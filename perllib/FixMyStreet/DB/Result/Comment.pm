@@ -6,6 +6,7 @@ package FixMyStreet::DB::Result::Comment;
 
 use strict;
 use warnings;
+use FixMyStreet::Template;
 
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
@@ -199,7 +200,7 @@ __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",
   { "foreign.object_id" => "self.id" },
-  { 
+  {
       cascade_copy => 0, cascade_delete => 0,
       where => { 'object_type' => 'update' },
   }
@@ -222,5 +223,86 @@ __PACKAGE__->might_have(
   },
   { cascade_copy => 0, cascade_delete => 1 },
 );
+
+=head2 meta_line
+
+Returns a string to be used on a report update, describing some of the metadata
+about an update
+
+=cut
+
+sub meta_line {
+    my ( $self, $c ) = @_;
+
+    my $meta = '';
+
+    $c->stash->{last_state} ||= '';
+
+    if ($self->anonymous or !$self->name) {
+        $meta = sprintf( _( 'Posted anonymously at %s' ), Utils::prettify_dt( $self->confirmed ) )
+    } elsif ($self->user->from_body) {
+        my $user_name = FixMyStreet::Template::html_filter($self->user->name);
+        my $body = $self->user->body;
+        if ($body eq 'Bromley Council') {
+            $body = "$body <img src='/cobrands/bromley/favicon.png' alt=''>";
+        }
+        $meta = sprintf( _( 'Posted by %s (<strong>%s</strong>) at %s' ), $user_name, $body, Utils::prettify_dt( $self->confirmed ) );
+    } else {
+        $meta = sprintf( _( 'Posted by %s at %s' ), FixMyStreet::Template::html_filter($self->name), Utils::prettify_dt( $self->confirmed ) )
+    }
+
+    my $update_state = '';
+
+    if ($self->mark_fixed) {
+        $update_state = _( 'marked as fixed' );
+    } elsif ($self->mark_open)  {
+        $update_state = _( 'reopened' );
+    } elsif ($self->problem_state) {
+        my $state = $self->problem_state_display;
+
+        if ($state eq 'confirmed') {
+            if ($c->stash->{last_state}) {
+                $update_state = _( 'reopened' )
+            }
+        } elsif ($state eq 'investigating') {
+            $update_state = _( 'marked as investigating' )
+        } elsif ($state eq 'planned') {
+            $update_state = _( 'marked as planned' )
+        } elsif ($state eq 'in progress') {
+            $update_state = _( 'marked as in progress' )
+        } elsif ($state eq 'action scheduled') {
+            $update_state = _( 'marked as action scheduled' )
+        } elsif ($state eq 'closed') {
+            $update_state = _( 'marked as closed' )
+        } elsif ($state eq 'fixed') {
+            $update_state = _( 'marked as fixed' )
+        } elsif ($state eq 'unable to fix') {
+            $update_state = _( 'marked as unable to fix' )
+        } elsif ($state eq 'not responsible') {
+            $update_state = _( "marked as not the council's responsibility" )
+        } elsif ($state eq 'duplicate') {
+            $update_state = _( 'closed as a duplicate report' )
+        } elsif ($state eq 'internal referral') {
+            $update_state = _( 'marked as an internal referral' )
+        }
+
+        if ($c->cobrand->moniker eq 'bromley' || $self->problem->bodies_str eq '2482') {
+            if ($state eq 'unable to fix') {
+                $update_state = 'marked as no further action';
+            } elsif ($state eq 'not responsible') {
+                $update_state = 'marked as third party responsibility'
+            }
+        }
+
+    }
+
+    if ($update_state ne $c->stash->{last_state} and $update_state) {
+        $meta .= ", $update_state";
+    }
+
+    $c->stash->{last_state} = $update_state;
+
+    return $meta;
+};
 
 1;
