@@ -1,0 +1,81 @@
+@import "_colours";
+@import "../sass/layout";
+
+.big-green-banner {
+  text-transform: none;
+}
+
+body.frontpage {
+  #site-header {
+    height: 5em;
+    background-color: $map_nav_bg;
+  }
+
+  #site-logo {
+    top: 11px;
+  }
+
+  .nav-menu {
+    line-height: 3.25em;
+  }
+}
+
+body.mappage {
+  .nav-menu--main a.report-a-problem-btn {
+    color: white;
+  }
+}
+
+#front-main {
+  background-color: $front_main_background;
+
+  h1, h2, label {
+      color: white;
+  }
+
+  h1 {
+      font-size: 1.7em;
+  }
+  h2 {
+      font-size: 1.1em;
+  }
+}
+
+#site-logo,
+body.frontpage #site-logo,
+body.twothirdswidthpage #site-logo
+{
+        position: relative;
+        top: 6px;
+        left: 20px;
+        margin: 0;
+        padding: 0;
+        background: url("/cobrands/bathnes/logo.png") 0 0 no-repeat;
+        background-size: contain;
+        width: 160px;
+        height: 65px;
+        display: inline-block;
+}
+
+body.mappage {
+  #site-logo {
+    height: 54px;
+    width: 127px;
+    top: 7px;
+    left: 7px;
+  }
+
+  #site-header {
+      color: white;
+      background-color: $bath_blue;
+  }
+
+    .nav-menu a {
+        color: white;
+    }
+
+}
+
+.nav-wrapper .nav-wrapper-2 {
+    border-top-color: transparent;
+}

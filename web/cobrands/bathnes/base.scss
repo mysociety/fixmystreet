@@ -1,0 +1,25 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+.nav-menu--mysoc {
+  display: none;
+}
+
+
+body.frontpage #site-logo,
+#site-logo
+{
+    background: url("/cobrands/bathnes/logo.png") 0 0 no-repeat;
+    background-size: contain;
+    width: 82px;
+    height: 40px;
+    top: 8px;
+    left: 4px;
+}
+
+h1, h2, h3, h4 {
+  color: $bath_green;
+}
