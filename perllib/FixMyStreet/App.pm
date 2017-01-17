@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 use Catalyst::Runtime 5.80;
 use FixMyStreet;
+use FixMyStreet::App::Response;
 use FixMyStreet::Cobrand;
 use Memcached;
 use FixMyStreet::Map;
@@ -81,6 +82,8 @@ __PACKAGE__->config(
         },
     },
 );
+
+__PACKAGE__->response_class('FixMyStreet::App::Response');
 
 # Start the application
 __PACKAGE__->setup();
