@@ -70,6 +70,7 @@ sub sign_in : Private {
     my ( $self, $c, $email ) = @_;
 
     $email ||= $c->get_param('email') || '';
+    $email = lc $email;
     my $password = $c->get_param('password_sign_in') || '';
     my $remember_me = $c->get_param('remember_me') || 0;
 
