@@ -200,6 +200,7 @@ sub available_permissions {
 
     my $perms = $self->next::method();
     $perms->{Problems}->{contribute_as_body} = "Create reports/updates as " . $self->council_name;
+    $perms->{Problems}->{view_body_contribute_details} = "See user detail for reports created as " . $self->council_name;
     $perms->{Users}->{user_assign_areas} = "Assign users to areas in " . $self->council_name;
 
     return $perms;
