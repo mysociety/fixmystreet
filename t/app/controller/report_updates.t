@@ -653,6 +653,18 @@ for my $test (
         state => 'fixed - council',
         report_bodies => $body->id . ',2505',
     },
+    {
+      desc => 'from authority user show username for users with correct permissions',
+      fields => {
+          name => $user->name,
+          may_show_name => 1,
+          update => 'Set state to fixed',
+          state => 'fixed',
+      },
+      state => 'fixed - council',
+      report_bodies => $body->id . ',2505',
+      view_username => 1
+    },
 ) {
     subtest $test->{desc} => sub {
         $report->comments->delete;
@@ -662,6 +674,14 @@ for my $test (
         }
 
         $mech->log_in_ok( $user->email );
+
+        if ($test->{view_username}) {
+          ok $user->user_body_permissions->create({
+            body => $body,
+            permission_type => 'view_body_contribute_details'
+          }), 'Give user view_body_contribute_details permissions';
+        }
+
         $user->from_body( $body->id );
         $user->update;
 
@@ -690,8 +710,14 @@ for my $test (
         } else {
             like $update_meta->[0], qr/marked as $meta_state$/, 'update meta includes state change';
         }
-        like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
-        $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
+
+        if ($test->{view_username}) {
+          like $update_meta->[0], qr{Westminster City Council \(Test User\)}, 'update meta includes council and user name';
+          $user->user_body_permissions->delete_all;
+        } else {
+          like $update_meta->[0], qr{Westminster City Council}, 'update meta includes council name';
+          $mech->content_contains( '<strong>Westminster City Council</strong>', 'council name in bold');
+        }
 
         $report->discard_changes;
         is $report->state, $test->{state}, 'state set';
