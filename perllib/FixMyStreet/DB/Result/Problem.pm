@@ -659,6 +659,20 @@ sub body {
     return $body;
 }
 
+
+=head2 time_ago
+  Returns how long ago a problem was reported in an appropriately
+  prettified duration, depending on the duration.
+=cut
+
+sub time_ago {
+    my ( $self, $date ) = @_;
+    $date ||= 'confirmed';
+    my $duration = time() - $self->$date->epoch;
+
+    return Utils::prettify_duration( $duration );
+}
+
 =head2 response_templates
 
 Returns all ResponseTemplates attached to this problem's bodies, in alphabetical
