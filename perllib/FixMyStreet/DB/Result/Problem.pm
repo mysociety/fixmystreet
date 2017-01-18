@@ -182,6 +182,8 @@ use Utils;
 use FixMyStreet::Map::FMS;
 use LWP::Simple qw($ua);
 use RABX;
+use URI;
+use URI::QueryParam;
 
 my $IM = eval {
     require Image::Magick;
@@ -509,6 +511,30 @@ sub url {
 sub admin_url {
     my ($self, $cobrand) = @_;
     return $cobrand->admin_base_url . '/report_edit/' . $self->id;
+}
+
+=head2 tokenised_url
+
+Return a url for this problem report that logs a user in
+
+=cut
+
+sub tokenised_url {
+    my ($self, $user, $params) = @_;
+
+    my $token = FixMyStreet::App->model('DB::Token')->create(
+        {
+            scope => 'email_sign_in',
+            data  => {
+                id    => $self->id,
+                email => $user->email,
+                r     => $self->url,
+                p     => $params,
+            }
+        }
+    );
+
+    return "/M/". $token->token;
 }
 
 =head2 is_open

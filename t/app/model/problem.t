@@ -5,6 +5,7 @@ use Test::More;
 
 use FixMyStreet::TestMech;
 use FixMyStreet;
+use FixMyStreet::App;
 use FixMyStreet::DB;
 use mySociety::Locale;
 use Sub::Override;
@@ -53,7 +54,7 @@ is $problem->whensent,   undef, 'inflating null confirmed ok';
 is $problem->lastupdate, undef, 'inflating null confirmed ok';
 is $problem->created,  undef, 'inflating null confirmed ok';
 
-for my $test ( 
+for my $test (
     {
         desc => 'more or less empty problem',
         changed => {},
@@ -242,7 +243,7 @@ for my $test (
     };
 }
 
-for my $test ( 
+for my $test (
     {
         state => 'partial',
         is_visible  => 0,
@@ -772,6 +773,32 @@ subtest 'check duplicate reports' => sub {
     is $problem1->duplicate_of->title, $problem2->title, 'problem1 returns correct problem from duplicate_of';
     is scalar @{ $problem2->duplicates }, 1, 'problem2 has correct number of duplicates';
     is $problem2->duplicates->[0]->title, $problem1->title, 'problem2 includes problem1 in duplicates';
+};
+
+subtest 'generates a tokenised url for a user' => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $body_ids{2651}, 'TITLE');
+    my $url = $problem->tokenised_url($user);
+    (my $token = $url) =~ s/\/M\///g;
+
+    like $url, qr/\/M\//, 'problem generates tokenised url';
+
+    my $token_obj = FixMyStreet::App->model('DB::Token')->find( {
+        scope => 'email_sign_in', token => $token
+    } );
+    is $token, $token_obj->token, 'token is generated in database with correct scope';
+    is $token_obj->data->{r}, $problem->url, 'token has correct redirect data';
+};
+
+subtest 'stores params in a token' => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $body_ids{2651}, 'TITLE');
+    my $url = $problem->tokenised_url($user, { foo => 'bar', baz => 'boo'});
+    (my $token = $url) =~ s/\/M\///g;
+
+    my $token_obj = FixMyStreet::App->model('DB::Token')->find( {
+        scope => 'email_sign_in', token => $token
+    } );
+
+    is_deeply $token_obj->data->{p}, { foo => 'bar', baz => 'boo'}, 'token has correct params';
 };
 
 subtest 'get report time ago in appropriate format' => sub {
