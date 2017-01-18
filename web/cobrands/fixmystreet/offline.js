@@ -322,7 +322,7 @@ fixmystreet.offline = (function() {
         if (savedForm) {
             savedForm.replace(/\+/g, '%20').split('&').forEach(function(kv) {
                 kv = kv.split('=', 2);
-                if (kv[0] != 'save_inspected' && kv[0] != 'public_update' && kv[0] != 'save') {
+                if (kv[0] != 'include_update' && kv[0] != 'public_update' && kv[0] != 'save') {
                     $('[name=' + kv[0] + ']').val(decodeURIComponent(kv[1]));
                 }
             });

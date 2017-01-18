@@ -57,7 +57,7 @@ FixMyStreet::override_config {
     };
 
     subtest "test basic inspect submission" => sub {
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action Scheduled', save_inspected => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action Scheduled', include_update => undef } });
         $report->discard_changes;
         is $report->state, 'action scheduled', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Yes', 'report data changed';
@@ -65,10 +65,11 @@ FixMyStreet::override_config {
 
     subtest "test inspect & instruct submission" => sub {
         $report->unset_extra_metadata('inspected');
+        $report->state('confirmed');
         $report->update;
         my $reputation = $report->user->get_extra_metadata("reputation") || 0;
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", save_inspected => "1" } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", include_update => "1", state => 'action scheduled' } });
         $report->discard_changes;
         is $report->comments->first->text, "This is a public update.", 'Update was created';
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
@@ -80,7 +81,7 @@ FixMyStreet::override_config {
         $report->update;
         $report->comments->delete_all;
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => undef, save_inspected => "1" } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => undef, include_update => "1" } });
         is_deeply $mech->page_errors, [ "Please provide a public update for this report." ], 'errors match';
         $report->discard_changes;
         is $report->comments->count, 0, "Update wasn't created";
@@ -117,7 +118,7 @@ FixMyStreet::override_config {
         $report->comments->delete_all;
 
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', duplicate_of => $report2->id, public_update => "This is a duplicate.", save_inspected => "1" } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', duplicate_of => $report2->id, public_update => "This is a duplicate.", include_update => "1" } });
         $report->discard_changes;
 
         is $report->state, 'duplicate', 'report marked as duplicate';
@@ -136,7 +137,7 @@ FixMyStreet::override_config {
             state => 'Duplicate',
             duplicate_of => $report2->id,
             public_update => $update_text,
-            save_inspected => "1",
+            include_update => "1",
         }});
         $report->discard_changes;
 
@@ -190,7 +191,7 @@ FixMyStreet::override_config {
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
         $report->update({ state => 'confirmed' });
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action Scheduled', save_inspected => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action Scheduled', include_update => undef } });
         $report->discard_changes;
         is $report->state, 'action scheduled', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';
@@ -211,7 +212,7 @@ FixMyStreet::override_config {
         # which should cause it to be resent. We clear the host because
         # otherwise testing stays on host() above.
         $mech->clear_host;
-        $mech->submit_form(button => 'save', with_fields => { category => 'Horses', save_inspected => undef, });
+        $mech->submit_form(button => 'save', with_fields => { category => 'Horses', include_update => undef, });
 
         $report->discard_changes;
         is $report->category, "Horses", "Report in correct category";
