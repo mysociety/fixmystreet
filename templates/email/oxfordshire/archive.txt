@@ -1,0 +1,28 @@
+Subject: Your reports on [% site_name %]
+
+Hello [% user.name %],
+
+FixMyStreet is being updated in Oxfordshire to improve how problems get fixed.
+
+As part of these updates, we are closing old reports that appear to be resolved but remain open in the system.
+
+We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system, which we've listed below.
+
+If your report is no longer an issue, you don't need to do anything.
+
+If you believe that your report is still a problem, you can reopen it by clicking or copying and pasting
+the link marked 'Reopen?' by a report.
+
+[% FOR report IN reports %]
+
+[% report.title %]
+
+Reported [% report.time_ago %] ago.
+
+Reopen? [% cobrand.base_url_for_report( report ) %][% report.tokenised_url( user, { reopen => 'true' } ) %]#update_form
+
+----
+
+[% END %]
+
+The mySociety team and Oxfordshire County Council

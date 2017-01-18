@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+require 5.8.0;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::Script::ArchiveOldEnquiries;
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit|c',     "actually close reports and send emails. Omitting this flag will do a dry-run"],
+    ['body|b=s',     "which body ID to close reports for"],
+    ['cobrand=s',     "which cobrand template to use for sent emails"],
+    ['closure-cutoff=s',     "Anything before this will be closed with no email"],
+    ['email-cutoff=s',     "Anything before this will be closed with an email sent to the reporter"],
+    ['limit|l=s',     "limit to a certain number of reports/users to be closed"],
+    ['help|h',       "print usage message and exit" ],
+);
+print($usage->text), exit if $opts->help;
+
+FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
