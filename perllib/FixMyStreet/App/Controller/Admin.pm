@@ -1220,10 +1220,8 @@ sub user_add : Path('user_edit') : Args(0) {
 
     $c->forward( 'log_edit', [ $user->id, 'user', 'edit' ] );
 
-    $c->stash->{status_message} =
-      '<p><em>' . _('Updated!') . '</em></p>';
-
-    return 1;
+    $c->flash->{status_message} = _("Updated!");
+    $c->res->redirect( $c->uri_for( 'user_edit', $user->id ) );
 }
 
 sub user_edit : Path('user_edit') : Args(1) {
@@ -1246,6 +1244,11 @@ sub user_edit : Path('user_edit') : Args(1) {
 
     $c->forward('fetch_all_bodies');
     $c->forward('fetch_body_areas', [ $user->from_body ]) if $user->from_body;
+
+    if ( defined $c->flash->{status_message} ) {
+        $c->stash->{status_message} =
+            '<p><em>' . $c->flash->{status_message} . '</em></p>';
+    }
 
     if ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
@@ -1370,10 +1373,9 @@ sub user_edit : Path('user_edit') : Args(1) {
             if ($edited) {
                 $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
             }
+            $c->flash->{status_message} = _("Updated!");
+            $c->res->redirect( $c->uri_for( 'user_edit', $user->id ) );
         }
-
-        $c->stash->{status_message} =
-          '<p><em>' . _('Updated!') . '</em></p>';
     }
 
     if ( $user->from_body ) {
