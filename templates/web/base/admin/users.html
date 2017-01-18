@@ -47,6 +47,8 @@
 [% IF NOT searched %]
 <h2>[% loc('Add user') %]</h2>
 [% INCLUDE 'admin/user-form.html', user = '' %]
+[% ELSE %]
+<a href="[% c.uri_for( c.controller('Admin').action_for('user_add') ) %]">[% loc('Add user') %]</a>
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]
