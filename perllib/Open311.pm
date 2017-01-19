@@ -83,10 +83,10 @@ sub send_service_request {
         }
 
         warn sprintf( "Failed to submit problem %s over Open311, response\n: %s\n%s", $problem->id, $response, $self->debug_details )
-            unless $problem->send_fail_count;
+            if $problem->send_fail_count && $problem->send_fail_count == 2;
     } else {
         warn sprintf( "Failed to submit problem %s over Open311, details:\n%s", $problem->id, $self->error)
-            unless $problem->send_fail_count;
+            if $problem->send_fail_count && $problem->send_fail_count == 2;
     }
     return 0;
 }
@@ -259,10 +259,10 @@ sub post_service_request_update {
         }
 
         warn sprintf( "Failed to submit comment %s over Open311, response - %s\n%s\n", $comment->id, $response, $self->debug_details )
-            unless $comment->send_fail_count;
+            if $comment->send_fail_count && $comment->send_fail_count == 2;
     } else {
         warn sprintf( "Failed to submit comment %s over Open311, details\n%s\n", $comment->id, $self->error)
-            unless $comment->send_fail_count;
+            if $comment->send_fail_count && $comment->send_fail_count == 2;
     }
     return 0;
 }

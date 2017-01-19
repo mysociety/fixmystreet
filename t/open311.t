@@ -30,20 +30,26 @@ my $o2 = Open311->new( endpoint => 'http://127.0.0.1/open311/', jurisdiction => 
 
 my $u = FixMyStreet::DB->resultset('User')->new( { email => 'test@example.org', name => 'A User' } );
 
-my $p = FixMyStreet::DB->resultset('Problem')->new( {
-    latitude => 1,
-    longitude => 1,
-    title => 'title',
-    detail => 'detail',
-    user => $u,
-    id => 1,
-    name => 'A User',
-    cobrand => 'fixmystreet',
-} );
+for my $sfc (0..2) {
+    my $p = FixMyStreet::DB->resultset('Problem')->new( {
+        latitude => 1,
+        longitude => 1,
+        title => 'title',
+        detail => 'detail',
+        user => $u,
+        id => 1,
+        name => 'A User',
+        cobrand => 'fixmystreet',
+        send_fail_count => $sfc,
+    } );
+    my $expected_error = qr{Failed to submit problem 1 over Open311}ism;
 
-my $expected_error = qr{Failed to submit problem 1 over Open311}ism;
-
-warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} $expected_error, 'warning generated on failed call';
+    if ($sfc == 2) {
+        warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} $expected_error, 'warning generated on failed call';
+    } else {
+        warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} undef, 'no warning generated on failed call';
+    }
+}
 
 my $dt = DateTime->now();
 
@@ -571,6 +577,9 @@ for my $test (
         }
     };
 }
+
+$problem->send_fail_count(2);
+$comment->send_fail_count(2);
 
 subtest 'No request id in reponse' => sub {
     my $results;
