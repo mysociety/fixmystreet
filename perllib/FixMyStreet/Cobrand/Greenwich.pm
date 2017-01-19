@@ -55,4 +55,6 @@ sub contact_email {
     return join( '@', 'fixmystreet', 'royalgreenwich.gov.uk' );
 }
 
+sub reports_per_page { return 20; }
+
 1;
