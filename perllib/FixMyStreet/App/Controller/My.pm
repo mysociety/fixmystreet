@@ -161,6 +161,8 @@ sub setup_page_data : Private {
     @categories = map { $_->category } @categories;
     $c->stash->{filter_categories} = \@categories;
 
+    $c->forward('/admin/fetch_body_areas', [ $c->user->from_body ]) if $c->user->from_body;
+
     $c->stash->{page} = 'my';
     my $pins = $c->stash->{pins};
     FixMyStreet::Map::display_map(

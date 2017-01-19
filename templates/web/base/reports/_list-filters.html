@@ -6,6 +6,18 @@
     </select>
 [% END %]
 
+[% select_area = BLOCK %]
+  [% IF areas.size %]
+    <select class="form-control js-multiple" name="filter_area" id="filter_areas" multiple data-all="[% loc('Everywhere') %]">
+      [% FOR area IN areas %]
+          <option value="[% area.name | html %]"[% ' selected' IF filter_area.grep(area.name).size %]>
+              [% area.name | html %]
+          </option>
+      [% END %]
+    </select>
+  [% END %]
+[% END %]
+
 [% select_category = BLOCK %]
   [% IF filter_categories.size %]
     <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
@@ -25,7 +37,11 @@
 [% END %]
 
         <p class="report-list-filters">
-            [% tprintf(loc('<label for="statuses">Show</label> %s <label for="filter_categories">about</label> %s', 'The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories'), select_status, select_category) %]
+            [% IF areas.size %]
+              [% tprintf(loc('<label for="statuses">Show</label> %s <label for="filter_areas">in</label> %s <label for="filter_categories">about</label> %s', 'The first %s is a dropdown of all/fixed/etc, the second is a dropdown of areas, the third is a dropdown of categories'), select_status, select_area, select_category) %]
+            [% ELSE %]
+              [% tprintf(loc('<label for="statuses">Show</label> %s <label for="filter_categories">about</label> %s', 'The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories'), select_status, select_category) %]
+            [% END %]
             <input type="submit" name="filter_update" value="[% loc('Go') %]">
         </p>
 

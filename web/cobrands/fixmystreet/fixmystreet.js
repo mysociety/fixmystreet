@@ -735,6 +735,7 @@ $.extend(fixmystreet.set_up, {
     }
     make_multi('statuses');
     make_multi('filter_categories');
+    make_multi('filter_areas');
   },
 
   report_page_inspect: function() {
