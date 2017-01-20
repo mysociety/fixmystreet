@@ -110,6 +110,16 @@ sub get_problems : Private {
         $c->stash->{filter_category} = $categories;
     }
 
+    my $areas = [ $c->get_param_list('filter_areas', 1) ];
+    use Data::Dumper;
+    if ( @$areas ) {
+        $params->{areas} = { like => [ map { "%,$_,%" } @$areas ] };
+        $c->log->debug($areas);
+        $c->stash->{filter_areas} = $areas;
+    }
+
+    $c->log->debug(Dumper($params));
+
     my $rows = 50;
     $rows = 5000 if $c->stash->{sort_key} eq 'shortlist'; # Want all reports
 
