@@ -313,7 +313,7 @@ var fixmystreet = fixmystreet || {};
             new_url = location.href + '?' + $.param(qs);
         }
         history.pushState({
-            filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses, 'sort': sort_key }
+            filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses, 'filter_areas': filter_areas, 'sort': sort_key }
         }, null, new_url);
     }
 
@@ -529,9 +529,11 @@ var fixmystreet = fixmystreet || {};
             $("#filter_categories").on("change.filters", categories_or_status_changed);
             $("#statuses").on("change.filters", categories_or_status_changed);
             $("#sort").on("change.filters", categories_or_status_changed);
+            $("#filter_areas").on("change.filters", categories_or_status_changed);
             $("#filter_categories").on("change.user", categories_or_status_changed_history);
             $("#statuses").on("change.user", categories_or_status_changed_history);
             $("#sort").on("change.user", categories_or_status_changed_history);
+            $("#filter_areas").on("change.user", categories_or_status_changed_history);
         } else if (fixmystreet.page == 'new') {
             drag.activate();
         }
@@ -802,7 +804,7 @@ OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixe
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     read: function(options) {
         // Pass the values of the category, status, and sort fields as query params
-        $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
+        $.each({ filter_category: 'filter_categories', status: 'statuses', filter_areas: 'filter_areas', sort: 'sort' }, function(key, id) {
             var val = $('#' + id).val();
             if (val !== undefined) {
                 options.params = options.params || {};
