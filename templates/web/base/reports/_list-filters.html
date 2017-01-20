@@ -10,7 +10,7 @@
   [% IF areas.size %]
     <select class="form-control js-multiple" name="filter_area" id="filter_areas" multiple data-all="[% loc('Everywhere') %]">
       [% FOR area IN areas %]
-          <option value="[% area.name | html %]"[% ' selected' IF filter_area.grep(area.name).size %]>
+          <option value="[% area.id | html %]"[% ' selected' IF filter_area.grep(area.name).size %]>
               [% area.name | html %]
           </option>
       [% END %]
