@@ -611,7 +611,7 @@ sub meta_line {
         if ($c->user_exists and
             $c->user->has_permission_to('view_body_contribute_details', $problem->bodies_str_ids) and
             $problem->name ne $problem->user->name) {
-            $problem_name = sprintf( _('%s (%s)'), $problem->name, $problem->user->name );
+            $problem_name = sprintf('%s (%s)', $problem->name, $problem->user->name );
         }
 
         if ( $problem->service and $category && $category ne _('Other') ) {
