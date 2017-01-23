@@ -12,6 +12,20 @@ function isR2L() {
     return !!$('html[dir=rtl]').length;
 }
 
+function make_multi(id) {
+    var $id = $('#' + id),
+        all = $id.data('all');
+    $id.multiSelect({
+        allText: all,
+        noneText: all,
+        positionMenuWithin: $('#side'),
+        presets: [{
+            name: all,
+            options: []
+        }]
+    });
+}
+
 // Some small jQuery extensions
 (function($) {
   var opened;
@@ -720,19 +734,6 @@ $.extend(fixmystreet.set_up, {
     // to refresh the map when the filter inputs are changed.
     $(".report-list-filters [type=submit]").hide();
 
-    function make_multi(id) {
-        var $id = $('#' + id),
-            all = $id.data('all');
-        $id.multiSelect({
-            allText: all,
-            noneText: all,
-            positionMenuWithin: $('#side'),
-            presets: [{
-                name: all,
-                options: []
-            }]
-        });
-    }
     make_multi('statuses');
     make_multi('filter_categories');
   },
@@ -1119,6 +1120,10 @@ $.extend(fixmystreet.set_up, {
               $input.val($this.val());
           }
       });
+  },
+
+  admin_page_form: function() {
+    make_multi('areas');
   }
 });
 

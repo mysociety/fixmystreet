@@ -172,7 +172,7 @@ subtest 'check contact creation' => sub {
 
     $mech->get_ok('/admin/body/' . $body->id);
 
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
         category   => 'test category',
         email      => 'test@example.com',
         note       => 'test note',
@@ -185,7 +185,7 @@ subtest 'check contact creation' => sub {
     $mech->content_contains( '<td>test note' );
     $mech->content_contains( 'Private:&nbsp;No' );
 
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
         category   => 'private category',
         email      => 'test@example.com',
         note       => 'test note',
@@ -208,7 +208,7 @@ subtest 'check contact creation' => sub {
 subtest 'check contact editing' => sub {
     $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
 
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
         email    => 'test2@example.com',
         note     => 'test2 note',
         non_public => undef,
@@ -220,7 +220,7 @@ subtest 'check contact editing' => sub {
     $mech->content_contains( 'Private:&nbsp;No' );
 
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
         email    => 'test2@example.com',
         note     => 'test2 note',
         non_public => 'on',
@@ -247,7 +247,7 @@ subtest 'check contact updating' => sub {
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };
 
-$body->update({ send_method => undef }); 
+$body->update({ send_method => undef });
 
 subtest 'check open311 configuring' => sub {
     $mech->get_ok('/admin/body/' . $body->id);
@@ -309,7 +309,7 @@ my $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
         object_type => 'problem',
         object_id   => $report->id
     },
-    { 
+    {
         order_by => { -desc => 'id' },
     }
 );
@@ -739,7 +739,7 @@ $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
         object_type => 'update',
         object_id   => $update->id
     },
-    { 
+    {
         order_by => { -desc => 'id' },
     }
 );
@@ -948,7 +948,7 @@ for my $test (
 
 subtest 'editing update email creates new user if required' => sub {
     my $user = FixMyStreet::App->model('DB::User')->find(
-        { email => 'test4@example.com' } 
+        { email => 'test4@example.com' }
     );
 
     $user->delete if $user;
@@ -964,7 +964,7 @@ subtest 'editing update email creates new user if required' => sub {
     $mech->submit_form_ok( { with_fields => $fields } );
 
     $user = FixMyStreet::App->model('DB::User')->find(
-        { email => 'test4@example.com' } 
+        { email => 'test4@example.com' }
     );
 
     is_deeply $mech->visible_form_values, $fields, 'submitted form values';
@@ -1168,7 +1168,7 @@ $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
         object_type => 'user',
         object_id   => $user->id
     },
-    { 
+    {
         order_by => { -desc => 'id' },
     }
 );
@@ -1215,7 +1215,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1233,7 +1233,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1251,7 +1251,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1269,7 +1269,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1287,7 +1287,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => 'on',
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1305,7 +1305,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1326,7 +1326,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => 'on',
-                area_id => '',
+                areas => undef,
             },
             changes => {
                 is_superuser => undef,
@@ -1337,6 +1337,23 @@ FixMyStreet::override_config {
             log_count => 5,
             log_entries => [qw/edit edit edit edit edit/],
         },
+        {
+            desc => 'edit user add areas',
+            fields => {
+                name => 'Changed User',
+                email => 'changed@example.com',
+                body => $southend->id,
+                phone => '',
+                flagged => undef,
+                is_superuser => undef,
+                areas => undef,
+                %default_perms,
+            },
+            changes => {
+                areas => 60705,
+                areas => 62883,
+            },
+        }
     ) {
         subtest $test->{desc} => sub {
             $mech->get_ok( '/admin/user_edit/' . $user->id );
@@ -1405,6 +1422,7 @@ subtest "Users without from_body can't access admin" => sub {
 
 subtest "Users with from_body can access their own council's admin" => sub {
     FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
@@ -1419,6 +1437,7 @@ subtest "Users with from_body can access their own council's admin" => sub {
 subtest "Users with from_body can't access another council's admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'bristol' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
 
@@ -1432,6 +1451,7 @@ subtest "Users with from_body can't access another council's admin" => sub {
 subtest "Users with from_body can't access fixmystreet.com admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
 
@@ -1461,6 +1481,7 @@ subtest "response templates can be added" => sub {
 subtest "response templates are included on page" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $report->update({ category => $oxfordshirecontact->category, bodies_str => $oxfordshire->id });
         $mech->log_in_ok( $oxfordshireuser->email );
@@ -1518,6 +1539,7 @@ $mech->log_out_ok;
 subtest "response priorities can't be viewed across councils" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $oxfordshireuser->user_body_permissions->create({
             body => $oxfordshire,

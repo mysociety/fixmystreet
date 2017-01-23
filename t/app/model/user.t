@@ -39,6 +39,20 @@ FixMyStreet::override_config {
     $mech->content_like(qr/may_show_name[^>c]*>/);
 };
 
+subtest 'user with areas returns areas as an array' => sub {
+    my $user = FixMyStreet::DB->resultset('User')->find_or_create(
+        {
+            email => 'testwithareas@example.com'
+        }
+    );
+
+    is_deeply $user->area_ids, [], 'area_ids is an empty array when no areas present';
+
+    $user->update({areas => ',123,456,789'});
+
+    is_deeply $user->area_ids, [123,456,789], 'area_ids is an array of areas';
+};
+
 END {
     $mech->delete_user( $problem->user ) if $problem;
     done_testing();

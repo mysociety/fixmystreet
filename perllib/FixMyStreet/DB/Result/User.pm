@@ -38,9 +38,9 @@ __PACKAGE__->add_columns(
   { data_type => "bigint", is_nullable => 1 },
   "is_superuser",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "area_id",
-  { data_type => "integer", is_nullable => 1 },
   "extra",
+  { data_type => "text", is_nullable => 1 },
+  "areas",
   { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -102,8 +102,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-16 14:22:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7wfF1VnZax2QTXCIPXr+vg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-01-23 11:49:06
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aTQoCVW6MNo64VNtDB/h3g
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
@@ -208,6 +208,19 @@ sub body {
     my $self = shift;
     return '' unless $self->from_body;
     return $self->from_body->name;
+}
+
+=head2 area_ids
+
+Returns the areas a user has been assigned to as an array
+
+=cut
+
+sub area_ids {
+    my $self = shift;
+    return [] if !defined $self->areas;
+    my @areas = grep length, split(/,/, $self->areas);
+    return [ @areas ];
 }
 
 =head2 belongs_to_body

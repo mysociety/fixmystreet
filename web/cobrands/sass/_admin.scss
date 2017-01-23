@@ -146,4 +146,23 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     background-position: $right top;
     background-repeat: no-repeat;
   }
+
+  #user_edit {
+    .multi-select-container {
+      font-size: 19px;
+      .multi-select-button {
+        width: 100%;
+        padding: 5px 8px;
+      }
+      .multi-select-menu {
+        height: 200px;
+        overflow-y: scroll;
+        font-size: 0.8em;
+        top: 1em;
+        left: 1em;
+        min-width: 50%;
+      }
+    }
+  }
+
 }
