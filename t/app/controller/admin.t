@@ -1215,7 +1215,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1233,7 +1233,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1251,7 +1251,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1269,7 +1269,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1287,7 +1287,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => 'on',
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1305,7 +1305,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                areas => undef,
                 %default_perms,
             },
             changes => {
@@ -1326,7 +1326,7 @@ FixMyStreet::override_config {
                 phone => '',
                 flagged => undef,
                 is_superuser => 'on',
-                area_id => '',
+                areas => undef,
             },
             changes => {
                 is_superuser => undef,

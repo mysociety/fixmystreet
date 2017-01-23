@@ -1310,12 +1310,14 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->from_body && $c->user->has_permission_to('user_assign_areas', $user->from_body->id) ) {
             my %valid_areas = map { $_->{id} => 1 } @{ $c->stash->{areas} };
-            my @areas = $c->get_param('areas');
             my $new_areas = "";
-            foreach my $area (@areas) {
-              if ($valid_areas{$area}) {
-                $new_areas .= ",$area";
-              }
+            if ( $c->get_param('areas') ) {
+                my @areas = $c->get_param('areas');
+                foreach my $area (@areas) {
+                  if ($valid_areas{$area}) {
+                    $new_areas .= ",$area";
+                  }
+                }
             }
             $user->areas( $new_areas );
         }
