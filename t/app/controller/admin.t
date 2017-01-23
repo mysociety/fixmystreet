@@ -1405,6 +1405,7 @@ subtest "Users without from_body can't access admin" => sub {
 
 subtest "Users with from_body can access their own council's admin" => sub {
     FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
@@ -1419,6 +1420,7 @@ subtest "Users with from_body can access their own council's admin" => sub {
 subtest "Users with from_body can't access another council's admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'bristol' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
 
@@ -1432,6 +1434,7 @@ subtest "Users with from_body can't access another council's admin" => sub {
 subtest "Users with from_body can't access fixmystreet.com admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
 
@@ -1461,6 +1464,7 @@ subtest "response templates can be added" => sub {
 subtest "response templates are included on page" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $report->update({ category => $oxfordshirecontact->category, bodies_str => $oxfordshire->id });
         $mech->log_in_ok( $oxfordshireuser->email );
@@ -1518,6 +1522,7 @@ $mech->log_out_ok;
 subtest "response priorities can't be viewed across councils" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $oxfordshireuser->user_body_permissions->create({
             body => $oxfordshire,
