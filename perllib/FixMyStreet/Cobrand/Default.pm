@@ -1204,4 +1204,15 @@ sub traffic_management_options {
     ];
 }
 
+
+=head2 display_days_ago_threshold
+
+Used to control whether a relative 'n days ago' or absolute date is shown
+for problems/updates. If a problem/update's `days_ago` value is <= this figure,
+the 'n days ago' format is used. By default the absolute date is always used.
+
+=cut
+sub display_days_ago_threshold { 0 }
+
+
 1;

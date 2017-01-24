@@ -165,4 +165,6 @@ sub user_extra_fields {
     return [ 'initials' ];
 }
 
+sub display_days_ago_threshold { 28 }
+
 1;
