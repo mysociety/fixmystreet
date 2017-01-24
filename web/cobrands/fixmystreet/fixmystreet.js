@@ -497,7 +497,7 @@ $.extend(fixmystreet.set_up, {
         btn.attr('name', 'shortlist-' + sw);
     }
 
-    $('.item-list').on('click', ':submit', function(e) {
+    $('.item-list--reports').on('click', ':submit', function(e) {
       e.preventDefault();
 
       var $submitButton = $(this);
