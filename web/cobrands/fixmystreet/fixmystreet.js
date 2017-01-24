@@ -787,6 +787,16 @@ $.extend(fixmystreet.set_up, {
         }
     }).change();
 
+    // On mobile, we want to redirect inspectors back to their shortlist after
+    // each report has been inspected (This matches the offline behaviour too).
+    // Let's let the server worry about the redirection logic, but to help out
+    // we'll include a 'mobile' field in the POST data.
+    $("#report_inspect_form").submit(function() {
+        if ($('html').hasClass('mobile')) {
+            $("#report_inspect_form").append("<input type=hidden name=mobile value=1>");
+        }
+    });
+
     $('.js-toggle-public-update').each(function() {
         var $checkbox = $(this);
         var toggle_public_update = function() {

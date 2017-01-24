@@ -424,11 +424,17 @@ sub inspect : Private {
                     %update_params,
                 } );
             }
-            # This problem might no longer be visible on the current cobrand,
-            # if its body has changed (e.g. by virtue of the category changing)
-            # so redirect to a cobrand where it can be seen if necessary
+
             my $redirect_uri;
-            if ( $c->cobrand->is_council && !$c->cobrand->owns_problem($problem) ) {
+            if ( $c->get_param("mobile") && $c->user->active_planned_reports->count ) {
+                # If the report was inspected on a mobile device, send the user
+                # to their planned reports page to save a couple of taps.
+                $redirect_uri = "/my/planned";
+            } elsif ( $c->cobrand->is_council && !$c->cobrand->owns_problem($problem) ) {
+                # This problem might no longer be visible on the current
+                # cobrand, if its body has changed (e.g. by virtue of the
+                # category changing) so redirect to a cobrand where it can be
+                # seen if necessary.
                 $redirect_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
             } else {
                 $redirect_uri = $c->uri_for( $problem->url );
