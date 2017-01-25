@@ -417,6 +417,19 @@ sub update_reputation {
     $self->update;
 }
 
+sub reports_in_areas {
+    my $self = shift;
+    my $area_ids = $self->area_ids;
+
+    return undef if scalar(@$area_ids) == 0;
+
+    my @likes = map {  {areas => { like=>"%,$_,%"}} } @$area_ids;
+
+    return FixMyStreet::DB->resultset('Problem')->search({
+        -or => \@likes
+    });
+}
+
 has categories => (
     is => 'ro',
     lazy => 1,
