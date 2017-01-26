@@ -412,6 +412,9 @@ Used after signing in to take the person back to where they were.
 
 sub redirect_on_signin : Private {
     my ( $self, $c, $redirect ) = @_;
+    if (scalar(@{ $c->user->area_ids }) and ($redirect eq '' or $redirect eq 'my') ) {
+      $redirect = 'my/areas';
+    }
     $redirect = 'my' unless $redirect;
     $redirect = 'my' if $redirect =~ /^admin/ && !$c->user->is_superuser;
     if ( $c->cobrand->moniker eq 'zurich' ) {
