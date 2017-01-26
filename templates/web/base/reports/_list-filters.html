@@ -12,7 +12,7 @@
 
 [% select_category = BLOCK %]
   [% IF filter_categories.size %]
-    <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
+    <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]" data-presets='[% select_presets %]'>
         [% FOR cat IN filter_categories %]
             <option value="[% cat | html %]"[% ' selected' IF filter_category.grep(cat).size %]>
                 [% cat | html %]

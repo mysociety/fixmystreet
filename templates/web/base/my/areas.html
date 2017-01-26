@@ -1,0 +1,20 @@
+[%
+    SET bodyclass = 'mappage';
+    PROCESS "report/photo-js.html";
+    PROCESS "maps/${map.type}.html";
+    INCLUDE 'header.html', title = loc('Your area')
+%]
+
+[% map_html %]
+</div>
+<div id="map_sidebar">
+  <div id="side">
+
+    <h1>[% loc('Your area') %]</h1>
+
+    [% INCLUDE 'my/_problems.html' %]
+
+  </div>
+</div>
+
+[% INCLUDE 'footer.html' %]
