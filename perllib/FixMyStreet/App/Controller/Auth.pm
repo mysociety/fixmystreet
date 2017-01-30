@@ -412,12 +412,31 @@ Used after signing in to take the person back to where they were.
 
 sub redirect_on_signin : Private {
     my ( $self, $c, $redirect ) = @_;
-    $redirect = 'my' unless $redirect;
+    unless ( $redirect ) {
+        $c->detach('redirect_to_categories') if $c->user->from_body && scalar @{ $c->user->categories };
+        $redirect = 'my';
+    }
     $redirect = 'my' if $redirect =~ /^admin/ && !$c->cobrand->admin_allow_user($c->user);
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $redirect = 'admin' if $c->user->from_body;
     }
     $c->res->redirect( $c->uri_for( "/$redirect" ) );
+}
+
+=head2 redirect_to_categories
+
+Redirects the user to their body's reports page, prefiltered to whatever
+categories this user has been assigned to.
+
+=cut
+
+sub redirect_to_categories : Private {
+    my ( $self, $c ) = @_;
+
+    my $categories = join(',', @{ $c->user->categories });
+    my $body_short = $c->cobrand->short_name( $c->user->from_body );
+
+    $c->res->redirect( $c->uri_for( "/reports/" . $body_short, { filter_category => $categories } ) );
 }
 
 =head2 redirect
