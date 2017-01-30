@@ -56,6 +56,10 @@ sub planned : Local : Args(0) {
     $c->forward('planned_reorder');
     $c->forward('/reports/stash_report_sort', [ 'shortlist' ]);
     $c->forward('get_problems');
+    if ($c->get_param('ajax')) {
+        $c->stash->{shortlist} = $c->stash->{sort_key} eq 'shortlist';
+        $c->detach('/reports/ajax', [ 'my/_problem-list.html' ]);
+    }
     $c->forward('setup_page_data');
 }
 
