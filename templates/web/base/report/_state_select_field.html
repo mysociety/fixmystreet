@@ -1,0 +1,12 @@
+<select class="form-control" name="state"  id="state">
+[% IF include_empty %]
+    <option value="">---</option>
+[% END %]
+[% FOREACH group IN state_groups %]
+    <optgroup label="[% group.0 %]">
+    [% FOREACH state IN group.1 %]
+        <option [% 'selected ' IF state == current_state %] value="[% state %]">[% state_pretty.$state %]</option>
+    [% END %]
+    </optgroup>
+[% END %]
+</select>

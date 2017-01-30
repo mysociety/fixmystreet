@@ -1,0 +1,21 @@
+[%
+SET state_pretty = {
+    'confirmed' = loc('Open')
+    'investigating' = loc('Investigating')
+    'action scheduled' = loc('Action Scheduled')
+    'fixed - council' = loc('Fixed')
+    'not responsible' = loc('Not Responsible')
+    'duplicate' = loc('Duplicate')
+    'unable to fix' = loc('No further action')
+};
+
+SET state_groups = [
+    [ loc('New'), [ 'confirmed', 'investigating' ] ],
+    [ loc('Scheduled'), [ 'action scheduled' ] ],
+    [ loc('Fixed'), [ 'fixed - council' ] ],
+    [ loc('Closed'), [ 'not responsible', 'duplicate', 'unable to fix' ] ]
+];
+
+%]
+[% DEFAULT current_state = problem.state %]
+[% INCLUDE 'report/_state_select_field.html' %]

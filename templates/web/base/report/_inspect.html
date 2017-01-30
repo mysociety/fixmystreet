@@ -64,7 +64,7 @@
         [% IF permissions.report_inspect %]
           <p>
             <label for="state">[% loc('State') %]</label>
-            [% INCLUDE 'admin/state_groups_select.html' %]
+            [% INCLUDE 'report/inspect/state_groups_select.html' %]
           </p>
           <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
             <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
