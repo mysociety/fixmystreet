@@ -51,6 +51,12 @@
                              %]>[% loc('Shortlist') %]</[% c.req.uri.path == '/my/planned' ? 'span' : 'a' %]>
                         </li>
                         [% END %]
+                        [% IF c.user_exists AND c.user.areas != '' %]
+                        <li>
+                            <[% IF c.req.uri.path == '/my/areas' %]span[% ELSE %]a href="/my/areas"[% END
+                             %]>[% loc('My Areas') %]</[% c.req.uri.path == '/my/areas' ? 'span' : 'a' %]>
+                        </li>
+                        [% END %]
                         <li>
                             <[% IF c.req.uri.path == '/reports/Oxfordshire' %]span[% ELSE %]a href="/reports/Oxfordshire[% IF c.user_exists AND c.user.categories.size %]?filter_category=[% c.user.categories.join(",") | uri | html %][% END %]"[% END
                                  %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]>
