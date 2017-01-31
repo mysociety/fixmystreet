@@ -433,6 +433,12 @@ sub inspect : Private {
             } else {
                 $redirect_uri = $c->uri_for( $problem->url );
             }
+
+            # Or if inspector, redirect back to shortlist
+            if ($c->user->has_body_permission_to('planned_reports')) {
+                $redirect_uri = $c->uri_for_action('my/planned');
+            }
+
             $c->log->debug( "Redirecting to: " . $redirect_uri );
             $c->res->redirect( $redirect_uri );
         }
