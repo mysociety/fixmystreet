@@ -1188,4 +1188,11 @@ sub category_extra_hidden {
 	return 0;
 }
 
+sub traffic_management_options {
+    return [
+        _("Yes"),
+        _("No"),
+    ];
+}
+
 1;

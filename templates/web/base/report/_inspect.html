@@ -108,8 +108,9 @@
           [% traffic_info = problem.get_extra_metadata('traffic_information') %]
           <select id="traffic_information" name="traffic_information" class="form-control">
             <option value=""[% ' selected' IF NOT traffic_info %]>-</option>
-            <option[% ' selected' IF traffic_info == "Yes" %]>Yes</option>
-            <option[% ' selected' IF traffic_info == "No" %]>No</option>
+            [% FOREACH option IN problem.traffic_management_options %]
+                <option value='[% option %]'[% ' selected' IF traffic_info == option %]>[% option %]</option>
+            [% END %]
           </select>
         </p>
         <p>

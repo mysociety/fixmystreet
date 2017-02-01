@@ -121,4 +121,13 @@ sub contact_email {
 
 sub admin_user_domain { 'oxfordshire.gov.uk' }
 
+sub traffic_management_options {
+    return [
+        "Signs and Cones",
+        "Stop and Go Boards",
+        "High Speed Roads",
+    ];
+}
+
+
 1;

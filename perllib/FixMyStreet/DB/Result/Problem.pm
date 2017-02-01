@@ -1056,4 +1056,17 @@ has duplicates => (
     },
 );
 
+has traffic_management_options => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $cobrand = $self->get_cobrand_logged;
+        if ( $cobrand->can('get_body_handler_for_problem') ) {
+            $cobrand = $cobrand->get_body_handler_for_problem( $self );
+        }
+        return $cobrand->traffic_management_options;
+    },
+);
+
 1;
