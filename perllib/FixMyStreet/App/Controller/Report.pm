@@ -377,7 +377,9 @@ sub inspect : Private {
                 unless ($problem->get_extra_metadata('inspected')) {
                     $problem->set_extra_metadata( inspected => 1 );
                     $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
-                    $reputation_change = 1;
+                    my $state = $problem->state;
+                    $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
+                    $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
                 }
             }
         }

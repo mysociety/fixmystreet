@@ -67,18 +67,20 @@ FixMyStreet::override_config {
         $report->unset_extra_metadata('inspected');
         $report->state('confirmed');
         $report->update;
-        my $reputation = $report->user->get_extra_metadata("reputation") || 0;
+        $report->inspection_log_entry->delete;
+        my $reputation = $report->user->get_extra_metadata("reputation");
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", include_update => "1", state => 'action scheduled' } });
         $report->discard_changes;
         is $report->comments->first->text, "This is a public update.", 'Update was created';
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
-        is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
+        is $report->user->get_extra_metadata('reputation'), $reputation, "User reputation wasn't changed";
     };
 
     subtest "test update is required when instructing" => sub {
         $report->unset_extra_metadata('inspected');
         $report->update;
+        $report->inspection_log_entry->delete;
         $report->comments->delete_all;
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { public_update => undef, include_update => "1" } });
@@ -179,13 +181,26 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'oxfordshire',
 }, sub {
     subtest "test negative reputation" => sub {
-        my $reputation = $report->user->get_extra_metadata("reputation");
+        my $reputation = $report->user->get_extra_metadata("reputation") || 0;
 
         $mech->get_ok("/report/$report_id");
         $mech->submit_form( button => 'remove_from_site' );
 
         $report->discard_changes;
         is $report->user->get_extra_metadata('reputation'), $reputation-1, "User reputation was decreased";
+        $report->update({ state => 'confirmed' });
+    };
+
+    subtest "test positive reputation" => sub {
+        $report->unset_extra_metadata('inspected');
+        $report->update;
+        $report->inspection_log_entry->delete if $report->inspection_log_entry;
+        my $reputation = $report->user->get_extra_metadata("reputation") || 0;
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'action scheduled', include_update => undef } });
+        $report->discard_changes;
+        is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
+        is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
     };
 
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
