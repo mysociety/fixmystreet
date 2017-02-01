@@ -594,7 +594,7 @@ for my $test (
             name => $user->name,
             may_show_name => 1,
             update => 'Set state to unable to fix',
-            state => 'unable to fix',
+            state => 'no further action',
         },
         state => 'unable to fix',
     },
