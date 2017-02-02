@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2016\n"
 "Language-Team: Turkish (Turkey) (https://www.transifex.com/mysociety/teams/12067/tr_TR/)\n"
@@ -195,8 +195,8 @@ msgstr ""
 "Bu muhtemelen \"kapalı alanın\" neden boş olduğunu(aşağıda)<br>\n"
 "Belkide yapılandırma dosyanıza bazı <code>MAPIT_TYPES</code> eklemelisiniz?"
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr ""
@@ -1922,6 +1922,13 @@ msgstr "İşaretlenen problemler bulunamadı."
 msgid "No flagged users found."
 msgstr "İşaretlenen kullanıcılar bulunamadı."
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr "Onarımı mümkün değil"
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2463,13 +2470,17 @@ msgstr "Paylaş"
 msgid "Posted anonymously at %s"
 msgstr "%s Anonim olarak gönderildi"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "%s (<strong>%s</strong>) tarafından %s 'te paylaşılmıştır"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "Tarafından paylaşıldı %s saat %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "<strong>%s</strong> (%s) tarafından %s 'te paylaşılmıştır"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "<strong>%s</strong> tarafından %s 'te paylaşılmıştır"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3779,13 +3790,6 @@ msgid "Try emailing us directly:"
 msgstr "Direkt olarak e-posta gönderin:"
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr "Onarımı mümkün değil"
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4282,6 +4286,10 @@ msgstr ""
 msgid "by %s"
 msgstr "%s tarafından"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "tekrarlanmış bildirim olarak işaretle"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4315,10 +4323,6 @@ msgstr "son güncelleme %s"
 msgid "less than a minute"
 msgstr "bir dakikadan az"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "tekrarlanmış bildirim olarak işaretle"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "planlanan eylem olarak işaretle"
@@ -4344,6 +4348,10 @@ msgstr "Devam etmekte olarak işaretle"
 msgid "marked as investigating"
 msgstr "araştırılıyor olarak işaretle"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "onarılamaz olarak işaretle"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr "Kurulun sorumluluğu dışında olarak işaretle"
@@ -4351,10 +4359,6 @@ msgstr "Kurulun sorumluluğu dışında olarak işaretle"
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "Planlandı olarak işaretle"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "onarılamaz olarak işaretle"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15

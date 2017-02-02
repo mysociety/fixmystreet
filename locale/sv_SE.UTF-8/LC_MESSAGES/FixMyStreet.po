@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Jon Kristensen <info@jonkri.com>, 2016\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
@@ -195,8 +195,8 @@ msgstr ""
 "              Detta är förmodligen anledningen till att \"område som täcks (area covered)\" är tomt nedan.<br>\n"
 "              Vill du lägga till några <code>MAPIT_TYPES</code> i konfigruationsfilen?"
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr "<label for=\"statuses\">Visa</label> %s <label for=\"filter_categories\">om</label> %s"
@@ -1909,6 +1909,13 @@ msgstr "Inga flaggade problem kunde hittas."
 msgid "No flagged users found."
 msgstr "Inga flaggade användare kunde hittas."
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr "Kunde inte åtgärda"
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2452,13 +2459,17 @@ msgstr "Skicka"
 msgid "Posted anonymously at %s"
 msgstr "Postat anonymt %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "Postat av %s (<strong>%s</strong>) %s"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "Postat av %s %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "Postat av <strong>%s</strong> (%s) %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "Postat av <strong>%s</strong> %s"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3771,13 +3782,6 @@ msgid "Try emailing us directly:"
 msgstr "Prova att skicka ett e-brev till oss direkt:"
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr "Kunde inte åtgärda"
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4272,6 +4276,10 @@ msgstr "samtliga"
 msgid "by %s"
 msgstr "av %s"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "markerad som dubblett av rapport"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4305,10 +4313,6 @@ msgstr "senast uppdaterad %s"
 msgid "less than a minute"
 msgstr "mindre än en minut"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "markerad som dubblett av rapport"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "markerad som åtgärd schemalagd"
@@ -4334,6 +4338,10 @@ msgstr "markerad som pågående"
 msgid "marked as investigating"
 msgstr "markerad som under utredning"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "markerad som kunde inte åtgärda"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr "markerad som ej kommunens ansvar"
@@ -4341,10 +4349,6 @@ msgstr "markerad som ej kommunens ansvar"
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "markerad som planerad"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "markerad som kunde inte åtgärda"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15

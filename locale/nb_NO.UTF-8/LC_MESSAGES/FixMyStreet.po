@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: pere <pere-transifex@hungry.com>, 2016\n"
 "Language-Team: Norwegian Bokmål (Norway) (https://www.transifex.com/mysociety/teams/12067/nb_NO/)\n"
@@ -196,8 +196,8 @@ msgid ""
 "              Maybe add some <code>MAPIT_TYPES</code> to your config file?"
 msgstr "<code>MAPIT_URL</code> er satt (<code>%s</code>) men ingen <code>MAPIT_TYPES</code>.<br>Dette er antagelig hvorfor \"dekket område\" er tom (under).<br>Kanskje du skal legge til noen <code>MAPIT_TYPES</code> i konfigurasjonsfilen?"
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr "<label for=\"statuses\">Vis</label> %s <label for=\"filter_categories\">om</label> %s"
@@ -1930,6 +1930,13 @@ msgstr "Fant ingen flaggede problemer."
 msgid "No flagged users found."
 msgstr "Fant ingen flaggede brukere."
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr "Kan ikke fikses"
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2483,13 +2490,17 @@ msgstr "Send inn"
 msgid "Posted anonymously at %s"
 msgstr "Publisert anonymt %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "Lagt inn av %s (<strong>%s</strong>) %s"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "Sendt inn av %s %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "Lagt inn av <strong>%s</strong> (%s) %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "Lagt inn av <strong>%s</strong> %s"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3828,13 +3839,6 @@ msgid "Try emailing us directly:"
 msgstr "Forsøk å sende epost direkte til oss:"
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr "Kan ikke fikses"
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4333,6 +4337,10 @@ msgstr "alle"
 msgid "by %s"
 msgstr "av %s"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "markert som duplisert rapport"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4366,10 +4374,6 @@ msgstr "sist oppdatert %s"
 msgid "less than a minute"
 msgstr "mindre enn et minutt"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "markert som duplisert rapport"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "markert som planlagt"
@@ -4395,6 +4399,10 @@ msgstr "markert som under arbeid"
 msgid "marked as investigating"
 msgstr "markert som undersøkes"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "markert som uløselig"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr "markert som ikke administrasjonens ansvar"
@@ -4402,10 +4410,6 @@ msgstr "markert som ikke administrasjonens ansvar"
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "markert som planlagt"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "markert som uløselig"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15

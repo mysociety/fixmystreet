@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2016\n"
 "Language-Team: Chinese (https://www.transifex.com/mysociety/teams/12067/zh/)\n"
@@ -208,8 +208,8 @@ msgstr ""
 "\n"
 "可以在你的設定檔加入一些 <code>地圖連結別</code> "
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr "<label for=\"statuses\">颢示</label> %s <label for=\"filter_categories\">關於</label> %s"
@@ -1957,6 +1957,13 @@ msgstr "未發現標記警告問題 "
 msgid "No flagged users found."
 msgstr "未發現標記警告用戶"
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr "無法修復"
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2507,13 +2514,17 @@ msgstr "張貼"
 msgid "Posted anonymously at %s"
 msgstr "匿名張貼  %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "由%s (<strong>%s</strong>) 在%s"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "由 %s 在 %s 張貼"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "由<strong>%s</strong> (%s) 在%s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "由<strong>%s</strong> 在%s"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3848,13 +3859,6 @@ msgid "Try emailing us directly:"
 msgstr "何不直接發信給我們:"
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr "無法修復"
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4355,6 +4359,10 @@ msgstr ""
 msgid "by %s"
 msgstr "由 %s"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "標註為重覆之申報"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4388,10 +4396,6 @@ msgstr "%s上回更新:"
 msgid "less than a minute"
 msgstr "少於一分鐘"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "標註為重覆之申報"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "標註為排程行動"
@@ -4417,6 +4421,10 @@ msgstr "標註為處理中"
 msgid "marked as investigating"
 msgstr "標註為調查中"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "標註為無法解決"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr "標註為非本區政府職責範圍"
@@ -4424,10 +4432,6 @@ msgstr "標註為非本區政府職責範圍"
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "標註為己規畫"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "標註為無法解決"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15

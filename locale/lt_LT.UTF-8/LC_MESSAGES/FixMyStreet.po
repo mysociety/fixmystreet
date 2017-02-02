@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Paulius Zaleckas <paulius.zaleckas@gmail.com>, 2017\n"
 "Language-Team: Lithuanian (Lithuania) (https://www.transifex.com/mysociety/teams/12067/lt_LT/)\n"
@@ -195,8 +195,8 @@ msgstr ""
 "Turbūt dėl to \"padengta sritis\" yra tuščia (žemiau).<br>\n"
 "Galbūt pridėkite <code>MAPIT_TYPES</code> į savo config failą?"
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr ""
@@ -1942,6 +1942,13 @@ msgstr "Pažymėtos problemos nerastos"
 msgid "No flagged users found."
 msgstr "Pažymėti vartotojai nerasti."
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr ""
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2489,12 +2496,16 @@ msgstr "Įkelti"
 msgid "Posted anonymously at %s"
 msgstr "Pateikta anonimiškai %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr ""
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
+msgstr ""
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr ""
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
 msgstr ""
 
 #: templates/web/base/front/footer-marketing.html:12
@@ -3804,13 +3815,6 @@ msgid "Try emailing us directly:"
 msgstr ""
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr ""
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4305,6 +4309,10 @@ msgstr ""
 msgid "by %s"
 msgstr ""
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr ""
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4338,10 +4346,6 @@ msgstr ""
 msgid "less than a minute"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr ""
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr ""
@@ -4367,16 +4371,16 @@ msgstr ""
 msgid "marked as investigating"
 msgstr ""
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr ""
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
-msgstr ""
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Granit Zhubi <granitzhubi@gmail.com>, 2016\n"
 "Language-Team: Albanian (https://www.transifex.com/mysociety/teams/12067/sq/)\n"
@@ -203,8 +203,8 @@ msgstr ""
 "              Kjo eshte ndoshta arsyeja pse \"zona e mbuluar\" eshte e zbrazet (me poshte).<br>\n"
 "              Ndoshta shtoni disa <code>MAPIT_TYPES</code> ne skedarin tuaj te konfigurimit?"
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr ""
@@ -1935,6 +1935,13 @@ msgstr ""
 msgid "No flagged users found."
 msgstr ""
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr "E pamundur të zgjidhet"
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2476,13 +2483,17 @@ msgstr "Posto"
 msgid "Posted anonymously at %s"
 msgstr "Postuar ne menyre anonime ne %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "Postuar nga  %s (<strong>%s</strong>) ne %s"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "Postuar nga %s ne %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "Postuar nga  <strong>%s</strong> (%s) ne %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "Postuar nga  <strong>%s</strong> ne %s"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3808,13 +3819,6 @@ msgid "Try emailing us directly:"
 msgstr "Provoni për të na shkruar email direkt:"
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr "E pamundur të zgjidhet"
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4309,6 +4313,10 @@ msgstr "Të gjitha"
 msgid "by %s"
 msgstr "nga %s"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "shenuar si raport i dyfishuar"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4342,10 +4350,6 @@ msgstr "Perditesimi i fundit %s"
 msgid "less than a minute"
 msgstr "më pak se një minutë"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "shenuar si raport i dyfishuar"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "shenuar si veprim i planifikuar"
@@ -4371,6 +4375,10 @@ msgstr "shenuar si ne progres"
 msgid "marked as investigating"
 msgstr "shenuar si i shqyrtuar"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "Etiketuar si e pamundur për ta rregulluar"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr ""
@@ -4378,10 +4386,6 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "shenuar si i planifikuar"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "Etiketuar si e pamundur për ta rregulluar"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15

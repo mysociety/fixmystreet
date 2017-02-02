@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2016\n"
 "Language-Team: Greek (Greece) (https://www.transifex.com/mysociety/teams/12067/el_GR/)\n"
@@ -209,8 +209,8 @@ msgstr ""
 "Μάλλον γι'αυτό η κατηγορία \"περιοχή αρμοδιότητας\" είναι κενή (παρακάτω).<br>\n"
 "Μήπως να προσθέσετε μερικά <code>MAPIT_TYPES</code> στο αρχείο ρυθμίσεων;"
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr "<label for=\"statuses\">Προβολή</label> %s <label for=\"filter_categories\">σχετικά με</label> %s"
@@ -1943,6 +1943,13 @@ msgstr "Δε βρέθηκαν επισημασμένα προβλήματα."
 msgid "No flagged users found."
 msgstr "Δε βρέθηκαν επισημασμένοι χρήστες."
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr "Δεν είναι εφικτή η διόρθωση"
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2490,13 +2497,17 @@ msgstr "Δημοσίευση"
 msgid "Posted anonymously at %s"
 msgstr "Δημοσιεύθηκε ανώνυμα στις %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "Δημοσιεύθηκε από %s (<strong>%s</strong>) στις %s"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "Δημοσιεύθηκε από %s στις %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "Δημοσιεύθηκε από <strong>%s</strong> (%s) στις %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "Δημοσιεύθηκε από <strong>%s</strong> στις %s"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3822,13 +3833,6 @@ msgid "Try emailing us directly:"
 msgstr "Στείλε μας ένα email:"
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr "Δεν είναι εφικτή η διόρθωση"
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4329,6 +4333,10 @@ msgstr ""
 msgid "by %s"
 msgstr "από %s"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "σημειωμένη ως διπλή αναφορά"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4362,10 +4370,6 @@ msgstr "τελευταία ενημέρωση %s"
 msgid "less than a minute"
 msgstr "λιγότερο από ένα λεπτό"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "σημειωμένη ως διπλή αναφορά"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "σημειωμένη ως προγραμματισμένη δράση"
@@ -4391,6 +4395,10 @@ msgstr "σημειωμένο ως σε διαδικασία αντιμετώπι
 msgid "marked as investigating"
 msgstr "σημειωμένο ως υπό έλεγχο"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "σημειωμένο ως αδύνατο να διορθωθεί"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr "σημειωμένο ως εκτός αρμοδιότητας της υπηρεσίας"
@@ -4398,10 +4406,6 @@ msgstr "σημειωμένο ως εκτός αρμοδιότητας της υ�
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "σημειωμένο ως προγραμματισμένο"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "σημειωμένο ως αδύνατο να διορθωθεί"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15

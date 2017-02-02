@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2016\n"
 "Language-Team: Burmese (Myanmar) (https://www.transifex.com/mysociety/teams/12067/my_MM/)\n"
@@ -192,8 +192,8 @@ msgid ""
 "              Maybe add some <code>MAPIT_TYPES</code> to your config file?"
 msgstr ""
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr ""
@@ -1899,6 +1899,13 @@ msgstr ""
 msgid "No flagged users found."
 msgstr ""
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr ""
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2440,13 +2447,18 @@ msgstr "တင္မည္"
 msgid "Posted anonymously at %s"
 msgstr "%sမွာ အမည္မသိကဲ့သို႔တင္မည္"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "%s မွာ %s(<strong>%s</strong>)မွတင္ခဲ့သည္"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "%s မွာ %s မွတင္ခဲ့သည္"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "%s မွာ %s(<strong>%s</strong>)မွတင္ခဲ့သည္"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+#, fuzzy
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "%s မွာ %s(<strong>%s</strong>)မွတင္ခဲ့သည္"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3755,13 +3767,6 @@ msgid "Try emailing us directly:"
 msgstr ""
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr ""
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4263,6 +4268,10 @@ msgstr ""
 msgid "by %s"
 msgstr "%s မွ"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "အစီရင္ခံစာ တူညီေနေၾကာင္း အမွတ္အသား ျပဳလုပ္ထားသည္"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4296,10 +4305,6 @@ msgstr "ေနာက္ဆုံး ျပဳျပင္မြမ္းမံ�
 msgid "less than a minute"
 msgstr "တစ္မိနစ္ခန္႔သာ"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "အစီရင္ခံစာ တူညီေနေၾကာင္း အမွတ္အသား ျပဳလုပ္ထားသည္"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "ျပဳျပင္ထားေသာ အခ်ိန္ဇယားကို အမွတ္အသားျပဳလုပ္ပါ"
@@ -4325,6 +4330,10 @@ msgstr "ဆက္လက္လုပ္ေဆာင္ေနဆဲ အမွတ�
 msgid "marked as investigating"
 msgstr "စံုစမ္းစစ္ေဆးေနဆဲ အမွတ္အသား ျပဳလုပ္ထားသည္"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "ျပင္ဆင္၍ မရေၾကာင္း အမွတ္အသား ျပဳလုပ္ထားသည္"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr "ေကာင္စီ၏ တာဝန္မဟုတ္ေၾကာင္း အမွတ္အသား ျပဳလုပ္ထားသည္"
@@ -4332,10 +4341,6 @@ msgstr "ေကာင္စီ၏ တာဝန္မဟုတ္ေၾကာင�
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "စီစဥ္ထားၿပီးျဖစ္ေၾကာင္း အမွတ္အသား ျပဳလုပ္ထားသည္"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "ျပင္ဆင္၍ မရေၾကာင္း အမွတ္အသား ျပဳလုပ္ထားသည္"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15

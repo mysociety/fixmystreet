@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2017-02-02 10:22+0000\n"
+"POT-Creation-Date: 2017-02-02 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Khaled Saleem Baleesh <Kbaleesh@gmail.com>, 2016\n"
 "Language-Team: Arabic (https://www.transifex.com/mysociety/teams/12067/ar/)\n"
@@ -207,8 +207,8 @@ msgstr ""
 "              هذا هو السبب المرجح وراء كون \"منطقة التغطية\" فارغة (أدناه).<br>\n"
 "              هل تريد إضافة بعض <code>MAPIT_TYPES</code> إلى ملف التكوين؟"
 
-#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #. ('The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories')
+#. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:28
 msgid "<label for=\"statuses\">Show</label> %s <label for=\"filter_categories\">about</label> %s"
 msgstr "<label for=\"statuses\">إظهار</label> %s <label for=\"filter_categories\">عن</label> %s"
@@ -1952,6 +1952,13 @@ msgstr "لم يتم العثور على مشكلات مشار إليها."
 msgid "No flagged users found."
 msgstr "لم يتم العثور على مستخدمين مشار إليهم."
 
+#: templates/web/base/admin/report_blocks.html:1
+#: templates/web/base/admin/report_blocks.html:14
+#: templates/web/base/report/update/form_update.html:41
+#: templates/web/base/report/update/form_update.html:44
+msgid "No further action"
+msgstr "يتعذر الإصلاح"
+
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
 msgid "No further updates"
@@ -2502,13 +2509,17 @@ msgstr "نشر"
 msgid "Posted anonymously at %s"
 msgstr "نشر بدون تحديد الهوية في %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:250
-msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "تم النشر بواسطة %s (<strong>%s</strong>) في %s"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:255
 msgid "Posted by %s at %s"
 msgstr "تم النشر بواسطة %s في %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:250
+msgid "Posted by <strong>%s</strong> (%s) at %s"
+msgstr "تم النشر بواسطة <strong>%s</strong> (%s) في %s"
+
+#: perllib/FixMyStreet/DB/Result/Comment.pm:252
+msgid "Posted by <strong>%s</strong> at %s"
+msgstr "تم النشر بواسطة <strong>%s</strong> في %s"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3842,13 +3853,6 @@ msgid "Try emailing us directly:"
 msgstr "جرّب إرسال البريد الإلكتروني إلينا مباشرةً:"
 
 #: templates/web/base/admin/report_blocks.html:1
-#: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update/form_update.html:41
-#: templates/web/base/report/update/form_update.html:44
-msgid "Unable to fix"
-msgstr "يتعذر الإصلاح"
-
-#: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:21
 #: templates/web/base/admin/update_edit.html:30
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -4349,6 +4353,10 @@ msgstr "الكل"
 msgid "by %s"
 msgstr "بواسطة %s"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:288
+msgid "closed as a duplicate report"
+msgstr "عليه علامة تقرير مكرر"
+
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
@@ -4382,10 +4390,6 @@ msgstr "آخر تحديث %s"
 msgid "less than a minute"
 msgstr "أقل من دقيقة واحدة"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:288
-msgid "marked as a duplicate report"
-msgstr "عليه علامة تقرير مكرر"
-
 #: perllib/FixMyStreet/DB/Result/Comment.pm:278
 msgid "marked as action scheduled"
 msgstr "عليه علامة إجراء مجدول"
@@ -4411,6 +4415,10 @@ msgstr "عليه علامة قيد التقدم"
 msgid "marked as investigating"
 msgstr "عليه علامة جارٍ التحقق"
 
+#: perllib/FixMyStreet/DB/Result/Comment.pm:284
+msgid "marked as no further action"
+msgstr "عليه علامة يتعذر الإصلاح"
+
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
 msgid "marked as not the council's responsibility"
 msgstr "عليه علامة ليست مسؤولية المجلس"
@@ -4418,10 +4426,6 @@ msgstr "عليه علامة ليست مسؤولية المجلس"
 #: perllib/FixMyStreet/DB/Result/Comment.pm:274
 msgid "marked as planned"
 msgstr "عليه علامة مخطط"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:284
-msgid "marked as unable to fix"
-msgstr "عليه علامة يتعذر الإصلاح"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:122
 #: templates/web/base/admin/questionnaire.html:15
