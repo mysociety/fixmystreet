@@ -209,14 +209,14 @@ sub base_url { FixMyStreet->config('BASE_URL') }
 =head2 base_url_for_report
 
 Return the base url for a report (might be different in a two-tier county, but
-most of the time will be same as base_url). Report may be an object, or a
-hashref.
+most of the time will be same as base_url_with_lang). Report may be an object,
+or a hashref.
 
 =cut
 
 sub base_url_for_report {
     my ( $self, $report ) = @_;
-    return $self->base_url;
+    return $self->base_url_with_lang;
 }
 
 =head2 base_host
