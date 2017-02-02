@@ -5,6 +5,7 @@ notifications:
       - "irc.mysociety.org#fixmystreet"
     use_notice: true
     skip_join: true
+  slack: mysociety:1M2CXeMwHIf8SrGoKyZrz0jO
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/863c1892a6a51e5a3b3c
