@@ -1,5 +1,9 @@
 [% select_status = BLOCK %]
     <select class="form-control js-multiple" name="status" id="statuses" multiple data-all="[% loc('All reports') %]">
+      [% IF c.user_exists AND c.user.has_body_permission_to('planned_reports') AND !shortlist %]
+        <option value="shortlisted"[% ' selected' IF filter_status.shortlisted %]>[% loc('Shortlisted') %]</option>
+        <option value="unshortlisted"[% ' selected' IF filter_status.unshortlisted %]>[% loc('Unshortlisted') %]</option>
+      [% END %]
         <option value="open"[% ' selected' IF filter_status.open %]>[% loc('Unfixed reports') %]</option>
         <option value="closed"[% ' selected' IF filter_status.closed %]>[% loc('Closed reports') %]</option>
         <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% loc('Fixed reports') %]</option>

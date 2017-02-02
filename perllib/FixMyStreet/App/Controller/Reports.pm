@@ -378,6 +378,25 @@ sub load_and_group_problems : Private {
         non_public => 0,
         state      => [ keys %$states ]
     };
+    my $filter = {
+        order_by => $c->stash->{sort_order},
+        rows => $c->cobrand->reports_per_page,
+    };
+
+    if (defined $c->stash->{filter_status}{shortlisted}) {
+        $where->{'me.id'} = { '=', \"user_planned_reports.report_id"};
+        $where->{'user_planned_reports.removed'} = undef;
+        $filter->{join} = 'user_planned_reports';
+    } elsif (defined $c->stash->{filter_status}{unshortlisted}) {
+        my $shortlisted_ids = $c->cobrand->problems->search({
+            'me.id' => { '=', \"user_planned_reports.report_id"},
+            'user_planned_reports.removed' => undef,
+        }, {
+           join => 'user_planned_reports',
+           columns => ['me.id'],
+        })->as_query;
+        $where->{'me.id'} = { -not_in => $shortlisted_ids };
+    }
 
     my $not_open = [ FixMyStreet::DB::Result::Problem::fixed_states(), FixMyStreet::DB::Result::Problem::closed_states() ];
     if ( $type eq 'new' ) {
@@ -413,11 +432,9 @@ sub load_and_group_problems : Private {
 
     $problems = $problems->search(
         $where,
-        {
-            order_by => $c->stash->{sort_order},
-            rows => $c->cobrand->reports_per_page,
-        }
+        $filter
     )->include_comment_counts->page( $page );
+
     $c->stash->{pager} = $problems->pager;
 
     my ( %problems, @pins );
@@ -500,6 +517,19 @@ sub stash_report_filter_status : Private {
         %filter_problem_states = %$s;
     }
 
+    if ($status{shortlisted}) {
+        $filter_status{shortlisted} = 1;
+    }
+
+    if ($status{unshortlisted}) {
+        $filter_status{unshortlisted} = 1;
+    }
+
+    if (keys %filter_problem_states == 0) {
+      my $s = FixMyStreet::DB::Result::Problem->open_states();
+      %filter_problem_states = (%filter_problem_states, %$s);
+    }
+
     $c->stash->{filter_problem_states} = \%filter_problem_states;
     $c->stash->{filter_status} = \%filter_status;
     return 1;
@@ -577,4 +607,3 @@ Licensed under the Affero GPL.
 __PACKAGE__->meta->make_immutable;
 
 1;
-
