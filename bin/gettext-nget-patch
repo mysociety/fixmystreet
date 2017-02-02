@@ -30,7 +30,7 @@ find( sub {
     close FP;
 }, 'templates', 'perllib');
 
-foreach (values %out) {
+foreach (sort { $a->{s} cmp $b->{s} } values %out) {
     print <<EOF;
 
 #: $_->{file}:$_->{line}
