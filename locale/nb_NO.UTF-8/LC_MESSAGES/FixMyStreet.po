@@ -329,8 +329,7 @@ msgstr "Alle kategorier"
 #: templates/web/base/footer.html:29
 #: templates/web/base/reports/_list-filters.html:2
 #: templates/web/zurich/admin/index-dm.html:12
-#: templates/web/zurich/admin/stats.html:13
-#: templates/web/zurich/footer.html:21
+#: templates/web/zurich/admin/stats.html:13 templates/web/zurich/footer.html:21
 #: templates/web/zurich/nav_over_content.html:6
 msgid "All reports"
 msgstr "Alle rapporter"
@@ -1137,7 +1136,7 @@ msgstr ""
 
 #: templates/web/base/admin/report_edit.html:101
 msgid "External team"
-msgstr ""
+msgstr "Eksternt lag"
 
 #: templates/web/base/admin/category_edit.html:25
 #: templates/web/base/admin/report_edit.html:94
@@ -1522,7 +1521,7 @@ msgstr "Trenger inspeksjon"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:712
 msgid "Instruct contractors to fix problems"
-msgstr ""
+msgstr "Instruer underleverandør til å fikse problemer"
 
 #: templates/web/zurich/admin/list_updates.html:35
 msgid "Internal notes"
@@ -1547,7 +1546,7 @@ msgstr "Ugyldig format %s oppgitt."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:361
 msgid "Invalid location. New location must be covered by the same council."
-msgstr ""
+msgstr "Ugyldig plassering.  Ny plassering må være dekket av den samme administrasjonen."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1479
 msgid "Invalid start date"
@@ -1601,9 +1600,8 @@ msgid "Last&nbsp;update:"
 msgstr "Siste&nbsp;oppdatering:"
 
 #: templates/web/base/reports/_list-filters.html:38
-#, fuzzy
 msgid "Least recently updated"
-msgstr "Siste oppdatering:"
+msgstr ""
 
 #: templates/web/base/admin/body-form.html:127
 msgid "Leave this blank if all reports to this body should be sent using the same send method (e.g., \"%s\")."
@@ -1618,10 +1616,9 @@ msgid "Loading..."
 msgstr "Laster..."
 
 #: templates/web/base/alert/choose.html:1
-#: templates/web/base/alert/choose.html:3
-#: templates/web/base/alert/index.html:1 templates/web/base/alert/index.html:3
-#: templates/web/base/alert/list.html:1 templates/web/base/alert/list.html:5
-#: templates/web/base/alert/updates.html:1
+#: templates/web/base/alert/choose.html:3 templates/web/base/alert/index.html:1
+#: templates/web/base/alert/index.html:3 templates/web/base/alert/list.html:1
+#: templates/web/base/alert/list.html:5 templates/web/base/alert/updates.html:1
 #: templates/web/base/tokens/confirm_alert.html:1
 msgid "Local RSS feeds and email alerts"
 msgstr "Lokal RSS-strøm og e-postvarsel"
@@ -1713,7 +1710,7 @@ msgstr "Måned"
 
 #: templates/web/base/reports/_list-filters.html:39
 msgid "Most commented"
-msgstr ""
+msgstr "Mest kommentert"
 
 #: templates/web/base/admin/bodies.html:25
 #: templates/web/base/admin/body-form.html:24
@@ -1851,7 +1848,7 @@ msgstr "Ny mal"
 
 #: templates/web/base/reports/_list-filters.html:35
 msgid "Newest"
-msgstr ""
+msgstr "Nyeste"
 
 #: templates/web/base/pagination.html:10
 msgid "Next"
@@ -2032,7 +2029,7 @@ msgstr "Eldre <br>problemer"
 
 #: templates/web/base/reports/_list-filters.html:36
 msgid "Oldest"
-msgstr ""
+msgstr "Eldste"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:169
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:900
@@ -2133,7 +2130,7 @@ msgstr "Permalink"
 
 #: templates/web/base/admin/user-form.html:152
 msgid "Permissions:"
-msgstr ""
+msgstr "Rettigheter:"
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:65
 msgid "Phone number"
@@ -2237,8 +2234,7 @@ msgid "Please choose a property type"
 msgstr "Velg en type egenskap"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:396
-#: templates/web/base/admin/bodies.html:4
-#: templates/web/base/admin/body.html:11
+#: templates/web/base/admin/bodies.html:4 templates/web/base/admin/body.html:11
 msgid "Please correct the errors below"
 msgstr "Husk å rette opp feilene nedenfor."
 
@@ -2696,9 +2692,8 @@ msgid "Recently reported problems"
 msgstr "Nylig meldte problemer"
 
 #: templates/web/base/reports/_list-filters.html:37
-#, fuzzy
 msgid "Recently updated"
-msgstr "Få oppdateringer"
+msgstr ""
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
@@ -2963,8 +2958,7 @@ msgstr ""
 msgid "Search Reports"
 msgstr "Søk i rapporter"
 
-#: templates/web/base/admin/index.html:29
-#: templates/web/base/admin/users.html:1
+#: templates/web/base/admin/index.html:29 templates/web/base/admin/users.html:1
 msgid "Search Users"
 msgstr "Søk i brukere"
 
@@ -3193,8 +3187,7 @@ msgstr "Tilstand:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:640
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:386
-#: templates/web/base/admin/index.html:65
-#: templates/web/base/admin/stats.html:1
+#: templates/web/base/admin/index.html:65 templates/web/base/admin/stats.html:1
 #: templates/web/base/admin/stats_by_state.html:1
 #: templates/web/zurich/admin/stats.html:1 templates/web/zurich/header.html:65
 msgid "Stats"
@@ -3285,8 +3278,7 @@ msgstr "Oppsummer dine endringer"
 #: perllib/FixMyStreet/Cobrand/Default.pm:638
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:382
 #: templates/web/base/admin/bodies.html:29
-#: templates/web/base/admin/index.html:1
-#: templates/web/base/status/index.html:1
+#: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
 #: templates/web/base/status/index.html:3
 #: templates/web/zurich/admin/index-dm.html:1
 #: templates/web/zurich/admin/index-sdm.html:1
@@ -3924,8 +3916,7 @@ msgstr "Brukersøk leter etter treff gjennom brukernavn og epostadresser. "
 #: perllib/FixMyStreet/Cobrand/Default.pm:670
 #: perllib/FixMyStreet/Cobrand/Default.pm:723
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:398
-#: templates/web/base/admin/flagged.html:29
-#: templates/web/zurich/header.html:61
+#: templates/web/base/admin/flagged.html:29 templates/web/zurich/header.html:61
 msgid "Users"
 msgstr "Brukere"
 

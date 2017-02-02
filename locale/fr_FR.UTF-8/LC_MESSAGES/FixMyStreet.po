@@ -43,7 +43,7 @@ msgstr "de %d à %d de %d"
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
 msgid "%s - Summary reports"
-msgstr "%s - Rapports sommaires"
+msgstr "%s - Rapports résumés"
 
 #. ("%s here is the site name")
 #: templates/web/base/admin/navigation.html:3
@@ -107,10 +107,10 @@ msgid ""
 "council&rsquo;s alerts, but will only appear in the \"Within the boundary\" alert\n"
 "for the county council."
 msgstr ""
-"%s envoie différentes catégories de problème\n"
-"a l'administration appropriée. Les problèmes à la limite d'une administration\n"
-"pourraient ne pas correspondre aux problèmes envoyés à cette administration. Par exemple, un rapport\n"
-" graffiti sera envoyé a l'administration de district, et apparaîtrait dans les deux administrations."
+"%s envoie différentes catégories de problèmes \n"
+"à l'administration appropriée. Les problèmes situés sur le territoire d'une administration pourraient ne pas correspondre aux problèmes envoyés à cette administration.\n"
+" Par exemple, un rapport graffiti sera envoyé à l'administration\n"
+" de district, et apparaîtrait dans les deux administrations."
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:256 perllib/FixMyStreet/Cobrand/UK.pm:268
 msgid "%s ward, %s"
@@ -145,7 +145,7 @@ msgstr "(Sans numéro de téléphone)"
 
 #: templates/web/base/alert/_list.html:25
 msgid "(a default distance which covers roughly 200,000 people)"
-msgstr "(une distance par défaut qui couvre environs 200 000 personnes)"
+msgstr "(une distance par défaut qui couvre environ 200 000 personnes)"
 
 #. ("%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]")
 #: templates/web/base/alert/_list.html:30
@@ -194,7 +194,7 @@ msgstr "--Choisissez un modèle--"
 
 #: templates/web/base/report/new/form_report.html:23
 msgid "10 inch pothole on Example St, near post box"
-msgstr "Nid de poule de 10cm prés de la boîte postale"
+msgstr "Nid de poule de 10cm près de la boîte postale"
 
 #: templates/web/base/admin/body-form.html:48
 #: templates/web/base/admin/body-form.html:49
@@ -341,8 +341,7 @@ msgstr "Toutes catégories"
 #: templates/web/base/footer.html:29
 #: templates/web/base/reports/_list-filters.html:2
 #: templates/web/zurich/admin/index-dm.html:12
-#: templates/web/zurich/admin/stats.html:13
-#: templates/web/zurich/footer.html:21
+#: templates/web/zurich/admin/stats.html:13 templates/web/zurich/footer.html:21
 #: templates/web/zurich/nav_over_content.html:6
 msgid "All reports"
 msgstr "Tous les rapports"
@@ -397,7 +396,7 @@ msgstr "Région:"
 #: templates/web/base/admin/bodies.html:19
 #: templates/web/base/admin/body.html:64
 msgid "As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."
-msgstr "Comme ceci est un site de développement et %s est un test, les rapports produits sur ce site seront envoyés au gestionnaire du problème FixMyStreet et non le contact de l'administration indiqué pour la catégorie choisie."
+msgstr "Comme ceci est un site de développement et %s est un test, les rapports produits sur ce site seront envoyés au gestionnaire du problème FixMyStreet et non au contact de l'administration indiqué pour la catégorie choisie."
 
 #: templates/web/zurich/admin/report_edit.html:209
 msgid "Assign to competent body:"
@@ -435,7 +434,7 @@ msgstr "Pour le moment, seul la recherche et la consultation de rapports sont su
 #: templates/web/base/admin/user-form.html:78
 #: templates/web/base/admin/user-form.html:79
 msgid "Authorised staff users can be associated with the categories in which they operate."
-msgstr ""
+msgstr "Les utilisateurs autorisés peuvent être associés aux catégories sur lesquelles ils interviennent."
 
 #: templates/web/base/admin/template_edit.html:22
 msgid "Auto-response:"
@@ -453,7 +452,7 @@ msgstr "Évitez les renseignements personnels et les plaques d'immatriculation"
 #: perllib/FixMyStreet/DB/Result/Problem.pm:401
 #: templates/web/zurich/report/_item.html:9
 msgid "Awaiting moderation"
-msgstr "Attendant une modération"
+msgstr "En attente de modération"
 
 #: templates/web/base/js/translation_strings.html:31
 msgid "Back"
@@ -1131,7 +1130,7 @@ msgstr "Catégorie existante"
 
 #: templates/web/base/report/new/form_report.html:52
 msgid "Explain what’s wrong"
-msgstr "Expliquez ce qui est erroné"
+msgstr "Expliquez le problème"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:174
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:913
@@ -1366,7 +1365,7 @@ msgstr "Caché(s)"
 
 #: templates/web/base/around/display_location.html:67
 msgid "Hide old"
-msgstr "Cachés anciens"
+msgstr "Cacher les anciens"
 
 #: templates/web/base/around/display_location.html:62
 msgid "Hide pins"
@@ -1620,9 +1619,8 @@ msgid "Last&nbsp;update:"
 msgstr "Dernière&nbsp;actualisation :"
 
 #: templates/web/base/reports/_list-filters.html:38
-#, fuzzy
 msgid "Least recently updated"
-msgstr "Dernière actualisation :"
+msgstr "Moins récemment mis à jour"
 
 #: templates/web/base/admin/body-form.html:127
 msgid "Leave this blank if all reports to this body should be sent using the same send method (e.g., \"%s\")."
@@ -1637,10 +1635,9 @@ msgid "Loading..."
 msgstr "Chargement…"
 
 #: templates/web/base/alert/choose.html:1
-#: templates/web/base/alert/choose.html:3
-#: templates/web/base/alert/index.html:1 templates/web/base/alert/index.html:3
-#: templates/web/base/alert/list.html:1 templates/web/base/alert/list.html:5
-#: templates/web/base/alert/updates.html:1
+#: templates/web/base/alert/choose.html:3 templates/web/base/alert/index.html:1
+#: templates/web/base/alert/index.html:3 templates/web/base/alert/list.html:1
+#: templates/web/base/alert/list.html:5 templates/web/base/alert/updates.html:1
 #: templates/web/base/tokens/confirm_alert.html:1
 msgid "Local RSS feeds and email alerts"
 msgstr "Flux RSS et alertes email locaux"
@@ -1732,7 +1729,7 @@ msgstr "Mois"
 
 #: templates/web/base/reports/_list-filters.html:39
 msgid "Most commented"
-msgstr ""
+msgstr "Les plus commentés"
 
 #: templates/web/base/admin/bodies.html:25
 #: templates/web/base/admin/body-form.html:24
@@ -1870,7 +1867,7 @@ msgstr "Nouveau modèle"
 
 #: templates/web/base/reports/_list-filters.html:35
 msgid "Newest"
-msgstr ""
+msgstr "Plus récents"
 
 #: templates/web/base/pagination.html:10
 msgid "Next"
@@ -2052,7 +2049,7 @@ msgstr "Anciens <br />problèmes"
 
 #: templates/web/base/reports/_list-filters.html:36
 msgid "Oldest"
-msgstr ""
+msgstr "Plus anciens"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:169
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:900
@@ -2257,8 +2254,7 @@ msgid "Please choose a property type"
 msgstr "Merci de choisir un type de propriété"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:396
-#: templates/web/base/admin/bodies.html:4
-#: templates/web/base/admin/body.html:11
+#: templates/web/base/admin/bodies.html:4 templates/web/base/admin/body.html:11
 msgid "Please correct the errors below"
 msgstr "Merci de corriger les erreurs ci-dessous"
 
@@ -2714,9 +2710,8 @@ msgid "Recently reported problems"
 msgstr "Problèmes signalés récemment"
 
 #: templates/web/base/reports/_list-filters.html:37
-#, fuzzy
 msgid "Recently updated"
-msgstr "Recevoir les mises à jour"
+msgstr "Récemment mis à jour"
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
@@ -2981,8 +2976,7 @@ msgstr "Sauvegardez avec une mise à jour publique"
 msgid "Search Reports"
 msgstr "Rechercher rapports"
 
-#: templates/web/base/admin/index.html:29
-#: templates/web/base/admin/users.html:1
+#: templates/web/base/admin/index.html:29 templates/web/base/admin/users.html:1
 msgid "Search Users"
 msgstr "Rechercher les utilisateurs"
 
@@ -3175,7 +3169,7 @@ msgstr "Désolé, vous n'êtes pas autorisé à faire cette action."
 
 #: templates/web/base/reports/_list-filters.html:33
 msgid "Sort by"
-msgstr ""
+msgstr "Trier par"
 
 #: templates/web/base/admin/user-form.html:47
 msgid "Staff users have permission to log in to the admin."
@@ -3210,8 +3204,7 @@ msgstr "État actuel :"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:640
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:386
-#: templates/web/base/admin/index.html:65
-#: templates/web/base/admin/stats.html:1
+#: templates/web/base/admin/index.html:65 templates/web/base/admin/stats.html:1
 #: templates/web/base/admin/stats_by_state.html:1
 #: templates/web/zurich/admin/stats.html:1 templates/web/zurich/header.html:65
 msgid "Stats"
@@ -3302,8 +3295,7 @@ msgstr "Résumez vos modifications"
 #: perllib/FixMyStreet/Cobrand/Default.pm:638
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:382
 #: templates/web/base/admin/bodies.html:29
-#: templates/web/base/admin/index.html:1
-#: templates/web/base/status/index.html:1
+#: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
 #: templates/web/base/status/index.html:3
 #: templates/web/zurich/admin/index-dm.html:1
 #: templates/web/zurich/admin/index-sdm.html:1
@@ -3936,8 +3928,7 @@ msgstr "La recherche utilisateurs parcourt les noms et adresses courriel."
 #: perllib/FixMyStreet/Cobrand/Default.pm:670
 #: perllib/FixMyStreet/Cobrand/Default.pm:723
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:398
-#: templates/web/base/admin/flagged.html:29
-#: templates/web/zurich/header.html:61
+#: templates/web/base/admin/flagged.html:29 templates/web/zurich/header.html:61
 msgid "Users"
 msgstr "Utilisateurs"
 
