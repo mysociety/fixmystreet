@@ -51,7 +51,7 @@
                     [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
                     loc('Investigating')], ['action scheduled', loc('Action Scheduled')],
                     ['in progress', loc('In Progress')], ['duplicate', loc('Duplicate')],
-                    ['unable to fix', loc('Unable to fix')], ['not responsible', loc('Not Responsible')],
+                    ['unable to fix', loc('No further action')], ['not responsible', loc('Not Responsible')],
                     ['fixed', loc('Fixed')] ] %]
                     <option [% 'selected ' IF state.0 == problem.state_display %] value="[% state.0 %]">[% state.1 %]</option>
                 [% END %]

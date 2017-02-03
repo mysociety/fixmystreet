@@ -281,7 +281,7 @@ sub meta_line {
         } elsif ($state eq 'fixed') {
             $update_state = _( 'marked as fixed' )
         } elsif ($state eq 'unable to fix') {
-            $update_state = _( 'marked as unable to fix' )
+            $update_state = _( 'marked as no further action' )
         } elsif ($state eq 'not responsible') {
             $update_state = _( "marked as not the council's responsibility" )
         } elsif ($state eq 'duplicate') {
@@ -291,9 +291,7 @@ sub meta_line {
         }
 
         if ($c->cobrand->moniker eq 'bromley' || $self->problem->bodies_str eq '2482') {
-            if ($state eq 'unable to fix') {
-                $update_state = 'marked as no further action';
-            } elsif ($state eq 'not responsible') {
+            if ($state eq 'not responsible') {
                 $update_state = 'marked as third party responsibility'
             }
         }

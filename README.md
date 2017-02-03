@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.6.1.
+Platform is now at version 2.0.2.
 
 ## Installation
 
@@ -44,6 +44,43 @@ Thanks to [Browserstack](https://www.browserstack.com/) who let us use their
 web-based cross-browser testing tools for this project.
 
 ## Releases
+
+* v2.0.2 (3rd February 2017)
+    - Front end changes:
+        - Add an offline fallback page with appcache. #1588
+        - Improve print layout for report list pages. #1548
+        - Rename ‘unable to fix’ as ‘no further action’.
+    - Bugfixes:
+        - Mark two missing strings for translation. #1604
+        - Make sure email is lowercase when signing in. #1623
+        - Make sure language included in calls to base_url_for_report. #1617
+        - Small CSS homepage fixes.
+        - Admin:
+            - Fix filtering on shortlist page. #1620
+            - Fix 'save with public update' toggle. #1615
+    - Admin improvements:
+        - Add offline report inspection for inspectors. #1588 #1602 #1608
+        - Admin with appropriate permission can see body user who left
+          contribute_as_body report or update. #1601 #1603
+        - Include ‘Add user’ link on admin user search results page. #1606
+        - Redirect to new user after user creation/edit. #1606
+        - Redirect to shortlist after inspection if user has permission. #1612
+        - Allow response templates to be associated with a state, and default
+          to that template if report state changed to match. #1587
+        - Disable show name checkbox when reporting as someone else. #1597
+        - Show response priorities in report list items. #1582
+        - Shortlist add/remove icons in report lists and report page. #1582
+        - Reordering shortlist buttons in report lists. #1582
+        - Default inspect form to save with public update.
+        - Drop unneeded Cancel button on inspect form.
+        - Use ‘*’ on admin page to signify superuser.
+    - Development improvements:
+        - Update has_body_permission_to to allow superusers. #1600
+        - Move staging flags to their own config variable. #1600
+        - Only warn of Open311 failure after a couple, in case it's transient.
+        - Only load user body permissions once per request.
+        - Return 400/500 for some client/server errors.
+        - Fix bad cross-year test.
 
 * v2.0.1 (16th December 2016)
     - Bugfixes:
