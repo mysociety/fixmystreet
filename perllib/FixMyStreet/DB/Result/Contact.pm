@@ -86,7 +86,7 @@ __PACKAGE__->many_to_many( response_priorities => 'contact_response_priorities',
 sub get_metadata_for_input {
     my $self = shift;
     my $id_field = $self->id_field;
-    my @metadata = grep { $_->{code} !~ /^(easting|northing|$id_field)$/ } @{$self->get_extra_fields};
+    my @metadata = grep { $_->{code} !~ /^(easting|northing|closest_address|$id_field)$/ } @{$self->get_extra_fields};
 
     # Just in case the extra data is in an old parsed format
     foreach (@metadata) {

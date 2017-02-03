@@ -81,6 +81,8 @@ sub send {
         foreach (@{$contact->get_extra_fields}) {
             if ($_->{code} eq $id_field) {
                 push @$extra, { name => $id_field, value => $row->id };
+            } elsif ($_->{code} eq 'closest_address' && $h->{closest_address}) {
+                push @$extra, { name => $_->{code}, value => $h->{$_->{code}} };
             } elsif ($_->{code} =~ /^(easting|northing)$/) {
                 if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
                     push @$extra, { name => $_->{code}, value => $h->{$_->{code}} };
