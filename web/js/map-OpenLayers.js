@@ -116,20 +116,26 @@ var fixmystreet = fixmystreet || {};
       },
 
       reorder_visible: function() {
-          $('.visible-reports').removeClass('hidden');
           var visible = ''
+          var $itemList = $('.item-list');
+          var $visibleReports = $('.visible-reports');
           for (var i = 0; i < fixmystreet.markers.features.length; i++) {
               var feature = fixmystreet.markers.features[i];
-              var $listItem = $('.item-list #report-'+ feature.data.id);
+              var $listItem = $itemList.find('#report-'+ feature.data.id);
               if (feature.onScreen()) {
                   visible += $listItem[0].outerHTML; // This is faster than using .append()
                   $listItem.addClass('hidden');
               } else {
-                  $('.visible-reports #report-'+ feature.data.id).remove();
+                  $visibleReports.find('#report-'+ feature.data.id).remove();
                   $listItem.removeClass('hidden');
               }
           }
-          $('.visible-reports').html(visible);
+          if (visible == '') {
+            $visibleReports.addClass('hidden');
+          } else {
+            $visibleReports.removeClass('hidden');
+            $visibleReports.html(visible);
+          }
       },
 
       get_marker_by_id: function(problem_id) {
