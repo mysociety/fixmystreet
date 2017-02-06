@@ -245,6 +245,8 @@ sub meta_line {
         my $body = $self->user->body;
         if ($body eq 'Bromley Council') {
             $body = "$body <img src='/cobrands/bromley/favicon.png' alt=''>";
+        } elsif ($body eq 'Royal Borough of Greenwich') {
+            $body = "$body <img src='/cobrands/greenwich/favicon.png' alt=''>";
         }
         if ($c->user_exists and $c->user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids)) {
             $meta = sprintf( _( 'Posted by <strong>%s</strong> (%s) at %s' ), $body, $user_name, Utils::prettify_dt( $self->confirmed ) );
