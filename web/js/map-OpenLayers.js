@@ -115,6 +115,23 @@ var fixmystreet = fixmystreet || {};
         fixmystreet.markers.redraw();
       },
 
+      reorder_visible: function() {
+          $('.visible-reports').removeClass('hidden');
+          var visible = ''
+          for (var i = 0; i < fixmystreet.markers.features.length; i++) {
+              var feature = fixmystreet.markers.features[i];
+              var $listItem = $('.item-list #report-'+ feature.data.id);
+              if (feature.onScreen()) {
+                  visible += $listItem[0].outerHTML; // This is faster than using .append()
+                  $listItem.addClass('hidden');
+              } else {
+                  $('.visible-reports #report-'+ feature.data.id).remove();
+                  $listItem.removeClass('hidden');
+              }
+          }
+          $('.visible-reports').html(visible);
+      },
+
       get_marker_by_id: function(problem_id) {
         return fixmystreet.markers.getFeaturesByAttribute('id', problem_id)[0];
       },
@@ -524,6 +541,7 @@ var fixmystreet = fixmystreet || {};
             fixmystreet.map.addControl( fixmystreet.select_feature );
             fixmystreet.select_feature.activate();
             fixmystreet.map.events.register( 'zoomend', null, fixmystreet.maps.markers_resize );
+            fixmystreet.map.events.register( 'moveend', null, fixmystreet.maps.reorder_visible );
 
             // Set up the event handlers to populate the filters and react to them changing
             $("#filter_categories").on("change.filters", categories_or_status_changed);
@@ -844,6 +862,8 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         if (typeof(obj.pagination) != 'undefined') {
             $('.js-pagination').html(obj.pagination);
         }
+        // Run reorder event to show visible markers first
+        fixmystreet.maps.reorder_visible()
         return fixmystreet.maps.markers_list( obj.pins, false );
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
