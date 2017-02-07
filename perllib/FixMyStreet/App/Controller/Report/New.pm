@@ -105,6 +105,7 @@ sub report_new : Path : Args(0) {
     # deal with the user and report and check both are happy
 
     return unless $c->forward('check_form_submitted');
+
     $c->forward('/auth/check_csrf_token');
     $c->forward('process_user');
     $c->forward('process_report');
@@ -493,7 +494,7 @@ Work out what the location of the report should be - either by using lat,lng or
 a tile click or what's come in from a partial. Returns false if no location
 could be found.
 
-=cut 
+=cut
 
 sub determine_location : Private {
     my ( $self, $c ) = @_;
@@ -515,7 +516,7 @@ sub determine_location : Private {
 Detect that the map tiles have been clicked on by looking for the tile
 parameters.
 
-=cut 
+=cut
 
 sub determine_location_from_tile_click : Private {
     my ( $self, $c ) = @_;
@@ -566,7 +567,7 @@ sub determine_location_from_tile_click : Private {
 Use latitude and longitude stored in the report - this is probably result of a
 partial report being loaded.
 
-=cut 
+=cut
 
 sub determine_location_from_report : Private {
     my ( $self, $c ) = @_;
@@ -1203,9 +1204,14 @@ sub redirect_or_confirm_creation : Private {
                 to => [ [ $report->user->email, $report->name ] ],
             } );
         }
-        $c->log->info($report->user->id . ' was logged in, showing confirmation page for ' . $report->id);
-        $c->stash->{created_report} = 'loggedin';
-        $c->stash->{template} = 'tokens/confirm_problem.html';
+        if ($c->user_exists && $c->user->has_body_permission_to('planned_reports')) {
+            $c->log->info($report->user->id . ' is an inspector - redirecting straight to report page for ' . $report->id);
+            $c->res->redirect( '/report/'. $report->id );
+        } else {
+            $c->log->info($report->user->id . ' was logged in, showing confirmation page for ' . $report->id);
+            $c->stash->{created_report} = 'loggedin';
+            $c->stash->{template} = 'tokens/confirm_problem.html';
+        }
         return 1;
     }
 

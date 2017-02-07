@@ -1635,6 +1635,48 @@ subtest "extra google analytics code displayed on email confirmation problem cre
     };
 };
 
+subtest "inspectors get redirected directly to the report page" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        BASE_URL => 'https://www.fixmystreet.com',
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->log_out_ok;
+
+        my $user = $mech->create_user_ok('inspector@example.org', name => 'inspector', from_body => $bodies[0]);
+        $user->user_body_permissions->find_or_create({
+            body => $bodies[0],
+            permission_type => 'planned_reports',
+        });
+
+        $mech->log_in_ok('inspector@example.org');
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR' } },
+            "submit location" );
+        $mech->follow_link_ok(
+            { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link"
+        );
+
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    title         => "Inspector report",
+                    detail        => 'Inspector report details.',
+                    photo1        => '',
+                    name          => 'Joe Bloggs',
+                    may_show_name => '1',
+                    phone         => '07903 123 456',
+                    category      => 'Trees',
+                }
+            },
+            "submit good details"
+        );
+
+        like $mech->uri->path, qr/\/report\/[0-9]+/, 'Redirects directly to report';
+    }
+};
+
 done_testing();
 
 END {
