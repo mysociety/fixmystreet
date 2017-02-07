@@ -292,7 +292,10 @@ sub meta_line {
             $update_state = _( 'marked as an internal referral' )
         }
 
-        if ($c->cobrand->moniker eq 'bromley' || $self->problem->bodies_str eq '2482') {
+        if ($c->cobrand->moniker eq 'bromley' || (
+                $self->problem->bodies_str &&
+                $self->problem->bodies_str eq '2482'
+        )) {
             if ($state eq 'not responsible') {
                 $update_state = 'marked as third party responsibility'
             }

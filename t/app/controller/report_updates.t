@@ -131,6 +131,19 @@ for my $test (
     };
 }
 
+subtest "updates displayed on report with empty bodies_str" => sub {
+    my $old_bodies_str = $report->bodies_str;
+    $report->update({ bodies_str => undef });
+    $comment->update({ problem_state => 'fixed' , mark_open => 'false', mark_fixed => 'false' });
+
+    $mech->get_ok("/report/$report_id");
+
+    my $meta = $mech->extract_update_metas;
+    is scalar @$meta, 1, 'update displayed';
+
+    $report->update({ bodies_str => $old_bodies_str });
+};
+
 subtest "unconfirmed updates not displayed" => sub {
     $comment->state( 'unconfirmed' );
     $comment->update;
