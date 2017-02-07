@@ -119,6 +119,8 @@ var fixmystreet = fixmystreet || {};
           var visible = ''
           var $itemList = $('.item-list');
           var $visibleReports = $('.visible-reports');
+          if ($visibleReports.length == 0) return false;
+
           for (var i = 0; i < fixmystreet.markers.features.length; i++) {
               var feature = fixmystreet.markers.features[i];
               var $listItem = $itemList.find('#report-'+ feature.data.id);
