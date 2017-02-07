@@ -15,12 +15,12 @@
 [% BLOCK form_as %]
     <label for="form_as">[% loc('Report as') %]</label>
     <select id="form_as" class="form-control js-contribute-as" name="form_as">
-        <option value="myself" selected>[% loc('Yourself') %]</option>
+        <option value="myself" [% c.user.has_body_permission_to('planned_reports') ? '' : 'selected'  %]>[% loc('Yourself') %]</option>
       [% IF js || can_contribute_as_another_user %]
         <option value="another_user">[% loc('Another user') %]</option>
       [% END %]
       [% IF js || can_contribute_as_body %]
-        <option value="body">[% c.user.from_body.name %]</option>
+        <option value="body" [% c.user.has_body_permission_to('planned_reports') ? 'selected' : ''  %]>[% c.user.from_body.name %]</option>
       [% END %]
     </select>
 [% END %]
