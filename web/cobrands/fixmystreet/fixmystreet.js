@@ -128,6 +128,8 @@ function isR2L() {
   });
 })(jQuery);
 
+fixmystreet.hooks = fixmystreet.hooks || {};
+
 fixmystreet.mobile_reporting = {
   apply_ui: function() {
     // Creates the "app-like" mobile reporting UI with full screen map
@@ -425,6 +427,10 @@ $.extend(fixmystreet.set_up, {
                 $category_meta.empty();
             }
         });
+
+        if (fixmystreet.hooks.update_problem_fields) {
+            fixmystreet.hooks.update_problem_fields($(this).data('role'), $(this).data('body'), args);
+        }
     });
   },
 

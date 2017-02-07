@@ -342,3 +342,29 @@ $.extend(fixmystreet.set_up, {
     });
   }
 });
+
+$.extend(fixmystreet.hooks, {
+    update_problem_fields: function(role, body, args) {
+        if (role == 'inspector') {
+            var title = args.category + ' problem has been scheduled for fixing';
+            var description = args.category + ' problem found - scheduled for fixing by ' + body;
+
+            var $title_field = $('#form_title');
+            var $description_field = $('#form_detail');
+
+            if ($title_field.val().length === 0 || $title_field.data('autopopulated') === true) {
+                $title_field.val(title);
+                $title_field.data('autopopulated', true);
+            }
+
+            if ($description_field.val().length === 0 || $description_field.data('autopopulated') === true) {
+                $description_field.val(description);
+                $description_field.data('autopopulated', true);
+            }
+
+            $('#form_title, #form_detail').on('keyup', function() {
+              $(this).data('autopopulated', false);
+            });
+        }
+    }
+});
