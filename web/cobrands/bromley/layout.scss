@@ -23,6 +23,12 @@ body.mappage {
   #site-header {
     height: 5em;
   }
+
+  // Make the report button match the rest of the nav
+  .nav-menu--main a.report-a-problem-btn {
+      padding: 1.4em 0.75em 1.35em;
+      margin: 0;
+  }
 }
 
 // We have to specify this again for IE, since FMS overrides it
@@ -49,6 +55,18 @@ body.mappage {
 // Override the FMS main menu to give it a background colour
 .nav-menu--main {
   background-color: $bromley_blue;
+
+  // Bromley doesn't have a special styling for the report button in the nav
+  a.report-a-problem-btn {
+    color: $nav_fg;
+    background: none;
+    padding: 0.75em;
+    margin: 0;
+    @include border-radius(0);
+    &:hover {
+      background: $nav_fg_hover;
+    }
+  }
 }
 .nav-menu--main span {
   color: $nav_fg;
