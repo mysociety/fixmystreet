@@ -1,0 +1,35 @@
+[%
+    SET base = "";
+    SET base = c.cobrand.base_url IF admin;
+
+    # DEFAULT would make sense here, except it treats the empty string as falsy
+    # and some cobrands want to set ul_class to an empty string.
+    SET ul_class="nav-menu nav-menu--main" UNLESS ul_class.defined;
+%]
+[% BLOCK navitem ~%]
+    <li [% liattrs %]>
+      [%~ IF c.req.uri.path == uri ~%]
+          <span [% attrs %]>[% label %]</span>
+      [%~ ELSE ~%]
+          <a href="[% base %][% uri %][% suffix IF suffix %]" [% attrs %]>[% label %]</a>
+      [%~ END ~%]
+    </li>
+[%~ END %]
+
+[% UNLESS omit_wrapper %]
+    <div id="main-nav" role="navigation">
+[% END %]
+
+    [% UNLESS hide_mysoc_link %]
+        <ul class="nav-menu nav-menu--mysoc">
+            <li><a id="mysoc-logo" href="https://www.mysociety.org/">mySociety</a></li>
+        </ul>
+    [% END %]
+
+    <ul class="[% ul_class %]"[% " id='" _ ul_id _ "'" IF ul_id %]>
+        [% INCLUDE 'main_nav_items.html' %]
+    </ul>
+
+[% UNLESS omit_wrapper %]
+    </div>
+[% END %]
