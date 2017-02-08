@@ -135,7 +135,7 @@ var fixmystreet = fixmystreet || {};
                   $listItem.removeClass('hidden');
               }
           }
-          if (visible == '') {
+          if (visible === '') {
             $visibleReports.addClass('hidden');
           } else {
             $visibleReports.removeClass('hidden');
