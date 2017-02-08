@@ -125,10 +125,13 @@ var fixmystreet = fixmystreet || {};
               var feature = fixmystreet.markers.features[i];
               var $listItem = $itemList.find('#report-'+ feature.data.id);
               if (feature.onScreen()) {
-                  visible += $listItem[0].outerHTML; // This is faster than using .append()
+                  var clone = $($listItem[0].outerHTML);
+                  clone.attr('id', clone.attr('id') + '-visible');
+                  clone.removeClass('hidden');
+                  visible += clone[0].outerHTML; // This is faster than using .append()
                   $listItem.addClass('hidden');
               } else {
-                  $visibleReports.find('#report-'+ feature.data.id).remove();
+                  $visibleReports.find('#report-'+ feature.data.id + '-visible').remove();
                   $listItem.removeClass('hidden');
               }
           }
