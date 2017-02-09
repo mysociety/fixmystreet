@@ -126,7 +126,7 @@ var fixmystreet = fixmystreet || {};
               var feature = fixmystreet.markers.features[i];
               var $listItem = $itemList.find('#report-'+ feature.data.id);
               if (feature.onScreen()) {
-                  var clone = $($listItem[0].outerHTML);
+                  var clone = $listItem.clone();
                   clone.attr('id', clone.attr('id') + '-visible');
                   clone.removeClass('hidden');
                   visible += clone[0].outerHTML; // This is faster than using .append()
