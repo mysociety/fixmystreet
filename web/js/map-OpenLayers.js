@@ -120,7 +120,7 @@ var fixmystreet = fixmystreet || {};
 
           var visible = ''
           var $itemList = $('.item-list');
-          var $visibleReports = $('.visible-reports');
+          var $visibleReports = $('.js-visible-reports');
 
           for (var i = 0; i < fixmystreet.markers.features.length; i++) {
               var feature = fixmystreet.markers.features[i];
