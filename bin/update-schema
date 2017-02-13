@@ -194,6 +194,7 @@ else {
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0050' if table_exists('defect_types');
     return '0049' if column_exists('response_priorities', 'external_id');
     return '0048' if column_exists('response_templates', 'state');
     return '0047' if column_exists('response_priorities', 'description');

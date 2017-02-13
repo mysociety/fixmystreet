@@ -340,8 +340,14 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_information traffic_information duplicate_of defect_type/) {
+            foreach (qw/detailed_information traffic_information duplicate_of/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
+            }
+
+            if ( $c->get_param('defect_type') ) {
+                $problem->defect_type($problem->defect_types->find($c->get_param('defect_type')));
+            } else {
+                $problem->defect_type(undef);
             }
 
             if ( $c->get_param('include_update') ) {

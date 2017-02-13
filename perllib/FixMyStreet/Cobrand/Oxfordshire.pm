@@ -161,9 +161,13 @@ sub admin_pages {
 
     # Oxfordshire have a custom admin page for downloading reports in an Exor-
     # friendly format which anyone with report_instruct permission can use.
-    if ( $user->is_superuser || $user->has_body_permission_to('report_instruct') ) {
+    if ( $user->has_body_permission_to('report_instruct') ) {
         $pages->{exordefects} = [ _('Download Exor RDI'), 10 ];
     }
+    if ( $user->has_body_permission_to('defect_type_edit') ) {
+        $pages->{defecttypes} = [ _('Defect Types'), 11 ];
+        $pages->{defecttype_edit} = [ undef, undef ];
+    };
 
     return $pages;
 }
@@ -189,5 +193,21 @@ sub user_extra_fields {
 }
 
 sub display_days_ago_threshold { 28 }
+
+sub defect_type_extra_fields {
+    return [
+        'activity_code',
+        'defect_code',
+    ];
+};
+
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+    $perms->{Bodies}->{defect_type_edit} = "Add/edit defect types";
+
+    return $perms;
+}
 
 1;
