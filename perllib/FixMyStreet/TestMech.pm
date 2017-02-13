@@ -610,6 +610,7 @@ sub delete_body {
     my $body = shift;
 
     $mech->delete_problems_for_body($body->id);
+    $mech->delete_defect_type($_) for $body->defect_types;
     $mech->delete_contact($_) for $body->contacts;
     $mech->delete_user($_) for $body->users;
     $_->delete for $body->response_templates;
@@ -639,6 +640,14 @@ sub delete_problems_for_body {
         }
         $reports->delete;
     }
+}
+
+sub delete_defect_type {
+    my $mech = shift;
+    my $defect_type = shift;
+
+    $defect_type->contact_defect_types->delete_all;
+    $defect_type->delete;
 }
 
 sub create_contact_ok {

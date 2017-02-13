@@ -108,6 +108,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "response_priority_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "defect_type_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -115,6 +117,17 @@ __PACKAGE__->has_many(
   "FixMyStreet::DB::Result::Comment",
   { "foreign.problem_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->belongs_to(
+  "defect_type",
+  "FixMyStreet::DB::Result::DefectType",
+  { id => "defect_type_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 __PACKAGE__->has_many(
   "moderation_original_datas",
@@ -153,8 +166,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-07 11:01:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iH9c4VZZN/ONnhN6g89DFw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-02-13 15:11:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8zzWlJX7OQOdvrGxKuZUmg
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -752,6 +765,18 @@ alphabetical order of name.
 sub response_priorities {
     my $self = shift;
     return $self->result_source->schema->resultset('ResponsePriority')->for_bodies($self->bodies_str_ids, $self->category);
+}
+
+=head2 defect_types
+
+Returns all DefectTypes attached to this problem's category/contact, in
+alphabetical order of name.
+
+=cut
+
+sub defect_types {
+    my $self = shift;
+    return $self->result_source->schema->resultset('DefectType')->for_bodies($self->bodies_str_ids, $self->category);
 }
 
 # returns true if the external id is the council's ref, i.e., useful to publish it
