@@ -1,0 +1,65 @@
+// On large screens, #site-header provides the header background image.
+// The nav links and logo are all absolutely positioned from a different
+// ancestor, so we have to hard-code a height.
+#site-header {
+    background: $primary; // TODO: background image
+    height: 140px;
+    margin-bottom: 0;
+
+    body.frontpage & {
+        height: 140px;
+    }
+}
+
+#site-logo {
+    body.frontpage &,
+    & {
+        top: 25px;
+        width: 240px;
+        height: 50px;
+        background-position: 0 50%;
+        @include high-dpi-background-image('/cobrands/drpolice/images/site-logo-desktop');
+    }
+}
+
+// This is the element that actually contains the .nav-menu links.
+.nav-wrapper {
+    .nav-wrapper-2 {
+        border-top: none;
+        background: transparent;
+
+        height: auto;
+        min-height: 0;
+        top: 40px + (100px - 48px) / 2;
+
+        body.frontpage & {
+            height: auto;
+        }
+    }
+}
+
+.nav-menu {
+    margin: 0 -0.75em; // compensate for 0.75em padding on children
+}
+
+.nav-menu--main {
+    a, span {
+        font-size: 1em; // up from 0.9em
+        font-weight: bold;
+    }
+}
+
+// Selected menu item
+.nav-menu--main span,
+.nav-menu a:hover,
+.nav-menu a:focus {
+    color: mix($primary, #fff, 50%);
+}
+
+.site-header__warning {
+    padding: 0.75em 0;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 11em; // up from 7em because we have a taller header
+}

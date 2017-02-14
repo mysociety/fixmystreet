@@ -1,0 +1,20 @@
+[% PROCESS 'front/javascript.html' %]
+
+[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
+
+[% IF error %]
+    <p class="form-error">[% error %]</p>
+[% END %]
+
+<p style="text-align: center; margin: 0; border: 2px dashed #ccc; padding: 2em;">HOME PAGE CONTENT GOES HERE</p>
+
+</div><!-- close div.content -->
+</div><!-- close div.container -->
+
+<div class="frontpage__report">
+    <div class="container">
+        <p style="text-align: center; margin: 0; border: 2px dashed #ccc; padding: 2em;">CATEGORIES GO HERE</p>
+    <!-- div.container will be closed by footer -->
+<!-- div.frontpage__report will be closed by footer -->
+
+[% INCLUDE 'footer.html' %]

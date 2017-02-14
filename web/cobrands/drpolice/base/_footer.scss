@@ -1,0 +1,14 @@
+body {
+    background-color: $footer-background-color; // "infinite footer" effect on short pages
+    color: $footer-text-color;
+}
+
+.wrapper {
+    background-color: $base_bg;
+    color: $base_fg;
+}
+
+.site-footer {
+    background-color: $footer-background-color;
+    color: $footer-text-color;
+}

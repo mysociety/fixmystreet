@@ -1,0 +1,55 @@
+// On small screens, #site-header is the 55px bar at the top of the page,
+// containing the site logo, "Report" button, and three-bar "menu" icon.
+#site-header {
+    background: $primary; // rather than black gradient
+    border-top: none;
+    height: auto;
+    margin-bottom: 1em;
+
+    .container {
+        padding: 0;
+        min-height: 0;
+    }
+}
+
+#site-logo {
+    background-position: 0 50%;
+    left: 0.7em;
+    @include high-dpi-background-image('/cobrands/drpolice/images/site-logo-mobile');
+}
+
+// The "Report" button in #site-header on small screens.
+#report-cta {
+    border: 1px solid mix($primary, #fff, 50%);
+    top: 20px;
+
+    &:hover,
+    &:focus {
+        color: $primary;
+        background-color: #fff;
+        border-color: #fff;
+    }
+}
+
+#nav-link {
+    top: 2px;
+}
+
+.site-header__warning {
+    background-color: rgba($color-policia-navy-blue, 0.8);
+    color: $color-policia-bright-blue;
+    padding: 0.5em 0.75em;
+    text-align: right;
+
+    p {
+        font-size: 0.8em;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        margin: 0;
+    }
+}
+
+.site-header__links {
+    position: relative;
+    height: 55px;
+}

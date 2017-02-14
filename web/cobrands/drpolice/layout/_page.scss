@@ -1,0 +1,11 @@
+.container {
+    padding: 2em 0;
+}
+
+.container .content {
+    body.fullwidthpage &,
+    body.twothirdswidthpage & {
+        padding: 0;
+        margin: 0;
+    }
+}

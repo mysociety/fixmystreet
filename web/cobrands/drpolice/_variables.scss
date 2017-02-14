@@ -1,0 +1,31 @@
+$color-policia-royal-blue: #006EC5;
+$color-policia-navy-blue: #003F9A;
+$color-policia-bright-blue: #52B3FF; // accent colour
+$color-policia-red: #EA2933;
+$color-policia-black: #22243C;
+$color-policia-grey: #EEEEEE;
+
+$primary: $color-policia-royal-blue;
+$primary_b: #000000; // border around the #postcodeForm in base/around/postcode_form.html
+$primary_text: #FFFFFF; // text colour used on top of $primary (eg: #front-main, .segmented-control--radio)
+
+$base_bg: #FFF; // body background colour on desktop
+$base_fg: $color-policia-black; // body text colour on desktop
+
+$map_nav_bg: $color-policia-royal-blue; // background colour for `body.mappage .nav-wrapper-2` on desktop
+$nav_fg: #fff; // nav link colour on desktop
+$nav_fg_hover: transparent; // nav link :hover colour on desktop
+
+$col_big_numbers: $primary; // ol.big-numbers on homepage
+
+$col_click_map: #ff1493; // background colour for .big-green-banner on area page
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;
+
+$body-font: Oxygen, Calibri, sans-serif;
+$meta-font: $body-font;
+$heading-font: $body-font;
+
+$footer-background-color: mix(#333, $color-policia-royal-blue, 90%);
+$footer-text-color: #fff;
