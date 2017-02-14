@@ -7,18 +7,7 @@
     <div class="nav-wrapper clearfix">
         <div class="main-menu-wrapper">
             <div class="main-menu">
-            <ul class="clearfix">
-                <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
-                    >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-                %]<li><[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
-                    %]>[% loc("Your reports") %]</[% ( c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) ) ? 'span' : 'a' %]></li>[%
-                %]<li><[% IF c.req.uri.path == '/reports/Hart' %]span[% ELSE %]a href="/reports/Hart"[% END
-                    %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-                %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
-                    %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-                %]<li class="last"><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-                    %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-            </ul>
+              [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area hide_mysoc_link=1 ul_class="clearfix" hide_privacy_link=1 %]
             </div>
         </div>
         <div class="nav-wrapper-2 clearfix">
