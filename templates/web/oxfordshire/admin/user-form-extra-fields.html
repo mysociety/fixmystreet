@@ -1,0 +1,12 @@
+<li>
+  <div class="admin-hint">
+    <p>
+      [% loc(
+        "The user's initials are used when sending inspections to Exor.
+        Only inspectors need to have this field filled in.")
+      %]
+    </p>
+  </div>
+  <label for="initials">[% loc('Initials:') %]</label>
+  <input type='text' class="form-control" name='extra[initials]' id='initials' value='[% user.get_extra_metadata("initials") | html %]'>
+</li>

@@ -130,4 +130,14 @@ sub traffic_management_options {
 }
 
 
+sub reputation_increment_states {
+    return {
+        'action scheduled' => 1,
+    };
+}
+
+sub user_extra_fields {
+    return [ 'initials' ];
+}
+
 1;

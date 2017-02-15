@@ -173,6 +173,7 @@
             </ul>
         [% END %]
       [% END %]
+      [% TRY %][% INCLUDE 'admin/user-form-extra-fields.html' %][% CATCH file %][% END %]
     </ul>
     <input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
 </form>
