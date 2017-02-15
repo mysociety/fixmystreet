@@ -112,9 +112,7 @@ sub send(;$) {
             $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
         }
 
-        if ($cobrand->can('process_additional_metadata_for_email')) {
-            $cobrand->process_additional_metadata_for_email($row, \%h);
-        }
+        $cobrand->call_hook(process_additional_metadata_for_email => $row, \%h);
 
         my $bodies = FixMyStreet::DB->resultset('Body')->search(
             { id => $row->bodies_str_ids },

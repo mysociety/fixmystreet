@@ -45,6 +45,29 @@ subtest 'check /ajax defaults to open reports only' => sub {
     }
 };
 
+my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
+
+subtest 'Exor RDI download appears on Oxfordshire cobrand admin' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'oxfordshire' => '.' } ],
+    }, sub {
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/admin');
+        $mech->content_contains("Download Exor RDI");
+    }
+};
+
+subtest 'Exor RDI download doesn’t appear outside of Oxfordshire cobrand admin' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+    }, sub {
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/admin');
+        $mech->content_lacks("Download Exor RDI");
+    }
+};
+
 # Clean up
+$mech->delete_user( $superuser );
 $mech->delete_problems_for_body( 2237 );
 done_testing();

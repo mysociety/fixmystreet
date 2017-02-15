@@ -84,7 +84,7 @@ sub send {
         From => $self->send_from( $row ),
     };
 
-    $cobrand->munge_sendreport_params($row, $h, $params) if $cobrand->can('munge_sendreport_params');
+    $cobrand->call_hook(munge_sendreport_params => $row, $h, $params);
 
     $params->{Bcc} = $self->bcc if @{$self->bcc};
 

@@ -339,16 +339,13 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_information traffic_information duplicate_of/) {
+            foreach (qw/detailed_information traffic_information duplicate_of defect_type/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 
-            if ( $c->get_param('save_inspected') ) {
+            if ( $c->get_param('include_update') ) {
                 $update_text = Utils::cleanup_text( $c->get_param('public_update'), { allow_multiline => 1 } );
-                if ($update_text) {
-                    $problem->set_extra_metadata( inspected => 1 );
-                    $reputation_change = 1;
-                } else {
+                if (!$update_text) {
                     $valid = 0;
                     $c->stash->{errors} ||= [];
                     push @{ $c->stash->{errors} }, _('Please provide a public update for this report.');
@@ -374,6 +371,16 @@ sub inspect : Private {
             }
             if ( $problem->state ne $old_state ) {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
+
+                # If the state has been changed by an inspector, consider the
+                # report to be inspected.
+                unless ($problem->get_extra_metadata('inspected')) {
+                    $problem->set_extra_metadata( inspected => 1 );
+                    $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
+                    my $state = $problem->state;
+                    $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
+                    $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
+                }
             }
         }
 

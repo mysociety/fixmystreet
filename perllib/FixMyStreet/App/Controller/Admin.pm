@@ -1217,6 +1217,8 @@ sub user_add : Path('user_edit') : Args(0) {
         key => 'users_email_key'
     } );
     $c->stash->{user} = $user;
+    $c->forward('user_cobrand_extra_fields');
+    $user->update;
 
     $c->forward( 'log_edit', [ $user->id, 'user', 'edit' ] );
 
@@ -1280,6 +1282,8 @@ sub user_edit : Path('user_edit') : Args(1) {
         } else {
             $user->from_body( undef );
         }
+
+        $c->forward('user_cobrand_extra_fields');
 
         # Has the user's from_body changed since we fetched areas (if we ever did)?
         # If so, we need to re-fetch areas so the UI is up to date.
@@ -1395,6 +1399,15 @@ sub user_edit : Path('user_edit') : Args(1) {
     }
 
     return 1;
+}
+
+sub user_cobrand_extra_fields : Private {
+    my ( $self, $c ) = @_;
+
+    my @extra_fields = @{ $c->cobrand->call_hook('user_extra_fields') || [] };
+    foreach ( @extra_fields ) {
+        $c->stash->{user}->set_extra_metadata( $_ => $c->get_param("extra[$_]") );
+    }
 }
 
 sub flagged : Path('flagged') : Args(0) {
