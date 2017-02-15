@@ -182,6 +182,8 @@ use Utils;
 use FixMyStreet::Map::FMS;
 use LWP::Simple qw($ua);
 use RABX;
+use URI;
+use URI::QueryParam;
 
 my $IM = eval {
     require Image::Magick;
@@ -511,6 +513,30 @@ sub admin_url {
     return $cobrand->admin_base_url . '/report_edit/' . $self->id;
 }
 
+=head2 tokenised_url
+
+Return a url for this problem report that logs a user in
+
+=cut
+
+sub tokenised_url {
+    my ($self, $user, $params) = @_;
+
+    my $token = FixMyStreet::App->model('DB::Token')->create(
+        {
+            scope => 'email_sign_in',
+            data  => {
+                id    => $self->id,
+                email => $user->email,
+                r     => $self->url,
+                p     => $params,
+            }
+        }
+    );
+
+    return "/M/". $token->token;
+}
+
 =head2 is_open
 
 Returns 1 if the problem is in a open state otherwise 0.
@@ -657,6 +683,20 @@ sub body {
         );
     }
     return $body;
+}
+
+
+=head2 time_ago
+  Returns how long ago a problem was reported in an appropriately
+  prettified duration, depending on the duration.
+=cut
+
+sub time_ago {
+    my ( $self, $date ) = @_;
+    $date ||= 'confirmed';
+    my $duration = time() - $self->$date->epoch;
+
+    return Utils::prettify_duration( $duration );
 }
 
 =head2 response_templates
