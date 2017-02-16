@@ -559,7 +559,7 @@ $fms-green: #62b356;
       font-weight: normal;
     }
     textarea {
-      height: 15em;
+      height: 10em;
     }
     textarea,
     input[type="text"],
@@ -589,6 +589,11 @@ $fms-green: #62b356;
         background-color: desaturate(darken(#E65376, 10%), 10%);
       }
     }
+  }
+
+  .council-order__form__product__price {
+      margin-left: 0.5em;
+      color: #999;
   }
 
   .form-group {
