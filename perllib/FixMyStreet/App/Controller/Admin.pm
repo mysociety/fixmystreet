@@ -78,7 +78,7 @@ sub index : Path : Args(0) {
     $c->forward('stats_by_state');
 
     my @unsent = $c->cobrand->problems->search( {
-        state => [ 'confirmed' ],
+        state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         whensent => undef,
         bodies_str => { '!=', undef },
     } )->all;
