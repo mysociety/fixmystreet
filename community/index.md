@@ -35,8 +35,8 @@ first.</p>
 <h3>IRC</h3>
 
 <p>If you would like to discuss things in a chat room, the <a
-href="irc://irc.mysociety.org/fixmystreet">#fixmystreet</a> channel on
-irc.mysociety.org allows for just that (<a
+href="irc://irc.freenode.net/fixmystreet">#fixmystreet</a> channel on
+irc.freenode.net allows for just that (<a
 href="irc/">web IRC interface</a>).</p>
 
 </div>

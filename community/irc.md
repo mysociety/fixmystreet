@@ -24,7 +24,7 @@ var dN=new Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sa
 
 To connect to our <acronym title="Internet Relay Chat">IRC</acronym> channel
 (chat room), either choose a nickname below, provided by Mibbit, or if you know
-about IRC and have a client already, connect to irc.mysociety.org and enter the
+about IRC and have a client already, connect to irc.freenode.net and enter the
 #fixmystreet channel.
 
 <p>mySociety is mainly based in the UK, so you may find the 
@@ -33,5 +33,5 @@ The time in the UK now is
 <script>dT();</script></p>
 
 <iframe width="600" height="480" scrolling="no" frameborder="0"
-  src="http://widget.mibbit.com/?server=irc.mysociety.org&amp;channel=%23fixmystreet&amp;nick=Guest%3F">
+  src="https://webchat.freenode.net/?channels=%23fixmystreet&randomnick=1">
   </iframe>
