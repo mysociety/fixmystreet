@@ -2,7 +2,7 @@ notifications:
   email: false
   irc:
     channels:
-      - "irc.mysociety.org#fixmystreet"
+      - "irc.freenode.net#fixmystreet"
     use_notice: true
     skip_join: true
   slack: mysociety:1M2CXeMwHIf8SrGoKyZrz0jO
