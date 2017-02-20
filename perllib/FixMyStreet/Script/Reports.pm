@@ -28,7 +28,7 @@ sub send(;$) {
     my $base_url = FixMyStreet->config('BASE_URL');
     my $site = $site_override || CronFns::site($base_url);
 
-    my $states = [ 'confirmed', 'fixed' ];
+    my $states = [ FixMyStreet::DB::Result::Problem::open_states() ];
     $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed', 'investigating' ] if $site eq 'zurich';
     my $unsent = $rs->search( {
         state => $states,
@@ -274,7 +274,7 @@ sub send(;$) {
         }
         my $sending_errors = '';
         my $unsent = $rs->search( {
-            state => [ 'confirmed', 'fixed' ],
+            state => [ FixMyStreet::DB::Result::Problem::open_states() ],
             whensent => undef,
             bodies_str => { '!=', undef },
             send_fail_count => { '>', 0 }

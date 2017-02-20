@@ -57,6 +57,7 @@ sub download : Path('download') : Args(0) {
     my %params = (
         -and => [
             state => [ 'action scheduled' ],
+            external_id => { '!=' => undef },
             'admin_log_entries.action' => 'inspected',
             'admin_log_entries.whenedited' => { '>=', $start_date },
             'admin_log_entries.whenedited' => { '<=', $end_date + $one_day },
