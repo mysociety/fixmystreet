@@ -191,12 +191,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
             $type ||= 'jpeg';
             if ($fileid && length($fileid) == 40) {
                 my $file = $self->get_file($fileid, $type);
-                if ($file->exists) {
-                    $file->basename;
-                } else {
-                    warn "File $part doesn't exist";
-                    ();
-                }
+                $file->basename;
             } else {
                 # A bad hash, probably a bot spamming with bad data.
                 ();
