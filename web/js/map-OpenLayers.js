@@ -636,6 +636,15 @@ var fixmystreet = fixmystreet || {};
             } else {
                 layer = new fixmystreet.map_type(fixmystreet.layer_name, fixmystreet.layer_options[i]);
             }
+            if (fixmystreet.layer_options[i].events) {
+                var events = fixmystreet.layer_options[i].events;
+                for (var event in events) {
+                    if (events.hasOwnProperty(event)) {
+                        var callback = events[event];
+                        layer.events.register(event, layer, callback);
+                    }
+                }
+            }
             fixmystreet.map.addLayer(layer);
         }
 
