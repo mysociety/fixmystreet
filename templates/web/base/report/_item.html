@@ -56,7 +56,7 @@
             [%- IF dist %], [% dist %]km[% END %]
             [%- IF problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
                 [%- IF problem.days_ago('lastupdate') > 0 AND problem.days_ago('lastupdate') <= c.cobrand.display_days_ago_threshold %]
-                  [% tprintf(loc('last updated %s days ago'), problem.days_ago('lastupdate') ) %]
+                  [% tprintf( nget( loc('last updated %d day ago'), loc('last updated %d days ago'), problem.days_ago('lastupdate') ), problem.days_ago('lastupdate') ) %]
                 [%- ELSE %]
                   [% tprintf(loc('last updated %s'), prettify_dt( problem.lastupdate, 1 ) )  %]
                 [%- END %]
