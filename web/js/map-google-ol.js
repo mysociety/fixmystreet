@@ -33,8 +33,19 @@ fixmystreet.maps.config = function() {
         zoomDuration: 10
     };
 
+    var road_layer = {}; // Empty object defaults to standard road layer
+
+    function apply_map_styles() {
+        var styledMapType = new google.maps.StyledMapType(fixmystreet_google_maps_custom_style);
+        this.mapObject.mapTypes.set('styled', styledMapType);
+        this.mapObject.setMapTypeId('styled');
+    }
+    if (typeof fixmystreet_google_maps_custom_style !== 'undefined') {
+        road_layer = { type: 'styled', events: { added: apply_map_styles } };
+    }
+
     fixmystreet.layer_options = [
-        {},
+        road_layer,
         { type: google.maps.MapTypeId.HYBRID }
     ];
 };

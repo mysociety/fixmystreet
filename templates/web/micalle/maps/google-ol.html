@@ -1,0 +1,22 @@
+[%
+map_js = [
+    "https://maps.googleapis.com/maps/api/js?v=3",
+    version('/js/OpenLayers/OpenLayers.google.js'),
+    version('/js/map-OpenLayers.js'),
+    version('/js/map-google-ol.js'),
+    version('/cobrands/micalle/google_maps_style.js'),
+]
+%]
+
+[% map_sub_links = BLOCK %]
+<a class="hidden-nojs" id="map_layer_toggle" href="">[% loc('Satellite') %]</a>
+[% END %]
+
+[% map_html = BLOCK %]
+[% INCLUDE maps/openlayers.html %]
+[% UNLESS around_page %]
+<p id="sub_map_links">
+     [% map_sub_links %]
+</p>
+[% END %]
+[% END %]
