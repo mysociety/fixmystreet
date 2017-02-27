@@ -697,6 +697,20 @@ sub time_ago {
     return Utils::prettify_duration( $duration );
 }
 
+=head2 days_ago
+
+  Returns how many days ago a problem was reported.
+
+=cut
+
+sub days_ago {
+    my ( $self, $date ) = @_;
+    $date ||= 'confirmed';
+    my $now = DateTime->now( time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone );
+    my $duration = $now->delta_days($self->$date);
+    return $duration->delta_days;
+}
+
 =head2 response_templates
 
 Returns all ResponseTemplates attached to this problem's bodies, in alphabetical
