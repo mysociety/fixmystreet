@@ -155,7 +155,7 @@ sub version {
 
 sub _version_get_mtime {
     my $file = shift;
-    unless ($version_hash{$file} && !FixMyStreet->config('STAGING_SITE')) {
+    unless (defined $version_hash{$file} && !FixMyStreet->config('STAGING_SITE')) {
         my $path = FixMyStreet->path_to('web', $file);
         $version_hash{$file} = ( stat( $path ) )[9] || 0;
     }
