@@ -398,7 +398,7 @@ if ($('#offline_list').length) {
 } else {
     // Put the appcache manifest in a page in an iframe so that HTML pages
     // aren't cached (thanks to Jake Archibald for documenting this!)
-    if (window.applicationCache && window.localStorage) {
+    if (window.applicationCache && window.localStorage && $('#js-meta-data').data('appcache')) {
         $(document.body).prepend('<iframe src="/offline/appcache" style="position:absolute;top:-999em;visibility:hidden"></iframe>');
     }
 
