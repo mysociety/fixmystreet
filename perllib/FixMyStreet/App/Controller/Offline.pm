@@ -17,9 +17,15 @@ On staging site, appcache only for people who want it.
 
 =cut
 
+sub have_appcache : Private {
+    my ($self, $c) = @_;
+    return $c->user_exists && $c->user->has_body_permission_to('planned_reports')
+        && !FixMyStreet->staging_flag('enable_appcache', 0);
+}
+
 sub manifest : Path("/offline/appcache.manifest") {
     my ($self, $c) = @_;
-    if (FixMyStreet->staging_flag('enable_appcache', 0)) {
+    unless ($c->forward('have_appcache')) {
         $c->response->status(404);
         $c->response->body('NOT FOUND');
     }
@@ -30,7 +36,7 @@ sub manifest : Path("/offline/appcache.manifest") {
 sub appcache : Path("/offline/appcache") {
     my ($self, $c) = @_;
     $c->detach('/page_error_404_not_found', []) if keys %{$c->req->params};
-    if (FixMyStreet->staging_flag('enable_appcache', 0)) {
+    unless ($c->forward('have_appcache')) {
         $c->response->status(404);
         $c->response->body('NOT FOUND');
     }
