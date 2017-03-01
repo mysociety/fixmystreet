@@ -620,6 +620,7 @@ body.mappage .wrapper {
           background-image: url($image-sprite);
           background-position: center -2563px;
         }
+
         &.share {
           background-image: url('/cobrands/fixmystreet/images/share.png');
           background-position: center 25%;
@@ -1496,6 +1497,40 @@ html.js #map .noscript {
       background-image:url($image-sprite);
       background-position: flip(right, -341px) -3936px;
     }
+    &#toggle-fullscreen {
+      padding: 0.6em 1em 0.5em 1em;
+      &:after {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background-size: 16px 16px;
+        vertical-align: middle;
+        margin-#{$left}: 8px;
+      }
+      &.expand:after {
+        background-image: url(/cobrands/fixmystreet/images/expand.png);
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/expand@2x.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/expand.svg), none;
+        }
+      }
+      &.compress:after {
+        background-image: url(/cobrands/fixmystreet/images/compress.png);
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/compress@2x.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/compress.svg), none;
+        }
+      }
+    }
     &:hover {
       background-color:#000;
       text-decoration:none;
@@ -1559,14 +1594,14 @@ html.js #map .noscript {
   text-transform: uppercase;
   text-align: center;
   font-size: 0.875em;
-  .mobile-reporting-map & {
+  .map-fullscreen & {
     display: none;
   }
 }
 
 .mobile-map-banner {
   display: none;
-  .mobile-reporting-map & {
+  .map-fullscreen & {
     display: block;
   }
   text-transform: uppercase;
@@ -1656,7 +1691,7 @@ a:hover.rap-notes-trigger {
 // and make the map full screen to reduce distractions. JavaScript also
 // tweaks the text content of some of the map-related elements, to make
 // it more "app-like".
-.mobile-reporting-map {
+.map-fullscreen {
   #site-header {
     display: none;
   }
@@ -1672,10 +1707,6 @@ a:hover.rap-notes-trigger {
     z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
   }
 
-  #fms_pan_zoom {
-    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
-  }
-
   .container {
     padding: 0; // map_box needs to be full width, so remove page gutter
   }
@@ -1685,7 +1716,13 @@ a:hover.rap-notes-trigger {
   }
 }
 
-.mobile-reporting-map.only-map {
+.map-reporting {
+  #fms_pan_zoom {
+    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
+  }
+}
+
+.only-map {
   height: 100%;
   body {
     height: 100%;

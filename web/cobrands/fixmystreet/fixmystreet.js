@@ -118,7 +118,7 @@ fixmystreet.mobile_reporting = {
   apply_ui: function() {
     // Creates the "app-like" mobile reporting UI with full screen map
     // and special "OK/Cancel" buttons etc.
-    $('html').addClass('mobile-reporting-map only-map');
+    $('html').addClass('map-fullscreen only-map map-reporting');
     $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
     $('html, body').scrollTop(0);
   },
@@ -126,7 +126,7 @@ fixmystreet.mobile_reporting = {
   remove_ui: function() {
     // Removes the "app-like" mobile reporting UI, reverting all the
     // changes made by fixmystreet.mobile_reporting.apply_ui().
-    $('html').removeClass('mobile-reporting-map only-map');
+    $('html').removeClass('map-fullscreen only-map map-reporting');
     $('#map_box').css({ width: "", height: "", position: "" });
     $('#mob_sub_map_links').remove();
   }
@@ -869,6 +869,9 @@ $.extend(fixmystreet.set_up, {
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
+        if (fixmystreet.page === 'report' || fixmystreet.page === 'reports') {
+            $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" class="expand" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
+        }
     }
 
     // Show/hide depending on whether it has any children to show
@@ -897,6 +900,16 @@ $.extend(fixmystreet.set_up, {
             })
             .prependTo('#sub_map_links');
     }
+
+    $('#toggle-fullscreen').click(function() {
+      var btnClass = $('html').hasClass('map-fullscreen') ? 'expand' : 'compress';
+      var text = $(this).data(btnClass + '-text');
+
+      $('html').toggleClass('map-fullscreen only-map');
+      $(this).html(text).attr('class', btnClass);
+
+      fixmystreet.map.updateSize();
+    });
   },
 
   map_sidebar_key_tools: function() {

@@ -13,7 +13,7 @@ var fixmystreet = fixmystreet || {};
     if (type == 'mobile') {
         E.className += ' mobile';
         if (fixmystreet.page == 'around') {
-            E.className += ' mobile-reporting-map only-map';
+            E.className += ' map-fullscreen only-map map-reporting';
         }
     }
 })(document);
