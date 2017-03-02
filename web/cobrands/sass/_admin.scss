@@ -152,3 +152,14 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         }
     }
 }
+
+.admin-index-search {
+    width: 27em;
+    form {
+        clear: left;
+    }
+    select {
+        max-width: 65%;
+        float: left;
+    }
+}
