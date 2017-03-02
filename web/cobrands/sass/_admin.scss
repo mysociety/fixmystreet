@@ -67,39 +67,51 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         list-style: none;
       }
     }
-    .admin-box { // for delimiting forms, etc
-      border:1px solid #999;
-      padding:0.5em 1em;
-      margin:1.5em 0;
-      h2 { // only really want on first-child
+}
+
+.admin-box { // for delimiting forms, etc
+    border:1px solid #999;
+    padding:0.5em 1em;
+    margin:1.5em 0;
+    h2 { // only really want on first-child
         margin-top: 0;
-      }
     }
-  .admin-offsite-link {
+}
+
+.admin-offsite-link {
     display: inline;
-  }
-  .fms-admin-warning, .fms-admin-info {
+    padding-#{$right}: 12px;
+    background-image: url(../../i/external-link.png);
+    background-position: $right top;
+    background-repeat: no-repeat;
+}
+
+.fms-admin-warning, .fms-admin-info {
     padding: 1em;
     font-size: 90%;
     border-style: solid;
     border-width: 1px;
     border-#{$left}-width: 1em;
     margin-bottom: 1em;
-  }
-  .fms-admin-warning {
-      border-color: #f99;
-      background-color: #ffe1e1;
-  }
-  .fms-admin-info {
-      border-color: #9f9;
-      background-color: #e1ffe1;
-  }
-  .admin-open311-only {
+}
+
+.fms-admin-warning {
+    border-color: #f99;
+    background-color: #ffe1e1;
+}
+
+.fms-admin-info {
+    border-color: #9f9;
+    background-color: #e1ffe1;
+}
+
+.admin-open311-only {
     border:1px solid #666;
     padding:1em;
     margin: 1em 0;
-  }
-  .admin-hint {
+}
+
+.admin-hint {
     font-size: 80%; // little question marks are small
     cursor: pointer;
     display: block;
@@ -115,35 +127,28 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     -webkit-border-radius: 0.333em;
     border-radius: 0.333em;
     p {
-      display:none;
+        display:none;
     }
     &:before { content: "?" }
     &.admin-hint-show {
-      font-size: 90%;
-      text-align: $left;
-      display: block;
-      float:none;
-      margin:1em 0;
-      &:before { content: "" }
-      background-color: inherit !important;
-      p {
-        font-weight: normal;
+        font-size: 90%;
+        text-align: $left;
         display: block;
-        background-color: #ff9;
-        color: #000;
-        border-style: solid;
-        border-width: 1px;
-        border-#{$left}-width: 1em;
-        border-color: #f93;
-        padding:1em;
-        margin: 0;
-      }
+        float:none;
+        margin:1em 0;
+        &:before { content: "" }
+        background-color: inherit !important;
+        p {
+            font-weight: normal;
+            display: block;
+            background-color: #ff9;
+            color: #000;
+            border-style: solid;
+            border-width: 1px;
+            border-#{$left}-width: 1em;
+            border-color: #f93;
+            padding:1em;
+            margin: 0;
+        }
     }
-  }
-  .admin-offsite-link {
-    padding-#{$right}: 12px;
-    background-image: url(../../i/external-link.png);
-    background-position: $right top;
-    background-repeat: no-repeat;
-  }
 }
