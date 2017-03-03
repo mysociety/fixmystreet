@@ -45,6 +45,27 @@ web-based cross-browser testing tools for this project.
 
 ## Releases
 
+* In development
+    - Front end improvements:
+        - Add ability to make map full screen on mobile report pages. #1655
+        - Allow users to reopen closed reports. #1607
+    - Admin improvements:
+        - Redirect to category-filtered /reports on login if present. #1622
+        - Follow redirect to /admin after login if allowed. #1622
+        - Include /admin link on top-level nav for admin users.
+        - Add shortlist filters. #1629
+    - Bugfixes:
+        - Fix crash on reports with empty `bodies_str`. #1635
+        - Only output appcache/manifest for shortlist users. #1653
+        - Fix placeholder typo in French translation.
+    - Development improvements:
+        - Send open reports regardless of current state. #1334
+        - Clarify ‘inspected’ behaviour. #1614
+        - Reduce disk stats. #1647
+        - Refactor main navigation into reusable blocks.
+        - Add Problem->time_ago for pretty-printed duration.
+        - Add `external_id` field to ResponsePriority.
+
 * v2.0.2 (3rd February 2017)
     - Front end changes:
         - Add an offline fallback page with appcache. #1588
