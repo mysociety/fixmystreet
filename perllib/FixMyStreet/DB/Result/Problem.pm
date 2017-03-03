@@ -549,6 +549,16 @@ sub is_open {
     return exists $self->open_states->{ $self->state } ? 1 : 0;
 }
 
+=head2 is_in_progress
+
+Sees if the problem is in an open, not 'confirmed' state.
+
+=cut
+
+sub is_in_progress {
+    my $self = shift;
+    return $self->is_open && $self->state ne 'confirmed' ? 1 : 0;
+}
 
 =head2 is_fixed
 

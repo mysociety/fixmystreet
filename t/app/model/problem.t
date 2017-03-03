@@ -249,6 +249,7 @@ for my $test (
         is_visible  => 0,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -256,6 +257,7 @@ for my $test (
         is_visible => 0,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -263,6 +265,7 @@ for my $test (
         is_visible => 0,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -270,6 +273,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -277,6 +281,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -284,6 +289,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -291,6 +297,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -298,6 +305,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -305,6 +313,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
     {
@@ -312,6 +321,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
     {
@@ -319,6 +329,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
     {
@@ -326,6 +337,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 1,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -333,6 +345,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 1,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -340,6 +353,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 1,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -347,6 +361,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
 ) {
@@ -356,6 +371,7 @@ for my $test (
         is $problem->is_fixed, $test->{is_fixed}, 'is_fixed';
         is $problem->is_closed, $test->{is_closed}, 'is_closed';
         is $problem->is_open, $test->{is_open}, 'is_open';
+        is $problem->is_in_progress, $test->{is_in_progress}, 'is_in_progress';
     };
 }
 
