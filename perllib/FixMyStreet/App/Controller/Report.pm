@@ -419,12 +419,13 @@ sub inspect : Private {
                 if (my $saved_at = $c->get_param('saved_at')) {
                     $timestamp = DateTime->from_epoch( epoch => $saved_at );
                 }
+                my $name = $c->user->from_body ? $c->user->from_body->name : $c->user->name;
                 $problem->add_to_comments( {
                     text => $update_text,
                     created => $timestamp,
                     confirmed => $timestamp,
                     user_id => $c->user->id,
-                    name => $c->user->from_body->name,
+                    name => $name,
                     state => 'confirmed',
                     mark_fixed => 0,
                     anonymous => 0,
