@@ -31,7 +31,7 @@
                             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>
                     </ul>
                     <ul>
-                        <li><a href="https://www.fixmystreet.com/council">FixMyStreet for Councils</a></li>
+                        <li><a href="/about/council">FixMyStreet for Councils</a></li>
                         <li><[% IF c.req.uri.path == '/posters' %]span[% ELSE %]a href="[% base %]/posters"[% END
                             %]>[% loc("FixMyStreet Goodies") %]</[% c.req.uri.path == '/posters' ? 'span' : 'a' %]></li>
                         <li><[% IF c.req.uri.path == '/contact' %]span[% ELSE %]a href="[% base %]/contact"[% END
