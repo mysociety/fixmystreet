@@ -31,4 +31,7 @@ is Utils::Email::test_dmarc('BAD'), undef;
 is Utils::Email::test_dmarc('test@yahoo.com'), 1;
 is Utils::Email::test_dmarc('test@example.net'), undef;
 
+is Utils::Email::same_domain(['test@example.net', ''], [ ['to@example.net', ''], ['to@example.com', ''] ]), 1;
+is Utils::Email::same_domain(['test@example.org', ''], [ ['to@example.net', ''] ]), '';
+
 done_testing();

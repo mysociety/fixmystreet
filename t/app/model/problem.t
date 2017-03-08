@@ -148,7 +148,7 @@ for my $test (
 
 my $user = FixMyStreet::DB->resultset('User')->find_or_create(
     {
-        email => 'system_user@example.com'
+        email => 'system_user@example.net'
     }
 );
 
@@ -428,7 +428,7 @@ for my $contact ( {
 }, {
     body_id => $body_ids{14279}[0], # Ballymoney
     category => 'Graffiti',
-    email => 'highways@example.com',
+    email => 'highways@example.net',
 }, {
     confirmed => 0,
     body_id => $body_ids{2636}, # Isle of Wight
@@ -439,7 +439,7 @@ for my $contact ( {
 }
 
 my %common = (
-    email => 'system_user@example.com',
+    email => 'system_user@example.net',
     name => 'Andrew Smith',
 );
 foreach my $test ( {
@@ -505,6 +505,9 @@ foreach my $test ( {
         body          => $body_ids{14279}[0],
         category      => 'Graffiti',
         longitude => -6.5,
+        # As Ballmoney contact has same domain as reporter, the From line will
+        # become a unique reply address and Reply-To will become the reporter
+        reply_to => 1,
     }, {
         %common,
         desc          => 'directs NI correctly, 2',
@@ -563,7 +566,12 @@ foreach my $test ( {
         if ( $test->{ email_count } ) {
             my $email = $mech->get_email;
             like $email->header('To'), $test->{ to }, 'to line looks correct';
-            is $email->header('From'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'from line looks correct';
+            if ($test->{reply_to}) {
+                is $email->header('Reply-To'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'Reply-To line looks correct';
+                like $email->header('From'), qr/"$test->{name}" <fms-report-\d+-\w+\@example.org>/, 'from line looks correct';
+            } else {
+                is $email->header('From'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'from line looks correct';
+            }
             like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
             my $body = $mech->get_text_body_from_email($email);
             like $body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
@@ -671,7 +679,7 @@ subtest 'check can turn on report sent email alerts' => sub {
     my $email = $emails[0];
 
     like $email->header('To'),qr/City of Edinburgh Council/, 'to line looks correct';
-    is $email->header('From'), '"Test User" <system_user@example.com>', 'from line looks correct';
+    is $email->header('From'), '"Test User" <system_user@example.net>', 'from line looks correct';
     like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
     my $body = $mech->get_text_body_from_email($email);
     like $body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';

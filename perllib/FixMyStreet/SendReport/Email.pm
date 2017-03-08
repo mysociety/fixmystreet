@@ -2,6 +2,7 @@ package FixMyStreet::SendReport::Email;
 
 use Moo;
 use FixMyStreet::Email;
+use Utils::Email;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
@@ -90,7 +91,8 @@ sub send {
 
     my $sender = FixMyStreet::Email::unique_verp_id('report', $row->id);
 
-    if (FixMyStreet::Email::test_dmarc($params->{From}[0])) {
+    if (FixMyStreet::Email::test_dmarc($params->{From}[0])
+      || Utils::Email::same_domain($params->{From}, $params->{To})) {
         $params->{'Reply-To'} = [ $params->{From} ];
         $params->{From} = [ $sender, $params->{From}[1] ];
     }
