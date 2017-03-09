@@ -1264,6 +1264,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         }
 
         $user->name( $c->get_param('name') );
+        my $original_email = $user->email;
         $user->email( $email );
         $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
         $user->flagged( $c->get_param('flagged') || 0 );
@@ -1365,11 +1366,17 @@ sub user_edit : Path('user_edit') : Args(1) {
         return if %{$c->stash->{field_errors}};
 
         my $existing_user = $c->model('DB::User')->search({ email => $user->email, id => { '!=', $user->id } })->first;
-        if ($existing_user) {
+        my $existing_user_cobrand = $c->cobrand->users->search({ email => $user->email, id => { '!=', $user->id } })->first;
+        if ($existing_user_cobrand) {
             $existing_user->adopt($user);
             $c->forward( 'log_edit', [ $id, 'user', 'merge' ] );
             $c->res->redirect( $c->uri_for( 'user_edit', $existing_user->id ) );
         } else {
+            if ($existing_user) {
+                # Tried to change email to an existing one lacking permission
+                # so make sure it's switched back
+                $user->email($original_email);
+            }
             $user->update;
             if ($edited) {
                 $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
