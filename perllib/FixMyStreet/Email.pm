@@ -77,6 +77,10 @@ sub _render_template {
     return $var;
 }
 
+sub unique_verp_id {
+    sprintf('fms-%s@%s', generate_verp_token(@_), FixMyStreet->config('EMAIL_DOMAIN'));
+}
+
 sub _unique_id {
     sprintf('fms-%s-%s@%s',
         time(), unpack('h*', random_bytes(5, 1)),

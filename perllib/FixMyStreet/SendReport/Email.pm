@@ -88,10 +88,7 @@ sub send {
 
     $params->{Bcc} = $self->bcc if @{$self->bcc};
 
-    my $sender = sprintf('<fms-%s@%s>',
-        FixMyStreet::Email::generate_verp_token('report', $row->id),
-        FixMyStreet->config('EMAIL_DOMAIN')
-    );
+    my $sender = FixMyStreet::Email::unique_verp_id('report', $row->id);
 
     if (FixMyStreet::Email::test_dmarc($params->{From}[0])) {
         $params->{'Reply-To'} = [ $params->{From} ];
