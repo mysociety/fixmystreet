@@ -789,11 +789,9 @@ sub report_edit : Path('report_edit') : Args(1) {
 
         $c->forward( '/admin/report_edit_category', [ $problem ] );
 
-        if ( $c->get_param('email') ne $problem->user->email ) {
-            my $user = $c->model('DB::User')->find_or_create(
-                { email => $c->get_param('email') }
-            );
-
+        my $email = lc $c->get_param('email');
+        if ( $email ne $problem->user->email ) {
+            my $user = $c->model('DB::User')->find_or_create({ email => $email });
             $user->insert unless $user->in_storage;
             $problem->user( $user );
         }
@@ -1117,8 +1115,9 @@ sub update_edit : Path('update_edit') : Args(1) {
         # $update->name can be null which makes ne unhappy
         my $name = $update->name || '';
 
+        my $email = lc $c->get_param('email');
         if ( $c->get_param('name') ne $name
-          || $c->get_param('email') ne $update->user->email
+          || $email ne $update->user->email
           || $c->get_param('anonymous') ne $update->anonymous
           || $c->get_param('text') ne $update->text ) {
               $edited = 1;
@@ -1138,11 +1137,8 @@ sub update_edit : Path('update_edit') : Args(1) {
         $update->anonymous( $c->get_param('anonymous') );
         $update->state( $new_state );
 
-        if ( $c->get_param('email') ne $update->user->email ) {
-            my $user =
-              $c->model('DB::User')
-              ->find_or_create( { email => $c->get_param('email') } );
-
+        if ( $email ne $update->user->email ) {
+            my $user = $c->model('DB::User')->find_or_create({ email => $email });
             $user->insert unless $user->in_storage;
             $update->user($user);
         }
@@ -1207,7 +1203,7 @@ sub user_add : Path('user_edit') : Args(0) {
 
     my $user = $c->model('DB::User')->find_or_create( {
         name => $c->get_param('name'),
-        email => $c->get_param('email'),
+        email => lc $c->get_param('email'),
         phone => $c->get_param('phone') || undef,
         from_body => $c->get_param('body') || undef,
         flagged => $c->get_param('flagged') || 0,
@@ -1257,7 +1253,8 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         my $edited = 0;
 
-        if ( $user->email ne $c->get_param('email') ||
+        my $email = lc $c->get_param('email');
+        if ( $user->email ne $email ||
             $user->name ne $c->get_param('name') ||
             ($user->phone || "") ne $c->get_param('phone') ||
             ($user->from_body && $c->get_param('body') && $user->from_body->id ne $c->get_param('body')) ||
@@ -1267,7 +1264,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         }
 
         $user->name( $c->get_param('name') );
-        $user->email( $c->get_param('email') );
+        $user->email( $email );
         $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
         $user->flagged( $c->get_param('flagged') || 0 );
         # Only superusers can grant superuser status
@@ -1627,7 +1624,7 @@ accordingly
 sub ban_user : Private {
     my ( $self, $c ) = @_;
 
-    my $email = $c->get_param('email');
+    my $email = lc $c->get_param('email');
 
     return unless $email;
 
@@ -1654,7 +1651,7 @@ Sets the flag on a user with the given email
 sub flag_user : Private {
     my ( $self, $c ) = @_;
 
-    my $email = $c->get_param('email');
+    my $email = lc $c->get_param('email');
 
     return unless $email;
 
@@ -1682,7 +1679,7 @@ Remove the flag on a user with the given email
 sub remove_user_flag : Private {
     my ( $self, $c ) = @_;
 
-    my $email = $c->get_param('email');
+    my $email = lc $c->get_param('email');
 
     return unless $email;
 
