@@ -538,10 +538,11 @@ $.extend(fixmystreet.set_up, {
     function make_multi(id) {
         var $id = $('#' + id),
             all = $id.data('all'),
+            none = $id.data('none') || all,
             allOpts = $id.data('allOptions') || [];
         $id.multiSelect({
             allText: all,
-            noneText: all,
+            noneText: none,
             positionMenuWithin: $('#side'),
             presets: [{
                 name: all,
