@@ -275,7 +275,8 @@ sub delete :Local :Args(1) {
     $p->user->update_reputation(-1);
 
     $c->model('DB::AdminLog')->create( {
-        admin_user => $c->user->email,
+        user => $c->user,
+        admin_user => $c->user->from_body->name,
         object_type => 'problem',
         action => 'state_change',
         object_id => $id,

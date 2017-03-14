@@ -46,7 +46,7 @@
                     <p class="meta-2">
                         [% INCLUDE meta_line %]
                         [% mlog = update.latest_moderation_log_entry(); IF mlog %]
-                            <br /> Moderated by [% mlog.user.from_body.name %] at [% prettify_dt(mlog.whenedited) %]
+                            <br /> Moderated by [% mlog.admin_user %] at [% prettify_dt(mlog.whenedited) %]
                         [% END %]
                     </p>
                 </div>
