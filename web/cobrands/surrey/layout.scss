@@ -1,0 +1,24 @@
+@import "_colours";
+@import "../sass/layout";
+
+.big-green-banner {
+  text-transform: none;
+}
+
+/* The map is fixed to start at 4em from the top, so needs a slightly
+ * smaller padding */
+body.mappage #site-header {
+    padding: 7px 0;
+}
+#main-nav {
+    min-height: 70px;
+}
+body.mappage #main-nav {
+    min-height: 4em;
+}
+
+/* The menu can be treated the same on all pages, no map page difference */
+.nav-menu--main a.report-a-problem-btn {
+    padding: 0.75em;
+    margin: 0;
+}
