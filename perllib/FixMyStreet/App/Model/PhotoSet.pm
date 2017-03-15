@@ -67,14 +67,7 @@ has upload_dir => (
     is => 'ro',
     lazy => 1,
     default => sub {
-        my $self = shift;
-        my $cache_dir = path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
-        $cache_dir->mkpath;
-        unless ( -d $cache_dir && -w $cache_dir ) {
-            warn "Can't find/write to photo cache directory '$cache_dir'";
-            return;
-        }
-        $cache_dir;
+        path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
     },
 );
 

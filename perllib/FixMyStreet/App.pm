@@ -11,7 +11,7 @@ use FixMyStreet::Map;
 use FixMyStreet::Email;
 use Utils;
 
-use Path::Class;
+use Path::Tiny 'path';
 use URI;
 use URI::QueryParam;
 
@@ -102,6 +102,13 @@ after 'prepare_headers' => sub {
 # disable debug logging unless in debug mode
 __PACKAGE__->log->disable('debug')    #
   unless __PACKAGE__->debug;
+
+# Check upload_dir
+my $cache_dir = path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
+$cache_dir->mkpath;
+unless ( -d $cache_dir && -w $cache_dir ) {
+    warn "\x1b[31mCan't find/write to photo cache directory '$cache_dir'\x1b[0m\n";
+}
 
 =head1 NAME
 
