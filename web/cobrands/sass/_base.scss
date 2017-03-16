@@ -1550,6 +1550,24 @@ html.js #map .noscript {
   }
 }
 
+// Loading indicator
+
+#loading-indicator {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.4;
+  text-align: center;
+
+  img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
 .big-green-banner {
   position: relative;
   top: -1.75em;
