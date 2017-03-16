@@ -54,7 +54,7 @@ href="irc/">web IRC interface</a>).</p>
 If you're trying to set a FixMyStreet project up outside the UK, let mySociety's
 <a href="https://www.mysociety.org/about/mysociety-around-the-world/">international team</a>
 know by emailing
-<a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org</a>.
+<a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org</a>.</p>
 </div>
 </div>
 
