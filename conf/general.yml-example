@@ -114,6 +114,7 @@ GEOCODER: ''
 # relevant key here.
 GOOGLE_MAPS_API_KEY: ''
 BING_MAPS_API_KEY: ''
+GOOGLE_MAPS_JS_API_KEY: ''
 
 # This provdes parameters that are included in geocoding requests, to hopefully
 # return more useful results. The options vary depending which geocoder you use,
