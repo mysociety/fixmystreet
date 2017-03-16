@@ -62,7 +62,7 @@ sub loc : Fn {
 
 =head2 nget
 
-    [% nget( 'singular', 'plural', $number ) %]
+    [% nget( 'singular', 'plural', $number ) %]
 
 Use first or second string depending on the number.
 

@@ -162,10 +162,10 @@ sub admin_pages {
     # Oxfordshire have a custom admin page for downloading reports in an Exor-
     # friendly format which anyone with report_instruct permission can use.
     if ( $user->has_body_permission_to('report_instruct') ) {
-        $pages->{exordefects} = [ _('Download Exor RDI'), 10 ];
+        $pages->{exordefects} = [ ('Download Exor RDI'), 10 ];
     }
     if ( $user->has_body_permission_to('defect_type_edit') ) {
-        $pages->{defecttypes} = [ _('Defect Types'), 11 ];
+        $pages->{defecttypes} = [ ('Defect Types'), 11 ];
         $pages->{defecttype_edit} = [ undef, undef ];
     };
 
