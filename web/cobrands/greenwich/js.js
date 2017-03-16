@@ -15,7 +15,7 @@ $(fixmystreet.add_assets({
     asset_id_field: 'Unit_Numbe',
     propertyNames: [ 'Unit_Numbe', 'the_geom' ],
     attributes: {
-        column_id: 'Unit_Numbe'
+        lamp_column_id: 'Unit_Numbe'
     },
     geometryName: 'the_geom'
 }));
