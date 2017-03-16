@@ -47,7 +47,7 @@
       [% IF problem.title != original.title %]
         <label>
             <input type="checkbox" name="problem_revert_title" class="revert-title">
-            Revert to original title
+            [% loc('Revert to original title') %]
         </label>
       [% END %]
         <h1><input class="form-control" type="text" name="problem_title" value="[% problem.title | html %]" data-original-value="[% original.title | html %]"></h1>
@@ -57,7 +57,7 @@
     <div class="moderate-edit">
         <label>
             <input type="checkbox" name="problem_show_name" [% 'checked' UNLESS problem.anonymous %]>
-            Show reporter&rsquo;s name
+            [% loc('Show reporter&rsquo;s name') %]
         </label>
     </div>
     <p class="report_meta_info">
@@ -66,7 +66,7 @@
 
     [% INCLUDE 'report/_main_sent_info.html' %]
     [% mlog = problem.latest_moderation_log_entry(); IF mlog %]
-        <p>Moderated by [% mlog.admin_user %] at [% prettify_dt(mlog.whenedited) %]</p>
+        <p>[% tprintf(loc('Moderated by %s at %s'), mlog.admin_user, prettify_dt(mlog.whenedited)) %]</p>
     [% END %]
 
     [% INCLUDE 'report/_support.html' %]
@@ -76,7 +76,7 @@
         <p class="moderate-edit">
             <label>
                 <input type="checkbox" name="problem_show_photo" [% problem.photo ? 'checked' : '' %]>
-                Show photo
+                [% loc('Show photo') %]
             </label>
         </p>
     [% END %]
@@ -92,7 +92,7 @@
       [% IF problem.detail != original.detail %]
         <label>
             <input type="checkbox" name="problem_revert_detail" class="revert-textarea">
-            Revert to original text
+            [% loc('Revert to original text') %]
         </label>
       [% END %]
         <textarea class="form-control" name="problem_detail" data-original-value="[% original.detail | html %]">[% problem.detail | html %]</textarea>
@@ -102,16 +102,16 @@
         <p>
             <label>
                 <input type="checkbox" class="hide-document" name="problem_hide" [% problem.hidden ? 'checked' : '' %]>
-                Hide entire report
+                [% loc('Hide entire report') %]
             </label>
         </p>
         <p>
-            <label for="moderation_reason">Moderation reason:</label>
-            <input type="text" class="form-control" name="moderation_reason" placeholder="Describe why you are moderating this">
+            <label for="moderation_reason">[% loc('Moderation reason:') %]</label>
+            <input type="text" class="form-control" name="moderation_reason" placeholder="[% loc('Describe why you are moderating this') %]">
         </p>
         <p>
-            <input type="submit" class="green-btn" value="Save changes">
-            <input type="button" class="btn cancel" value="Discard changes">
+            <input type="submit" class="green-btn" value="[% loc('Save changes') %]">
+            <input type="button" class="btn cancel" value="[% loc('Discard changes') %]">
         </p>
     </div>
   [% END %]

@@ -669,7 +669,7 @@ $.extend(fixmystreet.set_up, {
   email_login_form: function() {
     // Log in with email button
     var email_form = $('#js-social-email-hide'),
-        button = $('<button class="btn btn--social btn--social-email">Log in with email</button>'),
+        button = $('<button class="btn btn--social btn--social-email">'+translation_strings.login_with_email+'</button>'),
         form_box = $('<div class="form-box"></div>');
     button.click(function(e) {
         e.preventDefault();
