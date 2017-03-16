@@ -2173,6 +2173,7 @@ table.nicetable {
     text-align: center;
     border-right-width: 0; // avoid double border between items
     float: left; // float fallback for browsers that don't support flexbox
+    position: relative; // Make sure this is shown on legacy flexbox webkit
     @include flex(1 0 auto, 1);
   }
 
