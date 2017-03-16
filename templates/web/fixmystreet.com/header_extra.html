@@ -16,22 +16,4 @@
 })(document);
 </script>
 
-[%# We are conducting an A/B experiment %]
-[% IF c.config.BASE_URL == "https://www.fixmystreet.com" AND not admin AND NOT c.req.header('User-Agent').match('Google Page Speed') %]
-<script src="//www.google-analytics.com/cx/api.js?experiment=ZwMlZkAhSbK_tP_QG64QrQ"></script>
-<script nonce="[% csp_nonce %]">
-var variation = typeof cxApi !== "undefined" ? cxApi.chooseVariation() : 0,
-    docElement = document.documentElement,
-    className = docElement.className;
-if (!/about\/council/.test(location.pathname)) {
-    docElement.className = className + ' variant' + variation;
-}
-</script>
-[% END %]
-<style>
-html .variant1 { display: none !important; }
-html.variant1 .variant0 { display: none !important; }
-html.variant1 .variant1 { display: block !important; }
-</style>
-
 [% INCLUDE 'tracking_code.html' %]

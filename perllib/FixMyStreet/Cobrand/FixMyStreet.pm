@@ -60,26 +60,5 @@ sub extra_contact_validation {
     return %errors;
 }
 
-sub report_form_extras {
-    ( { name => 'gender', required => 0 }, { name => 'variant', required => 0 } )
-}
-
-sub ask_gender_question {
-    my $self = shift;
-
-    return 1 unless $self->{c}->user;
-
-    my $reports = $self->{c}->model('DB::Problem')->search({
-        user_id => $self->{c}->user->id,
-        extra => { like => '%gender%' }
-    }, { order_by => { -desc => 'id' } });
-
-    while (my $report = $reports->next) {
-        my $gender = $report->get_extra_metadata('gender');
-        return 0 if $gender =~ /female|male|other|unknown/;
-    }
-    return 1;
-}
-
 1;
 

@@ -1120,10 +1120,6 @@ $(function() {
         'page': fixmystreet.page
     };
 
-    if (typeof variation !== 'undefined' && variation === 1) {
-        $('input[name=variant]').val(1);
-    }
-
     $.each(fixmystreet.set_up, function(setup_name, setup_func) {
         setup_func();
     });
