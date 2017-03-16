@@ -266,6 +266,8 @@ $.extend(fixmystreet.set_up, {
             );
             $("#problem_northing").text(bng.lat.toFixed(1));
             $("#problem_easting").text(bng.lon.toFixed(1));
+            $("#problem_latitude").text(latlon.lat.toFixed(6));
+            $("#problem_longitude").text(latlon.lon.toFixed(6));
             $("form#report_inspect_form input[name=latitude]").val(latlon.lat);
             $("form#report_inspect_form input[name=longitude]").val(latlon.lon);
         });
