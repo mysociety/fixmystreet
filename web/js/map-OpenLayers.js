@@ -801,6 +801,9 @@ OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixe
 // params to /ajax if the user has filtered the map.
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     read: function(options) {
+        // Show the loading indicator over the map
+        $('#loading-indicator').removeClass('hidden');
+        $('#loading-indicator').attr('aria-hidden', false);
         // Pass the values of the category, status, and sort fields as query params
         $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
             var val = $('#' + id).val();
@@ -817,17 +820,9 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
-        // Check we haven't received the data after the map has been clicked.
-        if (fixmystreet.page == 'new') {
-            // If we have, we want to do nothing, which means returning an
-            // array of the back-projected version of the current pin
-            var pin = fixmystreet.markers.features[0].clone();
-            pin.geometry.transform(
-                fixmystreet.map.getProjectionObject(),
-                new OpenLayers.Projection("EPSG:4326")
-            );
-            return [ pin ];
-        }
+        // Remove loading indicator
+        $('#loading-indicator').addClass('hidden');
+        $('#loading-indicator').attr('aria-hidden', true);
         if (typeof json == 'string') {
             obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
         } else {
