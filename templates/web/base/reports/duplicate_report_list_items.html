@@ -1,0 +1,9 @@
+[% IF items.size %]
+  [% FOREACH problem IN items %]
+      [% UNLESS problem.title;
+          dist = tprintf("%.1f", (problem.distance || 0) );
+          problem = problem.problem;
+      END %]
+      [% INCLUDE 'reports/_list-entry.html' %]
+  [% END %]
+[% END %]
