@@ -233,44 +233,42 @@ sub output_requests : Private {
 
         my $request =
         {
-            'service_request_id' => [ $id ],
-            'title' => [ $problem->title ], # Not in Open311 v2
-            'detail'  => [ $problem->detail ], # Not in Open311 v2
-            'description' => [ $problem->title .': ' . $problem->detail ],
-            'lat' => [ $problem->latitude ],
-            'long' => [ $problem->longitude ],
-            'status' => [ $problem->state ],
-#            'status_notes' => [ {} ],
-            'requested_datetime' => [ w3date($problem->confirmed) ],
-            'updated_datetime' => [ w3date($problem->lastupdate) ],
-#            'expected_datetime' => [ {} ],
-#            'address' => [ {} ],
-#            'address_id' => [ {} ],
-            'service_code' => [ $problem->category ],
-            'service_name' => [ $problem->category ],
-#            'service_notice' => [ {} ],
-#            'zipcode' => [ {} ],
-            'interface_used' => [ $problem->service ], # Not in Open311 v2
+            'service_request_id' => $id,
+            'title' => $problem->title, # Not in Open311 v2
+            'detail'  => $problem->detail, # Not in Open311 v2
+            'description' => $problem->title .': ' . $problem->detail,
+            'lat' => $problem->latitude,
+            'long' => $problem->longitude,
+            'status' => $problem->state,
+#            'status_notes' => {},
+            'requested_datetime' => w3date($problem->confirmed),
+            'updated_datetime' => w3date($problem->lastupdate),
+#            'expected_datetime' => {},
+#            'address' => {},
+#            'address_id' => {},
+            'service_code' => $problem->category,
+            'service_name' => $problem->category,
+#            'service_notice' => {},
+#            'zipcode' => {},
+            'interface_used' => $problem->service, # Not in Open311 v2
         };
 
         if ( $c->cobrand->moniker eq 'zurich' ) {
-            $request->{service_notice} = [ 
-                $problem->get_extra_metadata('public_response')
-            ];
+            $request->{service_notice} = $problem->get_extra_metadata('public_response');
         }
         else {
             # FIXME Not according to Open311 v2
-            $request->{agency_responsible} = $problem->bodies;
+            my @body_names = map { $_->name } values %{$problem->bodies};
+            $request->{agency_responsible} = {'recipient' => [ @body_names ] };
         }
 
         if ( !$problem->anonymous ) {
             # Not in Open311 v2
-            $request->{'requestor_name'} = [ $problem->name ];
+            $request->{'requestor_name'} = $problem->name;
         }
         if ( $problem->whensent ) {
             # Not in Open311 v2
-            $request->{'agency_sent_datetime'} =
-                [ w3date($problem->whensent) ];
+            $request->{'agency_sent_datetime'} = w3date($problem->whensent);
         }
 
         # Extract number of updates
@@ -279,25 +277,18 @@ sub output_requests : Private {
         )->count;
         if ($updates) {
             # Not in Open311 v2
-            $request->{'comment_count'} = [ $updates ];
+            $request->{'comment_count'} = $updates;
         }
 
         my $display_photos = $c->cobrand->allow_photo_display($problem);
         if ($display_photos && $problem->photo) {
             my $url = $c->cobrand->base_url();
             my $imgurl = $url . $problem->photos->[0]->{url_full};
-            $request->{'media_url'} = [ $imgurl ];
+            $request->{'media_url'} = $imgurl;
         }
         push(@problemlist, $request);
     }
 
-    foreach my $request (@problemlist) {
-        if ($request->{agency_responsible}) {
-            my @body_names = map { $_->name } values %{$request->{agency_responsible}} ;
-            $request->{agency_responsible} =
-                [ {'recipient' => [ @body_names ] } ];
-        }
-    }
     $c->forward( 'format_output', [ {
         'requests' => [ {
             'request' => \@problemlist
@@ -432,7 +423,7 @@ sub format_output : Private {
         $c->res->body( encode_json($hashref) );
     } elsif ('xml' eq $format) {
         $c->res->content_type('application/xml; charset=utf-8');
-        $c->res->body( XMLout($hashref, RootName => undef) );
+        $c->res->body( XMLout($hashref, RootName => undef, NoAttr => 1 ) );
     } else {
         $c->detach( 'error', [
             sprintf(_('Invalid format %s specified.'), $format)
