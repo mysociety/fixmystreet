@@ -13,7 +13,7 @@ use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
 use Test::More;
 use Web::Scraper;
 use Carp;
-use Email::Send::Test;
+use FixMyStreet::Email::Sender;
 use JSON::MaybeXS;
 
 =head1 NAME
@@ -182,7 +182,7 @@ Clear the email queue.
 
 sub clear_emails_ok {
     my $mech = shift;
-    Email::Send::Test->clear;
+    FixMyStreet::Email::Sender->default_transport->clear_deliveries;
     $mech->builder->ok( 1, 'cleared email queue' );
     return 1;
 }
@@ -199,7 +199,7 @@ sub email_count_is {
     my $mech = shift;
     my $number = shift || 0;
 
-    $mech->builder->is_num( scalar( Email::Send::Test->emails ),
+    $mech->builder->is_num( scalar( FixMyStreet::Email::Sender->default_transport->delivery_count ),
         $number, "checking for $number email(s) in the queue" );
 }
 
@@ -215,7 +215,8 @@ In list context returns all the emails (or none).
 
 sub get_email {
     my $mech   = shift;
-    my @emails = Email::Send::Test->emails;
+    my @emails = FixMyStreet::Email::Sender->default_transport->deliveries;
+    @emails = map { $_->{email}->object } @emails;
 
     return @emails if wantarray;
 

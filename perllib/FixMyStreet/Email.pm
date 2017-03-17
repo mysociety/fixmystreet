@@ -17,7 +17,7 @@ use mySociety::Random qw(random_bytes);
 use Utils::Email;
 use FixMyStreet;
 use FixMyStreet::DB;
-use FixMyStreet::EmailSend;
+use FixMyStreet::Email::Sender;
 
 sub test_dmarc {
     my $email = shift;
@@ -187,7 +187,7 @@ sub send_cron {
         print $email->as_string;
         return 1; # Failure
     } else {
-        my $result = FixMyStreet::EmailSend->new({ env_from => $env_from })->send($email);
+        my $result = FixMyStreet::Email::Sender->try_to_send($email, { from => $env_from });
         return $result ? 0 : 1;
     }
 }

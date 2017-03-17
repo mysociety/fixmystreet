@@ -180,7 +180,8 @@ TWITTER_KEY: ''
 TWITTER_SECRET: ''
 
 # If you wish to send email through a SMTP server elsewhere, change these
-# variables. SMTP_TYPE should be one of '', 'ssl' or 'tls'.
+# variables. SMTP_TYPE should be one of '', 'ssl' or 'tls'. SMTP_PORT will
+# default to 587 (tls), 465 (ssl), or 25.
 SMTP_SMARTHOST: 'localhost'
 SMTP_TYPE: ''
 SMTP_PORT: ''

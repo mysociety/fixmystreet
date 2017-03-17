@@ -9,9 +9,11 @@ use FixMyStreet::Cobrand;
 use Memcached;
 use FixMyStreet::Map;
 use FixMyStreet::Email;
+use FixMyStreet::Email::Sender;
 use Utils;
 
 use Path::Tiny 'path';
+use Try::Tiny;
 use URI;
 use URI::QueryParam;
 
@@ -346,8 +348,13 @@ sub send_email {
     $data->{_html_images_} = \@inline_images if @inline_images;
 
     my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email($data) };
-    my $return = $c->model('EmailSend')->send($email);
-    $c->log->error("$return") if !$return;
+
+    try {
+        FixMyStreet::Email::Sender->send($email, { from => $sender });
+    } catch {
+        my $error = $_ || 'unknown error';
+        $c->log->error("$error");
+    };
 
     return $email;
 }
