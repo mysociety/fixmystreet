@@ -425,6 +425,15 @@ $.extend(fixmystreet.set_up, {
                 $category_meta.empty();
             }
         });
+
+        $.getJSON('/report/new/possible_duplicates', args, function(data) {
+          if (data.count > 0) {
+            $('#js-duplicates').removeClass('hidden');
+            $('#js-duplicates ul').html(data.duplicates);
+          } else {
+            $('#js-duplicates').addClass('hidden');
+          }
+        })
     });
   },
 

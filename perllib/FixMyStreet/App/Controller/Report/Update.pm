@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Path::Class;
 use Utils;
+use JSON::MaybeXS;
 
 =head1 NAME
 
@@ -22,10 +23,12 @@ sub report_update : Path : Args(0) {
 
     $c->forward('initialize_update');
     $c->forward('load_problem');
+
     $c->forward('check_form_submitted')
       or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
 
     $c->forward('/auth/check_csrf_token');
+
     $c->forward('process_update');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
@@ -33,7 +36,30 @@ sub report_update : Path : Args(0) {
       or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
 
     $c->forward('save_update');
-    $c->forward('redirect_or_confirm_creation');
+
+    if ($c->stash->{plus_one} != 1) {
+        $c->forward('redirect_or_confirm_creation');
+    }
+}
+
+sub plus_one : Path('plus_one') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->set_param('update', 'User has added +1 to this report');
+    $c->set_param('name', $c->user->name);
+    $c->set_param('add_alert', 1);
+    $c->set_param('submit_update', 1);
+
+    $c->stash->{plus_one} = 1;
+
+    $c->forward('report_update');
+    $c->forward('update_problem');
+    $c->forward('signup_for_alerts');
+
+    my $json = { success => 1 };
+    my $body = encode_json($json);
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
 }
 
 sub confirm : Private {
@@ -471,6 +497,10 @@ sub save_update : Private {
         # User exists and we are not logged in as them.
         $c->forward('tokenize_user', [ $update ]);
         $update->user->discard_changes();
+    }
+
+    if ($c->stash->{plus_one} == 1) {
+        $update->state('hidden');
     }
 
     if ( $update->in_storage ) {
