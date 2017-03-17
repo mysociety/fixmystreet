@@ -1,5 +1,5 @@
 package FixMyStreet::Cobrand::WestBerkshire;
-use base 'FixMyStreet::Cobrand::UKCouncils';
+use base 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
