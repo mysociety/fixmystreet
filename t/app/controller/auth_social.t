@@ -7,7 +7,6 @@ use JSON::MaybeXS;
 
 use t::Mock::Facebook;
 use t::Mock::Twitter;
-use t::Mock::MapIt;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -17,8 +16,6 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my ($report) = $mech->create_problems_for_body(1, '2345', 'Test');
-
-LWP::Protocol::PSGI->register(t::Mock::MapIt->to_psgi_app, host => 'mapit.uk');
 
 FixMyStreet::override_config {
     FACEBOOK_APP_ID => 'facebook-app-id',

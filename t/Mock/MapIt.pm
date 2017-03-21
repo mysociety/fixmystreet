@@ -2,6 +2,7 @@ package t::Mock::MapIt;
 
 use JSON::MaybeXS;
 use Web::Simple;
+use LWP::Protocol::PSGI;
 
 use mySociety::Locale;
 
@@ -70,5 +71,7 @@ sub postcode {
         wgs84_lat => 51.5, wgs84_lon => -2.1, postcode => $postcode, coordsyst => 'G',
     };
 }
+
+LWP::Protocol::PSGI->register(t::Mock::MapIt->to_psgi_app, host => 'mapit.uk');
 
 __PACKAGE__->run_if_script;

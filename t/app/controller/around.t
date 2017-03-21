@@ -1,9 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use LWP::Protocol::PSGI;
 
-use t::Mock::MapIt;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -84,8 +82,6 @@ foreach my $test (
   )
 {
     subtest "check lat/lng for '$test->{pc}'" => sub {
-        LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.uk');
-
         $mech->get_ok('/');
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],

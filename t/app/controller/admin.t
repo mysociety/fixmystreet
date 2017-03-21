@@ -1,9 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use LWP::Protocol::PSGI;
 
-use t::Mock::MapIt;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -1204,7 +1202,6 @@ my %default_perms = (
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.uk');
     for my $test (
         {
             desc => 'edit user name',

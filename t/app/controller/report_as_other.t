@@ -1,9 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use LWP::Protocol::PSGI;
 
-use t::Mock::MapIt;
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 
@@ -134,7 +132,6 @@ END {
 
 sub start_report {
     my $permission = shift;
-    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.uk');
     $_->delete for $user->user_body_permissions;
     $user->user_body_permissions->create({ body => $body, permission_type => $permission })
         if $permission;
