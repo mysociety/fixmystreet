@@ -146,7 +146,7 @@ subtest 'check summary counts' => sub {
 
 # This override is wrapped around ALL the /admin/body tests
 FixMyStreet::override_config {
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
     MAPIT_TYPES => [ 'UTA' ],
     BASE_URL => 'http://www.example.org',
 }, sub {
@@ -578,7 +578,6 @@ foreach my $test (
 }
 
 FixMyStreet::override_config {
-    MAPIT_URL => 'http://mapit.mysociety.org/',
     ALLOWED_COBRANDS => 'fixmystreet',
 }, sub {
 

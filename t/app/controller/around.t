@@ -15,7 +15,7 @@ subtest "check that if no query we get sent back to the homepage" => sub {
 subtest "redirect x,y requests to lat/lon (301 - permanent)" => sub {
 
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok('/around?x=3281&y=1113');
     };
@@ -71,8 +71,8 @@ foreach my $test (
 foreach my $test (
     {
         pc        => 'SW1A 1AA',
-        latitude  => '51.5',
-        longitude => '-2.1',
+        latitude  => '51.501009',
+        longitude => '-0.141588',
     },
     {
         pc        => 'TQ 388 773',
@@ -98,7 +98,7 @@ foreach my $test (
 
 subtest 'check non public reports are not displayed on around page' => sub {
     my $params = {
-        postcode  => 'EH99 1SP',
+        postcode  => 'EH1 1BB',
         latitude  => 55.9519637512,
         longitude => -3.17492254484,
     };
@@ -108,9 +108,9 @@ subtest 'check non public reports are not displayed on around page' => sub {
     $mech->get_ok('/');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
             "good location" );
     };
     $mech->content_contains( 'Around page Test 3 for 2651',
@@ -122,9 +122,9 @@ subtest 'check non public reports are not displayed on around page' => sub {
     $mech->get_ok('/');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
             "good location" );
     };
     $mech->content_lacks( 'Around page Test 3 for 2651',

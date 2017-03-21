@@ -56,6 +56,10 @@ for my $test (
     is_deeply $mech->page_errors, [ $error_message ], 'errors match';
 }
 
+# Email address parsing should pass from here
+my $resolver = Test::MockModule->new('Email::Valid');
+$resolver->mock('address', sub { $_[1] });
+
 # create a new account
 $mech->clear_emails_ok;
 $mech->get_ok('/auth');

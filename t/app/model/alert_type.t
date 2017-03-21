@@ -188,7 +188,7 @@ subtest "correct text for title after URL" => sub {
         }
     )->delete;
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
@@ -324,7 +324,7 @@ foreach my $test (
         $report->update();
 
         FixMyStreet::override_config {
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             FixMyStreet::DB->resultset('AlertType')->email_alerts();
         };
@@ -432,7 +432,7 @@ subtest "check alerts from cobrand send main site url for alerts for different c
     )->delete;
 
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };

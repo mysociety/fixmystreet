@@ -6,6 +6,10 @@ use FixMyStreet::TestMech;
 use FixMyStreet::App;
 use Web::Scraper;
 use Path::Class;
+use LWP::Protocol::PSGI;
+use t::Mock::MapItZurich;
+
+LWP::Protocol::PSGI->register(t::Mock::MapItZurich->to_psgi_app, host => 'mapit.zurich');
 
 my $mech = FixMyStreet::TestMech->new;
 $mech->get_ok('/import');
@@ -255,7 +259,7 @@ subtest "Submit a correct entry (with location)" => sub {
     # go to the token url
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok($token_url);
     };
@@ -281,7 +285,7 @@ subtest "Submit a correct entry (with location)" => sub {
     # change the details
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok(    #
             {
@@ -314,7 +318,7 @@ subtest "Submit a correct entry (with location)" => sub {
 subtest "Submit a correct entry (with location) to cobrand" => sub {
   FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
-    MAPIT_URL => 'http://global.mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.zurich/',
     MAPIT_TYPES => [ 'O08' ],
     MAPIT_ID_WHITELIST => [],
     MAP_TYPE => 'Zurich,OSM',

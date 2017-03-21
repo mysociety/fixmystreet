@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::MockModule;
 
 BEGIN {
     use FixMyStreet;
@@ -11,6 +12,10 @@ use mySociety::Locale;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
+
+# Closest road reverse geocode mock
+my $resolver = Test::MockModule->new('LWP::Simple');
+$resolver->mock('get', sub($) { "<result></result>" });
 
 # Front page test
 
