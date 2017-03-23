@@ -371,7 +371,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         }
     }
 
-    my $dt = DateTime->now()->add( days => 2);
+    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
 
     my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
 
@@ -486,7 +486,7 @@ subtest "Test signature template is used from cobrand" => sub {
 
     my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
 
-    my $dt = DateTime->now()->add( days => 2);
+    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
 
     my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
 
