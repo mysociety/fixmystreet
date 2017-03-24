@@ -124,7 +124,7 @@ sub load_problem_or_display_error : Private {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
             unless $c->cobrand->show_unconfirmed_reports ;
     }
-    elsif ( $problem->hidden_states->{ $problem->state } or 
+    elsif ( $problem->hidden_states->{ $problem->state } or
             (($problem->get_extra_metadata('closure_status')||'') eq 'hidden')) {
         $c->detach(
             '/page_error_410_gone',
@@ -199,6 +199,10 @@ sub format_problem_for_display : Private {
 
     unless ( $c->get_param('submit_update') ) {
         $c->stash->{add_alert} = 1;
+    }
+
+    if ( $c->get_param('plus_one') ) {
+        $c->stash->{plus_one} = 1;
     }
 
     $c->stash->{extra_name_info} = $problem->bodies_str && $problem->bodies_str eq '2482' ? 1 : 0;
