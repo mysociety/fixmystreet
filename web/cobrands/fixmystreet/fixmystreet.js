@@ -433,9 +433,8 @@ $.extend(fixmystreet.set_up, {
             $('#js-duplicates ul').on('click', '.plus-one', function(e) {
               var $this = $(this)
               var token = $('meta[name="csrf-token"]').attr('content');
-              $.post( '/report/update/plus_one', { id: $this.data('problem-id'), token: token }, function() {
-                url = $this.data('report-url') + '?plus_one=true'
-                window.location.href = url;
+              $.post( '/report/update/plus_one', { id: $this.data('problem-id'), token: token }, function(data) {
+                window.location.href = data.url;
               });
               e.preventDefault();
             });

@@ -56,7 +56,8 @@ sub plus_one : Path('plus_one') : Args(0) {
     $c->forward('update_problem');
     $c->forward('signup_for_alerts');
 
-    my $json = { success => 1 };
+    my $url = '/report/' . $c->stash->{problem}->id . '?plus_one=1';
+    my $json = { url => $url };
     my $body = encode_json($json);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);

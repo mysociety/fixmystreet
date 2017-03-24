@@ -31,7 +31,7 @@ my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
 my $json = $mech->get_ok_json("/report/update/plus_one?id=$report_id&token=$csrf");
 
-is $json->{success}, 1, 'Correct JSON is returned';
+is $json->{url}, "/report/$report_id?plus_one=1", 'Correct JSON is returned';
 
 my @updates = FixMyStreet::App->model('DB::Comment')->search(
     { problem_id => $report->id }
