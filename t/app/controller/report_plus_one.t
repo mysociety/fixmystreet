@@ -51,6 +51,13 @@ is scalar(@alerts), 1, 'User is subscribed to updates';
 is @alerts[0]->alert_type->ref, 'new_updates', 'alert update type is correct';
 is @alerts[0]->parameter, $report_id, 'alert update has the correct report id';
 
+$mech->log_out_ok;
+
+my $json = $mech->get_ok_json("/report/update/plus_one?id=$report_id&token=$csrf");
+my $url = "/report/update/plus_one?id=$report_id";
+
+is $json->{url}, "/auth?plus_one=1&r=$url", 'Correct URL is returned for logged out user';
+
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');
 done_testing();

@@ -44,19 +44,26 @@ sub report_update : Path : Args(0) {
 
 sub plus_one : Path('plus_one') : Args(0) {
     my ( $self, $c ) = @_;
+    my $url;
 
-    $c->set_param('update', 'User has added +1 to this report');
-    $c->set_param('name', $c->user->name);
-    $c->set_param('add_alert', 1);
-    $c->set_param('submit_update', 1);
+    if ($c->user) {
+        $c->set_param('update', 'User has added +1 to this report');
+        $c->set_param('name', $c->user->name);
+        $c->set_param('add_alert', 1);
+        $c->set_param('submit_update', 1);
 
-    $c->stash->{plus_one} = 1;
+        $c->stash->{plus_one} = 1;
 
-    $c->forward('report_update');
-    $c->forward('update_problem');
-    $c->forward('signup_for_alerts');
+        $c->forward('report_update');
+        $c->forward('update_problem');
+        $c->forward('signup_for_alerts');
 
-    my $url = '/report/' . $c->stash->{problem}->id . '?plus_one=1';
+        $url = '/report/' . $c->stash->{problem}->id . '?plus_one=1';
+    } else {
+        my $redirectURL = '/report/update/plus_one?id=' . $c->get_param('id') ;
+        $url = '/auth?plus_one=1&r=' . $redirectURL;
+    }
+
     my $json = { url => $url };
     my $body = encode_json($json);
     $c->res->content_type('application/json; charset=utf-8');
