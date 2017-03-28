@@ -7,6 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Path::Class;
 use Utils;
 use JSON::MaybeXS;
+use URI::Escape;
 
 =head1 NAME
 
@@ -60,8 +61,10 @@ sub plus_one : Path('plus_one') : Args(0) {
 
         $url = '/report/' . $c->stash->{problem}->id . '?plus_one=1';
     } else {
-        my $redirectURL = '/report/update/plus_one?id=' . $c->get_param('id') ;
-        $url = '/auth?plus_one=1&r=' . $redirectURL;
+        $c->forward('/auth/get_csrf_token');
+        my $params = uri_escape_utf8('id=' . $c->get_param('id') . '&token=' . $c->stash->{csrf_token});
+        my $redirectURL = '/report/update/plus_one';
+        $url = '/auth?plus_one=1&r=' . $redirectURL . '&p=' . $params;
     }
 
     my $json = { url => $url };

@@ -6,6 +6,7 @@ use FixMyStreet::TestMech;
 use Web::Scraper;
 use Path::Class;
 use DateTime;
+use URI::Escape;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -54,9 +55,10 @@ is @alerts[0]->parameter, $report_id, 'alert update has the correct report id';
 $mech->log_out_ok;
 
 my $json = $mech->get_ok_json("/report/update/plus_one?id=$report_id&token=$csrf");
-my $url = "/report/update/plus_one?id=$report_id";
+my $url = '\/report\/update\/plus_one';
+my $params = uri_escape_utf8("id=$report_id&token=$csrf");
 
-is $json->{url}, "/auth?plus_one=1&r=$url", 'Correct URL is returned for logged out user';
+like $json->{url}, qr/\/auth\?plus_one=1&r=$url&p=id%3D1%26token%3D.*/, 'Correct URL is returned for logged out user';
 
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');
