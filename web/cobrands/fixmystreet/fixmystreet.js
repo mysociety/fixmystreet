@@ -435,7 +435,7 @@ $.extend(fixmystreet.set_up, {
               var token = $('meta[name="csrf-token"]').attr('content');
               $.post( '/report/update/plus_one', { id: $this.data('problem-id'), token: token }, function(data) {
                 window.location.href = data.url;
-              });
+              }, 'json');
               e.preventDefault();
             });
           } else {
