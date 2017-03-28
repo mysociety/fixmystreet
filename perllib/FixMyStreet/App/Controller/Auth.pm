@@ -11,6 +11,7 @@ use JSON::MaybeXS;
 use MIME::Base64;
 use Net::Facebook::Oauth2;
 use Net::Twitter::Lite::WithAPIv1_1;
+use URI::Query;
 
 =head1 NAME
 
@@ -31,8 +32,13 @@ Present the user with a sign in / create account page.
 
 sub general : Path : Args(0) {
     my ( $self, $c ) = @_;
+    my $params = {};
 
-    $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] )
+    if ($c->get_param('p')) {
+        $params = URI::Query->new($c->get_param('p'))->hash;
+    }
+
+    $c->detach( 'redirect_on_signin', [ $c->get_param('r'), $params ] )
         if $c->user && $c->get_param('r');
 
     # all done unless we have a form posted to us
@@ -51,7 +57,7 @@ sub general : Path : Args(0) {
     }
 
        $c->forward( 'sign_in' )
-    && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
+    && $c->detach( 'redirect_on_signin', [ $c->get_param('r'), $params ] );
 
 }
 

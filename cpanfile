@@ -89,6 +89,7 @@ requires 'Text::CSV';
 requires 'URI', '1.71';
 requires 'URI::Escape';
 requires 'URI::QueryParam';
+requires 'URI::Query';
 requires 'XML::RSS';
 requires 'XML::Simple';
 requires 'YAML';

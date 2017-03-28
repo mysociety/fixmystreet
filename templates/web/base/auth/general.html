@@ -13,6 +13,7 @@
     <fieldset>
 
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">
+        <input type="hidden" name="p" value="[% c.req.params.p | html %]">
 
 [% IF NOT oauth_need_email AND (c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY) %]
     [% IF c.config.FACEBOOK_APP_ID %]
