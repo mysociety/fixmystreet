@@ -17,7 +17,7 @@ $mech->content_contains('html class="no-js" lang="en-gb"');
 # check that we can get list page
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
     GEOCODER => '',
 }, sub {
     $mech->get_ok('/alert/list');
@@ -25,21 +25,21 @@ FixMyStreet::override_config {
     $mech->content_contains('Local RSS feeds and email alerts');
     $mech->content_contains('html class="no-js" lang="en-gb"');
 
-    $mech->get_ok('/alert/list?pc=EH99 1SP');
+    $mech->get_ok('/alert/list?pc=EH1 1BB');
     $mech->title_like(qr/^Local RSS feeds and email alerts/);
-    $mech->content_contains('Here are the types of local problem alerts for &lsquo;EH99&nbsp;1SP&rsquo;');
+    $mech->content_contains('Here are the types of local problem alerts for &lsquo;EH1&nbsp;1BB&rsquo;');
     $mech->content_contains('html class="no-js" lang="en-gb"');
     $mech->content_contains('Problems within 10.0km');
-    $mech->content_contains('rss/pc/EH991SP/2');
-    $mech->content_contains('rss/pc/EH991SP/5');
-    $mech->content_contains('rss/pc/EH991SP/10');
-    $mech->content_contains('rss/pc/EH991SP/20');
-    $mech->content_contains('Problems within City of Edinburgh');
+    $mech->content_contains('rss/pc/EH11BB/2');
+    $mech->content_contains('rss/pc/EH11BB/5');
+    $mech->content_contains('rss/pc/EH11BB/10');
+    $mech->content_contains('rss/pc/EH11BB/20');
+    $mech->content_contains('Problems within Edinburgh City');
     $mech->content_contains('Problems within City Centre ward');
-    $mech->content_contains('/rss/reports/City+of+Edinburgh');
-    $mech->content_contains('/rss/reports/City+of+Edinburgh/City+Centre');
-    $mech->content_contains('council:2651:City_of_Edinburgh');
-    $mech->content_contains('ward:2651:20728:City_of_Edinburgh:City_Centre');
+    $mech->content_contains('/rss/reports/Edinburgh');
+    $mech->content_contains('/rss/reports/Edinburgh/City+Centre');
+    $mech->content_contains('council:2651:Edinburgh');
+    $mech->content_contains('ward:2651:20728:Edinburgh:City_Centre');
 
     subtest "Test Nominatim lookup" => sub {
         LWP::Protocol::PSGI->register(t::Mock::Nominatim->run_if_script, host => 'nominatim.openstreetmap.org');

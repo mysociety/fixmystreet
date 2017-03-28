@@ -34,7 +34,7 @@ my $user = $mech->log_in_ok('test@example.com');
 $user->update( { from_body => $oxon } );
 
 FixMyStreet::override_config {
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'fixmystreet',
 }, sub {
     subtest "test inspect page" => sub {
@@ -177,7 +177,6 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    MAPIT_URL => 'http://mapit.mysociety.org/',
     ALLOWED_COBRANDS => 'oxfordshire',
 }, sub {
     subtest "test negative reputation" => sub {
@@ -215,7 +214,6 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    MAPIT_URL => 'http://mapit.mysociety.org/',
     ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
     BASE_URL => 'http://fixmystreet.site',
 }, sub {

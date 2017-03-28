@@ -1,9 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use LWP::Protocol::PSGI;
 
-use t::Mock::MapIt;
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 
@@ -13,7 +11,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2245, 'Wiltshire Council');
+my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $contact1 = $mech->create_contact_ok( body_id => $body->id, category => 'Street lighting', email => 'highways@example.com' );
 my $contact2 = $mech->create_contact_ok( body_id => $body->id, category => 'Potholes', email => 'potholes@example.com' );
 
@@ -38,7 +36,7 @@ subtest "Body user, has permission to add report as council" => sub {
         detail => 'Test report details.',
         category => 'Street lighting',
     );
-    is $report->name, 'Wiltshire Council', 'report name is body';
+    is $report->name, 'Oxfordshire County Council', 'report name is body';
     is $report->user->name, 'Body User', 'user name unchanged';
     is $report->user->id, $user->id, 'user matches';
     is $report->anonymous, 0, 'report not anonymous';
@@ -59,7 +57,7 @@ subtest "Body user, has permission to add report as another user" => sub {
     is $report->user->name, 'Another User', 'user name matches';
     is $report->user->email, 'another@example.net', 'user email correct';
     isnt $report->user->id, $user->id, 'user does not match';
-    like $mech->get_text_body_from_email, qr/Your report to Wiltshire Council has been logged/;
+    like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
     push @users, $report->user;
 };
 
@@ -78,7 +76,7 @@ subtest "Body user, has permission to add report as another (existing) user" => 
     is $report->user->name, 'Existing User', 'user name remains same';
     is $report->user->email, 'existing@example.net', 'user email correct';
     isnt $report->user->id, $user->id, 'user does not match';
-    like $mech->get_text_body_from_email, qr/Your report to Wiltshire Council has been logged/;
+    like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
     push @users, $report->user;
 };
 
@@ -88,7 +86,7 @@ subtest "Body user, has permission to add update as council" => sub {
         form_as => 'body',
         update => 'Test Update',
     );
-    is $update->name, 'Wiltshire Council', 'update name is body';
+    is $update->name, 'Oxfordshire County Council', 'update name is body';
     is $update->user->name, 'Body User', 'user name unchanged';
     is $update->user->id, $user->id, 'user matches';
     is $update->anonymous, 0, 'update not anonymous';
@@ -134,7 +132,6 @@ END {
 
 sub start_report {
     my $permission = shift;
-    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.uk');
     $_->delete for $user->user_body_permissions;
     $user->user_body_permissions->create({ body => $body, permission_type => $permission })
         if $permission;

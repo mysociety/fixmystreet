@@ -44,7 +44,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
 $mech->host('www.fixmystreet.com');
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixmystreet' ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->get_ok("/rss/pc/EH11BB/2");
 };
@@ -118,7 +118,7 @@ $report->update();
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixmystreet' ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->get_ok("/rss/pc/EH11BB/2");
 };
@@ -186,7 +186,7 @@ subtest "check RSS feeds on cobrand have correct URLs for non-cobrand reports" =
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'hart' ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok("/rss/area/Hart");
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();

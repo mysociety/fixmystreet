@@ -12,12 +12,7 @@ subtest "check that the form goes to /around" => sub {
     $mech->get_ok('/');
     is $mech->uri->path, '/', "still on '/'";
 
-    # submit form
-    FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
-    }, sub {
-        $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } } );
-    };
+    $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } } );
 
     # check that we are at /around
     is $mech->uri->path, '/around', "Got to /around";
@@ -52,7 +47,7 @@ subtest "does pc, (x,y), (e,n) or (lat,lon) go to /around" => sub {
 
         # get the uri and check for 302
         FixMyStreet::override_config {
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->get_ok($uri);
         };

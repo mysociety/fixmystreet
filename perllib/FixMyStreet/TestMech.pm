@@ -10,6 +10,7 @@ BEGIN {
 }
 
 use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
+use t::Mock::MapIt;
 use Test::More;
 use Web::Scraper;
 use Carp;

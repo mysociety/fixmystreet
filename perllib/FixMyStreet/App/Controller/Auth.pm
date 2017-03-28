@@ -104,7 +104,7 @@ sub sign_in : Private {
 
 Email the user the details they need to sign in. Don't check for an account - if
 there isn't one we can create it when they come back with a token (which
-contains the email addresss).
+contains the email address).
 
 =cut
 

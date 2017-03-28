@@ -30,7 +30,7 @@ subtest "Check multiple upload worked" => sub {
     # submit initial pc form
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
         UPLOAD_DIR => $UPLOAD_DIR,
     }, sub {
 

@@ -208,7 +208,7 @@ foreach my $test (
 
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->get_ok('/alert/list?pc=EH991SP');
         };
@@ -312,7 +312,7 @@ subtest "Test two-tier council alerts" => sub {
     ) {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->get_ok( '/alert/list?pc=GL502PR' );
             $mech->submit_form_ok( {
@@ -351,7 +351,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         $mech->get_ok( '/alert' );
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => 'EH11BB' } } );
             $mech->submit_form_ok( {
@@ -371,7 +371,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         }
     }
 
-    my $dt = DateTime->now()->add( days => 2);
+    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
 
     my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
 
@@ -436,7 +436,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     ok $update, "created test update - $update_id";
 
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         FixMyStreet::App->model('DB::AlertType')->email_alerts();
     };
@@ -447,7 +447,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     for (@emails) {
         my $body = $mech->get_text_body_from_email($_);
         $count++ if $body =~ /The following updates have been left on this report:/;
-        $count++ if $body =~ /The following new FixMyStreet reports have been added in the City of\s+Edinburgh\s+Council area:/;
+        $count++ if $body =~ /The following new FixMyStreet reports have been added in the Area 2651 area:/;
         $count++ if $body =~ /The following FixMyStreet reports have been made within the area you\s+specified:/;
         $count++ if $body =~ /\s+-\s+Testing/;
     }
@@ -486,7 +486,7 @@ subtest "Test signature template is used from cobrand" => sub {
 
     my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
 
-    my $dt = DateTime->now()->add( days => 2);
+    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
 
     my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
 
@@ -542,7 +542,7 @@ subtest "Test signature template is used from cobrand" => sub {
 
     $mech->clear_emails_ok;
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
     }, sub {
         FixMyStreet::App->model('DB::AlertType')->email_alerts();
@@ -570,7 +570,7 @@ subtest "Test signature template is used from cobrand" => sub {
 
     $mech->clear_emails_ok;
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
     }, sub {
         FixMyStreet::App->model('DB::AlertType')->email_alerts();
@@ -665,7 +665,7 @@ for my $test (
 
         $mech->clear_emails_ok;
         FixMyStreet::override_config {
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             FixMyStreet::App->model('DB::AlertType')->email_alerts();
         };
@@ -673,7 +673,7 @@ for my $test (
 
         $report->update( { non_public => 0 } );
         FixMyStreet::override_config {
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             FixMyStreet::App->model('DB::AlertType')->email_alerts();
         };

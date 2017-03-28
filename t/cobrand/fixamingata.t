@@ -1,18 +1,21 @@
 use strict;
 use warnings;
 use Test::More;
-use LWP::Protocol::PSGI;
+use Test::MockModule;
 
 BEGIN {
     use FixMyStreet;
     FixMyStreet->test_mode(1);
 }
 
-use t::Mock::MapIt;
 use mySociety::Locale;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
+
+# Closest road reverse geocode mock
+my $resolver = Test::MockModule->new('LWP::Simple');
+$resolver->mock('get', sub($) { "<result></result>" });
 
 # Front page test
 
@@ -101,13 +104,9 @@ subtest "Test ajax decimal points" => sub {
     # requesting the page, so that the code performs a full switch to Swedish
     mySociety::Locale::push('en-gb');
 
-    # A note to the future - the run_if_script line must be within a subtest
-    # otherwise it fails to work
-    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.sweden');
-
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],
-        MAPIT_URL => 'http://mapit.sweden/'
+        MAPIT_URL => 'http://mapit.uk/'
     }, sub {
         $mech->get_ok('/ajax/lookup_location?term=12345');
         # We want an actual decimal point in a JSON response...
