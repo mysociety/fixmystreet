@@ -67,8 +67,6 @@ sub plus_one : Path('plus_one') : Args(0) {
         $url = '/auth?plus_one=1&r=' . $redirectURL . '&p=' . $params;
     }
 
-    $c->log->debug($c->request->headers->header('Accept'));
-
     if ($c->request->headers->header('Accept') =~ /application\/json/) {
         my $json = { url => $url };
         my $body = encode_json($json);
