@@ -38,7 +38,7 @@ sub report_update : Path : Args(0) {
 
     $c->forward('save_update');
 
-    if ($c->stash->{plus_one} != 1) {
+    if (!defined $c->stash->{plus_one}) {
         $c->forward('redirect_or_confirm_creation');
     }
 }
@@ -516,7 +516,7 @@ sub save_update : Private {
         $update->user->discard_changes();
     }
 
-    if ($c->stash->{plus_one}) {
+    if (defined $c->stash->{plus_one}) {
         $update->state('hidden');
     }
 
