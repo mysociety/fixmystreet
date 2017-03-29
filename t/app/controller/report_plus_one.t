@@ -61,6 +61,14 @@ my $params = uri_escape_utf8("id=$report_id&token=$csrf");
 
 like $json->{url}, qr/\/auth\?plus_one=1&r=$url&p=id%3D1%26token%3D.*/, 'Correct URL is returned for logged out user';
 
+$mech->log_in_ok( $user2->email );
+$mech->add_header(Accept => 'text/html');
+$mech->get_ok("/report/update/plus_one?id=$report_id&token=$csrf");
+
+is $mech->res->code, 200, "got 200 for final destination";
+is $mech->res->previous->code, 302, "got 302 for redirect";
+is $mech->uri->path, "/report/$report_id", "Redirects to report if JSON not requested";
+
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');
 done_testing();
