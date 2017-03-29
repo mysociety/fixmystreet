@@ -30,6 +30,7 @@ my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
 # Create a +1 for a report when logged in
 
+$mech->add_header(Accept => 'application/json');
 my $json = $mech->get_ok_json("/report/update/plus_one?id=$report_id&token=$csrf");
 
 is $json->{url}, "/report/$report_id?plus_one=1", 'Correct JSON is returned';
