@@ -5,7 +5,7 @@ if (!fixmystreet.maps) {
 }
 
 $(fixmystreet.add_assets({
-    wfs_url: "http://royalaf3.miniserver.com:8080/geoserver/gis/ows",
+    wfs_url: "https://warm-bastion-39610.herokuapp.com/wfs",
     wfs_feature: "streetlights",
     asset_category: "Street lighting",
     asset_item: 'street light',
