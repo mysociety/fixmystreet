@@ -11,7 +11,6 @@ use JSON::MaybeXS;
 use MIME::Base64;
 use Net::Facebook::Oauth2;
 use Net::Twitter::Lite::WithAPIv1_1;
-use URI::Query;
 
 =head1 NAME
 
@@ -35,7 +34,9 @@ sub general : Path : Args(0) {
     my $params = {};
 
     if ($c->get_param('p')) {
-        $params = URI::Query->new($c->get_param('p'))->hash;
+        my $u = URI->new;
+        $u->query($c->get_param('p'));
+        $params = { $u->query_form };
     }
 
     $c->detach( 'redirect_on_signin', [ $c->get_param('r'), $params ] )
