@@ -59,7 +59,7 @@ my $json = $mech->get_ok_json("/report/update/plus_one?id=$report_id&token=$csrf
 my $url = '\/report\/update\/plus_one';
 my $params = uri_escape_utf8("id=$report_id&token=$csrf");
 
-like $json->{url}, qr/\/auth\?plus_one=1&r=$url&p=id%3D1%26token%3D.*/, 'Correct URL is returned for logged out user';
+like $json->{url}, qr/\/auth\?plus_one=1&r=$url&p=id%3D$report_id%26token%3D.*/, 'Correct URL is returned for logged out user';
 
 $mech->log_in_ok( $user2->email );
 $mech->add_header(Accept => 'text/html');
