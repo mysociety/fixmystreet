@@ -516,7 +516,7 @@ sub save_update : Private {
         $update->user->discard_changes();
     }
 
-    if ($c->stash->{plus_one} == 1) {
+    if ($c->stash->{plus_one}) {
         $update->state('hidden');
     }
 
