@@ -1147,6 +1147,16 @@ input.final-submit {
   }
 }
 
+.plus-one {
+  @extend %list-item-action-button;
+  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive');
+
+  &:hover,
+  &:focus {
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive-hover');
+  }
+}
+
 .item-list__item__shortlist-up {
   @extend %list-item-action-button;
 

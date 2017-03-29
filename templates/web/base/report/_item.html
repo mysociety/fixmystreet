@@ -5,7 +5,7 @@
 [% IF duplicate %]
     [% item_extra_class = "item-list__item--indented" ~%]
     [% item_action = BLOCK ~%]
-      <button class="plus-one" href="#" data-problem-id="[% problem.id %]">👍</button>
+      <button class="plus-one" href="#" data-problem-id="[% problem.id %]">Subscribe</button>
     [%~ END %]
 [% ELSIF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) ~%]
     [% item_extra_class = "item-list__item--indented" ~%]
