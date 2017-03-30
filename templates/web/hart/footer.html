@@ -44,54 +44,64 @@
         </div>
     </div>
 
-    <div class="hart-footer-wrapper">
-        <div id="footer_outside_wrapper">
-            <div id="footer_inside_wrapper" class="clearfix">
-                <div id="footer-right" class="clearfix">
-                    <ul class="footer-nav">
-                        <li> <a href="http://www.hart.gov.uk/sitemap">Site map</a> </li>
-                        <li> <a href="http://www.hart.gov.uk/Accessibility">Accessibility</a> </li>
-                    </ul>
-                </div>
-                <footer id="hart-footer" class="clearfix">
-                    <div id="copyright-block" class="desk-only">
-                        <strong>©</strong> &nbsp;
-                            <a href="http://www.hart.gov.uk/disclaimer" title="More information on the Disclaimer">Hart District Council</a>
-                    </div>
-                    <ul class="footer-nav clearfix">
-                        <li> <a href="http://www.hart.gov.uk/disclaimer">Disclaimer</a></li>
-                        <li> <a href="http://www.hart.gov.uk/freedom-information">Freedom of Information</a></li>
-                        <li> <a href="http://www.hart.gov.uk/privacy">Privacy</a></li>
-                    </ul>
-                </footer>
-                <div class="clearfix" id="footer-row-2">
-                    <div id="hart-powered-by">
-                        <a href="https://www.fixmystreet.com/about/council">Powered by <img src="/cobrands/hart/fms-logo.png" alt="FixMyStreet" style="height:20px;"></a>
-                    </div>
-                    <div id="footer-images">
-                        <a href="https://twitter.com/HartCouncil">
-                            <img alt="" src="/cobrands/hart/twitter-logo.png" style="height:43px; width:43px" />
-                        </a> 
-                        <a href="http://www.facebook.com/HartDistrictCouncil">
-                            <img alt="" src="/cobrands/hart/facebook-logo.png" style="height:43px; margin-right: 10px; width:43px" />
-                        </a> 
-                        <a href="http://www.gov.uk">
-                            <img alt="" src="/cobrands/hart/gov-logo.png" style="height:43px; width:172px" />
-                        </a>
-                    </div>
-                </div>
-                <div id="footer-row-3">
-                    <div id="copyright-block-mobile" class="mob-only">
-                        <strong>©</strong> &nbsp;
-                        <a href="http://www.hart.gov.uk/disclaimer" title="More information on the Disclaimer">
-                            Hart District Council</a>
-                    </div>
-                </div>
-            </div>
+    <footer id="hart-footer">
+      <div id="footer-inner" class="container">
+        <div id="footer-row-1" class="clearfix row">
+          <p class="desk-only">
+            <strong>©</strong>
+            <a href="http://www.hart.gov.uk/disclaimer" title="More information on the Disclaimer" class="hart">Hart District Council</a>
+            <a href="http://www.gov.uk/" title="GOV.UK">GOV.UK</a>
+          </p>
+          <ul id="footer-nav">
+              <li> <a href="http://www.hart.gov.uk/Accessibility">Accessibility</a> </li>
+              <li class="mob-only"> <a href="http://www.gov.uk/" title="GOV.UK">GOV.UK</a> </li>
+              <li> <a href="http://www.hart.gov.uk/privacy">Privacy</a> </li>
+              <li class="mob-only"> <a href="http://www3.basingstoke.gov.uk/ccmwa/chat/a6f6143d-407f-4f99-b673-6feb98b54815">Web Chat</a> </li>
+              <li class="mob-only"> <a href="https://www.hart.gov.uk/contact-us">Contact us</a> </li>
+              <li class="mob-only"> <a href="https://www.hart.gov.uk/feedback">Feedback</a> </li>
+              <li class="mob-only bottom"> <a href="https://www.hart.gov.uk/user/login?current=node/1">Login</a> </li>
+              <li class="mob-only bottom"> <a href="https://www.hart.gov.uk/user/register">Register</a> </li>
+          </ul>
         </div>
-    </div>
-    <div class="footer_border">
-    </div>
+        <div id="footer-row-2" class="clearfix row">
+          <ul id="footer-images">
+            <li>
+              <a href="https://www.facebook.com/HartDistrictCouncil">
+                <img alt="Facebook" src="/cobrands/hart/facebook-logo.png" style="width: 50px; height: 50px;">
+              </a>
+            </li>
+            <li>
+              <a href="https://twitter.com/HartCouncil">
+                <img alt="Twitter" src="/cobrands/hart/twitter-logo.png" style="width: 50px; height: 50px;">
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/channel/UCtkLOTkot4Z24Mr9C4I3t-A">
+                <img alt="YouTube" src="/cobrands/hart/youtube-logo.png" style="width: 50px; height: 50px;">
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/hartcouncil/">
+                <img alt="Instagram" src="/cobrands/hart/instagram-logo.png" style="width: 50px; height: 50px;">
+              </a>
+            </li>
+            <li class="web-chat">
+              <a href="http://www3.basingstoke.gov.uk/ccmwa/chat/a6f6143d-407f-4f99-b673-6feb98b54815">
+                <span class="desk-only">Web Chat</span>
+                <img alt="Web chat" src="/cobrands/hart/chat.png" style="height: 50px; width: 50px;">
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div id="footer-row-3" class="clearfix row">
+          <p class="mob-only">
+            <strong>©</strong>
+            <a href="http://www.hart.gov.uk/disclaimer" title="More information on the Disclaimer" class="hart">Hart District Council</a>
+          </p>
+          <a href="https://www.fixmystreet.com/about/council">Powered by <img src="/cobrands/hart/fms-logo.png" alt="FixMyStreet" style="height:20px;"></a>
+        </div>
+      </div>
+    </footer>
 
     [% INCLUDE 'common_footer_tags.html' %]
 

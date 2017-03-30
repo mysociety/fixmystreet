@@ -29,7 +29,8 @@ $mappage-actions-width--medium: 20em;
     display: block;
 }
 .mob-only {
-    display: none;
+    // Override `display: block` etc if other classes are defined
+    display: none !important ;
 }
 
 body {

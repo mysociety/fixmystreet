@@ -234,130 +234,136 @@ body.frontpage .table-cell .content {
   margin-bottom: 2em;
 }
 
-.hart-footer-wrapper {
+#hart-footer {
+  box-shadow: 0px 500px 0px 500px #4F5757;
+  background: #4F5757;
+  color: #fff;
 
-    background-color: #4F5757;
-    clear: both;
-    height: auto;
-    overflow: hidden;
-    padding: 15px 15px 50px 15px;
-    color:#fff;
+  @media only screen and (max-width:48em) {
+    font-size: 1em;
+    margin: 0 !important;
+  }
 
-    @media only screen and (min-width:48em) {
-        margin-left:-15px;
-        padding: 35px 25px 40px 25px;
+  #footer-inner {
+    @media only screen and (max-width:48em) {
+      padding: 15px;
     }
+  }
 
-    #footer_outside_wrapper {
-        max-width: 60em;
-        margin: 0 auto;
-        #footer_inside_wrapper {
-            display: block;
-
-            #footer-right {
-                @media only screen and (min-width:48em) {
-                    float: right;
-                    width: 30%;
-                }
-
-                .region-footer-right {
-                    float: left;
-                    max-width: 319px;
-                }
-            }
-            #footer-images {
-                width: 50%;
-                text-align: right;
-                padding-bottom: 10px;
-                margin-bottom: 0px;
-                @media only screen and (min-width:48em) {
-                    margin-top: 1.5em;
-                    padding-bottom: 1em;
-                }
-                float: right!important;
-                text-decoration: none!important;
-                img {
-                    margin-bottom: 5px;
-                }
-                a, a:hover, a:active {
-                    text-decoration: none;
-                }
-            }
-        }
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    li {
+      display: inline-block;
     }
-    .footer_border {
-        display: block;
-    }
-    p {
+  }
+
+  a {
+    color: #fff;
+  }
+
+  p {
+    padding: 0;
+    margin: 0;
+  }
+
+  #footer-row-1 {
+    padding: 1.5em 0 0.5em 0;
+
+    @media only screen and (max-width:48em) {
       margin: 0;
-    }
-    a:link, a:visited {
-        color: #fff; text-decoration: none;
-    }
-    a:hover, a:active {
-        text-decoration: underline;
+      padding: 0;
     }
 
-    footer#hart-footer {
-        margin-top: 0;
+    p {
+      float: left;
 
-        @media only screen and (min-width:48em) {
-            width: 70%;
-            float: left;
+      .hart {
+        margin: 0 5px 0 0;
+        padding: 0 10px 0 0;
+        border-right: 1px solid #fff;
+      }
+
+    }
+
+    #footer-nav {
+      float: right;
+
+      li {
+        margin: 0 0 0 10px;
+        padding: 0 0 0 10px;
+        float: right;
+
+        &:first-child {
+          border-left: 1px solid #fff;
         }
-    }
+      }
 
-    #copyright-block {
-        float: left;
-        margin-left: 1em;
-    }
-    #copyright-block-mobile {
-        margin-left: 10px;
-    }
+      @media only screen and (max-width:48em) {
+        float: none;
+        width: 100%;
 
-    #footer-row-2 {
-        margin-top: 2em;
-    }
-
-    .footer-nav,  {
-        height:35px;
-
-        margin-left: 0;
-        margin-bottom: 0;
-
-        @media only screen and (min-width:48em) {
-            float: right;
+        ul {
+          margin: 15px 0px 0px -2%;
         }
 
         li {
-            list-style-type: none;
-            float: left;
-            width: 50%;
-            margin-bottom: 0;
+          float: left;
+          width: 45%;
+          display: block;
+          border-left: none !important;
+          border-bottom: 1px solid #797f7f;
+          padding: 2px 0px;
+          margin: 0 2%;
 
-            a {
-                display: block;
-                border-bottom:1px solid #797f7f;
-                padding: 10px 0;
-                margin-left: 10px;
-                margin-right: 10px;
-            }
-            @media only screen and (min-width:48em) {
-                border-right:1px solid #fff;
-                width: auto;
-                a {
-                    border-bottom: none;
-                    padding: 0 10px;
-                    margin-left: 0;
-                    margin-right: 0;
-                }
-                &:last-child {
-                    border: none;
-                    padding-right: 0;
-                }
-            }
+          &.bottom {
+            border: none !important;
+          }
         }
+      }
+
     }
+  }
+
+  #footer-row-2 {
+    margin: 0.5em 0;
+
+    @media only screen and (max-width:48em) {
+      margin: 1.5em 0 1em 0;
+    }
+
+    li {
+      margin: 0 2px;
+
+      @media only screen and (max-width:48em) {
+        float: left;
+        margin-right: 5px;
+      }
+    }
+
+    li.web-chat {
+      float: right;
+
+      @media only screen and (max-width:48em) {
+        float: left;
+      }
+
+      a {
+        span {
+          float: left;
+          line-height: 50px;
+          margin: 0 10px 0 0;
+        }
+      }
+    }
+
+  }
+
+  #footer-row-3 {
+    padding: 0 0 1.5em 0;
+    margin: 0.5em 0;
+  }
 }
 
 // IE specific CSS
