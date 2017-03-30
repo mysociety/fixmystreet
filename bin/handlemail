@@ -172,20 +172,19 @@ sub handle_non_bounce_to_null_address {
         To => $data{return_path},
         _body_ => $template,
     });
-    send_mail($mail->as_string, '<>', $data{return_path});
+    send_mail($mail->as_string, $data{return_path});
 }
 
 sub forward_on_to {
     my $recipient = shift;
     my $text = join("\n", @lines) . "\n";
-    my $sender = $data{return_path} || '<>';
-    send_mail($text, $sender, $recipient);
+    send_mail($text, $recipient);
 }
 
 sub send_mail {
-    my ($text, $sender, $recipient) = @_;
+    my ($text, $recipient) = @_;
     if (mySociety::EmailUtil::EMAIL_SUCCESS
-            != mySociety::EmailUtil::send_email($text, $sender, $recipient)) {
+            != mySociety::EmailUtil::send_email($text, '<>', $recipient)) {
         exit(75);
     }
 }
