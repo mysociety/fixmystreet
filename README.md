@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 2.0.2.
+Platform is now at version 2.0.3.
 
 ## Installation
 
@@ -45,7 +45,7 @@ web-based cross-browser testing tools for this project.
 
 ## Releases
 
-* In development
+* v2.0.3 (31st March 2017)
     - Front end improvements:
         - Add ability to make map full screen on mobile report pages. #1655
         - Move staff-only JavaScript to separate file. #1666
@@ -76,6 +76,8 @@ web-based cross-browser testing tools for this project.
         - Remove superfluous lists from Open311 JSON output. #1672
         - Upgrade to using Email::Sender. #1639
         - Fix bug if test run c. 55 hours before BST starts.
+        - Use lat/lon on inspection form if no local coordinates. #1676
+        - Improve translatability of various pages.
     - Development improvements:
         - Send open reports regardless of current state. #1334
         - Clarify ‘inspected’ behaviour. #1614
@@ -83,10 +85,12 @@ web-based cross-browser testing tools for this project.
         - Refactor main navigation into reusable blocks.
         - Add Problem->time_ago for pretty-printed duration.
         - Add `external_id` field to ResponsePriority.
+        - Forward on all bounces as bounces.
         - Use sender in From if From and To domains match. #1651
         - Refactor SendReport::Open311 to use cobrand hooks. #792
         - Do upload_dir check on start up, not each report. #1668
         - Make sure all tests can run offline. #1675
+        - Add ability to override Google Maps road style. #1676
 
 * v2.0.2 (3rd February 2017)
     - Front end changes:
