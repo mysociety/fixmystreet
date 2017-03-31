@@ -1484,7 +1484,7 @@ sub stats : Path('stats') : Args(0) {
         $selected_body = $c->user->from_body->id;
     }
 
-    if ( $c->cobrand->moniker eq 'seesomething' || $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand->moniker eq 'zurich' ) {
         return $c->cobrand->admin_stats();
     }
 

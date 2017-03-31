@@ -29,13 +29,6 @@ sub build_recipient_list {
             $self->unconfirmed_notes->{$body_email}{$row->category} = $note;
         }
 
-        my $body_name = $body->name;
-        # see something uses council areas but doesn't send to councils so just use a
-        # generic name here to minimise confusion
-        if ( $row->cobrand eq 'seesomething' ) {
-            $body_name = 'See Something, Say Something';
-        }
-
         my @emails;
         # allow multiple emails per contact
         if ( $body_email =~ /,/ ) {
@@ -44,7 +37,7 @@ sub build_recipient_list {
             @emails = ( $body_email );
         }
         for my $email ( @emails ) {
-            push @{ $self->to }, [ $email, $body_name ];
+            push @{ $self->to }, [ $email, $body->name ];
         }
     }
 
