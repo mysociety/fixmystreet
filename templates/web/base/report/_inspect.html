@@ -12,9 +12,15 @@
         </p>
         <p>
           [% SET local_coords = problem.local_coords; %]
-          <strong>[% loc('Easting/Northing:') %]</strong>
-          <span id="problem_easting">[% local_coords.0 IF local_coords %]</span>,
-          <span id="problem_northing">[% local_coords.1 IF local_coords %]</span>
+          [% IF local_coords %]
+              <strong>[% loc('Easting/Northing:') %]</strong>
+              <span id="problem_easting">[% local_coords.0 %]</span>,
+              <span id="problem_northing">[% local_coords.1 %]</span>
+          [% ELSE %]
+              <strong>[% loc('Latitude/Longitude:') %]</strong>
+              <span id="problem_latitude">[% problem.latitude %]</span>
+              <span id="problem_longitude">[% problem.longitude %]</span>,
+          [% END %]
           <input type="hidden" name="longitude" value="[% problem.longitude %]">
           <input type="hidden" name="latitude" value="[% problem.latitude %]">
         </p>

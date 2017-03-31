@@ -46,7 +46,7 @@
             [% END %]
             [%- IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]
                 [%- IF problem.days_ago > 0 AND problem.days_ago <= c.cobrand.display_days_ago_threshold %]
-                  [% tprintf( nget( loc('Reported %d day ago'), loc('Reported %d days ago'), problem.days_ago), problem.days_ago ) %]
+                  [% tprintf( nget('Reported %d day ago', 'Reported %d days ago', problem.days_ago), problem.days_ago ) %]
                 [%- ELSE %]
                   [% prettify_dt( problem.confirmed, 1 ) %]
                 [%- END %]
@@ -56,7 +56,7 @@
             [%- IF dist %], [% dist %]km[% END %]
             [%- IF problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
                 [%- IF problem.days_ago('lastupdate') > 0 AND problem.days_ago('lastupdate') <= c.cobrand.display_days_ago_threshold %]
-                  [% tprintf( nget( loc('last updated %d day ago'), loc('last updated %d days ago'), problem.days_ago('lastupdate') ), problem.days_ago('lastupdate') ) %]
+                  [% tprintf( nget('last updated %d day ago', 'last updated %d days ago', problem.days_ago('lastupdate') ), problem.days_ago('lastupdate') ) %]
                 [%- ELSE %]
                   [% tprintf(loc('last updated %s'), prettify_dt( problem.lastupdate, 1 ) )  %]
                 [%- END %]

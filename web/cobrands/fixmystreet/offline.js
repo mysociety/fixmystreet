@@ -2,17 +2,27 @@ fixmystreet.offlineBanner = (function() {
     var toCache = 0;
     var cachedSoFar = 0;
 
+    // Extremely noddy function
+    function sprintf(s, p) {
+        return s.replace('%s', p);
+    }
+
+    // Note this non-global way of handling plurals may need looking at in future
     function formText() {
         var num = fixmystreet.offlineData.getForms().length;
-        return num + ' update' + (num===1 ? '' : 's');
+        if ( num === 1 ) {
+            return num + translation_strings.offline.update_single;
+        } else {
+            return num + translation_strings.offline.update_plural;
+        }
     }
 
     function onlineText() {
-        return 'You have <a id="oFN" href=""><span>' + formText() + '</span> saved to submit</a>.';
+        return sprintf(translation_strings.offline.saved_to_submit, formText());
     }
 
     function offlineText() {
-        return 'You are offline \u2013 <span>' + formText() + '</span> saved.';
+        return translation_strings.offline.you_are_offline + ' \u2013 ' + sprintf(translation_strings.offline.N_saved, formText());
     }
 
     function remove() {
@@ -87,12 +97,12 @@ fixmystreet.offlineBanner = (function() {
         startProgress: function(l) {
             $('.top_banner--offline').slideDown();
             toCache = l;
-            $('#offline_saving').html('Saving reports offline &ndash; <span>0</span>/' + toCache + '.');
+            $('#offline_saving').html(translation_strings.offline.saving_reports + ' &ndash; <span>0</span>/' + toCache + '.');
         },
         progress: function() {
             cachedSoFar += 1;
             if (cachedSoFar === toCache) {
-                $('#offline_saving').text('Reports saved offline.');
+                $('#offline_saving').text(translation_strings.offline.reports_saved);
                 window.setTimeout(remove, 3000);
             } else {
                 $('#offline_saving span').text(cachedSoFar);
@@ -367,10 +377,10 @@ if ($('#offline_list').length) {
     if (!success) {
         var html = localStorage.getItem('/my/planned');
         if (html) {
-            $('#offline_list').before('<h2>Your offline reports</h2>');
+            $('#offline_list').before('<h2>'+translation_strings.offline.your_reports+'</h2>');
             $('#offline_list').html(html);
             if (location.search.indexOf('saved=1') > 0) {
-                $('#offline_list').before('<p class="form-success">Your update has been saved offline for submission when back online.</p>');
+                $('#offline_list').before('<p class="form-success">'+translation_strings.offline.update_saved+'</p>');
             }
             fixmystreet.offline.replaceImages('#offline_list img');
             var offlineForms = fixmystreet.offlineData.getForms();
@@ -380,16 +390,16 @@ if ($('#offline_list').length) {
             });
             $('#offline_list a').each(function(i, a) {
                 if (savedForms[a.href]) {
-                    $(this).find('h3').prepend('<em>Offline update data saved</em> ');
+                    $(this).find('h3').prepend('<em>'+translation_strings.offline.update_data_saved+'</em> ');
                 }
             });
-            $('#offline_clear').css('margin-top', '5em').html('<button id="js-clear-localStorage">Clear offline data</button>');
+            $('#offline_clear').css('margin-top', '5em').html('<button id="js-clear-localStorage">'+translation_strings.offline.clear_data+'</button>');
             $('#js-clear-localStorage').click(function() {
-                if (window.confirm("Are you sure?")) {
+                if (window.confirm(translation_strings.offline.are_you_sure)) {
                     fixmystreet.offline.removeReports(fixmystreet.offlineData.getCachedUrls());
                     fixmystreet.offlineData.clearForms();
                     localStorage.removeItem('/my/planned');
-                    alert('Offline data cleared');
+                    alert(translation_strings.offline.data_cleared);
                 }
             });
         }

@@ -148,7 +148,7 @@ h1 {
   a, span {
     display: block;
     color: $nav_fg;
-    background: none;
+    background-color: transparent;
     border-bottom: none;
   }
 }
@@ -158,16 +158,16 @@ h1 {
     font-size: 0.9em;
   }
   a:hover {
-    background: $nav_fg_hover;
+    background-color: $nav_fg_hover;
   }
   a.report-a-problem-btn {
     color: $primary_text;
-    background: $primary;
+    background-color: $primary;
     padding:0.25em;
     margin:0.5em;
     @include border-radius(0.25em);
     &:hover {
-      background:$primary/1.1;
+      background-color:$primary/1.1;
     }
   }
   span {
@@ -177,17 +177,17 @@ h1 {
 .nav-menu--mysoc {
   padding: 0em 0.5em;
   margin-#{$left}: 0.25em;
-  background: $primary;
+  background-color: $primary;
   @include border-radius(0 0 0.375em 0.375em);
   a {
-    background:none;
+    background-color: transparent;
     color: $primary_text;
     text-transform: uppercase;
     font-size: 0.6875em;
     padding: 1.3em 0.7em 1em;
     &:hover {
       color: #fff;
-      background: none;
+      background-color: transparent;
     }
   }
 }

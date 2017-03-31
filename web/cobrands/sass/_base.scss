@@ -530,24 +530,24 @@ ul.error {
   a, span {
     display: block;
     padding: 0.5em 1em;
-    background: #f6f6f6;
+    background-color: #f6f6f6;
     color: #333;
     font-size: 1.25em;
     border-bottom: 0.25em solid #333;
   }
   a:hover, span.hover {
-    background: #333;
+    background-color: #333;
     color: #fff;
     text-decoration: none;
   }
   span {
-    background: #ccc;
+    background-color: #ccc;
   }
 }
 .nav-menu--mysoc {
   a {
     color: $primary_text;
-    background: $primary;
+    background-color: $primary;
   }
 }
 #mysoc-logo {
