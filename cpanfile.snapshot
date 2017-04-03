@@ -4373,11 +4373,11 @@ DISTRIBUTIONS
       Carp 0
       ExtUtils::MakeMaker 0
       Storable 0
-  Net-Facebook-Oauth2-0.09
-    pathname: M/MA/MAMOD/Net-Facebook-Oauth2-0.09.tar.gz
+  Net-Facebook-Oauth2-0.10
+    pathname: M/MA/MAMOD/Net-Facebook-Oauth2-0.10.tar.gz
     provides:
       MyApp::Controller::Facebook undef
-      Net::Facebook::Oauth2 0.09
+      Net::Facebook::Oauth2 0.10
     requirements:
       Carp 0
       ExtUtils::MakeMaker 0

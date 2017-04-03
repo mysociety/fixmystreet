@@ -74,7 +74,7 @@ requires 'MooX::Types::MooseLike';
 requires 'namespace::autoclean';
 requires 'Net::DNS::Resolver';
 requires 'Net::Domain::TLD', '1.75';
-requires 'Net::Facebook::Oauth2';
+requires 'Net::Facebook::Oauth2', '0.10';
 requires 'Net::OAuth';
 requires 'Net::Twitter::Lite::WithAPIv1_1';
 requires 'Path::Class';
