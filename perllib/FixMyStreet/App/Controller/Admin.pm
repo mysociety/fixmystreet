@@ -7,7 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Path::Class;
 use POSIX qw(strftime strcoll);
 use Digest::SHA qw(sha1_hex);
-use mySociety::EmailUtil qw(is_valid_email);
+use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
 use mySociety::ArrayUtils;
 use DateTime::Format::Strptime;
 use List::Util 'first';
@@ -357,10 +357,11 @@ sub update_contacts : Private {
             }
         );
 
-        my $email = $self->trim( $c->get_param('email') );
+        my $email = $c->get_param('email');
+        $email =~ s/\s+//g;
         my $send_method = $c->get_param('send_method') || $contact->send_method || $contact->body->send_method || "";
         unless ( $send_method eq 'Open311' ) {
-            $errors{email} = _('Please enter a valid email') unless is_valid_email($email) || $email eq 'REFUSED';
+            $errors{email} = _('Please enter a valid email') unless is_valid_email_list($email) || $email eq 'REFUSED';
         }
 
         $contact->email( $email );

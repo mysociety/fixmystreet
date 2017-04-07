@@ -206,7 +206,7 @@ subtest 'check contact creation' => sub {
 subtest 'check contact editing' => sub {
     $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
 
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
         email    => 'test2@example.com',
         note     => 'test2 note',
         non_public => undef,
@@ -218,7 +218,18 @@ subtest 'check contact editing' => sub {
     $mech->content_contains( 'Private:&nbsp;No' );
 
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
+        email    => 'test2@example.com, test3@example.com',
+        note     => 'test3 note',
+    } } );
+
+    $mech->content_contains( 'test2@example.com,test3@example.com' );
+
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->content_contains( '<td><strong>test2@example.com,test3@example.com' );
+
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
         email    => 'test2@example.com',
         note     => 'test2 note',
         non_public => 'on',
