@@ -4,12 +4,12 @@ FixMyStreet Platform is an open source project to help people run websites for
 reporting common street problems such as potholes and broken street lights to
 the appropriate authority.
 
-Users locate problems using a combination of address and sticking a pin
-in a map without worrying about the correct authority to report it to.
+Users locate problems using a combination of address and droping a pin
+in a map without being worried about the correct authority to report it to.
 FixMyStreet then works out the correct authority using the problem location and
-type and sends a report, by email or using a web service such as Open311.
+type. Then it sends a report, by email or using a web service such as Open311.
 Reported problems are visible to everyone so they can see if something has
-already been reported and leave updates. Users can also subscribe to email or
+already been reported. Users can also subscribe to email or
 RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
@@ -19,7 +19,7 @@ Platform is now at version 2.0.3.
 ## Installation
 
 We've been working hard to make the FixMyStreet Platform easy to install and
-re-use in other countries - please see our site at <http://fixmystreet.org/>
+re-use in other countries. Please see our site at <http://fixmystreet.org/>
 for help and documentation in installing the FixMyStreet Platform.
 
 ## Contribution Guidelines
@@ -29,7 +29,7 @@ installation for their area, we of course welcome stand-alone contributions as
 well. The [*Suitable for
 Volunteers*](https://github.com/mysociety/fixmystreet/labels/Suitable%20for%20Volunteers)
 label in our GitHub issues hopefully labels some potential tasks that might be
-suitable for that situation, though please do search through the other issues
+suitable for that situation. More over please search through the other issues
 to see if what you're after has been suggested or discussed - or feel free to
 add your own issue if not.
 
