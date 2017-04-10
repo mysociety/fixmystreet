@@ -1,0 +1,25 @@
+.home-fmspro {
+    margin: -1em;
+    padding: 2em 1em;
+    background: mix(#fff, $primary, 50%) url('images/home-fmspro-workmen.jpg') 50% 60% no-repeat;
+    background-size: cover;
+
+    h2 {
+        margin-top: 0;
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+
+    .btn {
+        background: #333;
+        color: mix(#fff, $primary, 50%) !important; // override !important from button-reset()
+        border: none;
+
+        &:hover,
+        &:focus {
+            background-color: mix(#333, $primary, 80%);
+        }
+    }
+}

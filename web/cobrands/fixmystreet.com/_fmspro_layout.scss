@@ -1,0 +1,27 @@
+.home-fmspro {
+    margin: 2em 0; // rather than -1em on mobile
+    padding: 2em;
+
+    @media (min-width: 64em) {
+        padding: 4em;
+    }
+
+    h2 {
+        font-weight: bold;
+        font-family: inherit;
+        font-size: 2em;
+    }
+
+    p {
+        font-size: (18em/16); // 18px
+    }
+
+    .lead {
+        font-size: (21em/16); // 21px
+        font-weight: bold;
+    }
+
+    .btn {
+        margin-top: 0.5em;
+    }
+}
