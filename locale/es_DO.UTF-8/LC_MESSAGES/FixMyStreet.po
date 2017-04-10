@@ -1577,7 +1577,7 @@ msgid ""
 "If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in\n"
 "                  the menu. Make sure you use the same category name in the bodies if you want this to happen."
 msgstr ""
-"Si dos o más organismos tienen la misma ubicación, FixMyStreet combina categorías de notificaciones idénticas en una sola entrada en\n"
+"Si dos o más organismos tienen la misma ubicación, CuidoMiCiudad combina categorías de notificaciones idénticas en una sola entrada en\n"
 "el menú. Asegúrese de que utiliza el mismo nombre categoría en ambos órganos si desea que sean combinadas."
 
 #: templates/web/base/questionnaire/completed.html:8
@@ -1641,7 +1641,7 @@ msgid ""
 "          when they are shown on the site. Enter the ID (number) of that user."
 msgstr ""
 "Si ha habilitado \"Open311 envío de actualizaciones\", debe identificar qué \n"
-"<strong>usuario</strong> de FixMyStreet aparece como creador de dichas actualizaciones\n"
+"<strong>usuario</strong> de CuidoMiCiudad aparece como creador de dichas actualizaciones\n"
 "en esta web. Introduzca el ID (número) del usuario."
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:133
@@ -2022,7 +2022,7 @@ msgstr "¡Casi hemos terminado! Lea su email&hellip;"
 
 #: templates/web/base/reports/index.html:24
 msgid "New <br>problems"
-msgstr "Nuevos <br>problemas"
+msgstr "Nuevos <br>reportes"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:259
 msgid "New body added"
@@ -2043,7 +2043,7 @@ msgstr "Nueva nota interna:"
 
 #: db/alert_types.pl:18 db/alert_types.pl:22
 msgid "New local problems on FixMyStreet"
-msgstr "Nuevos problemas locales en FixMyStreet"
+msgstr "Nuevos reportes locales en CuidoMiCiudad"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:113
 msgid "New note to DM:"
@@ -2060,23 +2060,23 @@ msgstr "Prioridad nueva"
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
-msgstr "Nuevos problemas en {{COUNCIL}} para el barrio {{WARD}} en FixMyStreet"
+msgstr "Nuevos reportes en {{COUNCIL}} para el barrio {{WARD}} en CuidoMiCiudad"
 
 #: db/alert_types.pl:26 db/alert_types.pl:30
 msgid "New problems near {{POSTCODE}} on FixMyStreet"
-msgstr "Nuevos problemas cerca de {{POSTCODE}} En FixMyStreet"
+msgstr "Nuevos reportes cerca de {{POSTCODE}} En CuidoMiCiudad"
 
 #: db/alert_types.pl:10
 msgid "New problems on FixMyStreet"
-msgstr "Nuevos problemas en FixMyStreet"
+msgstr "Nuevos reportes en CuidoMiCiudad"
 
 #: db/alert_types.pl:34
 msgid "New problems to {{COUNCIL}} on FixMyStreet"
-msgstr "Nuevos problemas en {{COUNCIL}} en FixMyStreet"
+msgstr "Nuevos reportes en {{COUNCIL}} en CuidoMiCiudad"
 
 #: db/alert_types.pl:42
 msgid "New problems within {{NAME}}'s boundary on FixMyStreet"
-msgstr "Nuevos problemas en los límites de {{NAME}} en FixMyStreet"
+msgstr "Nuevos reportes en los límites de {{NAME}} en CuidoMiCiudad"
 
 #: templates/web/zurich/admin/index-sdm.html:4
 msgid "New reports"
@@ -2288,7 +2288,7 @@ msgstr ""
 
 #: templates/web/base/reports/index.html:26
 msgid "Old / unknown <br>problems"
-msgstr "Problemas<br>Antiguos / desconocidos"
+msgstr "Reportes<br>Antiguos / desconocidos"
 
 #: templates/web/base/admin/questionnaire.html:24
 msgid "Old state"
@@ -2296,11 +2296,11 @@ msgstr "Estado antiguo"
 
 #: templates/web/base/reports/index.html:28
 msgid "Older <br>fixed"
-msgstr "Antiguo <br>arreglado"
+msgstr "Reportes solucionados"
 
 #: templates/web/base/reports/index.html:25
 msgid "Older <br>problems"
-msgstr "Problemas <br>antiguos"
+msgstr "Reportes <br>antiguos"
 
 #: templates/web/base/reports/_list-filters.html:48
 msgid "Oldest"
@@ -2337,7 +2337,7 @@ msgstr "Código Open311  API "
 
 #: templates/web/base/open311/index.html:62
 msgid "Open311 API for the mySociety FixMyStreet server"
-msgstr "API Open311 para el servidor FixMyStreet de mySociety"
+msgstr "API Open311 para el servidor CuidoMiCiudad"
 
 #: templates/web/base/admin/open311-form-fields.html:34
 msgid "Open311 Jurisdiction"
@@ -2818,7 +2818,7 @@ msgstr "Problemas en el mapa"
 
 #: db/alert_types.pl:14
 msgid "Problems recently reported fixed on FixMyStreet"
-msgstr "Problemas recientemente notificados como arreglados en FixMyStreet"
+msgstr "Problemas recientemente notificados como arreglados en CuidoMiCiudad"
 
 #: templates/web/base/alert/_list.html:22
 msgid "Problems within %.1fkm of this location"
@@ -2984,7 +2984,7 @@ msgstr "Recientemente actualizado"
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
-msgstr "Recuerde que FixMyStreet es principalmente para informar sobre problemas físicos que pueden ser arreglados. Si su problema no es apropiado para ser presentado a través de este sitio recuerde que puede ponerse en contacto con su Ayuntamiento directamente mediante su página web."
+msgstr "Recuerde que CuidoMiCiudad es principalmente para informar sobre problemas físicos que pueden ser arreglados. Si su problema no es apropiado para ser presentado a través de este sitio recuerde que puede ponerse en contacto con su Ayuntamiento directamente mediante su página web."
 
 #: templates/web/base/admin/report_blocks.html:48
 msgid "Remove flag"
@@ -3442,7 +3442,7 @@ msgid ""
 "          sent from your FixMyStreet installation."
 msgstr ""
 "Algunos puntos finales requieren una clave de <strong>API</strong> para indicar que las notificaciones provienen\n"
-"de tu sistema FixMyStreet."
+"de tu sistema CuidoMiCiudad."
 
 #: templates/web/base/alert/index.html:40
 msgid "Some photos of recent reports"
@@ -3742,7 +3742,7 @@ msgstr "Esa notificación no se puede ver en %s."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:131
 msgid "That report has been removed from FixMyStreet."
-msgstr "Esa notificación ha sido eliminada de FixMyStreet."
+msgstr "Esa notificación ha sido eliminada de CuidoMiCiudad."
 
 #: templates/web/base/admin/contact-form.html:25
 msgid ""
@@ -3758,7 +3758,7 @@ msgid ""
 "The <strong>endpoint</strong> is the URL of the service that FixMyStreet will connect to \n"
 "            when sending reports to this body."
 msgstr ""
-"El <strong>destino</strong> es la URL del servicio al que FixMyStreet se conectará \n"
+"El <strong>destino</strong> es la URL del servicio al que CuidoMiCiudad se conectará \n"
 "cuando envíe notificaciones al organismo administrativo."
 
 #: templates/web/base/admin/open311-form-fields.html:27
@@ -3994,7 +3994,7 @@ msgstr "Este es un sitio para desarrolladores, las cosas podrían romperse en cu
 
 #: templates/web/base/reports/index.html:10
 msgid "This is a summary of all reports on this site."
-msgstr "Este es un resumen de todos los informes en esta web."
+msgstr "Este es un resumen de todos los informes en CuidoMiCiudad."
 
 #: templates/web/base/report/new/form_report.html:56
 msgid "This pothole has been here for two months and…"
