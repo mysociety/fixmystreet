@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 2.0.3.
+Platform is now at version 2.0.4.
 
 ## Installation
 
@@ -44,6 +44,16 @@ Thanks to [Browserstack](https://www.browserstack.com/) who let us use their
 web-based cross-browser testing tools for this project.
 
 ## Releases
+
+* v2.0.4 (13th April 2017)
+    - Front end improvements:
+        - On /reports maps, only include reports in view. #1689
+    - Admin improvements:
+        - Allow comma-separated contact emails in the admin. #1683
+    - Bugfixes:
+        - Upgrade Facebook 3rd party library to fix Facebook login. #1681
+        - Don't error when devolved body, blank send methods. #1374
+        - Fix issue with categories with regex characters. #1688
 
 * v2.0.3 (31st March 2017)
     - Front end improvements:
