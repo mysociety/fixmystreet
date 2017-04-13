@@ -36,21 +36,7 @@
       <div class="inspect-section">
         <p>
           <label for="category">[% loc('Category') %]</label>
-            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-          <select name="category" id="category" class="form-control">
-            [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
-            <optgroup label="[% loc('Existing category') %]">
-              <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
-            </optgroup>
-            [% END %]
-            [% IF categories.size %]
-              <optgroup label="[% loc('Available categories') %]">
-                [% FOREACH cat IN categories %]
-                  <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
-                [% END %]
-              </optgroup>
-            [% END %]
-          </select>
+          [% INCLUDE 'admin/report-category.html' %]
         </p>
 
         [% FOREACH category IN categories %]
