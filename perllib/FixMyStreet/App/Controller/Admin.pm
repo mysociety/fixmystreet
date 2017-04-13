@@ -733,7 +733,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
     }
 
-    $c->stash->{categories} = $c->forward('categories_for_point');
+    $c->forward('categories_for_point');
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
         my $done = $c->cobrand->admin_report_edit();
@@ -909,7 +909,8 @@ sub categories_for_point : Private {
     # Remove the "Pick a category" option
     shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
 
-    return $c->stash->{category_options};
+    $c->stash->{categories} = $c->stash->{category_options};
+    $c->stash->{categories_hash} = { map { $_ => 1 } @{$c->stash->{category_options}} };
 }
 
 sub templates : Path('templates') : Args(0) {

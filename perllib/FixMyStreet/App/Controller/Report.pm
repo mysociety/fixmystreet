@@ -306,7 +306,7 @@ sub inspect : Private {
     my $problem = $c->stash->{problem};
     my $permissions = $c->stash->{_permissions};
 
-    $c->stash->{categories} = $c->forward('/admin/categories_for_point');
+    $c->forward('/admin/categories_for_point');
     $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
     my %category_body = map { $_->category => $_->body_id } map { $_->contacts->all } values %{$problem->bodies};

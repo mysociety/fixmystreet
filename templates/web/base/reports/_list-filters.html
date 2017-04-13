@@ -19,7 +19,7 @@
   [% IF filter_categories.size %]
     <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
         [% FOR cat IN filter_categories %]
-            <option value="[% cat | html %]"[% ' selected' IF filter_category.grep(cat).size %]>
+            <option value="[% cat | html %]"[% ' selected' IF filter_category.$cat %]>
                 [% cat | html %]
             </option>
         [% END %]
