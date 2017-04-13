@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+cd "$(dirname "$0")/.."
+
+script/bootstrap
+bin/update-schema --commit
+bin/make_css
+commonlib/bin/gettext-makemo
