@@ -430,6 +430,12 @@ sub load_and_group_problems : Private {
         $problems = $problems->to_body($c->stash->{body});
     }
 
+    if (my $bbox = $c->get_param('bbox')) {
+        my ($min_lon, $min_lat, $max_lon, $max_lat) = split /,/, $bbox;
+        $where->{latitude} = { '>=', $min_lat, '<', $max_lat };
+        $where->{longitude} = { '>=', $min_lon, '<', $max_lon };
+    }
+
     $problems = $problems->search(
         $where,
         $filter

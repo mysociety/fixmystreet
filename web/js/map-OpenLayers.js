@@ -215,14 +215,21 @@ var fixmystreet = fixmystreet || {};
         }
     };
 
+    /* Make sure pins aren't going to reload just because we're zooming out,
+     * we already have the pins when the page loaded */
     function zoomToBounds(bounds) {
         if (!bounds) { return; }
+        fixmystreet.markers.strategies[0].deactivate();
         var center = bounds.getCenterLonLat();
         var z = fixmystreet.map.getZoomForExtent(bounds);
         if ( z < 13 && $('html').hasClass('mobile') ) {
             z = 13;
         }
         fixmystreet.map.setCenter(center, z);
+        // Reactivate the strategy and make it think it's done an update
+        fixmystreet.markers.strategies[0].activate();
+        fixmystreet.markers.strategies[0].calculateBounds();
+        fixmystreet.markers.strategies[0].resolution = fixmystreet.map.getResolution();
     }
 
     function sidebar_highlight(problem_id) {
@@ -391,7 +398,10 @@ var fixmystreet = fixmystreet || {};
                         f.geometry = new_geometry;
                         this.removeAllFeatures();
                         this.addFeatures([f]);
-                        zoomToBounds(extent);
+                        var qs = parse_query_string();
+                        if (!qs.bbox) {
+                            zoomToBounds(extent);
+                        }
                     } else {
                         fixmystreet.map.removeLayer(this);
                     }
@@ -478,8 +488,13 @@ var fixmystreet = fixmystreet || {};
                 format: new OpenLayers.Format.FixMyStreet()
             });
         }
-        if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
+        if (fixmystreet.page == 'reports') {
+            pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetRefreshOnZoom() ];
+        }
+        if (fixmystreet.page == 'my') {
             pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetFixed() ];
+        }
+        if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
             pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
                 url: fixmystreet.original.href.split('?')[0] + '?ajax=1',
                 format: new OpenLayers.Format.FixMyStreet()
@@ -778,6 +793,25 @@ OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
             mapBounds = this.getMapBounds();
         }
         this.bounds = mapBounds;
+    }
+});
+
+/* This strategy will call for updates whenever the zoom changes,
+ * unlike the parent which only will if new area is included. It
+ * also does not update on load, as we already have the data. */
+OpenLayers.Strategy.FixMyStreetRefreshOnZoom = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
+    resFactor: 1.5,
+    activate: function() {
+        var activated = OpenLayers.Strategy.prototype.activate.call(this);
+        if (activated) {
+            this.layer.events.on({
+                "moveend": this.update,
+                "refresh": this.update,
+                "visibilitychanged": this.update,
+                scope: this
+            });
+        }
+        return activated;
     }
 });
 
