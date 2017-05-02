@@ -67,8 +67,8 @@ sub geocoded_string_check {
 }
 
 sub find_closest {
-    my ( $self, $latitude, $longitude ) = @_;
-    return FixMyStreet::Geocode::OSM::closest_road_text( $self, $latitude, $longitude );
+    my ( $self, $problem ) = @_;
+    return FixMyStreet::Geocode::OSM::closest_road_text( $self, $problem->latitude, $problem->longitude );
 }
 
 # Used by send-reports, calling find_closest, calling OSM geocoding

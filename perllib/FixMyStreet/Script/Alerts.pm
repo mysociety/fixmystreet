@@ -143,7 +143,7 @@ sub send() {
             # this is ward and council problems
             } else {
                 if ( exists $row->{geocode} && $row->{geocode} && $ref =~ /ward|council/ ) {
-                    my $nearest_st = _get_address_from_gecode( $row->{geocode} );
+                    my $nearest_st = _get_address_from_geocode( $row->{geocode} );
                     $row->{nearest} = $nearest_st;
                 }
 
@@ -236,7 +236,7 @@ sub send() {
                 parameter => $row->{id},
             } );
             if ( exists $row->{geocode} && $row->{geocode} ) {
-                my $nearest_st = _get_address_from_gecode( $row->{geocode} );
+                my $nearest_st = _get_address_from_geocode( $row->{geocode} );
                 $row->{nearest} = $nearest_st;
             }
             my $dt = $parser->parse_timestamp( $row->{confirmed} );
@@ -304,7 +304,7 @@ sub _send_aggregated_alert_email(%) {
     }
 }
 
-sub _get_address_from_gecode {
+sub _get_address_from_geocode {
     my $geocode = shift;
 
     return '' unless defined $geocode;

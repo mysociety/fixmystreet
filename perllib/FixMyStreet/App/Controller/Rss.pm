@@ -289,7 +289,7 @@ sub add_row : Private {
     }
 
     if ( $row->{used_map} ) {
-        my $address = $c->cobrand->find_closest_address_for_rss( $row->{latitude}, $row->{longitude}, $row );
+        my $address = $c->cobrand->find_closest_address_for_rss($row);
         $item{description} .= ent("\n<br>$address") if $address;
     }
 

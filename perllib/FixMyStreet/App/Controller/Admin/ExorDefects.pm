@@ -140,6 +140,7 @@ sub download : Path('download') : Args(0) {
 
         foreach my $report (@$inspections) {
             my ($eastings, $northings) = $report->local_coords;
+            my $location = "${eastings}E ${northings}N";
             my $description = sprintf("%s %s", $report->external_id || "", $report->get_extra_metadata('detailed_information') || "");
             my $activity_code = $report->defect_type ?
                 $report->defect_type->get_extra_metadata('activity_code')
@@ -153,7 +154,7 @@ sub download : Path('download') : Args(0) {
                 $activity_code, # activity code - minor carriageway, also FC (footway)
                 "", # empty field, can also be A (seen on MC) or B (seen on FC)
                 sprintf("%03d", ++$i), # randomised sequence number
-                "${eastings}E ${northings}N", # defect location field, which we don't capture from inspectors
+                $location, # defect location field, which we don't capture from inspectors
                 $report->inspection_log_entry->whenedited->strftime("%H%M"), # defect time raised
                 "","","","","","","", # empty fields
                 $traffic_information,
