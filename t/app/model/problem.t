@@ -5,6 +5,7 @@ use Test::More;
 
 use FixMyStreet::TestMech;
 use FixMyStreet;
+use FixMyStreet::App;
 use FixMyStreet::DB;
 use mySociety::Locale;
 use Sub::Override;
@@ -53,7 +54,7 @@ is $problem->whensent,   undef, 'inflating null confirmed ok';
 is $problem->lastupdate, undef, 'inflating null confirmed ok';
 is $problem->created,  undef, 'inflating null confirmed ok';
 
-for my $test ( 
+for my $test (
     {
         desc => 'more or less empty problem',
         changed => {},
@@ -147,7 +148,7 @@ for my $test (
 
 my $user = FixMyStreet::DB->resultset('User')->find_or_create(
     {
-        email => 'system_user@example.com'
+        email => 'system_user@example.net'
     }
 );
 
@@ -242,12 +243,13 @@ for my $test (
     };
 }
 
-for my $test ( 
+for my $test (
     {
         state => 'partial',
         is_visible  => 0,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -255,6 +257,7 @@ for my $test (
         is_visible => 0,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -262,6 +265,7 @@ for my $test (
         is_visible => 0,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -269,6 +273,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -276,6 +281,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -283,6 +289,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -290,6 +297,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -297,6 +305,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 1,
+        is_in_progress => 1,
         is_closed   => 0,
     },
     {
@@ -304,6 +313,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
     {
@@ -311,6 +321,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
     {
@@ -318,6 +329,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
     {
@@ -325,6 +337,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 1,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -332,6 +345,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 1,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -339,6 +353,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 1,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 0,
     },
     {
@@ -346,6 +361,7 @@ for my $test (
         is_visible => 1,
         is_fixed    => 0,
         is_open     => 0,
+        is_in_progress => 0,
         is_closed   => 1,
     },
 ) {
@@ -355,6 +371,7 @@ for my $test (
         is $problem->is_fixed, $test->{is_fixed}, 'is_fixed';
         is $problem->is_closed, $test->{is_closed}, 'is_closed';
         is $problem->is_open, $test->{is_open}, 'is_open';
+        is $problem->is_in_progress, $test->{is_in_progress}, 'is_in_progress';
     };
 }
 
@@ -411,7 +428,7 @@ for my $contact ( {
 }, {
     body_id => $body_ids{14279}[0], # Ballymoney
     category => 'Graffiti',
-    email => 'highways@example.com',
+    email => 'highways@example.net',
 }, {
     confirmed => 0,
     body_id => $body_ids{2636}, # Isle of Wight
@@ -422,7 +439,7 @@ for my $contact ( {
 }
 
 my %common = (
-    email => 'system_user@example.com',
+    email => 'system_user@example.net',
     name => 'Andrew Smith',
 );
 foreach my $test ( {
@@ -488,6 +505,9 @@ foreach my $test ( {
         body          => $body_ids{14279}[0],
         category      => 'Graffiti',
         longitude => -6.5,
+        # As Ballmoney contact has same domain as reporter, the From line will
+        # become a unique reply address and Reply-To will become the reporter
+        reply_to => 1,
     }, {
         %common,
         desc          => 'directs NI correctly, 2',
@@ -546,7 +566,12 @@ foreach my $test ( {
         if ( $test->{ email_count } ) {
             my $email = $mech->get_email;
             like $email->header('To'), $test->{ to }, 'to line looks correct';
-            is $email->header('From'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'from line looks correct';
+            if ($test->{reply_to}) {
+                is $email->header('Reply-To'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'Reply-To line looks correct';
+                like $email->header('From'), qr/"$test->{name}" <fms-report-\d+-\w+\@example.org>/, 'from line looks correct';
+            } else {
+                is $email->header('From'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'from line looks correct';
+            }
             like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
             my $body = $mech->get_text_body_from_email($email);
             like $body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
@@ -654,7 +679,7 @@ subtest 'check can turn on report sent email alerts' => sub {
     my $email = $emails[0];
 
     like $email->header('To'),qr/City of Edinburgh Council/, 'to line looks correct';
-    is $email->header('From'), '"Test User" <system_user@example.com>', 'from line looks correct';
+    is $email->header('From'), '"Test User" <system_user@example.net>', 'from line looks correct';
     like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
     my $body = $mech->get_text_body_from_email($email);
     like $body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
@@ -772,6 +797,89 @@ subtest 'check duplicate reports' => sub {
     is $problem1->duplicate_of->title, $problem2->title, 'problem1 returns correct problem from duplicate_of';
     is scalar @{ $problem2->duplicates }, 1, 'problem2 has correct number of duplicates';
     is $problem2->duplicates->[0]->title, $problem1->title, 'problem2 includes problem1 in duplicates';
+};
+
+subtest 'generates a tokenised url for a user' => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $body_ids{2651}, 'TITLE');
+    my $url = $problem->tokenised_url($user);
+    (my $token = $url) =~ s/\/M\///g;
+
+    like $url, qr/\/M\//, 'problem generates tokenised url';
+
+    my $token_obj = FixMyStreet::App->model('DB::Token')->find( {
+        scope => 'email_sign_in', token => $token
+    } );
+    is $token, $token_obj->token, 'token is generated in database with correct scope';
+    is $token_obj->data->{r}, $problem->url, 'token has correct redirect data';
+};
+
+subtest 'stores params in a token' => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $body_ids{2651}, 'TITLE');
+    my $url = $problem->tokenised_url($user, { foo => 'bar', baz => 'boo'});
+    (my $token = $url) =~ s/\/M\///g;
+
+    my $token_obj = FixMyStreet::App->model('DB::Token')->find( {
+        scope => 'email_sign_in', token => $token
+    } );
+
+    is_deeply $token_obj->data->{p}, { foo => 'bar', baz => 'boo'}, 'token has correct params';
+};
+
+subtest 'get report time ago in appropriate format' => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $body_ids{2651}, 'TITLE');
+
+    $problem->update( {
+      confirmed => DateTime->now->subtract( minutes => 2)
+    } );
+    is $problem->time_ago, '2 minutes', 'problem returns time ago in minutes';
+
+    $problem->update( {
+      confirmed => DateTime->now->subtract( hours => 18)
+    } );
+    is $problem->time_ago, '18 hours', 'problem returns time ago in hours';
+
+    $problem->update( {
+      confirmed => DateTime->now->subtract( days => 4)
+    } );
+    is $problem->time_ago, '4 days', 'problem returns time ago in days';
+
+    $problem->update( {
+      confirmed => DateTime->now->subtract( weeks => 3 )
+    } );
+    is $problem->time_ago, '3 weeks', 'problem returns time ago in weeks';
+
+    $problem->update( {
+      confirmed => DateTime->now->subtract( months => 4 )
+    } );
+    is $problem->time_ago, '4 months', 'problem returns time ago in months';
+
+    $problem->update( {
+      confirmed => DateTime->now->subtract( years => 2 )
+    } );
+    is $problem->time_ago, '2 years', 'problem returns time ago in years';
+};
+
+subtest 'time ago works with other dates' => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $body_ids{2651}, 'TITLE');
+
+    $problem->update( {
+      lastupdate => DateTime->now->subtract( days => 4)
+    } );
+    is $problem->time_ago('lastupdate'), '4 days', 'problem returns last updated time ago in days';
+};
+
+subtest 'return how many days ago a problem was reported' => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $body_ids{2651}, 'TITLE');
+    $problem->update( {
+      confirmed => DateTime->now->subtract( weeks => 2  )
+    } );
+    is $problem->days_ago, 14, 'days_ago returns the amount of days';
+
+    $problem->update( {
+      lastupdate => DateTime->now->subtract( days => 4)
+    } );
+
+    is $problem->days_ago('lastupdate'), 4, 'days_ago allows other dates to be specified';
 };
 
 END {

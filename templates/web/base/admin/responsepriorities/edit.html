@@ -20,6 +20,16 @@
 
     <div class="admin-hint">
       <p>
+        [% loc('If this priority is passed to an external service (e.g. Exor/Confirm) enter the priority code to use with that service here.') %]
+      </p>
+    </div>
+    <p>
+        <strong>[% loc('External ID') %]:</strong>
+        <input type="text" name="external_id" class="form-control" size="30" value="[% rp.external_id | html %]">
+    </p>
+
+    <div class="admin-hint">
+      <p>
         [% loc('If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories.') %]
       </p>
     </div>

@@ -12,14 +12,13 @@
 <form>
 
 <hgroup>
-    <h2>Reports, Statistics and Actions for</h2>
-    <h1>[% council.name %]</h1>
+    [% tprintf(loc('<h2>Reports, Statistics and Actions for</h2> <h1>%s</h1>'), council.name) %]
 </hgroup>
 
 <div class="filters">
     <p>
-        <label for="ward">Ward:</label>
-        <select class="form-control" name="ward"><option value=''>All</option>
+        <label for="ward">[% loc('Ward:') %]</label>
+        <select class="form-control" name="ward"><option value=''>[% loc('All') %]</option>
             [% FOR w IN children.values.sort('name') %]
                 <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
             [% END %]
@@ -27,8 +26,8 @@
     </p>
 
     <p>
-        <label for="category">Report category:</label>
-        <select class="form-control" name="category"><option value=''>All</option>
+        <label for="category">[% loc('Category:') %]</label>
+        <select class="form-control" name="category"><option value=''>[% loc('All') %]</option>
             [% FOR cat_op IN category_options %]
                 <option value='[% cat_op | html %]'[% ' selected' IF category == cat_op %]>[% cat_op | html %]</option>
             [% END %]
@@ -36,7 +35,7 @@
     </p>
 
     <p>
-        <input type="submit" class="btn" value="Look up">
+        <input type="submit" class="btn" value="[% loc('Look up') %]">
     </p>
 
     <br clear="all" />
@@ -46,17 +45,17 @@
 <table width="100%" id="overview">
     <tr>
         <th>&nbsp;</th>
-        <th scope="col"><abbr title="Week To Date">WTD</abbr></th>
-        <th scope="col">Last 7 days</th>
-        <th scope="col">Last 4 weeks</th>
-        <th scope="col">YTD</th>
+        <th scope="col"><abbr title="[% loc('Week To Date') %]">[% loc('WTD', "Week to date") %]</abbr></th>
+        <th scope="col">[% loc('Last 7 days') %]</th>
+        <th scope="col">[% loc('Last 4 weeks') %]</th>
+        <th scope="col">[% loc('YTD', "Year to date") %]</th>
     </tr>
 
     [%
     rows = {
-        '0' => [ "total", "Total reports received" ]
-        '1' => [ "fixed - council", "Council has marked as fixed" ]
-        '2' => [ "fixed_user", "User has marked as fixed" ]
+        '0' => [ "total", loc("Total reports received") ]
+        '1' => [ "fixed - council", loc("Council has marked as fixed") ]
+        '2' => [ "fixed_user", loc("User has marked as fixed") ]
     };
     FOR row IN rows %]
     <tr id="[% row.value.0.replace('[^\w]+', '_' ) %]">
@@ -69,7 +68,7 @@
     [% END %]
 
     <tr class='subtotal' id="total_fixed">
-        <th scope="row">Total marked as fixed</th>
+        <th scope="row">[% loc('Total marked as fixed') %]</th>
         <td>[% problems.wtd.${"fixed - council"} + problems.wtd.fixed_user %]</td>
         <td>[% problems.week.${"fixed - council"} + problems.week.fixed_user %]</td>
         <td>[% problems.weeks.${"fixed - council"} + problems.weeks.fixed_user %]</td>
@@ -78,10 +77,10 @@
 
     [%
     rows = {
-        '0' => [ "in progress", "Council has marked as in progress" ]
-        '1' => [ "action scheduled", "Council has marked as planned" ]
-        '2' => [ "investigating", "Council has marked as investigating" ]
-        '3' => [ "closed", "Council has marked as closed" ]
+        '0' => [ "in progress", loc("Council has marked as in progress") ]
+        '1' => [ "action scheduled", loc("Council has marked as planned") ]
+        '2' => [ "investigating", loc("Council has marked as investigating") ]
+        '3' => [ "closed", loc("Council has marked as closed") ]
     };
     wtd = 0, week = 0, weeks = 0, ytd = 0;
     FOR row IN rows %]
@@ -95,7 +94,7 @@
     [% END %]
 
     <tr class='subtotal' id="marked">
-        <th scope="row">Total marked</th>
+        <th scope="row">[% loc('Total marked') %]</th>
         <td>[% problems.wtd.${"in progress"} + problems.wtd.${"action scheduled"} +
             problems.wtd.investigating + problems.wtd.closed %]</td>
         <td>[% problems.week.${"in progress"} + problems.week.${"action scheduled"} +
@@ -107,7 +106,7 @@
     </tr>
 
     <tr id="avg_fixed">
-        <th scope="row">Average time to council marking fixed (days)</th>
+        <th scope="row">[% loc('Average time to council marking fixed (days)') %]</th>
         <td>[% problems.wtd.time_to_fix %]</td>
         <td>[% problems.week.time_to_fix %]</td>
         <td>[% problems.weeks.time_to_fix %]</td>
@@ -115,7 +114,7 @@
     </tr>
 
     <tr id="avg_marked">
-        <th scope="row">Average time to first council state change (days)</th>
+        <th scope="row">[% loc('Average time to first council state change (days)') %]</th>
         <td>[% problems.wtd.time_to_mark %]</td>
         <td>[% problems.week.time_to_mark %]</td>
         <td>[% problems.weeks.time_to_mark %]</td>
@@ -123,7 +122,7 @@
     </tr>
 
     <tr class='subtotal' id="not_marked">
-        <th scope="row">Total not marked</th>
+        <th scope="row">[% loc('Total not marked') %]</th>
         <td>[% problems.wtd.not_marked %]</td>
         <td>[% problems.week.not_marked %]</td>
         <td>[% problems.weeks.not_marked %]</td>
@@ -132,25 +131,25 @@
 
 </table>
 
-<h2>Reports</h2>
+<h2>[% loc('Reports') %]</h2>
 
                 </select>
-<p>Report state: <select class="form-control" name="state">
-<option value=''>All</option>
+<p>[% loc('Report state:') %] <select class="form-control" name="state">
+<option value=''>[% loc('All') %]</option>
                 [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
                 loc('Investigating')], ['action scheduled', loc('Planned')], ['in progress',
                 loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')] ] %]
                     <option [% 'selected ' IF state.0 == q_state %] value="[% state.0 %]">[% state.1 %]</option>
                 [% END %]
 </select>
-<input type="submit" class="btn" value="Look up">
-<a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">Export as CSV</a>
+<input type="submit" class="btn" value="[% loc('Look up') %]">
+<a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">[% loc('Export as CSV') %]</a>
 
 <table width="100%" id="reports">
     <tr>
-        <th scope="col">Less than 7 days old</th>
-        <th scope="col">7-14 days old</th>
-        <th scope="col">14-30 days old</th>
+        <th scope="col">[% loc('Less than 7 days old') %]</th>
+        <th scope="col">[% loc('7-14 days old') %]</th>
+        <th scope="col">[% loc('14-30 days old') %]</th>
     </tr>
     <tr>
         <td width="34%"><ul>[% INCLUDE list, list = lists.1 %]</ul></td>

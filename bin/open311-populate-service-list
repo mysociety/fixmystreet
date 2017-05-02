@@ -23,7 +23,8 @@ my ($opt, $usage) = describe_options(
 print($usage->text), exit if $opt->help;
 
 my $bodies = FixMyStreet::DB->resultset('Body')->search( {
-    id => { '!=', 2237 }, # XXX Until Oxfordshire does do so
+    # Until Oxfordshire does, and Bristol stops erroring
+    name => { -not_in => [ 'Oxfordshire County Council', 'Bristol City Council' ] },
     send_method => 'Open311'
 } );
 my $verbose = 0;

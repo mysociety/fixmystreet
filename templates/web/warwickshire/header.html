@@ -172,25 +172,7 @@
         <div class="container navbar-container">
             <div class="navbar" id="mega-menu-navbar">
                 <div class="navbar-inner">
-                    <ul id="mega-menu" class="menu nav">
-                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
-                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
-                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-                            %]
-                            <!--
-                            <li><[% IF c.req.uri.path == '/reports/Warwickshire' %]span[% ELSE %]a href="/reports/Warwickshire"[% END %]>
-                            [% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]>
-                            </li>
-                            -->
-                            
-                            <li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
-                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>[%
-                        %]<li class="nav-menu__item--privacy"><[% IF c.req.uri.path == '/privacy' %]span[% ELSE %]a href="/privacy"[% END
-                            %]>[% loc("Privacy") %]</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li>
-                    </ul>
+                    [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area hide_mysoc_link=1 hide_all_reports_link=1 omit_wrapper=1 ul_class="menu nav" ul_id="mega-menu" %]
                 </div>
             </div>
         </div>

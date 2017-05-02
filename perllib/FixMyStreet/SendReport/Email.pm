@@ -2,6 +2,7 @@ package FixMyStreet::SendReport::Email;
 
 use Moo;
 use FixMyStreet::Email;
+use Utils::Email;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
@@ -28,13 +29,6 @@ sub build_recipient_list {
             $self->unconfirmed_notes->{$body_email}{$row->category} = $note;
         }
 
-        my $body_name = $body->name;
-        # see something uses council areas but doesn't send to councils so just use a
-        # generic name here to minimise confusion
-        if ( $row->cobrand eq 'seesomething' ) {
-            $body_name = 'See Something, Say Something';
-        }
-
         my @emails;
         # allow multiple emails per contact
         if ( $body_email =~ /,/ ) {
@@ -43,7 +37,7 @@ sub build_recipient_list {
             @emails = ( $body_email );
         }
         for my $email ( @emails ) {
-            push @{ $self->to }, [ $email, $body_name ];
+            push @{ $self->to }, [ $email, $body->name ];
         }
     }
 
@@ -84,16 +78,14 @@ sub send {
         From => $self->send_from( $row ),
     };
 
-    $cobrand->munge_sendreport_params($row, $h, $params) if $cobrand->can('munge_sendreport_params');
+    $cobrand->call_hook(munge_sendreport_params => $row, $h, $params);
 
     $params->{Bcc} = $self->bcc if @{$self->bcc};
 
-    my $sender = sprintf('<fms-%s@%s>',
-        FixMyStreet::Email::generate_verp_token('report', $row->id),
-        FixMyStreet->config('EMAIL_DOMAIN')
-    );
+    my $sender = FixMyStreet::Email::unique_verp_id('report', $row->id);
 
-    if (FixMyStreet::Email::test_dmarc($params->{From}[0])) {
+    if (FixMyStreet::Email::test_dmarc($params->{From}[0])
+      || Utils::Email::same_domain($params->{From}, $params->{To})) {
         $params->{'Reply-To'} = [ $params->{From} ];
         $params->{From} = [ $sender, $params->{From}[1] ];
     }

@@ -46,10 +46,31 @@
         map_map: '[% loc('Map') | replace("'", "\\'") %]',
         map_satellite: '[% loc('Satellite') | replace("'", "\\'") %]',
 
+        expand_map: '[% loc('Expand map') | replace("'", "\\'") %]',
+        collapse_map: '[% loc('Collapse map') | replace("'", "\\'") %]',
+
         permalink: '[% loc('Permalink') | replace("'", "\\'") %]',
 
         upload_max_files_exceeded: '[% loc ('Whoa there Testino! Three photos are enough.') | replace("'", "\\'") %]',
         upload_default_message: '[% loc ('Drag and drop photos here or <u>click to upload</u>') | replace("'", "\\'") %]',
         upload_cancel_confirmation: '[% loc ('Are you sure you want to cancel this upload?') | replace("'", "\\'") %]',
-        upload_invalid_file_type: '[% loc ('Please upload an image only') | replace("'", "\\'") %]'
+        upload_invalid_file_type: '[% loc ('Please upload an image only') | replace("'", "\\'") %]',
+
+        login_with_email: '[% loc('Log in with email') | replace("'", "\\'") %]',
+
+        offline: {
+            your_reports: '[% loc('Your offline reports') | replace("'", "\\'") %]',
+            update_saved: '[% loc('Your update has been saved offline for submission when back online.') | replace("'", "\\'") %]',
+            update_data_saved: '[% loc('Offline update data saved') | replace("'", "\\'") %]',
+            clear_data: '[% loc('Clear offline data') | replace("'", "\\'") %]',
+            are_you_sure: '[% loc('Are you sure?') | replace("'", "\\'") %]',
+            data_cleared: '[% loc('Offline data cleared') | replace("'", "\\'") %]',
+            reports_saved: '[% loc('Reports saved offline.') | replace("'", "\\'") %]',
+            saving_reports: '[% loc('Saving reports offline', 'This is followed by a progress count, e.g. 3/5') | replace("'", "\\'") %]',
+            you_are_offline: '[% loc('You are offline') | replace("'", "\\'") %]',
+            N_saved: '[% loc('<span>%s</span> saved.') | replace("'", "\\'") %]',
+            saved_to_submit: '[% loc('You have <a id="oFN" href=""><span>%s</span> saved to submit</a>.') | replace("'", "\\'") %]',
+            update_single: '[% loc('update') | replace("'", "\\'") %]',
+            update_plural: '[% loc('updates') | replace("'", "\\'") %]'
+        }
     };

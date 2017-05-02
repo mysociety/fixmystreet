@@ -20,14 +20,14 @@ has returns_email => (
 sub dispatch_request {
     my $self = shift;
 
-    sub (GET + /v2.2/dialog/oauth + ?*) {
+    sub (GET + /v2.8/dialog/oauth + ?*) {
         my ($self) = @_;
         return [ 200, [ 'Content-Type' => 'text/html' ], [ 'FB login page' ] ];
     },
 
-    sub (GET + /v2.2/oauth/access_token + ?*) {
+    sub (GET + /v2.8/oauth/access_token + ?*) {
         my ($self) = @_;
-        return [ 200, [ 'Content-Type' => 'text/plain' ], [ 'access_token=access_token&expires=never' ] ];
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ '{"access_token": "access_token"}' ] ];
     },
 
     sub (GET + /me + ?fields=) {

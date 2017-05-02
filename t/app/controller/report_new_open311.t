@@ -12,7 +12,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2651, 'City of Edinburgh Council');
+my $body = $mech->create_body_ok(2245, 'Wiltshire Council');
 $body->update({
     endpoint => 'http://example.com/open311',
     jurisdiction => 'mySociety',
@@ -27,7 +27,7 @@ my $contact1 = $mech->create_contact_ok(
     extra => [ { description => 'Lamppost number', code => 'number', required => 'True' },
                { description => 'Lamppost type', code => 'type', required => 'False', values =>
                    { value => [ { name => ['Gas'], key => ['old'] }, { name => [ 'Yellow' ], key => [ 'modern' ] } ] }
-               } 
+               }
              ],
 );
 my $contact1b = $mech->create_contact_ok(
@@ -117,7 +117,7 @@ foreach my $test (
         # submit initial pc form
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
                 "submit location" );
@@ -139,7 +139,6 @@ foreach my $test (
         my $new_values = {
             %{ $test->{fields} },     # values added to form
             %{ $test->{changes} },    # changes we expect
-            gender => undef,
         };
         is_deeply $mech->visible_form_values, $new_values,
           "values correctly changed";
@@ -159,7 +158,7 @@ foreach my $test (
         };
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => $new_values } );
         };

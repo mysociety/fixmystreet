@@ -117,20 +117,8 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
     [% INCLUDE 'admin/state_groups_select.html' %]
 </li>
 <li><label class="inline-text" for="category">[% loc('Category:') %]</label>
-<select class="form-control" name="category" id="category">
-  [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
-  <optgroup label="[% loc('Existing category') %]">
-    <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
-  </optgroup>
-  [% END %]
-  [% IF categories.size %]
-    <optgroup label="[% loc('Available categories') %]">
-      [% FOREACH cat IN categories %]
-        <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
-      [% END %]
-    </optgroup>
-  [% END %]
-</select></li>
+    [% INCLUDE 'admin/report-category.html' %]
+</li>
 <li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
 <select class="form-control" name="anonymous"  id="anonymous">
 <option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>

@@ -283,11 +283,7 @@ sub _send_aggregated_alert_email(%) {
     } );
     $data{unsubscribe_url} = $cobrand->base_url( $data{cobrand_data} ) . '/A/' . $token->token;
 
-    my $sender = sprintf('<fms-%s@%s>',
-        FixMyStreet::Email::generate_verp_token('alert', $data{alert_id}),
-        FixMyStreet->config('EMAIL_DOMAIN')
-    );
-
+    my $sender = FixMyStreet::Email::unique_verp_id('alert', $data{alert_id});
     my $result = FixMyStreet::Email::send_cron(
         $data{schema},
         "$data{template}.txt",

@@ -76,7 +76,7 @@ sub users_restriction {
 
     my $or_query = [
         from_body => $self->council_id,
-        id => [ { -in => $problem_user_ids }, { -in => $update_user_ids } ],
+        'me.id' => [ { -in => $problem_user_ids }, { -in => $update_user_ids } ],
     ];
     if ($self->can('admin_user_domain')) {
         my $domain = $self->admin_user_domain;

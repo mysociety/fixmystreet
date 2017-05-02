@@ -1,0 +1,35 @@
+[% INCLUDE 'admin/header.html' title=tprintf(('Defect Types for %s'), body.name) -%]
+
+<table>
+    <thead>
+    <tr>
+        <th>  [% ('Name') %] </th>
+        <th>  [% ('Description') %] </th>
+        <th>  [% ('Categories') %] </th>
+        <th>  &nbsp; </th>
+    </tr>
+    </thead>
+    <tbody>
+      [% PROCESS 'defect_type/format.html' %]
+      [% FOR d IN defect_types %]
+          <tr>
+              <td>  [% defect_type_format(defect_type=d) %] </td>
+              <td>  [% d.description | html %] </td>
+              <td>
+                [% UNLESS d.contacts.size %]
+                  <em>[% ('All categories') %]</em>
+                [% ELSE %]
+                  [% FOR contact IN d.contacts %]
+                    [% contact.category %][% ',' UNLESS loop.last %]
+                  [% END %]
+                [% END %]
+              </td>
+              <td> <a href="[% c.uri_for('', body.id, d.id) %]" class="btn">[% ('Edit') %]</a> </td>
+          </tr>
+      [% END %]
+    </tbody>
+</table>
+
+<a href="[% c.uri_for('', body.id, 'new') %]" class="btn">[% ('New defect type') %]</a>
+
+[% INCLUDE 'admin/footer.html' %]

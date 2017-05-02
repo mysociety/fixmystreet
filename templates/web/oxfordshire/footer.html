@@ -11,24 +11,10 @@
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
                     <ul class="nav-menu nav-menu--mysoc">
-                        <li><a id="mysoc-logo" href="https://www.fixmystreet.com/council">Powered by <img src="/cobrands/oxfordshire/images/fms-logo-105x20.png" alt="FixMyStreet"></a></li>
+                        <li><a id="mysoc-logo" href="https://www.fixmystreet.com/about/council">Powered by <img src="/cobrands/oxfordshire/images/fms-logo-105x20.png" alt="FixMyStreet"></a></li>
                     </ul>
 
-                    <ul class="nav-menu nav-menu--main">
-                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
-                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
-                            %]>[% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-                        %][% IF c.user_exists AND c.user.has_body_permission_to('planned_reports') %]<li>
-                            <[% IF c.req.uri.path == '/my/planned' %]span[% ELSE %]a href="/my/planned"[% END
-                             %]>[% loc('Shortlist') %]</[% c.req.uri.path == '/my/planned' ? 'span' : 'a' %]></li>[%
-                        %][% END %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports[% IF c.user_exists AND c.user.categories.size %]?filter_category=[% c.user.categories.join(",") | uri | html %][% END %]"[% END
-                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
-                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-                    </ul>
+                    [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area hide_mysoc_link=1 omit_wrapper=1 hide_privacy_link=1 %]
                 </div>
             </div>
         </div>

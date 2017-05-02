@@ -137,7 +137,7 @@ sub ward : Path : Args(2) {
     } )->all;
     @categories = map { $_->category } @categories;
     $c->stash->{filter_categories} = \@categories;
-    $c->stash->{filter_category} = [ $c->get_param_list('filter_category', 1) ];
+    $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
 
     my $pins = $c->stash->{pins};
 
@@ -428,6 +428,12 @@ sub load_and_group_problems : Private {
         $problems = $problems->to_body($c->stash->{body});
     } elsif ($c->stash->{body}) {
         $problems = $problems->to_body($c->stash->{body});
+    }
+
+    if (my $bbox = $c->get_param('bbox')) {
+        my ($min_lon, $min_lat, $max_lon, $max_lat) = split /,/, $bbox;
+        $where->{latitude} = { '>=', $min_lat, '<', $max_lat };
+        $where->{longitude} = { '>=', $min_lon, '<', $max_lon };
     }
 
     $problems = $problems->search(

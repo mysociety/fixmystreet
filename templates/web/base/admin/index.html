@@ -20,14 +20,18 @@ and to receive notices of updates.
   </p>
 [% END %]
 
+<div class="admin-index-search form-txt-submit-box clearfix">
+
 <form method="get" action="[% c.uri_for('reports') %]" accept-charset="utf-8">
     <p><label for="search_reports">[% loc('Search Reports') %]</label>
         <input type="text" class="form-control" name="search"  size="30" id="search_reports" value="[% searched | html %]">
+        <input type="submit" class="btn" value="[% loc('Go') %]">
 </form>
 
 <form method="get" action="[% c.uri_for('users') %]" accept-charset="utf-8">
     <p><label for="search_users">[% loc('Search Users') %]</label>
         <input type="text" class="form-control" name="search"  size="30" id="search_users" value="[% searched | html %]">
+        <input type="submit" class="btn" value="[% loc('Go') %]">
 </form>
 
 [% IF c.user.is_superuser %]
@@ -45,6 +49,8 @@ and to receive notices of updates.
   <input type="submit" class="btn" value="[% loc('Go') %]">
   </form>
 [% END %]
+
+</div>
 
 [% IF unsent_reports.size %]
 <h2>[% loc('Reports waiting to be sent') %]</h2>

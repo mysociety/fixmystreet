@@ -12,9 +12,15 @@
         </p>
         <p>
           [% SET local_coords = problem.local_coords; %]
-          <strong>[% loc('Easting/Northing:') %]</strong>
-          <span id="problem_easting">[% local_coords.0 IF local_coords %]</span>,
-          <span id="problem_northing">[% local_coords.1 IF local_coords %]</span>
+          [% IF local_coords %]
+              <strong>[% loc('Easting/Northing:') %]</strong>
+              <span id="problem_easting">[% local_coords.0 %]</span>,
+              <span id="problem_northing">[% local_coords.1 %]</span>
+          [% ELSE %]
+              <strong>[% loc('Latitude/Longitude:') %]</strong>
+              <span id="problem_latitude">[% problem.latitude %]</span>
+              <span id="problem_longitude">[% problem.longitude %]</span>,
+          [% END %]
           <input type="hidden" name="longitude" value="[% problem.longitude %]">
           <input type="hidden" name="latitude" value="[% problem.latitude %]">
         </p>
@@ -30,21 +36,7 @@
       <div class="inspect-section">
         <p>
           <label for="category">[% loc('Category') %]</label>
-            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-          <select name="category" id="category" class="form-control">
-            [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
-            <optgroup label="[% loc('Existing category') %]">
-              <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
-            </optgroup>
-            [% END %]
-            [% IF categories.size %]
-              <optgroup label="[% loc('Available categories') %]">
-                [% FOREACH cat IN categories %]
-                  <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
-                [% END %]
-              </optgroup>
-            [% END %]
-          </select>
+          [% INCLUDE 'admin/report-category.html' %]
         </p>
 
         [% FOREACH category IN categories %]
@@ -62,6 +54,17 @@
         [% END %]
 
         [% IF permissions.report_inspect %]
+          [% PROCESS 'defect_type/format.html' %]
+          <p>
+            <label for="defect_type">[% loc('Defect type') %]</label>
+            <select id="defect_type" name="defect_type" class="form-control">
+              <option value=""[% ' selected' IF NOT problem.defect_type %]>-</option>
+              [% FOREACH defect_type IN problem.defect_types %]
+                <option[% ' selected' IF problem.defect_type_id == defect_type.id %] value="[% defect_type.id %]">[% defect_type_format() %]</option>
+              [% END %]
+            </select>
+          </p>
+
           <p>
             <label for="state">[% loc('State') %]</label>
             [% INCLUDE 'report/inspect/state_groups_select.html' %]
@@ -127,7 +130,7 @@
         [% IF permissions.report_inspect %]
           <p>
             <label class="label-containing-checkbox">
-              <input type="checkbox" name="save_inspected" value="1" class="js-toggle-public-update" checked>
+              <input type="checkbox" name="include_update" value="1" class="js-toggle-public-update" checked>
               [% loc('Save with a public update') %]
             </label>
           </p>

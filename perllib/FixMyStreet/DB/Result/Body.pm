@@ -75,6 +75,12 @@ __PACKAGE__->has_many(
   { "foreign.body_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "defect_types",
+  "FixMyStreet::DB::Result::DefectType",
+  { "foreign.body_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 __PACKAGE__->belongs_to(
   "parent",
   "FixMyStreet::DB::Result::Body",
@@ -112,8 +118,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-06 15:33:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZuzscnLqcx0k512cTZ/kdg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-02-13 15:11:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BOJANVwg3kR/1VjDq0LykA
 
 sub url {
     my ( $self, $c, $args ) = @_;
@@ -125,6 +131,21 @@ sub areas {
     my $self = shift;
     my %ids = map { $_->area_id => 1 } $self->body_areas->all;
     return \%ids;
+}
+
+=head2 get_cobrand_handler
+
+Get a cobrand object for this body, if there is one.
+
+e.g.
+    * if the problem was sent to Bromley it will return ::Bromley
+    * if the problem was sent to Camden it will return nothing
+
+=cut
+
+sub get_cobrand_handler {
+    my $self = shift;
+    return FixMyStreet::Cobrand->body_handler($self->areas);
 }
 
 1;

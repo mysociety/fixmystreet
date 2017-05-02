@@ -99,7 +99,7 @@ sub truncate_coordinate {
 Strip leading and trailing white space from a string. Also reduces all
 white space to a single space.
 
-Trim 
+Trim
 
 =cut
 
@@ -195,7 +195,28 @@ sub prettify_dt {
 # argument is duration in seconds, rounds to the nearest minute
 sub prettify_duration {
     my ($s, $nearest) = @_;
-    if ($nearest eq 'week') {
+
+    unless ( defined $nearest ) {
+        if ($s < 3600) {
+            $nearest = 'minute';
+        } elsif ($s < 3600*24) {
+            $nearest = 'hour';
+        } elsif ($s < 3600*24*7) {
+            $nearest = 'day';
+        } elsif ($s < 3600*24*7*4) {
+            $nearest = 'week';
+        } elsif ($s < 3600*24*7*4*12) {
+            $nearest = 'month';
+        } else {
+            $nearest = 'year';
+        }
+    }
+
+    if ($nearest eq 'year') {
+        $s = int(($s+60*60*24*3.5)/60/60/24/7/4/12)*60*60*24*7*4*12;
+    } elsif ($nearest eq 'month') {
+        $s = int(($s+60*60*24*3.5)/60/60/24/7/4)*60*60*24*7*4;
+    } elsif ($nearest eq 'week') {
         $s = int(($s+60*60*24*3.5)/60/60/24/7)*60*60*24*7;
     } elsif ($nearest eq 'day') {
         $s = int(($s+60*60*12)/60/60/24)*60*60*24;
@@ -206,6 +227,8 @@ sub prettify_duration {
         return _('less than a minute') if $s == 0;
     }
     my @out = ();
+    _part(\$s, 60*60*24*7*4*12, \@out);
+    _part(\$s, 60*60*24*7*4, \@out);
     _part(\$s, 60*60*24*7, \@out);
     _part(\$s, 60*60*24, \@out);
     _part(\$s, 60*60, \@out);
@@ -217,7 +240,11 @@ sub _part {
     if ($$s >= $m) {
         my $i = int($$s / $m);
         my $str;
-        if ($m == 60*60*24*7) {
+        if ($m == 60*60*24*7*4*12) {
+            $str = mySociety::Locale::nget("%d year", "%d years", $i);
+        } elsif ($m == 60*60*24*7*4) {
+            $str = mySociety::Locale::nget("%d month", "%d months", $i);
+        } elsif ($m == 60*60*24*7) {
             $str = mySociety::Locale::nget("%d week", "%d weeks", $i);
         } elsif ($m == 60*60*24) {
             $str = mySociety::Locale::nget("%d day", "%d days", $i);

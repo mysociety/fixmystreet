@@ -1,9 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use LWP::Protocol::PSGI;
 
-use t::Mock::MapIt;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -148,7 +146,7 @@ subtest 'check summary counts' => sub {
 
 # This override is wrapped around ALL the /admin/body tests
 FixMyStreet::override_config {
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
     MAPIT_TYPES => [ 'UTA' ],
     BASE_URL => 'http://www.example.org',
 }, sub {
@@ -218,6 +216,17 @@ subtest 'check contact editing' => sub {
     $mech->content_contains( 'test2@example.com' );
     $mech->content_contains( '<td>test2 note' );
     $mech->content_contains( 'Private:&nbsp;No' );
+
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        email    => 'test2@example.com, test3@example.com',
+        note     => 'test3 note',
+    } } );
+
+    $mech->content_contains( 'test2@example.com,test3@example.com' );
+
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->content_contains( '<td><strong>test2@example.com,test3@example.com' );
 
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
@@ -580,7 +589,6 @@ foreach my $test (
 }
 
 FixMyStreet::override_config {
-    MAPIT_URL => 'http://mapit.mysociety.org/',
     ALLOWED_COBRANDS => 'fixmystreet',
 }, sub {
 
@@ -1204,7 +1212,6 @@ my %default_perms = (
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.uk');
     for my $test (
         {
             desc => 'edit user name',

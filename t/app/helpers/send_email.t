@@ -19,7 +19,6 @@ use Test::LongString;
 
 use Catalyst::Test 'FixMyStreet::App';
 
-use Email::Send::Test;
 use Path::Tiny;
 
 use FixMyStreet::TestMech;
@@ -31,7 +30,7 @@ my $c = ctx_request("/");
 $c->stash->{foo} = 'bar';
 
 # clear the email queue
-Email::Send::Test->clear;
+$mech->clear_emails_ok;
 
 # send the test email
 FixMyStreet::override_config {
@@ -42,7 +41,7 @@ FixMyStreet::override_config {
 };
 
 # check it got templated and sent correctly
-my @emails = Email::Send::Test->emails;
+my @emails = $mech->get_email;
 is scalar(@emails), 1, "caught one email";
 
 # Get the email, check it has a date and then strip it out

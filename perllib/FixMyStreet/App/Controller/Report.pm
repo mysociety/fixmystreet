@@ -275,7 +275,8 @@ sub delete :Local :Args(1) {
     $p->user->update_reputation(-1);
 
     $c->model('DB::AdminLog')->create( {
-        admin_user => $c->user->email,
+        user => $c->user->obj,
+        admin_user => $c->user->from_body->name,
         object_type => 'problem',
         action => 'state_change',
         object_id => $id,
@@ -305,7 +306,7 @@ sub inspect : Private {
     my $problem = $c->stash->{problem};
     my $permissions = $c->stash->{_permissions};
 
-    $c->stash->{categories} = $c->forward('/admin/categories_for_point');
+    $c->forward('/admin/categories_for_point');
     $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
     my %category_body = map { $_->category => $_->body_id } map { $_->contacts->all } values %{$problem->bodies};
@@ -343,12 +344,15 @@ sub inspect : Private {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 
-            if ( $c->get_param('save_inspected') ) {
+            if ( $c->get_param('defect_type') ) {
+                $problem->defect_type($problem->defect_types->find($c->get_param('defect_type')));
+            } else {
+                $problem->defect_type(undef);
+            }
+
+            if ( $c->get_param('include_update') ) {
                 $update_text = Utils::cleanup_text( $c->get_param('public_update'), { allow_multiline => 1 } );
-                if ($update_text) {
-                    $problem->set_extra_metadata( inspected => 1 );
-                    $reputation_change = 1;
-                } else {
+                if (!$update_text) {
                     $valid = 0;
                     $c->stash->{errors} ||= [];
                     push @{ $c->stash->{errors} }, _('Please provide a public update for this report.');
@@ -374,6 +378,16 @@ sub inspect : Private {
             }
             if ( $problem->state ne $old_state ) {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
+
+                # If the state has been changed by an inspector, consider the
+                # report to be inspected.
+                unless ($problem->get_extra_metadata('inspected')) {
+                    $problem->set_extra_metadata( inspected => 1 );
+                    $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
+                    my $state = $problem->state;
+                    $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
+                    $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
+                }
             }
         }
 
@@ -412,12 +426,13 @@ sub inspect : Private {
                 if (my $saved_at = $c->get_param('saved_at')) {
                     $timestamp = DateTime->from_epoch( epoch => $saved_at );
                 }
+                my $name = $c->user->from_body ? $c->user->from_body->name : $c->user->name;
                 $problem->add_to_comments( {
                     text => $update_text,
                     created => $timestamp,
                     confirmed => $timestamp,
                     user_id => $c->user->id,
-                    name => $c->user->from_body->name,
+                    name => $name,
                     state => 'confirmed',
                     mark_fixed => 0,
                     anonymous => 0,

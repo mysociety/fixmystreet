@@ -14,7 +14,7 @@ is $problem->user->latest_anonymity, 0, "User's last report was not anonymous";
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->get_ok('/around?pc=sw1a1aa');
     $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
@@ -32,7 +32,7 @@ is $problem->user->latest_anonymity, 1, "User's last update was anonymous";
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->get_ok('/around?pc=sw1a1aa');
     $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );

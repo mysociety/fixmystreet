@@ -1,5 +1,7 @@
 use Test::More;
 use FixMyStreet::TestMech;
+use LWP::Protocol::PSGI;
+use t::Mock::MapItZurich;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -7,10 +9,12 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+LWP::Protocol::PSGI->register(t::Mock::MapItZurich->to_psgi_app, host => 'mapit.zurich');
+
 subtest "Check signed up for alert when logged in" => sub {
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://global.mapit.mysociety.org',
-        MAPIT_TYPES => [ 'O06' ],
+        MAPIT_URL => 'http://mapit.zurich',
+        MAPIT_TYPES => [ 'O08' ],
     }, sub {
         $mech->log_in_ok('user@example.org');
         $mech->post_ok( '/report/new/mobile', {

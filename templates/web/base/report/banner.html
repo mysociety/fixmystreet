@@ -14,7 +14,6 @@
 [% IF problem.is_closed %]
     [% INCLUDE banner, id = 'closed', text = loc('Closed') %]
 [% END %]
-[% states = [ 'investigating', 'in progress', 'planned', 'action scheduled' ];
-   IF states.grep(problem.state).size %]
+[% IF problem.is_in_progress %]
     [% INCLUDE banner, id = 'progress', text = loc('In progress') %]
 [% END %]

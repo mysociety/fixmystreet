@@ -214,16 +214,6 @@ DISTRIBUTIONS
       Storable 0
       String::CRC32 0
       Time::HiRes 0
-  Carp-1.26
-    pathname: Z/ZE/ZEFRAM/Carp-1.26.tar.gz
-    provides:
-      Carp 1.26
-      Carp::Heavy 1.26
-    requirements:
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      IPC::Open3 1.0103
-      Test::More 0
   Capture-Tiny-0.40
     pathname: D/DA/DAGOLDEN/Capture-Tiny-0.40.tar.gz
     provides:
@@ -237,6 +227,18 @@ DISTRIBUTIONS
       IO::Handle 0
       Scalar::Util 0
       perl 5.006
+      strict 0
+      warnings 0
+  Carp-1.26
+    pathname: Z/ZE/ZEFRAM/Carp-1.26.tar.gz
+    provides:
+      Carp 1.26
+      Carp::Heavy 1.26
+    requirements:
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      IPC::Open3 1.0103
+      Test::More 0
       strict 0
       warnings 0
   Carp-Assert-0.20
@@ -2445,19 +2447,17 @@ DISTRIBUTIONS
       ExtUtils::CBuilder 0.27
       ExtUtils::MakeMaker 0
       perl 5.006
-  Devel-StackTrace-1.30
-    pathname: D/DR/DROLSKY/Devel-StackTrace-1.30.tar.gz
+  Devel-StackTrace-2.02
+    pathname: D/DR/DROLSKY/Devel-StackTrace-2.02.tar.gz
     provides:
-      Devel::StackTrace 1.30
-      Devel::StackTrace::Frame 1.30
+      Devel::StackTrace 2.02
+      Devel::StackTrace::Frame 2.02
     requirements:
-      ExtUtils::MakeMaker 6.30
+      ExtUtils::MakeMaker 0
       File::Spec 0
       Scalar::Util 0
-      Test::More 0.88
-      base 0
-      bytes 0
       overload 0
+      perl 5.006
       strict 0
       warnings 0
   Devel-StackTrace-AsHTML-0.14
@@ -2508,6 +2508,26 @@ DISTRIBUTIONS
       List::MoreUtils 0.12
       Module::Runtime 0
       base 0
+      strict 0
+      warnings 0
+  Email-Abstract-3.008
+    pathname: R/RJ/RJBS/Email-Abstract-3.008.tar.gz
+    provides:
+      Email::Abstract 3.008
+      Email::Abstract::EmailMIME 3.008
+      Email::Abstract::EmailSimple 3.008
+      Email::Abstract::MIMEEntity 3.008
+      Email::Abstract::MailInternet 3.008
+      Email::Abstract::MailMessage 3.008
+      Email::Abstract::Plugin 3.008
+    requirements:
+      Carp 0
+      Email::Simple 1.998
+      ExtUtils::MakeMaker 0
+      MRO::Compat 0
+      Module::Pluggable 1.5
+      Scalar::Util 0
+      perl 5.006
       strict 0
       warnings 0
   Email-Address-1.898
@@ -2582,25 +2602,61 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Email-Send-2.198
-    pathname: R/RJ/RJBS/Email-Send-2.198.tar.gz
+  Email-Sender-1.300030
+    pathname: R/RJ/RJBS/Email-Sender-1.300030.tar.gz
     provides:
-      Email::Send 2.198
-      Email::Send::NNTP 2.198
-      Email::Send::Qmail 2.198
-      Email::Send::SMTP 2.198
-      Email::Send::Sendmail 2.198
-      Email::Send::Test 2.198
+      Email::Sender 1.300030
+      Email::Sender::Failure 1.300030
+      Email::Sender::Failure::Multi 1.300030
+      Email::Sender::Failure::Permanent 1.300030
+      Email::Sender::Failure::Temporary 1.300030
+      Email::Sender::Manual 1.300030
+      Email::Sender::Manual::QuickStart 1.300030
+      Email::Sender::Role::CommonSending 1.300030
+      Email::Sender::Role::HasMessage 1.300030
+      Email::Sender::Simple 1.300030
+      Email::Sender::Success 1.300030
+      Email::Sender::Success::Partial 1.300030
+      Email::Sender::Transport 1.300030
+      Email::Sender::Transport::DevNull 1.300030
+      Email::Sender::Transport::Failable 1.300030
+      Email::Sender::Transport::Maildir 1.300030
+      Email::Sender::Transport::Mbox 1.300030
+      Email::Sender::Transport::Print 1.300030
+      Email::Sender::Transport::SMTP 1.300030
+      Email::Sender::Transport::SMTP::Persistent 1.300030
+      Email::Sender::Transport::Sendmail 1.300030
+      Email::Sender::Transport::Test 1.300030
+      Email::Sender::Transport::Wrapper 1.300030
+      Email::Sender::Util 1.300030
     requirements:
-      Email::Address 1.80
-      Email::Simple 1.92
+      Carp 0
+      Email::Abstract 3.006
+      Email::Address 0
+      Email::Simple 1.998
       ExtUtils::MakeMaker 0
+      Fcntl 0
+      File::Basename 0
+      File::Path 2.06
       File::Spec 0
-      Module::Pluggable 2.97
-      Return::Value 1.28
-      Scalar::Util 1.02
-      Symbol 0
-      Test::More 0.47
+      IO::File 1.11
+      IO::Handle 0
+      List::Util 1.45
+      Module::Runtime 0
+      Moo 2.000000
+      Moo::Role 0
+      MooX::Types::MooseLike 0.15
+      MooX::Types::MooseLike::Base 0
+      Net::SMTP 3.07
+      Scalar::Util 0
+      Sub::Exporter 0
+      Sub::Exporter::Util 0
+      Sys::Hostname 0
+      Throwable::Error 0.200003
+      Try::Tiny 0
+      strict 0
+      utf8 0
+      warnings 0
   Email-Simple-2.102
     pathname: R/RJ/RJBS/Email-Simple-2.102.tar.gz
     provides:
@@ -3262,16 +3318,21 @@ DISTRIBUTIONS
       File::Temp 0
       Scalar::Util 0
       Test::More 0.88
-  IO-Socket-SSL-1.84
-    pathname: S/SU/SULLR/IO-Socket-SSL-1.84.tar.gz
+  IO-Socket-SSL-2.047
+    pathname: S/SU/SULLR/IO-Socket-SSL-2.047.tar.gz
     provides:
-      IO::Socket::SSL 1.84
-      IO::Socket::SSL::SSL_Context 1.84
-      IO::Socket::SSL::SSL_HANDLE 1.84
-      IO::Socket::SSL::Session_Cache 1.84
+      IO::Socket::SSL 2.047
+      IO::Socket::SSL::Intercept 2.014
+      IO::Socket::SSL::OCSP_Cache 2.047
+      IO::Socket::SSL::OCSP_Resolver 2.047
+      IO::Socket::SSL::PublicSuffix undef
+      IO::Socket::SSL::SSL_Context 2.047
+      IO::Socket::SSL::SSL_HANDLE 2.047
+      IO::Socket::SSL::Session_Cache 2.047
+      IO::Socket::SSL::Utils 2.014
     requirements:
       ExtUtils::MakeMaker 0
-      Net::SSLeay 1.21
+      Net::SSLeay 1.46
       Scalar::Util 0
   IO-String-1.08
     pathname: G/GA/GAAS/IO-String-1.08.tar.gz
@@ -3847,34 +3908,36 @@ DISTRIBUTIONS
       Test::More 0
       perl 5.008001
       version 0
-  Moo-1.003000
-    pathname: H/HA/HAARG/Moo-1.003000.tar.gz
+  Moo-2.003001
+    pathname: H/HA/HAARG/Moo-2.003001.tar.gz
     provides:
       Method::Generate::Accessor undef
       Method::Generate::BuildAll undef
       Method::Generate::Constructor undef
       Method::Generate::DemolishAll undef
-      Method::Inliner undef
-      Moo 1.003000
+      Moo 2.003001
       Moo::HandleMoose undef
       Moo::HandleMoose::FakeConstructor undef
       Moo::HandleMoose::FakeMetaClass undef
+      Moo::HandleMoose::_TypeMap undef
       Moo::Object undef
-      Moo::Role undef
+      Moo::Role 2.003001
       Moo::_Utils undef
       Moo::_mro undef
+      Moo::_strictures undef
       Moo::sification undef
-      Sub::Defer undef
-      Sub::Quote undef
       oo undef
     requirements:
       Class::Method::Modifiers 1.1
       Devel::GlobalDestruction 0.11
-      Dist::CheckConflicts 0.02
+      Exporter 5.57
       ExtUtils::MakeMaker 0
-      Module::Runtime 0.012
-      Role::Tiny 1.003
-      strictures 1.004003
+      Module::Runtime 0.014
+      Role::Tiny 2.000004
+      Scalar::Util 0
+      Sub::Defer 2.003001
+      Sub::Quote 2.003001
+      perl 5.006
   MooX-Types-MooseLike-0.29
     pathname: M/MA/MATEU/MooX-Types-MooseLike-0.29.tar.gz
     provides:
@@ -4310,11 +4373,11 @@ DISTRIBUTIONS
       Carp 0
       ExtUtils::MakeMaker 0
       Storable 0
-  Net-Facebook-Oauth2-0.09
-    pathname: M/MA/MAMOD/Net-Facebook-Oauth2-0.09.tar.gz
+  Net-Facebook-Oauth2-0.10
+    pathname: M/MA/MAMOD/Net-Facebook-Oauth2-0.10.tar.gz
     provides:
       MyApp::Controller::Facebook undef
-      Net::Facebook::Oauth2 0.09
+      Net::Facebook::Oauth2 0.10
     requirements:
       Carp 0
       ExtUtils::MakeMaker 0
@@ -4379,27 +4442,6 @@ DISTRIBUTIONS
       Test::More 0.66
       Test::Warn 0.21
       URI::Escape 3.28
-  Net-SMTP-SSL-1.03
-    pathname: R/RJ/RJBS/Net-SMTP-SSL-1.03.tar.gz
-    provides:
-      Net::SMTP::SSL 1.03
-    requirements:
-      ExtUtils::MakeMaker 0
-      IO::Socket::SSL 0
-      Net::SMTP 0
-      Test::More 0.47
-  Net-SMTP-TLS-0.12
-    pathname: A/AW/AWESTHOLM/Net-SMTP-TLS-0.12.tar.gz
-    provides:
-      Net::SMTP::TLS 0.12
-    requirements:
-      Digest::HMAC_MD5 0
-      ExtUtils::MakeMaker 0
-      IO::Socket::INET 0
-      IO::Socket::SSL 0
-      MIME::Base64 0
-      Net::SSLeay 0
-      Test::More 0
   Net-SSLeay-1.52
     pathname: M/MI/MIKEM/Net-SSLeay-1.52.tar.gz
     provides:
@@ -4901,15 +4943,14 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0.47
-  Role-Tiny-1.003001
-    pathname: H/HA/HAARG/Role-Tiny-1.003001.tar.gz
+  Role-Tiny-2.000005
+    pathname: H/HA/HAARG/Role-Tiny-2.000005.tar.gz
     provides:
-      Role::Tiny 1.003001
-      Role::Tiny::With undef
+      Role::Tiny 2.000005
+      Role::Tiny::With 2.000005
     requirements:
-      ExtUtils::MakeMaker 0
-      Test::Fatal 0.003
-      Test::More 0.96
+      Exporter 5.57
+      perl 5.006
   SOAP-Lite-0.715
     pathname: M/MK/MKUTTER/SOAP-Lite-0.715.tar.gz
     provides:
@@ -5064,6 +5105,17 @@ DISTRIBUTIONS
       Safe::Isa 1.000002
     requirements:
       ExtUtils::MakeMaker 0
+  Scalar-List-Utils-1.47
+    pathname: P/PE/PEVANS/Scalar-List-Utils-1.47.tar.gz
+    provides:
+      List::Util 1.47
+      List::Util::XS 1.47
+      Scalar::Util 1.47
+      Sub::Util 1.47
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
+      perl 5.006
   Scope-Guard-0.20
     pathname: C/CH/CHOCOLATE/Scope-Guard-0.20.tar.gz
     provides:
@@ -5084,6 +5136,15 @@ DISTRIBUTIONS
       Lingua::Stem::Snowball::Se 1.2
     requirements:
       Test::More 0.42
+  Socket-2.024
+    pathname: P/PE/PEVANS/Socket-2.024.tar.gz
+    provides:
+      Socket 2.024
+    requirements:
+      ExtUtils::CBuilder 0
+      ExtUtils::Constant 0.23
+      ExtUtils::MakeMaker 0
+      perl 5.006001
   Sort-Key-1.32
     pathname: S/SA/SALVA/Sort-Key-1.32.tar.gz
     provides:
@@ -5230,6 +5291,15 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::Fatal 0.010
       Test::More 0.47
+  Sub-Quote-2.003001
+    pathname: H/HA/HAARG/Sub-Quote-2.003001.tar.gz
+    provides:
+      Sub::Defer 2.003001
+      Sub::Quote 2.003001
+    requirements:
+      ExtUtils::MakeMaker 0
+      Scalar::Util 0
+      perl 5.006
   Sub-Uplevel-0.24
     pathname: D/DA/DAGOLDEN/Sub-Uplevel-0.24.tar.gz
     provides:
@@ -5827,6 +5897,22 @@ DISTRIBUTIONS
       Text::Unidecode 0.04
     requirements:
       ExtUtils::MakeMaker 0
+  Throwable-0.200013
+    pathname: R/RJ/RJBS/Throwable-0.200013.tar.gz
+    provides:
+      StackTrace::Auto 0.200013
+      Throwable 0.200013
+      Throwable::Error 0.200013
+    requirements:
+      Carp 0
+      Devel::StackTrace 1.32
+      ExtUtils::MakeMaker 0
+      Module::Runtime 0.002
+      Moo 1.000001
+      Moo::Role 0
+      Scalar::Util 0
+      Sub::Quote 0
+      overload 0
   Tie-IxHash-1.23
     pathname: C/CH/CHORNY/Tie-IxHash-1.23.tar.gz
     provides:
@@ -6357,6 +6443,50 @@ DISTRIBUTIONS
       Locale::gettext 1.05
     requirements:
       ExtUtils::MakeMaker 0
+  libnet-3.10
+    pathname: S/SH/SHAY/libnet-3.10.tar.gz
+    provides:
+      Net undef
+      Net::Cmd 3.10
+      Net::Config 3.10
+      Net::Domain 3.10
+      Net::FTP 3.10
+      Net::FTP::A 3.10
+      Net::FTP::E 3.10
+      Net::FTP::I 3.10
+      Net::FTP::L 3.10
+      Net::FTP::_SSL_SingleSessionCache 3.10
+      Net::FTP::dataconn 3.10
+      Net::NNTP 3.10
+      Net::NNTP::_SSL 3.10
+      Net::Netrc 3.10
+      Net::POP3 3.10
+      Net::POP3::_SSL 3.10
+      Net::SMTP 3.10
+      Net::SMTP::_SSL 3.10
+      Net::Time 3.10
+    requirements:
+      Carp 0
+      Errno 0
+      Exporter 0
+      ExtUtils::MakeMaker 6.64
+      Fcntl 0
+      File::Basename 0
+      FileHandle 0
+      Getopt::Std 0
+      IO::File 0
+      IO::Select 0
+      IO::Socket 1.05
+      POSIX 0
+      Socket 2.016
+      Symbol 0
+      Time::Local 0
+      constant 0
+      perl 5.008001
+      strict 0
+      utf8 0
+      vars 0
+      warnings 0
   libwww-perl-6.05
     pathname: G/GA/GAAS/libwww-perl-6.05.tar.gz
     provides:

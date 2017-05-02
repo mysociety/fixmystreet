@@ -25,7 +25,7 @@ my $p_user = $mech->create_user_ok('p_user@example.com');
 set_absolute_time('2014-03-01T12:00:00');
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
 
     $mech->not_logged_in_ok;
@@ -48,7 +48,7 @@ FixMyStreet::override_config {
         with_fields => { email => $test_user, password_sign_in => $test_pass }
     } );
 
-    $mech->content_contains( 'City of Edinburgh' );
+    $mech->content_contains( 'Area 2651' );
 
     FixMyStreet::App->model('DB::Contact')->search( { body_id => $body->id } )
       ->delete;

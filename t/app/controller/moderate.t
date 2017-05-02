@@ -101,6 +101,7 @@ subtest 'Problem moderation' => sub {
             problem_detail => 'Good good improved',
         }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
+        $mech->content_like(qr/Moderated by Bromley Council/);
 
         $report->discard_changes;
         is $report->title, 'Good [...] good';
@@ -328,6 +329,23 @@ subtest 'Update 2' => sub {
 
     $update2->discard_changes;
     is $update2->text, 'update good good [...] good',
+};
+
+subtest 'Now stop being a staff user' => sub {
+    $user->update({ from_body => undef });
+    $mech->get_ok($REPORT_URL);
+    $mech->content_contains('Moderated by Bromley Council');
+};
+
+subtest 'And do it as a superuser' => sub {
+    $user->update({ is_superuser => 1 });
+    $mech->get_ok($REPORT_URL);
+    $mech->submit_form_ok({ with_fields => {
+        %problem_prepopulated,
+        problem_title  => 'Good good',
+        problem_detail => 'Good good improved',
+    }});
+    $mech->content_contains('Moderated by a FixMyStreet administrator');
 };
 
 $update->delete;

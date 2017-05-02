@@ -25,7 +25,7 @@
 
 [% IF c.cobrand.moniker == 'fixmystreet' %]
     <div id="report-share" class="hidden-js" align="center">
-        <a class="btn btn--social btn--twitter" href="https://twitter.com/intent/tweet?text=I%20just%20viewed%20this%20report:%20&lsquo;[% problem.title_safe | uri %]&rsquo;&amp;via=fixmystreet&amp;related=mySociety">
+        <a class="btn btn--social btn--twitter" href="https://twitter.com/intent/tweet?text=I%20just%20viewed%20this%20report:%20&lsquo;[% problem.title_safe | uri %]&rsquo;&amp;url=[% c.cobrand.base_url | uri %][% c.req.uri.path | uri %]&amp;via=fixmystreet&amp;related=mySociety">
             <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
             Tweet
         </a>

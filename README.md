@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 2.0.2.
+Platform is now at version 2.0.4.
 
 ## Installation
 
@@ -44,6 +44,63 @@ Thanks to [Browserstack](https://www.browserstack.com/) who let us use their
 web-based cross-browser testing tools for this project.
 
 ## Releases
+
+* v2.0.4 (13th April 2017)
+    - Front end improvements:
+        - On /reports maps, only include reports in view. #1689
+    - Admin improvements:
+        - Allow comma-separated contact emails in the admin. #1683
+    - Bugfixes:
+        - Upgrade Facebook 3rd party library to fix Facebook login. #1681
+        - Don't error when devolved body, blank send methods. #1374
+        - Fix issue with categories with regex characters. #1688
+
+* v2.0.3 (31st March 2017)
+    - Front end improvements:
+        - Add ability to make map full screen on mobile report pages. #1655
+        - Move staff-only JavaScript to separate file. #1666
+        - Show loading indicator when loading pins. #1669
+        - Allow users to reopen closed reports. #1607
+    - Admin improvements:
+        - Redirect to category-filtered /reports on login if present. #1622
+        - Follow redirect to /admin after login if allowed. #1622
+        - Include /admin link on top-level nav for admin users.
+        - Add shortlist filters. #1629
+        - Add submit buttons to admin index search forms. #1551
+        - Store user object when deleting report. #1661
+        - Use name at time of moderation, include superusers. #1660
+        - Add customisable defect types. #1674
+    - Bugfixes:
+        - Fix crash on reports with empty `bodies_str`. #1635
+        - Only output appcache/manifest for shortlist users. #1653
+        - Fix placeholder typo in French translation.
+        - Make sure report Ajax call is not cached by IE11. #1638
+        - Check cobrand users list when admin merging users. #1662
+        - Make sure emails are lowercased in admin. #1662
+        - Specify options in 'all' status filter. #1664
+        - Be clearer if no states selected is not all states. #1664
+        - Set up correct environment in cobrand PO script. #1616
+        - Allow superuser to leave update when inspecting. #1640
+        - Remove duplicate <> around envelope senders. #1663
+        - Fix invisible segmented controls in old Webkit. #1670
+        - Remove superfluous lists from Open311 JSON output. #1672
+        - Upgrade to using Email::Sender. #1639
+        - Fix bug if test run c. 55 hours before BST starts.
+        - Use lat/lon on inspection form if no local coordinates. #1676
+        - Improve translatability of various pages.
+    - Development improvements:
+        - Send open reports regardless of current state. #1334
+        - Clarify ‘inspected’ behaviour. #1614
+        - Reduce disk stats. #1647
+        - Refactor main navigation into reusable blocks.
+        - Add Problem->time_ago for pretty-printed duration.
+        - Add `external_id` field to ResponsePriority.
+        - Forward on all bounces as bounces.
+        - Use sender in From if From and To domains match. #1651
+        - Refactor SendReport::Open311 to use cobrand hooks. #792
+        - Do upload_dir check on start up, not each report. #1668
+        - Make sure all tests can run offline. #1675
+        - Add ability to override Google Maps road style. #1676
 
 * v2.0.2 (3rd February 2017)
     - Front end changes:

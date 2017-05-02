@@ -16,6 +16,12 @@ scripts.push(
     version('/cobrands/fixmystreet/fixmystreet.js'),
 );
 
+IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
+    scripts.push(
+        version('/cobrands/fixmystreet/staff.js')
+    );
+END;
+
 FOR script IN map_js;
     scripts.push(script);
 END;
@@ -28,7 +34,7 @@ scripts.push(
 IF admin;
     scripts.push(
         version('/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js'),
-        version('/js/fixmystreet-admin.js'),
+        version('/cobrands/fixmystreet/admin.js'),
     );
 END;
 

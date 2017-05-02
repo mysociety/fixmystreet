@@ -29,7 +29,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { tester => '.' } ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );

@@ -104,7 +104,7 @@ sub sign_in : Private {
 
 Email the user the details they need to sign in. Don't check for an account - if
 there isn't one we can create it when they come back with a token (which
-contains the email addresss).
+contains the email address).
 
 =cut
 
@@ -223,7 +223,7 @@ sub token : Path('/M') : Args(1) {
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page
-    $c->detach( 'redirect_on_signin', [ $data->{r} ] );
+    $c->detach( 'redirect_on_signin', [ $data->{r}, $data->{p} ] );
 }
 
 =head2 facebook_sign_in
@@ -415,12 +415,35 @@ sub redirect_on_signin : Private {
     if (scalar(@{ $c->user->area_ids }) and ($redirect eq '' or $redirect eq 'my') ) {
       $redirect = 'my/areas';
     }
-    $redirect = 'my' unless $redirect;
+    unless ( $redirect ) {
+        $c->detach('redirect_to_categories') if $c->user->from_body && scalar @{ $c->user->categories };
+        $redirect = 'my';
+    }
     $redirect = 'my' if $redirect =~ /^admin/ && !$c->user->is_superuser;
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $redirect = 'admin' if $c->user->from_body;
     }
-    $c->res->redirect( $c->uri_for( "/$redirect" ) );
+    if (defined $params) {
+        $c->res->redirect( $c->uri_for( "/$redirect", $params ) );
+    } else {
+        $c->res->redirect( $c->uri_for( "/$redirect" ) );
+    }
+}
+
+=head2 redirect_to_categories
+
+Redirects the user to their body's reports page, prefiltered to whatever
+categories this user has been assigned to.
+
+=cut
+
+sub redirect_to_categories : Private {
+    my ( $self, $c ) = @_;
+
+    my $categories = join(',', @{ $c->user->categories });
+    my $body_short = $c->cobrand->short_name( $c->user->from_body );
+
+    $c->res->redirect( $c->uri_for( "/reports/" . $body_short, { filter_category => $categories } ) );
 }
 
 =head2 redirect

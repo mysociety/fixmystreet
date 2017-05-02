@@ -153,4 +153,14 @@ sub exists {
     return 0;
 }
 
+sub body_handler {
+    my ($class, $areas) = @_;
+
+    foreach my $avail ( $class->available_cobrand_classes ) {
+        my $cobrand = $class->get_class_for_moniker($avail->{moniker})->new({});
+        next unless $cobrand->can('council_id');
+        return $cobrand if $areas->{$cobrand->council_id};
+    }
+}
+
 1;

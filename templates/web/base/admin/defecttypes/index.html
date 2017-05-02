@@ -1,0 +1,13 @@
+[% INCLUDE 'admin/header.html' title=('Defect Types') -%]
+
+<ul>
+    [% FOR body IN bodies %]
+        <li>
+            <a href="[% c.uri_for('',  body.id) %]">[% body.name %]</a>
+            [% defect_types_count = body.defect_types.count %]
+            [% IF defect_types_count %]([% defect_types_count %])[% END %]
+        </li>
+    [% END %]
+</ul>
+
+[% INCLUDE 'admin/footer.html' %]

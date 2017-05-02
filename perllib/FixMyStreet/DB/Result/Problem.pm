@@ -108,6 +108,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "response_priority_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "defect_type_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -115,6 +117,17 @@ __PACKAGE__->has_many(
   "FixMyStreet::DB::Result::Comment",
   { "foreign.problem_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->belongs_to(
+  "defect_type",
+  "FixMyStreet::DB::Result::DefectType",
+  { id => "defect_type_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 __PACKAGE__->has_many(
   "moderation_original_datas",
@@ -153,8 +166,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-07 11:01:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iH9c4VZZN/ONnhN6g89DFw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-02-13 15:11:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8zzWlJX7OQOdvrGxKuZUmg
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -182,6 +195,8 @@ use Utils;
 use FixMyStreet::Map::FMS;
 use LWP::Simple qw($ua);
 use RABX;
+use URI;
+use URI::QueryParam;
 
 my $IM = eval {
     require Image::Magick;
@@ -511,6 +526,30 @@ sub admin_url {
     return $cobrand->admin_base_url . '/report_edit/' . $self->id;
 }
 
+=head2 tokenised_url
+
+Return a url for this problem report that logs a user in
+
+=cut
+
+sub tokenised_url {
+    my ($self, $user, $params) = @_;
+
+    my $token = FixMyStreet::App->model('DB::Token')->create(
+        {
+            scope => 'email_sign_in',
+            data  => {
+                id    => $self->id,
+                email => $user->email,
+                r     => $self->url,
+                p     => $params,
+            }
+        }
+    );
+
+    return "/M/". $token->token;
+}
+
 =head2 is_open
 
 Returns 1 if the problem is in a open state otherwise 0.
@@ -523,6 +562,16 @@ sub is_open {
     return exists $self->open_states->{ $self->state } ? 1 : 0;
 }
 
+=head2 is_in_progress
+
+Sees if the problem is in an open, not 'confirmed' state.
+
+=cut
+
+sub is_in_progress {
+    my $self = shift;
+    return $self->is_open && $self->state ne 'confirmed' ? 1 : 0;
+}
 
 =head2 is_fixed
 
@@ -587,9 +636,7 @@ sub meta_line {
     my $meta = '';
 
     my $category = $problem->category;
-    if ($c->cobrand->can('change_category_text')) {
-        $category = $c->cobrand->change_category_text($category);
-    }
+    $category = $c->cobrand->call_hook(change_category_text => $category) || $category;
 
     if ( $problem->anonymous ) {
         if ( $problem->service and $category && $category ne _('Other') ) {
@@ -659,6 +706,34 @@ sub body {
     return $body;
 }
 
+
+=head2 time_ago
+  Returns how long ago a problem was reported in an appropriately
+  prettified duration, depending on the duration.
+=cut
+
+sub time_ago {
+    my ( $self, $date ) = @_;
+    $date ||= 'confirmed';
+    my $duration = time() - $self->$date->epoch;
+
+    return Utils::prettify_duration( $duration );
+}
+
+=head2 days_ago
+
+  Returns how many days ago a problem was reported.
+
+=cut
+
+sub days_ago {
+    my ( $self, $date ) = @_;
+    $date ||= 'confirmed';
+    my $now = DateTime->now( time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone );
+    my $duration = $now->delta_days($self->$date);
+    return $duration->delta_days;
+}
+
 =head2 response_templates
 
 Returns all ResponseTemplates attached to this problem's bodies, in alphabetical
@@ -692,6 +767,18 @@ sub response_priorities {
     return $self->result_source->schema->resultset('ResponsePriority')->for_bodies($self->bodies_str_ids, $self->category);
 }
 
+=head2 defect_types
+
+Returns all DefectTypes attached to this problem's category/contact, in
+alphabetical order of name.
+
+=cut
+
+sub defect_types {
+    my $self = shift;
+    return $self->result_source->schema->resultset('DefectType')->for_bodies($self->bodies_str_ids, $self->category);
+}
+
 # returns true if the external id is the council's ref, i.e., useful to publish it
 # (by way of an example, the Oxfordshire send method returns a useful reference when
 # it succeeds, so that is the ref we should show on the problem report page).
@@ -708,17 +795,10 @@ sub can_display_external_id {
 
 sub duration_string {
     my ( $problem, $c ) = @_;
-    my $body;
-    if ( $c->cobrand->can('link_to_council_cobrand') ) {
-        $body = $c->cobrand->link_to_council_cobrand($problem);
-    } else {
-        $body = $problem->body( $c );
-    }
-    if ( $c->cobrand->can('get_body_handler_for_problem') ) {
-        my $handler = $c->cobrand->get_body_handler_for_problem( $problem );
-        if ( $handler->can('is_council_with_case_management') && $handler->is_council_with_case_management ) {
-            return sprintf(_('Received by %s moments later'), $body);
-        }
+    my $body = $c->cobrand->call_hook(link_to_council_cobrand => $problem) || $problem->body($c);
+    my $handler = $c->cobrand->call_hook(get_body_handler_for_problem => $problem);
+    if ( $handler && $handler->call_hook('is_council_with_case_management') ) {
+        return sprintf(_('Received by %s moments later'), $body);
     }
     return unless $problem->whensent;
     return sprintf(_('Sent to %s %s later'), $body,
@@ -1062,10 +1142,17 @@ has traffic_management_options => (
     default => sub {
         my $self = shift;
         my $cobrand = $self->get_cobrand_logged;
-        if ( $cobrand->can('get_body_handler_for_problem') ) {
-            $cobrand = $cobrand->get_body_handler_for_problem( $self );
-        }
+        $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $self) || $cobrand;
         return $cobrand->traffic_management_options;
+    },
+);
+
+has inspection_log_entry => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        return $self->admin_log_entries->search({ action => 'inspected' }, { order_by => { -desc => 'whenedited' } })->first;
     },
 );
 

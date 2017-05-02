@@ -1,0 +1,10 @@
+<p>
+  <strong>[% loc('Categories:') %]</strong>
+</p>
+<p>
+  <select class="form-control js-multiple" name="categories" id="categories" multiple data-all="[% loc('All categories') %]">
+    [% FOR contact IN contacts %]
+      <option value="[% contact.id %]" [% 'selected' IF contact.active %]>[% contact.category | html %]</option>
+    [% END %]
+  </select>
+</p>

@@ -40,6 +40,10 @@ sub disambiguate_location {
     };
 }
 
+sub get_geocoder {
+    return 'OSM'; # use OSM geocoder
+}
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey' if $p->state eq 'not responsible';

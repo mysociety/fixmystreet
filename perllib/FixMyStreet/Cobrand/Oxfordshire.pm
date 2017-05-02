@@ -112,6 +112,29 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+    push @$extra, { name => 'external_id', value => $row->id };
+
+    if ($h->{closest_address}) {
+        push @$extra, { name => 'closest_address', value => $h->{closest_address} }
+    }
+    if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
+        push @$extra, { name => 'northing', value => $h->{northing} };
+        push @$extra, { name => 'easting', value => $h->{easting} };
+    }
+    $row->set_extra_fields( @$extra );
+
+    $params->{extended_description} = 'oxfordshire';
+}
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+    $open311->endpoints( { requests => 'open311_service_request.cgi' } );
+}
+
 sub on_map_default_status { return 'open'; }
 
 sub contact_email {
@@ -129,5 +152,62 @@ sub traffic_management_options {
     ];
 }
 
+sub admin_pages {
+    my $self = shift;
+
+    my $user = $self->{c}->user;
+
+    my $pages = $self->next::method();
+
+    # Oxfordshire have a custom admin page for downloading reports in an Exor-
+    # friendly format which anyone with report_instruct permission can use.
+    if ( $user->has_body_permission_to('report_instruct') ) {
+        $pages->{exordefects} = [ ('Download Exor RDI'), 10 ];
+    }
+    if ( $user->has_body_permission_to('defect_type_edit') ) {
+        $pages->{defecttypes} = [ ('Defect Types'), 11 ];
+        $pages->{defecttype_edit} = [ undef, undef ];
+    };
+
+    return $pages;
+}
+
+sub defect_types {
+    {
+        SFP2 => "SFP2: sweep and fill <1m2",
+        POT2 => "POT2",
+    };
+}
+
+sub exor_rdi_link_id { 1989169 }
+sub exor_rdi_link_length { 50 }
+
+sub reputation_increment_states {
+    return {
+        'action scheduled' => 1,
+    };
+}
+
+sub user_extra_fields {
+    return [ 'initials' ];
+}
+
+sub display_days_ago_threshold { 28 }
+
+sub defect_type_extra_fields {
+    return [
+        'activity_code',
+        'defect_code',
+    ];
+};
+
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+    $perms->{Bodies}->{defect_type_edit} = "Add/edit defect types";
+
+    return $perms;
+}
 
 1;

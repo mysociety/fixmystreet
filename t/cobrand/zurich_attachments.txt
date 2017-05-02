@@ -1,7 +1,7 @@
 MIME-Version: 1.0
 Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #REPORT_ID
 Content-Type: multipart/mixed; boundary="BOUNDARY"
-To: "External Body" <external_body@example.org>
+To: "External Body" <external_body@example.net>
 Content-Transfer-Encoding: 7bit
 From: "FixMyStreet" <division@example.org>
 

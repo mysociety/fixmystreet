@@ -1,0 +1,37 @@
+[% INCLUDE 'admin/header.html' title=tprintf(('Defect Type for %s'), body.name) -%]
+[% dt = defect_type %]
+
+[% UNLESS dt.id %]<h3>[% ('New defect type') %]</h3>[% END %]
+
+<form method="post"
+    action="[% c.uri_for('', body.id, dt.id || 'new' ) %]"
+    enctype="application/x-www-form-urlencoded"
+    accept-charset="utf-8"
+    class="validate">
+
+    <p>
+        <strong>[% ('Name:') %] </strong>
+        <input type="text" name="name" class="required form-control" size="30" value="[% dt.name | html %]">
+    </p>
+    <p>
+        <strong>[% ('Description:') %] </strong>
+        <input type="text" name="description" class="form-control" size="30" value="[% dt.description | html %]">
+    </p>
+
+    <div class="admin-hint">
+      <p>
+        [% ('If you only want this defect type to be an option for specific categories, pick them here. By default they will show for all categories.') %]
+      </p>
+    </div>
+
+    [% INCLUDE 'admin/category-multiselect.html' %]
+
+    [% TRY %][% INCLUDE 'admin/defecttypes/extra_fields.html' %][% CATCH file %][% END %]
+
+    <p>
+      <input type="hidden" name="token" value="[% csrf_token %]" >
+      <input type="submit" class="btn" name="save" value="[% dt.id ? ('Save changes') : ('Create defect type') %]" >
+    </p>
+</form>
+
+[% INCLUDE 'admin/footer.html' %]

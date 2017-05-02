@@ -530,24 +530,24 @@ ul.error {
   a, span {
     display: block;
     padding: 0.5em 1em;
-    background: #f6f6f6;
+    background-color: #f6f6f6;
     color: #333;
     font-size: 1.25em;
     border-bottom: 0.25em solid #333;
   }
   a:hover, span.hover {
-    background: #333;
+    background-color: #333;
     color: #fff;
     text-decoration: none;
   }
   span {
-    background: #ccc;
+    background-color: #ccc;
   }
 }
 .nav-menu--mysoc {
   a {
     color: $primary_text;
-    background: $primary;
+    background-color: $primary;
   }
 }
 #mysoc-logo {
@@ -620,6 +620,7 @@ body.mappage .wrapper {
           background-image: url($image-sprite);
           background-position: center -2563px;
         }
+
         &.share {
           background-image: url('/cobrands/fixmystreet/images/share.png');
           background-position: center 25%;
@@ -1496,6 +1497,40 @@ html.js #map .noscript {
       background-image:url($image-sprite);
       background-position: flip(right, -341px) -3936px;
     }
+    &#toggle-fullscreen {
+      padding: 0.6em 1em 0.5em 1em;
+      &:after {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background-size: 16px 16px;
+        vertical-align: middle;
+        margin-#{$left}: 8px;
+      }
+      &.expand:after {
+        background-image: url(/cobrands/fixmystreet/images/expand.png);
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/expand@2x.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/expand.svg), none;
+        }
+      }
+      &.compress:after {
+        background-image: url(/cobrands/fixmystreet/images/compress.png);
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/compress@2x.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/compress.svg), none;
+        }
+      }
+    }
     &:hover {
       background-color:#000;
       text-decoration:none;
@@ -1550,6 +1585,24 @@ html.js #map .noscript {
   }
 }
 
+// Loading indicator
+
+#loading-indicator {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.4;
+  text-align: center;
+
+  img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
 .big-green-banner {
   position: relative;
   top: -1.75em;
@@ -1559,14 +1612,14 @@ html.js #map .noscript {
   text-transform: uppercase;
   text-align: center;
   font-size: 0.875em;
-  .mobile-reporting-map & {
+  .map-fullscreen & {
     display: none;
   }
 }
 
 .mobile-map-banner {
   display: none;
-  .mobile-reporting-map & {
+  .map-fullscreen & {
     display: block;
   }
   text-transform: uppercase;
@@ -1656,7 +1709,7 @@ a:hover.rap-notes-trigger {
 // and make the map full screen to reduce distractions. JavaScript also
 // tweaks the text content of some of the map-related elements, to make
 // it more "app-like".
-.mobile-reporting-map {
+.map-fullscreen {
   #site-header {
     display: none;
   }
@@ -1672,10 +1725,6 @@ a:hover.rap-notes-trigger {
     z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
   }
 
-  #fms_pan_zoom {
-    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
-  }
-
   .container {
     padding: 0; // map_box needs to be full width, so remove page gutter
   }
@@ -1685,7 +1734,13 @@ a:hover.rap-notes-trigger {
   }
 }
 
-.mobile-reporting-map.only-map {
+.map-reporting {
+  #fms_pan_zoom {
+    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
+  }
+}
+
+.only-map {
   height: 100%;
   body {
     height: 100%;
@@ -2136,6 +2191,7 @@ table.nicetable {
     text-align: center;
     border-right-width: 0; // avoid double border between items
     float: left; // float fallback for browsers that don't support flexbox
+    position: relative; // Make sure this is shown on legacy flexbox webkit
     @include flex(1 0 auto, 1);
   }
 

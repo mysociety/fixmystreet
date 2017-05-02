@@ -659,8 +659,7 @@ sub setup_categories_and_bodies : Private {
         push @category_options, _('Other') if $seen{_('Other')};
     }
 
-    $c->cobrand->munge_category_list(\@category_options, \@contacts, \%category_extras)
-        if $c->cobrand->can('munge_category_list');
+    $c->cobrand->call_hook(munge_category_list => \@category_options, \@contacts, \%category_extras);
 
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
@@ -903,7 +902,7 @@ sub contacts_to_bodies : Private {
     if ($c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL}) {
         [];
     } else {
-        if ( $c->cobrand->can('singleton_bodies_str') && $c->cobrand->singleton_bodies_str ) {
+        if ( $c->cobrand->call_hook('singleton_bodies_str') ) {
             # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
             # relies on string comparison against bodies_str.
             [ $contacts[0]->body ];
@@ -1033,9 +1032,7 @@ sub send_problem_confirm_email : Private {
     $template = 'problem-confirm-not-sending.txt' unless $report->bodies_str;
 
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
-    if ($c->cobrand->can('problem_confirm_email_extras')) {
-        $c->cobrand->problem_confirm_email_extras($report);
-    }
+    $c->cobrand->call_hook(problem_confirm_email_extras => $report);
 
     $c->send_email( $template, {
         to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],

@@ -215,14 +215,21 @@ var fixmystreet = fixmystreet || {};
         }
     };
 
+    /* Make sure pins aren't going to reload just because we're zooming out,
+     * we already have the pins when the page loaded */
     function zoomToBounds(bounds) {
         if (!bounds) { return; }
+        fixmystreet.markers.strategies[0].deactivate();
         var center = bounds.getCenterLonLat();
         var z = fixmystreet.map.getZoomForExtent(bounds);
         if ( z < 13 && $('html').hasClass('mobile') ) {
             z = 13;
         }
         fixmystreet.map.setCenter(center, z);
+        // Reactivate the strategy and make it think it's done an update
+        fixmystreet.markers.strategies[0].activate();
+        fixmystreet.markers.strategies[0].calculateBounds();
+        fixmystreet.markers.strategies[0].resolution = fixmystreet.map.getResolution();
     }
 
     function sidebar_highlight(problem_id) {
@@ -331,6 +338,8 @@ var fixmystreet = fixmystreet || {};
             );
             $("#problem_northing").text(bng.y.toFixed(1));
             $("#problem_easting").text(bng.x.toFixed(1));
+            $("#problem_latitude").text(lonlat.y.toFixed(6));
+            $("#problem_longitude").text(lonlat.x.toFixed(6));
             $("form#report_inspect_form input[name=latitude]").val(lonlat.y);
             $("form#report_inspect_form input[name=longitude]").val(lonlat.x);
         },
@@ -389,7 +398,10 @@ var fixmystreet = fixmystreet || {};
                         f.geometry = new_geometry;
                         this.removeAllFeatures();
                         this.addFeatures([f]);
-                        zoomToBounds(extent);
+                        var qs = parse_query_string();
+                        if (!qs.bbox) {
+                            zoomToBounds(extent);
+                        }
                     } else {
                         fixmystreet.map.removeLayer(this);
                     }
@@ -476,8 +488,13 @@ var fixmystreet = fixmystreet || {};
                 format: new OpenLayers.Format.FixMyStreet()
             });
         }
-        if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
+        if (fixmystreet.page == 'reports') {
+            pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetRefreshOnZoom() ];
+        }
+        if (fixmystreet.page == 'my') {
             pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetFixed() ];
+        }
+        if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
             pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
                 url: fixmystreet.original.href.split('?')[0] + '?ajax=1',
                 format: new OpenLayers.Format.FixMyStreet()
@@ -779,6 +796,25 @@ OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     }
 });
 
+/* This strategy will call for updates whenever the zoom changes,
+ * unlike the parent which only will if new area is included. It
+ * also does not update on load, as we already have the data. */
+OpenLayers.Strategy.FixMyStreetRefreshOnZoom = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
+    resFactor: 1.5,
+    activate: function() {
+        var activated = OpenLayers.Strategy.prototype.activate.call(this);
+        if (activated) {
+            this.layer.events.on({
+                "moveend": this.update,
+                "refresh": this.update,
+                "visibilitychanged": this.update,
+                scope: this
+            });
+        }
+        return activated;
+    }
+});
+
 /* Copy of Strategy.Fixed, but with no initial load */
 OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixed, {
     activate: function() {
@@ -801,6 +837,9 @@ OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixe
 // params to /ajax if the user has filtered the map.
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     read: function(options) {
+        // Show the loading indicator over the map
+        $('#loading-indicator').removeClass('hidden');
+        $('#loading-indicator').attr('aria-hidden', false);
         // Pass the values of the category, status, and sort fields as query params
         $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
             var val = $('#' + id).val();
@@ -817,17 +856,9 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
-        // Check we haven't received the data after the map has been clicked.
-        if (fixmystreet.page == 'new') {
-            // If we have, we want to do nothing, which means returning an
-            // array of the back-projected version of the current pin
-            var pin = fixmystreet.markers.features[0].clone();
-            pin.geometry.transform(
-                fixmystreet.map.getProjectionObject(),
-                new OpenLayers.Projection("EPSG:4326")
-            );
-            return [ pin ];
-        }
+        // Remove loading indicator
+        $('#loading-indicator').addClass('hidden');
+        $('#loading-indicator').attr('aria-hidden', true);
         if (typeof json == 'string') {
             obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
         } else {

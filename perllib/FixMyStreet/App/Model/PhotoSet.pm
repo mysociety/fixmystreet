@@ -67,14 +67,7 @@ has upload_dir => (
     is => 'ro',
     lazy => 1,
     default => sub {
-        my $self = shift;
-        my $cache_dir = path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
-        $cache_dir->mkpath;
-        unless ( -d $cache_dir && -w $cache_dir ) {
-            warn "Can't find/write to photo cache directory '$cache_dir'";
-            return;
-        }
-        $cache_dir;
+        path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
     },
 );
 
@@ -191,12 +184,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
             $type ||= 'jpeg';
             if ($fileid && length($fileid) == 40) {
                 my $file = $self->get_file($fileid, $type);
-                if ($file->exists) {
-                    $file->basename;
-                } else {
-                    warn "File $part doesn't exist";
-                    ();
-                }
+                $file->basename;
             } else {
                 # A bad hash, probably a bot spamming with bad data.
                 ();

@@ -1,5 +1,6 @@
 package FixMyStreet::Cobrand::UK;
 use base 'FixMyStreet::Cobrand::Default';
+use strict;
 
 use JSON::MaybeXS;
 use mySociety::MaPit;
@@ -354,13 +355,8 @@ sub get_body_handler_for_problem {
     my @bodies = values %{$row->bodies};
     my %areas = map { %{$_->areas} } @bodies;
 
-    foreach my $avail ( FixMyStreet::Cobrand->available_cobrand_classes ) {
-        my $class = FixMyStreet::Cobrand->get_class_for_moniker($avail->{moniker});
-        my $cobrand = $class->new({});
-        next unless $cobrand->can('council_id');
-        return $cobrand if $areas{$cobrand->council_id};
-    }
-
+    my $cobrand = FixMyStreet::Cobrand->body_handler(\%areas);
+    return $cobrand if $cobrand;
     return ref $self ? $self : $self->new;
 }
 

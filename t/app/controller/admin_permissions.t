@@ -1,9 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use LWP::Protocol::PSGI;
 
-use t::Mock::MapIt;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -84,8 +82,6 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => [ 'oxfordshire' ],
 }, sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.uk');
-
     my $user2_id = $user2->id;
     $report->update({ bodies_str => $oxfordshire->id });
 

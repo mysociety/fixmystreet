@@ -9,9 +9,11 @@ use FixMyStreet::Cobrand;
 use Memcached;
 use FixMyStreet::Map;
 use FixMyStreet::Email;
+use FixMyStreet::Email::Sender;
 use Utils;
 
-use Path::Class;
+use Path::Tiny 'path';
+use Try::Tiny;
 use URI;
 use URI::QueryParam;
 
@@ -103,6 +105,13 @@ after 'prepare_headers' => sub {
 __PACKAGE__->log->disable('debug')    #
   unless __PACKAGE__->debug;
 
+# Check upload_dir
+my $cache_dir = path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
+$cache_dir->mkpath;
+unless ( -d $cache_dir && -w $cache_dir ) {
+    warn "\x1b[31mCan't find/write to photo cache directory '$cache_dir'\x1b[0m\n";
+}
+
 =head1 NAME
 
 FixMyStreet::App - Catalyst based application
@@ -163,7 +172,7 @@ sub setup_request {
 
     my $cobrand = $c->cobrand;
 
-    $cobrand->add_response_headers if $cobrand->can('add_response_headers');
+    $cobrand->call_hook('add_response_headers');
 
     # append the cobrand templates to the include path
     $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates;
@@ -339,8 +348,13 @@ sub send_email {
     $data->{_html_images_} = \@inline_images if @inline_images;
 
     my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email($data) };
-    my $return = $c->model('EmailSend')->send($email);
-    $c->log->error("$return") if !$return;
+
+    try {
+        FixMyStreet::Email::Sender->send($email, { from => $sender });
+    } catch {
+        my $error = $_ || 'unknown error';
+        $c->log->error("$error");
+    };
 
     return $email;
 }

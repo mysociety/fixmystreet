@@ -83,6 +83,11 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     $c->detach( 'report_moderate_audit', \@types )
 }
 
+sub moderating_user_name {
+    my $user = shift;
+    return $user->from_body ? $user->from_body->name : 'a FixMyStreet administrator';
+}
+
 sub report_moderate_audit : Private {
     my ($self, $c, @types) = @_;
 
@@ -95,7 +100,7 @@ sub report_moderate_audit : Private {
     $c->model('DB::AdminLog')->create({
         action => 'moderation',
         user => $user,
-        admin_user => $user->name,
+        admin_user => moderating_user_name($user),
         object_id => $problem->id,
         object_type => 'problem',
         reason => (sprintf '%s (%s)', $reason, $types_csv),
@@ -249,7 +254,7 @@ sub update_moderate_audit : Private {
     $c->model('DB::AdminLog')->create({
         action => 'moderation',
         user => $user,
-        admin_user => $user->name,
+        admin_user => moderating_user_name($user),
         object_id => $comment->id,
         object_type => 'update',
         reason => (sprintf '%s (%s)', $reason, $types_csv),

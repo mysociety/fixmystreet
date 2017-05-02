@@ -143,7 +143,7 @@ sub get_problems : Private {
     my $categories = [ $c->get_param_list('filter_category', 1) ];
     if ( @$categories ) {
         $params->{category} = $categories;
-        $c->stash->{filter_category} = $categories;
+        $c->stash->{filter_category} = { map { $_ => 1 } @$categories };
     }
 
     my $rows = 50;

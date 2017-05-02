@@ -13,14 +13,22 @@ the main FixMyStreet po files
 
 =cut
 
-my $cobrand = shift;
+use File::Basename qw(dirname);
+use File::Spec;
 
+my $cobrand = shift;
 die "Please provide a cobrand name\n" unless $cobrand;
 
+my $d = dirname(dirname(File::Spec->rel2abs($0)));
+chdir $d;
+
+# Install required code if needed
+system("vendor/bin/carton install --path local-gettext --cpanfile locale/cpanfile --deployment");
+$ENV{PATH} = "local-gettext/bin:$ENV{PATH}";
+$ENV{PERL5LIB} = "local-gettext/lib/perl5:local/lib/perl5";
+
 my $cobrand_lc = lc( $cobrand );
-
 my $PO = "locale/$cobrand.po";
-
 my $cobrand_module = "perllib/FixMyStreet/Cobrand/$cobrand.pm";
 my $web_templates = "templates/web/$cobrand_lc/";
 

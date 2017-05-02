@@ -132,60 +132,6 @@
     );
 }
 
-.variant1 {
-    #site-header {
-        border-top-color: #fff;
-        background: #fad52a;
-    }
-
-    #report-cta {
-        border: none;
-        background-color: #fff;
-        color: mix(#fad52a, #000, 50%);
-        padding: 0.5em 0.5em 0.4em 0.5em;
-    }
-
-    #site-logo {
-        background-image: url(/cobrands/fixmystreet.com/images/friendly-logo-mobile.png);
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet.com/images/friendly-logo-mobile@2.png);
-            background-size: 175px 40px;
-        }
-    }
-
-    &.frontpage {
-        background: #fad52a url(/cobrands/fixmystreet.com/images/friendly-homepage-mobile.jpg) top center no-repeat;
-        background-size: 100%;
-
-        #site-header {
-            border-top-color: #fff;
-            background: transparent;
-        }
-    }
-
-    #front-main #postcodeForm {
-        background: rgba(255,255,255,0.3);
-
-        input#sub {
-            @include linear-gradient(#49c0ff, #1091d5);
-
-            &:hover, &:focus {
-                @include linear-gradient(darken(#49c0ff, 10%), darken(#1091d5, 10%));
-            }
-        }
-    }
-
-    #front-main a#geolocate_link {
-        background: transparent;
-        color: inherit;
-    }
-
-    #front-main + .container {
-        background: transparent;
-    }
-}
-
 // Avoid double border between mobile nav and footer
 .nav-menu--main > :last-child a {
   border-bottom: none;

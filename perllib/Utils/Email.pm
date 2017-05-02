@@ -34,4 +34,16 @@ sub _send {
     return grep { $_->type eq $type } @answers;
 }
 
+sub same_domain {
+    my ($email, $list) = @_;
+    my $addr = (Email::Address->parse($email->[0]))[0];
+    return unless $addr;
+    my $domain = $addr->host;
+    foreach (@$list) {
+        my $addr = (Email::Address->parse($_->[0]))[0];
+        next unless $addr;
+        return 1 if $domain eq $addr->host;
+    }
+}
+
 1;

@@ -65,6 +65,18 @@ sub is_default {
     return $self->moniker eq 'default';
 }
 
+=head2 call_hook
+
+  $cobrand->call_hook(foo => 1, 2, 3); # calls $cobrand->foo(1, 2, 3) if it exists
+
+=cut
+
+sub call_hook {
+    my ($self, $method_name, @args) = @_;
+    my $method = $self->can($method_name) or return;
+    return $self->$method(@args);
+}
+
 # NB: this Base class is for 'meta' features.  To add base methods for all cobrands,
 # you may want to look at FMS::Cobrand::Default instead!
 

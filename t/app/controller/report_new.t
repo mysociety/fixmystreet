@@ -25,7 +25,7 @@ subtest "test that bare requests to /report/new get redirected" => sub {
     is_deeply { $mech->uri->query_form }, {}, "query empty";
 
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok('/report/new?pc=SW1A%201AA');
     };
@@ -476,7 +476,7 @@ foreach my $test (
         # submit initial pc form
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
                 "submit location" );
@@ -498,7 +498,6 @@ foreach my $test (
         my $new_values = {
             %{ $test->{fields} },     # values added to form
             %{ $test->{changes} },    # changes we expect
-            gender => undef,
         };
         is_deeply $mech->visible_form_values, $new_values,
           "values correctly changed";
@@ -550,7 +549,7 @@ foreach my $test (
     $mech->get_ok('/around');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
             "submit location" );
@@ -666,7 +665,7 @@ subtest "test password errors for a user who is signing in as they report" => su
     $mech->get_ok('/around');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
             "submit location" );
@@ -718,7 +717,7 @@ subtest "test report creation for a user who is signing in as they report" => su
     $mech->get_ok('/around');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
             "submit location" );
@@ -814,7 +813,7 @@ foreach my $test (
         $mech->get_ok('/around');
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR', } },
                 "submit location" );
@@ -836,7 +835,6 @@ foreach my $test (
                     photo2        => '',
                     photo3        => '',
                     category      => '-- Pick a category --',
-                    gender => undef,
                 },
                 "user's details prefilled"
             );
@@ -914,7 +912,7 @@ subtest "test report creation for a category that is non public" => sub {
     $mech->get_ok('/around');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
             "submit location" );
@@ -976,7 +974,7 @@ $contact2->update;
 my $extra_details;
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
 };
@@ -985,7 +983,7 @@ ok !$extra_details->{titles_list}, 'Non Bromley does not send back list of title
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.4021&longitude=0.01578');
 };
@@ -1005,7 +1003,7 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
     my $off_coast_longitude = -0.646929;
 
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok(    #
             "/report/new"
@@ -1027,7 +1025,7 @@ for my $test (
     {
         desc  => 'user title not set if not bromley problem',
         host  => 'www.fixmystreet.com',
-        postcode => 'EH99 1SP',
+        postcode => 'EH1 1BB',
         fms_extra_title => '',
         extra => [],
         user_title => undef,
@@ -1078,7 +1076,7 @@ for my $test (
     subtest $test->{desc} => sub {
         my $override = {
             ALLOWED_COBRANDS => [ $test->{host} =~ /bromley/ ? 'bromley' : 'fixmystreet' ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         };
 
         $mech->host( $test->{host} );
@@ -1195,9 +1193,9 @@ subtest 'user title not reset if no user title in submission' => sub {
         $mech->get_ok('/');
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP', } },
+            $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
                 "submit location" );
             $mech->follow_link_ok(
                 { text_regex => qr/skip this step/i, },
@@ -1260,7 +1258,7 @@ subtest "test Hart" => sub {
             FixMyStreet::override_config {
                 ALLOWED_COBRANDS => [ 'hart', 'fixmystreet' ],
                 BASE_URL => 'http://www.fixmystreet.com',
-                MAPIT_URL => 'http://mapit.mysociety.org/',
+                MAPIT_URL => 'http://mapit.uk/',
             }, sub {
                 $mech->get_ok('/around');
                 $mech->content_contains( "Hart Council" );
@@ -1365,133 +1363,18 @@ subtest "test Hart" => sub {
     }
 };
 
-subtest "test SeeSomething" => sub {
-    $mech->host('seesomething.fixmystreet.com');
-    $mech->clear_emails_ok;
-    $mech->log_out_ok;
-
-    my $cobrand = FixMyStreet::Cobrand::SeeSomething->new();
-
-    my $body_ss = $mech->create_body_ok(2535, 'Sandwell Borough Council', id => 2535);
-    my $bus_contact = $mech->create_contact_ok(
-        body_id => $body_ss->id,
-        category => 'Bus',
-        email => 'bus@example.com',
-        non_public => 1,
-    );
-
-    for my $test ( {
-            desc => 'report with no user details works',
-            pc => 'WS1 4NH',
-            fields => {
-                detail => 'Test report details',
-                category => 'Bus',
-                subcategory => 'Smoking',
-            },
-            email => $cobrand->anonymous_account->{email},
-        },
-        {
-            desc => 'report with user details works',
-            pc => 'WS1 4NH',
-            fields => {
-                detail => 'Test report details',
-                category => 'Bus',
-                subcategory => 'Smoking',
-                email => 'non_anon_user@example.com',
-                name => 'Non Anon',
-            },
-            email => 'non_anon_user@example.com',
-        },
-        {
-            desc => 'report with public category',
-            pc => 'WS1 4NH',
-            fields => {
-                detail => 'Test report details',
-                category => 'Bus',
-                subcategory => 'Smoking',
-            },
-            email => $cobrand->anonymous_account->{email},
-            public => 1,
-        }
-    ) {
-        subtest $test->{desc} => sub {
-            $mech->clear_emails_ok;
-            my $user =
-              FixMyStreet::App->model('DB::User')->find( { email => $test->{email} } );
-
-            if ( $user ) {
-                $user->alerts->delete;
-                $user->problems->delete;
-                $user->delete;
-            }
-
-            if ( $test->{public} ) {
-                $bus_contact->non_public(0);
-                $bus_contact->update;
-            } else {
-                $bus_contact->non_public(1);
-                $bus_contact->update;
-            }
-
-            $mech->get_ok( '/around' );
-            FixMyStreet::override_config {
-                ALLOWED_COBRANDS => [ 'seesomething' ],
-                MAPIT_URL => 'http://mapit.mysociety.org/',
-            }, sub {
-                $mech->submit_form_ok(
-                    {
-                        with_fields => {
-                            pc => $test->{pc},
-                        },
-                    },
-                    'submit around form',
-                );
-                $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
-
-                $mech->submit_form_ok(
-                    {
-                        with_fields => $test->{fields},
-                    },
-                    'Submit form details with no user details',
-                );
-            };
-            is_deeply $mech->page_errors, [], "check there were no errors";
-
-            $user =
-              FixMyStreet::App->model('DB::User')->find( { email => $test->{email} } );
-            ok $user, "user found";
-
-            my $report = $user->problems->first;
-            ok $report, "Found the report";
-
-            $mech->email_count_is(0);
-
-            ok $report->confirmed, 'Report is confirmed automatically';
-
-            is $mech->uri->path, '/report/new', 'stays on report/new page';
-            $mech->content_contains( 'Your report has been sent', 'use report created template' );
-
-            $user->alerts->delete;
-            $user->problems->delete;
-            $user->delete;
-        };
-    }
-
-    $bus_contact->delete;
-};
-
 subtest "categories from deleted bodies shouldn't be visible for new reports" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $mech->get_ok('/report/new/ajax?latitude=51.89&longitude=-2.09'); # Cheltenham
+        $mech->get_ok('/report/new/ajax?latitude=51.896268&longitude=-2.093063'); # Cheltenham
         ok $mech->content_contains( $contact3->category );
 
         # Delete the body which the contact belongs to.
         $contact3->body->update( { deleted => 1 } );
 
-        $mech->get_ok('/report/new/ajax?latitude=51.89&longitude=-2.09'); # Cheltenham
+        $mech->get_ok('/report/new/ajax?latitude=51.896268&longitude=-2.093063'); # Cheltenham
         ok $mech->content_lacks( $contact3->category );
 
         $contact3->body->update( { deleted => 0 } );
@@ -1501,12 +1384,12 @@ subtest "categories from deleted bodies shouldn't be visible for new reports" =>
 subtest "unresponsive body handling works" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         # Test body-level send method
         my $old_send = $contact1->body->send_method;
         $contact1->body->update( { send_method => 'Refused' } );
-        $mech->get_ok('/report/new/ajax?latitude=55.9&longitude=-3.2'); # Edinburgh
+        $mech->get_ok('/report/new/ajax?latitude=55.952055&longitude=-3.189579'); # Edinburgh
         my $body_id = $contact1->body->id;
         ok $mech->content_like( qr{Edinburgh.*accept reports.*/unresponsive\?body=$body_id} );
 
@@ -1555,8 +1438,8 @@ subtest "unresponsive body handling works" => sub {
             phone               => '07903 123 456',
             category            => 'Trees',
             service             => 'iOS',
-            lat                 => 55.9,
-            lon                 => -3.2,
+            lat                 => 55.952055,
+            lon                 => -3.189579,
             pc                  => '',
             used_map            => '1',
             submit_register     => '1',
@@ -1582,7 +1465,7 @@ subtest "unresponsive body handling works" => sub {
         # And test per-category refusing
         my $old_email = $contact3->email;
         $contact3->update( { email => 'REFUSED' } );
-        $mech->get_ok('/report/new/category_extras?category=Trees&latitude=51.89&longitude=-2.09');
+        $mech->get_ok('/report/new/category_extras?category=Trees&latitude=51.896268&longitude=-2.093063');
         ok $mech->content_like( qr/Cheltenham.*Trees.*unresponsive.*category=Trees/ );
 
         $mech->get_ok('/around');
@@ -1616,7 +1499,6 @@ subtest "unresponsive body handling works" => sub {
 subtest "unresponsive body page works" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
         my $old_send = $contact1->body->send_method;
         my $body_id = $contact1->body->id;
@@ -1643,7 +1525,7 @@ subtest "extra google analytics code displayed on logged in problem creation" =>
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         BASE_URL => 'https://www.fixmystreet.com',
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         # check that the user does not exist
         my $test_email = 'test-2@example.com';
@@ -1672,7 +1554,7 @@ subtest "extra google analytics code displayed on logged in problem creation" =>
         $mech->submit_form_ok(
             {
                 with_fields => {
-                    title         => "Test Report at café", 
+                    title         => "Test Report at café",
                     detail        => 'Test report details.',
                     photo1        => '',
                     name          => 'Joe Bloggs',
@@ -1699,7 +1581,7 @@ subtest "extra google analytics code displayed on email confirmation problem cre
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         BASE_URL => 'https://www.fixmystreet.com',
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_out_ok;
         $mech->clear_emails_ok;

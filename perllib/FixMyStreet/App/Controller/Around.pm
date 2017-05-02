@@ -182,7 +182,7 @@ sub display_location : Private {
     my ( $on_map_all, $on_map, $nearby, $distance ) =
       FixMyStreet::Map::map_features( $c,
         latitude => $latitude, longitude => $longitude,
-        interval => $interval, categories => $c->stash->{filter_category},
+        interval => $interval, categories => [ keys %{$c->stash->{filter_category}} ],
         states => $c->stash->{filter_problem_states},
         order => $c->stash->{sort_order},
       );
@@ -264,8 +264,8 @@ sub check_and_stash_category : Private {
     my %categories_mapped = map { $_ => 1 } @categories;
 
     my $categories = [ $c->get_param_list('filter_category', 1) ];
-    my @valid_categories = grep { $_ && $categories_mapped{$_} } @$categories;
-    $c->stash->{filter_category} = \@valid_categories;
+    my %valid_categories = map { $_ => 1 } grep { $_ && $categories_mapped{$_} } @$categories;
+    $c->stash->{filter_category} = \%valid_categories;
 }
 
 =head2 /ajax
