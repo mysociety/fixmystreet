@@ -140,7 +140,15 @@ sub download : Path('download') : Args(0) {
 
         foreach my $report (@$inspections) {
             my ($eastings, $northings) = $report->local_coords;
-            my $location = "${eastings}E ${northings}N";
+
+            my $location = "${eastings}E ${northings}N.";
+            $location = "[DID NOT USE MAP] $location" unless $report->used_map;
+            my $closest_address = $c->cobrand->find_closest($report, 1);
+            if (%$closest_address) {
+                $location .= " Nearest road: $closest_address->{road}." if $closest_address->{road};
+                $location .= " Nearest postcode: $closest_address->{postcode}{postcode}." if $closest_address->{postcode};
+            }
+
             my $description = sprintf("%s %s", $report->external_id || "", $report->get_extra_metadata('detailed_information') || "");
             my $activity_code = $report->defect_type ?
                 $report->defect_type->get_extra_metadata('activity_code')
