@@ -5,12 +5,15 @@ use Test::More;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+
 subtest 'check /ajax defaults to open reports only' => sub {
     my $categories = [ 'Bridges', 'Fences', 'Manhole' ];
     my $params = {
         postcode  => 'OX28 4DS',
-        latitude  =>  51.7847208192,
-        longitude => -1.49445264029,
+        cobrand => 'oxfordshire',
+        latitude  =>  51.784721,
+        longitude => -1.494453,
     };
     my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
                 . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
@@ -23,7 +26,7 @@ subtest 'check /ajax defaults to open reports only' => sub {
                 category => $category,
                 state => $state,
             );
-            $mech->create_problems_for_body( 1, 2237, 'Around page', \%report_params );
+            $mech->create_problems_for_body( 1, $oxon->id, 'Around page', \%report_params );
         }
     }
 
@@ -46,6 +49,8 @@ subtest 'check /ajax defaults to open reports only' => sub {
 };
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
+my $inspector = $mech->create_user_ok('inspector@example.com', name => 'Inspector');
+$inspector->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
 
 subtest 'Exor RDI download appears on Oxfordshire cobrand admin' => sub {
     FixMyStreet::override_config {
@@ -67,7 +72,52 @@ subtest 'Exor RDI download doesn’t appear outside of Oxfordshire cobrand admin
     }
 };
 
+subtest 'Exor file looks okay' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/admin/exordefects');
+        $mech->submit_form_ok( { with_fields => {
+            start_date => '05/05/2017',
+            end_date => '05/05/2017',
+            user_id => $inspector->id,
+        } }, 'submit download');
+        $mech->content_contains("No inspections by that inspector in the selected date range");
+        my $problem = FixMyStreet::DB->resultset('Problem')->first;
+        $problem->update({ state => 'action scheduled', external_id => 123 });
+        FixMyStreet::DB->resultset('AdminLog')->create({
+            admin_user => $inspector->name,
+            user => $inspector,
+            object_type => 'problem',
+            action => 'inspected',
+            object_id => $problem->id,
+            whenedited => DateTime->new(year => 2017, month => 5, day => 5, hour => 12),
+        });
+        $mech->submit_form_ok( { with_fields => {
+            start_date => '05/05/2017',
+            end_date => '05/05/2017',
+            user_id => $inspector->id,
+        } }, 'submit download');
+        (my $rdi = $mech->content) =~ s/\r\n/\n/g;
+        is $rdi, <<EOF, "RDI file matches expected";
+"1,1.8,1.0.0.0,ENHN,"
+"G,1989169,,,XX,170505,0700,D,INS,N,,,,"
+"H,MC"
+"I,MC,,001,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","123 ""
+"J,SFP2,2,,,434970,209683,,,,,"
+"M,resolve,,,/CMC,,"
+"P,0,999999"
+"X,1,1,1,1,0,0,0,1,0,1,0,0,0"
+EOF
+    }
+};
+
 # Clean up
-$mech->delete_user( $superuser );
-$mech->delete_problems_for_body( 2237 );
-done_testing();
+END {
+    $mech->delete_user( $superuser );
+    $mech->delete_user( $inspector );
+    $mech->delete_problems_for_body( $oxon->id );
+    done_testing();
+}
