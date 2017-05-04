@@ -121,7 +121,8 @@ sub find_closest {
 
     my $data = $self->SUPER::find_closest($problem, $as_data);
 
-    my $url = "https://mapit.mysociety.org/nearest/4326/" . $problem->longitude . ',' . $problem->latitude;
+    my $mapit_url = FixMyStreet->config('MAPIT_URL');
+    my $url = $mapit_url . "nearest/4326/" . $problem->longitude . ',' . $problem->latitude;
     my $j = LWP::Simple::get($url);
     if ($j) {
         $j = JSON->new->utf8->allow_nonref->decode($j);

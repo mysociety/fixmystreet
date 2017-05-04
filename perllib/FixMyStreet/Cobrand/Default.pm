@@ -4,6 +4,7 @@ use base 'FixMyStreet::Cobrand::Base';
 use strict;
 use warnings;
 use FixMyStreet;
+use FixMyStreet::DB;
 use FixMyStreet::Geocode::Bing;
 use DateTime;
 use Encode;
@@ -71,7 +72,7 @@ a cobrand that only wants some of the data.
 
 sub problems {
     my $self = shift;
-    return $self->problems_restriction($self->{c}->model('DB::Problem'));
+    return $self->problems_restriction(FixMyStreet::DB->resultset('Problem'));
 }
 
 =head1 problems_on_map
@@ -83,7 +84,7 @@ restricted to a subset if we're on a cobrand that only wants some of the data.
 
 sub problems_on_map {
     my $self = shift;
-    return $self->problems_on_map_restriction($self->{c}->model('DB::Problem'));
+    return $self->problems_on_map_restriction(FixMyStreet::DB->resultset('Problem'));
 }
 
 =head1 updates
@@ -95,7 +96,7 @@ a cobrand that only wants some of the data.
 
 sub updates {
     my $self = shift;
-    return $self->updates_restriction($self->{c}->model('DB::Comment'));
+    return $self->updates_restriction(FixMyStreet::DB->resultset('Comment'));
 }
 
 =head1 problems_restriction/updates_restriction
@@ -149,7 +150,7 @@ a cobrand that only wants some of the data.
 
 sub users {
     my $self = shift;
-    return $self->users_restriction($self->{c}->model('DB::User'));
+    return $self->users_restriction(FixMyStreet::DB->resultset('User'));
 }
 
 =head1 users_restriction

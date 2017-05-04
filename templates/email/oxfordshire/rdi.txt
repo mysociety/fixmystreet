@@ -1,0 +1,8 @@
+Subject: RDI report for [% user.name %]
+
+Please find attached RDI file for [% start_date %]
+to [% end_date %].
+
+----
+
+The mySociety team and Oxfordshire County Council
