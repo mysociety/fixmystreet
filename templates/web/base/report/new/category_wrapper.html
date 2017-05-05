@@ -12,6 +12,12 @@
 [% END %]
 </div>
 
+<div id="js-duplicates" class="hidden">
+  <h2>Has this already been reported?</h2>
+  <p>Other users of this site have reported similar problems nearby, if your problem one of these, click the ⭐ to subscribe to the problem.</p>
+  <ul class="item-list item-list--duplicates"></ul>
+</div>
+
 [%- IF category_extras %]
     [% PROCESS "report/new/category_extras.html" %]
 [%- END %]

@@ -425,6 +425,23 @@ $.extend(fixmystreet.set_up, {
                 $category_meta.empty();
             }
         });
+
+        $.getJSON('/report/new/possible_duplicates', args, function(data) {
+          if (data.count > 0) {
+            $('#js-duplicates').removeClass('hidden');
+            $('#js-duplicates ul').html(data.duplicates);
+            $('#js-duplicates ul').on('click', '.plus-one', function(e) {
+              var $this = $(this);
+              var token = $('meta[name="csrf-token"]').attr('content');
+              $.post( '/report/update/plus_one', { id: $this.data('problem-id'), token: token }, function(data) {
+                window.location.href = data.url;
+              }, 'json');
+              e.preventDefault();
+            });
+          } else {
+            $('#js-duplicates').addClass('hidden');
+          }
+        });
     });
   },
 

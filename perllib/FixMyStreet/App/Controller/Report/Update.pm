@@ -6,6 +6,8 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Path::Class;
 use Utils;
+use JSON::MaybeXS;
+use URI::Escape;
 
 =head1 NAME
 
@@ -22,10 +24,12 @@ sub report_update : Path : Args(0) {
 
     $c->forward('initialize_update');
     $c->forward('load_problem');
+
     $c->forward('check_form_submitted')
       or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
 
     $c->forward('/auth/check_csrf_token');
+
     $c->forward('process_update');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
@@ -33,7 +37,44 @@ sub report_update : Path : Args(0) {
       or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
 
     $c->forward('save_update');
-    $c->forward('redirect_or_confirm_creation');
+
+    if (!defined $c->stash->{plus_one}) {
+        $c->forward('redirect_or_confirm_creation');
+    }
+}
+
+sub plus_one : Path('plus_one') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $url;
+
+    if ($c->user) {
+        $c->set_param('update', 'User has added +1 to this report');
+        $c->set_param('name', $c->user->name);
+        $c->set_param('add_alert', 1);
+        $c->set_param('submit_update', 1);
+
+        $c->stash->{plus_one} = 1;
+
+        $c->forward('report_update');
+        $c->forward('update_problem');
+        $c->forward('signup_for_alerts');
+
+        $url = '/report/' . $c->stash->{problem}->id . '?plus_one=1';
+    } else {
+        $c->forward('/auth/get_csrf_token');
+        my $params = uri_escape_utf8('id=' . $c->get_param('id') . '&token=' . $c->stash->{csrf_token});
+        my $redirectURL = '/report/update/plus_one';
+        $url = '/auth?plus_one=1&r=' . $redirectURL . '&p=' . $params;
+    }
+
+    if ($c->request->headers->header('Accept') =~ /application\/json/) {
+        my $json = { url => $url };
+        my $body = encode_json($json);
+        $c->res->content_type('application/json; charset=utf-8');
+        $c->res->body($body);
+    } else {
+        $c->res->redirect($url);
+    }
 }
 
 sub confirm : Private {
@@ -471,6 +512,10 @@ sub save_update : Private {
         # User exists and we are not logged in as them.
         $c->forward('tokenize_user', [ $update ]);
         $update->user->discard_changes();
+    }
+
+    if (defined $c->stash->{plus_one}) {
+        $update->state('hidden');
     }
 
     if ( $update->in_storage ) {

@@ -222,6 +222,36 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     $c->res->body($body);
 }
 
+sub possible_duplicates : Path('possible_duplicates') : Args(0) {
+  my ( $self, $c ) = @_;
+
+  if ( ! $c->forward('determine_location') ) {
+      my $body = encode_json({ error => _("Sorry, we could not find that location.") });
+      $c->res->content_type('application/json; charset=utf-8');
+      $c->res->body($body);
+      return 1;
+  }
+  $c->forward('setup_categories_and_bodies');
+  $c->forward('check_for_category');
+
+  my $category = $c->stash->{category} || "";
+  my $states = FixMyStreet::DB::Result::Problem::open_states();
+  my $nearby = $c->model('DB::Nearby')->nearby(
+    $c, 0.010, [], 50, $c->stash->{latitude}, $c->stash->{longitude}, undef, [ $category ], $states
+  );
+
+  my $duplicate_html = $c->render_fragment(
+      'reports/duplicate_report_list_items.html',
+      { items => $nearby }
+  );
+
+  my $json = { count => scalar(@$nearby) };
+  $json->{duplicates} = $duplicate_html if $duplicate_html;
+  my $body = encode_json($json);
+  $c->res->content_type('application/json; charset=utf-8');
+  $c->res->body($body);
+}
+
 sub category_extras_ajax : Path('category_extras') : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -493,7 +523,7 @@ Work out what the location of the report should be - either by using lat,lng or
 a tile click or what's come in from a partial. Returns false if no location
 could be found.
 
-=cut 
+=cut
 
 sub determine_location : Private {
     my ( $self, $c ) = @_;
@@ -515,7 +545,7 @@ sub determine_location : Private {
 Detect that the map tiles have been clicked on by looking for the tile
 parameters.
 
-=cut 
+=cut
 
 sub determine_location_from_tile_click : Private {
     my ( $self, $c ) = @_;
@@ -566,7 +596,7 @@ sub determine_location_from_tile_click : Private {
 Use latitude and longitude stored in the report - this is probably result of a
 partial report being loaded.
 
-=cut 
+=cut
 
 sub determine_location_from_report : Private {
     my ( $self, $c ) = @_;

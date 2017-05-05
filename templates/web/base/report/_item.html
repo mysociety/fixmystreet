@@ -2,7 +2,12 @@
 [% PROCESS 'admin/report_blocks.html' ~%]
 [% END ~%]
 
-[% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) ~%]
+[% IF duplicate %]
+    [% item_extra_class = "item-list__item--indented" ~%]
+    [% item_action = BLOCK ~%]
+      <button class="plus-one" href="#" data-problem-id="[% problem.id %]">Subscribe</button>
+    [%~ END %]
+[% ELSIF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) ~%]
     [% item_extra_class = "item-list__item--indented" ~%]
     [% item_action = BLOCK ~%]
       <input type="submit" value="1"

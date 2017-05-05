@@ -36,6 +36,10 @@
     </p>
     [% INCLUDE 'report/update-form.html' %]
     [% SET shown_form = 1 %]
+[% ELSIF plus_one %]
+    <p class='form-success'>
+        [% loc('Thanks for adding your input to this report. You\'ve also been subscribed to any updates') %]
+    </P>
 [% END %]
 
 [% INCLUDE 'report/banner.html' %]
