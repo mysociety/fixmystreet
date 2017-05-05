@@ -39,11 +39,11 @@ $mech->get_ok('/my/planned');
 $mech->content_contains('Test Title');
 
 $mech->get_ok($problem->url);
-$mech->content_contains('Shortlisted');
+$mech->text_contains('Shortlisted');
 $mech->submit_form_ok({ with_fields => { 'shortlist-remove' => 1 } });
-$mech->content_contains('Shortlist');
+$mech->text_contains('Shortlist');
 $mech->submit_form_ok({ with_fields => { 'shortlist-add' => 1 } });
-$mech->content_contains('Shortlisted');
+$mech->text_contains('Shortlisted');
 
 $mech->get_ok('/my/planned?sort=shortlist&ajax=1');
 $mech->content_contains('shortlist-up');
@@ -56,6 +56,31 @@ $mech->content_lacks('shortlist-down');
 $mech->get_ok('/my/planned?ajax=1');
 $mech->content_contains('shortlist-up');
 $mech->content_contains('shortlist-down');
+
+subtest "POSTing multiple problems to my/planned/change adds all to shortlist" => sub {
+    my ($problem1, $problem2, $problem3) = $mech->create_problems_for_body(3, $body->id, 'New Problem');
+
+    # Grab CSRF token
+    $mech->get_ok($problem1->url);
+    my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
+
+    $mech->post_ok( '/my/planned/change_multiple', {
+            'ids[]' => [
+                $problem1->id,
+                $problem2->id,
+                $problem3->id,
+            ],
+            token => $csrf,
+        }
+    );
+
+    $mech->get_ok($problem1->url);
+    $mech->text_contains('Shortlisted');
+    $mech->get_ok($problem2->url);
+    $mech->text_contains('Shortlisted');
+    $mech->get_ok($problem3->url);
+    $mech->text_contains('Shortlisted');
+};
 
 done_testing();
 

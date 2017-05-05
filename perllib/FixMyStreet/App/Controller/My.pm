@@ -205,6 +205,20 @@ sub planned_change : Path('planned/change') {
     }
 }
 
+sub shortlist_multiple : Path('planned/change_multiple') {
+    my ($self, $c) = @_;
+    $c->forward('/auth/check_csrf_token');
+
+    my @ids = $c->get_param_list('ids[]');
+
+    foreach my $id (@ids) {
+      $c->forward( '/report/load_problem_or_display_error', [ $id ] );
+      $c->user->add_to_planned_reports($c->stash->{problem});
+    }
+
+    $c->res->body(encode_json({ outcome => 'add' }));
+}
+
 sub by_shortlisted {
     my $a_order = $a->get_extra_metadata('order') || 0;
     my $b_order = $b->get_extra_metadata('order') || 0;
