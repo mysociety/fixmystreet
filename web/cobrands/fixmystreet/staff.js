@@ -81,15 +81,6 @@ $.extend(fixmystreet.set_up, {
   },
 
   list_item_actions: function() {
-    function toggle_shortlist(btn, sw, id) {
-        btn.attr('class', 'item-list__item__shortlist-' + sw);
-        btn.attr('title', btn.data('label-' + sw));
-        if (id) {
-            sw += '-' + id;
-        }
-        btn.attr('name', 'shortlist-' + sw);
-    }
-
     $('.item-list--reports').on('click', ':submit', function(e) {
       e.preventDefault();
 
@@ -130,9 +121,9 @@ $.extend(fixmystreet.set_up, {
       } else if ('shortlist-up' === whatUserWants) {
         $item.insertBefore( $item.prev() );
       } else if ('shortlist-remove' === whatUserWants) {
-          toggle_shortlist($submitButton, 'add', report_id);
+          fixmystreet.hooks.toggle_shortlist($submitButton, 'add', report_id);
       } else if ('shortlist-add' === whatUserWants) {
-          toggle_shortlist($submitButton, 'remove', report_id);
+          fixmystreet.hooks.toggle_shortlist($submitButton, 'remove', report_id);
       }
 
       // Items have moved around. We need to make sure the "up" button on the
@@ -150,9 +141,9 @@ $.extend(fixmystreet.set_up, {
         } else if ('shortlist-up' === whatUserWants) {
           $item.insertAfter( $item.next() );
         } else if ('shortlist-remove' === whatUserWants) {
-          toggle_shortlist($submitButton, 'remove', report_id);
+          fixmystreet.hooks.toggle_shortlist($submitButton, 'remove', report_id);
         } else if ('shortlist-add' === whatUserWants) {
-          toggle_shortlist($submitButton, 'add', report_id);
+          fixmystreet.hooks.toggle_shortlist($submitButton, 'add', report_id);
         }
         fixmystreet.update_list_item_buttons($list);
       }).complete(function() {
@@ -340,7 +331,24 @@ $.extend(fixmystreet.set_up, {
             $input.val($this.val());
         }
     });
+  },
+
+  shortlist_listener: function() {
+    $('#fms_shortlist_all').on('click', function() {
+      var features = [];
+      var csrf = $('meta[name="csrf-token"]').attr('content');
+
+      for (var i = 0; i < fixmystreet.markers.features.length; i++) {
+        var feature = fixmystreet.markers.features[i];
+        if (feature.onScreen()) {
+          features.push(feature.data.id);
+        }
+      }
+
+      fixmystreet.maps.shortlist_multiple(features, csrf);
+    });
   }
+
 });
 
 $.extend(fixmystreet.hooks, {
@@ -366,5 +374,65 @@ $.extend(fixmystreet.hooks, {
               $(this).data('autopopulated', false);
             });
         }
+    },
+
+    toggle_shortlist: function(btn, sw, id) {
+        btn.attr('class', 'item-list__item__shortlist-' + sw);
+        btn.attr('title', btn.data('label-' + sw));
+        if (id) {
+            sw += '-' + id;
+        }
+        btn.attr('name', 'shortlist-' + sw);
     }
+
+});
+
+fixmystreet.maps = fixmystreet.maps || {};
+
+$.extend(fixmystreet.maps, {
+  shortlist_multiple: function(ids, token, count) {
+    var retryCount = (typeof count !== 'undefined') ?  count : 0;
+    $.post("/my/planned/change_multiple", { ids: ids, token: token })
+    .done(function() {
+      var $itemList = $('.item-list'),
+          items = [];
+
+      for (var i = 0; i < ids.length; i++) {
+        var problemId = ids[i],
+            $item = $itemList.find('#report-'+ problemId),
+            $form = $item.find('form'),
+            $submit = $form.find("input[type='submit']" );
+
+        fixmystreet.hooks.toggle_shortlist($submit, 'remove', problemId);
+
+        items.push({
+          'url': '/report/' + $item.data('report-id'),
+          'lastupdate': $item.data('lastupdate')
+        });
+      }
+      $(document).trigger('shortlist-all', { items: items});
+    })
+    .fail(function(response) {
+      if (response.status == 400 && retryCount < 4) {
+        // If the response is 400, then get a new CSRF token and retry
+        var csrf = response.responseText.match(/content="([^"]*)" name="csrf-token"/)[1];
+        fixmystreet.maps.shortlist_multiple(ids, csrf, retryCount + 1);
+      } else {
+        alert("We appear to be having problems. Please try again later.");
+      }
+    });
+  },
+
+  show_shortlist_control: function() {
+    var $shortlistButton = $('#fms_shortlist_all');
+    if ($shortlistButton === undefined || fixmystreet.page != "reports" ) {
+      return;
+    }
+
+    if (fixmystreet.map.getZoom() >= 14) {
+      $shortlistButton.removeClass('hidden');
+    } else {
+      $shortlistButton.addClass('hidden');
+    }
+  }
 });

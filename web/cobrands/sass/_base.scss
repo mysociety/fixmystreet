@@ -1493,6 +1493,27 @@ html.js #map .noscript {
       background-image:url($image-sprite);
       background-position: flip(right, -341px) -4070px;
     }
+    &#fms_shortlist_all {
+      padding: 0.6em 1em 0.5em 1em;
+      &:after {
+         content: "";
+         display: inline-block;
+         width: 16px;
+         height: 16px;
+         background-image: url(/cobrands/fixmystreet/images/map-marker.png);
+
+         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+             background-image: url(/cobrands/fixmystreet/images/map-marker@2x.png);
+         }
+
+         @media all {
+             background-image: url(/cobrands/fixmystreet/images/map-marker.svg), none;
+         }
+         background-size: 16px 16px;
+         vertical-align: middle;
+         margin: flip(0 0 0 8px, 0 8px 0 0);
+       }
+    }
     &.feed {
       background-image:url($image-sprite);
       background-position: flip(right, -341px) -3936px;

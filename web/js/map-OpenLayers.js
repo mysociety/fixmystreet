@@ -2,7 +2,9 @@ var fixmystreet = fixmystreet || {};
 
 (function() {
 
-    fixmystreet.maps = {
+    fixmystreet.maps = fixmystreet.maps || {}
+
+    $.extend(fixmystreet.maps, {
       // This function might be passed either an OpenLayers.LonLat (so has
       // lon and lat), or an OpenLayers.Geometry.Point (so has x and y).
       update_pin: function(lonlat) {
@@ -198,7 +200,7 @@ var fixmystreet = fixmystreet || {};
           }
           fixmystreet.markers.redraw();
       }
-    };
+    });
 
     var drag = {
         activate: function() {
@@ -541,6 +543,9 @@ var fixmystreet = fixmystreet || {};
             fixmystreet.map.addControl( fixmystreet.select_feature );
             fixmystreet.select_feature.activate();
             fixmystreet.map.events.register( 'zoomend', null, fixmystreet.maps.markers_resize );
+            fixmystreet.map.events.register( 'zoomend', null, function() {
+              fixmystreet.run(fixmystreet.maps.show_shortlist_control)
+            });
 
             // Set up the event handlers to populate the filters and react to them changing
             $("#filter_categories").on("change.filters", categories_or_status_changed);

@@ -424,6 +424,11 @@ if ($('#offline_list').length) {
         var lastupdate = $('.problem-header').data('lastupdate');
         fixmystreet.cachet.cacheReports([{ 'url': '/report/' + id, 'lastupdate': lastupdate }]);
     });
+
+    $(document).on('shortlist-all', function(e, args) {
+      fixmystreet.cachet.cacheReports(args.items);
+    });
+
     $(document).on('shortlist-remove', function(e, id) {
         fixmystreet.offline.removeReports(['/report/' + id]);
     });
