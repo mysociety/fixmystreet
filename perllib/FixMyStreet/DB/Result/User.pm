@@ -204,6 +204,27 @@ sub alert_for_problem {
     } );
 }
 
+=head2 create_alert
+
+Sign a user up to receive alerts on a given problem
+
+=cut
+
+sub create_alert {
+    my ( $self, $id, $options ) = @_;
+    my $alert = $self->alert_for_problem($id);
+
+    unless ( $alert ) {
+      $alert = $self->alerts->create({
+          %$options,
+          alert_type   => 'new_updates',
+          parameter    => $id,
+      });
+    }
+
+    $alert->confirm();
+}
+
 sub body {
     my $self = shift;
     return '' unless $self->from_body;

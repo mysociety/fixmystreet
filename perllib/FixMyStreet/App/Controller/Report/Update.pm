@@ -548,24 +548,17 @@ sub signup_for_alerts : Private {
     my ( $self, $c ) = @_;
 
     my $update = $c->stash->{update};
+    my $user = $update->user;
+    my $problem_id = $update->problem_id;
+
     if ( $c->stash->{add_alert} ) {
         my $options = {
-            user => $update->user,
-            alert_type => 'new_updates',
-            parameter => $update->problem_id,
+            cobrand => $update->cobrand,
+            cobrand_data => $update->cobrand_data,
+            lang => $update->lang,
         };
-        my $alert = $c->model('DB::Alert')->find($options);
-        unless ($alert) {
-            $alert = $c->model('DB::Alert')->create({
-                %$options,
-                cobrand      => $update->cobrand,
-                cobrand_data => $update->cobrand_data,
-                lang         => $update->lang,
-            });
-        }
-        $alert->confirm();
-
-    } elsif ( my $alert = $update->user->alert_for_problem($update->problem_id) ) {
+        $user->create_alert($problem_id, $options);
+    } elsif ( my $alert = $user->alert_for_problem($problem_id) ) {
         $alert->disable();
     }
 
