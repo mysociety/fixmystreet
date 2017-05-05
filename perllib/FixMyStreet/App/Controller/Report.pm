@@ -124,7 +124,7 @@ sub load_problem_or_display_error : Private {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
             unless $c->cobrand->show_unconfirmed_reports ;
     }
-    elsif ( $problem->hidden_states->{ $problem->state } or 
+    elsif ( $problem->hidden_states->{ $problem->state } or
             (($problem->get_extra_metadata('closure_status')||'') eq 'hidden')) {
         $c->detach(
             '/page_error_410_gone',
@@ -388,6 +388,15 @@ sub inspect : Private {
                     $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
                     $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
                 }
+
+                # If an inspector has changed the state, subscribe them to
+                # updates
+                my $options = {
+                    cobrand      => $c->cobrand->moniker,
+                    cobrand_data => $problem->cobrand_data,
+                    lang         => $problem->lang,
+                };
+                $problem->user->create_alert($problem->id, $options);
             }
         }
 

@@ -59,8 +59,13 @@ FixMyStreet::override_config {
     subtest "test basic inspect submission" => sub {
         $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action Scheduled', include_update => undef } });
         $report->discard_changes;
+        my $alert = FixMyStreet::App->model('DB::Alert')->find(
+            { user => $user, alert_type => 'new_updates', confirmed => 1, }
+        );
+
         is $report->state, 'action scheduled', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Yes', 'report data changed';
+        ok defined( $alert ) , 'sign up for alerts';
     };
 
     subtest "test inspect & instruct submission" => sub {
@@ -127,6 +132,17 @@ FixMyStreet::override_config {
         is $report->comments->search({ problem_state => 'duplicate' })->count, 1, 'update marking report as duplicate was left';
 
         $report->update({ state => $old_state });
+    };
+
+    subtest "changing state does not add another alert" =>sub {
+      $mech->get_ok("/report/$report_id");
+      $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Investigating', public_update => "We're investigating.", include_update => "1" } });
+
+      my $alert_count = FixMyStreet::App->model('DB::Alert')->search(
+          { user_id => $user->id, alert_type => 'new_updates', confirmed => 1, parameter => $report_id }
+      )->count();
+
+      is $alert_count, 1 , 'User has only one alert';
     };
 
     subtest "marking a report as a duplicate doesn't clobber user-provided update" => sub {
