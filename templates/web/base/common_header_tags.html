@@ -6,6 +6,10 @@
     id="js-meta-data" data-page="[% page %]"
     data-cobrand="[% c.cobrand.moniker %]">
 
+[% IF csrf_token %]
+  <meta content="[% csrf_token %]" name="csrf-token" />
+[% END %]
+
 <!--[if (lt IE 9)]>
     <script src="[% version('/js/html5shiv.js') %]""></script>
 <![endif]-->

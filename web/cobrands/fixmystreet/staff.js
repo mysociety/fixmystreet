@@ -105,7 +105,7 @@ $.extend(fixmystreet.set_up, {
           var parts = whatUserWants.split('-');
           whatUserWants = parts[0] + '-' + parts[1];
           report_id = parts[2];
-          var token = $('[name=token]').val();
+          var token = $('meta[name="csrf-token"]').attr('content');
           data = whatUserWants + '=1&token=' + token + '&id=' + report_id;
       } else {
           var $form = $(this).parents('form');

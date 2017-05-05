@@ -70,7 +70,7 @@ fixmystreet.offlineBanner = (function() {
                             }
                             // In case the request failed due to out-of-date CSRF token,
                             // try once more with a new token given in the error response.
-                            var m = jqXHR.responseText.match(/name="token" value="([^"]*)"/);
+                            var m = jqXHR.responseText.match(/content="([^"]*)" name="csrf-token"/);
                             if (!m) {
                                 return nextForm();
                             }
