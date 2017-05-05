@@ -340,6 +340,10 @@ $.extend(fixmystreet.set_up, {
             $input.val($this.val());
         }
     });
+  },
+
+  admin_page_form: function() {
+    $('areas').make_multi();
   }
 });
 

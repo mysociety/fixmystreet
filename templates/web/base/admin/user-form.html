@@ -61,11 +61,11 @@
                 %]
               </p>
             </div>
-            [% loc('Area:') %]
-            <select class="form-control" id='area_id' name='area_id' [% 'disabled' UNLESS c.user.has_permission_to('user_assign_areas', user.from_body.id) %]>
-              <option value=''>[% loc('No area') %]</option>
+
+            [% loc('Areas:') %]
+            <select class="form-control js-multiple" id='areas' name='areas' multiple multiple data-all='[% loc('No area') %]' [% 'disabled' UNLESS c.user.has_permission_to('user_assign_areas', user.from_body.id) %]>
               [% FOREACH area IN areas %]
-                <option value="[% area.id %]"[% ' selected' IF area.id == user.area_id %]>[% area.name | html %]</option>
+                <option value="[% area.id %]"[% ' selected' IF user.area_ids.grep(area.id).size %]>[% area.name | html %]</option>
               [% END %]
             </select>
           </li>

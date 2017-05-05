@@ -36,15 +36,7 @@
     [% INCLUDE '_hart_hants_note.html' %]
 [% END %]
 
-<section class="full-width">
-[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
-<div class="js-pagination">
-[% INCLUDE 'pagination.html', pager = problems_pager, param = 'p' %]
-</div>
-<div id="js-reports-list">
-    [% INCLUDE 'my/_problem-list.html' %]
-</div>
-</section>
+[% INCLUDE 'my/_problems.html' shortlist = 0 %]
 
 [% FOREACH u IN updates %]
     [% IF loop.first %]

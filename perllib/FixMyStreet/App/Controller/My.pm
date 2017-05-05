@@ -44,6 +44,38 @@ sub my : Path : Args(0) {
     $c->forward('setup_page_data');
 }
 
+sub areas : Local : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('/auth/get_csrf_token');
+
+    $c->detach('/page_error_404_not_found', [])
+        if !defined $c->user->reports_in_areas;
+
+    $c->stash->{problems_rs} = $c->user->reports_in_areas;
+    $c->stash->{show_map} = 1;
+    if (!defined($c->get_param('filter_category', 1))) {
+       $c->set_param('filter_category', join(',', @{$c->user->categories}) );
+    }
+    $c->forward('/reports/stash_report_sort', [ 'created-desc' ]);
+    $c->forward('get_problems');
+    if ($c->get_param('ajax')) {
+        $c->detach('/reports/ajax', [ 'my/_problem-list.html' ]);
+    }
+    $c->forward('setup_page_data');
+    $c->stash->{map}->{area} = $c->user->area_ids;
+    $c->stash->{select_presets} = encode_json([
+      {
+        name => _('My categories'),
+        options => $c->user->categories
+      },
+      {
+        name => _('Everything'),
+        options => $c->stash->{filter_categories}
+      }
+    ]);
+}
+
 sub planned : Local : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -174,7 +206,7 @@ sub setup_page_data : Private {
         pins      => $pins,
         any_zoom  => 1,
     )
-        if @$pins;
+        if @$pins || $c->stash->{show_map};
 }
 
 sub planned_change : Path('planned/change') {

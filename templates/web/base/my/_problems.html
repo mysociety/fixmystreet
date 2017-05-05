@@ -1,0 +1,9 @@
+<section class="full-width">
+[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 shortlist = shortlist %]
+<div class="js-pagination">
+[% INCLUDE 'pagination.html', pager = problems_pager, param = 'p' %]
+</div>
+<div id="js-reports-list">
+  [% INCLUDE 'my/_problem-list.html' shortlist = shortlist %]
+</div>
+</section>

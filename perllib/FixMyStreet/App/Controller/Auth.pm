@@ -411,12 +411,15 @@ Used after signing in to take the person back to where they were.
 
 
 sub redirect_on_signin : Private {
-    my ( $self, $c, $redirect, $params ) = @_;
+    my ( $self, $c, $redirect ) = @_;
+    if (scalar(@{ $c->user->area_ids }) and ($redirect eq '' or $redirect eq 'my') ) {
+      $redirect = 'my/areas';
+    }
     unless ( $redirect ) {
         $c->detach('redirect_to_categories') if $c->user->from_body && scalar @{ $c->user->categories };
         $redirect = 'my';
     }
-    $redirect = 'my' if $redirect =~ /^admin/ && !$c->cobrand->admin_allow_user($c->user);
+    $redirect = 'my' if $redirect =~ /^admin/ && !$c->user->is_superuser;
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $redirect = 'admin' if $c->user->from_body;
     }

@@ -113,7 +113,12 @@ function isR2L() {
 
     make_multi: function() {
         var $this = $(this),
-            all = $this.data('all');
+            all = $this.data('all'),
+            presets = $this.data('presets') === undefined ? [{
+              name: all,
+              options: []
+            }] : $this.data('presets');
+
         $this.multiSelect({
             allText: all,
             noneText: all,

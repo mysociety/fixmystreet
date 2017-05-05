@@ -286,6 +286,44 @@ subtest "sign in but have email form autofilled" => sub {
     is $mech->uri->path, '/my', "redirected to correct page";
 };
 
+subtest 'signin redirects to /my/areas for user with assigned areas' => sub {
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    $user->update({areas => ',123,456,789'});
+
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        {
+            form_name => 'general_auth',
+            fields    => {
+                email    => $test_email,
+                password_sign_in => $test_password,
+            },
+            button => 'sign_in',
+        },
+        "sign in with '$test_email'"
+    );
+    is $mech->uri->path, '/my/areas', "redirected to /my/areas";
+    $mech->log_out_ok;
+
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        {
+            form_name => 'general_auth',
+            fields    => {
+                email    => $test_email,
+                password_sign_in => $test_password,
+                r => 'my'
+            },
+            button => 'sign_in',
+        },
+        "sign in with '$test_email' and redirect variable set to 'my'"
+    );
+    is $mech->uri->path, '/my/areas', "redirected to /my/areas with redirect set to 'my'";
+
+    $user->update({areas => ''});
+};
+
+
 
 # more test:
 # TODO: test that email are always lowercased

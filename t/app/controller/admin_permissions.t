@@ -196,7 +196,7 @@ FixMyStreet::override_config {
         } } );
 
         is $user2->user_body_permissions->count, 0, 'user2 has had permissions removed';
-        is $user2->area_id, undef, 'user2 has had area removed';
+        is $user2->areas, undef, 'user2 has had area removed';
     };
 };
 

@@ -68,6 +68,59 @@ FixMyStreet::override_config {
     $mech->content_like(qr/may_show_name[^>c]*>/);
 };
 
+subtest 'user with areas returns areas as an array' => sub {
+    my $user = FixMyStreet::DB->resultset('User')->find_or_create(
+        {
+            email => 'testwithareas@example.com'
+        }
+    );
+
+    is_deeply $user->area_ids, [], 'area_ids is an empty array when no areas present';
+
+    $user->update({areas => ',123,456,789'});
+
+    is_deeply $user->area_ids, [123,456,789], 'area_ids is an array of areas';
+};
+
+subtest 'reports_in_areas returns reports in a users areas' => sub {
+    my $user = FixMyStreet::DB->resultset('User')->find_or_create(
+        {
+            email => 'testwithareas@example.com'
+        }
+    );
+    $user->update({areas => ',123,456,789'});
+
+    my ($problem1) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',123,6753,4324,' });
+    my ($problem2) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',6753,456,4324,' });
+    my ($problem3) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',6753,3433,789,' });
+    my ($problem4) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',6753,3433,32324,' });
+
+    my @reports = $user->reports_in_areas;
+
+    is scalar(@reports), 3, 'Has correct number of problems';
+
+    is $reports[0]->id, $problem1->id, 'Contains problem 1';
+    is $reports[1]->id, $problem2->id, 'Contains problem 2';
+    is $reports[2]->id, $problem3->id, 'Contains problem 3';
+};
+
+subtest 'reports_in_areas returns an empty array for a user without areas' => sub {
+    my $newuser = FixMyStreet::DB->resultset('User')->find_or_create(
+        {
+            email => 'testwithoutareas@example.com'
+        }
+    );
+
+    my ($problem1) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',123,6753,4324,' });
+    my ($problem2) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',6753,456,4324,' });
+    my ($problem3) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',6753,3433,789,' });
+    my ($problem4) = $mech->create_problems_for_body(1, '2504', 'Title', { areas => ',6753,3433,32324,' });
+
+    my $reports = $newuser->reports_in_areas;
+
+    is $reports, undef, 'Has no problems';
+};
+
 END {
     $mech->delete_user( $problem->user ) if $problem;
     done_testing();
