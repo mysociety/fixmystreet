@@ -944,7 +944,11 @@ textarea.form-error {
 
 // The coloured sidebar column on .with-actions pages.
 #side-inspect {
-  background-color: #E9F2FF;
+    margin: 0;
+}
+
+.inspect-form-heading {
+  display: none;
 }
 
 // More general notes

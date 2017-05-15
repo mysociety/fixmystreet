@@ -77,6 +77,10 @@ dd, p {
   }
 }
 
+#side-inspect {
+  background-color: #deead2; // darker version of $oxfordshire_very_light_green
+}
+
 .btn-primary {
     @include button-reset(
         $oxfordshire_button_top,

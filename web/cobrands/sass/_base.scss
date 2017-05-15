@@ -1848,6 +1848,18 @@ label .muted {
   }
 }
 
+// The coloured sidebar column on .with-actions pages.
+// On narrow screens, it becomes a full-width section.
+#side-inspect {
+  padding: 1em;
+  margin: 0 -1em;
+  background-color: #E9F2FF;
+}
+
+.inspect-form-heading {
+  margin-top: 0;
+}
+
 .inspect-section {
   border-top: 1px solid rgba(0, 0, 0, 0.2);
   padding-top: 1.5em;
