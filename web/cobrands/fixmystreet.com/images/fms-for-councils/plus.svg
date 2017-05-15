@@ -1,14 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
-    <title>Group 2 Copy</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Group-2-Copy" fill="#333333">
-            <path d="M32,18 C32,10.2680135 25.7319865,4 18,4 C10.2680135,4 4,10.2680135 4,18 C4,25.7319865 10.2680135,32 18,32 C25.7319865,32 32,25.7319865 32,18 Z M0,18 C0,8.0588745 8.0588745,0 18,0 C27.9411255,0 36,8.0588745 36,18 C36,27.9411255 27.9411255,36 18,36 C8.0588745,36 0,27.9411255 0,18 Z" id="Oval"></path>
-            <path d="M16,25.5 C16,26.6045695 16.8954305,27.5 18,27.5 C19.1045695,27.5 20,26.6045695 20,25.5 L20,10.5 C20,9.3954305 19.1045695,8.5 18,8.5 C16.8954305,8.5 16,9.3954305 16,10.5 L16,25.5 Z" id="Line"></path>
-            <path d="M10.5,16 C9.3954305,16 8.5,16.8954305 8.5,18 C8.5,19.1045695 9.3954305,20 10.5,20 L25.5,20 C26.6045695,20 27.5,19.1045695 27.5,18 C27.5,16.8954305 26.6045695,16 25.5,16 L10.5,16 Z" id="Line"></path>
-        </g>
-    </g>
-</svg>
+<svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><title>Group 2 Copy</title><g fill="#333" fill-rule="evenodd"><path d="M32 18c0-7.732-6.268-14-14-14S4 10.268 4 18s6.268 14 14 14 14-6.268 14-14zM0 18C0 8.06 8.06 0 18 0s18 8.06 18 18-8.06 18-18 18S0 27.94 0 18z"/><path d="M16 25.5c0 1.105.895 2 2 2s2-.895 2-2v-15c0-1.105-.895-2-2-2s-2 .895-2 2v15z"/><path d="M10.5 16c-1.105 0-2 .895-2 2s.895 2 2 2h15c1.105 0 2-.895 2-2s-.895-2-2-2h-15z"/></g></svg>

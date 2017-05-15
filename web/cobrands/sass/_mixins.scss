@@ -172,6 +172,40 @@ $right: right;
   align-items: $alignment;
 }
 
+@mixin flex-direction($direction) {
+    @if ($direction == column) {
+        -webkit-box-orient: vertical;
+    } @elseif ($direction == row) {
+        -webkit-box-orient: horizontal;
+    }
+    -moz-flex-direction: $direction;
+    -ms-flex-direction: $direction;
+    -webkit-flex-direction: $direction;
+    flex-direction: $direction;
+}
+
+@mixin justify-content($alignment) {
+    -webkit-justify-content: $alignment;
+    -moz-justify-content: $alignment;
+    -ms-justify-content: $alignment;
+    justify-content: $alignment;
+}
+
+@mixin flex-order($order) {
+  // 2009 syntax
+  -webkit-box-ordinal-group: $order;
+  -moz-box-ordinal-group: $order;
+
+   // 2011 syntax https://www.w3.org/TR/2012/WD-css3-flexbox-20120322/#flex-order
+  -ms-flex-order: $order;
+  flex-order: $order;
+
+  // Modern syntax
+  -webkit-order: $order;
+  -ms-order: $order;
+  order: $order;
+}
+
 @mixin high-dpi-background-image($path) {
   background-image: url("#{$path}.png");
 

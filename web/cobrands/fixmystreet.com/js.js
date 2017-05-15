@@ -36,20 +36,33 @@ $(function(){
 });
 
 $(function(){
-    /* Accordion on councils page */
+    // "Fold out" additional rows in pricing grid
+    $('.js-extra-features').each(function(){
+        var $t3 = $(this);
+        var $t2 = $('<tbody>');
+        var cols = $t3.find('tr').eq(0).children().length;
 
-  var allPanels = $('.accordion > .accordion-item .accordion-content').hide();
-  var allSwitches = $('.accordion .accordion-switch');
+        $t2.addClass('pricing-table__show-more');
+        $t2.html('<tr><td colspan="' + cols + '"><button class="button">Compare more features</button></td></tr>');
+        $t2.on('click', '.button', function(){
+            $t3.toggle();
+        });
 
-  allSwitches.click(function() {
-    if ($(this).hasClass('accordion-switch--open')) {
-        return false;
-    }
-    allPanels.slideUp();
-    allSwitches.removeClass('accordion-switch--open');
-    $(this).addClass('accordion-switch--open');
-    $(this).next().slideDown();
-    return false;
-  });
-  allSwitches.first().click();
+        $t2.insertBefore($t3);
+        $t3.hide();
+    });
+
+    // Add tier names to cells, to be displayed on narrow screens
+    $('.pricing-table thead th').each(function(){
+        var $table = $(this).parents('.pricing-table');
+        var colIndex = $(this).prevAll().length;
+
+        // Ignore first column
+        if (colIndex > 0) {
+            var tierName = $(this).text();
+            $table.find('tbody tr').each(function(){
+                $(this).children().eq(colIndex).attr('data-tier-name', tierName);
+            });
+        }
+    });
 });
