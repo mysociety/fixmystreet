@@ -776,6 +776,7 @@ body.authpage {
       border:none;
       a, input[type=submit] {
         font-size: 0.75em;
+        line-height: 18px; // match `body`
         color:#666;
         padding: flip(0.5em 1.5em 0.5em 0, 0.5em 0 0.5em 1.5em);
         text-transform:none;
