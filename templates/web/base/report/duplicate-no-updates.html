@@ -1,5 +1,5 @@
 <div>
-    [% UNLESS hide_header %]<h2>[% loc( 'Provide an update') %]</h2>[% END %]
+    [% UNLESS hide_header %]<h2 class="update-form-heading">[% loc( 'Provide an update') %]</h2>[% END %]
     <p>[% loc("This report is a duplicate. Please leave updates on the original report:") %]</p>
     <ul class="item-list">
       [% INCLUDE 'report/_item.html' item_extra_class = 'item-list__item--with-pin item-list--reports__item--selected' problem = problem.duplicate_of %]
