@@ -257,4 +257,17 @@ sub in_area {
     });
 }
 
+sub planned_in_area {
+    my ( $rs, $area_id ) = @_;
+    my $reports = $rs->in_area($area_id);
+    $reports->search(
+      {
+        'user_planned_reports.id' => \'IS NOT NULL'
+      },
+      {
+        join => 'user_planned_reports'
+      }
+    );
+}
+
 1;

@@ -9,6 +9,13 @@ use JSON::MaybeXS;
 my $mech = FixMyStreet::TestMech->new;
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', { id => 2237 });
 
+my $user = $mech->log_in_ok( 'test@example.com' );
+$user->update({ from_body => $oxfordshire });
+$user->user_body_permissions->find_or_create({
+    body => $oxfordshire,
+    permission_type => 'planned_reports',
+});
+
 my $area_id = '123';
 
 my ($problem1) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", whensent => \'current_timestamp' });
@@ -22,13 +29,33 @@ subtest 'in_area returns correct number of problems in a given area' => sub {
     is $in_area->count, 3, 'correct count is returned';
 
     $in_area = FixMyStreet::DB->resultset('Problem')->in_area($area_id)->search({
-      whensent  => { '>=', \"current_timestamp-'30 days'::interval" }
+        whensent  => { '>=', \"current_timestamp-'30 days'::interval" }
     });
 
     is $in_area->count, 2, 'allows filtering by date';
 };
 
+subtest 'planned_in_area gets planned reports' => sub {
+    $user->add_to_planned_reports($problem1);
+    $user->add_to_planned_reports($problem2);
+
+    $problem2->user_planned_reports->first->update({
+        added => \"current_timestamp-'60 days'::interval"
+    });
+
+    my $planned_in_area = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id);
+
+    is $planned_in_area->count, 2, 'correct count is returned';
+
+    $planned_in_area = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id)->search({
+        'user_planned_reports.added'  => { '>=', \"current_timestamp-'30 days'::interval" }
+    });
+
+    is $planned_in_area->count, 1, 'allows filtering by date';
+};
+
 END {
+    $mech->delete_user($user);
     $mech->delete_body($oxfordshire);
     done_testing();
 }
