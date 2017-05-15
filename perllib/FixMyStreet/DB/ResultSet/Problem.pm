@@ -250,4 +250,11 @@ sub include_comment_counts {
     });
 }
 
+sub in_area {
+    my ( $rs, $area_id ) = @_;
+    return $rs->search({
+        areas => { like => "%,$area_id,%"}
+    });
+}
+
 1;
