@@ -5,8 +5,10 @@ $layout_front_stats_color: $primary !default;
 $mappage-header-height: 4em !default;
 $mappage-sidebar-width: 29em;
 $mappage-sidebar-padding: 1em;
-$mappage-with-notes-sidebar-width: 44em;
-$mappage-with-actions-sidebar-width: 58em;
+$mappage-notes-width: 15em;
+$mappage-actions-width: 25em;
+$mappage-sidebar-width--medium: 24em;
+$mappage-actions-width--medium: 20em;
 
 .internal-link-fixed-header {
     display: block;
@@ -353,11 +355,15 @@ body.mappage.admin {
   margin: 0;
 
   .with-notes & {
-    #{$left}: $mappage-with-notes-sidebar-width;
+    #{$left}: $mappage-sidebar-width + $mappage-notes-width;
   }
 
   .with-actions & {
-    #{$left}: $mappage-with-actions-sidebar-width;
+    #{$left}: $mappage-sidebar-width + $mappage-actions-width;
+
+    @media (max-width: 79em) {
+      #{$left}: $mappage-sidebar-width--medium  + $mappage-actions-width--medium;
+    }
   }
 }
 
@@ -374,19 +380,23 @@ body.mappage.admin {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 
   .with-notes & {
-    width: ($mappage-with-notes-sidebar-width - ($mappage-sidebar-padding * 2));
+    width: (($mappage-sidebar-width + $mappage-notes-width) - ($mappage-sidebar-padding * 2));
     // TODO: Should have a bitmap image fallback for old browsers!!
     background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
     background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
   }
 
   .with-actions & {
-    width: $mappage-with-actions-sidebar-width;
+    width: $mappage-sidebar-width + $mappage-actions-width;
     max-width: 100%; // Secondary column will squish on screens 768-960px
     padding: 0; // Padding will be handled by children of .two_column_sidebar
 
     &:after {
       display: none; // 4em bottom spacing will be handled by children of .two_column_sidebar
+    }
+
+    @media (max-width: 79em) {
+      width: $mappage-sidebar-width--medium + $mappage-actions-width--medium;
     }
   }
 
@@ -435,13 +445,27 @@ body.mappage.admin {
   #side-report {
     width: $mappage-sidebar-width;
     @include flex(0 0 auto);
+
+    @media (max-width: 79em) {
+      width: $mappage-sidebar-width--medium;
+    }
   }
 
-  // No flexbox in IE8, so we settle for floating the columns instead.
+  // Line up edge of .shadow-wrap with edge of #side-report
+  .shadow-wrap {
+    width: $mappage-sidebar-width;
+
+    @media (max-width: 79em) {
+      width: $mappage-sidebar-width--medium;
+    }
+  }
+
+  // No flexbox in IE8-9, so we settle for floating the columns instead.
   // They will no longer stretch the full height of the sidebar, and the
   // width of #side-report will no longer match the width of .shadow-wrap
   // when a scrollbar is present.
-  .iel8 & {
+  .iel8 &,
+  .ie9 & {
     @include clearfix();
 
     & > * {
