@@ -28,9 +28,7 @@ subtest 'in_area returns correct number of problems in a given area' => sub {
 
     is $in_area->count, 3, 'correct count is returned';
 
-    $in_area = FixMyStreet::DB->resultset('Problem')->in_area($area_id)->search({
-        whensent  => { '>=', \"current_timestamp-'30 days'::interval" }
-    });
+    $in_area = FixMyStreet::DB->resultset('Problem')->in_area($area_id, DateTime->now->subtract(days => 30));
 
     is $in_area->count, 2, 'allows filtering by date';
 };
@@ -47,9 +45,7 @@ subtest 'planned_in_area gets planned reports' => sub {
 
     is $planned_in_area->count, 2, 'correct count is returned';
 
-    $planned_in_area = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id)->search({
-        'user_planned_reports.added'  => { '>=', \"current_timestamp-'30 days'::interval" }
-    });
+    $planned_in_area = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id, DateTime->now->subtract(days => 30));
 
     is $planned_in_area->count, 1, 'allows filtering by date';
 };

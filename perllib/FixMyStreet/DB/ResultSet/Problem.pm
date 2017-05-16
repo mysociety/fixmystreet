@@ -251,19 +251,29 @@ sub include_comment_counts {
 }
 
 sub in_area {
-    my ( $rs, $area_id ) = @_;
-    return $rs->search({
+    my ( $rs, $area_id, $since ) = @_;
+    my $params = {
         areas => { like => "%,$area_id,%"}
-    });
+    };
+    if ($since) {
+      $since = DateTime::Format::W3CDTF->format_datetime($since);
+      $params->{whensent} = { '>=', $since };
+    }
+    return $rs->search($params);
 }
 
 sub planned_in_area {
-    my ( $rs, $area_id ) = @_;
+    my ( $rs, $area_id, $since ) = @_;
     my $reports = $rs->in_area($area_id);
+    my $params = {
+      'user_planned_reports.id' => \'IS NOT NULL'
+    };
+    if ($since) {
+      $since = DateTime::Format::W3CDTF->format_datetime($since);
+      $params->{'user_planned_reports.added'} = { '>=', $since };
+    }
     $reports->search(
-      {
-        'user_planned_reports.id' => \'IS NOT NULL'
-      },
+      $params,
       {
         join => 'user_planned_reports'
       }
