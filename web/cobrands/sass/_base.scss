@@ -600,17 +600,21 @@ body.mappage .wrapper {
         display: block;
         background-color: #f5f5f5;
         background-repeat: no-repeat;
-        color:#333;
+        color: #333 !important;
         padding:4em 2em 1em;
         text-transform:uppercase;
         font: {
           size:0.6875em;
           family: $meta-font;
+          weight: normal;
         }
+        line-height: 1.2em;
+        white-space: normal;
+        border-radius: 0;
         &:hover, &.hover {
           text-decoration:none;
           background-color:#333;
-          color:#fff;
+          color: #fff !important;
         }
         &.abuse {
           background-image: url($image-sprite);
@@ -831,6 +835,12 @@ input.final-submit {
             background-image: url(/cobrands/fixmystreet/images/icon-shortlisted-mini.svg), none;
         }
     }
+}
+
+.btn--provide-update {
+    display: block;
+    width: 100%;
+    margin-bottom: 1em;
 }
 
 .btn--block {
@@ -1842,6 +1852,18 @@ label .muted {
   & > :first-child {
     margin-top: 0;
   }
+}
+
+// The coloured sidebar column on .with-actions pages.
+// On narrow screens, it becomes a full-width section.
+#side-inspect {
+  padding: 1em;
+  margin: 0 -1em;
+  background-color: #E9F2FF;
+}
+
+.inspect-form-heading {
+  margin-top: 0;
 }
 
 .inspect-section {

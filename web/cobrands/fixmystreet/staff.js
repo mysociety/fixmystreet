@@ -263,6 +263,17 @@ $.extend(fixmystreet.set_up, {
             $("form#report_inspect_form input[name=longitude]").val(latlon.lon);
         });
     }
+
+    // Make the "Provide an update" form toggleable, and hide it by default.
+    // (Inspectors will normally just use the #public_update box instead).
+    var $updateFormH2 = $('.update-form-heading');
+    var $updateFormBtn = $('<button>').insertBefore( $updateFormH2 );
+    $updateFormH2.hide().nextAll().hide();
+    $updateFormBtn.addClass('btn btn--provide-update');
+    $updateFormBtn.text( $updateFormH2.text() );
+    $updateFormBtn.on('click', function(){
+        $updateFormH2.nextAll().toggle();
+    });
   },
 
   moderation: function() {
