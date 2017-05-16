@@ -132,7 +132,7 @@ FixMyStreet::override_config {
         },
         {
             desc => 'confirmed last 2 weeks with no state',
-            dt   => $now->clone->subtract( weeks => 2 ),
+            dt   => $now->clone->subtract( weeks => 2, hours => 1 ),
             counts => [1,2,4,4],
             report_counts => [2, 1, 1],
         },
