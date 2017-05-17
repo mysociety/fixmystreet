@@ -1,0 +1,213 @@
+.dashboard-header {
+    background-color: $primary;
+    margin: 0 -1em;
+    padding: 1em;
+
+    @media (min-width: 48em) {
+        margin: -1em -1em 0 -1em;
+        padding: 2em;
+    }
+
+    h1 {
+        font-family: inherit;
+        font-weight: bold;
+        margin: 0;
+    }
+}
+
+.dashboard-row {
+    @include clearfix();
+    margin: 0 -1em;
+}
+
+.dashboard-item {
+    @include box-sizing(border-box);
+    padding: 1em;
+
+    @media (min-width: 48em) {
+        float: left;
+        padding: 2em;
+    }
+
+    h2 {
+        font-family: inherit;
+        margin-top: 0;
+    }
+}
+
+@media (min-width: 48em) {
+    .dashboard-item--12 {
+        width: 100%;
+    }
+
+    .dashboard-item--6 {
+        width: 50%;
+    }
+}
+
+.dashboard-subheading {
+    margin-top: 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 1em;
+}
+
+.labelled-line-chart,
+.labelled-sparkline {
+    position: relative;
+    width: 100%;
+    line-height: 1.2em;
+
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .label {
+        strong {
+            display: block;
+            font-size: 2em;
+            line-height: 1em;
+            margin-bottom: 0.1em;
+            font-weight: bold;
+        }
+    }
+}
+
+.labelled-line-chart {
+    @include box-sizing(border-box);
+
+    @media (min-width: 48em) {
+        padding-right: 20%;
+    }
+
+    .label {
+        float: left;
+        margin-right: 2em;
+    }
+}
+.js .labelled-line-chart .label {
+    @media (min-width: 48em) {
+        position: absolute;
+        margin-top: -1em;
+        margin-right: 0;
+    }
+}
+
+.labelled-sparkline {
+    .label {
+        strong {
+            margin-top: 0.3em;
+        }
+    }
+}
+
+.dashboard-sparklines {
+    margin: 0 -1em;
+
+    & > * {
+        @include box-sizing(border-box);
+        padding: 0 1em 1em 1em;
+    }
+
+    @media (min-width: 48em) {
+        @include clearfix();
+
+        & > * {
+            float: $left;
+            width: 33%;
+        }
+    }
+}
+
+.dashboard-search {
+    background-color: $primary;
+    margin: 0 -1em;
+    padding: 1em;
+
+    @include clearfix();
+
+    @media (min-width: 48em) {
+        margin: 0 -3em 0 0;
+        padding: 2em;
+    }
+
+    input[type="text"] {
+        margin-bottom: 0;
+    }
+
+    input[type="submit"] {
+        background: #000;
+        color: #fff;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-family: inherit;
+        border-radius: 4px;
+        border: none;
+    }
+}
+
+.dashboard-search__input {
+    @include box-sizing(border-box);
+    width: 80%;
+    float: left;
+    padding-right: 1em;
+}
+
+.dashboard-search__submit {
+    width: 20%;
+    float: right;
+
+    input {
+        width: 100%;
+        font-size: 16px;
+        line-height: 18px;
+        padding: 10px 8px;
+    }
+}
+
+.dashboard-search #geolocate_link {
+    display: block;
+    color: inherit;
+
+    &:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: transparent url(/cobrands/fixmystreet/images/crosshairs.png) no-repeat 0 0;
+        background-size: 16px 16px;
+        margin-#{$right}: 0.5em;
+        vertical-align: -0.1em;
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/crosshairs@2x.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/crosshairs.svg), none;
+        }
+    }
+}
+
+.dashboard-ranking-table {
+    width: 100%;
+
+    td {
+        padding: 0.4em 0.8em;
+
+        &:last-child {
+            text-align: $right;
+        }
+    }
+
+    tbody tr:nth-child(odd) {
+        td {
+            background-color: mix($primary, #fff, 15%);
+        }
+    }
+
+    tfoot td {
+        font-weight: bold;
+    }
+}
