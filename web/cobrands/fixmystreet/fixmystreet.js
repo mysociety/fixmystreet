@@ -379,6 +379,18 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  autocomplete: function() {
+    $('.js-autocomplete').each(function() {
+        accessibleAutocomplete.enhanceSelectElement({
+            selectElement: this,
+            displayMenu: 'overlay',
+            required: true,
+            // showAllValues: true, // Currently undismissable on iOS
+            defaultValue: ''
+        });
+    });
+  },
+
   report_geolocation: function() {
     if (!geo_position_js.init()) {
         return;

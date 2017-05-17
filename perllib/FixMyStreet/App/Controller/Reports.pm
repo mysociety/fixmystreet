@@ -54,6 +54,15 @@ sub index : Path : Args(0) {
         $c->detach( 'redirect_body' );
     }
 
+    if (my $body = $c->get_param('body')) {
+        $body = $c->model('DB::Body')->find( { id => $body } );
+        if ($body) {
+            $body = $c->cobrand->short_name($body);
+            $c->res->redirect("/reports/$body");
+            $c->detach;
+        }
+    }
+
     # Fetch all bodies
     my @bodies = $c->model('DB::Body')->search({
         deleted => 0,
@@ -67,15 +76,21 @@ sub index : Path : Args(0) {
     $c->stash->{bodies} = \@bodies;
     $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
 
-    eval {
+    my $dashboard = eval {
+        my $data = File::Slurp::read_file(
+            FixMyStreet->path_to( '../data/all-reports-dashboard.json' )->stringify
+        );
+        $c->stash(decode_json($data));
+        return 1;
+    };
+    my $table = eval {
         my $data = File::Slurp::read_file(
             FixMyStreet->path_to( '../data/all-reports.json' )->stringify
         );
-        my $j = decode_json($data);
-        $c->stash->{fixed} = $j->{fixed};
-        $c->stash->{open} = $j->{open};
+        $c->stash(decode_json($data));
+        return 1;
     };
-    if ($@) {
+    if (!$dashboard && !$table) {
         my $message = _("There was a problem showing the All Reports page. Please try again later.");
         if ($c->config->{STAGING_SITE}) {
             $message .= '</p><p>Perhaps the bin/update-all-reports script needs running. Use: bin/update-all-reports</p><p>'
@@ -88,7 +103,7 @@ sub index : Path : Args(0) {
     $c->response->header('Cache-Control' => 'max-age=3600');
 }
 
-=head2 index
+=head2 body
 
 Show the summary page for a particular body.
 
@@ -99,7 +114,7 @@ sub body : Path : Args(1) {
     $c->detach( 'ward', [ $body ] );
 }
 
-=head2 index
+=head2 ward
 
 Show the summary page for a particular ward.
 
