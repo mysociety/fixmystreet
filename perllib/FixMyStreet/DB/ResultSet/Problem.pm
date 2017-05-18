@@ -280,4 +280,24 @@ sub planned_in_area {
     );
 }
 
+sub fixed_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    my $reports = $rs->in_area($area_id);
+    my $params = {
+      'comments.problem_state' => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
+    };
+    if ($since) {
+      $since = DateTime::Format::W3CDTF->format_datetime($since);
+      $params->{'comments.created'} = { '>=', $since };
+    }
+    $reports->search(
+      $params,
+      {
+        join => 'comments',
+        order_by => 'comments.created',
+        group_by => 'me.id',
+      }
+    );
+}
+
 1;

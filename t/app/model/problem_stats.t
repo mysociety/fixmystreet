@@ -50,6 +50,26 @@ subtest 'planned_in_area gets planned reports' => sub {
     is $planned_in_area->count, 1, 'allows filtering by date';
 };
 
+subtest 'fixed_in_area gets fixed reports' => sub {
+    $mech->create_comment_for_problem($problem1, $user, 'Title', 'text', 0, 'confirmed', undef, { created => DateTime->now->subtract(days => 32) });
+    $problem1->update({ state => 'fixed - council', created => DateTime->now->subtract(days => 40) });
+    $mech->create_comment_for_problem($problem1, $user, 'Title', 'text', 0, 'confirmed', 'fixed - council', { created => DateTime->now->subtract(days => 10) });
+
+    $problem2->update({ state => 'fixed', created => DateTime->now->subtract(days => 60) });
+    $mech->create_comment_for_problem($problem2, $user, 'Title', 'text', 0, 'confirmed', 'fixed', { created => DateTime->now->subtract(days => 32) });
+
+    $problem3->update({ state => 'fixed - user', created => DateTime->now->subtract(days => 60) });
+    $mech->create_comment_for_problem($problem3, $user, 'Title', 'text', 0, 'confirmed', 'fixed - user', { created => DateTime->now->subtract(days => 60) });
+
+    my $fixed_in_area = FixMyStreet::DB->resultset('Problem')->fixed_in_area($area_id);
+
+    is $fixed_in_area->count, 3, 'correct count is returned';
+
+    $fixed_in_area = FixMyStreet::DB->resultset('Problem')->fixed_in_area($area_id, DateTime->now->subtract(days => 30));
+
+    is $fixed_in_area->count, 1, 'allows filtering by date';
+};
+
 END {
     $mech->delete_user($user);
     $mech->delete_body($oxfordshire);
