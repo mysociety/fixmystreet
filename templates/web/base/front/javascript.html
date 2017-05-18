@@ -1,10 +1,10 @@
 [%
 # Assume using OpenStreetMap maps
 map_js = [
-    version('/js/yepnope.js'),
+    version('/vendor/yepnope.js'),
     [ version('/cobrands/fixmystreet/front.js'), {
         id = 'script_front',
-        'data-scripts' = version('/js/OpenLayers/OpenLayers.fixmystreet.js') _ ',' _
+        'data-scripts' = version('/vendor/OpenLayers/OpenLayers.fixmystreet.js') _ ',' _
             version('/js/map-OpenLayers.js') _ ',' _
             version('/js/map-OpenStreetMap.js')
     } ],

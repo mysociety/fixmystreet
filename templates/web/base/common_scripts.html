@@ -9,10 +9,10 @@ scripts.push(
     start _ "/js/translation_strings." _ lang_code _ ".js?" _ Math.int( date.now / 3600 ),
     version('/jslib/jquery-1.7.2.min.js'),
     version('/js/validation_rules.js'),
-    version('/js/jquery.validate.min.js'),
-    version('/js/dropzone.min.js'),
+    version('/vendor/jquery.validate.min.js'),
+    version('/vendor/dropzone.min.js'),
     version('/js/jquery.multi-select.js'),
-    version('/js/geo.min.js'),
+    version('/vendor/geo.min.js'),
     version('/cobrands/fixmystreet/fixmystreet.js'),
 );
 
@@ -33,7 +33,7 @@ scripts.push(
 
 IF admin;
     scripts.push(
-        version('/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js'),
+        version('/vendor/jquery-ui/js/jquery-ui-1.10.3.custom.min.js'),
         version('/cobrands/fixmystreet/admin.js'),
     );
 END;
