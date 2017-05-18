@@ -192,6 +192,9 @@ sub admin_pages {
         $pages->{defecttype_edit} = [ undef, undef ];
     };
 
+    $pages->{areastats} = [ ('Area Stats'), 14 ];
+    $pages->{areastats_edit} = [ undef, undef  ];
+
     return $pages;
 }
 
