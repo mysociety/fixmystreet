@@ -5,6 +5,7 @@ use strict;
 use JSON::MaybeXS;
 use mySociety::MaPit;
 use mySociety::VotingArea;
+use Utils;
 
 sub country             { return 'GB'; }
 sub area_types          { [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ] }
@@ -122,7 +123,8 @@ sub find_closest {
     my $data = $self->SUPER::find_closest($problem, $as_data);
 
     my $mapit_url = FixMyStreet->config('MAPIT_URL');
-    my $url = $mapit_url . "nearest/4326/" . $problem->longitude . ',' . $problem->latitude;
+    my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $problem->latitude, $problem->longitude;
+    my $url = $mapit_url . "nearest/4326/$lon,$lat";
     my $j = LWP::Simple::get($url);
     if ($j) {
         $j = JSON->new->utf8->allow_nonref->decode($j);

@@ -32,6 +32,7 @@ my @PLACES = (
     [ 'GU51 4AE', 51.279456, -0.846216, 2333, 'Hart District Council', 'DIS', 2227, 'Hampshire County Council', 'CTY' ],
     [ 'WS1 4NH', 52.563074, -1.991032, 2535, 'Sandwell Borough Council', 'MTD' ],
     [ 'OX28 4DS', 51.784721, -1.494453 ],
+    [ 'E14 2DN', 51.508536, '0.000001' ],
 );
 
 sub dispatch_request {
@@ -112,7 +113,7 @@ sub dispatch_request {
         foreach (@PLACES) {
             if ($point eq "4326/$_->[2],$_->[1]") {
                 return $self->output({
-                    postcode => { wgs84_lat => $_->[1], wgs84_lon => $_->[2], postcode => $_->[0] },
+                    postcode => { wgs84_lat => $_->[1], wgs84_lon => $_->[2], postcode => $_->[0], distance => 93 },
                 });
             }
         }
