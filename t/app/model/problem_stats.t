@@ -70,6 +70,29 @@ subtest 'fixed_in_area gets fixed reports' => sub {
     is $fixed_in_area->count, 1, 'allows filtering by date';
 };
 
+subtest 'closed_in_area gets closed reports' => sub {
+    $problem1->comments->delete_all();
+    $problem1->update({ state => 'closed', created => DateTime->now->subtract(days => 40) });
+    $mech->create_comment_for_problem($problem1, $user, 'Title', 'text', 0, 'confirmed', 'closed', { created => DateTime->now->subtract(days => 10) });
+
+    $problem2->comments->delete_all();
+    $problem2->update({ state => 'unable to fix', created => DateTime->now->subtract(days => 60) });
+    $mech->create_comment_for_problem($problem2, $user, 'Title', 'text', 0, 'confirmed', 'unable to fix', { created => DateTime->now->subtract(days => 32) });
+
+    $problem3->comments->delete_all();
+    $problem3->update({ state => 'closed', created => DateTime->now->subtract(days => 60) });
+    $mech->create_comment_for_problem($problem3, $user, 'Title', 'text', 0, 'confirmed', 'closed', { created => DateTime->now->subtract(days => 60) });
+
+    my $closed_in_area = FixMyStreet::DB->resultset('Problem')->closed_in_area($area_id);
+
+    is $closed_in_area->count, 3, 'correct count is returned';
+
+    $closed_in_area = FixMyStreet::DB->resultset('Problem')->closed_in_area($area_id, DateTime->now->subtract(days => 30));
+
+    is $closed_in_area->count, 1, 'allows filtering by date';
+};
+
+
 END {
     $mech->delete_user($user);
     $mech->delete_body($oxfordshire);

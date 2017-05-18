@@ -280,11 +280,11 @@ sub planned_in_area {
     );
 }
 
-sub fixed_in_area {
-    my ( $rs, $area_id, $since ) = @_;
+sub in_area_with_states {
+    my ( $rs, $area_id, $states, $since ) = @_;
     my $reports = $rs->in_area($area_id);
     my $params = {
-      'comments.problem_state' => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
+      'comments.problem_state' => $states,
     };
     if ($since) {
       $since = DateTime::Format::W3CDTF->format_datetime($since);
@@ -299,5 +299,16 @@ sub fixed_in_area {
       }
     );
 }
+
+sub fixed_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    $rs->in_area_with_states($area_id, [ FixMyStreet::DB::Result::Problem->fixed_states() ], $since);
+}
+
+sub closed_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    $rs->in_area_with_states($area_id, [ FixMyStreet::DB::Result::Problem->closed_states() ], $since);
+}
+
 
 1;
