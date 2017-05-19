@@ -134,7 +134,7 @@ for my $test (
 subtest "updates displayed on report with empty bodies_str" => sub {
     my $old_bodies_str = $report->bodies_str;
     $report->update({ bodies_str => undef });
-    $comment->update({ problem_state => 'fixed' , mark_open => 'false', mark_fixed => 'false' });
+    $comment->update({ problem_state => 'fixed - user' , mark_open => 'false', mark_fixed => 'false' });
 
     $mech->get_ok("/report/$report_id");
 
@@ -587,9 +587,10 @@ for my $test (
             name => $user->name,
             may_show_name => 1,
             update => 'Set state to fixed',
-            state => 'fixed',
+            state => 'fixed - council',
         },
         state => 'fixed - council',
+        meta => 'fixed',
     },
     {
         desc => 'from authority user marks report as action scheduled',
@@ -661,9 +662,10 @@ for my $test (
             name => $user->name,
             may_show_name => 1,
             update => 'Set state to fixed',
-            state => 'fixed',
+            state => 'fixed - council',
         },
         state => 'fixed - council',
+        meta => 'fixed',
         report_bodies => $body->id . ',2505',
     },
     {
@@ -672,9 +674,10 @@ for my $test (
           name => $user->name,
           may_show_name => 1,
           update => 'Set state to fixed',
-          state => 'fixed',
+          state => 'fixed - council',
       },
       state => 'fixed - council',
+      meta => 'fixed',
       report_bodies => $body->id . ',2505',
       view_username => 1
     },
@@ -1662,14 +1665,14 @@ for my $test (
     },
     {
         desc => 'update fixed without marking as open leaves state unchanged',
-        initial_state => 'fixed',
+        initial_state => 'fixed - user',
         expected_form_fields => {
             reopen => undef,
         },
         submitted_form_fields => {
             reopen => 0,
         },
-        end_state => 'fixed',
+        end_state => 'fixed - user',
     },
     {
         desc => 'update unable to fix without marking as fixed leaves state unchanged',
@@ -1761,7 +1764,7 @@ for my $test (
     },
     {
         desc => 'cannot mark fixed as fixed, can mark as not fixed',
-        initial_state => 'fixed',
+        initial_state => 'fixed - user',
         expected_form_fields => {
             reopen => undef,
         },
