@@ -44,7 +44,7 @@ for my $sfc (0..2) {
     } );
     my $expected_error = qr{Failed to submit problem 1 over Open311}ism;
 
-    if ($sfc == 2) {
+    if ($sfc == 1) {
         warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} $expected_error, 'warning generated on failed call';
     } else {
         warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} undef, 'no warning generated on failed call';
@@ -578,8 +578,8 @@ for my $test (
     };
 }
 
-$problem->send_fail_count(2);
-$comment->send_fail_count(2);
+$problem->send_fail_count(1);
+$comment->send_fail_count(1);
 
 subtest 'No request id in reponse' => sub {
     my $results;
