@@ -227,12 +227,22 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';
     };
 
-    subtest "No action scheduled without the right permission" => sub {
+    subtest "Action scheduled only shown appropriately" => sub {
         $report->update({ state => 'confirmed' });
         $mech->get_ok("/report/$report_id");
         $mech->content_lacks('action scheduled');
 
+        # If the report is already in that state, though, we should show it
+        $report->update({ state => 'action scheduled' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_unlike(qr/<optgroup label="Scheduled">\s*<option value="action scheduled">Action Scheduled<\/option>/);
+        $mech->content_contains('<option selected value="action scheduled">Action Scheduled</option>');
+
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_like(qr/<optgroup label="Scheduled">\s*<option selected value="action scheduled">Action Scheduled<\/option>/);
+
+        $report->update({ state => 'confirmed' });
         $mech->get_ok("/report/$report_id");
         $mech->content_like(qr/<optgroup label="Scheduled">\s*<option value="action scheduled">Action Scheduled<\/option>/);
     };
