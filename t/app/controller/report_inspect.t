@@ -221,10 +221,20 @@ FixMyStreet::override_config {
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
         $report->update({ state => 'confirmed' });
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action Scheduled', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Investigating', include_update => undef } });
         $report->discard_changes;
-        is $report->state, 'action scheduled', 'report state changed';
+        is $report->state, 'investigating', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';
+    };
+
+    subtest "No action scheduled without the right permission" => sub {
+        $report->update({ state => 'confirmed' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('action scheduled');
+
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_like(qr/<optgroup label="Scheduled">\s*<option value="action scheduled">Action Scheduled<\/option>/);
     };
 
 };
