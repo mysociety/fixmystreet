@@ -18,10 +18,10 @@ $user->user_body_permissions->find_or_create({
 
 my $area_id = '123';
 
-my ($problem1) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", whensent => \'current_timestamp' });
-my ($problem2) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",6753,$area_id,4324,", whensent => \'current_timestamp' });
-my ($problem3) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", whensent => \"current_timestamp-'60 days'::interval" });
-my ($problem4) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",6753,4324,", whensent => \'current_timestamp' });
+my ($problem1) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \'current_timestamp' });
+my ($problem2) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",6753,$area_id,4324,", created => \'current_timestamp' });
+my ($problem3) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \"current_timestamp-'60 days'::interval" });
+my ($problem4) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",6753,4324,", created => \'current_timestamp' });
 
 subtest 'in_area returns correct number of problems in a given area' => sub {
     my $in_area = FixMyStreet::DB->resultset('Problem')->in_area($area_id);

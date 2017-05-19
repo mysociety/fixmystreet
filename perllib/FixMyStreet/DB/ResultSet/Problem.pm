@@ -257,7 +257,7 @@ sub in_area {
     };
     if ($since) {
       $since = DateTime::Format::W3CDTF->format_datetime($since);
-      $params->{whensent} = { '>=', $since };
+      $params->{created} = { '>=', $since };
     }
     return $rs->search($params);
 }
