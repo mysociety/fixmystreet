@@ -285,26 +285,6 @@ body.unresponsive-council {
     }
 }
 
-// FMS.com has a slightly different version of the
-// footer-help / footer-marketing widgets that appear
-// at the bottom of pages with `pagefooter` set.
-#footer-help {
-  border: none;
-
-  ul {
-    margin: 0 auto;
-
-    li {
-      max-width: 19em;
-
-      &:last-child {
-        border: none;
-        padding-left: 3em;
-      }
-    }
-  }
-}
-
 .mysoc-footer {
   margin-top: 3em;
   // The below lines are so that on e.g. /about/posters the footer will move on
@@ -314,4 +294,29 @@ body.unresponsive-council {
 }
 body.mappage .mysoc-footer {
     display: none;
+}
+
+.fms-pro-promo {
+  margin: 2em 0 3em 0;
+  padding: 2em;
+  background: $primary url(images/tile-y.jpg) 0 0 repeat;
+
+  p {
+    font-size: 1.2em;
+    max-width: 26em;
+  }
+
+  h2 {
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 2em;
+  }
+
+  @media (min-width: 60em) {
+    padding: 3em;
+  }
+}
+
+.footer-marketing {
+  color: #ccc;
 }

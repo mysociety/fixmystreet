@@ -240,3 +240,21 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
     margin-right: 0.5em;
   }
 }
+
+.fms-pro-promo {
+  margin: 2em -1em;
+  padding: 1em;
+  background: $primary;
+
+  .lead {
+    font-weight: bold;
+  }
+
+  & > :first-child {
+    margin-top: 0;
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
+}
