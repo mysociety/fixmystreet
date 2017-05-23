@@ -674,6 +674,11 @@ body.authpage {
   border-top:0.25em solid $primary;
 }
 
+// Shown at bottom of homepage, among other places
+.footer-marketing {
+  width: 100%;
+}
+
 //footer blocks
 #footer-mobileapps {
   border-#{$right}: 1em solid transparent;

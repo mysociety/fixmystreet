@@ -698,7 +698,6 @@ footer {
   p {
 	font-size: 0.75em;
 	padding-bottom: 0;
-    border-bottom:1px solid #AFAFAF;
   }
 }
 
@@ -2099,6 +2098,16 @@ table.nicetable {
       }
     }
   }
+}
+
+// Shown at bottom of homepage, among other places
+.footer-marketing {
+    text-align: center;
+    margin-top: 2em;
+
+    & > :last-child {
+        margin-bottom: 0;
+    }
 }
 
 #alerts {
