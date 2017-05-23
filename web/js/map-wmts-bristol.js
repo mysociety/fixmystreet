@@ -1,4 +1,4 @@
-/* 
+/*
  * Maps for FMS using Bristol City Council's WMTS tile server
  */
 
@@ -102,7 +102,7 @@ fixmystreet.maps.matrix_ids = [
     }
 ];
 
-/* 
+/*
  * maps.config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
  */
@@ -125,11 +125,12 @@ fixmystreet.maps.config = function() {
     if ( fixmystreet.page == 'report' ) {
         fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
     }
-    
+
     this.setup_wmts_base_map();
 };
 
-fixmystreet.maps.marker_size_for_zoom = function(zoom) {
+fixmystreet.maps.marker_size = function() {
+    var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
     if (zoom >= 7) {
         return 'normal';
     } else if (zoom >= 4) {

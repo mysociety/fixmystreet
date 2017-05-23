@@ -1,5 +1,5 @@
-/* 
- * Maps for FMZ using Zurich council's WMTS tile server 
+/*
+ * Maps for FMZ using Zurich council's WMTS tile server
  */
 
 // From 'fullExtent' from http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled95/LuftbildHybrid/MapServer?f=pjson
@@ -140,7 +140,7 @@ fixmystreet.maps.matrix_ids = [
 
 })();
 
-/* 
+/*
  * maps.config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
  */
@@ -165,7 +165,8 @@ fixmystreet.maps.config = function() {
     fixmystreet.area_format = { fillColor: 'none', strokeWidth: 4, strokeColor: 'black' };
 };
 
-fixmystreet.maps.marker_size_for_zoom = function(zoom) {
+fixmystreet.maps.marker_size = function() {
+    var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
     if (zoom >= 6) {
         return 'normal';
     } else if (zoom >= 3) {
