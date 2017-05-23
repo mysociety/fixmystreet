@@ -3,7 +3,7 @@
 [% PROCESS 'common_scripts.html' %]
 
 <!--[if lte IE 9]>
-  <script src="[% version('/js/history.polyfill.min.js') %]"></script>
+  <script src="[% version('/vendor/history.polyfill.min.js') %]"></script>
 <![endif]-->
 [% FOR script IN scripts ~%]
     [% script = script.0 ? script : [ script ] ~%]
