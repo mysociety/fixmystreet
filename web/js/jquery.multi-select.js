@@ -2,9 +2,7 @@
 // by mySociety
 // https://github.com/mysociety/jquery-multi-select
 
-;(function($) {
-
-  "use strict";
+(function($) {
 
   var pluginName = "multiSelect",
     defaults = {
@@ -122,7 +120,7 @@
 
       this.$button.empty();
 
-      if (selected.length == 0) {
+      if (selected.length === 0) {
         this.$button.text( this.settings.noneText );
       } else if ( (selected.length === options.length) && this.settings.allText) {
         this.$button.text( this.settings.allText );
