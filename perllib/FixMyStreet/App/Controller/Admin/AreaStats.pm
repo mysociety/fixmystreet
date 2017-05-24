@@ -12,6 +12,17 @@ sub begin : Private {
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
+
+    my $user = $c->user;
+
+    if ($user->is_superuser) {
+        $c->forward('/admin/fetch_all_bodies');
+    } elsif ( $user->from_body ) {
+        $c->forward('load_user_body', [ $user->from_body->id ]);
+        $c->res->redirect( $c->uri_for( '', $c->stash->{body}->id ) );
+    } else {
+        $c->detach( '/page_error_404_not_found' );
+    }
 }
 
 sub area : Path : Args(1) {
@@ -30,6 +41,13 @@ sub area : Path : Args(1) {
     } else {
         $c->detach( '/page_error_404_not_found' );
     }
+}
+
+sub load_user_body : Private {
+    my ($self, $c, $body_id) = @_;
+
+    $c->stash->{body} = $c->model('DB::Body')->find($body_id)
+        or $c->detach( '/page_error_404_not_found' );
 }
 
 1;

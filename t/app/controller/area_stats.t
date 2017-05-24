@@ -15,6 +15,13 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => [ 'oxfordshire' ],
 }, sub {
+    subtest 'superuser gets areas listed' => sub {
+        $mech->create_body_ok(1234, 'Some Other Council');
+        $mech->get_ok('/admin/areastats');
+        $mech->content_contains('Oxfordshire County Council', 'Oxfordshire is shown on the page');
+        $mech->content_contains('Some Other Council', 'Some other council is shown on the page');
+    };
+    
     subtest 'gets an area' => sub {
         $mech->get_ok('/admin/areastats/20720', 'Returns OK if area exists');
         $mech->content_contains('Area 20720', 'Area name is shown on the page');
