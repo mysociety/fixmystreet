@@ -1,0 +1,11 @@
+[% INCLUDE 'admin/header.html' title=('Area Stats') -%]
+
+<ul>
+    [% FOR area IN areas %]
+        <li>
+            <a href="[% c.uri_for('',  area.value.id) %]">[% area.value.name %]</a>
+        </li>
+    [% END %]
+</ul>
+
+[% INCLUDE 'admin/footer.html' %]

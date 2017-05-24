@@ -19,10 +19,15 @@ sub index : Path : Args(0) {
         $c->forward('/admin/fetch_all_bodies');
     } elsif ( $user->from_body ) {
         $c->forward('load_user_body', [ $user->from_body->id ]);
-        $c->res->redirect( $c->uri_for( '', $c->stash->{body}->id ) );
+        $c->res->redirect( $c->uri_for( '/admin/areastats/body', $c->stash->{body}->id ) );
     } else {
         $c->detach( '/page_error_404_not_found' );
     }
+}
+
+sub body : Path('body') : Args(1) {
+    my ($self, $c, $body_id) = @_;
+    $c->stash->{areas} = mySociety::MaPit::call('area/children', [ $body_id ] );
 }
 
 sub area : Path : Args(1) {
