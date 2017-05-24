@@ -195,7 +195,19 @@ $.extend(fixmystreet.set_up, {
     // in the DOM, we just need to hide/show them as appropriate.
     $('form#report_inspect_form [name=category]').change(function() {
         var category = $(this).val(),
-            selector = "[data-category='" + category + "']";
+            selector = "[data-category='" + category + "']",
+            $defect_types = $('#defect_type'),
+            defect_types_data = $("form#report_inspect_form " + selector).data('defect-types') || [];
+
+        function populateSelect($select, data, label_formatter) {
+          $select.find('option:gt(0)').remove();
+          $.each(data, function(k,v) {
+            label = window.fixmystreet.utils[label_formatter](v);
+            $select.append($('<option></option>')
+            .attr('value', v.id).text(label));
+          });
+        }
+
         $("form#report_inspect_form [data-category]:not(" + selector + ")").addClass("hidden");
         $("form#report_inspect_form " + selector).removeClass("hidden");
         // And update the associated priority list
@@ -211,6 +223,7 @@ $.extend(fixmystreet.set_up, {
             $select.append($('<option>', { value: kv[0], text: decodeURIComponent(kv[1]) }));
         });
         $select.val(curr_pri);
+        populateSelect($defect_types, defect_types_data, 'defect_type_format');
     });
 
     // The inspect form submit button can change depending on the selected state
@@ -446,4 +459,12 @@ $.extend(fixmystreet.maps, {
       $shortlistButton.addClass('hidden');
     }
   }
+});
+
+fixmystreet.utils = fixmystreet.utils || {};
+
+$.extend(fixmystreet.utils, {
+    defect_type_format: function(data) {
+        return data.name;
+    }
 });
