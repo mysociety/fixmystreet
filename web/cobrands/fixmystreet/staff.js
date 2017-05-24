@@ -196,8 +196,11 @@ $.extend(fixmystreet.set_up, {
     $('form#report_inspect_form [name=category]').change(function() {
         var category = $(this).val(),
             selector = "[data-category='" + category + "']",
+            $priorities = $('#problem_priority'),
             $defect_types = $('#defect_type'),
-            defect_types_data = $("form#report_inspect_form " + selector).data('defect-types') || [];
+            defect_types_data = $("form#report_inspect_form " + selector).data('defect-types') || [],
+            priorities_data = $("form#report_inspect_form " + selector).data('priorities') || [],
+            curr_pri = $priorities.val();
 
         function populateSelect($select, data, label_formatter) {
           $select.find('option:gt(0)').remove();
@@ -210,20 +213,10 @@ $.extend(fixmystreet.set_up, {
 
         $("form#report_inspect_form [data-category]:not(" + selector + ")").addClass("hidden");
         $("form#report_inspect_form " + selector).removeClass("hidden");
-        // And update the associated priority list
-        var priorities = $("form#report_inspect_form " + selector).data('priorities');
-        var $select = $('#problem_priority'),
-            curr_pri = $select.val();
-        $select.find('option:gt(0)').remove();
-        $.each(priorities.split('&'), function(i, kv) {
-            if (!kv) {
-                return;
-            }
-            kv = kv.split('=', 2);
-            $select.append($('<option>', { value: kv[0], text: decodeURIComponent(kv[1]) }));
-        });
-        $select.val(curr_pri);
+
+        populateSelect($priorities, priorities_data, 'priorities_type_format');
         populateSelect($defect_types, defect_types_data, 'defect_type_format');
+        $priorities.val(curr_pri);
     });
 
     // The inspect form submit button can change depending on the selected state
@@ -465,6 +458,9 @@ fixmystreet.utils = fixmystreet.utils || {};
 
 $.extend(fixmystreet.utils, {
     defect_type_format: function(data) {
+        return data.name;
+    },
+    priorities_type_format: function(data) {
         return data.name;
     }
 });

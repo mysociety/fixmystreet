@@ -3,20 +3,18 @@ use base 'DBIx::Class::ResultSet';
 
 use strict;
 use warnings;
+use Moo;
+use HTML::Entities;
 
-sub for_bodies {
-    my ($rs, $bodies, $category) = @_;
-    my $attrs = {
-        'me.body_id' => $bodies,
-    };
-    if ($category) {
-        $attrs->{'contact.category'} = [ $category, undef ];
-    }
-    $rs->search($attrs, {
-        order_by => 'name',
-        join => { 'contact_response_priorities' => 'contact' },
-        distinct => 1,
-    });
+with('FixMyStreet::Roles::ContactExtra');
+
+sub join_table {
+    return 'contact_response_priorities';
+}
+
+sub map_extras {
+    my ($rs, @ts) = @_;
+    return map { { id => $_->id, name => encode_entities($_->name) } } @ts;
 }
 
 1;

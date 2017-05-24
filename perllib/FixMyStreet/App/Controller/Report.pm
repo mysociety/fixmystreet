@@ -312,27 +312,10 @@ sub inspect : Private {
     $c->forward('/admin/categories_for_point');
     $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
-    my %category_body = map { $_->category => $_->body_id } map { $_->contacts->all } values %{$problem->bodies};
-
-    my @priorities = $c->model('DB::ResponsePriority')->for_bodies($problem->bodies_str_ids)->all;
-    my $priorities_by_category = {};
-    foreach my $pri (@priorities) {
-        my $any = 0;
-        foreach ($pri->contacts->all) {
-            $any = 1;
-            push @{$priorities_by_category->{$_->category}}, $pri->id . '=' . URI::Escape::uri_escape_utf8($pri->name);
-        }
-        if (!$any) {
-            foreach (grep { $category_body{$_} == $pri->body_id } @{$c->stash->{categories}}) {
-                push @{$priorities_by_category->{$_}}, $pri->id . '=' . URI::Escape::uri_escape_utf8($pri->name);
-            }
-        }
+    if ($c->cobrand->can('council_area_id')) {
+        my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});
+        $c->stash->{priorities_by_category} = $priorities_by_category;
     }
-    foreach (keys %{$priorities_by_category}) {
-        $priorities_by_category->{$_} = join('&', @{$priorities_by_category->{$_}});
-    }
-
-    $c->stash->{priorities_by_category} = $priorities_by_category;
 
     if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
