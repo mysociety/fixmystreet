@@ -64,7 +64,14 @@ sub set_map_class {
 }
 
 sub display_map {
-    return $map_class->display_map(@_);
+# Add geo microformat as part of the map HTML, see
+# http://microformats.org/wiki/geo for the specification
+    my ($q, %args) = @_;
+    my $mapstr = $map_class->display_map(@_);
+    my $latitude = $args{latitude};
+    my $longitude = $args{longitude};
+    $mapstr .= "<div class=\"geo\"><abbr class=\"latitude\" title=\"$latitude\"/><abbr class=\"longitude\" title=\"$longitude\"/></div>\n";
+    return $mapstr;
 }
 
 sub map_features {
