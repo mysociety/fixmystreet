@@ -164,6 +164,11 @@ sub cleanup_text {
 
 sub prettify_dt {
     my ( $dt, $type ) = @_;
+
+    return '' unless $dt; 
+        # this is plastering over crack but it's not correct for this utility
+        # sub to be dying here.  Perhaps better would be croak for more info?
+
     $type ||= '';
     $type = 'short' if $type eq '1';
 
