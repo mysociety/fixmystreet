@@ -293,9 +293,9 @@ sub in_area_with_states {
     $reports->search(
       $params,
       {
-        join => 'comments',
-        order_by => 'comments.created',
-        group_by => 'me.id',
+          join => 'comments',
+          group_by => 'me.id, comments.created',
+          order_by => 'comments.created'
       }
     );
 }
