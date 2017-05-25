@@ -1639,7 +1639,7 @@ subtest "inspectors get redirected directly to the report page" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         BASE_URL => 'https://www.fixmystreet.com',
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_out_ok;
 

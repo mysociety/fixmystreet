@@ -32,7 +32,6 @@ subtest 'check /ajax defaults to open reports only' => sub {
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'oxfordshire' => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
         my $json = $mech->get_ok_json( '/ajax?status=all&bbox=' . $bbox );
         my $pins = $json->{pins};

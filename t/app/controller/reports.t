@@ -199,7 +199,6 @@ is $stats->{'Westminster City Council'}->[1], 5, 'non public reports included in
 subtest "test fiksgatami all reports page" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fiksgatami' ],
-        MAPIT_URL => 'http://mapit.nuug.no/',
     }, sub {
         $mech->create_body_ok(3, 'Oslo');
         ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
