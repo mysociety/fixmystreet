@@ -35,14 +35,38 @@ sub area : Path : Args(1) {
 
     my $date = DateTime->now->subtract(days => 30);
     my $area = mySociety::MaPit::call('area', $area_id );
+    my $user = $c->user;
+
+    $c->forward('load_user_body', [ $user->from_body->id ]);
+    $c->forward('/admin/fetch_contacts');
 
     if ($area->{name}) {
         $c->stash->{area} = $area;
 
-        $c->stash->{open} = FixMyStreet::DB->resultset('Problem')->in_area($area_id, $date)->count;
-        $c->stash->{scheduled} = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id, $date)->count;
-        $c->stash->{closed} = FixMyStreet::DB->resultset('Problem')->closed_in_area($area_id, $date)->count;
-        $c->stash->{fixed} = FixMyStreet::DB->resultset('Problem')->fixed_in_area($area_id, $date)->count;
+        my @open = FixMyStreet::DB->resultset('Problem')->in_area($area_id, $date)->all;
+        my @scheduled = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id, $date)->all;
+        my @closed = FixMyStreet::DB->resultset('Problem')->closed_in_area($area_id, $date)->all;
+        my @fixed = FixMyStreet::DB->resultset('Problem')->fixed_in_area($area_id, $date)->all;
+        my $by_category = {};
+
+        foreach my $contact ($c->stash->{live_contacts}->all) {
+            $by_category->{$contact->category} = {};
+            $by_category->{$contact->category}->{open} = scalar(grep { $_->category eq $contact->category } @open);
+            $by_category->{$contact->category}->{scheduled} = scalar(grep { $_->category eq $contact->category } @scheduled);
+            $by_category->{$contact->category}->{closed} = scalar(grep { $_->category eq $contact->category } @closed);
+            $by_category->{$contact->category}->{fixed} = scalar(grep { $_->category eq $contact->category } @fixed);
+            # Remove hash if count is zero for all states
+            my $count = scalar(grep { $by_category->{$contact->category}{$_} == 0 } keys(%{$by_category->{$contact->category}}));
+            if ($count == 4) {
+                delete $by_category->{$contact->category};
+            }
+        }
+
+        $c->stash->{open} = scalar(@open);
+        $c->stash->{scheduled} = scalar(@scheduled);
+        $c->stash->{closed} = scalar(@closed);
+        $c->stash->{fixed} = scalar(@fixed);
+        $c->stash->{by_category} = $by_category;
     } else {
         $c->detach( '/page_error_404_not_found' );
     }
