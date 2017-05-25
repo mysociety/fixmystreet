@@ -26,7 +26,7 @@ env:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install gettext
-  - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8 sv_SE.UTF-8
+  - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8
 install:
   - .travis/install
 before_script:
