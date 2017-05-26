@@ -6,6 +6,7 @@ $pin_prefix: '/i/' !default;
 
   a {
     background-image: url('#{$pin_prefix}pin-yellow-small.png');
+    background-size: 24px 32px;
     background-repeat: no-repeat;
     background-position: $left center;
   }
@@ -21,6 +22,9 @@ $pin_prefix: '/i/' !default;
   }
   &.grey a {
       background-image: url('#{$pin_prefix}pin-grey-small.png');
+  }
+  &.orange a {
+      background-image: url('#{$pin_prefix}pin-orange-small.png');
   }
 }
 .item-list--reports__item--selected {
