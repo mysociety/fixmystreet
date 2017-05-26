@@ -251,7 +251,7 @@ $.extend(fixmystreet.set_up, {
   basics: function() {
     // Preload the new report pin
     if ( typeof fixmystreet !== 'undefined' && typeof fixmystreet.pin_prefix !== 'undefined' ) {
-        document.createElement('img').src = fixmystreet.pin_prefix + 'pin-green.png';
+        document.createElement('img').src = fixmystreet.pin_prefix + 'pin-' + fixmystreet.pin_new_report_colour + '.png';
     } else {
         document.createElement('img').src = '/i/pin-green.png';
     }

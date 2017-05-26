@@ -52,7 +52,7 @@ var fixmystreet = fixmystreet || {};
             /* Already have a pin */
             fixmystreet.markers.features[0].move(lonlat);
         } else {
-            var markers = fixmystreet.maps.markers_list( [ [ lonlat.lat, lonlat.lon, 'green' ] ], false );
+            var markers = fixmystreet.maps.markers_list( [ [ lonlat.lat, lonlat.lon, fixmystreet.pin_new_report_colour ] ], false );
             fixmystreet.bbox_strategy.deactivate();
             fixmystreet.markers.removeAllFeatures();
             fixmystreet.markers.addFeatures( markers );

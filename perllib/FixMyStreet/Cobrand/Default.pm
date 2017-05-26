@@ -945,6 +945,15 @@ sub pin_colour {
     return $p->is_fixed ? 'green' : 'red';
 }
 
+=head2 pin_new_report_colour
+
+Returns the colour of pin to be used for a new report.
+
+=cut
+sub pin_new_report_colour {
+    return 'green';
+}
+
 =head2 path_to_pin_icons
 
 Used to override the path for the pin icons if you want to add custom pin icons

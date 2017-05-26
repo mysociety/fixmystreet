@@ -1,24 +1,26 @@
+$pin_prefix: '/i/' !default;
+
 // Like .item-list__item--indented except with a pin icon baked in!
 .item-list__item--with-pin {
   @extend .item-list__item--indented;
 
   a {
-    background-image: url(/i/pin-yellow-small.png);
+    background-image: url('#{$pin_prefix}pin-yellow-small.png');
     background-repeat: no-repeat;
     background-position: $left center;
   }
 
   &.yellow a {
-      background-image: url(/i/pin-yellow-small.png);
+      background-image: url('#{$pin_prefix}pin-yellow-small.png');
   }
   &.green a {
-      background-image: url(/i/pin-green-small.png);
+      background-image: url('#{$pin_prefix}pin-green-small.png');
   }
   &.red a {
-      background-image: url(/i/pin-red-small.png);
+      background-image: url('#{$pin_prefix}pin-red-small.png');
   }
   &.grey a {
-      background-image: url(/i/pin-grey-small.png);
+      background-image: url('#{$pin_prefix}pin-grey-small.png');
   }
 }
 .item-list--reports__item--selected {
