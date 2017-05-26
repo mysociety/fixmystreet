@@ -11,10 +11,13 @@ SET state_pretty = {
 
 SET state_groups = [
     [ loc('New'), [ 'confirmed', 'investigating' ] ],
-    [ loc('Scheduled'), [ 'action scheduled' ] ],
     [ loc('Fixed'), [ 'fixed - council' ] ],
     [ loc('Closed'), [ 'not responsible', 'duplicate', 'unable to fix' ] ]
 ];
+
+IF c.user_exists AND c.user.has_body_permission_to('report_instruct');
+    CALL state_groups.splice(1, 0, [ [ loc('Scheduled'), [ 'action scheduled' ] ] ]);
+END
 
 %]
 [% DEFAULT current_state = problem.state %]

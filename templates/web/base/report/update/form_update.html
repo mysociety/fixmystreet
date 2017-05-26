@@ -36,16 +36,8 @@
 <textarea rows="7" cols="30" name="update" class="form-control" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
 
 [% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
-    <label for="form_state">[% loc( 'State' ) %]</label>
-    <select name="state" id="form_state" class="form-control">
-    [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
-    loc('Investigating')], ['action scheduled', loc('Action Scheduled')],
-    ['in progress', loc('In Progress')], ['duplicate', loc('Duplicate')],
-    ['unable to fix', loc('No further action')], ['not responsible', loc('Not Responsible')],
-    ['fixed', loc('Fixed')] ] %]
-        <option [% 'selected ' IF state.0 == problem.state_display %] value="[% state.0 %]">[% state.1 %]</option>
-    [% END %]
-    </select>
+    <label for="state">[% loc( 'State' ) %]</label>
+    [% INCLUDE 'report/inspect/state_groups_select.html' %]
 [% ELSE %]
   [% IF (problem.is_fixed OR problem.state == 'closed') AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
 

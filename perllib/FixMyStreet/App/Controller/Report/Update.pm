@@ -286,8 +286,6 @@ sub process_update : Private {
     }
 
     if ( $params{state} ) {
-        $params{state} = 'fixed - council'
-            if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_body( $update->problem->bodies_str );
         $update->problem_state( $params{state} );
     } else {
         # we do this so we have a record of the state of the problem at this point
@@ -344,14 +342,10 @@ sub check_for_errors : Private {
     my ( $self, $c ) = @_;
 
     # they have to be an authority user to update the state
-    if ( $c->get_param('state') ) {
+    if ( my $state = $c->get_param('state') ) {
         my $error = 0;
         $error = 1 unless $c->user && $c->user->belongs_to_body( $c->stash->{update}->problem->bodies_str );
-
-        my $state = $c->get_param('state');
-        $state = 'fixed - council' if $state eq 'fixed';
-        $error = 1 unless ( grep { $state eq $_ } ( FixMyStreet::DB::Result::Problem->council_states() ) );
-
+        $error = 1 unless grep { $state eq $_ } FixMyStreet::DB::Result::Problem->council_states();
         if ( $error ) {
             $c->stash->{errors} ||= [];
             push @{ $c->stash->{errors} }, _('There was a problem with your update. Please try again.');
