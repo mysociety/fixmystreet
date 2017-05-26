@@ -1,6 +1,7 @@
 package FixMyStreet::App::Controller::Admin::AreaStats;
 use Moose;
 use namespace::autoclean;
+use List::Util qw(sum);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -61,6 +62,15 @@ sub area : Path : Args(1) {
                 delete $by_category->{$contact->category};
             }
         }
+
+        my @all = FixMyStreet::DB->resultset('Problem')->in_area_with_states($area_id, [], $date)->all;
+        my @times = ();
+        foreach my $problem (@all) {
+            push @times, $problem->comments->first->created->epoch() - $problem->confirmed->epoch();
+        }
+        my $count = @times;
+        my $sum = sum(@times);
+        $c->stash->{average} = Utils::prettify_duration($sum / $count);
 
         $c->stash->{open} = scalar(@open);
         $c->stash->{scheduled} = scalar(@scheduled);

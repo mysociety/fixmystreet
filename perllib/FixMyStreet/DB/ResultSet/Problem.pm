@@ -283,9 +283,10 @@ sub planned_in_area {
 sub in_area_with_states {
     my ( $rs, $area_id, $states, $since ) = @_;
     my $reports = $rs->in_area($area_id);
-    my $params = {
-      'comments.problem_state' => $states,
-    };
+    my $params = {};
+    if (@$states) {
+        $params->{'comments.problem_state'} = $states;
+    }
     if ($since) {
       $since = DateTime::Format::W3CDTF->format_datetime($since);
       $params->{'comments.created'} = { '>=', $since };

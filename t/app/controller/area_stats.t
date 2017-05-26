@@ -73,6 +73,19 @@ FixMyStreet::override_config {
         $mech->text_contains('Potholes6004');
         $mech->text_contains('Traffic lights13730');
     };
+
+    subtest 'shows average correctly' => sub {
+        $fixed_problems[0]->update({ confirmed => DateTime->now->subtract(days => 2) });
+        $fixed_problems[1]->update({ confirmed => DateTime->now->subtract(days => 3) });
+        $fixed_problems[2]->update({ confirmed => DateTime->now->subtract(days => 7) });
+        $fixed_problems[3]->update({ confirmed => DateTime->now->subtract(days => 4) });
+        $closed_problems[0]->update({ confirmed => DateTime->now->subtract(days => 6) });
+        $closed_problems[1]->update({ confirmed => DateTime->now->subtract(days => 9) });
+        $closed_problems[2]->update({ confirmed => DateTime->now->subtract(days => 12) });
+
+        $mech->get_ok('/admin/areastats/20720');
+        $mech->text_contains('average time between issue being opened and set to another status was 6 days');
+    }
 };
 
 END {
