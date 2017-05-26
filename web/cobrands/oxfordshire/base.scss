@@ -78,7 +78,7 @@ dd, p {
 }
 
 #side-inspect {
-  background-color: #deead2; // darker version of $oxfordshire_very_light_green
+  background-color: mix(#fff, $primary, 85%);
 }
 
 .btn-primary {
@@ -92,6 +92,10 @@ dd, p {
         $oxfordshire_button_border,
         #fff
     );
+}
+
+.box-warning {
+    background-color: mix(#fff, $primary, 85%);
 }
 
 @media print {
