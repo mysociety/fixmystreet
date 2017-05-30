@@ -342,7 +342,8 @@ sub check_for_errors : Private {
     my ( $self, $c ) = @_;
 
     # they have to be an authority user to update the state
-    if ( my $state = $c->get_param('state') ) {
+    my $state = $c->get_param('state');
+    if ( $state && $state ne $c->stash->{update}->problem->state ) {
         my $error = 0;
         $error = 1 unless $c->user && $c->user->belongs_to_body( $c->stash->{update}->problem->bodies_str );
         $error = 1 unless grep { $state eq $_ } FixMyStreet::DB::Result::Problem->council_states();
