@@ -168,8 +168,7 @@ sub prepare_params_for_email : Private {
 
     if ( $c->stash->{update} ) {
 
-        $c->stash->{problem_url} = $base_url . '/report/' . $c->stash->{update}->problem_id
-            . '#update_' . $c->stash->{update}->id;
+        $c->stash->{problem_url} = $base_url . $c->stash->{update}->url;
         $c->stash->{admin_url} = $admin_url . '/update_edit/' . $c->stash->{update}->id;
         $c->stash->{complaint} = sprintf(
             "Complaint about update %d on report %d",

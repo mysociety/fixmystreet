@@ -13,7 +13,7 @@ INCLUDE '_email_top.html';
   <h1 style="[% h1_style %]">Your update has been&nbsp;logged</h1>
   <p style="[% p_style %]">Your update has been logged on [% site_name %]:</p>
   <p style="margin: 20px auto; text-align: center">
-  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(problem) %][% problem.url %]#update_[% update.id %]">View my update</a>
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(problem) %][% update.url %]">View my update</a>
   </p>
   [% end_padded_box %]
 </th>

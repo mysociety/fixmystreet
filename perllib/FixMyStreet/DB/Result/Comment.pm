@@ -149,6 +149,11 @@ sub confirm {
     $self->confirmed( \'current_timestamp' );
 }
 
+sub url {
+    my $self = shift;
+    return "/report/" . $self->problem_id . '#update_' . $self->id;
+}
+
 sub photos {
     my $self = shift;
     my $photoset = $self->get_photoset;

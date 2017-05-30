@@ -1,9 +1,10 @@
 [% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation');
 
 DEFAULT problem = update.problem;
-SET problem_url = c.uri_for('/report', problem.id);
 IF update;
-    problem_url = problem_url _ '#update_' _ update.id;
+    SET problem_url = update.url;
+ELSE;
+    SET problem_url = problem.url;
 END;
 
 %]

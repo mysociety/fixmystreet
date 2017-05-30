@@ -4,7 +4,7 @@ Hello [% update.name %],
 
 Your update has been logged on [% site_name %]:
 
-[% cobrand.base_url_for_report(problem) %][% problem.url %]#update_[% update.id %]
+[% cobrand.base_url_for_report(problem) %][% update.url %]
 
 Your update reads:
 
