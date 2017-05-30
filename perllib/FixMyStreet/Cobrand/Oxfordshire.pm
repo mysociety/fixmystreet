@@ -120,6 +120,14 @@ sub path_to_pin_icons {
     return '/cobrands/oxfordshire/images/';
 }
 
+sub pin_hover_title {
+    my ($self, $problem, $title) = @_;
+    my $state = $self->{c}->render_fragment(
+        'report/state-list.html',
+        { state => $problem->state });
+    return "$state: $title";
+}
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
