@@ -314,9 +314,10 @@ sub ajax : Path('/ajax') {
         # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
         my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
         my $colour = $c->cobrand->pin_colour( $p, 'around' );
+        my $title = $c->cobrand->call_hook(pin_hover_title => $p, $p->title_safe) || $p->title_safe;
         [ $p->latitude, $p->longitude,
           $colour,
-          $p->id, $p->title_safe
+          $p->id, $title
         ]
     } @$on_map_all, @$nearby;
 
