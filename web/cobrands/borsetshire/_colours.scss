@@ -1,0 +1,39 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+$color-borsetshire-blue: #1375B8;
+$color-borsetshire-light-blue: #95D4FF;
+$color-borsetshire-green: #76951F;
+$color-borsetshire-light-green: #A6C257;
+$color-borsetshire-yellow: #C5A728;
+$color-borsetshire-light-yellow: #F4D659;
+
+$primary: $color-borsetshire-blue; // background on #postcodeForm, #front_stats, #front-main on desktop, and border-bottom on various map page sidebar items
+$primary_b: darken($color-borsetshire-blue, 10%); // border on div around the #postcodeForm input
+$primary_text: #fff; // text colour wherever $primary is the background
+
+$base_bg: white; // background on body and .tablewrapper on desktop
+$base_fg: #000; // text color on body and .tablewrapper on desktop
+
+$map_nav_bg: $color-borsetshire-blue; // background for #site-header on mobile, and `.mappage #site-header` on desktop
+$nav_fg: #fff; // text color for `.nav-menu a` on desktop
+$nav_fg_hover: $color-borsetshire-blue; // hover text color for `.nav-menu a`
+
+$col_big_numbers: #ccc; // text color for ol.big-numbers list item counters on homepage
+
+$col_click_map: gray;  // background for .big-green-banner on map page
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;
+
+$header-top-border: false;
+
+$mappage-header-height: 5em; // 3em #site-logo plus 1em padding top and bottom
+
+$body-font: Cabin, "Calibri", "Gill Sans", "Gill Sans MT", sans-serif;
+$meta-font: $body-font;
+$heading-font: $body-font;
