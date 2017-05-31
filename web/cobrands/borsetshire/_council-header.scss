@@ -1,0 +1,74 @@
+.nav-wrapper {
+    top: 5em;
+}
+
+#main-nav {
+    min-height: 3.5em;
+}
+
+.site-header__fake-nav {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 1em;
+    height: 48px;
+    margin: 0 -1em;
+    @include flex-container();
+    @include flex-align(center);
+
+    li {
+        padding: 0 1em;
+        margin: 0;
+        list-style: none;
+    }
+
+    input,
+    span {
+        display: inline-block;
+        height: 38px;
+        vertical-align: top;
+    }
+
+    input {
+        width: 10em;
+    }
+
+    span {
+        line-height: 38px;
+        background-color: $color-borsetshire-blue;
+        padding: 0 1em;
+    }
+}
+
+#site-subheader {
+    display: block;
+    padding: 1em;
+    background: $color-borsetshire-blue;
+    color: #fff;
+
+    h2 {
+        line-height: 24px;
+        margin: 0;
+    }
+}
+
+// Reset all the header customisations on the map page.
+.mappage {
+    .nav-wrapper {
+        top: 0;
+    }
+
+    #main-nav {
+        min-height: 5em;
+    }
+
+    #site-subheader,
+    .site-header__fake-nav {
+        display: none;
+    }
+}
+
+// Accommodate the new, taller, header.
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 10em;
+}

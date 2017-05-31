@@ -1,0 +1,48 @@
+@import "_colours";
+@import "../sass/layout";
+@import "_council-header";
+
+@import url('https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i');
+
+#site-logo {
+    background-position: 0 0;
+    background-size: 180px 48px;
+    height: 48px;
+    width: 180px;
+    @include high-dpi-background-image('images/site-logo');
+}
+
+#site-header {
+    background-color: darken($color-borsetshire-blue, 5%);
+}
+
+// Postcode form is left-aligned, and given a background image
+// and a bit more padding than normal.
+#front-main {
+    padding: 4em 1em;
+    text-align: inherit;
+    color: inherit;
+    background: mix(#fff, $color-borsetshire-light-yellow, 50%) url('images/street.jpg') 50% 55% no-repeat;
+    background-size: cover;
+
+    #postcodeForm div {
+        margin: 0;
+    }
+}
+
+// Nav menu items have a bit more padding than normal.
+.nav-menu {
+    a, span {
+        padding: 0.5em 0.75em;
+        border-radius: 0.2em;
+    }
+
+    span {
+        color: $color-borsetshire-light-yellow;
+    }
+
+    a.report-a-problem-btn {
+        padding: 0.5em 0.75em;
+        margin: 0 0.5em 0 0;
+    }
+}
