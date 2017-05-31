@@ -44,7 +44,8 @@ sub area : Path : Args(1) {
     if ($area->{name}) {
         $c->stash->{area} = $area;
 
-        my @open = FixMyStreet::DB->resultset('Problem')->in_area($area_id, $date)->all;
+        my @all = FixMyStreet::DB->resultset('Problem')->in_area_with_states($area_id, [], $date)->all;
+        my @open = FixMyStreet::DB->resultset('Problem')->open_in_area($area_id, $date)->all;
         my @scheduled = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id, $date)->all;
         my @closed = FixMyStreet::DB->resultset('Problem')->closed_in_area($area_id, $date)->all;
         my @fixed = FixMyStreet::DB->resultset('Problem')->fixed_in_area($area_id, $date)->all;
@@ -52,6 +53,7 @@ sub area : Path : Args(1) {
 
         foreach my $contact ($c->stash->{live_contacts}->all) {
             $by_category->{$contact->category} = {};
+            $by_category->{$contact->category}->{all} = scalar(grep { $_->category eq $contact->category } @all);
             $by_category->{$contact->category}->{open} = scalar(grep { $_->category eq $contact->category } @open);
             $by_category->{$contact->category}->{scheduled} = scalar(grep { $_->category eq $contact->category } @scheduled);
             $by_category->{$contact->category}->{closed} = scalar(grep { $_->category eq $contact->category } @closed);
@@ -63,7 +65,6 @@ sub area : Path : Args(1) {
             }
         }
 
-        my @all = FixMyStreet::DB->resultset('Problem')->in_area_with_states($area_id, [], $date)->all;
         my @times = ();
         foreach my $problem (@all) {
             push @times, $problem->comments->first->created->epoch() - $problem->confirmed->epoch();

@@ -251,10 +251,13 @@ sub include_comment_counts {
 }
 
 sub in_area {
-    my ( $rs, $area_id, $since ) = @_;
+    my ( $rs, $area_id, $since, $states ) = @_;
     my $params = {
         areas => { like => "%,$area_id,%"}
     };
+    if (defined $states) {
+        $params->{state} = $states;
+    }
     if ($since) {
       $since = DateTime::Format::W3CDTF->format_datetime($since);
       $params->{created} = { '>=', $since };
@@ -299,6 +302,11 @@ sub in_area_with_states {
           order_by => 'comments.created'
       }
     );
+}
+
+sub open_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    $rs->in_area($area_id, $since, [ FixMyStreet::DB::Result::Problem->open_states() ]);
 }
 
 sub fixed_in_area {

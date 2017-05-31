@@ -36,7 +36,6 @@ foreach my $problem (@closed_problems) {
     $mech->create_comment_for_problem($problem, $oxfordshireuser, 'Title', 'text', 0, 'confirmed', 'closed');
 }
 
-
 $mech->log_in_ok( $superuser->email );
 
 FixMyStreet::override_config {
@@ -69,9 +68,9 @@ FixMyStreet::override_config {
 
     subtest 'shows correct stats' => sub {
         $mech->get_ok('/admin/areastats/20720');
-        $mech->content_contains('In the last month 19 issues opened, 7 scheduled, 3 closed, 4 fixed');
-        $mech->text_contains('Potholes6004');
-        $mech->text_contains('Traffic lights13730');
+        $mech->content_contains('In the last month 12 issues opened, 7 scheduled, 3 closed, 4 fixed');
+        $mech->text_contains('Potholes2004');
+        $mech->text_contains('Traffic lights10730');
     };
 
     subtest 'shows average correctly' => sub {

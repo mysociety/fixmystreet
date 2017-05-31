@@ -94,6 +94,18 @@ subtest 'closed_in_area gets closed reports' => sub {
     is $closed_in_area[0]->title, $problem1->title, 'query runs correctly';
 };
 
+subtest 'open_in_area gets open reports' => sub {
+    $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324," });
+    $mech->create_problems_for_body(1, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \"current_timestamp-'60 days'::interval" });
+    my @open_in_area = FixMyStreet::DB->resultset('Problem')->open_in_area($area_id)->all;
+
+    is scalar(@open_in_area), 2, 'correct count is returned';
+    is $open_in_area[0]->title, $problem4->title, 'query runs correctly';
+
+    @open_in_area = FixMyStreet::DB->resultset('Problem')->open_in_area($area_id, DateTime->now->subtract(days => 30))->all;
+    is scalar(@open_in_area), 1, 'allows filtering by date';
+    is $open_in_area[0]->title, $problem4->title, 'query runs correctly';
+};
 
 END {
     $mech->delete_user($user);
