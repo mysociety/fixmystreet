@@ -1,8 +1,3 @@
-use strict;
-use utf8; # sign in error message has &ndash; in it
-use warnings;
-use Test::More;
-
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 use Web::Scraper;

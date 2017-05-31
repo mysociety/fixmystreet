@@ -1,6 +1,3 @@
-use strict;
-use warnings;
-use Test::More;
 use LWP::Protocol::PSGI;
 
 use FixMyStreet::TestMech;

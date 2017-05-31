@@ -1,6 +1,3 @@
-use strict;
-use warnings;
-use Test::More;
 use Test::MockModule;
 use LWP::Protocol::PSGI;
 use LWP::Simple;

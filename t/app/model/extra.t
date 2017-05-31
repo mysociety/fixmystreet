@@ -4,7 +4,6 @@ use Test::More;
 use utf8;
 
 use FixMyStreet::DB;
-use Data::Dumper;
 use DateTime;
 
 my $db = FixMyStreet::DB->connect;

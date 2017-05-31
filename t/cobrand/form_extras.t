@@ -1,6 +1,3 @@
-use strict;
-use warnings;
-
 package FixMyStreet::Cobrand::Tester;
 use parent 'FixMyStreet::Cobrand::FixMyStreet';
 
@@ -18,7 +15,6 @@ sub path_to_web_templates {
 
 package main;
 
-use Test::More;
 use FixMyStreet::TestMech;
 
 # disable info logs for this test run

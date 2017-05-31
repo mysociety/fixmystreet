@@ -1,7 +1,3 @@
-use strict;
-use warnings;
-
-use Test::More;
 use t::Mock::Bing;
 
 use mySociety::Locale;

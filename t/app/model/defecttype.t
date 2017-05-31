@@ -1,7 +1,3 @@
-use strict;
-use warnings;
-use Test::More;
-
 use FixMyStreet::App;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;

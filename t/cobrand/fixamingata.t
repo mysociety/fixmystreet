@@ -1,12 +1,4 @@
-use strict;
-use warnings;
-use Test::More;
 use Test::MockModule;
-
-BEGIN {
-    use FixMyStreet;
-    FixMyStreet->test_mode(1);
-}
 
 use mySociety::Locale;
 

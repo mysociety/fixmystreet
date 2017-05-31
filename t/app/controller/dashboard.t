@@ -1,6 +1,3 @@
-use strict;
-use warnings;
-use Test::More;
 use Test::MockTime ':all';
 
 use FixMyStreet::TestMech;

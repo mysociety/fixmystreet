@@ -1,8 +1,3 @@
-use strict;
-use warnings;
-
-use Test::More;
-
 use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::TestMech;
@@ -31,13 +26,13 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
 });
 my $report = $reports[0];
 
-subtest 'Report isn’t sent if uninspected' => sub {
+subtest "Report isn't sent if uninspected" => sub {
     $mech->clear_emails_ok;
 
     FixMyStreet::DB->resultset('Problem')->send_reports();
 
     $mech->email_count_is( 0 );
-    is $report->whensent, undef, 'Report hasn’t been sent';
+    is $report->whensent, undef, "Report hasn't been sent";
 };
 
 subtest 'Report is sent when inspected' => sub {
@@ -72,7 +67,7 @@ subtest 'Uninspected report is sent when made by trusted user' => sub {
     is $report->get_extra_metadata('inspected'), undef, 'Report not marked as inspected';
 };
 
-subtest 'Uninspected report isn’t sent when user rep is too low' => sub {
+subtest "Uninspected report isn't sent when user rep is too low" => sub {
     $mech->clear_emails_ok;
     $report->whensent( undef );
     $report->update;
@@ -88,7 +83,7 @@ subtest 'Uninspected report isn’t sent when user rep is too low' => sub {
 
     $report->discard_changes;
     $mech->email_count_is( 0 );
-    is $report->whensent, undef, 'Report hasn’t been sent';
+    is $report->whensent, undef, "Report hasn't been sent";
 };
 
 subtest 'Uninspected report is sent when user rep is high enough' => sub {

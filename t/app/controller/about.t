@@ -1,11 +1,6 @@
-use utf8;
-use strict;
-use warnings;
+use FixMyStreet::TestMech;
 
-use Test::More;
-use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
-
-ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
+ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 # check that we can get the page
 $mech->get_ok('/faq');

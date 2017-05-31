@@ -1,4 +1,3 @@
-use Test::More;
 use FixMyStreet::TestMech;
 use LWP::Protocol::PSGI;
 use t::Mock::MapItZurich;

@@ -17,7 +17,6 @@ sub updates_restriction {
 
 package main;
 
-use Test::More;
 use FixMyStreet::TestMech;
 
 my $c = FixMyStreet::App->new;

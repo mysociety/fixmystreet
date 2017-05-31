@@ -1,6 +1,3 @@
-use strict;
-use warnings;
-use Test::More;
 use FixMyStreet::DB;
 use FixMyStreet::Map;
 use FixMyStreet::TestMech;

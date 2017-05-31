@@ -1,15 +1,14 @@
 # TODO
 # Overdue alerts
 
-use strict;
-use warnings;
 use DateTime;
 use Email::MIME;
 use LWP::Protocol::PSGI;
-use Test::More;
 use Test::LongString;
 use Path::Tiny;
 use t::Mock::MapItZurich;
+use FixMyStreet::TestMech;
+my $mech = FixMyStreet::TestMech->new;
 
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
@@ -52,9 +51,6 @@ sub reset_report_state {
     $report->created($created) if $created;
     $report->update;
 }
-
-use FixMyStreet::TestMech;
-my $mech = FixMyStreet::TestMech->new;
 
 # Front page test
 ok $mech->host("zurich.example.com"), "change host to Zurich";

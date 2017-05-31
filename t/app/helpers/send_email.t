@@ -1,20 +1,10 @@
-use strict;
-use warnings;
-use utf8;
-
 package FixMyStreet::Cobrand::Tester;
 use parent 'FixMyStreet::Cobrand::Default';
 sub path_to_email_templates { [ FixMyStreet->path_to( 't', 'app', 'helpers', 'emails') ] }
 
 package main;
 
-BEGIN {
-    use FixMyStreet;
-    FixMyStreet->test_mode(1);
-}
-
 use Email::MIME;
-use Test::More;
 use Test::LongString;
 
 use Catalyst::Test 'FixMyStreet::App';

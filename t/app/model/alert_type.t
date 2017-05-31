@@ -1,6 +1,3 @@
-use strict;
-use warnings;
-use Test::More;
 use FixMyStreet::TestMech;
 
 mySociety::Locale::gettext_domain( 'FixMyStreet' );

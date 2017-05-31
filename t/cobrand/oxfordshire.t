@@ -1,7 +1,3 @@
-use strict;
-use warnings;
-use Test::More;
-
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -61,7 +57,7 @@ subtest 'Exor RDI download appears on Oxfordshire cobrand admin' => sub {
     }
 };
 
-subtest 'Exor RDI download doesn’t appear outside of Oxfordshire cobrand admin' => sub {
+subtest "Exor RDI download doesn't appear outside of Oxfordshire cobrand admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
     }, sub {

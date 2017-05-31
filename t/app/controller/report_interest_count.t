@@ -1,6 +1,3 @@
-use strict;
-use warnings;
-
 package FixMyStreet::Cobrand::Tester;
 
 use parent 'FixMyStreet::Cobrand::Default';
@@ -10,8 +7,6 @@ sub can_support_problems {
 }
 
 package main;
-
-use Test::More;
 
 use FixMyStreet::TestMech;
 use Web::Scraper;
