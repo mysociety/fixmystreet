@@ -18,6 +18,7 @@ __PACKAGE__->config(
     expose_methods => [
         'tprintf', 'prettify_dt',
         'version', 'decode',
+        'prettify_state',
     ],
     FILTERS => {
         add_links => \&add_links,
@@ -165,6 +166,16 @@ sub decode {
     my ( $self, $c, $text ) = @_;
     utf8::decode($text) unless utf8::is_utf8($text);
     return $text;
+}
+
+sub prettify_state {
+    my ($self, $c, $text) = @_;
+    # New template to prevent interaction with current one
+    my $tt = FixMyStreet::Template->new({ INCLUDE_PATH => $self->{include_path} });
+    my $var;
+    $tt->process('report/state-list.html', { state => $text }, \$var);
+    $var =~ s/ - .*//;
+    return $var;
 }
 
 1;

@@ -609,19 +609,6 @@ sub is_visible {
     return exists $self->visible_states->{ $self->state } ? 1 : 0;
 }
 
-=head2 state_display
-
-Returns a string suitable for display lookup in the update meta section.
-Removes the '- council/user' bit from fixed states.
-
-=cut
-
-sub state_display {
-    my $self = shift;
-    (my $state = $self->state) =~ s/ -.*$//;
-    return $state;
-}
-
 =head2 meta_line
 
 Returns a string to be used on a problem report page, describing some of the

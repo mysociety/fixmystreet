@@ -4,7 +4,7 @@
 [%- BLOCK states -%]
 [%- FOREACH state IN list %]
 [%- '<ul>' IF loop.first %]
-    <li>[% object.$state %] [% state_pretty.$state %]</li>
+    <li>[% object.$state %] [% prettify_state(state) %]</li>
 [%- "\n</ul>" IF loop.last %]
 [%- END %]
 [% END -%]
