@@ -24,10 +24,6 @@ h1.main {
     margin: 0.5em 0;
 }
 
-.container {
-    padding: 0 1em 1em; /* if remove this 1em, need to edit .full-width! */
-}
-
 #site-header {
     background: $primary;
     height: 57px;
@@ -51,13 +47,6 @@ h1.main {
             .menu-icon { background-image: url('/cobrands/hart/menu_mobile.png'); }
         }
     }
-}
-
-// Colour tab to match colour scheme
-#nav-link {
-  width: 50px;
-  height: 48px;
-  background: url('/cobrands/hart/tab-blue.png') 0 0 no-repeat;
 }
 
 .big-green-banner {

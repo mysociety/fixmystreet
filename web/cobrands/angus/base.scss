@@ -8,15 +8,14 @@
 body.frontpage #site-logo,
 #site-logo
 {
-    background: url("/cobrands/angus/third_party/css_img/angus-logo-header.png") 0 0 no-repeat;
+    background: url("/cobrands/angus/third_party/css_img/angus-logo-header.png") 0 50% no-repeat;
     background-size: contain;
     width: 82px;
-    height: 40px;
-    top: 8px;
-    left: 4px;
+    height: 50px;
 }
 
 #site-header {
+    border-top: none;
     background: $angus_green;
 
     form.form__search {

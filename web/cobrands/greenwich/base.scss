@@ -9,12 +9,11 @@
 body.frontpage #site-logo,
 #site-logo
 {
-    background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
+    background: url("/cobrands/greenwich/logo.gif") 0 50% no-repeat;
     background-size: contain;
     width: 82px;
     height: 40px;
-    top: 8px;
-    left: 4px;
+    padding: 0.25em 0;
 }
 
 #nav-link {

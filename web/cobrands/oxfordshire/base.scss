@@ -9,21 +9,13 @@
 #site-header {
   background: none;
   background-color: $oxfordshire_dk_green;
-  height: 60px;
 }
 
 #site-logo {
-  margin-top:4px;
-  background-image: url('images/logo.jpg');
-  background-repeat: no-repeat;
-  background-position: 0px 0px;
-  border: 4px solid $oxfordshire_dk_green;
+  background: transparent url('images/logo.jpg') 0 50% no-repeat;
   width: 173px;
   height: 38px;
-}
-
-#nav-link {
-  height: 60px; // to match #site-header
+  padding: 0.5em 0;
 }
 
 #mysoc-logo {

@@ -39,16 +39,11 @@ body {
 }
 
 #site-header {
-    height: auto;
     background: white;
 
     nav ul li, ul.nav li {
         list-style: none;
         margin-bottom: 0;
-    }
-
-    .container {
-        min-height: 0;
     }
 }
 
