@@ -150,55 +150,21 @@ body.fullwidthpage {
             }
         }
     }
-
-    .container {
-        .content {
-            footer {
-                .tablewrapper {
-                    background: #1a1a1a url(images/tile.jpg) 0 0 repeat;
-                }
-            }
-        }
-    }
 }
 
 body.frontpage {
-    .container {
+    // Because fms.com includes a .fms-pro-promo that we want to look separate
+    // from #front-howto and #front-recent, we move the white background and
+    // padding from .content to the .tablewrapper, so it visually stands alone.
+    .content {
         background-color: transparent;
+        padding: 0em 0em 1em;
+        margin-top: -3em; // overlap the bottom of #front-main
 
-        .content {
-            background-color: transparent;
-            padding: 0em 0em 1em;
-
-            > .tablewrapper {
-                margin: -4em 0em 0em;
-                padding: 1em 1em;
-                background-color: white;
-                width: auto;
-            }
-            > .form-error {
-                margin-top: -4em;
-            }
-            > .form-error + .tablewrapper {
-                margin-top: 0;
-            }
-        }
-        footer {
-            .bordered {
-                margin: 0em;
-            }
-        }
-    }
-}
-
-body.twothirdswidthpage {
-    .container {
-        .content {
-            footer {
-                .tablewrapper {
-                    border: 0px;
-                }
-            }
+        .tablewrapper {
+            @include box-sizing(border-box);
+            padding: 1.5em;
+            background-color: white;
         }
     }
 }
