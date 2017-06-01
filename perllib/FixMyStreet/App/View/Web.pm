@@ -23,6 +23,7 @@ __PACKAGE__->config(
         add_links => \&add_links,
         escape_js => \&escape_js,
         markup => [ \&markup_factory, 1 ],
+        prettify_state => \&prettify_state,
     },
     COMPILE_EXT => '.ttc',
     STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
@@ -164,6 +165,31 @@ sub _version_get_mtime {
 sub decode {
     my ( $self, $c, $text ) = @_;
     utf8::decode($text) unless utf8::is_utf8($text);
+    return $text;
+}
+
+sub prettify_state {
+    my $text = shift;
+    my %STATE_PRETTY = (
+        confirmed => _('Open'),
+        investigating => _('Investigating'),
+        planned => _('Planned'),
+        'in progress' => _('In progress'),
+        'action scheduled' => _('Action Scheduled'),
+        fixed => _('Fixed'),
+        'fixed - user' => _('Fixed - User'),
+        'fixed - council' => _('Fixed - Council'),
+        'unable to fix' => _('No further action'),
+        'not responsible' => _('Not Responsible'),
+        duplicate => _('Duplicate'),
+        closed => _('Closed'),
+        'internal referral' => _('Internal referral'),
+        hidden => _('Hidden'),
+        partial => _('Partial'),
+        unconfirmed => _('Unconfirmed'),
+    );
+    $text = $STATE_PRETTY{$text};
+    $text =~ s/ - .*//;
     return $text;
 }
 

@@ -174,22 +174,6 @@ sub photos {
     return \@photos;
 }
 
-=head2 problem_state_display
-
-Returns a string suitable for display lookup in the update meta section.
-Removes the '- council/user' bit from fixed states.
-
-=cut
-
-sub problem_state_display {
-    my $self = shift;
-
-    my $state = $self->problem_state;
-    $state =~ s/ -.*$//;
-
-    return $state;
-}
-
 =head2 latest_moderation_log_entry
 
 Return most recent ModerationLog object
@@ -269,7 +253,7 @@ sub meta_line {
     } elsif ($self->mark_open)  {
         $update_state = _( 'reopened' );
     } elsif ($self->problem_state) {
-        my $state = $self->problem_state_display;
+        my $state = $self->problem_state;
 
         if ($state eq 'confirmed') {
             if ($c->stash->{last_state}) {
@@ -285,7 +269,7 @@ sub meta_line {
             $update_state = _( 'marked as action scheduled' )
         } elsif ($state eq 'closed') {
             $update_state = _( 'marked as closed' )
-        } elsif ($state eq 'fixed') {
+        } elsif ($state =~ /^fixed/) {
             $update_state = _( 'marked as fixed' )
         } elsif ($state eq 'unable to fix') {
             $update_state = _( 'marked as no further action' )

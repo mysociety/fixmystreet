@@ -9,12 +9,12 @@
     [% END ~%]
 [% END ~%]
 [% IF NOT found ~%]
-    <option selected value="[% current_state %]">[% state_pretty.$current_state %]</option>
+    <option selected value="[% current_state %]">[% current_state | prettify_state %]</option>
 [% END ~%]
 [% FOREACH group IN state_groups %]
     <optgroup label="[% group.0 %]">
     [% FOREACH state IN group.1 %]
-        <option [% 'selected ' IF state == current_state %]value="[% state %]">[% state_pretty.$state %]</option>
+        <option [% 'selected ' IF state == current_state %]value="[% state %]">[% state | prettify_state %]</option>
     [% END %]
     </optgroup>
 [% END %]

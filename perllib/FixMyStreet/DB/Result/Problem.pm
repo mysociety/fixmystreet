@@ -611,15 +611,13 @@ sub is_visible {
 
 =head2 state_display
 
-Returns a string suitable for display lookup in the update meta section.
-Removes the '- council/user' bit from fixed states.
+Returns a string suitable for display.
 
 =cut
 
 sub state_display {
     my $self = shift;
-    (my $state = $self->state) =~ s/ -.*$//;
-    return $state;
+    return FixMyStreet::App::View::Web::prettify_state($self->state);
 }
 
 =head2 meta_line
