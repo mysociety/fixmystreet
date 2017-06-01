@@ -11,6 +11,8 @@ $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #ccc !default;
 
 $form-control-border-color: #aaaaaa !default;
+$header-top-border-width: 0.25em !default;
+$header-top-border: $header-top-border-width solid $primary !default;
 
 @import "_mixins";
 @import "_report_list";
@@ -469,7 +471,9 @@ ul.error {
 
 // #site-header creates grey bar in mobile
 #site-header {
-  border-top: 0.25em solid $primary;
+  @if ($header-top-border) {
+    border-top: $header-top-border;
+  }
   @include linear-gradient(#000, #222 10%, #222 90%, #000);
   position: relative;
 }

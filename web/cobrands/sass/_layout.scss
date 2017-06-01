@@ -9,6 +9,8 @@ $mappage-notes-width: 15em;
 $mappage-actions-width: 25em;
 $mappage-sidebar-width--medium: 24em;
 $mappage-actions-width--medium: 20em;
+$header-top-border-width: 0.25em !default;
+$header-top-border: $header-top-border-width solid $primary !default;
 
 .internal-link-fixed-header {
     display: block;
@@ -65,11 +67,14 @@ h1 {
 }
 
 #main-nav {
-  min-height: 60px; // set this to height of #site-logo + any vertical padding
+  min-height: $mappage-header-height; // defaults to map header height; should be height of #site-header (eg: #site-logo + any vertical padding)
   @include flex-container();
   @include flex-align(center);
   float: $right; // we could use justify-content here, but float degrades better for non-flexbox browsers
   margin: 0;
+  @if ($header-top-border) {
+    margin-top: $header-top-border-width * -1; // visually compensate for border on #site-header
+  }
 }
 
 #site-logo {
@@ -90,7 +95,11 @@ h1 {
 
 .nav-wrapper {
   position: absolute;
-  top: 0.25em; // set this to whatever border-top #site-header has
+  @if ($header-top-border) {
+    top: $header-top-border-width;
+  } @else {
+    top: 0;
+  }
   left: 0;
   right: 0;
 }
