@@ -468,7 +468,6 @@ ul.error {
 }
 
 // #site-header creates grey bar in mobile
-// .nav-wrapper-2 is used on desktop
 #site-header {
   border-top: 0.25em solid $primary;
   @include linear-gradient(#000, #222 10%, #222 90%, #000);
@@ -516,6 +515,12 @@ ul.error {
     text-decoration: none;
     background-color: #444;
   }
+}
+
+// The nav list has this sort of "full width" look,
+// so we want to cancel out the margin from .container
+#main-nav {
+  margin: 0 -1em;
 }
 
 .nav-menu {

@@ -2,7 +2,7 @@
 
 $image-sprite: '../fixmystreet/images/sprite.png' !default;
 $layout_front_stats_color: $primary !default;
-$mappage-header-height: 4em !default;
+$mappage-header-height: 4em !default; // eg: might want this to equal outer height of #site-header on normal pages
 $mappage-sidebar-width: 29em;
 $mappage-sidebar-padding: 1em;
 $mappage-notes-width: 15em;
@@ -12,9 +12,6 @@ $mappage-actions-width--medium: 20em;
 
 .internal-link-fixed-header {
     display: block;
-    /* Roughly the height of .nav-wrapper-2 (mappage-header-height) plus the
-     * border-top on .nav-wrapper-2 (4px), plus the padding-top on
-     * .item-list__item (0.5em). */
     @if unit($mappage-header-height) == 'em' {
         padding-top: $mappage-header-height + 1em;
         margin-top: -($mappage-header-height + 1em);
@@ -56,73 +53,29 @@ h1 {
   position: relative;
 }
 
-.wrapper{
-  display: table;
-  caption-side: top;
-  width: 100%;
-  .table-cell {
-    display:table-cell;
-  }
+// Body sometimes has a .top_banner at the start, which we don't want to
+// cover up when we absolutely position the nav to the top of the body.
+// So make .wrapper into a new positioning context for the nav.
+.wrapper {
+  position: relative;
 }
 
-//pad the top of the wrapper to allow space for the menu to fit in
-//when its positioned absolute below
-.ie7 {
-  .wrapper {
-    padding-top:4em;
-  }
-}
-
-.nav-wrapper {
-  display: table-caption;
-  .nav-wrapper-2 {
-    width: 100%;
-    min-height: 4em;
-    position: absolute;
-    border-top: 4px solid $primary;
-    border-width: 4px 0 0 0;
-    z-index: 2;
-  }
-}
-
-//position absolute the menu as ie doesn't like display:table
-.ie7 {
-  .nav-wrapper {
-    position: absolute;
-    top:0;
-    #{$left}: 0;
-    width:100%;
-    .nav-wrapper-2 {
-      // position static as well so we fix lots of the z-index issues
-      position:static;
-    }
-  }
-}
-
-// Resets a lot of the mobile styling. #site-header only used to help position logo on desktop
 #site-header {
-  height: auto;
   background: none;
-  border-top: 0px;
-  // margin-top: 4px; <-- With this we compensate for 4px of content due to
-  // .nav-wrapper-2's border-top, but misaligns e.g. FAQ page
-  .container {
-    position: static;//reset position so the nav links become clickable
-  }
+}
 
-  .ie7 & {
-      height: 3em;
-      // Without this, the #site-logo is unclickable.
-      // Something to do with broken z-index nesting in IE6-7.
-      z-index: 2;
-  }
+#main-nav {
+  min-height: 60px; // set this to height of #site-logo + any vertical padding
+  @include flex-container();
+  @include flex-align(center);
+  float: $right; // we could use justify-content here, but float degrades better for non-flexbox browsers
+  margin: 0;
 }
 
 #site-logo {
-  top: 0.9em;
-  #{$left}: auto;
-  position: absolute;
-  z-index: 3;
+    // Bring #site-logo in front of .nav-wrapper (which has no z-index) so that it's clickable
+    position: relative;
+    z-index: 1;
 }
 
 #nav-link {
@@ -135,11 +88,13 @@ h1 {
     display: none;
 }
 
-#main-nav {
-  margin: 0 auto;
-  padding: 0;
-  width: 60em;
+.nav-wrapper {
+  position: absolute;
+  top: 0.25em; // set this to whatever border-top #site-header has
+  left: 0;
+  right: 0;
 }
+
 .nav-menu {
   float: $right;
   li {
@@ -180,16 +135,10 @@ h1 {
 // The narrow single column box
 .content {
   width: 27em;
-  margin: 3em 0.5em -1em;
+  margin: 1em 0.5em 0 0.5em;
   padding: 1em 1em 3em;
   background: #fff;
   color: #222;
-}
-.iel8 {
-  .content {
-    //take off margins so we line up properly
-    margin: 0 0.5em;
-  }
 }
 
 .full-width {
@@ -198,11 +147,8 @@ h1 {
 
 // map page - has fixed header and different styling
 body.mappage {
-
-  .wrapper .table-cell,
-  .nav-wrapper {
-    // No need for the table-cell stuff now we're using absolute positioning
-    display: block;
+  .wrapper {
+    position: static;
   }
 
   .container {
@@ -225,72 +171,29 @@ body.mappage {
     left: 0;
     right: 0;
     height: $mappage-header-height;
+    background: $map_nav_bg;
   }
 
   #site-logo {
-    #{$left}: 12px;
-    // Also inherits...
-    //   `top: 0.9em`
-    //   `position: absolute`
-    //   `z-index: 3`
-    // ...from the non-mappage version, above
+    margin-#{$left}: 1em;
   }
 
   #main-nav {
-    width: auto;
     margin-#{$right}: 1em;
   }
 
-  .nav-wrapper {
-    .nav-wrapper-2 {
-      position: absolute;
-      z-index: auto;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: $map_nav_bg;
-
-      // Watch out! If the nav links break onto two lines, the header will
-      // get taller, and overlap the top of #map_sidebar and #map_box.
-      // (But at least the nav links will be legible.)
-      min-height: $mappage-header-height;
-
-      // Count the 4px border-top as part of the height (mappage-header-height)
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-  }
-
-  .nav-menu--main a, .nav-menu--main span {
-    padding: 1.4em 0.75em 1.35em;
-  }
-
-  .nav-menu--main a.report-a-problem-btn {
-    padding: 0.5em;
-    margin: 0.9em 0.25em 0.85em;
-  }
+//  .nav-menu--main a, .nav-menu--main span {
+//    padding: 1.4em 0.75em 1.35em;
+//  }
+//
+//  .nav-menu--main a.report-a-problem-btn {
+//    padding: 0.5em;
+//    margin: 0.9em 0.25em 0.85em;
+//  }
 
   .banner {
     p {
       top: -2.1em; // a few pixels lower than default
-    }
-  }
-}
-
-.ie7 {
-  body.mappage {
-    // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
-    .container {
-      float: $left;
-      width: 27em;
-      margin-#{$left}: 0.7em;
-    }
-    .nav-wrapper{
-      z-index:1;
-      .nav-wrapper-2 {
-        position:static;
-      }
     }
   }
 }
@@ -951,40 +854,6 @@ textarea.form-error {
 
 // Frontpage
 
-body.frontpage {
-  .table-cell {
-    .content {
-      margin: 1em 0.5em 0;
-    }
-  }
-  .nav-wrapper-2{
-    height:6em;
-  }
-  #site-header{
-    height:8em;
-  }
-}
-//logo fix
-.iel8 {
-  body.frontpage {
-    #site-logo {
-      position:relative;
-      width:60em;
-      margin:0 auto;
-    }
-  }
-}
-.ie7 {
-  body.frontpage {
-    #site-header {
-      height:4em;
-    }
-    #site-logo {
-      top:-1em;
-    }
-  }
-}
-
 // big yellow bit full screen width
 #front-main {
   color: $primary_text;
@@ -1132,13 +1001,6 @@ body.frontpage {
     width: auto;
     float: $right;
     padding-#{$left}: 180px;
-  }
-
-  #mysoc-logo {
-    width: 16px;
-    // Just the mySociety circle logo
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABJ9JREFUeNqsVXlMHFUYf/Pe7O7M7E2Xw6UFWg5LQ1GTosa0IT00wYbGaKoltWnaRGNrjIptiUalXqlJU9RU0fSPHtqCR20pliBpQpAmxQgoLDeLQIEuh2WBndmDnZn3fMvRsqEGVv0mv3lzvPd97/u97wBgmXLUbHvOFZ/cJK1KbTtmiX4F/J+ySzBuDiakeSdWphA3RSAhTX3NaN2znLVwyQkMA/YbzAcwAAIFIBSYELjPYH6Zpf9CwrEMeGS1zhalh2zEBkIq2NCdkDvfyOxCRqHfnnpIWN9caK+5URDX2VJob8zfZsqJyIBKlVzweU7pIMIC3TFHIUAISkSx2GKE2uK8qNK0ODZbVsgKuwllnthp/S4rUZs0vx4th0dHcLp3FCv1VogEL8G9Jz2THx4Tx79+Yh23/oVs4zuBwKx3CuWQ5aHO5VYba7oDDjDj/TJEpSgWJytD0FAP5Dm6PD4ySZmSIUM0+C6DoGdUdkXkwULBC56HJtRJuxFpsu7nsll60CwHQY3D/8PRq1NFQZXg+TP8TwKphhc3GXPS4zWP9tySm07XSZe9MgkLEpCuX5uZZdqQBwEM1nsaStq87V3/xtjGTVzKB29bj0RZkK2s3PvTJ59PnWG2Rm3esTP2mW80gDUByq+CFffJoS+2tkrtTZEoz80R1pVfjrsBEGMGCvWAQ+DsV5MFcLstp0jFqsmH/cCn+qjLMGqLdcvrcOkIDpO9eYY9QMuYVRED1U8A8Sjg6Vz9AahH+mi84OhCzwISbAwT8fFoFr6EjlgvMAh2eDtP85AP7XwGHORAi9R6USVqRNrPlUqlIEgCSM8ApGMAtCBw/nvpLGqR2qoFxIMYbUwCJvh2tbv6oyt/lX8Z6fa7e+Thdsd0bdpa7QqvF49UlPmKXz0y/vEdHqyshaeDH2lNNoPGmhlUfQMuydmzHOX2VENMTKKQ0OMQu6Qxv8hqaLDMhWoY0VlxuXkPx24vZhhooa/elts1hddvfXsCE/yPyrftTdj15ME1n3J6FOsTlbFrZwbeqDrVdz4sD0Ji41fan019q1MF2Ego/wy9NIjDl5zHM1xeZ8e9lMenGuIPl2zoIIAxqjIGiO4cIeg/vrs+fbBDvBlWi3RISKF5YCQYz5XkGRchx+rT6djBpzyYaM3Zl0ftaqd++fGSt7m2NTqBT9dwyOgXldmaRWnRcgyflGnKWGTAr0hOTFQPjSQTHWciihCCJd9IM/fAxuTV712shTreHppreXz3of739+dMDFW1E0wUBjIsHQGt4gDT8BtsF52L+oE74BquH7l6kFIzoYE6agBJv49V5o/JI39G5750mNFydlWaAiHQOca45/Pfvdk17bp2ur+AM6CAYGKBlkdyQ+Xom4OdYve83rBy3Tj284U+T/N1njUmBVTf0Lh/qBdABDQ2+31Elu8mkaoAyAsxgHbIK5/1FnX9NlmVmGFa0/vHVL+zYaJloc5F/cAdGB4AIIT51FaBWFdRps94bIciB2ZaJ+T1wNf2azmYS8bOOndbCPcKhGX1g0BfqwPpzUS3Ki0ZanVeT13FuZHiQ4UkOK0stfZvAQYA/wr53nPx8cUAAAAASUVORK5CYII=);
-    background-size: auto;
   }
 
   //Revert to mobile use of the .full-width class
