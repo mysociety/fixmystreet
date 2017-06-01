@@ -148,6 +148,13 @@ body.fullwidthpage {
 }
 
 body.frontpage {
+    #site-logo {
+        top: 3em;
+        width: 300px;
+        height: 60px;
+        background: url($image-sprite) -2px -108px no-repeat;
+    }
+
     // Because fms.com includes a .fms-pro-promo that we want to look separate
     // from #front-howto and #front-recent, we move the white background and
     // padding from .content to the .tablewrapper, so it visually stands alone.
