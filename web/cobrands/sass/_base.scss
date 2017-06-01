@@ -544,22 +544,6 @@ ul.error {
     background-color: #ccc;
   }
 }
-.nav-menu--mysoc {
-  a {
-    color: $primary_text;
-    background-color: $primary;
-  }
-}
-#mysoc-logo {
-  background-origin: content-box;
-  background-position: $left 3px;
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAAYCAYAAAArrNkGAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABBtJREFUaN7tmT2u1DAQx/cIPgBCQUJCICH5BuQIPkIq6hzBB0AyiAP4ABQ5ghtEm54mEtVrICUNkpmsJjBvdvyR1S7hPa2lv1aJs5PEP894xjkc/tMWY+xADhRQA8iC9I7PtD6PP9xa9aC1oCnmm9lpgtHW3WiVB03HuqYeA9DlPZbJuXj8o5wgGM5os+ixLb74MeTt+Hz+kiGXva99jEDjJV7w+5Pn3aIHNoEvB/Tu7s6iejzuQAEUQRPIgxT2KTwesX+5rkvYs7yP2KDXLN7XXCKkAUgHiii3MaQuideI9x/x2GB/gxFjVZMIoY6AmtBGJ+QJluUKgdheI1LpfveuoQMciTw7XrUAbEFzot8Re4GcnwWghv23Ezx0PiejBYiBAA0/Pz7VoOV3AKnEup1LwhyBQFsr2Jkzdjy51hZyBIuwaOuFZ6fPPaaA5jQX+hvi4fS8YUC9BBzXqJOB4INXAGpAM8oAxBEUUbYSQiCD1ZWACnZGhDJIUacGaBbY34ghAxfAdHheCxBHAs6yvp7YpP/zDOgk9WHIGhMvOZ5TrjCgfUUSptigqQqg1M7A7kHhTVvWUAF8Q/r6ZObPQy4bfMf62wycoeSFOEmoPS2sQ74mdFUC1RhuHQ25QonkKurjE6CCpzTC+9CmNwBNeiHz/oGvabnweG+9E9ZDul6GDDiD53tybsoMYIMJhhQSjy/28YVzoAgKoGRt+uvHMwUaQRHkS7N/I1AjhGuuGs+2ifsOPOwKk6TLAeUe2J4DFPtG7vnsnK3MQPngTwg0ErUZoC3CPEqyWbmDJQG1cVvbCpRPmIadm6Wy5VpAeXKkpCRqQ1F/DwBAnAlQnQHaEKDzlYGGgvQWoEJy1LOx8P8SqOLJEU2uNhbhvQC0AVn76n3/9vWHpIe++/Km/fxVL17aL3ATSYU5E2h77rbkBqA2kYFHsbS7FlAhOTrJpIXwkirYRynMAEgDiignwHSgiGozCceUg5EBqs5N2hhQX8gnpDaldoquCVQn6lmV2foLbJdkSmWkANESoNPLT98UyKMUgbnIFsqWGRMxQ0JbW1G2eCHsdmQferWlMwlPxHuLnwiFa9NefU2gQiJ0UholBixm6lGV8lAEGVFDykMr6l5e5OeA1tg5ASB8wcmVMEa4rtkLqM3VnqQuDJnBmHnhT6A2oKPNBSIFuq6hoCbzCatY91Zs/ZXspED5Ws+rDu0IbZUSEps//YmQuvbrCg8NFd8I1zBl8bd66w8galBA6Q3rmWKb3YZlpIqE0Da13pLrVjtd6flxMtP7qorvse1hjyYkRfs8yMP/8E83WMIeII2wdrobnk0gG6HOnUu7WteAqRKf39QN0yagTlhf9/lwz9fNG8yzgBrmmWa3h8Ftv0HaQLi1TYlaSGX3UvsNzdBKw+waoEEAAAAASUVORK5CYII=');
-  background-repeat: no-repeat;
-  text-indent: -999999px;
-}
-.ie7 #mysoc-logo {
-  background: url($image-sprite) -240px -38px no-repeat;
-}
 
 //defines where the table caption is (login stuff on mob, nav menu on desktop)
 .wrapper {

@@ -20,12 +20,6 @@
     <div id="main-nav" role="navigation">
 [% END %]
 
-    [% UNLESS hide_mysoc_link %]
-        <ul class="nav-menu nav-menu--mysoc">
-            <li><a id="mysoc-logo" href="https://www.mysociety.org/">mySociety</a></li>
-        </ul>
-    [% END %]
-
     <ul class="[% ul_class %]"[% " id='" _ ul_id _ "'" IF ul_id %]>
         [% INCLUDE 'main_nav_items.html' %]
     </ul>

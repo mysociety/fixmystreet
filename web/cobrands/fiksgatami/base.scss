@@ -4,3 +4,10 @@
 
 @import "../sass/base";
 
+
+.nav-menu--mysoc {
+  a {
+    color: $primary_text;
+    background-color: $primary;
+  }
+}

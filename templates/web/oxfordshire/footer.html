@@ -10,11 +10,10 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
-                    <ul class="nav-menu nav-menu--mysoc">
+                    [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area omit_wrapper=1 hide_privacy_link=1 %]
+                    <ul class="nav-menu">
                         <li><a id="mysoc-logo" href="https://www.fixmystreet.com/about/council">Powered by <img src="/cobrands/oxfordshire/images/fms-logo-105x20.png" alt="FixMyStreet"></a></li>
                     </ul>
-
-                    [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area hide_mysoc_link=1 omit_wrapper=1 hide_privacy_link=1 %]
                 </div>
             </div>
         </div>
