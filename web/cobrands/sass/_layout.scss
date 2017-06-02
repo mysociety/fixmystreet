@@ -450,7 +450,7 @@ body.fullwidthpage {
 
 // two thirds width page, also has option for a sidebar which can be sticky or not
 body.twothirdswidthpage {
-  .container {
+  #site-header + .container {
     // This used to be on all containers, but there was a bug in Chrome, so now
     // it's just here so that the sidebar links are still clickable with their
     // negative z-index.

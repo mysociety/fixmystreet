@@ -26,8 +26,6 @@ h1.main {
 
 #site-header {
     background: $primary;
-    height: 57px;
-
 
     .mobile-header-nav {
         height: 56px;
@@ -47,6 +45,15 @@ h1.main {
             .menu-icon { background-image: url('/cobrands/hart/menu_mobile.png'); }
         }
     }
+}
+
+#site-logo {
+    display: block;
+    background: url("/cobrands/hart/hart-logo-mobile.png") 0 50% no-repeat;
+}
+
+#main-nav--hart { // Hart has two main menus, basically same on mobile
+    margin: 0 -1em;
 }
 
 .big-green-banner {

@@ -14,16 +14,15 @@ body {
   a:hover {text-decoration:underline}
   margin:0;
   background:#E0E0E0 url("images/bg.jpg") repeat-y top center;
+}
 
-  #oxford-wrapper {
+#oxford-wrapper {
     background: url("images/bg-y.jpg") repeat-y scroll 0 0 #FFFFFF;
     clear: both;
     display: block;
     margin: 0 auto;
     padding: 0 8px;
     width: 990px;
-  }
-
 }
 
 #oxford-header {
@@ -32,19 +31,19 @@ body {
   overflow:hidden;
   position:relative;
   width:958px;
-
-  /* note================= */
-  height: 133px;
-  height:auto !important;
-  min-height:133px;
-  /* note================= */
+  min-height: 133px;
 
   background: $oxfordshire_lt_green url("images/header.jpg") no-repeat 0 0;
 
   a.logo:hover {cursor:pointer;cursor:hand}
-  a.logo {float:left; display:inline; margin:3px 0 6px 10px; position:relative; overflow:hidden}
-  a.logo span {display:block; position:absolute; top:0; left:0; z-index:10}
-  a.logo,  a.logo span {width:173px; height:38px; background: url("images/logo.jpg") no-repeat 0 0;}
+  a.logo {
+    float:left;
+    margin:3px 0 6px 10px;
+    width:173px;
+    height:38px;
+    background: url("images/logo.jpg") no-repeat 0 50%;
+    text-indent: -999999px;
+  }
 
   h1 {
     float:left; padding:8px 0 0 10px; margin:0; font-size:1.25em; line-height:normal;
@@ -236,7 +235,3 @@ body {
     z-index: 1000;
   }
 }
-.oxford-left {
-  float: left !important;
-}
-

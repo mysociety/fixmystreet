@@ -43,11 +43,10 @@ body.twothirdswidthpage #site-logo
     }
 }
 
-body.frontpage #site-header, #site-header {
-    height: auto;
-
+#site-header,
+body.frontpage #site-header {
     .container {
-        min-height: 0;
+        position: static;
     }
 
     .container:first-child {
@@ -66,10 +65,6 @@ body.frontpage {
         width: 990px;
         top: 262px;
     }
-}
-
-.nav-wrapper .nav-wrapper-2 {
-    border-top: none;
 }
 
 .nav-menu--main {
@@ -150,8 +145,15 @@ body.frontpage {
 }
 
 body.mappage {
-    #site-header .container {
-        min-height: 68px;
+    #site-header {
+        background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
+        background-color: $base_bg;
+        background-size: contain;
+
+        .container {
+            min-height: 0;
+            background: transparent;
+        }
     }
 
     .main-menu-container {
@@ -171,16 +173,18 @@ body.mappage {
         height: 54px;
     }
 
-    .nav-wrapper .nav-wrapper-2 {
-        background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
-        background-color: $base_bg;
-        background-size: contain;
+    #main-nav {
+        width: auto;
+    }
+
+    .nav-wrapper {
         border-bottom: solid 4px $primary;
     }
 
     .nav-menu--main a.report-a-problem-btn {
         color: $nav_fg;
     }
+
     .nav-menu {
         a, span {
             color: $primary_text;

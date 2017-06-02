@@ -192,6 +192,7 @@ h1,h2,h3,h4,h5 {
     height: 42px;
     line-height: 0;
     padding: 1.3em 1em;
+    margin: 0 0 0 -3px;
     border: 1px solid #647890;
     width: 20%;
     opacity: 1;
@@ -201,7 +202,6 @@ h1,h2,h3,h4,h5 {
     background: #647890 url("search-icon.png") no-repeat center center !important;
     text-indent: -10000px;
     border-radius: 0 5px 5px 0;
-    margin-left: -3px;
   }
 }
 

@@ -5,9 +5,7 @@
 
 @import "../sass/base";
 
-body.frontpage #site-logo,
-#site-logo
-{
+#site-logo {
     background: url("/cobrands/angus/third_party/css_img/angus-logo-header.png") 0 50% no-repeat;
     background-size: contain;
     width: 82px;
@@ -15,7 +13,6 @@ body.frontpage #site-logo,
 }
 
 #site-header {
-    border-top: none;
     background: $angus_green;
 
     form.form__search {
@@ -36,9 +33,5 @@ label[for=pc] {
 }
 
 .angus_nav, .wrapper__main_menu {
-  display: none;
-}
-
-.nav-menu--breadcrumb {
   display: none;
 }

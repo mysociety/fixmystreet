@@ -1,16 +1,10 @@
 @import "_colours";
 @import "../sass/layout";
 
-#site-header {
+#site-header,
+body.mappage #site-header {
   // default layout.scss sets this, so we need it here as well as base.scss
-  background: $eh_blue;
-  background-image: url(img/header_mid.jpg);
-  background-repeat: repeat-x;
-}
-
-// Get rid of the top border
-.nav-wrapper .nav-wrapper-2 {
-  border-top: none;
+  background: $eh_blue url(img/header_mid.jpg) 0 0 repeat-x;
 }
 
 body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
@@ -21,10 +15,6 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
   #site-header {
     background-color: $base_bg;
     height: $logo-height + $eh-nav-height + $fms-nav-height;
-
-    .container {
-      height: auto;
-    }
 
     .container:first-child {
       height: $logo-height;
@@ -125,6 +115,7 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
   #site-logo {
     $img-height: 184px;
     $img-width: 399px;
+    position: absolute;
     top: $logo-height - $img-height;
     width: $img-width;
     height: $img-height;
@@ -135,25 +126,27 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
     background-size: $img-width $img-height;
   }
 
-  .nav-menu {
+  #main-nav {
     position: absolute;
     top: $logo-height + $eh-nav-height;
-    height: $fms-nav-height;
-    margin: 0 auto;
-    width: 60em;
-    padding: 0;
-    text-align: center;
+    width: 100%;
     float: none;
+    min-height: 0;
+  }
+
+  .nav-menu {
+    float: none;
+    width: 100%;
+    text-align: center;
+
     li {
       float: none;
       display: inline-block;
     }
-  }
 
-  // Make elements beneath clickable
-  .nav-wrapper .nav-wrapper-2 {
-    min-height: 0;
-    height: 0;
+    .nav-menu__item--privacy {
+      display: none;
+    }
   }
 }
 
@@ -171,13 +164,6 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
 }
 
 body.mappage {
-  .nav-wrapper .nav-wrapper-2 {
-    background-color: $eh_blue;
-    background-image: url(img/header_mid.jpg);
-    background-repeat: repeat-x;
-    background-position: top;
-  }
-
   #site-logo {
     top: 8px;
   }
@@ -210,20 +196,6 @@ footer ul {
 
     a {
       padding: 0 0.5em 0 0.25em;
-    }
-  }
-}
-
-// Stop the FMS nav being too wide and off to the right off the page
-// at this break point.
-@media only screen and (min-width: 48em) and (max-width: 61em) {
-  #main-nav {
-    float: $left;
-    padding-#{$left}: 0;
-  }
-  body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
-    .nav-menu {
-      width: 100%;
     }
   }
 }
