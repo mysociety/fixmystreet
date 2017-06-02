@@ -130,7 +130,8 @@ h1 {
   #{$left}: -999999px;
 }
 
-#report-cta {
+#report-cta,
+.nav-menu__item--privacy {
     display: none;
 }
 
@@ -142,11 +143,7 @@ h1 {
 .nav-menu {
   float: $right;
   li {
-    display: inline;
     float: $left;
-  }
-  li.nav-menu__item--privacy {
-    display: none;
   }
   a, span {
     display: block;
