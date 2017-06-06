@@ -23,11 +23,6 @@
     background-color: #6b6969;
     @include linear-gradient(#6b6969, #555454);
 
-    .container {
-        width: auto;
-        max-width: 984px; // match the Stevenage header width
-    }
-
     .iel8 & {
       background-color: #6b6969;
     }
@@ -112,7 +107,7 @@ body.twothirdswidthpage {
     color: #222;
     margin: 0 auto;
     margin-top: 1.5em;
-    max-width: 60em;
+    max-width: $container-max-width;
 }
 
 // Front page button colour
@@ -139,15 +134,11 @@ body.mappage {
         border-top: none;
     }
 
-    // Over-specific selector required to trump _layout.scss
     .nav-wrapper {
         position: absolute;
         top: 0;
         padding: 0;
         background: #fff url("http://www.stevenage.gov.uk/Images/headerBG.jpg") repeat-x bottom left;
-        .container {
-            max-width: none; // Overriding 984px default above
-        }
     }
 
     // Override the defaults, above

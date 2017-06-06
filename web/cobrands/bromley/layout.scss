@@ -13,10 +13,6 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage {
 }
 
 body.mappage {
-  .container {
-    max-width: none;
-  }
-
   .bromley-header {
     margin-bottom: 0;
     padding-top: 0.5em;
@@ -32,12 +28,6 @@ body.mappage {
       height: 114px;
     }
   }
-}
-
-// Override the container width to match Bromley' site, which is wider
-.container {
-  width: 100%;
-  max-width: 1200px;
 }
 
 #main-nav {

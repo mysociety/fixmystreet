@@ -14,6 +14,8 @@ $form-control-border-color: #aaaaaa !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
+$container-max-width: 60em !default;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -460,8 +462,10 @@ ul.error {
 /*** LAYOUT ***/
 
 // Padding creates page margins on mobile
-.container{
+.container {
+  margin: 0 auto;
   padding: 0 1em;
+  max-width: $container-max-width;
 }
 
 // Use full width to reverse .container margins

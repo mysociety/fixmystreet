@@ -63,33 +63,30 @@ body.twothirdswidthpage .content {
 }
 
 // Menu *under* header - with a full width shadow first
-// The !importants are because we do not want this to be reset on a map page as
-// it otherwise would be.
-
 .container--hart {
     box-shadow: 0 0 20px rgba(0,0,0,0.2); // shadow to add contrast with map
-    width: 100% !important;
-    position: absolute !important;
+    position: absolute;
+    max-width: none;
+    padding: 0;
+    width: 100%;
+
+    body.mappage & {
+        position: absolute; // rather than static
+    }
 }
 
 #main-nav {
     min-height: 0;
     float: none;
-    max-width: 60em; // To have it line up at big widths
-    margin: 11em auto 0; // To push it under heade
+    margin: 11em auto 0; // To push it under header
     background-color: #fff;
-}
 
-body.mappage {
-    #site-logo {
-        // XXX Rather than re-overriding this, and margin-right below, should
-        // the 1em padding be on the header container instead of site-logo/
-        // main-nav, or something?
-        margin-left: 2.25em;
-    }
-    #main-nav {
-        max-width: none; // containers are full width on map page, overriding 60em above
-        margin-right: 0;
+    // #main-nav acts a bit like a .container, so we give it the same max-width.
+    max-width: $container-max-width;
+
+    // And, like other .containers, we remove the max-width on the map page.
+    body.mappage & {
+        max-width: none;
     }
 }
 

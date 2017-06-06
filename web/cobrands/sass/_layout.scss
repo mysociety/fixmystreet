@@ -48,11 +48,8 @@ h1 {
 
 // Page wrapper and header bits follow
 
-.container{
-  margin: 0 auto;
-  padding: 0em;
-  width: 60em;
-  position: relative;
+.container {
+    position: relative;
 }
 
 // Body sometimes has a .top_banner at the start, which we don't want to
@@ -136,17 +133,11 @@ h1 {
 }
 
 // .content Is the white box
-
-// The narrow single column box
 .content {
-  margin: 1em 0.5em 0;
+  margin: 1em 0 0 0;
   padding: 1em;
   background: #fff;
   color: #222;
-}
-
-.full-width {
-  margin: 0 ($mappage-sidebar-padding * -1);
 }
 
 // map page - has fixed header and different styling
@@ -156,13 +147,17 @@ body.mappage {
   }
 
   .container {
-    width: auto;
+    max-width: none;
     position: static;
   }
 
   .content {
     padding: 0;
     margin: 0;
+  }
+
+  .full-width {
+    margin: 0 ($mappage-sidebar-padding * -1);
   }
 
   #site-header {
@@ -174,14 +169,6 @@ body.mappage {
     left: 0;
     right: 0;
     height: $mappage-header-height;
-  }
-
-  #site-logo {
-    margin-#{$left}: 1em;
-  }
-
-  #main-nav {
-    margin-#{$right}: 1em;
   }
 
 //  .nav-menu--main a, .nav-menu--main span {
@@ -477,6 +464,17 @@ body.twothirdswidthpage {
         position: fixed;
         top:7em;
         #{$left}: auto;
+      }
+    }
+  }
+
+  @media (max-width: 61em) {
+    // make twothirdswidthpage nearly as small as main
+    // .content: just enough to still fit the sidebar in
+    .content {
+      width:30em;
+      .sticky-sidebar {
+        #{$left}: 32em;
       }
     }
   }
@@ -975,38 +973,4 @@ textarea.form-error {
 .fms-admin-floated {
     float: $right;
     width: 25%;
-}
-
-/* MEDIA QUERIES */
-@media only screen and (min-width: 48em) and (max-width: 61em) {
-  .container {
-      width: 100%;
-  }
-
-  // Remove central positioning of mainmenu and float right.
-  // Left padding is to ensure no overlap of the site-logo
-  // Background styling replicates header styling
-
-  #main-nav {
-    width: auto;
-    float: $right;
-    padding-#{$left}: 180px;
-  }
-
-  //Revert to mobile use of the .full-width class
-  .full-width{
-    width: auto;
-    margin: 0em -1em;
-  }
-
-  //make twothirdswidthpage nearly as small as main
-  //.content: just enough to still fit the sidebar in
-  body.twothirdswidthpage {
-    .content {
-      width:30em;
-      .sticky-sidebar {
-        #{$left}: 32em;
-      }
-    }
-  }
 }

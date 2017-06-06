@@ -2,13 +2,10 @@
 @import "_fonts";
 @import "../sass/layout";
 
-$max_page_width: 1200px;
-
 #site-logo {
     width: 165px;
     height: 66px;
     padding: 0.75em 0;
-    margin: 0 1em;
 }
 
 #site-header {
@@ -27,7 +24,7 @@ $max_page_width: 1200px;
     box-sizing: border-box;
     position: absolute;
     bottom: 0;
-    right: 0;
+    right: 1em;
 
     .field {
       min-width: 13em;
@@ -114,37 +111,30 @@ $max_page_width: 1200px;
 
   #front-main-container {
     background-color: $angus_light_grey;
-    width: 100%;
-    max-width: $max_page_width;
+    max-width: $container-max-width;
     padding-top: 1em;
     padding-bottom: 1em;
   }
 }
 
-body.fullwidthpage, body.twothirdswidthpage, body.authpage {
-  .container {
-    max-width: $max_page_width;
-    width: 100%;
-
-    .content {
-      background: $angus_light_grey;
-      background-color: $angus_light_grey;
-    }
+body.fullwidthpage,
+body.twothirdswidthpage,
+body.authpage {
+  .content {
+    background: $angus_light_grey;
+    background-color: $angus_light_grey;
   }
 }
 
 body.frontpage {
-  .container {
-    .content {
-      background: $base_bg;
-      background-color: $base_bg;
-    }
+  .content {
+    background: $base_bg;
+    background-color: $base_bg;
   }
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
-    z-index: 0;
-    left: 43em;
+    padding-left: 1em;
 
     aside {
         top: 198px;
@@ -344,7 +334,7 @@ body.mappage {
 
   footer {
     font-size: 0.8em;
-    max-width: $max_page_width;
+    max-width: $container-max-width;
     margin: 0 auto;
     padding-top: 3em;
     padding-left: 3em;

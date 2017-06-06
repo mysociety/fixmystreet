@@ -2,8 +2,6 @@
 @import "_fonts";
 @import "../sass/layout";
 
-$fixed_page_width: 990px;
-
 #site-logo,
 body.frontpage #site-logo,
 body.twothirdswidthpage #site-logo
@@ -18,17 +16,13 @@ body.twothirdswidthpage #site-logo
         height: 83px;
 }
 
-.container, #main-nav {
-    width: $fixed_page_width;
-}
-
 #front-main {
     background-color: $base_bg;
     padding-top: 0.5em;
     text-align: left;
 
     #front-main-container {
-        max-width: $fixed_page_width;
+        max-width: $container-max-width;
         background-color: transparent;
         padding: 1em 0;
     }
@@ -45,9 +39,10 @@ body.twothirdswidthpage #site-logo
 
 #site-header {
     background: none;
+    padding: 0 1em; // "wave" background image means its easier to apply padding here than on .container
 
     .container {
-        position: static;
+        padding: 0; // let the #site-header padding do the work on mid-sized screens
     }
 
     .container:first-child {
@@ -61,10 +56,12 @@ body.frontpage {
         border-left: solid 4px $primary;
     }
 
+    // Greenwich positions the menu visually *below* the h1 on the homepage.
     #fms-menu-desktop {
         position: absolute;
-        width: 990px;
-        top: 262px;
+        left: 0;
+        right: 0;
+        top: 150px;
     }
 }
 
@@ -150,6 +147,7 @@ body.mappage {
         background: $base_bg url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
         background-size: contain;
 
+        // No more "wave" background on .container
         .container {
             min-height: 0;
             background: transparent;
@@ -171,10 +169,6 @@ body.mappage {
         background-size: 111px 54px;
         width: 111px;
         height: 54px;
-    }
-
-    #main-nav {
-        width: auto;
     }
 
     .nav-wrapper {
