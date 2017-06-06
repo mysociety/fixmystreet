@@ -21,11 +21,6 @@
   transform: none;
 }
 
-// Change the colour and size of the site header to suit
-#site-header {
-  background: $base_bg;
-}
-
 // Reset form placeholders so that they match Bromley's
 // input placeholders, these need to be on separate lines as if the browser
 // can't understand a selector it will invalidate the whole line.

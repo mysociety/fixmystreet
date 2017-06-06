@@ -474,7 +474,8 @@ ul.error {
   @if ($header-top-border) {
     border-top: $header-top-border;
   }
-  @include linear-gradient(#000, #222 10%, #222 90%, #000);
+  color: $nav_fg;
+  background-color: $map_nav_bg;
   position: relative;
 }
 
@@ -511,13 +512,13 @@ ul.error {
   font-size: 0.9em;
   line-height: 1em;
   border: 1px solid #666;
-  color: #fff;
+  color: $nav_fg;
   padding: 0.4em;
   border-radius: 0.3em;
 
   &:hover, &:focus {
     text-decoration: none;
-    background-color: #444;
+    background-color: $nav_fg_hover;
   }
 }
 

@@ -43,8 +43,9 @@ body.twothirdswidthpage #site-logo
     }
 }
 
-#site-header,
-body.frontpage #site-header {
+#site-header {
+    background: none;
+
     .container {
         position: static;
     }
@@ -146,8 +147,7 @@ body.frontpage {
 
 body.mappage {
     #site-header {
-        background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
-        background-color: $base_bg;
+        background: $base_bg url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
         background-size: contain;
 
         .container {

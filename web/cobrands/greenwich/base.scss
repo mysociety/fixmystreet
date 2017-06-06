@@ -6,9 +6,7 @@
 @import "../sass/base";
 @import "../sass/report_list_pins";
 
-body.frontpage #site-logo,
-#site-logo
-{
+#site-logo {
     background: url("/cobrands/greenwich/logo.gif") 0 50% no-repeat;
     background-size: contain;
     width: 82px;
@@ -22,8 +20,7 @@ body.frontpage #site-logo,
 
 
 #site-header {
-    background-color: $base_bg;
-    background: url("/cobrands/greenwich/mastWave.gif") 0 0 no-repeat;
+    background: $base_bg url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
     background-size: cover;
 }
 

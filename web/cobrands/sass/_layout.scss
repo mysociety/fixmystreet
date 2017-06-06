@@ -62,10 +62,6 @@ h1 {
   position: relative;
 }
 
-#site-header {
-  background: none;
-}
-
 #main-nav {
   min-height: $mappage-header-height; // defaults to map header height; should be height of #site-header (eg: #site-logo + any vertical padding)
   @include flex-container();
@@ -178,7 +174,6 @@ body.mappage {
     left: 0;
     right: 0;
     height: $mappage-header-height;
-    background: $map_nav_bg;
   }
 
   #site-logo {
