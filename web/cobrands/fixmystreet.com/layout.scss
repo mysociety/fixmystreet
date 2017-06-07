@@ -93,11 +93,6 @@ body.mappage {
     }
 }
 
-.nav-menu--mysoc {
-    background: #515151;
-    margin-top: -4px;
-}
-
 body.twothirdswidthpage,
 body.fullwidthpage {
     #front-main {
@@ -150,55 +145,28 @@ body.fullwidthpage {
             }
         }
     }
-
-    .container {
-        .content {
-            footer {
-                .tablewrapper {
-                    background: #1a1a1a url(images/tile.jpg) 0 0 repeat;
-                }
-            }
-        }
-    }
 }
 
 body.frontpage {
-    .container {
-        background-color: transparent;
-
-        .content {
-            background-color: transparent;
-            padding: 0em 0em 1em;
-
-            > .tablewrapper {
-                margin: -4em 0em 0em;
-                padding: 1em 1em;
-                background-color: white;
-                width: auto;
-            }
-            > .form-error {
-                margin-top: -4em;
-            }
-            > .form-error + .tablewrapper {
-                margin-top: 0;
-            }
-        }
-        footer {
-            .bordered {
-                margin: 0em;
-            }
-        }
+    #site-logo {
+        top: 3em;
+        width: 300px;
+        height: 60px;
+        background: url($image-sprite) -2px -108px no-repeat;
     }
-}
 
-body.twothirdswidthpage {
-    .container {
-        .content {
-            footer {
-                .tablewrapper {
-                    border: 0px;
-                }
-            }
+    // Because fms.com includes a .fms-pro-promo that we want to look separate
+    // from #front-howto and #front-recent, we move the white background and
+    // padding from .content to the .tablewrapper, so it visually stands alone.
+    .content {
+        background-color: transparent;
+        padding: 0em 0em 1em;
+        margin-top: -3em; // overlap the bottom of #front-main
+
+        .tablewrapper {
+            @include box-sizing(border-box);
+            padding: 1.5em;
+            background-color: white;
         }
     }
 }

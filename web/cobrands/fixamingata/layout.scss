@@ -73,6 +73,14 @@ h3, h4,
     }
 }
 
+body.frontpage {
+    #site-logo {
+        width: 300px;
+        height: 55px;
+        background: url($image-sprite) -2px -115px no-repeat;
+    }
+}
+
 #front-main {
     background: $primary url(/cobrands/fixamingata/images/tile-y.jpg);
 }
@@ -114,8 +122,6 @@ h3, h4,
 #postcodeForm { margin-left: -1em !important; margin-right: -1em !important; }
 
 body.fullwidthpage .container .content footer .tablewrapper { background: #fff; }
-
-body.frontpage #site-logo { top: 0em; }
 
 body.frontpage #site-header { height: 85px; }
 

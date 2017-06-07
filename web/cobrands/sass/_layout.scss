@@ -130,7 +130,8 @@ h1 {
   #{$left}: -999999px;
 }
 
-#report-cta {
+#report-cta,
+.nav-menu__item--privacy {
     display: none;
 }
 
@@ -142,11 +143,7 @@ h1 {
 .nav-menu {
   float: $right;
   li {
-    display: inline;
     float: $left;
-  }
-  li.nav-menu__item--privacy {
-    display: none;
   }
   a, span {
     display: block;
@@ -176,40 +173,6 @@ h1 {
   span {
     color:$primary;
   }
-}
-.nav-menu--mysoc {
-  padding: 0em 0.5em;
-  margin-#{$left}: 0.25em;
-  background-color: $primary;
-  @include border-radius(0 0 0.375em 0.375em);
-  a {
-    background-color: transparent;
-    color: $primary_text;
-    text-transform: uppercase;
-    font-size: 0.6875em;
-    padding: 1.3em 0.7em 1em;
-    &:hover {
-      color: #fff;
-      background-color: transparent;
-    }
-  }
-}
-#mysoc-logo {
-  width:84px;
-  height:16px;
-  background-size: 100px auto;
-  background-position: 50% 50%;
-  opacity: 0.8;
-  &:hover {
-    opacity: 1;
-  }
-  // IE8 does not support background-size, so increase width to show whole image
-  .ie8 & {
-    width: 100px;
-  }
-}
-.ie7 #mysoc-logo {
-    background-position: -260px -43px;
 }
 
 // .content Is the white box
@@ -999,12 +962,6 @@ body.frontpage {
   }
   #site-header{
     height:8em;
-  }
-  #site-logo{
-    top:3em;
-    width: 300px;
-    height: 60px;
-    background: url($image-sprite) -2px -108px no-repeat;
   }
 }
 //logo fix
