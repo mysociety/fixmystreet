@@ -90,6 +90,10 @@ GEO_CACHE: '../cache/'
 MAPIT_URL: ''
 MAPIT_TYPES: [ 'ZZZ' ]
 
+# If the MapIt you're using in MAPIT_URL requires an API key
+# (as https://mapit.mysociety.org/ does, for example), specify it here.
+# MAPIT_API_KEY: ''
+
 # If you are using global MapIt, you might want to restrict FixMyStreet usage
 # to only one or more areas, rather than all O04, for example. Provide MapIt
 # IDs here in a list that FixMyStreet should recognise, along with the MapIt
