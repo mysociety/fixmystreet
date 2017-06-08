@@ -204,3 +204,6 @@ TESTING_COUNCILS: ''
 
 # if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
 MESSAGE_MANAGER_URL: ''
+
+# If you want to hide all pages from non-logged-in users, set this to 1.
+LOGIN_REQUIRED: 0
