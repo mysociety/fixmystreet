@@ -233,7 +233,7 @@ body.mappage.admin {
   padding: $mappage-sidebar-padding;
   overflow: auto; // vertical scrollbar when list is taller than window
   background-color: #fff; // since no longer in the flow inside .content
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 
   .with-notes & {
     width: (($mappage-sidebar-width + $mappage-notes-width) - ($mappage-sidebar-padding * 2));
