@@ -4,8 +4,7 @@
         </div><!-- .table-cell -->
 
         <div class="nav-wrapper">
-            <div class="nav-wrapper-2">
-                <div class="nav-wrapper-3">
+            <div class="container">
                     <div id="main-nav" role="navigation">
                       [% IF c.user_exists %]
                         <p>
@@ -23,7 +22,6 @@
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
                         </ul>
                     </div>
-                </div>
             </div>
         </div>
     </div> <!-- .wrapper -->

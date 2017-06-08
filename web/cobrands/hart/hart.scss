@@ -26,109 +26,11 @@
 h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; }
 body { color: #333; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
 
-.nav-wrapper-2,
-body.mappage .nav-wrapper .nav-wrapper-2,
-body.frontpage .nav-wrapper-2 {
-    border: 0;
-    border-top: solid 4px $hart_primary;  /* otherwise overridden in base layout.scss
-                                             for some templates only */
-    min-height: auto;
-    background-color: $hart_primary;
-
-    @media only screen and (min-width:48em) {
-        height: 173px;
-    }
-}
-
-@media only screen and (min-width:48em) {
-    #map_box,
-    #map_sidebar {
-        top: 173px + 32px;
-    }
-
-    body.frontpage #site-header {
-        height: 13em;
-
-        .mobile-header-nav {
-            display: none;
-        }
-    }
-
-    body.mappage {
-        .header-container,
-        .main-menu {
-            max-width: none; // containers are full width on map page
-        }
-    }
-
-    #skipped-map {
-        clear: both;
-        margin-top: 3em; /* required to push "Your Reports" visible on Safari/IE */
-    }
-
-	#main-nav {
-	  margin-top: 106px;
-    }
-    .nav-menu {
-      margin-left: 157px;
-	  float: none;
-	}
-
-	.nav-menu li {
-	  text-align: center;
-	  text-transform: uppercase;
-	  padding: 0 15px;
-	  font-size: 16px;
-	  border-right: solid 1px white;
-	  line-height: 1.5em;
-	}
-	.nav-menu li:last-child {
-	    border-right: none;
-	}
-
-	.nav-menu a {
-	    padding: 0;
-	    font-size: inherit;
-	}
-
-	.nav-menu li:hover, .nav-menu li:hover a, {
-	  background-color: white;
-	  color: black;
-	  text-decoration: none;
-	}
-}
-
-@media only screen and (max-width: 61em) and (min-width: 48em) {
-    #main-nav {
-        padding-left: 0px;
-        float:none;
-    }
-}
-
 /* -------- For Google translate select box only */
 .header-nav div#google_translate_element .goog-te-gadget { font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif;    }
 .header-nav div#google_translate_element .goog-te-gadget .goog-te-combo { margin:5px 0 0 5px; padding:0 0 0 2px; background: #9b9b9b; color: #fff; border: 1px solid #606060; font-size: 12px; width: 138px;}
 .header-nav div#google_translate_element .goog-te-gadget .goog-te-combo option { background:#fff; color: #666; padding: 1px 0; margin: 0; }
 /* --- */
-
-body.frontpage #site-logo,
-#site-logo {
-    display: block;
-    background: url("/cobrands/hart/hart-logo-mobile.png") 0 0 no-repeat;
-    margin: 10px;
-    padding-left: 10px;
-    position: static;
-    @media only screen and (min-width: 48em) {
-        position: relative;
-        top: 1em;
-        margin: 0;
-        margin-left: 2.25em;
-        padding: 0;
-        background: url("/cobrands/hart/hart-logo.png") 0 0 no-repeat;
-        width: 123px;
-        height: 132px;
-    }
-}
 
 .sign-in {
     display: none;
@@ -144,75 +46,18 @@ body.frontpage #site-logo,
 .sign-in a:link, .sign-in a:visited {color:#333; font-weight:bold; text-decoration:none;}
 .sign-in a:hover, .sign-in a:active {text-decoration:underline;}
 
-.main-menu-wrapper {
-    background-color: #FFF;
-    width: 100%;
-
-    @media only screen and (min-width:48em) {
-        position: absolute;
-        box-shadow: 0 0 20px rgba(0,0,0,0.2); // shadow to add contrast with map
+.nav-menu--main {
+    font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif;
+    a {
+        &:link, &:visited {
+            color: $hart_primary;
+        }
+        &:hover {
+            background-color: $hart_primary;
+            color: #FFF;
+        }
     }
-}
-
-.main-menu {
-  li {
-      font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif;
-      margin: 0;
-
-      span { display: none }
-
-      a {
-          padding: 0.5em 1em;
-          background: #f6f6f6;
-          color: #333;
-          font-size: 1.25em;
-          border-bottom: 0.25em solid #333;
-          display: block;
-
-          &:link, &:visited {
-              color: $hart_primary;
-              text-decoration: none;
-          }
-          &:hover {
-              background-color: $hart_primary;
-              color: #FFF;
-          }
-      }
-  }
-  @media only screen and (min-width:48em) {
-    height: 32px;
-    max-width: 60em;
-    margin: 173px auto 0 auto;
-
-    li {
-      float: left;
-      margin-left: 1em;
-      text-align: center;
-
-      span {
-        display: inline;
-      }
-
-      a {
-          padding: 0;
-          background: #fff;
-          color: #333;
-          font-size: 1em;
-          border-bottom: 0;
-          display: inline;
-
-          &:link, &:visited {
-              color: $hart_primary;
-              text-decoration: none;
-          }
-          &:hover {
-              background-color: #fff;
-              color: $hart_primary;
-              text-decoration: underline;
-          }
-      }
-    }
-  }
+    span { display: none }
 }
 
 #front-main {
@@ -384,20 +229,6 @@ body.frontpage .table-cell .content {
 
 .header-nav li {
   list-style-type: none;
-}
-
-.main-menu ul {
-  margin: 0;
-  line-height: 32px;
-}
-
-.main-menu li {
-  list-style-type: none;
-  color: #000;
-}
-
-.main-menu li.last {
-  padding-right: 0;
 }
 
 //#search input { display: inline; margin: 0; @include border-radius(0em); }

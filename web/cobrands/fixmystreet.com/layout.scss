@@ -76,20 +76,20 @@ h3, h4,
     a:hover {
         @include linear-gradient(#000, #444 10%, #444 95%, #111);
     }
-}
-
-.nav-wrapper {
-    .nav-wrapper-2 {
-        border-image-source: url(images/tile-y-border.jpg);
-        border-image-slice: 4 0 0;
-        border-image-repeat: repeat;
+    a.report-a-problem-btn:hover {
+        background: $primary/1.1;
     }
 }
+
+#site-header {
+    background: none;
+    border-image-source: url(images/tile-y-border.jpg);
+    border-image-slice: 4 0 0;
+    border-image-repeat: repeat;
+}
 body.mappage {
-    .nav-wrapper {
-        .nav-wrapper-2 {
-            @include linear-gradient(#000, #222 10%, #222 90%, #000);
-        }
+    #site-header {
+        @include linear-gradient(#000, #222 10%, #222 90%, #000);
     }
 }
 
@@ -149,7 +149,7 @@ body.fullwidthpage {
 
 body.frontpage {
     #site-logo {
-        top: 3em;
+        margin: 2em 0;
         width: 300px;
         height: 60px;
         background: url($image-sprite) -2px -108px no-repeat;

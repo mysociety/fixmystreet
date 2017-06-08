@@ -3,18 +3,10 @@ $mappage-header-height: 41px + 100px + 37px; // .navbar-inverse + #top-header + 
 @import "_colours";
 @import "../sass/layout";
 
-
 #site-header {
-    position: relative;
+    border-top: none;
     .navbar {
         margin-bottom: 0;
-    }
-}
-
-// Needs to be within body.frontpage to override an existing rule in _layout.scss
-body.frontpage {
-    #site-header {
-        height: auto;
     }
 }
 
@@ -27,10 +19,6 @@ body.mappage {
         display: none;
     }
 
-    .navbar-container {
-        width: auto !important; // 100% width for the FMS nav links container ONLY
-    }
-
     #site-header .navbar {
         margin-top: 0; // remove space between FMS nav links and green header
     }
@@ -39,10 +27,6 @@ body.mappage {
         border-width: 0 0 1px 0;
         border-radius: 0;
     }
-}
-
-.content {
-    margin-bottom: 0;
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
@@ -57,59 +41,24 @@ body.twothirdswidthpage .content .sticky-sidebar {
     background: $base_bg;
 }
 
+#top-header {
+    [class*="span"] {
+        margin-left: 2%;
+    }
 
-// These bits are taken from Warwickshire's CSS to override default FMS styles
-// The 'body.mappage .container' selector has been added to each so it takes precedent over
-// default FMS style.
+    .span12 {
+        width: 98%;
+    }
 
-// http://www.warwickshire.gov.uk/wp-content/themes/gamma/style.css
-.container {
-  width: 940px;
-}
+    .span3 {
+        width: 23%;
+    }
 
-.navbar .container {
-  width: auto;
-}
-
-.navbar-static-top .container,
-.navbar-fixed-top .container,
-.navbar-fixed-bottom .container,
-body.mappage .container {
-  width: 940px;
-}
-
-// http://www.warwickshire.gov.uk/wp-content/themes/gamma/bootstrap-responsive.css
-@media (min-width: 1200px) {
-    .container,
-      .navbar-static-top .container,
-      .navbar-fixed-top .container,
-      .navbar-fixed-bottom .container,
-      body.mappage .container {
-        width: 1170px;
+    .span9 {
+        width: 73%;
     }
 }
 
-@media (min-width: 768px) and (max-width: 979px) {
-    .container,
-      .navbar-static-top .container,
-      .navbar-fixed-top .container,
-      .navbar-fixed-bottom .container,
-      body.mappage .container {
-        width: 724px;
-      }
-  }
-
-@media (max-width: 767px) {
-    .container,
-    body.mappage .container {
-        width: auto;
-      }
-}
-
-@media (max-width: 979px) {
-    .navbar .container,
-    body.mappage .container {
-        width: auto;
-        padding: 0;
-      }
+#site-search.navbar-form input {
+    width: 16em;
 }

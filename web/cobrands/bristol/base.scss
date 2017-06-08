@@ -10,21 +10,19 @@
 #site-logo {
   @extend %bold-font;
 
-  background: url(/cobrands/bristol/img/bcclogo.png) 0 0 no-repeat;
+  height: auto;
+  background: url(/cobrands/bristol/img/bcclogo.png) 0 50% no-repeat;
   background-size: 37px;
   text-indent: 47px;
   line-height: 37px;
   font-size: 24px;
-  padding: 0;
+  padding: 0.5em 0;
   margin: 0;
   color: white;
 }
 
 #site-header {
-  height: 3.5em;
   border-bottom: solid 5px $bcc_red;
-  border-top-color: $g1;
-  background: $g1; // Can't use background-color as it's ignored in favour of existing background
 }
 
 // Style the Bristol footer correctly

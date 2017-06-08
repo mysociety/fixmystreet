@@ -1,6 +1,12 @@
 @import "_colours";
 @import "../sass/layout";
 
+#main-nav {
+  display: block; // remove flex so nav touches top of parent
+  min-height: 0; // no vertical align, so no need for a height
+  margin-top: 0; // don't bother overlapping the border
+}
+
 .nav-menu--mysoc {
   padding: 0em 0.5em;
   margin-#{$left}: 0.25em;
@@ -21,7 +27,7 @@
 
 body.frontpage {
   #site-logo {
-    top: 3em;
+    margin: 2em 0;
     width: 300px;
     height: 60px;
     background: url($image-sprite) -2px -108px no-repeat;

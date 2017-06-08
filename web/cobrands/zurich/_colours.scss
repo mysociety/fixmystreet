@@ -10,7 +10,7 @@ $primary_text: #fff;
 $base_bg: #fff;
 $base_fg: #3c3c3c;
 
-$map_nav_bg: #fff;
+$map_nav_bg: #366AB6;
 /* Unused here, main-nav is mobile only */
 $nav_fg: $primary_text;
 $nav_fg_hover: $primary/1.1;
@@ -23,3 +23,4 @@ $col_fixed_label_dark: #4B8304;
 $mobile_menu_tab_bg_col: #FFFFFF; // the white border and tab on mobile site
 $mobile_header_blue: #366AB6; // close match to Zurich logo_portal.jpg
 
+$header-top-border: solid 0.25em $mobile_menu_tab_bg_col;

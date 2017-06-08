@@ -3,14 +3,11 @@
 @import "../sass/layout";
 
 #site-header {
-  background-color: $g1;
-  background: $g1;
   border-bottom: none;
 }
 
-// Don't display a border atop the page
-.nav-wrapper .nav-wrapper-2 {
-  border-top: none;
+#main-nav {
+  float: none;
 }
 
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
@@ -20,20 +17,14 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     background-size: 81px 81px;
     text-indent: 122px;
     height: 111px;
+    width: 11em;
     line-height: 111px;
     font-size: 30px;
-    // Getting rid of absolute positioning allows us to style the BCC nav below nicely
-    position: static;
+    padding: 0;
   }
 
-  // Make sure the header is only as tall as it needs to be
+  // White "nav bar" with red border-top, below the logo
   #site-header {
-    height: auto;
-
-    .container {
-      min-height: 0;
-    }
-
     &:after {
       content: " ";
       height: 3.5em;
@@ -74,8 +65,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
 
   .nav-menu {
     // Put the main FMS navigation below the Bristol header
-    float: left;
-    width: 100%;
     margin-top: 7.25em;
 
     a, span {
@@ -101,57 +90,44 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     background-color: transparent;
   }
 
-  // Stop .nav-wrapper from preventing the logo being clicked
-  .nav-wrapper .nav-wrapper-2 {
-    height: 0;
-    min-height: 0;
-  }
-
   // Put FAQ side nav at correct vertical position
   .content .sticky-sidebar aside {
-    top: 14.5em;
+    top: 12.5em;
   }
 }
 
 body.mappage {
-  // Stop the header being too tall
+  // Add a red border-bottom *inside* the header
   #site-header {
-    min-height: 79px;
-
-    .container {
-      min-height: 0;
-
-      #site-logo {
-        top: 0.5em;
-        line-height: 44px;
-      }
-    }
+    @include box-sizing(border-box);
+    border-bottom: solid 5px $bcc_red;
   }
 
+  // Reinstate the floated nav bar on map pages
+  #main-nav {
+    float: right;
+  }
+
+  // A few changes to the nav items now they're on a black background
   .nav-menu {
     a, span {
-      text-decoration: none;
       color: white;
       font-size: 1.1em;
-      padding: 1em 0.75em 0.95em;
     }
+
     a:hover {
       background: transparent;
       text-decoration: underline;
     }
+
     a.report-a-problem-btn {
       color: white;
-      margin: 0.5em 0.25em 0.45em;
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+
       &:hover {
         background-color: lighten($bcc_red, 5%);
-      };
-    }
-  }
-
-  // Haven't quite figured out why this can't go on #site-header
-  .nav-wrapper {
-    .nav-wrapper-2 {
-      border-bottom: solid 5px $bcc_red;
+      }
     }
   }
 

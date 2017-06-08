@@ -12,18 +12,17 @@
 
 #site-header {
     @include linear-gradient(#000, #ccc 10%, #ccc 90%, #000);
+    padding: 0.5em 0;
 }
 
 #site-logo {
     width: 185px;
-    margin-top: 8px;
-    margin-left: 10px;
-    background: url('images/fms-logo.png') no-repeat;
+    height: 38px;
+    background: url('images/fms-logo.png') 0 50% no-repeat;
 }
 
 #report-cta {
     font-size: 0.8em;
-    margin-top: -0.25em;
     border-color: #999;
     color: #000;
     padding-bottom: 0.2em;

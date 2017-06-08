@@ -2,38 +2,20 @@
 @import "_fonts";
 @import "../sass/layout";
 
-$max_page_width: 1200px;
-
-#site-logo,
-body.frontpage #site-logo,
-body.twothirdswidthpage #site-logo
-{
-        position: relative;
-        top: 13px;
-        left: 20px;
-        margin: 0;
-        padding: 0;
-        background: url("/cobrands/angus/third_party/css_img/angus-logo-header.png") 0 0 no-repeat;
-        background-size: contain;
-        width: 165px;
-        height: 66px;
-        display: inline-block;
+#site-logo {
+    width: 165px;
+    height: 66px;
+    padding: 0.75em 0;
 }
 
 #site-header {
-  background-color: $angus_green;
   border-bottom: solid 8px $angus_dark_green;
   box-shadow: 0 5px 5px rgba(0, 0, 0, .075);
-
-  .container {
-    position: relative;
-    min-height: 5em;
-  }
 
   form.form__search {
     display: block;
     clear: right;
-    margin: .65em 0 .25em;
+    margin-bottom: 25px; // 90x - 2.5em / 2
     padding: 0;
     text-align: right;
     width: 75%;
@@ -42,7 +24,7 @@ body.twothirdswidthpage #site-logo
     box-sizing: border-box;
     position: absolute;
     bottom: 0;
-    right: 0;
+    right: 1em;
 
     .field {
       min-width: 13em;
@@ -124,52 +106,38 @@ body.twothirdswidthpage #site-logo
   }
 }
 
-body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
-  #site-header {
-    height: 91px;
-  }
-}
-
 #front-main {
   background: transparent;
 
   #front-main-container {
     background-color: $angus_light_grey;
-    width: 100%;
-    max-width: $max_page_width;
+    max-width: $container-max-width;
     padding-top: 1em;
     padding-bottom: 1em;
   }
 }
 
-body.fullwidthpage, body.twothirdswidthpage, body.authpage {
-  .container {
-    max-width: $max_page_width;
-    width: 100%;
-
-    .content {
-      background: $angus_light_grey;
-      background-color: $angus_light_grey;
-
-    }
+body.fullwidthpage,
+body.twothirdswidthpage,
+body.authpage {
+  .content {
+    background: $angus_light_grey;
+    background-color: $angus_light_grey;
   }
 }
 
 body.frontpage {
-  .container {
-    .content {
-      background: $base_bg;
-      background-color: $base_bg;
-    }
+  .content {
+    background: $base_bg;
+    background-color: $base_bg;
   }
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
-    z-index: 0;
-    left: 43em;
+    padding-left: 1em;
 
     aside {
-        top: 15em;
+        top: 198px;
     }
 }
 
@@ -289,9 +257,11 @@ footer p.social a:active,footer p.social a:focus,footer p.social a:hover
   display: none;
 }
 
+.wrapper__main_menu {
+    display: block;
+}
 
 .nav-menu--breadcrumb {
-  display: block;
   font-size: 0.75em;
   float: left;
 
@@ -335,10 +305,9 @@ body.mappage {
   }
 
   #site-logo {
-    height: 54px;
+    height: 58px;
     width: 111px;
-    top: 7px;
-    left: 7px;
+    padding: 0;
   }
 
   #site-header {
@@ -365,7 +334,7 @@ body.mappage {
 
   footer {
     font-size: 0.8em;
-    max-width: $max_page_width;
+    max-width: $container-max-width;
     margin: 0 auto;
     padding-top: 3em;
     padding-left: 3em;

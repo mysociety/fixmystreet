@@ -5,14 +5,12 @@
     </div><!-- .table-cell -->
 
     <div class="nav-wrapper clearfix">
-        <div class="main-menu-wrapper">
-            <div class="main-menu">
-              [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area ul_class="clearfix" hide_privacy_link=1 %]
-            </div>
-        </div>
-        <div class="nav-wrapper-2 clearfix">
-            <div id="main-nav" class="clearfix" role="navigation">
-                <ul class="nav-menu">
+      <div class="container container--hart">
+        [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area ul_class="nav-menu nav-menu--first" hide_privacy_link=1 %]
+      </div>
+      <div class="container">
+            <div id="main-nav--hart" role="navigation">
+                <ul class="nav-menu nav-menu--hart">
                     <li>
                         <a href="http://www.hart.gov.uk/home">Home</a>
                     </li>

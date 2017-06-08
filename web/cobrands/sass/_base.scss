@@ -11,6 +11,10 @@ $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #ccc !default;
 
 $form-control-border-color: #aaaaaa !default;
+$header-top-border-width: 0.25em !default;
+$header-top-border: $header-top-border-width solid $primary !default;
+
+$container-max-width: 60em !default;
 
 @import "_mixins";
 @import "_report_list";
@@ -458,8 +462,10 @@ ul.error {
 /*** LAYOUT ***/
 
 // Padding creates page margins on mobile
-.container{
-  padding: 0 1em 1em;
+.container {
+  margin: 0 auto;
+  padding: 0 1em;
+  max-width: $container-max-width;
 }
 
 // Use full width to reverse .container margins
@@ -468,62 +474,63 @@ ul.error {
 }
 
 // #site-header creates grey bar in mobile
-// .nav-wrapper-2 is used on desktop
-#site-header{
-  border-top: 0.25em solid $primary;
-  height: 3em;
-  @include linear-gradient(#000, #222 10%, #222 90%, #000);
-  .container {
-    min-height:4em;
+#site-header {
+  @if ($header-top-border) {
+    border-top: $header-top-border;
   }
+  color: $nav_fg;
+  background-color: $map_nav_bg;
+  position: relative;
 }
-#site-logo{
+
+#site-logo {
   display: block;
   width: 175px;
-  height: 40px;
-  top: 0.4em;
-  #{$left}: 0.5em;
-  background: url($image-sprite) -3px -3px no-repeat;
+  height: 60px;
+  background: url($image-sprite) -8px 5px no-repeat;
   text-indent: -999999px;
-  position: absolute;
-  z-index:2;
 }
 
 // this is a skip to nav for mobile users only
 #nav-link {
   width: 3em;
-  height: 3em; // same height as #site-header
+  height: 3em;
   background: transparent url(../fixmystreet/images/#{$menu-image}.png) center center no-repeat;
   background-image: inline-image("../fixmystreet/images/#{$menu-image}.svg"), none;
   background-size: 22px 18px;
-  display: block;
   text-indent: -999999px;
-  position: absolute;
   #{$right}: 0;
-  top: 0.25em; // same as border-top on #site-header
+}
+
+#nav-link, #report-cta {
+  display: block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 // A shortcut to the Reporting page, in the mobile header
 #report-cta {
-  display: block;
-  position: absolute;
-  top: (3em / 2); // half the height of #site-header
   #{$right}: 3.5em;
-  margin-top: -0.5em;
 
   font-size: 0.9em;
   line-height: 1em;
   border: 1px solid #666;
-  color: #fff;
+  color: $nav_fg;
   padding: 0.4em;
   border-radius: 0.3em;
 
   &:hover, &:focus {
     text-decoration: none;
-    background-color: #444;
+    background-color: $nav_fg_hover;
   }
 }
 
+// The nav list has this sort of "full width" look,
+// so we want to cancel out the margin from .container
+#main-nav {
+  margin: 0 -1em;
+}
 
 .nav-menu {
   @include list-reset-soft;
@@ -543,21 +550,6 @@ ul.error {
   span {
     background-color: #ccc;
   }
-}
-
-//defines where the table caption is (login stuff on mob, nav menu on desktop)
-.wrapper {
-  width:100%;
-  display:table;
-  // The 'caption' at large widths will be top, moving the menu up magically
-  caption-side: bottom;
-  // This is so absolutely positioned header stuff doesn't overlap banner...
-  position: relative;
-}
-// ...however position: relative stops the map being clickable (?), so better
-// revert it there
-body.mappage .wrapper {
-  position: static;
 }
 
 // #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic

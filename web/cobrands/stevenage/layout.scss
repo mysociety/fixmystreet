@@ -1,13 +1,23 @@
 @import "colours";
 @import "../sass/layout";
 
-// d523b431
-.nav-wrapper{
-  .nav-wrapper-2{
+.wrapper {
+    display: table;
+    width: 100%;
+}
+.table-cell {
+    display: table-cell;
+}
+.table-caption {
+    display: table-caption;
+}
+
+#site-header {
+    display: none;
+}
+
+.nav-wrapper {
     position: static;
-    min-height: 0;
-    // e7c122a4 / 0b0a619b / - "Removed mySociety menu and positioned menu"
-    border-top: none;
     padding-top: 0.5em;
     padding-bottom: 0.25em;
     background-color: #6b6969;
@@ -16,7 +26,12 @@
     .iel8 & {
       background-color: #6b6969;
     }
-  }
+}
+
+#main-nav {
+    min-height: 0;
+    margin-top: 0;
+    float: none;
 }
 
 // We use absolute positioning for the header on IE7,
@@ -38,15 +53,6 @@
         }
     }
 }
-
-#main-nav {
-    @include clearfix;
-    width: auto;
-    max-width: 984px; // match the Stevenage header width
-    float: none;
-    padding-left: 0;
-}
-
 
 .nav-menu {
     float: none;
@@ -96,26 +102,12 @@ body.twothirdswidthpage {
 }
 
 // d523b431
-body.frontpage {
-    .nav-wrapper-2 {
-        height: auto;
-    }
-    #site-header {
-        height: auto;
-    }
-}
-
-#site-header {
-    display: none;
-}
-
-// d523b431
 #front-main {
     background: #fff;
     color: #222;
     margin: 0 auto;
     margin-top: 1.5em;
-    max-width: 60em;
+    max-width: $container-max-width;
 }
 
 // Front page button colour
@@ -133,52 +125,26 @@ body.frontpage {
   }
 }
 
-@media only screen and (min-width: 48em) and (max-width: 61em) {
-    // f432a72d - moved sticky sidebars down a bit to account for the larger header
-    body.twothirdswidthpage {
-        .content {
-            .sticky-sidebar {
-                aside {
-                    top: 19em;
-                }
-            }
-        }
-    }
-}
-
 body.mappage {
     #site-header {
         // We use the obscured #site-header to push the
         // content sidebar down beyond .nav-wrapper-2
-        height: 3em;
+        height: 4em;
         display: block;
+        border-top: none;
     }
 
-    // Over-specific selector required to trump _layout.scss
-    .nav-wrapper .nav-wrapper-2 {
+    .nav-wrapper {
         position: absolute;
         top: 0;
         padding: 0;
         background: #fff url("http://www.stevenage.gov.uk/Images/headerBG.jpg") repeat-x bottom left;
     }
 
-    #site-logo {
-        position: absolute;
-        top: 0.5em;
-    }
-
+    // Override the defaults, above
     #main-nav {
         float: right;
-        margin-right: 1em;
-        margin-top: 1em;
-    }
-
-    // again, !important to override _layout.scss
-    .nav-menu--main a,
-    .nav-menu--main span,
-    .report-a-problem-btn {
-        padding: 0.5em 0.75em 0.4em 0.75em !important;
-        margin: 0 !important;
+        min-height: $mappage-header-height;
     }
 
     .nav-menu a {

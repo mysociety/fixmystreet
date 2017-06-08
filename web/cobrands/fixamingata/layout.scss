@@ -67,10 +67,9 @@ h3, h4,
 @import "_colours";
 @import "../sass/layout";
 
-.nav-wrapper {
-    .nav-wrapper-2 {
-        border-top: 0;
-    }
+#site-header {
+    background: $map_nav_bg;
+    padding: 1em 0;
 }
 
 body.frontpage {
@@ -78,6 +77,17 @@ body.frontpage {
         width: 300px;
         height: 55px;
         background: url($image-sprite) -2px -115px no-repeat;
+    }
+
+    #main-nav {
+        height: 55px + 16px + 16px;
+        margin-left: 300px;
+    }
+}
+
+body.mappage {
+    #site-logo {
+        margin-top: -5px;
     }
 }
 
@@ -122,7 +132,3 @@ body.frontpage {
 #postcodeForm { margin-left: -1em !important; margin-right: -1em !important; }
 
 body.fullwidthpage .container .content footer .tablewrapper { background: #fff; }
-
-body.frontpage #site-header { height: 85px; }
-
-body.frontpage #user-meta { margin-top: 1.2em; }

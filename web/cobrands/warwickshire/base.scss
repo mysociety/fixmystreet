@@ -39,16 +39,9 @@ body {
 }
 
 #site-header {
-    height: auto;
-    background: white;
-
     nav ul li, ul.nav li {
         list-style: none;
         margin-bottom: 0;
-    }
-
-    .container {
-        min-height: 0;
     }
 }
 
@@ -114,17 +107,9 @@ body.mappage > div.container {
     display: block;
 }
 
-@media (max-width: 978px) {
-    .navbar-container {
-        padding: 0;
-        margin: 0;
-    }
-}
-
-// Lifted from bootstrap-responsive.css, no idea why this
-// media query has a different pixel size to the one above...
 @media (max-width: 979px) {
     .navbar-fixed-top .navbar-inner {
-        padding: 0 5px;
+        padding-top: 0;
+        padding-bottom: 0;
     }
 }

@@ -8,12 +8,6 @@ a:hover {
     text-decoration: underline;
 }
 
-// mySociety addition for box shadow on front page with static image
-body.frontpage #zurich-footer-wrapper {
-    padding: 1px 0;
-    @include box-shadow(0 -6px 6px -5px #000);
-}
-
 #zurich-footer {
     margin: 2em auto; // mySociety
     font-size: 67.5%;
@@ -22,7 +16,7 @@ body.frontpage #zurich-footer-wrapper {
     background-image: url(bg_mainnav_portal.png);
     background-repeat: repeat-x;
     border: 1px solid #d8d8d8;
-    width: 953px;
+    max-width: 953px;
     padding: 3px 10px;
     margin-bottom: 24px;
     height: 1.5em

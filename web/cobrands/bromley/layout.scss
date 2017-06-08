@@ -3,31 +3,19 @@
 
 // Alter the logo and the header on every page *but* the map page. On the map
 // page it stays small like in base.css
-body.fullwidthpage,
-body.twothirdswidthpage {
-  #site-header {
-    // Increase the height of the site-header to suit the taller logo image
-    height: auto;
-  }
-  // Override the logo
+body.fullwidthpage, body.twothirdswidthpage, body.authpage {
   #site-logo {
     width: 159px;
     height: 114px;
     background: url(/cobrands/bromley/bromley-logo.png) 0 0 no-repeat;
+    float: left;
   }
 }
 
-// On the map page, we want the header to be much smaller, otherwise it pushes
-// the sidebar down too much
 body.mappage {
-  #site-header {
-    height: 5em;
-  }
-
-  // Make the report button match the rest of the nav
-  .nav-menu--main a.report-a-problem-btn {
-      padding: 1.4em 0.75em 1.35em;
-      margin: 0;
+  .bromley-header {
+    margin-bottom: 0;
+    padding-top: 0.5em;
   }
 }
 
@@ -35,10 +23,6 @@ body.mappage {
 .iel8 {
   body.fullwidthpage,
   body.twothirdswidthpage {
-    #site-header {
-    // Increase the height of the site-header to suit the taller logo image
-      height: auto;
-    }
     #site-logo {
       width: 159px;
       height: 114px;
@@ -46,10 +30,10 @@ body.mappage {
   }
 }
 
-// Override the container width to match Bromley' site, which is wider
-.container {
-  width: 100%;
-  max-width: 1200px;
+#main-nav {
+  display: block; // remove flex so nav touches top of parent
+  min-height: 0; // no vertical align, so no need for a height
+  margin-top: 0; // don't bother overlapping the border
 }
 
 // Override the FMS main menu to give it a background colour
@@ -116,29 +100,17 @@ body.fullwidthpage .container .content footer .tablewrapper {
 // Bromley desktop styles
 //////////////////////////////////////////////////////////////////////////////
 
-// Bromley's logo is bigger on big screens so that it appears to have some
-// left padding
-#site-logo,
-body.frontpage #site-logo {
-  float: left;
-  width: 239px;
-  clear: left;
-  margin-bottom: 20px;
-  // Bromley uses an image element inside a link, so it can be centered using
-  // text-align. We use a background image, so this approximates that.
-  background-position: 50% 0%;
-}
-
 // Bromley's .top-links section floats to the right on bigger screens
 .top-links {
     float: right;
     width: auto;
+    margin-top: 3em;
 }
 
 // Bromley's search form floats to the right too
 .main-search {
   width: 35%;
-  margin: 10px 0 0 0;
+  margin: 0;
   float: right;
   min-width: 287px;
   clear: right;

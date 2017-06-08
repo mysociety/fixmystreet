@@ -20,3 +20,8 @@ $nav_fg_hover: #444;
 $col_click_map: $bromley_blue;
 $col_fixed_label: $bromley_blue;
 $col_fixed_label_dark: darken($bromley_blue, 10%);
+
+$header-top-border-width: 4px;
+
+// Override the container width to match Bromley' site, which is wider
+$container-max-width: 1200px;

@@ -2,8 +2,6 @@
 @import "_fonts";
 @import "../sass/layout";
 
-$fixed_page_width: 990px;
-
 #site-logo,
 body.frontpage #site-logo,
 body.twothirdswidthpage #site-logo
@@ -18,17 +16,13 @@ body.twothirdswidthpage #site-logo
         height: 83px;
 }
 
-.container, #main-nav {
-    width: $fixed_page_width;
-}
-
 #front-main {
     background-color: $base_bg;
     padding-top: 0.5em;
     text-align: left;
 
     #front-main-container {
-        max-width: $fixed_page_width;
+        max-width: $container-max-width;
         background-color: transparent;
         padding: 1em 0;
     }
@@ -43,11 +37,12 @@ body.twothirdswidthpage #site-logo
     }
 }
 
-body.frontpage #site-header, #site-header {
-    height: auto;
+#site-header {
+    background: none;
+    padding: 0 1em; // "wave" background image means its easier to apply padding here than on .container
 
     .container {
-        min-height: 0;
+        padding: 0; // let the #site-header padding do the work on mid-sized screens
     }
 
     .container:first-child {
@@ -61,15 +56,13 @@ body.frontpage {
         border-left: solid 4px $primary;
     }
 
+    // Greenwich positions the menu visually *below* the h1 on the homepage.
     #fms-menu-desktop {
         position: absolute;
-        width: 990px;
-        top: 262px;
+        left: 0;
+        right: 0;
+        top: 150px;
     }
-}
-
-.nav-wrapper .nav-wrapper-2 {
-    border-top: none;
 }
 
 .nav-menu--main {
@@ -150,8 +143,15 @@ body.frontpage {
 }
 
 body.mappage {
-    #site-header .container {
-        min-height: 68px;
+    #site-header {
+        background: $base_bg url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
+        background-size: contain;
+
+        // No more "wave" background on .container
+        .container {
+            min-height: 0;
+            background: transparent;
+        }
     }
 
     .main-menu-container {
@@ -171,16 +171,14 @@ body.mappage {
         height: 54px;
     }
 
-    .nav-wrapper .nav-wrapper-2 {
-        background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
-        background-color: $base_bg;
-        background-size: contain;
+    .nav-wrapper {
         border-bottom: solid 4px $primary;
     }
 
     .nav-menu--main a.report-a-problem-btn {
         color: $nav_fg;
     }
+
     .nav-menu {
         a, span {
             color: $primary_text;

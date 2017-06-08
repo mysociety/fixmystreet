@@ -37,8 +37,7 @@ body, body a {
 }
 
 // White background, so no margin needed.
-.content,
-.iel8 .content {
+.content {
     margin: 0;
 }
 
@@ -62,16 +61,10 @@ body.twothirdswidthpage {
 body.mappage {
   #oxford-wrapper {
     width: auto;
+    background: none;
     padding: 0;
-    background: transparent;
   }
-
   #oxford-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
     width: auto;
     min-height: $mappage-header-height; // override the normal min-height of 133px
     padding: 0;
@@ -86,16 +79,10 @@ body.mappage {
 
     a.logo {
       display: block;
-      float: left;
       height: $mappage-header-height;
       width: 200px;
       margin: 0;
       background: transparent url("images/logo-light-green.gif") no-repeat 50% 50%;
-      text-indent: -999px;
-
-      * {
-        display: none;
-      }
     }
 
     #navigation {
@@ -129,10 +116,6 @@ body.mappage {
   .wrapper .table-cell {
     padding-left: 0;
     padding-right: 0;
-  }
-
-  .container {
-    width: auto;
   }
 
   .extra-text {

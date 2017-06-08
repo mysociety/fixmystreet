@@ -17,17 +17,18 @@ $fms-pink: #E65376;
     max-width: 100%;
   }
 
-  .wrapper {
-    display: block;
-    @media only screen and (min-width: 48em) {
-      display: table;
-    }
+  // Allow page contents to stretch to edges of window
+  .container {
+    max-width: none;
+    padding: 0;
+  }
 
-    // Allow page contents to stretch to edges of window
-    // (But only inside .wrapper, so not affecting footer!)
+  #site-header,
+  .nav-wrapper,
+  .mysoc-footer {
     .container {
-      width: 100%;
-      padding: 0;
+      max-width: 60em;
+      padding: 0 1em;
     }
   }
 
@@ -48,14 +49,6 @@ $fms-pink: #E65376;
     }
   }
 
-  #site-header {
-    .container {
-      @media only screen and (min-width: 60em) {
-        max-width: 60em;
-      }
-    }
-  }
-
   .fixed-container {
     max-width: 90em;
     padding: 0;
@@ -65,9 +58,6 @@ $fms-pink: #E65376;
     padding: 0;
     background-color: #fff;
     overflow: hidden;
-    @media only screen and (min-width: 60em) {
-      width: 100%;
-    }
   }
 
   .councils-content-wrapper {

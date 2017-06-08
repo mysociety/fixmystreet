@@ -7,37 +7,18 @@
 @import "../sass/report_list_pins";
 
 // Override the site logo
-#site-logo{
-  display: block;
+#site-logo {
   width: 80px;
   height: 44px;
-  top: 0.4em;
-  left: 0.5em;
   background: url('/cobrands/bromley/bromley-logo.s.png') 0 0 no-repeat;
   text-indent: -999999px;
-  position: absolute;
   z-index:2;
 }
 
-// Change the colour and size of the site header to suit
-#site-header {
-  background: $base_bg;
-}
-// We don't want a fixed height header on any page except the map page because
-// it includes lots of other stuff there, including a dynamic drop-down menu
-// that changes height
-body.fullwidthpage,
-body.twothirdswidthpage {
-  #site-header {
-    height: auto;
-  }
-}
-
-// On the map page, we need slightly more space for our logo
-body.mappage {
-  #site-header {
-    height: 3.5em;
-  }
+#nav-link {
+  top: 7px;
+  right: 0.5em;
+  transform: none;
 }
 
 // Reset form placeholders so that they match Bromley's
@@ -81,14 +62,7 @@ body.frontpage.fullwidthpage {
 .bromley-header {
   // These are from Bromley's styles, applied here because it's the closest
   // analog to their site header.
-  padding: 0 10px;
   padding-top: 1em;
-}
-
-// Add a border to this to approximate Bromley's border between the breadcrumb
-// and A-Z menu
-.main-menu-container {
-  border-top: 1px solid #e2e2e2;
 }
 
 // Override the links to match Bromley's
@@ -145,11 +119,11 @@ h1,h2,h3,h4,h5 {
 
 // Bromley's styles for the .top-links nav
 .top-links {
-  margin-top: 44px; // Needed to push it below FMS' mobile menu bar
+  // Needed to push it below FMS' mobile menu bar
+  margin: 0 0 13px;
   display: block;
   width: 100%;
   text-align: center;
-  margin-bottom:13px;
   li {
     display: inline-block;
     padding: 0 10px;
@@ -213,6 +187,7 @@ h1,h2,h3,h4,h5 {
     height: 42px;
     line-height: 0;
     padding: 1.3em 1em;
+    margin: 0 0 0 -3px;
     border: 1px solid #647890;
     width: 20%;
     opacity: 1;
@@ -222,7 +197,6 @@ h1,h2,h3,h4,h5 {
     background: #647890 url("search-icon.png") no-repeat center center !important;
     text-indent: -10000px;
     border-radius: 0 5px 5px 0;
-    margin-left: -3px;
   }
 }
 
@@ -273,10 +247,13 @@ input.field, input.text,
 }
 
 // Bromley's silly A-Z menu
+// Add a border to this to approximate Bromley's border between the breadcrumb
+// and A-Z menu
 .a-z-container {
-  margin-bottom: 15px;
-  padding: 0 10px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e2e2e2;
 }
+
 .main-a-z {
   padding: 10px 5px;
   margin: 0 auto;

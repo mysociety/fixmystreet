@@ -14,6 +14,11 @@ $base_bg: #ffffff;
 $base_fg: #1a1a1a;
 
 /* Unused here */
-$map_nav_bg: #222;
 $nav_fg: #fff;
 $nav_fg_hover: #444;
+
+$map_nav_bg: $primary;
+$mappage-header-height: 173px + 32px;
+$header-top-border: false;
+
+$container-max-width: 60em;

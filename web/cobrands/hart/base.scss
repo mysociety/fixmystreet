@@ -24,15 +24,7 @@ h1.main {
     margin: 0.5em 0;
 }
 
-.container {
-    padding: 0 1em 1em; /* if remove this 1em, need to edit .full-width! */
-}
-
 #site-header {
-    background: $primary;
-    height: 57px;
-
-
     .mobile-header-nav {
         height: 56px;
         float: right;
@@ -53,11 +45,13 @@ h1.main {
     }
 }
 
-// Colour tab to match colour scheme
-#nav-link {
-  width: 50px;
-  height: 48px;
-  background: url('/cobrands/hart/tab-blue.png') 0 0 no-repeat;
+#site-logo {
+    display: block;
+    background: url("/cobrands/hart/hart-logo-mobile.png") 0 50% no-repeat;
+}
+
+#main-nav--hart { // Hart has two main menus, basically same on mobile
+    margin: 0 -1em;
 }
 
 .big-green-banner {

@@ -14,9 +14,11 @@ $primary_text: #222222;
 $base_bg: white;
 $base_fg: $eh_dark_grey;
 
-$map_nav_bg: $eh_green;
+$map_nav_bg: $eh_blue;
 $nav_fg: #000;
 $nav_fg_hover: $primary;
+
+$header-top-border: false;
 
 // Colour used for front page 'how to report a problem' steps
 $col_big_numbers: #ccc;

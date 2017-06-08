@@ -18,6 +18,8 @@ $primary_text: #222222;
 $base_bg: #fff;
 $base_fg: #000;
 
+$header-top-border: false;
+
 $map_nav_bg: $angus_green;
 $nav_fg: #fff;
 $nav_fg_hover: transparent;
@@ -29,3 +31,5 @@ $col_click_map_dark: darken($col_click_map, 10%);
 
 $col_fixed_label: $angus_green;
 $col_fixed_label_dark: darken($col_click_map, 10%);
+
+$container-max-width: 1200px;

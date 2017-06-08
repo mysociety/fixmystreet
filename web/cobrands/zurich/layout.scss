@@ -11,42 +11,86 @@ $mappage-header-height: 7em;
     color: #3c3c3c;
 }
 
-// Front page content needs a shadow.
-// (Purely decorative: No need for border fallback for IE8)
-body.frontpage .content {
-    @include box-shadow(0 0 6px 1px #000);
-}
-// The header on a map page needs a shadow too
-body.mappage .nav-wrapper .nav-wrapper-2 {
-    @include box-shadow(0 0 6px 1px #000);
-    z-index: 2; // One more than #zurich-main-nav so it's on top
-}
-// Except on admin pages where there's an admin nav directly underneath it
-body.mappage.admin .nav-wrapper-2 {
-    @include box-shadow(none);
-}
-
 // Fix positioning of images in the admin
 body.admin .admin-nav-wrapper {
     z-index: 1;
 }
 
 // Different header and logo
-#site-header .container {
-    height: 99px;
-    background: url(logo_portal.x.jpg) top left repeat-x;
+#site-header {
+    background-color: #fff;
+    border-top: none;
+    margin-bottom: 2em;
+
+    .container {
+        background: #fff url(logo_portal.x.jpg) top left repeat-x;
+        padding: 0;
+    }
 }
 
-body.frontpage #site-logo, #site-logo {
+body.mappage {
+    #site-header {
+        // The header on a map page needs a shadow too
+        @include box-shadow(0 0 6px 1px #000);
+        z-index: 2; // One more than #zurich-main-nav so it's on top
+        .container {
+            margin: 0 1em; // White padding left/right
+        }
+    }
+    // Except on admin pages where there's an admin nav directly underneath it
+    &.admin #site-header {
+        @include box-shadow(none);
+    }
+}
+
+#site-logo-text {
+    display: inline;
+    position: absolute;
+    top: 0;
+    z-index: 3;
+    padding-top: 83px;
+    padding-left: 10px;
+    color: #585858;
+    font-size: 85%;
+}
+body.mappage #site-logo-text {
+    padding-left: 0;
+}
+
+#site-logo {
     width: 415px;
     height: 83px;
-    background: url(logo_portal.jpg) top left no-repeat;
-    top: 0;
-    left: auto; // base set this to 0
+    background-position: top left;
+    margin-left: 0;
+}
+
+body.mappage #site-logo {
+    margin-left: 0;
+}
+
+.nav-wrapper {
+    top: 18px;
+}
+
+#main-nav {
+    margin-top: 0;
+    display: block; // Stop the default 'flex'
+    body.mappage & {
+        // As header gets a z-index above for the shadow
+        // Otherwise this would be invisible underneath
+        z-index: 2;
+        position: relative;
+    }
 }
 
 // Static map on front page
 body.frontpage {
+    // Front page content needs a shadow.
+    // (Purely decorative: No need for border fallback for IE8)
+    .content {
+        @include box-shadow(0 0 6px 1px #000);
+    }
+
     .table-cell {
         background-position: 50% 117px;
         background-repeat: no-repeat;
@@ -60,59 +104,23 @@ body.frontpage {
     }
 
     #site-header {
-        height: 117px;
-        background-color: #fff;
         @include box-shadow(0 0 6px 1px #000);
+        height: 117px;
     }
-}
 
-#site-logo-text {
-    position: absolute;
-    top: 0;
-    z-index: 3;
-    padding-top: 83px;
-    padding-left: 10px;
-    color: #585858;
-    font-size: 85%;
-}
-body.mappage #site-logo-text {
-    position: fixed;
-}
-
-.nav-wrapper {
-    .nav-wrapper-2 {
-        border-top: none;
-    }
-    .nav-wrapper-3 {
-        height: 6em; // rough figure, enough to show the blue band, but less than .nav-wrapper-2 height
-        padding-top: 18px;
-    }
-}
-
-body.mappage {
-    .nav-wrapper {
-        .nav-wrapper-2 {
-            border-top: none;
-            padding: 0 10px;
-            box-sizing: border-box;
-        }
-    }
-    /* Ugh :( But first wrapper is the caption, second is the fixed (so first we
-       can do padding on) so a third seems necessary for the background then. */
-    .nav-wrapper-3 {
-        background: #fff url(logo_portal.x.jpg) top left repeat-x;
-    }
-    .content {
-      margin-top: 1em;
+    #zurich-footer-wrapper {
+        padding: 1px 0;
+        @include box-shadow(0 -6px 6px -5px #000);
+        position: relative;
     }
 }
 
 // Logged in notice in footer (appearing in header)
-.nav-wrapper-2 p:first-child {
+.nav-wrapper p:first-child {
     font-weight: bold;
     margin-top: 0.75em;
 }
-.nav-wrapper-2 p {
+.nav-wrapper p {
     line-height: 1.2;
     color: white;
     clear: right;

@@ -8,37 +8,20 @@ $heading-font: 'PTSansCaptionRegular', "PT Sans Caption", Verdana, Arial, sans-s
 
 @import "../sass/base";
 
-#site-header {
-    background: #eee;
-    height: 4em;
-    margin-bottom: 1em;
-
-    .container {
-      min-height: 0;
-    }
-}
-
 #site-logo {
   background: transparent;
   width: 82px;
   height: 45px;
   text-indent: 0;
-  top: 0.6em;
-  left: 0.9em;
+  padding: 0.5em 0;
 }
 
 #report-cta {
   border-color: #ccc;
   color: #000;
-  top: 2em;
-
   &:hover, &:focus {
     background-color: #ddd;
   }
-}
-
-#nav-link {
-  top: 0.75em;
 }
 
 @import "council_header";
