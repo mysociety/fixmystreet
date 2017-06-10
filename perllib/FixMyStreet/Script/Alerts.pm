@@ -6,7 +6,6 @@ use warnings;
 use DateTime::Format::Pg;
 use IO::String;
 
-use mySociety::DBHandle qw(dbh);
 use FixMyStreet::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
@@ -17,8 +16,6 @@ use FixMyStreet::DB;
 use FixMyStreet::Email;
 use FixMyStreet::Map;
 use FixMyStreet::App::Model::PhotoSet;
-
-FixMyStreet->configure_mysociety_dbhandle;
 
 my $parser = DateTime::Format::Pg->new();
 
@@ -65,7 +62,7 @@ sub send() {
         $query =~ s/\?/alert.parameter/ if ($query =~ /\?/);
         $query =~ s/\?/alert.parameter2/ if ($query =~ /\?/);
 
-        $query = dbh()->prepare($query);
+        $query = FixMyStreet::DB->storage->dbh->prepare($query);
         $query->execute();
         my $last_alert_id;
         my %data = ( template => $alert_type->template, data => [], schema => $schema );
@@ -228,7 +225,7 @@ sub send() {
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
             and users.email <> ?
             order by confirmed desc";
-        $q = dbh()->prepare($q);
+        $q = FixMyStreet::DB->storage->dbh->prepare($q);
         $q->execute($latitude, $longitude, $d, $alert->whensubscribed, $alert->id, $alert->user->email);
         while (my $row = $q->fetchrow_hashref) {
             $schema->resultset('AlertSent')->create( {

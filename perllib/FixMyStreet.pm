@@ -11,7 +11,6 @@ use Readonly;
 use Sub::Override;
 
 use mySociety::Config;
-use mySociety::DBHandle;
 
 my $CONF_FILE = $ENV{FMS_OVERRIDE_CONFIG} || 'general';
 
@@ -135,9 +134,6 @@ Most of the values are read from the config file and others are hordcoded here.
 #
 # we use the one that is most similar to DBI's connect.
 
-# FIXME - should we just use mySociety::DBHandle? will that lead to AutoCommit
-# woes (we want it on, it sets it to off)?
-
 sub dbic_connect_info {
     my $class  = shift;
     my $config = $class->config;
@@ -159,35 +155,6 @@ sub dbic_connect_info {
     my $dbic_args = {};
 
     return ( $dsn, $user, $password, $dbi_args, $dbic_args );
-}
-
-=head2 configure_mysociety_dbhandle
-
-    FixMyStreet->configure_mysociety_dbhandle();
-
-Calls configure in mySociety::DBHandle with args from the config. We need to do
-this so that old code that uses mySociety::DBHandle finds it properly set up. We
-can't (might not) be able to share the handle as DBIx::Class wants it with
-AutoCommit on (so that its transaction code can be used in preference to calling
-begin and commit manually) and mySociety::* code does not.
-
-This should be fixed/standardized to avoid having two database handles floating
-around.
-
-=cut
-
-sub configure_mysociety_dbhandle {
-    my $class  = shift;
-    my $config = $class->config;
-
-    mySociety::DBHandle::configure(
-        Name     => $config->{FMS_DB_NAME},
-        User     => $config->{FMS_DB_USER},
-        Password => $config->{FMS_DB_PASS},
-        Host     => $config->{FMS_DB_HOST} || undef,
-        Port     => $config->{FMS_DB_PORT} || undef,
-    );
-
 }
 
 my $tz;
