@@ -128,6 +128,18 @@ sub email_sign_in : Private {
         return;
     }
 
+    # If user registration is disabled then bail out at this point
+    # if there's not already a user with this email address.
+    # NB this uses the same template as a successful sign in to stop
+    # enumeration of valid email addresses.
+    if ( FixMyStreet->config('SIGNUPS_DISABLED')
+         && !$c->model('DB::User')->search({ email => $good_email })->count
+         && !$c->stash->{current_user} # don't break the change email flow
+    ) {
+        $c->stash->{template} = 'auth/token.html';
+        return;
+    }
+
     my $user_params = {};
     $user_params->{password} = $c->get_param('password_register')
         if $c->get_param('password_register');
@@ -199,6 +211,10 @@ sub token : Path('/M') : Args(1) {
 
     my $user = $c->model('DB::User')->find_or_new({ email => $data->{email} });
 
+    # Bail out if this is a new user and SIGNUPS_DISABLED is set
+    $c->detach( '/page_error_403_access_denied', [] )
+        if FixMyStreet->config('SIGNUPS_DISABLED') && !$user->in_storage && !$data->{old_email};
+
     if ($data->{old_email}) {
         # Were logged in as old_email, want to switch to email ($user)
         if ($user->in_storage) {
@@ -243,6 +259,8 @@ sub fb : Private {
 
 sub facebook_sign_in : Private {
     my ( $self, $c ) = @_;
+
+    $c->detach( '/page_error_403_access_denied', [] ) if FixMyStreet->config('SIGNUPS_DISABLED');
 
     my $fb = $c->forward('/auth/fb');
     my $url = $fb->get_authorization_url(scope => ['email']);
@@ -301,6 +319,8 @@ sub tw : Private {
 
 sub twitter_sign_in : Private {
     my ( $self, $c ) = @_;
+
+    $c->detach( '/page_error_403_access_denied', [] ) if FixMyStreet->config('SIGNUPS_DISABLED');
 
     my $twitter = $c->forward('/auth/tw');
     my $url = $twitter->get_authentication_url(callback => $c->uri_for('/auth/Twitter'));

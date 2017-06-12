@@ -14,8 +14,14 @@
 
   <div class="confirmation-header confirmation-header--inbox">
 
-    <h1>[% loc("Nearly done! Now check your email&hellip;") %]</h1>
-    <p>[% loc("Click the link in our confirmation email to sign in.") %]</p>
+    [% IF c.config.SIGNUPS_DISABLED %]
+        <h1>[% loc("Nearly done!") %]</h1>
+        <p>[% loc("If there's a user associated with the address you entered, we've sent a confirmation email.") %]</p>
+        <p>[% loc("Click the link in that email to sign in.") %]</p>
+    [% ELSE %]
+        <h1>[% loc("Nearly done! Now check your email&hellip;") %]</h1>
+        <p>[% loc("Click the link in our confirmation email to sign in.") %]</p>
+    [% END %]
 
     <p>
         [% loc("Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time.") %]
