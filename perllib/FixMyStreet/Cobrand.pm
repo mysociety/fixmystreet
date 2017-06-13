@@ -158,8 +158,8 @@ sub body_handler {
 
     foreach my $avail ( $class->available_cobrand_classes ) {
         my $cobrand = $class->get_class_for_moniker($avail->{moniker})->new({});
-        next unless $cobrand->can('council_id');
-        return $cobrand if $areas->{$cobrand->council_id};
+        next unless $cobrand->can('council_area_id');
+        return $cobrand if $areas->{$cobrand->council_area_id};
     }
 }
 

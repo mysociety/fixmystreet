@@ -105,10 +105,9 @@ sub problems : Local {
     foreach my $problem (@problems) {
         $problem->name( '' ) if $problem->anonymous == 1;
         $problem->service( 'Web interface' ) if $problem->service eq '';
-        my $bodies = $problem->bodies;
-        if (keys %$bodies) {
-             my @body_names = map { $_->name } values %$bodies;
-             $problem->bodies_str( join(' and ', @body_names) );
+        my $body_names = $problem->body_names;
+        if (@$body_names) {
+             $problem->bodies_str( join(' and ', @$body_names) );
         }
     }
 

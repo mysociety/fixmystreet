@@ -4,7 +4,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
-sub council_id { return 2347; }
+sub council_area_id { return 2347; }
 sub council_area { return 'Stevenage'; }
 sub council_name { return 'Stevenage Council'; }
 sub council_url { return 'stevenage'; }

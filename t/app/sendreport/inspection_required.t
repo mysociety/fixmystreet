@@ -8,7 +8,7 @@ ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $user = $mech->create_user_ok( 'user@example.com' );
 
-my $body = $mech->create_body_ok( 2237, 'Oxfordshire County Council', id => 2237 );
+my $body = $mech->create_body_ok( 2237, 'Oxfordshire County Council');
 # $body->update({ send_method => 'Email' });
 
 my $contact = $mech->create_contact_ok(
