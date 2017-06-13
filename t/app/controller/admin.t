@@ -8,7 +8,7 @@ my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
@@ -16,7 +16,7 @@ my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => '
 my $oxford = $mech->create_body_ok(2421, 'Oxford City Council');
 $mech->create_contact_ok( body_id => $oxford->id, category => 'Graffiti', email => 'graffiti@example.net' );
 
-my $bromley = $mech->create_body_ok(2482, 'Bromley Council', id => 2482);
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council');
 
 my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 2');
 
@@ -115,7 +115,7 @@ subtest 'check summary counts' => sub {
         my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
         my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
 
-        $report->bodies_str(2237);
+        $report->bodies_str($oxfordshire->id);
         $report->cobrand('oxfordshire');
         $report->update;
 

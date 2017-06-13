@@ -258,8 +258,8 @@ sub output_requests : Private {
         }
         else {
             # FIXME Not according to Open311 v2
-            my @body_names = map { $_->name } values %{$problem->bodies};
-            $request->{agency_responsible} = {'recipient' => [ @body_names ] };
+            my $body_names = $problem->body_names;
+            $request->{agency_responsible} = {'recipient' => $body_names };
         }
 
         if ( !$problem->anonymous ) {

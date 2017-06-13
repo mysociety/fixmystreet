@@ -934,7 +934,7 @@ sub set_report_extras : Private {
         }
     }
 
-    $c->cobrand->process_open311_extras( $c, @$contacts[0]->body_id, \@extra )
+    $c->cobrand->process_open311_extras( $c, @$contacts[0]->body, \@extra )
         if ( scalar @$contacts );
 
     if ( @extra ) {

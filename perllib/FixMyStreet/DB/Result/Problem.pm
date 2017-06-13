@@ -510,6 +510,19 @@ sub bodies($) {
     return { map { $_->id => $_ } @bodies };
 }
 
+sub body_names($) {
+    my $self = shift;
+    my $bodies = $self->bodies;
+    my @names = map { $_->name } values %$bodies;
+    return \@names;
+}
+
+sub to_body_named($$) {
+    my ($self, $re) = @_;
+    my $names = join(',,', @{$self->body_names});
+    $names =~ /$re/;
+}
+
 =head2 url
 
 Returns a URL for this problem report.
@@ -774,7 +787,7 @@ sub defect_types {
 #     Note:   this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
     my $self = shift;
-    if ($self->external_id && $self->send_method_used && $self->bodies_str =~ /(2237|2550)/) {
+    if ($self->external_id && $self->send_method_used && $self->to_body_named('Oxfordshire|Angus')) {
         return 1;
     }
     return 0;

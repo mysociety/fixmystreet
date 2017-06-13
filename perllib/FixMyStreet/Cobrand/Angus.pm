@@ -4,7 +4,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
-sub council_id { return 2550; }
+sub council_area_id { return 2550; }
 sub council_area { return 'Angus'; }
 sub council_name { return 'Angus Council'; }
 sub council_url { return 'angus'; }
@@ -70,13 +70,17 @@ sub temp_update_contacts {
 
     my $contact_rs = $self->{c}->model('DB::Contact');
 
+    my $body = FixMyStreet::DB->resultset('Body')->search({
+        'body_areas.area_id' => $self->council_area_id,
+    }, { join => 'body_areas' })->first;
+
     my $_update = sub {
         my ($category, $field, $category_details) = @_;
         # NB: we're accepting just 1 field, but supply as array [ $field ]
 
         my $contact = $contact_rs->find_or_create(
             {
-                body_id => $self->council_id,
+                body => $body,
                 category => $category,
                 %{ $category_details || {} },
             },

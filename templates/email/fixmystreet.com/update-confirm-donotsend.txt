@@ -1,4 +1,4 @@
-[% IF update.problem.bodies_str != 2482 AND update.problem.bodies_str != 2347 %]
+[% IF NOT update.problem.to_body_named('Bromley|Stevenage') %]
 Note that we do not send updates to [% update.problem.body %] - they are
 intended as a place for [% site_name %] users to
 discuss, support, and offer advice.

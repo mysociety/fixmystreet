@@ -4,7 +4,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com' );
-my $body = $mech->create_body_ok( 2482, 'Bromley Council', id => 2482 );
+my $body = $mech->create_body_ok( 2482, 'Bromley Council');
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',

@@ -2,8 +2,8 @@ use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $brum = $mech->create_body_ok(2514, 'Birmingham City Council', id => 2514);
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $brum = $mech->create_body_ok(2514, 'Birmingham City Council');
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $rp = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
@@ -13,7 +13,7 @@ FixMyStreet::DB->resultset("ContactResponsePriority")->create({
     contact => $contact,
     response_priority => $rp,
 });
-my $wodc = $mech->create_body_ok(2420, 'West Oxfordshire District Council', id => 2420);
+my $wodc = $mech->create_body_ok(2420, 'West Oxfordshire District Council');
 $mech->create_contact_ok( body_id => $wodc->id, category => 'Horses', email => 'horses@example.net' );
 
 

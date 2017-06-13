@@ -526,7 +526,7 @@ subtest "Zurich banners are displayed correctly" => sub {
   };
 };
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
 subtest "check user details show when a user has correct permissions" => sub {

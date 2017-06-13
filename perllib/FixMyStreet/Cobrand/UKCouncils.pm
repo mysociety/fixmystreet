@@ -1,7 +1,5 @@
 package FixMyStreet::Cobrand::UKCouncils;
-use base 'FixMyStreet::Cobrand::UK';
-
-# XXX Things using this cobrand base assume that a body ID === MapIt area ID
+use parent 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
@@ -40,16 +38,25 @@ sub restriction {
     return { cobrand => shift->moniker };
 }
 
+# UK cobrands assume that each MapIt area ID maps both ways with one body
+sub body {
+    my $self = shift;
+    my $body = FixMyStreet::DB->resultset('Body')->search({
+        'body_areas.area_id' => $self->council_area_id
+    }, { join => 'body_areas' })->first;
+    return $body;
+}
+
 sub problems_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
-    return $rs->to_body($self->council_id);
+    return $rs->to_body($self->body);
 }
 
 sub updates_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
-    return $rs->to_body($self->council_id);
+    return $rs->to_body($self->body);
 }
 
 sub users_restriction {
@@ -75,7 +82,7 @@ sub users_restriction {
     )->as_query;
 
     my $or_query = [
-        from_body => $self->council_id,
+        from_body => $self->body->id,
         'me.id' => [ { -in => $problem_user_ids }, { -in => $update_user_ids } ],
     ];
     if ($self->can('admin_user_domain')) {
@@ -108,7 +115,7 @@ sub area_check {
     return 1 if FixMyStreet->staging_flag('skip_checks');
 
     my $councils = $params->{all_areas};
-    my $council_match = defined $councils->{$self->council_id};
+    my $council_match = defined $councils->{$self->council_area_id};
     if ($council_match) {
         return 1;
     }
@@ -164,7 +171,7 @@ sub owns_problem {
         @bodies = values %{$report->bodies};
     }
     my %areas = map { %{$_->areas} } @bodies;
-    return $areas{$self->council_id} ? 1 : undef;
+    return $areas{$self->council_area_id} ? 1 : undef;
 }
 
 # If the council is two-tier then show pins for the other council as grey
@@ -192,7 +199,7 @@ sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
-    return $user->from_body->id == $self->council_id;
+    return $user->from_body->areas->{$self->council_area_id};
 }
 
 sub available_permissions {

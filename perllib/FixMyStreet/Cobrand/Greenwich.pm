@@ -4,7 +4,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
-sub council_id { return 2493; }
+sub council_area_id { return 2493; }
 sub council_area { return 'Greenwich'; }
 sub council_name { return 'Royal Borough of Greenwich'; }
 sub council_url { return 'greenwich'; }

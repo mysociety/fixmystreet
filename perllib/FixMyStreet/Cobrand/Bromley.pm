@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use DateTime::Format::W3CDTF;
 
-sub council_id { return 2482; }
+sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
