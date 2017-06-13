@@ -677,15 +677,10 @@ sub create_contact_ok {
 
 sub create_body_ok {
     my $self = shift;
-    my ( $area_id, $name, %extra ) = @_;
+    my ( $area_id, $name ) = @_;
 
     my $body = FixMyStreet::DB->resultset('Body');
-    my $params = { name => $name };
-    if ($extra{id}) {
-        $body = $body->update_or_create({ %$params, id => $extra{id} }, { key => 'primary' });
-    } else {
-        $body = $body->find_or_create($params);
-    }
+    $body = $body->find_or_create({ name => $name });
     ok $body, "found/created body $name";
 
     $body->body_areas->delete;

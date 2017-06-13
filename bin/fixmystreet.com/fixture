@@ -105,7 +105,7 @@ $postcode = mySociety::MaPit::call('postcode', $postcode);
 
 my $cobrand = 'default';
 foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
-    my $sub = $_->{class} && $_->{class}->can('council_id');
+    my $sub = $_->{class} && $_->{class}->can('council_area_id');
     if ($sub && &$sub == $opt->area_id) {
         $cobrand = $_->{class}->moniker;
         last;

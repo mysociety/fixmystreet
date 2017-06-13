@@ -14,7 +14,7 @@
     [% INCLUDE banner, id = 'closed', text = loc('Closed') %]
 [% END %]
 
-[% IF NOT problem.bodies_str == '2482' %]
+[% IF NOT problem.to_body_named('Bromley') %]
 
     [% IF problem.is_open AND date.now - problem.lastupdate.epoch > 8 * 7 * 24 * 60 * 60 %]
         [% INCLUDE banner, id = 'unknown', text = loc('Unknown') %]

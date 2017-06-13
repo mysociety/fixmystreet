@@ -2,13 +2,13 @@ use FixMyStreet::App;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $potholes_contact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 my $traffic_lights_contact =$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 
 my $potholes_defect_type = FixMyStreet::App->model('DB::DefectType')->find_or_create(
     {
-        body_id => 2237,
+        body_id => $oxfordshire->id,
         name => 'Potholes',
         description => 'This defect type is to do with potholes'
     }
@@ -19,7 +19,7 @@ $potholes_defect_type->contact_defect_types->find_or_create({
 
 my $general_defect_type = FixMyStreet::App->model('DB::DefectType')->find_or_create(
     {
-        body_id => 2237,
+        body_id => $oxfordshire->id,
         name => 'All categories',
         description => 'This defect type is for all categories'
     }

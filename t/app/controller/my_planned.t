@@ -4,7 +4,7 @@ my $mech = FixMyStreet::TestMech->new;
 $mech->get_ok('/my/planned');
 is $mech->uri->path, '/auth', "got sent to the sign in page";
 
-my $body = $mech->create_body_ok(2237, 'Oxfordshire');
+my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Test Title');
 
 $mech->get_ok($problem->url);

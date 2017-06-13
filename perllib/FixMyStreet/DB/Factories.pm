@@ -44,8 +44,6 @@ __PACKAGE__->fields({
 
 #######################
 
-# This currently creates special 'UK' bodies, with ID == MapIt area_id.
-# We should try and end this, it is just confusing.
 package FixMyStreet::DB::Factory::Body;
 
 use parent -norequire, "FixMyStreet::DB::Factory::Base";
@@ -56,10 +54,6 @@ __PACKAGE__->resultset(FixMyStreet::DB->resultset("Body"));
 __PACKAGE__->exclude(['area_id', 'categories']);
 
 __PACKAGE__->fields({
-    id => __PACKAGE__->callback(sub {
-        my $area_id = shift->get('area_id');
-        $area_id;
-    }),
     name => __PACKAGE__->callback(sub {
         my $area_id = shift->get('area_id');
         my $area = mySociety::MaPit::call('area', $area_id);

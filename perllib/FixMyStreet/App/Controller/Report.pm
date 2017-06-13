@@ -203,7 +203,8 @@ sub format_problem_for_display : Private {
         $c->stash->{add_alert} = 1;
     }
 
-    $c->stash->{extra_name_info} = $problem->bodies_str && $problem->bodies_str eq '2482' ? 1 : 0;
+    my $first_body = (values %{$problem->bodies})[0];
+    $c->stash->{extra_name_info} = $first_body && $first_body->name =~ /Bromley/ ? 1 : 0;
 
     $c->forward('generate_map_tags');
 

@@ -128,9 +128,10 @@ sub check_for_errors {
       unless $self->text =~ m/\S/;
 
     # Bromley Council custom character limit
-    if ( $self->text && $self->problem && $self->problem->bodies_str
-        && $self->problem->bodies_str eq '2482' && length($self->text) > 1750 ) {
-        $errors{update} = sprintf( _('Updates are limited to %s characters in length. Please shorten your update'), 1750 );
+    if ( $self->text && $self->problem && $self->problem->bodies_str) {
+        if ($self->problem->to_body_named('Bromley') && length($self->text) > 1750) {
+            $errors{update} = sprintf( _('Updates are limited to %s characters in length. Please shorten your update'), 1750 );
+        }
     }
 
     return \%errors;
@@ -281,10 +282,7 @@ sub meta_line {
             $update_state = _( 'marked as an internal referral' )
         }
 
-        if ($c->cobrand->moniker eq 'bromley' || (
-                $self->problem->bodies_str &&
-                $self->problem->bodies_str eq '2482'
-        )) {
+        if ($c->cobrand->moniker eq 'bromley' || $self->problem->to_body_named('Bromley')) {
             if ($state eq 'not responsible') {
                 $update_state = 'marked as third party responsibility'
             }

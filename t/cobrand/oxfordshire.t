@@ -1,7 +1,7 @@
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 
 subtest 'check /ajax defaults to open reports only' => sub {
     my $categories = [ 'Bridges', 'Fences', 'Manhole' ];

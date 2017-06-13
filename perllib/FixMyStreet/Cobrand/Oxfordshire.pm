@@ -4,7 +4,7 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
-sub council_id { return 2237; }
+sub council_area_id { return 2237; }
 sub council_area { return 'Oxfordshire'; }
 sub council_name { return 'Oxfordshire County Council'; }
 sub council_url { return 'oxfordshire'; }

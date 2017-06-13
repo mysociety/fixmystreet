@@ -36,13 +36,11 @@ for my $body (
     { area_id => 2226, name => 'Gloucestershire County Council' },
     { area_id => 2326, name => 'Cheltenham Borough Council' },
     { area_id => 2504, name => 'Westminster City Council' },
-    # The next three have fixed IDs because bits of the code rely on
-    # the body ID === MapIt area ID.
-    { area_id => 2482, name => 'Bromley Council', id => 2482 },
-    { area_id => 2227, name => 'Hampshire County Council', id => 2227 },
-    { area_id => 2333, name => 'Hart Council', id => 2333 },
+    { area_id => 2482, name => 'Bromley Council' },
+    { area_id => 2227, name => 'Hampshire County Council' },
+    { area_id => 2333, name => 'Hart Council' },
 ) {
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, id => $body->{id});
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
     push @bodies, $body_obj;
     $body_ids{$body->{area_id}} = $body_obj->id;
 }

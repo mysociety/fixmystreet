@@ -32,12 +32,11 @@ sub disambiguate_location {
 sub process_open311_extras {
     my $self    = shift;
     my $ctx     = shift;
-    my $body_id = shift;
+    my $body = shift;
     my $extra   = shift;
     my $fields  = shift || [];
 
-    # XXX Hardcoded body ID matching mapit area ID
-    if ( $body_id eq '2482' ) {
+    if ( $body && $body->name =~ /Bromley/ ) {
         my @fields = ( 'fms_extra_title', @$fields );
         for my $field ( @fields ) {
             my $value = $ctx->get_param($field);
@@ -328,15 +327,11 @@ sub report_check_for_errors {
         );
     }
 
-    # XXX Hardcoded body ID matching mapit area ID
     if ( $report->bodies_str && $report->detail ) {
         # Custom character limit:
-        # Bromley Council
-        if ( $report->bodies_str eq '2482' && length($report->detail) > 1750 ) {
+        if ( $report->to_body_named('Bromley') && length($report->detail) > 1750 ) {
             $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1750 );
-        }
-        # Oxfordshire
-        if ( $report->bodies_str eq '2237' && length($report->detail) > 1700 ) {
+        } elsif ( $report->to_body_named('Oxfordshire') && length($report->detail) > 1700 ) {
             $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1700 );
         }
     }
