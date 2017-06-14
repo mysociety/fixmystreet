@@ -11,9 +11,6 @@ my $body = $mech->create_body_ok( $BROMLEY_ID, 'Bromley Council' );
 my $dt = DateTime->now;
 
 my $user = $mech->create_user_ok('test-moderation@example.com', name => 'Test User');
-$user->user_body_permissions->delete_all;
-$user->discard_changes;
-
 my $user2 = $mech->create_user_ok('test-moderation2@example.com', name => 'Test User 2');
 
 sub create_report {
@@ -342,12 +339,5 @@ subtest 'And do it as a superuser' => sub {
     }});
     $mech->content_contains('Moderated by a FixMyStreet administrator');
 };
-
-$update->delete;
-$update2->delete;
-$report->moderation_original_data->delete;
-$report->delete;
-$report2->delete;
-$mech->delete_user($user);
 
 done_testing();

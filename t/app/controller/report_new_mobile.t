@@ -36,6 +36,5 @@ subtest "Check signed up for alert when logged in" => sub {
 };
 
 END {
-    $mech->delete_user('user@example.org');
     done_testing();
 }

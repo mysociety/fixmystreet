@@ -504,8 +504,5 @@ subtest "correct i18n-ed summary for state of closed" => sub {
 };
 
 END {
-    $mech->delete_user($user) if $user;
-    $mech->delete_user($user2) if $user2;
-    $mech->delete_user($user3) if $user3;
     done_testing();
 }

@@ -1,8 +1,5 @@
-use strict;
-use warnings;
-use Test::More;
+use FixMyStreet::Test;
 use Test::Exception;
-use utf8;
 
 use FixMyStreet::DB;
 use DateTime;
@@ -22,8 +19,6 @@ my $user = $db->resultset('User')->find_or_create({
 FixMyStreet::override_config {
     UPLOAD_DIR => $UPLOAD_DIR,
 }, sub {
-
-$db->txn_begin;
 
 my $image_path = path('t/app/controller/sample.jpg');
 
@@ -73,8 +68,6 @@ subtest 'Photoset with 3 referenced photo' => sub {
     my $photoset = $report->get_photoset();
     is $photoset->num_images, 3, 'Found 3 images';
 };
-
-$db->txn_rollback;
 
 };
 

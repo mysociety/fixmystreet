@@ -78,7 +78,3 @@ subtest "POSTing multiple problems to my/planned/change adds all to shortlist" =
 };
 
 done_testing();
-
-END {
-    $mech->delete_user($user);
-}

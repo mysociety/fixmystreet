@@ -875,11 +875,5 @@ subtest 'return how many days ago a problem was reported' => sub {
 };
 
 END {
-    $problem->comments->delete if $problem;
-    $problem->delete if $problem;
-    $mech->delete_user( $user ) if $user;
-
-    $mech->delete_body($_) for @bodies;
-
     done_testing();
 }

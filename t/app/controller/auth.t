@@ -6,11 +6,8 @@ my $mech = FixMyStreet::TestMech->new;
 my $test_email    = 'test@example.com';
 my $test_email2   = 'test@example.net';
 my $test_password = 'foobar';
-$mech->delete_user($test_email);
 
 END {
-    $mech->delete_user($test_email);
-    $mech->delete_user($test_email2);
     done_testing();
 }
 

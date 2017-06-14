@@ -63,6 +63,5 @@ FixMyStreet::override_config {
 };
 
 END {
-    $mech->delete_problems_for_body(undef);
     done_testing();
 }

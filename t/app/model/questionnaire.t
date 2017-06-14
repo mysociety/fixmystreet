@@ -108,6 +108,4 @@ for my $test (
     }
 }
 
-$mech->delete_user( $user );
-
 done_testing();

@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::Alerts;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -434,7 +435,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::Script::Alerts::send();
     };
     # TODO Note the below will fail if the db has an existing alert that matches
     $mech->email_count_is(3);

@@ -1671,7 +1671,3 @@ subtest "inspectors get redirected directly to the report page" => sub {
 };
 
 done_testing();
-
-END {
-    $mech->delete_body($_) foreach @bodies;
-}

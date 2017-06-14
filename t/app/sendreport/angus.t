@@ -1,9 +1,4 @@
-use strict;
-use warnings;
-
-use FixMyStreet::DB;
-
-use Test::More;
+use FixMyStreet::Test;
 
 use_ok("FixMyStreet::SendReport::Angus");
 

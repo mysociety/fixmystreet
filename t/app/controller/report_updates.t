@@ -5,10 +5,6 @@ use DateTime;
 
 my $mech = FixMyStreet::TestMech->new;
 
-# create a test user and report
-$mech->delete_user('commenter@example.com');
-$mech->delete_user('test@example.com');
-
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $user2 = $mech->create_user_ok('commenter@example.com', name => 'Commenter');
@@ -816,7 +812,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         $mech->get_ok("/report/$report_id");
 
         $report->discard_changes;
-        my @updates = $report->comments->all;
+        my @updates = $report->comments->search(undef, { order_by => ['created', 'id'] })->all;
         is scalar @updates, 2, 'correct number of updates';
 
         my $update = pop @updates;
@@ -849,7 +845,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         $mech->get_ok("/report/$report_id");
 
         $report->discard_changes;
-        @updates = $report->comments->search(undef, { order_by => 'created' })->all;;
+        @updates = $report->comments->search(undef, { order_by => ['created', 'id'] })->all;
 
         is scalar @updates, 3, 'correct number of updates';
 
@@ -879,7 +875,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         $mech->get_ok("/report/$report_id");
 
         $report->discard_changes;
-        @updates = $report->comments->search(undef, { order_by => 'created' })->all;;
+        @updates = $report->comments->search(undef, { order_by => ['created', 'id'] })->all;;
         is scalar @updates, 4, 'correct number of updates';
 
         $update = pop @updates;
@@ -1883,7 +1879,4 @@ subtest 'check cannot answer other user\'s creator fixed questionnaire' => sub {
     $mech->content_contains( "I'm afraid we couldn't locate your problem in the database." )
 };
 
-ok $comment->delete, 'deleted comment';
-$mech->delete_user('commenter@example.com');
-$mech->delete_user('test@example.com');
 done_testing();

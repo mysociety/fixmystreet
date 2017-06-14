@@ -1,10 +1,4 @@
-use strict;
-use warnings;
-
-use Test::More tests => 2;
-
-use FixMyStreet;
-use FixMyStreet::DB;
+use FixMyStreet::Test;
 
 my $comment_rs = FixMyStreet::DB->resultset('Comment');
 
@@ -23,3 +17,4 @@ my $comment = $comment_rs->new(
 
 is $comment->confirmed,  undef, 'inflating null confirmed ok';
 is $comment->created,  undef, 'inflating null confirmed ok';
+done_testing();
