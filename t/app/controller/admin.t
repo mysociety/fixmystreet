@@ -18,11 +18,7 @@ $mech->create_contact_ok( body_id => $oxford->id, category => 'Graffiti', email 
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council');
 
-my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 2');
-
-if ( $user3 ) {
-  $mech->delete_user( $user3 );
-}
+my $user3;
 
 my $dt = DateTime->new(
     year   => 2011,
@@ -154,16 +150,6 @@ $mech->content_like(qr{AB\d\d});
 $mech->content_contains("http://www.example.org/around");
 
 subtest 'check contact creation' => sub {
-    my $contact = FixMyStreet::App->model('DB::Contact')->search(
-        { body_id => $body->id, category => [ 'test category', 'test/category' ] }
-    );
-    $contact->delete_all;
-
-    my $history = FixMyStreet::App->model('DB::ContactsHistory')->search(
-        { body_id => $body->id, category => [ 'test category', 'test/category' ] }
-    );
-    $history->delete_all;
-
     $mech->get_ok('/admin/body/' . $body->id);
 
     $mech->submit_form_ok( { with_fields => { 
@@ -1542,15 +1528,4 @@ subtest "response priorities can't be viewed across councils" => sub {
     };
 };
 
-END {
-    $mech->delete_user( $user );
-    $mech->delete_user( $user2 );
-    $mech->delete_user( $user3 );
-    $mech->delete_user( $superuser );
-    $mech->delete_user( 'test4@example.com' );
-    $mech->delete_body( $oxfordshire );
-    $mech->delete_body( $oxford );
-    $mech->delete_body( $bromley );
-    $mech->delete_body( $westminster );
-    done_testing();
-}
+done_testing();

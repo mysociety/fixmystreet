@@ -57,7 +57,5 @@ subtest 'Problem->defect_types behaves correctly' => sub {
 
 
 END {
-    $mech->delete_body( $oxfordshire );
-
     done_testing();
 }

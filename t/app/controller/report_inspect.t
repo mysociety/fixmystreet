@@ -274,7 +274,5 @@ FixMyStreet::override_config {
 
 
 END {
-    $mech->delete_body($oxon);
-    $mech->delete_body($brum);
     done_testing();
 }

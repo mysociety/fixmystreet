@@ -978,12 +978,6 @@ FixMyStreet::override_config {
 };
 
 END {
-    $mech->delete_body($subdivision);
-    $mech->delete_body($division);
-    $mech->delete_body($zurich);
-    $mech->delete_body($external_body);
-    $mech->delete_user( 'dm1@example.org' );
-    $mech->delete_user( 'sdm1@example.org' );
     ok $mech->host("www.fixmystreet.com"), "change host back";
     done_testing();
 }

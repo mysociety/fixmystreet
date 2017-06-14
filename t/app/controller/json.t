@@ -111,6 +111,4 @@ is_deeply    #
   ],
   "correct response";
 
-$mech->delete_user($user);
-
 done_testing();

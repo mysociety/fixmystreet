@@ -13,7 +13,6 @@ mySociety::Locale::gettext_domain('FixMyStreet');
 FixMyStreet::Map::set_map_class();
 my $c = ctx_request('http://fixmystreet.com/test?bbox=-7.6,49.7,-7.5,49.8');
 
-$mech->delete_user('test@example.com');
 my $user =
   FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
@@ -110,8 +109,5 @@ for my $test (
         is $pin_colour, $colour, 'pin colour';
     };
 }
-
-$mech->delete_user( $user );
-
 
 done_testing();

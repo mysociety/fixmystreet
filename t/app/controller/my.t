@@ -63,8 +63,3 @@ is $problems[2]->discard_changes->anonymous, 1, 'Other user problem made anonymo
 is $update[0]->discard_changes->anonymous, 1, 'User update made anonymous';
 
 done_testing();
-
-END {
-    $mech->delete_user($user);
-    $mech->delete_user($other_user);
-}

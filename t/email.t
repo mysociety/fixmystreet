@@ -1,7 +1,4 @@
-use strict;
-use warnings;
-
-use Test::More;
+use FixMyStreet::Test;
 use FixMyStreet::Email;
 
 my $secret = FixMyStreet::DB->resultset('Secret')->update({

@@ -128,7 +128,4 @@ for my $test (
     };
 }
 
-# Clean up
-$mech->delete_user($user);
-$mech->delete_body($body);
 done_testing();

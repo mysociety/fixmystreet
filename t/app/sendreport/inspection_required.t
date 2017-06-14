@@ -99,8 +99,3 @@ subtest 'Uninspected report is sent when user rep is high enough' => sub {
 };
 
 done_testing();
-
-END {
-    $mech->delete_user($user);
-    $mech->delete_body($body);
-}

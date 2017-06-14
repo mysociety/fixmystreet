@@ -1,8 +1,6 @@
 #!/usr/bin/env perl
 
-use utf8;
-use strict;
-use warnings;
+use FixMyStreet::Test;
 use File::Temp 'tempdir';
 use Path::Tiny;
 use Test::More;

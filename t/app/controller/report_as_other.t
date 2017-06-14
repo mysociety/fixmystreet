@@ -121,11 +121,6 @@ subtest "Body user, has permission to add update as another (existing) user" => 
 
 done_testing();
 
-END {
-    $mech->delete_body($body);
-    $mech->delete_user($_) for @users;
-}
-
 sub start_report {
     my $permission = shift;
     $_->delete for $user->user_body_permissions;

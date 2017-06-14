@@ -382,7 +382,3 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
 };
 
 done_testing();
-
-END {
-    $mech->delete_body($body);
-}

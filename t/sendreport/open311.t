@@ -40,7 +40,4 @@ subtest 'testing Open311 behaviour', sub {
     is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
 };
 
-# Clean up
-$mech->delete_user($user);
-$mech->delete_body($body);
 done_testing();
