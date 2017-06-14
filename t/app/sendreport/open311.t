@@ -1,7 +1,5 @@
-use strict;
-use warnings;
+use FixMyStreet::Test;
 
-use Test::More;
 use Test::Deep;
 
 use Open311;
@@ -160,11 +158,11 @@ sub test_overrides {
             ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich'],
         }, sub {
             my $db = FixMyStreet::DB->storage->schema;
-            $db->txn_begin;
+            #$db->txn_begin;
 
             my $params = { id => $input->{body_id}, name => $input->{body_name} };
             my $body = $db->resultset('Body')->find_or_create($params);
-            $body->body_areas->create({ area_id => $input->{body_id} });
+            $body->body_areas->find_or_create({ area_id => $input->{body_id} });
             ok $body, "found/created body " . $input->{body_name};
             $body->update({ can_be_devolved => 1 });
 
@@ -182,7 +180,7 @@ sub test_overrides {
             );
             $contact->update({ send_method => 'Open311', endpoint => 'http://example.com/open311' });
 
-            my $user = $db->resultset('User')->create( {
+            my $user = $db->resultset('User')->find_or_create( {
                     name => 'Fred Bloggs',
                     email => TEST_USER_EMAIL,
                     password => 'dummy',
@@ -215,7 +213,7 @@ sub test_overrides {
                 or diag Dumper( Open311->_get_test_data );
 
             Open311->_reset_test_data();
-            $db->txn_rollback;
+            #$db->txn_rollback;
         };
     }
 }

@@ -1,13 +1,8 @@
-use strict;
-use warnings;
-use Test::More;
-use utf8;
+use FixMyStreet::Test;
 
-use FixMyStreet::DB;
 use DateTime;
 
-my $db = FixMyStreet::DB->connect;
-$db->txn_begin;
+my $db = FixMyStreet::DB->storage->schema;
 
 my $body = $db->resultset('Body')->create({ name => 'ExtraTestingBody' });
 
@@ -104,5 +99,4 @@ subtest 'Default hash layout' => sub {
     };
 };
 
-$db->txn_rollback;
 done_testing();

@@ -1,8 +1,4 @@
-use strict;
-use warnings;
-use Test::More;
-
-use FixMyStreet;
+use FixMyStreet::Test;
 use FixMyStreet::Cobrand;
 
 my @cobrands = (

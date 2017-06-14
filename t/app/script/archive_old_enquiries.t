@@ -155,8 +155,3 @@ subtest 'user with new reports does not get email' => sub {
 };
 
 done_testing();
-
-END {
-    $mech->delete_user($user);
-    $mech->delete_body($oxfordshire);
-}

@@ -5,15 +5,6 @@ use FixMyStreet::App::Controller::Questionnaire;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
-# Make sure there's no outstanding questionnaire emails to be sent
-FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
-    site => 'fixmystreet'
-} );
-$mech->clear_emails_ok;
-
-# create a test user and report
-$mech->delete_user('test@example.com');
-
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $dt = DateTime->now()->subtract( weeks => 5 );
@@ -455,5 +446,4 @@ FixMyStreet::override_config {
     is $plain->header('Content-Type'), 'text/plain; charset="utf-8"', 'email is in right encoding';
 };
 
-$mech->delete_user('test@example.com');
 done_testing();

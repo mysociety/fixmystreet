@@ -11,10 +11,6 @@ my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
 my $body_fife_id = $mech->create_body_ok(2649, 'Fife Council')->id;
 my $body_slash_id = $mech->create_body_ok(10000, 'Electricity/Gas Council')->id;
 
-$mech->delete_problems_for_body( $body_west_id );
-$mech->delete_problems_for_body( $body_edin_id );
-$mech->delete_problems_for_body( $body_fife_id );
-
 my @edinburgh_problems = $mech->create_problems_for_body(3, $body_edin_id, 'All reports');
 my @westminster_problems = $mech->create_problems_for_body(5, $body_west_id, 'All reports');
 my @fife_problems = $mech->create_problems_for_body(15, $body_fife_id, 'All reports');
@@ -83,7 +79,8 @@ $fife_problems[10]->update( {
 });
 
 # Run the cron script that makes the data for /reports so we don't get an error.
-system( "bin/update-all-reports" );
+use FixMyStreet::Script::UpdateAllReports;
+FixMyStreet::Script::UpdateAllReports::generate();
 
 # check that we can get the page
 $mech->get_ok('/reports');

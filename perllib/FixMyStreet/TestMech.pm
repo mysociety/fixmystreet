@@ -1,20 +1,13 @@
 package FixMyStreet::TestMech;
 use parent qw(Test::WWW::Mechanize::Catalyst Test::Builder::Module);
 
-use strict;
-use warnings FATAL => 'all';
-use utf8;
+use FixMyStreet::Test;
 
 sub import {
     strict->import;
     warnings->import(FATAL => 'all');
     utf8->import;
     Test::More->export_to_level(1);
-}
-
-BEGIN {
-    use FixMyStreet;
-    FixMyStreet->test_mode(1);
 }
 
 use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';

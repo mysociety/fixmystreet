@@ -1,9 +1,6 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
-use Test::More;
-
+use FixMyStreet::Test;
 use FixMyStreet::DB;
 
 use_ok( 'Open311::PopulateServiceList' );

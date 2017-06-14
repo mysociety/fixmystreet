@@ -1,7 +1,5 @@
-use strict;
-use warnings;
+use FixMyStreet::Test;
 
-use Test::More;
 use Sub::Override;
 
 use FixMyStreet;

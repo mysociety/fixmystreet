@@ -11,13 +11,6 @@ my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => '
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council');
 
-END {
-    $mech->delete_user( $user );
-    $mech->delete_user( $user2 );
-    $mech->delete_user( $superuser );
-    $mech->delete_user( $oxfordshireuser );
-}
-
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,

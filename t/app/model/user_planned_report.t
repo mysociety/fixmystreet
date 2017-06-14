@@ -40,8 +40,3 @@ is $user2->active_planned_reports, 0;
 is $user2->planned_reports, 1;
 
 done_testing();
-
-END {
-    $mech->delete_user($user);
-    $mech->delete_user($user2);
-}

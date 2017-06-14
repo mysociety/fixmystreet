@@ -88,7 +88,5 @@ subtest "prefilters /around if user has categories" => sub {
 };
 
 END {
-    $mech->delete_problems_for_body( 2651 );
-    $mech->delete_body($oxon);
     done_testing();
 }

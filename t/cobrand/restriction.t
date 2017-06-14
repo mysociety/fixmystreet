@@ -50,5 +50,4 @@ is($cobrand->updates->count, 1, 'One update in the right cobrand');
 my $nearby = $c->model('DB::Nearby')->nearby($c, 5, [], 10, 0.003, 0.004);
 is(@$nearby, 1, 'One report close to the origin point');
 
-$mech->delete_problems_for_body(1234);
 done_testing();

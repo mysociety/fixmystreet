@@ -64,7 +64,6 @@ FixMyStreet::override_config {
 };
 
 END {
-    $mech->delete_user( $problem->user ) if $problem;
     done_testing();
 }
 

@@ -6,8 +6,6 @@ use DateTime;
 
 my $mech = FixMyStreet::TestMech->new;
 
-# create a test user and report
-$mech->delete_user('test@example.com');
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $user2 = $mech->create_user_ok('test2@example.com', name => 'Other User');
@@ -579,7 +577,5 @@ subtest "check brackets don't appear when username and report name are the same"
 };
 
 END {
-    $mech->delete_user('test@example.com');
-    $mech->delete_body($westminster);
     done_testing();
 }

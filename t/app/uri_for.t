@@ -1,7 +1,4 @@
-use strict;
-use warnings;
-
-use Test::More;
+use FixMyStreet::Test;
 
 # FIXME Should this be here? A better way? uri_for varies by map.
 use Catalyst::Test 'FixMyStreet::App';

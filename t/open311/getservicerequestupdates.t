@@ -1,8 +1,6 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
-use Test::More;
+use FixMyStreet::Test;
 use CGI::Simple;
 use LWP::Protocol::PSGI;
 use t::Mock::Static;

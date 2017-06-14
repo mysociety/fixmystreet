@@ -1,8 +1,6 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
-use Test::More;
+use FixMyStreet::Test;
 use URI::Split qw(uri_split);
 
 use FixMyStreet;

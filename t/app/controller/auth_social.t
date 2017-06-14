@@ -251,6 +251,5 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
 };
 
 END {
-    $mech->delete_problems_for_body('2345');
     done_testing();
 }

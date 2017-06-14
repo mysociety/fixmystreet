@@ -109,10 +109,6 @@ EOF
     }
 };
 
-# Clean up
 END {
-    $mech->delete_user( $superuser );
-    $mech->delete_user( $inspector );
-    $mech->delete_problems_for_body( $oxon->id );
     done_testing();
 }

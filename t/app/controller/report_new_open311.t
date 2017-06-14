@@ -172,7 +172,3 @@ foreach my $test (
 }
 
 done_testing();
-
-END {
-    $mech->delete_body($body);
-}
