@@ -91,18 +91,18 @@ sub run {
 
     local $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
 
-    # If no arguments, test everything
-    unshift @ARGV, 't' unless @ARGV;
-
-    # verbose if we have a single file
-    unshift @ARGV, '--verbose' if @ARGV and -f $ARGV[-1];
-
-    unshift @ARGV,
-        '--recurse',                             # we always want to recurse
-        '--state', (join ',' => @state, 'save'); # we always want to save state
-
     my $prove = App::Prove->new;
     $prove->process_args(@ARGV);
+
+    # If no arguments, test everything
+    $prove->argv(['t']) unless @{$prove->argv};
+    # verbose if we have a single file
+    $prove->verbose(1) if @{$prove->argv} and -f $prove->argv->[-1];
+    # we always want to recurse
+    $prove->recurse(1);
+    # we always want to save state
+    $prove->state([ @state, 'save' ]);
+
     $prove->run;
 }
 
