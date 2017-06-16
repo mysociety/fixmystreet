@@ -13,7 +13,9 @@
 }
 
 #site-header {
-    padding: 1em 0;
+    .container {
+        padding: 1em; // up from default `0 1em`
+    }
 }
 
 #site-subheader,

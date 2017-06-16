@@ -9,9 +9,9 @@
 .site-header__fake-nav {
     display: block;
     position: absolute;
-    top: 0;
+    top: 1em;
     right: 1em;
-    height: 48px;
+    height: $mappage-header-height - 2em;
     margin: 0 -1em;
     @include flex-container();
     @include flex-align(center);
@@ -59,7 +59,7 @@
     }
 
     #main-nav {
-        min-height: 5em;
+        min-height: $mappage-header-height;
     }
 
     #site-subheader,
