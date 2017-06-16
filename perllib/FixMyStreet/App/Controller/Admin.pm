@@ -8,7 +8,6 @@ use Path::Class;
 use POSIX qw(strftime strcoll);
 use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
-use mySociety::ArrayUtils;
 use DateTime::Format::Strptime;
 use List::Util 'first';
 
@@ -844,8 +843,9 @@ sub report_edit_category : Private {
         $problem->category($category);
         my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
         my @new_body_ids = map { $_->body_id } @contacts;
-        # If the report has changed bodies we need to resend it
-        if (scalar @{mySociety::ArrayUtils::symmetric_diff($problem->bodies_str_ids, \@new_body_ids)}) {
+        # If the report has changed bodies (and not to a subset!) we need to resend it
+        my %old_map = map { $_ => 1 } @{$problem->bodies_str_ids};
+        if (grep !$old_map{$_}, @new_body_ids) {
             $problem->whensent(undef);
         }
         $problem->bodies_str(join( ',', @new_body_ids ));
