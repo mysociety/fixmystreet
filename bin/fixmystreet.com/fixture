@@ -15,11 +15,11 @@ BEGIN {
     require "$d/../../setenv.pl";
 }
 
+use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB::Factories;
 use DateTime::Format::Pg;
 use Getopt::Long::Descriptive;
-use Path::Tiny 'path';
 
 my ($opt, $usage) = describe_options(
     '%c %o',
@@ -53,8 +53,8 @@ BEGIN
 END
 $func$;
 }) or die $!;
-    $db->dbh->do( path('db/alert_types.sql')->slurp ) or die $!;
-    $db->dbh->do( path('db/generate_secret.sql')->slurp ) or die $!;
+    $db->dbh->do( scalar FixMyStreet->path_to('db/alert_types.sql')->slurp ) or die $!;
+    $db->dbh->do( scalar FixMyStreet->path_to('db/generate_secret.sql')->slurp ) or die $!;
     say "Emptied database";
 }
 
