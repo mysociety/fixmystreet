@@ -385,7 +385,7 @@ select.form-control {
 }
 
 .form-txt-submit-box {
-  min-height:3em;
+  @include clearfix();
   input[type=password],
   input[type=text],
   input[type=email] {
