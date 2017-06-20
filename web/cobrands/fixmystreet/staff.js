@@ -184,7 +184,8 @@ $.extend(fixmystreet.set_up, {
   },
 
   report_page_inspect: function() {
-    var $inspect_form = $('form#report_inspect_form');
+    var $inspect_form = $('form#report_inspect_form'),
+        $templates = $('#templates_for_public_update');
 
     if (!$inspect_form.length) {
         return;
@@ -193,6 +194,31 @@ $.extend(fixmystreet.set_up, {
     // Focus on form
     $('html,body').scrollTop($inspect_form.offset().top);
 
+    function updateTemplates(opts) {
+        opts.category = opts.category || $inspect_form.find('[name=category]').val();
+        opts.state = opts.state || $inspect_form.find('[name=state]').val();
+        var selector = "[data-category='" + opts.category + "']";
+        var data = $inspect_form.find(selector).data('templates') || [];
+        data = $.grep(data, function(d, i) {
+            if (!d.state || d.state == opts.state) {
+                return true;
+            }
+            return false;
+        });
+        populateSelect($templates, data, 'templates_format');
+    }
+
+    function populateSelect($select, data, label_formatter) {
+      $select.find('option:gt(0)').remove();
+      $.each(data, function(k,v) {
+        label = window.fixmystreet.utils[label_formatter](v);
+        $opt = $('<option></option>').attr('value', v.id).text(label);
+        if (v.state) {
+            $opt.attr('data-problem-state', v.state);
+        }
+        $select.append($opt);
+      });
+    }
 
     // On the manage/inspect report form, we already have all the extra inputs
     // in the DOM, we just need to hide/show them as appropriate.
@@ -206,20 +232,12 @@ $.extend(fixmystreet.set_up, {
             priorities_data = entry.data('priorities') || [],
             curr_pri = $priorities.val();
 
-        function populateSelect($select, data, label_formatter) {
-          $select.find('option:gt(0)').remove();
-          $.each(data, function(k,v) {
-            label = window.fixmystreet.utils[label_formatter](v);
-            $select.append($('<option></option>')
-            .attr('value', v.id).text(label));
-          });
-        }
-
         $inspect_form.find("[data-category]:not(" + selector + ")").addClass("hidden");
         entry.removeClass("hidden");
 
         populateSelect($priorities, priorities_data, 'priorities_type_format');
         populateSelect($defect_types, defect_types_data, 'defect_type_format');
+        updateTemplates({'category': category});
         $priorities.val(curr_pri);
     });
 
@@ -229,6 +247,8 @@ $.extend(fixmystreet.set_up, {
         var $submit = $inspect_form.find("input[type=submit][name=save]");
         var value = $submit.attr('data-value-'+state);
         $submit.val(value || $submit.data('valueOriginal'));
+
+        updateTemplates({'state': state});
 
         // We might also have a response template to preselect for the new state
         var $select = $inspect_form.find("select.js-template-name");
@@ -451,6 +471,9 @@ $.extend(fixmystreet.utils, {
         return data.name;
     },
     priorities_type_format: function(data) {
+        return data.name;
+    },
+    templates_format: function(data) {
         return data.name;
     },
     toggle_shortlist: function(btn, sw, id) {
