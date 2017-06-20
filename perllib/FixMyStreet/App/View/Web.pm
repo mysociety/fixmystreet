@@ -174,7 +174,6 @@ sub prettify_state {
     my $tt = FixMyStreet::Template->new({ INCLUDE_PATH => $self->{include_path} });
     my $var;
     $tt->process('report/state-list.html', { state => $text }, \$var);
-    $var =~ s/ - .*//;
     return $var;
 }
 
