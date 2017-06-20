@@ -2,6 +2,8 @@
 
 <h1>[% loc('Sign in') %]</h1>
 
+[% TRY %][% INCLUDE 'auth/_general_top.html' %][% CATCH file %][% END %]
+
 [% IF oauth_need_email %]
     <p class="form-error">[% loc('We need your email address, please give it below.') %]</p>
 [% END %]
