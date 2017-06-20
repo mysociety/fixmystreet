@@ -67,6 +67,14 @@ my $body = FixMyStreet::DB::Factory::Body->find_or_create({
 });
 say "Created body " . $body->name . " for MapIt area ID " . $opt->area_id . ', categories ' . join(', ', @$categories);
 
+FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Generic' });
+FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Fixed', state => 'fixed - council' });
+FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Monitoring', state => 'unable to fix' });
+my $template = FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Not us', state => 'not responsible' });
+$template->add_to_contacts($body->contacts->first);
+my $priority = FixMyStreet::DB::Factory::ResponsePriority->create_batch(3, { body => $body });
+$priority->[0]->add_to_contacts($body->contacts->first);
+
 # Users
 say "Created users, all with password 'password':";
 my $user; # Will store the final (normal) user of the loop for later user
@@ -123,6 +131,7 @@ for (1..$num) {
     my $titles = $titles{$category};
     push @$problems, FixMyStreet::DB::Factory::Problem->create({
         body => $body,
+        areas => ',' . $opt->area_id . ',',
         user => $user,
         postcode => $postcode->{postcode},
         latitude => $postcode->{wgs84_lat} + rand($inaccurate_km) - $inaccurate_km / 2,

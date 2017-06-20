@@ -100,6 +100,31 @@ __PACKAGE__->fields({
 
 #######################
 
+package FixMyStreet::DB::Factory::ResponseTemplate;
+
+use parent -norequire, "FixMyStreet::DB::Factory::Base";
+
+__PACKAGE__->resultset(FixMyStreet::DB->resultset("ResponseTemplate"));
+
+__PACKAGE__->fields({
+    text => __PACKAGE__->seq(sub { 'Template text #' . (shift()+1) }),
+});
+
+#######################
+
+package FixMyStreet::DB::Factory::ResponsePriority;
+
+use parent "DBIx::Class::Factory";
+
+__PACKAGE__->resultset(FixMyStreet::DB->resultset("ResponsePriority"));
+
+__PACKAGE__->fields({
+    name => __PACKAGE__->seq(sub { 'Priority #' . (shift()+1) }),
+    description => __PACKAGE__->seq(sub { 'Description #' . (shift()+1) }),
+});
+
+#######################
+
 package FixMyStreet::DB::Factory::Comment;
 
 use parent "DBIx::Class::Factory";
