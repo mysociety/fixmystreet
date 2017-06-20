@@ -33,7 +33,7 @@ sub general : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] )
-        if $c->user && $c->get_param('r');
+        if $c->req->method eq 'GET' && $c->user && $c->get_param('r');
 
     # all done unless we have a form posted to us
     return unless $c->req->method eq 'POST';
