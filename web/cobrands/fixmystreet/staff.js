@@ -121,9 +121,9 @@ $.extend(fixmystreet.set_up, {
       } else if ('shortlist-up' === whatUserWants) {
         $item.insertBefore( $item.prev() );
       } else if ('shortlist-remove' === whatUserWants) {
-          fixmystreet.hooks.toggle_shortlist($submitButton, 'add', report_id);
+          fixmystreet.utils.toggle_shortlist($submitButton, 'add', report_id);
       } else if ('shortlist-add' === whatUserWants) {
-          fixmystreet.hooks.toggle_shortlist($submitButton, 'remove', report_id);
+          fixmystreet.utils.toggle_shortlist($submitButton, 'remove', report_id);
       }
 
       // Items have moved around. We need to make sure the "up" button on the
@@ -141,9 +141,9 @@ $.extend(fixmystreet.set_up, {
         } else if ('shortlist-up' === whatUserWants) {
           $item.insertAfter( $item.next() );
         } else if ('shortlist-remove' === whatUserWants) {
-          fixmystreet.hooks.toggle_shortlist($submitButton, 'remove', report_id);
+          fixmystreet.utils.toggle_shortlist($submitButton, 'remove', report_id);
         } else if ('shortlist-add' === whatUserWants) {
-          fixmystreet.hooks.toggle_shortlist($submitButton, 'add', report_id);
+          fixmystreet.utils.toggle_shortlist($submitButton, 'add', report_id);
         }
         fixmystreet.update_list_item_buttons($list);
       }).complete(function() {
@@ -195,22 +195,28 @@ $.extend(fixmystreet.set_up, {
     // in the DOM, we just need to hide/show them as appropriate.
     $('form#report_inspect_form [name=category]').change(function() {
         var category = $(this).val(),
-            selector = "[data-category='" + category + "']";
+            selector = "[data-category='" + category + "']",
+            $priorities = $('#problem_priority'),
+            $defect_types = $('#defect_type'),
+            defect_types_data = $("form#report_inspect_form " + selector).data('defect-types') || [],
+            priorities_data = $("form#report_inspect_form " + selector).data('priorities') || [],
+            curr_pri = $priorities.val();
+
+        function populateSelect($select, data, label_formatter) {
+          $select.find('option:gt(0)').remove();
+          $.each(data, function(k,v) {
+            label = window.fixmystreet.utils[label_formatter](v);
+            $select.append($('<option></option>')
+            .attr('value', v.id).text(label));
+          });
+        }
+
         $("form#report_inspect_form [data-category]:not(" + selector + ")").addClass("hidden");
         $("form#report_inspect_form " + selector).removeClass("hidden");
-        // And update the associated priority list
-        var priorities = $("form#report_inspect_form " + selector).data('priorities');
-        var $select = $('#problem_priority'),
-            curr_pri = $select.val();
-        $select.find('option:gt(0)').remove();
-        $.each(priorities.split('&'), function(i, kv) {
-            if (!kv) {
-                return;
-            }
-            kv = kv.split('=', 2);
-            $select.append($('<option>', { value: kv[0], text: decodeURIComponent(kv[1]) }));
-        });
-        $select.val(curr_pri);
+
+        populateSelect($priorities, priorities_data, 'priorities_type_format');
+        populateSelect($defect_types, defect_types_data, 'defect_type_format');
+        $priorities.val(curr_pri);
     });
 
     // The inspect form submit button can change depending on the selected state
@@ -385,15 +391,6 @@ $.extend(fixmystreet.hooks, {
               $(this).data('autopopulated', false);
             });
         }
-    },
-
-    toggle_shortlist: function(btn, sw, id) {
-        btn.attr('class', 'item-list__item__shortlist-' + sw);
-        btn.attr('title', btn.data('label-' + sw));
-        if (id) {
-            sw += '-' + id;
-        }
-        btn.attr('name', 'shortlist-' + sw);
     }
 
 });
@@ -414,7 +411,7 @@ $.extend(fixmystreet.maps, {
             $form = $item.find('form'),
             $submit = $form.find("input[type='submit']" );
 
-        fixmystreet.hooks.toggle_shortlist($submit, 'remove', problemId);
+        fixmystreet.utils.toggle_shortlist($submit, 'remove', problemId);
 
         items.push({
           'url': '/report/' + $item.data('report-id'),
@@ -446,4 +443,23 @@ $.extend(fixmystreet.maps, {
       $shortlistButton.addClass('hidden');
     }
   }
+});
+
+fixmystreet.utils = fixmystreet.utils || {};
+
+$.extend(fixmystreet.utils, {
+    defect_type_format: function(data) {
+        return data.name;
+    },
+    priorities_type_format: function(data) {
+        return data.name;
+    },
+    toggle_shortlist: function(btn, sw, id) {
+        btn.attr('class', 'item-list__item__shortlist-' + sw);
+        btn.attr('title', btn.data('label-' + sw));
+        if (id) {
+            sw += '-' + id;
+        }
+        btn.attr('name', 'shortlist-' + sw);
+    }
 });
