@@ -22,9 +22,12 @@ if ( FixMyStreet->config('BASE_URL') =~ /zurich|zueri/ ) {
 }
 
 sub generate {
+    my $include_areas = shift;
+
     my $problems = FixMyStreet::DB->resultset('Problem')->search(
         {
             state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+            bodies_str => \'is not null',
         },
         {
             columns => [
@@ -41,23 +44,21 @@ sub generate {
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         my @bodies;
+        my @areas;
         my $cobrand = $problem{cobrand};
+        my $duration_str = ( $problem{duration} > 2 * $fourweeks ) ? 'old' : 'new';
+        my $type = ( $problem{duration} > 2 * $fourweeks )
+            ? 'unknown'
+            : ($problem{age} > $fourweeks ? 'older' : 'new');
+        my $problem_fixed =
+               FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}}
+            || FixMyStreet::DB::Result::Problem->closed_states()->{$problem{state}};
 
-        if ( !$problem{bodies_str} ) {
-            # Problem was not sent to any bodies, add to all areas
-            @bodies = grep { $_ } split( /,/, $problem{areas} );
-            $problem{bodies} = 0;
-        } else {
-            # Add to bodies it was sent to
-            @bodies = split( /,/, $problem{bodies_str} );
-            $problem{bodies} = scalar @bodies;
-        }
+        # Add to bodies it was sent to
+        @bodies = split( /,/, $problem{bodies_str} );
+
         foreach my $body ( @bodies ) {
-            my $duration_str = ( $problem{duration} > 2 * $fourweeks ) ? 'old' : 'new';
-            my $type = ( $problem{duration} > 2 * $fourweeks )
-                ? 'unknown'
-                : ($problem{age} > $fourweeks ? 'older' : 'new');
-            if (FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}} || FixMyStreet::DB::Result::Problem->closed_states()->{$problem{state}}) {
+            if ( $problem_fixed ) {
                 # Fixed problems are either old or new
                 $fixed{$body}{$duration_str}++;
                 $fixed{$cobrand}{$body}{$duration_str}++;
@@ -65,6 +66,17 @@ sub generate {
                 # Open problems are either unknown, older, or new
                 $open{$body}{$type}++;
                 $open{$cobrand}{$body}{$type}++;
+            }
+        }
+
+        if ( $include_areas ) {
+            @areas = grep { $_ } split( /,/, $problem{areas} );
+            foreach my $area ( @areas ) {
+                if ( $problem_fixed ) {
+                    $fixed{areas}{$area}{$duration_str}++;
+                } else {
+                    $open{areas}{$area}{$type}++;
+                }
             }
         }
     }
