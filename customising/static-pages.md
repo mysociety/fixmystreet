@@ -18,6 +18,11 @@ Have a look at the existing files in `templates/web/base/about/` for an idea
 of the contents of a file – you need a header and a footer include, but other
 than that the contents are up to you.
 
+If you want the page to be available in multiple languages, then name your file
+`team-LANG.html` for each language and it will automatically be used. For
+example, if your site is available in Welsh and French, you could have
+`team-cy.html` and `team-fr.html`
+
 <hr>
 
 If you wish to do more complex pages, or wish to then we recommend setting up

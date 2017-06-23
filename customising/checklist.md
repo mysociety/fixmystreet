@@ -117,7 +117,7 @@ at the same time as others -- but if you're not sure then just work through the 
     <p>
       To do this, copy the template files into your own cobrand's directory and
       rewrite them. The generic base FAQ can be found at
-      <code>templates/web/base/faq/faq-en-gb.html</code>
+      <code>templates/web/base/about/faq-en-gb.html</code>
     </p>
     <p>
       See <a href="{{ site.baseurl }}customising/templates/">more about templates</a>.
