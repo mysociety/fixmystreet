@@ -55,6 +55,8 @@
         - Consolidate various admin summary statistics page. #1919.
         - 'Auto-response' flag on response templates is honoured for fetched
           Open311 updates. #1924
+    - Development improvements:
+        - Add hook for pre-wrapper content.
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.
