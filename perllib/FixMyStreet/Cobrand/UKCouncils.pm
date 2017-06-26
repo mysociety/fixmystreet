@@ -53,6 +53,13 @@ sub problems_restriction {
     return $rs->to_body($self->body);
 }
 
+sub problems_on_map_restriction {
+    my ($self, $rs) = @_;
+    # If we're a two-tier council show all problems on the map and not just
+    # those for this cobrand's council to reduce duplicate reports.
+    return $self->is_two_tier ? $rs : $self->problems_restriction($rs);
+}
+
 sub updates_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
