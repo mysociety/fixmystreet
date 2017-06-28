@@ -1056,6 +1056,51 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
 
 };
 
+subtest "check we load a partial report correctly" => sub {
+    my $user = FixMyStreet::App->model('DB::User')->find_or_create(
+        {
+            email => 'test-partial@example.com'
+        }
+    );
+
+    my $report = FixMyStreet::App->model('DB::Problem')->create( {
+        name               => '',
+        postcode           => '',
+        category           => 'Street lighting',
+        title              => 'Testing',
+        detail             => "Testing Detail",
+        anonymous          => 0,
+        state              => 'partial',
+        lang               => 'en-gb',
+        service            => '',
+        areas              => '',
+        used_map           => 1,
+        latitude           => '51.754926',
+        longitude          => '-1.256179',
+        user_id            => $user->id,
+    } );
+
+    my $report_id = $report->id;
+
+    my $token = FixMyStreet::App->model("DB::Token")
+        ->create( { scope => 'partial', data => $report->id } );
+
+    my $token_code = $token->token;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    },
+    sub {
+        $mech->get("/L/$token_code");
+        is $mech->res->previous->code, 302, 'partial token page redirects';
+        is $mech->uri->path, "/report/new", "partial redirects to report page";
+        $mech->content_contains('Testing Detail');
+    };
+
+    $mech->delete_user($user);
+};
+
 for my $test (
     {
         desc  => 'user title not set if not bromley problem',

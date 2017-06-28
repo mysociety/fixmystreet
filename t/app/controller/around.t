@@ -1,3 +1,5 @@
+use Test::MockModule;
+
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -172,6 +174,20 @@ subtest 'check category and status filtering works on /around?ajax' => sub {
     $json = $mech->get_ok_json( '/around?ajax=1&status=fixed&filter_category=Vegetation&bbox=' . $bbox );
     $pins = $json->{pins};
     is scalar @$pins, 1, 'correct number of fixed Vegetation reports';
+};
+
+subtest 'check skip_around skips around page' => sub {
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Default');
+    $cobrand->mock('skip_around_page', sub { 1 });
+    $cobrand->mock('country', sub { 1 });
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get('/around?latitude=51.754926&longitude=-1.256179');
+        is $mech->res->code, 302, "around page is a redirect";
+        is $mech->uri->path, '/report/new', "and redirects to /report/new";
+    };
 };
 
 done_testing();
