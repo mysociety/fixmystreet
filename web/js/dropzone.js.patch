@@ -1,36 +1,50 @@
---- web/js/src/dropzone.orig.js	2016-06-17 21:29:47.000000000 +0100
-+++ web/js/src/dropzone.js	2016-06-20 11:40:55.000000000 +0100
-@@ -1469,7 +1469,7 @@
-     return _results;
+--- dropzone.5.1.1.js	2017-06-30 09:46:43.000000000 +0100
++++ dropzone.exiffixes.js	2017-06-30 18:25:27.000000000 +0100
+@@ -1175,9 +1175,7 @@
+           };
+           if ((typeof EXIF !== "undefined" && EXIF !== null) && fixOrientation) {
+             loadExif = function(callback) {
+-              return EXIF.getData(img, function() {
+-                return callback(EXIF.getTag(this, 'Orientation'));
+-              });
++              return callback(EXIF.getData(img));
+             };
+           }
+           return loadExif(function(orientation) {
+@@ -1601,7 +1599,7 @@
+     return results;
    };
  
 -  Dropzone.blacklistedBrowsers = [/opera.*Macintosh.*version\/12/i];
 +  Dropzone.blacklistedBrowsers = [/opera.*(Windows Phone|Macintosh).*version\/12/i];
  
    Dropzone.isBrowserSupported = function() {
-     var capableBrowser, regex, _i, _len, _ref;
-@@ -1679,7 +1679,23 @@
-   drawImageIOSFix = function(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
-     var vertSquashRatio;
-     vertSquashRatio = detectVerticalSquash(img);
--    return ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh / vertSquashRatio);
-+    dh = dh / vertSquashRatio;
+     var capableBrowser, j, len, ref, regex;
+@@ -1904,6 +1902,27 @@
+       var array, ato, buf, imageData, mae, separatePoint;
+       imageData = resizedFileBase64.replace('data:image/jpeg;base64,', '');
+       buf = this.decode64(imageData);
 +
-+    /* An improved version of http://stackoverflow.com/a/28356942/669631 */
-+    var orientation = 0;
-+    switch (EXIF.getData(img)) {
-+        case 3: orientation = 2; break;
-+        case 6: orientation = 1; break;
-+        case 8: orientation = -1; break;
-+    }
-+    if (orientation) {
-+        ctx.translate(dx + dw/2, dy + dh/2);
-+        ctx.rotate(orientation * Math.PI / 2);
-+        dx = -dw/2;
-+        dy = -dh/2;
-+    }
++      // Certain browsers (I'm looking at you, Safari) 'helpfully' provide their
++      // own EXIF data in the JPEG returned from HTMLCanvasElement.toDataURL.
++      // Dropzone doesn't take this into account when restoring the original
++      // file's EXIF, meaning the final uploaded file has two sets of EXIF.
++      // Certain JPEG tools (I'm looking at you, jhead) don't really handle this
++      // very well, either ignoring the duplicate EXIF, picking the wrong one
++      // or refusing to process the file entirely.
++      // Seems like the best way out of this mess is to make sure the uploaded
++      // JPEG only ever has one EXIF header. In this case, we want to keep the
++      // EXIF from the original file.
++      // This little loop inspects the new JPEG from the toDataURL call and
++      // strips out any existing EXIF headers (technically any APP1 headers,
++      // but same difference in this case).
++      for (var i = 0; i < buf.length; i++) {
++          if (buf[i] === 255 && buf[i+1] === 225) {
++              var length = buf[i + 2] * 256 + buf[i + 3] + 2;
++              buf.splice(i, length);
++          }
++      }
 +
-+    return ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-   };
- 
- 
+       separatePoint = buf.indexOf(255, 3);
+       mae = buf.slice(0, separatePoint);
+       ato = buf.slice(separatePoint);
