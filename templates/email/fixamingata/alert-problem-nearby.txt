@@ -1,6 +1,6 @@
 Subject: Nya rapporter på FixaMinGata
 
-Följande rapporter har nyligen lagts till på:
+Följande rapporter har nyligen lagts till i din närhet:
 
 [% INCLUDE '_email_report_list.txt' %]
 

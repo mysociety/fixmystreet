@@ -1,0 +1,57 @@
+[%
+
+email_summary = "Det här meddelandet rör en rapport om ett problem i gatumiljön som en medborgare lämnat via tjänsten FixaMinGata";
+email_footer = "Föreningen Sambruk som driver tjänsten ansvarar för en användargrupp som det går bra att gå med i för att få tillgång till ytterligare FixaMinGata-relaterade tjänster och support. Bland annat kan varje kategori ha sin egen e-postadress, och FixaMinGata kan även kopplas mot system som Open311";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">Ny rapport för [% report.body %]</h1>
+  <p style="[% p_style %]">[% missing %][% multiple %]Följande rapport
+tror medborgaren behöver er uppmärksamhet.</p>
+
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% url %]">Visa rapporten</a>
+  </p>
+  <h2 style="[% h2_style %] margin: 30px 0 10px 0">Rapporterad av:</h2>
+  <table [% table_reset %]>
+    <tr>
+      <th style="[% contact_th_style %]">Namn</th>
+      <td style="[% contact_td_style %]">[% name | html %]</td>
+    </tr>
+    <tr>
+      <th style="[% contact_th_style %]">Epost</th>
+      <td style="[% contact_td_style %]"><a href="mailto:[% email | html %]">[% email | html %]</a></td>
+    </tr>
+    [%~ IF phone %]
+      <tr>
+        <th style="[% contact_th_style %]">Telefon</th>
+        <td style="[% contact_td_style %]"><a href="tel:[% phone | html %]">[% phone | html %]</a></td>
+      </tr>
+    [%~ END %]
+  </table>
+  <p style="[% p_style %] margin-top: 0.5em;">Svar på det här brevet kommer att skickas till den person som lämnade rapporten.</p>
+  [% end_padded_box %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% title | html %]</h2>
+    [%~ IF category_line %]
+    <p style="[% secondary_p_style %]">[% category | html %]</p>
+    [%~ END %]
+    <p style="[% secondary_p_style %]">[% detail | html %]</p>
+    <p style="[% secondary_p_style %]">
+      <strong>Plats:</strong>
+      <a href="[% osm_url %]" title="Se den här platsen på OpenStreetMap">
+        [%~ latitude %], [% longitude ~%]
+      </a>
+      [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
+    </p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

@@ -3,7 +3,8 @@ Subject: Bekräfta din rapport på [% INCLUDE 'site-name.txt' | trim %]
 Hej [% report.name %],
 
 För att bekräfta den rapport som du nyligen lade in på FixaMinGata
-måste du klicka på nedanstående länk:
+måste du klicka på nedanstående länk. Notera att din rapport inte
+kommer att skickas till kommunen.
 
 [% token_url %]
 
@@ -17,3 +18,5 @@ Du har angivit följande information om problemet:
 [% report.detail %]
 
 [% INCLUDE 'signature.txt' %]
+
+Det går inte att svara på detta mail.

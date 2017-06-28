@@ -1,0 +1,19 @@
+[%
+
+email_summary = "Nya rapporter i " _ area_name _ " på FixaMinGata";
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Nya rapporter inom [% area_name %]</h1>
+  [%~ INCLUDE '_email_report_list.html' %]
+
+  <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Avsluta min prenumeration på nya rapporter i [% area_name %]</a></p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

@@ -1,0 +1,26 @@
+Subject: Din rapport har&nbsp;loggats: [% report.title %]
+
+Hej [% report.name %],
+
+Din rapport till [% report.body %] har blivit loggad på [% site_name %].
+
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Eftersom [% c.cobrand.council_name %] inte är ansvarig för den här typen av
+rapporter, så kommer rapporten istället att skickas till [% report.body %].
+[% END %]
+
+Du kan se din rapport på:
+
+[% cobrand.base_url_for_report(report) %][% report.url %]
+
+Din rapport har titeln:
+
+[% report.title %]
+
+Och detaljerna:
+
+[% report.detail %]
+
+[% INCLUDE 'signature.txt' %]
+
+Det går inte att svara på detta mail.

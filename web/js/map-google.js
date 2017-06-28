@@ -218,7 +218,8 @@ fixmystreet.maps = {};
                 'Show pins', 'Hide pins',
                 'Dangos pinnau', 'Cuddio pinnau',
                 "Vis nåler", "Gjem nåler",
-                "Zeige Stecknadeln", "Stecknadeln ausblenden"
+                "Zeige Stecknadeln", "Stecknadeln ausblenden",
+                'Visa kartnålar', 'Göm kartnålar'
             ];
             for (i=0; i<showhide.length; i+=2) {
                 if (this.innerHTML == showhide[i]) {

@@ -1,0 +1,30 @@
+[%
+
+email_summary = "Tack för att du loggade din rapport";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">Din rapport har&nbsp;loggats</h1>
+  <p style="[% p_style %]">Din rapport till [% report.body %] har blivit loggad på [% site_name %].
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Eftersom [% c.cobrand.council_name %] inte är ansvarig för den här typen av
+rapporter, så kommer rapporten istället att skickas till [% report.body %].
+[% END %]
+  </p>
+  <p style="margin: 20px auto; text-align: center">
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.url %]">Visa min rapport</a>
+  </p>
+  [% end_padded_box %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

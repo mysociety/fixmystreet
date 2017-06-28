@@ -193,6 +193,7 @@ sub _generate_service_request_description {
             $description = "title: " . $problem->title . "\n\n$description";
         }
     } elsif ($problem->cobrand eq 'fixamingata') {
+        $description .= "Titel: " . $problem->title . "\n\n";
         $description .= "Beskrivning: " . $problem->detail . "\n\n";
         $description .= "Länk till ärendet: " . $extra->{url} . "\n\n";
         $description .= "Skickad via FixaMinGata\n";

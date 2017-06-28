@@ -1,0 +1,21 @@
+[%
+
+email_summary = "Klicka på den här länken för att ändra din FixaMinGata-epostadress";
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Ändra din&nbsp;FixaMinGata-epostadress</h1>
+  <p style="[% p_style %]">Klicka på länken nedan för att bekräfta att du vill uppdatera din epostadress på FixaMinGata.</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">Ändra min epostadress</a>
+  </p>
+  <p style="[% p_style %]">Om du inte vill ändra din epostadress så behöver du inte göra något.</p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

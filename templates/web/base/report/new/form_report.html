@@ -22,6 +22,8 @@
 [% END %]
     <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('10 inch pothole on Example St, near post box') %]" required>
 
+[% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
+
 [% IF c.cobrand.allow_photo_upload %]
     <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
     <label for="form_photo">

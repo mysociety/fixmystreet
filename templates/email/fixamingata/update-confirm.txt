@@ -2,7 +2,7 @@ Subject: Bekräfta din uppdatering på [% INCLUDE 'site-name.txt' | trim %]
 
 Hej [% update.name %],
 
-vänligen klicka på länken nedan för att bekräfta den uppdatering du
+Vänligen klicka på länken nedan för att bekräfta den uppdatering du
 just lämnade:
 
 [% token_url %]

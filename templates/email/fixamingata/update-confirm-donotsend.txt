@@ -1,0 +1,2 @@
+Notera att vi inte skickar uppdateringar till [% update.problem.body %] - endast
+användare som prenumererar på uppdateringar i ärendet kommer att se ditt inlägg.

@@ -677,6 +677,8 @@ subtest 'check FixaMinGata' => sub {
     my $results = make_service_req( $problem, $extra, $problem->category, '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>' );
     is $results->{ res }, 248, 'got request id';
     my $description = <<EOT;
+Titel: a problem
+
 Beskrivning: MØØse
 
 Länk till ärendet: http://example.com/report/1

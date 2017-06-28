@@ -1,0 +1,30 @@
+[%
+
+title = report.title | html;
+email_summary = "Har du en minut över? Informera oss om vad som hände med din FixaMinGata-rapport om ${ title }.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">Har ditt problem blivit&nbsp;fixat?</h1>
+  <p style="[% p_style %]">[% created %] sedan lämnade du en rapport på FixaMinGata.</p>
+  <p style="[% p_style %]">För att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde informera oss om huruvida problemet har blivit fixat än:</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% fixed_button_style %]" href="[% url %]">Fixat</a>
+    <a style="[% notfixed_button_style %]" href="[% url %]">Ej fixat</a>
+  </p>
+  <p style="[% p_style %]">Tack! Din feedback är värdefull.</p>
+  [% end_padded_box %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% title %]</h2>
+    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

@@ -1,0 +1,15 @@
+Subject: Din uppdatering har loggats
+
+Hej [% update.name %],
+
+Din uppdatering har blivit loggad på [% site_name %]:
+
+[% cobrand.base_url_for_report(problem) %][% problem.url %]#update_[% update.id %]
+
+Din uppdatering:
+
+[% update.text %]
+
+[% INCLUDE 'signature.txt' %]
+
+Det går inte att svara på detta mail.

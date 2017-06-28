@@ -1,8 +1,0 @@
-<ul class="plain-list">
-[% IF all_councils.items.first > 0 %]
-    <li style="margin-bottom: 0em;">[% id = all_councils.items.first;
-           tprintf("Kom ihåg att FixaMinGata primärt är avsett för att rapportera fysiska problem som kan åtgärdas. Om ditt problem inte lämpar sig för att rapportera via den här webbsidan kan du kontakta din kommun direkt via <a href='%s'>deras webbsida</a>.", all_body_urls.$id); %]</li>
-[% ELSE %]
-    <li style="margin-bottom: 0em;">[% loc("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website.") %]</li>
-[% END %]
-</ul>

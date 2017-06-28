@@ -1,0 +1,21 @@
+[%
+
+email_summary = "Klicka på knappen för att bekräfta din e-postadress och logga in på FixaMinGata";
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Välkommen till FixaMinGata!</h1>
+  <p style="[% p_style %]">För att bekräfta din epostadress måste du nu klicka på knappen nedan.</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">Bekräfta min epostadress</a>
+  </p>
+  <p style="[% p_style %]">Du kommer sedan att kunna se dina rapporter och hantera dem via sajten.</p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

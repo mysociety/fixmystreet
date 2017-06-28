@@ -1,0 +1,14 @@
+[% FOR update IN data %]
+    <div style="[% list_item_style %]">
+    [%~ IF update.item_photo %]
+      <a href="[% problem_url %]">
+        <img style="[% list_item_photo_style %]" src="[% inline_image(update.get_first_image_fp) %]" alt="">
+      </a>
+    [%~ END %]
+      <p style="[% list_item_p_style %]">&ldquo;[% update.item_text | html %]&rdquo;</p>
+      <p style="[% list_item_date_style %]">
+        [%~ update.item_name | html IF update.item_name AND NOT update.item_anonymous -%]
+        [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
+      </p>
+    </div>
+[% END %]

@@ -1,0 +1,21 @@
+[%
+
+email_summary = "Bekräfta din bevakning på FixaMinGata";
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Bekräfta din bevakning på&nbsp;FixaMinGata</h1>
+  <p style="[% p_style %]">Vänligen klicka på knappen nedan för att bekräfta din prenumerationsbevakning på FixaMinGata:</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Aktivera bevakning</a>
+  </p>
+  <p style="[% p_style %]">Om du inte vill aktivera din bevakning så behöver du inte göra något.</p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

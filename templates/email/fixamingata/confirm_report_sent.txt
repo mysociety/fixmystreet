@@ -1,0 +1,23 @@
+Subject: [% site_name %] Rapport skickad: [% title %]
+
+Hej,
+
+Tack för att du använder [% site_name %] för att skicka din rapport
+"[% title %]".
+
+Din rapport har nu skickats till [% bodies_name %].
+
+Din rapport är också tillgänglig på [% url %], där andra kan läsa eller
+diskutera kring rapporten.
+
+Du kan lämna uppdateringar på ovanstående sida, men dessa kommer inte att
+skickas till kommunen.
+
+Om du vill skicka en uppdatering till din kommun, gör då detta då de har
+återkopplat till dig, så att du kan svara direkt till kommunen.
+
+Lycka till med att få ditt problem fixat!
+
+[% signature %]
+
+Det går inte att svara på detta mail.

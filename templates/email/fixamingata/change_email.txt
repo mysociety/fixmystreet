@@ -1,0 +1,10 @@
+Subject: Uppdatera din e-postadress på [% site_name %]
+
+Klicka på länken nedan för att bekräfta att du vill uppdatera din
+e-postadress på [% site_name %].
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+[% INCLUDE 'signature.txt' %]
+
+Det går inte att svara på detta mail.

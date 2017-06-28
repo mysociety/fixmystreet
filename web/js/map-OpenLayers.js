@@ -570,7 +570,8 @@ var fixmystreet = fixmystreet || {};
                 'Show pins', 'Hide pins',
                 'Dangos pinnau', 'Cuddio pinnau',
                 "Vis nåler", "Skjul nåler",
-                "Zeige Stecknadeln", "Stecknadeln ausblenden"
+                "Zeige Stecknadeln", "Stecknadeln ausblenden",
+                'Visa kartnålar', 'Göm kartnålar'
             ];
             for (var i=0; i<showhide.length; i+=2) {
                 if (this.innerHTML == showhide[i]) {

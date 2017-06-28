@@ -1,9 +1,9 @@
-Subject: Bekräfta din bevakning på [% INCLUDE 'site-name.txt' | trim %]
+Subject: Bekräfta din bevakning på FixaMinGata
 
 Hej,
 
-vänligen klicka på länken nedan för att bekräfta den bevakning du
-just valde att prenumerera till på [% INCLUDE 'site-name.txt' | trim %]:
+Vänligen klicka på länken nedan för att bekräfta den bevakning du
+just valde att prenumerera till på FixaMinGata:
 
     [% token_url %]
 

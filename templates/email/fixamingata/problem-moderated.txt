@@ -1,0 +1,33 @@
+Subject: Din rapport har blivit modererad
+
+Hej [% user.name %],
+
+Din rapport på [% site_name %] har blivit modererad.
+
+[% IF types == 'hide' -%]
+Din rapport har dolts från sajten.
+[% ELSE %]
+Följande information har ändrats:
+
+	[% types %]
+
+[% END -%]
+
+Din rapport har titeln:
+
+[% problem.moderation_original_data.title %]
+
+Du har angivit följande information om problemet:
+
+[% problem.moderation_original_data.detail %]
+
+[% UNLESS types == 'hide' %]
+Du kan se rapporten på [% report_uri %]
+[% END %]
+
+Om du inte tycker att rapporten skulle ha blivit modererad kan du kontakta
+FixaMinGata:s support på [% report_complain_uri %]
+
+[% INCLUDE 'signature.txt' %]
+
+Det går inte att svara på detta mail.

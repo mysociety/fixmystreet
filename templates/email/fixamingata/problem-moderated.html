@@ -1,0 +1,32 @@
+[%
+
+email_summary = "Din rapport på " _ site_name _ " har blivit modererad.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">Din rapport har blivit&nbsp;modererad</h1>
+[% IF types == 'hide' -%]
+  <p style="[% p_style %]">Din rapport har dolts från sajten.</p>
+[% ELSE %]
+  <p style="[% p_style %]">Följande information har ändrats: <strong>[% types %]</strong></p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% report_uri %]">Visa min rapport</a>
+  </p>
+[% END -%]
+  <p style="[% p_style %]">Om du inte tycker att rapporten skulle ha blivit modererad kan du
+kontakta FixaMinGata:s support på <a href="[% report_complain_uri %]">[% report_complain_uri %]</a></p>
+  [% end_padded_box %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = problem %]
+    <h2 style="[% h2_style %]">[% problem.moderation_original_data.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% problem.moderation_original_data.detail | html %]</p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]
