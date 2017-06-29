@@ -532,7 +532,6 @@ technical information, see
     with an appropriate translation in a different language. This presupposes
     the text has been translated &mdash; the alternative translations are 
     storied in <code>.po</code> files.
-    </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
@@ -933,6 +932,7 @@ technical information, see
       example, with caching disabled, and debugging switched off. Make sure you set
       <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
       to <code>0</code>.
+    </p>
     <p>
       If you have a staging server, the system environment of your staging and
       production servers should be identical.
