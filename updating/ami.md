@@ -39,6 +39,7 @@ After updating the code, you should run the following commands to update any
 needed dependencies and any schema changes to your database. It's a good idea
 to take a backup of your database first.
 
+    fms@ip-10-58-191-98:~/fixmystreet$ git submodule update
     fms@ip-10-58-191-98:~/fixmystreet$ bin/install_perl_modules
     fms@ip-10-58-191-98:~/fixmystreet$ bin/update-schema --commit
     fms@ip-10-58-191-98:~/fixmystreet$ bin/make-css

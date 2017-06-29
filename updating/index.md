@@ -51,6 +51,7 @@ needed dependencies and any schema changes to your database. It's a good idea
 to take a backup of your database first.
 
 {% highlight bash %}
+git submodule update
 bin/install_perl_modules
 bin/update-schema --commit
 bin/make_css
