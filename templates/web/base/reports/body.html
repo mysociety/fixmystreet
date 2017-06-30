@@ -37,13 +37,16 @@
 <div id="map_sidebar">
     <div id="side">
 
-<h1 id="reports_heading">
-    [% IF ward %]
-    [% ward.name %]<span>, </span><a href="[% body_url %]">[% body.name %]</a>
+  [% IF ward %]
+    <h1 id="reports_heading">
+        [% ward.name %]
+    </h1>
+    <a href="[% body_url %]">[% body.name %]</a>
     [% ELSE %]
-    [% body.name %]
-    [% END %]
-</h1>
+    <h1 id="reports_heading">
+        [% body.name %]
+    </h1>
+  [% END %]
 
 [% IF c.cobrand.moniker == 'hart' %]
     [% INCLUDE '_hart_hants_note.html' %]
