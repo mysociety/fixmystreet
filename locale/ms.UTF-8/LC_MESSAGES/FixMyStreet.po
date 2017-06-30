@@ -1883,9 +1883,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Dipostkan oleh %s pada %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4880,15 +4879,3 @@ msgstr[0] "kemaskini yang lepas %s"
 msgid "report"
 msgid_plural "reports"
 msgstr[0] "Semua laporan"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Semua Laporan"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Kategori baru"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "kemaskini yang lepas %s"

@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2017-03-30 17:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2016\n"
+"Last-Translator: Daniele Faraglia <daniele.faraglia@gmail.com>, 2017\n"
 "Language-Team: Italian (https://www.transifex.com/mysociety/teams/12067/it/)\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -126,12 +126,12 @@ msgstr "(Email nella tabella degli abusi)"
 #: templates/web/zurich/admin/report_edit-sdm.html:62
 #: templates/web/zurich/admin/report_edit.html:90
 msgid "(No name)"
-msgstr ""
+msgstr "(Nessun nome)"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:69
 #: templates/web/zurich/admin/report_edit.html:97
 msgid "(No phone number)"
-msgstr ""
+msgstr "(Nessun recapito)"
 
 #: templates/web/base/alert/_list.html:25
 msgid "(a default distance which covers roughly 200,000 people)"
@@ -178,7 +178,7 @@ msgstr "-- Scegli un tipo di proprietà --"
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
-msgstr ""
+msgstr "--Scegli un template--"
 
 #: templates/web/base/report/new/form_report.html:23
 msgid "10 inch pothole on Example St, near post box"
@@ -350,7 +350,7 @@ msgstr ""
 #: templates/web/base/admin/category-multiselect.html:5
 #: templates/web/base/admin/responsepriorities/list.html:19
 msgid "All categories"
-msgstr ""
+msgstr "Tutte le categorie"
 
 #: templates/web/base/main_nav_items.html:0
 #: templates/web/base/main_nav_items.html:27
@@ -459,7 +459,7 @@ msgstr ""
 #: templates/web/base/admin/report_edit.html:127
 #: templates/web/base/report/_inspect.html:47
 msgid "Available categories"
-msgstr ""
+msgstr "Categorie disponibili"
 
 #: templates/web/base/dashboard/index.html:109
 msgid "Average time to council marking fixed (days)"
@@ -1875,9 +1875,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Segnalato da %s al %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -2094,8 +2093,9 @@ msgstr ""
 #: templates/web/base/report/inspect/state_groups_select.html:8
 #: templates/web/base/report/update/form_update.html:41
 #: templates/web/base/report/update/form_update.html:44
+#, fuzzy
 msgid "No further action"
-msgstr ""
+msgstr "Nessun ulteriore aggiornamento"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
@@ -3316,7 +3316,7 @@ msgstr ""
 #: templates/web/base/report/update.html:20
 #, fuzzy
 msgid "Show Photo?"
-msgstr "Pubblica la foto"
+msgstr "Foto"
 
 #: templates/web/base/report/new/form_user_loggedin.html:54
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:22
@@ -4884,19 +4884,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "Tutte le segnalazioni"
 msgstr[1] "Tutte le segnalazioni"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Tutte le segnalazioni"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Crea una categoria"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Segnalato da %s al %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "ultimo aggiornamento %s"

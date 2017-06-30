@@ -1875,9 +1875,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Adroddwyd gan %s am %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4916,23 +4915,3 @@ msgstr[0] "Adroddiadau"
 msgstr[1] "Adroddiadau"
 msgstr[2] "Adroddiadau"
 msgstr[3] "Adroddiadau"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Pob adroddiad"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "URL allanol"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Creu categori"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Adroddwyd gan %s am %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "diweddarwyd ddiwethaf %s"

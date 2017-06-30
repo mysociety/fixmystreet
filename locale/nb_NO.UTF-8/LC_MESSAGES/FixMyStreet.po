@@ -242,7 +242,7 @@ msgstr "<strong>Merk:</strong> Denne rapporten er sendt videre for å få noe ti
 
 #: templates/web/base/report/_inspect.html:162
 msgid "<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on."
-msgstr ""
+msgstr "<strong>Merk:</strong> Denne rapporten har ikke blitt sent videre for handling. Det er ikke sikkert eventuelle endringer vil bli levert."
 
 #: templates/web/base/auth/general.html:80
 #: templates/web/base/report/new/form_user_loggedout_password.html:3
@@ -288,7 +288,7 @@ msgstr "Legg til ny kategori"
 #: templates/web/base/report/_main.html:19
 #: templates/web/base/report/_main.html:30
 msgid "Add to shortlist"
-msgstr ""
+msgstr "Legg i hurtiglisten"
 
 #: templates/web/base/admin/user_edit.html:4
 #: templates/web/base/admin/users.html:48
@@ -314,7 +314,7 @@ msgstr "La til %s"
 
 #: templates/web/base/report/_main.html:145
 msgid "Adding this report to your shortlist will remove it from %s’s shortlist."
-msgstr ""
+msgstr "Ved å legge rapporten i hurtiglisten din vil fjerne den fra hurtiglisten til %s"
 
 #: templates/web/base/main_nav_items.html:47
 msgid "Admin"
@@ -417,7 +417,7 @@ msgstr "Område:"
 #: templates/web/base/admin/bodies.html:19
 #: templates/web/base/admin/body.html:64
 msgid "As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."
-msgstr "Da reproduksjonsstedet og %s ikke stemmer, vil meldingen som er laget her, bli sendt til problemrapportøren, og ikke til kontakten som er gitt for meldingformålet."
+msgstr "Da dette er en reproduksjonsside og %s er usann, vil meldinger som blir laget her, bli sendt til problemrapportøren, og ikke til kontakten som er gitt for meldingformålet."
 
 #: templates/web/zurich/admin/report_edit.html:209
 msgid "Assign to competent body:"
@@ -455,7 +455,7 @@ msgstr "For øyeblikket er det kun søk etter og å se på rapporter som fungere
 #: templates/web/base/admin/user-form.html:78
 #: templates/web/base/admin/user-form.html:79
 msgid "Authorised staff users can be associated with the categories in which they operate."
-msgstr ""
+msgstr "Autorisert personale kan bli assosiert med en kategori hvor de operer."
 
 #: templates/web/base/admin/template_edit.html:22
 msgid "Auto-response:"
@@ -1035,7 +1035,7 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:16
 #: templates/web/base/report/_item.html:81
 msgid "Easting/Northing:"
-msgstr ""
+msgstr "Øst/Nord:"
 
 #: templates/web/base/admin/list_updates.html:42
 #: templates/web/base/admin/problem_row.html:41
@@ -1260,7 +1260,7 @@ msgstr "Ekstern URL"
 
 #: templates/web/base/admin/report_edit.html:99
 msgid "External body"
-msgstr ""
+msgstr "Ekstern administrasjon"
 
 #: templates/web/base/admin/report_edit.html:101
 msgid "External team"
@@ -1341,7 +1341,7 @@ msgstr "Flag bruker"
 #: perllib/FixMyStreet/Cobrand/Default.pm:645
 #: templates/web/base/admin/users.html:20
 msgid "Flagged"
-msgstr "Flagget:"
+msgstr "Flagget"
 
 #: templates/web/base/admin/flagged.html:1
 msgid "Flagged reports and users"
@@ -1424,7 +1424,7 @@ msgstr "Glad for å høre at det er i orden!"
 #: templates/web/base/reports/_list-filters.html:53
 #: templates/web/zurich/admin/stats.html:26
 msgid "Go"
-msgstr "Søk"
+msgstr "Fortsett"
 
 #: templates/web/base/admin/report_edit.html:95
 msgid "Going to send questionnaire?"
@@ -1460,7 +1460,7 @@ msgstr "Hjelp"
 #: templates/web/base/report/new/category_extras.html:13
 #: templates/web/base/report/new/category_extras.html:14
 msgid "Help <strong>%s</strong> resolve your problem quicker, by providing some extra detail. This extra information will not be published online."
-msgstr ""
+msgstr "Hjelp <strong>%s</strong> å løse problemet ditt fortere, ved å oppgi noen ekstra detaljer. Denne ekstra informasjonen vil ikke bli publisert på nettsiden."
 
 #: templates/web/base/alert/_list.html:9
 msgid "Here are the types of local problem alerts for &lsquo;%s&rsquo;."
@@ -1571,12 +1571,12 @@ msgstr "Hvis du kun ønsker at denne prioriteten skal være et valg for spesifik
 
 #: templates/web/base/admin/template_edit.html:29
 msgid "If you only want this template to be an option for specific categories, pick them here. By default they will show for all categories."
-msgstr ""
+msgstr "Hvis du vil at denne malen skal være et valg for spesielle kategorier, velg dem her. Som standard vil de vises for alle kategorier."
 
 #: templates/web/base/report/new/top_message_none.html:10
 #: templates/web/base/report/new/top_message_none.html:9
 msgid "If you submit a problem here the problem will <strong>not</strong> be reported to the council."
-msgstr ""
+msgstr "Hvis du legger inn en rapport her vil <strong>ikke</strong> rapporten bli sendt til administrasjonen."
 
 #: templates/web/base/admin/template_edit.html:36
 msgid "If you want to use this template to prefill the update field when changing a report&rsquo;s state, select the state here."
@@ -1781,7 +1781,7 @@ msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:50
 msgid "Least recently updated"
-msgstr ""
+msgstr "Minst nylig oppdatert"
 
 #: templates/web/base/admin/body-form.html:127
 msgid "Leave this blank if all reports to this body should be sent using the same send method (e.g., \"%s\")."
@@ -1848,7 +1848,7 @@ msgstr "KART"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:712
 msgid "Manage shortlist"
-msgstr ""
+msgstr "Administrer hurtigliste"
 
 #: templates/web/base/reports/_list-filters.html:45
 msgid "Manual order"
@@ -1892,7 +1892,7 @@ msgstr "Melding til ekstern administrasjon:"
 
 #: templates/web/base/admin/report_edit.html:71
 msgid "Missing bodies:"
-msgstr ""
+msgstr "Manglende administrasjoner:"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:437
 msgid "Missing jurisdiction_id"
@@ -2179,6 +2179,8 @@ msgid ""
 "Normal (public) users should not be associated with any <strong>area</strong>.<br>\n"
 "                  Authorised staff users can be associated with the area in which they operate."
 msgstr ""
+"Vanlige (offentlige) brukere bør ikke være tilknyttet noen <strong>områder</strong>.<br>\n"
+"Autorisert personale kan være assosiert med området de operer i."
 
 #: templates/web/base/admin/user-form.html:28
 #: templates/web/base/admin/user-form.html:29
@@ -2321,7 +2323,7 @@ msgstr "Open311-API for mySocietys FiksGataMi-tjener"
 
 #: templates/web/base/admin/open311-form-fields.html:34
 msgid "Open311 Jurisdiction"
-msgstr ""
+msgstr "Open311 Jurisdiksjon"
 
 #: templates/web/base/open311/index.html:72
 msgid "Open311 initiative web page"
@@ -2523,7 +2525,7 @@ msgstr "Vennligst skriv et navn"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:478
 msgid "Please enter a name for this body"
-msgstr ""
+msgstr "Vennligst legg inn et navn for administrasjonen"
 
 #: templates/web/base/auth/change_password.html:22
 #: templates/web/base/auth/change_password.html:25
@@ -2652,7 +2654,7 @@ msgstr "Vennligst merk deg:"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:358
 msgid "Please provide a public update for this report."
-msgstr ""
+msgstr "Vennligst bidra med en offentlig oppdatering for denne rapporten."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:242
 msgid "Please provide some explanation as to why you're reopening this report"
@@ -2841,7 +2843,7 @@ msgstr "Bidra med en oppdatering"
 
 #: templates/web/base/report/update/form_name.html:9
 msgid "Provide update as"
-msgstr ""
+msgstr "Legg inn oppdatering som"
 
 #: templates/web/base/auth/general.html:112
 msgid "Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
@@ -2949,7 +2951,7 @@ msgstr "Motta e-post når det er oppdateringer på dette problemet"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:801
 msgid "Received by %s moments later"
-msgstr ""
+msgstr "Mottatt av %s øyeblikk senere"
 
 #. ("%s is the site name")
 #: templates/web/base/around/display_location.html:0
@@ -2967,7 +2969,7 @@ msgstr "Nylig meldte problemer"
 
 #: templates/web/base/reports/_list-filters.html:49
 msgid "Recently updated"
-msgstr ""
+msgstr "Nylig oppdatert"
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
@@ -2983,11 +2985,11 @@ msgstr "Fjern flagg"
 #: templates/web/base/report/_main.html:18
 #: templates/web/base/report/_main.html:26
 msgid "Remove from shortlist"
-msgstr ""
+msgstr "Fjern fra hurtiglisten"
 
 #: templates/web/base/report/display_tools.html:6
 msgid "Remove from site"
-msgstr ""
+msgstr "Fjern fra nettsiden"
 
 #: templates/web/base/admin/report_edit.html:166
 #: templates/web/base/admin/update_edit.html:69
@@ -3126,7 +3128,7 @@ msgstr "Rapporter som venter på godkjenning"
 
 #: templates/web/base/admin/user-form.html:107
 msgid "Reports made by trusted users will be sent to the responsible body without being inspected first."
-msgstr ""
+msgstr "Rapporter laget av klarerte brukere vil bli sendt til den ansvarlige administrasjonen uten å bli sjekket først."
 
 #: templates/web/zurich/admin/index-sdm.html:10
 msgid "Reports published"
@@ -3139,15 +3141,15 @@ msgstr "Rapporter et problem"
 
 #: templates/web/base/admin/index.html:56
 msgid "Reports waiting to be sent"
-msgstr ""
+msgstr "Usendte rapporter"
 
 #: templates/web/base/admin/contact-form.html:89
 msgid "Reports will automatically be sent without needing to be inspected if the user's <strong>reputation</strong> is at or above this value. Set to <strong>0</strong> if all reports must be inspected regardless."
-msgstr ""
+msgstr "Rapporter vil automatisk bli send uten å måtte sjekkes hvis brukerens <strong>omdømme</strong> er på eller over denne verdien. Sett den til <strong>0</strong> hvis alle rapporter må sjekkes uansett."
 
 #: templates/web/base/admin/contact-form.html:94
 msgid "Reputation threshold"
-msgstr ""
+msgstr "Omdømme terskel"
 
 #: templates/web/base/admin/report_edit.html:84
 msgid "Resend report"
@@ -3155,23 +3157,23 @@ msgstr "Send rapport på nytt"
 
 #: templates/web/base/admin/responsepriorities/index.html:1
 msgid "Response Priorities"
-msgstr ""
+msgstr "Responsprioriteter"
 
 #: templates/web/base/admin/responsepriorities/list.html:1
 msgid "Response Priorities for %s"
-msgstr ""
+msgstr "Responsprioriteter for %s"
 
 #: templates/web/base/admin/responsepriorities/edit.html:1
 msgid "Response Priority for %s"
-msgstr ""
+msgstr "Responsprioritet for %s"
 
 #: templates/web/base/admin/template_edit.html:1
 msgid "Response Template for %s"
-msgstr ""
+msgstr "Responsmal for %s"
 
 #: templates/web/base/admin/templates_index.html:1
 msgid "Response Templates"
-msgstr ""
+msgstr "Responsmaler"
 
 #: templates/web/base/admin/templates.html:1
 #: templates/web/base/admin/templates.html:4
@@ -3250,7 +3252,7 @@ msgstr "Lagre endringer"
 
 #: templates/web/base/report/_inspect.html:148
 msgid "Save with a public update"
-msgstr ""
+msgstr "Lagre med en offentlig oppdatering"
 
 #. ('This is followed by a progress count, e.g. 3/5')
 #. ("This is followed by a progress count, e.g. 3/5")
@@ -3289,7 +3291,7 @@ msgstr "Søket fant ingen brukere."
 #: templates/web/base/report/new/councils_text_private.html:7
 #: templates/web/base/report/new/form_user.html:5
 msgid "See our privacy policy"
-msgstr ""
+msgstr "Se personvernreglene våre"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:715
 #, fuzzy
@@ -3341,7 +3343,7 @@ msgstr "Tjeneste:"
 
 #: templates/web/base/report/_inspect.html:31
 msgid "Set to my current location"
-msgstr ""
+msgstr "Sett til nåværende plassering"
 
 #: templates/web/base/report/display_tools.html:17
 msgid "Share"
@@ -3352,18 +3354,18 @@ msgstr "Dele"
 #: templates/web/base/report/_main.html:21
 #: templates/web/base/report/_main.html:29
 msgid "Shortlist"
-msgstr ""
+msgstr "Hurtigliste"
 
 #: templates/web/base/report/_main.html:134
 #: templates/web/base/report/_main.html:20
 #: templates/web/base/report/_main.html:25
 #: templates/web/base/reports/_list-filters.html:9
 msgid "Shortlisted"
-msgstr ""
+msgstr "I hurtiglisten"
 
 #: templates/web/base/report/_main.html:144
 msgid "Shortlisted by %s"
-msgstr ""
+msgstr "I hurtiglisten til %s"
 
 #: templates/web/base/report/update.html:20
 #, fuzzy
@@ -3491,15 +3493,15 @@ msgstr "Beklager, du mangler rettigheter til å gjøre dette."
 
 #: templates/web/base/reports/_list-filters.html:42
 msgid "Sort by"
-msgstr ""
+msgstr "Sorter etter"
 
 #: templates/web/base/admin/user-form.html:47
 msgid "Staff users have permission to log in to the admin."
-msgstr ""
+msgstr "Personale har mulighet til å logge admingrensesnittet."
 
 #: templates/web/base/admin/user-form.html:50
 msgid "Staff:"
-msgstr ""
+msgstr "Personale:"
 
 #: templates/web/base/admin/stats.html:71
 msgid "Start Date:"
@@ -3636,11 +3638,11 @@ msgstr "Oppsummeringsrapporter"
 
 #: templates/web/base/admin/user-form.html:133
 msgid "Superuser:"
-msgstr ""
+msgstr "Superbruker:"
 
 #: templates/web/base/admin/user-form.html:130
 msgid "Superusers have permission to perform <strong>all actions</strong> within the admin."
-msgstr ""
+msgstr "Superbrukere har tilgang til å utføre <strong>alle handlinger</strong> i admingrensesnittet."
 
 #: templates/web/base/admin/questionnaire.html:1
 #: templates/web/base/admin/stats.html:56
@@ -3927,21 +3929,21 @@ msgstr ""
 #: templates/web/base/report/new/councils_text.html:3
 #: templates/web/base/report/new/councils_text.html:4
 msgid "These will be published online for others to see, in accordance with our <a href=\"%s\">privacy policy</a>."
-msgstr ""
+msgstr "Disse vil bli publisert på nettsiden tilgjengelig for andre, i samsvar med <a href=\"/faq#privacy\">personvernreglene</a> våre."
 
 #: templates/web/base/report/new/councils_text_all.html:4
 #: templates/web/base/report/new/councils_text_all.html:6
 msgid "These will be sent to <strong>%s</strong> and also published online for others to see, in accordance with our <a href=\"%s\">privacy policy</a>."
-msgstr ""
+msgstr "Disse vil bli sent til <strong>%s</strong> og vil også bli publisert på nettsiden tilgjengelig for andre, i samsvar med <a href=\"/faq#privacy\">personvernreglene</a> våre."
 
 #: templates/web/base/report/new/councils_text_private.html:5
 #: templates/web/base/report/new/form_user.html:4
 msgid "These will be sent to the council, but will never be shown online."
-msgstr ""
+msgstr "Disse vil bli sendt til administrasjonen, men vil aldri bli vist på nettsiden."
 
 #: templates/web/base/report/new/councils_text_private.html:3
 msgid "These will never be shown online."
-msgstr ""
+msgstr "Disse vil aldri bli vist på nettsiden."
 
 #: templates/web/base/open311/index.html:69
 msgid "This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future."
@@ -3995,7 +3997,7 @@ msgstr "Dette er en opplisting av alle problemene i denne tjenesten."
 
 #: templates/web/base/report/new/form_report.html:56
 msgid "This pothole has been here for two months and…"
-msgstr ""
+msgstr "Det har vært et hull i veien i to måneder og..."
 
 #: templates/web/base/report/update/form_update.html:63
 msgid "This problem has been fixed"
@@ -4109,19 +4111,19 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:124
 #: templates/web/base/report/_item.html:102
 msgid "Traffic management required?"
-msgstr ""
+msgstr "Trafikkstyring kreves?"
 
 #: templates/web/base/admin/user-form.html:111
 msgid "Trusted by bodies:"
-msgstr ""
+msgstr "Klarert av administrasjoner:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:721
 msgid "Trusted to make reports that don't need to be inspected"
-msgstr ""
+msgstr "Klarert til å lage rapporter som ikke må sjekkes"
 
 #: templates/web/base/admin/user-form.html:119
 msgid "Trusted:"
-msgstr ""
+msgstr "Klarert:"
 
 #: templates/web/base/js/translation_strings.html:29
 msgid "Try again"
@@ -4166,8 +4168,9 @@ msgid "Unknown problem ID"
 msgstr "Ukjent problem-Id"
 
 #: templates/web/base/reports/_list-filters.html:10
+#, fuzzy
 msgid "Unshortlisted"
-msgstr ""
+msgstr "I hurtiglisten"
 
 #: templates/web/base/report/_item.html:24
 msgid "Up one"
@@ -4261,7 +4264,7 @@ msgstr ""
 
 #: templates/web/base/admin/contact-form.html:124
 msgid "Use this field to record details that are only displayed in the admin. Input is not shown publicly, and is not sent to the body."
-msgstr ""
+msgstr "Bruk dette feltet for å legge inn detaljer som kun blir vist i admingrensesnittet, og ikke blir sendt til administrasjonen."
 
 #: templates/web/zurich/admin/report_edit-sdm.html:50
 #: templates/web/zurich/admin/report_edit.html:69
@@ -4299,7 +4302,7 @@ msgstr "Brukere"
 
 #: templates/web/base/admin/user-form.html:141
 msgid "Users can perform the following actions within their assigned body or area."
-msgstr ""
+msgstr "Brukere kan gjøre følgende handlinger innenfor deres tildelte administrasjon eller område"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:400
 #: perllib/FixMyStreet/App/Controller/Admin.pm:430
@@ -4348,7 +4351,7 @@ msgstr "Vi fant mer en ett treff for den plassen.  Vi viser opp til ti treff, s�
 
 #: templates/web/base/around/lookup_by_ref.html:5
 msgid "We found more than one match for that problem reference:"
-msgstr ""
+msgstr "Vi fant mer enn et treff for problemreferansen:"
 
 #: templates/web/base/auth/general.html:6
 #: templates/web/base/report/display.html:35
@@ -4564,7 +4567,7 @@ msgstr "Du har ikke laget en rapport ennå. <a href=\"%s\">Rapporter et problem 
 
 #: templates/web/base/my/planned.html:21
 msgid "You haven&rsquo;t shortlisted any reports yet."
-msgstr ""
+msgstr "Du har ikke noen rapporter i hurtiglisten din enda."
 
 #: templates/web/base/admin/index.html:19
 msgid "You need to <a href=\"%s\">add some bodies</a> (such as councils or departments) before any reports can be sent."
@@ -4653,7 +4656,7 @@ msgstr "Dine oppdateringer"
 #: templates/web/base/my/planned.html:0 templates/web/base/my/planned.html:18
 #: templates/web/base/my/planned.html:5
 msgid "Your shortlist"
-msgstr ""
+msgstr "Din hurtigliste"
 
 #: templates/web/base/js/translation_strings.html:63
 msgid "Your update has been saved offline for submission when back online."
@@ -4969,29 +4972,11 @@ msgid_plural "reports"
 msgstr[0] "Rapport"
 msgstr[1] "Rapport"
 
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Alle kategorier"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "Ekstern ID"
-
-#, fuzzy
-#~ msgid "Inspector:"
-#~ msgstr "Trenger inspeksjon"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Endre rapportkategori"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Publisert av %s %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "sist oppdatert %s"
-
 #~ msgid "Cancel"
 #~ msgstr "Avbryt"
+
+#~ msgid "Reports from users with high enough reputation will be sent immediately without requiring inspection. Each category's threshold can be managed on its edit page. Users earn reputation when a report they have made is marked as inspected by inspectors."
+#~ msgstr "Rapporter fra brukere med høyt nok omdømme vil bli sendt direkte uten å måtte sjekkes. Hver kategori har en terskel som kan endres. Brukere tjener omdømme når en rapport de har laget er merket som sjekket av en inspektør."
+
+#~ msgid "Reputation:"
+#~ msgstr "Omdømme:"

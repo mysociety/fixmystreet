@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2017-03-30 17:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Paulius Zaleckas <paulius.zaleckas@gmail.com>, 2017\n"
+"Last-Translator: Paulius Zaleckas <paulius.zaleckas@gmail.com>, 2016\n"
 "Language-Team: Lithuanian (Lithuania) (https://www.transifex.com/mysociety/teams/12067/lt_LT/)\n"
 "Language: lt_LT\n"
 "MIME-Version: 1.0\n"
@@ -156,7 +156,7 @@ msgstr "(pavyzdžiui, grafitis, šiukšlės, duobė kelyje ar gatvės apšvietim
 
 #: templates/web/base/report/_item.html:68
 msgid "(not sent to council)"
-msgstr "(neišsiųsta savivaldybei)"
+msgstr "(neišsiųsta tarybai)"
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:59
 msgid "(optional)"
@@ -798,7 +798,7 @@ msgstr "Vieta nenustatyta"
 
 #: templates/web/base/admin/list_updates.html:9
 msgid "Council"
-msgstr "Savivaldybė"
+msgstr "Taryba"
 
 #: templates/web/base/admin/body.html:1
 #: templates/web/base/admin/category_edit.html:1
@@ -837,7 +837,7 @@ msgstr ""
 
 #: templates/web/base/admin/stats.html:92
 msgid "Council:"
-msgstr "Savivaldybė:"
+msgstr "Taryba:"
 
 #: templates/web/base/admin/stats.html:12
 #: templates/web/base/admin/stats.html:32
@@ -2132,8 +2132,9 @@ msgstr "Pažymėti vartotojai nerasti."
 #: templates/web/base/report/inspect/state_groups_select.html:8
 #: templates/web/base/report/update/form_update.html:41
 #: templates/web/base/report/update/form_update.html:44
+#, fuzzy
 msgid "No further action"
-msgstr ""
+msgstr "Jokių kitų atnaujinimai"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
@@ -3035,7 +3036,7 @@ msgstr ""
 #: templates/web/base/around/intro.html:1
 #: templates/web/zurich/around/intro.html:1
 msgid "Report, view, or discuss local problems"
-msgstr ""
+msgstr "Praneškite, pamatykite arba diskutuokite apie vietines problemas"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:653
 #: templates/web/base/contact/index.html:55
@@ -3359,7 +3360,7 @@ msgstr ""
 #: templates/web/base/report/update.html:20
 #, fuzzy
 msgid "Show Photo?"
-msgstr "Paskelbti nuotrauką"
+msgstr "Nuotrauka"
 
 #: templates/web/base/report/new/form_user_loggedin.html:54
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:22
@@ -4323,7 +4324,7 @@ msgstr ""
 
 #: templates/web/base/index-steps.html:11
 msgid "We send it to the council on your behalf"
-msgstr ""
+msgstr "Mes nusiūsime ją tarybai jūsų vardu"
 
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
@@ -4941,11 +4942,3 @@ msgid_plural "reports"
 msgstr[0] "Visi pranešimai"
 msgstr[1] "Visi pranešimai"
 msgstr[2] "Visi pranešimai"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Visi Pranešimai"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Sukurti kategoriją"

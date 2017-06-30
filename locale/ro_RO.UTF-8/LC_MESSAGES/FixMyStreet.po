@@ -4889,7 +4889,3 @@ msgid_plural "reports"
 msgstr[0] "Rapoartele dvs."
 msgstr[1] "Rapoartele dvs."
 msgstr[2] "Rapoartele dvs."
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Adaugă o categorie nouă"

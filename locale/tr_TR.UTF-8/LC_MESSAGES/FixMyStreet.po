@@ -1904,9 +1904,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "%s tarafından %s de bildirilmiştir"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4899,23 +4898,3 @@ msgstr[0] "son güncelleme %s"
 msgid "report"
 msgid_plural "reports"
 msgstr[0] "Bildirim"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Tüm Bildirimler"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "Harici URL "
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Kategori oluştur"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "%s tarafından %s de bildirilmiştir"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "son güncelleme %s"

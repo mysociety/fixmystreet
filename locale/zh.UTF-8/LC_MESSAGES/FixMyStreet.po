@@ -1937,9 +1937,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "由%s 的 %s 申報"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4972,23 +4971,3 @@ msgstr[0] "%s上回更新:"
 msgid "report"
 msgid_plural "reports"
 msgstr[0] "提報　"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "所有事件申報"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "外部網址"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "創建類別"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "由%s 的 %s 申報"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "%s上回更新:"

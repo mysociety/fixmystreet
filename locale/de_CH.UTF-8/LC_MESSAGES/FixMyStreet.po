@@ -1877,9 +1877,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Gemeldet von %s um %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -2095,8 +2094,9 @@ msgstr ""
 #: templates/web/base/report/inspect/state_groups_select.html:8
 #: templates/web/base/report/update/form_update.html:41
 #: templates/web/base/report/update/form_update.html:44
+#, fuzzy
 msgid "No further action"
-msgstr ""
+msgstr "Bearbeitung abschliessen"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
@@ -3317,7 +3317,7 @@ msgstr ""
 #: templates/web/base/report/update.html:20
 #, fuzzy
 msgid "Show Photo?"
-msgstr "Zeige Stecknadeln"
+msgstr "Foto"
 
 #: templates/web/base/report/new/form_user_loggedin.html:54
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:22
@@ -4884,19 +4884,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "Meldung"
 msgstr[1] "Meldung"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Alle Meldungen"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Kategorie erstellen"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Gemeldet von %s um %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "letzte Bearbeitung %s"

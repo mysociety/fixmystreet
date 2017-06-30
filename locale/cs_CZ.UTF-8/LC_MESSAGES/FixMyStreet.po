@@ -1905,9 +1905,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Nahlášeno uživatelem  %s, určeno pro %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4963,19 +4962,3 @@ msgid_plural "reports"
 msgstr[0] "Hlášení"
 msgstr[1] "Hlášení"
 msgstr[2] "Hlášení"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Všechna hlášení"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Vytvořit kategorii"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Nahlášeno uživatelem  %s, určeno pro %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "naposledy upravené %s"

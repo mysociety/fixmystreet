@@ -1937,9 +1937,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Автор обращения: %s, время отправки: %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -5022,23 +5021,3 @@ msgstr[0] "Сообщить"
 msgstr[1] "Сообщить"
 msgstr[2] "Сообщить"
 msgstr[3] "Сообщить"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Все Отчеты"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "Внешний URL"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Создать категорию"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Автор обращения: %s, время отправки: %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "последнее обновление: %s"

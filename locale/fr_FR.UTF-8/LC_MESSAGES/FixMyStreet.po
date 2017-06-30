@@ -4981,35 +4981,11 @@ msgid_plural "reports"
 msgstr[0] "Rapport"
 msgstr[1] "Rapport"
 
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Toutes catégories"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "ID externe"
-
-#, fuzzy
-#~ msgid "Inspector:"
-#~ msgstr "inspection requise"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Éditer la catégorie des rapports"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Signalé par %s à %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "dernière mise à jour %s"
+#~ msgid "Cancel"
+#~ msgstr "Annuler"
 
 #~ msgid "Reports from users with high enough reputation will be sent immediately without requiring inspection. Each category's threshold can be managed on its edit page. Users earn reputation when a report they have made is marked as inspected by inspectors."
 #~ msgstr "les rapports des utilisateurs ayant une réputation élevée seront envoyés immédiatement sans exiger l'inspection. le seuil de chaque catégorie peut être géré sur sa page d'édition. Les utilisateurs gagnent en réputation quand un rapport qu'ils ont fait est marqué comme inspectés par les inspecteurs."
 
 #~ msgid "Reputation:"
 #~ msgstr "Réputation :"
-
-#~ msgid "Cancel"
-#~ msgstr "Annuler"

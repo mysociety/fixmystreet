@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2017-03-30 17:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Khaled Saleem Baleesh <Kbaleesh@gmail.com>, 2016\n"
+"Last-Translator: Sanad Organization <ptx2017@sanad-iq.org>, 2017\n"
 "Language-Team: Arabic (https://www.transifex.com/mysociety/teams/12067/ar/)\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -194,7 +194,7 @@ msgstr "-اختر قالب---"
 
 #: templates/web/base/report/new/form_report.html:23
 msgid "10 inch pothole on Example St, near post box"
-msgstr ""
+msgstr "حفرة بعمق 10 انشات على شارع مثال قرب صندوق البريد"
 
 #: templates/web/base/dashboard/index.html:152
 msgid "14-30 days old"
@@ -249,11 +249,11 @@ msgstr "<strong>لا</strong> دعني أسجّل دخولي بالبريد"
 
 #: templates/web/base/report/_inspect.html:160
 msgid "<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on."
-msgstr ""
+msgstr "<strong>ملاحظة:</strong>  تم ارسال هذا التقرير للتطبيق. لن يتم ارسال اي تغييرات اخرى عليه."
 
 #: templates/web/base/report/_inspect.html:162
 msgid "<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on."
-msgstr ""
+msgstr "<strong>ملاحظة:</strong> لم  يتم ارسال هذا التقرير للتطبيق بعد. لن يتم ارسال اي تغييرات اخرى عليه."
 
 #: templates/web/base/auth/general.html:80
 #: templates/web/base/report/new/form_user_loggedout_password.html:3
@@ -302,7 +302,7 @@ msgstr "أضف تصنيفاً"
 #: templates/web/base/report/_main.html:19
 #: templates/web/base/report/_main.html:30
 msgid "Add to shortlist"
-msgstr ""
+msgstr "اضف للقائمة القصيرة"
 
 #: templates/web/base/admin/user_edit.html:4
 #: templates/web/base/admin/users.html:48
@@ -312,7 +312,7 @@ msgstr "إضافة مستخدم"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:730
 msgid "Add/edit problem categories"
-msgstr ""
+msgstr "اضف / عدل اصناف المشاكل"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:732
 msgid "Add/edit response priorities"
@@ -328,7 +328,7 @@ msgstr "أُضيف %s"
 
 #: templates/web/base/report/_main.html:145
 msgid "Adding this report to your shortlist will remove it from %s’s shortlist."
-msgstr ""
+msgstr "اضافة التقرير للقائمة القصيرة خاصتك سيحذفه من %s’s  القائمة القصيرة."
 
 #: templates/web/base/main_nav_items.html:47
 msgid "Admin"
@@ -426,7 +426,7 @@ msgstr "المنطقة المغطاة"
 
 #: templates/web/base/admin/user-form.html:64
 msgid "Area:"
-msgstr ""
+msgstr "المنطقة:"
 
 #: templates/web/base/admin/bodies.html:19
 #: templates/web/base/admin/body.html:64
@@ -452,7 +452,7 @@ msgstr "تعيين إلى قسم فرعي:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:727
 msgid "Assign users to areas"
-msgstr ""
+msgstr "تعيين المستخدمين للمناطق"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:214
 msgid "Assigned to %s"
@@ -469,7 +469,7 @@ msgstr "حاليا مايعمل هو البحث ورؤية البلاغات فق
 #: templates/web/base/admin/user-form.html:78
 #: templates/web/base/admin/user-form.html:79
 msgid "Authorised staff users can be associated with the categories in which they operate."
-msgstr ""
+msgstr "مستخدمين "
 
 #: templates/web/base/admin/template_edit.html:22
 msgid "Auto-response:"
@@ -624,7 +624,7 @@ msgstr ""
 
 #: templates/web/base/admin/contact-form.html:79
 msgid "Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent."
-msgstr ""
+msgstr "تفقد <strong>مطلوب الفحص</strong> اذا كانت التقارير في الفئة <strong>تستوجب الفحص</strong> قبل الارسال"
 
 #: templates/web/base/admin/contact-form.html:63
 msgid ""
@@ -752,7 +752,7 @@ msgstr "أكد الحساب"
 #: templates/web/base/report/new/form_user_loggedout_password.html:21
 #: templates/web/base/report/update/form_user_loggedout_password.html:20
 msgid "Confirm by email instead, providing a new password at that point. When you confirm, your password will be updated."
-msgstr ""
+msgstr "الرجاء الدخول عبر البريد الإلكتروني بدلا عن ذلك، كما يرجى تقديم كلمة مرور جديدة عند هذه النقطة. بعد التأكيد، سيتم تحديث كلمة المرور."
 
 #: templates/web/base/questionnaire/creator_fixed.html:1
 #: templates/web/base/tokens/confirm_problem.html:1
@@ -878,11 +878,11 @@ msgstr "انشء أولوية"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:714
 msgid "Create reports/updates as the council"
-msgstr ""
+msgstr "انشاء التبليغات/تحديثات كالمجلس"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:713
 msgid "Create reports/updates on a user's behalf"
-msgstr ""
+msgstr "انشاء التبليغات/تحديثات بالنيابة عن مستخدم"
 
 #: templates/web/base/admin/template_edit.html:46
 #: templates/web/zurich/admin/template_edit.html:29
@@ -991,7 +991,7 @@ msgstr "حفظ التغييرات"
 
 #: templates/web/base/admin/open311-form-fields.html:95
 msgid "Do not send email alerts on fetched comments to problem creator"
-msgstr ""
+msgstr "لا ترسل اشعارات البريد الالكتروني حول التعليقات المأخوذة لصانع المشكلة"
 
 #. ("%s is the site name")
 #: templates/web/base/auth/general.html:58
@@ -1051,7 +1051,7 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:16
 #: templates/web/base/report/_item.html:81
 msgid "Easting/Northing:"
-msgstr ""
+msgstr "باتجاه الشرق /باتجاه الشمال:"
 
 #: templates/web/base/admin/list_updates.html:42
 #: templates/web/base/admin/problem_row.html:41
@@ -1277,7 +1277,7 @@ msgstr "رابط خارجي"
 
 #: templates/web/base/admin/report_edit.html:99
 msgid "External body"
-msgstr ""
+msgstr "هيئة خارجية"
 
 #: templates/web/base/admin/report_edit.html:101
 msgid "External team"
@@ -1477,7 +1477,7 @@ msgstr "المساعدة"
 #: templates/web/base/report/new/category_extras.html:13
 #: templates/web/base/report/new/category_extras.html:14
 msgid "Help <strong>%s</strong> resolve your problem quicker, by providing some extra detail. This extra information will not be published online."
-msgstr ""
+msgstr "ساعد <strong>%s</strong> على حل مشكلتك اسرع من خلال توفير تفاصيل اضافية.لن تنشر  هذه المعلومات الاضافية عند الاتصال بالانترنت."
 
 #: templates/web/base/alert/_list.html:9
 msgid "Here are the types of local problem alerts for &lsquo;%s&rsquo;."
@@ -1588,16 +1588,16 @@ msgstr "إذا حصلت على معلومات أكثر عن حالة مشكلت�
 
 #: templates/web/base/admin/responsepriorities/edit.html:33
 msgid "If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories."
-msgstr ""
+msgstr "اذا كنت تريد ان تكون هذه الاولوية خيارا لفئة معينة، قم باختيارها هنا. سوف تظهر لكل الفئات افتراضيا."
 
 #: templates/web/base/admin/template_edit.html:29
 msgid "If you only want this template to be an option for specific categories, pick them here. By default they will show for all categories."
-msgstr ""
+msgstr "اذا كنت تريد ان تكون هذا النموذج خيارا لفئة معينة، قم باختيارها هنا. سوف تظهر لكل الفئات افتراضيا."
 
 #: templates/web/base/report/new/top_message_none.html:10
 #: templates/web/base/report/new/top_message_none.html:9
 msgid "If you submit a problem here the problem will <strong>not</strong> be reported to the council."
-msgstr ""
+msgstr "في حالة تقديم مشكلة هنا، <strong>لن</strong> يتم الإبلاغ عن المشكلة للمجلس."
 
 #: templates/web/base/admin/template_edit.html:36
 msgid "If you want to use this template to prefill the update field when changing a report&rsquo;s state, select the state here."
@@ -1734,7 +1734,7 @@ msgstr "التنسيق المحدد %s غير صالح."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:398
 msgid "Invalid location. New location must be covered by the same council."
-msgstr ""
+msgstr "موقع غير صحيح. على الموقع الجديد ان يكون تحت نفس المجلس."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1498
 msgid "Invalid start date"
@@ -1805,7 +1805,7 @@ msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:50
 msgid "Least recently updated"
-msgstr ""
+msgstr "الاقل تحديثا مؤخرا"
 
 #: templates/web/base/admin/body-form.html:127
 msgid "Leave this blank if all reports to this body should be sent using the same send method (e.g., \"%s\")."
@@ -1872,7 +1872,7 @@ msgstr "الخريطة"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:712
 msgid "Manage shortlist"
-msgstr ""
+msgstr "ادارة القائمة القصيرة"
 
 #: templates/web/base/reports/_list-filters.html:45
 msgid "Manual order"
@@ -1900,7 +1900,7 @@ msgstr "تحديد ما تم إصلاحه/إغلاقه منذ أكثر من ثم
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:710
 msgid "Markup problem details"
-msgstr ""
+msgstr "حدد تفاصيل المشكلة."
 
 #: templates/web/base/contact/index.html:96
 msgid "Message"
@@ -1916,7 +1916,7 @@ msgstr "رسالة إلى الهيئة الخارجية:"
 
 #: templates/web/base/admin/report_edit.html:71
 msgid "Missing bodies:"
-msgstr ""
+msgstr "هيئات مفقودة:"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:437
 msgid "Missing jurisdiction_id"
@@ -1924,20 +1924,20 @@ msgstr " jurisdiction_id غير موجود"
 
 #: templates/web/base/report/_main.html:130
 msgid "Moderate"
-msgstr ""
+msgstr "إشراف"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:706
 msgid "Moderate report details"
-msgstr ""
+msgstr "قم بالاشراف على تفاصيل التبليغ"
 
 #: templates/web/base/report/_main.html:130
 msgid "Moderate this report"
-msgstr ""
+msgstr "قم بالاشراف على التبليغ"
 
 #: templates/web/base/report/update.html:12
 #, fuzzy
 msgid "Moderate this update"
-msgstr "تم الإبلاغ عنها بواسطة %s في %s"
+msgstr "قم بالاشراف على التبليغ"
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -1953,7 +1953,7 @@ msgstr "تمت المعالجة بواسطة القسم خلال يوم عمل �
 #: templates/web/base/report/update.html:57
 #, fuzzy
 msgid "Moderation reason:"
-msgstr "مناطق أخرى:"
+msgstr "قم بالاشراف على التبليغ"
 
 #: templates/web/base/admin/stats.html:11
 msgid "Month"
@@ -1997,7 +1997,7 @@ msgstr "الاسم: %s"
 
 #: templates/web/base/report/_inspect.html:28
 msgid "Navigate to this problem"
-msgstr ""
+msgstr "انتقل الى هذه المشكلة"
 
 #: perllib/FixMyStreet/Geocode/FixaMinGata.pm:160
 #: perllib/FixMyStreet/Geocode/OSM.pm:145
@@ -2200,6 +2200,9 @@ msgid ""
 "Normal (public) users should not be associated with any <strong>area</strong>.<br>\n"
 "                  Authorised staff users can be associated with the area in which they operate."
 msgstr ""
+"لا يجوز إقران المستخدمين العاديين (العموميين) بأي <strong>منطقة</strong>.<br>\n"
+"                يمكن إقران المستخدمين الموظفين المعتمدين بالمنطقةالتي يعملون فيها.<br>\n"
+"  "
 
 #: templates/web/base/admin/user-form.html:28
 #: templates/web/base/admin/user-form.html:29
@@ -2334,7 +2337,7 @@ msgstr "مفتوح، ولكن لا يوجد أي تحديث خلال ثماني�
 
 #: templates/web/base/admin/open311-form-fields.html:47
 msgid "Open311 API Key"
-msgstr ""
+msgstr "API  Open311 مفتاح "
 
 #: templates/web/base/open311/index.html:62
 msgid "Open311 API for the mySociety FixMyStreet server"
@@ -2342,7 +2345,7 @@ msgstr "واجهة Open311 API لخادم mySociety FixMyStreet"
 
 #: templates/web/base/admin/open311-form-fields.html:34
 msgid "Open311 Jurisdiction"
-msgstr ""
+msgstr "صلاحيات Open311"
 
 #: templates/web/base/open311/index.html:72
 msgid "Open311 initiative web page"
@@ -2544,7 +2547,7 @@ msgstr "الرجاء إدخال اسمك"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:478
 msgid "Please enter a name for this body"
-msgstr ""
+msgstr "الرجاء ادخال اسم لهذه الهيئة."
 
 #: templates/web/base/auth/change_password.html:22
 #: templates/web/base/auth/change_password.html:25
@@ -2671,7 +2674,7 @@ msgstr "الرجاء ملاحظة:"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:358
 msgid "Please provide a public update for this report."
-msgstr ""
+msgstr "الرجاء تقديم تحديث عام لهذا التقرير."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:242
 msgid "Please provide some explanation as to why you're reopening this report"
@@ -2860,7 +2863,7 @@ msgstr "قدّم تحديثًا"
 
 #: templates/web/base/report/update/form_name.html:9
 msgid "Provide update as"
-msgstr ""
+msgstr "قدم التحديث كـ"
 
 #: templates/web/base/auth/general.html:112
 msgid "Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
@@ -2874,7 +2877,7 @@ msgstr "تقديم كلمة المرور اختياري، ولكن فعل ذلك
 #: templates/web/base/report/new/form_report.html:10
 #, fuzzy
 msgid "Public details"
-msgstr "الاستجابة العامة:"
+msgstr "التحديث العام:"
 
 #: templates/web/zurich/admin/report_edit.html:241
 #: templates/web/zurich/admin/report_edit.html:268
@@ -2883,7 +2886,7 @@ msgstr "الاستجابة العامة:"
 
 #: templates/web/base/report/_inspect.html:152
 msgid "Public update:"
-msgstr ""
+msgstr "التحديث العام:"
 
 #: templates/web/zurich/admin/report_edit.html:123
 #: templates/web/zurich/admin/stats.html:38
@@ -3002,7 +3005,7 @@ msgstr "إزالة الإشارة"
 #: templates/web/base/report/_main.html:18
 #: templates/web/base/report/_main.html:26
 msgid "Remove from shortlist"
-msgstr ""
+msgstr "حذف من القائمة القصيرة"
 
 #: templates/web/base/report/display_tools.html:6
 msgid "Remove from site"
@@ -3145,7 +3148,7 @@ msgstr "التقارير في انتظار الاعتماد"
 
 #: templates/web/base/admin/user-form.html:107
 msgid "Reports made by trusted users will be sent to the responsible body without being inspected first."
-msgstr ""
+msgstr "التبليغات من المستخدمين الموثوقين سوف ترسل الى الهيئة المسؤولة من دون فحصها اولا."
 
 #: templates/web/zurich/admin/index-sdm.html:10
 msgid "Reports published"
@@ -3162,11 +3165,11 @@ msgstr "التقارير في انتظار الإرسال"
 
 #: templates/web/base/admin/contact-form.html:89
 msgid "Reports will automatically be sent without needing to be inspected if the user's <strong>reputation</strong> is at or above this value. Set to <strong>0</strong> if all reports must be inspected regardless."
-msgstr ""
+msgstr "سوف يتم ارسال التبليغات اوتوماتيكيا دون الحاجة لفحصها اذا كانت قيمة <strong>سمعة</strong> المستخدم تساوي او اكبر من هذه القيمة. حدد الى <strong>0</strong>  اذا كان يجب فحص كل التبلغات بغض النظر."
 
 #: templates/web/base/admin/contact-form.html:94
 msgid "Reputation threshold"
-msgstr ""
+msgstr "عتبة السمعة"
 
 #: templates/web/base/admin/report_edit.html:84
 msgid "Resend report"
@@ -3174,7 +3177,7 @@ msgstr "إعادة إرسال التقرير"
 
 #: templates/web/base/admin/responsepriorities/index.html:1
 msgid "Response Priorities"
-msgstr ""
+msgstr "أولويات الاستجابة "
 
 #: templates/web/base/admin/responsepriorities/list.html:1
 msgid "Response Priorities for %s"
@@ -3269,7 +3272,7 @@ msgstr "حفظ التغييرات"
 
 #: templates/web/base/report/_inspect.html:148
 msgid "Save with a public update"
-msgstr ""
+msgstr "احفظ مع التحديث العام"
 
 #. ('This is followed by a progress count, e.g. 3/5')
 #. ("This is followed by a progress count, e.g. 3/5")
@@ -3311,8 +3314,9 @@ msgid "See our privacy policy"
 msgstr "انظر سياسة الخصوصية"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:715
+#, fuzzy
 msgid "See user detail for reports created as the council"
-msgstr ""
+msgstr "انشاء التبليغات/تحديثات كالمجلس"
 
 #: templates/web/base/admin/body-form.html:39
 #: templates/web/zurich/admin/body-form.html:16
@@ -3338,7 +3342,7 @@ msgstr "تحديد:"
 
 #: templates/web/base/admin/open311-form-fields.html:109
 msgid "Send extended Open311 statuses with service request updates"
-msgstr ""
+msgstr "أرسل حالات Open311  مطولة مع تحديثات طلب الخدمة"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:826
 msgid "Sent report back"
@@ -3370,18 +3374,18 @@ msgstr "مشاركة"
 #: templates/web/base/report/_main.html:21
 #: templates/web/base/report/_main.html:29
 msgid "Shortlist"
-msgstr ""
+msgstr "قائمة قصيرة"
 
 #: templates/web/base/report/_main.html:134
 #: templates/web/base/report/_main.html:20
 #: templates/web/base/report/_main.html:25
 #: templates/web/base/reports/_list-filters.html:9
 msgid "Shortlisted"
-msgstr ""
+msgstr "تم الاضافة الى القائمة القصيرة"
 
 #: templates/web/base/report/_main.html:144
 msgid "Shortlisted by %s"
-msgstr ""
+msgstr "تم الاضافة الى القائمة القصيرة في %s"
 
 #: templates/web/base/report/update.html:20
 #, fuzzy
@@ -3427,7 +3431,7 @@ msgstr "تسجيل الدخول"
 
 #: templates/web/base/auth/general.html:96
 msgid "Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated."
-msgstr ""
+msgstr "الرجاء الدخولعبر البريد الإلكتروني بدلا عن ذلك، كما يرجى تقديم كلمة مرور جديدة عند هذه النقطة. بعد التأكيد، سيتم تحديث كلمة المرور."
 
 #: templates/web/base/auth/general.html:1
 #: templates/web/zurich/auth/general.html:1
@@ -3653,11 +3657,11 @@ msgstr "ملخص التقارير"
 
 #: templates/web/base/admin/user-form.html:133
 msgid "Superuser:"
-msgstr ""
+msgstr "مستخدم خارق"
 
 #: templates/web/base/admin/user-form.html:130
 msgid "Superusers have permission to perform <strong>all actions</strong> within the admin."
-msgstr ""
+msgstr "المستخدم الخارق له ترخيص لتنفيذ strong>كل اعمال</strong> التي يمكن للأدمن عملها."
 
 #: templates/web/base/admin/questionnaire.html:1
 #: templates/web/base/admin/stats.html:56
@@ -3941,21 +3945,21 @@ msgstr ""
 #: templates/web/base/report/new/councils_text.html:3
 #: templates/web/base/report/new/councils_text.html:4
 msgid "These will be published online for others to see, in accordance with our <a href=\"%s\">privacy policy</a>."
-msgstr ""
+msgstr "سوف يتم نشر هذه و سيكون بمقدور الجميع رؤيتها وفقا لـ <a href=\"%s\">سياسة الخصوصية</a>."
 
 #: templates/web/base/report/new/councils_text_all.html:4
 #: templates/web/base/report/new/councils_text_all.html:6
 msgid "These will be sent to <strong>%s</strong> and also published online for others to see, in accordance with our <a href=\"%s\">privacy policy</a>."
-msgstr ""
+msgstr " سوف يتم ارسال هذه الى <strong>%s</strong>و  سوف يتم نشرها و سيكون بمقدور الجميع رؤيتها وفقا لـ <a href=\"%s\">سياسة الخصوصية</a>."
 
 #: templates/web/base/report/new/councils_text_private.html:5
 #: templates/web/base/report/new/form_user.html:4
 msgid "These will be sent to the council, but will never be shown online."
-msgstr ""
+msgstr "سوف يتم ارسال هذه الى المجلس و لكن لن يتم اظهارها عند الاتصال بالانترنت ابدا"
 
 #: templates/web/base/report/new/councils_text_private.html:3
 msgid "These will never be shown online."
-msgstr ""
+msgstr "لن يتم اظهار هذه عند الاتصال بالانترنت ابدا"
 
 #: templates/web/base/open311/index.html:69
 msgid "This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future."
@@ -4009,7 +4013,7 @@ msgstr "هذا ملخص لكل التقارير الموجودة على هذا �
 
 #: templates/web/base/report/new/form_report.html:56
 msgid "This pothole has been here for two months and…"
-msgstr ""
+msgstr "مضى شهرين على وجود هذه الحفرة و...."
 
 #: templates/web/base/report/update/form_update.html:63
 msgid "This problem has been fixed"
@@ -4127,15 +4131,15 @@ msgstr "هل يتطلب إدارة المرور؟"
 
 #: templates/web/base/admin/user-form.html:111
 msgid "Trusted by bodies:"
-msgstr ""
+msgstr "موثوق من الهيئات:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:721
 msgid "Trusted to make reports that don't need to be inspected"
-msgstr ""
+msgstr "موثوق به لأنشاء تبليغات بدون الحاجة الى تدقيقها"
 
 #: templates/web/base/admin/user-form.html:119
 msgid "Trusted:"
-msgstr ""
+msgstr "موثوق:"
 
 #: templates/web/base/js/translation_strings.html:29
 msgid "Try again"
@@ -4180,8 +4184,9 @@ msgid "Unknown problem ID"
 msgstr "معرف المشكلة غير معروف"
 
 #: templates/web/base/reports/_list-filters.html:10
+#, fuzzy
 msgid "Unshortlisted"
-msgstr ""
+msgstr "تم الاضافة الى القائمة القصيرة"
 
 #: templates/web/base/report/_item.html:24
 msgid "Up one"
@@ -4271,11 +4276,11 @@ msgstr "التحديثات على هذه المشكلة، %s"
 
 #: templates/web/base/admin/open311-form-fields.html:65
 msgid "Use Open311 update-sending extension"
-msgstr ""
+msgstr "استخدم ملحق Open311 لأرسال الاحداثيات"
 
 #: templates/web/base/admin/contact-form.html:124
 msgid "Use this field to record details that are only displayed in the admin. Input is not shown publicly, and is not sent to the body."
-msgstr ""
+msgstr "استخدم هذا الحقب لتسجيل التفاصيل التي لا تُعرض إلا في الإدارة. لا تُعرض المدخلات بصورة عامة، ولا تُرسل إلى الهيئة."
 
 #: templates/web/zurich/admin/report_edit-sdm.html:50
 #: templates/web/zurich/admin/report_edit.html:69
@@ -4284,7 +4289,7 @@ msgstr "تم استخدام الخريطة"
 
 #: templates/web/base/admin/open311-form-fields.html:78
 msgid "User ID to attribute fetched comments to"
-msgstr ""
+msgstr "التعليق المأخوذ ينتمي الى مستخدم معرف"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1700
 msgid "User flag removed"
@@ -4313,7 +4318,7 @@ msgstr "المستخدمون"
 
 #: templates/web/base/admin/user-form.html:141
 msgid "Users can perform the following actions within their assigned body or area."
-msgstr ""
+msgstr "يمكن للمستخدمين تنفيذ الاوامر التاليه في مناطقهم او هيئاتهم المعينة."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:400
 #: perllib/FixMyStreet/App/Controller/Admin.pm:430
@@ -4362,7 +4367,7 @@ msgstr "عثرنا على أكثر من مطابقة لهذا الموقع. نح
 
 #: templates/web/base/around/lookup_by_ref.html:5
 msgid "We found more than one match for that problem reference:"
-msgstr ""
+msgstr "وجدنا اكثر من تطايق لمؤشرات المشكلة:"
 
 #: templates/web/base/auth/general.html:6
 #: templates/web/base/report/display.html:35
@@ -4414,7 +4419,7 @@ msgstr ""
 
 #: templates/web/base/js/translation_strings.html:54
 msgid "Whoa there Testino! Three photos are enough."
-msgstr ""
+msgstr "ثلاث صور تكفي."
 
 #: templates/web/base/tokens/confirm_alert.html:7
 msgid "Why stop there? <a href=\"/alert\">Set up more alerts</a> for free."
@@ -4579,7 +4584,7 @@ msgstr "لم تقم بإنشاء أي تقارير حتى الآن. <a href=\"%s
 
 #: templates/web/base/my/planned.html:21
 msgid "You haven&rsquo;t shortlisted any reports yet."
-msgstr ""
+msgstr "لم تقم باضافة أي تقارير الى القائمة القصيرة حتى الآن. "
 
 #: templates/web/base/admin/index.html:19
 msgid "You need to <a href=\"%s\">add some bodies</a> (such as councils or departments) before any reports can be sent."
@@ -4669,7 +4674,7 @@ msgstr "التقارير"
 #: templates/web/base/my/planned.html:0 templates/web/base/my/planned.html:18
 #: templates/web/base/my/planned.html:5
 msgid "Your shortlist"
-msgstr ""
+msgstr "قائمتك القصيرة"
 
 #: templates/web/base/js/translation_strings.html:63
 msgid "Your update has been saved offline for submission when back online."
@@ -4682,7 +4687,7 @@ msgstr "التحديثات"
 #: templates/web/base/report/new/form_user_loggedin.html:18
 #: templates/web/base/report/update/form_name.html:11
 msgid "Yourself"
-msgstr ""
+msgstr "نفسك"
 
 #: templates/web/base/admin/category-checkboxes.html:7
 #: templates/web/base/admin/user-form.html:151
@@ -4776,7 +4781,7 @@ msgstr "غير متاح"
 #: templates/web/base/admin/category-checkboxes.html:8
 #: templates/web/base/admin/user-form.html:152
 msgid "none"
-msgstr ""
+msgstr "بلا"
 
 #: templates/web/base/admin/category_edit.html:35
 msgid "optional"
@@ -5053,29 +5058,11 @@ msgstr[3] "إبلاغ"
 msgstr[4] "إبلاغ"
 msgstr[5] "إبلاغ"
 
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "كل التصنيفات"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "معرف خارجي"
-
-#, fuzzy
-#~ msgid "Inspector:"
-#~ msgstr "يتطلب المعاينة"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "عدل تصنيف التقرير"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "تم الإبلاغ عنها بواسطة %s في %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "آخر تحديث %s"
-
 #~ msgid "Cancel"
 #~ msgstr "إلغاء"
+
+#~ msgid "Reports from users with high enough reputation will be sent immediately without requiring inspection. Each category's threshold can be managed on its edit page. Users earn reputation when a report they have made is marked as inspected by inspectors."
+#~ msgstr "سوف يتم ارسال التبليغات من المستخدمبن الذين لديهم سمعة عالية بما فيه الكفاية فورا وبدون الحاجة للفحص. يمكن ادارة عتبة كل فئة في صفحة التعديل خاصتها. يمكن للمستخدمين الحصول على سمعة عندما يتم فحص التبليغ الذي قاموا بأنشاءه من قبل الفاحصين."
+
+#~ msgid "Reputation:"
+#~ msgstr "السمعة:"

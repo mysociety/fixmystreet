@@ -1880,9 +1880,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "%s မွာ %s မွတင္ခဲ့သည္"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -2099,8 +2098,9 @@ msgstr ""
 #: templates/web/base/report/inspect/state_groups_select.html:8
 #: templates/web/base/report/update/form_update.html:41
 #: templates/web/base/report/update/form_update.html:44
+#, fuzzy
 msgid "No further action"
-msgstr ""
+msgstr "အသစ္မြမ္းမံမႈမ်ားမေတြ႕ပါ"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
@@ -2670,12 +2670,11 @@ msgstr "%s မွာ %s မွတင္ခဲ့သည္"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:252
 msgid "Posted by <strong>%s</strong> (%s) at %s"
-msgstr "%s မွာ %s(<strong>%s</strong>)မွတင္ခဲ့သည္"
+msgstr "%s မွာ <strong>%s</strong>(%s)မွတင္ခဲ့သည္"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:254
-#, fuzzy
 msgid "Posted by <strong>%s</strong> at %s"
-msgstr "%s မွာ %s(<strong>%s</strong>)မွတင္ခဲ့သည္"
+msgstr "%s မွာ <strong>%s</strong>မွတင္ခဲ့သည္"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -4878,15 +4877,3 @@ msgstr[0] "ေနာက္ဆုံး ျပဳျပင္မြမ္းမ�
 msgid "report"
 msgid_plural "reports"
 msgstr[0] "အစီရင္ခံစာအားလံုး"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "အစီရင္ခံစာအားလံုး"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "အမ်ိဳးအစားဖန္တီးမည္"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "ေနာက္ဆုံး ျပဳျပင္မြမ္းမံမႈမ်ား"

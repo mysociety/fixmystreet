@@ -1898,9 +1898,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Публикувано от %s в %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -2117,8 +2116,9 @@ msgstr ""
 #: templates/web/base/report/inspect/state_groups_select.html:8
 #: templates/web/base/report/update/form_update.html:41
 #: templates/web/base/report/update/form_update.html:44
+#, fuzzy
 msgid "No further action"
-msgstr ""
+msgstr "Няма повече актуализации"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
@@ -4913,19 +4913,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "Сигнали"
 msgstr[1] "Сигнали"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Вички сигнали"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Създай категория"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Сигналът е подаден в категория %s "
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "Последно обновено  %s"

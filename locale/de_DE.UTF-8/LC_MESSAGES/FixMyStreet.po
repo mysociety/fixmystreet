@@ -1880,9 +1880,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Gemeldet von %s um %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4660,8 +4659,9 @@ msgid "marked as investigating"
 msgstr "als untersuchend markiert"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:286
+#, fuzzy
 msgid "marked as no further action"
-msgstr ""
+msgstr "als untersuchend markiert"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:288
 msgid "marked as not the council's responsibility"
@@ -4888,23 +4888,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "Bericht"
 msgstr[1] "Bericht"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Alle Meldungen"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "Externe URL"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Kategorie erstellen"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Gemeldet von %s um %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "zuletzt aktualisiert %s"

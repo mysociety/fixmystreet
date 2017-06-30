@@ -1905,9 +1905,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Publiceret af %s %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4958,23 +4957,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "Rapport"
 msgstr[1] "Rapport"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Alle rapporter"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "Eksternt link"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Lav kategori"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Publiceret af %s %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "sidst opdateret %s"

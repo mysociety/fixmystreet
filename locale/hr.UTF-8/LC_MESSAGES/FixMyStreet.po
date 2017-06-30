@@ -1875,9 +1875,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Prijavio %s za %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4902,15 +4901,3 @@ msgid_plural "reports"
 msgstr[0] "Sve prijave"
 msgstr[1] "Sve prijave"
 msgstr[2] "Sve prijave"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Sve Prijave"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Kreiraj kategoriju"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Prijavio %s za %s"

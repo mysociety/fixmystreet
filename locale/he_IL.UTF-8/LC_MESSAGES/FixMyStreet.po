@@ -2088,8 +2088,9 @@ msgstr ""
 #: templates/web/base/report/inspect/state_groups_select.html:8
 #: templates/web/base/report/update/form_update.html:41
 #: templates/web/base/report/update/form_update.html:44
+#, fuzzy
 msgid "No further action"
-msgstr ""
+msgstr "תצורה"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:125
 #: templates/web/zurich/admin/report_edit.html:259
@@ -4728,9 +4729,8 @@ msgid "update"
 msgstr ""
 
 #: templates/web/base/js/translation_strings.html:74
-#, fuzzy
 msgid "updates"
-msgstr "כפול"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:52
 msgid "used map"
@@ -4867,7 +4867,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "צור קטגוריה"

@@ -1923,9 +1923,8 @@ msgid "Moderate this report"
 msgstr ""
 
 #: templates/web/base/report/update.html:12
-#, fuzzy
 msgid "Moderate this update"
-msgstr "Αναφέρθηκε από %s στις %s"
+msgstr ""
 
 #: templates/web/base/report/_main.html:69
 #: templates/web/base/report/update.html:49
@@ -4963,23 +4962,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "Αναφορά"
 msgstr[1] "Αναφορά"
-
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Όλες οι Αναφορές"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "Εξωτερικός Σύνδεσμος"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Δημιουργία κατηγορίας"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Αναφέρθηκε από %s στις %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "τελευταία ενημέρωση %s"

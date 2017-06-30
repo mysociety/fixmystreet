@@ -4946,35 +4946,11 @@ msgid_plural "reports"
 msgstr[0] "Raporto"
 msgstr[1] "Raporto"
 
-#, fuzzy
-#~ msgid "All inspectors"
-#~ msgstr "Të gjitha kategoritë"
-
-#, fuzzy
-#~ msgid "External ID:"
-#~ msgstr "ID e jashtme"
-
-#, fuzzy
-#~ msgid "Inspector:"
-#~ msgstr "Inspektimi kërkohet"
-
-#, fuzzy
-#~ msgid "Report category:"
-#~ msgstr "Përditëso kategorinë e raporteve"
-
-#, fuzzy
-#~ msgid "Reported %d days ago"
-#~ msgstr "Raportuar nga %s ne %s"
-
-#, fuzzy
-#~ msgid "last updated %d days ago"
-#~ msgstr "Perditesimi i fundit %s"
+#~ msgid "Cancel"
+#~ msgstr "Anulo"
 
 #~ msgid "Reports from users with high enough reputation will be sent immediately without requiring inspection. Each category's threshold can be managed on its edit page. Users earn reputation when a report they have made is marked as inspected by inspectors."
 #~ msgstr "Raportet nga përdoruesit me reputacion të lartë dhe të mjaftueshëm do të dërgohen menjëherë pa kërkuar inspektimin e mëtutjeshëm. Pragu i çdo kategorie mund të menaxhohet në faqen e saj të redaktimit. Përdoruesit fitojnë reputacion kur një raport që kanë bërë është shënuar si i kontrolluar nga inspektorët."
 
 #~ msgid "Reputation:"
 #~ msgstr "Reputacioni:"
-
-#~ msgid "Cancel"
-#~ msgstr "Anulo"
