@@ -11,8 +11,9 @@ sub for_bodies {
     my $attrs = {
         'me.body_id' => $bodies,
     };
+    my $order = $rs->can('name_column') ? $rs->name_column() : 'name';
     my $filters = {
-        order_by => 'name',
+        order_by => $order,
         join => { $join_table => 'contact' },
         distinct => 1,
     };

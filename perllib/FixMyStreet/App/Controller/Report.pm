@@ -315,6 +315,8 @@ sub inspect : Private {
     if ($c->cobrand->can('council_area_id')) {
         my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});
         $c->stash->{priorities_by_category} = $priorities_by_category;
+        my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});
+        $c->stash->{templates_by_category} = $templates_by_category;
     }
 
     if ( $c->get_param('save') ) {
