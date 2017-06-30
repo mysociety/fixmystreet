@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Symlinks a file like conf/general-foobar.yml to conf/general.yml,
+# to make switching between cobrands simpler while debugging.
+
+# Takes a single argument which should be a site name from one of
+# your config files, like "oxfordshire" from conf/general-oxforshire.yml
+
+# Run from the fixmystreet directory, like so:
+# $ bin/switch-site oxfordshire
+
+if [ -z "$1" ]
+then
+    current_target=$(readlink conf/general.yml)
+    if [ -z $current_target ]
+    then
+        echo 'Supply a config name, from the following list:'
+    else
+        echo 'Currently using settings from:'
+        echo "  $current_target"
+        echo 'To change, supply a config name from the following list:'
+    fi
+    ls conf/general-*.yml | sed 's/.*general-\(.*\)\.yml/  \1/'
+    exit 1
+fi
+
+if [ -e "conf/general-$1.yml" ]
+then
+    # -f flag replaces the target file if it already exists.
+    # Remember that 1st argument is a file path relative to
+    # the file specified in the second argument.
+    ln -sf general-$1.yml conf/general.yml
+else
+    echo "File conf/general-$1.yml does not exist."
+fi
