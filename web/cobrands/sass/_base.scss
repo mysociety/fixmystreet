@@ -50,12 +50,8 @@ h1 {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
-h1#reports_heading span {
-  display: none;
-}
-h1#reports_heading a {
-  display: block;
-  font-size: 50%;
+h1#reports_heading {
+  margin-bottom: 0;
 }
 
 h2 {
@@ -412,6 +408,7 @@ select.form-control {
 .label-containing-checkbox {
   padding-#{$left}: 24px;
   position: relative;
+  margin-bottom: 0;
 
   input {
     position: absolute;
@@ -1855,6 +1852,10 @@ label .muted {
   & > :first-child,
   & > :first-child > :first-child {
     margin-top: 0;
+  }
+  label {
+    display: inline-block;
+    margin-top: 0.25em;
   }
 }
 
