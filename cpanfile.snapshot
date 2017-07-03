@@ -4358,10 +4358,10 @@ DISTRIBUTIONS
       Test::More 0.66
       Test::Warn 0.21
       URI::Escape 3.28
-  Net-SSLeay-1.52
-    pathname: M/MI/MIKEM/Net-SSLeay-1.52.tar.gz
+  Net-SSLeay-1.81
+    pathname: M/MI/MIKEM/Net-SSLeay-1.81.tar.gz
     provides:
-      Net::SSLeay 1.52
+      Net::SSLeay 1.81
       Net::SSLeay::Handle 0.61
     requirements:
       ExtUtils::MakeMaker 6.36

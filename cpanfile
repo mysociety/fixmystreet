@@ -11,6 +11,7 @@ requires 'ExtUtils::MakeMaker', '6.72'; # [1]
 requires 'Guard', '1.023';
 requires 'PadWalker', '2.2';
 requires 'aliased', '0.34';
+requires 'Net::SSLeay', '1.81';
 
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.80031';
