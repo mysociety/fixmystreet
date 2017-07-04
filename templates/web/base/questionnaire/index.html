@@ -22,8 +22,8 @@
     <p class="questionnaire-report-reminder__report-meta">[% problem.meta_line(c) | html %]</p>
   [% IF updates.size %]
     <p class="questionnaire-report-reminder__last-update-header">
-        <strong>Last update</strong>
-        <a href="/report/[% problem.id %]">Show all updates</a>
+        <strong>[% loc('Last update') %]</strong>
+        <a href="/report/[% problem.id %]">[% loc('Show all updates') %]</a>
     </p>
     <p class="questionnaire-report-reminder__last-update">&ldquo;[% updates.last.text | add_links %]&rdquo;</p>
   [% END %]
