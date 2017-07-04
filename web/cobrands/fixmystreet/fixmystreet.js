@@ -383,13 +383,13 @@ $.extend(fixmystreet.set_up, {
     if (!geo_position_js.init()) {
         return;
     }
-    if ($('#postcodeForm').length) {
-        var link = '<a href="LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
-        $('form[action="/alert/list"]').append(link.replace('LINK','/alert/list'));
+    if ($('.js-geolocate').length) {
+        var link = $('.js-geolocate').attr('action');
+        link = '<a href="' + link + '" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
         if ($('body.frontpage').length) {
-            $('#postcodeForm').after(link.replace('LINK','/around'));
+            $('.js-geolocate').after(link);
         } else{
-            $('#postcodeForm').append(link.replace('LINK','/around'));
+            $('.js-geolocate').append(link);
         }
         fixmystreet.geolocate.setup(function(pos) {
             var latitude = pos.coords.latitude;

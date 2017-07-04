@@ -27,7 +27,7 @@ within a certain distance of a particular location.', "%s is the site name"), si
 [% loc('To find out what local alerts we have for you, please enter your postcode or street name and area' ) %]
 [% END %]
 </p>
-<form method="get" action="/alert/list" class="form-box">
+<form method="get" action="/alert/list" class="form-box js-geolocate">
   <fieldset>
     <div class="form-txt-submit-box">
       <input class="form-control" type="text" name="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
