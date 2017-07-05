@@ -937,22 +937,6 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Crypt-SSLeay-0.64
-    pathname: N/NA/NANIS/Crypt-SSLeay-0.64.tar.gz
-    provides:
-      Crypt::SSLeay 0.64
-      Crypt::SSLeay::CTX undef
-      Crypt::SSLeay::Conn undef
-      Crypt::SSLeay::Err undef
-      Crypt::SSLeay::MainContext undef
-      Crypt::SSLeay::X509 undef
-      Net::SSL 2.85
-    requirements:
-      ExtUtils::MakeMaker 0
-      LWP::Protocol::https 6.02
-      MIME::Base64 0
-      Test::More 0.88
-      Try::Tiny 0.09
   DBD-Pg-2.19.3
     pathname: T/TU/TURNSTEP/DBD-Pg-2.19.3.tar.gz
     provides:
@@ -3224,6 +3208,13 @@ DISTRIBUTIONS
       File::Temp 0
       Scalar::Util 0
       Test::More 0.88
+  IO-SessionData-1.03
+    pathname: P/PH/PHRED/IO-SessionData-1.03.tar.gz
+    provides:
+      IO::SessionData 1.03
+      IO::SessionSet undef
+    requirements:
+      ExtUtils::MakeMaker 0
   IO-Socket-SSL-2.047
     pathname: S/SU/SULLR/IO-Socket-SSL-2.047.tar.gz
     provides:
@@ -3502,20 +3493,6 @@ DISTRIBUTIONS
       IPC::Cmd 0
       XSLoader 0
       base 0
-  MIME-Lite-3.030
-    pathname: R/RJ/RJBS/MIME-Lite-3.030.tar.gz
-    provides:
-      MIME::Lite 3.030
-      MIME::Lite::IO_Handle 3.030
-      MIME::Lite::IO_Scalar 3.030
-      MIME::Lite::IO_ScalarArray 3.030
-      MIME::Lite::SMTP 3.030
-      MailTool undef
-    requirements:
-      Email::Date::Format 1.000
-      ExtUtils::MakeMaker 0
-      File::Basename 0
-      File::Spec 0
   MIME-Types-1.38
     pathname: M/MA/MARKOV/MIME-Types-1.38.tar.gz
     provides:
@@ -3524,53 +3501,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0.47
-  MIME-tools-5.504
-    pathname: D/DS/DSKOLL/MIME-tools-5.504.tar.gz
-    provides:
-      MIME::Body 5.504
-      MIME::Body::File 5.504
-      MIME::Body::InCore 5.504
-      MIME::Body::Scalar 5.504
-      MIME::Decoder 5.504
-      MIME::Decoder::Base64 5.504
-      MIME::Decoder::BinHex 5.504
-      MIME::Decoder::Binary 5.504
-      MIME::Decoder::Gzip64 5.504
-      MIME::Decoder::NBit 5.504
-      MIME::Decoder::QuotedPrint 5.504
-      MIME::Decoder::UU 5.504
-      MIME::Entity 5.504
-      MIME::Field::ConTraEnc 5.504
-      MIME::Field::ContDisp 5.504
-      MIME::Field::ContType 5.504
-      MIME::Field::ParamVal 5.504
-      MIME::Head 5.504
-      MIME::Parser 5.504
-      MIME::Parser::FileInto undef
-      MIME::Parser::FileUnder undef
-      MIME::Parser::Filer undef
-      MIME::Parser::Reader undef
-      MIME::Parser::Results undef
-      MIME::Tools 5.504
-      MIME::WordDecoder undef
-      MIME::WordDecoder::ISO_8859 undef
-      MIME::WordDecoder::US_ASCII undef
-      MIME::WordDecoder::UTF_8 undef
-      MIME::Words 5.504
-    requirements:
-      ExtUtils::MakeMaker 6.42
-      File::Path 1
-      File::Spec 0.6
-      File::Temp 0.18
-      IO::File 1.13
-      IO::Handle 0
-      MIME::Base64 2.2
-      Mail::Field 1.05
-      Mail::Header 1.01
-      Mail::Internet 1.0203
-      Test::Deep 0
-      Test::More 0
-      perl 5.008
   MRO-Compat-0.12
     pathname: B/BO/BOBTFISH/MRO-Compat-0.12.tar.gz
     provides:
@@ -4400,30 +4330,30 @@ DISTRIBUTIONS
       IO::Socket 0
       POSIX 0
       Socket 0
-  Net-Twitter-Lite-0.12006
-    pathname: M/MM/MMIMS/Net-Twitter-Lite-0.12006.tar.gz
+  Net-Twitter-Lite-0.12008
+    pathname: M/MM/MMIMS/Net-Twitter-Lite-0.12008.tar.gz
     provides:
-      Net::Twitter::Lite 0.12006
-      Net::Twitter::Lite::API::V1 0.12006
-      Net::Twitter::Lite::API::V1_1 0.12006
-      Net::Twitter::Lite::Error 0.12006
-      Net::Twitter::Lite::WithAPIv1_1 0.12006
-      Net::Twitter::Lite::WrapResult 0.12006
+      Net::Twitter::Lite 0.12008
+      Net::Twitter::Lite::API::V1 0.12008
+      Net::Twitter::Lite::API::V1_1 0.12008
+      Net::Twitter::Lite::Error 0.12008
+      Net::Twitter::Lite::WithAPIv1_1 0.12008
+      Net::Twitter::Lite::WrapResult 0.12008
     requirements:
       Carp 0
-      Crypt::SSLeay 0.5
       Encode 0
       HTTP::Request::Common 0
       JSON 2.02
+      LWP::Protocol::https 0
       LWP::UserAgent 2.032
-      Module::Build 0.3601
-      Net::HTTP >= 0, != 6.04, != 6.05
+      Module::Build::Tiny 0.034
+      Net::HTTP 0
       Net::Netrc 0
       URI 1.40
       URI::Escape 0
       overload 0
       parent 0
-      perl 5.005
+      perl 5.006
       strict 0
       warnings 0
   Number-Compare-0.03
@@ -4880,31 +4810,29 @@ DISTRIBUTIONS
     requirements:
       Exporter 5.57
       perl 5.006
-  SOAP-Lite-0.715
-    pathname: M/MK/MKUTTER/SOAP-Lite-0.715.tar.gz
+  SOAP-Lite-1.20
+    pathname: P/PH/PHRED/SOAP-Lite-1.20.tar.gz
     provides:
-      Apache::SOAP 0.715
-      Apache::XMLRPC::Lite 0.715
-      LWP::Protocol 0.715
+      Apache::SOAP 1.17
       My::Chat undef
       My::Examples undef
       My::Parameters undef
       My::PersistentIterator undef
       My::PingPong undef
       My::SessionIterator undef
-      SOAP 0.715
+      SOAP 1.20
       SOAP::Apache undef
-      SOAP::Client 0.715
-      SOAP::Cloneable 0.715
-      SOAP::Constants 0.715
-      SOAP::Custom::XML::Data 0.715
-      SOAP::Custom::XML::Deserializer 0.715
-      SOAP::Data 0.715
-      SOAP::Deserializer 0.715
-      SOAP::Fault 0.715
-      SOAP::Header 0.715
-      SOAP::Lite 0.715
-      SOAP::Lite::COM 0.715
+      SOAP::Client 1.20
+      SOAP::Cloneable 1.20
+      SOAP::Constants 1.17
+      SOAP::Custom::XML::Data 1.20
+      SOAP::Custom::XML::Deserializer 1.20
+      SOAP::Data 1.20
+      SOAP::Deserializer 1.20
+      SOAP::Fault 1.20
+      SOAP::Header 1.20
+      SOAP::Lite 1.20
+      SOAP::Lite::COM 1.20
       SOAP::Lite::Deserializer::XMLSchema1999 undef
       SOAP::Lite::Deserializer::XMLSchema2001 undef
       SOAP::Lite::Deserializer::XMLSchemaSOAP1_1 undef
@@ -4913,93 +4841,65 @@ DISTRIBUTIONS
       SOAP::Lite::Packager::DIME undef
       SOAP::Lite::Packager::MIME undef
       SOAP::Lite::Utils undef
-      SOAP::Packager 0.715
-      SOAP::Packager::DIME 0.715
-      SOAP::Packager::MIME 0.715
-      SOAP::Parser 0.715
-      SOAP::SOM 0.715
-      SOAP::Schema 0.715
-      SOAP::Schema::Deserializer 0.715
-      SOAP::Schema::WSDL 0.715
-      SOAP::Serializer 0.715
-      SOAP::Server 0.715
-      SOAP::Server::Object 0.715
-      SOAP::Server::Parameters 0.715
-      SOAP::Test 0.715
-      SOAP::Test::Server 0.715
-      SOAP::Trace 0.715
-      SOAP::Transport 0.715
-      SOAP::Transport::HTTP 0.715
-      SOAP::Transport::HTTP::Apache 0.715
-      SOAP::Transport::HTTP::CGI 0.715
-      SOAP::Transport::HTTP::Client 0.715
-      SOAP::Transport::HTTP::Daemon 0.715
+      SOAP::Packager 1.17
+      SOAP::Packager::DIME 1.17
+      SOAP::Packager::MIME 1.17
+      SOAP::Parser 1.20
+      SOAP::SOM 1.20
+      SOAP::Schema 1.20
+      SOAP::Schema::Deserializer 1.20
+      SOAP::Schema::WSDL 1.20
+      SOAP::Serializer 1.20
+      SOAP::Server 1.20
+      SOAP::Server::Object 1.20
+      SOAP::Server::Parameters 1.20
+      SOAP::Test 1.17
+      SOAP::Test::Server 1.17
+      SOAP::Trace 1.20
+      SOAP::Transport 1.20
+      SOAP::Transport::HTTP 1.17
+      SOAP::Transport::HTTP::Apache 1.17
+      SOAP::Transport::HTTP::CGI 1.17
+      SOAP::Transport::HTTP::Client 1.17
+      SOAP::Transport::HTTP::Daemon 1.17
       SOAP::Transport::HTTP::Daemon::ForkAfterProcessing undef
       SOAP::Transport::HTTP::Daemon::ForkOnAccept undef
-      SOAP::Transport::HTTP::FCGI 0.715
-      SOAP::Transport::HTTP::Server 0.715
-      SOAP::Transport::IO 0.715
-      SOAP::Transport::IO::Server 0.715
-      SOAP::Transport::LOCAL 0.715
-      SOAP::Transport::LOCAL::Client 0.715
+      SOAP::Transport::HTTP::FCGI 1.17
+      SOAP::Transport::HTTP::Server 1.17
+      SOAP::Transport::IO 1.17
+      SOAP::Transport::IO::Server 1.17
+      SOAP::Transport::LOCAL 1.17
+      SOAP::Transport::LOCAL::Client 1.17
       SOAP::Transport::LOOPBACK undef
       SOAP::Transport::LOOPBACK::Client undef
-      SOAP::Transport::MAILTO 0.715
-      SOAP::Transport::MAILTO::Client 0.715
-      SOAP::Transport::POP3 0.715
-      SOAP::Transport::POP3::Server 0.715
-      SOAP::Utils 0.715
-      SOAP::XMLSchema1999::Serializer 0.715
-      SOAP::XMLSchema2001::Serializer 0.715
-      SOAP::XMLSchema::Serializer 0.715
-      SOAP::XMLSchemaApacheSOAP::Deserializer 0.715
-      UDDI::Constants 0.715
-      UDDI::Data 0.715
-      UDDI::Deserializer 0.715
-      UDDI::Lite 0.715
-      UDDI::SOM 0.715
-      UDDI::Serializer 0.715
-      XML::Parser::Lite 0.715
-      XMLRPC 0.715
-      XMLRPC::Constants 0.715
-      XMLRPC::Data 0.715
-      XMLRPC::Deserializer 0.715
-      XMLRPC::Lite 0.715
-      XMLRPC::SOM 0.715
-      XMLRPC::Serializer 0.715
-      XMLRPC::Server 0.715
-      XMLRPC::Server::Parameters 0.715
-      XMLRPC::Test 0.715
-      XMLRPC::Test::Server 0.715
-      XMLRPC::Transport::HTTP 0.715
-      XMLRPC::Transport::HTTP::Apache 0.715
-      XMLRPC::Transport::HTTP::CGI 0.715
-      XMLRPC::Transport::HTTP::Daemon 0.715
-      XMLRPC::Transport::POP3 0.715
-      XMLRPC::Transport::POP3::Server 0.715
-      XMLRPC::Transport::TCP 0.715
-      XMLRPC::Transport::TCP::Server 0.715
+      SOAP::Transport::MAILTO 1.17
+      SOAP::Transport::MAILTO::Client 1.17
+      SOAP::Transport::POP3 1.17
+      SOAP::Transport::POP3::Server 1.17
+      SOAP::Transport::TCP 1.17
+      SOAP::Transport::TCP::Client 1.17
+      SOAP::Transport::TCP::Server 1.17
+      SOAP::Utils 1.20
+      SOAP::XMLSchema1999::Serializer 1.20
+      SOAP::XMLSchema2001::Serializer 1.20
+      SOAP::XMLSchema::Serializer 1.20
+      SOAP::XMLSchemaApacheSOAP::Deserializer 1.20
+      URI::tcp 1.17
     requirements:
       Class::Inspector 0
       Compress::Zlib 0
-      Crypt::SSLeay 0
       ExtUtils::MakeMaker 0
-      FCGI 0
-      HTTP::Daemon 0
-      IO::File 0
+      IO::SessionData 1.03
       IO::Socket::SSL 0
+      LWP::Protocol::https 0
       LWP::UserAgent 0
       MIME::Base64 0
-      MIME::Lite 0
-      MIME::Parser 0
-      Net::POP3 0
       Scalar::Util 0
       Task::Weaken 0
-      Test::More 0
       URI 0
       XML::Parser 2.23
       constant 0
-      perl 5.006
+      perl 5.006000
   SQL-Abstract-1.73
     pathname: F/FR/FREW/SQL-Abstract-1.73.tar.gz
     provides:

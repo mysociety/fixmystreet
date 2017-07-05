@@ -78,7 +78,7 @@ requires 'Net::DNS::Resolver';
 requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.10';
 requires 'Net::OAuth';
-requires 'Net::Twitter::Lite::WithAPIv1_1';
+requires 'Net::Twitter::Lite::WithAPIv1_1', '0.12008';
 requires 'Path::Class';
 requires 'POSIX';
 requires 'Readonly';
@@ -97,12 +97,12 @@ requires 'YAML';
 
 feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     # East Hampshire & Angus
-    requires 'SOAP::Lite';
+    requires 'SOAP::Lite', '1.20';
 };
 
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {
     # Geocoder
-    requires 'SOAP::Lite';
+    requires 'SOAP::Lite', '1.20';
 };
 
 # Moderation by from_body user
