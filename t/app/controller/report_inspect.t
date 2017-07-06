@@ -65,13 +65,15 @@ FixMyStreet::override_config {
     };
 
     subtest "test inspect & instruct submission" => sub {
-        $report->unset_extra_metadata('inspected');
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
         $report->state('confirmed');
         $report->update;
-        $report->inspection_log_entry->delete;
         my $reputation = $report->user->get_extra_metadata("reputation");
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", include_update => "1", state => 'action scheduled' } });
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            public_update => "This is a public update.", include_update => "1",
+            state => 'action scheduled', raise_defect => 1,
+        } });
         $report->discard_changes;
         is $report->comments->first->text, "This is a public update.", 'Update was created';
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
@@ -203,44 +205,40 @@ FixMyStreet::override_config {
     };
 
     subtest "test positive reputation" => sub {
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
         $report->unset_extra_metadata('inspected');
         $report->update;
         $report->inspection_log_entry->delete if $report->inspection_log_entry;
         my $reputation = $report->user->get_extra_metadata("reputation") || 0;
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'action scheduled', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            state => 'in progress', include_update => undef,
+        } });
+        $report->discard_changes;
+        is $report->get_extra_metadata('inspected'), undef, 'report not marked as inspected';
+
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            state => 'action scheduled', include_update => undef,
+        } });
+        $report->discard_changes;
+        is $report->get_extra_metadata('inspected'), undef, 'report not marked as inspected';
+        is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
+
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            state => 'action scheduled', include_update => undef,
+            raise_defect => 1,
+        } });
         $report->discard_changes;
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
-        is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
     };
 
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
         $report->update({ state => 'confirmed' });
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Investigating', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action Scheduled', include_update => undef } });
         $report->discard_changes;
-        is $report->state, 'investigating', 'report state changed';
+        is $report->state, 'action scheduled', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';
-    };
-
-    subtest "Action scheduled only shown appropriately" => sub {
-        $report->update({ state => 'confirmed' });
-        $mech->get_ok("/report/$report_id");
-        $mech->content_lacks('action scheduled');
-
-        # If the report is already in that state, though, we should show it
-        $report->update({ state => 'action scheduled' });
-        $mech->get_ok("/report/$report_id");
-        $mech->content_unlike(qr/<optgroup label="Scheduled">\s*<option value="action scheduled">Action Scheduled<\/option>/);
-        $mech->content_contains('<option selected value="action scheduled">Action Scheduled</option>');
-
-        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
-        $mech->get_ok("/report/$report_id");
-        $mech->content_like(qr/<optgroup label="Scheduled">\s*<option selected value="action scheduled">Action Scheduled<\/option>/);
-
-        $report->update({ state => 'confirmed' });
-        $mech->get_ok("/report/$report_id");
-        $mech->content_like(qr/<optgroup label="Scheduled">\s*<option value="action scheduled">Action Scheduled<\/option>/);
     };
 
 };

@@ -80,6 +80,18 @@ $.extend(fixmystreet.set_up, {
       $("#js-change-duplicate-report").click(refresh_duplicate_list);
   },
 
+  action_scheduled_raise_defect: function() {
+    $("#report_inspect_form").find('[name=state]').on('change', function() {
+        if ($(this).val() !== "action scheduled") {
+            $("#js-inspect-action-scheduled").addClass("hidden");
+            $('#raise_defect_yes').prop('required', false);
+        } else {
+            $("#js-inspect-action-scheduled").removeClass("hidden");
+            $('#raise_defect_yes').prop('required', true);
+        }
+    });
+  },
+
   list_item_actions: function() {
     $('.item-list--reports').on('click', ':submit', function(e) {
       e.preventDefault();

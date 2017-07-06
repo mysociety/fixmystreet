@@ -72,6 +72,17 @@
             <label for="state">[% loc('State') %]</label>
             [% INCLUDE 'report/inspect/state_groups_select.html' %]
           </p>
+        [% IF permissions.report_instruct AND NOT problem.get_extra_metadata('inspected') %]
+          <div id="js-inspect-action-scheduled" class="[% "hidden" UNLESS problem.state == 'action scheduled' %]">
+            <p>[% loc('Do you want to automatically raise a defect?') %]</p>
+            <p class="segmented-control segmented-control--radio">
+                <input type="radio" name="raise_defect" id="raise_defect_yes" value="1">
+                <label class="btn" for="raise_defect_yes">[% loc('Yes') %]</label>
+                <input type="radio" name="raise_defect" id="raise_defect_no" value="0">
+                <label class="btn" for="raise_defect_no">[% loc('No') %]</label>
+            </p>
+          </div>
+        [% END %]
           <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
             <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
             <p class="[% "hidden" UNLESS problem.duplicate_of %]"><strong>[% loc('Duplicate of') %]</strong></p>
