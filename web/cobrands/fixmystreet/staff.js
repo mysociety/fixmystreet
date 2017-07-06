@@ -241,22 +241,26 @@ $.extend(fixmystreet.set_up, {
         $priorities.val(curr_pri);
     });
 
-    // The inspect form submit button can change depending on the selected state
-    $inspect_form.find("[name=state]").change(function(){
-        var state = $(this).val();
+    function state_change(state) {
+        // The inspect form submit button can change depending on the selected state
         var $submit = $inspect_form.find("input[type=submit][name=save]");
-        var value = $submit.attr('data-value-'+state);
+        var value = $submit.attr('data-value-' + state);
         $submit.val(value || $submit.data('valueOriginal'));
 
         updateTemplates({'state': state});
-
+    }
+    var $state_dropdown = $inspect_form.find("[name=state]");
+    state_change($state_dropdown.val());
+    $state_dropdown.change(function(){
+        var state = $(this).val();
+        state_change(state);
         // We might also have a response template to preselect for the new state
         var $select = $inspect_form.find("select.js-template-name");
         var $option = $select.find("option[data-problem-state='"+state+"']").first();
         if ($option.length) {
             $select.val($option.val()).change();
         }
-    }).change();
+    });
 
     $('.js-toggle-public-update').each(function() {
         var $checkbox = $(this);
