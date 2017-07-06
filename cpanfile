@@ -54,7 +54,6 @@ requires 'Email::MIME';
 requires 'Email::Sender';
 requires 'Email::Valid';
 requires 'Error';
-requires 'FCGI';
 requires 'File::Find';
 requires 'File::Path';
 requires 'File::Slurp';

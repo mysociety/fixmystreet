@@ -7,7 +7,6 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 use Try::Tiny;
 use Encode;
 use XML::Simple;
-use mySociety::Web qw(ent);
 
 sub get_auth_token {
     my ($self, $authxml) = @_;

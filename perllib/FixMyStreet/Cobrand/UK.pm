@@ -379,7 +379,7 @@ sub link_to_council_cobrand {
     my $handler = $self->get_body_handler_for_problem($problem);
     $self->{c}->log->debug( sprintf "bodies: %s areas: %s self: %s handler: %s", $problem->bodies_str, $problem->areas, $self->moniker, $handler->moniker );
     my $bodies_str_ids = $problem->bodies_str_ids;
-    if ( !mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS') &&
+    if ( !FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS') &&
          scalar(@$bodies_str_ids) == 1 && $handler->is_council &&
          $handler->moniker ne $self->{c}->cobrand->moniker
        ) {

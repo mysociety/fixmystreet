@@ -2818,12 +2818,6 @@ DISTRIBUTIONS
       File::Spec 0.8
       Pod::Man 0
       perl 5.006
-  FCGI-0.74
-    pathname: F/FL/FLORA/FCGI-0.74.tar.gz
-    provides:
-      FCGI 0.74
-    requirements:
-      ExtUtils::MakeMaker 0
   File-ChangeNotify-0.23
     pathname: D/DR/DROLSKY/File-ChangeNotify-0.23.tar.gz
     provides:
