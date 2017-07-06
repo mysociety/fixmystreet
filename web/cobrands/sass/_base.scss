@@ -2253,7 +2253,7 @@ table.nicetable {
 .segmented-control--radio {
   input {
     position: absolute;
-    left: -999px;
+    opacity: 0;
   }
 
   input:checked + label {
