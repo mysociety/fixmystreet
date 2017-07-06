@@ -23,7 +23,8 @@ has user => (
     is => 'ro',
     coerce => sub {
         return $_[0] if blessed($_[0]) && $_[0]->isa('FixMyStreet::DB::Result::User');
-        FixMyStreet::DB->resultset('User')->find( { id => $_[0] } );
+        FixMyStreet::DB->resultset('User')->find( { id => $_[0] } )
+            if $_[0];
     },
 );
 
