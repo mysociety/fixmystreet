@@ -6,7 +6,7 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 
 use Try::Tiny;
 use Encode;
-use mySociety::Web qw(ent);
+use HTML::Entities;
 
 sub construct_message {
     my %h = @_;
@@ -43,8 +43,8 @@ sub send {
     $eh_service ||= Integrations::EastHantsWSDL->on_fault(sub { my($soap, $res) = @_; die ref $res ? $res->faultstring : $soap->transport->status, "\n"; });
     try {
         # ServiceName, RemoteCreatedBy, Salutation, FirstName, Name, Email, Telephone, HouseNoName, Street, Town, County, Country, Postcode, Comments, FurtherInfo, ImageURL
-        my $message = ent(encode_utf8($h->{message}));
-        my $name = ent(encode_utf8($h->{name}));
+        my $message = encode_entities(encode_utf8($h->{message}));
+        my $name = encode_entities(encode_utf8($h->{name}));
         my $result = $eh_service->INPUTFEEDBACK(
             $h->{category}, 'FixMyStreet', '', '', $name, $h->{email}, $h->{phone},
             '', '', '', '', '', '', $message, 'Yes', $h->{image_url}

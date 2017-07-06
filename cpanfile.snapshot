@@ -844,26 +844,6 @@ DISTRIBUTIONS
       Class::Singleton 1.4
     requirements:
       ExtUtils::MakeMaker 0
-  Class-Std-0.011
-    pathname: D/DC/DCONWAY/Class-Std-0.011.tar.gz
-    provides:
-      Class::Std 0.011
-      Class::Std::SCR 0.011
-    requirements:
-      Data::Dumper 0
-      Scalar::Util 0
-      Test::More 0
-  Class-Std-Fast-v0.0.8
-    pathname: A/AC/ACID/Class-Std-Fast-v0.0.8.tar.gz
-    provides:
-      Class::Std::Fast 0.000008
-      Class::Std::Fast::Storable 0.000008
-    requirements:
-      Class::Std v0.0.8
-      Data::Dumper 0
-      Scalar::Util 0
-      Test::More 0
-      version 0
   Class-Unload-0.07
     pathname: I/IL/ILMARI/Class-Unload-0.07.tar.gz
     provides:
@@ -889,18 +869,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
-  Compress-Raw-Bzip2-2.060
-    pathname: P/PM/PMQS/Compress-Raw-Bzip2-2.060.tar.gz
-    provides:
-      Compress::Raw::Bzip2 2.060
-    requirements:
-      ExtUtils::MakeMaker 0
-  Compress-Raw-Zlib-2.060
-    pathname: P/PM/PMQS/Compress-Raw-Zlib-2.060.tar.gz
-    provides:
-      Compress::Raw::Zlib 2.060
-    requirements:
-      ExtUtils::MakeMaker 0
   Config-Any-0.23
     pathname: B/BR/BRICAS/Config-Any-0.23.tar.gz
     provides:
@@ -969,22 +937,6 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Crypt-SSLeay-0.64
-    pathname: N/NA/NANIS/Crypt-SSLeay-0.64.tar.gz
-    provides:
-      Crypt::SSLeay 0.64
-      Crypt::SSLeay::CTX undef
-      Crypt::SSLeay::Conn undef
-      Crypt::SSLeay::Err undef
-      Crypt::SSLeay::MainContext undef
-      Crypt::SSLeay::X509 undef
-      Net::SSL 2.85
-    requirements:
-      ExtUtils::MakeMaker 0
-      LWP::Protocol::https 6.02
-      MIME::Base64 0
-      Test::More 0.88
-      Try::Tiny 0.09
   DBD-Pg-2.19.3
     pathname: T/TU/TURNSTEP/DBD-Pg-2.19.3.tar.gz
     provides:
@@ -1364,13 +1316,6 @@ DISTRIBUTIONS
       Symbol 0
       Test 0
       perl 5.006
-  Data-Dumper-2.145
-    pathname: S/SM/SMUELLER/Data-Dumper-2.145.tar.gz
-    provides:
-      Data::Dumper 2.145
-    requirements:
-      ExtUtils::MakeMaker 0
-      Test::More 0.98
   Data-Dumper-Concise-2.020
     pathname: F/FR/FREW/Data-Dumper-Concise-2.020.tar.gz
     provides:
@@ -2751,8 +2696,8 @@ DISTRIBUTIONS
     provides:
       Error 0.17019
       Error::Simple 0.17019
-      Error::WarnDie undef
-      Error::subs undef
+      Error::WarnDie 0
+      Error::subs 0
     requirements:
       Module::Build 0.39
       Scalar::Util 0
@@ -2778,33 +2723,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.17
       perl 5.006001
-  ExtUtils-CBuilder-0.280205
-    pathname: D/DA/DAGOLDEN/ExtUtils-CBuilder-0.280205.tar.gz
-    provides:
-      ExtUtils::CBuilder 0.280205
-      ExtUtils::CBuilder::Base 0.280205
-      ExtUtils::CBuilder::Platform::Unix 0.280205
-      ExtUtils::CBuilder::Platform::VMS 0.280205
-      ExtUtils::CBuilder::Platform::Windows 0.280205
-      ExtUtils::CBuilder::Platform::Windows::BCC 0.280205
-      ExtUtils::CBuilder::Platform::Windows::GCC 0.280205
-      ExtUtils::CBuilder::Platform::Windows::MSVC 0.280205
-      ExtUtils::CBuilder::Platform::aix 0.280205
-      ExtUtils::CBuilder::Platform::cygwin 0.280205
-      ExtUtils::CBuilder::Platform::darwin 0.280205
-      ExtUtils::CBuilder::Platform::dec_osf 0.280205
-      ExtUtils::CBuilder::Platform::os2 0.280205
-    requirements:
-      Cwd 0
-      ExtUtils::MakeMaker 6.30
-      File::Basename 0
-      File::Spec 3.13
-      File::Temp 0
-      IO::File 0
-      IPC::Cmd 0
-      Perl::OSType 0
-      Test::More 0.47
-      Text::ParseWords 0
   ExtUtils-Config-0.008
     pathname: L/LE/LEONT/ExtUtils-Config-0.008.tar.gz
     provides:
@@ -2900,36 +2818,6 @@ DISTRIBUTIONS
       File::Spec 0.8
       Pod::Man 0
       perl 5.006
-  ExtUtils-ParseXS-3.21
-    pathname: S/SM/SMUELLER/ExtUtils-ParseXS-3.21.tar.gz
-    provides:
-      ExtUtils::ParseXS 3.21
-      ExtUtils::ParseXS::Constants 3.21
-      ExtUtils::ParseXS::CountLines 3.21
-      ExtUtils::ParseXS::Eval 3.21
-      ExtUtils::ParseXS::Utilities 3.21
-      ExtUtils::Typemaps 3.21
-      ExtUtils::Typemaps::Cmd 3.21
-      ExtUtils::Typemaps::InputMap 3.21
-      ExtUtils::Typemaps::OutputMap 3.21
-      ExtUtils::Typemaps::Type 3.21
-    requirements:
-      Carp 0
-      Cwd 0
-      DynaLoader 0
-      Exporter 0
-      ExtUtils::CBuilder 0
-      ExtUtils::MakeMaker 6.46
-      File::Basename 0
-      File::Spec 0
-      Symbol 0
-      Test::More 0.47
-  FCGI-0.74
-    pathname: F/FL/FLORA/FCGI-0.74.tar.gz
-    provides:
-      FCGI 0.74
-    requirements:
-      ExtUtils::MakeMaker 0
   File-ChangeNotify-0.23
     pathname: D/DR/DROLSKY/File-ChangeNotify-0.23.tar.gz
     provides:
@@ -3302,45 +3190,6 @@ DISTRIBUTIONS
       Filter::Util::Call 0
       Test::More 0
       perl 5.006002
-  IO-Compress-2.060
-    pathname: P/PM/PMQS/IO-Compress-2.060.tar.gz
-    provides:
-      Compress::Zlib 2.060
-      File::GlobMapper 1.000
-      IO::Compress undef
-      IO::Compress::Adapter::Bzip2 2.060
-      IO::Compress::Adapter::Deflate 2.060
-      IO::Compress::Adapter::Identity 2.060
-      IO::Compress::Base 2.060
-      IO::Compress::Base::Common 2.060
-      IO::Compress::Bzip2 2.060
-      IO::Compress::Deflate 2.060
-      IO::Compress::Gzip 2.060
-      IO::Compress::Gzip::Constants 2.060
-      IO::Compress::RawDeflate 2.060
-      IO::Compress::Zip 2.060
-      IO::Compress::Zip::Constants 2.060
-      IO::Compress::Zlib::Constants 2.060
-      IO::Compress::Zlib::Extra 2.060
-      IO::Uncompress::Adapter::Bunzip2 2.060
-      IO::Uncompress::Adapter::Identity 2.060
-      IO::Uncompress::Adapter::Inflate 2.060
-      IO::Uncompress::AnyInflate 2.060
-      IO::Uncompress::AnyUncompress 2.060
-      IO::Uncompress::Base 2.060
-      IO::Uncompress::Bunzip2 2.060
-      IO::Uncompress::Gunzip 2.060
-      IO::Uncompress::Inflate 2.060
-      IO::Uncompress::RawInflate 2.060
-      IO::Uncompress::Unzip 2.060
-      U64 2.060
-      Zlib::OldDeflate 2.060
-      Zlib::OldInflate 2.060
-    requirements:
-      Compress::Raw::Bzip2 2.060
-      Compress::Raw::Zlib 2.060
-      ExtUtils::MakeMaker 0
-      Scalar::Util 0
   IO-HTML-1.00
     pathname: C/CJ/CJM/IO-HTML-1.00.tar.gz
     provides:
@@ -3353,6 +3202,13 @@ DISTRIBUTIONS
       File::Temp 0
       Scalar::Util 0
       Test::More 0.88
+  IO-SessionData-1.03
+    pathname: P/PH/PHRED/IO-SessionData-1.03.tar.gz
+    provides:
+      IO::SessionData 1.03
+      IO::SessionSet undef
+    requirements:
+      ExtUtils::MakeMaker 0
   IO-Socket-SSL-2.047
     pathname: S/SU/SULLR/IO-Socket-SSL-2.047.tar.gz
     provides:
@@ -3631,20 +3487,6 @@ DISTRIBUTIONS
       IPC::Cmd 0
       XSLoader 0
       base 0
-  MIME-Lite-3.030
-    pathname: R/RJ/RJBS/MIME-Lite-3.030.tar.gz
-    provides:
-      MIME::Lite 3.030
-      MIME::Lite::IO_Handle 3.030
-      MIME::Lite::IO_Scalar 3.030
-      MIME::Lite::IO_ScalarArray 3.030
-      MIME::Lite::SMTP 3.030
-      MailTool undef
-    requirements:
-      Email::Date::Format 1.000
-      ExtUtils::MakeMaker 0
-      File::Basename 0
-      File::Spec 0
   MIME-Types-1.38
     pathname: M/MA/MARKOV/MIME-Types-1.38.tar.gz
     provides:
@@ -3653,53 +3495,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0.47
-  MIME-tools-5.504
-    pathname: D/DS/DSKOLL/MIME-tools-5.504.tar.gz
-    provides:
-      MIME::Body 5.504
-      MIME::Body::File 5.504
-      MIME::Body::InCore 5.504
-      MIME::Body::Scalar 5.504
-      MIME::Decoder 5.504
-      MIME::Decoder::Base64 5.504
-      MIME::Decoder::BinHex 5.504
-      MIME::Decoder::Binary 5.504
-      MIME::Decoder::Gzip64 5.504
-      MIME::Decoder::NBit 5.504
-      MIME::Decoder::QuotedPrint 5.504
-      MIME::Decoder::UU 5.504
-      MIME::Entity 5.504
-      MIME::Field::ConTraEnc 5.504
-      MIME::Field::ContDisp 5.504
-      MIME::Field::ContType 5.504
-      MIME::Field::ParamVal 5.504
-      MIME::Head 5.504
-      MIME::Parser 5.504
-      MIME::Parser::FileInto undef
-      MIME::Parser::FileUnder undef
-      MIME::Parser::Filer undef
-      MIME::Parser::Reader undef
-      MIME::Parser::Results undef
-      MIME::Tools 5.504
-      MIME::WordDecoder undef
-      MIME::WordDecoder::ISO_8859 undef
-      MIME::WordDecoder::US_ASCII undef
-      MIME::WordDecoder::UTF_8 undef
-      MIME::Words 5.504
-    requirements:
-      ExtUtils::MakeMaker 6.42
-      File::Path 1
-      File::Spec 0.6
-      File::Temp 0.18
-      IO::File 1.13
-      IO::Handle 0
-      MIME::Base64 2.2
-      Mail::Field 1.05
-      Mail::Header 1.01
-      Mail::Internet 1.0203
-      Test::Deep 0
-      Test::More 0
-      perl 5.008
   MRO-Compat-0.12
     pathname: B/BO/BOBTFISH/MRO-Compat-0.12.tar.gz
     provides:
@@ -3913,20 +3708,6 @@ DISTRIBUTIONS
       Test::More 0.86
       YAML::Tiny 1.38
       perl 5.005
-  Module-Metadata-1.000014
-    pathname: B/BO/BOBTFISH/Module-Metadata-1.000014.tar.gz
-    provides:
-      Module::Metadata 1.000014
-    requirements:
-      Carp 0
-      ExtUtils::MakeMaker 0
-      File::Find 0
-      File::Spec 0
-      IO::File 0
-      strict 0
-      vars 0
-      version 0.87
-      warnings 0
   Module-Pluggable-4.7
     pathname: S/SI/SIMONW/Module-Pluggable-4.7.tar.gz
     provides:
@@ -4438,10 +4219,14 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       JSON::MaybeXS 0
       LWP::UserAgent 0
+      Plack::Loader 0
+      Plack::Request 0
       Test::Exception 0
       Test::MockModule 0
       Test::MockObject 0
       Test::More 0.88
+      Test::Requires 0
+      Test::TCP 0
       URI 0
       URI::Escape 0
   Net-HTTP-6.06
@@ -4497,10 +4282,10 @@ DISTRIBUTIONS
       Test::More 0.66
       Test::Warn 0.21
       URI::Escape 3.28
-  Net-SSLeay-1.52
-    pathname: M/MI/MIKEM/Net-SSLeay-1.52.tar.gz
+  Net-SSLeay-1.81
+    pathname: M/MI/MIKEM/Net-SSLeay-1.81.tar.gz
     provides:
-      Net::SSLeay 1.52
+      Net::SSLeay 1.81
       Net::SSLeay::Handle 0.61
     requirements:
       ExtUtils::MakeMaker 6.36
@@ -4539,30 +4324,30 @@ DISTRIBUTIONS
       IO::Socket 0
       POSIX 0
       Socket 0
-  Net-Twitter-Lite-0.12006
-    pathname: M/MM/MMIMS/Net-Twitter-Lite-0.12006.tar.gz
+  Net-Twitter-Lite-0.12008
+    pathname: M/MM/MMIMS/Net-Twitter-Lite-0.12008.tar.gz
     provides:
-      Net::Twitter::Lite 0.12006
-      Net::Twitter::Lite::API::V1 0.12006
-      Net::Twitter::Lite::API::V1_1 0.12006
-      Net::Twitter::Lite::Error 0.12006
-      Net::Twitter::Lite::WithAPIv1_1 0.12006
-      Net::Twitter::Lite::WrapResult 0.12006
+      Net::Twitter::Lite 0.12008
+      Net::Twitter::Lite::API::V1 0.12008
+      Net::Twitter::Lite::API::V1_1 0.12008
+      Net::Twitter::Lite::Error 0.12008
+      Net::Twitter::Lite::WithAPIv1_1 0.12008
+      Net::Twitter::Lite::WrapResult 0.12008
     requirements:
       Carp 0
-      Crypt::SSLeay 0.5
       Encode 0
       HTTP::Request::Common 0
       JSON 2.02
+      LWP::Protocol::https 0
       LWP::UserAgent 2.032
-      Module::Build 0.3601
-      Net::HTTP >= 0, != 6.04, != 6.05
+      Module::Build::Tiny 0.034
+      Net::HTTP 0
       Net::Netrc 0
       URI 1.40
       URI::Escape 0
       overload 0
       parent 0
-      perl 5.005
+      perl 5.006
       strict 0
       warnings 0
   Number-Compare-0.03
@@ -4838,21 +4623,6 @@ DISTRIBUTIONS
       File::Basename 0
       Scalar::Util 0
       Test 0
-  Perl-OSType-1.003
-    pathname: D/DA/DAGOLDEN/Perl-OSType-1.003.tar.gz
-    provides:
-      Perl::OSType 1.003
-    requirements:
-      Exporter 0
-      ExtUtils::MakeMaker 6.30
-      File::Find 0
-      File::Spec::Functions 0
-      File::Temp 0
-      List::Util 0
-      Test::More 0.88
-      constant 0
-      strict 0
-      warnings 0
   Plack-1.0018
     pathname: M/MI/MIYAGAWA/Plack-1.0018.tar.gz
     provides:
@@ -5026,13 +4796,6 @@ DISTRIBUTIONS
       perl 5.00473
       strict 0
       vars 0
-  Return-Value-1.666002
-    pathname: R/RJ/RJBS/Return-Value-1.666002.tar.gz
-    provides:
-      Return::Value 1.666002
-    requirements:
-      ExtUtils::MakeMaker 0
-      Test::More 0.47
   Role-Tiny-2.000005
     pathname: H/HA/HAARG/Role-Tiny-2.000005.tar.gz
     provides:
@@ -5041,31 +4804,29 @@ DISTRIBUTIONS
     requirements:
       Exporter 5.57
       perl 5.006
-  SOAP-Lite-0.715
-    pathname: M/MK/MKUTTER/SOAP-Lite-0.715.tar.gz
+  SOAP-Lite-1.20
+    pathname: P/PH/PHRED/SOAP-Lite-1.20.tar.gz
     provides:
-      Apache::SOAP 0.715
-      Apache::XMLRPC::Lite 0.715
-      LWP::Protocol 0.715
+      Apache::SOAP 1.17
       My::Chat undef
       My::Examples undef
       My::Parameters undef
       My::PersistentIterator undef
       My::PingPong undef
       My::SessionIterator undef
-      SOAP 0.715
+      SOAP 1.20
       SOAP::Apache undef
-      SOAP::Client 0.715
-      SOAP::Cloneable 0.715
-      SOAP::Constants 0.715
-      SOAP::Custom::XML::Data 0.715
-      SOAP::Custom::XML::Deserializer 0.715
-      SOAP::Data 0.715
-      SOAP::Deserializer 0.715
-      SOAP::Fault 0.715
-      SOAP::Header 0.715
-      SOAP::Lite 0.715
-      SOAP::Lite::COM 0.715
+      SOAP::Client 1.20
+      SOAP::Cloneable 1.20
+      SOAP::Constants 1.17
+      SOAP::Custom::XML::Data 1.20
+      SOAP::Custom::XML::Deserializer 1.20
+      SOAP::Data 1.20
+      SOAP::Deserializer 1.20
+      SOAP::Fault 1.20
+      SOAP::Header 1.20
+      SOAP::Lite 1.20
+      SOAP::Lite::COM 1.20
       SOAP::Lite::Deserializer::XMLSchema1999 undef
       SOAP::Lite::Deserializer::XMLSchema2001 undef
       SOAP::Lite::Deserializer::XMLSchemaSOAP1_1 undef
@@ -5074,93 +4835,65 @@ DISTRIBUTIONS
       SOAP::Lite::Packager::DIME undef
       SOAP::Lite::Packager::MIME undef
       SOAP::Lite::Utils undef
-      SOAP::Packager 0.715
-      SOAP::Packager::DIME 0.715
-      SOAP::Packager::MIME 0.715
-      SOAP::Parser 0.715
-      SOAP::SOM 0.715
-      SOAP::Schema 0.715
-      SOAP::Schema::Deserializer 0.715
-      SOAP::Schema::WSDL 0.715
-      SOAP::Serializer 0.715
-      SOAP::Server 0.715
-      SOAP::Server::Object 0.715
-      SOAP::Server::Parameters 0.715
-      SOAP::Test 0.715
-      SOAP::Test::Server 0.715
-      SOAP::Trace 0.715
-      SOAP::Transport 0.715
-      SOAP::Transport::HTTP 0.715
-      SOAP::Transport::HTTP::Apache 0.715
-      SOAP::Transport::HTTP::CGI 0.715
-      SOAP::Transport::HTTP::Client 0.715
-      SOAP::Transport::HTTP::Daemon 0.715
+      SOAP::Packager 1.17
+      SOAP::Packager::DIME 1.17
+      SOAP::Packager::MIME 1.17
+      SOAP::Parser 1.20
+      SOAP::SOM 1.20
+      SOAP::Schema 1.20
+      SOAP::Schema::Deserializer 1.20
+      SOAP::Schema::WSDL 1.20
+      SOAP::Serializer 1.20
+      SOAP::Server 1.20
+      SOAP::Server::Object 1.20
+      SOAP::Server::Parameters 1.20
+      SOAP::Test 1.17
+      SOAP::Test::Server 1.17
+      SOAP::Trace 1.20
+      SOAP::Transport 1.20
+      SOAP::Transport::HTTP 1.17
+      SOAP::Transport::HTTP::Apache 1.17
+      SOAP::Transport::HTTP::CGI 1.17
+      SOAP::Transport::HTTP::Client 1.17
+      SOAP::Transport::HTTP::Daemon 1.17
       SOAP::Transport::HTTP::Daemon::ForkAfterProcessing undef
       SOAP::Transport::HTTP::Daemon::ForkOnAccept undef
-      SOAP::Transport::HTTP::FCGI 0.715
-      SOAP::Transport::HTTP::Server 0.715
-      SOAP::Transport::IO 0.715
-      SOAP::Transport::IO::Server 0.715
-      SOAP::Transport::LOCAL 0.715
-      SOAP::Transport::LOCAL::Client 0.715
+      SOAP::Transport::HTTP::FCGI 1.17
+      SOAP::Transport::HTTP::Server 1.17
+      SOAP::Transport::IO 1.17
+      SOAP::Transport::IO::Server 1.17
+      SOAP::Transport::LOCAL 1.17
+      SOAP::Transport::LOCAL::Client 1.17
       SOAP::Transport::LOOPBACK undef
       SOAP::Transport::LOOPBACK::Client undef
-      SOAP::Transport::MAILTO 0.715
-      SOAP::Transport::MAILTO::Client 0.715
-      SOAP::Transport::POP3 0.715
-      SOAP::Transport::POP3::Server 0.715
-      SOAP::Utils 0.715
-      SOAP::XMLSchema1999::Serializer 0.715
-      SOAP::XMLSchema2001::Serializer 0.715
-      SOAP::XMLSchema::Serializer 0.715
-      SOAP::XMLSchemaApacheSOAP::Deserializer 0.715
-      UDDI::Constants 0.715
-      UDDI::Data 0.715
-      UDDI::Deserializer 0.715
-      UDDI::Lite 0.715
-      UDDI::SOM 0.715
-      UDDI::Serializer 0.715
-      XML::Parser::Lite 0.715
-      XMLRPC 0.715
-      XMLRPC::Constants 0.715
-      XMLRPC::Data 0.715
-      XMLRPC::Deserializer 0.715
-      XMLRPC::Lite 0.715
-      XMLRPC::SOM 0.715
-      XMLRPC::Serializer 0.715
-      XMLRPC::Server 0.715
-      XMLRPC::Server::Parameters 0.715
-      XMLRPC::Test 0.715
-      XMLRPC::Test::Server 0.715
-      XMLRPC::Transport::HTTP 0.715
-      XMLRPC::Transport::HTTP::Apache 0.715
-      XMLRPC::Transport::HTTP::CGI 0.715
-      XMLRPC::Transport::HTTP::Daemon 0.715
-      XMLRPC::Transport::POP3 0.715
-      XMLRPC::Transport::POP3::Server 0.715
-      XMLRPC::Transport::TCP 0.715
-      XMLRPC::Transport::TCP::Server 0.715
+      SOAP::Transport::MAILTO 1.17
+      SOAP::Transport::MAILTO::Client 1.17
+      SOAP::Transport::POP3 1.17
+      SOAP::Transport::POP3::Server 1.17
+      SOAP::Transport::TCP 1.17
+      SOAP::Transport::TCP::Client 1.17
+      SOAP::Transport::TCP::Server 1.17
+      SOAP::Utils 1.20
+      SOAP::XMLSchema1999::Serializer 1.20
+      SOAP::XMLSchema2001::Serializer 1.20
+      SOAP::XMLSchema::Serializer 1.20
+      SOAP::XMLSchemaApacheSOAP::Deserializer 1.20
+      URI::tcp 1.17
     requirements:
       Class::Inspector 0
       Compress::Zlib 0
-      Crypt::SSLeay 0
       ExtUtils::MakeMaker 0
-      FCGI 0
-      HTTP::Daemon 0
-      IO::File 0
+      IO::SessionData 1.03
       IO::Socket::SSL 0
+      LWP::Protocol::https 0
       LWP::UserAgent 0
       MIME::Base64 0
-      MIME::Lite 0
-      MIME::Parser 0
-      Net::POP3 0
       Scalar::Util 0
       Task::Weaken 0
-      Test::More 0
       URI 0
       XML::Parser 2.23
       constant 0
-      perl 5.006
+      perl 5.006000
   SQL-Abstract-1.73
     pathname: F/FR/FREW/SQL-Abstract-1.73.tar.gz
     provides:
@@ -5604,12 +5337,6 @@ DISTRIBUTIONS
       File::Spec 0.8
       File::Temp 0.12
       Scalar::Util 0
-  TermReadKey-2.32
-    pathname: J/JS/JSTOWE/TermReadKey-2.32.tar.gz
-    provides:
-      Term::ReadKey 2.32
-    requirements:
-      ExtUtils::MakeMaker 0
   Test-Base-0.60
     pathname: I/IN/INGY/Test-Base-0.60.tar.gz
     provides:
@@ -5896,21 +5623,6 @@ DISTRIBUTIONS
       Test::Requires 0
       Time::HiRes 0
       perl 5.008
-  Test-Simple-0.98
-    pathname: M/MS/MSCHWERN/Test-Simple-0.98.tar.gz
-    provides:
-      Test::Builder 0.98
-      Test::Builder::IO::Scalar 2.110
-      Test::Builder::Module 0.98
-      Test::Builder::Tester 1.22
-      Test::Builder::Tester::Color 1.22
-      Test::Builder::Tester::Tie 1.22
-      Test::More 0.98
-      Test::Simple 0.98
-    requirements:
-      ExtUtils::MakeMaker 0
-      Test::Harness 2.03
-      perl 5.006
   Test-TCP-1.21
     pathname: T/TO/TOKUHIROM/Test-TCP-1.21.tar.gz
     provides:
@@ -6834,17 +6546,6 @@ DISTRIBUTIONS
       indirect 0
       multidimensional 0
       perl 5.006
-  version-0.9902
-    pathname: J/JP/JPEACOCK/version-0.9902.tar.gz
-    provides:
-      charstar 0.9902
-      version 0.9902
-      version::vpp 0.9902
-      version::vxs 0.9902
-    requirements:
-      ExtUtils::MakeMaker 0
-      File::Temp 0.13
-      Test::More 0.45
   warnings-illegalproto-0.001001
     pathname: F/FR/FREW/warnings-illegalproto-0.001001.tar.gz
     provides:

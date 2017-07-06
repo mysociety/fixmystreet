@@ -3,6 +3,7 @@ package FixMyStreet::App::Controller::Rss;
 use Moose;
 use namespace::autoclean;
 use POSIX qw(strftime);
+use HTML::Entities;
 use URI::Escape;
 use XML::RSS;
 
@@ -11,8 +12,7 @@ use FixMyStreet::App::Model::PhotoSet;
 use FixMyStreet::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
-use mySociety::Sundries qw(ordinal);
-use mySociety::Web qw(ent);
+use Lingua::EN::Inflect qw(ORD);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -250,7 +250,7 @@ sub add_row : Private {
         };
         $row->{created} = strftime("%e %B", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0);
         $row->{created} =~ s/^\s+//;
-        $row->{created} =~ s/^(\d+)/ordinal($1)/e if $c->stash->{lang_code} eq 'en-gb';
+        $row->{created} =~ s/^(\d+)/ORD($1)/e if $c->stash->{lang_code} eq 'en-gb';
     }
     if ($row->{confirmed}) {
         $row->{confirmed} =~ /^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
@@ -259,7 +259,7 @@ sub add_row : Private {
         };
         $row->{confirmed} = strftime("%e %B", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0);
         $row->{confirmed} =~ s/^\s+//;
-        $row->{confirmed} =~ s/^(\d+)/ordinal($1)/e if $c->stash->{lang_code} eq 'en-gb';
+        $row->{confirmed} =~ s/^(\d+)/ORD($1)/e if $c->stash->{lang_code} eq 'en-gb';
     }
 
     (my $title = _($alert_type->item_title)) =~ s/\{\{(.*?)}}/$row->{$1}/g;
@@ -270,13 +270,13 @@ sub add_row : Private {
     my $url = $base_url . $link;
 
     my %item = (
-        title => ent($title),
+        title => encode_entities($title),
         link => $url,
         guid => $url,
-        description => ent(ent($desc)) # Yes, double-encoded, really.
+        description => encode_entities(encode_entities($desc)) # Yes, double-encoded, really.
     );
     $item{pubDate} = $pubDate if $pubDate;
-    $item{category} = ent($row->{category}) if $row->{category};
+    $item{category} = encode_entities($row->{category}) if $row->{category};
 
     if ($c->cobrand->allow_photo_display($row) && $row->{photo}) {
         # Bit yucky as we don't have full objects here
@@ -285,16 +285,16 @@ sub add_row : Private {
         my ($hash, $format) = split /\./, $first_fn;
         my $cachebust = substr($hash, 0, 8);
         my $key = $alert_type->item_table eq 'comment' ? 'c/' : '';
-        $item{description} .= ent("\n<br><img src=\"". $base_url . "/photo/$key$row->{id}.0.$format?$cachebust\">");
+        $item{description} .= encode_entities("\n<br><img src=\"". $base_url . "/photo/$key$row->{id}.0.$format?$cachebust\">");
     }
 
     if ( $row->{used_map} ) {
         my $address = $c->cobrand->find_closest_address_for_rss($row);
-        $item{description} .= ent("\n<br>$address") if $address;
+        $item{description} .= encode_entities("\n<br>$address") if $address;
     }
 
     my $recipient_name = $c->cobrand->contact_name;
-    $item{description} .= ent("\n<br><a href='$url'>" .
+    $item{description} .= encode_entities("\n<br><a href='$url'>" .
         sprintf(_("Report on %s"), $recipient_name) . "</a>");
 
     if ($row->{latitude} || $row->{longitude}) {
@@ -329,9 +329,9 @@ sub add_parameters : Private {
     (my $desc = _($alert_type->head_description)) =~ s/\{\{(.*?)}}/$row->{$1}/g;
 
     $c->stash->{rss}->channel(
-        title       => ent($title),
+        title       => encode_entities($title),
         link        => $c->uri_for($link) . ($c->stash->{qs} || ''),
-        description => ent($desc),
+        description => encode_entities($desc),
         language    => 'en-gb',
     );
 }

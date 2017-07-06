@@ -14,8 +14,11 @@ language: perl
 perl:
   - "5.14" # wheezy, precise
   - "5.18" # trusty
-  - "5.20" # jessie, vivid, wily
-  - "5.22" # stretch, xenial
+  - "5.20" # jessie
+  - "5.22" # xenial
+  - "5.24" # stretch, zesty
+# Params::Classify breaks in 5.26, and Lingua::EN::Tagger needs upgrading
+#  - "5.26"
 
 env:
   global:

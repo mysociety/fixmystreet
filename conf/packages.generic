@@ -12,3 +12,5 @@ postgresql-server-dev-all
 gnuplot
 ttf-bitstream-vera
 libexpat1-dev
+libssl-dev
+zlib1g-dev
