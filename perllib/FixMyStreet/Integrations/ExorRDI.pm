@@ -5,12 +5,21 @@ with 'Throwable';
 
 has message => (is => 'ro');
 
+package FixMyStreet::Integrations::ExorRDI::CSV;
+
+use parent 'Text::CSV';
+
+sub add_row {
+    my ($self, $data, @data) = @_;
+    $self->combine(@data);
+    push @$data, $self->string;
+}
+
 package FixMyStreet::Integrations::ExorRDI;
 
 use DateTime;
 use Moo;
 use Scalar::Util 'blessed';
-use Text::CSV;
 use FixMyStreet::DB;
 use namespace::clean;
 
@@ -68,40 +77,21 @@ sub construct {
         }
     }
 
-    my $csv = Text::CSV->new({ binary => 1, eol => "" });
+    my $csv = FixMyStreet::Integrations::ExorRDI::CSV->new({ binary => 1, eol => "" });
 
     my $p_count = 0;
     my $link_id = $cobrand->exor_rdi_link_id;
 
     # RDI first line is always the same
-    $csv->combine("1", "1.8", "1.0.0.0", "ENHN", "");
-    my @body = ($csv->string);
+    my $body = [];
+    $csv->add_row($body, "1", "1.8", "1.0.0.0", "ENHN", "");
 
     my $i = 0;
     foreach my $inspector_id (keys %$inspectors) {
         my $inspections = $inspectors->{$inspector_id};
         my $initials = $inspector_initials->{$inspector_id};
 
-        $csv->combine(
-            "G", # start of an area/sequence
-            $link_id, # area/link id, fixed value for our purposes
-            "","", # must be empty
-            $initials || "XX", # inspector initials
-            $self->start_date->strftime("%y%m%d"), # date of inspection yymmdd
-            "0700", # time of inspection hhmm, set to static value for now
-            "D", # inspection variant, should always be D
-            "INS", # inspection type, always INS
-            "N", # Area of the county - north (N) or south (S)
-            "", "", "", "" # empty fields
-        );
-        push @body, $csv->string;
-
-        $csv->combine(
-            "H", # initial inspection type
-            "MC" # minor carriageway (changes depending on activity code)
-        );
-        push @body, $csv->string;
-
+        my %body_by_activity_code;
         foreach my $report (@$inspections) {
             my ($eastings, $northings) = $report->local_coords;
 
@@ -120,8 +110,9 @@ sub construct {
             my $traffic_information = $report->get_extra_metadata('traffic_information') ?
                 'TM ' . $report->get_extra_metadata('traffic_information')
                 : 'TM none';
+            $body_by_activity_code{$activity_code} ||= [];
 
-            $csv->combine(
+            $csv->add_row($body_by_activity_code{$activity_code},
                 "I", # beginning of defect record
                 $activity_code, # activity code - minor carriageway, also FC (footway)
                 "", # empty field, can also be A (seen on MC) or B (seen on FC)
@@ -132,12 +123,11 @@ sub construct {
                 $traffic_information,
                 $description, # defect description
             );
-            push @body, $csv->string;
 
             my $defect_type = $report->defect_type ?
                               $report->defect_type->get_extra_metadata('defect_code')
                               : 'SFP2';
-            $csv->combine(
+            $csv->add_row($body_by_activity_code{$activity_code},
                 "J", # georeferencing record
                 $defect_type, # defect type - SFP2: sweep and fill <1m2, POT2 also seen
                 $report->response_priority ?
@@ -148,31 +138,51 @@ sub construct {
                 $northings, # northings
                 "","","","","" # empty fields
             );
-            push @body, $csv->string;
 
-            $csv->combine(
+            $csv->add_row($body_by_activity_code{$activity_code},
                 "M", # bill of quantities record
                 "resolve", # permanent repair
                 "","", # empty fields
-                "/CMC", # /C + activity code
+                "/C$activity_code", # /C + activity code
                 "", "" # empty fields
             );
-            push @body, $csv->string;
         }
 
-        # end this group of defects with a P record
-        $csv->combine(
-            "P", # end of area/sequence
-            0, # always 0
-            999999, # charging code, always 999999 in OCC
-        );
-        push @body, $csv->string;
-        $p_count++;
+        foreach my $activity_code (sort keys %body_by_activity_code) {
+            $csv->add_row($body,
+                "G", # start of an area/sequence
+                $link_id, # area/link id, fixed value for our purposes
+                "","", # must be empty
+                $initials || "XX", # inspector initials
+                $self->start_date->strftime("%y%m%d"), # date of inspection yymmdd
+                "0700", # time of inspection hhmm, set to static value for now
+                "D", # inspection variant, should always be D
+                "INS", # inspection type, always INS
+                "N", # Area of the county - north (N) or south (S)
+                "", "", "", "" # empty fields
+            );
+
+            $csv->add_row($body,
+                "H", # initial inspection type
+                $activity_code # e.g. MC = minor carriageway
+            );
+
+            # List of I/J/M entries from above
+            push @$body, @{$body_by_activity_code{$activity_code}};
+
+            # end this group of defects with a P record
+            $csv->add_row($body,
+                "P", # end of area/sequence
+                0, # always 0
+                999999, # charging code, always 999999 in OCC
+            );
+            $p_count++;
+        }
     }
 
     # end the RDI file with an X record
     my $record_count = $i;
-    $csv->combine(
+    $csv->add_row($body,
         "X", # end of inspection record
         $p_count,
         $p_count,
@@ -184,11 +194,10 @@ sub construct {
         $p_count,
         0, 0, 0 # error counts, always zero
     );
-    push @body, $csv->string;
 
     # The RDI format is very weird CSV - each line must be wrapped in
     # double quotes.
-    return join "", map { "\"$_\"\r\n" } @body;
+    return join "", map { "\"$_\"\r\n" } @$body;
 }
 
 has filename => (
