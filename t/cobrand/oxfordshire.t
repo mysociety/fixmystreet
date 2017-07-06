@@ -80,31 +80,52 @@ subtest 'Exor file looks okay' => sub {
             user_id => $inspector->id,
         } }, 'submit download');
         $mech->content_contains("No inspections by that inspector in the selected date range");
-        my $problem = FixMyStreet::DB->resultset('Problem')->first;
-        $problem->update({ state => 'action scheduled', external_id => 123 });
-        FixMyStreet::DB->resultset('AdminLog')->create({
-            admin_user => $inspector->name,
-            user => $inspector,
-            object_type => 'problem',
-            action => 'inspected',
-            object_id => $problem->id,
-            whenedited => DateTime->new(year => 2017, month => 5, day => 5, hour => 12),
+
+        my $dt = FixMyStreet::DB->resultset('DefectType')->create({
+            body => $oxon,
+            name => 'Footpath',
+            description => 'Footpath stuff',
         });
+        $dt->set_extra_metadata(activity_code => 'FC');
+        $dt->set_extra_metadata(defect_code => 'SFP1');
+        $dt->update;
+        my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 2 })->all;
+        my $i = 123;
+        foreach my $problem (@problems) {
+            $problem->update({ state => 'action scheduled', external_id => $i });
+            $problem->update({ defect_type => $dt }) if $i == 123;
+            FixMyStreet::DB->resultset('AdminLog')->create({
+                admin_user => $inspector->name,
+                user => $inspector,
+                object_type => 'problem',
+                action => 'inspected',
+                object_id => $problem->id,
+                whenedited => DateTime->new(year => 2017, month => 5, day => 5, hour => 12),
+            });
+            $i++;
+        }
         $mech->submit_form_ok( { with_fields => {
             start_date => '05/05/2017',
             end_date => '05/05/2017',
             user_id => $inspector->id,
         } }, 'submit download');
         (my $rdi = $mech->content) =~ s/\r\n/\n/g;
+        $rdi =~ s/(I,[FM]C,,)\d+/$1XXX/g; # Remove unique ID figures, unknown order
         is $rdi, <<EOF, "RDI file matches expected";
 "1,1.8,1.0.0.0,ENHN,"
 "G,1989169,,,XX,170505,0700,D,INS,N,,,,"
+"H,FC"
+"I,FC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","123 ""
+"J,SFP1,2,,,434970,209683,,,,,"
+"M,resolve,,,/CFC,,"
+"P,0,999999"
+"G,1989169,,,XX,170505,0700,D,INS,N,,,,"
 "H,MC"
-"I,MC,,001,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","123 ""
+"I,MC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","124 ""
 "J,SFP2,2,,,434970,209683,,,,,"
 "M,resolve,,,/CMC,,"
 "P,0,999999"
-"X,1,1,1,1,0,0,0,1,0,1,0,0,0"
+"X,2,2,2,2,0,0,0,2,0,2,0,0,0"
 EOF
     }
 };
