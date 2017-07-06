@@ -124,32 +124,31 @@ the back-end is the external system).
 In our experience, bodies integrated in this way often want to know the
 FixMyStreet ID for the report, to store at their end. From the body's point of
 view, FixMyStreet is the external system, so we usually pass this to them in
-the Open311 POST request as `attribute[external_id]`. This does not happen by
-default -- if you need this behaviour, look for "external_id" in the
-send-reports code to see how some cobrands add it.
+the Open311 POST request as `attribute[fixmystreet_id]`. If the body sets up
+their Open311 server to request this attribute, we will automatically fill it.
+If they want the field named differently, you will need to store it as the
+`id_field` extra metadata on the relevant contacts.
 
 ### What if the back-end system is not Open311 compliant?
 
 If the body you want to integrate with does not yet support the Open311 standard,
 you can still integrate with it, but it takes a little more work. If the back-end
 offers an alternative way to post new problem reports into it, then you'll need to
-code it. Typically this will mean adding a custom Perl module to 
-`perlib/FixMyStreet/SendReport`.
+code it. Typically this could involve either adding a custom Perl module to
+`perlib/FixMyStreet/SendReport`, or writing a 'proxy' server that receives Open311
+data from FixMyStreet (so it *is* Open311 from FixMyStreet's point of view) and
+then sends on differently formatted data elsewhere.
 
-However, we *strongly recommend* you try to implement the Open311 standard
-instead. Of course, you won't be able to change the back-end system (often
-these are large, proprietary and inflexible systems), but, with the cooperation
-of the body's IT team, you can implement a shiv that makes it behave like one.
-
-For example, in the UK we integrate with Oxfordshire council, whose back-end
-does not use the Open311 standard, by running a script on their server which
-accepts incoming Open311 requests, and converts them into custom calls (using
-the local back-end's API, which are effectively Postgres stored procedures). The
-script captures the result and sends it back as the appropriate Open311
-response. These scripts are straightforward (see them in
-[/bin/oxfordshire/](https://github.com/mysociety/fixmystreet/tree/master/bin/oxfordshire)) because
-they don't need to implement the whole Open311 protocol -- only the calls that
-FixMyStreet uses.
+We *strongly recommend* you try to implement the Open311 standard instead, but
+you might well not be able to change the back-end system (often these are
+large, proprietary and inflexible systems), so you may be able to implement a
+shim that makes it behave like one. For example, in the UK we integrate with a
+number of councils whose back-end does not use the Open311 standard, by running
+a script either on our or their server, which accepts incoming Open311 requests
+and converts them into custom calls. The script captures the result and sends
+it back as the appropriate Open311 response. We have an
+[example](https://github.com/mysociety/open311-adapter) of one adapter we use
+on GitHub.
 
 The advantage of this approach is that, to FixMyStreet, the body uses the tried
 and tested Open311 send method. The benefit to the body is that should their
@@ -171,9 +170,10 @@ on FixMyStreet. Typically this means marking the problem as fixed (turning the
 pin green, if configured to do so) and optionally adding a description from the
 council.
 
-This behaviour isn't quite covered by the Open311 standard (although we think
-it should be: see [this explanation](https://www.mysociety.org/2013/02/20/open311-extended/))
-and it requires the back-end to expose update data.
+A basic form of this is in the Open311 standard, but we prefer a slight extension
+(which we think should be: see [this
+explanation](https://www.mysociety.org/2013/02/20/open311-extended/)) and it
+requires the back-end to expose update data.
 
 Our experience is that most back-ends do not already provide this data, but that
 it is a relatively easy for them to implement if they choose to do so. For
@@ -226,16 +226,3 @@ displayed on the FixMyStreet system. Before doing this, you need to consider:
 Talk to us before doing this level of integration. Our experience is that levels
 1 and 2 are higher priority both for public users and for the authorities, so it's
 a good idea to implement those first.
-
-
-
-
-
-
-
-
-
-
-
-
-
