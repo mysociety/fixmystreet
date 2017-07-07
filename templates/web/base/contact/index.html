@@ -77,13 +77,17 @@
         [% END %]
         <input type="text" class="form-control required" name="name" id="form_name" value="[% form_name | html %]" size="30">
 
-
         <label for="form_email">[% loc('Your email') %]</label>
         [% IF field_errors.em %]
            <div class="form-error">[% field_errors.em %]</div>
         [% END %]
         <input type="text" class="form-control required email" name="em" id="form_email" value="[% em | html %]" size="30">
 
+        <div class="form-group">
+          <label for="form_phone">[% loc('Your phone number') %]</label>
+          <span class="required-text required-text--optional">optional</span>
+          <input type="text" class="form-control extra.phone" name="extra.phone" id="form_phone" value="" size="30">
+        </div>
 
         <label for="form_subject">[% loc('Subject') %]</label>
         [% IF field_errors.subject %]
@@ -100,7 +104,7 @@
         <textarea class="form-control required" name="message" id="form_message" rows="7" cols="50">[% message | html %]</textarea>
 
 
-        <input class="final-submit green-btn" type="submit" value="[% loc('Post') %]">
+        <input class="final-submit green-btn" type="submit" value="[% loc('Send') %]">
 
     </fieldset>
 </form>

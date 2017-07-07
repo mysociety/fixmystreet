@@ -210,6 +210,7 @@ for my $test (
         # we santise this when we submit so need to remove it
         delete $test->{fields}->{id}
           if $test->{fields}->{id} and $test->{fields}->{id} eq 'invalid';
+        $test->{fields}->{'extra.phone'} = '';
         is_deeply $mech->visible_form_values, $test->{fields}, 'form values';
     };
 }
@@ -323,6 +324,7 @@ for my $test (
             # we santise this when we submit so need to remove it
             delete $test->{fields}->{id}
               if $test->{fields}->{id} and $test->{fields}->{id} eq 'invalid';
+            $test->{fields}->{'extra.phone'} = '';
             is_deeply $mech->visible_form_values, $test->{fields}, 'form values';
 
             if ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'update' ) {

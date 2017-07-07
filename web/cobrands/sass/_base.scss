@@ -294,6 +294,21 @@ select.form-control {
     }
 }
 
+.form-group {
+  position: relative;
+  max-width: 27em;
+}
+
+.required-text {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.required-text--optional {
+  color: #666;
+}
+
 .form-section-heading {
     font-family: inherit;
     color: inherit;

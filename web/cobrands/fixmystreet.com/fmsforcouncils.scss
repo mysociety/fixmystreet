@@ -805,6 +805,9 @@ $fms-pink: #E65376;
     top: 3px;
     font-size: 0.75em;
     color: $fms-pink;
+    &.required--optional {
+      color: #777;
+    }
   }
 
   .council-order__screenshot {
