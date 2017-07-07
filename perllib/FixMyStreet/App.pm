@@ -200,6 +200,10 @@ sub setup_request {
 
     $c->stash->{site_name} = Utils::trim_text($c->render_fragment('site-name.html'));
 
+    if (my $template = $c->forward('/about/find_template', [ 'homepage' ])) {
+        $c->stash->{homepage_template} = $template;
+    }
+
     $c->model('DB::Problem')->set_restriction( $cobrand->site_key() );
 
     Memcached::set_namespace( FixMyStreet->config('FMS_DB_NAME') . ":" );

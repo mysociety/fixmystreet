@@ -35,11 +35,6 @@ subtest "check that no id redirects to homepage" => sub {
     is $mech->uri->path, '/', "at home page";
 };
 
-subtest "test id=NNN redirects to /NNN" => sub {
-    $mech->get_ok("/report?id=$report_id");
-    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
-};
-
 subtest "test bad council email clients web links" => sub {
     $mech->get_ok("/report/3D$report_id");
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";

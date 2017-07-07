@@ -58,6 +58,11 @@ sub index : Path : Args(0) {
         return;
     }
 
+    if ($c->stash->{homepage_template}) {
+        $c->stash->{template} = $c->stash->{homepage_template};
+        $c->detach;
+    }
+
     $c->forward('/auth/get_csrf_token');
 }
 

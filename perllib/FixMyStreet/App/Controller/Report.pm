@@ -28,14 +28,11 @@ Redirect to homepage unless C<id> parameter in query, in which case redirect to
 sub index : Path('') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $id = $c->get_param('id');
-
-    my $uri =
-        $id
-      ? $c->uri_for( '/report', $id )
-      : $c->uri_for('/');
-
-    $c->res->redirect($uri);
+    if ($c->stash->{homepage_template}) {
+        $c->stash->{template} = 'index.html';
+    } else {
+        $c->res->redirect('/');
+    }
 }
 
 =head2 report_display

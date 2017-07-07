@@ -1,4 +1,4 @@
-[%~ INCLUDE navitem uri='/' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
+[%~ INCLUDE navitem uri=(homepage_template ? '/report' : '/') label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
 
 [%~ IF c.user_exists ~%]
     [%~ INCLUDE navitem uri='/my' label=loc('Your account') ~%]
