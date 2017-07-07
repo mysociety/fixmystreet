@@ -155,19 +155,8 @@ body.frontpage {
         background: url($image-sprite) -2px -108px no-repeat;
     }
 
-    // Because fms.com includes a .fms-pro-promo that we want to look separate
-    // from #front-howto and #front-recent, we move the white background and
-    // padding from .content to the .tablewrapper, so it visually stands alone.
     .content {
-        background-color: transparent;
-        padding: 0em 0em 1em;
         margin-top: -3em; // overlap the bottom of #front-main
-
-        .tablewrapper {
-            @include box-sizing(border-box);
-            padding: 1.5em;
-            background-color: white;
-        }
     }
 }
 
@@ -264,8 +253,15 @@ body.mappage .mysoc-footer {
     display: none;
 }
 
+// FMS Pro advert
+footer {
+  background: $base_bg;
+  margin: -1em;
+  padding: 1em 0;
+}
+
 .fms-pro-promo {
-  margin: 2em 0 3em 0;
+  margin: 1em 0 3em 0;
   padding: 2em;
   background: $primary url(images/tile-y.jpg) 0 0 repeat;
 
