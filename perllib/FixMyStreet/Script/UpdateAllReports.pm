@@ -140,7 +140,10 @@ sub generate_dashboard {
     %problems_fixed_by_period = stuff_by_day_or_year('day',
         'Comment',
         confirmed => { '>=', \"current_timestamp-'8 days'::interval" },
-        problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
+        -or => [
+            problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
+            mark_fixed => 1,
+        ],
     );
     my %problems_updated_by_period = stuff_by_day_or_year('day',
         'Comment',
