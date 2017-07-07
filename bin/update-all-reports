@@ -21,13 +21,13 @@ use Getopt::Long::Descriptive;
 
 my ($opt, $usage) = describe_options(
     '%c %o',
-    [ 'dashboard', "Output JSON for new dashboard-style page." ],
+    [ 'table', "Output JSON for old table-style page." ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
 print($usage->text), exit if $opt->help;
 
-if ($opt->dashboard) {
-    FixMyStreet::Script::UpdateAllReports::generate_dashboard();
-} else {
+if ($opt->table) {
     FixMyStreet::Script::UpdateAllReports::generate();
+} else {
+    FixMyStreet::Script::UpdateAllReports::generate_dashboard();
 }

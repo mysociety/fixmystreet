@@ -384,8 +384,6 @@ sub load_and_group_problems : Private {
     $c->forward('stash_report_sort', [ $c->cobrand->reports_ordering ]);
 
     my $page = $c->get_param('p') || 1;
-    # NB: If 't' is specified, it will override 'status'.
-    my $type = $c->get_param('t') || 'all';
     my $category = [ $c->get_param_list('filter_category', 1) ];
 
     my $states = $c->stash->{filter_problem_states};
@@ -411,25 +409,6 @@ sub load_and_group_problems : Private {
            columns => ['me.id'],
         })->as_query;
         $where->{'me.id'} = { -not_in => $shortlisted_ids };
-    }
-
-    my $not_open = [ FixMyStreet::DB::Result::Problem::fixed_states(), FixMyStreet::DB::Result::Problem::closed_states() ];
-    if ( $type eq 'new' ) {
-        $where->{confirmed} = { '>', \"current_timestamp - INTERVAL '4 week'" };
-        $where->{state} = { 'IN', [ FixMyStreet::DB::Result::Problem::open_states() ] };
-    } elsif ( $type eq 'older' ) {
-        $where->{confirmed} = { '<', \"current_timestamp - INTERVAL '4 week'" };
-        $where->{lastupdate} = { '>', \"current_timestamp - INTERVAL '8 week'" };
-        $where->{state} = { 'IN', [ FixMyStreet::DB::Result::Problem::open_states() ] };
-    } elsif ( $type eq 'unknown' ) {
-        $where->{lastupdate} = { '<', \"current_timestamp - INTERVAL '8 week'" };
-        $where->{state} = { 'IN',  [ FixMyStreet::DB::Result::Problem::open_states() ] };
-    } elsif ( $type eq 'fixed' ) {
-        $where->{lastupdate} = { '>', \"current_timestamp - INTERVAL '8 week'" };
-        $where->{state} = $not_open;
-    } elsif ( $type eq 'older_fixed' ) {
-        $where->{lastupdate} = { '<', \"current_timestamp - INTERVAL '8 week'" };
-        $where->{state} = $not_open;
     }
 
     if (@$category) {
