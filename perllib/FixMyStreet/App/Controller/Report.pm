@@ -367,15 +367,9 @@ sub inspect : Private {
             if ( $problem->state ne $old_state ) {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
 
-                # If the state has been changed by an inspector, consider the
-                # report to be inspected.
-                unless ($problem->get_extra_metadata('inspected')) {
-                    $problem->set_extra_metadata( inspected => 1 );
-                    $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
-                    my $state = $problem->state;
-                    $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
-                    $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
-                }
+                my $state = $problem->state;
+                $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
+                $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
 
                 # If an inspector has changed the state, subscribe them to
                 # updates
@@ -385,6 +379,13 @@ sub inspect : Private {
                     lang         => $problem->lang,
                 };
                 $problem->user->create_alert($problem->id, $options);
+            }
+
+            # If the state has been changed to action scheduled and they've said
+            # they want to raise a defect, consider the report to be inspected.
+            if ($problem->state eq 'action scheduled' && $c->get_param('raise_defect') && !$problem->get_extra_metadata('inspected')) {
+                $problem->set_extra_metadata( inspected => 1 );
+                $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
             }
         }
 
