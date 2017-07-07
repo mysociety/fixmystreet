@@ -23,7 +23,7 @@
         <h2>UK: [% loc('All time') %]</h2>
         <div class="labelled-line-chart">
             <canvas id="chart-all-reports" width="600" height="300"
-                data-labels="[[% problem_periods.join(',') %]]"
+                data-labels="[&quot;[% problem_periods.join('&quot;,&quot;') %]&quot;]"
                 data-values-reports="[[% problems_reported_by_period.join(',') %]]"
                 data-values-fixed="[[% problems_fixed_by_period.join(',') %]]"
                 ></canvas>

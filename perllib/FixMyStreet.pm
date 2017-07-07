@@ -177,6 +177,7 @@ sub set_time_zone {
     my $tz_f = time_zone();
     $dt->set_time_zone($tz);
     $dt->set_time_zone($tz_f) if $tz_f;
+    return $dt;
 }
 
 # Development functions

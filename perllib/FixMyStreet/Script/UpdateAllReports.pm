@@ -78,34 +78,43 @@ sub generate {
     File::Slurp::write_file( FixMyStreet->path_to( '../data/all-reports.json' )->stringify, \$body );
 }
 
+sub end_period {
+    my $period = shift;
+    FixMyStreet->set_time_zone(DateTime->now)->truncate(to => $period)->add($period . 's' => 1)->subtract(seconds => 1);
+}
+
+sub loop_period {
+    my ($date, $period, $extra) = @_;
+    my $end = end_period($period);
+    my @out;
+    while ($date <= $end) {
+        push @out, { n => $date->$period, $extra ? (d => $date->$extra) : () };
+        $date->add($period . 's' => 1);
+    }
+    return @out;
+}
+
 sub generate_dashboard {
     my %data;
 
-    my $now = DateTime->now;
+    my $end_today = end_period('day');
     my $min_confirmed = FixMyStreet::DB->resultset('Problem')->search({
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         select => [ { min => 'confirmed' } ],
         as => [ 'confirmed' ],
-    })->first->confirmed;
+    })->first->confirmed->truncate(to => 'day');
 
-    my ($group_by, @problem_periods);
-    if (DateTime::Duration->compare($now - $min_confirmed, DateTime::Duration->new(months => 1)) < 0) {
+    my ($group_by, $extra);
+    if (DateTime::Duration->compare($end_today - $min_confirmed, DateTime::Duration->new(months => 1)) < 0) {
         $group_by = 'day';
-        while ($min_confirmed < $now) {
-            push @problem_periods, $min_confirmed->day;
-            $min_confirmed->add(days => 1);
-        }
-    } elsif (DateTime::Duration->compare($now - $min_confirmed, DateTime::Duration->new(years => 1)) < 0) {
+    } elsif (DateTime::Duration->compare($end_today - $min_confirmed, DateTime::Duration->new(years => 1)) < 0) {
         $group_by = 'month';
-        while ($min_confirmed < $now) {
-            push @problem_periods, $min_confirmed->month_abbr;
-            $min_confirmed->add(months => 1);
-        }
+        $extra = 'month_abbr';
     } else {
         $group_by = 'year';
-        @problem_periods = ($min_confirmed->year..$now->year);
     }
+    my @problem_periods = loop_period($min_confirmed, $group_by, $extra);
 
     my %problems_reported_by_period = stuff_by_day_or_year(
         $group_by, 'Problem',
@@ -117,11 +126,11 @@ sub generate_dashboard {
     );
 
     my (@problems_reported_by_period, @problems_fixed_by_period);
-    foreach (@problem_periods) {
+    foreach (map { $_->{n} } @problem_periods) {
         push @problems_reported_by_period, ($problems_reported_by_period[-1]||0) + ($problems_reported_by_period{$_}||0);
         push @problems_fixed_by_period, ($problems_fixed_by_period[-1]||0) + ($problems_fixed_by_period{$_}||0);
     }
-    $data{problem_periods} = \@problem_periods;
+    $data{problem_periods} = [ map { $_->{d} || $_->{n} } @problem_periods ];
     $data{problems_reported_by_period} = \@problems_reported_by_period;
     $data{problems_fixed_by_period} = \@problems_fixed_by_period;
 
