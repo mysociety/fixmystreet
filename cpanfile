@@ -69,6 +69,7 @@ requires 'Locale::gettext';
 requires 'LWP::Simple';
 requires 'LWP::UserAgent';
 requires 'Math::Trig';
+requires 'MIME::Parser'; # HandleMail
 requires 'Module::Pluggable';
 requires 'Moose';
 requires 'MooX::Types::MooseLike';

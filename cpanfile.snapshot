@@ -3495,6 +3495,53 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0.47
+  MIME-tools-5.504
+    pathname: D/DS/DSKOLL/MIME-tools-5.504.tar.gz
+    provides:
+      MIME::Body 5.504
+      MIME::Body::File 5.504
+      MIME::Body::InCore 5.504
+      MIME::Body::Scalar 5.504
+      MIME::Decoder 5.504
+      MIME::Decoder::Base64 5.504
+      MIME::Decoder::BinHex 5.504
+      MIME::Decoder::Binary 5.504
+      MIME::Decoder::Gzip64 5.504
+      MIME::Decoder::NBit 5.504
+      MIME::Decoder::QuotedPrint 5.504
+      MIME::Decoder::UU 5.504
+      MIME::Entity 5.504
+      MIME::Field::ConTraEnc 5.504
+      MIME::Field::ContDisp 5.504
+      MIME::Field::ContType 5.504
+      MIME::Field::ParamVal 5.504
+      MIME::Head 5.504
+      MIME::Parser 5.504
+      MIME::Parser::FileInto undef
+      MIME::Parser::FileUnder undef
+      MIME::Parser::Filer undef
+      MIME::Parser::Reader undef
+      MIME::Parser::Results undef
+      MIME::Tools 5.504
+      MIME::WordDecoder undef
+      MIME::WordDecoder::ISO_8859 undef
+      MIME::WordDecoder::US_ASCII undef
+      MIME::WordDecoder::UTF_8 undef
+      MIME::Words 5.504
+    requirements:
+      ExtUtils::MakeMaker 6.42
+      File::Path 1
+      File::Spec 0.6
+      File::Temp 0.18
+      IO::File 1.13
+      IO::Handle 0
+      MIME::Base64 2.2
+      Mail::Field 1.05
+      Mail::Header 1.01
+      Mail::Internet 1.0203
+      Test::Deep 0
+      Test::More 0
+      perl 5.008
   MRO-Compat-0.12
     pathname: B/BO/BOBTFISH/MRO-Compat-0.12.tar.gz
     provides:
