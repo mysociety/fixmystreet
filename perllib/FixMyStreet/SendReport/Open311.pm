@@ -35,8 +35,7 @@ sub send {
 
         # Try and fill in some ones that we've been asked for, but not asked the user for
 
-        my $contact = $row->result_source->schema->resultset("Contact")->find( {
-            deleted => 0,
+        my $contact = $row->result_source->schema->resultset("Contact")->not_deleted->find( {
             body_id => $body->id,
             category => $row->category
         } );

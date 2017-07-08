@@ -10,8 +10,8 @@
     questionnaires_1 = questionnaires.1 | format_number;
     total_bodies = bodies.size | format_number;
     contacts_total = contacts.total | format_number;
-    contacts_1 = contacts.1 | format_number;
-    contacts_0 = contacts.0 | format_number;
+    contacts_confirmed = contacts.confirmed | format_number;
+    contacts_unconfirmed = contacts.unconfirmed | format_number;
 -%]
 
 <ul>
@@ -24,5 +24,5 @@
     <li>[% tprintf( loc('%s confirmed alerts, %s unconfirmed'), decode(alerts_1), decode(alerts_0)) %]</li>
     <li>[% tprintf( loc('%s questionnaires sent &ndash; %s answered (%s%%)'), decode(questionnaires_total), decode(questionnaires_1), questionnaires_pc) %]</li>
     <li>[% tprintf( loc('%s bodies'), decode(total_bodies)) %],
-        [% tprintf( loc('%s council contacts &ndash; %s confirmed, %s unconfirmed'), decode(contacts_total), decode(contacts_1), decode(contacts_0)) %]</li>
+        [% tprintf( loc('%s council contacts &ndash; %s confirmed, %s unconfirmed'), decode(contacts_total), decode(contacts_confirmed), decode(contacts_unconfirmed)) %]</li>
 </ul>

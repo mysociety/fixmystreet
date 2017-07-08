@@ -38,24 +38,23 @@
 
   <div class="admin-hint">
     <p>
-        [% loc("Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.
-                If you are not sure of the origin or validity of the contact, leave this unchecked.") %]
+        [%
+loc("Use <strong>confirmed</strong> to indicate that this contact has been
+confirmed as correct. If you are not sure of the origin or validity of the
+contact, use <strong>unconfirmed</strong>. <strong>inactive</strong> will
+remove the category from use when reporting problems, but keep it available in
+map filters, and <strong>deleted</strong> will remove the category from there
+as well.") %]
     </p>
   </div>
   <p>
-    <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed OR contact.confirmed == "" %]>
-    <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
-  </p>
-
-  <div class="admin-hint">
-    <p>
-      [% loc("Check <strong>deleted</strong> to remove the category from use. 
-        It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
-    </p>
-  </div>
-  <p>
-    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
-    <label for="deleted" class="inline">[% loc('Deleted') %]</label>
+    <label for="state">[% loc('State') %]</label>
+    <select name="state" id="state">
+      <option value="unconfirmed"[% ' selected' IF contact.state == 'unconfirmed' %]>[% loc('Unconfirmed') %]
+      <option value="confirmed"[% ' selected' IF contact.state == 'confirmed' || contact.state == "" %]>[% loc('Confirmed') %]
+      <option value="inactive"[% ' selected' IF contact.state == 'inactive' %]>[% loc('Inactive') %]
+      <option value="deleted"[% ' selected' IF contact.state == 'deleted' %]>[% loc('Deleted') %]
+    </select>
   </p>
 
   <div class="admin-hint">

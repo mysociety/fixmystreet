@@ -3,7 +3,7 @@
 <ul>
     <li>[% tprintf( loc('<strong>%s</strong> live problems'), total_problems_live ) %];
     [% tprintf( loc('from %s different users'), total_problems_users ) %]</li>
-    <li>[% tprintf( loc('%s council contacts &ndash; %s confirmed, %s unconfirmed'), contacts.total, contacts.1, contacts.0) %]</li>
+    <li>[% tprintf( loc('%s council contacts &ndash; %s confirmed, %s unconfirmed'), contacts.total, contacts.confirmed, contacts.unconfirmed) %]</li>
 </ul>
 
 <h2>[% loc('Problem breakdown by state') %]</h2>

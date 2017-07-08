@@ -213,7 +213,7 @@ subtest "test greenwich all reports page" => sub {
             body_id => $body->id,
             category => 'Deleted',
             email => 'deleted@example.com',
-            deleted => 1
+            state => 'deleted',
         );
         ok $mech->host("greenwich.fixmystreet.com"), 'change host to greenwich';
         $mech->get_ok('/reports/Royal+Borough+of+Greenwich');

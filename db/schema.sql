@@ -69,8 +69,12 @@ create table contacts (
     body_id integer not null references body(id),
     category text not null default 'Other',
     email text not null,
-    confirmed boolean not null,
-    deleted boolean not null,
+    state text not null check (
+        state = 'unconfirmed'
+        or state = 'confirmed'
+        or state = 'inactive'
+        or state = 'deleted'
+    ),
 
     -- last editor
     editor text not null,
@@ -102,8 +106,12 @@ create table contacts_history (
     body_id integer not null,
     category text not null default 'Other',
     email text not null,
-    confirmed boolean not null,
-    deleted boolean not null,
+    state text not null check (
+        state = 'unconfirmed'
+        or state = 'confirmed'
+        or state = 'inactive'
+        or state = 'deleted'
+    ),
 
     -- editor
     editor text not null,
@@ -118,7 +126,7 @@ create table contacts_history (
 create function contacts_updated()
     returns trigger as '
     begin
-        insert into contacts_history (contact_id, body_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.id, new.body_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
+        insert into contacts_history (contact_id, body_id, category, email, editor, whenedited, note, state) values (new.id, new.body_id, new.category, new.email, new.editor, new.whenedited, new.note, new.state);
         return new;
     end;
 ' language 'plpgsql';

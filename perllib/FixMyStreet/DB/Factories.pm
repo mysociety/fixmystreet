@@ -91,8 +91,7 @@ __PACKAGE__->fields({
         (my $email = lc $_) =~ s/ /-/g;
         lc $category . '@example.org';
     }),
-    confirmed => 1,
-    deleted => 0,
+    state => 'confirmed',
     editor => 'Factory',
     whenedited => \'current_timestamp',
     note => 'Created by factory',

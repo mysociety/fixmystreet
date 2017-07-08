@@ -11,8 +11,17 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("contacts");
 __PACKAGE__->add_columns(
+  "id",
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "contacts_id_seq",
+  },
   "body_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "category",
+  { data_type => "text", default_value => "Other", is_nullable => 0 },
   "email",
   { data_type => "text", is_nullable => 0 },
   "editor",
@@ -21,19 +30,6 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 0 },
   "note",
   { data_type => "text", is_nullable => 0 },
-  "confirmed",
-  { data_type => "boolean", is_nullable => 0 },
-  "category",
-  { data_type => "text", default_value => "Other", is_nullable => 0 },
-  "deleted",
-  { data_type => "boolean", is_nullable => 0 },
-  "id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "contacts_id_seq",
-  },
   "extra",
   { data_type => "text", is_nullable => 1 },
   "non_public",
@@ -46,6 +42,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", default_value => "", is_nullable => 1 },
   "send_method",
   { data_type => "text", is_nullable => 1 },
+  "state",
+  { data_type => "text", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("contacts_body_id_category_idx", ["body_id", "category"]);
@@ -75,8 +73,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-02-13 15:11:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:f9VepR/oPyr3z6PUpJ4w2A
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-07-08 20:45:04
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:t/VtPP11R8bbqPZdEVXffw
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');

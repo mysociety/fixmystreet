@@ -167,10 +167,9 @@ sub test_overrides {
             $body->update({ can_be_devolved => 1 });
 
             my $contact = $body->contacts->find_or_create(
-                confirmed => 1,
+                state => 'confirmed',
                 email => 'ZZ',
                 category => 'ZZ',
-                deleted => 0,
                 editor => 'test suite',
                 note => '',
                 whenedited => DateTime->now,

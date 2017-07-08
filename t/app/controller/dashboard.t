@@ -59,9 +59,8 @@ FixMyStreet::override_config {
                 body_id    => $body->id,
                 category   => $contact,
                 email      => "$contact\@example.org",
-                confirmed  => 1,
+                state => 'confirmed',
                 whenedited => DateTime->now,
-                deleted    => 0,
                 editor     => 'test',
                 note       => 'test',
             }
