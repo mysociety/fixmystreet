@@ -19,6 +19,11 @@ sub not_deleted {
     return $rs->search( { $rs->me('state') => { '!=' => 'deleted' } } );
 }
 
+sub active {
+    my $rs = shift;
+    $rs->search( { $rs->me('state') => [ 'unconfirmed', 'confirmed' ] } );
+}
+
 sub summary_count {
     my ( $rs, $restriction ) = @_;
 

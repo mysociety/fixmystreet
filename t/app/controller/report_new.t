@@ -890,6 +890,32 @@ foreach my $test (
 
 }
 
+subtest "Test inactive categories" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        BASE_URL => 'https://www.fixmystreet.com',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        # Around and New report have both categories
+        $mech->get_ok('/around?pc=GL50+2PR');
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees');
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees');
+        $contact2->update( { state => 'inactive' } ); # Potholes
+        # But when Potholes is inactive, it's not on New report
+        $mech->get_ok('/around?pc=GL50+2PR');
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees');
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
+        $mech->content_lacks('Potholes');
+        $mech->content_contains('Trees');
+        # Change back
+        $contact2->update( { state => 'confirmed' } );
+    };
+};
+
 subtest "test report creation for a category that is non public" => sub {
     $mech->log_out_ok;
     $mech->clear_emails_ok;

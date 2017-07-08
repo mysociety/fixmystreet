@@ -605,7 +605,7 @@ sub setup_categories_and_bodies : Private {
     my $contacts                #
       = $c                      #
       ->model('DB::Contact')    #
-      ->not_deleted             #
+      ->active
       ->search( { body_id => [ keys %bodies ] } );
     my @contacts = $c->cobrand->categories_restriction($contacts)->all;
 
