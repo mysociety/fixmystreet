@@ -1,5 +1,74 @@
 ## Releases
 
+* Unreleased
+
+* v2.1 (8th July 2017)
+    - New features:
+        - Allow users to hide their name on reports/updates. #658
+        - New /reports page. #1630 #1726 #1753
+    - Front end improvements:
+        - Resize photos client-side before uploading. #1734
+        - CSS header/content/navigation refactoring/simplification. #1719 #1718
+        - Consolidate state dropdowns, make sure existing state is included. #1707
+        - Simplify `footer-marketing.html` for most cobrands. #1709
+        - Change the contact form Post button label to Send. #1750
+        - Add an optional phone field to the contact form. #1750
+        - Double resolution pin icons in core. #1713
+    - Admin improvements:
+        - Don't resend if category change subsets body. #1725
+        - Fix styling of 'remove from site' button. #1700
+        - Add inactive state to categories. #1757
+        - Inspect form:
+            - Make more visually distinct, better on medium screens. #1700 #1701
+            - Populate defect types dropdown on category change. #1698
+            - Update templates when category/state changed. #1729
+            - Fix bug when switching state to duplicate and back. #1729
+            - Don't preselect inspector template on page load. #1747
+        - Allow inspectors to shortlist all reports in view. #1652
+        - Subscribe inspectors to updates when state changes. #1694
+        - Streamline new reports for inspectors. #1636
+    - Bugfixes:
+        - Make three strings translatable. #1744 #1735
+        - Reinstate geolocation on alert page. #1726
+        - Fix clickable spaces on inspect form/ward page. #1724
+        - Make sure segmented control input not offscreen. #1749
+        - Remove superfluous quote in HTML script element. #1705
+        - Add missing closing </dl> to base FAQ.
+    - Development improvements:
+        - Allow static home page template override. #1745
+        - Add Debian stretch/perl 5.24 support. #1746
+        - Add scripts to rule them all. #1740
+        - Update submodule on any Vagrant provisioning. #1702
+        - Fix imbalanced paragraph tags in glossary. #1737
+        - Spot badly configured SMTP type. #1758.
+        - Add MAPIT_API_KEY support
+        - Hooks:
+            - Add hook for post-title field content in report form. #1735
+            - Add hook so cobrands can change pin hover title. #1713
+            - Allow cobrands to define pin colour for new reports. #1713
+        - Testing:
+            - Run each test file in a transaction. #1721
+            - Test script should run 't' when other args given. #1721
+            - Auto-add strict/warnings/Test::More with TestMech. #1554
+            - Fix test that would not run offline. #1712
+            - Fix timing edge case test failure.
+    - Backwards incompatible changes:
+        - The `nav-wrapper-2` class has been removed. If you have a
+          custom footer template, replace that class with 'container'. #1718
+        - The `/reports` page now uses different generated data. If you
+          have a custom `reports/index.html` template, you may need to
+          call `update-all-reports` with the `--table` argument.
+    - Internal things:
+        - Move third party libraries into vendor directories. #1704
+        - Stop using sudo on Travis, improve locale support. #1712
+        - Add CodeCov coverage testing. #1759
+    - UK:
+        - Add fixture script. #1720
+        - Add Borsetshire demo cobrand. #1717
+        - Remove requirement for fixed body IDs. #1721
+        - Show all pins on two-tier councils only. #1733
+        - Stop nearest request with scientific notation. #1695
+
 * v2.0.4 (13th April 2017)
     - Front end improvements:
         - On /reports maps, only include reports in view. #1689

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set this to the version we want to check out
-VERSION=${VERSION_OVERRIDE:-v2.0.4}
+VERSION=${VERSION_OVERRIDE:-v2.1}
 
 PARENT_SCRIPT_URL=https://github.com/mysociety/commonlib/blob/master/bin/install-site.sh
 
@@ -67,5 +67,5 @@ if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
     echo Installation complete - you should now be able to view the site at:
     echo   http://$HOST/
     echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
-    echo running: $REPOSITORY/bin/run-tests t
+    echo running: $REPOSITORY/script/test
 fi
