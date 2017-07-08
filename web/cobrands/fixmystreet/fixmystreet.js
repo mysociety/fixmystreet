@@ -991,8 +991,8 @@ fixmystreet.display = {
                 translation_strings.ok +
             '</a>' +
             '</p>')
+        .addClass('above-form') // Stop map being absolute, so reporting form doesn't get hidden
         .css({
-            position: 'relative', // Stop map being absolute, so reporting form doesn't get hidden
             width: width,
             height: height
         });
