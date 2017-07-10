@@ -110,7 +110,7 @@ requires 'Algorithm::Diff';
 # Modules used by CSS & watcher
 requires 'CSS::Sass';
 requires 'File::ChangeNotify';
-requires 'Path::Tiny';
+requires 'Path::Tiny', '0.104';
 requires 'File::Find::Rule';
 
 # Modules used by the test suite

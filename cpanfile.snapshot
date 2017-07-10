@@ -4581,28 +4581,30 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Path-Tiny-0.028
-    pathname: D/DA/DAGOLDEN/Path-Tiny-0.028.tar.gz
+  Path-Tiny-0.104
+    pathname: D/DA/DAGOLDEN/Path-Tiny-0.104.tar.gz
     provides:
-      Path::Tiny 0.028
+      Path::Tiny 0.104
+      Path::Tiny::Error 0.104
     requirements:
       Carp 0
       Cwd 0
       Digest 1.03
       Digest::SHA 5.45
       Exporter 5.57
-      ExtUtils::MakeMaker 6.30
+      ExtUtils::MakeMaker 6.17
       Fcntl 0
       File::Copy 0
+      File::Glob 0
       File::Path 2.07
-      File::Spec 3.40
-      File::Temp 0.18
+      File::Spec 0.86
+      File::Temp 0.19
       File::stat 0
-      autodie::exception 2.14
       constant 0
+      if 0
       overload 0
+      perl 5.008001
       strict 0
-      threads 0
       warnings 0
   PathTools-3.40
     pathname: S/SM/SMUELLER/PathTools-3.40.tar.gz
