@@ -1,198 +1,190 @@
 @import "_colours";
 @import "../sass/layout";
 
-#site-header {
-  background: $base_bg url(img/header_mid.jpg) 0 0 repeat-x;
+#site-logo {
+    margin: 0; // Left aligned again
 }
 
-body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
-  $logo-height: 90px;
-  $eh-nav-height: 32px;
-  $fms-nav-height: 43px;
+// Put the nav underneath the East Herts nav
 
-  #site-header {
-    height: $logo-height + $eh-nav-height + $fms-nav-height;
-
-    .container:first-child {
-      height: $logo-height;
-    }
-
-    .header__eh_nav {
-      display: block;
-      background-color: $eh_dark_green;
-      background-image: url(img/welcome_mid.gif);
-      background-repeat: repeat-x;
-      background-position: 0 0;
-      height: $eh-nav-height;
-
-      ul, span {
-        font-size: 1.1em;
-        line-height: $eh-nav-height;
-        color: white;
-      }
-
-      ul {
-        float: right;
-        text-align: right;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-
-        li {
-          display: inline;
-          margin: 0;
-          padding: 0;
-
-          a {
-            color: white;
-            padding: 0 0.5em 0 0.6em;
-          }
-        }
-      }
-    }
-
-    .header__eh_top_nav {
-      display: block;
-      position: relative;
-      z-index: 4;
-
-      ul {
-        float: right;
-        margin: 0;
-        list-style: none;
-
-        li {
-          display: inline;
-          list-style: none;
-        }
-      }
-
-      ul#toputilnav {
-        width: 100%;
-        text-align: right;
-
-        li {
-          margin: 0;
-          padding: 0;
-
-          a {
-            padding: 0 0.5em 0 0.25em;
-            font-size: 0.9em;
-            color: black;
-          }
-
-          &:after {
-            content: "";
-            border-right: solid 1px $eh_dark_grey;
-          }
-
-          // For some reason the spacing isn't even on the 'cookies' link,
-          // so this sorts it out.
-          &:first-child {
-            margin-right: 0.25em;
-          };
-
-          &:last-child {
-            a {
-              padding-right: 0;
-            }
-            &:after {
-              border-right: none;
-            }
-          }
-        }
-      }
-
-      ul#bannerimages {
-        margin-top: 0.25em;
-      }
-    }
-  }
-
-  #site-logo {
-    $img-height: 184px;
-    $img-width: 399px;
+#main-nav {
+    display: block;
     position: absolute;
-    top: $logo-height - $img-height;
-    width: $img-width;
-    height: $img-height;
-    background-image: url(img/toplogo.jpg);
-    background-repeat: no-repeat;
-    background-position: bottom;
-    background-color: $eh_blue;
-    background-size: $img-width $img-height;
-  }
-
-  #main-nav {
-    position: absolute;
-    top: $logo-height + $eh-nav-height;
+    top: 124px; // 80px + 40px + 4px gap
+    left: 0;
     width: 100%;
     float: none;
     min-height: 0;
-  }
-
-  .nav-menu {
-    float: none;
-    width: 100%;
-    text-align: center;
-
-    li {
-      float: none;
-      display: inline-block;
-    }
-
-    .nav-menu__item--privacy {
-      display: none;
-    }
-  }
 }
 
+// And make it look the same
+
+.nav-menu {
+    background-color: $eh_dark_grey;
+    margin-right: calc(40px - -0.75em);
+    span {
+        color: #fff;
+        background-color: $eh_green;
+    }
+}
+
+.nav-menu--main {
+    a, span {
+        padding: 0.5em;
+        margin: 0.25em;
+        @include border-radius(0.25em);
+    }
+    a.report-a-problem-btn {
+        background-color: transparent;
+        padding: 0.5em;
+        margin: 0.25em;
+    }
+}
+
+// Front page, light background bar
+
 #front-main {
-  background-color: #f6f6f6;
+    background-color: #f6f6f6;
 }
 
 .content, #front-main {
-  color: $eh_dark_grey;
+    color: $eh_dark_grey;
 }
 
+// Extra height needed
 body.twothirdswidthpage .content .sticky-sidebar aside {
-  top: 11em;
-  box-shadow: none;
+  top: 16em;
 }
 
 body.mappage {
-  #site-logo {
-    top: 8px;
-  }
+    #site-header {
+        top: 40px;
+        height: 138px;
+    }
+}
 
-  .nav-menu--main {
-    a {
-      color: white;
+// Header bits from their stylesheet, tweaked for simpler display
+
+.toputils__right {
+    float: right;
+}
+.toputils__nav {
+    float: left;
+    padding: 0 0.25em;
+    li {
+        float: left;
+        list-style: none;
     }
-    span {
-      color: $eh_dark_grey;
-    }
-  }
+}
+.toputils__navlist {
+    margin: 0;
+    padding: 0;
+}
+a.toputils__navitem {
+    display: block;
+    color: #fff;
+    line-height: 2.5rem;
+    padding: 0 0.5em;
+    font-size: 0.875rem;
+}
+
+.mainmenu {
+    background-color: #00843d;
+}
+
+.mainmenu {
+    position:absolute;
+    display: block;
+    right: calc(40px - -0.75em);
+    top: 20px;
+}
+
+a.mainmenu__item {
+    font-size: 1.125rem;
+    line-height: normal;
+    display: block;
+    padding: 1em;
+    color: #fff
+}
+
+.mainmenu__list {
+    margin: 0;
+    padding: 0;
+}
+
+.mainmenu__list > li {
+    list-style: none;
+    float: left;
+    position: relative
+}
+
+.searchcontrol {
+    background-color: #fff;
+    font-size: .875rem;
+    position:absolute;
+    display: block;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    margin-top: 30px;
+    background-color: transparent
+}
+
+.searchcontrol__expandtoggle {
+    display:block;
+    width: 40px;
+    height: 40px;
+    background-image: url("https://www.eastherts.gov.uk/themes/cruise/images/searchbutton-transparent.png");
+    position: absolute;
+    right: 0;
+    text-indent: -99999px;
+}
+
+// Footer bits from their stylesheet, tweaked for smaller widths
+
+.footer__left {
+    float: left;
+    width: 266px;
+}
+.footer__right {
+    float: right;
+    width: 450px;
+}
+
+.footer__logo {
+    margin:0 0 1em 0
 }
 
 
-footer ul {
-  margin-bottom: 0.5em;
-  li {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
+.footer__socialmedia {
+    text-align:left
+}
 
-    &:after {
-      content: "";
-      border-right: solid 1px $eh_dark_grey;
-    }
-    &:last-child:after {
-      border-right: none;
-    }
+.footer__socialmedia img {
+    margin: 0 1em 1em 0
+}
 
-    a {
-      padding: 0 0.5em 0 0.25em;
-    }
-  }
+a.footer__navlink {
+    padding:0;
+    padding-right: .5em;
+    margin-right: .5em;
+    border-right: 1px solid #fff;
+    text-align: left
+}
+
+.footer__navitem:last-child a.footer__navlink {
+    border-right: 0
+}
+
+.footer__navitem {
+    float:left
+}
+
+.footer__copyright {
+    text-align:left
+}
+.footer__goss > a {
+    text-align:left
 }

@@ -1,49 +1,78 @@
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
-
 @import "../sass/base";
 
-.header__eh_nav, .header__eh_top_nav, .nav-menu li.user-meta--nav {
-  display: none;
+#site-header {
+    background-image: url('https://www.eastherts.gov.uk/media/29966/Website_background/image/panorama-lomoesque-compressor.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 #site-logo {
-  background: url(img/toplogo.gif);
-  background-size: 51px 48px;
-  height: 48px;
-  width: 51px;
+  margin: 0 auto;
+  background: url('https://www.eastherts.gov.uk/image/29967/site_logo/original.png');
+  width: 150px;
+  height: 138px;
 }
 
-h1, h2, h3, h4 {
-  color: $eh_green;
+// Seemed easiest to have a little bar above the header
+
+.toputils {
+    background-color: #000;
+    position: relative;
+    height: 40px;
 }
 
-footer {
-  background-color: $eh_med_grey;
-  background-image: url(img/footer.gif);
-  background-repeat: repeat-x;
-  background-position: top;
+// Footer styles from their stylesheet
 
-  text-align: center;
-  padding: 1em;
-  margin: 0;
-
-  p {
-    margin: 0;
-  }
-
-  ul {
-    margin: 0;
-    li {
-      list-style: none;
-
-      a, a:visited, a:hover, a:active {
-        color: $eh_dark_grey;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
+.footer {
+    padding: 2em 0.75em 1em;
+    color: #fff;
+    background-color: #000;
+    .container {
+        padding: 0;
+        margin: 0 auto;
     }
-  }
+}
+.footer__logo {
+    display: block;
+    margin: 0 auto 1em;
+}
+.footer__socialmedia {
+    text-align: center;
+    a {
+        text-decoration: none;
+    }
+}
+.footer__navigation {
+    overflow: hidden;
+    margin-bottom: 1em;
+    & > ul {
+        margin: 0;
+        padding: 0;
+        li {
+            list-style: none;
+        }
+    }
+}
+.footer__navitem {
+    margin-bottom: 0;
+}
+a.footer__navlink {
+    color: #fff;
+    display: block;
+    padding: 0.5em 0;
+    text-align: center;
+}
+.footer__copyright {
+    text-align: center;
+    clear: both;
+}
+.footer__goss > a {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    color: #ccc;
+    clear: both;
 }
