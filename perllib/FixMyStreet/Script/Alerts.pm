@@ -62,7 +62,7 @@ sub send() {
         $query =~ s/\?/alert.parameter/ if ($query =~ /\?/);
         $query =~ s/\?/alert.parameter2/ if ($query =~ /\?/);
 
-        $query = FixMyStreet::DB->storage->dbh->prepare($query);
+        $query = FixMyStreet::DB->schema->storage->dbh->prepare($query);
         $query->execute();
         my $last_alert_id;
         my %data = ( template => $alert_type->template, data => [], schema => $schema );
@@ -225,7 +225,7 @@ sub send() {
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
             and users.email <> ?
             order by confirmed desc";
-        $q = FixMyStreet::DB->storage->dbh->prepare($q);
+        $q = FixMyStreet::DB->schema->storage->dbh->prepare($q);
         $q->execute($latitude, $longitude, $d, $alert->whensubscribed, $alert->id, $alert->user->email);
         while (my $row = $q->fetchrow_hashref) {
             $schema->resultset('AlertSent')->create( {

@@ -31,7 +31,7 @@ my ($opt, $usage) = describe_options(
 );
 print($usage->text), exit if $opt->help;
 
-my $db = FixMyStreet::DB->storage;
+my $db = FixMyStreet::DB->schema->storage;
 $db->txn_begin;
 END {
     if ($db) {

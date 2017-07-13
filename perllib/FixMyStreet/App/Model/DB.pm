@@ -7,8 +7,8 @@ use warnings;
 use FixMyStreet;
 
 __PACKAGE__->config(
-    schema_class => 'FixMyStreet::DB',
-    connect_info => sub { FixMyStreet::DB->storage->dbh },
+    schema_class => 'FixMyStreet::DB::Schema',
+    connect_info => sub { FixMyStreet::DB->schema->storage->dbh },
 );
 
 =head1 NAME

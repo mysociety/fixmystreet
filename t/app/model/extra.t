@@ -2,7 +2,7 @@ use FixMyStreet::Test;
 
 use DateTime;
 
-my $db = FixMyStreet::DB->storage->schema;
+my $db = FixMyStreet::DB->schema;
 
 my $body = $db->resultset('Body')->create({ name => 'ExtraTestingBody' });
 

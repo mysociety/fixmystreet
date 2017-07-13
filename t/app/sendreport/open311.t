@@ -157,7 +157,7 @@ sub test_overrides {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich'],
         }, sub {
-            my $db = FixMyStreet::DB->storage->schema;
+            my $db = FixMyStreet::DB->schema;
             #$db->txn_begin;
 
             my $params = { id => $input->{body_id}, name => $input->{body_name} };
