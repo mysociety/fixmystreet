@@ -1,7 +1,13 @@
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use mySociety::MaPit;
 use FixMyStreet::App;
 use DateTime;
+
+set_absolute_time('2017-07-07T16:00:00');
+END {
+    restore_time;
+}
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
@@ -11,9 +17,9 @@ my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
 my $body_fife_id = $mech->create_body_ok(2649, 'Fife Council')->id;
 my $body_slash_id = $mech->create_body_ok(10000, 'Electricity/Gas Council')->id;
 
-my @edinburgh_problems = $mech->create_problems_for_body(3, $body_edin_id, 'All reports');
-my @westminster_problems = $mech->create_problems_for_body(5, $body_west_id, 'All reports');
-my @fife_problems = $mech->create_problems_for_body(15, $body_fife_id, 'All reports');
+my @edinburgh_problems = $mech->create_problems_for_body(3, $body_edin_id, 'All reports', { category => 'Potholes' });
+my @westminster_problems = $mech->create_problems_for_body(5, $body_west_id, 'All reports', { category => 'Graffiti' });
+my @fife_problems = $mech->create_problems_for_body(15, $body_fife_id, 'All reports', { category => 'Flytipping' });
 
 is scalar @westminster_problems, 5, 'correct number of westminster problems created';
 is scalar @edinburgh_problems, 3, 'correct number of edinburgh problems created';
@@ -80,30 +86,21 @@ $fife_problems[10]->update( {
 
 # Run the cron script that makes the data for /reports so we don't get an error.
 use FixMyStreet::Script::UpdateAllReports;
-FixMyStreet::Script::UpdateAllReports::generate();
+FixMyStreet::Script::UpdateAllReports::generate_dashboard();
 
 # check that we can get the page
 $mech->get_ok('/reports');
-$mech->title_like(qr{Summary reports});
+$mech->title_like(qr{Dashboard});
 $mech->content_contains('Birmingham');
 
-my $stats = $mech->extract_report_stats;
-
-is $stats->{'City of Edinburgh Council'}->[1], 2, 'correct number of new reports for Edinburgh';
-is $stats->{'City of Edinburgh Council'}->[2], 1, 'correct number of older reports for Edinburgh';
-
-is $stats->{'Westminster City Council'}->[1], 5, 'correct number of reports for Westminster';
-
-is $stats->{'Fife Council'}->[1], 5, 'correct number of new reports for Fife';
-is $stats->{'Fife Council'}->[2], 4, 'correct number of old reports for Fife';
-is $stats->{'Fife Council'}->[3], 1, 'correct number of unknown reports for Fife';
-is $stats->{'Fife Council'}->[4], 3, 'correct number of fixed reports for Fife';
-is $stats->{'Fife Council'}->[5], 1, 'correct number of older fixed reports for Fife';
+$mech->content_contains('&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;');
+$mech->content_contains('5,9,10,22');
+$mech->content_contains('2,3,4,4');
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
-    $mech->follow_link_ok( { text_regex => qr/Birmingham/ } );
+    $mech->submit_form_ok( { with_fields => { body => $body_edin_id } }, 'Submitted dropdown okay' );
     $mech->get_ok('/reports/Westminster');
 };
 
@@ -118,54 +115,44 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->get_ok('/reports');
-    $mech->follow_link_ok({ url_regex => qr{/reports/Electricity_Gas\+Council} });
+    $mech->submit_form_ok({ with_fields => { body => $body_slash_id } }, 'Submitted dropdown okay');
     is $mech->uri->path, '/reports/Electricity_Gas+Council', 'Path is correct';
 
-    $mech->get_ok('/reports/City+of+Edinburgh?t=new');
+    $mech->get_ok('/reports/City+of+Edinburgh?status=open');
 };
 $problems = $mech->extract_problem_list;
-is scalar @$problems, 2, 'correct number of new problems displayed';
+is scalar @$problems, 3, 'correct number of open problems displayed';
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
-    $mech->get_ok('/reports/City+of+Edinburgh?t=older');
+    $mech->get_ok('/reports/City+of+Edinburgh?status=closed');
 };
 $problems = $mech->extract_problem_list;
-is scalar @$problems, 1, 'correct number of older problems displayed';
+is scalar @$problems, 0, 'correct number of closed problems displayed';
 
 for my $test (
     {
-        desc => 'new fife problems on report page',
-        type => 'new',
-        expected => 5
+        desc => 'open fife problems on report page',
+        type => 'open',
+        expected => 10
     },
     {
-        desc => 'older fife problems on report page',
-        type => 'older',
-        expected => 4
-    },
-    {
-        desc => 'unknown fife problems on report page',
-        type => 'unknown',
-        expected => 1
+        desc => 'closed fife problems on report page',
+        type => 'closed',
+        expected => 0
     },
     {
         desc => 'fixed fife problems on report page',
         type => 'fixed',
-        expected => 3
-    },
-    {
-        desc => 'older_fixed fife problems on report page',
-        type => 'older_fixed',
-        expected => 1
+        expected => 4
     },
 ) {
     subtest $test->{desc} => sub {
         FixMyStreet::override_config {
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $mech->get_ok('/reports/Fife+Council?t=' . $test->{type});
+            $mech->get_ok('/reports/Fife+Council?status=' . $test->{type});
         };
 
         $problems = $mech->extract_problem_list;
@@ -186,9 +173,10 @@ is scalar @$problems, 4, 'only public problems are displayed';
 
 $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible');
 
+# No change to numbers if report is non-public
 $mech->get_ok('/reports');
-$stats = $mech->extract_report_stats;
-is $stats->{'Westminster City Council'}->[1], 5, 'non public reports included in stats';
+$mech->content_contains('&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;');
+$mech->content_contains('5,9,10,22');
 
 subtest "test fiksgatami all reports page" => sub {
     FixMyStreet::override_config {

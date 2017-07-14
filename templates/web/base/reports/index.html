@@ -1,50 +1,113 @@
+[% USE Number.Format -%]
 [% extra_js = [
-    version('/js/jquery.fixedthead.js')
+    version('/vendor/chart.min.js'),
+    version('/vendor/accessible-autocomplete.min.js'),
+    version('/js/dashboard.js')
 ] -%]
-[% INCLUDE 'header.html', title = loc('Summary reports'), bodyclass => 'fullwidthpage' %]
+[%
+    problems_reported = problems_reported_by_period.last | format_number;
+    problems_fixed = problems_fixed_by_period.last | format_number;
+    last_seven_reported = last_seven_days.problems_total | format_number;
+    last_seven_updated = last_seven_days.updated_total | format_number;
+    last_seven_fixed = last_seven_days.fixed_total | format_number;
+    other_categories_formatted = other_categories | format_number;
+-%]
+[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass => 'dashboard fullwidthpage' %]
 
-<h1>[% loc('All Reports') %]</h1>
-
-<div class="intro">
-<p>
-    [% loc('This is a summary of all reports on this site.') %]
-  [% IF bodies.size > 1 %]
-    [% loc('Select a particular council to see the reports sent there.') %]
-  [% END %]
-  [% IF any_empty_bodies %]
-    [% loc('Greyed-out lines are councils that no longer exist.') %]
-  [% END %]
-</p>
+<div class="dashboard-header">
+    <h1>[% loc('Dashboard') %]</h1>
 </div>
 
-<table cellpadding="3" cellspacing="1" border="0" class="nicetable">
-<thead>
-<tr>
-<th class="title">[% loc('Name') %]</th>
-<th title="[% loc('Reported within the last four weeks') %]" class="data">[% loc('New <br>problems') %]</th>
-<th title="[% loc('Open for more than four weeks, with an update within the past eight weeks') %]" class="data">[% loc('Older <br>problems') %]</th>
-<th title="[% loc('Open, but not had any update in eight weeks') %]" class="data">[% loc('Old / unknown <br>problems') %]</th>
-<th title="[% loc('Marked fixed/closed in the past eight weeks') %]" class="data">[% loc('Recently <br>fixed') %]</th>
-<th title="[% loc('Marked fixed/closed more than eight weeks ago') %]" class="data">[% loc('Older <br>fixed') %]</th>
-</tr>
-</thead>
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--12">
+        <h2>[% loc('All time') %]</h2>
+        <div class="labelled-line-chart">
+            <canvas id="chart-all-reports" width="600" height="300"
+                data-labels="[&quot;[% problem_periods.join('&quot;,&quot;') %]&quot;]"
+                data-values-reports="[[% problems_reported_by_period.join(',') %]]"
+                data-values-fixed="[[% problems_fixed_by_period.join(',') %]]"
+                ></canvas>
+            <span class="label" data-datasetindex="0"><strong style="color: #F4A140">[% tprintf(nget("%s problem reported", "%s problems reported", problems_reported_by_period.last), decode(problems_reported) _ '</strong>') %]</span>
+            <span class="label" data-datasetindex="1"><strong style="color: #62B356">[% tprintf(nget("%s report marked as fixed", "%s reports marked as fixed", problems_fixed_by_period.last), decode(problems_fixed) _ '</strong>') %]</span>
+        </div>
+    </div>
+</div>
 
-<tbody>
-[% FOREACH body IN bodies %]
-<tr align="center"
-[%- IF NOT body.get_column("area_count") %] class="gone"
-[%- ELSIF ! (loop.count % 2) %] class="a"
-[%- END %]>
-<td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
-<td class="data">[% IF open.${body.id}.new %]<a href="[% body.url(c, { t => 'new' }) %]">[% open.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
-<td class="data">[% IF open.${body.id}.older %]<a href="[% body.url(c, { t => 'older' }) %]">[% open.${body.id}.older %]</a>[% ELSE %]0[% END %]</td>
-<td class="data">[% IF open.${body.id}.unknown %]<a href="[% body.url(c, { t => 'unknown' }) %]">[% open.${body.id}.unknown %]</a>[% ELSE %]0[% END %]</td>
-<td class="data">[% IF fixed.${body.id}.new %]<a href="[% body.url(c, { t => 'fixed' }) %]">[% fixed.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
-<td class="data">[% IF fixed.${body.id}.old %]<a href="[% body.url(c, { t => 'older_fixed' }) %]">[% fixed.${body.id}.old %]</a>[% ELSE %]0[% END %]</td>
-</tr>
-[% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
-[% END %]
-</tbody>
-</table>
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% loc('Last 7 days') %]</h2>
+        <div class="dashboard-sparklines">
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#F4A140" data-values="[% last_seven_days.problems.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #F4A140;">[% tprintf(nget("%s problem reported", "%s problems reported", last_seven_days.problems_total), decode(last_seven_reported) _ '</strong>') %]</span>
+                </div>
+            </div>
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#4FADED" data-values="[% last_seven_days.updated.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #4FADED;">[% tprintf(nget("%s update on problems", "%s updates on problems", last_seven_days.updated_total), decode(last_seven_updated) _ '</strong>') %]</span>
+                </div>
+            </div>
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#62B356" data-values="[% last_seven_days.fixed.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #62B356;">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", last_seven_days.fixed_total), decode(last_seven_fixed) _ '</strong>') %]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-item dashboard-item--6">
+        <form class="dashboard-search" action="/reports">
+            <h2>[% loc('Show reports in your area') %]</h2>
+            <label for="body">[% loc('Pick your council') %]</label>
+            <div class="dashboard-search__input">
+                <select id="body" name="body" class="js-autocomplete">
+                    <option value="">[% loc('Pick your council') %]</option>
+                  [% FOR body IN bodies %]
+                    <option value="[% body.id %]">[% body.name | html ~%]
+                        [% IF NOT body.get_column("area_count") %] [% loc('(no longer exists)') %][% END ~%]
+                    </option>
+                  [% END %]
+                </select>
+            </div>
+            <div class="dashboard-search__submit">
+                <input type="submit" value="[% loc('Go') %]">
+            </div>
+        </form>
+    </div>
+</div>
 
-[% INCLUDE 'footer.html', pagefooter = 'yes' %]
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% loc('Top 5 responsive councils') %]</h2>
+        <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN top_five_bodies %]
+                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s day", "%s days", line.days), line.days) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% loc('Top 5 most used categories') %]</h2>
+        <p>[% loc('Number of problems reported in each category, in the last 7 days.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN top_five_categories %]
+                [% line_count = line.count | format_number ~%]
+                <tr><td>[% line.category %]</td><td>[% tprintf(nget("%s report", "%s reports", line.count), decode(line_count)) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% loc('Other categories') %]</td><td>[% tprintf(nget("%s report", "%s reports", other_categories), decode(other_categories_formatted)) %]</td></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
