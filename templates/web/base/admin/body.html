@@ -70,7 +70,7 @@
   <table cellspacing="0" cellpadding="2" border="1">
     <tr>
       <th>[% loc('Category') %]</th>
-      <th colspan=2>[% loc('State') %]</th>
+      <th>[% loc('State') %]</th>
       <th>[% loc('Last editor') %]</th>
       <th>[% loc('Note') %]</th>
     [% IF any_not_confirmed %]
@@ -78,20 +78,20 @@
     [% END %]
     </tr>
     [% WHILE ( cat = contacts.next ) %]
-      <tr [% IF cat.deleted %]class="is-deleted"[% END %]>
+      <tr [% IF cat.state == 'deleted' %]class="is-deleted"[% END %]>
         <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category | html %]</a>
             <br>[% cat.email | html %]</td>
         <td>
-            [% loc('Confirmed') %]:&nbsp;
-            [%- IF cat.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
-            <br>[% loc('Deleted') %]:&nbsp;
-            [%- IF cat.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]
-        </td>
-        <td>
-            [% loc('Private') %]:&nbsp;
-            [%- cat.non_public ? loc('Yes') : loc('No') %]
-            <br>[% loc('Devolved') %]:&nbsp;
-            [%- IF body.can_be_devolved AND cat.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
+            [% cat.state %]
+          [% IF cat.non_public OR (body.can_be_devolved AND cat.send_method) %]
+            <br><small>
+            [% IF cat.non_public %][% loc('Private') %][% END %]
+              [% IF cat.non_public AND (body.can_be_devolved AND cat.send_method) %]
+                /
+              [% END %]
+            [% IF body.can_be_devolved AND cat.send_method %][% loc('Devolved') %][% END %]
+            </small>
+          [% END %]
         </td>
         <td>[% cat.editor | html %]
             <br><small>[% PROCESS format_time time=cat.whenedited %]</small></td>

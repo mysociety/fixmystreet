@@ -10,13 +10,18 @@ sub me { join('.', shift->current_source_alias, shift || q{})  }
 
     $rs = $rs->not_deleted();
 
-Filter down to not deleted contacts - which have C<deleted> set to false;
+Filter down to not deleted contacts (so active or inactive).
 
 =cut
 
 sub not_deleted {
     my $rs = shift;
-    return $rs->search( { $rs->me('deleted') => 0 } );
+    return $rs->search( { $rs->me('state') => { '!=' => 'deleted' } } );
+}
+
+sub active {
+    my $rs = shift;
+    $rs->search( { $rs->me('state') => [ 'unconfirmed', 'confirmed' ] } );
 }
 
 sub summary_count {
@@ -25,9 +30,9 @@ sub summary_count {
     return $rs->search(
         $restriction,
         {
-            group_by => ['confirmed'],
-            select   => [ 'confirmed', { count => 'id' } ],
-            as       => [qw/confirmed confirmed_count/]
+            group_by => ['state'],
+            select   => [ 'state', { count => 'id' } ],
+            as       => [qw/state state_count/]
         }
     );
 }

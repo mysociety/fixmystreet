@@ -7,9 +7,11 @@
     <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
 
     <p>
-        <input type="hidden" name="confirmed" value="1">
-        <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
-        <label class="inline" for="deleted">[% loc('Deleted') %]</label>
+        <label for="state">[% loc('State') %]</label>
+        <select name="state" id="state">
+          <option value="confirmed"[% ' selected' IF contact.state == 'confirmed' %]>[% loc('Confirmed') %]
+          <option value="deleted"[% ' selected' IF contact.state == 'deleted' %]>[% loc('Deleted') %]
+        </select>
         <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
         <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
     </p>

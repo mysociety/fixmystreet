@@ -56,7 +56,7 @@ foreach my $test ( {
 ) {
     subtest $test->{desc} => sub {
         my $e = FixMyStreet::SendReport::Email->new;
-        $contact->update( { confirmed => 0 } ) if $test->{unconfirmed};
+        $contact->update( { state => 'unconfirmed' } ) if $test->{unconfirmed};
         $contact->update( { note => $test->{note} } ) if $test->{note};
         $e->add_body( $body ) if $test->{add_council};
         is $e->build_recipient_list( $row, {} ), $test->{count}, 'correct recipient list count';

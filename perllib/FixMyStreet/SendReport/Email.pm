@@ -12,15 +12,14 @@ sub build_recipient_list {
     my $all_confirmed = 1;
     foreach my $body ( @{ $self->bodies } ) {
 
-        my $contact = $row->result_source->schema->resultset("Contact")->find( {
-            deleted => 0,
+        my $contact = $row->result_source->schema->resultset("Contact")->not_deleted->find( {
             body_id => $body->id,
             category => $row->category
         } );
 
-        my ($body_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
+        my ($body_email, $state, $note) = ( $contact->email, $contact->state, $contact->note );
 
-        unless ($confirmed) {
+        unless ($state eq 'confirmed') {
             $all_confirmed = 0;
             $note = 'Body ' . $row->bodies_str . ' deleted'
                 unless $note;

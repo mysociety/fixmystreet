@@ -51,8 +51,7 @@
     <tr>
         <th>[% loc('When edited') %]</th>
         <th>[% loc('Email') %]</th>
-        <th>[% loc('Confirmed') %]</th>
-        <th>[% loc('Deleted') %]</th>
+        <th>[% loc('State') %]</th>
         <th>[% loc('Editor') %]</th>
         <th>[% loc('Note') %]</th>
     </tr>
@@ -61,8 +60,7 @@
     <tr>
         <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
         <td>[% PROCESS highlightchanged old=prev new=contact value='email' %]</td>
-        <td>[% PROCESS highlightchanged_yesno old=prev new=contact value='confirmed' %]</td>
-        <td>[% PROCESS highlightchanged_yesno old=prev new=contact value='deleted' %]</td>
+        <td>[% PROCESS highlightchanged old=prev new=contact value='state' %]</td>
         <td>[% contact.editor | html %]</td>
         <td>[% contact.note | html %]</td>
     </tr>

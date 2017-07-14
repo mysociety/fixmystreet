@@ -425,7 +425,7 @@ for my $contact ( {
     category => 'Graffiti',
     email => 'highways@example.net',
 }, {
-    confirmed => 0,
+    state => 'unconfirmed',
     body_id => $body_ids{2636}, # Isle of Wight
     category => 'potholes',
     email => '2636@example.com',

@@ -96,11 +96,11 @@ sub index : Path : Args(0) {
     my $contacts = $c->model('DB::Contact')->summary_count();
 
     my %contact_counts =
-      map { $_->confirmed => $_->get_column('confirmed_count') } $contacts->all;
+      map { $_->state => $_->get_column('state_count') } $contacts->all;
 
-    $contact_counts{0} ||= 0;
-    $contact_counts{1} ||= 0;
-    $contact_counts{total} = $contact_counts{0} + $contact_counts{1};
+    $contact_counts{confirmed} ||= 0;
+    $contact_counts{unconfirmed} ||= 0;
+    $contact_counts{total} = $contact_counts{confirmed} + $contact_counts{unconfirmed};
 
     $c->stash->{contacts} = \%contact_counts;
 
@@ -264,8 +264,8 @@ sub bodies : Path('bodies') : Args(0) {
     my $contacts = $c->model('DB::Contact')->search(
         undef,
         {
-            select => [ 'body_id', { count => 'id' }, { count => \'case when deleted then 1 else null end' },
-            { count => \'case when confirmed then 1 else null end' } ],
+            select => [ 'body_id', { count => 'id' }, { count => \'case when state = \'deleted\' then 1 else null end' },
+            { count => \'case when state = \'confirmed\' then 1 else null end' } ],
             as => [qw/body_id c deleted confirmed/],
             group_by => [ 'body_id' ],
             result_class => 'DBIx::Class::ResultClass::HashRefInflator'
@@ -364,8 +364,7 @@ sub update_contacts : Private {
         }
 
         $contact->email( $email );
-        $contact->confirmed( $c->get_param('confirmed') ? 1 : 0 );
-        $contact->deleted( $c->get_param('deleted') ? 1 : 0 );
+        $contact->state( $c->get_param('state') );
         $contact->non_public( $c->get_param('non_public') ? 1 : 0 );
         $contact->note( $c->get_param('note') );
         $contact->whenedited( \'current_timestamp' );
@@ -420,7 +419,7 @@ sub update_contacts : Private {
 
         $contacts->update(
             {
-                confirmed => 1,
+                state => 'confirmed',
                 whenedited => \'current_timestamp',
                 note => 'Confirmed',
                 editor => $editor,
@@ -484,8 +483,8 @@ sub fetch_contacts : Private {
 
     my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
     $c->stash->{contacts} = $contacts;
-    $c->stash->{live_contacts} = $contacts->search({ deleted => 0 });
-    $c->stash->{any_not_confirmed} = $contacts->search({ confirmed => 0 })->count;
+    $c->stash->{live_contacts} = $contacts->search({ state => { '!=' => 'deleted' } });
+    $c->stash->{any_not_confirmed} = $contacts->search({ state => 'unconfirmed' })->count;
 
     if ( $c->get_param('text') && $c->get_param('text') eq '1' ) {
         $c->stash->{template} = 'admin/council_contacts.txt';

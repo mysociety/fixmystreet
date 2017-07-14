@@ -160,7 +160,7 @@ sub get_services : Private {
     my $lon = $c->get_param('long') || '';
 
     # Look up categories for this council or councils
-    my $categories = $c->model('DB::Contact')->not_deleted;
+    my $categories = $c->model('DB::Contact')->active;
 
     if ($lat || $lon) {
         my $area_types = $c->cobrand->area_types;

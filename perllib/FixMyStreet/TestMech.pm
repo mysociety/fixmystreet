@@ -631,8 +631,7 @@ sub delete_defect_type {
 sub create_contact_ok {
     my $self = shift;
     my %contact_params = (
-        confirmed => 1,
-        deleted => 0,
+        state => 'confirmed',
         editor => 'Test',
         whenedited => \'current_timestamp',
         note => 'Created for test',

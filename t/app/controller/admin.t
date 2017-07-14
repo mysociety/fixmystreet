@@ -157,13 +157,13 @@ subtest 'check contact creation' => sub {
         email      => 'test@example.com',
         note       => 'test note',
         non_public => undef,
-        confirmed  => 0,
+        state => 'unconfirmed',
     } } );
 
     $mech->content_contains( 'test category' );
     $mech->content_contains( 'test@example.com' );
     $mech->content_contains( '<td>test note' );
-    $mech->content_contains( 'Private:&nbsp;No' );
+    $mech->content_like( qr/<td>\s*unconfirmed\s*<\/td>/ ); # No private
 
     $mech->submit_form_ok( { with_fields => { 
         category   => 'private category',
@@ -173,7 +173,7 @@ subtest 'check contact creation' => sub {
     } } );
 
     $mech->content_contains( 'private category' );
-    $mech->content_contains( 'Private:&nbsp;Yes' );
+    $mech->content_like( qr{test\@example.com\s*</td>\s*<td>\s*confirmed\s*<br>\s*<small>\s*Private\s*</small>\s*</td>} );
 
     $mech->submit_form_ok( { with_fields => {
         category => 'test/category',
@@ -195,9 +195,8 @@ subtest 'check contact editing' => sub {
     } } );
 
     $mech->content_contains( 'test category' );
-    $mech->content_contains( 'test2@example.com' );
+    $mech->content_like( qr{test2\@example.com\s*</td>\s*<td>\s*unconfirmed\s*</td>} );
     $mech->content_contains( '<td>test2 note' );
-    $mech->content_contains( 'Private:&nbsp;No' );
 
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
@@ -210,14 +209,13 @@ subtest 'check contact editing' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com,test3@example.com' );
 
-    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
         email    => 'test2@example.com',
         note     => 'test2 note',
         non_public => 'on',
     } } );
 
-    $mech->content_contains( 'Private:&nbsp;Yes' );
+    $mech->content_like( qr{test2\@example.com\s*</td>\s*<td>\s*unconfirmed\s*<br>\s*<small>\s*Private\s*</small>\s*</td>} );
 
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );
@@ -225,7 +223,7 @@ subtest 'check contact editing' => sub {
 
 subtest 'check contact updating' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
-    $mech->content_like(qr{test2\@example.com</strong>[^<]*</td>[^<]*<td>No}s);
+    $mech->content_like(qr{test2\@example.com</strong>[^<]*</td>[^<]*<td>unconfirmed}s);
 
     $mech->get_ok('/admin/body/' . $body->id);
 
@@ -233,9 +231,9 @@ subtest 'check contact updating' => sub {
     $mech->tick( 'confirmed', 'test category' );
     $mech->submit_form_ok({form_number => 1});
 
-    $mech->content_like(qr'test2@example.com</td>[^<]*<td>\s*Confirmed:&nbsp;Yes's);
+    $mech->content_like(qr'test2@example.com</td>[^<]*<td>\s*confirmed's);
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
-    $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
+    $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>confirmed}s);
 };
 
 $body->update({ send_method => undef }); 
