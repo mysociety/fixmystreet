@@ -213,7 +213,6 @@ sub report_form_ajax : Path('ajax') : Args(0) {
             category        => $category,
             extra_name_info => $extra_name_info,
             titles_list     => $extra_titles_list,
-            categories      => $c->stash->{category_options},
             %$contribute_as ? (contribute_as => $contribute_as) : (),
             $top_message ? (top_message => $top_message) : (),
         }
@@ -645,7 +644,7 @@ sub setup_categories_and_bodies : Private {
         $bodies_to_list{ $contact->body_id } = $contact->body;
 
         unless ( $seen{$contact->category} ) {
-            push @category_options, $contact->category;
+            push @category_options, { name => $contact->category, value => $contact->category_display };
 
             my $metas = $contact->get_metadata_for_input;
             $category_extras{$contact->category} = $metas if @$metas;
@@ -657,13 +656,15 @@ sub setup_categories_and_bodies : Private {
 
             $non_public_categories{ $contact->category } = 1 if $contact->non_public;
         }
-        $seen{$contact->category} = 1;
+        $seen{$contact->category} = $contact->category_display;
     }
 
     if (@category_options) {
         # If there's an Other category present, put it at the bottom
-        @category_options = ( _('-- Pick a category --'), grep { $_ ne _('Other') } @category_options );
-        push @category_options, _('Other') if $seen{_('Other')};
+        @category_options = (
+            { name => _('-- Pick a category --'), value => _('-- Pick a category --') },
+            grep { $_->{name} ne _('Other') } @category_options );
+        push @category_options, { name => _('Other'), value => $seen{_('Other')} } if $seen{_('Other')};
     }
 
     $c->cobrand->call_hook(munge_category_list => \@category_options, \@contacts, \%category_extras);

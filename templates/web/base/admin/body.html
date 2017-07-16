@@ -79,7 +79,7 @@
     </tr>
     [% WHILE ( cat = contacts.next ) %]
       <tr [% IF cat.state == 'deleted' %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category | html %]</a>
+        <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category_display | html %]</a>
             <br>[% cat.email | html %]</td>
         <td>
             [% cat.state %]

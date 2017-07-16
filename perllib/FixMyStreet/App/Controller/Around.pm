@@ -259,7 +259,7 @@ sub check_and_stash_category : Private {
             distinct => 1
         }
     )->all;
-    my @categories = map { $_->category } @contacts;
+    my @categories = map { { name => $_->category, value => $_->category_display } } @contacts;
     $c->stash->{filter_categories} = \@categories;
     my %categories_mapped = map { $_ => 1 } @categories;
 

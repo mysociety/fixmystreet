@@ -162,7 +162,7 @@ sub setup_page_data : Private {
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;
-    @categories = map { $_->category } @categories;
+    @categories = map { { name => $_->category, value => $_->category_display } } @categories;
     $c->stash->{filter_categories} = \@categories;
 
     $c->stash->{page} = 'my';

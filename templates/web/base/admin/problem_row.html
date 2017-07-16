@@ -20,7 +20,7 @@
             <br>[% loc('Anonymous') %]: [% IF problem.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
         </td>
         <td>
-            [% PROCESS value_or_nbsp value=problem.category %]
+            [% PROCESS value_or_nbsp value=problem.category_display %]
             <br>[%- IF edit_body_contacts -%]
               [% FOR body IN problem.bodies.values %]
                 <a href="[% c.uri_for('body', body.id ) %]">[% PROCESS value_or_nbsp value=body.name %]</a>

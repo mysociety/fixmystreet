@@ -2,7 +2,7 @@
 
   [% IF contact.in_storage %]
     <p>
-      <h1>[% contact.category | html %]</h2>
+      <h1>[% contact.category_display | html %]</h2>
       <input type="hidden" name="category" value="[% contact.category | html %]" >
     </p>
   [% ELSE %]

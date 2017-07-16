@@ -22,6 +22,19 @@ sub _translate {
     my $table = lc $self->result_source->source_name;
     my $id = $self->id;
 
+    # Deal with the fact problem table has denormalized copy of category string
+    if ($table eq 'problem' && $col eq 'category') {
+        my $body_id = $self->bodies_str_ids->[0];
+        return $fallback unless $body_id && $body_id =~ /^[0-9]+$/;
+        my $contact = $schema->resultset("Contact")->find( {
+            body_id => $body_id,
+            category => $fallback,
+        } );
+        return $fallback unless $contact; # Shouldn't happen, but some tests
+        $table = 'contact';
+        $id = $contact->id;
+    }
+
     if (ref $schema) {
         my $translation = $schema->resultset('Translation')->find({
             lang => $schema->lang,

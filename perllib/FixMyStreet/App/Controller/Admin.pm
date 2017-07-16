@@ -925,8 +925,8 @@ sub categories_for_point : Private {
     # Remove the "Pick a category" option
     shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
 
-    $c->stash->{categories} = $c->stash->{category_options};
-    $c->stash->{categories_hash} = { map { $_ => 1 } @{$c->stash->{category_options}} };
+    $c->stash->{category_options_copy} = $c->stash->{category_options};
+    $c->stash->{categories_hash} = { map { $_->{name} => 1 } @{$c->stash->{category_options}} };
 }
 
 sub templates : Path('templates') : Args(0) {
