@@ -18,8 +18,11 @@ __PACKAGE__->load_namespaces(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-07-13 14:15:09
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UpH30RXb6SbCqRv2FPmpkg
 
+use Moo;
 use FixMyStreet;
 
 __PACKAGE__->connection(FixMyStreet->dbic_connect_info);
+
+has lang => ( is => 'rw' );
 
 1;

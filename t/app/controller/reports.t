@@ -25,6 +25,16 @@ my @edinburgh_problems = $mech->create_problems_for_body(3, $body_edin_id, 'All 
 my @westminster_problems = $mech->create_problems_for_body(5, $body_west_id, 'All reports', { category => 'Graffiti' });
 my @fife_problems = $mech->create_problems_for_body(15, $body_fife_id, 'All reports', { category => 'Flytipping' });
 
+my $west_trans = FixMyStreet::DB->resultset('Translation')->find_or_create({
+    tbl => 'body',
+    object_id => $body_west_id,
+    col => 'name',
+    lang => 'de',
+    msgstr => 'De Westminster'
+});
+
+ok $west_trans, 'created westminster translation';
+
 is scalar @westminster_problems, 5, 'correct number of westminster problems created';
 is scalar @edinburgh_problems, 3, 'correct number of edinburgh problems created';
 is scalar @fife_problems, 15, 'correct number of fife problems created';
@@ -264,6 +274,15 @@ subtest "it lists shortlisted reports" => sub {
         $mech->get_ok('/reports/City+of+Edinburgh+Council');
         $mech->content_lacks('<option value="shortlisted">Shortlisted</option>');
         $mech->content_lacks('<option value="unshortlisted">Unshortlisted</option>');
+    };
+};
+
+subtest "can use translated body name" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/reports/De Westminster');
+        $mech->title_like(qr/Westminster City Council/);
     };
 };
 

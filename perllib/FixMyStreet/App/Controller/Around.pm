@@ -196,8 +196,8 @@ sub display_location : Private {
     my @pins;
     unless ($c->get_param('no_pins')) {
         @pins = map {
-            # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
-            my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
+            # Here we might have a DB::Problem or a DB::Result::Nearby, we always want the problem.
+            my $p = (ref $_ eq 'FixMyStreet::DB::Result::Nearby') ? $_->problem : $_;
             $p->pin_data($c, 'around');
         } @$on_map_all, @$nearby;
     }
@@ -311,8 +311,8 @@ sub ajax : Path('/ajax') {
 
     # create a list of all the pins
     my @pins = map {
-        # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
-        my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
+        # Here we might have a DB::Problem or a DB::Result::Nearby, we always want the problem.
+        my $p = (ref $_ eq 'FixMyStreet::DB::Result::Nearby') ? $_->problem : $_;
         my $colour = $c->cobrand->pin_colour( $p, 'around' );
         my $title = $c->cobrand->call_hook(pin_hover_title => $p, $p->title_safe) || $p->title_safe;
         [ $p->latitude, $p->longitude,

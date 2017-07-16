@@ -318,6 +318,19 @@ sub body_check : Private {
         }
     }
 
+    my @translations = $c->model('DB::Translation')->search( {
+        tbl => 'body',
+        col => 'name',
+        msgstr => $q_body
+    } )->all;
+
+    if (@translations == 1) {
+        if ( my $body = $c->model('DB::Body')->find( { id => $translations[0]->object_id } ) ) {
+            $c->stash->{body} = $body;
+            return;
+        }
+    }
+
     # No result, bad body name.
     $c->detach( 'redirect_index' );
 }
