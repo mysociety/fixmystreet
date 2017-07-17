@@ -28,10 +28,13 @@ sub build_default_transport {
     if ( FixMyStreet->test_mode ) {
         Email::Sender::Util->easy_transport(Test => {});
     } elsif ( my $smtp_host = FixMyStreet->config('SMTP_SMARTHOST') ) {
-        my $type = FixMyStreet->config('SMTP_TYPE') || '';
+        my $type = lc (FixMyStreet->config('SMTP_TYPE') || '');
         my $port = FixMyStreet->config('SMTP_PORT') || '';
         my $username = FixMyStreet->config('SMTP_USERNAME') || '';
         my $password = FixMyStreet->config('SMTP_PASSWORD') || '';
+
+        die "Bad SMTP_TYPE config: is $type, should be tls, ssl, or blank"
+            unless $type =~ /^(tls|ssl|)$/;
 
         my $ssl = $type eq 'tls' ? 'starttls' : $type eq 'ssl' ? 'ssl' : '';
         my $args = {
