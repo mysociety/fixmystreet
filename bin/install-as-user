@@ -98,12 +98,8 @@ if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
 then
     createdb --owner "$UNIX_USER" "$DB_NAME"
     echo 'CREATE LANGUAGE plpgsql;' | psql -U "$UNIX_USER" "$DB_NAME" || true
-    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/schema.sql
-    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/alert_types.sql
-    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/generate_secret.sql
-else
-    bin/update-schema --commit
 fi
+bin/update-schema --commit
 echo $DONE_MSG
 
 # Generate po and mo files (these invocations taken from Kagee's script):
