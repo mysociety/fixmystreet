@@ -11,7 +11,7 @@ We noticed that you have [% report_count %] old [% nget('report', 'reports', rep
 If your report is no longer an issue, you don't need to do anything.
 
 If you believe that your report is still a problem, you can reopen it by clicking or copying and pasting
-the link marked 'Reopen?' by a report.
+the link marked 'View report' by a report and leaving an update.
 
 [% FOR report IN reports %]
 
@@ -19,7 +19,7 @@ the link marked 'Reopen?' by a report.
 
 Reported [% report.time_ago %] ago.
 
-Reopen? [% cobrand.base_url_for_report( report ) %][% report.tokenised_url( user, { reopen => 'true' } ) %]#update_form
+View report: [% cobrand.base_url_for_report( report ) %][% report.tokenised_url( user, { reopen => 'true' } ) %]#update_form
 
 ----
 
