@@ -257,10 +257,7 @@ sub send_email : Private {
         $params->{from} = $from;
     }
 
-    $c->send_email('contact.txt', $params);
-
-    # above is always succesful :(
-    $c->stash->{success} = 1;
+    $c->stash->{success} = $c->send_email('contact.txt', $params);
 
     return 1;
 }

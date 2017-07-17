@@ -297,7 +297,7 @@ sub get_override {
 
 =head2 send_email
 
-    $email_sent = $c->send_email( 'email_template.txt', $extra_stash_values );
+    $success = $c->send_email( 'email_template.txt', $extra_stash_values );
 
 Send an email by filling in the given template with values in the stash.
 
@@ -308,6 +308,8 @@ The stash (or extra_stash_values) keys 'to', 'from' and 'subject' are used to
 set those fields in the email if they are present.
 
 If a 'from' is not specified then the default from the config is used.
+
+Returns the email on success, false on failure.
 
 =cut
 
@@ -353,14 +355,15 @@ sub send_email {
 
     my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email($data) };
 
+    my $result = 0;
     try {
         FixMyStreet::Email::Sender->send($email, { from => $sender });
+        $result = $email;
     } catch {
         my $error = $_ || 'unknown error';
         $c->log->error("$error");
     };
-
-    return $email;
+    return $result;
 }
 
 =head2 uri_with
