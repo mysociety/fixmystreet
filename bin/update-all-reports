@@ -22,12 +22,13 @@ use Getopt::Long::Descriptive;
 my ($opt, $usage) = describe_options(
     '%c %o',
     [ 'table', "Output JSON for old table-style page." ],
+    [ 'areas', "Include area IDs in output JSON." ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
 print($usage->text), exit if $opt->help;
 
 if ($opt->table) {
-    FixMyStreet::Script::UpdateAllReports::generate();
+    FixMyStreet::Script::UpdateAllReports::generate($opt->areas);
 } else {
     FixMyStreet::Script::UpdateAllReports::generate_dashboard();
 }

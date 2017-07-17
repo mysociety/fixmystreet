@@ -133,6 +133,18 @@ sub areas {
     return \%ids;
 }
 
+sub first_area_children {
+    my ( $self, $c ) = @_;
+
+    my $area_id = $self->body_areas->first->area_id;
+
+    my $children = mySociety::MaPit::call('area/children', $area_id,
+        type => $c->cobrand->area_types_children,
+    );
+
+    return $children;
+}
+
 =head2 get_cobrand_handler
 
 Get a cobrand object for this body, if there is one.
