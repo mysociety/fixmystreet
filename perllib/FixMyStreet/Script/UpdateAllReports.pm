@@ -153,14 +153,16 @@ sub generate_dashboard {
     );
     $data{last_seven_days} = \%last_seven_days;
 
+    my $dtf = FixMyStreet::DB->storage->datetime_parser;
+    my $eight_ago = $dtf->format_datetime(DateTime->now->subtract(days => 8));
     %problems_reported_by_period = stuff_by_day_or_year('day',
         'Problem',
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
-        confirmed => { '>=', \"current_timestamp-'8 days'::interval" },
+        confirmed => { '>=', $eight_ago },
     );
     %problems_fixed_by_period = stuff_by_day_or_year('day',
         'Comment',
-        confirmed => { '>=', \"current_timestamp-'8 days'::interval" },
+        confirmed => { '>=', $eight_ago },
         -or => [
             problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
             mark_fixed => 1,
@@ -168,7 +170,7 @@ sub generate_dashboard {
     );
     my %problems_updated_by_period = stuff_by_day_or_year('day',
         'Comment',
-        confirmed => { '>=', \"current_timestamp-'8 days'::interval" },
+        confirmed => { '>=', $eight_ago },
     );
 
     my $date = DateTime->today->subtract(days => 7);
@@ -218,12 +220,12 @@ sub generate_dashboard {
 
     @top_five_bodies = @top_five_bodies[0..4] if @top_five_bodies > 5;
 
-
+    my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));
     my $last_seven_days = FixMyStreet::DB->resultset("Problem")->search({
-        confirmed => { '>=', \"current_timestamp-'7 days'::interval" },
+        confirmed => { '>=', $week_ago },
     })->count;
     my @top_five_categories = FixMyStreet::DB->resultset("Problem")->search({
-        confirmed => { '>=', \"current_timestamp-'7 days'::interval" },
+        confirmed => { '>=', $week_ago },
         category => { '!=', 'Other' },
     }, {
         select => [ 'category', { count => 'id' } ],
