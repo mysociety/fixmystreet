@@ -214,25 +214,16 @@ fixmystreet.maps = {};
         $('#hide_pins_link').click(function(e) {
             var i, m;
             e.preventDefault();
-            var showhide = [
-                'Show pins', 'Hide pins',
-                'Dangos pinnau', 'Cuddio pinnau',
-                "Vis nåler", "Gjem nåler",
-                "Zeige Stecknadeln", "Stecknadeln ausblenden",
-                'Visa kartnålar', 'Göm kartnålar'
-            ];
-            for (i=0; i<showhide.length; i+=2) {
-                if (this.innerHTML == showhide[i]) {
-                    for (m=0; m<fixmystreet.markers.length; m++) {
-                        fixmystreet.markers[m].setMap(fixmystreet.map);
-                    }
-                    this.innerHTML = showhide[i+1];
-                } else if (this.innerHTML == showhide[i+1]) {
-                    for (m=0; m<fixmystreet.markers.length; m++) {
-                        fixmystreet.markers[m].setMap(null);
-                    }
-                    this.innerHTML = showhide[i];
+            if (this.innerHTML == translation_strings.show_pins) {
+                for (m=0; m<fixmystreet.markers.length; m++) {
+                    fixmystreet.markers[m].setMap(fixmystreet.map);
                 }
+                this.innerHTML = translation_strings.hide_pins;
+            } else if (this.innerHTML == translation_strings.hide_pins) {
+                for (m=0; m<fixmystreet.markers.length; m++) {
+                    fixmystreet.markers[m].setMap(null);
+                }
+                this.innerHTML = translation_strings.show_pins;
             }
         });
 
