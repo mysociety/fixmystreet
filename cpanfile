@@ -54,6 +54,7 @@ requires 'Email::MIME';
 requires 'Email::Sender';
 requires 'Email::Valid';
 requires 'Error';
+requires 'FCGI'; # Required by e.g. Plack::Handler::FCGI
 requires 'File::Find';
 requires 'File::Path';
 requires 'File::Slurp';
