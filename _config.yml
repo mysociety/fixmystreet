@@ -1,7 +1,10 @@
-safe: true
 baseurl: /
 permalink: pretty
 exclude: [ node_modules, bower_components ]
+paginate: 10
+gems:
+  - jekyll-paginate
+paginate_path: "/blog/:num/"
 
 authors:
   struan:
