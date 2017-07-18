@@ -54,7 +54,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         echo "****************"
         echo "You can now ssh into your vagrant box: vagrant ssh"
         echo "The website code is found in: ~/fixmystreet"
-        echo "You can run the dev server with: script/fixmystreet_app_server.pl [-d] [-r] [--fork]"
+        echo "You can run the dev server with: script/server"
         echo "Access the admin with username: superuser@example.org and password: password"
     else
         echo "Unfortunately, something appears to have gone wrong with the installation."

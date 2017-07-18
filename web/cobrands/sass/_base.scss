@@ -1741,14 +1741,11 @@ a:hover.rap-notes-trigger {
     height: auto; // override `.mobile #map_box` height:10em
     margin: 0;
     z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
-  }
 
-  .container {
-    padding: 0; // map_box needs to be full width, so remove page gutter
-  }
-
-  #map_sidebar {
-    padding: 1em; // reinstate page gutter, but on sidebar, so map_box is unaffected
+    &.above-form {
+      position: relative;
+      margin: 0 -1em;
+    }
   }
 }
 
