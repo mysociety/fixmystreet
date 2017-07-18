@@ -98,4 +98,46 @@ subtest 'Default hash layout' => sub {
     };
 };
 
+subtest 'Get named field values' => sub {
+    my $user = $db->resultset('User')->create({
+        email => 'test-moderation@example.com',
+        name => 'Test User'
+    });
+    my $report = $db->resultset('Problem')->create(
+    {
+        postcode           => 'BR1 3SB',
+        bodies_str         => "",
+        areas              => "",
+        category           => 'Other',
+        title              => 'Good bad good',
+        detail             => 'Good bad bad bad good bad',
+        used_map           => 't',
+        name               => 'Test User 2',
+        anonymous          => 'f',
+        state              => 'confirmed',
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        latitude           => '51.4129',
+        longitude          => '0.007831',
+        user_id            => $user->id,
+    });
+
+    $report->push_extra_fields(
+        {
+            name => "field1",
+            description => "This is a test field",
+            value => "value 1",
+        },
+        {
+            name => "field 2",
+            description => "Another test",
+            value => "this is a test value",
+        }
+    );
+
+    is $report->get_extra_field_value("field1"), "value 1", "field1 has correct value";
+    is $report->get_extra_field_value("field 2"), "this is a test value", "field 2 has correct value";
+};
+
 done_testing();
