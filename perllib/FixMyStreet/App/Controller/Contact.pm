@@ -54,7 +54,8 @@ sub submit : Path('submit') : Args(0) {
           && $c->forward('determine_contact_type')
           && $c->forward('validate')
           && $c->forward('prepare_params_for_email')
-          && $c->forward('send_email');
+          && $c->forward('send_email')
+          && $c->forward('redirect_on_success');
 }
 
 =head2 determine_contact_type
@@ -99,7 +100,7 @@ sub determine_contact_type : Private {
 
 =head2 validate
 
-Validate the form submission parameters. Sets error messages and redirect 
+Validate the form submission parameters. Sets error messages and redirect
 to index page if errors.
 
 =cut
@@ -258,6 +259,23 @@ sub send_email : Private {
     }
 
     $c->stash->{success} = $c->send_email('contact.txt', $params);
+
+    return 1;
+}
+
+=head2 redirect_on_success
+
+Redirect to a custom URL if one was provided
+
+=cut
+
+sub redirect_on_success : Private {
+    my ( $self, $c ) = @_;
+
+    if (my $success_url = $c->get_param('success_url')) {
+        $c->res->redirect($success_url);
+        $c->detach;
+    }
 
     return 1;
 }
