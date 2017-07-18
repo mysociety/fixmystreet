@@ -1,22 +1,18 @@
 /* COLOURS */
 
 $eh_dark_grey: #555;
-$eh_med_grey: #dadcda;
-$eh_dark_green: #007900;
-$eh_green: #2c992c;
-$eh_purple: #609;
-$eh_blue: #4e96e8;
+$eh_green: #00843d;
 
 $primary: $eh_green;
 $primary_b: #000000;
-$primary_text: #222222;
+$primary_text: #fff;
 
 $base_bg: white;
 $base_fg: $eh_dark_grey;
 
-$map_nav_bg: $eh_blue;
-$nav_fg: #000;
-$nav_fg_hover: $primary;
+$map_nav_bg: #000;
+$nav_fg: #fff;
+$nav_fg_hover: $eh_green;
 
 $header-top-border: false;
 
@@ -29,6 +25,8 @@ $col_click_map_dark: darken($eh_green, 10%);
 $col_fixed_label: #00BD08;
 $col_fixed_label_dark: #4B8304;
 
-$body-font: Verdana,Arial,Helvetica,Geneva,sans-serif;
+$body-font: 'Open Sans', sans-serif;
 $meta-font: $body-font;
 $heading-font: $body-font;
+
+$mappage-header-height: 178px;
