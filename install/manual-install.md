@@ -11,7 +11,7 @@ title: Installing
   but the other installation options may be easier:</p>
 
 Note that this is just one of 
-[four ways to install FixMyStreet]({{ site.baseurl }}install/)
+[four ways to install FixMyStreet]({{ "/install/" | relative_url }})
 (the other ways are easier!).
 
 
@@ -132,7 +132,7 @@ $
 {% endhighlight %}
 
 You should be able to connect to the database with `psql -U fms fms` -- if not,
-you will need to investigate [how to allow access to your PostgreSQL database]({{ site.baseurl }}install/database).
+you will need to investigate [how to allow access to your PostgreSQL database]({{ "/install/database" | relative_url }}).
 
 #### 5b. Install database schema
 
@@ -157,22 +157,22 @@ $ cp conf/general.yml-example conf/general.yml
 
 The bare minimum of settings you will need to fill in or update are:
 
-* [FMS_DB_PASS]({{ site.baseurl }}customising/config/#fms_db_pass) -- this is the password for the database. (Also obviously change any other database settings you did differently here.)
-* [BASE_URL]({{ site.baseurl }}customising/config/#base_url) -- for using the development server, set to `'http://localhost:3000/'`. This is the URL of the homepage of your FixMyStreet installation.
-* [MAPIT_URL]({{ site.baseurl }}customising/config/#mapit_url) -- for the development server, set to `'http://localhost:3000/fakemapit/'`. This would be the URL of a MapIt installation, as and when you use one.
+* [FMS_DB_PASS]({{ "/customising/config/#fms_db_pass" | relative_url }}) -- this is the password for the database. (Also obviously change any other database settings you did differently here.)
+* [BASE_URL]({{ "/customising/config/#base_url" | relative_url }}) -- for using the development server, set to `'http://localhost:3000/'`. This is the URL of the homepage of your FixMyStreet installation.
+* [MAPIT_URL]({{ "/customising/config/#mapit_url" | relative_url }}) -- for the development server, set to `'http://localhost:3000/fakemapit/'`. This would be the URL of a MapIt installation, as and when you use one.
 
 Some others you might want to look at, though the defaults are enough for it to run:
 
-* [EMAIL_DOMAIN]({{ site.baseurl }}customising/config/#email_domain) -- the email domain that emails will be sent from
-* [CONTACT_EMAIL]({{ site.baseurl }}customising/config/#contact_email) -- the email address to be used on the site for the contact us form.
-* [DO_NOT_REPLY_EMAIL]({{ site.baseurl }}customising/config/#do_not_reply_email) -- the email address to be used on the site for e.g. confirmation emails.
-* [STAGING_SITE]({{ site.baseurl }}customising/config/#staging_site) -- if this is 1 then all email (alerts and reports) will be sent to the contact email address. Use this for development sites.
-* [UPLOAD_DIR]({{ site.baseurl }}customising/config/#upload_dir) -- this is the location where images will be stored when they are uploaded. It should be accessible by and writeable by the FixMyStreet process.
-* [GEO_CACHE]({{ site.baseurl }}customising/config/#geo_cache) -- this is the location where Geolocation data will be cached. It should be accessible by and writeable by the FixMyStreet process.
+* [EMAIL_DOMAIN]({{ "/customising/config/#email_domain" | relative_url }}) -- the email domain that emails will be sent from
+* [CONTACT_EMAIL]({{ "/customising/config/#contact_email" | relative_url }}) -- the email address to be used on the site for the contact us form.
+* [DO_NOT_REPLY_EMAIL]({{ "/customising/config/#do_not_reply_email" | relative_url }}) -- the email address to be used on the site for e.g. confirmation emails.
+* [STAGING_SITE]({{ "/customising/config/#staging_site" | relative_url }}) -- if this is 1 then all email (alerts and reports) will be sent to the contact email address. Use this for development sites.
+* [UPLOAD_DIR]({{ "/customising/config/#upload_dir" | relative_url }}) -- this is the location where images will be stored when they are uploaded. It should be accessible by and writeable by the FixMyStreet process.
+* [GEO_CACHE]({{ "/customising/config/#geo_cache" | relative_url }}) -- this is the location where Geolocation data will be cached. It should be accessible by and writeable by the FixMyStreet process.
 
 If you are using Bing or Google maps you should also set one of
-[BING_MAPS_API_KEY]({{ site.baseurl }}customising/config/#bing_maps_api_key) or 
-[GOOGLE_MAPS_API_KEY]({{ site.baseurl }}customising/config/#google_maps_api_key).
+[BING_MAPS_API_KEY]({{ "/customising/config/#bing_maps_api_key" | relative_url }}) or 
+[GOOGLE_MAPS_API_KEY]({{ "/customising/config/#google_maps_api_key" | relative_url }}).
 
 ### 7. Set up some required data
 
@@ -225,7 +225,7 @@ base for your own user crontab.
 
 ### Deployment
 
-For <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+For <a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>
 use of FixMyStreet, we suggest you use Apache or nginx, and
 FastCGI. It should also be possible to run it using Plack/PSGI, if that is
 preferable.
@@ -274,7 +274,7 @@ our developers and on mySociety's servers.
 
 ## Problems?
 
-See some [troubleshooting hints]({{ site.baseurl }}install/troubleshooting/) if
+See some [troubleshooting hints]({{ "/install/troubleshooting/" | relative_url }}) if
 something's not working for you.
 
 ## When you've finished

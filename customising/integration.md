@@ -15,10 +15,10 @@ author: dave
 
 ## Integrate if you can!
 
-Often <a href="{{ site.baseurl }}glossary/#body" class="glossary__link">bodies</a>,
+Often <a href="{{ "/glossary/#body" | relative_url }}" class="glossary__link">bodies</a>,
 especially if they are local government bodies, already have databases and
 back-end systems for tracking problems they are fixing. FixMyStreet works fine
-if you just use the default <a href="{{ site.baseurl }}glossary/#send-method"
+if you just use the default <a href="{{ "/glossary/#send-method" | relative_url }}"
 class="glossary__link">send method</a>, which is email, but it's *much better* if you
 can integrate with the body's back-end systems.
 
@@ -27,7 +27,7 @@ cooperation they offer FixMyStreet. In general, once FixMyStreet is integrated
 it's *easier* for the body's staff to use.
 
 Our experience with FixMyStreet in the UK is that councils that integrate with
-FixMyStreet also choose to run it as a <a href="{{ site.baseurl}}glossary/#cobrand"
+FixMyStreet also choose to run it as a <a href="{{ "/glossary/#cobrand" | relative_url }}"
 class="glossary__link">cobrand</a> (that is, branded and on their own website). In
 fact, cobranding and integrating are not dependent on each other, so if you do
 one it is not necessary to do the other.
@@ -62,7 +62,7 @@ one it is not necessary to do the other.
 
 Although you can approach each of these levels of integration as custom
 programming tasks, we *strongly recommend* you use the
-<a href="{{site.baseurl }}glossary/#open311" class="glossary__link">Open311</a>
+<a href="{{ "/glossary/#open311" | relative_url }}" class="glossary__link">Open311</a>
 open standard when you can.
 
 Strictly speaking it's possible to implement any of these levels independently
@@ -73,7 +73,7 @@ previous one.
 
 You can integrate with just one body (while the others continue to use email).
 You can even just integrate certain
-<a href="{{ site.baseurl }}glossary/#category" class="glossary__link">categories</a>
+<a href="{{ "/glossary/#category" | relative_url }}" class="glossary__link">categories</a>
 for a body &mdash; for example, "Potholes" and "Fallen trees" could be
 submitted by Open311, while "Streetlighting" problems are sent by email.
 
@@ -92,7 +92,7 @@ into back-end:
 <img src="/assets/img/fms_integration_1.png">
 
 
-If the body's server is already <a href="{{site.baseurl }}glossary/#open311"
+If the body's server is already <a href="{{ "/glossary/#open311" | relative_url }}"
 class="glossary__link">Open311</a> compliant, you can switch on the first stage
 of integration -- which puts the problem report directly into the body's
 back-end system instead of emailing it -- just by setting the send method (for
@@ -108,7 +108,7 @@ address.
 
 If you want to have the problem reports for some categories to be integrated
 into their body's back-end, but continue to send others by email, you can
-<a href="{{site.baseurl }}glossary/#devolve"
+<a href="{{ "/glossary/#devolve" | relative_url }}"
 class="glossary__link">devolve</a>
 choosing the send method to the contacts. Set the body's send method as above,
 but also enable **contacts can be devolved**. Now you can set specific

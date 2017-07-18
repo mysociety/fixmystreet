@@ -78,7 +78,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
+          See <a href="{{ "/running/users/" | relative_url }}">About users</a> for more about managing
           abusive users.
         </li>
       </ul>
@@ -92,7 +92,7 @@ technical information, see
     An <strong>administrator</strong> is a user who has access to the back-end
     admin (so can do things like add or edit <a href="#body"
     class="glossary__link">bodies</a>, modify <a href="#report"
-    class="glossary__link">problem reports</a>, and <a href="{{ site.baseurl }}running/users/">manage
+    class="glossary__link">problem reports</a>, and <a href="{{ "/running/users/" | relative_url }}">manage
     users</a>). An administrator should also have access to the email account
     to which user support emails are sent.
     <p>
@@ -110,7 +110,7 @@ technical information, see
           href="#body" class="glossary__link">body</a>.
         </li>
         <li>
-          See the <a href="{{ site.baseurl }}running/admin_manual/">Administrator's Manual</a> for
+          See the <a href="{{ "/running/admin_manual/" | relative_url }}">Administrator's Manual</a> for
           details of what an administrator does.
         </li>
       </ul>
@@ -149,7 +149,7 @@ technical information, see
     shapefiles from other mapping applications.
     <p>
       The
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
+      <code><a href="{{ "/customising/config/#mapit_id_whitelist" | relative_url }}">MAPIT_ID_WHITELIST</a></code>
       config setting can explicitly list the <em>only</em>
       areas your installation will recognise &mdash; alternatively, you can
       limit them by <a href="#area-type" class="glossary__link">area type</a>
@@ -159,11 +159,11 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}customising/boundaries/">more about boundaries</a>
+          See <a href="{{ "/customising/boundaries/" | relative_url }}">more about boundaries</a>
           and the different ways to set them up.
         </li>
         <li>
-          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
+          See <a href="{{ "/customising/fms_and_mapit/" | relative_url }}">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary__link">areas</a>.
         </li>
@@ -193,7 +193,7 @@ technical information, see
     province, or a ward, and so on.
     <p>
       The
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>
+      <code><a href="{{ "/customising/config/#mapit_types" | relative_url }}">MAPIT_TYPES</a></code>
       config setting specifies the area types your installation uses.
     </p>
     <p>
@@ -211,11 +211,11 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}customising/boundaries/">more about boundaries</a>
+          See <a href="{{ "/customising/boundaries/" | relative_url }}">more about boundaries</a>
           and the different ways to set them up.
         </li>
         <li>
-          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
+          See <a href="{{ "/customising/fms_and_mapit/" | relative_url }}">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary__link">areas</a>.
         </li>
@@ -239,11 +239,11 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and
+          See <a href="{{ "/running/bodies_and_contacts/" | relative_url }}">Managing bodies and
           contacts</a> for how to set these up.
         </li>
         <li>
-          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
+          See <a href="{{ "/customising/fms_and_mapit/" | relative_url }}">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary__link">areas</a>.
         </li>
@@ -265,7 +265,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See the <a href="{{ site.baseurl }}directory_structure/">FixMyStreet
+          See the <a href="{{ "/directory_structure/" | relative_url }}">FixMyStreet
           directory structure</a> explained.
         </li>
         <li>
@@ -274,7 +274,7 @@ technical information, see
         </li>
         <li>
           More about  
-          <a href="{{ site.baseurl }}customising/">customising FixMyStreet</a>.
+          <a href="{{ "/customising/" | relative_url }}">customising FixMyStreet</a>.
         </li>
       </ul>
     </div>
@@ -294,7 +294,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and
+          See <a href="{{ "/running/bodies_and_contacts/" | relative_url }}">Managing bodies and
           contacts</a> for how to set these up.
         </li>
       </ul>
@@ -325,15 +325,15 @@ technical information, see
       <ul>
         <li>
           The cobrands that FixMyStreet will use are defined in the
-          <code><a href="{{ site.baseurl }}customising/config/#allowed_cobrands">ALLOWED_COBRANDS</a></code>
+          <code><a href="{{ "/customising/config/#allowed_cobrands" | relative_url }}">ALLOWED_COBRANDS</a></code>
           config setting, based on the URL of the incoming request.
         </li>
         <li>
-          <a href="{{ site.baseurl }}customising/">more about customising</a>, including a
-          <a href="{{ site.baseurl }}customising/checklist/">checklist</a> of the key things to consider.
+          <a href="{{ "/customising/" | relative_url }}">more about customising</a>, including a
+          <a href="{{ "/customising/checklist/" | relative_url }}">checklist</a> of the key things to consider.
         </li>
         <li>
-          See <a href="{{ site.baseurl }}customising/cobrand-module/">Cobrand module</a> for
+          See <a href="{{ "/customising/cobrand-module/" | relative_url }}">Cobrand module</a> for
           information about the Perl class you can override.
         </li>
       </ul>
@@ -355,15 +355,15 @@ technical information, see
       password). Instead, there is an example file,
       <code>cong/general.yml-example</code> you can
       copy and edit. If you install using the 
-       <a href="{{ site.baseurl }}install/install-script/">installation script</a>
-       or the <a href="{{ site.baseurl }}install/ami/">AMI</a>, this file will 
+       <a href="{{ "/install/install-script/" | relative_url }}">installation script</a>
+       or the <a href="{{ "/install/ami/" | relative_url }}">AMI</a>, this file will 
        automatically be created for you.
     </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}customising/config">all the config settings</a>
+          See <a href="{{ "/customising/config" | relative_url }}">all the config settings</a>
           you need to get your site running.
         </li>
         <li>
@@ -390,7 +390,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and
+          See <a href="{{ "/running/bodies_and_contacts/" | relative_url }}">Managing bodies and
           contacts</a> for how to set these up.
         </li>
       </ul>
@@ -428,7 +428,7 @@ technical information, see
   </dt>
   <dd>
     A <strong>dev server</strong> is one that is running your FixMyStreet site
-    so you can <a href="{{ site.baseurl }}customising/">customise it</a>, experiment
+    so you can <a href="{{ "/customising/" | relative_url }}">customise it</a>, experiment
     with different settings, and test that it does what you expect.
     This is different from a
     <a href="#production" class="glossary__link">production server</a>, which is the one your
@@ -437,7 +437,7 @@ technical information, see
     which is used for testing code before it goes live.
     <p>
       On your dev server, you should set
-      <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
+      <code><a href="{{ "/customising/config/#staging_site" | relative_url }}">STAGING_SITE</a></code>
       to <code>1</code>.
     </p>
   </dd>
@@ -460,7 +460,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing
+          See <a href="{{ "/running/bodies_and_contacts/" | relative_url }}">Managing
           bodies and contacts</a> for how to set these up.
         </li>
       </ul>
@@ -489,7 +489,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
+          See <a href="{{ "/running/users/" | relative_url }}">About users</a> for more about managing
           abusive users.
         </li>
       </ul>
@@ -508,14 +508,14 @@ technical information, see
       FixMyStreet can use the <a href="#osm"
       class="glossary__link">OpenStreetMap</a>, Google, or Bing geocoders, or a custom one.
       The 
-      <code><a href="{{ site.baseurl }}customising/config/#geocoder">GEOCODER</a></code>
+      <code><a href="{{ "/customising/config/#geocoder" | relative_url }}">GEOCODER</a></code>
       setting controls which one your site uses.
     </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
+          See <a href="{{ "/customising/fms_and_mapit/" | relative_url }}">How FixMyStreet uses
           MapIt</a> for more about how the geocoder is used.
         </li>
       </ul>
@@ -536,7 +536,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          More about <a href="{{ site.baseurl }}customising/language/">translating
+          More about <a href="{{ "/customising/language/" | relative_url }}">translating
           FixMyStreet</a>.
         </li>
         <li>
@@ -570,7 +570,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See the <a href="{{ site.baseurl }}install/">installation instructions</a> which will
+          See the <a href="{{ "/install/" | relative_url }}">installation instructions</a> which will
           clone the FixMyStreet repo.
         </li>
         <li>
@@ -621,7 +621,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          More about <a href="{{ site.baseurl }}customising/integration/">integrating FixMyStreet</a>
+          More about <a href="{{ "/customising/integration/" | relative_url }}">integrating FixMyStreet</a>
           with back-end systems (includes diagrams)
         </li>
         <li>
@@ -659,7 +659,7 @@ technical information, see
           at Google Developers.
         </li>
         <li>
-          More about <a href="{{ site.baseurl }}customising/boundaries/">admin boundaries</a>
+          More about <a href="{{ "/customising/boundaries/" | relative_url }}">admin boundaries</a>
           and why you might need to create them yourself.
         </li>
       </ul>
@@ -696,7 +696,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See more about <a href="{{ site.baseurl }}customising/">customising</a> your
+          See more about <a href="{{ "/customising/" | relative_url }}">customising</a> your
           installation, which includes language and translation considerations
         </li>
         <li>
@@ -752,7 +752,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses MapIt</a>
+          <a href="{{ "/customising/fms_and_mapit/" | relative_url }}">How FixMyStreet uses MapIt</a>
         </li>
         <li>
           <a
@@ -770,7 +770,7 @@ technical information, see
           installation
         </li>
         <li>
-          See <a href="{{ site.baseurl }}customising/boundaries/">more about boundaries</a>,
+          See <a href="{{ "/customising/boundaries/" | relative_url }}">more about boundaries</a>,
           which define the areas, and the different ways to set them up.
         </li>
       </ul>
@@ -793,7 +793,7 @@ technical information, see
         </li>
         <li>
           More about
-          <a href="{{ site.baseurl }}install/fixmystreet-with-sms/">running
+          <a href="{{ "/install/fixmystreet-with-sms/" | relative_url }}">running
           FixMyStreet with SMS</a>, and the limitations of doing so.
         </li>
       </ul>
@@ -817,7 +817,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          More about <a href="{{ site.baseurl }}customising/integration/">integrating FixMyStreet</a>
+          More about <a href="{{ "/customising/integration/" | relative_url }}">integrating FixMyStreet</a>
           using Open311 (includes diagrams)
         </li>
         <li>
@@ -880,7 +880,7 @@ technical information, see
       <ul>
         <li>
           Remember that FixMyStreet uses the location to
-          <a href="{{ site.baseurl }}fms_and_mapit/">determine where to send reports</a>,
+          <a href="{{ "/fms_and_mapit/" | relative_url }}">determine where to send reports</a>,
           so a partial report (having no location) effectively has no 
           <a href="#body" class="glossary__link">body</a> responsible for it.
         </li>
@@ -911,7 +911,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="{{ site.baseurl }}customising/send_reports/">How FixMyStreet sends reports</a>.
+          <a href="{{ "/customising/send_reports/" | relative_url }}">How FixMyStreet sends reports</a>.
         </li>
       </ul>
     </div>
@@ -930,7 +930,7 @@ technical information, see
     <p>
       Your production site should be configured to run as efficiently as possible: for
       example, with caching disabled, and debugging switched off. Make sure you set
-      <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
+      <code><a href="{{ "/customising/config/#staging_site" | relative_url }}">STAGING_SITE</a></code>
       to <code>0</code>.
     </p>
     <p>
@@ -963,7 +963,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="{{ site.baseurl }}customising/send_reports/">How FixMyStreet sends
+          <a href="{{ "/customising/send_reports/" | relative_url }}">How FixMyStreet sends
           reports</a>.
         </li>
       </ul>
@@ -982,7 +982,7 @@ technical information, see
     site your users visit running with live data.
     <p>
       On your staging server, you should set
-      <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
+      <code><a href="{{ "/customising/config/#staging_site" | relative_url }}">STAGING_SITE</a></code>
       to <code>1</code>.
     </p>
     <p>
@@ -1011,7 +1011,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See the <a href="{{ site.baseurl }}running/admin_manual/">Administrator's manual</a>
+          See the <a href="{{ "/running/admin_manual/" | relative_url }}">Administrator's manual</a>
           for a more detailed list of problem states.
         </li>
       </ul>
@@ -1065,7 +1065,7 @@ technical information, see
           class="glossary__link">administrator</a></strong>
         </li>
         <li>
-          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
+          See <a href="{{ "/running/users/" | relative_url }}">About users</a> for more about managing
           users, including how to create a staff account.
         </li>
       </ul>
@@ -1091,7 +1091,7 @@ technical information, see
       <ul>
         <li>
           More about <a
-          href="{{ site.baseurl }}install/fixmystreet-with-sms/">running FixMyStreet with SMS</a>, and the limitations of doing so.
+          href="{{ "/install/fixmystreet-with-sms/" | relative_url }}">running FixMyStreet with SMS</a>, and the limitations of doing so.
         </li>
         <li>
           <a href="http://en.wikipedia.org/wiki/Short_Message_Service">More about SMS</a>
@@ -1119,7 +1119,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="{{ site.baseurl }}running/surveys">more about surveys</a>
+          <a href="{{ "/running/surveys" | relative_url }}">more about surveys</a>
         </li>
         <li>
           Survey data is available to <a href="#administrator"
@@ -1133,7 +1133,7 @@ technical information, see
         <li>
           If you don't want your FixMyStreet site to send out surveys, you can
           switch off this behaviour in a <a
-          href="{{ site.baseurl }}customising/cobrand-module/">cobrand module</a>.
+          href="{{ "/customising/cobrand-module/" | relative_url }}">cobrand module</a>.
         </li>
       </ul>
     </div>
@@ -1164,7 +1164,7 @@ technical information, see
       <ul>
         <li>
           See more about using templates to <a
-          href="{{ site.baseurl }}customising/">customise</a> your installation.
+          href="{{ "/customising/" | relative_url }}">customise</a> your installation.
         </li>
         <li>
           See the <a href="http://www.template-toolkit.org/">Template Toolkit
@@ -1200,7 +1200,7 @@ technical information, see
         </li>
         <li>
           For details about authorisation and how sessions work, see 
-          <a href="{{ site.baseurl }}running/users/#sessions">more about users</a>.
+          <a href="{{ "/running/users/#sessions" | relative_url }}">more about users</a>.
         </li>
       </ul>
     </div>
@@ -1249,7 +1249,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
+          See <a href="{{ "/running/users/" | relative_url }}">About users</a> for more about managing
           users.
         </li>
         <li>

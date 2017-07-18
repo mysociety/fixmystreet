@@ -8,7 +8,7 @@ title: Feeding back your changes
 <p class="lead">We want people using the code to keep it as up to date as they can, so that
 they gain the benefits of any changes made to the code by us or by other users.
 To do this, we need your help when you are making changes to the code, feeding
-the changes back to us and <a href="{{ site.baseurl }}updating/">updating your code</a>.</p>
+the changes back to us and <a href="{{ "/updating/" | relative_url }}">updating your code</a>.</p>
 
 **If you haven't done this, don't panic!**
 Everything is solvable, and we fully understand that what little

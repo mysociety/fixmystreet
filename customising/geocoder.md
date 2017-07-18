@@ -16,19 +16,19 @@ near the start of the process, before maps, MapIt boundaries or bodies enter
 the picture.
 
 The geocoder takes a string -- for example, the name of a place or a street --
-and converts it into a [lat-long]({{ site.baseurl }}glossary/#latlong) location.
+and converts it into a [lat-long]({{ "/glossary/#latlong" | relative_url }}) location.
 
 The geocoder defaults to OpenStreetMap's [Nominatim](http://nominatim.openstreetmap.org).
 FixMyStreet also contains Bing and Google based geocoders, and can use
 custom geocoders too.
 
 You can customise the geocoding by providing limiting parameters in
-<code><a href="{{ site.baseurl }}customising/config/#geocoding_disambiguation">GEOCODING_DISAMBIGUATION</a></code>.
+<code><a href="{{ "/customising/config/#geocoding_disambiguation" | relative_url }}">GEOCODING_DISAMBIGUATION</a></code>.
 You typically need to do this so the geocoder only considers places in the area
 your FixMyStreet site is serving. For example, you may want to limit results to
 a specific country or city.
 
-The options vary [depending on which geocoder you use]({{ site.baseurl }}customising/config/#geocoding_disambiguation).
+The options vary [depending on which geocoder you use]({{ "/customising/config/#geocoding_disambiguation" | relative_url }}).
 
 ## Detailed flow: location &rarr; map pin &rarr; drop-down menu
 

@@ -21,7 +21,7 @@ the Configuration page of your administration interface, at
 The FixMyStreet code ships with an example configuration file:
 `conf/general.yml-example`.
 
-As part of the [installation process]({{ site.baseurl }}install ), the example
+As part of the [installation process]({{ "/install " | relative_url }}), the example
 file gets copied to `conf/general.yml`. You **must** edit this file to suit
 your needs.
 
@@ -215,8 +215,8 @@ The following are all the configuration settings that you can change in `conf/ge
   </dt>
   <dd>
     Is this site a 
-    <a href="{{ site.baseurl }}glossary/#staging" class="glossary__link">staging</a>
-    (or <a href="{{ site.baseurl }}glossary/#development" class="glossary__link">development</a>)
+    <a href="{{ "/glossary/#staging" | relative_url }}" class="glossary__link">staging</a>
+    (or <a href="{{ "/glossary/#development" | relative_url }}" class="glossary__link">development</a>)
     site?
     <p>
       On a staging site, templates/CSS modified times aren't cached. Staging
@@ -230,7 +230,7 @@ The following are all the configuration settings that you can change in `conf/ge
       <ul class="examples">
         <li>
           If this is your live
-          <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+          <a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>
           server:
           <p>
             <code>STAGING_SITE: 0</code>
@@ -252,7 +252,7 @@ The following are all the configuration settings that you can change in `conf/ge
   <dd>
     There is a safety mechanism on staging sites (where
     <code><a href="#staging_site">STAGING_SITE</a></code> is <code>1</code>):
-    your staging site will <a href="{{ site.baseurl }}customising/send_reports">send reports</a> to a convenient email
+    your staging site will <a href="{{ "/customising/send_reports" | relative_url }}">send reports</a> to a convenient email
     address <em>instead of</em> the relevant body's contact address.
     This is very useful for testing!
     <p>
@@ -271,10 +271,10 @@ The following are all the configuration settings that you can change in `conf/ge
     </ul>
     <p>
       Note that this setting is only relevant on a
-      <a href="{{ site.baseurl }}glossary/#staging" class="glossary__link">staging</a>
+      <a href="{{ "/glossary/#staging" | relative_url }}" class="glossary__link">staging</a>
       server.
       On your
-      <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+      <a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>
       server (where 
       <code><a href="#staging_site">STAGING_SITE</a></code> is <code>0</code>)
       it will be ignored.
@@ -345,13 +345,13 @@ The following are all the configuration settings that you can change in `conf/ge
         Remember that if you want your site to run in languages other than
         English, you'll also need to check that the translations are 
         available, and your system supports the appropriate
-        <a href="{{ site.baseurl }}glossary/#locale" class="glossary__link">locales</a>.
+        <a href="{{ "/glossary/#locale" | relative_url }}" class="glossary__link">locales</a>.
       </li>
     </ul>
     <p>
       Just adding a language here does not necessarily mean FixMyStreet will
       always use it (for example, a language coded subdomain name or browser preference may be considered). See this page about
-      <a href="{{ site.baseurl }}customising/language">languages and FixMyStreet</a> for more information.
+      <a href="{{ "/customising/language" | relative_url }}">languages and FixMyStreet</a> for more information.
     </p>
     <div class="more-info">
       <p>Example:</p>
@@ -421,7 +421,7 @@ LANGUAGES:
   <dd>
     FixMyStreet uses the external service MapIt to map locations (points) to
     administrative areas: see this
-    <a href="{{ site.baseurl }}customising/fms_and_mapit">explanation of MapIt</a>.
+    <a href="{{ "/customising/fms_and_mapit" | relative_url }}">explanation of MapIt</a>.
     <!-- TODO link to explanation of boundaries -->
     <p>
       You must provide the URL of a MapIt server, and nominate what types of
@@ -522,7 +522,7 @@ LANGUAGES:
     should also specify the generation of MapIt data you are using, especially
     if you are using our global MapIt service.
     <p>
-      Global MapIt uses <a href="{{ site.baseurl }}glossary/#osm"
+      Global MapIt uses <a href="{{ "/glossary/#osm" | relative_url }}"
       class="glossary__link">OpenStreetMap</a> data. From time to time we import the latest
       data in order to pull in newly-added boundaries, or reflect changes to existing
       ones. When this happens, the area IDs may change, which means the values in your
@@ -554,7 +554,7 @@ LANGUAGES:
           MapIt's generation <code>4</code> for 
           <a href="http://global.mapit.mysociety.org/area/507455.html?generation=4">Thailand's national border</a>
           (hence <code>507455</code> and
-          <a href="{{ site.baseurl }}glossary/#area-type" class="glossary__link">area type</a> <code>O02</code>):
+          <a href="{{ "/glossary/#area-type" | relative_url }}" class="glossary__link">area type</a> <code>O02</code>):
 <pre>MAPIT_URL: http://global.mapit.mysociety.org/
 MAPIT_TYPES: ['O02']
 MAPIT_ID_WHITELIST: [507455]
@@ -600,18 +600,18 @@ MAPIT_ID_GENERATION: 4
     <a name="geocoder"><code>GEOCODER</code></a>
   </dt>
   <dd>
-    Which <a href="{{ site.baseurl }}glossary/#geocoder" class="glossary__link">geocoder service</a> to use to look up results, for
+    Which <a href="{{ "/glossary/#geocoder" | relative_url }}" class="glossary__link">geocoder service</a> to use to look up results, for
     example, from front page "Enter your location" searches.
     <p>
     Possible choices are 
     <code>Google</code>, <code>Bing</code>, or <code>OSM</code>.
     By default, FixMyStreet will use <code>OSM</code>, the 
-    <a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a> 
+    <a href="{{ "/glossary/#osm" | relative_url }}" class="glossary__link">OpenStreetMap</a> 
     geocoder.
     </p>
     <p>
       For more information, see the
-      <a href="{{ site.baseurl }}customising/geocoder">page about geocoding</a>.
+      <a href="{{ "/customising/geocoder" | relative_url }}">page about geocoding</a>.
     </p>
     <p>
     <p>
@@ -673,7 +673,7 @@ MAPIT_ID_GENERATION: 4
   </dt>
   <dd>
     This setting provides parameters that are included in 
-    <a href="{{ site.baseurl}}glossary/#geocoder" class="glossary__link">geocoding</a> requests, to hopefully
+    <a href="{{ "/glossary/#geocoder" | relative_url }}" class="glossary__link">geocoding</a> requests, to hopefully
     return more useful results. The options that will be applied vary depending
     on which geocoder you are using (although unwanted options will be ignored,
     so you can specify all of them, which might be convenient if you change
@@ -729,7 +729,7 @@ GEOCODING_DISAMBIGUATION:
   <dd>
     The type of map you want to use. If left blank, the default is 
     <code>OSM</code> for 
-    <a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a>.
+    <a href="{{ "/glossary/#osm" | relative_url }}" class="glossary__link">OpenStreetMap</a>.
     Other options are <code>GoogleOL</code> for Google Open Layers,
     and other UK-specific values, including <code>FMS</code>
     for UK <a href="https://www.fixmystreet.com">FixMyStreet</a>.
@@ -752,7 +752,7 @@ GEOCODING_DISAMBIGUATION:
   </dt>
   <dd>
     FixMyStreet uses a templating 
-    <a href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>
+    <a href="{{ "/glossary/#cobrand" | relative_url }}" class="glossary__link">cobrand</a>
     system to provide different looks (and behaviour) for
     different installations. For example, if you create a cobrand
     called <code>moon</code>, then FixMyStreet will look for templates in the
@@ -808,7 +808,7 @@ ALLOWED_COBRANDS:
     <p>
       If you're running a site with multiple cobrands, you'll never want to
       serve the Default cobrand on your 
-      <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+      <a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>
       server, so make sure you've set ALLOWED_COBRANDS correctly.
     </p>
     <div class="more-info">
@@ -980,7 +980,7 @@ ALLOWED_COBRANDS:
     not usually use this, so you can leave it blank.    
     <p>
       Providing a URL does not automatically enable the service &mdash; your <a
-      href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>
+      href="{{ "/glossary/#cobrand" | relative_url }}" class="glossary__link">cobrand</a>
       must be explicitly coded to use it. Contact us if you need to use Message
       Manager with your FixMyStreet site.
     </p>

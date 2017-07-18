@@ -72,10 +72,10 @@ name.
 
 * send_questionnaires
 
-    By default, FixMyStreet [sends questionnaires]({{site.baseurl}}running/surveys)
+    By default, FixMyStreet [sends questionnaires]({{ "/running/surveys" | relative_url }})
     (sometimes called _surveys_) four weeks after a user submitted a report. The
     questionnaire encourages them to update the 
-    <a href="{{ site.baseurl }}glossary/#state" class="glossary__link">state</a>
+    <a href="{{ "/glossary/#state" | relative_url }}" class="glossary__link">state</a>
     of the report. Return 0 to disable this feature so that surveys are never
     sent.
     

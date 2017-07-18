@@ -1,4 +1,3 @@
-baseurl: /
 permalink: pretty
 exclude: [ node_modules, bower_components ]
 paginate: 10

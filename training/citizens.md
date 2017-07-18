@@ -15,19 +15,19 @@ Training notes for citizens
   <p>
     Basic training notes like these are available for
     <br>
-    <a href="{{site.baseurl}}training/citizens">citizens</a>,
-    <a href="{{site.baseurl}}training/staff">staff users</a>, and
-    <a href="{{site.baseurl}}training/admins">administrators</a>.
+    <a href="{{ "/training/citizens" | relative_url }}">citizens</a>,
+    <a href="{{ "/training/staff" | relative_url }}">staff users</a>, and
+    <a href="{{ "/training/admins" | relative_url }}">administrators</a>.
   </p>
   <p>
-    Refer to the <a href="{{site.baseurl}}overview">full documentation</a>
+    Refer to the <a href="{{ "/overview" | relative_url }}">full documentation</a>
     for more detailed information!
   </p>
 </div>
 
 Remember that every FixMyStreet installation is different, and can both
 look and behave differently, depending on how it has been 
-[customised]({{site.baseurl}}customising/).
+[customised]({{ "/customising/" | relative_url }}).
 
 <!-- magically present as slideshow, slides split on h2 or h3 -->
 <a name class="play-as-slideshow"></a>
@@ -65,7 +65,7 @@ click on "Report a problem" anywhere on the site to get started.
 
 ## Enter location...
 
-![front page]({{ site.baseurl }}assets/img/training/mmi-01-front-page.png)
+![front page]({{ "/assets/img/training/mmi-01-front-page.png" | relative_url }})
 
 
 ## Start with a general location
@@ -80,7 +80,7 @@ click on "Report a problem" anywhere on the site to get started.
 
 ## Click on the map...
 
-![click on map]({{ site.baseurl }}assets/img/training/mmi-02-click-on-map.png)
+![click on map]({{ "/assets/img/training/mmi-02-click-on-map.png" | relative_url }})
 
 ## Click the map (a pin appears!)
 
@@ -93,7 +93,7 @@ click on "Report a problem" anywhere on the site to get started.
 
 ## Enter details...
 
-![enter details]({{ site.baseurl }}assets/img/training/mmi-03-enter-details.png)
+![enter details]({{ "/assets/img/training/mmi-03-enter-details.png" | relative_url }})
 
 ## Enter details
 
@@ -114,7 +114,7 @@ click on "Report a problem" anywhere on the site to get started.
 
 ## Enter your _own_ details
 
-![enter user details]({{ site.baseurl }}assets/img/training/mmi-04-user-details.png)
+![enter user details]({{ "/assets/img/training/mmi-04-user-details.png" | relative_url }})
 
 ## Provide your email address
 
@@ -176,7 +176,7 @@ the same for you, either way.
 
 You can see this on the public site:
 
-![sent yet?]({{ site.baseurl }}assets/img/training/mmi-18-show-when-sent.png)
+![sent yet?]({{ "/assets/img/training/mmi-18-show-when-sent.png" | relative_url }})
 
 * **the report has not been sent yet** if there's no "Sent to..." sentence 
 
@@ -186,7 +186,7 @@ You can see this on the public site:
 
 ## Add an update...
 
-![add an update]({{ site.baseurl }}assets/img/training/mmi-05-update.png)
+![add an update]({{ "/assets/img/training/mmi-05-update.png" | relative_url }})
 
 
 ## Add an update to a report
@@ -213,7 +213,7 @@ The administrators will be alerted and can hide the report.
 
 ## The "report abuse" link
 
-![report abuse]({{ site.baseurl }}assets/img/training/mmi-06-report-abuse.png)
+![report abuse]({{ "/assets/img/training/mmi-06-report-abuse.png" | relative_url }})
 
 
 ## Find problems nearby
@@ -227,7 +227,7 @@ If you're looking at a problem report...
 
 ## Ask to be notified...
 
-![the get-updates link]({{ site.baseurl }}assets/img/training/mmi-07-get-updates-link.png)
+![the get-updates link]({{ "/assets/img/training/mmi-07-get-updates-link.png" | relative_url }})
 
 ## Get email updates
 
@@ -246,7 +246,7 @@ for programmers/other apps.
 
 ## Getting updates...
 
-![get updates]({{ site.baseurl }}assets/img/training/mmi-08-get-updates.png)
+![get updates]({{ "/assets/img/training/mmi-08-get-updates.png" | relative_url }})
 
 
 ## Use your account
@@ -266,11 +266,11 @@ When you are logged in:
 
 ## Signing in...
 
-![sign in screen]({{ site.baseurl }}assets/img/training/mmi-09-login.png)
+![sign in screen]({{ "/assets/img/training/mmi-09-login.png" | relative_url }})
 
 ## Your reports
 
-![your reports]({{ site.baseurl }}assets/img/training/mmi-12-your-reports.png)
+![your reports]({{ "/assets/img/training/mmi-12-your-reports.png" | relative_url }})
 
 ## Share what you've done!
 
@@ -289,7 +289,7 @@ When you are logged in:
   <br>
   it always appears somewhere near the top of the screen when you're logged in
 
-![sign out]({{ site.baseurl }}assets/img/training/mmi-17-logout.png)
+![sign out]({{ "/assets/img/training/mmi-17-logout.png" | relative_url }})
 
 
 

@@ -16,18 +16,18 @@ FixMyStreet training notes
     Basic training notes like these are available for
   </p>
   <ul>
-    <li><a href="{{site.baseurl}}training/citizens">citizens</a></li>
-    <li><a href="{{site.baseurl}}training/staff">staff</a></li>
-    <li><a href="{{site.baseurl}}training/admins">administrators</a></li>
+    <li><a href="{{ "/training/citizens" | relative_url }}">citizens</a></li>
+    <li><a href="{{ "/training/staff" | relative_url }}">staff</a></li>
+    <li><a href="{{ "/training/admins" | relative_url }}">administrators</a></li>
   </ul>
   <p>
-    Refer to the <a href="{{site.baseurl}}overview">full documentation</a>
+    Refer to the <a href="{{ "/overview" | relative_url }}">full documentation</a>
     for more detailed information!
   </p>
 </div>
   
 Remember that every FixMyStreet installation is different, and can both
 look and behave differently, depending on how it has been 
-[customised]({{site.baseurl}}customising/).
+[customised]({{ "/customising/" | relative_url }}).
 
 

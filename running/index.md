@@ -27,7 +27,7 @@ installation at `/admin`.
 
 When you first deploy your installation of FixMyStreet, this is just a public
 directory. Obviously, for a
-<a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+<a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>
 server you should **restrict access to
 authorised users only**. For example, if you're running the Apache webserver,
 you can use `htaccess` to do this.

@@ -12,7 +12,7 @@ run a site in multiple languages. <strong>Work in progress.</strong></p>
 ## Setup
 
 The translations for most FixMyStreet strings are stored as standard 
-<a href="{{ site.baseurl }}glossary/#gettext" class="glossary__link">gettext</a>
+<a href="{{ "/glossary/#gettext" | relative_url }}" class="glossary__link">gettext</a>
 files, in `FixMyStreet.po` files under `locale/<lang>/LC_MESSAGES/`. A
 few full pages, such as the FAQ, and emails, are stored separately in the
 templates directory and should be translated by creating new templates in your
@@ -20,7 +20,7 @@ cobrand.
 
 
 Firstly, set the
-<code><a href="{{ site.baseurl }}customising/config/#languages">LANGUAGES</a></code>
+<code><a href="{{ "/customising/config/#languages" | relative_url }}">LANGUAGES</a></code>
 configuration option to the languages your site uses. This is an array of
 strings specifying what language or languages your installation uses. For
 example, if your site is available in English, French, and German, you would

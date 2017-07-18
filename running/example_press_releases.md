@@ -14,7 +14,7 @@ Adapt the wording so that it’s suitable for your project — or of course, you
 may wish to write your own press releases from scratch.
 
 Then send it to your media contacts, as described in our 
-[guide to promoting FixMyStreet]({{site.baseurl}}running/promotion).
+[guide to promoting FixMyStreet]({{ "/running/promotion" | relative_url }}).
 
 It’s best to copy and paste the text into the body of an email, rather than
 send it as an attachment: journalists say that they are far more likely to read

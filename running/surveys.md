@@ -11,16 +11,16 @@ author: dave
   email inviting that user to complete a survey (which we also sometimes call a
   questionnaire). The survey is presented as a page on the site that asks the
   user about the current
-  <a href="{{site.baseurl}}glossary/#state" class="glossary__link">state</a>
+  <a href="{{ "/glossary/#state" | relative_url }}" class="glossary__link">state</a>
   of the problem (for example, it may have been fixed), and lets them add an
-  <a href="{{site.baseurl}}glossary/#update" class="glossary__link">update</a>
+  <a href="{{ "/glossary/#update" | relative_url }}" class="glossary__link">update</a>
   too.
 </p> 
   
 We recommend that you keep this feature enabled, because it gives you
 useful data about the problems that have been reported on your site, and
 an indication of the performance of the 
-<a href="{{site.baseurl}}glossary/#body" class="glossary__link">bodies</a>
+<a href="{{ "/glossary/#body" | relative_url }}" class="glossary__link">bodies</a>
 that should be fixing them. Some users will report a problem and then won't
 really think about it after that. We're happy with this, because it's how the
 site is supposed to work &mdash; reporting a problem is easy and doesn't demand
@@ -58,9 +58,9 @@ only because the user agreed to this.
 The email that is sent out is made using the `questionnaire.txt` template. The
 default is in `/templates/email/default/`. Of course, you should override this
 in your own
-<a href="{{site.baseurl}}glossary/#cobrand" class="glossary__link">cobrand</a>
+<a href="{{ "/glossary/#cobrand" | relative_url }}" class="glossary__link">cobrand</a>
 &mdash; see more about 
-[customising email templates]({{site.baseurl}}customising/templates/#emails).
+[customising email templates]({{ "/customising/templates/#emails" | relative_url }}).
 
 The email message contains a link to the survey page that includes a token that
 authenticates the user who submitted the report (this is possible because it is
@@ -90,10 +90,10 @@ text of the report that was submitted.
 ## What's in the survey?
 
 The default survey invites the user to make an
-<a href="{{site.baseurl}}glossary/#update" class="glossary__link">update</a>
+<a href="{{ "/glossary/#update" | relative_url }}" class="glossary__link">update</a>
 to the problem report:
 
-   * change the <a href="{{site.baseurl}}glossary/#state" class="glossary__link">state</a>
+   * change the <a href="{{ "/glossary/#state" | relative_url }}" class="glossary__link">state</a>
      &mdash; for example, to _fixed_, because it's been fixed (unless it was
      already in that state)
    * add a comment or description (optional)
@@ -108,7 +108,7 @@ It also asks:
 The default template is defined in `/templates/web/default/questionnaire/*`,
 with the questions in `index`. As with all templates, you can override
 these with your own cobrand &mdash; for details, see
-[customising templates]({{site.baseurl}}customising/templates/#emails).
+[customising templates]({{ "/customising/templates/#emails" | relative_url }}).
 
 Note that if you want to collect other data in your survey, you'll need to
 update the source code to handle this.
@@ -120,7 +120,7 @@ comment is not optional.
 ## How to see the results
 
 You can see the collected results of surveys by logging in as an
-<a href="{{site.baseurl}}glossary/#administrator" class="glossary__link">administrator</a>
+<a href="{{ "/glossary/#administrator" | relative_url }}" class="glossary__link">administrator</a>
 and visiting `admin/questionnaire` in the admin (or click on **Survey** in the
 admin menu bar). If we are hosting the site for you and you don't have admin
 access, ask us to send you the results.
@@ -158,10 +158,10 @@ had not previously engaged with authorities to do so?
   
 How complex these results are will depend to some extent on the states that
 your site allows. For example, if you've allowed
-<a href="{{site.baseurl}}glossary/#staff-user" class="glossary__link">staff users</a>
+<a href="{{ "/glossary/#staff-user" | relative_url }}" class="glossary__link">staff users</a>
 to have more detailed states to choose from than the public (such as "fixed
 &mdash; council", or "in&nbsp;progress"), then you'll have more combinations to
-deal with. See the [admin manual]({{site.baseurl}}running/admin_manual/) for more
+deal with. See the [admin manual]({{ "/running/admin_manual/" | relative_url }}) for more
 information about the report states that are available to staff users.
 
 ## How to turn questionnaire-sending off

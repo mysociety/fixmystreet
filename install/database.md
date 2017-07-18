@@ -33,4 +33,4 @@ Then you should be able to access the database with:
 ## Configuration
 
 When you've got everything working, you'll need to update the
-[database config settings]({{ site.baseurl }}customising/config/#fms_db_host).
+[database config settings]({{ "/customising/config/#fms_db_host" | relative_url }}).

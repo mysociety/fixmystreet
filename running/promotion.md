@@ -168,7 +168,7 @@ Send details of your launch to any outlet you think will cover it. Be clear and
 concise: explain what the site is for and how it benefits users.
 
 Not sure how to write a press release?
-[We’ve provided a template here]({{ site.baseurl }}running/example_press_releases).
+[We’ve provided a template here]({{ "/running/example_press_releases" | relative_url }}).
 
 You may wish to send out two types of press release:
 
@@ -264,8 +264,8 @@ Set up accounts on whichever social media is most used in your country: in the
 UK, we have FixMyStreet accounts on Twitter and Facebook. You have the option
 to set up links to your social media accounts in the site’s footer, report
 pages, etc: you can
-[read more about customising your FixMyStreet site here]({{ site.baseurl }}customising/)
-— or [contact us]({{ site.baseurl }}community/) if you need more help.
+[read more about customising your FixMyStreet site here]({{ "/customising/" | relative_url }})
+— or [contact us]({{ "/community/" | relative_url }}) if you need more help.
 
 You’ll need to monitor your accounts daily, in case people ask you questions
 that need a prompt reply. The easiest way is to set up your accounts so that
@@ -446,7 +446,7 @@ events, blog posts, news stories - you will already have content for your
 newsletter; you’ll just need to link to it.
 
 Make sure you invite users to sign up to your newsletter. Check our
-[documentation on customising your site]({{ site.baseurl }}customising/),
+[documentation on customising your site]({{ "/customising/" | relative_url }}),
 or mySociety can help you include a message about the newsletter at various
 key points, like:
 

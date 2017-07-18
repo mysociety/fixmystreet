@@ -13,7 +13,7 @@ author: matthew
 ## Background
 
 Do make sure you have followed the
-[initial CSS guide]({{ site.baseurl }}customising/css/) first to set up the
+[initial CSS guide]({{ "/customising/css/" | relative_url }}) first to set up the
 initial CSS for your own cobrand. There are a few ways you can have your own
 logo on your cobrand, which we will go through below. We first talk about
 replacing the image itself, and then changing the size.

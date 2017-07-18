@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>{{ page.title }} | FixMyStreet Platform | mySociety</title>
-    <link rel="stylesheet" href="{{ site.baseurl }}assets/css/fixmystreet-org.css">
+    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-org.css" | relative_url }}">
     <link href="/atom.xml" rel="alternate" title="FixMyStreet Platform" type="application/atom+xml">
     <meta name="viewport" content="initial-scale=1">
     <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,900,400italic' rel='stylesheet' type='text/css'>
@@ -32,7 +32,7 @@
 
     <header class="site-header">
       <div class="container">
-        <a href="{{ site.baseurl }}" class="site-title"><h1>FixMyStreet: Platform</h1></a>
+        <a href="{{ "/" | relative_url }}" class="site-title"><h1>FixMyStreet: Platform</h1></a>
       </div>
     </header>
 

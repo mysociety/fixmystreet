@@ -16,19 +16,19 @@ Training notes for new administrators
   <p>
     Basic training notes like these are available for
     <br>
-    <a href="{{site.baseurl}}training/citizens">citizens</a>,
-    <a href="{{site.baseurl}}training/staff">staff</a>, and
-    <a href="{{site.baseurl}}training/admins">administrators</a>.
+    <a href="{{ "/training/citizens" | relative_url }}">citizens</a>,
+    <a href="{{ "/training/staff" | relative_url }}">staff</a>, and
+    <a href="{{ "/training/admins" | relative_url }}">administrators</a>.
   </p>
   <p>
-    Refer to the <a href="{{site.baseurl}}overview">full documentation</a>
+    Refer to the <a href="{{ "/overview" | relative_url }}">full documentation</a>
     for more detailed information!
   </p>
 </div>
 
 Remember that every FixMyStreet installation is different, and can both
 look and behave differently, depending on how it has been 
-[customised]({{site.baseurl}}customising/).
+[customised]({{ "/customising/" | relative_url }}).
 
 <!-- magically present as slideshow, slides split on h2 or h3 -->
 <a name class="play-as-slideshow"></a>
@@ -110,7 +110,7 @@ When a user clicks on the map to report a problem...
 
 ##  There might be lots of categories!
 
-![example showing many categories]({{ site.baseurl }}assets/img/training/fms-many-categories.png)
+![example showing many categories]({{ "/assets/img/training/fms-many-categories.png" | relative_url }})
 
 ## Getting help in the admin
 
@@ -126,7 +126,7 @@ to list all the bodies in your system.
 
 * **click on each body's name to see and edit the details**
 
-![example showing many categories]({{ site.baseurl }}assets/img/training/admin-bodies.png)
+![example showing many categories]({{ "/assets/img/training/admin-bodies.png" | relative_url }})
 
 
 ## Configuring bodies and contacts
@@ -149,7 +149,7 @@ The key things you need to provide:
 
 ## Add a body
 
-![example showing many categories]({{ site.baseurl }}assets/img/training/admin-add-a-body.png)
+![example showing many categories]({{ "/assets/img/training/admin-add-a-body.png" | relative_url }})
 
 
 ### You must specify an area
@@ -195,7 +195,7 @@ You need to add contacts to each body.
 
 ### Adding a contact
 
-![add a contact/category]({{ site.baseurl }}assets/img/training/admin-add-contact.png)
+![add a contact/category]({{ "/assets/img/training/admin-add-contact.png" | relative_url }})
 
 
 ### Confirm your contacts!
@@ -292,7 +292,7 @@ Click on **Reports** -- there's a search box at the top.
 
 ### Searching reports
 
-![search reports]({{ site.baseurl }}assets/img/training/admin-search-reports.png)
+![search reports]({{ "/assets/img/training/admin-search-reports.png" | relative_url }})
 
 ## What the different timestamps mean
 
@@ -398,7 +398,7 @@ of the page. You can click **Edit** next to any of those to edit them.
 
 You can see this on the public site:
 
-![sent yet?]({{ site.baseurl }}assets/img/training/mmi-18-show-when-sent.png)
+![sent yet?]({{ "/assets/img/training/mmi-18-show-when-sent.png" | relative_url }})
 
 ..but it's also shown as the "Sent" field if you look at the report in the admin.
 
@@ -422,11 +422,11 @@ To access the users in the admin, click **Users**. The page only
 list _staff users_ by default. To see other users, use the search box
 to search across email or name.
 
-![show user]({{ site.baseurl }}assets/img/training/admin-users.png)
+![show user]({{ "/assets/img/training/admin-users.png" | relative_url }})
 
 ## Editing a user
 
-![edit user]({{ site.baseurl }}assets/img/training/admin-edit-user.png)
+![edit user]({{ "/assets/img/training/admin-edit-user.png" | relative_url }})
 
 ### Change a user's name or email address
 
@@ -480,7 +480,7 @@ when you click **Users**.
 
 ### Flagged reports and users
 
-![flagged things]({{ site.baseurl }}assets/img/training/admin-flagged-reports-users.png)
+![flagged things]({{ "/assets/img/training/admin-flagged-reports-users.png" | relative_url }})
 
 ## Banning a user: the abuse list
 
@@ -494,15 +494,15 @@ to have access to your site).
   <br>
   when you are **editing a _report_ or _update_** they submitted
   
-![ban a user]({{ site.baseurl }}assets/img/training/admin-ban-a-user.png)
+![ban a user]({{ "/assets/img/training/admin-ban-a-user.png" | relative_url }})
 
 ## Getting statistics
 
-![getting stats]({{ site.baseurl }}assets/img/training/admin-stats-enter-dates.png)
+![getting stats]({{ "/assets/img/training/admin-stats-enter-dates.png" | relative_url }})
 
 ## Example of statistics
 
-![output stats]({{ site.baseurl }}assets/img/training/admin-stats.png)
+![output stats]({{ "/assets/img/training/admin-stats.png" | relative_url }})
 
 ## Other administration tasks
 

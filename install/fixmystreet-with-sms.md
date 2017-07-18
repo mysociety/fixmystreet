@@ -7,7 +7,7 @@ title: Using FixMyStreet with SMS
 
 <p class="lead">
   We're sometimes asked about running FixMyStreet with
-  <a href="{{ site.baseurl }}glossary/#sms" class="glossary__link">SMS</a>.
+  <a href="{{ "/glossary/#sms" | relative_url }}" class="glossary__link">SMS</a>.
   With SMS, users can report problems by text message instead of using the web
   interface. This page describes how it can work, and what you must consider
   before going ahead.
@@ -26,7 +26,7 @@ SMS are, and why we always recommend you establish and run your site on the web
 ### Main issues: duplicate reports, no location information
 
 One important aspect to FixMyStreet is that most 
-<a href="{{ site.baseurl }}glossary/#report" class="glossary__link">problem reports</a> are about problems with specific locations. On the web, this
+<a href="{{ "/glossary/#report" | relative_url }}" class="glossary__link">problem reports</a> are about problems with specific locations. On the web, this
 means we can present the user with a map to click on.
 
 This interface, encouraging people to click on a map, serves a couple of functions: 
@@ -34,7 +34,7 @@ This interface, encouraging people to click on a map, serves a couple of functio
    * it deters duplicate reports being sent for the same problem, because it's obvious if a problem has already been reported (a pin will already be there)
 
    * it provides an accurate 
-     <a href="{{ site.baseurl }}glossary/#latlong" class="glossary__link">lat-long</a>
+     <a href="{{ "/glossary/#latlong" | relative_url }}" class="glossary__link">lat-long</a>
      position of the location of the problem
 
 The main problem with SMS &mdash; although there are others &mdash; is that
@@ -72,7 +72,7 @@ below) first.
 In both cases, you start by advertising a number (possibly a shortcode which is
 easier for people to remember) for people to send SMS reports to. This means
 you should
-[customise your templates]({{ site.baseurl }}customising/templates), because (when it's running live) the number should presumably appear on the website
+[customise your templates]({{ "/customising/templates" | relative_url }}), because (when it's running live) the number should presumably appear on the website
 too.
 
 ## Method 1: use a mobile phone (yes, really!)
@@ -110,8 +110,8 @@ of the reporter.
 </div>
 
 We have a web application called 
-<a href="{{ site.baseurl }}glossary/#message-manager" class="glossary__link">Message Manager</a> that accepts incoming messages from an SMS gateway, and makes them available to
-<a href="{{ site.baseurl }}glossary/#staff-user" class="glossary__link">staff users</a>
+<a href="{{ "/glossary/#message-manager" | relative_url }}" class="glossary__link">Message Manager</a> that accepts incoming messages from an SMS gateway, and makes them available to
+<a href="{{ "/glossary/#staff-user" | relative_url }}" class="glossary__link">staff users</a>
 within the FixMyStreet website. A staff user on a FixMyStreet site that is
 using Message Manager can see incoming SMS reports, reply to them, and turn
 them into reports by clicking on the map. This effectively integrates SMS

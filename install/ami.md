@@ -12,7 +12,7 @@ title: AMI for EC2
   EC2 instance.
 </p>
 
-Note that this is just one of [four ways to install FixMyStreet]({{ site.baseurl }}install/).
+Note that this is just one of [four ways to install FixMyStreet]({{ "/install/" | relative_url }}).
 
 ## Installing on Amazon's Web Services
 
@@ -42,9 +42,9 @@ file to set a couple of parameters.  That configuration file is
     fms@ip-10-58-191-98:~/fixmystreet$ nano conf/general.yml
 
 You should set 
-<code><a href="{{ site.baseurl }}customising/config/#contact_email">CONTACT_EMAIL</a></code>
+<code><a href="{{ "/customising/config/#contact_email" | relative_url }}">CONTACT_EMAIL</a></code>
 and
-<code><a href="{{ site.baseurl }}customising/config/#do_not_reply_email">DO_NOT_REPLY_EMAIL</a></code>
+<code><a href="{{ "/customising/config/#do_not_reply_email" | relative_url }}">DO_NOT_REPLY_EMAIL</a></code>
 or whatever you wish to use. postfix is installed so that outgoing email will
 work, but this may need further configuration.
 

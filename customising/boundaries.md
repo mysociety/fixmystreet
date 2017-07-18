@@ -8,7 +8,7 @@ title: Admin boundaries
 <p class="lead">
     When you set up FixMyStreet, you usually need to provide <strong>admin boundaries</strong>
     for each of the 
-    <a href="{{ site.baseurl }}glossary/#body" class="glossary__link">bodies</a>
+    <a href="{{ "/glossary/#body" | relative_url }}" class="glossary__link">bodies</a>
     you'll be sending reports to. If you're lucky, the boundaries might already
     be available. If not, you'll have to make them. This page explains your
     options.
@@ -25,7 +25,7 @@ been put somewhere that is *not* covered by any bodies.
 
 <div class="attention-box">
   We've written a separate page about 
-  <a href="{{site.baseurl }}customising/fms_and_mapit/">how FixMyStreet uses MapIt</a>,
+  <a href="{{ "/customising/fms_and_mapit/" | relative_url }}">how FixMyStreet uses MapIt</a>,
   which is the service that determines which area any point (pin) is within. It's
   helpful to understand how that works &mdash; because it also explains how
   FixMyStreet determines which categories of problem can be reported at any
@@ -36,7 +36,7 @@ been put somewhere that is *not* covered by any bodies.
 FixMyStreet finds all the bodies that are associated with the area (or areas)
 that the pin is inside -- those are the bodies to whom the report might be sent.
 Which of these bodies is actually chosen depends on the 
-<a href="{{ site.baseurl }}glossary/#category" class="glossary__link">category</a>
+<a href="{{ "/glossary/#category" | relative_url }}" class="glossary__link">category</a>
 the user selects when they complete their problem report.
 
 ## Boundaries are independent of your maps!
@@ -59,7 +59,7 @@ list when you create or edit the body.
 If the bodies you are going to be sending reports to are local government
 departments, it's possible that this data already exists. We use the admin
 boundary data from 
-<a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a>,
+<a href="{{ "/glossary/#osm" | relative_url }}" class="glossary__link">OpenStreetMap</a>,
 and many countries' data is already available. If that's the case for you, then
 this is going to be easy! You just have to identify the areas you need, and
 tell FixMyStreet to ignore all the others.
@@ -120,7 +120,7 @@ Use this type of boundary if:
 The advantage of using the boundary "Everywhere" is that it's very easy to set
 up. The disadvantage is that your FixMyStreet will accept clicks *anywhere* on
 the map. This may be acceptable if you are limiting your 
-<a href="{{site.baseurl }}glossary/#geocoder" class="glosssary">geocoder</a>
+<a href="{{ "/glossary/#geocoder" | relative_url }}" class="glosssary">geocoder</a>
 to a very specific area.
 
 <dl class="reveal-on-click" data-reveal-noun="details">
@@ -130,14 +130,14 @@ to a very specific area.
   <dd>
     <p>
       This is the default setup of a new FixMyStreet installation (if you used the 
-      <a href="{{ site.baseurl}}install/install-script">installation script</a> or the 
-      <a href="{{ site.baseurl}}install/ami">AMI install</a>).
+      <a href="{{ "/install/install-script" | relative_url }}">installation script</a> or the 
+      <a href="{{ "/install/ami" | relative_url }}">AMI install</a>).
     </p>
     <p>
       Set
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
+      <code><a href="{{ "/customising/config/#mapit_url" | relative_url }}">MAPIT_URL</a></code>
       to be blank, and set 
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>
+      <code><a href="{{ "/customising/config/#mapit_types" | relative_url }}">MAPIT_TYPES</a></code>
       to the special value <code>ZZZ</code>. FixMyStreet will use a fake MapIt that always
       returns "Everywhere" as the only area that contains the point &mdash; for any
       location.
@@ -176,18 +176,18 @@ Use this type of boundary if you:
       like this, so &mdash; especially if you are just doing this as a probationary
       trial &mdash; we may be able to host this for you (note though that we do
       rate-limit calls to MapIt). Either send us 
-      <a href="{{ site.baseurl }}glossary/#kml" class="glossary__link">KML shape files</a>,
+      <a href="{{ "/glossary/#kml" | relative_url }}" class="glossary__link">KML shape files</a>,
       or if you can't do that, maybe a clear image of the map with the boundary
       drawn on it for us to copy.
     </p>
     <p>
       In your <code>conf/general.yml</code>, you must set 
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
+      <code><a href="{{ "/customising/config/#mapit_url" | relative_url }}">MAPIT_URL</a></code>
       to either your MapIt or our custom one, and set
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>
+      <code><a href="{{ "/customising/config/#mapit_types" | relative_url }}">MAPIT_TYPES</a></code>
       to the areas you want (the actual values will depend on what that particular
       MapIt is returning). You should also set 
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
+      <code><a href="{{ "/customising/config/#mapit_id_whitelist" | relative_url }}">MAPIT_ID_WHITELIST</a></code>
       to the ID of the single area you want.
     </p>
     <pre><code>MAPIT_URL: 'http://mapit.example.com'
@@ -219,13 +219,13 @@ Use this type of boundary if you:
     <p>
       Same as previous example: either set up your own instance of MapIt, or ask to
       have your boundaries added to our custom one. If you want us to host it, we'll
-      need <a href="{{ site.baseurl }}glossary/#kml" class="glossary__link">KML shape files</a>
+      need <a href="{{ "/glossary/#kml" | relative_url }}" class="glossary__link">KML shape files</a>
       or a graphic showing the boundary clearly shown so we can copy it. 
     </p>
     <p>
       Note that now there may be more than one type of area, and you'll need to explicitly
       nominate every area you're interested in with
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code> 
+      <code><a href="{{ "/customising/config/#mapit_id_whitelist" | relative_url }}">MAPIT_ID_WHITELIST</a></code> 
       (unless you want *all* the areas this MapIt returns for the given type, in
       which case you can set it to be empty).
     </p>
@@ -258,7 +258,7 @@ Use this type of boundary if:
   </dt>
   <dd>
     <p>
-      Start by finding the <a href="{{ site.baseurl }}glossary/#latlong"
+      Start by finding the <a href="{{ "/glossary/#latlong" | relative_url }}"
       class="glossary__link">lat-long</a> of some of the places you want to cover,
       and look them up on <a href="http://global.mapit.mysociety.org">global
       MapIt</a> (or maybe the <a href="http://mapit.mysociety.org">UK one</a>).
@@ -308,7 +308,7 @@ Use this type of boundary if:
           Specifically, you need the <strong>Administrative Boundary
           Levels</strong> (which will look like <code>O04</code> or
           <code>O05</code>), which are the values for your 
-          <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>.
+          <code><a href="{{ "/customising/config/#mapit_types" | relative_url }}">MAPIT_TYPES</a></code>.
           Remember this data is boundary data from OpenStreetMap &mdash;
           if the boundaries you need are not shown, you may have to set up your
           own (described below). You can also click on any of the boundaries
@@ -318,7 +318,7 @@ Use this type of boundary if:
       <li>
         <p>
           The individual <em>area_id</em>s are also useful, because you put
-          them into the <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
+          them into the <code><a href="{{ "/customising/config/#mapit_id_whitelist" | relative_url }}">MAPIT_ID_WHITELIST</a></code>.
         </p>
       </li>
     </ol>
@@ -354,7 +354,7 @@ Use this type of boundary if:
   <dd>
     <p>
       In your <code>conf/general.yml</code> file, point 
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
+      <code><a href="{{ "/customising/config/#mapit_url" | relative_url }}">MAPIT_URL</a></code>
       at the global MapIt server.
     </p>
     <p>
@@ -383,9 +383,9 @@ Use this type of boundary if:
       Finally, limit your installation to the specific areas you're interested
       in (otherwise you'll be getting areas from the whole world). Identify the
       specific areas you want to use, and list them explicitly in
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
+      <code><a href="{{ "/customising/config/#mapit_id_whitelist" | relative_url }}">MAPIT_ID_WHITELIST</a></code>.
       You should also set
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_generation">MAPIT_GENERATION</a></code>, 
+      <code><a href="{{ "/customising/config/#mapit_generation" | relative_url }}">MAPIT_GENERATION</a></code>, 
       so that your areas can still be found when we update the global MapIt data.
     </p>
 <pre><code>MAPIT_URL: 'http://global.mapit.mysociety.org'
@@ -435,7 +435,7 @@ this data into a MapIt server and use that.
       But if you can't do that, or the boundary data you have is not
       definitive, you can create your own. Use any good GIS software to plot
       the boundaries accurately, and then export it as
-      <a href="{{ site.baseurl }}glossary/#kml" class="glossary__link">KML shape files</a>.
+      <a href="{{ "/glossary/#kml" | relative_url }}" class="glossary__link">KML shape files</a>.
       MapIt can import these, so you can then either run your own MapIt
       instance, or ask us to add it to our custom one.
     </p>

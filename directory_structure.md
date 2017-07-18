@@ -56,7 +56,7 @@ you're doing is [customising your installation](/customising).
       The primary configuration file is <code>general.yml</code>. This file isn't in the git
       repository (since it will contain information specific to your installation, including
       the database password), but example files are.
-      See  <a href="{{ site.baseurl }}customising/config/">details of all
+      See  <a href="{{ "/customising/config/" | relative_url }}">details of all
       configuration settings</a>.
     </p>
   </dd>
@@ -75,7 +75,7 @@ you're doing is [customising your installation](/customising).
       The <code>db</code> directory contains SQL for creating the tables and seeding some of the data &mdash;
       for example, <code>schema.sql</code> contains the full database structure, and you use this when
       you first create the database (see <em>2. Create a new PostgreSQL database</em> in the
-      <a href="{{ site.baseurl }}install/">installation instructions</a> if you're installing manually).
+      <a href="{{ "/install/" | relative_url }}">installation instructions</a> if you're installing manually).
     </p>
     <p>
       By convention, we also put "migration" SQL in here, so if the schema has changed since you installed and
@@ -101,7 +101,7 @@ you're doing is [customising your installation](/customising).
       The translation strings are stored in <code>.po</code> files in directories specific to
       the locale and encoding. For example, <code>nn_NO.UTF-8/</code> contains the translations
       for the Norwegian site. See more about
-      <a href="{{ site.baseurl }}customising/language/">translating FixMyStreet</a>.
+      <a href="{{ "/customising/language/" | relative_url }}">translating FixMyStreet</a>.
     </p>
   </dd>
   <dt>
@@ -161,10 +161,10 @@ you're doing is [customising your installation](/customising).
             Cobrand
           </dt>
           <dd>
-            Contains the <a href="{{ site.baseurl }}customising/cobrand-module/">Cobrand modules</a>, which you
+            Contains the <a href="{{ "/customising/cobrand-module/" | relative_url }}">Cobrand modules</a>, which you
             can use if you need to add custom behaviour beyond that provided by config
             and template changes.
-            See <a href="{{ site.baseurl }}customising/">more abobut customising</a> your site.
+            See <a href="{{ "/customising/" | relative_url }}">more abobut customising</a> your site.
           </dd>
           <dt>
             DB
@@ -197,7 +197,7 @@ you're doing is [customising your installation](/customising).
             <p>
               In addition to email and Open311, this is where the
               custom 
-              <a href="{{ site.baseurl }}customising/integration/">back-end integrations</a>
+              <a href="{{ "/customising/integration/" | relative_url }}">back-end integrations</a>
               are found.
             </p>
           </dd>
@@ -211,7 +211,7 @@ you're doing is [customising your installation](/customising).
       </dt>
       <dd class="last">
         <p>
-          <em>code for implementing FixMyStreet's <a href="{{ site.baseurl }}glossary/#open311" class="glossary__link">Open311</a> functionality</em>
+          <em>code for implementing FixMyStreet's <a href="{{ "/glossary/#open311" | relative_url }}" class="glossary__link">Open311</a> functionality</em>
         </p>
       </dd>
     </dl>
@@ -249,7 +249,7 @@ you're doing is [customising your installation](/customising).
       <code>default/</code>. In this way, cobrands only need to override templates that
       differ from FixMyStreet's default &mdash; it's feasible for your cobrand's template
       directories to be empty.
-      See <a href="{{ site.baseurl }}customising/">more abobut customising</a> your site.
+      See <a href="{{ "/customising/" | relative_url }}">more abobut customising</a> your site.
     </p>
     <dl>
       <dt>

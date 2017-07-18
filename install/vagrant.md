@@ -9,16 +9,16 @@ title: Vagrant
 Vagrant provides an easy method to set up virtual development environments &mdash; for
 further information see <a href="http://www.vagrantup.com">the Vagrant website</a>.
 We bundle an example Vagrantfile in the repository, which runs the
-<a href="{{ site.baseurl }}install/install-script/">install script</a> for you.
+<a href="{{ "/install/install-script/" | relative_url }}">install script</a> for you.
 </p>
 
-Note that this is just one of [four ways to install FixMyStreet]({{ site.baseurl }}install/).
+Note that this is just one of [four ways to install FixMyStreet]({{ "/install/" | relative_url }}).
 
 <div class="attention-box warning">
   Vagrant is only suitable for use as a
-  <a href="{{ site.baseurl }}glossary/#development" class="glossary__link">development</a>
+  <a href="{{ "/glossary/#development" | relative_url }}" class="glossary__link">development</a>
   server &mdash; <strong>do not</strong> use it in
-  <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>!
+  <a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>!
 </div>
 
 This pages describes how to use Vagrant to create a development environment

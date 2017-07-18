@@ -50,7 +50,7 @@ site** but most of this page shows how to set your own colours *without adding
 any new HTML or CSS*. We know that you'll want to change more than just the
 default colours: but this is the best way to start.
 
-Once you've done this, you'll have your own <a href="{{ site.baseurl }}glossary/#cobrand"
+Once you've done this, you'll have your own <a href="{{ "/glossary/#cobrand" | relative_url }}"
 class="glossary__link">cobrand</a>, and can start changing other stylesheets and
 templates in the same way.
 
@@ -104,14 +104,14 @@ it's FixMyStreet's internal name for it.
 You need to tell FixMyStreet to use your cobrand instead of the default one.
 
 FixMyStreet uses the 
-<code><a href="{{ site.baseurl }}customising/config/#allowed_cobrands">ALLOWED_COBRANDS</a></code>
+<code><a href="{{ "/customising/config/#allowed_cobrands" | relative_url }}">ALLOWED_COBRANDS</a></code>
 config variable to decide which cobrand to use. In `conf/general.yml`, set it to your new cobrand like this:
 
     ALLOWED_COBRANDS:
       - fixmypark
 
 In fact, `ALLOWED_COBRANDS` is 
-[a little more complex that it looks]({{ site.baseurl }}customising/config/#allowed_cobrands).
+[a little more complex that it looks]({{ "/customising/config/#allowed_cobrands" | relative_url }}).
 If you give it a list of cobrands, it will decide which one to use depending on string
 matches on the incoming URL *for every request*  But for most cases you don't want it to switch.
 So if you just specify just one cobrand like this, FixMyStreet will simply use it.
@@ -268,7 +268,7 @@ FixMyStreet include the changes.
 Remember that *all* you've done here is change the colours, **using the
 existing default CSS and HTML**. Of course any and all of this can be
 overridden (by overriding CSS files and overriding the bits of HTML that you
-want to change in the <a href="{{ site.baseurl }}glossary/#template"
+want to change in the <a href="{{ "/glossary/#template" | relative_url }}"
 class="glossary__link">templates</a>) but this is just so you can get going.
 
 # Directionality
@@ -280,12 +280,12 @@ straightforward and involves two steps:
   so that the `$direction` variable is set to `right`.
 * Secondly, create a copy of the `templates/web/base/header.html` in
   your own cobrand if you haven’t already (see
-  [template customising]({{ site.baseurl }}customising/templates/) for more
+  [template customising]({{ "/customising/templates/" | relative_url }}) for more
   details) and uncomment the `SET` line that sets `dir="rtl"`.
 
 That’s it; recompile your CSS, reload your site and you will find that
 FixMyStreet has switched to a right-to-left layout. Your next step will
-probably be to [change the language]({{ site.baseurl }}customising/language/)
+probably be to [change the language]({{ "/customising/language/" | relative_url }})
 used by your site.
 
 # Next steps...
@@ -293,11 +293,11 @@ used by your site.
 If you want to customise the logo, [we have a tutorial for that](../logo/).
 
 Now you have your own cobrand, adding your own HTML <a
-href="{{ site.baseurl }}glossary/#template" class="glossary__link">templates</a> is straightforward.
+href="{{ "/glossary/#template" | relative_url }}" class="glossary__link">templates</a> is straightforward.
 
-Please see our separate page on [customising templates]({{ site.baseurl }}customising/templates/).
+Please see our separate page on [customising templates]({{ "/customising/templates/" | relative_url }}).
 
 ### Feeding back changes
 
 Finally, when you've finished creating your cobrand you should consider
-[feeding it back to us]({{site.baseurl}}feeding-back) so it becomes part of the FixMyStreet repository.
+[feeding it back to us]({{ "/feeding-back" | relative_url }}) so it becomes part of the FixMyStreet repository.

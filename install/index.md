@@ -13,16 +13,16 @@ title: Installing
 
 ## Four ways to install
 
-* [Use an install script for Debian or Ubuntu servers]({{ site.baseurl }}install/install-script/)
-* [Use a FixMyStreet AMI for Amazon EC2]({{ site.baseurl }}install/ami/)
-* [Vagrant installation]({{ site.baseurl }}install/vagrant/), for development
-* [Install the software manually]({{ site.baseurl }}install/manual-install/)
+* [Use an install script for Debian or Ubuntu servers]({{ "/install/install-script/" | relative_url }})
+* [Use a FixMyStreet AMI for Amazon EC2]({{ "/install/ami/" | relative_url }})
+* [Vagrant installation]({{ "/install/vagrant/" | relative_url }}), for development
+* [Install the software manually]({{ "/install/manual-install/" | relative_url }})
 
 FixMyStreet is a web application written in Perl, using the Catalyst framework.
 Installation deploys the core code and also manages its dependencies.
 
 If you're not technical, this can be a little daunting &mdash; if you haven't
-already done so, [get in touch]({{ site.baseurl }}community) and ask for help.
+already done so, [get in touch]({{ "/community" | relative_url }}) and ask for help.
 
 Please also see the instructions for [updating your code](/updating/) once it's installed.
 

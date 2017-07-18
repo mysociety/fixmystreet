@@ -7,9 +7,9 @@ author: dave
 # Managing bodies and contacts in FixMyStreet
 
 <p class="lead">A <strong><a href="/glossary/#body" class="glossary__link">body</a></strong> is the authority to which problem
-reports will be sent. Each body needs one or more <strong><a href="{{ site.baseurl }}glossary/#contact" class="glossary__link">contacts</a></strong>
+reports will be sent. Each body needs one or more <strong><a href="{{ "/glossary/#contact" | relative_url }}" class="glossary__link">contacts</a></strong>
 (typically these are email addresses) to which particular
-<strong><a href="{{ site.baseurl }}glossary/#category" class="glossary__link">categories</a></strong> of problem are sent. </p>
+<strong><a href="{{ "/glossary/#category" | relative_url }}" class="glossary__link">categories</a></strong> of problem are sent. </p>
 
 For [FixMyStreet in the UK](https://www.fixmystreet.com/), bodies are councils (county, district, and metropolitan).
 
@@ -22,7 +22,7 @@ Click on **Bodies** and fill in the form. Normally, you _must_ provide a name
 and pick at least one area it covers. See [How FixMyStreet uses
 MapIt](/customising/fms_and_mapit) for more information on how these areas are chosen.
 
-You can specify a <strong><a href="{{ site.baseurl }}glossary/#send-method" class="glossary__link">send method</a></strong>. This is *how* FixMyStreet will send the
+You can specify a <strong><a href="{{ "/glossary/#send-method" | relative_url }}" class="glossary__link">send method</a></strong>. This is *how* FixMyStreet will send the
 problem reports to this body.
 
 If you leave it blank, **send method will default to email**.
@@ -98,13 +98,13 @@ possible if the body to which you are trying to send reports supports them.
 Some do; many do not.
 
 See
-[more about integration]({{ site.baseurl }}customising/integration/)
+[more about integration]({{ "/customising/integration/" | relative_url }})
 to understand the different ways this can work. The first stage of
 integration is injecting problem reports directly into the body's back-end
 system.
 
 We like
-<a href="{{ site.baseurl }}glossary/#open311" class="glossary__link">Open311</a>,
+<a href="{{ "/glossary/#open311" | relative_url }}" class="glossary__link">Open311</a>,
 which is an open standard for
 submitting problem reports to a body automatically (by sending the data
 directly to a webservice that consumes it). FixMyStreet also has a number of
@@ -127,10 +127,10 @@ it](https://www.mysociety.org/blog/open311-explained).
 In fact, if you're working on an installation that can connect to bodies using
 a method other than email, not *all* of a body's contacts need to be sent the
 same way. It's possible to specify a different
-<a href="{{ site.baseurl }}glossary/#send-method" class="glossary__link">send method</a>
+<a href="{{ "/glossary/#send-method" | relative_url }}" class="glossary__link">send method</a>
 for an individual contact. To do this you need to tell FixMyStreet that, for
 this body, the decision of which send method to use can be
-<a href="{{site.baseurl }}glossary/#devolve" class="glossary__link">devolved</a>
+<a href="{{ "/glossary/#devolve" | relative_url }}" class="glossary__link">devolved</a>
 to the contacts. You'll need to edit the body (in `/admin`) and check the box
 marked "Contacts can be devolved". Then mark each of the contacts that are not
 using the body's send method (which by default is email) as "devolved", and

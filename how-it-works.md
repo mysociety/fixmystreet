@@ -13,19 +13,19 @@ title: How to FixMyStreet
 
 FixMyStreet makes it easy for anyone to report a problem without worrying about
 the correct authority to send it to. FixMyStreet takes care of that using the
-problem's location and <a href="{{ site.baseurl }}glossary/#category"
+problem's location and <a href="{{ "/glossary/#category" | relative_url }}"
 class="glossary__link">category</a>, and sends a
-<a href="{{ site.baseurl }}glossary/#report" class="glossary__link">report</a>, 
-by email or using a web service such as <a href="{{ site.baseurl }}glossary/#open311"
+<a href="{{ "/glossary/#report" | relative_url }}" class="glossary__link">report</a>, 
+by email or using a web service such as <a href="{{ "/glossary/#open311" | relative_url }}"
 class="glossary__link">Open311</a>, to the department or body responsible for fixing
 it.
 
 But FixMyStreet doesn't just send problem reports &mdash; it makes the reports
 visible to everyone. Anyone can see what's already been reported, leave <a
-href="{{ site.baseurl }}glossary/#update" class="glossary__link">updates</a>, or
-subscribe to <a href="{{ site.baseurl }}glossary/#alert"
+href="{{ "/glossary/#update" | relative_url }}" class="glossary__link">updates</a>, or
+subscribe to <a href="{{ "/glossary/#alert" | relative_url }}"
 class="glossary__link">alerts</a>. We help prevent duplicate reports and offer
-additional features for <a href="{{ site.baseurl }}glossary/#staff-user"
+additional features for <a href="{{ "/glossary/#staff-user" | relative_url }}"
 class="glossary__link">staff users</a> working for the authorities who are actually
 fixing problems.
 
@@ -45,16 +45,16 @@ If you want to get FixMyStreet up and running, this is what you need to do:
     <ul>
       <li>
         <strong>an administrator</strong> who can 
-        <a href="{{ site.baseurl }}running">run the site</a> and the project
+        <a href="{{ "/running" | relative_url }}">run the site</a> and the project
       </li>
       <li>
         <strong>a developer</strong> who can 
-        <a href="{{ site.baseurl }}install">do the tech</a> and 
-        <a href="{{ site.baseurl }}customising">customise the code</a>
+        <a href="{{ "/install" | relative_url }}">do the tech</a> and 
+        <a href="{{ "/customising" | relative_url }}">customise the code</a>
       </li>
       <li>
         <strong>a translator</strong> (unless you'll be using a 
-        <a href="{{ site.baseurl }}customising/language">language</a>
+        <a href="{{ "/customising/language" | relative_url }}">language</a>
         we already support)
       </li>
     </ul>
@@ -69,9 +69,9 @@ If you want to get FixMyStreet up and running, this is what you need to do:
   </dt>
   <dd>
     <ul>
-      <li><a href="{{ site.baseurl }}install/install-script">on your own server</a></li>
-      <li><a href="{{ site.baseurl }}install/ami">on an Amazon Web Services EC2 server</a></li>
-      <li>...or ask us to <a href="{{ site.baseurl }}install/#hosting">host it for you</a></li>
+      <li><a href="{{ "/install/install-script" | relative_url }}">on your own server</a></li>
+      <li><a href="{{ "/install/ami" | relative_url }}">on an Amazon Web Services EC2 server</a></li>
+      <li>...or ask us to <a href="{{ "/install/#hosting" | relative_url }}">host it for you</a></li>
     </ul>
   </dd>  
   <dt>
@@ -85,12 +85,12 @@ If you want to get FixMyStreet up and running, this is what you need to do:
     <ul>
       <li>
         you'll need to get the 
-        <a href="{{ site.baseurl }}customising/boundaries">boundary data</a>
+        <a href="{{ "/customising/boundaries" | relative_url }}">boundary data</a>
         for the area you're covering (and the borders of any authorities within it)
       </li>
       <li>
         you must find 
-        <a href="{{ site.baseurl }}running/bodies_and_contacts">email addresses</a>
+        <a href="{{ "/running/bodies_and_contacts" | relative_url }}">email addresses</a>
          for each of the departments responsible for each category of problem,
          in each of the bodies responsible for the areas you're covering
       </li>
@@ -101,29 +101,29 @@ If you want to get FixMyStreet up and running, this is what you need to do:
   </dt>
   <dd>
     There's lots you can do to 
-    <a href="{{ site.baseurl }}customising">customise the site</a>:
+    <a href="{{ "/customising" | relative_url }}">customise the site</a>:
     <ul>
       <li>
-        <a href="{{ site.baseurl }}customising/config">configure the site</a>
+        <a href="{{ "/customising/config" | relative_url }}">configure the site</a>
         so it does what you want
       </li>
       <li>
-        make simple <a href="{{ site.baseurl }}customising/css">colour scheme</a> changes, 
+        make simple <a href="{{ "/customising/css" | relative_url }}">colour scheme</a> changes, 
         logo, and wording changes 
       </li>
       <li>
         optionally make more complex design or 
-        <a href="{{ site.baseurl }}customising/cobrand-module">behaviour changes</a>
+        <a href="{{ "/customising/cobrand-module" | relative_url }}">behaviour changes</a>
         &mdash; this will require dev skills (you can do this, or ask us to)
       </li>
       <li>
-        <a href="{{ site.baseurl }}customising/language">translate</a>
+        <a href="{{ "/customising/language" | relative_url }}">translate</a>
         it into the language(s) you need. We use a service called
         Transifex so your translators don't need to be programmers.
       </li>
       <li>
         change the about/privacy/FAQ pages by 
-        <a href="{{ site.baseurl }}customising/templates">writing your own</a>
+        <a href="{{ "/customising/templates" | relative_url }}">writing your own</a>
       </li>
     </ul>
     
@@ -136,10 +136,10 @@ If you want to get FixMyStreet up and running, this is what you need to do:
       Actually setting up a FixMyStreet project is just the beginning &mdash;
       you need to be committed for the long term to see the site grow and
       succeed. There will be
-      <a href="{{ site.baseurl }}running/admin_manual">user support</a>
+      <a href="{{ "/running/admin_manual" | relative_url }}">user support</a>
       to do, marketing and press to handle, liaison with the authorities you're
       sending the reports to, and perhaps even 
-      <a href="{{ site.baseurl }}customising/integration">integration</a>
+      <a href="{{ "/customising/integration" | relative_url }}">integration</a>
       (because email is the easiest, but not necessarily the best, way to send
       those reports).
     </p>
@@ -148,15 +148,15 @@ If you want to get FixMyStreet up and running, this is what you need to do:
 
 <!-- NB duplicated from /overview -->
 We've written a clear guide for anyone who's thinking about [setting up and
-running FixMyStreet]({{ site.baseurl }}The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). 
+running FixMyStreet]({{ "/The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf" | relative_url }}). 
 If you're thinking of running such a project, you **must** read it first -- it
 explains why these sites work, and what you need to think about before you start.
 
 If you still want to be involved, we welcome questions about how it works
-[on our mailing list]({{ site.baseurl }}community/).
+[on our mailing list]({{ "/community/" | relative_url }}).
 Or, if you're outside the UK, email
 <a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org.</a>
 
-There's also the [FixMyStreet blog]({{ site.baseurl }}blog/) where we post version release
+There's also the [FixMyStreet blog]({{ "/blog/" | relative_url }}) where we post version release
 information and other progress reports. And we often post FixMyStreet news on
 the <a href="https://www.mysociety.org/blog/">mySociety blog</a> too.

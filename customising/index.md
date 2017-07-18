@@ -16,12 +16,12 @@ title: Customising
 ## Your own cobrand
 
 Whatever you change, you'll almost certainly need to create a
-<a href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>,
+<a href="{{ "/glossary/#cobrand" | relative_url }}" class="glossary__link">cobrand</a>,
 which is the mechanism FixMyStreet uses to let you deviate from its default
 appearance and behaviour.
 
 As well as the
-[configuration settings]({{ site.baseurl }}customising/config/) you specify in
+[configuration settings]({{ "/customising/config/" | relative_url }}) you specify in
 the `conf/general.yml` file, a cobrand is made up of a set of templates, CSS,
 and an *optional* Cobrand module that contains custom Perl code. There are
 defaults for all of these, so the cobrand only needs to override things that are
@@ -41,20 +41,20 @@ things like directory names). The default cobrand is called Default (`default`).
 
 There's a lot you can customise on your own FixMyStreet site.
 
-We've prepared a [customisation checklist]({{ site.baseurl }}customising/checklist/)
+We've prepared a [customisation checklist]({{ "/customising/checklist/" | relative_url }})
 which covers all the key things you should work through when installing your own 
 site.
 
 But if you just want to see what's possible, here are some of the
 aspects of FixMyStreet that you can customise:
 
-* [how to translate or change FixMyStreet's language]({{ site.baseurl }}customising/language/)
-* [how FixMyStreet assigns reports to bodies]({{ site.baseurl }}customising/fms_and_mapit/)
-* [how to customise the geocoder]({{ site.baseurl }}customising/geocoder/)
-* [how to change the design]({{ site.baseurl }}customising/css/)
-* [how to customise templates]({{ site.baseurl }}customising/templates/)
-* [how reports are sent by FixMyStreet]({{ site.baseurl }}customising/send_reports/)
-* [all the config settings]({{ site.baseurl }}customising/config/)
+* [how to translate or change FixMyStreet's language]({{ "/customising/language/" | relative_url }})
+* [how FixMyStreet assigns reports to bodies]({{ "/customising/fms_and_mapit/" | relative_url }})
+* [how to customise the geocoder]({{ "/customising/geocoder/" | relative_url }})
+* [how to change the design]({{ "/customising/css/" | relative_url }})
+* [how to customise templates]({{ "/customising/templates/" | relative_url }})
+* [how reports are sent by FixMyStreet]({{ "/customising/send_reports/" | relative_url }})
+* [all the config settings]({{ "/customising/config/" | relative_url }})
 
 Note that none of the above require you to know or write any Perl (the language 
 FixMyStreet is mostly written in). 
@@ -79,4 +79,4 @@ and CSS you may not feel you have to, but it's likely you'll have needed to
 make actual code changes for your particular environment, and feeding these
 back means it is easier to update the code from upstream in future to gain new
 features and bugfixes.
-See [more about feeding back changes]({{ site.baseurl }}feeding-back/).
+See [more about feeding back changes]({{ "/feeding-back/" | relative_url }}).

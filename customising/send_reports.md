@@ -52,7 +52,7 @@ it successfully.
 Although by default FixMyStreet sends reports by email, it's possible to inject reports *directly* into some
 bodies' databases or back-end systems. This is usually much better than using email because it's more convenient
 for the staff working at the receiving end. See
-[more about integration]({{ site.baseurl }}customising/integration/) for details.
+[more about integration]({{ "/customising/integration/" | relative_url }}) for details.
 
 ## Technical investigation
 
@@ -67,7 +67,7 @@ But if you want to see what's going on, you can use these options:
 
    * the `--verbose` option prints out a summary of reports that did not get
      sent. Incidentally, this option is useful even in
-     <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>,
+     <a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>,
      because it causes cron to send a logging email containing this summary of
      failed-to-send reports if anything goes wrong.
 

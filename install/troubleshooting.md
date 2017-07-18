@@ -7,11 +7,11 @@ title: Installation troubleshooting
 
 <p class="lead">
   If you've installed FixMyStreet using the 
-  <a href="{{ site.baseurl }}install/install-script">installation script</a>
+  <a href="{{ "/install/install-script" | relative_url }}">installation script</a>
   or the 
-  <a href="{{ site.baseurl }}install/ami">AMI</a>, you should be good to go.
+  <a href="{{ "/install/ami" | relative_url }}">AMI</a>, you should be good to go.
   However, if you've done a 
-  <a href="{{ site.baseurl }}install/manual-install">manual install</a>, 
+  <a href="{{ "/install/manual-install" | relative_url }}">manual install</a>, 
   sometimes you might bump into a problem if your system is different from
   what FixMyStreet expects. These hints might help.
 </p>
@@ -32,7 +32,7 @@ title: Installation troubleshooting
 ### locale: must be installed
 
 By default, FixMyStreet uses the `en_GB.UTF-8` 
-<a href="{{ site.baseurl }}glossary/#locale" class="glossary__link">locale</a>.
+<a href="{{ "/glossary/#locale" | relative_url }}" class="glossary__link">locale</a>.
 If it is not installed then it may not start. You need this locale on your
 system even if you're planning on running your site in a different language.
 
@@ -49,7 +49,7 @@ Check to see what locales your system currently supports with:
 ### Template caching
 
 FixMyStreet caches compiled 
-<a href="{{ site.baseurl }}glossary/#template" class="glossary__link">templates</a>
+<a href="{{ "/glossary/#template" | relative_url }}" class="glossary__link">templates</a>
 alongside the source files, so the `templates/web/` directory needs to be writable
 by the process that is running FixMyStreet.
 
@@ -97,7 +97,7 @@ aren't showing up, do `bin/make_css` to create them.
 
 ### Bad YAML format in config settings: no response or 500 error
 
-When you change any of the [config settings]({{ site.baseurl }}customising/config/)
+When you change any of the [config settings]({{ "/customising/config/" | relative_url }})
 in `conf/general.yml` (which you will do!), make sure you don't break the YAML
 format. If FixMyStreet can't read that file cleanly, it may time out, causing fastcgi
 to eventually respond with a 500 Internal Server Error.

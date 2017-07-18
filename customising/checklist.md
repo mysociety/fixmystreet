@@ -24,7 +24,7 @@ at the same time as others -- but if you're not sure then just work through the 
   </dt>
   <dd>
     You need a name for your
-    <a href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>
+    <a href="{{ "/glossary/#cobrand" | relative_url }}" class="glossary__link">cobrand</a>
     right at the start because that's the name you'll use for the directories
     where your own resources and templates go.
     <p>
@@ -58,14 +58,14 @@ at the same time as others -- but if you're not sure then just work through the 
   <dd>
     If FixMyStreet doesn't already have translations for the language(s) you
     need, you can start work on that right away &mdash; see 
-    <a href="{{site.baseurl }}customising/language/">more about languages</a>.
+    <a href="{{ "/customising/language/" | relative_url }}">more about languages</a>.
   </dd>
   <dt>
     <h3>Install the software on the server</h3>
   </dt>
   <dd>
     There are several different ways of doing this &mdash; see 
-    <a href="{{ site.baseurl }}install/">installation instructions</a>.
+    <a href="{{ "/install/" | relative_url }}">installation instructions</a>.
     <p>
       Even if you're not hosting the site yourself, you might want to install
       the software in order to see how your customisation looks before putting
@@ -88,7 +88,7 @@ at the same time as others -- but if you're not sure then just work through the 
     <h3>Change the colour scheme</h3>
   </dt>
   <dd>
-    See <a href="{{ site.baseurl }}customising/css/">changing colour and CSS</a>
+    See <a href="{{ "/customising/css/" | relative_url }}">changing colour and CSS</a>
     for detailed instructions.
     <p>
       You can just change the colour variables without needing to touch any other
@@ -105,7 +105,7 @@ at the same time as others -- but if you're not sure then just work through the 
     dropping in a graphics file.
     <p>
       We'll be adding instructions later, but meanwhile see the page
-      <a href="{{ site.baseurl }}customising/css/">about changing the CSS</a>.    
+      <a href="{{ "/customising/css/" | relative_url }}">about changing the CSS</a>.    
     </p>
   </dd>
   <dt>
@@ -120,7 +120,7 @@ at the same time as others -- but if you're not sure then just work through the 
       <code>templates/web/base/about/faq-en-gb.html</code>
     </p>
     <p>
-      See <a href="{{ site.baseurl }}customising/templates/">more about templates</a>.
+      See <a href="{{ "/customising/templates/" | relative_url }}">more about templates</a>.
     </p>
   </dd>
   <dt>
@@ -129,9 +129,9 @@ at the same time as others -- but if you're not sure then just work through the 
   <dd>
     When someone enters a place name, you only want your FixMyStreet to look
     for it in the place your site covers. This is controlled by the
-    <code><a href="{{ site.baseurl }}customising/config/#geocoding_disambiguation">GEOCODING_DISAMBIGUATION</a></code>
+    <code><a href="{{ "/customising/config/#geocoding_disambiguation" | relative_url }}">GEOCODING_DISAMBIGUATION</a></code>
     setting.
-    See <a href="{{ site.baseurl }}customising/geocoder/">more about the geocoder</a>.
+    See <a href="{{ "/customising/geocoder/" | relative_url }}">more about the geocoder</a>.
     <p>
       We've listed this separately from the other config settings because it
       may take a little bit of testing to see what options work best &mdash;
@@ -143,10 +143,10 @@ at the same time as others -- but if you're not sure then just work through the 
   </dt>
   <dd>
     You need to decide what kind of boundary data you'll be using &mdash; see
-    <a href="{{ site.baseurl }}customising/boundaries/">more about boundaries</a>.
+    <a href="{{ "/customising/boundaries/" | relative_url }}">more about boundaries</a>.
     <p>
       As part of that work, you'll need to set 
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
+      <code><a href="{{ "/customising/config/#mapit_url" | relative_url }}">MAPIT_URL</a></code>
       and the other MapIt config settings to match the service you're using.
     </p>
   </dd>
@@ -155,15 +155,15 @@ at the same time as others -- but if you're not sure then just work through the 
   </dt>
   <dd>
     Many of the  
-    <a href="{{ site.baseurl }}customising/config/">configuration settings</a>
+    <a href="{{ "/customising/config/" | relative_url }}">configuration settings</a>
     can be left with their defaults, but some you <em>must</em> change. 
     <p>
       As well as system settings (for example, 
-      <code><a href="{{ site.baseurl }}customising/config/#fms_db_name">FMS_DB_NAME</a></code>),
+      <code><a href="{{ "/customising/config/#fms_db_name" | relative_url }}">FMS_DB_NAME</a></code>),
       every new site needs custom
-      <code><a href="{{ site.baseurl }}customising/config/#email_domain">EMAIL_DOMAIN</a></code>
+      <code><a href="{{ "/customising/config/#email_domain" | relative_url }}">EMAIL_DOMAIN</a></code>
       and
-      <code><a href="{{ site.baseurl }}customising/config/#example_places">EXAMPLE_PLACES</a></code>
+      <code><a href="{{ "/customising/config/#example_places" | relative_url }}">EXAMPLE_PLACES</a></code>
       settings. Make sure the example places you choose really do work if you enter them 
       as the location on the front page.
     </p>
@@ -178,13 +178,13 @@ at the same time as others -- but if you're not sure then just work through the 
   </dt>
   <dd>
     Once your site is running log into the admin and 
-    <a href="{{ site.baseurl }}running/bodies_and_contacts/">add the bodies</a>.
+    <a href="{{ "/running/bodies_and_contacts/" | relative_url }}">add the bodies</a>.
     <p>
       You should have set up the
-      <a href="{{ site.baseurl }}customising/boundaries/">admin boundaries</a>
+      <a href="{{ "/customising/boundaries/" | relative_url }}">admin boundaries</a>
       by this stage, because you need to associate each body with the area it covers.
       For more information, see
-      <a href="{{ site.baseurl }}customising/fms_and_mapit/">how FixMyStreet uses MapIt</a>.
+      <a href="{{ "/customising/fms_and_mapit/" | relative_url }}">how FixMyStreet uses MapIt</a>.
     </p>
   </dd>
   <dt>
@@ -194,7 +194,7 @@ at the same time as others -- but if you're not sure then just work through the 
     Once you've created the bodies to whom reports will be sent, you can add
     their problem categories (for example, "Potholes", "Streetlights"). At the
     same time, add the contact email addresses for each one &mdash; see <a
-    href="{{ site.baseurl }}running/bodies_and_contacts/">more about
+    href="{{ "/running/bodies_and_contacts/" | relative_url }}">more about
     contacts and categories</a>.
   </dd>
 </dl>
@@ -204,7 +204,7 @@ at the same time as others -- but if you're not sure then just work through the 
 
 Remember that this just covers the key parts of a custom installation. There's
 a lot more you can change &mdash; for example, you can write custom Perl code
-for the <a href="{{ site.baseurl }}customising/cobrand-module/">Cobrand
+for the <a href="{{ "/customising/cobrand-module/" | relative_url }}">Cobrand
 module</a> if you want to override specific behaviour not covered by config
 variables.
 

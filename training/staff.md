@@ -16,19 +16,19 @@ Training notes for new staff users
   <p>
     Basic training notes like these are available for
     <br>
-    <a href="{{site.baseurl}}training/citizens">citizens</a>,
-    <a href="{{site.baseurl}}training/staff">staff</a>, and
-    <a href="{{site.baseurl}}training/admins">administrators</a>.
+    <a href="{{ "/training/citizens" | relative_url }}">citizens</a>,
+    <a href="{{ "/training/staff" | relative_url }}">staff</a>, and
+    <a href="{{ "/training/admins" | relative_url }}">administrators</a>.
   </p>
   <p>
-    Refer to the <a href="{{site.baseurl}}overview">full documentation</a>
+    Refer to the <a href="{{ "/overview" | relative_url }}">full documentation</a>
     for more detailed information!
   </p>
 </div>
 
 Remember that every FixMyStreet installation is different, and can both
 look and behave differently, depending on how it has been 
-[customised]({{site.baseurl}}customising/).
+[customised]({{ "/customising/" | relative_url }}).
 
 
 <!-- magically present as slideshow, slides split on h2 or h3 -->
@@ -108,7 +108,7 @@ need an administrator to convert your account to a *staff account*.
 
 ## Signing up
 
-![sign in screen]({{ site.baseurl }}assets/img/training/mmi-09-login.png)
+![sign in screen]({{ "/assets/img/training/mmi-09-login.png" | relative_url }})
 
 ## How to log in
 
@@ -150,7 +150,7 @@ in!
 
 ### Add an update...
 
-![add an update]({{ site.baseurl }}assets/img/training/mmi-05-update.png)
+![add an update]({{ "/assets/img/training/mmi-05-update.png" | relative_url }})
 
 ## Change a report's state
 
@@ -173,13 +173,13 @@ When you're logged in with a staff account, you can
 
 ### More states available to a staff user
 
-![staff states]({{ site.baseurl }}assets/img/training/mmi-15-staff-states.png)
+![staff states]({{ "/assets/img/training/mmi-15-staff-states.png" | relative_url }})
 
 ## This is what a fixed problem looks like
 
 The problem report has a green tag marked "fixed"!
 
-![it is fixed]({{ site.baseurl }}assets/img/training/mmi-16-woo-it-is-fixed.png)
+![it is fixed]({{ "/assets/img/training/mmi-16-woo-it-is-fixed.png" | relative_url }})
 
 ## Hiding reports
 
@@ -195,7 +195,7 @@ can report a problem report if it contains offensive or inappropriate material.
 
 ## The "remove from site" link
 
-![remove from site]({{ site.baseurl }}assets/img/training/mmi-13-staff-remove-from-site.png)
+![remove from site]({{ "/assets/img/training/mmi-13-staff-remove-from-site.png" | relative_url }})
 
 ## View all reports for your body
 
@@ -232,7 +232,7 @@ People are happy to know you're reporting problems when you find them.
   
 * be extra careful: **do not to leave a staff account logged in!**
   
-![sign out]({{ site.baseurl }}assets/img/training/mmi-17-logout.png)
+![sign out]({{ "/assets/img/training/mmi-17-logout.png" | relative_url }})
 
 
 <!--
