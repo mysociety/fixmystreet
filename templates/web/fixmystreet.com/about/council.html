@@ -25,7 +25,7 @@
     </div>
     <div class="councils-hero__demo-access">
       <h2>Try FixMyStreet Professional right now, on our demo site</h2>
-      <form class="councils-hero__demo-access__form js-fms-pro-demo-form">
+      <form action="/contact/submit" method="post" class="councils-hero__demo-access__form js-fms-pro-demo-form">
         <div class="form-group">
           <label for="demo-name">Name</label>
           <span class="required">required</span>
@@ -43,9 +43,15 @@
         </div>
         <div class="form-group">
           <label for="demo-job">Job title</label>
-          <input type="text" name="job" id="demo-job">
+          <input type="text" name="extra.job_title" id="demo-job">
         </div>
         <div class="form-group submit-group">
+          <input type="hidden" name="extra.referer" value="[% c.req.headers.referer | html %]">
+          <input type="hidden" name="subject" value="Demo site request">
+          <input type="hidden" name="message" value="This visitor was sent a link to demo.fixmystreet.com">
+          <input type="hidden" name="recipient" value="enquiries">
+          <input type="hidden" name="dest" value="from_council">
+          <input type="hidden" name="success_url" value="https://demo.fixmystreet.com">
           <input type="submit" value="Let me in" class="btn">
         </div>
       </form>
