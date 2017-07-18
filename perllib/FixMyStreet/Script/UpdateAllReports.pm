@@ -115,7 +115,12 @@ sub generate_dashboard {
     }, {
         select => [ { min => 'confirmed' } ],
         as => [ 'confirmed' ],
-    })->first->confirmed->truncate(to => 'day');
+    })->first->confirmed;
+    if ($min_confirmed) {
+        $min_confirmed = $min_confirmed->truncate(to => 'day');
+    } else {
+        $min_confirmed = FixMyStreet->set_time_zone(DateTime->now)->truncate(to => 'day');
+    }
 
     my ($group_by, $extra);
     if (DateTime::Duration->compare($end_today - $min_confirmed, DateTime::Duration->new(months => 1)) < 0) {

@@ -2,6 +2,7 @@ use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use mySociety::MaPit;
 use FixMyStreet::App;
+use FixMyStreet::Script::UpdateAllReports;
 use DateTime;
 
 set_absolute_time('2017-07-07T16:00:00');
@@ -10,6 +11,9 @@ END {
 }
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
+
+# Run the cron script with empty database
+FixMyStreet::Script::UpdateAllReports::generate_dashboard();
 
 $mech->create_body_ok(2514, 'Birmingham City Council');
 my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
@@ -85,7 +89,6 @@ $fife_problems[10]->update( {
 });
 
 # Run the cron script that makes the data for /reports so we don't get an error.
-use FixMyStreet::Script::UpdateAllReports;
 FixMyStreet::Script::UpdateAllReports::generate_dashboard();
 
 # check that we can get the page
