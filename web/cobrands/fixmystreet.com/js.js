@@ -65,4 +65,16 @@ $(function(){
             });
         }
     });
+
+    // Hide the demo access form behind a button, to save space on initial page load
+    $('.js-fms-pro-demo-form').each(function(){
+        var $form = $(this);
+        var $revealBtn = $('<button>').addClass('btn').text('Request access').on('click', function(){
+            $form.slideDown(250, function(){
+                $form.find('input[type="text"], input[type="text"]').eq(0).focus();
+            });
+            $(this).remove();
+        }).insertAfter($form);
+        $form.hide();
+    });
 });

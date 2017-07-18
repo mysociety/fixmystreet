@@ -142,8 +142,71 @@ $fms-pink: #E65376;
     color: #777;
   }
 
+  .councils-hero__demo-access {
+    background-color: $fms-pink;
+    border-radius: 3px;
+    color: #fff;
+    padding: 2em;
+    margin: 4em auto -4em auto;
+    max-width: 26em;
+    position: relative;
+    z-index: 1;
+
+    @media (min-width: 44em) {
+      padding: 3em;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 0 0 1em 0;
+    }
+
+    .form-group {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    label {
+      font-weight: normal;
+    }
+
+    // Avoid border collapse jump on jQuery.slideDown()
+    .form-group:first-child label {
+      margin-top: 0;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      border: 1px solid desaturate(darken($fms-pink, 10%), 20%);
+      width: 100%;
+      padding: 0.5em;
+      border-radius: 3px;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      display: block;
+      margin: 0 auto;
+      background-image: none;
+      background-color: desaturate(darken($fms-pink, 10%), 20%);
+      border: none;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: desaturate(darken($fms-pink, 20%), 20%);
+      }
+    }
+
+    .required,
+    .form-note {
+      color: mix($fms-pink, #fff, 30%);
+    }
+  }
+
   .councils-sales {
-    padding: 3em 0 5em;
+    padding: 2em 0 5em;
     .councils-content-wrapper {
       max-width: 58em;
     }
@@ -188,7 +251,8 @@ $fms-pink: #E65376;
   .councils-sales--benefits {
     background-color: #F7F6F5;
     border-bottom: 1px solid #e9e9e9;
-    padding-top: 1em;
+    padding-top: 5em;
+
     h2 {
       font-size: 2.5em;
       text-align: center;
