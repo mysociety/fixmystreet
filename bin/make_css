@@ -35,6 +35,8 @@ GetOptions(
     'style|t=s' => sub { die "Unknown style\n" unless $_[1] =~ /nested|expanded|compact|compressed/; $style = $_[1]; },
     'verbose' => \my $verbose,
     'watch' => \my $watch,
+    'script=s'=> \my $watch_script,
+    'script-param=s'=> \my $watch_script_param,
     'help|?' => \my $help,
 ) or pod2usage(2);
 pod2usage(1) if $help;
@@ -93,6 +95,7 @@ while ( my @events = $watcher->wait_for_events() ) {
             }
         }
     }
+    system($watch_script, $watch_script_param) if $watch_script;
 }
 
 # Given a SCSS file, compile it and generate a .map file,
@@ -150,6 +153,8 @@ make_css [options] [dirs ...]
  Options:
    --verbose        display more information
    --watch          wait for file updates and compile automatically
+   --script         script to run after recompilation in watch mode
+   --script-param   param to pass to --script when executing
    --style, -t      CSS output style (one of nested, expanded, compact, compressed)
    --help           this help message
 

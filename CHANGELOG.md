@@ -16,6 +16,7 @@
         - Improve performance of duplicate display.
     - Development improvements:
         - `switch-site` script to automate switching config.yml files. #1741
+        - `make_css --watch` can run custom script after each compilation.
 
 * v2.1.1 (3rd August 2017)
     - Email improvements:
