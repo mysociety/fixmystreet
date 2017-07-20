@@ -188,7 +188,7 @@
     &:hover {background: $colour_green_dark;}
     &:active {
         background: $colour_green_dark_2;
-        box-shadow: inset 0px 0px 6px $colour_green_dark_2 /1.5;
+        box-shadow: inset 0px 0px 6px darken($colour_green_dark_2, 30%);
     }
 }
 
@@ -198,7 +198,7 @@
     &:hover {background: $colour_blue_dark;}
     &:active {
         background: $colour_blue_dark_2;
-        box-shadow: inset 0px 0px 6px $colour_blue_dark_2 /1.5;
+        box-shadow: inset 0px 0px 6px darken($colour_blue_dark_2, 30%);
     }
 }
 
@@ -271,7 +271,7 @@
         width: $base-spacing-unit * 1.5;
         margin-right: 2px;
         &:hover {
-            background-color: $colour_light_grey / 1.1;
+            background-color: darken($colour_light_grey, 10%);
         }
     }
     .owl-prev {
