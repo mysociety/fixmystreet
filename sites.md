@@ -24,18 +24,9 @@ Launched: 2014
 <br>
 Run by: <a href="http://sinarproject.org/">Sinar project</a>
 
-<h3>India</h3>
-Site: <a href="http://zerotb.mysociety.org/">ZeroTB</a> in Delhi. A
-project to report medicine shortages in the city's clinics, based on a
-modified version of the FixMyStreet platform.
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.article-25.org/">Article 25</a>
-
 <h2>Australasia</h2>
 <h3>Australia</h3>
-Site: <a href="http://www.fixmystreet.org.au/">FixMyStreet.org.au</a> 
+Site: <a href="http://www.fixmystreet.org.au/">FixMyStreet.org.au</a>
 <br>
 Launched: 2013
 <br>
@@ -96,13 +87,6 @@ Run by: <a href="https://www.mysociety.org/">mySociety</a>
 
 <h2>South America</h2>
 
-<h3>Chile</h3>
-Site: <a href="http://bellavistaenaccion.cl/">Bellavista En Ación</a>
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.ciudadviva.cl/">Ciudad Viva</a>
-
 <h3>Uruguay</h3>
 Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
 <br>
@@ -114,3 +98,24 @@ Run by: <a href="http://www.datauy.org/">DATA</a>
 
 If you don't see your country listed above, you could start your own
 FixMyStreet. <a href="/overview/">Find out more here</a>.
+
+<h2>Honourable mentions</h2>
+
+<p>Sites powered by FixMyStreet, but sadly no longer running.</p>
+
+<h3>India</h3>
+Site: <b>ZeroTB</b> in Delhi. A
+project to report medicine shortages in the city's clinics, based on a
+modified version of the FixMyStreet platform.
+<br>
+Launched: 2014
+<br>
+Run by: <a href="http://www.article-25.org/">Article 25</a>
+
+<h3>Chile</h3>
+Site: <b>Bellavista En Ación</b>
+<br>
+Launched: 2014
+<br>
+Run by: <a href="http://www.ciudadviva.cl/">Ciudad Viva</a>
+
