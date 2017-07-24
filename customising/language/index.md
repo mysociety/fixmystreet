@@ -89,3 +89,14 @@ The templates use the `loc` function to pass strings to gettext for
 translation. If you create or update a `.po` file, you will need to run the
 `commonlib/bin/gettext-makemo` script to compile these files into the machine
 readable format used by the site.
+
+## Translating the FAQ
+
+The FAQ pages do not use gettext so need to be translated separately by
+creating a new template under your co-brand, e.g for a German
+translation:
+
+  templates/web/<co-brand>/about/faq-de.html
+
+For other languages the file should be `faq-<lang>.html`. If there is
+not a translated template it will fall back to `faq.html`.
