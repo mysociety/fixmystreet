@@ -77,6 +77,35 @@ site. For example, a basic two language switcher:
         <li><a href="https://fr.[% c.cobrand.base_host %][% c.req.uri.path_query %]">Français</a></li>
     [% END %]
 
+## Ensuring links in emails default to the right language
+
+With the default configuration links in emails will use the `BASE_URL`
+and hence clicking on them means the user will see the browser
+negotiated language. This behaviour can be changed using the
+`base_url_with_lang` function in your Cobrand module which is used
+when generating URLs for emails.
+
+A basic version of this that supports two languages would look like
+like this:
+
+    sub base_url_with_lang {
+        my $self = shift;
+        my $base = $self->base_url;
+        my $lang = $mySociety::Locale::lang;
+        if ($lang eq 'fr') {
+            $base =~ s{https?://}{$&fr.};
+        } else {
+            $base =~ s{https?://}{$&en.};
+        }
+        return $base;
+    }
+
+The current language is stored when a report is made and this is used
+when sending out emails related to the report. When the email is sent
+this means that `$mySociety::Local::lang` returns the language used at
+the time the report was submitted, hence the function above will return
+URLs for the correct language.
+
 ## Contributing a translation
 
 If we don't already have a translation for the language you want, please do
