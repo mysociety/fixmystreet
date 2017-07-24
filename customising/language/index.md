@@ -47,6 +47,36 @@ upon the browser. If you have used the install script on a clean server, or the
 AMI, you should be able to visit your domain with a language code at the start
 by default.
 
+Using the example above `http://fr.fixmystreet.com/` would display the
+French translation and `http://de.fixmystreet.com/` would display the
+German translation. If no language is specified in the URL, or an
+unsupported code is used then it will fall back to the language
+negotiated by the browser. If that language is not available,
+the first language listed in the `LANGUAGES` configuration option
+will be displayed.
+
+Note that this method only supports two letter language codes. This
+means you cannot use `sv-se` format strings to distingish regional
+variants in the hostname. However, the first part of the language string
+does not need to be an official language code so you can use it to allow
+regional variants, e.g:
+
+    LANGUAGES:
+        - 'sv,Svenska,sv_SE'
+        - 'sf,Svenska,sv_FI'
+
+`http://sv.fixmystreet.com` would dsplay `sv_SE` and
+`http://sf.fixmystreet.com` would display `sv_FI`.
+
+These language links can be used for adding a language switcher to the
+site. For example, a basic two language switcher:
+
+    [% IF lang_code == 'fr' %]
+        <li><a href="https://en.[% c.cobrand.base_host %][% c.req.uri.path_query %]">English</a></li>
+    [% ELSE %]
+        <li><a href="https://fr.[% c.cobrand.base_host %][% c.req.uri.path_query %]">Français</a></li>
+    [% END %]
+
 ## Contributing a translation
 
 If we don't already have a translation for the language you want, please do
