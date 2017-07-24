@@ -21,6 +21,7 @@ use FixMyStreet::Integrations::ExorRDI;
 my $end_date = DateTime->now( time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone )
     ->truncate(to => 'hour')->set_hour(16);
 my $start_date = $end_date->clone->subtract(days => 1);
+my $inspection_date = $end_date; # All inspections are considered to have happened on the same date.
 
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('oxfordshire')->new;
 $cobrand->set_lang_and_domain('en-gb', 1);
@@ -35,6 +36,7 @@ foreach my $inspector (@inspectors) {
     my $params = {
         start_date => $start_date,
         end_date => $end_date,
+        inspection_date => $inspection_date,
         user => $inspector,
     };
     my $rdi = FixMyStreet::Integrations::ExorRDI->new($params);

@@ -113,13 +113,13 @@ subtest 'Exor file looks okay' => sub {
         $rdi =~ s/(I,[FM]C,,)\d+/$1XXX/g; # Remove unique ID figures, unknown order
         is $rdi, <<EOF, "RDI file matches expected";
 "1,1.8,1.0.0.0,ENHN,"
-"G,1989169,,,XX,170505,0700,D,INS,N,,,,"
+"G,1989169,,,XX,170505,1600,D,INS,N,,,,"
 "H,FC"
 "I,FC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","123 ""
 "J,SFP1,2,,,434970,209683,,,,,"
 "M,resolve,,,/CFC,,"
 "P,0,999999"
-"G,1989169,,,XX,170505,0700,D,INS,N,,,,"
+"G,1989169,,,XX,170505,1600,D,INS,N,,,,"
 "H,MC"
 "I,MC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","124 ""
 "J,SFP2,2,,,434970,209683,,,,,"

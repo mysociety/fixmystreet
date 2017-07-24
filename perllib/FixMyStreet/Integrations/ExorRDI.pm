@@ -23,7 +23,7 @@ use Scalar::Util 'blessed';
 use FixMyStreet::DB;
 use namespace::clean;
 
-has [qw(start_date end_date)] => (
+has [qw(start_date end_date inspection_date)] => (
     is => 'ro',
     required => 1,
 );
@@ -154,8 +154,8 @@ sub construct {
                 $link_id, # area/link id, fixed value for our purposes
                 "","", # must be empty
                 $initials || "XX", # inspector initials
-                $self->start_date->strftime("%y%m%d"), # date of inspection yymmdd
-                "0700", # time of inspection hhmm, set to static value for now
+                $self->inspection_date->strftime("%y%m%d"), # date of inspection yymmdd
+                "1600", # time of inspection hhmm, set to static value for now
                 "D", # inspection variant, should always be D
                 "INS", # inspection type, always INS
                 "N", # Area of the county - north (N) or south (S)
@@ -204,7 +204,7 @@ has filename => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        my $start = $self->start_date->strftime("%Y%m%d");
+        my $start = $self->inspection_date->strftime("%Y%m%d");
         my $end = $self->end_date->strftime("%Y%m%d");
         my $filename = sprintf("exor_defects-%s-%s.rdi", $start, $end);
         if ( $self->user ) {

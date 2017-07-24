@@ -56,6 +56,7 @@ sub download : Path('download') : Args(0) {
 
     my $params = {
         start_date => $start_date,
+        inspection_date => $start_date,
         end_date => $end_date + $one_day,
         user => $c->get_param('user_id'),
     };
