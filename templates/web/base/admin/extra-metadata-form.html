@@ -1,0 +1,81 @@
+<ul class="js-metadata-items">
+  [% FOR meta IN metas.merge([{}]) %]
+    <li class="js-metadata-item [% IF loop.last %]hidden-js js-metadata-item-template[% END %]" data-index="[% loop.index %]">
+        <button class="btn btn--small js-metadata-item-remove hidden-nojs">[% loc('Remove field') %]</button>
+
+        <div class="admin-hint"><p>[% loc('The ordering of this field on the report page. Fields are shown in ascending order according to this value.') %]</p></div>
+        <label>
+            [% loc('Order') %]
+            <input name="metadata[[% loop.index %]].order" data-field-name="order" type=text value="[% meta.order | html %]">
+        </label>
+
+        <div class="admin-hint"><p>[% loc('The code used to store this field value in the database. e.g. <code>address</code> would be available as <code>problem.extra.address</code> in the templates.') %]</p></div>
+        <label>
+            [% loc('Code') %]
+            <input name="metadata[[% loop.index %]].code" data-field-name="code" type=text value="[% meta.code | html %]">
+        </label>
+
+        <div class="admin-hint"><p>[% loc('Whether the user is required to provide a value for this field.') %]</p></div>
+        <label>
+            [% loc('Required') %]
+            <input name="metadata[[% loop.index %]].required" data-field-name="required" type=checkbox [% meta.required == 'true' ? 'checked' : '' %]>
+        </label>
+
+        <div class="admin-hint"><p>[% loc('If ticked the user won’t see an input field, just the ‘Description’ text.') %]</p></div>
+        <label>
+            [% loc('Notice') %]
+            <input name="metadata[[% loop.index %]].notice" data-field-name="notice" type=checkbox [% meta.variable == 'false' ? 'checked' : '' %]>
+        </label>
+
+        <div class="admin-hint"><p>[% loc('The field name as shown to the user on the report form.') %]</p></div>
+        <label>
+            [% loc('Description') %]
+            <input name="metadata[[% loop.index %]].description" data-field-name="description" type=text value="[% meta.description | html %]">
+        </label>
+
+        <div class="admin-hint"><p>[% loc('Can be used to display extra text to the user alongside the field. The default template does not show this (<code>meta.datatype_description</code>), you must add it in <code>category_extras_fields.html</code>') %]</p></div>
+        <label>
+            [% loc('Hint') %]
+            <input name="metadata[[% loop.index %]].datatype_description" data-field-name="datatype_description" type=text value="[% meta.datatype_description | html %]">
+        </label>
+
+        <div class="admin-hint"><p>[% loc('The type of input field to show to the user. <strong>Text</strong> is a simple text field, <strong>List</strong> is a drop-down selection.') %]</p></div>
+        <label>
+            [% loc('Type') %]
+            <select name="metadata[[% loop.index %]].datatype" data-field-name="datatype" class="js-metadata-item-type">
+                <option value="string" [% meta.datatype == 'string' ? 'selected' : '' %]>[% loc('String') %]</option>
+                <option value="singlevaluelist" [% meta.datatype == 'singlevaluelist' ? 'selected' : '' %]>[% loc('List') %]</option>
+            </select>
+        </label>
+
+        <div class="js-metadata-options">
+            <div class="admin-hint"><p>[% loc('For each option, <strong>Key</strong> is the value which is stored in the database for that option and <strong>Name</strong> is the value displayed to the user.') %]</p></div>
+            [% loc('Options') %]<span class="hidden-js"> [% loc('(ignored if type is "String")') %]</span>
+            <ul>
+                [% outer_loop = loop %]
+                [% values = meta.values OR [] %]
+                [% FOREACH option IN values.merge([{}]) %]
+                [%# the .merge() call is so there's an empty one on the end %]
+                    <li class="js-metadata-option [% IF loop.last %]hidden-js js-metadata-option-template[% END %]">
+                        <label>
+                            [% loc('Key') %]
+                            <input class="js-metadata-option-key" name="metadata[[% outer_loop.index %]].values[[% loop.index %]].key" type="text" value="[% option.key | html %]">
+                        </label>
+                        <label>
+                            [% loc('Name') %]
+                            <input class="js-metadata-option-name" name="metadata[[% outer_loop.index %]].values[[% loop.index %]].name" type="text" value="[% option.name | html %]">
+                        </label>
+                        <button class="btn btn--small js-metadata-option-remove hidden-nojs">[% loc('Remove') %]</button>
+                    </li>
+                [% END %]
+                <li class="hidden-nojs">
+                    <button class="btn btn--small js-metadata-option-add">[% loc('Add option') %]</button>
+                </li>
+            </ul>
+        </div>
+    </li>
+  [%- END %]
+  <li class="hidden-nojs">
+      <button class="btn btn--small js-metadata-item-add">[% loc('Add field') %]</button>
+  </li>
+</ul>

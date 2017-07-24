@@ -15,7 +15,14 @@
         list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
       ); %]
     </p>
-    [% INCLUDE 'report/new/category_extras_fields.html' %]
+    [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$category %]
     </div>
+  [%- END %]
+
+  [%- IF report_extra_fields %]
+    [% FOREACH extras IN report_extra_fields %]
+        [% cat_prefix = "extra[" _ extras.id _ "]" %]
+        [% INCLUDE 'report/new/category_extras_fields.html' metas=extras.get_extra_fields %]
+    [% END %]
   [%- END %]
 </div>

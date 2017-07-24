@@ -1,0 +1,68 @@
+[% INCLUDE 'admin/header.html' title=loc('Extra Fields') -%]
+
+<form method=post action="[% c.uri_for('', extra.id || 'new' ) %]">
+    <div class="admin-hint">
+      <p>
+        [% loc('Give this collection of fields a name. It is not shown publicly, just here in the admin.') %]
+      </p>
+    </div>
+    <p>
+        <label>
+            [% loc('Name') %]
+            <input type=text name="name" value="[% extra.name | html %]" />
+        </label>
+    </p>
+
+    [% IF cobrands.size > 1 %]
+        <div class="admin-hint">
+        <p>
+            [% loc('To limit this collection of fields to a single cobrand, select it here.') %]
+        </p>
+        </div>
+        <p>
+            <label>
+                [% loc('Cobrand') %]
+                <select name="cobrand">
+                    <option value="">[% loc('All cobrands') %]</option>
+                [% FOREACH cobrand IN cobrands %]
+                <option value="[% cobrand | html %]" [% IF cobrand == extra.cobrand %]selected[% END %]>[% cobrand | html %]</option>
+                [% END %]
+                </select>
+            </label>
+        </p>
+    [% ELSE %]
+        <input type=hidden name=cobrand value="[% extra.cobrand | html %]" />
+    [% END %]
+
+    [% IF languages.size > 1 %]
+        <div class="admin-hint">
+        <p>
+            [% loc('To limit this collection of fields to a single language, select it here.') %]
+        </p>
+        </div>
+        <p>
+            <label>
+                [% loc('Language') %]
+                <select name="language">
+                    <option value="">[% loc('All languages') %]</option>
+                    [% FOREACH lang IN languages.pairs %]
+                        <option value="[% lang.key | html %]" [% IF lang.key == extra.language %]selected[% END %]>[% lang.value.name | html %]</option>
+                    [% END %]
+                </select>
+            </label>
+        </p>
+    [% ELSE %]
+        <input type=hidden name=language value="[% extra.language | html %]" />
+    [% END %]
+    <p>
+        <label>[% loc('Fields') %]</label>
+        [% INCLUDE 'admin/extra-metadata-form.html' metas=extra.get_extra_fields %]
+    </p>
+
+    <p>
+      <input type="hidden" name="token" value="[% csrf_token %]" >
+      <input type="submit" class="btn" name="save" value="[% extra.in_storage ? loc('Save changes') : loc('Save new fields') %]">
+    </p>
+</form>
+
+[% INCLUDE 'admin/footer.html' %]

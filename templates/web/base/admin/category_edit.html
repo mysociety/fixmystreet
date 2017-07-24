@@ -21,31 +21,6 @@
 
 [% INCLUDE 'admin/contact-form.html' %]
 
-[% IF contact.extra %]
-<h2>[% loc('Extra data:') %] </h2>
-<dl>
-  [% FOR pair IN contact.get_extra_metadata %]
-    <dt>[% pair.key %]</dt> <dd>[% pair.value %]</dd>
-  [% END %]
-</dl>
-<ul>
-  [% FOR meta IN contact.get_metadata_for_input %]
-    <li>
-        [% meta.order %], <code>[% meta.code %]</code>, [% meta.datatype %],
-        [% meta.required == 'true' ? loc('required') : loc('optional') %]
-        <br><small>[% meta.description %]</small>
-      [% IF meta.variable != 'false' AND meta.exists('values') %]
-        <ul>
-          [% FOR option IN meta.values %]
-            <li>[% option.name %] <small>([% option.key %])</small></li>
-          [% END %]
-        </ul>
-      [%- END %]
-    </li>
-  [%- END %]
-</ul>
-[% END %]
-
 <h2>[% loc('History') %]</h2>
 <table border="1">
     <tr>

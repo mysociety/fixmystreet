@@ -4,10 +4,12 @@
     - New features:
         - Body and category names can now be translated in the admin. #1244
         - Body users can now create reports as an anonymous user. #1796
+        - Extra fields can be added to report form site-wide. #1743
     - Front end improvements:
         - Always show pagination figures even if only one page.
     - Admin improvements:
         - Highlight current shortlisted user in list tooltip.
+        - Extra fields on contacts can be edited. #1743
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
         - Stop errors from JS validator due to form in form.

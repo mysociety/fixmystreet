@@ -40,7 +40,7 @@ $(function(){
 
 
     // admin hints: maybe better implemented as tooltips?
-    $(".admin-hint").on('click', function(){
+    $(".admin").on('click', ".admin-hint", function(){
         if ($(this).hasClass('admin-hint-show')) {
             $(this).removeClass('admin-hint-show');
         } else {
@@ -123,5 +123,84 @@ $(function(){
             }
         }
     });
+
+    // Bits for the report extra fields form builder:
+
+    // If type is changed to 'singlevaluelist' show the options list
+    $(".js-metadata-items").on("change", ".js-metadata-item-type", function() {
+        var $this = $(this);
+        var shown = $this.val() === 'singlevaluelist';
+        var $list = $this.closest(".js-metadata-item").find('.js-metadata-options');
+        $list.toggle(shown);
+    });
+    // call immediately to perform page setup
+    $(".js-metadata-item-type").change();
+
+    // Options can be removed by clicking the 'remove' button
+    $(".js-metadata-items").on("click", ".js-metadata-option-remove", function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        var $item = $this.closest(".js-metadata-item");
+        $this.closest('li').remove();
+        return true;
+    });
+
+    // New options can be added by clicking the appropriate button
+    $(".js-metadata-items").on("click", ".js-metadata-option-add", function(e) {
+        e.preventDefault();
+        var $ul = $(this).closest("ul");
+        var $template_option = $ul.find(".js-metadata-option-template");
+        var $new_option = $template_option.clone();
+        $new_option.removeClass("hidden-js js-metadata-option-template");
+        $new_option.show();
+        $new_option.insertBefore($template_option);
+        $new_option.find("input").first().focus();
+        renumber_metadata_options($(this).closest(".js-metadata-item"));
+        return true;
+    });
+
+    // Fields can be added/removed
+    $(".js-metadata-item-add").on("click", function(e) {
+        e.preventDefault();
+        var $template_item = $(".js-metadata-items .js-metadata-item-template");
+        var $new_item = $template_item.clone();
+        $new_item.data('index', Math.max.apply(
+            null,
+            $(".js-metadata-item").map(function() {
+                return $(this).data('index');
+            }).get()
+        ) + 1);
+        renumber_metadata_fields($new_item);
+        $new_item.removeClass("hidden-js js-metadata-item-template");
+        $new_item.show();
+        $new_item.insertBefore($template_item);
+        $new_item.find("input").first().focus();
+        return true;
+    });
+    $(".js-metadata-items").on("click", ".js-metadata-item-remove", function(e) {
+        e.preventDefault();
+        $(this).closest(".js-metadata-item").remove();
+        return true;
+    });
+
+    function renumber_metadata_fields($item) {
+        var item_index = $item.data("index");
+        $item.find("input[data-field-name").each(function(i) {
+            var $input = $(this);
+            var prefix = "metadata["+item_index+"].";
+            var name = prefix + $input.data("fieldName");
+            $input.attr("name", name);
+        });
+    }
+
+    function renumber_metadata_options($item) {
+        var item_index = $item.data("index");
+        $item.find(".js-metadata-option").each(function(i) {
+            var $li = $(this);
+            var prefix = "metadata["+item_index+"].values["+i+"]";
+            $li.find(".js-metadata-option-key").attr("name", prefix+".key");
+            $li.find(".js-metadata-option-name").attr("name", prefix+".name");
+        });
+    }
 });
 

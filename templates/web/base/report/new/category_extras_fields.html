@@ -1,4 +1,4 @@
-[%- FOR meta IN category_extras.$category %]
+[%- FOR meta IN metas %]
   [%- meta_name = meta.code -%]
 
   [% IF c.cobrand.category_extra_hidden(meta_name) %]
