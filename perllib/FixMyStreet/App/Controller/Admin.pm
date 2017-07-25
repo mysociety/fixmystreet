@@ -10,6 +10,8 @@ use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
 use DateTime::Format::Strptime;
 use List::Util 'first';
+use List::MoreUtils 'uniq';
+use mySociety::ArrayUtils;
 
 use FixMyStreet::SendReport;
 
@@ -847,6 +849,21 @@ sub report_edit_category : Private {
         if (grep !$old_map{$_}, @new_body_ids) {
             $problem->whensent(undef);
         }
+        # If the send methods of the old/new contacts differ we need to resend the report
+        my @old_contacts = grep { $_->category eq $category_old } @{$c->stash->{contacts}};
+        my @new_send_methods = uniq map {
+            ( $_->body->can_be_devolved && $_->send_method ) ?
+            $_->send_method : $_->body->send_method;
+        } @contacts;
+        my @old_send_methods = map {
+            ( $_->body->can_be_devolved && $_->send_method ) ?
+            $_->send_method : $_->body->send_method;
+        } @old_contacts;
+        if ( scalar @{ mySociety::ArrayUtils::symmetric_diff(\@old_send_methods, \@new_send_methods) } ) {
+            $c->log->debug("Report changed, resending");
+            $problem->whensent(undef);
+        }
+
         $problem->bodies_str(join( ',', @new_body_ids ));
         $problem->add_to_comments({
             text => '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $category_old, $category) . '*',

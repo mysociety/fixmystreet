@@ -3,8 +3,10 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 my $brum = $mech->create_body_ok(2514, 'Birmingham City Council');
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1 } );
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
+my $contact2 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Sheep', email => 'SHEEP', send_method => 'Open311' );
+my $contact3 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Badgers', email => 'badgers@example.net' );
 my $rp = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
     name => 'High Priority',
@@ -17,13 +19,14 @@ my $wodc = $mech->create_body_ok(2420, 'West Oxfordshire District Council');
 $mech->create_contact_ok( body_id => $wodc->id, category => 'Horses', email => 'horses@example.net' );
 
 
-my ($report, $report2) = $mech->create_problems_for_body(2, $oxon->id, 'Test', {
+my ($report, $report2, $report3) = $mech->create_problems_for_body(3, $oxon->id, 'Test', {
     category => 'Cows', cobrand => 'fixmystreet', areas => ',2237,2420',
     whensent => \'current_timestamp',
     latitude => 51.847693, longitude => -1.355908,
 });
 my $report_id = $report->id;
 my $report2_id = $report2->id;
+my $report3_id = $report3->id;
 
 
 my $user = $mech->log_in_ok('test@example.com');
@@ -247,6 +250,28 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
     BASE_URL => 'http://fixmystreet.site',
 }, sub {
+    subtest "test report not resent when category changes if send_method doesn't change" => sub {
+        $mech->get_ok("/report/$report3_id");
+        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers', include_update => undef, });
+
+        $report3->discard_changes;
+        is $report3->category, "Badgers", "Report in correct category";
+        isnt $report3->whensent, undef, "Report not marked as unsent";
+        is $report3->bodies_str, $oxon->id, "Reported to OCC";
+    };
+
+    subtest "test resending when send_method changes" => sub {
+        $mech->get_ok("/report/$report3_id");
+        # Then change the category to the other category within the same council,
+        # which should cause it to be resent because it has a different send method
+        $mech->submit_form(button => 'save', with_fields => { category => 'Sheep', include_update => undef, });
+
+        $report3->discard_changes;
+        is $report3->category, "Sheep", "Report in correct category";
+        is $report3->whensent, undef, "Report marked as unsent";
+        is $report3->bodies_str, $oxon->id, "Reported to OCC";
+    };
+
     subtest "test category/body changes" => sub {
         $mech->host('oxfordshire.fixmystreet.site');
         $report->update({ state => 'confirmed' });
