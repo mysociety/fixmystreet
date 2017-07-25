@@ -643,11 +643,12 @@ sub create_contact_ok {
 }
 
 sub create_body_ok {
-    my $self = shift;
-    my ( $area_id, $name ) = @_;
+    my ( $self, $area_id, $name, $params ) = @_;
+
+    $params->{name} = $name;
 
     my $body = FixMyStreet::DB->resultset('Body');
-    $body = $body->find_or_create({ name => $name });
+    $body = $body->find_or_create( $params );
     ok $body, "found/created body $name";
 
     $body->body_areas->delete;
