@@ -13,6 +13,14 @@
           <strong>[% loc('Report ID:') %]</strong>
           <span class="js-report-id">[% problem.id %]</span>
         </p>
+        [% IF permissions.report_inspect AND problem.user.phone %]
+          <p>
+            <strong>[% loc('Phone Reporter:') %]</strong>
+            <span class="js-report-id">
+                <a href="tel:[% problem.user.phone %]">[% problem.user.phone %]</a>
+            </span>
+          </p>
+        [% END %]
         <p>
           [% SET local_coords = problem.local_coords; %]
           [% IF local_coords %]
