@@ -444,9 +444,19 @@ sub inspect : Private {
                 $redirect_uri = $c->uri_for( $problem->url );
             }
 
-            # Or if inspector, redirect back to shortlist
+            # Or if inspector, redirect back to /around at this report's
+            # location with the right filters. We go here rather than the
+            # shortlist because it makes it much simpler to inspect many reports
+            # in the same location. The shortlist is always a single click away,
+            # being on the main nav.
             if ($c->user->has_body_permission_to('planned_reports')) {
-                $redirect_uri = $c->uri_for_action('my/planned');
+                my $categories = join(',', @{ $c->user->categories });
+                my $params = {
+                    filter_category => $categories,
+                    lat => $problem->latitude,
+                    lon => $problem->longitude,
+                };
+                $redirect_uri = $c->uri_for( "/around", $params );
             }
 
             $c->log->debug( "Redirecting to: " . $redirect_uri );
