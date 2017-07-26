@@ -226,4 +226,14 @@ sub available_permissions {
     return $perms;
 }
 
+sub report_missing_name_error {
+    my ($self, $c) = @_;
+
+    if ($c->user_exists && $c->user->has_body_permission_to('contribute_as_another_user') && $c->user->has_body_permission_to('contribute_as_body') ) {
+        return "The given name must be at least 5 chars long. If the user wants to remain anonymous, please report as the Council.";
+    } else {
+        return $self->next::method();
+    }
+}
+
 1;

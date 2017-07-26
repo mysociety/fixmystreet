@@ -130,6 +130,154 @@ EOF
     }
 };
 
+
+$mech->create_contact_ok(body_id => $oxon->id, category => 'Potholes', email => 'potholes@example.org');
+my $user = $mech->create_user_ok('customerservices@example.org', name => 'customer services', from_body => $oxon);
+$user->user_body_permissions->find_or_create({
+    body => $oxon,
+    permission_type => 'contribute_as_body',
+});
+$user->user_body_permissions->find_or_create({
+    body => $oxon,
+    permission_type => 'contribute_as_another_user',
+});
+
+foreach my $test (
+    {
+        msg    => 'name too short',
+        pc     => 'OX4 1QW',
+        fields => {
+            title         => 'Test title',
+            detail        => 'Test detail',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'DUDE',
+            may_show_name => '1',
+            email         => '',
+            phone         => '',
+            category      => 'Potholes',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {},
+        errors  => [
+            'Please enter your email',
+'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
+        ],
+    },
+    {
+        msg    => 'name is anonymous',
+        pc     => 'OX4 1QW',
+        fields => {
+            title         => 'Test title',
+            detail        => 'Test detail',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'anonymous',
+            may_show_name => '1',
+            email         => '',
+            phone         => '',
+            category      => 'Potholes',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {},
+        errors  => [
+            'Please enter your email',
+'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
+        ],
+    },
+    {
+        msg    => 'name too short',
+        user   => $user->email,
+        pc     => 'OX4 1QW',
+        fields => {
+            title         => 'Test title',
+            detail        => 'Test detail',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'DUDE',
+            may_show_name => undef,
+            phone         => '',
+            category      => 'Potholes',
+            form_as       => 'another_user',
+        },
+        changes => {},
+        errors  => [
+"The given name must be at least 5 chars long. If the user wants to remain anonymous, please report as the Council.",
+        ],
+    },
+    {
+        msg    => 'name is anonymous',
+        user   => $user->email,
+        pc     => 'OX4 1QW',
+        fields => {
+            title         => 'Test title',
+            detail        => 'Test detail',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'anonymous',
+            may_show_name => undef,
+            phone         => '',
+            category      => 'Potholes',
+            form_as       => 'another_user',
+        },
+        changes => {},
+        errors  => [
+"The given name must be at least 5 chars long. If the user wants to remain anonymous, please report as the Council.",
+        ],
+    },
+  )
+{
+    subtest "check form errors where $test->{msg}" => sub {
+        $mech->log_out_ok;
+        if ( $test->{user} ) {
+            $mech->log_in_ok($test->{user});
+        }
+
+        $mech->get_ok('/around');
+
+        # submit initial pc form
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { oxfordshire => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+                "submit location" );
+            is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
+
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
+
+            # submit the main form
+            my $content = $mech->content;
+            $content =~ s/[^[:ascii:]]+//g;
+            print $content;
+            $mech->submit_form_ok( { with_fields => $test->{fields} },
+                "submit form" );
+        };
+
+        # check that we got the errors expected
+        is_deeply [ sort @{$mech->page_errors} ], [ sort @{$test->{errors}} ], "check errors";
+
+        # check that fields have changed as expected
+        my $new_values = {
+            %{ $test->{fields} },     # values added to form
+            %{ $test->{changes} },    # changes we expect
+        };
+        is_deeply $mech->visible_form_values, $new_values,
+          "values correctly changed";
+    };
+}
+
+
 END {
     done_testing();
 }

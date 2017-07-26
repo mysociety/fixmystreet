@@ -322,9 +322,7 @@ sub report_check_for_errors {
         || $report->name !~ m/\s/
         || $report->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i))
     {
-        $errors{name} = _(
-'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
-        );
+        $errors{name} = $self->report_missing_name_error($c);
     }
 
     if ( $report->bodies_str && $report->detail ) {
@@ -337,6 +335,12 @@ sub report_check_for_errors {
     }
 
     return %errors;
+}
+
+sub report_missing_name_error {
+    return _(
+'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
+        );
 }
 
 =head2 get_body_handler_for_problem
