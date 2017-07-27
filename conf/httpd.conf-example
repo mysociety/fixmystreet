@@ -22,8 +22,8 @@ RewriteRule ^/alerts/?$                 /alert          [R=permanent,L]
 # Proxy mapit so that our js code can make calls on the originating server. Use
 # a RewriteRule rather than ProxyPass so that Apache's processing order is more
 # predictable. ProxyPassReverse is not affected by this.
-RewriteRule /mapit/(.*) http://mapit.mysociety.org/$1 [P,L]
-ProxyPassReverse /mapit/ http://mapit.mysociety.org/
+RewriteRule /mapit/(.*) https://mapit.mysociety.org/$1 [P,L]
+ProxyPassReverse /mapit/ https://mapit.mysociety.org/
 
 # serve static files directly
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
