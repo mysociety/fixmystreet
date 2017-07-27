@@ -146,7 +146,7 @@ sub report_moderate_title : Private {
 
     my $title = $c->get_param('problem_revert_title') ?
         $original_title
-        : $self->diff($original_title, $c->get_param('problem_title'));
+        : $c->get_param('problem_title');
 
     if ($title ne $old_title) {
         $original->insert unless $original->in_storage;
@@ -167,7 +167,7 @@ sub report_moderate_detail : Private {
     my $original_detail = $original->detail;
     my $detail = $c->get_param('problem_revert_detail') ?
         $original_detail
-        : $self->diff($original_detail, $c->get_param('problem_detail'));
+        : $c->get_param('problem_detail');
 
     if ($detail ne $old_detail) {
         $original->insert unless $original->in_storage;
@@ -285,7 +285,7 @@ sub update_moderate_detail : Private {
     my $original_detail = $original->detail;
     my $detail = $c->get_param('update_revert_detail') ?
         $original_detail
-        : $self->diff($original_detail, $c->get_param('update_detail'));
+        : $c->get_param('update_detail');
 
     if ($detail ne $old_detail) {
         $original->insert unless $original->in_storage;
@@ -339,29 +339,6 @@ sub return_text : Private {
     $c->res->content_type('text/plain; charset=utf-8');
     $c->res->body( $text // '' );
 }
-
-sub diff {
-    my ($self, $old, $new) = @_;
-
-    $new =~s/\[\.{3}\]//g;
-
-    my $diff = Algorithm::Diff->new( [ split //, $old ], [ split //, $new ] );
-    my $string;
-    while ($diff->Next) {
-        my $d = $diff->Diff;
-        if ($d & 1) {
-            my $deleted = join '', $diff->Items(1);
-            unless ($deleted =~/^\s*$/) {
-                $string .= ' ' if $deleted =~/^ /;
-                $string .= '[...]';
-                $string .= ' ' if $deleted =~/ $/;
-            }
-        }
-        $string .= join '', $diff->Items(2);
-    }
-    return $string;
-}
-
 
 __PACKAGE__->meta->make_immutable;
 

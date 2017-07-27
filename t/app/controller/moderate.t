@@ -96,8 +96,8 @@ subtest 'Problem moderation' => sub {
         $mech->content_like(qr/Moderated by Bromley Council/);
 
         $report->discard_changes;
-        is $report->title, 'Good [...] good';
-        is $report->detail, 'Good [...] good [...]improved';
+        is $report->title, 'Good good';
+        is $report->detail, 'Good good improved';
     };
 
     subtest 'Revert title and text' => sub {
@@ -191,8 +191,8 @@ subtest 'Problem 2' => sub {
     $mech->base_like( qr{\Q$REPORT2_URL\E} );
 
     $report2->discard_changes;
-    is $report2->title, 'Good [...] good';
-    is $report2->detail, 'Good [...] good [...]improved';
+    is $report2->title, 'Good good';
+    is $report2->detail, 'Good good improved';
 
     $mech->submit_form_ok({ with_fields => {
         %problem_prepopulated,
@@ -236,7 +236,7 @@ subtest 'updates' => sub {
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $update->discard_changes;
-        is $update->text, 'update good good [...] good',
+        is $update->text, 'update good good good',
     };
 
     subtest 'Revert text' => sub {
@@ -320,7 +320,7 @@ subtest 'Update 2' => sub {
     }}) or die $mech->content;
 
     $update2->discard_changes;
-    is $update2->text, 'update good good [...] good',
+    is $update2->text, 'update good good good',
 };
 
 subtest 'Now stop being a staff user' => sub {
