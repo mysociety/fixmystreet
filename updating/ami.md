@@ -42,7 +42,7 @@ to take a backup of your database first.
     fms@ip-10-58-191-98:~/fixmystreet$ git submodule update
     fms@ip-10-58-191-98:~/fixmystreet$ bin/install_perl_modules
     fms@ip-10-58-191-98:~/fixmystreet$ bin/update-schema --commit
-    fms@ip-10-58-191-98:~/fixmystreet$ bin/make-css
+    fms@ip-10-58-191-98:~/fixmystreet$ bin/make_css
     fms@ip-10-58-191-98:~/fixmystreet$ commonlib/bin/gettext-makemo
 
 If you have made changes to the schema yourself, this may not work,
