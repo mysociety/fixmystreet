@@ -45,6 +45,11 @@ to take a backup of your database first.
     fms@ip-10-58-191-98:~/fixmystreet$ bin/make_css
     fms@ip-10-58-191-98:~/fixmystreet$ commonlib/bin/gettext-makemo
 
+If you are updating to version 2.1 or greater then there is a single script
+that will run all the commands required for an update.
+
+    fms@ip-10-58-191-98:~/fixmystreet$ script/update
+
 If you have made changes to the schema yourself, this may not work,
 please feel free to [contact us](/community/) to discuss it first.
 

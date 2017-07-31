@@ -58,6 +58,13 @@ bin/make_css
 commonlib/bin/gettext-makemo
 {% endhighlight %}
 
+If you are updating to version 2.1 or greater then there is a single script
+that will run all the commands required for an update.
+
+{% highlight bash %}
+    script/update
+{% endhighlight %}
+
 Of course, if you have made changes to the database schema yourself, this may
 not work, please feel free to [contact us](/community/) to discuss it first.
 
