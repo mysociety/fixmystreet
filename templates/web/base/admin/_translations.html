@@ -1,0 +1,19 @@
+[% IF languages.size > 1 %]
+<h2>[% loc('Translations') %]</h2>
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+<table>
+  <tr>
+    <th>[% loc('Language') %]</th>
+    <th>[% loc('Translation') %]</th>
+  </tr>
+  [% FOREACH language IN languages.keys %]
+  <tr>
+    <td>
+      <label for="translation_[% language %]">[% languages.$language.name %] ([% language %])</label>
+        <input type="hidden" name="translation_id_[% language %]" value="[% translations.$language.id %]">
+    </td>
+    <td><input type="text" name="translation_[% language %]" id="translation_[% language %]" value="[% translations.$language.msgstr %]"></td>
+  </tr>
+  [% END %]
+</table>
+[% END %]

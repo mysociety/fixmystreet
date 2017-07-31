@@ -130,9 +130,10 @@
   <div class="fms-admin-warning">
     [% errors.values.join('<br>') %]
   </div>
+  [% INCLUDE 'admin/contact-form.html' translations=contact_translations %]
+  [% ELSE  %]
+  [% INCLUDE 'admin/contact-form.html' translations={} %]
   [% END %]
-
-  [% INCLUDE 'admin/contact-form.html' %]
 </div>
 
 [% IF NOT errors and c.user.is_superuser %]
