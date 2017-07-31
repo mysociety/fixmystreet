@@ -244,7 +244,7 @@ It's possible that the admin boundaries of local government in your area are
 already available in the OpenStreetMap project. If this is the case,
 FixMyStreet can automatically use them. **This is the easiest solution if the
 data you need is there** because we already run two servers 
-([UK MapIt](http://mapit.mysociety.org) and 
+([UK MapIt](https://mapit.mysociety.org) and 
 [global MapIt](http://global.mapit.mysociety.org))
 that make this data available.
 
@@ -261,7 +261,7 @@ Use this type of boundary if:
       Start by finding the <a href="{{ "/glossary/#latlong" | relative_url }}"
       class="glossary__link">lat-long</a> of some of the places you want to cover,
       and look them up on <a href="http://global.mapit.mysociety.org">global
-      MapIt</a> (or maybe the <a href="http://mapit.mysociety.org">UK one</a>).
+      MapIt</a> (or maybe the <a href="https://mapit.mysociety.org">UK one</a>).
       If you see the "Areas covering this point" include the admin
       boundaries you need, you're good to go! For example, here's
       the <a
@@ -329,7 +329,7 @@ Use this type of boundary if:
   <dd>
     <p>
       We run two public MapIt services: <a
-      href="http://mapit.mysociety.org">mapit.mysociety.org</a> covers the UK
+      href="https://mapit.mysociety.org">mapit.mysociety.org</a> covers the UK
       (because that's where we're based, and it serves our own 
       <a href="www.fixmystreet.com">UK FixMySteet</a> site), and 
       <a href="http://global.mapit.mysociety.org">global.mapit.mysociety.org</a>,
@@ -360,7 +360,7 @@ Use this type of boundary if:
     <p>
       Find the areas you need by looking on the
       <a href="http://global.mapit.mysociety.org">global MapIt website</a> or the
-      <a href="http://mapit.mysociety.org">UK one</a>. You must also nominate
+      <a href="https://mapit.mysociety.org">UK one</a>. You must also nominate
       the types of area these are (effectively the <em>level</em> of admin
       boundary it is), and the generation. On global, the area types look
       something like <code>[ 'O05', 'O06' ]</code>. (Note those contain capital

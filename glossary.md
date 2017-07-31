@@ -760,7 +760,7 @@ technical information, see
           is the global MapIt service
         </li>
         <li>
-          <a href="http://mapit.mysociety.org/">mapit.mysociety.org</a> is the
+          <a href="https://mapit.mysociety.org/">mapit.mysociety.org</a> is the
           UK MapIt service
         </li>
         <li>

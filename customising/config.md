@@ -446,7 +446,7 @@ LANGUAGES:
         <li>
           In the UK, you probably want, to cover all councils:
           <p><code>
-            MAPIT_URL: 'http://mapit.mysociety.org/'<br>
+            MAPIT_URL: 'https://mapit.mysociety.org/'<br>
             MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
           </code></p>
           <p>
