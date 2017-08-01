@@ -1,6 +1,19 @@
-[% DEFAULT report = object ~%]
+[%
+
+# There are cases (eg: when sending email about an update on a problem)
+# where `object` might not be a report. So in those cases, you can pass
+# in a `report` argument, which should be the report the email is about.
+# Otherwise, we assume the `object` you passed is a report.
+DEFAULT report = object;
+
+# There are cases (eg: when confirming a not-yet-published report) where
+# you will want the map image to link to somewhere other than the report
+# page. So in those cases, you can pass in a custom `url` argument.
+DEFAULT url = cobrand.base_url_for_report(report) _ report.url
+
+~%]
 <th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
-  <img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
+  <a href="[% url %]"><img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt=""></a>
   [% start_padded_box %]
     [%~ IF object.photo %]
       <img style="[% preview_photo_style %]" src="[% inline_image(object.get_first_image_fp) %]" alt="" align="right">

@@ -25,7 +25,7 @@ of problem, so it will instead be sent to [% report.body %].
   <p style="[% p_style %]">If you no longer wish to send this report, please take no further action.</p>
   [% end_padded_box %]
 </th>
-[% WRAPPER '_email_sidebar.html' object = report %]
+[% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
 [% END %]

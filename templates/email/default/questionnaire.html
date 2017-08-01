@@ -22,7 +22,7 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">Thank you! Your feedback is really valuable.</p>
   [% end_padded_box %]
 </th>
-[% WRAPPER '_email_sidebar.html' object = report %]
+[% WRAPPER '_email_sidebar.html' object = report, url = url %]
     <h2 style="[% h2_style %]">[% title %]</h2>
     <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
 [% END %]
