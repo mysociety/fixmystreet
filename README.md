@@ -26,3 +26,5 @@ bundle exec jekyll serve
 And then visit <http://127.0.0.1:4000>.
 
 Jekyll automatically compiles the HTML/Markdown and Sass files as you go.
+And [livereload](https://github.com/RobertDeRose/jekyll-livereload)
+automatically reloads your web browser window when the site is recompiled.

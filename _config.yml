@@ -12,3 +12,8 @@ authors:
     display_name: Matthew
   zarino:
     display_name: Zarino
+
+# https://github.com/RobertDeRose/jekyll-livereload/
+# Enable livereload by default when running `jekyll serve` locally.
+# (Doesn't do anything on Github Pages.)
+livereload: true
