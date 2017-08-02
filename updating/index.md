@@ -46,9 +46,16 @@ you are too worried to merge in case it breaks something.
 
 ## Subsequent dependency updates
 
-After updating the code, you should run the following commands to update any
+After updating the code, you should run the following command to update any
 needed dependencies and any schema changes to your database. It's a good idea
 to take a backup of your database first.
+
+{% highlight bash %}
+script/update
+{% endhighlight %}
+
+If you are updating to a version lower than 2.1 then you will have to run
+multiple scripts to update everything:
 
 {% highlight bash %}
 git submodule update
@@ -56,13 +63,6 @@ bin/install_perl_modules
 bin/update-schema --commit
 bin/make_css
 commonlib/bin/gettext-makemo
-{% endhighlight %}
-
-If you are updating to version 2.1 or greater then there is a single script
-that will run all the commands required for an update.
-
-{% highlight bash %}
-    script/update
 {% endhighlight %}
 
 Of course, if you have made changes to the database schema yourself, this may
