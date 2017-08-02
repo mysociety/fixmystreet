@@ -67,9 +67,21 @@ h3, h4,
 @import "_colours";
 @import "../sass/layout";
 
+body {
+    @media ($high-dpi-screen) {
+        background-image: url(images/tile@2x.jpg);
+        background-size: 500px;
+    }
+}
+
 // Tiled background stripe, not plain colour
 #front-main {
     background: $primary url(images/tile-y.jpg);
+
+    @media ($high-dpi-screen) {
+        background-image: url(images/tile-y@2x.jpg);
+        background-size: 500px;
+    }
 }
 
 .nav-menu--main {
@@ -83,9 +95,14 @@ h3, h4,
 
 #site-header {
     background: none;
-    border-image-source: url(images/tile-y-border.jpg);
-    border-image-slice: 4 0 0;
+    border-image-source: url(images/tile-y.jpg);
+    border-image-slice: 4 0 0 0;
     border-image-repeat: repeat;
+
+    @media ($high-dpi-screen) {
+        border-image-source: url(images/tile-y@2x.jpg);
+        border-image-slice: 8 0 0 0;
+    }
 }
 body.mappage {
     #site-header {
@@ -255,15 +272,25 @@ body.mappage .mysoc-footer {
 
 // FMS Pro advert
 footer {
-  background: $base_bg;
+  background: $base_bg; // (images/tile.jpg)
   margin: -1em;
   padding: 1em 0;
+
+  @media ($high-dpi-screen) {
+    background-image: url(images/tile@2x.jpg);
+    background-size: 500px;
+  }
 }
 
 .fms-pro-promo {
   margin: 1em 0 3em 0;
   padding: 2em;
   background: $primary url(images/tile-y.jpg) 0 0 repeat;
+
+  @media ($high-dpi-screen) {
+    background-image: url(images/tile-y@2x.jpg);
+    background-size: 500px;
+  }
 
   p {
     font-size: 1.2em;
