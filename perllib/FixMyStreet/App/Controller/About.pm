@@ -34,22 +34,24 @@ sub index : Path("/about") : Args(0) {
 sub find_template : Private {
     my ( $self, $c, $page ) = @_;
 
-    return $found{$page} if !FixMyStreet->config('STAGING_SITE') && exists $found{$page};
-
     my $lang_code = $c->stash->{lang_code};
+
+    return $found{$lang_code}{$page} if !FixMyStreet->config('STAGING_SITE') &&
+                                        exists $found{$lang_code}{$page};
+
     foreach my $dir_templates (@{$c->stash->{additional_template_paths}}, @{$c->view('Web')->paths}) {
         foreach my $dir_static (static_dirs($page, $dir_templates)) {
             foreach my $file ("$page-$lang_code.html", "$page.html") {
                 if (-e "$dir_templates/$dir_static/$file") {
-                    $found{$page} = "$dir_static/$file";
-                    return $found{$page};
+                    $found{$lang_code}{$page} = "$dir_static/$file";
+                    return $found{$lang_code}{$page};
                 }
             }
         }
     }
     # Cache that the page does not exist, so we don't look next time
-    $found{$page} = undef;
-    return $found{$page};
+    $found{$lang_code}{$page} = undef;
+    return $found{$lang_code}{$page};
 }
 
 sub static_dirs {
