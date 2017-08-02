@@ -65,8 +65,10 @@ regional variants, e.g:
         - 'sv,Svenska,sv_SE'
         - 'sf,Svenska,sv_FI'
 
-`http://sv.fixmystreet.com` would dsplay `sv_SE` and
-`http://sf.fixmystreet.com` would display `sv_FI`.
+`http://sv.fixmystreet.com` would display `sv_SE` and
+`http://sf.fixmystreet.com` would display `sv_FI`. However, this would
+not be detected automatically (at the bare domain) if the user's browser was
+set to sv-fi.
 
 These language links can be used for adding a language switcher to the
 site. For example, a basic two language switcher:
@@ -102,7 +104,7 @@ like this:
 
 The current language is stored when a report is made and this is used
 when sending out emails related to the report. When the email is sent
-this means that `$mySociety::Local::lang` returns the language used at
+this means that `$mySociety::Locale::lang` returns the language used at
 the time the report was submitted, hence the function above will return
 URLs for the correct language.
 
@@ -119,13 +121,13 @@ translation. If you create or update a `.po` file, you will need to run the
 `commonlib/bin/gettext-makemo` script to compile these files into the machine
 readable format used by the site.
 
-## Translating the FAQ
+## Translating the FAQ and other static pages
 
-The FAQ pages do not use gettext so need to be translated separately by
-creating a new template under your co-brand, e.g for a German
-translation:
+Static pages do not use gettext so need to be translated separately by
+creating a new template under your cobrand, e.g. for a German
+translation of the FAQ:
 
-  templates/web/<co-brand>/about/faq-de.html
+  templates/web/<cobrand>/about/faq-de.html
 
 For other languages the file should be `faq-<lang>.html`. If there is
 not a translated template it will fall back to `faq.html`.
