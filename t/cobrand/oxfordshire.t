@@ -89,11 +89,20 @@ subtest 'Exor file looks okay' => sub {
         $dt->set_extra_metadata(activity_code => 'FC');
         $dt->set_extra_metadata(defect_code => 'SFP1');
         $dt->update;
-        my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 2 })->all;
+        my $dt2 = FixMyStreet::DB->resultset('DefectType')->create({
+            body => $oxon,
+            name => 'Accidental sign damage',
+            description => 'Accidental sign damage',
+        });
+        $dt2->set_extra_metadata(activity_code => 'S');
+        $dt2->set_extra_metadata(defect_code => 'ACC2');
+        $dt2->update;
+        my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3 })->all;
         my $i = 123;
         foreach my $problem (@problems) {
             $problem->update({ state => 'action scheduled', external_id => $i });
             $problem->update({ defect_type => $dt }) if $i == 123;
+            $problem->update({ defect_type => $dt2 }) if $i == 124;
             FixMyStreet::DB->resultset('AdminLog')->create({
                 admin_user => $inspector->name,
                 user => $inspector,
@@ -110,7 +119,7 @@ subtest 'Exor file looks okay' => sub {
             user_id => $inspector->id,
         } }, 'submit download');
         (my $rdi = $mech->content) =~ s/\r\n/\n/g;
-        $rdi =~ s/(I,[FM]C,,)\d+/$1XXX/g; # Remove unique ID figures, unknown order
+        $rdi =~ s/(I,[FMS]C?,,)\d+/$1XXX/g; # Remove unique ID figures, unknown order
         is $rdi, <<EOF, "RDI file matches expected";
 "1,1.8,1.0.0.0,ENHN,"
 "G,1989169,,,XX,170505,1600,D,INS,N,,,,"
@@ -121,11 +130,17 @@ subtest 'Exor file looks okay' => sub {
 "P,0,999999"
 "G,1989169,,,XX,170505,1600,D,INS,N,,,,"
 "H,MC"
-"I,MC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","124 ""
+"I,MC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","125 ""
 "J,SFP2,2,,,434970,209683,,,,,"
 "M,resolve,,,/CMC,,"
 "P,0,999999"
-"X,2,2,2,2,0,0,0,2,0,2,0,0,0"
+"G,1989169,,,XX,170505,1600,D,INS,N,,,,"
+"H,S"
+"I,S,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","124 ""
+"J,ACC2,2,,,434970,209683,,,,,"
+"M,resolve,,,/CSI,,"
+"P,0,999999"
+"X,3,3,3,3,0,0,0,3,0,3,0,0,0"
 EOF
     }
 };

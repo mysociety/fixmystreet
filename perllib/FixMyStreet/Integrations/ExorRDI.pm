@@ -139,11 +139,14 @@ sub construct {
                 "","","","","" # empty fields
             );
 
+            my $m_row_activity_code = $activity_code;
+            $m_row_activity_code .= 'I' if length $activity_code == 1;
+
             $csv->add_row($body_by_activity_code{$activity_code},
                 "M", # bill of quantities record
                 "resolve", # permanent repair
                 "","", # empty fields
-                "/C$activity_code", # /C + activity code
+                "/C$m_row_activity_code", # /C + activity code + perhaps an "I"
                 "", "" # empty fields
             );
         }
