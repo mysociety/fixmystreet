@@ -16,6 +16,21 @@ Launched: 2015
 <br>
 Run by: <a href="http://cewit.or.ug">CEW-IT</a>
 
+<h2>Americas</h2>
+<h3>Dominican Republic</h3>
+Site: <a href="https://www.cuidomiciudad.do/">CuidoMiCiudad</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://www.adn.gob.do/">Ayuntamiento del Distrito Nacional (ADN)</a>
+
+<h3>Uruguay</h3>
+Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
+<br>
+Launched: 2014
+<br>
+Run by: <a href="http://www.datauy.org/">DATA</a>
+
 <h2>Asia</h2>
 <h3>Malaysia</h3>
 Site: <a href="http://aduanku.my/">Aduanku</a>
@@ -105,15 +120,6 @@ Launched: 2007
 <br>
 Run by: <a href="https://www.mysociety.org/">mySociety</a>
 
-
-<h2>South America</h2>
-
-<h3>Uruguay</h3>
-Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.datauy.org/">DATA</a>
 
 <h2>And you?</h2>
 
