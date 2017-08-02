@@ -48,6 +48,20 @@ Launched: 2012
 <br>
 Run by: <a href="http://mygov.ie/">mygov.ie</a>
 
+<h3>Kosovo</h3>
+Site: <a href="https://lokalizo.org">Lokalizo</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://pi-ks.org/">Prosperity Initiative in Kosovo (PIKS)</a>
+
+<h3>Kosovo</h3>
+Site: <a href="https://ndreqe.com">ndreqe.</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://dplus-ks.org">Democracy Plus</a>
+
 <h3>Norway</h3>
 Site: <a href="http://www.fiksgatami.no/">FiksGataMi</a>
 <br>
@@ -55,7 +69,14 @@ Launched: 2011
 <br>
 Run by: <a href="http://www.nuug.no/">NUUG</a>
 
-<h3>Spain</h3>
+<h3>Alcantarilla, Spain</h3>
+Site: <a href="http://arreglamibarrio.org/">Arregla Mi Barrio</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://ocm.ocmalcantarilla.es/">Observatorio Ciudadano Municipal de Alcantarilla</a>
+
+<h3>Alcalá de Henares, Spain</h3>
 Site: <a href="http://cuida.alcala.org/">Cuida Alcalá</a>
 <br>
 Launched: 2015
