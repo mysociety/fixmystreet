@@ -20,7 +20,7 @@ bundle install --deployment
 To preview the site locally, run:
 
 ```
-bundle exec jekyll serve
+bundle exec jekyll serve --incremental
 ```
 
 And then visit <http://127.0.0.1:4000>.

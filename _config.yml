@@ -17,3 +17,11 @@ authors:
 # Enable livereload by default when running `jekyll serve` locally.
 # (Doesn't do anything on Github Pages.)
 livereload: true
+
+# https://github.com/jekyll/jekyll/issues/4112
+# Jekyll's --incremental flag is awesome, but has a few bugs.
+# _plugins/incremental_regeneration_fixer.rb makes it better.
+# (Doesn't do anything on Github Pages.)
+incremental_regeneration_fixer:
+  interdependent_files:
+    - "{_posts,blog}/*"
