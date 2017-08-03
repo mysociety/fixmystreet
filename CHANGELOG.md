@@ -1,6 +1,10 @@
 ## Releases
 
 * Unreleased
+
+* v2.1.1 (3rd August 2017)
+    - Email improvements:
+        - Clicking on the map in an email links to the report #1596
     - Admin improvements:
         - Resend report if changing category changes send_method. #1772
         - Do not replace deleted text with [...] when moderating. #1774
