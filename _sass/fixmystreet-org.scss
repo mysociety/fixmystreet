@@ -1,5 +1,5 @@
 @import 'config';
-@import '../../theme/sass/global';
+@import '../theme/sass/global';
 @import 'owl_carousel';
 @import 'training_slideshow';
 
@@ -329,7 +329,7 @@ table.promo-spreadsheet {
     font-size: 90%;
     line-height: 1;
     tr {
-        th { text-align: left; } 
+        th { text-align: left; }
         &.sheet-header th { background-color:#a7cf97; }
         td {
             width: 2%;
@@ -340,7 +340,7 @@ table.promo-spreadsheet {
 /* mock document for example_press_releases */
 .mock-document {
     border:1px solid #666;
-    padding:1em;  
+    padding:1em;
     h2 {
         border-top: none;
         padding-top: 0em;
