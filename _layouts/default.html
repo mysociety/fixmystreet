@@ -20,8 +20,9 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
-
-    <script type="text/javascript" src="/assets/scripts/lib.min.js"></script>
+    <script type="text/javascript" src="/assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/scripts/jquery-migrate.min.js"></script>
+    <script type="text/javascript" src="/assets/scripts/owl.carousel.min.js"></script>
   </head>
   <body{% if page.bodyclass %} class="{{ page.bodyclass }}"{% endif %}>
     <div class="ms-header">
@@ -40,7 +41,7 @@
 
       {% include footer.html %}
 
-    <script type="text/javascript" src="/assets/scripts/app.min.js"></script>
+    <script type="text/javascript" src="/assets/scripts/app.js"></script>
 
   </body>
 </html>

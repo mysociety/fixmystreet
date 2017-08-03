@@ -1,7 +1,6 @@
 _site
-mixture.json
+.bundle
 .DS_Store
-
-node_modules
-bower_components
+.jekyll-metadata
 .sass-cache
+vendor
