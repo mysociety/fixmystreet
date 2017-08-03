@@ -566,23 +566,14 @@ var fixmystreet = fixmystreet || {};
 
         $('#hide_pins_link').click(function(e) {
             e.preventDefault();
-            var showhide = [
-                'Show pins', 'Hide pins',
-                'Dangos pinnau', 'Cuddio pinnau',
-                "Vis nåler", "Skjul nåler",
-                "Zeige Stecknadeln", "Stecknadeln ausblenden",
-                'Visa kartnålar', 'Göm kartnålar'
-            ];
-            for (var i=0; i<showhide.length; i+=2) {
-                if (this.innerHTML == showhide[i]) {
-                    fixmystreet.markers.setVisibility(true);
-                    fixmystreet.select_feature.activate();
-                    this.innerHTML = showhide[i+1];
-                } else if (this.innerHTML == showhide[i+1]) {
-                    fixmystreet.markers.setVisibility(false);
-                    fixmystreet.select_feature.deactivate();
-                    this.innerHTML = showhide[i];
-                }
+            if (this.innerHTML == translation_strings.show_pins) {
+                fixmystreet.markers.setVisibility(true);
+                fixmystreet.select_feature.activate();
+                this.innerHTML = translation_strings.hide_pins;
+            } else if (this.innerHTML == translation_strings.hide_pins) {
+                fixmystreet.markers.setVisibility(false);
+                fixmystreet.select_feature.deactivate();
+                this.innerHTML = translation_strings.show_pins;
             }
         });
 
