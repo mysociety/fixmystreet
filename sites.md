@@ -16,6 +16,21 @@ Launched: 2015
 <br>
 Run by: <a href="http://cewit.or.ug">CEW-IT</a>
 
+<h2>Americas</h2>
+<h3>Dominican Republic</h3>
+Site: <a href="https://www.cuidomiciudad.do/">CuidoMiCiudad</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://www.adn.gob.do/">Ayuntamiento del Distrito Nacional (ADN)</a>
+
+<h3>Uruguay</h3>
+Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
+<br>
+Launched: 2014
+<br>
+Run by: <a href="http://www.datauy.org/">DATA</a>
+
 <h2>Asia</h2>
 <h3>Malaysia</h3>
 Site: <a href="http://aduanku.my/">Aduanku</a>
@@ -24,18 +39,9 @@ Launched: 2014
 <br>
 Run by: <a href="http://sinarproject.org/">Sinar project</a>
 
-<h3>India</h3>
-Site: <a href="http://zerotb.mysociety.org/">ZeroTB</a> in Delhi. A
-project to report medicine shortages in the city's clinics, based on a
-modified version of the FixMyStreet platform.
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.article-25.org/">Article 25</a>
-
 <h2>Australasia</h2>
 <h3>Australia</h3>
-Site: <a href="http://www.fixmystreet.org.au/">FixMyStreet.org.au</a> 
+Site: <a href="http://www.fixmystreet.org.au/">FixMyStreet.org.au</a>
 <br>
 Launched: 2013
 <br>
@@ -57,6 +63,20 @@ Launched: 2012
 <br>
 Run by: <a href="http://mygov.ie/">mygov.ie</a>
 
+<h3>Kosovo</h3>
+Site: <a href="https://lokalizo.org">Lokalizo</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://pi-ks.org/">Prosperity Initiative in Kosovo (PIKS)</a>
+
+<h3>Kosovo</h3>
+Site: <a href="https://ndreqe.com">ndreqe.</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://dplus-ks.org">Democracy Plus</a>
+
 <h3>Norway</h3>
 Site: <a href="http://www.fiksgatami.no/">FiksGataMi</a>
 <br>
@@ -64,7 +84,14 @@ Launched: 2011
 <br>
 Run by: <a href="http://www.nuug.no/">NUUG</a>
 
-<h3>Spain</h3>
+<h3>Alcantarilla, Spain</h3>
+Site: <a href="http://arreglamibarrio.org/">Arregla Mi Barrio</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://ocm.ocmalcantarilla.es/">Observatorio Ciudadano Municipal de Alcantarilla</a>
+
+<h3>Alcalá de Henares, Spain</h3>
 Site: <a href="http://cuida.alcala.org/">Cuida Alcalá</a>
 <br>
 Launched: 2015
@@ -94,23 +121,28 @@ Launched: 2007
 Run by: <a href="https://www.mysociety.org/">mySociety</a>
 
 
-<h2>South America</h2>
+<h2>And you?</h2>
+
+If you don't see your country listed above, you could start your own
+FixMyStreet. <a href="/overview/">Find out more here</a>.
+
+<h2>Honourable mentions</h2>
+
+<p>Sites powered by FixMyStreet, but sadly no longer running.</p>
+
+<h3>India</h3>
+Site: <b>ZeroTB</b> in Delhi. A
+project to report medicine shortages in the city's clinics, based on a
+modified version of the FixMyStreet platform.
+<br>
+Launched: 2014
+<br>
+Run by: <a href="http://www.article-25.org/">Article 25</a>
 
 <h3>Chile</h3>
-Site: <a href="http://bellavistaenaccion.cl/">Bellavista En Ación</a>
+Site: <b>Bellavista En Ación</b>
 <br>
 Launched: 2014
 <br>
 Run by: <a href="http://www.ciudadviva.cl/">Ciudad Viva</a>
 
-<h3>Uruguay</h3>
-Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.datauy.org/">DATA</a>
-
-<h2>And you?</h2>
-
-If you don't see your country listed above, you could start your own
-FixMyStreet. <a href="/overview/">Find out more here</a>.
