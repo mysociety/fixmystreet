@@ -1,6 +1,19 @@
 ## Releases
 
 * Unreleased
+    - Admin improvements:
+        - Resend report if changing category changes send_method. #1772
+        - Do not replace deleted text with [...] when moderating. #1774
+        - Show reporter's phone number on inspector form. #1773
+        - Redirect to /around after inspecting a report.
+    - Bugfixes:
+        - Cache template paths in About.pm with lang_code. #1765
+        - Resize pin image before compositing onto static map.
+    - Development improvements:
+        - Use standard JavaScript translation for show/hide pins. #1752
+        - Allow update-schema to run on empty database. #1755
+        - Update MapIt URL to https in example webserver configs.
+        - Option to redirect to custom URL from Contact form.
 
 * v2.1 (8th July 2017)
     - New features:
