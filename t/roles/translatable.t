@@ -51,6 +51,16 @@ is $body->name, "Dunkirk";
 is $contact->category_display, "Schlaglöcher";
 is $problem->category_display, "Schlaglöcher";
 
+is $contact->translation_for('category', 'de')->msgstr, "Schlaglöcher";
+is $body->translation_for('name', 'fr')->msgstr, "Dunkerque";
+
+ok $body->add_translation_for('name', 'es', 'Dunkerque');
+
+FixMyStreet::DB->schema->lang("es");
+is $body->name, "Dunkerque";
+
+is $body->translation_for('name')->count, 2;
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fiksgatami' ],
 }, sub {

@@ -49,4 +49,49 @@ sub _translate {
     return $fallback;
 };
 
+# These next two functions (translation_for and and_translation_for) are
+# convenience methods for use in the translation interface in the admin.
+# They shouldn't be used else where as they don't take account of things
+# like denormalised strings (e.g report category)
+sub translation_for {
+    my ($self, $col, $lang) = @_;
+
+    my $schema = $self->result_source->schema;
+
+    my $props = {
+        tbl => lc $self->result_source->source_name,
+        object_id => $self->id,
+        col => $col
+    };
+
+    if ($lang) {
+        $props->{lang} = $lang;
+    }
+
+    my $translations = $schema->resultset('Translation')->search($props);
+
+    return $lang ? $translations->first : $translations;
+}
+
+sub add_translation_for {
+    my ($self, $col, $lang, $msgstr) = @_;
+
+    my $schema = $self->result_source->schema;
+
+    my $props = {
+        tbl => lc $self->result_source->source_name,
+        object_id => $self->id,
+        col => $col,
+        lang => $lang,
+        msgstr => $msgstr,
+    };
+
+    my $translation = $schema->resultset('Translation')->update_or_create(
+        $props,
+        { key => 'translation_tbl_object_id_col_lang_key' }
+    );
+
+    return $translation;
+}
+
 1;
