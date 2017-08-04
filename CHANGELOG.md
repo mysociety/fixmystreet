@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Always show pagination figures even if only one page.
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
         - Stop errors from JS validator due to form in form.
