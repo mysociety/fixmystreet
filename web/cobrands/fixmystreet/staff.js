@@ -312,7 +312,8 @@ $.extend(fixmystreet.set_up, {
     $updateFormH2.hide().nextAll().hide();
     $updateFormBtn.addClass('btn btn--provide-update');
     $updateFormBtn.text( $updateFormH2.text() );
-    $updateFormBtn.on('click', function(){
+    $updateFormBtn.on('click', function(e) {
+        e.preventDefault();
         $updateFormH2.nextAll().toggle();
     });
   },
