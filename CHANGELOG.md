@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Admin improvements:
+        - Highlight current shortlisted user in list tooltip.
 
 * v2.1.1 (3rd August 2017)
     - Email improvements:
