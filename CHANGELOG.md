@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes:
+        - Set up action scheduled field when report loaded. #1789
 
 * v2.1.1 (3rd August 2017)
     - Email improvements:

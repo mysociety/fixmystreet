@@ -1042,6 +1042,7 @@ fixmystreet.display = {
                 $('body').addClass('with-actions');
                 fixmystreet.run(fixmystreet.set_up.report_page_inspect);
                 fixmystreet.run(fixmystreet.set_up.manage_duplicates);
+                fixmystreet.run(fixmystreet.set_up.action_scheduled_raise_defect);
             } else {
                 $sideReport.appendTo('#map_sidebar');
             }
