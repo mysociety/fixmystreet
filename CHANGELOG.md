@@ -5,6 +5,7 @@
         - Set up action scheduled field when report loaded. #1789
         - Stop errors from JS validator due to form in form.
         - Stop update form toggle causing report submission.
+        - Update map size if an extra column has appeared.
 
 * v2.1.1 (3rd August 2017)
     - Email improvements:

@@ -1053,7 +1053,7 @@ fixmystreet.display = {
             fixmystreet.page = 'report';
 
             fixmystreet.mobile_reporting.remove_ui();
-            if ($('html').hasClass('mobile') && fixmystreet.map.updateSize) {
+            if (fixmystreet.map.updateSize && ($twoColReport.length || $('html').hasClass('mobile'))) {
                 fixmystreet.map.updateSize();
             }
 
