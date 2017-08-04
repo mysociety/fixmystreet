@@ -30,6 +30,7 @@ my $report3_id = $report3->id;
 
 
 my $user = $mech->log_in_ok('test@example.com');
+$user->set_extra_metadata('categories', [ $contact->id ]);
 $user->update( { from_body => $oxon } );
 
 FixMyStreet::override_config {
@@ -69,6 +70,7 @@ FixMyStreet::override_config {
 
     subtest "test inspect & instruct submission" => sub {
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
         $report->state('confirmed');
         $report->update;
         my $reputation = $report->user->get_extra_metadata("reputation");
@@ -81,6 +83,8 @@ FixMyStreet::override_config {
         is $report->comments->first->text, "This is a public update.", 'Update was created';
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
         is $report->user->get_extra_metadata('reputation'), $reputation, "User reputation wasn't changed";
+        $user->unset_extra_metadata('categories');
+        $user->update;
     };
 
     subtest "test update is required when instructing" => sub {
@@ -100,8 +104,9 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 55, longitude => -2 } });
         $mech->content_contains('Invalid location');
-        $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 51.754926, longitude => -1.256179 } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 51.754926, longitude => -1.256179, include_update => undef } });
         $mech->content_lacks('Invalid location');
+        $user->user_body_permissions->search({ body_id => $oxon->id, permission_type => 'planned_reports' })->delete;
     };
 
     subtest "test duplicate reports are shown" => sub {

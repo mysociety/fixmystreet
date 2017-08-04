@@ -452,10 +452,10 @@ sub inspect : Private {
             if ($c->user->has_body_permission_to('planned_reports')) {
                 my $categories = join(',', @{ $c->user->categories });
                 my $params = {
-                    filter_category => $categories,
                     lat => $problem->latitude,
                     lon => $problem->longitude,
                 };
+                $params->{filter_category} = $categories if $categories;
                 $redirect_uri = $c->uri_for( "/around", $params );
             }
 
