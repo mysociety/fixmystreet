@@ -1,4 +1,4 @@
-[% IF pager.last_page > 1 %]
+[% IF pager.total_entries > 1 %]
     <p class="pagination">
         [% IF pager.previous_page %]
             <a class="prev" href="[% c.uri_with({ $param => pager.previous_page, ajax => undefined }) %][% '#' _ hash IF hash %]">[% loc('Previous') %]</a>

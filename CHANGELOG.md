@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Always show pagination figures even if only one page.
     - Admin improvements:
         - Highlight current shortlisted user in list tooltip.
     - Bugfixes:
