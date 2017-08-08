@@ -11,7 +11,9 @@
       [% IF c.user.is_planned_report(problem) ~%]
         name="shortlist-remove" title="[% loc('Remove from shortlist') %]" class="item-list__item__shortlist-remove"
       [%~ ELSE ~%]
-        name="shortlist-add" title="[% loc('Add to shortlist') %]" class="item-list__item__shortlist-[% IF problem.shortlisted_user %]take[% ELSE %]add[% END %]"
+        name="shortlist-add" title="[% IF problem.shortlisted_user %]
+            [%~ tprintf(loc('Shortlisted by %s'), problem.shortlisted_user.name) %]; [% END %]
+            [%~ loc('Add to shortlist') %]" class="item-list__item__shortlist-[% IF problem.shortlisted_user %]take[% ELSE %]add[% END %]"
       [%~ END ~%]
       >
     [%~ END %]

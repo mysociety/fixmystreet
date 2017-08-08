@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Admin improvements:
+        - Highlight current shortlisted user in list tooltip.
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
         - Stop errors from JS validator due to form in form.
