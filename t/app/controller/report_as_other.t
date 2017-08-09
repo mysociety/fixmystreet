@@ -133,6 +133,18 @@ subtest "Body user, has permission to add update as another (existing) user" => 
     like $mech->get_text_body_from_email, qr/Your update has been logged/;
 };
 
+subtest "Body user, has permission to add update as anonymous user" => sub {
+    my $update = add_update(
+        'contribute_as_anonymous_user',
+        form_as => 'anonymous_user',
+        update => 'Test Update',
+    );
+    is $update->name, 'Oxfordshire County Council', 'update name is body';
+    is $update->user->name, 'Body User', 'user name unchanged';
+    is $update->user->id, $user->id, 'user matches';
+    is $update->anonymous, 1, 'update anonymous';
+};
+
 done_testing();
 
 sub start_report {
