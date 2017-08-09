@@ -1177,6 +1177,7 @@ my %default_perms = (
     "permissions[report_inspect]" => undef,
     "permissions[report_instruct]" => undef,
     "permissions[contribute_as_another_user]" => undef,
+    "permissions[contribute_as_anonymous_user]" => undef,
     "permissions[contribute_as_body]" => undef,
     "permissions[view_body_contribute_details]" => undef,
     "permissions[user_edit]" => undef,

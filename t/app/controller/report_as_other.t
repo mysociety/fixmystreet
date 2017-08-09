@@ -76,6 +76,20 @@ subtest "Body user, has permission to add report as another (existing) user" => 
     push @users, $report->user;
 };
 
+subtest "Body user, has permission to add report as anonymous user" => sub {
+    my $report = add_report(
+        'contribute_as_anonymous_user',
+        form_as => 'anonymous_user',
+        title => "Test Report",
+        detail => 'Test report details.',
+        category => 'Street lighting',
+    );
+    is $report->name, 'Oxfordshire County Council', 'report name is body';
+    is $report->user->name, 'Body User', 'user name unchanged';
+    is $report->user->id, $user->id, 'user matches';
+    is $report->anonymous, 1, 'report anonymous';
+};
+
 subtest "Body user, has permission to add update as council" => sub {
     my $update = add_update(
         'contribute_as_body',

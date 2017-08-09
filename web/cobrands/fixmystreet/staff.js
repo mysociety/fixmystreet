@@ -173,21 +173,31 @@ $.extend(fixmystreet.set_up, {
             txt = opt.text;
         var $emailInput = $('input[name=email]').add('input[name=rznvy]');
         var $nameInput = $('input[name=name]');
+        var $phoneInput = $('input[name=phone]');
         var $showNameCheckbox = $('input[name=may_show_name]');
         var $addAlertCheckbox = $('#form_add_alert');
         if (val === 'myself') {
             $emailInput.val($emailInput.prop('defaultValue')).prop('disabled', true);
             $nameInput.val($nameInput.prop('defaultValue')).prop('disabled', false);
+            $phoneInput.val($phoneInput.prop('defaultValue')).prop('disabled', false);
             $showNameCheckbox.prop('checked', false).prop('disabled', false);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
         } else if (val === 'another_user') {
             $emailInput.val('').prop('disabled', false);
             $nameInput.val('').prop('disabled', false);
+            $phoneInput.val('').prop('disabled', false);
             $showNameCheckbox.prop('checked', false).prop('disabled', true);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
+        } else if (val === 'anonymous_user') {
+            $emailInput.val('-').prop('disabled', true);
+            $nameInput.val('-').prop('disabled', true);
+            $phoneInput.val('-').prop('disabled', true);
+            $showNameCheckbox.prop('checked', false).prop('disabled', true);
+            $addAlertCheckbox.prop('checked', false).prop('disabled', true);
         } else if (val === 'body') {
             $emailInput.val('-').prop('disabled', true);
             $nameInput.val(txt).prop('disabled', true);
+            $phoneInput.val('-').prop('disabled', true);
             $showNameCheckbox.prop('checked', true).prop('disabled', true);
             $addAlertCheckbox.prop('checked', false).prop('disabled', true);
         }

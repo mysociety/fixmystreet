@@ -710,6 +710,7 @@ sub available_permissions {
             report_instruct => _("Instruct contractors to fix problems"), # future use
             planned_reports => _("Manage shortlist"),
             contribute_as_another_user => _("Create reports/updates on a user's behalf"),
+            contribute_as_anonymous_user => _("Create reports/updates as anonymous user"),
             contribute_as_body => _("Create reports/updates as the council"),
             view_body_contribute_details => _("See user detail for reports created as the council"),
 

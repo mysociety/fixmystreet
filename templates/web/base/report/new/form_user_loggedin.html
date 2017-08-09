@@ -6,8 +6,9 @@
   </div>
 [% ELSE %]
   [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", bodies.keys) %]
+  [% can_contribute_as_anonymous_user = c.user.has_permission_to("contribute_as_anonymous_user", bodies.keys) %]
   [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies.keys) %]
-  [% IF can_contribute_as_another_user OR can_contribute_as_body %]
+  [% IF can_contribute_as_another_user OR can_contribute_as_anonymous_user OR can_contribute_as_body %]
     [% INCLUDE form_as %]
   [% END %]
 [% END %]
@@ -16,6 +17,9 @@
     <label for="form_as">[% loc('Report as') %]</label>
     <select id="form_as" class="form-control js-contribute-as" name="form_as">
         <option value="myself" [% c.user.has_body_permission_to('planned_reports') ? '' : 'selected'  %]>[% loc('Yourself') %]</option>
+      [% IF js || can_contribute_as_anonymous_user %]
+        <option value="anonymous_user">[% loc('Anonymous user') %]</option>
+      [% END %]
       [% IF js || can_contribute_as_another_user %]
         <option value="another_user">[% loc('Another user') %]</option>
       [% END %]

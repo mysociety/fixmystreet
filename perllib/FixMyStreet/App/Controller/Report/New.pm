@@ -201,8 +201,10 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     if ($c->user_exists) {
         my @bodies = keys %{$c->stash->{bodies}};
         my $ca_another_user = $c->user->has_permission_to('contribute_as_another_user', \@bodies);
+        my $ca_anonymous_user = $c->user->has_permission_to('contribute_as_anonymous_user', \@bodies);
         my $ca_body = $c->user->from_body && $c->user->has_permission_to('contribute_as_body', \@bodies);
         $contribute_as->{another_user} = $ca_another_user if $ca_another_user;
+        $contribute_as->{anonymous_user} = $ca_anonymous_user if $ca_anonymous_user;
         $contribute_as->{body} = $ca_body if $ca_body;
     }
 
@@ -742,7 +744,8 @@ sub process_user : Private {
         $user->title( $user_title ) if $user_title;
         $report->user( $user );
 
-        if ($c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies})) {
+        if ($c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies}) or
+            $c->stash->{contributing_as_anonymous_user} = $user->contributing_as('anonymous_user', $c, $c->stash->{bodies})) {
             $report->name($user->from_body->name);
             $user->name($user->from_body->name) unless $user->name;
             $c->stash->{no_reporter_alert} = 1;
@@ -822,6 +825,8 @@ sub process_report : Private {
     # set some simple bool values (note they get inverted)
     if ($c->stash->{contributing_as_body}) {
         $report->anonymous(0);
+    } elsif ($c->stash->{contributing_as_anonymous_user}) {
+        $report->anonymous(1);
     } else {
         $report->anonymous( $params{may_show_name} ? 0 : 1 );
     }
@@ -1148,7 +1153,7 @@ sub save_user_and_report : Private {
 
 sub created_as_someone_else : Private {
     my ($self, $c, $bodies) = @_;
-    return $c->stash->{contributing_as_another_user} || $c->stash->{contributing_as_body};
+    return $c->stash->{contributing_as_another_user} || $c->stash->{contributing_as_body} || $c->stash->{contributing_as_anonymous_user};
 }
 
 =head2 generate_map

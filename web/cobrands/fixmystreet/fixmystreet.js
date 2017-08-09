@@ -912,6 +912,9 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             if (!data.contribute_as.another_user) {
                 $select.find('option[value=another_user]').remove();
             }
+            if (!data.contribute_as.anonymous_user) {
+                $select.find('option[value=anonymous_user]').remove();
+            }
             if (!data.contribute_as.body) {
                 $select.find('option[value=body]').remove();
             }

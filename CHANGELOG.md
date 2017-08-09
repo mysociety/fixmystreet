@@ -3,6 +3,7 @@
 * Unreleased
     - New features:
         - Body and category names can now be translated in the admin. #1244
+        - Body users can now create reports as an anonymous user. #1796
     - Front end improvements:
         - Always show pagination figures even if only one page.
     - Admin improvements:
