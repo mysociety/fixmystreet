@@ -1,0 +1,38 @@
+// A simple little grid system, built to work within
+// the existing, padded FixMyStreet .content element
+
+.content-row {
+    @include clearfix();
+    margin: 0 -1em; // cover horizontal padding on .container (mobile) or .content (desktop)
+}
+
+@media (min-width: 48em) {
+    .content-row--first {
+        margin-top: -1em; // cover vertical padding on .content (desktop)
+    }
+}
+
+.content-col {
+    @include box-sizing(border-box);
+    width: 100%;
+    padding: 1em; // reinstate padding
+}
+
+@media (min-width: 48em) {
+    .content-col {
+        float: left;
+        padding: 2em; // more spacious padding on wide screens
+    }
+
+    .content-col--6 {
+        width: 50%;
+    }
+
+    .content-col--4 {
+        width: 33.33%;
+    }
+
+    .content-col--3 {
+        width: 25%;
+    }
+}

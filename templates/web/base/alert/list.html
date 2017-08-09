@@ -1,41 +1,21 @@
-[%
-    IF pretty_pc;
-        title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
-    ELSE;
-        title = loc('Local RSS feeds and email alerts');
-    END;
-%]
+[% SET title = loc('Email alerts & RSS') %]
 
 [% INCLUDE 'header.html', title = title, bodyclass = 'fullwidthpage' %]
 
-[% IF pretty_pc %]
-    [%
-        pretty_pc = pretty_pc | html | replace(' ', '&nbsp;');
-        title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
-    %]
-[% END %]
-
-
-<h1>[% title %]</h1>
-
-[% IF photos.size %]
-<div class="alerts__nearby-activity">
-    <h2>[% loc('Photos of recent nearby reports') %]</h2>
-    <div class="alerts__nearby-activity__photos">
-      [% FOREACH p IN photos %]
-        <a href="/report/[% p.id %]">
-            <img border="0" height="100" src="[% p.photos.first.url_tn %]"
-            alt="[% p.title | html %]" title="[% p.title | html %]">
-        </a>
-      [% END %]
+<div class="content-row content-row--first">
+    <div class="content-col alerts-header">
+        <h1>[% title | html %]</h1>
     </div>
 </div>
-[% END %]
 
-<form id="alerts" name="alerts" method="post" action="/alert/subscribe">
+<div class="content-row">
+    <div class="content-col alerts-page">
 
-  [% INCLUDE 'alert/_list.html' %]
+        <form method="post" action="/alert/subscribe">
+            [% INCLUDE 'alert/_list.html' %]
+        </form>
 
-</form>
+    </div>
+</div>
 
 [% INCLUDE 'footer.html' %]

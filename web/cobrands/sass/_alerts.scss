@@ -1,0 +1,34 @@
+.alerts-header {
+    background-color: $primary;
+
+    h1 {
+        font-family: inherit;
+        font-weight: bold;
+        margin: 0;
+    }
+}
+
+.alerts-page {
+    h2 {
+        font-family: inherit;
+        font-weight: bold;
+        margin-top: 0;
+    }
+}
+
+.alerts-submit-buttons {
+    margin: 0.5em -0.5em;
+
+    .btn,
+    .btn-primary {
+        margin: 0.5em;
+    }
+}
+
+.alerts-two-tier-explanation {
+    p {
+        font-size: 1.125em; // 18px
+        color: #777;
+        margin-bottom: 0.5em;
+    }
+}
