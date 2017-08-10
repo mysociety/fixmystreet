@@ -711,7 +711,6 @@ $.extend(fixmystreet.set_up, {
         });
     } else {
         $('#key-tool-wards').drawer('council_wards', false);
-        $('#key-tool-around-updates').drawer('updates_ajax', true);
     }
     $('#key-tool-report-updates').small_drawer('report-updates-data');
     $('#key-tool-report-share').small_drawer('report-share');
@@ -756,27 +755,6 @@ $.extend(fixmystreet.set_up, {
             $('.form-focus-hidden').fadeIn(500);
         });
     }
-  },
-
-  alert_page_buttons: function() {
-    // Go directly to RSS feed if RSS button clicked on alert page
-    // (due to not wanting around form to submit, though good thing anyway)
-    $('body').on('click', '#alert_rss_button', function(e) {
-        e.preventDefault();
-        var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
-        window.location.href = feed;
-    });
-    $('body').on('click', '#alert_email_button', function(e) {
-        e.preventDefault();
-        var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
-        form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
-        $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
-            var $v = $(this);
-            $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
-        });
-        $('body').append(form);
-        form.submit();
-    });
   },
 
   promo_elements: function() {
