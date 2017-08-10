@@ -11,7 +11,7 @@ has start_date => ( is => 'ro', default => sub { undef } );
 has end_date => ( is => 'ro', default => sub { undef } );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
-has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->connect } );
+has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 
 Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;

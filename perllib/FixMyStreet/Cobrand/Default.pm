@@ -269,6 +269,8 @@ sub set_lang_and_domain {
         DateTime->DefaultLocale( 'en_US' );
     }
 
+    FixMyStreet::DB->schema->lang($set_lang);
+
     return $set_lang;
 }
 sub languages { FixMyStreet->config('LANGUAGES') || [] }

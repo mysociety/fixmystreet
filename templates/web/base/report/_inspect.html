@@ -50,18 +50,21 @@
           [% INCLUDE 'admin/report-category.html' %]
         </p>
 
-        [% FOREACH category IN categories %]
-          [% cat_prefix = category | lower | replace('[^a-z]', '') %]
-          [% cat_prefix = "category_" _ cat_prefix _ "_" %]
-          [% IF category == problem.category %]
-            <p data-category="[% category | html %]" data-priorities='[% priorities_by_category.$category %]' data-defect-types='[% category_defect_types.$category %]' data-templates='[% templates_by_category.$category %]'>
-              [% INCLUDE 'report/new/category_extras_fields.html' %]
+        [% FOREACH category IN category_options_copy %]
+          [% cat_name = category.name;
+             cat_prefix = cat_name | lower | replace('[^a-z]', '');
+             cat_prefix = "category_" _ cat_prefix _ "_" %]
+            <p data-category="[% cat_name | html %]"
+               [%~ IF cat_name != problem.category %] class="hidden"[% END %]
+               data-priorities='[% priorities_by_category.$cat_name %]'
+               data-defect-types='[% category_defect_types.$cat_name %]'
+               ata-templates='[% templates_by_category.$cat_name %]'>
+              [% IF cat_name == problem.category %]
+                  [% INCLUDE 'report/new/category_extras_fields.html' %]
+              [% ELSE %]
+                  [% INCLUDE 'report/new/category_extras_fields.html' report_meta='' %]
+              [% END %]
             </p>
-          [% ELSE %]
-            <p data-category="[% category | html %]" class="hidden" data-priorities='[% priorities_by_category.$category %]' data-defect-types='[% category_defect_types.$category %]' data-templates='[% templates_by_category.$category %]'>
-              [% INCLUDE 'report/new/category_extras_fields.html' report_meta='' %]
-            </p>
-          [% END %]
         [% END %]
 
         [% IF permissions.report_inspect %]

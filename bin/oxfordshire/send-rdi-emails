@@ -55,7 +55,7 @@ foreach my $inspector (@inspectors) {
         };
 
         my $result = FixMyStreet::Email::send_cron(
-            FixMyStreet::DB->storage->schema,
+            FixMyStreet::DB->schema,
             "rdi.txt", $params, $hdrs,
             undef, 0, $cobrand,
         );

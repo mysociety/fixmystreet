@@ -121,11 +121,18 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-02-13 15:11:11
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BOJANVwg3kR/1VjDq0LykA
 
+use Moo;
+use namespace::clean;
+
+with 'FixMyStreet::Roles::Translatable';
+
 sub url {
     my ( $self, $c, $args ) = @_;
     # XXX $areas_info was used here for Norway parent - needs body parents, I guess
     return $c->uri_for( '/reports/' . $c->cobrand->short_name( $self ), $args || {} );
 }
+
+around name => \&translate_around;
 
 sub areas {
     my $self = shift;

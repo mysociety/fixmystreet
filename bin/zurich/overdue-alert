@@ -38,7 +38,7 @@ loop_through( 'alert-overdue.txt', 0, 6, ['confirmed', 'planned'] );
 
 sub loop_through {
     my ( $template, $include_parent, $days, $states ) = @_;
-    my $dtf = FixMyStreet::DB->storage->datetime_parser;
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
     my $date_threshold = $dtf->format_datetime(FixMyStreet::Cobrand::Zurich::sub_days( $now, $days ));
 
     my $reports = FixMyStreet::DB->resultset("Problem")->search( {
@@ -78,7 +78,7 @@ sub send_alert {
     }
 
     FixMyStreet::Email::send_cron(
-        FixMyStreet::DB->storage->schema,
+        FixMyStreet::DB->schema,
         $template,
         $h,
         {

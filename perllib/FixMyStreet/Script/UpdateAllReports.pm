@@ -158,7 +158,7 @@ sub generate_dashboard {
     );
     $data{last_seven_days} = \%last_seven_days;
 
-    my $dtf = FixMyStreet::DB->storage->datetime_parser;
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
     my $eight_ago = $dtf->format_datetime(DateTime->now->subtract(days => 8));
     %problems_reported_by_period = stuff_by_day_or_year('day',
         'Problem',

@@ -168,6 +168,9 @@ template paths, maps, languages etc, etc.
 sub setup_request {
     my $c = shift;
 
+    # Set the Catalyst model schema to the same as the DB schema
+    $c->model("DB")->schema( FixMyStreet::DB->schema );
+
     $c->setup_dev_overrides();
 
     my $cobrand = $c->cobrand;

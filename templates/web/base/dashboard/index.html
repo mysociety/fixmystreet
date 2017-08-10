@@ -29,7 +29,7 @@
         <label for="category">[% loc('Category:') %]</label>
         <select class="form-control" name="category"><option value=''>[% loc('All') %]</option>
             [% FOR cat_op IN category_options %]
-                <option value='[% cat_op | html %]'[% ' selected' IF category == cat_op %]>[% cat_op | html %]</option>
+                <option value='[% cat_op.name | html %]'[% ' selected' IF category == cat_op.name %]>[% cat_op.value | html %]</option>
             [% END %]
         </select>
     </p>

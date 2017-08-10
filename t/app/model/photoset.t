@@ -10,7 +10,7 @@ my $dt = DateTime->now;
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 
-my $db = FixMyStreet::DB->storage->schema;
+my $db = FixMyStreet::DB->schema;
 
 my $user = $db->resultset('User')->find_or_create({
         name => 'Bob', email => 'bob@example.com',

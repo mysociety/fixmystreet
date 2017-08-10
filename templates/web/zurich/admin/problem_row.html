@@ -15,7 +15,7 @@
           [% END %]
         </td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
-        <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.category_display %]</td>
         <td>[% PROCESS format_date this_date=problem.created %]</td>
         <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
         <td> [% states.${problem.state} %][% IF problem.state == 'planned';

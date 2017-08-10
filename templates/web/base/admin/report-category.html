@@ -1,13 +1,13 @@
 <select class="form-control" name="category" id="category">
   [% IF NOT problem.category OR NOT categories_hash.${problem.category} %]
     <optgroup label="[% loc('Existing category') %]">
-        <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
+        <option selected value="[% problem.category | html %]">[% (problem.category_display OR '-') | html %]</option>
     </optgroup>
   [% END %]
-  [% IF categories.size %]
+  [% IF category_options_copy.size %]
     <optgroup label="[% loc('Available categories') %]">
-      [% FOREACH cat IN categories %]
-        <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
+      [% FOREACH cat IN category_options_copy %]
+        <option value="[% cat.name | html %]"[% ' selected' IF problem.category == cat.name %]>[% cat.value | html %]</option>
       [% END %]
     </optgroup>
   [% END %]

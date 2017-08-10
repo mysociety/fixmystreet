@@ -2,7 +2,7 @@
 
   [% IF contact.in_storage %]
     <p>
-      <h1>[% contact.category | html %]</h2>
+      <h1>[% contact.category_display | html %]</h1>
       <input type="hidden" name="category" value="[% contact.category | html %]" >
     </p>
   [% ELSE %]
@@ -19,6 +19,8 @@
       <strong>[% loc('Category') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
     </p>
   [% END %]
+
+  [% INCLUDE 'admin/_translations.html' %]
 
   <div class="admin-hint">
     <p>

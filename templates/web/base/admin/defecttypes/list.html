@@ -20,7 +20,7 @@
                   <em>[% ('All categories') %]</em>
                 [% ELSE %]
                   [% FOR contact IN d.contacts %]
-                    [% contact.category %][% ',' UNLESS loop.last %]
+                    [% contact.category_display %][% ',' UNLESS loop.last %]
                   [% END %]
                 [% END %]
               </td>

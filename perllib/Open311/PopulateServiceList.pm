@@ -6,7 +6,7 @@ use Open311;
 has bodies => ( is => 'ro' );
 has found_contacts => ( is => 'rw', default => sub { [] } );
 has verbose => ( is => 'ro', default => 0 );
-has schema => ( is => 'ro', lazy => 1, default => sub { FixMyStreet::DB->connect } );
+has schema => ( is => 'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 
 has _current_body => ( is => 'rw' );
 has _current_open311 => ( is => 'rw' );

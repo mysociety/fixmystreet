@@ -519,7 +519,7 @@ sub admin_report_edit {
 
         # Can change category to any other
         my @categories = $c->model('DB::Contact')->not_deleted->all;
-        $c->stash->{categories} = [ map { $_->category } @categories ];
+        $c->stash->{category_options} = [ map { { name => $_->category, value => $_->category } } @categories ];
 
     } elsif ($type eq 'dm') {
 
@@ -534,7 +534,7 @@ sub admin_report_edit {
 
         # Can change category to any other
         my @categories = $c->model('DB::Contact')->not_deleted->all;
-        $c->stash->{categories} = [ map { $_->category } @categories ];
+        $c->stash->{category_options} = [ map { { name => $_->category, value => $_->category } } @categories ];
 
     }
 

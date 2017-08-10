@@ -244,6 +244,9 @@ sub bodies : Path('bodies') : Args(0) {
 
     $c->stash->{edit_activity} = $edit_activity;
 
+    $c->forward( 'fetch_languages' );
+    $c->forward( 'fetch_translations' );
+
     my $posted = $c->get_param('posted') || '';
     if ( $posted eq 'body' ) {
         $c->forward('check_for_super_user');
@@ -257,6 +260,9 @@ sub bodies : Path('bodies') : Args(0) {
                 $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
             }
 
+            $c->stash->{object} = $body;
+            $c->stash->{translation_col} = 'name';
+            $c->forward('update_translations');
             $c->stash->{updated} = _('New body added');
         }
     }
@@ -298,30 +304,6 @@ sub body_form_dropdowns : Private {
 
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
-}
-
-sub body : Path('body') : Args(1) {
-    my ( $self, $c, $body_id ) = @_;
-
-    $c->stash->{body_id} = $body_id;
-
-    unless ($c->user->has_permission_to('category_edit', $body_id)) {
-        $c->forward('check_for_super_user');
-    }
-
-    $c->forward( '/auth/get_csrf_token' );
-    $c->forward( 'lookup_body' );
-    $c->forward( 'fetch_all_bodies' );
-    $c->forward( 'body_form_dropdowns' );
-
-    if ( $c->get_param('posted') ) {
-        $c->log->debug( 'posted' );
-        $c->forward('update_contacts');
-    }
-
-    $c->forward('fetch_contacts');
-
-    return 1;
 }
 
 sub check_for_super_user : Private {
@@ -407,6 +389,12 @@ sub update_contacts : Private {
             $contact->insert;
         }
 
+        unless ( %errors ) {
+            $c->stash->{translation_col} = 'category';
+            $c->stash->{object} = $contact;
+            $c->forward('update_translations');
+        }
+
     } elsif ( $posted eq 'update' ) {
         $c->forward('/auth/check_csrf_token');
 
@@ -446,9 +434,43 @@ sub update_contacts : Private {
             # Remove any others
             $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
 
+            $c->stash->{translation_col} = 'name';
+            $c->stash->{object} = $c->stash->{body};
+            $c->forward('update_translations');
+
             $c->stash->{updated} = _('Values updated');
         }
     }
+}
+
+sub update_translations : Private {
+    my ( $self, $c ) = @_;
+
+    foreach my $lang (keys(%{$c->stash->{languages}})) {
+        my $id = $c->get_param('translation_id_' . $lang);
+        my $text = $c->get_param('translation_' . $lang);
+        if ($id) {
+            my $translation = $c->model('DB::Translation')->find(
+                {
+                    id => $id,
+                }
+            );
+
+            if ($text) {
+                $translation->msgstr($text);
+                $translation->update;
+            } else {
+                $translation->delete;
+            }
+        } elsif ($text) {
+            my $col = $c->stash->{translation_col};
+            $c->stash->{object}->add_translation_for(
+                $col, $lang, $text
+            );
+        }
+    }
+
+    $c->stash->{updated} = _('Translations updated');
 }
 
 sub body_params : Private {
@@ -497,6 +519,44 @@ sub fetch_contacts : Private {
     return 1;
 }
 
+sub fetch_languages : Private {
+    my ( $self, $c ) = @_;
+
+    my $lang_map = {};
+    foreach my $lang (sort @{$c->cobrand->languages}) {
+        my ($id, $name, $code) = split(',', $lang);
+        $lang_map->{$id} = { name => $name, code => $code };
+    }
+
+    $c->stash->{languages} = $lang_map;
+
+    return 1;
+}
+
+sub fetch_translations : Private {
+    my ( $self, $c ) = @_;
+
+    my $translations = {};
+    if ($c->get_param('posted')) {
+        foreach my $lang (keys %{$c->stash->{languages}}) {
+            if (my $msgstr = $c->get_param('translation_' . $lang)) {
+                $translations->{$lang} = { msgstr => $msgstr };
+            }
+            if (my $id = $c->get_param('translation_id_' . $lang)) {
+                $translations->{$lang}->{id} = $id;
+            }
+        }
+    } elsif ($c->stash->{object}) {
+        my @translations = $c->stash->{object}->translation_for($c->stash->{translation_col})->all;
+
+        foreach my $tx (@translations) {
+            $translations->{$tx->lang} = { id => $tx->id, msgstr => $tx->msgstr };
+        }
+    }
+
+    $c->stash->{translations} = $translations;
+}
+
 sub lookup_body : Private {
     my ( $self, $c ) = @_;
 
@@ -516,35 +576,94 @@ sub lookup_body : Private {
     return 1;
 }
 
+sub body_base : Chained('/') : PathPart('admin/body') : CaptureArgs(0) { }
+
 # This is for if the category name contains a '/'
-sub category_edit_all : Path('body') {
+sub category_edit_all : Chained('body_base') : PathPart('') {
     my ( $self, $c, $body_id, @category ) = @_;
     my $category = join( '/', @category );
-    $c->go( 'category_edit', [ $body_id, $category ] );
-}
-
-sub category_edit : Path('body') : Args(2) {
-    my ( $self, $c, $body_id, $category ) = @_;
 
     $c->stash->{body_id} = $body_id;
+    $c->forward( 'lookup_body' );
+
+    my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
+    $c->stash->{contact} = $contact;
+
+    $c->stash->{template} = 'admin/category_edit.html';
+    $c->forward( 'category_edit' );
+}
+
+sub body : Chained('body_base') : PathPart('') : CaptureArgs(1) {
+    my ( $self, $c, $body_id ) = @_;
+    $c->stash->{body_id} = $body_id;
+}
+
+sub edit_body : Chained('body') : PathPart('') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    unless ($c->user->has_permission_to('category_edit', $c->stash->{body_id})) {
+        $c->forward('check_for_super_user');
+    }
+
+    $c->forward( '/auth/get_csrf_token' );
+    $c->forward( 'lookup_body' );
+    $c->forward( 'fetch_all_bodies' );
+    $c->forward( 'body_form_dropdowns' );
+    $c->forward('fetch_languages');
+
+    if ( $c->get_param('posted') ) {
+        $c->forward('update_contacts');
+    }
+
+    $c->stash->{object} = $c->stash->{body};
+    $c->stash->{translation_col} = 'name';
+
+    # if there's a contact then it's because we're displaying error
+    # messages about adding a contact so grabbing translations will
+    # fetch the contact submitted translations. So grab them, stash
+    # them and then clear posted so we can fetch the body translations
+    if ($c->stash->{contact}) {
+        $c->forward('fetch_translations');
+        $c->stash->{contact_translations} = $c->stash->{translations};
+    }
+    $c->set_param('posted', '');
+
+    $c->forward('fetch_translations');
+    $c->forward('fetch_contacts');
+
+    $c->stash->{template} = 'admin/body.html';
+    return 1;
+}
+
+sub category : Chained('body') : PathPart('') : CaptureArgs(1) {
+    my ( $self, $c, $category ) = @_;
 
     $c->forward( '/auth/get_csrf_token' );
     $c->forward( 'lookup_body' );
 
     my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
     $c->stash->{contact} = $contact;
+}
+
+sub category_edit : Chained('category') : PathPart('') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{translation_col} = 'category';
+    $c->stash->{object} = $c->stash->{contact};
+
+    $c->forward('fetch_languages');
+    $c->forward('fetch_translations');
 
     my $history = $c->model('DB::ContactsHistory')->search(
         {
-            body_id => $body_id,
-            category => $category
+            body_id => $c->stash->{body_id},
+            category => $c->stash->{contact}->category
         },
         {
             order_by => ['contacts_history_id']
         },
     );
     $c->stash->{history} = $history;
-
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
 
@@ -925,8 +1044,8 @@ sub categories_for_point : Private {
     # Remove the "Pick a category" option
     shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
 
-    $c->stash->{categories} = $c->stash->{category_options};
-    $c->stash->{categories_hash} = { map { $_ => 1 } @{$c->stash->{category_options}} };
+    $c->stash->{category_options_copy} = $c->stash->{category_options};
+    $c->stash->{categories_hash} = { map { $_->{name} => 1 } @{$c->stash->{category_options}} };
 }
 
 sub templates : Path('templates') : Args(0) {

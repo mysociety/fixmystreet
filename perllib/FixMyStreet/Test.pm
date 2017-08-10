@@ -8,7 +8,7 @@ use utf8;
 use Test::More;
 use FixMyStreet::DB;
 
-my $db = FixMyStreet::DB->storage;
+my $db = FixMyStreet::DB->schema->storage;
 
 sub import {
     strict->import;

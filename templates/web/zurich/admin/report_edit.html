@@ -98,7 +98,7 @@
     </dd>
 
     <dt>[% loc('Category:') %] <!-- Kategorie --></dt>
-    <dd>[% problem.category | html %]</dd>
+    <dd>[% problem.category_display | html %]</dd>
 
     <dt class="print-only">[% loc('State:') %] <!-- Status --></dt>
     <dd class="print-only">[% states_trans.${problem.state} %]</dd>
@@ -169,8 +169,8 @@
             <label for="category">[% loc('Assign to different category:') %]</label>
             <select class="form-control" name="category" id="category">
                 <option value="">--</option>
-              [% FOREACH cat IN categories %]
-                <option value="[% cat %]">[% cat %]</option>
+              [% FOREACH cat IN category_options %]
+                <option value="[% cat.name %]">[% cat.value %]</option>
               [% END %]
             </select>
         </div>

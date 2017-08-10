@@ -206,6 +206,7 @@ my $IM = eval {
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra',
+     'FixMyStreet::Roles::Translatable',
      'FixMyStreet::Roles::PhotoSet';
 
 =head2
@@ -456,12 +457,6 @@ sub check_for_errors {
         $errors{category} = _('Please choose a category');
         $self->category(undef);
     }
-    elsif ($self->category
-        && $self->category eq _('-- Pick a property type --') )
-    {
-        $errors{category} = _('Please choose a property type');
-        $self->category(undef);
-    }
 
     return \%errors;
 }
@@ -487,6 +482,11 @@ sub confirm {
     $self->state('confirmed');
     $self->confirmed( \'current_timestamp' );
     return 1;
+}
+
+sub category_display {
+    my $self = shift;
+    $self->translate('category');
 }
 
 sub bodies_str_ids {
@@ -635,7 +635,7 @@ sub meta_line {
     my $date_time = Utils::prettify_dt( $problem->confirmed );
     my $meta = '';
 
-    my $category = $problem->category;
+    my $category = $problem->category_display;
     $category = $c->cobrand->call_hook(change_category_text => $category) || $category;
 
     if ( $problem->anonymous ) {

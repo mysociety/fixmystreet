@@ -150,7 +150,7 @@ sub ward : Path : Args(2) {
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;
-    @categories = map { $_->category } @categories;
+    @categories = map { { name => $_->category, value => $_->category_display } } @categories;
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
 
@@ -315,6 +315,19 @@ sub body_check : Private {
                 $c->stash->{body} = $_;
                 return;
             }
+        }
+    }
+
+    my @translations = $c->model('DB::Translation')->search( {
+        tbl => 'body',
+        col => 'name',
+        msgstr => $q_body
+    } )->all;
+
+    if (@translations == 1) {
+        if ( my $body = $c->model('DB::Body')->find( { id => $translations[0]->object_id } ) ) {
+            $c->stash->{body} = $body;
+            return;
         }
     }
 

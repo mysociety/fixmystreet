@@ -182,7 +182,7 @@ subtest 'check contact creation' => sub {
         non_public => 'on',
     } } );
     $mech->get_ok('/admin/body/' . $body->id . '/test/category');
-
+    $mech->content_contains('<h1>test/category</h1>');
 };
 
 subtest 'check contact editing' => sub {

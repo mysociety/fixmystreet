@@ -1,5 +1,5 @@
 <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="category_edit">
-    <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
+    <p><strong>[% loc('Category:') %] </strong>[% contact.category_display | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
     <input type="hidden" name="token" value="[% csrf_token %]" >
 

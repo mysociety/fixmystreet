@@ -528,3 +528,13 @@ CREATE TABLE contact_defect_types (
 
 ALTER TABLE problem
     ADD COLUMN defect_type_id int REFERENCES defect_types(id);
+
+CREATE TABLE translation (
+    id serial not null primary key,
+    tbl text not null,
+    object_id integer not null,
+    col text not null,
+    lang text not null,
+    msgstr text not null,
+    unique(tbl, object_id, col, lang)
+);
