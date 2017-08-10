@@ -45,7 +45,7 @@ use mySociety::MaPit;
 use Getopt::Long;
 use Pod::Usage;
 
-my $db = FixMyStreet::DB->storage;
+my $db = FixMyStreet::DB->schema->storage;
 
 my ($commit, $version, $downgrade, $help);
 
@@ -99,12 +99,10 @@ sub get_statements {
 }
 
 sub run_statements {
-    $db->txn_begin;
     foreach my $st (@_) {
         print ".";
         $db->dbh->do($st);
     }
-    $db->txn_commit;
     print "\n";
 }
 
@@ -197,6 +195,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0052' if table_exists('translation');
     return '0051' if column_exists('contacts', 'state');
     return '0050' if table_exists('defect_types');
     return '0049' if column_exists('response_priorities', 'external_id');
