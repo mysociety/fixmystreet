@@ -14,6 +14,11 @@
         font-weight: bold;
         margin-top: 0;
     }
+
+    // Special case for second h2 at end of form
+    .alerts-final-question {
+        margin-top: 2em;
+    }
 }
 
 .alerts-submit-buttons {
@@ -30,5 +35,48 @@
         font-size: 1.125em; // 18px
         color: #777;
         margin-bottom: 0.5em;
+    }
+}
+
+.alerts-rss-live-preview {
+    display: block;
+    font-size: 1.125em; // 18px
+    line-height: 1em;
+    border: 2px solid $form-control-border-color;
+    padding: 1em;
+    border-radius: 4px;
+
+    @media (min-width: 48em) {
+        padding: 1.5em;
+    }
+
+    &:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: transparent url(/i/feed.png) 0 0 no-repeat;
+        margin-#{$right}: 0.75em;
+        vertical-align: middle;
+    }
+
+    &:hover,
+    &:focus {
+        background-color: mix(#0BA7D1, #fff, 10%); // lighter version of `a` color
+        border-color: #0D7CCE; // match a:hover color
+    }
+
+    &.loading {
+        border-color: #ddd;
+        color: #666;
+
+        &:before {
+            content: none;
+        }
+    }
+
+    & + input {
+        position: absolute;
+        left: -9999px;
     }
 }

@@ -777,6 +777,55 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  alerts_live_rss_preview: function() {
+      $('.js-alerts-rss-live-preview').each(function() {
+          var $button = $(this);
+          var $form = $button.parents('form');
+          var $preview = $('<a>');
+
+          $preview.addClass('alerts-rss-live-preview');
+          $preview.attr('target', '_blank');
+          $preview.insertBefore($button);
+
+          var reset = function reset() {
+              $preview.remove();
+              $form.off('.rss-live-preview');
+          };
+
+          $form.on('change.rss-live-preview', function() {
+              $preview.removeAttr('href');
+              $preview.html(translation_strings.loading);
+              $preview.addClass('loading');
+
+              var dataObj = $form.serializeArray();
+              dataObj.push({ name: 'ajax', value: 1 });
+
+              $.ajax({
+                  url: $form.attr('action'),
+                  type: $form.attr('method'),
+                  data: $.param(dataObj),
+                  dataType: 'json'
+
+              }).always(function() {
+                  $preview.removeClass('loading');
+
+              }).done(function(data) {
+                  if (data.status == 'success') {
+                      $preview.attr('href', data.url);
+                      $preview.text(data.url);
+                  } else {
+                      reset();
+                  }
+
+              }).fail(function(jqXHR, textStatus, errorThrown) {
+                  reset();
+              });
+          });
+
+          $form.trigger('change');
+      });
+  },
+
   ajax_history: function() {
     $('#map_sidebar').on('click', '.item-list--reports a', function(e) {
         if (e.metaKey || e.ctrlKey) {

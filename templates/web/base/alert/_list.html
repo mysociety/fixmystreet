@@ -51,11 +51,11 @@
 [% END %]
 
 [% IF delivery == 'rss' %]
-  <h2>[% loc('Grab your RSS feed:') %]</h2>
-  <input id="alert_rss_button" class="btn-primary" type="submit" name="rss" value="[% loc('Give me an RSS feed') %]">
+  <h2 class="alerts-final-question">[% loc('Grab your RSS feed:') %]</h2>
+  <input id="alert_rss_button" class="btn-primary js-alerts-rss-live-preview" type="submit" name="rss" value="[% loc('Give me an RSS feed') %]">
 [% ELSE %]
   [% UNLESS c.user_exists %]
-    <h2>[% loc('And where should your alerts be delivered?') %]</h2>
+    <h2 class="alerts-final-question">[% loc('And where should your alerts be delivered?') %]</h2>
     <p>
         <label for="rznvy">[% loc('Email address') %]</label>
         <input class="form-control" type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]">

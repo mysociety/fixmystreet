@@ -2,6 +2,8 @@ package FixMyStreet::App::Controller::Alert;
 use Moose;
 use namespace::autoclean;
 
+use JSON::MaybeXS;
+
 BEGIN { extends 'Catalyst::Controller'; }
 
 use mySociety::EmailUtil qw(is_valid_email);
@@ -51,7 +53,8 @@ Target for subscribe form
 sub subscribe : Path('subscribe') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->detach('rss') if $c->get_param('rss');
+    $c->detach('rss')
+        if $c->get_param('rss') || $c->get_param('delivery') eq 'rss';
 
     # if it exists then it's been submitted so we should
     # go to subscribe email and let it work out the next step
@@ -66,37 +69,50 @@ sub subscribe : Path('subscribe') : Args(0) {
 
 =head2 rss
 
-Redirects to relevant RSS feed
+Redirects to relevant RSS feed or, if requested with an "ajax" query parameter,
+simply returns a JSON object containing the RSS feed URL.
 
 =cut
 
 sub rss : Private {
     my ( $self, $c ) = @_;
     my $feed = $c->get_param('feed');
-
-    unless ($feed) {
-        $c->stash->{errors} = [ _('Please select the feed you want') ];
-        $c->go('list');
-    }
-
+    my $ajax = $c->get_param('ajax');
     my $url;
+    my $error;
+
     if ( $feed =~ /^area:(?:\d+:)+(.*)$/ ) {
         ( my $id = $1 ) =~ tr{:_}{/+};
         $url = $c->cobrand->base_url() . '/rss/area/' . $id;
-        $c->res->redirect($url);
     }
     elsif ( $feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/ ) {
         ( my $id = $1 ) =~ tr{:_}{/+};
         $url = $c->cobrand->base_url() . '/rss/reports/' . $id;
-        $c->res->redirect($url);
     }
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
         $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
-        $c->res->redirect($url);
+    }
+    elsif ( $feed ) {
+        $error = _('Illegal feed selection');
+    } else {
+        $error = _('Please select the feed you want');
+    }
+
+    if ( $url ) {
+        if ( $ajax ) {
+            $c->res->body(encode_json({ status => 'success', url => $url }));
+        }
+        else {
+            $c->res->redirect($url);
+        }
     }
     else {
-        $c->stash->{errors} = [ _('Illegal feed selection') ];
-        $c->go('list');
+        if ( $ajax ) {
+            $c->res->body(encode_json({ status => 'fail', message => $error }));
+        } else {
+            $c->stash->{errors} = [ $error ];
+            $c->go('list');
+        }
     }
 }
 
