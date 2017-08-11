@@ -486,7 +486,7 @@ sub confirm {
 
 sub category_display {
     my $self = shift;
-    $self->translate('category');
+    $self->translate_column('category');
 }
 
 sub bodies_str_ids {

@@ -469,8 +469,6 @@ sub update_translations : Private {
             );
         }
     }
-
-    $c->stash->{updated} = _('Translations updated');
 }
 
 sub body_params : Private {

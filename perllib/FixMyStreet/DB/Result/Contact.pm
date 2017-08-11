@@ -91,7 +91,7 @@ __PACKAGE__->many_to_many( defect_types => 'contact_defect_types', 'defect_type'
 
 sub category_display {
     my $self = shift;
-    $self->translate('category');
+    $self->translate_column('category');
 }
 
 sub get_metadata_for_input {

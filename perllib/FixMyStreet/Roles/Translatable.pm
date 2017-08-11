@@ -9,7 +9,7 @@ sub translate_around {
     $self->_translate($col, $fallback);
 }
 
-sub translate {
+sub translate_column {
     my ($self, $col) = (shift, shift);
     my $fallback = $self->$col(@_);
     $self->_translate($col, $fallback);
