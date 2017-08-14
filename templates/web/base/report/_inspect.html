@@ -58,7 +58,7 @@
                [%~ IF cat_name != problem.category %] class="hidden"[% END %]
                data-priorities='[% priorities_by_category.$cat_name %]'
                data-defect-types='[% category_defect_types.$cat_name %]'
-               ata-templates='[% templates_by_category.$cat_name %]'>
+               data-templates='[% templates_by_category.$cat_name %]'>
               [% IF cat_name == problem.category %]
                   [% INCLUDE 'report/new/category_extras_fields.html' %]
               [% ELSE %]
