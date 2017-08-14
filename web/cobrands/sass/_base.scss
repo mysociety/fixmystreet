@@ -1187,6 +1187,21 @@ input.final-submit {
   }
 }
 
+// List of potential duplicate reports (or a single confirmed duplicate)
+// that appears in Inspector form, when closing a report as a duplicate.
+.item-list--inspect-duplicates {
+    border-bottom: none;
+
+    .item-list__item {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .item-list--reports__item--selected {
+        border: 0.25em solid $primary;
+        background-color: #fff;
+    }
+}
+
 .item-list__heading {
   font-size: 1em;
   font-weight: normal;
