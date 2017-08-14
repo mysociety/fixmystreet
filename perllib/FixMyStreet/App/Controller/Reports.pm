@@ -36,6 +36,11 @@ sub index : Path : Args(0) {
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $c->forward( 'stash_report_filter_status' );
         $c->forward( 'load_and_group_problems' );
+
+        if ($c->get_param('ajax')) {
+            $c->detach('ajax', [ 'reports/_problem-list.html' ]);
+        }
+
         my $pins = $c->stash->{pins};
         $c->stash->{page} = 'reports';
         FixMyStreet::Map::display_map(
