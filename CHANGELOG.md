@@ -12,6 +12,7 @@
         - Stop errors from JS validator due to form in form.
         - Stop update form toggle causing report submission.
         - Update map size if an extra column has appeared.
+        - Improve performance of duplicate display.
     - Development improvements:
         - `switch-site` script to automate switching config.yml files. #1741
 

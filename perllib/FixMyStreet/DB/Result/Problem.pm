@@ -1115,6 +1115,16 @@ has shortlisted_user => (
     },
 );
 
+sub set_duplicate_of {
+    my ($self, $other_id) = @_;
+    $self->set_extra_metadata( duplicate_of => $other_id );
+    my $dupe = $self->result_source->schema->resultset("Problem")->find($other_id);
+    my $dupes_duplicates = $dupe->get_extra_metadata('duplicates') || [];
+    push @$dupes_duplicates, $self->id;
+    $dupe->set_extra_metadata( duplicates => $dupes_duplicates );
+    $dupe->update;
+}
+
 has duplicate_of => (
     is => 'ro',
     lazy => 1,
@@ -1132,8 +1142,9 @@ has duplicates => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        my $rabx_id = RABX::serialise( $self->id );
-        my @duplicates = $self->result_source->schema->resultset('Problem')->search({ extra => { like => "\%duplicate_of,$rabx_id%" } })->all;
+        my $duplicates = $self->get_extra_metadata("duplicates") || [];
+        return [] unless $duplicates && @$duplicates;
+        my @duplicates = $self->result_source->schema->resultset('Problem')->search({ id => $duplicates })->all;
         return \@duplicates;
     },
 );

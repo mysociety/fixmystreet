@@ -776,6 +776,8 @@ subtest 'check duplicate reports' => sub {
     $problem1->set_extra_metadata(duplicate_of => $problem2->id);
     $problem1->state('duplicate');
     $problem1->update;
+    $problem2->set_extra_metadata(duplicates => [ $problem1->id ]);
+    $problem2->update;
 
     is $problem1->duplicate_of->title, $problem2->title, 'problem1 returns correct problem from duplicate_of';
     is scalar @{ $problem2->duplicates }, 1, 'problem2 has correct number of duplicates';

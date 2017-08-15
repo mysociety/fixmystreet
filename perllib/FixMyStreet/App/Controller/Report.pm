@@ -325,7 +325,7 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_information traffic_information duplicate_of/) {
+            foreach (qw/detailed_information traffic_information/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 
@@ -360,7 +360,10 @@ sub inspect : Private {
             }
             if ( $problem->state ne 'duplicate' ) {
                 $problem->unset_extra_metadata('duplicate_of');
+            } elsif (my $duplicate_of = $c->get_param('duplicate_of')) {
+                $problem->set_duplicate_of($duplicate_of);
             }
+
             if ( $problem->state ne $old_state ) {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
 
