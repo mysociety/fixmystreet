@@ -1,14 +1,31 @@
-[% all_reports = on_map.merge(around_map) %]
-[% IF all_reports.size %]
-    [% FOREACH problem IN all_reports %]
-        [% UNLESS problem.title;
-            dist = tprintf("%.1f", (problem.distance || 0) );
-            problem = problem.problem;
-        END %]
+<ul class="item-list item-list--reports">
+[% IF on_map.size %]
+    [% FOREACH problem IN on_map %]
         [% INCLUDE 'reports/_list-entry.html' %]
     [% END %]
+    [% IF around_map.size %]
+    <li class="item-list__item item-list__item--empty">
+        <p>[% loc('Here are some other nearby reports:') %]</p>
+    </li>
+    [% END %]
+[% ELSIF around_map.size %]
+    <li class="item-list__item item-list__item--empty">
+        <p>[% loc('No reports to show on map, here are some nearby:') %]</p>
+    </li>
 [% ELSE %]
     <li class="item-list__item item-list__item--empty">
         <p>[% loc('There are no reports to show.') %]</p>
     </li>
+[% END %]
+</ul>
+
+[% IF around_map.size %]
+<ul class="item-list item-list--reports">
+    [% FOREACH problem IN around_map %]
+        [% dist = tprintf("%.1f", (problem.distance || 0) );
+           problem = problem.problem;
+        %]
+        [% INCLUDE 'reports/_list-entry.html' %]
+    [% END %]
+</ul>
 [% END %]

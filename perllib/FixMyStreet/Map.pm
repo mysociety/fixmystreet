@@ -88,15 +88,21 @@ sub map_features {
         $p{latitude} = ($p{max_lat} + $p{min_lat} ) / 2;
     }
 
-    my $on_map = $c->cobrand->problems_on_map->around_map( %p );
+    $p{page} = $c->get_param('p') || 1;
+    my $on_map = $c->cobrand->problems_on_map->around_map( $c, %p );
+    my $pager = $c->stash->{pager} = $on_map->pager;
+    $on_map = [ $on_map->all ];
 
     my $dist = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );
 
-    my $limit  = 20;
-    my @ids    = map { $_->id } @$on_map;
-    my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "categories", "states"}
-    );
+    my $nearby;
+    if (@$on_map < $pager->entries_per_page && $pager->current_page == 1) {
+        my $limit = 20;
+        my @ids = map { $_->id } @$on_map;
+        $nearby = $c->model('DB::Nearby')->nearby(
+            $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "categories", "states"}
+        );
+    }
 
     return ( $on_map, $nearby, $dist );
 }

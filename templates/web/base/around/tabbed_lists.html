@@ -1,5 +1,13 @@
 [% INCLUDE "reports/_list-filters.html" %]
 
-<ul id="js-reports-list" class="item-list item-list--reports">
+<div class="js-pagination">
+[% INCLUDE 'pagination.html' param = 'p' %]
+</div>
+
+<div id="js-reports-list">
     [% INCLUDE "around/on_map_list_items.html" %]
-</ul>
+</div>
+
+<div class="js-pagination">
+[% INCLUDE 'pagination.html' param = 'p' %]
+</div>

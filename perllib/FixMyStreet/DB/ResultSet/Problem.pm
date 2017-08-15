@@ -140,10 +140,11 @@ sub _recent {
 # Problems around a location
 
 sub around_map {
-    my ( $rs, %p) = @_;
+    my ( $rs, $c, %p) = @_;
     my $attr = {
         order_by => $p{order},
     };
+    $attr->{rows} = $c->cobrand->reports_per_page;
 
     unless ( $p{states} ) {
         $p{states} = FixMyStreet::DB::Result::Problem->visible_states();
@@ -157,8 +158,10 @@ sub around_map {
     };
     $q->{category} = $p{categories} if $p{categories} && @{$p{categories}};
 
-    my @problems = mySociety::Locale::in_gb_locale { $rs->search( $q, $attr )->include_comment_counts->all };
-    return \@problems;
+    my $problems = mySociety::Locale::in_gb_locale {
+        $rs->search( $q, $attr )->include_comment_counts->page($p{page});
+    };
+    return $problems;
 }
 
 # Admin functions
