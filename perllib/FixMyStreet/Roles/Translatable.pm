@@ -2,6 +2,13 @@ package FixMyStreet::Roles::Translatable;
 
 use Moo::Role;
 
+has _translated  => (is => 'rw');
+
+sub translated {
+    my $self = shift;
+    $self->_translated or $self->_translated({});
+}
+
 sub translate_around {
     my ($orig, $self) = (shift, shift);
     my $fallback = $self->$orig(@_);
@@ -21,6 +28,10 @@ sub _translate {
     my $schema = $self->result_source->schema;
     my $table = lc $self->result_source->source_name;
     my $id = $self->id;
+    my $lang = $schema->lang || '';
+
+    my $translated = $self->translated->{$col}{$lang};
+    return $translated if $translated;
 
     # Deal with the fact problem table has denormalized copy of category string
     if ($table eq 'problem' && $col eq 'category') {
@@ -37,15 +48,16 @@ sub _translate {
 
     if (ref $schema) {
         my $translation = $schema->resultset('Translation')->find({
-            lang => $schema->lang,
+            lang => $lang,
             tbl => $table,
             object_id => $id,
             col => $col
         });
-        return $translation->msgstr if $translation;
+        $fallback = $translation->msgstr if $translation;
     } else {
         warn "Can't use translation on this call to $table.$col";
     }
+    $self->translated->{$col}{$lang} = $fallback;
     return $fallback;
 };
 
