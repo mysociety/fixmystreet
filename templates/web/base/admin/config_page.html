@@ -88,6 +88,9 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE subsection heading="MapIt" %]
 [% INCLUDE just_value value="MAPIT_URL"
     conf = "<a href='" _ c.config.MAPIT_URL _ "'>" _ c.config.MAPIT_URL _ "</a>" %]
+[% IF c.config.MAPIT_API_KEY %]
+    [% INCLUDE just_value value="MAPIT_API_KEY" %]
+[% END %]
 [% INCLUDE with_cobrand value="MAPIT_TYPES"
     cob = c.cobrand.area_types %]
 <tr>
