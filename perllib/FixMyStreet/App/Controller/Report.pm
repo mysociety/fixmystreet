@@ -481,7 +481,7 @@ sub nearby_json : Private {
 
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     my $p = $c->stash->{problem};
-    my $dist = 1000;
+    my $dist = 1;
 
     my $nearby = $c->model('DB::Nearby')->nearby(
         $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, undef, [ $p->category ], undef
