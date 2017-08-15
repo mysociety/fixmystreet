@@ -16,9 +16,7 @@
         [% IF permissions.report_inspect AND problem.user.phone %]
           <p>
             <strong>[% loc('Phone Reporter:') %]</strong>
-            <span class="js-report-id">
-                <a href="tel:[% problem.user.phone %]">[% problem.user.phone %]</a>
-            </span>
+            <a href="tel:[% problem.user.phone | html %]">[% problem.user.phone | html %]</a>
           </p>
         [% END %]
         <p>
