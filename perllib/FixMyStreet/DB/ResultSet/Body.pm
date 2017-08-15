@@ -14,4 +14,15 @@ sub for_areas {
     return $result;
 }
 
+sub all_translated {
+    my $rs = shift;
+    my $schema = $rs->result_source->schema;
+    my @bodies = $rs->search(undef, {
+        '+columns' => { 'msgstr' => 'translations.msgstr' },
+        join => 'translations',
+        bind => [ 'name', $schema->lang, 'body' ],
+    })->all;
+    return @bodies;
+}
+
 1;

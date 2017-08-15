@@ -132,6 +132,21 @@ sub url {
     return $c->uri_for( '/reports/' . $c->cobrand->short_name( $self ), $args || {} );
 }
 
+__PACKAGE__->might_have(
+  "translations",
+  "FixMyStreet::DB::Result::Translation",
+  sub {
+    my $args = shift;
+    return {
+        "$args->{foreign_alias}.object_id" => { -ident => "$args->{self_alias}.id" },
+        "$args->{foreign_alias}.tbl" => { '=' => \"?" },
+        "$args->{foreign_alias}.col" => { '=' => \"?" },
+        "$args->{foreign_alias}.lang" => { '=' => \"?" },
+    };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 around name => \&translate_around;
 
 sub areas {
