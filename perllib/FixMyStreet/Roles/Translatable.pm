@@ -25,6 +25,9 @@ sub translate_column {
 sub _translate {
     my ($self, $col, $fallback) = @_;
 
+    my %cols = $self->get_columns;
+    return $cols{msgstr} if $cols{msgstr};
+
     my $schema = $self->result_source->schema;
     my $table = lc $self->result_source->source_name;
     my $id = $self->id;

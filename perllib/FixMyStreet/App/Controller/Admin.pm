@@ -1941,7 +1941,7 @@ sub check_page_allowed : Private {
 sub fetch_all_bodies : Private {
     my ($self, $c ) = @_;
 
-    my @bodies = $c->model('DB::Body')->all;
+    my @bodies = $c->model('DB::Body')->all_translated;
     if ( $c->cobrand->moniker eq 'zurich' ) {
         @bodies = $c->cobrand->admin_fetch_all_bodies( @bodies );
     } else {
