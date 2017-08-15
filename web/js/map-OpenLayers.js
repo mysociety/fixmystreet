@@ -483,7 +483,7 @@ var fixmystreet = fixmystreet || {};
             fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.FixMyStreet();
             pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
             pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
-                url: '/ajax',
+                url: fixmystreet.original.href.split('?')[0] + '?ajax=1',
                 params: fixmystreet.all_pins ? { all_pins: 1 } : { },
                 format: new OpenLayers.Format.FixMyStreet()
             });
@@ -494,7 +494,7 @@ var fixmystreet = fixmystreet || {};
         if (fixmystreet.page == 'my') {
             pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetFixed() ];
         }
-        if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
+        if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
             pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
                 url: fixmystreet.original.href.split('?')[0] + '?ajax=1',
                 format: new OpenLayers.Format.FixMyStreet()
@@ -821,11 +821,11 @@ OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixe
 });
 
 /* Pan data request handler */
-// This class is used to get a JSON object from /ajax that contains
+// This class is used to get a JSON object from /around?ajax that contains
 // pins for the map and HTML for the sidebar. It does a fetch whenever the map
 // is dragged (modulo a buffer extending outside the viewport).
 // This subclass is required so we can pass the 'filter_category' and 'status' query
-// params to /ajax if the user has filtered the map.
+// params to /around?ajax if the user has filtered the map.
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     read: function(options) {
         // Show the loading indicator over the map

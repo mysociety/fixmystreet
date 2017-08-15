@@ -127,12 +127,13 @@ fixmystreet.maps = {};
             b_ne = b.getNorthEast(),
             bbox = b_sw.lng() + ',' + b_sw.lat() + ',' + b_ne.lng() + ',' + b_ne.lat(),
             params = {
+                ajax: 1,
                 bbox: bbox
             };
         if (fixmystreet.all_pins) {
             params.all_pins = 1;
         }
-        $.getJSON('/ajax', params, read_pin_json);
+        $.getJSON('/around', params, read_pin_json);
     }
 
     function map_initialize() {

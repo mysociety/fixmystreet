@@ -7,7 +7,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 
-subtest 'check /ajax defaults to open reports only' => sub {
+subtest 'check /around?ajax defaults to open reports only' => sub {
     my $categories = [ 'Bridges', 'Fences', 'Manhole' ];
     my $params = {
         postcode  => 'OX28 4DS',
@@ -33,15 +33,15 @@ subtest 'check /ajax defaults to open reports only' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'oxfordshire' => '.' } ],
     }, sub {
-        my $json = $mech->get_ok_json( '/ajax?status=all&bbox=' . $bbox );
+        my $json = $mech->get_ok_json( '/around?ajax=1&status=all&bbox=' . $bbox );
         my $pins = $json->{pins};
         is scalar @$pins, 6, 'correct number of reports created';
 
-        $json = $mech->get_ok_json( '/ajax?bbox=' . $bbox );
+        $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
         $pins = $json->{pins};
         is scalar @$pins, 3, 'correct number of reports returned with no filters';
 
-        $json = $mech->get_ok_json( '/ajax?filter_category=Fences&bbox=' . $bbox );
+        $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Fences&bbox=' . $bbox );
         $pins = $json->{pins};
         is scalar @$pins, 1, 'only one Fences report by default';
     }

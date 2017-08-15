@@ -33,16 +33,20 @@ If no search redirect back to the homepage.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # handle old coord systems
-    $c->forward('redirect_en_or_xy_to_latlon');
-
-    # Check if we have a partial report
-    my $partial_report = $c->forward('load_partial');
+    if ($c->get_param('ajax')) {
+        $c->detach('ajax');
+    }
 
     # Check if the user is searching for a report by ID
     if ( $c->get_param('pc') && $c->get_param('pc') =~ $c->cobrand->lookup_by_ref_regex ) {
         $c->go('lookup_by_ref', [ $1 ]);
     }
+
+    # handle old coord systems
+    $c->forward('redirect_en_or_xy_to_latlon');
+
+    # Check if we have a partial report
+    my $partial_report = $c->forward('load_partial');
 
     # Try to create a location for whatever we have
     my $ret = $c->forward('/location/determine_location_from_coords')
@@ -275,7 +279,7 @@ sub map_features : Private {
     $c->stash->{distance} = $distance;
 }
 
-=head2 /ajax
+=head2 ajax
 
 Handle the ajax calls that the map makes when it is dragged. The info returned
 is used to update the pins on the map and the text descriptions on the side of
@@ -283,7 +287,7 @@ the map.
 
 =cut
 
-sub ajax : Path('/ajax') {
+sub ajax : Private {
     my ( $self, $c ) = @_;
 
     my $bbox = $c->get_param('bbox');

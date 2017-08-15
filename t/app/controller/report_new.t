@@ -893,7 +893,7 @@ foreach my $test (
 
         # Test that AJAX pages return the right data
         $mech->get_ok(
-            '/ajax?bbox=' . ($report->longitude - 0.01) . ',' .  ($report->latitude - 0.01)
+            '/around?ajax=1&bbox=' . ($report->longitude - 0.01) . ',' .  ($report->latitude - 0.01)
             . ',' . ($report->longitude + 0.01) . ',' .  ($report->latitude + 0.01)
         );
         $mech->content_contains( "Test Report at caf\xc3\xa9" );
