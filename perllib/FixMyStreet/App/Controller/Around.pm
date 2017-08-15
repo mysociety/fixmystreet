@@ -249,16 +249,11 @@ sub map_features : Private {
     $c->forward( '/reports/stash_report_filter_status' );
     $c->forward( '/reports/stash_report_sort', [ 'created-desc' ]);
 
-    # Deal with pin hiding/age
-    my $all_pins = $c->get_param('all_pins') ? 1 : undef;
-    $c->stash->{all_pins} = $all_pins;
-    my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
-
     return if $c->get_param('js'); # JS will request the same (or more) data client side
 
-    my ( $on_map_all, $on_map_list, $nearby, $distance ) =
+    my ( $on_map, $nearby, $distance ) =
       FixMyStreet::Map::map_features(
-        $c, interval => $interval, %$extra,
+        $c, %$extra,
         categories => [ keys %{$c->stash->{filter_category}} ],
         states => $c->stash->{filter_problem_states},
         order => $c->stash->{sort_order},
@@ -270,11 +265,11 @@ sub map_features : Private {
             # Here we might have a DB::Problem or a DB::Result::Nearby, we always want the problem.
             my $p = (ref $_ eq 'FixMyStreet::DB::Result::Nearby') ? $_->problem : $_;
             $p->pin_data($c, 'around');
-        } @$on_map_all, @$nearby;
+        } @$on_map, @$nearby;
     }
 
     $c->stash->{pins} = \@pins;
-    $c->stash->{on_map} = $on_map_list;
+    $c->stash->{on_map} = $on_map;
     $c->stash->{around_map} = $nearby;
     $c->stash->{distance} = $distance;
 }

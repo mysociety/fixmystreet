@@ -88,23 +88,17 @@ sub map_features {
         $p{latitude} = ($p{max_lat} + $p{min_lat} ) / 2;
     }
 
-    # list of problems around map can be limited, but should show all pins
-    my $around_limit = $c->cobrand->on_map_list_limit || undef;
-
-    my $on_map_all = $c->cobrand->problems_on_map->around_map( undef, %p );
-    my $on_map_list = $around_limit
-        ? $c->cobrand->problems_on_map->around_map( $around_limit, %p )
-        : $on_map_all;
+    my $on_map = $c->cobrand->problems_on_map->around_map( %p );
 
     my $dist = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );
 
     my $limit  = 20;
-    my @ids    = map { $_->id } @$on_map_list;
+    my @ids    = map { $_->id } @$on_map;
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "interval", "categories", "states"}
+        $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "categories", "states"}
     );
 
-    return ( $on_map_all, $on_map_list, $nearby, $dist );
+    return ( $on_map, $nearby, $dist );
 }
 
 sub click_to_wgs84 {

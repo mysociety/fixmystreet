@@ -521,7 +521,7 @@ sub nearby_json : Private {
     my $dist = 1;
 
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, undef, [ $p->category ], undef
+        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, [ $p->category ], undef
     );
     my @pins = map {
         my $p = $_->problem;

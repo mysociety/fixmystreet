@@ -130,9 +130,6 @@ fixmystreet.maps = {};
                 ajax: 1,
                 bbox: bbox
             };
-        if (fixmystreet.all_pins) {
-            params.all_pins = 1;
-        }
         $.getJSON('/around', params, read_pin_json);
     }
 
@@ -224,40 +221,6 @@ fixmystreet.maps = {};
                 this.innerHTML = translation_strings.show_pins;
             }
         });
-
-        $('#all_pins_link').click(function(e) {
-            var i;
-            e.preventDefault();
-            for (i=0; i<fixmystreet.markers.length; i++) {
-                fixmystreet.markers[i].setMap(fixmystreet.map);
-            }
-            var texts = [
-                'en', 'Show old', 'Hide old',
-                'nb', 'Inkluder utdaterte problemer', 'Skjul utdaterte rapporter',
-                'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
-            ];
-            for (i=0; i<texts.length; i+=3) {
-                if (this.innerHTML == texts[i+1]) {
-                    this.innerHTML = texts[i+2];
-                    fixmystreet.markers.protocol.options.params = { all_pins: 1 };
-                    fixmystreet.markers.refresh( { force: true } );
-                    lang = texts[i];
-                } else if (this.innerHTML == texts[i+2]) {
-                    this.innerHTML = texts[i+1];
-                    fixmystreet.markers.protocol.options.params = { };
-                    fixmystreet.markers.refresh( { force: true } );
-                    lang = texts[i];
-                }
-            }
-            if (lang == 'cy') {
-                document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
-            } else if (lang == 'nb') {
-                document.getElementById('hide_pins_link').innerHTML = 'Gjem nåler';
-            } else {
-                document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
-            }
-        });
-
     }
 
     google.maps.visualRefresh = true;
