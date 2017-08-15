@@ -4230,7 +4230,7 @@ msgstr "Oppdateringer av {{title}}"
 #: templates/web/base/report/display.html:0
 #: templates/web/base/report/display.html:9
 msgid "Updates to this problem, %s"
-msgstr "Oppdateringer til dette problemet, FiksGataMi"
+msgstr "Oppdateringer til dette problemet, %s"
 
 #: templates/web/base/admin/contact-form.html:41
 #: templates/web/base/admin/contact-form.html:42
