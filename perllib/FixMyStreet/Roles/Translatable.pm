@@ -1,6 +1,7 @@
 package FixMyStreet::Roles::Translatable;
 
 use Moo::Role;
+use FixMyStreet;
 
 has _translated  => (is => 'rw');
 
@@ -24,6 +25,9 @@ sub translate_column {
 
 sub _translate {
     my ($self, $col, $fallback) = @_;
+
+    my $langs = FixMyStreet->config('LANGUAGES');
+    return $fallback if @$langs < 2;
 
     my %cols = $self->get_columns;
     return $cols{msgstr} if $cols{msgstr};
