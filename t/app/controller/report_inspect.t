@@ -79,10 +79,21 @@ FixMyStreet::override_config {
             public_update => "This is a public update.", include_update => "1",
             state => 'action scheduled', raise_defect => 1,
         } });
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ with_fields => {
+            update => "This is a second public update, of normal update form, no actual change.",
+        } });
         $report->discard_changes;
-        is $report->comments->first->text, "This is a public update.", 'Update was created';
+        my $comment = ($report->comments( undef, { order_by => { -desc => 'id' } } )->all)[1]->text;
+        is $comment, "This is a public update.", 'Update was created';
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
         is $report->user->get_extra_metadata('reputation'), $reputation, "User reputation wasn't changed";
+        $mech->get_ok("/report/$report_id");
+        my $meta = $mech->extract_update_metas;
+        like $meta->[0], qr/Updated by .*action scheduled/, 'First update mentions action scheduled';
+        like $meta->[1], qr/Posted by .*defect raised/, 'Update mentions defect raised';
+        unlike $meta->[2], qr/Posted by .*action scheduled/, 'Update does not mention action scheduled';
+
         $user->unset_extra_metadata('categories');
         $user->update;
     };
@@ -245,6 +256,9 @@ FixMyStreet::override_config {
         } });
         $report->discard_changes;
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
+        $mech->get_ok("/report/$report_id");
+        my $meta = $mech->extract_update_metas;
+        like $meta->[-1], qr/Updated by .*defect raised/, 'Update mentions defect raised';
     };
 
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
