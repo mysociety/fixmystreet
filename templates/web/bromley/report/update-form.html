@@ -34,16 +34,21 @@
             </div>
         [% END %]
 
+            <div class="general-notes">
+                <p>Please note that new and separate occurrences of issues
+                should be logged as new reports, to avoid conflicting
+                information or updates and ensure the information is passed
+                promptly to our teams. Please log any new issue via
+                <a href="https://www.bromley.gov.uk/report">https://www.bromley.gov.uk/report</a>
+                using the map marker and description to detail where the issue
+                is located.</p>
+            </div>
+
             <label for="form_update">[% loc( 'Update' ) %]</label>
             [% IF field_errors.update %]
                 <div class='form-error'>[% field_errors.update %]</div>
             [% END %]
             <textarea class="form-control" rows="7" cols="30" name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
-
-            <div class="general-notes">
-                <p>Please note this comments box can only be used for this report.
-                <br><a href="http://www.bromley.gov.uk/report">Report a different issue</a>
-            </div>
 
             [% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
                 <label for="state">[% loc( 'State' ) %]</label>
