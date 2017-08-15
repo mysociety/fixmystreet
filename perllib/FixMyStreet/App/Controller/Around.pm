@@ -49,7 +49,8 @@ sub index : Path : Args(0) {
     my $partial_report = $c->forward('load_partial');
 
     # Try to create a location for whatever we have
-    my $ret = $c->forward('/location/determine_location_from_coords')
+    my $ret = $c->forward('/location/determine_location_from_bbox')
+        || $c->forward('/location/determine_location_from_coords')
         || $c->forward('/location/determine_location_from_pc');
     unless ($ret) {
         return $c->res->redirect('/') unless $c->get_param('pc') || $partial_report;
@@ -174,7 +175,11 @@ sub display_location : Private {
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
 
-    $c->forward('map_features', [ { latitude => $latitude, longitude => $longitude } ] );
+    if (my $bbox = $c->stash->{bbox}) {
+        $c->forward('map_features', [ { bbox => $bbox } ]);
+    } else {
+        $c->forward('map_features', [ { latitude => $latitude, longitude => $longitude } ]);
+    }
 
     FixMyStreet::Map::display_map(
         $c,
@@ -285,8 +290,8 @@ the map.
 sub ajax : Private {
     my ( $self, $c ) = @_;
 
-    my $bbox = $c->get_param('bbox');
-    unless ($bbox) {
+    my $ret = $c->forward('/location/determine_location_from_bbox');
+    unless ($ret) {
         $c->res->status(404);
         $c->res->body('');
         return;
@@ -295,7 +300,7 @@ sub ajax : Private {
     my %valid_categories = map { $_ => 1 } $c->get_param_list('filter_category', 1);
     $c->stash->{filter_category} = \%valid_categories;
 
-    $c->forward('map_features', [ { bbox => $bbox } ]);
+    $c->forward('map_features', [ { bbox => $c->stash->{bbox} } ]);
     $c->forward('/reports/ajax', [ 'around/on_map_list_items.html' ]);
 }
 

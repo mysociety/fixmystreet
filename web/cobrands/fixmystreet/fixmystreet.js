@@ -1238,11 +1238,20 @@ $(function() {
                     $('#filter_categories').add('#statuses').add('#sort').find('option')
                         .prop('selected', function() { return this.defaultSelected; })
                         .trigger('change.multiselect');
+                    if (fixmystreet.utils && fixmystreet.utils.parse_query_string) {
+                        var qs = fixmystreet.utils.parse_query_string();
+                        var page = qs.p || 1;
+                        $('.pagination').data('page', page)
+                            .trigger('change.filters');
+                    }
                     fixmystreet.display.reports_list(location.href);
                 } else if ('reportId' in e.state) {
                     fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
                 } else if ('newReportAtLonlat' in e.state) {
                     fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
+                } else if ('page_change' in e.state) {
+                    $('.pagination').data('page', e.state.page_change.page)
+                        .trigger('change.filters');
                 } else if ('filter_change' in e.state) {
                     $('#filter_categories').val(e.state.filter_change.filter_categories);
                     $('#statuses').val(e.state.filter_change.statuses);
