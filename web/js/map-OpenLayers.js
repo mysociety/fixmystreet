@@ -482,11 +482,6 @@ var fixmystreet = fixmystreet || {};
         if (fixmystreet.page == 'around') {
             fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.FixMyStreet();
             pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
-            pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
-                url: fixmystreet.original.href.split('?')[0] + '?ajax=1',
-                params: fixmystreet.all_pins ? { all_pins: 1 } : { },
-                format: new OpenLayers.Format.FixMyStreet()
-            });
         }
         if (fixmystreet.page == 'reports') {
             pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetRefreshOnZoom() ];
@@ -577,37 +572,6 @@ var fixmystreet = fixmystreet || {};
                 this.innerHTML = translation_strings.show_pins;
             }
         });
-
-        $('#all_pins_link').click(function(e) {
-            e.preventDefault();
-            fixmystreet.markers.setVisibility(true);
-            var texts = [
-                'en', 'Show old', 'Hide old',
-                'nb', 'Vis gamle', 'Skjul gamle',
-                'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
-            ];
-            for (var i=0; i<texts.length; i+=3) {
-                if (this.innerHTML == texts[i+1]) {
-                    this.innerHTML = texts[i+2];
-                    fixmystreet.markers.protocol.options.params = { all_pins: 1 };
-                    fixmystreet.markers.refresh( { force: true } );
-                    lang = texts[i];
-                } else if (this.innerHTML == texts[i+2]) {
-                    this.innerHTML = texts[i+1];
-                    fixmystreet.markers.protocol.options.params = { };
-                    fixmystreet.markers.refresh( { force: true } );
-                    lang = texts[i];
-                }
-            }
-            if (lang == 'cy') {
-                document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
-            } else if (lang == 'nb') {
-                document.getElementById('hide_pins_link').innerHTML = 'Skjul nåler';
-            } else {
-                document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
-            }
-        });
-
     }
 
     $(function(){

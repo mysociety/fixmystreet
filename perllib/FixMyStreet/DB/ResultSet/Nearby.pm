@@ -10,7 +10,7 @@ sub to_body {
 }
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $categories, $states ) = @_;
+    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $categories, $states ) = @_;
 
     unless ( $states ) {
         $states = FixMyStreet::DB::Result::Problem->visible_states();
@@ -20,8 +20,6 @@ sub nearby {
         non_public => 0,
         state => [ keys %$states ],
     };
-    $params->{'current_timestamp-lastupdate'} = { '<', \"'$interval'::interval" }
-        if $interval;
     $params->{id} = { -not_in => $ids }
         if $ids;
     $params->{category} = $categories if $categories && @$categories;

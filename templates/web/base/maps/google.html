@@ -18,7 +18,6 @@ map_js = [
 var fixmystreet = fixmystreet || {};
 $.extend(fixmystreet, {
     'area': [ [% map.area.join(',') %] ],
-    'all_pins': '[% all_pins %]',
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
 [% IF map.any_zoom -%]

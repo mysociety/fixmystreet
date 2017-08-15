@@ -140,11 +140,10 @@ sub _recent {
 # Problems around a location
 
 sub around_map {
-    my ( $rs, $limit, %p) = @_;
+    my ( $rs, %p) = @_;
     my $attr = {
         order_by => $p{order},
     };
-    $attr->{rows} = $limit if $limit;
 
     unless ( $p{states} ) {
         $p{states} = FixMyStreet::DB::Result::Problem->visible_states();
@@ -156,8 +155,6 @@ sub around_map {
             latitude => { '>=', $p{min_lat}, '<', $p{max_lat} },
             longitude => { '>=', $p{min_lon}, '<', $p{max_lon} },
     };
-    $q->{'current_timestamp - lastupdate'} = { '<', \"'$p{interval}'::interval" }
-        if $p{interval};
     $q->{category} = $p{categories} if $p{categories} && @{$p{categories}};
 
     my @problems = mySociety::Locale::in_gb_locale { $rs->search( $q, $attr )->include_comment_counts->all };

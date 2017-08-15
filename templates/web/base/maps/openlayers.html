@@ -9,7 +9,6 @@
 [%- UNLESS c.cobrand.call_hook('hide_areas_on_reports') %]
     data-area="[% map.area.join(',') %]"
 [%- END %]
-    data-all_pins='[% all_pins %]'
     data-latitude=[% map.latitude %]
     data-longitude=[% map.longitude %]
 [% IF map.any_zoom -%]
