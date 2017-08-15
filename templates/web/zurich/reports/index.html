@@ -13,17 +13,17 @@
         <h1>[% loc('All Reports') %]</h1>
 
         <section class="full-width">
-        [% INCLUDE 'pagination.html', param = 'p' %]
+            <div class="js-pagination">
+                [% INCLUDE 'pagination.html', param = 'p' %]
+            </div>
 
-          [% IF problems.0 %]
-            <ul class="item-list item-list--reports">
-              [% FOREACH problem IN problems.0 %]
-                [% INCLUDE 'reports/_list-entry.html' %]
-              [% END %]
-            </ul>
-          [% END %]
+            <div id="js-reports-list">
+                [% INCLUDE 'reports/_problem-list.html' %]
+            </div>
 
-        [% INCLUDE 'pagination.html', param = 'p' %]
+            <div class="js-pagination">
+                [% INCLUDE 'pagination.html', param = 'p' %]
+            </div>
         </section>
 
     </div>

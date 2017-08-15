@@ -36,6 +36,7 @@ sub index : Path : Args(0) {
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $c->forward( 'stash_report_filter_status' );
         $c->forward( 'load_and_group_problems' );
+        $c->stash->{body} = { id => 0 }; # So template can fetch the list
 
         if ($c->get_param('ajax')) {
             $c->detach('ajax', [ 'reports/_problem-list.html' ]);

@@ -46,4 +46,6 @@ sub dispatch_request {
     },
 }
 
+LWP::Protocol::PSGI->register(t::Mock::MapItZurich->to_psgi_app, host => 'mapit.zurich');
+
 __PACKAGE__->run_if_script;
