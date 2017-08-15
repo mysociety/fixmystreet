@@ -31,8 +31,6 @@ sub determine_location_from_coords : Private {
 
     my $latitude = $c->get_param('latitude') || $c->get_param('lat');
     my $longitude = $c->get_param('longitude') || $c->get_param('lon');
-    $c->log->debug($longitude);
-    $c->log->debug($latitude);
 
     if ( defined $latitude && defined $longitude ) {
         ($c->stash->{latitude}, $c->stash->{longitude}) =
