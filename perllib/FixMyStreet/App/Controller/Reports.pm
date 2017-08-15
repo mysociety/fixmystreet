@@ -457,7 +457,6 @@ sub load_and_group_problems : Private {
 
     my ( %problems, @pins );
     while ( my $problem = $problems->next ) {
-        $c->log->debug( $problem->cobrand . ', cobrand is ' . $c->cobrand->moniker );
         if ( !$c->stash->{body} ) {
             add_row( $c, $problem, 0, \%problems, \@pins );
             next;
