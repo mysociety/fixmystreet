@@ -41,31 +41,37 @@ is $body->name, "Dunkirk";
 is $contact->category_display, "Potholes";
 is $problem->category_display, "Potholes";
 
-FixMyStreet::DB->schema->lang("fr");
-is $body->name, "Dunkerque";
-is $contact->category_display, "Potholes";
-is $problem->category_display, "Potholes";
+# Multiple LANGUAGES so translation code is called
+FixMyStreet::override_config {
+    LANGUAGES => [ 'en-gb,English,en_GB', 'de,German,de_DE' ]
+}, sub {
+    FixMyStreet::DB->schema->lang("fr");
+    is $body->name, "Dunkerque";
+    is $contact->category_display, "Potholes";
+    is $problem->category_display, "Potholes";
 
-FixMyStreet::DB->schema->lang("de");
-is $body->name, "Dunkirk";
-is $contact->category_display, "Schlaglöcher";
-is $problem->category_display, "Schlaglöcher";
+    FixMyStreet::DB->schema->lang("de");
+    is $body->name, "Dunkirk";
+    is $contact->category_display, "Schlaglöcher";
+    is $problem->category_display, "Schlaglöcher";
 
-is $contact->translation_for('category', 'de')->msgstr, "Schlaglöcher";
-is $body->translation_for('name', 'fr')->msgstr, "Dunkerque";
+    is $contact->translation_for('category', 'de')->msgstr, "Schlaglöcher";
+    is $body->translation_for('name', 'fr')->msgstr, "Dunkerque";
 
-ok $body->add_translation_for('name', 'es', 'Dunkerque');
+    ok $body->add_translation_for('name', 'es', 'Dunkerque');
 
-FixMyStreet::DB->schema->lang("es");
-is $body->name, "Dunkerque";
+    FixMyStreet::DB->schema->lang("es");
+    is $body->name, "Dunkerque";
 
-is $body->translation_for('name')->count, 2;
+    is $body->translation_for('name')->count, 2;
+};
 
 FixMyStreet::override_config {
+    LANGUAGES => [ 'en-gb,English,en_GB', 'nb,Norwegian,nb_NO' ],
     ALLOWED_COBRANDS => [ 'fiksgatami' ],
 }, sub {
     $mech->get_ok($problem->url);
-	$mech->content_contains('Hull i veien');
+    $mech->content_contains('Hull i veien');
 };
 
 done_testing;
