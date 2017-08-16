@@ -12,6 +12,7 @@
         - Extra fields on contacts can be edited. #1743
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
+        - Fix sidebar hover behaviour being lost. #1808
         - Stop errors from JS validator due to form in form.
         - Stop update form toggle causing report submission.
         - Update map size if an extra column has appeared.

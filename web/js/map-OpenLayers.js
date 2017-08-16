@@ -674,7 +674,7 @@ var fixmystreet = fixmystreet || {};
 
         (function() {
             var timeout;
-            $('.item-list--reports').on('mouseenter', '.item-list--reports__item', function(){
+            $('#js-reports-list').on('mouseenter', '.item-list--reports__item', function(){
                 var href = $('a', this).attr('href');
                 var id = parseInt(href.replace(/^.*[\/]([0-9]+)$/, '$1'),10);
                 clearTimeout(timeout);

@@ -93,7 +93,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   list_item_actions: function() {
-    $('.item-list--reports').on('click', ':submit', function(e) {
+    $('#js-reports-list').on('click', ':submit', function(e) {
       e.preventDefault();
 
       var $submitButton = $(this);
