@@ -62,7 +62,7 @@ sub edit : Path : Args(2) {
     my %active_contacts = map { $_->id => 1 } @contacts;
     my @all_contacts = map { {
         id => $_->id,
-        category => $_->category,
+        category => $_->category_display,
         active => $active_contacts{$_->id},
     } } @live_contacts;
     $c->stash->{contacts} = \@all_contacts;
