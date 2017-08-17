@@ -13,7 +13,7 @@ $.extend(fixmystreet.set_up, {
           var nearby_url = '/report/'+report_id+'/nearby.json';
           $.getJSON(nearby_url, args, function(data) {
               var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
-              var $reports = $(data.current)
+              var $reports = $(data.reports_list)
                               .filter("li")
                               .not("[data-report-id="+report_id+"]")
                               .slice(0, 5);
@@ -93,7 +93,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   list_item_actions: function() {
-    $('.item-list--reports').on('click', ':submit', function(e) {
+    $('#js-reports-list').on('click', ':submit', function(e) {
       e.preventDefault();
 
       var $submitButton = $(this);

@@ -505,7 +505,7 @@ sub nearby_json : Private {
     );
 
     my $json = { pins => \@pins };
-    $json->{current} = $on_map_list_html if $on_map_list_html;
+    $json->{reports_list} = $on_map_list_html if $on_map_list_html;
     my $body = encode_json($json);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);

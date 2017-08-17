@@ -674,7 +674,7 @@ var fixmystreet = fixmystreet || {};
 
         (function() {
             var timeout;
-            $('.item-list--reports').on('mouseenter', '.item-list--reports__item', function(){
+            $('#js-reports-list').on('mouseenter', '.item-list--reports__item', function(){
                 var href = $('a', this).attr('href');
                 var id = parseInt(href.replace(/^.*[\/]([0-9]+)$/, '$1'),10);
                 clearTimeout(timeout);
@@ -860,10 +860,6 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
             obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
         } else {
             obj = json;
-        }
-        var current;
-        if (typeof(obj.current) != 'undefined' && (current = document.getElementById('current'))) {
-            current.innerHTML = obj.current;
         }
         var reports_list;
         if (typeof(obj.reports_list) != 'undefined' && (reports_list = document.getElementById('js-reports-list'))) {

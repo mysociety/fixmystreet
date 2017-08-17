@@ -114,12 +114,9 @@ fixmystreet.maps = {};
 
     /* Pan data handler */
     function read_pin_json(obj) {
-        var current, current_near;
-        if (typeof(obj.current) != 'undefined' && (current = document.getElementById('current'))) {
-            current.innerHTML = obj.current;
-        }
-        if (typeof(obj.current_near) != 'undefined' && (current_near = document.getElementById('current_near'))) {
-            current_near.innerHTML = obj.current_near;
+        var reports_list;
+        if (typeof(obj.reports_list) != 'undefined' && (reports_list = document.getElementById('js-reports-list'))) {
+            reports_list.innerHTML = obj.reports_list;
         }
         fixmystreet.markers = markers_list( obj.pins, false );
     }

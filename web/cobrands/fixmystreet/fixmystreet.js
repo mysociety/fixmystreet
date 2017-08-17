@@ -256,6 +256,13 @@ $.extend(fixmystreet.set_up, {
         document.createElement('img').src = '/i/pin-green.png';
     }
 
+    $('a[href*="around"]').each(function() {
+        this.href = this.href + (this.href.indexOf('?') > -1 ? '&js=1' : '?js=1');
+    });
+    $('form[action*="around"]').each(function() {
+        $('<input type="hidden" name="js" value="1">').prependTo(this);
+    });
+
     // Focus on postcode box on front page
     $('#pc').focus();
 
