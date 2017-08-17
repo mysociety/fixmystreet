@@ -179,6 +179,7 @@ body.frontpage {
 
 .next-steps {
   @include clearfix;
+  @include flex-container();
   margin-bottom: 2em; // add some space between this and the footer
 }
 

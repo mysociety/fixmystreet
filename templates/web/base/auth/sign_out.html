@@ -5,6 +5,6 @@
   <p>[% tprintf( loc('Please feel free to <a href="%s">sign in again</a>, or go back to the <a href="/">front page</a>.'), c.uri_for('/auth') ) %]</p>
 </div>
 
-[% INCLUDE next_steps.html %]
+[% INCLUDE next_steps.html utm_content='signed out' %]
 
 [% INCLUDE 'footer.html' %]
