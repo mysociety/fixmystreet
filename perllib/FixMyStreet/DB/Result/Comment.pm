@@ -101,6 +101,7 @@ use Moo;
 use namespace::clean -except => [ 'meta' ];
 
 with 'FixMyStreet::Roles::Abuser',
+     'FixMyStreet::Roles::Extra',
      'FixMyStreet::Roles::PhotoSet';
 
 my $stz = sub {
@@ -238,10 +239,19 @@ sub meta_line {
         } elsif ($body eq 'Royal Borough of Greenwich') {
             $body = "$body <img src='/cobrands/greenwich/favicon.png' alt=''>";
         }
-        if ($c->user_exists and $c->user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids)) {
-            $meta = sprintf( _( 'Posted by <strong>%s</strong> (%s) at %s' ), $body, $user_name, Utils::prettify_dt( $self->confirmed ) );
+        my $can_view_contribute = $c->user_exists && $c->user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids);
+        if ($self->text) {
+            if ($can_view_contribute) {
+                $meta = sprintf( _( 'Posted by <strong>%s</strong> (%s) at %s' ), $body, $user_name, Utils::prettify_dt( $self->confirmed ) );
+            } else {
+                $meta = sprintf( _( 'Posted by <strong>%s</strong> at %s' ), $body, Utils::prettify_dt( $self->confirmed ) );
+            }
         } else {
-            $meta = sprintf( _( 'Posted by <strong>%s</strong> at %s' ), $body, Utils::prettify_dt( $self->confirmed ) );
+            if ($can_view_contribute) {
+                $meta = sprintf( _( 'Updated by <strong>%s</strong> (%s) at %s' ), $body, $user_name, Utils::prettify_dt( $self->confirmed ) );
+            } else {
+                $meta = sprintf( _( 'Updated by <strong>%s</strong> at %s' ), $body, Utils::prettify_dt( $self->confirmed ) );
+            }
         }
     } else {
         $meta = sprintf( _( 'Posted by %s at %s' ), FixMyStreet::Template::html_filter($self->name), Utils::prettify_dt( $self->confirmed ) )
@@ -292,6 +302,10 @@ sub meta_line {
 
     if ($update_state ne $c->stash->{last_state} and $update_state) {
         $meta .= ", $update_state";
+    }
+
+    if ($self->get_extra_metadata('defect_raised')) {
+        $meta .= ', ' . _( 'and a defect raised' );
     }
 
     $c->stash->{last_state} = $update_state;

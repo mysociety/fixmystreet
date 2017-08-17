@@ -320,7 +320,7 @@ sub inspect : Private {
         $c->forward('/auth/check_csrf_token');
 
         my $valid = 1;
-        my $update_text;
+        my $update_text = '';
         my $reputation_change = 0;
         my %update_params = ();
 
@@ -367,6 +367,8 @@ sub inspect : Private {
             if ( $problem->state ne $old_state ) {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
 
+                $update_params{problem_state} = $problem->state;
+
                 my $state = $problem->state;
                 $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
                 $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
@@ -384,6 +386,7 @@ sub inspect : Private {
             # If the state has been changed to action scheduled and they've said
             # they want to raise a defect, consider the report to be inspected.
             if ($problem->state eq 'action scheduled' && $c->get_param('raise_defect') && !$problem->get_extra_metadata('inspected')) {
+                $update_params{extra} = { 'defect_raised' => 1 };
                 $problem->set_extra_metadata( inspected => 1 );
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
             }
@@ -419,24 +422,22 @@ sub inspect : Private {
             }
             $problem->lastupdate( \'current_timestamp' );
             $problem->update;
-            if ( defined($update_text) ) {
-                my $timestamp = \'current_timestamp';
-                if (my $saved_at = $c->get_param('saved_at')) {
-                    $timestamp = DateTime->from_epoch( epoch => $saved_at );
-                }
-                my $name = $c->user->from_body ? $c->user->from_body->name : $c->user->name;
-                $problem->add_to_comments( {
-                    text => $update_text,
-                    created => $timestamp,
-                    confirmed => $timestamp,
-                    user_id => $c->user->id,
-                    name => $name,
-                    state => 'confirmed',
-                    mark_fixed => 0,
-                    anonymous => 0,
-                    %update_params,
-                } );
+            my $timestamp = \'current_timestamp';
+            if (my $saved_at = $c->get_param('saved_at')) {
+                $timestamp = DateTime->from_epoch( epoch => $saved_at );
             }
+            my $name = $c->user->from_body ? $c->user->from_body->name : $c->user->name;
+            $problem->add_to_comments( {
+                text => $update_text,
+                created => $timestamp,
+                confirmed => $timestamp,
+                user_id => $c->user->id,
+                name => $name,
+                state => 'confirmed',
+                mark_fixed => 0,
+                anonymous => 0,
+                %update_params,
+            } );
             # This problem might no longer be visible on the current cobrand,
             # if its body has changed (e.g. by virtue of the category changing)
             # so redirect to a cobrand where it can be seen if necessary

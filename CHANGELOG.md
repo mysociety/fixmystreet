@@ -8,6 +8,7 @@
         - Body users can filter reports by all states. #1790
     - Front end improvements:
         - Always show pagination figures even if only one page.
+        - Report pages list every update to a report. #1806
     - Admin improvements:
         - Highlight current shortlisted user in list tooltip.
         - Extra fields on contacts can be edited. #1743
