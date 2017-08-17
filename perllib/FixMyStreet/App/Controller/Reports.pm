@@ -542,6 +542,19 @@ sub stash_report_filter_status : Private {
         $filter_status{unshortlisted} = 1;
     }
 
+    if ($c->user and ($c->user->is_superuser or (
+          $c->stash->{body} and $c->user->belongs_to_body($c->stash->{body}->id)
+    ))) {
+        foreach my $state (FixMyStreet::DB::Result::Problem->visible_states()) {
+            if ($status{$state}) {
+                %filter_problem_states = (%filter_problem_states, ($state => 1));
+                my $pretty_state = $state;
+                $pretty_state =~ tr/ /_/;
+                $filter_status{$pretty_state} = 1;
+            }
+        }
+    }
+
     if (keys %filter_problem_states == 0) {
       my $s = FixMyStreet::DB::Result::Problem->open_states();
       %filter_problem_states = (%filter_problem_states, %$s);
