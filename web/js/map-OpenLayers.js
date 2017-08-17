@@ -861,10 +861,6 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         } else {
             obj = json;
         }
-        var current;
-        if (typeof(obj.current) != 'undefined' && (current = document.getElementById('current'))) {
-            current.innerHTML = obj.current;
-        }
         var reports_list;
         if (typeof(obj.reports_list) != 'undefined' && (reports_list = document.getElementById('js-reports-list'))) {
             reports_list.innerHTML = obj.reports_list;
