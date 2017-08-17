@@ -259,6 +259,7 @@ $.extend(fixmystreet.set_up, {
     $('a[href*="around"]').each(function() {
         this.href = this.href + (this.href.indexOf('?') > -1 ? '&js=1' : '?js=1');
     });
+    $('input[name="js"]').val(1);
     $('form[action*="around"]').each(function() {
         $('<input type="hidden" name="js" value="1">').prependTo(this);
     });

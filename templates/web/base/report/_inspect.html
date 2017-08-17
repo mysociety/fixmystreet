@@ -7,6 +7,7 @@
     [% INCLUDE 'errors.html' %]
 
     <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id ) %]" class="validate">
+      <input type="hidden" name="js" value="">
 
       <div class="inspect-section">
         <p>

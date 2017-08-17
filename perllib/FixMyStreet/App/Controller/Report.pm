@@ -460,6 +460,7 @@ sub inspect : Private {
                     lon => $problem->longitude,
                 };
                 $params->{filter_category} = $categories if $categories;
+                $params->{js} = 1 if $c->get_param('js');
                 $redirect_uri = $c->uri_for( "/around", $params );
             }
 
