@@ -249,6 +249,8 @@ sub map_features : Private {
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
+    return if $c->get_param('js'); # JS will request the same (or more) data client side
+
     my ( $on_map_all, $on_map_list, $nearby, $distance ) =
       FixMyStreet::Map::map_features(
         $c, interval => $interval, %$extra,
