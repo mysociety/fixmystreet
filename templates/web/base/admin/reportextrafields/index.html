@@ -1,0 +1,26 @@
+[% INCLUDE 'admin/header.html' title=loc('Extra Fields') -%]
+
+<table>
+    <thead>
+    <tr>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Cobrand') %]</th>
+        <th>[% loc('Languages') %]</th>
+        <th>[% loc('Fields') %]</th>
+    </tr>
+    </thead>
+    <tbody>
+      [% FOR f IN extra_fields %]
+          <tr>
+              <td><a href="[% c.uri_for('', f.id) %]">[% f.name | html %]</a></td>
+              <td>[% f.cobrand | html %]</td>
+              <td>[% f.language | html %]</td>
+              <td>[% f.get_extra_fields.size %]</td>
+          </tr>
+      [% END %]
+    </tbody>
+</table>
+
+<a href="[% c.uri_for('', 'new') %]" class="btn">[% loc('Add extra fields') %]</a>
+
+[% INCLUDE 'admin/footer.html' %]

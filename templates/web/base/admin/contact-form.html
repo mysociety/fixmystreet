@@ -137,4 +137,12 @@ as well.") %]
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="submit" class="btn" name="Create category" value="[% contact.in_storage ? loc('Save changes') : loc('Create category') %]" >
   </p>
+
+    <h2>[% loc('Extra data:') %] </h2>
+    <dl>
+      [% FOR pair IN contact.get_extra_metadata %]
+        <dt>[% pair.key %]</dt> <dd>[% pair.value %]</dd>
+      [% END %]
+    </dl>
+    [% INCLUDE 'admin/extra-metadata-form.html' metas=(contact.get_metadata_for_input OR []) %]
 </form>

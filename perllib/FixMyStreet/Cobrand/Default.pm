@@ -668,6 +668,10 @@ sub admin_pages {
         $pages->{users} = [ _('Users'), 6 ];
         $pages->{user_edit} = [ undef, undef ];
     }
+    if ( $self->allow_report_extra_fields && $user->has_body_permission_to('category_edit') ) {
+        $pages->{reportextrafields} = [ _('Extra Fields'), 10 ];
+        $pages->{reportextrafields_edit} = [ undef, undef ];
+    }
 
     return $pages;
 }
@@ -1220,6 +1224,17 @@ the 'n days ago' format is used. By default the absolute date is always used.
 
 =cut
 sub display_days_ago_threshold { 0 }
+
+=head2 allow_report_extra_fields
+
+Used to control whether site-wide extra fields are available. If true,
+users with the category_edit permission can add site-wide fields via the
+admin.
+
+=cut
+
+sub allow_report_extra_fields { 0 }
+
 
 
 1;

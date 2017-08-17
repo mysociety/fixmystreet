@@ -99,6 +99,7 @@ sub report_new : Path : Args(0) {
     # create a problem from the submitted details
     $c->stash->{template} = "report/new/fill_in_details.html";
     $c->forward('setup_categories_and_bodies');
+    $c->forward('setup_report_extra_fields');
     $c->forward('generate_map');
     $c->forward('check_for_category');
 
@@ -138,6 +139,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
     }
 
     $c->forward('setup_categories_and_bodies');
+    $c->forward('setup_report_extra_fields');
     $c->forward('process_user');
     $c->forward('process_report');
     $c->forward('/photo/process_photo');
@@ -185,6 +187,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     }
 
     $c->forward('setup_categories_and_bodies');
+    $c->forward('setup_report_extra_fields');
 
     # render templates to get the html
     my $category = $c->render_fragment( 'report/new/category.html');
@@ -235,6 +238,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         return 1;
     }
     $c->forward('setup_categories_and_bodies');
+    $c->forward('setup_report_extra_fields');
     $c->forward('check_for_category');
 
     my $category = $c->stash->{category} || "";
@@ -252,6 +256,9 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $generate = 1;
     }
     if ($c->stash->{unresponsive}->{$category}) {
+        $generate = 1;
+    }
+    if ($c->stash->{report_extra_fields}) {
         $generate = 1;
     }
     if ($generate) {
@@ -689,6 +696,15 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{missing_details_body_names} = \@missing_details_body_names;
 }
 
+sub setup_report_extra_fields : Private {
+    my ( $self, $c ) = @_;
+
+    return unless $c->cobrand->allow_report_extra_fields;
+
+    my @extras = $c->model('DB::ReportExtraFields')->for_cobrand($c->cobrand)->for_language($c->stash->{lang_code})->all;
+    $c->stash->{report_extra_fields} = \@extras;
+}
+
 =head2 check_form_submitted
 
     $bool = $c->forward('check_form_submitted');
@@ -932,6 +948,23 @@ sub set_report_extras : Private {
     my @extra;
     foreach my $contact (@$contacts) {
         my $metas = $contact->get_metadata_for_input;
+        foreach my $field ( @$metas ) {
+            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field->{code})) {
+                unless ( $c->get_param($param_prefix . $field->{code}) ) {
+                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                }
+            }
+            push @extra, {
+                name => $field->{code},
+                description => $field->{description},
+                value => $c->get_param($param_prefix . $field->{code}) || '',
+            };
+        }
+    }
+
+    foreach my $extra_fields (@{ $c->stash->{report_extra_fields} }) {
+        my $metas = $extra_fields->get_extra_fields;
+        $param_prefix = "extra[" . $extra_fields->id . "]";
         foreach my $field ( @$metas ) {
             if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field->{code})) {
                 unless ( $c->get_param($param_prefix . $field->{code}) ) {

@@ -12,6 +12,6 @@
 [% END %]
 </div>
 
-[%- IF category_extras %]
+[%- IF category_extras OR report_extra_fields %]
     [% PROCESS "report/new/category_extras.html" %]
 [%- END %]

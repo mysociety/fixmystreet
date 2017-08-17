@@ -538,3 +538,11 @@ CREATE TABLE translation (
     msgstr text not null,
     unique(tbl, object_id, col, lang)
 );
+
+CREATE TABLE report_extra_fields (
+    id serial not null primary key,
+    name text not null,
+    cobrand text,
+    language text,
+    extra text
+);
