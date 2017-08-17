@@ -114,6 +114,8 @@ FixMyStreet::override_config {
         $report->set_extra_metadata('duplicate_of' => $report2->id);
         $report->state('duplicate');
         $report->update;
+        $report2->set_extra_metadata('duplicates' => [ $report->id ]);
+        $report2->update;
 
         $mech->get_ok("/report/$report_id");
         $mech->content_contains($report2->title);
@@ -124,6 +126,8 @@ FixMyStreet::override_config {
         $report->unset_extra_metadata('duplicate_of');
         $report->state($old_state);
         $report->update;
+        $report2->unset_extra_metadata('duplicates');
+        $report2->update;
     };
 
     subtest "marking a report as a duplicate with update correctly sets update status" => sub {
@@ -133,10 +137,13 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', duplicate_of => $report2->id, public_update => "This is a duplicate.", include_update => "1" } });
         $report->discard_changes;
+        $report2->discard_changes;
 
         is $report->state, 'duplicate', 'report marked as duplicate';
         is $report->comments->search({ problem_state => 'duplicate' })->count, 1, 'update marking report as duplicate was left';
 
+        is $report->get_extra_metadata('duplicate_of'), $report2->id;
+        is_deeply $report2->get_extra_metadata('duplicates'), [ $report->id ];
         $report->update({ state => $old_state });
     };
 
