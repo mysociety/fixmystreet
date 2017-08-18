@@ -8,7 +8,8 @@
       <input type="submit" value="1"
         data-label-remove="[% loc('Remove from shortlist') %]"
         data-label-add="[% loc('Add to shortlist') %]"
-      [% IF c.user.is_planned_report(problem) ~%]
+      [% problem_id = problem.id ~%]
+      [% IF user_shortlist_ids.$problem_id ~%]
         name="shortlist-remove" title="[% loc('Remove from shortlist') %]" class="item-list__item__shortlist-remove"
       [%~ ELSE ~%]
         name="shortlist-add" title="[% IF problem.shortlisted_user %]

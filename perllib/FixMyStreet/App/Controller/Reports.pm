@@ -404,6 +404,14 @@ sub load_and_group_problems : Private {
     my $page = $c->get_param('p') || 1;
     my $category = [ $c->get_param_list('filter_category', 1) ];
 
+    if ($c->user_exists) {
+        my @shortlist_ids = $c->user->active_planned_reports->search( undef, {
+            columns => [ 'id' ]
+        })->all;
+        my %shortlist_ids = map { $_->id => 1 } @shortlist_ids;
+        $c->stash->{user_shortlist_ids} = \%shortlist_ids;
+    }
+
     my $states = $c->stash->{filter_problem_states};
     my $where = {
         non_public => 0,
