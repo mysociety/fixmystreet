@@ -15,6 +15,7 @@ sub for_bodies {
     my $filters = {
         order_by => $order,
         join => { $join_table => 'contact' },
+        prefetch => $join_table,
         distinct => 1,
     };
     if ($category) {
@@ -33,7 +34,10 @@ sub by_categories {
 
     foreach my $contact (@contacts) {
         my $join_table = $rs->join_table();
-        my @ts = grep { !defined($_->$join_table->first) || $_->$join_table->find({contact_id => $contact->get_column('id')}) } @results;
+        my @ts = grep {
+               $_->$join_table == 0 # There's no category at all on this defect type/template/priority
+            || (grep { $_->contact_id == $contact->get_column('id') } $_->$join_table)
+        } @results;
         @ts = $rs->map_extras(@ts);
         $extras{$contact->category} = encode_json(\@ts);
     }
