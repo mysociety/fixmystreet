@@ -10,10 +10,10 @@
   [% FOR k IN by_category.keys.sort %]
     <tr>
       <td>[% k %]</td>
-      <td>[% by_category.$k.open %]</td>
-      <td>[% by_category.$k.scheduled %]</td>
-      <td>[% by_category.$k.closed %]</td>
-      <td>[% by_category.$k.fixed %]</td>
+      <td>[% by_category.$k.open OR 0 %]</td>
+      <td>[% by_category.$k.scheduled OR 0 %]</td>
+      <td>[% by_category.$k.closed OR 0 %]</td>
+      <td>[% by_category.$k.fixed OR 0 %]</td>
     </tr>
   [% END %]
 
@@ -21,6 +21,10 @@
 
 <p>In the last month [% open %] issues opened, [% scheduled %] scheduled, [% closed %] closed, [% fixed %] fixed</p>
 
+[% IF average > 0 %]
 <p>In the last month – average time between issue being opened and set to another status was [% average %]</p>
+[% ELSE %]
+<p>In the last month no problems changed state</p>
+[% END %]
 
 [% INCLUDE 'admin/footer.html' %]
