@@ -7,18 +7,21 @@
         - Extra fields can be added to report form site-wide. #1743
         - Body users can filter reports by all states. #1790
     - Front end improvements:
-        - Always show pagination figures even if only one page.
+        - Always show pagination figures even if only one page. #1787
         - Report pages list every update to a report. #1806
     - Admin improvements:
-        - Highlight current shortlisted user in list tooltip.
+        - Highlight current shortlisted user in list tooltip. #1788
         - Extra fields on contacts can be edited. #1743
+        - Clearer highlight for selected duplicate on inspect form. #1798
+        - Include MapIt API key on admin config page. #1778
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
         - Fix sidebar hover behaviour being lost. #1808
         - Stop errors from JS validator due to form in form.
         - Stop update form toggle causing report submission.
         - Update map size if an extra column has appeared.
-        - Improve performance of duplicate display.
+        - Improve performance of various pages. #1799
+        - Duplicate list not loading when phone number present. #1803
     - Development improvements:
         - `switch-site` script to automate switching config.yml files. #1741
         - `make_css --watch` can run custom script after each compilation.

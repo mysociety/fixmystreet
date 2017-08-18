@@ -502,13 +502,20 @@ Returns a hashref of bodies to which a report was sent.
 
 =cut
 
-sub bodies($) {
-    my $self = shift;
-    return {} unless $self->bodies_str;
-    my $bodies = $self->bodies_str_ids;
-    my @bodies = $self->result_source->schema->resultset('Body')->search({ id => $bodies })->all;
-    return { map { $_->id => $_ } @bodies };
-}
+has bodies => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        return {} unless $self->bodies_str;
+        my $bodies = $self->bodies_str_ids;
+        my @bodies = $self->result_source->schema->resultset('Body')->search(
+            { id => $bodies },
+            { prefetch => 'body_areas' },
+        )->all;
+        return { map { $_->id => $_ } @bodies };
+    },
+);
 
 sub body_names($) {
     my $self = shift;

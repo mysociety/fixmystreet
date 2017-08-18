@@ -412,9 +412,19 @@ sub active_planned_reports {
     $self->planned_reports->search({ removed => undef });
 }
 
+has active_user_planned_reports => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        [ $self->user_planned_reports->search({ removed => undef })->all ];
+    },
+);
+
 sub is_planned_report {
     my ($self, $problem) = @_;
-    return $self->active_planned_reports->find({ id => $problem->id });
+    my $id = $problem->id;
+    return scalar grep { $_->report_id == $id } @{$self->active_user_planned_reports};
 }
 
 sub update_reputation {
