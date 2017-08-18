@@ -27,6 +27,7 @@ my ($opt, $usage) = describe_options(
     [ 'name:s', "Name of body to use (defaults to MapIt area name)" ],
     [ 'empty', "Empty all tables of the database first" ],
     [ 'commit', "Actually commit changes to the database" ],
+    [ 'coords=s', "Co-ordinates to use instead of example postcode" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
 print($usage->text), exit if $opt->help;
@@ -108,8 +109,16 @@ my %titles = (
     'Graffiti' => ['Graffiti', 'Graffiti', 'Offensive graffiti', 'Graffiti on the bridge', 'Remove graffiti'],
     'Other' => ['Loose drain cover', 'Flytipping on country lane', 'Vehicle blocking footpath', 'Hedge encroaching pavement', 'Full litter bins'],
 );
-my $postcode = mySociety::MaPit::call('area/example_postcode', $opt->area_id);
-$postcode = mySociety::MaPit::call('postcode', $postcode);
+
+my ($location, $lat, $lon);
+if ($opt->coords) {
+    $location = $opt->coords;
+    ($lat, $lon) = split ',', $location;
+} else {
+    my $postcode = mySociety::MaPit::call('area/example_postcode', $opt->area_id);
+    $postcode = mySociety::MaPit::call('postcode', $postcode);
+    ($location, $lat, $lon) = map { $postcode->{$_} } qw/postcode wgs84_lat wgs84_lon/;
+}
 
 my $cobrand = 'default';
 foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
@@ -121,7 +130,7 @@ foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
 }
 
 my $num = 10;
-say "Created $num problems around '$postcode->{postcode}' in cobrand '$cobrand'";
+say "Created $num problems around '$location' in cobrand '$cobrand'";
 my $inaccurate_km = 0.01;
 my $confirmed = DateTime->today->subtract(days => 1)->add(hours => 8);
 my $problems = [];
@@ -133,9 +142,9 @@ for (1..$num) {
         body => $body,
         areas => ',' . $opt->area_id . ',',
         user => $user,
-        postcode => $postcode->{postcode},
-        latitude => $postcode->{wgs84_lat} + rand($inaccurate_km) - $inaccurate_km / 2,
-        longitude => $postcode->{wgs84_lon} + rand($inaccurate_km) - $inaccurate_km / 2,
+        postcode => $location,
+        latitude => $lat + rand($inaccurate_km) - $inaccurate_km / 2,
+        longitude => $lon + rand($inaccurate_km) - $inaccurate_km / 2,
         category => $category,
         cobrand => $cobrand,
         title => $titles->[int(rand(@$titles))],

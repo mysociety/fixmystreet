@@ -703,7 +703,6 @@ subtest "only superuser can edit bodies" => sub {
 };
 
 subtest "only superuser can see 'Add body' form" => sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     $user = $mech->log_in_ok( 'dm1@example.org' );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
@@ -718,7 +717,6 @@ subtest "only superuser can see 'Add body' form" => sub {
 };
 
 subtest "phone number is mandatory" => sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     FixMyStreet::override_config {
         MAPIT_TYPES => [ 'O08' ],
         MAPIT_URL => 'http://mapit.zurich/',
@@ -735,7 +733,6 @@ subtest "phone number is mandatory" => sub {
 };
 
 subtest "phone number is not mandatory for reports from mobile apps" => sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     FixMyStreet::override_config {
         MAPIT_TYPES => [ 'O08' ],
         MAPIT_URL => 'http://mapit.zurich/',
@@ -762,7 +759,6 @@ subtest "phone number is not mandatory for reports from mobile apps" => sub {
 };
 
 subtest "problems can't be assigned to deleted bodies" => sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     $user = $mech->log_in_ok( 'dm1@example.org' );
     $user->from_body( $zurich->id );
     $user->update;
@@ -791,7 +787,6 @@ subtest "problems can't be assigned to deleted bodies" => sub {
 };
 
 subtest "photo must be supplied for categories that require it" => sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     FixMyStreet::App->model('DB::Contact')->find_or_create({
         body => $division,
         category => "Graffiti - photo required",
@@ -969,10 +964,17 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.zurich/',
     MAPIT_TYPES  => [ 'ZZZ' ],
 }, sub {
-    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     subtest 'users at the top level can be edited' => sub {
         $mech->log_in_ok( $superuser->email );
         $mech->get_ok('/admin/user_edit/' . $superuser->id );
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    subtest 'A visit to /reports is okay' => sub {
+        $mech->get_ok('/reports');
     };
 };
 

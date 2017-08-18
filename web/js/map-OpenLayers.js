@@ -701,14 +701,6 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         btn.action = id;
         btn.className = "olButton";
         this.div.appendChild(btn);
-        if (OpenLayers.VERSION_NUMBER.indexOf('2.11') > -1) {
-            btn.map = this.map;
-            OpenLayers.Event.observe(btn, "mousedown", OpenLayers.Function.bindAsEventListener(this.buttonDown, btn));
-            var slideFactorPixels = this.slideFactor;
-            btn.getSlideFactor = function() {
-                return slideFactorPixels;
-            };
-        }
         this.buttons.push(btn);
         return btn;
     },
@@ -776,10 +768,7 @@ OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     getMapBounds: function() {
         var bounds = OpenLayers.Strategy.BBOX.prototype.getMapBounds.apply(this);
         if (bounds) {
-            // OpenLayers 2.11 (as used by Zürich) doesn't allow Bounds to be
-            // created by passing an array to the constructor, so we have to use
-            // this convenience method instead.
-            bounds = OpenLayers.Bounds.fromArray(bounds.toArray());
+            bounds = new OpenLayers.Bounds(bounds.toArray());
         }
         return bounds;
     },
