@@ -44,40 +44,80 @@ sub area : Path : Args(1) {
     if ($area->{name}) {
         $c->stash->{area} = $area;
 
-        my @all = FixMyStreet::DB->resultset('Problem')->in_area_with_states($area_id, [], $date)->all;
-        my @open = FixMyStreet::DB->resultset('Problem')->open_in_area($area_id, $date)->all;
-        my @scheduled = FixMyStreet::DB->resultset('Problem')->planned_in_area($area_id, $date)->all;
-        my @closed = FixMyStreet::DB->resultset('Problem')->closed_in_area($area_id, $date)->all;
-        my @fixed = FixMyStreet::DB->resultset('Problem')->fixed_in_area($area_id, $date)->all;
-        my $by_category = {};
+        my $dtf = $c->model('DB')->storage->datetime_parser;
+        my $time = $dtf->format_datetime($date);
 
-        foreach my $contact ($c->stash->{live_contacts}->all) {
-            $by_category->{$contact->category} = {};
-            $by_category->{$contact->category}->{all} = scalar(grep { $_->category eq $contact->category } @all);
-            $by_category->{$contact->category}->{open} = scalar(grep { $_->category eq $contact->category } @open);
-            $by_category->{$contact->category}->{scheduled} = scalar(grep { $_->category eq $contact->category } @scheduled);
-            $by_category->{$contact->category}->{closed} = scalar(grep { $_->category eq $contact->category } @closed);
-            $by_category->{$contact->category}->{fixed} = scalar(grep { $_->category eq $contact->category } @fixed);
-            # Remove hash if count is zero for all states
-            my $count = scalar(grep { $by_category->{$contact->category}{$_} == 0 } keys(%{$by_category->{$contact->category}}));
-            if ($count == 4) {
-                delete $by_category->{$contact->category};
+        my $params = {
+            'problem.areas' => { like => "%,$area_id,%" },
+            'me.confirmed' => { '>=', $time },
+        };
+
+        my $comments = $c->model('DB::Comment')->search(
+            $params,
+            {
+                group_by => [ 'problem_state' ],
+                select   => [ 'problem_state', { count => 'me.id' } ],
+                as       => [ qw/state state_count/ ],
+                join     => 'problem'
             }
+        );
+
+        $params = {
+            areas => { like => "%,$area_id,%" },
+        };
+
+        my $problems = $c->model('DB::Problem')->search(
+            $params,
+            {
+                group_by => [ 'category', 'state' ],
+                select   => [ 'category', 'state', { count => 'me.id' } ],
+                as       => [ qw/category state state_count/ ],
+            }
+        );
+
+        my %by_category = map { $_->category => {} } $c->stash->{live_contacts}->all;
+
+        my $state_map = {};
+
+        $state_map->{$_} = 'open' foreach FixMyStreet::DB::Result::Problem->open_states;
+        $state_map->{$_} = 'closed' foreach FixMyStreet::DB::Result::Problem->closed_states;
+        $state_map->{$_} = 'fixed' foreach FixMyStreet::DB::Result::Problem->fixed_states;
+        $state_map->{$_} = 'scheduled' foreach ('planned', 'action scheduled');
+
+        for my $p ($problems->all) {
+            my $meta_state = $state_map->{$p->state};
+            $by_category{$p->category}->{$meta_state} += $p->get_column('state_count');
         }
 
-        my @times = ();
-        foreach my $problem (@all) {
-            push @times, $problem->comments->first->created->epoch() - $problem->confirmed->epoch();
-        }
-        my $count = @times;
-        my $sum = sum(@times);
-        $c->stash->{average} = Utils::prettify_duration($sum / $count);
+        $c->stash->{$_} = 0 for values %$state_map;
 
-        $c->stash->{open} = scalar(@open);
-        $c->stash->{scheduled} = scalar(@scheduled);
-        $c->stash->{closed} = scalar(@closed);
-        $c->stash->{fixed} = scalar(@fixed);
-        $c->stash->{by_category} = $by_category;
+        $c->stash->{open} = $c->model('DB::Problem')->search(
+            {
+                areas => { like => "%,$area_id,%" },
+                confirmed => { '>=' => DateTime::Format::W3CDTF->format_datetime($date) },
+            }
+        )->count;
+
+        for my $comment ($comments->all) {
+            my $meta_state = $state_map->{$comment->get_column('state')};
+            $c->stash->{$meta_state} += $comment->get_column('state_count');
+        }
+
+        $comments = $c->model('DB::Comment')->search(
+            { %$params,
+                'me.id' => \"= (select min(id) from comment where me.problem_id=comment.problem_id)",
+            },
+            {
+                select   => [
+                    { avg => { extract => "epoch from me.confirmed-problem.confirmed" } },
+                ],
+                as       => [ qw/time/ ],
+                join     => 'problem'
+            }
+        )->first;
+        $c->stash->{average} = int( ($comments->get_column('time')||0)/ 60 / 60 / 24 + 0.5 );
+
+        $c->stash->{by_category} = \%by_category;
     } else {
         $c->detach( '/page_error_404_not_found' );
     }
