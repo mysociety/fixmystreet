@@ -2,10 +2,10 @@
 <table>
   <tr>
     <th></th>
-    <th>Open</th>
-    <th>Scheduled</th>
-    <th>Closed</th>
-    <th>Fixed</th>
+    <th>[% loc('Open') %]</th>
+    <th>[% loc('Scheduled') %]</th>
+    <th>[% loc('Closed') %]</th>
+    <th>[% loc('Fixed') %]</th>
   </tr>
   [% FOR k IN by_category.keys.sort %]
     <tr>
@@ -19,12 +19,21 @@
 
 </table>
 
-<p>In the last month [% open %] issues opened, [% scheduled %] scheduled, [% closed %] closed, [% fixed %] fixed</p>
+<p>
+[% tprintf(
+        loc('In the last month %d issues opened, %d scheduled, %d closed, %d fixed'),
+        open,
+        scheduled,
+        closed,
+        fixed
+        );
+%]
+</p>
 
 [% IF average > 0 %]
-<p>In the last month – average time between issue being opened and set to another status was [% average %]</p>
+<p>[% tprintf(loc('In the last month – average time between issue being opened and set to another status was %s days'), average) %]</p>
 [% ELSE %]
-<p>In the last month no problems changed state</p>
+<p>[% loc('In the last month no problems changed state') %]</p>
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]
