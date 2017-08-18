@@ -418,9 +418,9 @@ sub prepare_path {
 
     my $env = $ctx->request->env;
 
-    my $scheme    = $ctx->request->secure ? 'https' : 'http';
-    my $host      = $env->{HTTP_HOST} || $env->{SERVER_NAME};
-    my $port      = $env->{SERVER_PORT} || 80;
+    my $scheme    = $ENV{DEBUG_HTTP_SCHEME} || ( $ctx->request->secure ? 'https' : 'http' );
+    my $host      = $ENV{DEBUG_HTTP_HOST} || $env->{HTTP_HOST} || $env->{SERVER_NAME};
+    my $port      = $ENV{DEBUG_HTTP_PORT} || $env->{SERVER_PORT} || 80;
     my $base_path = $env->{SCRIPT_NAME} || "/";
 
     # set the request URI
