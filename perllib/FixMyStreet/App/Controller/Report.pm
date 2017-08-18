@@ -441,6 +441,7 @@ sub inspect : Private {
             # This problem might no longer be visible on the current cobrand,
             # if its body has changed (e.g. by virtue of the category changing)
             # so redirect to a cobrand where it can be seen if necessary
+            $problem->discard_changes;
             my $redirect_uri;
             if ( $c->cobrand->is_council && !$c->cobrand->owns_problem($problem) ) {
                 $redirect_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
