@@ -311,7 +311,7 @@ subtest "Test two-tier council alerts" => sub {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $mech->get_ok( '/alert/list?pc=GL502PR' );
+            $mech->get_ok( '/alert/list?pc=GL502PR&delivery=rss' );
             $mech->submit_form_ok( {
                 button => 'rss',
                 with_fields => {
