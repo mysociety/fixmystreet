@@ -43,7 +43,7 @@
                 <span class="item-list__item__state">[% loc('Fixed') %]</span>
             [% ELSIF NOT no_fixed AND problem.is_closed %]
                 <span class="item-list__item__state">[% loc('Closed') %]</span>
-            [% ELSIF problem.response_priority AND (c.user.has_permission_to('report_edit_priority', problem.bodies_str_ids) OR c.user.has_permission_to('report_inspect', problem.bodies_str_ids)) %]
+            [% ELSIF (c.user.has_permission_to('report_edit_priority', problem.bodies_str_ids) OR c.user.has_permission_to('report_inspect', problem.bodies_str_ids)) AND problem.response_priority %]
                 <span class="item-list__item__state">[% problem.response_priority.name %]</span>
             [% END %]
             [%- IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]

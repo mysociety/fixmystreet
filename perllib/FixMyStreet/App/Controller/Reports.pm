@@ -414,8 +414,17 @@ sub load_and_group_problems : Private {
         order_by => $c->stash->{sort_order},
         rows => $c->cobrand->reports_per_page,
     };
-    if ($c->user_exists && $c->stash->{body} && $c->user->has_permission_to('planned_reports', $c->stash->{body}->id)) {
-        $filter->{prefetch} = 'user_planned_reports';
+    if ($c->user_exists && $c->stash->{body}) {
+        my $bid = $c->stash->{body}->id;
+        my $prefetch = [];
+        if ($c->user->has_permission_to('planned_reports', $bid)) {
+            push @$prefetch, 'user_planned_reports';
+        }
+        if ($c->user->has_permission_to('report_edit_priority', $bid) || $c->user->has_permission_to('report_inspect', $bid)) {
+            push @$prefetch, 'response_priority';
+        }
+        $prefetch = $prefetch->[0] if @$prefetch == 1;
+        $filter->{prefetch} = $prefetch;
     }
 
     if (defined $c->stash->{filter_status}{shortlisted}) {
