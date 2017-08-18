@@ -413,6 +413,9 @@ sub load_and_group_problems : Private {
         order_by => $c->stash->{sort_order},
         rows => $c->cobrand->reports_per_page,
     };
+    if ($c->user_exists && $c->stash->{body} && $c->user->has_permission_to('planned_reports', $c->stash->{body}->id)) {
+        $filter->{prefetch} = 'user_planned_reports';
+    }
 
     if (defined $c->stash->{filter_status}{shortlisted}) {
         $where->{'me.id'} = { '=', \"user_planned_reports.report_id"};
