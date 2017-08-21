@@ -37,11 +37,11 @@ addons:
 
 install:
   - .travis/install
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.14" ]; then cpanm --quiet --notest Devel::Cover::Report::Codecov; fi'
+  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cpanm --quiet --notest Devel::Cover::Report::Codecov; fi'
 before_script:
   - commonlib/bin/gettext-makemo FixMyStreet
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.14" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst,perllib/DBIx,perllib/Email,perllib/Template,^t"; fi'
+  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst,perllib/DBIx,perllib/Email,perllib/Template,^t"; fi'
 script: "script/test --jobs 3 t"
 after_success:
   - .travis/after_script
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.14" ]; then cover --report codecov; fi'
+  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cover --report codecov; fi'
