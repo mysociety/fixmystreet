@@ -191,6 +191,42 @@ FixMyStreet::override_config {
         $report->update({ state => $old_state });
     };
 
+    subtest "post-inspect redirect is to the right place if URL set" => sub {
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+        $mech->get_ok("/report/$report_id");
+        my $update_text = "This text was entered as an update by the user.";
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            public_update => $update_text,
+            include_update => "1",
+            post_inspect_url => "/"
+        }});
+        is $mech->res->code, 200, "got 200";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+        is $mech->uri->path, '/', 'redirected to front page';
+        $user->user_body_permissions->search({ body_id => $oxon->id, permission_type => 'planned_reports' })->delete;
+    };
+
+    subtest "post-inspect redirect is to the right place if URL not set" => sub {
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+        $user->set_extra_metadata(categories => [ $contact->id ]);
+        $user->update;
+        $mech->get_ok("/report/$report_id");
+        my $update_text = "This text was entered as an update by the user.";
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            public_update => $update_text,
+            include_update => "1",
+            post_inspect_url => ""
+        }});
+        is $mech->res->code, 200, "got 200";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+        is $mech->uri->path, '/around', 'redirected to /around';
+        my %params = $mech->uri->query_form;
+        is $params{lat}, $report->latitude, "latitude param is correct";
+        is $params{lon}, $report->longitude, "longitude param is correct";
+        is $params{filter_category}, $contact->category, "categories param is correct";
+        $user->user_body_permissions->search({ body_id => $oxon->id, permission_type => 'planned_reports' })->delete;
+    };
+
     foreach my $test (
         { type => 'report_edit_priority', priority => 1 },
         { type => 'report_edit_category', category => 1 },

@@ -14,6 +14,7 @@
         - Extra fields on contacts can be edited. #1743
         - Clearer highlight for selected duplicate on inspect form. #1798
         - Include MapIt API key on admin config page. #1778
+        - Redirect to same map view after inspection. #1820
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
         - Fix display of thumbnail images on page reload. #1815

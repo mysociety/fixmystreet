@@ -316,6 +316,10 @@ sub inspect : Private {
         $c->stash->{templates_by_category} = $templates_by_category;
     }
 
+    if ($c->user->has_body_permission_to('planned_reports')) {
+        $c->stash->{post_inspect_url} = $c->req->referer;
+    }
+
     if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
 
@@ -438,31 +442,34 @@ sub inspect : Private {
                 anonymous => 0,
                 %update_params,
             } );
-            # This problem might no longer be visible on the current cobrand,
-            # if its body has changed (e.g. by virtue of the category changing)
-            # so redirect to a cobrand where it can be seen if necessary
-            $problem->discard_changes;
+
             my $redirect_uri;
-            if ( $c->cobrand->is_council && !$c->cobrand->owns_problem($problem) ) {
+            $problem->discard_changes;
+
+            # If inspector, redirect back to the map view they came from
+            # with the right filters. If that wasn't set, go to /around at this
+            # report's location.
+            # We go here rather than the shortlist because it makes it much
+            # simpler to inspect many reports in the same location. The
+            # shortlist is always a single click away, being on the main nav.
+            if ($c->user->has_body_permission_to('planned_reports')) {
+                unless ($redirect_uri = $c->get_param("post_inspect_url")) {
+                    my $categories = join(',', @{ $c->user->categories });
+                    my $params = {
+                        lat => $problem->latitude,
+                        lon => $problem->longitude,
+                    };
+                    $params->{filter_category} = $categories if $categories;
+                    $params->{js} = 1 if $c->get_param('js');
+                    $redirect_uri = $c->uri_for( "/around", $params );
+                }
+            } elsif ( $c->cobrand->is_council && !$c->cobrand->owns_problem($problem) ) {
+                # This problem might no longer be visible on the current cobrand,
+                # if its body has changed (e.g. by virtue of the category changing)
+                # so redirect to a cobrand where it can be seen if necessary
                 $redirect_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
             } else {
                 $redirect_uri = $c->uri_for( $problem->url );
-            }
-
-            # Or if inspector, redirect back to /around at this report's
-            # location with the right filters. We go here rather than the
-            # shortlist because it makes it much simpler to inspect many reports
-            # in the same location. The shortlist is always a single click away,
-            # being on the main nav.
-            if ($c->user->has_body_permission_to('planned_reports')) {
-                my $categories = join(',', @{ $c->user->categories });
-                my $params = {
-                    lat => $problem->latitude,
-                    lon => $problem->longitude,
-                };
-                $params->{filter_category} = $categories if $categories;
-                $params->{js} = 1 if $c->get_param('js');
-                $redirect_uri = $c->uri_for( "/around", $params );
             }
 
             $c->log->debug( "Redirecting to: " . $redirect_uri );
