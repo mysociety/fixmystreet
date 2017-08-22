@@ -579,9 +579,13 @@ $.extend(fixmystreet.set_up, {
         if (!f) {
             return;
         }
-        var mockFile = { name: f, server_id: f };
+        var mockFile = { name: f, server_id: f, dataURL: '/photo/temp.' + f };
         photodrop.emit("addedfile", mockFile);
-        photodrop.createThumbnailFromUrl(mockFile, '/photo/temp.' + f);
+        photodrop.createThumbnailFromUrl(mockFile,
+            photodrop.options.thumbnailWidth, photodrop.options.thumbnailHeight,
+            photodrop.options.thumbnailMethod, true, function(thumbnail) {
+                photodrop.emit('thumbnail', mockFile, thumbnail);
+            });
         photodrop.emit("complete", mockFile);
         photodrop.options.maxFiles -= 1;
       });
