@@ -220,15 +220,8 @@ HASHREF.
 =cut
 
 sub open_states {
-    my $states = {
-        'confirmed'        => 1,
-        'investigating'    => 1,
-        'in progress'      => 1,
-        'planned'          => 1,
-        'action scheduled' => 1,
-    };
-
-    return wantarray ? keys %{$states} : $states;
+    my @states = map { $_->label } @{FixMyStreet::DB->resultset("State")->open};
+    return wantarray ? @states : { map { $_ => 1 } @states };
 }
 
 =head2
@@ -242,13 +235,9 @@ HASHREF.
 =cut
 
 sub fixed_states {
-    my $states = {
-        'fixed'           => 1,
-        'fixed - user'    => 1,
-        'fixed - council' => 1,
-    };
-
-    return wantarray ? keys %{ $states } : $states;
+    my @states = map { $_->label } @{FixMyStreet::DB->resultset("State")->fixed};
+    push @states, 'fixed - user', 'fixed - council' if @states;
+    return wantarray ? @states : { map { $_ => 1 } @states };
 }
 
 =head2
@@ -262,17 +251,9 @@ HASHREF.
 =cut
 
 sub closed_states {
-    my $states = {
-        'closed'                      => 1,
-        'unable to fix'               => 1,
-        'not responsible'             => 1,
-        'duplicate'                   => 1,
-        'internal referral'           => 1,
-    };
-
-    return wantarray ? keys %{$states} : $states;
+    my @states = map { $_->label } @{FixMyStreet::DB->resultset("State")->closed};
+    return wantarray ? @states : { map { $_ => 1 } @states };
 }
-
 
 =head2
 
@@ -289,21 +270,10 @@ sub all_states {
         'hidden'                      => 1,
         'partial'                     => 1,
         'unconfirmed'                 => 1,
-        'confirmed'                   => 1,
-        'investigating'               => 1,
-        'in progress'                 => 1,
-        'planned'                     => 1,
-        'action scheduled'            => 1,
-        'fixed'                       => 1,
         'fixed - council'             => 1,
         'fixed - user'                => 1,
-        'unable to fix'               => 1,
-        'not responsible'             => 1,
-        'duplicate'                   => 1,
-        'closed'                      => 1,
-        'internal referral'           => 1,
     };
-
+    map { $states->{$_->label} = 1 } @{FixMyStreet::DB->resultset("State")->states};
     return wantarray ? keys %{$states} : $states;
 }
 

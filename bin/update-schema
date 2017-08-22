@@ -40,6 +40,7 @@ BEGIN {
 }
 
 use FixMyStreet;
+use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use mySociety::MaPit;
 use Getopt::Long;
@@ -112,7 +113,7 @@ if ($upgrade && $current_version eq 'EMPTY') {
     if ($commit) {
         run_statements(get_statements("$bin_dir/../db/schema.sql"));
         run_statements(get_statements("$bin_dir/../db/generate_secret.sql"));
-        run_statements(get_statements("$bin_dir/../db/alert_types.sql"));
+        run_statements(get_statements("$bin_dir/../db/fixture.sql"));
     }
 } elsif ($upgrade) {
     if ($version) {
@@ -139,11 +140,27 @@ if ($upgrade && $current_version eq 'EMPTY') {
         my $area_ids = $db->dbh->selectcol_arrayref('SELECT area_id FROM body_areas');
         if ( @$area_ids ) {
             my $areas = mySociety::MaPit::call('areas', $area_ids);
+            $db->txn_begin;
             foreach (values %$areas) {
                 $db->dbh->do('UPDATE body SET name=? WHERE id=?', {}, $_->{name}, $_->{id});
             }
             $db->txn_commit;
         }
+    }
+
+    if ( $commit && $current_version lt '0054' ) {
+        $nothing = 0;
+        print "States created, importing names\n";
+        my @avail = FixMyStreet::Cobrand->available_cobrand_classes;
+        # Pick first available cobrand and language for database name import
+        my $cobrand = $avail[0] ? FixMyStreet::Cobrand::class($avail[0]) : 'FixMyStreet::Cobrand::Default';
+        my $lang = $cobrand->new->set_lang_and_domain(undef, 1, FixMyStreet->path_to('locale')->stringify);
+        my $names = $db->dbh->selectcol_arrayref('SELECT name FROM state');
+        $db->txn_begin;
+        foreach (@$names) {
+            $db->dbh->do('UPDATE state SET name=? WHERE name=?', {}, _($_), $_);
+        }
+        $db->txn_commit;
     }
 }
 

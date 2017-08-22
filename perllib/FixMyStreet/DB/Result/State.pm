@@ -33,6 +33,16 @@ __PACKAGE__->add_unique_constraint("state_name_key", ["name"]);
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-08-22 15:17:43
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dvtAOpeYqEF9T3otHHgLqw
 
+use Moo;
+use namespace::clean;
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+with 'FixMyStreet::Roles::Translatable';
+
+sub msgstr {
+    my $self = shift;
+    my $lang = $self->result_source->schema->lang;
+    return $self->name unless $lang && $self->translated->{name}{$lang};
+    return $self->translated->{name}{$lang}{msgstr};
+}
+
 1;

@@ -54,7 +54,7 @@ BEGIN
 END
 $func$;
 }) or die $!;
-    $db->dbh->do( scalar FixMyStreet->path_to('db/alert_types.sql')->slurp ) or die $!;
+    $db->dbh->do( scalar FixMyStreet->path_to('db/fixture.sql')->slurp ) or die $!;
     $db->dbh->do( scalar FixMyStreet->path_to('db/generate_secret.sql')->slurp ) or die $!;
     say "Emptied database";
 }

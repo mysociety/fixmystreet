@@ -57,7 +57,7 @@ FixMyStreet::override_config {
     };
 
     subtest "test basic inspect submission" => sub {
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action Scheduled', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action scheduled', include_update => undef } });
         $report->discard_changes;
         my $alert = FixMyStreet::App->model('DB::Alert')->find(
             { user => $user, alert_type => 'new_updates', confirmed => 1, }
@@ -264,7 +264,7 @@ FixMyStreet::override_config {
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
         $report->update({ state => 'confirmed' });
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action Scheduled', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action scheduled', include_update => undef } });
         $report->discard_changes;
         is $report->state, 'action scheduled', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';

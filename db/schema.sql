@@ -519,6 +519,6 @@ CREATE TABLE report_extra_fields (
 CREATE TABLE state (
     id serial not null primary key,
     label text not null unique,
-    type text not null check (type = 'open' OR type = 'closed'),
+    type text not null check (type = 'open' OR type = 'closed' OR type = 'fixed'),
     name text not null unique
 );

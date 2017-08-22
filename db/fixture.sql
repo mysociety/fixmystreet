@@ -1,3 +1,13 @@
+INSERT INTO state (label, type, name) VALUES ('investigating', 'open', 'Investigating');
+INSERT INTO state (label, type, name) VALUES ('in progress', 'open', 'In progress');
+INSERT INTO state (label, type, name) VALUES ('planned', 'open', 'Planned');
+INSERT INTO state (label, type, name) VALUES ('action scheduled', 'open', 'Action scheduled');
+INSERT INTO state (label, type, name) VALUES ('unable to fix', 'closed', 'No further action');
+INSERT INTO state (label, type, name) VALUES ('not responsible', 'closed', 'Not responsible');
+INSERT INTO state (label, type, name) VALUES ('duplicate', 'closed', 'Duplicate');
+INSERT INTO state (label, type, name) VALUES ('internal referral', 'closed', 'Internal referral');
+INSERT INTO state (label, type, name) VALUES ('fixed', 'fixed', 'Fixed');
+
 -- New updates on a particular problem report
 insert into alert_type
 (ref, head_sql_query, head_table,
