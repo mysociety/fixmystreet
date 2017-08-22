@@ -195,6 +195,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0054' if table_exists('state');
     return '0053' if table_exists('report_extra_fields');
     return '0052' if table_exists('translation');
     return '0051' if column_exists('contacts', 'state');
