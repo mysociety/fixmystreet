@@ -508,12 +508,16 @@ has bodies => (
     default => sub {
         my $self = shift;
         return {} unless $self->bodies_str;
+        my $cache = $self->result_source->schema->cache;
+        return $cache->{bodies}{$self->bodies_str} if $cache->{bodies}{$self->bodies_str};
+
         my $bodies = $self->bodies_str_ids;
         my @bodies = $self->result_source->schema->resultset('Body')->search(
             { id => $bodies },
             { prefetch => 'body_areas' },
         )->all;
-        return { map { $_->id => $_ } @bodies };
+        $cache->{bodies}{$self->bodies_str} = { map { $_->id => $_ } @bodies };
+        return $cache->{bodies}{$self->bodies_str};
     },
 );
 
