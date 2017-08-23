@@ -16,6 +16,7 @@
         - Include MapIt API key on admin config page. #1778
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
+        - Fix display of thumbnail images on page reload. #1815
         - Fix sidebar hover behaviour being lost. #1808
         - Stop errors from JS validator due to form in form.
         - Stop update form toggle causing report submission.
