@@ -122,10 +122,17 @@ sub path_to_pin_icons {
 
 sub pin_hover_title {
     my ($self, $problem, $title) = @_;
-    my $state = $self->{c}->render_fragment(
-        'report/state-list.html',
-        { state => $problem->state });
+    my $state = FixMyStreet::DB->resultset("State")->display($problem->state, 1);
     return "$state: $title";
+}
+
+sub state_groups_inspect {
+    [
+        [ _('New'), [ 'confirmed', 'investigating' ] ],
+        [ _('Scheduled'), [ 'action scheduled' ] ],
+        [ _('Fixed'), [ 'fixed - council' ] ],
+        [ _('Closed'), [ 'not responsible', 'duplicate', 'unable to fix' ] ],
+    ]
 }
 
 sub open311_config {

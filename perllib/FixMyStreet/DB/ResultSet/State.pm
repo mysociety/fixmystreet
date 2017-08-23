@@ -54,7 +54,7 @@ sub fixed { [ $_[0]->_filter(sub { $_->type eq 'fixed' }) ] }
 # This function can be used to return that label's display name.
 
 sub display {
-    my ($rs, $label) = @_;
+    my ($rs, $label, $single_fixed) = @_;
     my $unchanging = {
         unconfirmed => _("Unconfirmed"),
         hidden => _("Hidden"),
@@ -62,6 +62,7 @@ sub display {
         'fixed - council' => _("Fixed - Council"),
         'fixed - user' => _("Fixed - User"),
     };
+    $label = 'fixed' if $single_fixed && $label =~ /^fixed - (council|user)$/;
     return $unchanging->{$label} if $unchanging->{$label};
     my ($state) = $rs->_filter(sub { $_->label eq $label });
     return $label unless $state;

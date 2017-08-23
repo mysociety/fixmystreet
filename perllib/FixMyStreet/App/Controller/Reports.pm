@@ -558,12 +558,11 @@ sub stash_report_filter_status : Private {
     if ($c->user and ($c->user->is_superuser or (
           $c->stash->{body} and $c->user->belongs_to_body($c->stash->{body}->id)
     ))) {
+        $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
         foreach my $state (FixMyStreet::DB::Result::Problem->visible_states()) {
             if ($status{$state}) {
-                %filter_problem_states = (%filter_problem_states, ($state => 1));
-                my $pretty_state = $state;
-                $pretty_state =~ tr/ /_/;
-                $filter_status{$pretty_state} = 1;
+                $filter_problem_states{$state} = 1;
+                $filter_status{$state} = 1;
             }
         }
     }

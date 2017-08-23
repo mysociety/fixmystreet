@@ -1,11 +1,6 @@
 [%
 
-SET state_groups = [
-    [ loc('Open'), [ 'confirmed', 'investigating', 'in progress', 'action scheduled' ] ],
-    [ loc('Fixed'), [ 'fixed - council' ] ],
-    [ loc('Closed'), [ 'unable to fix', 'not responsible', 'duplicate', 'internal referral' ] ],
-    [ loc('Hidden'), [ 'hidden' ] ]
-];
+SET state_groups = c.cobrand.state_groups_inspect;
 
 %]
 [% DEFAULT current_state = problem.state %]

@@ -170,12 +170,8 @@ sub decode {
 
 sub prettify_state {
     my ($self, $c, $text, $single_fixed) = @_;
-    # New template to prevent interaction with current one
-    my $tt = FixMyStreet::Template->new({ INCLUDE_PATH => $self->{include_path} });
-    my $var;
-    $tt->process('report/state-list.html', { state => $text }, \$var);
-    $var =~ s/ - .*// if $single_fixed;
-    return $var;
+
+    return FixMyStreet::DB->resultset("State")->display($text, $single_fixed);
 }
 
 1;

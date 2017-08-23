@@ -1,6 +1,6 @@
 [% select_status = BLOCK %]
     <select class="form-control js-multiple" name="status" id="statuses" multiple
-      data-all="[% loc('All reports') %]" data-all-options='["open","closed","fixed"]'
+      data-all="[% loc('All') %]" data-all-options='["open","closed","fixed"]'
     [%~ IF c.cobrand.on_map_default_status == 'open' %]
       data-none="[% loc('Unfixed reports') %]"
     [%~ END ~%]
@@ -10,19 +10,16 @@
         <option value="unshortlisted"[% ' selected' IF filter_status.unshortlisted %]>[% loc('Unshortlisted') %]</option>
       [% END %]
       [% IF c.user_exists AND c.user.is_superuser OR c.user.belongs_to_body(body.id) %]
-        <option value="confirmed"[% ' selected' IF filter_status.confirmed %]>[% loc('Open') %]</option>
-        <option value="investigating"[% ' selected' IF filter_status.investigating %]>[% loc('Investigating') %]</option>
-        <option value="in progress"[% ' selected' IF filter_status.in_progress %]>[% loc('In progress') %]</option>
-        <option value="action scheduled"[% ' selected' IF filter_status.action_scheduled %]>[% loc('Action scheduled') %]</option>
-        <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% loc('Fixed reports') %]</option>
-        <option value="unable to fix"[% ' selected' IF filter_status.unable_to_fix %]>[% loc('No further action') %]</option>
-        <option value="not responsible"[% ' selected' IF filter_status.not_responsible %]>[% loc('Not responsible') %]</option>
-        <option value="internal referral"[% ' selected' IF filter_status.internal_referral %]>[% loc('Internal referral') %]</option>
-        <option value="duplicate"[% ' selected' IF filter_status.duplicate %]>[% loc('Duplicate') %]</option>
+        [% FOR group IN filter_states %]
+          [% FOR state IN group.1 %]
+            [% NEXT IF state == 'hidden' %]
+            <option value="[% state %]"[% ' selected' IF filter_status.$state %]>[% prettify_state(state, 1) %]</option>
+          [% END %]
+        [% END %]
       [% ELSE %]
-        <option value="open"[% ' selected' IF filter_status.open %]>[% loc('Unfixed reports') %]</option>
-        <option value="closed"[% ' selected' IF filter_status.closed %]>[% loc('Closed reports') %]</option>
-        <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% loc('Fixed reports') %]</option>
+        <option value="open"[% ' selected' IF filter_status.open %]>[% prettify_state('confirmed') %]</option>
+        <option value="closed"[% ' selected' IF filter_status.closed %]>[% prettify_state('closed') %]</option>
+        <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% prettify_state('fixed') %]</option>
       [% END %]
     </select>
 [% END %]
@@ -46,7 +43,7 @@
 [% END %]
 
         <p class="report-list-filters">
-            [% tprintf(loc('<label for="statuses">Show</label> %s <label for="filter_categories">about</label> %s', "The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories"), select_status, select_category) %]
+            [% tprintf(loc('<label for="statuses">Show</label> %s reports <label for="filter_categories">about</label> %s', "The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories"), select_status, select_category) %]
             <input type="submit" name="filter_update" value="[% loc('Go') %]">
         </p>
 

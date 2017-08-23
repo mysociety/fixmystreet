@@ -227,8 +227,6 @@ sub meta_line {
 
     my $meta = '';
 
-    $c->stash->{last_state} ||= '';
-
     if ($self->anonymous or !$self->name) {
         $meta = sprintf( _( 'Posted anonymously at %s' ), Utils::prettify_dt( $self->confirmed ) )
     } elsif ($self->user->from_body) {
@@ -257,60 +255,36 @@ sub meta_line {
         $meta = sprintf( _( 'Posted by %s at %s' ), FixMyStreet::Template::html_filter($self->name), Utils::prettify_dt( $self->confirmed ) )
     }
 
-    my $update_state = '';
-
-    if ($self->mark_fixed) {
-        $update_state = _( 'marked as fixed' );
-    } elsif ($self->mark_open)  {
-        $update_state = _( 'reopened' );
-    } elsif ($self->problem_state) {
-        my $state = $self->problem_state;
-
-        if ($state eq 'confirmed') {
-            if ($c->stash->{last_state}) {
-                $update_state = _( 'reopened' )
-            }
-        } elsif ($state eq 'investigating') {
-            $update_state = _( 'marked as investigating' )
-        } elsif ($state eq 'planned') {
-            $update_state = _( 'marked as planned' )
-        } elsif ($state eq 'in progress') {
-            $update_state = _( 'marked as in progress' )
-        } elsif ($state eq 'action scheduled') {
-            $update_state = _( 'marked as action scheduled' )
-        } elsif ($state eq 'closed') {
-            $update_state = _( 'marked as closed' )
-        } elsif ($state =~ /^fixed/) {
-            $update_state = _( 'marked as fixed' )
-        } elsif ($state eq 'unable to fix') {
-            $update_state = _( 'marked as no further action' )
-        } elsif ($state eq 'not responsible') {
-            $update_state = _( "marked as not the council's responsibility" )
-        } elsif ($state eq 'duplicate') {
-            $update_state = _( 'closed as a duplicate report' )
-        } elsif ($state eq 'internal referral') {
-            $update_state = _( 'marked as an internal referral' )
-        }
-
-        if ($c->cobrand->moniker eq 'bromley' || $self->problem->to_body_named('Bromley')) {
-            if ($state eq 'not responsible') {
-                $update_state = 'marked as third party responsibility'
-            }
-        }
-
-    }
-
-    if ($update_state ne $c->stash->{last_state} and $update_state) {
-        $meta .= ", $update_state";
-    }
-
     if ($self->get_extra_metadata('defect_raised')) {
         $meta .= ', ' . _( 'and a defect raised' );
     }
 
-    $c->stash->{last_state} = $update_state;
-
     return $meta;
 };
+
+sub problem_state_display {
+    my ( $self, $c ) = @_;
+
+    my $update_state = '';
+    my $cobrand = $c->cobrand->moniker;
+
+    if ($self->mark_fixed) {
+        return FixMyStreet::DB->resultset("State")->display('fixed', 1);
+    } elsif ($self->mark_open)  {
+        return FixMyStreet::DB->resultset("State")->display('confirmed', 1);
+    } elsif ($self->problem_state) {
+        my $state = $self->problem_state;
+        if ($state eq 'not responsible') {
+            $update_state = _( "not the council's responsibility" );
+            if ($cobrand eq 'bromley' || $self->problem->to_body_named('Bromley')) {
+                $update_state = 'third party responsibility';
+            }
+        } else {
+            $update_state = FixMyStreet::DB->resultset("State")->display($state, 1);
+        }
+    }
+
+    return $update_state;
+}
 
 1;

@@ -313,7 +313,7 @@ for my $test (
         date => DateTime->now,
         state => 'investigating',
         banner_id => 'progress',
-        banner_text => 'progress',
+        banner_text => 'investigating',
         fixed => 0
     },
     {
@@ -321,7 +321,7 @@ for my $test (
         date => DateTime->now,
         state => 'action scheduled',
         banner_id => 'progress',
-        banner_text => 'progress',
+        banner_text => 'action scheduled',
         fixed => 0
     },
     {
@@ -329,7 +329,7 @@ for my $test (
         date => DateTime->now,
         state => 'planned',
         banner_id => 'progress',
-        banner_text => 'progress',
+        banner_text => 'planned',
         fixed => 0
     },
     {

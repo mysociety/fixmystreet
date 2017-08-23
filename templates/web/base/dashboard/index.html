@@ -136,11 +136,12 @@
                 </select>
 <p>[% loc('Report state:') %] <select class="form-control" name="state">
 <option value=''>[% loc('All') %]</option>
-                [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
-                loc('Investigating')], ['action scheduled', loc('Planned')], ['in progress',
-                loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')] ] %]
-                    <option [% 'selected ' IF state.0 == q_state %] value="[% state.0 %]">[% state.1 %]</option>
-                [% END %]
+    [% FOR group IN filter_states %]
+      [% FOR state IN group.1 %]
+        [% NEXT IF state == 'hidden' %]
+        <option [% 'selected ' IF state == q_state %] value="[% state %]">[% prettify_state(state, 1) %]</option>
+      [% END %]
+    [% END %]
 </select>
 <input type="submit" class="btn" value="[% loc('Look up') %]">
 <a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">[% loc('Export as CSV') %]</a>
