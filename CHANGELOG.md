@@ -3,6 +3,7 @@
 * Unreleased
     - New features:
         - Body and category names can now be translated in the admin. #1244
+        - Report states can be edited and translated in the admin. #1826
         - Body users can now create reports as an anonymous user. #1796
         - Extra fields can be added to report form site-wide. #1743
         - Body users can filter reports by all states. #1790

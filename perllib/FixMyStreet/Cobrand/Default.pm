@@ -642,6 +642,7 @@ sub admin_pages {
     # There are some pages that only super users can see
     if ( $user->is_superuser ) {
         $pages->{flagged} = [ _('Flagged'), 7 ];
+        $pages->{states} = [ _('States'), 8 ];
         $pages->{config} = [ _('Configuration'), 9];
     };
     # And some that need special permissions
