@@ -54,6 +54,11 @@ you already have, and the countres set so that they shouldn't in future.
 
 =cut
 
+sub setup_states {
+    FixMyStreet::DB::Result::Problem->visible_states_add('unconfirmed');
+    FixMyStreet::DB::Result::Problem->visible_states_remove('investigating');
+}
+
 sub shorten_recency_if_new_greater_than_fixed {
     return 0;
 }
