@@ -1,11 +1,8 @@
 use FixMyStreet::Test;
 
-use mySociety::Locale;
 use FixMyStreet::DB;
 
 use_ok 'FixMyStreet::Cobrand';
-
-mySociety::Locale::gettext_domain( 'FixMyStreet' );
 
 my $c = FixMyStreet::Cobrand::FixMyStreet->new();
 

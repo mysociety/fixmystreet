@@ -2,7 +2,6 @@ use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::TestMech;
 use FixMyStreet::SendReport::Email;
-use mySociety::Locale;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 

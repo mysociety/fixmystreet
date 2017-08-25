@@ -3,8 +3,6 @@ package t::Mock::MapItZurich;
 use JSON::MaybeXS;
 use Web::Simple;
 
-use mySociety::Locale;
-
 has json => (
     is => 'lazy',
     default => sub {

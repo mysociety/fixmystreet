@@ -2,10 +2,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet;
 use FixMyStreet::App;
 use FixMyStreet::DB;
-use mySociety::Locale;
 use Sub::Override;
-
-mySociety::Locale::gettext_domain('FixMyStreet');
 
 my $problem_rs = FixMyStreet::DB->resultset('Problem');
 

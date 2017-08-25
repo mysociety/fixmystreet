@@ -6,6 +6,7 @@ use strict;
 use warnings FATAL => 'all';
 use utf8;
 use Test::More;
+use mySociety::Locale;
 use FixMyStreet::DB;
 
 my $db = FixMyStreet::DB->schema->storage;
@@ -21,6 +22,7 @@ sub import {
 BEGIN {
     use FixMyStreet;
     FixMyStreet->test_mode(1);
+    mySociety::Locale::gettext_domain('FixMyStreet', 1);
 }
 
 END {

@@ -1,8 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::ArchiveOldEnquiries;
 
-mySociety::Locale::gettext_domain( 'FixMyStreet' );
-
 my $mech = FixMyStreet::TestMech->new();
 
 $mech->clear_emails_ok;
