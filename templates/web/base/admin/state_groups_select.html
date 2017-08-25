@@ -1,3 +1,3 @@
 [% PROCESS 'admin/report_blocks.html'; # For state_groups %]
 [% DEFAULT current_state = problem.state %]
-[% INCLUDE 'report/_state_select_field.html' %]
+[% INCLUDE 'report/_state_select_field.html' single_fixed=0 %]
