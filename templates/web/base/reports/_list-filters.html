@@ -19,7 +19,9 @@
       [% ELSE %]
         <option value="open"[% ' selected' IF filter_status.open %]>[% prettify_state('confirmed') %]</option>
         <option value="closed"[% ' selected' IF filter_status.closed %]>[% prettify_state('closed') %]</option>
-        <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% prettify_state('fixed') %]</option>
+        [% IF has_fixed_state %]
+            <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% prettify_state('fixed') %]</option>
+        [% END %]
       [% END %]
     </select>
 [% END %]
