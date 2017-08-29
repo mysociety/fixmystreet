@@ -1702,10 +1702,10 @@ for my $test (
         desc => 'update unable to fix without marking as fixed leaves state unchanged',
         initial_state => 'unable to fix',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'unable to fix',
     },
@@ -1713,10 +1713,10 @@ for my $test (
         desc => 'update internal referral without marking as fixed leaves state unchanged',
         initial_state => 'internal referral',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'internal referral',
     },
@@ -1724,10 +1724,10 @@ for my $test (
         desc => 'update not responsible without marking as fixed leaves state unchanged',
         initial_state => 'not responsible',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'not responsible',
     },
@@ -1735,10 +1735,10 @@ for my $test (
         desc => 'update duplicate without marking as fixed leaves state unchanged',
         initial_state => 'duplicate',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'duplicate',
     },
@@ -1798,48 +1798,48 @@ for my $test (
         end_state => 'confirmed',
     },
     {
-        desc => 'can mark unable to fix as fixed, cannot mark not closed',
+        desc => 'cannot mark unable to fix as fixed, can reopen',
         initial_state => 'unable to fix',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
     {
-        desc => 'can mark internal referral as fixed, cannot mark not closed',
+        desc => 'cannot mark internal referral as fixed, can reopen',
         initial_state => 'internal referral',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
     {
-        desc => 'can mark not responsible as fixed, cannot mark not closed',
+        desc => 'cannot mark not responsible as fixed, can reopen',
         initial_state => 'not responsible',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
     {
-        desc => 'can mark duplicate as fixed, cannot mark not closed',
+        desc => 'cannot mark duplicate as fixed, can reopen',
         initial_state => 'duplicate',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
 ) {
     subtest $test->{desc} => sub {

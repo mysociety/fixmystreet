@@ -39,7 +39,7 @@
     <label for="state">[% loc( 'State' ) %]</label>
     [% INCLUDE 'report/inspect/state_groups_select.html' %]
 [% ELSE %]
-  [% IF (problem.is_fixed OR problem.state == 'closed') AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
+  [% IF (problem.is_fixed OR problem.is_closed) AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
 
     <input type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF (update.mark_open || c.req.params.reopen) %]>
     [% IF problem.is_closed %]
