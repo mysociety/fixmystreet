@@ -351,7 +351,7 @@ sub check_for_errors : Private {
     if ( $state && $state ne $c->stash->{update}->problem->state ) {
         my $error = 0;
         $error = 1 unless $c->user && $c->user->belongs_to_body( $c->stash->{update}->problem->bodies_str );
-        $error = 1 unless grep { $state eq $_ } FixMyStreet::DB::Result::Problem->council_states();
+        $error = 1 unless grep { $state eq $_ } FixMyStreet::DB::Result::Problem->visible_states();
         if ( $error ) {
             $c->stash->{errors} ||= [];
             push @{ $c->stash->{errors} }, _('There was a problem with your update. Please try again.');

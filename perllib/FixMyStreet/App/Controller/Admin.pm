@@ -523,7 +523,7 @@ sub fetch_languages : Private {
     my ( $self, $c ) = @_;
 
     my $lang_map = {};
-    foreach my $lang (sort @{$c->cobrand->languages}) {
+    foreach my $lang (@{$c->cobrand->languages}) {
         my ($id, $name, $code) = split(',', $lang);
         $lang_map->{$id} = { name => $name, code => $code };
     }

@@ -1,7 +1,5 @@
 use FixMyStreet::TestMech;
 
-mySociety::Locale::gettext_domain( 'FixMyStreet' );
-
 my $mech = FixMyStreet::TestMech->new();
 
 # this is the easiest way to make sure we're not going

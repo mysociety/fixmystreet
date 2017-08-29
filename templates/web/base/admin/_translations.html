@@ -6,7 +6,7 @@
     <th>[% loc('Language') %]</th>
     <th>[% loc('Translation') %]</th>
   </tr>
-  [% FOREACH language IN languages.keys %]
+  [% FOREACH language IN languages.keys.sort %]
   <tr>
     <td>
       <label for="translation_[% language %]">[% languages.$language.name %] ([% language %])</label>

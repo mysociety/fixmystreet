@@ -31,6 +31,10 @@ package main;
 
 use FixMyStreet::TestMech;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);

@@ -142,7 +142,7 @@ sub update_comments {
 
                     # don't update state unless it's an allowed state and it's
                     # actually changing the state of the problem
-                    if ( FixMyStreet::DB::Result::Problem->council_states()->{$state} && $p->state ne $state &&
+                    if ( FixMyStreet::DB::Result::Problem->visible_states()->{$state} && $p->state ne $state &&
                         # For Oxfordshire, don't allow changes back to Open from other open states
                         !( $body->areas->{$AREA_ID_OXFORDSHIRE} && $state eq 'confirmed' && $p->is_open ) &&
                         # Don't let it change between the (same in the front end) fixed states

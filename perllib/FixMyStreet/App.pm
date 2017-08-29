@@ -219,11 +219,7 @@ sub setup_request {
         mySociety::MaPit::configure( "http://$host/fakemapit/" );
     }
 
-    # XXX Put in cobrand / do properly
-    if ($c->cobrand->moniker eq 'zurich') {
-        FixMyStreet::DB::Result::Problem->visible_states_add('unconfirmed');
-        FixMyStreet::DB::Result::Problem->visible_states_remove('investigating');
-    }
+    $c->cobrand->call_hook('setup_states');
 
     if (FixMyStreet->test_mode) {
         # Is there a better way of altering $c->config that may have

@@ -1,14 +1,11 @@
 use t::Mock::Bing;
 
-use mySociety::Locale;
 use FixMyStreet::DB;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
 use_ok 'FixMyStreet::Cobrand';
-
-mySociety::Locale::gettext_domain( 'FixMyStreet' );
 
 my $c = FixMyStreet::Cobrand::UK->new();
 

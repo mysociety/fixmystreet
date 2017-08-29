@@ -323,73 +323,29 @@ my $hidden_states = {
     'unconfirmed' => 1,
 };
 
-my $visible_states = {
-    map {
-        $hidden_states->{$_} ? () : ($_ => 1)
-    } all_states()
-};
-    ## e.g.:
-    # 'confirmed'                   => 1,
-    # 'investigating'               => 1,
-    # 'in progress'                 => 1,
-    # 'planned'                     => 1,
-    # 'action scheduled'            => 1,
-    # 'fixed'                       => 1,
-    # 'fixed - council'             => 1,
-    # 'fixed - user'                => 1,
-    # 'unable to fix'               => 1,
-    # 'not responsible'             => 1,
-    # 'duplicate'                   => 1,
-    # 'closed'                      => 1,
-    # 'internal referral'           => 1,
-
 sub hidden_states {
     return wantarray ? keys %{$hidden_states} : $hidden_states;
 }
 
 sub visible_states {
-    return wantarray ? keys %{$visible_states} : $visible_states;
+    my %visible_states = map {
+        $hidden_states->{$_} ? () : ($_ => 1)
+    } all_states();
+    return wantarray ? keys %visible_states : \%visible_states;
 }
 
 sub visible_states_add {
     my ($self, @states) = @_;
     for my $state (@states) {
         delete $hidden_states->{$state};
-        $visible_states->{$state} = 1;
     }
 }
 
 sub visible_states_remove {
     my ($self, @states) = @_;
     for my $state (@states) {
-        delete $visible_states->{$state};
         $hidden_states->{$state} = 1;
     }
-}
-
-=head2
-
-    @states = FixMyStreet::DB::Problem::council_states();
-
-Get a list of states that are availble to council users. If called in
-array context then returns an array of names, otherwise returns a
-HASHREF.
-
-=cut
-sub council_states {
-    my $states = {
-        'confirmed'                   => 1,
-        'investigating'               => 1,
-        'action scheduled'            => 1,
-        'in progress'                 => 1,
-        'fixed - council'             => 1,
-        'unable to fix'               => 1,
-        'not responsible'             => 1,
-        'duplicate'                   => 1,
-        'internal referral'           => 1,
-    };
-
-    return wantarray ? keys %{$states} : $states;
 }
 
 my $stz = sub {
