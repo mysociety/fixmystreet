@@ -26,6 +26,7 @@
         - Duplicate list not loading when phone number present. #1803
         - Don't list multiple fixed states all as Fixed in dropdown. #1824
     - Development improvements:
+        - Debug toolbar added. #1823
         - `switch-site` script to automate switching config.yml files. #1741
         - `make_css --watch` can run custom script after each compilation.
 
