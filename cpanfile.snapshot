@@ -1221,6 +1221,20 @@ DISTRIBUTIONS
       DBIx::Class 0
       ExtUtils::MakeMaker 6.72
       Test::More 0
+  DBIx-Class-QueryLog-1.005001
+    pathname: F/FR/FREW/DBIx-Class-QueryLog-1.005001.tar.gz
+    provides:
+      DBIx::Class::QueryLog 1.005001
+      DBIx::Class::QueryLog::Analyzer 1.005001
+      DBIx::Class::QueryLog::NotifyOnMax 1.005001
+      DBIx::Class::QueryLog::Query 1.005001
+      DBIx::Class::QueryLog::Transaction 1.005001
+    requirements:
+      DBIx::Class 0.07000
+      ExtUtils::MakeMaker 0
+      Moo 2
+      Time::HiRes 0
+      Types::Standard 0
   DBIx-Class-Schema-Loader-0.07035
     pathname: G/GE/GENEHACK/DBIx-Class-Schema-Loader-0.07035.tar.gz
     provides:
@@ -4775,6 +4789,70 @@ DISTRIBUTIONS
       URI 1.59
       parent 0
       perl 5.008001
+  Plack-Middleware-DBIC-QueryLog-0.05
+    pathname: J/JJ/JJNAPIORK/Plack-Middleware-DBIC-QueryLog-0.05.tar.gz
+    provides:
+      Plack::Middleware::DBIC::QueryLog 0.05
+    requirements:
+      DBIx::Class::QueryLog v1.3.0
+      Data::Dump 0
+      ExtUtils::MakeMaker 6.42
+      HTTP::Request::Common 0
+      Moo 0.009004
+      Plack 0.9957
+      Plack::Middleware::Debug 0
+      Scalar::Util 0
+      Test::Fatal 0
+      Test::More 0
+      perl 5.008008
+  Plack-Middleware-Debug-0.16
+    pathname: M/MI/MIYAGAWA/Plack-Middleware-Debug-0.16.tar.gz
+    provides:
+      Plack::Middleware::Debug 0.16
+      Plack::Middleware::Debug::Base 0.16
+      Plack::Middleware::Debug::CatalystLog 0.16
+      Plack::Middleware::Debug::DBITrace 0.16
+      Plack::Middleware::Debug::Environment 0.16
+      Plack::Middleware::Debug::Memory 0.16
+      Plack::Middleware::Debug::ModuleVersions 0.16
+      Plack::Middleware::Debug::Panel undef
+      Plack::Middleware::Debug::Parameters undef
+      Plack::Middleware::Debug::PerlConfig 0.16
+      Plack::Middleware::Debug::Response 0.16
+      Plack::Middleware::Debug::Session undef
+      Plack::Middleware::Debug::Timer 0.16
+      Plack::Middleware::Debug::TrackObjects undef
+    requirements:
+      Class::Method::Modifiers 1.05
+      Data::Dump 0
+      Encode 2.23
+      File::ShareDir 1.00
+      Module::Build::Tiny 0.026
+      Plack 0
+      Text::MicroTemplate 0.15
+      parent 0
+      perl 5.008001
+  Plack-Middleware-Debug-DBIC-QueryLog-0.09
+    pathname: J/JJ/JJNAPIORK/Plack-Middleware-Debug-DBIC-QueryLog-0.09.tar.gz
+    provides:
+      Plack::Middleware::Debug::DBIC::QueryLog 0.09
+    requirements:
+      DBIx::Class::QueryLog 0
+      DBIx::Class::QueryLog::Analyzer 0
+      Data::Dump 0
+      ExtUtils::MakeMaker 7.1002
+      HTTP::Request::Common 0
+      Moo 0.009005
+      Plack 0
+      Plack::Builder 0
+      Plack::Middleware::DBIC::QueryLog 0.05
+      Plack::Middleware::Debug 0
+      Plack::Test 0
+      SQL::Abstract 1.70
+      Scalar::Util 0
+      Test::Fatal 0
+      Test::More 0.96
+      perl 5.008008
   Plack-Middleware-ReverseProxy-0.15
     pathname: M/MI/MIYAGAWA/Plack-Middleware-ReverseProxy-0.15.tar.gz
     provides:
@@ -5846,6 +5924,17 @@ DISTRIBUTIONS
     requirements:
       Module::Build 0.36
       Test::More 0
+  Text-MicroTemplate-0.24
+    pathname: K/KA/KAZUHO/Text-MicroTemplate-0.24.tar.gz
+    provides:
+      Text::MicroTemplate 0.24
+      Text::MicroTemplate::EncodedString 0.24
+      Text::MicroTemplate::File undef
+    requirements:
+      ExtUtils::MakeMaker 6.59
+      File::Temp 0
+      Test::More 0
+      perl 5.00800
   Text-SimpleTable-2.03
     pathname: M/MR/MRAMBERG/Text-SimpleTable-2.03.tar.gz
     provides:
@@ -5994,6 +6083,48 @@ DISTRIBUTIONS
       constant 0
       strict 0
       warnings 0
+  Type-Tiny-1.002001
+    pathname: T/TO/TOBYINK/Type-Tiny-1.002001.tar.gz
+    provides:
+      Devel::TypeTiny::Perl56Compat 1.002001
+      Devel::TypeTiny::Perl58Compat 1.002001
+      Error::TypeTiny 1.002001
+      Error::TypeTiny::Assertion 1.002001
+      Error::TypeTiny::Compilation 1.002001
+      Error::TypeTiny::WrongNumberOfParameters 1.002001
+      Eval::TypeTiny 1.002001
+      Reply::Plugin::TypeTiny 1.002001
+      Test::TypeTiny 1.002001
+      Type::Coercion 1.002001
+      Type::Coercion::FromMoose 1.002001
+      Type::Coercion::Union 1.002001
+      Type::Library 1.002001
+      Type::Params 1.002001
+      Type::Parser 1.002001
+      Type::Registry 1.002001
+      Type::Tiny 1.002001
+      Type::Tiny::Class 1.002001
+      Type::Tiny::Duck 1.002001
+      Type::Tiny::Enum 1.002001
+      Type::Tiny::Intersection 1.002001
+      Type::Tiny::Role 1.002001
+      Type::Tiny::Union 1.002001
+      Type::Utils 1.002001
+      Types::Common::Numeric 1.002001
+      Types::Common::String 1.002001
+      Types::Standard 1.002001
+      Types::Standard::ArrayRef 1.002001
+      Types::Standard::CycleTuple 1.002001
+      Types::Standard::Dict 1.002001
+      Types::Standard::HashRef 1.002001
+      Types::Standard::Map 1.002001
+      Types::Standard::ScalarRef 1.002001
+      Types::Standard::Tuple 1.002001
+      Types::TypeTiny 1.002001
+    requirements:
+      Exporter::Tiny 0.026
+      ExtUtils::MakeMaker 6.17
+      perl 5.006001
   UNIVERSAL-can-1.20140328
     pathname: C/CH/CHROMATIC/UNIVERSAL-can-1.20140328.tar.gz
     provides:

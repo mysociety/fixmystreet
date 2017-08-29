@@ -115,6 +115,12 @@ requires 'File::ChangeNotify';
 requires 'Path::Tiny', '0.104';
 requires 'File::Find::Rule';
 
+# Modules used for development
+requires 'Plack::Middleware::Debug';
+requires 'Plack::Middleware::Debug::DBIC::QueryLog';
+recommends 'Linux::Inotify2' if $^O eq 'linux';
+recommends 'Mac::FSEvents' if $^O eq 'darwin';
+
 # Modules used by the test suite
 requires 'Test::PostgreSQL';
 requires 'CGI::Simple';

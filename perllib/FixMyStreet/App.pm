@@ -25,7 +25,6 @@ use Catalyst (
     'Session::State::Cookie',    # FIXME - we're using our own override atm
     'Authentication',
     'SmartURI',
-    'Compress::Gzip',
 );
 
 extends 'Catalyst';
