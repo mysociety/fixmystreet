@@ -14,7 +14,6 @@ BEGIN {
 use CSS::Sass;
 use File::ChangeNotify;
 use File::Find::Rule;
-use File::Slurp;
 use Getopt::Long;
 use MIME::Base64;
 use MIME::Types;
@@ -125,9 +124,10 @@ sub compile {
 # Write a file, only if it has changed.
 sub write_if_different {
     my ($fn, $data) = @_;
-    my $current = File::Slurp::read_file($fn, { binmode => ':utf8', err_mode => 'quiet' });
+    $fn = path($fn);
+    my $current = $fn->slurp_utf8;
     if (!$current || $current ne $data) {
-        File::Slurp::write_file($fn, { binmode => ':utf8' }, $data);
+        $fn->spew_utf8($data);
         return 1;
     }
     return 0;
