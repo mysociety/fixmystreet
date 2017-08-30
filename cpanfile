@@ -118,6 +118,7 @@ requires 'File::Find::Rule';
 # Modules used for development
 requires 'Plack::Middleware::Debug';
 requires 'Plack::Middleware::Debug::DBIC::QueryLog';
+requires 'Plack::Middleware::Debug::Template';
 recommends 'Linux::Inotify2' if $^O eq 'linux';
 recommends 'Mac::FSEvents' if $^O eq 'darwin';
 

@@ -4853,6 +4853,18 @@ DISTRIBUTIONS
       Test::Fatal 0
       Test::More 0.96
       perl 5.008008
+  Plack-Middleware-Debug-Template-1.00
+    pathname: M/MY/MYSOCIETY/Plack-Middleware-Debug-Template-1.00.tar.gz
+    provides:
+      Plack::Middleware::Debug::Template 1.00
+    requirements:
+      Class::Method::Modifiers 0
+      ExtUtils::MakeMaker 0
+      Plack::Middleware::Debug 0
+      Test::More 0
+      Text::MicroTemplate 0
+      Time::HiRes 0
+      perl 5.006
   Plack-Middleware-ReverseProxy-0.15
     pathname: M/MI/MIYAGAWA/Plack-Middleware-ReverseProxy-0.15.tar.gz
     provides:
