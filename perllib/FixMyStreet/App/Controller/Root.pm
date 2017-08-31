@@ -16,6 +16,18 @@ FixMyStreet::App::Controller::Root - Root Controller for FixMyStreet::App
 
 =head1 METHODS
 
+=head2 begin
+
+Any pre-flight checking for all requests
+
+=cut
+sub begin : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward( 'check_login_required' );
+}
+
+
 =head2 auto
 
 Set up general things for this instance
@@ -128,6 +140,27 @@ sub page_error : Private {
     $c->stash->{template}  = 'errors/generic.html';
     $c->stash->{message} = $error_msg || _('Unknown error');
     $c->response->status($code);
+}
+
+sub check_login_required : Private {
+    my ($self, $c) = @_;
+
+    return if $c->user_exists || !FixMyStreet->config('LOGIN_REQUIRED');
+
+    # Whitelisted URL patterns are allowed without login
+    my $whitelist = qr{
+          ^auth(/|$)
+        | ^js/translation_strings\.(.*?)\.js
+        | ^[PACQM]/  # various tokens that log the user in
+    }x;
+    return if $c->request->path =~ $whitelist;
+
+    # Blacklisted URLs immediately 404
+    # This is primarily to work around a Safari bug where the appcache
+    # URL is requested in an infinite loop if it returns a 302 redirect.
+    $c->detach('/page_error_404_not_found', []) if $c->request->path =~ /^offline/;
+
+    $c->detach( '/auth/redirect' );
 }
 
 =head2 end

@@ -6,9 +6,12 @@
         - Body users can now create reports as an anonymous user. #1796
         - Extra fields can be added to report form site-wide. #1743
         - Body users can filter reports by all states. #1790
+        - `LOGIN_REQUIRED` config key to limit site access to logged-in users.
+        - `SIGNUPS_DISABLED` config key to prevent new user registrations.
     - Front end improvements:
         - Always show pagination figures even if only one page. #1787
         - Report pages list every update to a report. #1806
+        - Cobrands can implement `hide_areas_on_reports` to hide outline on map.
     - Admin improvements:
         - Highlight current shortlisted user in list tooltip. #1788
         - Extra fields on contacts can be edited. #1743

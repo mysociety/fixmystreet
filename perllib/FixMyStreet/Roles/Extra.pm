@@ -175,4 +175,20 @@ sub get_extra {
     return $extra;
 }
 
+=head2 get_extra_field_value
+
+Return the value of a field stored in `_fields` in extra, or undefined if
+it's not present.
+
+=cut
+
+sub get_extra_field_value {
+    my ($self, $name) = @_;
+
+    my @fields = @{ $self->get_extra_fields() };
+
+    my ($field) = grep { $_->{name} eq $name } @fields;
+    return $field->{value};
+}
+
 1;

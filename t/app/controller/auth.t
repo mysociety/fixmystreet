@@ -5,6 +5,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $test_email    = 'test@example.com';
 my $test_email2   = 'test@example.net';
+my $test_email3   = 'newuser@example.org';
 my $test_password = 'foobar';
 
 END {
@@ -279,6 +280,94 @@ subtest "sign in but have email form autofilled" => sub {
     is $mech->uri->path, '/my', "redirected to correct page";
 };
 
+$mech->log_out_ok;
 
-# more test:
-# TODO: test that email are always lowercased
+subtest "sign in with uppercase email" => sub {
+    $mech->get_ok('/auth');
+    my $uc_test_email = uc $test_email;
+    $mech->submit_form_ok(
+        {
+            form_name => 'general_auth',
+            fields    => {
+                email    => $uc_test_email,
+                password_sign_in => $test_password,
+            },
+            button => 'sign_in',
+        },
+        "sign in with '$uc_test_email' and auto-completed name"
+    );
+    is $mech->uri->path, '/my', "redirected to correct page";
+
+    $mech->content_contains($test_email);
+    $mech->content_lacks($uc_test_email);
+
+    my $count = FixMyStreet::App->model('DB::User')->search( { email => $uc_test_email } )->count;
+    is $count, 0, "uppercase user wasn't created";
+};
+
+
+FixMyStreet::override_config {
+    SIGNUPS_DISABLED => 1,
+}, sub {
+    subtest 'signing in with an unknown email address disallowed' => sub {
+        $mech->log_out_ok;
+        # create a new account
+        $mech->clear_emails_ok;
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            {
+                form_name => 'general_auth',
+                fields    => { email => $test_email3, },
+                button    => 'email_sign_in',
+            },
+            "create a new account"
+        );
+
+        ok $mech->email_count_is(0);
+
+        my $count = FixMyStreet::App->model('DB::User')->search( { email => $test_email3 } )->count;
+        is $count, 0, "no user exists";
+    };
+
+    subtest 'signing in as known email address with new password is allowed' => sub {
+        my $new_password = "myshinynewpassword";
+
+        $mech->clear_emails_ok;
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            {
+                form_name => 'general_auth',
+                fields    => {
+                    email             => "$test_email",
+                    password_register => $new_password,
+                    r                 => 'faq', # Just as a test
+                },
+                button    => 'email_sign_in',
+            },
+            "email_sign_in with '$test_email'"
+        );
+
+        $mech->not_logged_in_ok;
+
+        ok $mech->email_count_is(1);
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+        is $mech->uri->path, '/faq', "redirected to the Help page";
+
+        $mech->log_out_ok;
+
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            {
+                form_name => 'general_auth',
+                fields    => {
+                    email    => $test_email,
+                    password_sign_in => $new_password,
+                },
+                button => 'sign_in',
+            },
+            "sign in with '$test_email' and new password"
+        );
+        is $mech->uri->path, '/my', "redirected to correct page";
+    };
+};
