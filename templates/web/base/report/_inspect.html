@@ -28,8 +28,8 @@
               <span id="problem_northing">[% local_coords.1 %]</span>
           [% ELSE %]
               <strong>[% loc('Latitude/Longitude:') %]</strong>
-              <span id="problem_latitude">[% problem.latitude %]</span>
-              <span id="problem_longitude">[% problem.longitude %]</span>,
+              <span id="problem_latitude">[% problem.latitude %]</span>,
+              <span id="problem_longitude">[% problem.longitude %]</span>
           [% END %]
           <input type="hidden" name="longitude" value="[% problem.longitude %]">
           <input type="hidden" name="latitude" value="[% problem.latitude %]">
