@@ -218,6 +218,7 @@ sub setup_request {
         mySociety::MaPit::configure( "http://$host/fakemapit/" );
     }
 
+    $c->stash->{has_fixed_state} = FixMyStreet::DB::Result::Problem::fixed_states->{fixed};
     $c->cobrand->call_hook('setup_states');
 
     if (FixMyStreet->test_mode) {

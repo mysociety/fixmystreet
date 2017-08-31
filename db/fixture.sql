@@ -1,3 +1,13 @@
+INSERT INTO state (label, type, name) VALUES ('investigating', 'open', 'Investigating');
+INSERT INTO state (label, type, name) VALUES ('in progress', 'open', 'In progress');
+INSERT INTO state (label, type, name) VALUES ('planned', 'open', 'Planned');
+INSERT INTO state (label, type, name) VALUES ('action scheduled', 'open', 'Action scheduled');
+INSERT INTO state (label, type, name) VALUES ('unable to fix', 'closed', 'No further action');
+INSERT INTO state (label, type, name) VALUES ('not responsible', 'closed', 'Not responsible');
+INSERT INTO state (label, type, name) VALUES ('duplicate', 'closed', 'Duplicate');
+INSERT INTO state (label, type, name) VALUES ('internal referral', 'closed', 'Internal referral');
+INSERT INTO state (label, type, name) VALUES ('fixed', 'fixed', 'Fixed');
+
 -- New updates on a particular problem report
 insert into alert_type
 (ref, head_sql_query, head_table,
@@ -18,11 +28,8 @@ insert into alert_type
 values ('new_problems', '', '',
     'New problems on FixMyStreet', '/', 'The latest problems reported by users',
     'problem',
-    'problem.non_public = ''f'' and problem.state in
-        (''confirmed'', ''investigating'', ''planned'', ''in progress'',
-         ''fixed'', ''fixed - council'', ''fixed - user'', ''closed''
-         ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
-         ''internal referral'' )',
+    'problem.non_public = ''f'' and problem.state NOT IN
+        (''unconfirmed'', ''hidden'', ''partial'')',
     'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem');
 
@@ -46,11 +53,8 @@ insert into alert_type
 values ('local_problems', '', '',
     'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem',
-    'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in
-    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
-     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
-     ''internal referral'')',
+    'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state NOT IN
+        (''unconfirmed'', ''hidden'', ''partial'')',
     'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
@@ -74,11 +78,8 @@ insert into alert_type
 values ('postcode_local_problems', '', '',
     'New problems near {{POSTCODE}} on FixMyStreet', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem',
-    'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in
-    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
-     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
-     ''internal referral'')',
+    'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state NOT IN
+        (''unconfirmed'', ''hidden'', ''partial'')',
     'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
@@ -102,11 +103,8 @@ insert into alert_type
 values ('council_problems', '', '',
     'New problems to {{COUNCIL}} on FixMyStreet', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
     'problem',
-    'problem.non_public = ''f'' and problem.state in
-    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
-      ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
-     ''internal referral'' ) AND
+    'problem.non_public = ''f'' and problem.state NOT IN
+        (''unconfirmed'', ''hidden'', ''partial'') AND
     regexp_split_to_array(bodies_str, '','') && ARRAY[?]',
     'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-council'
@@ -122,11 +120,8 @@ values ('ward_problems', '', '',
     'New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet', '/reports',
     'The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users',
     'problem',
-    'problem.non_public = ''f'' and problem.state in
-    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
-     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
-     ''internal referral'' ) AND
+    'problem.non_public = ''f'' and problem.state NOT IN
+        (''unconfirmed'', ''hidden'', ''partial'') AND
     (regexp_split_to_array(bodies_str, '','') && ARRAY[?] or bodies_str is null) and
     areas like ''%,''||?||'',%''',
     'created desc',
@@ -142,11 +137,8 @@ insert into alert_type
 values ('area_problems', '', '',
     'New problems within {{NAME}}''s boundary on FixMyStreet', '/reports',
     'The latest problems within {{NAME}}''s boundary reported by users', 'problem',
-    'problem.non_public = ''f'' and problem.state in
-    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
-     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
-     ''internal referral'' ) AND
+    'problem.non_public = ''f'' and problem.state NOT IN
+        (''unconfirmed'', ''hidden'', ''partial'') AND
     areas like ''%,''||?||'',%''',
     'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-area'

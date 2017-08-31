@@ -24,6 +24,8 @@ sub example : Local : Args(0) {
     my ( $self, $c ) = @_;
     $c->stash->{template} = 'dashboard/index.html';
 
+    $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
+
     $c->stash->{children} = {};
     for my $i (1..3) {
         $c->stash->{children}{$i} = { id => $i, name => "Ward $i" };
@@ -93,6 +95,7 @@ sub index : Path : Args(0) {
     $c->stash->{body} = $body;
 
     # Set up the data for the dropdowns
+    $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
 
     # Just take the first area ID we find
     my $area_id = $body->body_areas->first->area_id;
@@ -145,12 +148,10 @@ sub index : Path : Args(0) {
     # List of reports underneath summary table
 
     $c->stash->{q_state} = $c->get_param('state') || '';
-    if ( $c->stash->{q_state} eq 'fixed' ) {
+    if ( $c->stash->{q_state} eq 'fixed - council' ) {
         $prob_where->{'me.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
     } elsif ( $c->stash->{q_state} ) {
         $prob_where->{'me.state'} = $c->stash->{q_state};
-        $prob_where->{'me.state'} = { IN => [ 'planned', 'action scheduled' ] }
-            if $prob_where->{'me.state'} eq 'action scheduled';
     }
     my $params = {
         %$prob_where,

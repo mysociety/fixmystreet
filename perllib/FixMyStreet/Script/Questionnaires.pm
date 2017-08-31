@@ -16,6 +16,9 @@ sub send {
 sub send_questionnaires_period {
     my ( $period, $params ) = @_;
 
+    # Don't send if we don't have a fixed state
+    return unless FixMyStreet::DB::Result::Problem::fixed_states->{fixed};
+
     my $rs = FixMyStreet::DB->resultset('Questionnaire');
 
     # Select all problems that need a questionnaire email sending

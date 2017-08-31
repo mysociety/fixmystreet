@@ -43,6 +43,12 @@
                     </div>
                     [% END %]
 
+                  [% SET update_state = update.problem_state_display(c) %]
+                  [% IF update_state AND update_state != global.last_state AND NOT (global.last_state == "" AND update.problem_state == 'confirmed') %]
+                    <p class="meta-2">[% loc('State changed to:') %] [% update_state %]</p>
+                    [%- global.last_state = update_state %]
+                  [% END %]
+
                     <p class="meta-2">
                         [% INCLUDE meta_line %]
                         [% IF c.user_exists AND c.user.id == update.user_id AND !update.anonymous %]

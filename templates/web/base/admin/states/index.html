@@ -1,0 +1,118 @@
+[% INCLUDE 'admin/header.html' title=loc('States') ~%]
+
+[% SET rows = languages.size + 1 IF languages.size > 1 ~%]
+
+<form method="post" accept-charset="utf-8">
+
+<table>
+    <tr>
+        <th>Label</th>
+        <th>Type</th>
+        <th colspan="2">Name</th>
+        <th>&nbsp;</th>
+    </tr>
+    [% FOREACH state IN open_states.merge(closed_states).merge(fixed_states) %]
+    <tr>
+        <td rowspan="[% rows %]">
+          [% IF state.label == 'confirmed' %]
+            open
+          [% ELSE %]
+            [% state.label %]
+          [% END %]
+        </td>
+        <td rowspan="[% rows %]">
+          [% IF state.label == 'confirmed' %]
+            [% loc('Open') %]<input type="hidden" name="type:confirmed" value="open">
+          [% ELSIF state.label == 'closed' %]
+            [% loc('Closed') %]<input type="hidden" name="type:closed" value="closed">
+            [% ELSIF state.label == 'fixed' %]
+              [% loc('Fixed') %]<input type="hidden" name="type:fixed" value="fixed">
+          [% ELSE %]
+            <select name="type:[% state.label %]">
+                <option value="open"[% ' selected' IF state.type == 'open' %]>[% loc('Open') %]</option>
+                <option value="closed"[% ' selected' IF state.type == 'closed' %]>[% loc('Closed') %]</option>
+            </select>
+          [% END %]
+        </td>
+        <td colspan="2">
+          [% IF state.label != 'confirmed' AND state.label != 'closed' %]
+            <input type="text" name="name:[% state.label %]" value="[% state.name %]">
+          [% ELSIF languages.size == 1 %]
+            <input type="text" name="name:[% state.label %]" value="[% state.msgstr %]">
+          [% ELSE %]
+            [% state.name %]
+          [% END %]
+        </td>
+        <td style="text-align:center;vertical-align:middle" rowspan="[% rows %]">
+          [% IF state.label != 'confirmed' AND state.label != 'closed' %]
+            <input class="btn btn--small" type="submit" name="delete:[% state.label %]" value="Delete">
+          [% END %]
+        </td>
+    </tr>
+    [% IF languages.size > 1 %]
+  [% FOREACH language IN languages.keys.sort %]
+    <tr>
+        <td style="vertical-align:middle; text-align:right;">
+            <label style="margin:0" for="translation:[% state.label %]:[% language %]">
+                [% languages.$language.name %] ([% language %])
+            </label>
+        </td>
+        <td>
+            <input type="hidden" name="translation_id:[% state.label %]:[% language %]"
+                value="[% state.translated.name.$language.id %]">
+            <input type="text" name="translation:[% state.label %]:[% language %]"
+                id="translation:[% state.label %]:[% language %]" value="[% state.translated.name.$language.msgstr %]">
+        </td>
+  </tr>
+  [% END %]
+  [% END %]
+        </td>
+    </tr>
+  [% END %]
+</table>
+
+  <p>
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="submit" class="btn" value="[% loc('Update') %]">
+  </p>
+
+</form>
+
+[% IF fixed_states.size == 0 %]
+<form method="post" accept-charset="utf-8">
+    <p>
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        <input type="submit" class="btn" name="new_fixed" value="[% loc('Add fixed state') %]">
+    </p>
+</form>
+
+[% END %]
+
+<h2>[% loc('New state') %]</h2>
+
+<form method="post" accept-charset="utf-8">
+    <p>
+        <label for="label">[% loc('Label') %] <small>[% loc('(a-z and space only)') %]</small></label>
+        <input type="text" class="form-control" name="label" id="label" value="" size="20" pattern="[a-z ]+">
+    </p>
+
+    <p>
+        <label for="type">[% loc('Label') %]</label>
+        <select name="type" id="type">
+            <option value="open">[% loc('Open') %]</option>
+            <option value="closed">[% loc('Closed') %]</option>
+        </select>
+    </p>
+
+    <p>
+        <label for="name">[% loc('Name') %]</label>
+        <input type="text" class="form-control" name="name" id="name" value="" size="20">
+    </p>
+
+    <p>
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        <input type="submit" class="btn" name="new" value="[% loc('Create') %]">
+    </p>
+</form>
+
+[% INCLUDE 'admin/footer.html' %]

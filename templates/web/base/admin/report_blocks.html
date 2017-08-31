@@ -1,13 +1,7 @@
 [%
 
 SET report_blocks_included = 1;
-
-SET state_groups = [
-    [ loc('Open'), [ 'confirmed', 'investigating', 'planned', 'in progress', 'action scheduled' ] ],
-    [ loc('Fixed'), [ 'fixed', 'fixed - user', 'fixed - council' ] ],
-    [ loc('Closed'), [ 'unable to fix', 'not responsible', 'duplicate', 'closed', 'internal referral' ] ],
-    [ loc('Hidden'), [ 'hidden', 'partial', 'unconfirmed' ] ]
-];
+SET state_groups = c.cobrand.state_groups_admin;
 
 %]
 

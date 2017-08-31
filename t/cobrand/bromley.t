@@ -41,9 +41,9 @@ for my $update ('in progress', 'unable to fix') {
 # Test Bromley special casing of 'unable to fix'
 $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains( 'marks it as in progress' );
-$mech->content_contains( 'marked as in progress' );
+$mech->content_contains( 'State changed to: In progress' );
 $mech->content_contains( 'marks it as unable to fix' );
-$mech->content_contains( 'marked as no further action' );
+$mech->content_contains( 'State changed to: No further action' );
 
 subtest 'testing special Open311 behaviour', sub {
     $report->set_extra_fields();

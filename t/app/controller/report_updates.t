@@ -93,8 +93,7 @@ for my $test (
         anonymous  => 't',
         mark_fixed => 'true',
         mark_open  => 'false',
-        meta =>
-'Posted anonymously at 15:47, Sat 16 April 2011, marked as fixed',
+        meta => [ 'State changed to: Fixed', 'Posted anonymously at 15:47, Sat 16 April 2011' ]
     },
     {
         description => 'named user, anon is true, reopened',
@@ -102,7 +101,7 @@ for my $test (
         anonymous  => 't',
         mark_fixed => 'false',
         mark_open  => 'true',
-        meta => 'Posted anonymously at 15:47, Sat 16 April 2011, reopened',
+        meta => [ 'State changed to: Open', 'Posted anonymously at 15:47, Sat 16 April 2011' ]
     }
   )
 {
@@ -118,8 +117,9 @@ for my $test (
         $mech->content_contains('This is some update text');
 
         my $meta = $mech->extract_update_metas;
-        is scalar @$meta, 1, 'number of updates';
-        is $meta->[0], $test->{meta};
+        my $test_meta = ref $test->{meta} ? $test->{meta} : [ $test->{meta} ];
+        is scalar @$meta, scalar @$test_meta, 'number of updates';
+        is_deeply $meta, $test_meta;
     };
 }
 
@@ -131,7 +131,7 @@ subtest "updates displayed on report with empty bodies_str" => sub {
     $mech->get_ok("/report/$report_id");
 
     my $meta = $mech->extract_update_metas;
-    is scalar @$meta, 1, 'update displayed';
+    is scalar @$meta, 2, 'update displayed';
 
     $report->update({ bodies_str => $old_bodies_str });
 };
@@ -185,10 +185,11 @@ subtest "several updates shown in correct order" => sub {
     $mech->get_ok("/report/$report_id");
 
     my $meta = $mech->extract_update_metas;
-    is scalar @$meta, 3, 'number of updates';
+    is scalar @$meta, 4, 'number of updates';
     is $meta->[0], 'Posted by Other User at 12:23, Thu 10 March 2011', 'first update';
     is $meta->[1], 'Posted by Main User at 12:23, Thu 10 March 2011', 'second update';
-    is $meta->[2], 'Posted anonymously at 08:12, Tue 15 March 2011, marked as fixed', 'third update';
+    is $meta->[2], 'State changed to: Fixed', 'third update, part 1';
+    is $meta->[3], 'Posted anonymously at 08:12, Tue 15 March 2011', 'third update, part 2';
 };
 
 for my $test (
@@ -613,7 +614,6 @@ for my $test (
             state => 'internal referral',
         },
         state => 'internal referral',
-        meta  => "an internal referral",
     },
     {
         desc => 'from authority user marks report as not responsible',
@@ -635,7 +635,6 @@ for my $test (
             state => 'duplicate',
         },
         state => 'duplicate',
-        meta  => 'a duplicate report',
     },
     {
         desc => 'from authority user marks report as internal referral',
@@ -646,7 +645,6 @@ for my $test (
             state => 'internal referral',
         },
         state => 'internal referral',
-        meta  => 'an internal referral',
     },
     {
         desc => 'from authority user marks report sent to two councils as fixed',
@@ -711,19 +709,13 @@ for my $test (
 
         my $update_meta = $mech->extract_update_metas;
         my $meta_state = $test->{meta} || $test->{fields}->{state};
-        if ( $test->{reopened} ) {
-            like $update_meta->[0], qr/reopened/, 'update meta says reopened';
-        } elsif ( $test->{state} eq 'duplicate' ) {
-            like $update_meta->[0], qr/closed as $meta_state/, 'update meta includes state change';
-        } else {
-            like $update_meta->[0], qr/marked as $meta_state/, 'update meta includes state change';
-        }
+        like $update_meta->[0], qr/$meta_state/i, 'update meta includes state change';
 
         if ($test->{view_username}) {
-          like $update_meta->[0], qr{Westminster City Council \(Test User\)}, 'update meta includes council and user name';
+          like $update_meta->[1], qr{Westminster City Council \(Test User\)}, 'update meta includes council and user name';
           $user->user_body_permissions->delete_all;
         } else {
-          like $update_meta->[0], qr{Westminster City Council}, 'update meta includes council name';
+          like $update_meta->[1], qr{Westminster City Council}, 'update meta includes council name';
           $mech->content_contains( '<strong>Westminster City Council</strong>', 'council name in bold');
         }
 
@@ -751,24 +743,22 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
 
     $mech->get_ok( "/report/" . $report->id );
     my $update_meta = $mech->extract_update_metas;
-    unlike $update_meta->[0], qr/reopened/,
+    unlike $update_meta->[0], qr/Open/,
       'update meta does not say reopened';
 
     $comment->update( { mark_open => 1, problem_state => undef } );
     $mech->get_ok( "/report/" . $report->id );
     $update_meta = $mech->extract_update_metas;
 
-    unlike $update_meta->[0], qr/marked as open/,
-      'update meta does not says marked as open';
-    like $update_meta->[0], qr/reopened/, 'update meta does say reopened';
+    like $update_meta->[0], qr/Open/, 'update meta does say open';
 
     $comment->update( { mark_open => 0, problem_state => undef } );
     $mech->get_ok( "/report/" . $report->id );
     $update_meta = $mech->extract_update_metas;
 
-    unlike $update_meta->[0], qr/marked as open/,
+    unlike $update_meta->[0], qr/Open/,
       'update meta does not says marked as open';
-    unlike $update_meta->[0], qr/reopened/, 'update meta does not say reopened';
+    unlike $update_meta->[0], qr/Open/, 'update meta does not say reopened';
 };
 
 subtest "check first comment with no status change has no status in meta" => sub {
@@ -782,7 +772,7 @@ subtest "check first comment with no status change has no status in meta" => sub
     $mech->get_ok("/report/$report_id");
 
     my $update_meta = $mech->extract_update_metas;
-    unlike $update_meta->[0], qr/marked as|reopened/, 'update meta does not include state change';
+    unlike $update_meta->[0], qr/State changed to/, 'update meta does not include state change';
 };
 
 subtest "check comment with no status change has not status in meta" => sub {
@@ -820,7 +810,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         is $report->state, 'fixed - council', 'correct report state';
         is $update->problem_state, 'fixed - council', 'correct update state';
         my $update_meta = $mech->extract_update_metas;
-        unlike $update_meta->[1], qr/marked as/, 'update meta does not include state change';
+        unlike $update_meta->[1], qr/State changed to/, 'update meta does not include state change';
 
         $user->from_body( $body->id );
         $user->update;
@@ -854,9 +844,9 @@ subtest "check comment with no status change has not status in meta" => sub {
         is $report->state, 'investigating', 'correct report state';
         is $update->problem_state, 'investigating', 'correct update state';
         $update_meta = $mech->extract_update_metas;
-        like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
-        unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
-        like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
+        like $update_meta->[0], qr/fixed/i, 'first update meta says fixed';
+        unlike $update_meta->[2], qr/State changed to/, 'second update meta does not include state change';
+        like $update_meta->[3], qr/investigating/i, 'third update meta says investigating';
 
         my $dt = DateTime->now( time_zone => "local" )->add( seconds => 1 );
         $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
@@ -883,10 +873,10 @@ subtest "check comment with no status change has not status in meta" => sub {
         is $report->state, 'investigating', 'correct report state';
         is $update->problem_state, undef, 'no update state';
         $update_meta = $mech->extract_update_metas;
-        like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
-        unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
-        like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
-        unlike $update_meta->[3], qr/marked as/, 'fourth update meta has no state change';
+        like $update_meta->[0], qr/fixed/i, 'first update meta says fixed';
+        unlike $update_meta->[2], qr/State changed to/, 'second update meta does not include state change';
+        like $update_meta->[3], qr/investigating/i, 'third update meta says investigating';
+        unlike $update_meta->[5], qr/State changed to/, 'fourth update meta has no state change';
 };
 
 subtest 'check meta correct for second comment marking as reopened' => sub {
@@ -907,7 +897,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
 
     $mech->get_ok( "/report/" . $report->id );
     my $update_meta = $mech->extract_update_metas;
-    like $update_meta->[0], qr/fixed/, 'update meta says fixed';
+    like $update_meta->[0], qr/fixed/i, 'update meta says fixed';
 
     $comment = FixMyStreet::App->model('DB::Comment')->create(
         {
@@ -925,7 +915,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
 
     $mech->get_ok( "/report/" . $report->id );
     $update_meta = $mech->extract_update_metas;
-    like $update_meta->[1], qr/reopened/, 'update meta says reopened';
+    like $update_meta->[2], qr/Open/, 'update meta says reopened';
 };
 
 subtest "check first comment with status change but no text is displayed" => sub {
@@ -953,9 +943,9 @@ subtest "check first comment with status change but no text is displayed" => sub
     $mech->get_ok("/report/$report_id");
 
     my $update_meta = $mech->extract_update_metas;
-    like $update_meta->[0], qr/Updated by/, 'updated by meta if no text';
-    unlike $update_meta->[0], qr/Test User/, 'commenter name not included';
-    like $update_meta->[0], qr/investigating/, 'update meta includes state change';
+    like $update_meta->[1], qr/Updated by/, 'updated by meta if no text';
+    unlike $update_meta->[1], qr/Test User/, 'commenter name not included';
+    like $update_meta->[0], qr/investigating/i, 'update meta includes state change';
 
     ok $user->user_body_permissions->create({
       body => $body,
@@ -964,9 +954,9 @@ subtest "check first comment with status change but no text is displayed" => sub
 
     $mech->get_ok("/report/$report_id");
     $update_meta = $mech->extract_update_metas;
-    like $update_meta->[0], qr/Updated by/, 'updated by meta if no text';
-    like $update_meta->[0], qr/Test User/, 'commenter name included if user has view contribute permission';
-    like $update_meta->[0], qr/investigating/, 'update meta includes state change';
+    like $update_meta->[1], qr/Updated by/, 'updated by meta if no text';
+    like $update_meta->[1], qr/Test User/, 'commenter name included if user has view contribute permission';
+    like $update_meta->[0], qr/investigating/i, 'update meta includes state change';
 };
 
 
@@ -1712,10 +1702,10 @@ for my $test (
         desc => 'update unable to fix without marking as fixed leaves state unchanged',
         initial_state => 'unable to fix',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'unable to fix',
     },
@@ -1723,10 +1713,10 @@ for my $test (
         desc => 'update internal referral without marking as fixed leaves state unchanged',
         initial_state => 'internal referral',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'internal referral',
     },
@@ -1734,10 +1724,10 @@ for my $test (
         desc => 'update not responsible without marking as fixed leaves state unchanged',
         initial_state => 'not responsible',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'not responsible',
     },
@@ -1745,10 +1735,10 @@ for my $test (
         desc => 'update duplicate without marking as fixed leaves state unchanged',
         initial_state => 'duplicate',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 0,
+            reopen => 0,
         },
         end_state => 'duplicate',
     },
@@ -1808,48 +1798,48 @@ for my $test (
         end_state => 'confirmed',
     },
     {
-        desc => 'can mark unable to fix as fixed, cannot mark not closed',
+        desc => 'cannot mark unable to fix as fixed, can reopen',
         initial_state => 'unable to fix',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
     {
-        desc => 'can mark internal referral as fixed, cannot mark not closed',
+        desc => 'cannot mark internal referral as fixed, can reopen',
         initial_state => 'internal referral',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
     {
-        desc => 'can mark not responsible as fixed, cannot mark not closed',
+        desc => 'cannot mark not responsible as fixed, can reopen',
         initial_state => 'not responsible',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
     {
-        desc => 'can mark duplicate as fixed, cannot mark not closed',
+        desc => 'cannot mark duplicate as fixed, can reopen',
         initial_state => 'duplicate',
         expected_form_fields => {
-            fixed => undef,
+            reopen => undef,
         },
         submitted_form_fields => {
-            fixed => 1,
+            reopen => 1,
         },
-        end_state => 'fixed - user',
+        end_state => 'confirmed',
     },
 ) {
     subtest $test->{desc} => sub {

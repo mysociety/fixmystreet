@@ -57,7 +57,7 @@ FixMyStreet::override_config {
     };
 
     subtest "test basic inspect submission" => sub {
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action Scheduled', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action scheduled', include_update => undef } });
         $report->discard_changes;
         my $alert = FixMyStreet::App->model('DB::Alert')->find(
             { user => $user, alert_type => 'new_updates', confirmed => 1, }
@@ -90,9 +90,8 @@ FixMyStreet::override_config {
         is $report->user->get_extra_metadata('reputation'), $reputation, "User reputation wasn't changed";
         $mech->get_ok("/report/$report_id");
         my $meta = $mech->extract_update_metas;
-        like $meta->[0], qr/Updated by .*action scheduled/, 'First update mentions action scheduled';
-        like $meta->[1], qr/Posted by .*defect raised/, 'Update mentions defect raised';
-        unlike $meta->[2], qr/Posted by .*action scheduled/, 'Update does not mention action scheduled';
+        like $meta->[0], qr/State changed to: Action scheduled/, 'First update mentions action scheduled';
+        like $meta->[2], qr/Posted by .*defect raised/, 'Update mentions defect raised';
 
         $user->unset_extra_metadata('categories');
         $user->update;
@@ -300,7 +299,7 @@ FixMyStreet::override_config {
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
         $report->update({ state => 'confirmed' });
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action Scheduled', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action scheduled', include_update => undef } });
         $report->discard_changes;
         is $report->state, 'action scheduled', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';

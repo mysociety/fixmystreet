@@ -179,7 +179,7 @@ sub restriction {
     return $self->moniker ? { cobrand => $self->moniker } : {};
 }
 
-=head2 base_url_with_lang 
+=head2 base_url_with_lang
 
 =cut
 
@@ -358,7 +358,7 @@ sub front_stats_data {
 
 Returns any disambiguating information available. Defaults to none.
 
-=cut 
+=cut
 
 sub disambiguate_location { FixMyStreet->config('GEOCODING_DISAMBIGUATION') or {}; }
 
@@ -642,6 +642,7 @@ sub admin_pages {
     # There are some pages that only super users can see
     if ( $user->is_superuser ) {
         $pages->{flagged} = [ _('Flagged'), 7 ];
+        $pages->{states} = [ _('States'), 8 ];
         $pages->{config} = [ _('Configuration'), 9];
     };
     # And some that need special permissions
@@ -820,7 +821,7 @@ sub is_two_tier { 0; }
 
 =item council_rss_alert_options
 
-Generate a set of options for council rss alerts. 
+Generate a set of options for council rss alerts.
 
 =cut
 
@@ -1064,6 +1065,28 @@ Whether reports in state 'unconfirmed' should still be shown on the public site.
 
 sub show_unconfirmed_reports {
     0;
+}
+
+sub state_groups_admin {
+    my $rs = FixMyStreet::DB->resultset("State");
+    my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
+    [
+        [ $rs->display('confirmed'), [ FixMyStreet::DB::Result::Problem->open_states ] ],
+        @fixed ? [ $rs->display('fixed'), [ FixMyStreet::DB::Result::Problem->fixed_states ] ] : (),
+        [ $rs->display('closed'), [ FixMyStreet::DB::Result::Problem->closed_states ] ],
+        [ $rs->display('hidden'), [ FixMyStreet::DB::Result::Problem->hidden_states ] ]
+    ]
+}
+
+sub state_groups_inspect {
+    my $rs = FixMyStreet::DB->resultset("State");
+    my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
+    [
+        [ $rs->display('confirmed'), [ grep { $_ ne 'planned' } FixMyStreet::DB::Result::Problem->open_states ] ],
+        @fixed ? [ $rs->display('fixed'), [ 'fixed - council' ] ] : (),
+        [ $rs->display('closed'), [ grep { $_ ne 'closed' } FixMyStreet::DB::Result::Problem->closed_states ] ],
+        [ $rs->display('hidden'), [ 'hidden' ] ]
+    ]
 }
 
 =head2 never_confirm_updates

@@ -545,19 +545,8 @@ FixMyStreet::override_config {
         },
         {
             desc => 'limit by state works',
-            state => 'fixed',
+            state => 'fixed - council',
             report_counts => [2,0,0],
-            report_counts_after => [1,0,0],
-        },
-        {
-            desc => 'planned counted as action scheduled',
-            p1 => {
-                    state   => 'planned',
-                    conf_dt => DateTime->now(),
-                    category => 'Potholes',
-            },
-            state => 'action scheduled',
-            report_counts => [3,0,0],
             report_counts_after => [1,0,0],
         },
         {
@@ -573,7 +562,7 @@ FixMyStreet::override_config {
                     category => 'Potholes',
             },
             state => 'fixed',
-            report_counts => [5,0,0],
+            report_counts => [4,0,0],
             report_counts_after => [3,0,0],
         },
     ) {
@@ -612,7 +601,7 @@ FixMyStreet::override_config {
         while ( my $row = $csv->getline( $data_handle ) ) {
             push @rows, $row;
         }
-        is scalar @rows, 7, '1 (header) + 6 (reports) = 7 lines';
+        is scalar @rows, 6, '1 (header) + 5 (reports) = 6 lines';
     };
 };
 restore_time;
