@@ -19,6 +19,7 @@ use MIME::Base64;
 use MIME::Types;
 use Path::Tiny;
 use Pod::Usage;
+use Try::Tiny;
 
 # Store ARGV in case we need to restart later.
 my @ARGVorig = @ARGV;
@@ -125,7 +126,12 @@ sub compile {
 sub write_if_different {
     my ($fn, $data) = @_;
     $fn = path($fn);
-    my $current = $fn->slurp_utf8;
+    my $current = try {
+        $fn->slurp_utf8;
+    } catch {
+        return if $_->{err} eq 'No such file or directory';
+        die $_;
+    };
     if (!$current || $current ne $data) {
         $fn->spew_utf8($data);
         return 1;
