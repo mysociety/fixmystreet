@@ -2130,6 +2130,8 @@ table.nicetable {
         background: #f6f6f6;
     }
     img[width="16"] {
+        margin-top: 4px;
+        margin-left: 0.5em;
         float: $right;
     }
 }
@@ -2152,6 +2154,29 @@ table.nicetable {
         margin-right: 0.5em;
         text-decoration: none; // avoid underline showing between images
     }
+}
+
+.alerts__cta-box {
+    @extend .form-box;
+    background-color: mix($primary, #fff, 10%);
+    margin-top: 2em;
+    margin-bottom: 2em;
+
+    & > :first-child {
+        margin-top: 0;
+    }
+
+    .form-txt-submit-box {
+        max-width: 32em;
+    }
+}
+
+#rss_local_alt {
+    // Match .label-containing-checkbox
+    padding-left: 24px;
+
+    // Close up space between this and #rss_local
+    margin-top: -1em;
 }
 
 .confirmation-header {

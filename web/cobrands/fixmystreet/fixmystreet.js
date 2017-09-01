@@ -767,7 +767,7 @@ $.extend(fixmystreet.set_up, {
     // (due to not wanting around form to submit, though good thing anyway)
     $('body').on('click', '#alert_rss_button', function(e) {
         e.preventDefault();
-        var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
+        var feed = $('input[name=feed][type=radio]:checked').parent().prevAll('a').attr('href');
         window.location.href = feed;
     });
     $('body').on('click', '#alert_email_button', function(e) {

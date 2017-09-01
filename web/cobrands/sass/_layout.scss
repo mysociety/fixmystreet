@@ -960,6 +960,15 @@ textarea.form-error {
   }
 }
 
+.alerts__columns {
+    @include clearfix;
+    @include flex-container();
+    > div {
+        width: 50%;
+        margin: 0 2em;
+    }
+}
+
 .confirmation-header {
     width: 25em;
     margin: 0 auto 1em;
