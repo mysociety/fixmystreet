@@ -1,6 +1,8 @@
-[% INCLUDE 'header.html', title =>  loc('Local RSS feeds and email alerts') %]
+[% SET title = loc('Email alerts & RSS') %]
 
-<h1>[% loc('Local RSS feeds and email alerts') %]</h1>
+[% INCLUDE 'header.html', title = title %]
+
+<h1>[% title | html %]</h1>
 
 [% IF possible_location_matches %]
     <p>[% loc('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') %]</p>

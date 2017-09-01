@@ -2118,42 +2118,6 @@ table.nicetable {
     }
 }
 
-#alerts {
-    ul {
-        margin-bottom: 1em;
-    }
-    li {
-        padding: 0em;
-        margin-bottom: 0.5em;
-    }
-    .a {
-        background: #f6f6f6;
-    }
-    img[width="16"] {
-        float: $right;
-    }
-}
-
-.alerts__nearby-activity {
-    background-color: #f6f6f6;
-    margin: 1em -1em;
-    padding: 1em;
-
-    & > :first-child {
-        margin-top: 0;
-    }
-}
-
-.alerts__nearby-activity__photos {
-    white-space: nowrap;
-    overflow: hidden;
-
-    a {
-        margin-right: 0.5em;
-        text-decoration: none; // avoid underline showing between images
-    }
-}
-
 .confirmation-header {
   padding: 140px 0 2em;
   text-align: center;
@@ -2446,4 +2410,7 @@ table.nicetable {
 @import "_dropzone";
 @import "_multiselect";
 @import "_autocomplete";
+@import "_content-grid";
+@import "_multiple-choice";
 @import "_dashboard";
+@import "_alerts";

@@ -2,6 +2,8 @@ package FixMyStreet::App::Controller::Alert;
 use Moose;
 use namespace::autoclean;
 
+use JSON::MaybeXS;
+
 BEGIN { extends 'Catalyst::Controller'; }
 
 use mySociety::EmailUtil qw(is_valid_email);
@@ -27,10 +29,6 @@ Show the alerts page
 
 sub index : Path('') : Args(0) {
     my ( $self, $c ) = @_;
-
-    unless ( $c->req->referer && $c->req->referer =~ /fixmystreet\.com/ ) {
-        $c->forward( 'add_recent_photos', [10] );
-    }
 }
 
 sub list : Path('list') : Args(0) {
@@ -42,7 +40,6 @@ sub list : Path('list') : Args(0) {
       unless $c->forward('setup_request')
           && $c->forward('prettify_pc')
           && $c->forward('determine_location')
-          && $c->forward( 'add_recent_photos', [5] )
           && $c->forward('setup_council_rss_feeds')
           && $c->forward('setup_coordinate_rss_feeds');
 }
@@ -56,7 +53,8 @@ Target for subscribe form
 sub subscribe : Path('subscribe') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->detach('rss') if $c->get_param('rss');
+    $c->detach('rss')
+        if $c->get_param('rss') || $c->get_param('delivery') eq 'rss';
 
     # if it exists then it's been submitted so we should
     # go to subscribe email and let it work out the next step
@@ -71,37 +69,50 @@ sub subscribe : Path('subscribe') : Args(0) {
 
 =head2 rss
 
-Redirects to relevant RSS feed
+Redirects to relevant RSS feed or, if requested with an "ajax" query parameter,
+simply returns a JSON object containing the RSS feed URL.
 
 =cut
 
 sub rss : Private {
     my ( $self, $c ) = @_;
     my $feed = $c->get_param('feed');
-
-    unless ($feed) {
-        $c->stash->{errors} = [ _('Please select the feed you want') ];
-        $c->go('list');
-    }
-
+    my $ajax = $c->get_param('ajax');
     my $url;
+    my $error;
+
     if ( $feed =~ /^area:(?:\d+:)+(.*)$/ ) {
         ( my $id = $1 ) =~ tr{:_}{/+};
         $url = $c->cobrand->base_url() . '/rss/area/' . $id;
-        $c->res->redirect($url);
     }
     elsif ( $feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/ ) {
         ( my $id = $1 ) =~ tr{:_}{/+};
         $url = $c->cobrand->base_url() . '/rss/reports/' . $id;
-        $c->res->redirect($url);
     }
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
         $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
-        $c->res->redirect($url);
+    }
+    elsif ( $feed ) {
+        $error = _('Illegal feed selection');
+    } else {
+        $error = _('Please select the feed you want');
+    }
+
+    if ( $url ) {
+        if ( $ajax ) {
+            $c->res->body(encode_json({ status => 'success', url => $url }));
+        }
+        else {
+            $c->res->redirect($url);
+        }
     }
     else {
-        $c->stash->{errors} = [ _('Illegal feed selection') ];
-        $c->go('list');
+        if ( $ajax ) {
+            $c->res->body(encode_json({ status => 'fail', message => $error }));
+        } else {
+            $c->stash->{errors} = [ $error ];
+            $c->go('list');
+        }
     }
 }
 
@@ -175,7 +186,7 @@ sub confirm : Private {
 Take the alert options from the stash and use these to create a new
 alert. If it finds an existing alert that's the same then use that
 
-=cut 
+=cut
 
 sub create_alert : Private {
     my ( $self, $c ) = @_;
@@ -372,7 +383,7 @@ sub process_user : Private {
 Takes the latitide and longitude from the stash and uses them to generate uris
 for the local rss feeds
 
-=cut 
+=cut
 
 sub setup_coordinate_rss_feeds : Private {
     my ( $self, $c ) = @_;
@@ -393,11 +404,6 @@ sub setup_coordinate_rss_feeds : Private {
     }
 
     $c->stash->{rss_feed_uri} = $rss_feed;
-
-    $c->stash->{rss_feed_2k}  = $rss_feed . '/2';
-    $c->stash->{rss_feed_5k}  = $rss_feed . '/5';
-    $c->stash->{rss_feed_10k} = $rss_feed . '/10';
-    $c->stash->{rss_feed_20k} = $rss_feed . '/20';
 
     return 1;
 }
@@ -451,38 +457,6 @@ sub determine_location : Private {
     return 1;
 }
 
-=head2 add_recent_photos
-
-    $c->forward( 'add_recent_photos', [ $num_photos ] );
-
-Adds the most recent $num_photos to the template. If there is coordinate 
-and population radius information in the stash uses that to limit it.
-
-=cut
-
-sub add_recent_photos : Private {
-    my ( $self, $c, $num_photos ) = @_;
-
-    if (    $c->stash->{latitude}
-        and $c->stash->{longitude}
-        and $c->stash->{population_radius} )
-    {
-
-        $c->stash->{photos} = $c->cobrand->recent_photos(
-            'alert',
-            $num_photos,
-            $c->stash->{latitude},
-            $c->stash->{longitude},
-            $c->stash->{population_radius}
-        );
-    }
-    else {
-        $c->stash->{photos} = $c->cobrand->recent_photos('alert', $num_photos);
-    }
-
-    return 1;
-}
-
 sub choose : Private {
     my ( $self, $c ) = @_;
     $c->stash->{template} = 'alert/choose.html';
@@ -500,12 +474,11 @@ sub setup_request : Private {
 
     $c->stash->{rznvy} = $c->get_param('rznvy');
     $c->stash->{selected_feed} = $c->get_param('feed');
+    $c->stash->{delivery} = $c->get_param('delivery') || 'email';
 
     if ( $c->user ) {
         $c->stash->{rznvy} ||= $c->user->email;
     }
-
-    $c->stash->{template} = 'alert/list-ajax.html' if $c->get_param('ajax');
 
     return 1;
 }

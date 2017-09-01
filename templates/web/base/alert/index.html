@@ -1,51 +1,36 @@
-[% INCLUDE 'header.html', title = loc('Local RSS feeds and email alerts'), bodyclass = 'fullwidthpage' %]
+[% SET title = loc('Email alerts & RSS') %]
 
-<h1>[% loc('Local RSS feeds and email alerts') %]</h1>
+[% INCLUDE 'header.html', title = title, bodyclass = 'fullwidthpage' %]
 
-<p>
-[% IF c.cobrand.is_council %]
-[% tprintf(loc('%s has a variety of RSS feeds and email alerts for local
-problems, including alerts for all problems within a particular ward, or all
-problems within a certain distance of a particular location.', "%s is the site name"), site_name) %]
-[% ELSE %]
-[% tprintf(loc('%s has a variety of RSS feeds and email alerts for local problems, including
-alerts for all problems within a particular ward or council, or all problems
-within a certain distance of a particular location.', "%s is the site name"), site_name) %]
-[% END %]
-</p>
-
-[% IF location_error %]
-  <div class="error">[% location_error %]</div>
-[% ELSE %]
-  [% INCLUDE 'errors.html' %]
-[% END %]
-
-<p>
-[% IF c.cobrand.is_council %]
-[% tprintf(loc('To find out what local alerts we have for you, please enter your %s postcode or street name and area:'), c.cobrand.council_area) %]
-[% ELSE %]
-[% loc('To find out what local alerts we have for you, please enter your postcode or street name and area' ) %]
-[% END %]
-</p>
-<form method="get" action="/alert/list" class="form-box js-geolocate">
-  <fieldset>
-    <div class="form-txt-submit-box">
-      <input class="form-control" type="text" name="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
-      <input class="green-btn" type="submit" value="[% loc('Go') %]">
+<div class="content-row content-row--first">
+    <div class="content-col alerts-header">
+        <h1>[% title | html %]</h1>
     </div>
-  </fieldset>
-</form>
-
-[% IF photos.size %]
-<h2>[% loc('Some photos of recent reports') %]</h2>
-<div class="alerts__nearby-activity__photos">
-  [% FOREACH p IN photos %]
-    <a href="/report/[% p.id %]">
-        <img border="0" height="100" src="[% p.photos.first.url_tn %]"
-        alt="[% p.title | html %]" title="[% p.title | html %]">
-    </a>
-  [% END %]
 </div>
-[% END %]
+
+<div class="content-row">
+    <div class="content-col alerts-page">
+
+        <h2>[% loc('Subscribe to email alerts for problems in the area you care about') %]</h2>
+
+      [% IF location_error %]
+        <div class="error">[% location_error %]</div>
+      [% ELSE %]
+        [% INCLUDE 'errors.html' %]
+      [% END %]
+
+        <form method="get" action="/alert/list">
+            <p>
+                <label for="pc">[% loc('Postcode or address') %]</label>
+                <input class="form-control" type="text" name="pc" id="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
+            </p>
+            <p class="alerts-submit-buttons">
+                <button type="submit" name="delivery" value="email" class="btn-primary">[% loc('Subscribe by email') %]</button>
+                <button type="submit" name="delivery" value="rss" class="btn">[% loc('Subscribe by RSS') %]</button>
+            </p>
+        </form>
+
+    </div>
+</div>
 
 [% INCLUDE 'footer.html' %]

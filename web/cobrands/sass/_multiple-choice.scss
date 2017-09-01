@@ -1,0 +1,112 @@
+// Creates nice, chunky radio buttons and checkboxes.
+// Inspired by the GOV.UK elements library:
+// https://github.com/alphagov/govuk_elements
+
+.multiple-choice {
+    $input-size: 38px;
+
+    display: block;
+    position: relative; // for positioning of fake checkbox/radio
+    padding-#{$left}: $input-size;
+    margin: 1em 0;
+
+    // Make checkbox/radio invisible and stretch it over
+    // the fake checkbox/radio, to intercept clicks.
+    input {
+        position: absolute;
+        z-index: 1; // stack above label:before/label:after
+        top: 0;
+        left: 0;
+        width: $input-size;
+        height: $input-size;
+        opacity: 0;
+        cursor: pointer; // make fake checkbox/radio look clickable
+
+        // IE8 and below don't support pseudo-elements,
+        // so reveal the real checkbox/radio.
+        .lt-ie9 & {
+            opacity: 1;
+        }
+    }
+
+    label {
+        display: block;
+        cursor: pointer;
+        padding: 0;
+        padding-top: ($input-size - 24px) / 2;
+        padding-bottom: ($input-size - 24px) / 2;
+        padding-#{$left}: 0.75em;
+        margin: 0;
+
+        @media (min-width: 48em) {
+            font-size: 1.125em; // 18px
+        }
+
+        &:before,
+        &:after {
+            content: "";
+            display: block;
+            position: absolute;
+            @include box-sizing(border-box);
+        }
+
+        // The checkbox/radio outline
+        &:before {
+            width: $input-size;
+            height: $input-size;
+            top: 0;
+            left: 0;
+            border: 1px solid $form-control-border-color;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        // The checkbox/radio filling
+        &:after {
+            opacity: 0; // hide until input is checked
+        }
+    }
+
+    [type="radio"] + label {
+        &:before {
+            border-radius: 50%;
+        }
+
+        &:after {
+            border-radius: 50%;
+            border: 10px solid;
+            top: ($input-size / 2) - 10px;
+            left: ($input-size / 2) - 10px;
+        }
+    }
+
+    [type="checkbox"] + label {
+        &:before {
+            border-radius: 4px;
+        }
+
+        &:after {
+            border: solid;
+            border-width: 0 0 5px 5px;
+            background: transparent;
+            border-top-color: transparent;
+            height: 11px;
+            width: 22px;
+            top: ($input-size / 2) - 8px;
+            left: ($input-size / 2) - 11px;
+            @include experimental(transform, rotate(-45deg));
+        }
+    }
+
+    input:checked + label {
+        &:after {
+            opacity: 1;
+        }
+    }
+
+    input:focus + label {
+        &:before {
+            border-color: #0D7CCE; // match a:hover color
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 0 5px 1px #0BA7D1;
+        }
+    }
+}
