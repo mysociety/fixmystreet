@@ -173,6 +173,7 @@ sub setup_request {
     $c->setup_dev_overrides();
 
     my $cobrand = $c->cobrand;
+    FixMyStreet::DB->schema->cobrand($cobrand);
 
     $cobrand->call_hook('add_response_headers');
 

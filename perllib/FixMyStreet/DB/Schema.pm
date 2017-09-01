@@ -25,6 +25,8 @@ __PACKAGE__->connection(FixMyStreet->dbic_connect_info);
 
 has lang => ( is => 'rw' );
 
+has cobrand => ( is => 'rw' );
+
 has cache => ( is => 'rw', lazy => 1, default => sub { {} } );
 
 1;

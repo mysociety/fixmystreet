@@ -21,6 +21,7 @@ __PACKAGE__->config(
 
 sub build_per_context_instance {
     my ( $self, $c ) = @_;
+    # $self->schema->cobrand($c->cobrand);
     $self->schema->cache({});
     return $self;
 }
