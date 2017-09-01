@@ -295,6 +295,16 @@ sub permissions {
 sub has_permission_to {
     my ($self, $permission_type, $body_ids) = @_;
 
+    # Nobody, including superusers, can have a permission which isn't available
+    # in the current cobrand.
+    my $cobrand = $self->result_source->schema->cobrand;
+    my $cobrand_perms = $cobrand->available_permissions;
+    my %available = map { %$_ } values %$cobrand_perms;
+    # The 'trusted' permission is never set in the cobrand's
+    # available_permissions (see note there in Default.pm) so include it here.
+    $available{trusted} = 1;
+    return 0 unless $available{$permission_type};
+
     return 1 if $self->is_superuser;
     return 0 if !$body_ids || (ref $body_ids && !@$body_ids);
     $body_ids = [ $body_ids ] unless ref $body_ids;
