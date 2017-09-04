@@ -33,6 +33,7 @@
         - Debug toolbar added. #1823
         - `switch-site` script to automate switching config.yml files. #1741
         - `make_css --watch` can run custom script after each compilation.
+        - Upgrade comonlib to get nicer MapIt error message.
 
 * v2.1.1 (3rd August 2017)
     - Email improvements:
