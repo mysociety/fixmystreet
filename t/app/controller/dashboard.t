@@ -604,7 +604,7 @@ FixMyStreet::override_config {
         }
         is scalar @rows, 6, '1 (header) + 5 (reports) = 6 lines';
 
-        is scalar @{$rows[0]}, 16, '16 columns present';
+        is scalar @{$rows[0]}, 18, '18 columns present';
 
         is_deeply $rows[0],
             [
@@ -623,11 +623,16 @@ FixMyStreet::override_config {
                 'Longitude',
                 'Nearest Postcode',
                 'Ward',
+                'Easting',
+                'Northing',
                 'Report URL',
             ],
             'Column headers look correct';
 
         is $rows[5]->[14], 'Bradford-on-Avon', 'Ward column is name not ID';
+
+        is $rows[5]->[15], '610591', 'Correct Easting conversion';
+        is $rows[5]->[16], '126573', 'Correct Northing conversion';
     };
 };
 restore_time;
