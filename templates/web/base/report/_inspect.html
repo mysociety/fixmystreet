@@ -171,6 +171,7 @@
           [% ELSE %]
             <p>[% loc("<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on.") %]</p>
           [% END %]
+          [% TRY %][% INCLUDE 'report/_inspect_extra_info.html' %][% CATCH file %][% END %]
         [% END %]
 
         <p>

@@ -38,6 +38,7 @@ foreach my $inspector (@inspectors) {
         end_date => $end_date,
         inspection_date => $inspection_date,
         user => $inspector,
+        mark_as_processed => 1,
     };
     my $rdi = FixMyStreet::Integrations::ExorRDI->new($params);
     try {

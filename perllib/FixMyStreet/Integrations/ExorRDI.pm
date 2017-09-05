@@ -23,7 +23,7 @@ use Scalar::Util 'blessed';
 use FixMyStreet::DB;
 use namespace::clean;
 
-has [qw(start_date end_date inspection_date)] => (
+has [qw(start_date end_date inspection_date mark_as_processed)] => (
     is => 'ro',
     required => 1,
 );
@@ -43,13 +43,23 @@ sub construct {
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('oxfordshire')->new;
     my $dtf = $cobrand->problems->result_source->storage->datetime_parser;
 
+    my $missed_cutoff = DateTime->now - DateTime::Duration->new( hours => 24 );
     my %params = (
         -and => [
             state => [ 'action scheduled' ],
             external_id => { '!=' => undef },
-            'admin_log_entries.action' => 'inspected',
-            'admin_log_entries.whenedited' => { '>=', $dtf->format_datetime($self->start_date) },
-            'admin_log_entries.whenedited' => { '<=', $dtf->format_datetime($self->end_date) },
+            -or => [
+                -and => [
+                    'admin_log_entries.action' => 'inspected',
+                    'admin_log_entries.whenedited' => { '>=', $dtf->format_datetime($self->start_date) },
+                    'admin_log_entries.whenedited' => { '<=', $dtf->format_datetime($self->end_date) },
+                ],
+                -and => [
+                    extra => { -not_like => '%rdi_processed%' },
+                    'admin_log_entries.action' => 'inspected',
+                    'admin_log_entries.whenedited' => { '<=', $dtf->format_datetime($missed_cutoff) },
+                ]
+            ]
         ]
     );
 
@@ -197,6 +207,16 @@ sub construct {
         $p_count,
         0, 0, 0 # error counts, always zero
     );
+
+    if ($self->mark_as_processed) {
+        # Mark all these problems are having been included in an RDI
+        my $now = DateTime->now->strftime( '%Y-%m-%d %H:%M' );
+        $problems->reset;
+        while ( my $report = $problems->next ) {
+            $report->set_extra_metadata('rdi_processed' => $now);
+            $report->update;
+        }
+    }
 
     # The RDI format is very weird CSV - each line must be wrapped in
     # double quotes.

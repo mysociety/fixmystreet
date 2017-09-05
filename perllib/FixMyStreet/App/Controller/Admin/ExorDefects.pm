@@ -59,6 +59,7 @@ sub download : Path('download') : Args(0) {
         inspection_date => $start_date,
         end_date => $end_date + $one_day,
         user => $c->get_param('user_id'),
+        mark_as_processed => 0,
     };
     my $rdi = FixMyStreet::Integrations::ExorRDI->new($params);
 

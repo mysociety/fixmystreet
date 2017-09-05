@@ -1,3 +1,5 @@
+use FixMyStreet::Integrations::ExorRDI;
+
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -46,6 +48,8 @@ subtest 'check /ajax defaults to open reports only' => sub {
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $inspector = $mech->create_user_ok('inspector@example.com', name => 'Inspector');
 $inspector->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+
+my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3 })->all;
 
 subtest 'Exor RDI download appears on Oxfordshire cobrand admin' => sub {
     FixMyStreet::override_config {
@@ -97,7 +101,6 @@ subtest 'Exor file looks okay' => sub {
         $dt2->set_extra_metadata(activity_code => 'S');
         $dt2->set_extra_metadata(defect_code => 'ACC2');
         $dt2->update;
-        my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3 })->all;
         my $i = 123;
         foreach my $problem (@problems) {
             $problem->update({ state => 'action scheduled', external_id => $i });
@@ -142,7 +145,35 @@ subtest 'Exor file looks okay' => sub {
 "P,0,999999"
 "X,3,3,3,3,0,0,0,3,0,3,0,0,0"
 EOF
+        foreach my $problem (@problems) {
+            $problem->discard_changes;
+            is $problem->get_extra_metadata('rdi_processed'), undef, "Problem was not logged as sent in RDI";
+        }
+
     }
+};
+
+subtest 'Reports are marked as inspected correctly' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        my $date = DateTime->new(year => 2017, month => 5, day => 5, hour => 12);
+        my $params = {
+            start_date => $date,
+            end_date => $date,
+            inspection_date => $date,
+            user => $inspector,
+            mark_as_processed => 1,
+        };
+        my $rdi = FixMyStreet::Integrations::ExorRDI->new($params);
+        $rdi->construct;
+
+        my $now = DateTime->now->strftime( '%Y-%m-%d %H:%M' );
+        foreach my $problem (@problems) {
+            $problem->discard_changes;
+            is $problem->get_extra_metadata('rdi_processed'), $now, "Problem was logged as sent in RDI";
+        }
+    };
 };
 
 subtest 'response times messages displayed' => sub {
