@@ -1,0 +1,72 @@
+[% INCLUDE 'admin/header.html' title=tprintf(('Area stats for %s'), area_name) -%]
+<p>
+[% loc('There are currently:') %]
+</p>
+
+<table>
+  <tr>
+    <th></th>
+    <th>[% loc('Open') %]</th>
+    <th>[% loc('Scheduled') %]</th>
+    <th>[% loc('Closed') %]</th>
+    <th>[% loc('Fixed') %]</th>
+  </tr>
+  [% FOR k IN by_category.keys.sort %]
+    <tr>
+      <td>[% k %]</td>
+      <td>[% by_category.$k.open OR 0 %]</td>
+      <td>[% by_category.$k.scheduled OR 0 %]</td>
+      <td>[% by_category.$k.closed OR 0 %]</td>
+      <td>[% by_category.$k.fixed OR 0 %]</td>
+    </tr>
+  [% END %]
+
+</table>
+
+<p>
+[% loc('Issues in the last month:') %]
+</p>
+
+<p>
+[% tprintf(
+        loc('%d opened, %d scheduled, %d closed, %d fixed'),
+        open,
+        scheduled,
+        closed,
+        fixed
+        );
+%]
+</p>
+
+<table>
+  [% FOR k IN recent_by_category.keys.sort %]
+    <tr>
+      <td>[% k %]</td>
+      <td>[% recent_by_category.$k OR 0 %]</td>
+    </tr>
+  [% END %]
+</table>
+
+[% IF average > 0 %]
+<p>[% tprintf(loc('In the last month – average time between issue being opened and set to another status was %s days'), average) %]</p>
+[% ELSE %]
+<p>[% loc('In the last month no problems changed state') %]</p>
+[% END %]
+
+
+[% IF NOT c.user.area_id %]
+<p>
+<form action="" method="GET">
+[% loc('Show stats for:') %]
+    <select name="area">
+      <option value="">[% loc('Whole council') %]</option>
+      [% FOR area IN areas.values.sort('name')%]
+      <option value="[% area.id %]">[% area.name %]</option>
+      [% END %]
+    </select>
+    <input type="submit" value="Go">
+</form>
+</p>
+[% END %]
+
+[% INCLUDE 'admin/footer.html' %]

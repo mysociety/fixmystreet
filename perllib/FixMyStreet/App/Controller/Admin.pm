@@ -553,7 +553,7 @@ sub fetch_translations : Private {
     $c->stash->{translations} = $translations;
 }
 
-sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
+sub lookup_body : Private {
     my ( $self, $c, $body_id ) = @_;
 
     $c->stash->{body_id} = $body_id;
@@ -561,7 +561,14 @@ sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
     $c->detach( '/page_error_404_not_found', [] )
       unless $body;
     $c->stash->{body} = $body;
-    
+}
+
+sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
+    my ( $self, $c, $body_id ) = @_;
+
+    $c->forward('lookup_body');
+    my $body = $c->stash->{body};
+
     if ($body->body_areas->first) {
         my $example_postcode = mySociety::MaPit::call('area/example_postcode', $body->body_areas->first->area_id);
         if ($example_postcode && ! ref $example_postcode) {

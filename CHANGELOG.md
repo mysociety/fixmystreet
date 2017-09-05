@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - New features:
+        - Area summary statistics page in admin #1834
 
 * v2.2 (13th September 2017)
     - New features:
