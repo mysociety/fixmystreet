@@ -79,12 +79,18 @@ FixMyStreet::override_config {
         $fixed_problems[1]->update({ confirmed => DateTime->now->subtract(days => 3) });
         $fixed_problems[2]->update({ confirmed => DateTime->now->subtract(days => 7) });
         $fixed_problems[3]->update({ confirmed => DateTime->now->subtract(days => 4) });
+        $scheduled_problems[0]->update({ confirmed => DateTime->now->subtract(days => 2) });
+        $scheduled_problems[1]->update({ confirmed => DateTime->now->subtract(days => 4) });
+        $scheduled_problems[2]->update({ confirmed => DateTime->now->subtract(days => 6) });
+        $scheduled_problems[3]->update({ confirmed => DateTime->now->subtract(days => 7) });
+        $scheduled_problems[4]->update({ confirmed => DateTime->now->subtract(days => 1) });
+        $scheduled_problems[6]->update({ confirmed => DateTime->now->subtract(days => 1) });
         $closed_problems[0]->update({ confirmed => DateTime->now->subtract(days => 6) });
         $closed_problems[1]->update({ confirmed => DateTime->now->subtract(days => 9) });
         $closed_problems[2]->update({ confirmed => DateTime->now->subtract(days => 12) });
 
         $mech->get_ok('/admin/areastats/20720');
-        $mech->text_contains('average time between issue being opened and set to another status was 6 days');
+        $mech->text_contains('average time between issue being opened and set to another status was 5 days');
     }
 };
 
