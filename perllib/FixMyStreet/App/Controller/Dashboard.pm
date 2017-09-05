@@ -212,6 +212,9 @@ sub export_as_csv {
             'Status',
             'Latitude', 'Longitude',
             'Nearest Postcode',
+            'Ward',
+            'Easting',
+            'Northing',
             'Report URL',
             );
     my @body = ($csv->string);
@@ -243,6 +246,13 @@ sub export_as_csv {
             }
         }
 
+        my $wards = join ', ',
+          map { $c->stash->{children}->{$_}->{name} }
+          grep {$c->stash->{children}->{$_} }
+          split ',', $hashref->{areas};
+
+        my @local_coords = $report->local_coords;
+
         $csv->combine(
             @{$hashref}{
                 'id',
@@ -259,6 +269,9 @@ sub export_as_csv {
                 'latitude', 'longitude',
                 'postcode',
                 },
+            $wards,
+            $local_coords[0],
+            $local_coords[1],
             (join '', $c->cobrand->base_url_for_report($report), $report->url),
         );
 

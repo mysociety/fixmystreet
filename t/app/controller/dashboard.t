@@ -593,6 +593,7 @@ FixMyStreet::override_config {
             detail => "this report\nis split across\nseveral lines",
             state => "confirmed",
             conf_dt => DateTime->now(),
+            areas => 62883,
         } );
         $mech->get_ok('/dashboard?export=1');
         open my $data_handle, '<', \$mech->content;
@@ -602,6 +603,36 @@ FixMyStreet::override_config {
             push @rows, $row;
         }
         is scalar @rows, 6, '1 (header) + 5 (reports) = 6 lines';
+
+        is scalar @{$rows[0]}, 18, '18 columns present';
+
+        is_deeply $rows[0],
+            [
+                'Report ID',
+                'Title',
+                'Detail',
+                'User Name',
+                'Category',
+                'Created',
+                'Confirmed',
+                'Acknowledged',
+                'Fixed',
+                'Closed',
+                'Status',
+                'Latitude',
+                'Longitude',
+                'Nearest Postcode',
+                'Ward',
+                'Easting',
+                'Northing',
+                'Report URL',
+            ],
+            'Column headers look correct';
+
+        is $rows[5]->[14], 'Bradford-on-Avon', 'Ward column is name not ID';
+
+        is $rows[5]->[15], '610591', 'Correct Easting conversion';
+        is $rows[5]->[16], '126573', 'Correct Northing conversion';
     };
 };
 restore_time;

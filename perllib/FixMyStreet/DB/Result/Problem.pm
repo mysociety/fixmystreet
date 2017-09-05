@@ -861,6 +861,7 @@ sub as_hashref {
         latitude  => $self->latitude,
         longitude => $self->longitude,
         postcode  => $self->postcode,
+        areas     => $self->areas,
         state     => $self->state,
         state_t   => _( $self->state ),
         used_map  => $self->used_map,
