@@ -250,4 +250,93 @@ sub include_comment_counts {
     });
 }
 
+sub in_area {
+    my ( $rs, $area_id, $since, $states ) = @_;
+    my $params = {
+        areas => { like => "%,$area_id,%"}
+    };
+    if (defined $states) {
+        $params->{state} = $states;
+    }
+    if ($since) {
+      $since = DateTime::Format::W3CDTF->format_datetime($since);
+      $params->{created} = { '>=', $since };
+    }
+    return $rs->search($params);
+}
+
+sub planned_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    my $reports = $rs->in_area($area_id);
+    my $params = {
+      'user_planned_reports.id' => \'IS NOT NULL'
+    };
+    if ($since) {
+      $since = DateTime::Format::W3CDTF->format_datetime($since);
+      $params->{'user_planned_reports.added'} = { '>=', $since };
+    }
+    $reports->search(
+      $params,
+      {
+        join => 'user_planned_reports'
+      }
+    );
+}
+
+sub in_area_with_current_states {
+    my ( $rs, $area_id, $states, $since ) = @_;
+    my $reports = $rs->in_area($area_id);
+    my $params = {};
+    if (@$states) {
+        $params->{'state'} = $states;
+    }
+    if ($since) {
+      $since = DateTime::Format::W3CDTF->format_datetime($since);
+      $params->{'lastupdate'} = { '>=', $since };
+    }
+    $reports->search(
+      $params,
+      {
+          order_by => 'lastupdate'
+      }
+    );
+}
+
+sub in_area_with_states {
+    my ( $rs, $area_id, $states, $since ) = @_;
+    my $reports = $rs->in_area($area_id);
+    my $params = {};
+    if (@$states) {
+        $params->{'comments.problem_state'} = $states;
+    }
+    if ($since) {
+      $since = DateTime::Format::W3CDTF->format_datetime($since);
+      $params->{'comments.created'} = { '>=', $since };
+    }
+    $reports->search(
+      $params,
+      {
+          join => 'comments',
+          group_by => 'me.id, comments.created',
+          order_by => 'comments.created'
+      }
+    );
+}
+
+sub open_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    $rs->in_area($area_id, $since, [ FixMyStreet::DB::Result::Problem->open_states() ]);
+}
+
+sub fixed_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    $rs->in_area_with_states($area_id, [ FixMyStreet::DB::Result::Problem->fixed_states() ], $since);
+}
+
+sub closed_in_area {
+    my ( $rs, $area_id, $since ) = @_;
+    $rs->in_area_with_states($area_id, [ FixMyStreet::DB::Result::Problem->closed_states() ], $since);
+}
+
+
 1;

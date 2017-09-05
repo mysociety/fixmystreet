@@ -91,8 +91,14 @@ sub dispatch_request {
 
     sub (GET + /area/*) {
         my ($self, $area) = @_;
-        my $response = { "id" => $area, "name" => "Area $area", "type" => "UTA" };
-        return $self->output($response);
+        my $response;
+        if ($area eq 'XXX') {
+          $response = { code => 404, error => "No Area matches the given query." };
+          return [ 404, [ 'Content-Type' => 'application/json' ], [ $self->json->encode($response) ] ];
+        } else {
+          $response = { "id" => $area, "name" => "Area $area", "type" => "UTA" };
+          return $self->output($response);
+        }
     },
 
     sub (GET + /area/*/children) {

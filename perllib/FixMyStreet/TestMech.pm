@@ -720,4 +720,18 @@ sub get_photo_data {
     };
 }
 
+sub create_comment_for_problem {
+    my ( $mech, $problem, $user, $name, $text, $anonymous, $state, $problem_state, $params ) = @_;
+    $params ||= {};
+    $params->{problem_id} = $problem->id;
+    $params->{user_id} = $user->id;
+    $params->{name} = $name;
+    $params->{text} = $text;
+    $params->{anonymous} = $anonymous;
+    $params->{problem_state} = $problem_state;
+    $params->{state} = $state;
+    $params->{mark_fixed} = $problem_state && FixMyStreet::DB::Result::Problem->fixed_states()->{$problem_state} ? 1 : 0;
+
+    FixMyStreet::App->model('DB::Comment')->create($params);
+}
 1;
