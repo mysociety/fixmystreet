@@ -18,22 +18,23 @@ my $area_id = '20720';
 $mech->create_problems_for_body(2, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \'current_timestamp', category => 'Potholes' });
 $mech->create_problems_for_body(3, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \'current_timestamp', category => 'Traffic lights' });
 
-my @planned_problems = $mech->create_problems_for_body(7, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \'current_timestamp', category => 'Traffic lights' });
+my @scheduled_problems = $mech->create_problems_for_body(7, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \'current_timestamp', category => 'Traffic lights' });
 my @fixed_problems = $mech->create_problems_for_body(4, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \'current_timestamp', category => 'Potholes' });
 my @closed_problems = $mech->create_problems_for_body(3, $oxfordshire->id, 'Title', { areas => ",$area_id,6753,4324,", created => \'current_timestamp', category => 'Traffic lights' });
 
-foreach my $problem (@planned_problems) {
-    $oxfordshireuser->add_to_planned_reports($problem);
+foreach my $problem (@scheduled_problems) {
+    $problem->update({ state => 'planned' });
+    $mech->create_comment_for_problem($problem, $oxfordshireuser, 'Title', 'text', 0, 'confirmed', 'planned', { confirmed => \'current_timestamp' });
 }
 
 foreach my $problem (@fixed_problems) {
     $problem->update({ state => 'fixed - council' });
-    $mech->create_comment_for_problem($problem, $oxfordshireuser, 'Title', 'text', 0, 'confirmed', 'fixed');
+    $mech->create_comment_for_problem($problem, $oxfordshireuser, 'Title', 'text', 0, 'confirmed', 'fixed', { confirmed => \'current_timestamp' });
 }
 
 foreach my $problem (@closed_problems) {
     $problem->update({ state => 'closed' });
-    $mech->create_comment_for_problem($problem, $oxfordshireuser, 'Title', 'text', 0, 'confirmed', 'closed');
+    $mech->create_comment_for_problem($problem, $oxfordshireuser, 'Title', 'text', 0, 'confirmed', 'closed', { confirmed => \'current_timestamp' });
 }
 
 $mech->log_in_ok( $superuser->email );
@@ -68,9 +69,9 @@ FixMyStreet::override_config {
 
     subtest 'shows correct stats' => sub {
         $mech->get_ok('/admin/areastats/20720');
-        $mech->content_contains('In the last month 12 issues opened, 7 scheduled, 3 closed, 4 fixed');
+        $mech->content_contains('In the last month 19 issues opened, 7 scheduled, 3 closed, 4 fixed');
         $mech->text_contains('Potholes2004');
-        $mech->text_contains('Traffic lights10730');
+        $mech->text_contains('Traffic lights3730');
     };
 
     subtest 'shows average correctly' => sub {
