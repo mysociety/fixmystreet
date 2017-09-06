@@ -4,7 +4,7 @@ ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my @urls = (
     "/",
-    "/reports",
+    "/contact",
     "/about/faq",
     "/around?longitude=-1.351488&latitude=51.847235"
 );
