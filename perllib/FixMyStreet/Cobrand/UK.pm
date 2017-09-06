@@ -254,25 +254,25 @@ sub council_rss_alert_options {
         push @options, {
             type  => 'area',
             id    => sprintf( 'area:%s:%s', $district->{id}, $district->{id_name} ),
-            text  => $district_name,
+            text  => sprintf( _('Problems within %s'), $district_name ),
             rss_text => sprintf( _('RSS feed for %s'), $district_name ),
             uri => $c->uri_for( '/rss/area/' . $district->{short_name}  )
         }, {
             type      => 'area',
             id        => sprintf( 'area:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
-            text      => sprintf( _('%s ward, %s'), $d_ward_name, $district_name ),
+            text      => sprintf( _('Problems within %s ward, %s'), $d_ward_name, $district_name ),
             rss_text  => sprintf( _('RSS feed for %s ward, %s'), $d_ward_name, $district_name ),
             uri       => $c->uri_for( '/rss/area/' . $district->{short_name} . '/' . $d_ward->{short_name} )
         }, {
             type  => 'area',
             id    => sprintf( 'area:%s:%s', $county->{id}, $county->{id_name} ),
-            text  => $county_name,
+            text  => sprintf( _('Problems within %s'), $county_name ),
             rss_text => sprintf( _('RSS feed for %s'), $county_name ),
             uri => $c->uri_for( '/rss/area/' . $county->{short_name}  )
         }, {
             type      => 'area',
             id        => sprintf( 'area:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
-            text      => sprintf( _('%s ward, %s'), $c_ward_name, $county_name ),
+            text      => sprintf( _('Problems within %s ward, %s'), $c_ward_name, $county_name ),
             rss_text  => sprintf( _('RSS feed for %s ward, %s'), $c_ward_name, $county_name ),
             uri       => $c->uri_for( '/rss/area/' . $county->{short_name} . '/' . $c_ward->{short_name} )
         };
@@ -280,26 +280,26 @@ sub council_rss_alert_options {
         push @reported_to_options, {
             type      => 'council',
             id        => sprintf( 'council:%s:%s', $district->{id}, $district->{id_name} ),
-            text      => $district->{name},
+            text      => sprintf( _('Reports sent to %s'), $district->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $district->{short_name} ),
         }, {
             type     => 'ward',
             id       => sprintf( 'ward:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
-            text     => sprintf( _('%s, within %s ward'), $district->{name}, $d_ward->{name}),
+            text     => sprintf( _('Reports sent to %s, within %s ward'), $district->{name}, $d_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
         }, {
             type      => 'council',
             id        => sprintf( 'council:%s:%s', $county->{id}, $county->{id_name} ),
-            text      => $county->{name},
+            text      => sprintf( _('Reports sent to %s'), $county->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $county->{short_name} ),
         }, {
             type     => 'ward',
             id       => sprintf( 'ward:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
-            text     => sprintf( _('%s, within %s ward'), $county->{name}, $c_ward->{name}),
+            text     => sprintf( _('Reports sent to %s, within %s ward'), $county->{name}, $c_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
         };
 

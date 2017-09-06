@@ -24,7 +24,7 @@ FixMyStreet::override_config {
 
     $mech->get_ok('/alert/list?pc=EH1 1BB');
     $mech->title_like(qr/^Local RSS feeds and email alerts/);
-    $mech->content_contains('Here are the types of local problem alerts for &lsquo;EH1&nbsp;1BB&rsquo;');
+    $mech->content_contains('Local RSS feeds and email alerts for ‘EH1 1BB’');
     $mech->content_contains('html class="no-js" lang="en-gb"');
     $mech->content_contains('Problems within 10.0km');
     $mech->content_contains('rss/pc/EH11BB/2');
@@ -47,8 +47,10 @@ FixMyStreet::override_config {
     $mech->get_ok('/alert/list?pc=');
     $mech->content_contains('To find out what local alerts we have for you');
 
+    # Two-tier council
     $mech->get_ok('/alert/list?pc=GL502PR');
-    $mech->content_contains('Problems within the boundary of');
+    $mech->content_contains('Problems in an area');
+    $mech->content_contains('Reports by destination');
 
     $mech->get_ok('/alert/subscribe?rss=1&type=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=' );
     $mech->content_contains('Please select the feed you want');

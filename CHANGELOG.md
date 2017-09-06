@@ -12,6 +12,7 @@
     - Front end improvements:
         - Always show pagination figures even if only one page. #1787
         - Report pages list every update to a report. #1806
+        - Clearer wording and more prominent email input on alert page.
         - Cobrands can implement `hide_areas_on_reports` to hide outline on map.
     - Admin improvements:
         - Highlight current shortlisted user in list tooltip. #1788
