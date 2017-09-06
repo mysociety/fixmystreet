@@ -15,10 +15,14 @@ sub example_places {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    #return 'grey' if $p->state eq 'not responsible';
-    #return 'green' if $p->is_fixed || $p->is_closed;
-    #return 'red' if $p->state eq 'confirmed';
-    return 'yellow';
+    return 'grey' if $p->is_closed;
+    return 'green' if $p->is_fixed;
+    return 'yellow' if $p->state eq 'confirmed';
+    return 'orange'; # all the other `open_states` like "in progress"
+}
+
+sub path_to_pin_icons {
+    return '/cobrands/oxfordshire/images/';
 }
 
 sub send_questionnaires {
