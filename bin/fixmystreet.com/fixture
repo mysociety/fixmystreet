@@ -78,7 +78,7 @@ $priority->[0]->add_to_contacts($body->contacts->first);
 
 # Users
 say "Created users, all with password 'password':";
-my $user; # Will store the final (normal) user of the loop for later user
+my %users;
 my $perms_inspector = ['report_inspect', 'planned_reports'];
 my $perms_cs = [
     'contribute_as_body', 'contribute_as_another_user',
@@ -95,7 +95,7 @@ foreach (
     { name => 'Wizard of Oz', email => 'admin@example.org', is_superuser => 't' },
     { name => "Norma User", email => 'user@example.org' },
 ) {
-    $user = FixMyStreet::DB::Factory::User->find_or_create($_);
+    $users{$_->{email}} = FixMyStreet::DB::Factory::User->find_or_create($_);
     my $perms = $_->{permissions} ? " (" . join(', ', @{$_->{permissions} || []}) . ")" : "";
     my $su = $_->{is_superuser} ? " (superuser)" : "";
     say "* $_->{email}$perms$su";
@@ -129,7 +129,8 @@ foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
     }
 }
 
-my $num = 10;
+my $user = $users{'user@example.org'};
+my $num = 20;
 say "Created $num problems around '$location' in cobrand '$cobrand'";
 my $inaccurate_km = 0.01;
 my $confirmed = DateTime->today->subtract(days => 1)->add(hours => 8);
@@ -143,14 +144,19 @@ for (1..$num) {
         areas => ',' . $opt->area_id . ',',
         user => $user,
         postcode => $location,
-        latitude => $lat + rand($inaccurate_km) - $inaccurate_km / 2,
-        longitude => $lon + rand($inaccurate_km) - $inaccurate_km / 2,
+        latitude => $lat + rand(2 * $inaccurate_km) - $inaccurate_km,
+        longitude => $lon + rand(3 * $inaccurate_km) - 1.5 * $inaccurate_km,
         category => $category,
         cobrand => $cobrand,
         title => $titles->[int(rand(@$titles))],
         detail => 'The details of the report would be here, provided by the user, including exact location and how long it has been here.',
         confirmed => DateTime::Format::Pg->format_datetime($confirmed),
     });
+}
+
+for (1..3) {
+    my $p = $problems->[int(rand(@$problems))];
+    $users{'inspector@example.org'}->add_to_planned_reports($p);
 }
 
 # Comment
