@@ -181,7 +181,7 @@ sub export_as_csv {
     my ($self, $c, $problems_rs, $body) = @_;
     require Text::CSV;
     my $problems = $problems_rs->search(
-        {}, { prefetch => 'comments' });
+        {}, { prefetch => 'comments', order_by => 'me.confirmed' });
 
     my $filename = do {
         my %where = (

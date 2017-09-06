@@ -531,12 +531,12 @@ FixMyStreet::override_config {
             desc => 'Selecting no state does nothing',
             p1 => {
                     state   => 'fixed - user',
-                    conf_dt => DateTime->now(),
+                    conf_dt => DateTime->now()->subtract( minutes => 1 ),
                     category => 'Potholes',
             },
             p2 => {
                     state   => 'confirmed',
-                    conf_dt => DateTime->now(),
+                    conf_dt => DateTime->now()->subtract( minutes => 1 ),
                     category => 'Litter',
             },
             state => '',
@@ -553,12 +553,12 @@ FixMyStreet::override_config {
             desc => 'All fixed states count as fixed',
             p1 => {
                     state   => 'fixed - council',
-                    conf_dt => DateTime->now(),
+                    conf_dt => DateTime->now()->subtract( minutes => 1 ),
                     category => 'Potholes',
             },
             p2 => {
                     state   => 'fixed',
-                    conf_dt => DateTime->now(),
+                    conf_dt => DateTime->now()->subtract( minutes => 1 ),
                     category => 'Potholes',
             },
             state => 'fixed',
