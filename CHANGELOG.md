@@ -9,6 +9,8 @@
         - Body users can filter reports by all states. #1790
         - `LOGIN_REQUIRED` config key to limit site access to logged-in users.
         - `SIGNUPS_DISABLED` config key to prevent new user registrations.
+        - Body dashboard CSV export includes Northing, Easting and Ward.
+          It also now orders fields by report confirmed time. #1832 #1835
     - Front end improvements:
         - Always show pagination figures even if only one page. #1787
         - Report pages list every update to a report. #1806
