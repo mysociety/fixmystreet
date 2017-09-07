@@ -1,0 +1,9 @@
+[% IF report AND c.cobrand.problem_response_days(report) > 0 %]
+  <p>
+      Problems in the
+      [% report.category %]
+      category are generally responded to within
+      [% c.cobrand.problem_response_days(report) %]
+      working days.
+  </p>
+[% END %]
