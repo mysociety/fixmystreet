@@ -82,12 +82,13 @@ var fixmystreet = fixmystreet || {};
                     fixmystreet.map.getProjectionObject()
                 );
             }
-            var marker_size = (pin[3] === window.selected_problem_id) ? selected_size : size;
+            var id = +pin[3];
+            var marker_size = (id === window.selected_problem_id) ? selected_size : size;
             var marker = new OpenLayers.Feature.Vector(loc, {
                 colour: pin[2],
                 size: pin[5] || marker_size,
                 faded: 0,
-                id: pin[3],
+                id: id,
                 title: pin[4] || '',
                 draggable: pin[6] === false ? false : true
             });
