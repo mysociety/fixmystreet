@@ -14,6 +14,8 @@
     [% END %]
     </p>
 
+    [% TRY %][% INCLUDE '_email_sent_extra.html' %][% CATCH file %][% END %]
+
     <p>
         [% loc("Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time.") %]
     </p>
