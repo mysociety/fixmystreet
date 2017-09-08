@@ -144,6 +144,7 @@ CREATE TABLE response_priorities (
     name text not null,
     description text,
     external_id text,
+    is_default boolean not null default 'f',
     unique(body_id, name)
 );
 
