@@ -695,6 +695,7 @@ subtest "only superuser can edit bodies" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAPIT_URL => 'http://mapit.zurich/',
     }, sub {
         $mech->get( '/admin/body/' . $zurich->id );
     };

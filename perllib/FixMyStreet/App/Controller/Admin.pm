@@ -553,10 +553,10 @@ sub fetch_translations : Private {
     $c->stash->{translations} = $translations;
 }
 
-sub lookup_body : Private {
-    my ( $self, $c ) = @_;
+sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
+    my ( $self, $c, $body_id ) = @_;
 
-    my $body_id = $c->stash->{body_id};
+    $c->stash->{body_id} = $body_id;
     my $body = $c->model('DB::Body')->find($body_id);
     $c->detach( '/page_error_404_not_found', [] )
       unless $body;
@@ -568,30 +568,6 @@ sub lookup_body : Private {
             $c->stash->{example_pc} = $example_postcode;
         }
     }
-
-    return 1;
-}
-
-sub body_base : Chained('/') : PathPart('admin/body') : CaptureArgs(0) { }
-
-# This is for if the category name contains a '/'
-sub category_edit_all : Chained('body_base') : PathPart('') {
-    my ( $self, $c, $body_id, @category ) = @_;
-    my $category = join( '/', @category );
-
-    $c->stash->{body_id} = $body_id;
-    $c->forward( 'lookup_body' );
-
-    my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
-    $c->stash->{contact} = $contact;
-
-    $c->stash->{template} = 'admin/category_edit.html';
-    $c->forward( 'category_edit' );
-}
-
-sub body : Chained('body_base') : PathPart('') : CaptureArgs(1) {
-    my ( $self, $c, $body_id ) = @_;
-    $c->stash->{body_id} = $body_id;
 }
 
 sub edit_body : Chained('body') : PathPart('') : Args(0) {
@@ -602,7 +578,6 @@ sub edit_body : Chained('body') : PathPart('') : Args(0) {
     }
 
     $c->forward( '/auth/get_csrf_token' );
-    $c->forward( 'lookup_body' );
     $c->forward( 'fetch_all_bodies' );
     $c->forward( 'body_form_dropdowns' );
     $c->forward('fetch_languages');
@@ -631,18 +606,15 @@ sub edit_body : Chained('body') : PathPart('') : Args(0) {
     return 1;
 }
 
-sub category : Chained('body') : PathPart('') : CaptureArgs(1) {
-    my ( $self, $c, $category ) = @_;
+sub category : Chained('body') : PathPart('') {
+    my ( $self, $c, @category ) = @_;
+    my $category = join( '/', @category );
 
     $c->forward( '/auth/get_csrf_token' );
-    $c->forward( 'lookup_body' );
+    $c->stash->{template} = 'admin/category_edit.html';
 
     my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
     $c->stash->{contact} = $contact;
-}
-
-sub category_edit : Chained('category') : PathPart('') : Args(0) {
-    my ( $self, $c ) = @_;
 
     $c->stash->{translation_col} = 'category';
     $c->stash->{object} = $c->stash->{contact};
