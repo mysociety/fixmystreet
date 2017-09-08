@@ -1470,12 +1470,32 @@ subtest "response priorities can be added" => sub {
         name => "Cat 1A",
         description => "Fixed within 24 hours",
         deleted => undef,
+        is_default => undef,
         "contacts[".$oxfordshirecontact->id."]" => 1,
     };
     $mech->submit_form_ok( { with_fields => $fields } );
 
      is $oxfordshire->response_priorities->count, 1, "Response template was added to body";
      is $oxfordshirecontact->response_priorities->count, 1, "Response template was added to contact";
+};
+
+subtest "response priorities can set to default" => sub {
+    my $priority_id = $oxfordshire->response_priorities->first->id;
+    is $oxfordshire->response_priorities->count, 1, "Response priority exists";
+    $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id . "/$priority_id" );
+
+    my $fields = {
+        name => "Cat 1A",
+        description => "Fixed within 24 hours",
+        deleted => undef,
+        is_default => 1,
+        "contacts[".$oxfordshirecontact->id."]" => 1,
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+     is $oxfordshire->response_priorities->count, 1, "Still one response priority";
+     is $oxfordshirecontact->response_priorities->count, 1, "Still one response template";
+     ok $oxfordshire->response_priorities->first->is_default, "Response priority set to default";
 };
 
 subtest "response priorities can be listed" => sub {
