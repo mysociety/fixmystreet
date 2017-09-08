@@ -27,7 +27,7 @@ Admin pages
 
 =cut
 
-sub begin : Private {
+sub auto : Private {
     my ( $self, $c ) = @_;
 
     $c->uri_disposition('relative');
@@ -44,10 +44,6 @@ sub begin : Private {
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $c->cobrand->admin_type();
     }
-}
-
-sub auto : Private {
-    my ( $self, $c ) = @_;
 
     $c->forward('check_page_allowed');
 }

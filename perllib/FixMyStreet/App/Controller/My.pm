@@ -19,9 +19,10 @@ Catalyst Controller.
 
 =cut
 
-sub begin : Private {
+sub auto : Private {
     my ($self, $c) = @_;
     $c->detach( '/auth/redirect' ) unless $c->user;
+    return 1;
 }
 
 =head2 index
