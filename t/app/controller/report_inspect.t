@@ -226,6 +226,18 @@ FixMyStreet::override_config {
         $user->user_body_permissions->search({ body_id => $oxon->id, permission_type => 'planned_reports' })->delete;
     };
 
+    subtest "default response priorities display correctly" => sub {
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('Priority</label', 'report priority list present');
+        like $mech->content, qr/<select name="priority" id="problem_priority" class="form-control">[^<]*<option value="" selecte/s, 'blank priority option is selected';
+        $mech->content_lacks('value="' . $rp->id . '" selected>High', 'non default priority not selected');
+
+        $rp->update({ is_default => 1});
+        $mech->get_ok("/report/$report_id");
+        unlike $mech->content, qr/<select name="priority" id="problem_priority" class="form-control">[^<]*<option value="" selecte/s, 'blank priority option not selected';
+        $mech->content_contains('value="' . $rp->id . '" selected>High', 'default priority selected');
+    };
+
     foreach my $test (
         { type => 'report_edit_priority', priority => 1 },
         { type => 'report_edit_category', category => 1 },
