@@ -6,12 +6,6 @@ use mySociety::ArrayUtils;
 BEGIN { extends 'Catalyst::Controller'; }
 
 
-sub begin : Private {
-    my ( $self, $c ) = @_;
-
-    $c->forward('/admin/begin');
-}
-
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
