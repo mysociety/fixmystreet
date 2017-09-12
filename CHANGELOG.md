@@ -57,6 +57,7 @@
           Open311 updates. #1924
     - Development improvements:
         - Add hook for pre-wrapper content.
+        - Include JSON representation of extra fields in category_extras output
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.
