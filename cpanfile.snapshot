@@ -3350,6 +3350,16 @@ DISTRIBUTIONS
       Mozilla::CA 20110101
       Net::HTTPS 6
       perl 5.008001
+  LWPx-Profile-0.2
+    pathname: C/CR/CREIN/LWPx-Profile-0.2.tar.gz
+    provides:
+      LWPx::Profile 0.2
+    requirements:
+      ExtUtils::MakeMaker 0
+      LWP::UserAgent 0
+      Time::HiRes 0
+      strict 0
+      warnings 0
   Lexical-SealRequireHints-0.010
     pathname: Z/ZE/ZEFRAM/Lexical-SealRequireHints-0.010.tar.gz
     provides:
@@ -4853,6 +4863,17 @@ DISTRIBUTIONS
       Test::Fatal 0
       Test::More 0.96
       perl 5.008008
+  Plack-Middleware-Debug-LWP-0.3
+    pathname: C/CR/CREIN/Plack-Middleware-Debug-LWP-0.3.tar.gz
+    provides:
+      Plack::Middleware::Debug::LWP 0.3
+    requirements:
+      ExtUtils::MakeMaker 0
+      LWPx::Profile 0
+      Plack::Middleware::Debug::Base 0
+      parent 0
+      strict 0
+      warnings 0
   Plack-Middleware-Debug-Template-1.00
     pathname: M/MY/MYSOCIETY/Plack-Middleware-Debug-Template-1.00.tar.gz
     provides:
