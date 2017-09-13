@@ -6,6 +6,7 @@
         <th>  [% loc('Name') %] </th>
         <th>  [% loc('Description') %] </th>
         <th>  [% loc('Categories') %] </th>
+        <th>  [% loc('Default') %] </th>
         <th>  &nbsp; </th>
     </tr>
     </thead>
@@ -23,6 +24,7 @@
                   [% END %]
                 [% END %]
               </td>
+              <td> [% IF p.is_default %]X[% END %]</td>
               <td> <a href="[% c.uri_for('', body.id, p.id) %]" class="btn">[% loc('Edit') %]</a> </td>
           </tr>
       [% END %]

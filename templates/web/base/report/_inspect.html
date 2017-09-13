@@ -122,9 +122,9 @@
         <p>
           <label for="problem_priority">[% loc('Priority') %]</label>
           <select name="priority" id="problem_priority" class="form-control">
-            <option value="" [% 'selected' UNLESS problem.response_priority_id %]>-</option>
+            <option value="" [% 'selected' UNLESS problem.response_priority_id OR has_default_priority %]>-</option>
             [% FOREACH priority IN problem.response_priorities %]
-              <option value="[% priority.id %]" [% 'selected' IF problem.response_priority_id == priority.id %] [% 'disabled' IF priority.deleted %]>[% priority.name | html %]</option>
+              <option value="[% priority.id %]" [% 'selected' IF ( problem.response_priority_id == priority.id ) OR priority.is_default %][% 'disabled' IF priority.deleted %]>[% priority.name | html %]</option>
             [% END %]
           </select>
         </p>

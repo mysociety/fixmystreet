@@ -30,6 +30,18 @@
 
     <div class="admin-hint">
       <p>
+        [% loc('Select if this is the default priority') %]
+      </p>
+    </div>
+    <p>
+        <label>
+        <input type="checkbox" name="is_default" is="is_deleted" value="1"[% ' checked' IF rp.is_default %]>
+        [% loc('Default priority') %]
+        </label>
+    </p>
+
+    <div class="admin-hint">
+      <p>
         [% loc('If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories.') %]
       </p>
     </div>

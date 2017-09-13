@@ -320,6 +320,12 @@ sub inspect : Private {
         $c->stash->{post_inspect_url} = $c->req->referer;
     }
 
+    if ($c->user->has_body_permission_to('report_edit_priority') or
+        $c->user->has_body_permission_to('report_inspect')
+      ) {
+        $c->stash->{has_default_priority} = scalar( grep { $_->is_default } $problem->response_priorities );
+    }
+
     if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
 
