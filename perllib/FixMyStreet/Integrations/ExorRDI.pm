@@ -42,8 +42,11 @@ sub construct {
 
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('oxfordshire')->new;
     my $dtf = $cobrand->problems->result_source->storage->datetime_parser;
+    my $now = DateTime->now(
+        time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone
+    );
 
-    my $missed_cutoff = DateTime->now - DateTime::Duration->new( hours => 24 );
+    my $missed_cutoff = $now - DateTime::Duration->new( hours => 24 );
     my %params = (
         -and => [
             state => [ 'action scheduled' ],
@@ -210,10 +213,9 @@ sub construct {
 
     if ($self->mark_as_processed) {
         # Mark all these problems are having been included in an RDI
-        my $now = DateTime->now->strftime( '%Y-%m-%d %H:%M' );
         $problems->reset;
         while ( my $report = $problems->next ) {
-            $report->set_extra_metadata('rdi_processed' => $now);
+            $report->set_extra_metadata('rdi_processed' => $now->strftime( '%Y-%m-%d %H:%M' ));
             $report->update;
         }
     }

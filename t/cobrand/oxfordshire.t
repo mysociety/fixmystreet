@@ -1,3 +1,5 @@
+
+use Test::MockModule;
 use FixMyStreet::Integrations::ExorRDI;
 
 use FixMyStreet::TestMech;
@@ -158,6 +160,13 @@ subtest 'Reports are marked as inspected correctly' => sub {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
         my $date = DateTime->new(year => 2017, month => 5, day => 5, hour => 12);
+
+        my $now = DateTime->now(
+            time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone
+        );
+        my $datetime = Test::MockModule->new('DateTime');
+        $datetime->mock('now', sub { $now });
+
         my $params = {
             start_date => $date,
             end_date => $date,
@@ -168,10 +177,9 @@ subtest 'Reports are marked as inspected correctly' => sub {
         my $rdi = FixMyStreet::Integrations::ExorRDI->new($params);
         $rdi->construct;
 
-        my $now = DateTime->now->strftime( '%Y-%m-%d %H:%M' );
         foreach my $problem (@problems) {
             $problem->discard_changes;
-            is $problem->get_extra_metadata('rdi_processed'), $now, "Problem was logged as sent in RDI";
+            is $problem->get_extra_metadata('rdi_processed'), $now->strftime( '%Y-%m-%d %H:%M' ), "Problem was logged as sent in RDI";
         }
     };
 };
