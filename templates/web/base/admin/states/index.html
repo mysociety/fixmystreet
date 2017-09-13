@@ -6,9 +6,9 @@
 
 <table>
     <tr>
-        <th>Label</th>
-        <th>Type</th>
-        <th colspan="2">Name</th>
+        <th>[% loc('Label') %]</th>
+        <th>[% loc('Type') %]</th>
+        <th colspan="2">[% loc('Name') %]</th>
         <th>&nbsp;</th>
     </tr>
     [% FOREACH state IN open_states.merge(closed_states).merge(fixed_states) %]
@@ -97,7 +97,7 @@
     </p>
 
     <p>
-        <label for="type">[% loc('Label') %]</label>
+        <label for="type">[% loc('Type') %]</label>
         <select name="type" id="type">
             <option value="open">[% loc('Open') %]</option>
             <option value="closed">[% loc('Closed') %]</option>

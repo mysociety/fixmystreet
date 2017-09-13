@@ -24,7 +24,7 @@ FixMyStreet::override_config {
 
     $mech->get_ok('/alert/list?pc=EH1 1BB');
     $mech->title_like(qr/^Local RSS feeds and email alerts/);
-    $mech->content_contains('Local RSS feeds and email alerts for ‘EH1 1BB’');
+    $mech->content_like(qr/Local RSS feeds and email alerts for .EH1 1BB/);
     $mech->content_contains('html class="no-js" lang="en-gb"');
     $mech->content_contains('Problems within 10.0km');
     $mech->content_contains('rss/pc/EH11BB/2');
