@@ -7,8 +7,9 @@ use Memcached;
 
 sub _hardcoded_states {
     my $rs = shift;
-    my $open = $rs->new({ id => -1, label => 'confirmed', type => 'open', name => _("Open") });
-    my $closed = $rs->new({ id => -2, label => 'closed', type => 'closed', name => _("Closed") });
+    # These are translated on use, not here
+    my $open = $rs->new({ id => -1, label => 'confirmed', type => 'open', name => "Open" });
+    my $closed = $rs->new({ id => -2, label => 'closed', type => 'closed', name => "Closed" });
     return ($open, $closed);
 }
 
@@ -23,7 +24,7 @@ sub states {
     my $rs = shift;
 
     my $states = Memcached::get('states');
-    if ($states && !FixMyStreet->test_mode) {
+    if ($states) {
         # Need to reattach schema
         $states->[0]->result_source->schema( $rs->result_source->schema ) if $states->[0];
         return $states;
@@ -62,10 +63,15 @@ sub display {
         'fixed - council' => _("Fixed - Council"),
         'fixed - user' => _("Fixed - User"),
     };
+    my $translate_now = {
+        confirmed => _("Open"),
+        closed => _("Closed"),
+    };
     $label = 'fixed' if $single_fixed && $label =~ /^fixed - (council|user)$/;
     return $unchanging->{$label} if $unchanging->{$label};
     my ($state) = $rs->_filter(sub { $_->label eq $label });
     return $label unless $state;
+    $state->name($translate_now->{$label}) if $translate_now->{$label};
     return $state->msgstr;
 }
 
