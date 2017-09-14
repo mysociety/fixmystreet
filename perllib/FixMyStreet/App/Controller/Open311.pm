@@ -241,7 +241,8 @@ sub output_requests : Private {
             'long' => $problem->longitude,
             'status' => $problem->state,
 #            'status_notes' => {},
-            'requested_datetime' => w3date($problem->confirmed),
+            # Zurich has visible unconfirmed reports
+            'requested_datetime' => w3date($problem->confirmed || $problem->created),
             'updated_datetime' => w3date($problem->lastupdate),
 #            'expected_datetime' => {},
 #            'address' => {},
