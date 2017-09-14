@@ -96,7 +96,7 @@ sub problem_response_days {
     return 10 if $p->category eq 'Utilities';
     return 10 if $p->category eq 'Vegetation';
 
-    return undef;
+    return 0;
 }
 
 sub reports_ordering {

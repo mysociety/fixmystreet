@@ -1,20 +1,20 @@
 ## Releases
 
 * Unreleased
+
+* v2.2 (13th September 2017)
     - New features:
         - Body and category names can now be translated in the admin. #1244
         - Report states can be edited and translated in the admin. #1826
-        - Body users can now create reports as an anonymous user. #1796
-        - Extra fields can be added to report form site-wide. #1743
-        - Body users can filter reports by all states. #1790
+        - Extra fields can be added to the report form site-wide. #1743
+        - Staff users can now create reports as an anonymous user. #1796
+        - Staff users can filter reports by all states. #1790
         - `LOGIN_REQUIRED` config key to limit site access to logged-in users.
         - `SIGNUPS_DISABLED` config key to prevent new user registrations.
-        - Body dashboard CSV export includes Northing, Easting and Ward.
-          It also now orders fields by report confirmed time. #1832 #1835
     - Front end improvements:
         - Always show pagination figures even if only one page. #1787
-        - Report pages list every update to a report. #1806
-        - Clearer wording and more prominent email input on alert page.
+        - Report pages list more updates to a report. #1806
+        - Clearer wording and more prominent email input on alert page. #1829
         - Cobrands can implement `hide_areas_on_reports` to hide outline on map.
         - Templates to allow extra messages through problem confirmation. #1837
     - Admin improvements:
@@ -23,7 +23,9 @@
         - Clearer highlight for selected duplicate on inspect form. #1798
         - Include MapIt API key on admin config page. #1778
         - Redirect to same map view after inspection. #1820
-        - A default response priority can now be set #1838
+        - A default response priority can now be set. #1838
+        - Dashboard CSV export includes Northing, Easting and Ward.
+          It also now orders fields by report confirmed time. #1832 #1835
     - Bugfixes:
         - Set up action scheduled field when report loaded. #1789
         - Fix display of thumbnail images on page reload. #1815
