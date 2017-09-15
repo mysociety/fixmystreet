@@ -354,8 +354,12 @@ sub report_import : Path('/import') {
     my $report_user = $c->model('DB::User')->find_or_create(
         {
             email => lc $input{email},
+            email_verified => 1,
             name  => $input{name},
             phone => $input{phone}
+        },
+        {
+            key => 'users_email_verified_key'
         }
     );
 
@@ -447,7 +451,7 @@ sub initialize_report : Private {
 
             if ($report) {
                 # log the problem creation user in to the site
-                $c->authenticate( { email => $report->user->email },
+                $c->authenticate( { email => $report->user->email, email_verified => 1 },
                     'no_password' );
 
                 # save the token to delete at the end

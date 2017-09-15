@@ -19,7 +19,7 @@ __PACKAGE__->add_columns(
     sequence          => "users_id_seq",
   },
   "email",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "name",
   { data_type => "text", is_nullable => 1 },
   "phone",
@@ -30,21 +30,24 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "is_superuser",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "title",
   { data_type => "text", is_nullable => 1 },
   "twitter_id",
   { data_type => "bigint", is_nullable => 1 },
   "facebook_id",
   { data_type => "bigint", is_nullable => 1 },
-  "is_superuser",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "area_id",
   { data_type => "integer", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "email_verified",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "phone_verified",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
 __PACKAGE__->add_unique_constraint("users_facebook_id_key", ["facebook_id"]);
 __PACKAGE__->add_unique_constraint("users_twitter_id_key", ["twitter_id"]);
 __PACKAGE__->has_many(
@@ -102,8 +105,13 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-16 14:22:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7wfF1VnZax2QTXCIPXr+vg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-09-19 18:02:17
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OKHKCSahWD3Ov6ulj+2f/w
+
+# These are not fully unique constraints (they only are when the *_verified
+# is true), but this is managed in ResultSet::User's find() wrapper.
+__PACKAGE__->add_unique_constraint("users_email_verified_key", ["email", "email_verified"]);
+__PACKAGE__->add_unique_constraint("users_phone_verified_key", ["phone", "phone_verified"]);
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');

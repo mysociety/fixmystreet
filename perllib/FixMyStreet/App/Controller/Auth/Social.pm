@@ -185,7 +185,7 @@ sub oauth_success : Private {
 
     # If we've got here with a full user, log in
     if ($user) {
-        $c->authenticate( { email => $user->email }, 'no_password' );
+        $c->authenticate( { email => $user->email, email_verified => 1 }, 'no_password' );
         $c->stash->{login_success} = 1;
     }
 

@@ -21,9 +21,11 @@ create table sessions (
 -- users table
 create table users (
     id              serial  not null primary key,
-    email           text    not null unique,
+    email           text,
+    email_verified  boolean not null default 'f',
     name            text,
     phone           text,
+    phone_verified  boolean not null default 'f',
     password        text    not null default '',
     from_body       integer,
     flagged         boolean not null default 'f',
@@ -34,6 +36,8 @@ create table users (
     area_id         integer,
     extra           text
 );
+CREATE UNIQUE INDEX users_email_verified_unique ON users (email) WHERE email_verified;
+CREATE UNIQUE INDEX users_phone_verified_unique ON users (phone) WHERE phone_verified;
 
 -- Record details of reporting bodies, including open311 configuration details
 create table body (

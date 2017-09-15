@@ -667,8 +667,7 @@ sub create_problems_for_body {
     my $dt = $params->{dt} || DateTime->now();
 
     my $user = $params->{user} ||
-      FixMyStreet::DB->resultset('User')
-      ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
+      FixMyStreet::DB->resultset('User')->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 
     delete $params->{user};
     delete $params->{dt};

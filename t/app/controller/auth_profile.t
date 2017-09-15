@@ -102,7 +102,7 @@ subtest "Test change email page" => sub {
     $mech->content_contains('successfully confirmed');
     ok(FixMyStreet::App->model('DB::User')->find( { email => $test_email2 } ), "got a user");
 
-    ok(FixMyStreet::App->model('DB::User')->create( { email => $test_email } ), "created old user");
+    ok(FixMyStreet::App->model('DB::User')->create( { email => $test_email, email_verified => 1 } ), "created old user");
     $mech->submit_form_ok({ with_fields => { email => $test_email } },
         "change_email back to $test_email"
     );

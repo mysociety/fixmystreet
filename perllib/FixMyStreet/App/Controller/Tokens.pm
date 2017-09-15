@@ -109,7 +109,7 @@ sub confirm_problem : Path('/P') {
         $problem->user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
         $problem->user->update;
     }
-    $c->authenticate( { email => $problem->user->email }, 'no_password' );
+    $c->authenticate( { email => $problem->user->email, email_verified => 1 }, 'no_password' );
     $c->set_session_cookie_expire(0);
 
     $c->stash->{created_report} = 'fromemail';
@@ -170,7 +170,7 @@ sub confirm_alert : Path('/A') {
     }
 
     if (!$alert->confirmed && $c->stash->{confirm_type} ne 'unsubscribe') {
-        $c->authenticate( { email => $alert->user->email }, 'no_password' );
+        $c->authenticate( { email => $alert->user->email, email_verified => 1 }, 'no_password' );
         $c->set_session_cookie_expire(0);
     }
 
@@ -237,7 +237,7 @@ sub confirm_update : Path('/C') {
         $comment->user->update;
     }
 
-    $c->authenticate( { email => $comment->user->email }, 'no_password' );
+    $c->authenticate( { email => $comment->user->email, email_verified => 1 }, 'no_password' );
     $c->set_session_cookie_expire(0);
 
     $c->forward('/report/update/confirm');
@@ -269,7 +269,7 @@ sub questionnaire : Path('/Q') : Args(1) {
 
     my $questionnaire = $c->stash->{questionnaire};
     if (!$questionnaire->whenanswered) {
-        $c->authenticate( { email => $questionnaire->problem->user->email }, 'no_password' );
+        $c->authenticate( { email => $questionnaire->problem->user->email, email_verified => 1 }, 'no_password' );
         $c->set_session_cookie_expire(0);
     }
     $c->forward( '/questionnaire/show' );

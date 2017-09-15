@@ -1316,13 +1316,14 @@ sub user_add : Path('user_edit') : Args(0) {
     my $user = $c->model('DB::User')->find_or_create( {
         name => $c->get_param('name'),
         email => lc $c->get_param('email'),
+        email_verified => 1,
         phone => $c->get_param('phone') || undef,
         from_body => $c->get_param('body') || undef,
         flagged => $c->get_param('flagged') || 0,
         # Only superusers can create superusers
         is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
     }, {
-        key => 'users_email_key'
+        key => 'users_email_verified_key'
     } );
     $c->stash->{user} = $user;
     $c->forward('user_cobrand_extra_fields');

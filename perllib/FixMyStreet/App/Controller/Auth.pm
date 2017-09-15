@@ -76,7 +76,7 @@ sub sign_in : Private {
 
     if (   $email
         && $password
-        && $c->authenticate( { email => $email, password => $password } ) )
+        && $c->authenticate( { email => $email, email_verified => 1, password => $password } ) )
     {
 
         # unless user asked to be remembered limit the session to browser
@@ -233,7 +233,7 @@ sub token : Path('/M') : Args(1) {
     $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
     $user->update_or_insert;
-    $c->authenticate( { email => $user->email }, 'no_password' );
+    $c->authenticate( { email => $user->email, email_verified => 1 }, 'no_password' );
 
     # send the user to their page
     $c->detach( 'redirect_on_signin', [ $data->{r}, $data->{p} ] );

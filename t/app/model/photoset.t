@@ -12,9 +12,7 @@ my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 
 my $db = FixMyStreet::DB->schema;
 
-my $user = $db->resultset('User')->find_or_create({
-        name => 'Bob', email => 'bob@example.com',
-});
+my $user = $db->resultset('User')->find_or_create({ name => 'Bob', email => 'bob@example.com' });
 
 FixMyStreet::override_config {
     UPLOAD_DIR => $UPLOAD_DIR,
