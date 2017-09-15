@@ -539,16 +539,19 @@ sub stash_report_filter_status : Private {
         my $s = FixMyStreet::DB::Result::Problem->open_states();
         %filter_problem_states = (%filter_problem_states, %$s);
         $filter_status{open} = 1;
+        $filter_status{$_} = 1 for keys %$s;
     }
     if ($status{closed}) {
         my $s = FixMyStreet::DB::Result::Problem->closed_states();
         %filter_problem_states = (%filter_problem_states, %$s);
         $filter_status{closed} = 1;
+        $filter_status{$_} = 1 for keys %$s;
     }
     if ($status{fixed}) {
         my $s = FixMyStreet::DB::Result::Problem->fixed_states();
         %filter_problem_states = (%filter_problem_states, %$s);
         $filter_status{fixed} = 1;
+        $filter_status{$_} = 1 for keys %$s;
     }
 
     if ($status{all}) {
