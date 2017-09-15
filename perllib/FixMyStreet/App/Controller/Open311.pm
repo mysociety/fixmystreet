@@ -223,6 +223,10 @@ sub output_requests : Private {
         'closed' => 'closed'
     );
 
+    if ($c->cobrand->moniker eq 'zurich') {
+        $statusmap{investigating} = 'closed';
+    }
+
     my @problemlist;
     while ( my $problem = $problems->next ) {
         my $id = $problem->id;
@@ -325,9 +329,15 @@ sub get_requests : Private {
         my $op  = $rules{$param}[0];
         my $key = $rules{$param}[1];
         if ( 'status' eq $param ) {
+            my @open_states = FixMyStreet::DB::Result::Problem->open_states();
+            my @closed_states = ( FixMyStreet::DB::Result::Problem->fixed_states(), 'closed' );
+            if ( $c->cobrand->moniker eq 'zurich') {
+                push @closed_states, 'investigating';
+                @open_states = grep { $_ ne 'investigating' } @open_states;
+            }
             $value = {
-                'open' => [ FixMyStreet::DB::Result::Problem->open_states() ],
-                'closed' => [ FixMyStreet::DB::Result::Problem->fixed_states(), 'closed' ],
+                'open' => \@open_states,
+                'closed' => \@closed_states,
             }->{$value};
         } elsif ( 'agency_responsible' eq $param ) {
             my @valuelist;
