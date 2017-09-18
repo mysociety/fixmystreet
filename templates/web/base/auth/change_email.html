@@ -8,7 +8,7 @@
 
 [% loc('Your email address') %]: [% c.user.email %]
 
-<form action="[% c.uri_for('change_email') %]" method="post" name="change_email">
+<form action="[% c.uri_for_action('/auth/profile/change_email') %]" method="post" name="change_email">
     <input type="hidden" name="token" value="[% csrf_token %]">
 
     <fieldset>

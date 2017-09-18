@@ -11,7 +11,7 @@
     <p class="form-error">[% loc('Sorry, we could not log you in. Please fill in the form below.') %]</p>
 [% END %]
 
-<form action="[% c.uri_for() %]" method="post" name="general_auth" class="validate">
+<form action="/auth" method="post" name="general_auth" class="validate">
     <fieldset>
 
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">

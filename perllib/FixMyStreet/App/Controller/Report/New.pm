@@ -1131,9 +1131,9 @@ sub save_user_and_report : Private {
         $c->stash->{detach_args} = [$token->token];
 
         if ( $c->get_param('facebook_sign_in') ) {
-            $c->detach('/auth/facebook_sign_in');
+            $c->detach('/auth/social/facebook_sign_in');
         } elsif ( $c->get_param('twitter_sign_in') ) {
-            $c->detach('/auth/twitter_sign_in');
+            $c->detach('/auth/social/twitter_sign_in');
         }
     }
 

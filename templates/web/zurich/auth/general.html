@@ -12,7 +12,7 @@
     loc_email_error = errors.$email_error || errors.other;
 END %]
 
-<form action="[% c.uri_for() %]" method="post" name="general_auth_login" class="validate">
+<form action="/auth" method="post" name="general_auth_login" class="validate">
     <fieldset>
 
         <h1>[% loc('Sign in') %]</h1>
@@ -44,7 +44,7 @@ END %]
     </fieldset>
 </form>
 
-<form action="[% c.uri_for() %]" method="post" name="general_auth_register" class="validate">
+<form action="/auth" method="post" name="general_auth_register" class="validate">
     <fieldset>
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
