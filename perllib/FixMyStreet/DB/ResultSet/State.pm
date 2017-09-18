@@ -24,7 +24,10 @@ sub states {
     my $rs = shift;
 
     my $states = Memcached::get('states');
-    if ($states) {
+    # If tests are run in parallel, the cached state in Memcached could be
+    # corrupted by multiple tests changing it at the same time
+    # uncoverable branch true
+    if ($states && !FixMyStreet->test_mode) {
         # Need to reattach schema
         $states->[0]->result_source->schema( $rs->result_source->schema ) if $states->[0];
         return $states;
