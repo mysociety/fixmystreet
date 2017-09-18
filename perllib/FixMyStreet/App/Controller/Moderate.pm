@@ -85,7 +85,7 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
 
 sub moderating_user_name {
     my $user = shift;
-    return $user->from_body ? $user->from_body->name : 'a FixMyStreet administrator';
+    return $user->from_body ? $user->from_body->name : _('an administrator');
 }
 
 sub report_moderate_audit : Private {

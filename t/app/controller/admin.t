@@ -1,4 +1,6 @@
 use FixMyStreet::TestMech;
+# avoid wide character warnings from the category change message
+use open ':std', ':encoding(UTF-8)';
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -406,6 +408,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => undef,
         },
+        expect_comment => 1,
         changes   => { state => 'unconfirmed' },
         log_entries => [qw/edit state_change edit edit edit edit edit/],
         resend      => 0,
@@ -422,6 +425,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => undef,
         },
+        expect_comment => 1,
         changes   => { state => 'confirmed' },
         log_entries => [qw/edit state_change edit state_change edit edit edit edit edit/],
         resend      => 0,
@@ -438,6 +442,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => undef,
         },
+        expect_comment => 1,
         changes   => { state => 'fixed' },
         log_entries =>
           [qw/edit state_change edit state_change edit state_change edit edit edit edit edit/],
@@ -455,6 +460,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => undef,
         },
+        expect_comment => 1,
         changes     => { state => 'hidden' },
         log_entries => [
             qw/edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
@@ -473,6 +479,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => undef,
         },
+        expect_comment => 1,
         changes => {
             state     => 'confirmed',
             anonymous => 1,
@@ -520,10 +527,58 @@ foreach my $test (
         ],
         resend => 0,
     },
+    {
+        description => 'change state to investigating as body superuser',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            username   => $user2->email,
+            anonymous  => 1,
+            flagged    => 'on',
+            non_public => 'on',
+        },
+        expect_comment => 1,
+        user_body => $oxfordshire,
+        changes   => { state => 'investigating' },
+        log_entries => [
+            qw/edit state_change edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+        ],
+        resend => 0,
+    },
+    {
+        description => 'change state to in progess and change category as body superuser',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'investigating',
+            name       => 'Edited User',
+            username   => $user2->email,
+            anonymous  => 1,
+            flagged    => 'on',
+            non_public => 'on',
+        },
+        expect_comment => 1,
+        expected_text => '*Category changed from ‘Other’ to ‘Potholes’*',
+        user_body => $oxfordshire,
+        changes   => { state => 'in progress', category => 'Potholes' },
+        log_entries => [
+            qw/edit state_change edit state_change edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+        ],
+        resend => 0,
+    },
   )
 {
     subtest $test->{description} => sub {
+        $report->comments->delete;
         $log_entries->reset;
+
+        if ( $test->{user_body} ) {
+            $superuser->from_body( $test->{user_body}->id );
+            $superuser->update;
+        }
+
         $mech->get_ok("/admin/report_edit/$report_id");
 
         @{$test->{fields}}{'external_id', 'external_body', 'external_team', 'category'} = (13, "", "", "Other");
@@ -565,6 +620,31 @@ foreach my $test (
             $mech->content_contains( 'That problem will now be resent' );
             is $report->whensent, undef, 'mark report to resend';
         }
+
+        if ( $test->{expect_comment} ) {
+            my $comment = $report->comments->first;
+            ok $comment, 'report status change creates comment';
+            is $report->comments->count, 1, 'report only has one comment';
+            if ($test->{expected_text}) {
+                is $comment->text, $test->{expected_text}, 'comment has expected text';
+            } else {
+                is $comment->text, '', 'comment has no text';
+            }
+            if ( $test->{user_body} ) {
+                ok $comment->get_extra_metadata('is_body_user'), 'body user metadata set';
+                ok !$comment->get_extra_metadata('is_superuser'), 'superuser metadata not set';
+                is $comment->name, $test->{user_body}->name, 'comment name is body name';
+            } else {
+                ok !$comment->get_extra_metadata('is_body_user'), 'body user metadata not set';
+                ok $comment->get_extra_metadata('is_superuser'), 'superuser metadata set';
+                is $comment->name, _('an adminstrator'), 'comment name is admin';
+            }
+        } else {
+            is $report->comments->count, 0, 'report has no comments';
+        }
+
+        $superuser->from_body(undef);
+        $superuser->update;
     };
 }
 
@@ -586,6 +666,8 @@ subtest 'change report category' => sub {
     $ox_report->discard_changes;
     is $ox_report->category, 'Traffic lights';
     isnt $ox_report->whensent, undef;
+    is $ox_report->comments->count, 1, "Comment created for update";
+    is $ox_report->comments->first->text, '*Category changed from ‘Potholes’ to ‘Traffic lights’*', 'Comment text correct';
 
     $mech->submit_form_ok( { with_fields => { category => 'Graffiti' } }, 'form_submitted' );
     $ox_report->discard_changes;
@@ -604,7 +686,7 @@ subtest 'change email to new user' => sub {
         state  => $report->state,
         name   => $report->name,
         username => $report->user->email,
-        category => 'Other',
+        category => 'Potholes',
         anonymous => 1,
         flagged => 'on',
         non_public => 'on',

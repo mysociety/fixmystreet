@@ -913,7 +913,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
         $problem->set_inflated_columns(\%columns);
 
-        $c->forward( '/admin/report_edit_category', [ $problem ] );
+        $c->forward( '/admin/report_edit_category', [ $problem, $problem->state ne $old_state ] );
         $c->forward('update_user', [ $problem ]);
 
         # Deal with photos
@@ -935,6 +935,27 @@ sub report_edit : Path('report_edit') : Args(1) {
 
         if ( $problem->state ne $old_state ) {
             $c->forward( 'log_edit', [ $id, 'problem', 'state_change' ] );
+
+            my $name = _('an adminstrator');
+            my $extra = { is_superuser => 1 };
+            if ($c->user->from_body) {
+                $name = $c->user->from_body->name;
+                delete $extra->{is_superuser};
+                $extra->{is_body_user} = $c->user->from_body->id;
+            }
+            my $timestamp = \'current_timestamp';
+            $problem->add_to_comments( {
+                text => $c->stash->{update_text} || '',
+                created => $timestamp,
+                confirmed => $timestamp,
+                user_id => $c->user->id,
+                name => $name,
+                mark_fixed => 0,
+                anonymous => 0,
+                state => 'confirmed',
+                problem_state => $problem->state,
+                extra => $extra
+            } );
         }
         $c->forward( 'log_edit', [ $id, 'problem', 'edit' ] );
 

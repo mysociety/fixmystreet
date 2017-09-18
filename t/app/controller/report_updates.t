@@ -918,16 +918,96 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
     like $update_meta->[2], qr/Open/, 'update meta says reopened';
 };
 
-subtest "check first comment with status change but no text is displayed" => sub {
-    $user->from_body( $body->id );
-    $user->update;
+subtest 'check meta correct for comment after mark_fixed with not problem_state' => sub {
+    $report->comments->delete;
+    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            user          => $user,
+            problem_id    => $report->id,
+            text          => 'update text',
+            confirmed     => DateTime->now( time_zone => 'local'),
+            problem_state => '',
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 1,
+            state         => 'confirmed',
+        }
+    );
+
+    $mech->get_ok( "/report/" . $report->id );
+    my $update_meta = $mech->extract_update_metas;
+    like $update_meta->[0], qr/fixed/i, 'update meta says fixed';
+
+    $comment = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            user          => $user,
+            problem_id    => $report->id,
+            text          => 'update text',
+            confirmed     => DateTime->now( time_zone => 'local' ) + DateTime::Duration->new( minutes => 1 ),
+            problem_state => 'fixed - user',
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 0,
+            state         => 'confirmed',
+        }
+    );
+
+    $mech->get_ok( "/report/" . $report->id );
+    $update_meta = $mech->extract_update_metas;
+    unlike $update_meta->[2], qr/Fixed/i, 'update meta does not say fixed';
+};
+
+for my $test(
+    {
+      user => $user2,
+      name => $body->name,
+      body => $body,
+      superuser => 0,
+      desc =>"check first comment from body user with status change but no text is displayed"
+    },
+    {
+      user => $user2,
+      name => $body->name,
+      superuser => 0,
+      bodyuser => 1,
+      desc =>"check first comment from ex body user with status change but no text is displayed"
+    },
+    {
+      user => $user2,
+      name => $body->name,
+      body => $body,
+      superuser => 1,
+      desc =>"check first comment from body super user with status change but no text is displayed"
+    },
+    {
+      user => $user2,
+      name => 'an adminstrator',
+      superuser => 1,
+      desc =>"check first comment from super user with status change but no text is displayed"
+    }
+) {
+subtest $test->{desc} => sub {
+    my $extra = {};
+    if ($test->{body}) {
+        $extra->{is_body_user} = $test->{body}->id;
+        $user2->from_body( $test->{body}->id );
+    } else {
+        if ($test->{superuser}) {
+            $extra->{is_superuser} = 1;
+        } elsif ($test->{bodyuser}) {
+            $extra->{is_body_user} = $body->id;
+        }
+        $user2->from_body(undef);
+    }
+    $user2->is_superuser($test->{superuser});
+    $user2->update;
 
     $report->comments->delete;
 
     my $comment = FixMyStreet::App->model('DB::Comment')->create(
         {
-            user          => $user,
-            name          => $user->from_body->name,
+            user          => $test->{user},
+            name          => $test->{name},
             problem_id    => $report->id,
             text          => '',
             confirmed     => DateTime->now( time_zone => 'local'),
@@ -936,16 +1016,29 @@ subtest "check first comment with status change but no text is displayed" => sub
             mark_open     => 0,
             mark_fixed    => 0,
             state         => 'confirmed',
+            extra         => $extra,
         }
     );
     $mech->log_in_ok( $user->email );
+
+
+    ok $user->user_body_permissions->search({
+      body_id => $body->id,
+      permission_type => 'view_body_contribute_details'
+    })->delete, 'Remove user view_body_contribute_details permissions';
 
     $mech->get_ok("/report/$report_id");
 
     my $update_meta = $mech->extract_update_metas;
     like $update_meta->[1], qr/Updated by/, 'updated by meta if no text';
-    unlike $update_meta->[1], qr/Test User/, 'commenter name not included';
+    unlike $update_meta->[1], qr/Commenter/, 'commenter name not included';
     like $update_meta->[0], qr/investigating/i, 'update meta includes state change';
+
+    if ($test->{body} || $test->{bodyuser}) {
+        like $update_meta->[1], qr/Westminster/, 'body user update uses body name';
+    } elsif ($test->{superuser}) {
+        like $update_meta->[1], qr/an administrator/, 'superuser update says an administrator';
+    }
 
     ok $user->user_body_permissions->create({
       body => $body,
@@ -955,10 +1048,108 @@ subtest "check first comment with status change but no text is displayed" => sub
     $mech->get_ok("/report/$report_id");
     $update_meta = $mech->extract_update_metas;
     like $update_meta->[1], qr/Updated by/, 'updated by meta if no text';
-    like $update_meta->[1], qr/Test User/, 'commenter name included if user has view contribute permission';
+    like $update_meta->[1], qr/Commenter/, 'commenter name included if user has view contribute permission';
     like $update_meta->[0], qr/investigating/i, 'update meta includes state change';
 };
+}
 
+for my $test(
+    {
+      desc =>"check comment from super user hiding report is not displayed",
+      problem_state => 'hidden',
+    },
+    {
+      desc =>"check comment from super user unconfirming report is not displayed",
+      problem_state => 'unconfirmed',
+    }
+) {
+subtest $test->{desc} => sub {
+    my $extra = { is_superuser => 1 };
+    $user2->is_superuser(1);
+    $user2->update;
+
+    $report->comments->delete;
+
+    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            user          => $user2,
+            name          => 'an administrator',
+            problem_id    => $report->id,
+            text          => '',
+            confirmed     => DateTime->now( time_zone => 'local'),
+            problem_state => $test->{problem_state},
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 0,
+            state         => 'confirmed',
+            extra         => $extra,
+        }
+    );
+    $mech->log_in_ok( $user->email );
+    $mech->get_ok("/report/$report_id");
+
+    my $update_meta = $mech->extract_update_metas;
+    is scalar(@$update_meta), 0, 'no comments on report';
+  };
+}
+
+for my $test(
+    {
+      desc =>"check comments from super user hiding and unhiding report are not displayed",
+      problem_states => [qw/hidden confirmed/],
+      comment_count => 0,
+    },
+    {
+      desc =>"check comment from super user unconfirming and confirming report are is not displayed",
+      problem_states => [qw/unconfirmed confirmed/],
+      comment_count => 0,
+    },
+    {
+      desc =>"check comment after unconfirming and confirming a report is displayed",
+      problem_states => [qw/unconfirmed confirmed investigating/],
+      comment_count => 2, # state change line + who updated line
+    },
+    {
+      desc =>"check comment after confirming a report after blank state is not displayed",
+      problem_states => ['unconfirmed', '', 'confirmed'],
+      comment_count => 0, # state change line + who updated line
+    },
+) {
+subtest $test->{desc} => sub {
+    my $extra = { is_superuser => 1 };
+    $user2->is_superuser(1);
+    $user2->update;
+
+    $report->comments->delete;
+
+    for my $state (@{$test->{problem_states}}) {
+        my $comment = FixMyStreet::App->model('DB::Comment')->create(
+            {
+                user          => $user2,
+                name          => 'an administrator',
+                problem_id    => $report->id,
+                text          => '',
+                confirmed     => DateTime->now( time_zone => 'local'),
+                problem_state => $state,
+                anonymous     => 0,
+                mark_open     => 0,
+                mark_fixed    => 0,
+                state         => 'confirmed',
+                extra         => $extra,
+            }
+        );
+    }
+    $mech->log_in_ok( $user->email );
+    $mech->get_ok("/report/$report_id");
+
+    my $update_meta = $mech->extract_update_metas;
+    is scalar(@$update_meta), $test->{comment_count}, 'expected number of comments on report';
+  };
+}
+
+$user2->is_superuser(0);
+$user2->from_body(undef);
+$user2->update;
 
 $user->from_body(undef);
 $user->update;
@@ -966,6 +1157,7 @@ $user->update;
 $report->state('confirmed');
 $report->bodies_str($body->id);
 $report->update;
+$report->comments->delete;
 
 for my $test (
     {

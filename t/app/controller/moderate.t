@@ -337,7 +337,7 @@ subtest 'And do it as a superuser' => sub {
         problem_title  => 'Good good',
         problem_detail => 'Good good improved',
     }});
-    $mech->content_contains('Moderated by a FixMyStreet administrator');
+    $mech->content_contains('Moderated by an administrator');
 };
 
 done_testing();

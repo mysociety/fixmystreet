@@ -1,5 +1,11 @@
 [% global.last_state = '' %]
 [% FOREACH update IN updates %]
+[%- IF global.last_state == 'hidden' OR global.last_state == 'unconfirmed' OR update.problem_state == 'hidden' OR update.problem_state == 'unconfirmed' %]
+  [%- IF update.problem_state != '' %]
+  [%- global.last_state = update.problem_state %]
+  [%- END %]
+  [%- NEXT %]
+[%- END %]
 [% INCLUDE 'report/update.html' %]
 [% END %]
 

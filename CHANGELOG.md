@@ -19,6 +19,7 @@
       - Character length limit can be placed on report detailed information #1848
       - Inspector panel shows nearest address if available #1850
       - Return a 200 rather than 404 for ref ID lookup.
+      - Public report page shows state changes made in admin interface #1846
 
 * v2.2 (13th September 2017)
     - New features:
