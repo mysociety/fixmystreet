@@ -1863,6 +1863,13 @@ label .muted {
   padding: 1em;
   margin: 0 -1em;
   background-color: #E9F2FF;
+
+  #detailed_information_length {
+    float: right;
+    &.error {
+      color: red;
+    }
+  }
 }
 
 .inspect-form-heading {

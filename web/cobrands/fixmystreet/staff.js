@@ -299,6 +299,20 @@ $.extend(fixmystreet.set_up, {
         toggle_public_update();
     });
 
+    if ($('#detailed_information').data('max-length')) {
+        $('#detailed_information').on('keyup', function() {
+            var $this = $(this),
+            counter = $('#detailed_information_length');
+            var chars_left = $this.data('max-length') - $this.val().length;
+            counter.html(chars_left);
+            if (chars_left < 0) {
+                counter.addClass('error');
+            } else {
+                counter.removeClass('error');
+            }
+        });
+    }
+
     if (geo_position_js.init()) {
         fixmystreet.geolocate.setup(function(pos) {
             var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
