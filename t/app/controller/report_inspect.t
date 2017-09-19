@@ -261,6 +261,37 @@ FixMyStreet::override_config {
             });
         };
     }
+
+    subtest "detailed_information has max length" => sub {
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({
+            button => 'save',
+            with_fields => {
+                include_update => 0,
+                detailed_information => 'XXX172XXX' . 'x' x 163,
+            }
+        });
+
+        $report->discard_changes;
+        like $report->get_extra_metadata('detailed_information'), qr/XXX172XXX/, 'detailed information saved';
+        $mech->content_lacks('limited to 172 characters', "172 charcters of detailed information ok");
+        $mech->content_contains('XXX172XXX', "Detailed information field contains submitted text");
+
+        $mech->submit_form_ok({
+            button => 'save',
+            with_fields => {
+                include_update => 0,
+                detailed_information => 'XXX173XXX' . 'x' x 164,
+            }
+        });
+        $mech->content_contains('limited to 172 characters', "173 charcters of detailed information not ok");
+        $mech->content_contains('XXX173XXX', "Detailed information field contains submitted text");
+
+        $report->discard_changes;
+        like $report->get_extra_metadata('detailed_information'), qr/XXX172XXX/, 'detailed information not saved';
+    };
 };
 
 FixMyStreet::override_config {

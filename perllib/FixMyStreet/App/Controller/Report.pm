@@ -335,8 +335,18 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_information traffic_information/) {
-                $problem->set_extra_metadata( $_ => $c->get_param($_) );
+            $problem->set_extra_metadata( traffic_information => $c->get_param('traffic_information') );
+
+            if ( my $info = $c->get_param('detailed_information') ) {
+                $problem->set_extra_metadata( detailed_information => $info );
+                if (length($info) > 172) {
+                    $valid = 0;
+                    push @{ $c->stash->{errors} },
+                        sprintf(
+                            _('Detailed information is limited to %d characters.'),
+                            $c->cobrand->max_detailed_info_length
+                        );
+                }
             }
 
             if ( $c->get_param('defect_type') ) {
