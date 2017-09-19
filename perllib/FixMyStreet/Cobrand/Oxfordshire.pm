@@ -217,6 +217,8 @@ sub user_extra_fields {
 
 sub display_days_ago_threshold { 28 }
 
+sub max_detailed_info_length { 172 }
+
 sub defect_type_extra_fields {
     return [
         'activity_code',

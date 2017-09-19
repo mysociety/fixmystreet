@@ -326,6 +326,8 @@ sub inspect : Private {
         $c->stash->{has_default_priority} = scalar( grep { $_->is_default } $problem->response_priorities );
     }
 
+    $c->stash->{max_detailed_info_length} = $c->cobrand->max_detailed_info_length;
+
     if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
 
@@ -339,7 +341,9 @@ sub inspect : Private {
 
             if ( my $info = $c->get_param('detailed_information') ) {
                 $problem->set_extra_metadata( detailed_information => $info );
-                if (length($info) > 172) {
+                if ($c->cobrand->max_detailed_info_length &&
+                    length($info) > $c->cobrand->max_detailed_info_length
+                ) {
                     $valid = 0;
                     push @{ $c->stash->{errors} },
                         sprintf(
