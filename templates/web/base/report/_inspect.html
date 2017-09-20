@@ -34,6 +34,12 @@
           <input type="hidden" name="longitude" value="[% problem.longitude %]">
           <input type="hidden" name="latitude" value="[% problem.latitude %]">
         </p>
+        [% IF problem.nearest_address() %]
+        <p>
+            <strong>[% loc('Nearest calculated address:') %]</strong>
+            [% problem.nearest_address() %]
+        </p>
+        [% END %]
         <p>
           <a target="_blank" href="https://www.google.com/maps/dir/Current+Location/[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
         </p>

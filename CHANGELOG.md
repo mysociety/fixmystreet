@@ -7,6 +7,7 @@
         - Shortlist menu item always remains a link #1855
     - Admin improvements:
       - Character length limit can be placed on report detailed information #1848
+      - Inspector panel shows nearest address if available #1850
 
 * v2.2 (13th September 2017)
     - New features:

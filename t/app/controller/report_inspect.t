@@ -261,6 +261,43 @@ FixMyStreet::override_config {
             });
         };
     }
+
+    subtest "check nearest address display" => sub {
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('Nearest calculated address', 'No address displayed');
+
+        my $data = {
+            resourceSets => [ {
+                resources => [ {
+                    address => {
+                        addressLine => 'Constitution Hill',
+                        locality => 'London',
+                    }
+                } ],
+            } ],
+        };
+        $report->geocode($data);
+        $report->update;
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('Nearest calculated address', 'No address displayed');
+
+        $data = {
+            resourceSets => [ {
+                resources => [ {
+                    name => 'Constitution Hill, London, SW1A',
+                    address => {
+                        addressLine => 'Constitution Hill',
+                        locality => 'London',
+                    }
+                } ],
+            } ],
+        };
+        $report->geocode($data);
+        $report->update;
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('Nearest calculated address', 'Address displayed');
+        $mech->content_contains('Constitution Hill, London, SW1A', 'Correct address displayed');
+    }
 };
 
 foreach my $test (

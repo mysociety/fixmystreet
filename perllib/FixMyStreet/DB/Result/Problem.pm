@@ -618,6 +618,15 @@ sub meta_line {
     return $meta;
 }
 
+sub nearest_address {
+    my $self = shift;
+
+    return '' unless $self->geocode;
+
+    my $address = $self->geocode->{resourceSets}[0]{resources}[0];
+    return $address->{name};
+}
+
 sub body {
     my ( $problem, $c ) = @_;
     my $body;
