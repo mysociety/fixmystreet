@@ -36,25 +36,34 @@
       <div id="js-social-email-hide">
 [% END %]
 
-            [% IF email_error;
+            [% IF username_error;
 
                 # other keys include fqdn, mxcheck if you'd like to write a custom error message
 
                 errors = {
-                    missing => loc('Please enter your email'),
-                    other   => loc('Please check your email address is correct')
+                    nonmobile = loc('Please enter a mobile number'),
+                    missing_email = loc('Please enter your email'),
+                    other_email = loc('Please check your email address is correct')
+                    missing_phone = loc('Please enter your phone number'),
+                    other_phone = loc('Please check your phone number is correct')
                 };
 
-                loc_email_error = errors.$email_error || errors.other;
+                loc_username_error = errors.$username_error || errors.other_email;
             END %]
 
-        <label class="n" for="email">[% loc('Email') %]</label>
-      [% IF loc_email_error  %]
-        <div class="form-error">[% loc_email_error %]</div>
+[% IF c.config.SMS_AUTHENTICATION %]
+    [% SET username_label = loc('Your email or mobile') %]
+[% ELSE %]
+    [% SET username_label = loc('Your email') %]
+[% END %]
+
+        <label class="n" for="username">[% username_label %]</label>
+      [% IF loc_username_error  %]
+        <div class="form-error">[% loc_username_error %]</div>
       [% ELSIF sign_in_error %]
-        <div class="form-error">[% loc('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.') %]</div>
+        <div class="form-error">[% loc('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form.') %]</div>
       [% END %]
-        <input type="email" class="form-control required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]" autofocus>
+        <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]" autofocus>
 
         <div id="form_sign_in">
             <h3>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name)  %]</h3>
@@ -85,7 +94,7 @@
 
         <div class="form-txt-submit-box">
             <input type="password" name="password_sign_in" class="form-control" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
-            <input class="green-btn" type="submit" name="sign_in" value="[% loc('Sign in') %]">
+            <input class="green-btn" type="submit" name="sign_in_by_password" value="[% loc('Sign in') %]">
         </div>
 
         <div class="checkbox-group">
@@ -95,7 +104,11 @@
 
         <div class="general-notes">
             <p><strong>[% loc('Forgotten your password?') %]</strong>
+          [% IF c.config.SMS_AUTHENTICATION %]
+            [% loc('Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated.') %]</p>
+          [% ELSE %]
             [% loc('Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated.') %]</p>
+          [% END %]
         </div>
 
     </div>
@@ -103,7 +116,11 @@
 
 [% BLOCK form_sign_in_no %]
     <div id="form_sign_in_no" class="form-box">
+      [% IF c.config.SMS_AUTHENTICATION %]
+        <h5>[% loc('<strong>No</strong> let me sign in by email or text') %]</h5>
+      [% ELSE %]
         <h5>[% loc('<strong>No</strong> let me sign in by email') %]</h5>
+      [% END %]
 
         <label for="name">[% loc('Name') %]</label>
         <input class="form-control" type="text" name="name" value="" placeholder="[% loc('Your name') %]">
@@ -116,7 +133,7 @@
 
         <div class="form-txt-submit-box">
             <input class="form-control" type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
-            <input class="green-btn" type="submit" name="email_sign_in" value="[% loc('Sign in') %]">
+            <input class="green-btn" type="submit" name="sign_in_by_code" value="[% loc('Sign in') %]">
         </div>
     </div>
 [% END %]

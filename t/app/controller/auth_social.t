@@ -104,8 +104,10 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 # and the ID carries through the confirmation
                 if ($page eq 'update') {
                     $fields->{rznvy} = $fb_email;
-                } else {
+                } elsif ($page eq 'report') {
                     $fields->{email} = $fb_email;
+                } else {
+                    $fields->{username} = $fb_email;
                 }
                 $fields->{name} = 'Ffion Tester';
                 $mech->submit_form(with_fields => $fields);
@@ -216,8 +218,10 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 # and the ID carries through the confirmation
                 if ($page eq 'update') {
                     $fields->{rznvy} = $tw_email;
-                } else {
+                } elsif ($page eq 'report') {
                     $fields->{email} = $tw_email;
+                } else {
+                    $fields->{username} = $tw_email;
                 }
                 $fields->{name} = 'Ffion Tester';
                 $mech->submit_form(with_fields => $fields);

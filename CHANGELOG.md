@@ -2,6 +2,7 @@
 
 * Unreleased
     - New features:
+        - Optional logging in using confirmation by phone text.
         - Area summary statistics page in admin #1834
     - Bugfixes
         - Shortlist menu item always remains a link #1855

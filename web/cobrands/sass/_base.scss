@@ -228,6 +228,7 @@ input[type=file] {
     width: 100%;
 }
 
+input[type=number],
 input[type=text],
 input[type=password],
 input[type=email],
@@ -402,6 +403,7 @@ select.form-control {
 .form-txt-submit-box {
   @include clearfix();
   input[type=password],
+  input[type=number],
   input[type=text],
   input[type=email] {
     width: 65%;
@@ -2198,6 +2200,10 @@ table.nicetable {
 
   &.confirmation-header--inbox {
     background-image: url(/cobrands/fixmystreet/images/inbox-in-circle-100px.png);
+  }
+
+  &.confirmation-header--phone {
+    background-image: url(/cobrands/fixmystreet/images/phone-in-circle-100px.png);
   }
 
   h1, h2 {

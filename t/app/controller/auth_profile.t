@@ -17,12 +17,12 @@ END {
         {
             form_name => 'general_auth',
             fields    => {
-                email => "$test_email",
+                username => "$test_email",
                 r     => 'faq', # Just as a test
             },
-            button => 'email_sign_in',
+            button => 'sign_in_by_code',
         },
-        "email_sign_in with '$test_email'"
+        "sign_in_by_code with '$test_email'"
     );
 
     # follow link and change password - check not prompted for old password

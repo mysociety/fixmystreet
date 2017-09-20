@@ -8,6 +8,7 @@ use Email::Valid;
 use Digest::HMAC_SHA1 qw(hmac_sha1);
 use JSON::MaybeXS;
 use MIME::Base64;
+use FixMyStreet::SMS;
 
 =head1 NAME
 
@@ -35,19 +36,19 @@ sub general : Path : Args(0) {
     # all done unless we have a form posted to us
     return unless $c->req->method eq 'POST';
 
-    my $clicked_email = $c->get_param('email_sign_in');
-    my $data_address = $c->get_param('email');
+    my $clicked_sign_in_by_code = $c->get_param('sign_in_by_code');
+    my $data_username = $c->get_param('username');
     my $data_password = $c->get_param('password_sign_in');
     my $data_email = $c->get_param('name') || $c->get_param('password_register');
 
     # decide which action to take
-    $c->detach('email_sign_in') if $clicked_email || ($data_email && !$data_password);
-    if (!$data_address && !$data_password && !$data_email) {
+    $c->detach('code_sign_in') if $clicked_sign_in_by_code || ($data_email && !$data_password);
+    if (!$data_username && !$data_password && !$data_email) {
         $c->detach('social/facebook_sign_in') if $c->get_param('facebook_sign_in');
         $c->detach('social/twitter_sign_in') if $c->get_param('twitter_sign_in');
     }
 
-       $c->forward( 'sign_in' )
+       $c->forward( 'sign_in', [ $data_username ] )
     && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
 
 }
@@ -57,6 +58,13 @@ sub general_test : Path('_test_') : Args(0) {
     $c->stash->{template} = 'auth/token.html';
 }
 
+sub authenticate : Private {
+    my ($self, $c, $type, $username, $password) = @_;
+    return 1 if $type eq 'email' && $c->authenticate({ email => $username, email_verified => 1, password => $password });
+    return 1 if FixMyStreet->config('SMS_AUTHENTICATION') && $type eq 'phone' && $c->authenticate({ phone => $username, phone_verified => 1, password => $password });
+    return 0;
+}
+
 =head2 sign_in
 
 Allow the user to sign in with a username and a password.
@@ -64,21 +72,18 @@ Allow the user to sign in with a username and a password.
 =cut
 
 sub sign_in : Private {
-    my ( $self, $c, $email ) = @_;
+    my ( $self, $c, $username ) = @_;
 
-    $email ||= $c->get_param('email') || '';
-    $email = lc $email;
+    $username ||= '';
     my $password = $c->get_param('password_sign_in') || '';
     my $remember_me = $c->get_param('remember_me') || 0;
 
     # Sign out just in case
     $c->logout();
 
-    if (   $email
-        && $password
-        && $c->authenticate( { email => $email, email_verified => 1, password => $password } ) )
-    {
+    my $parsed = FixMyStreet::SMS->parse_username($username);
 
+    if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
         # unless user asked to be remembered limit the session to browser
         $c->set_session_cookie_expire(0)
           unless $remember_me;
@@ -91,25 +96,40 @@ sub sign_in : Private {
 
     $c->stash(
         sign_in_error => 1,
-        email => $email,
+        username => $username,
         remember_me => $remember_me,
     );
     return;
 }
 
-=head2 email_sign_in
+=head2 code_sign_in
 
-Email the user the details they need to sign in. Don't check for an account - if
-there isn't one we can create it when they come back with a token (which
-contains the email address).
+Either email the user a link to sign in, or send an SMS token to do so.
+
+Don't check for an account - if there isn't one we can create it when
+they come back with a token (which contains the email/phone).
 
 =cut
 
-sub email_sign_in : Private {
+sub code_sign_in : Private {
     my ( $self, $c ) = @_;
 
+    my $username = $c->get_param('username') || '';
+
+    my $parsed = FixMyStreet::SMS->parse_username($username);
+
+    if ($parsed->{type} eq 'phone' && FixMyStreet->config('SMS_AUTHENTICATION')) {
+        $c->forward('phone/sign_in', [ $parsed->{phone} ]);
+    } else {
+        $c->forward('email_sign_in', [ $parsed->{username} ]);
+    }
+}
+
+sub email_sign_in : Private {
+    my ( $self, $c, $email ) = @_;
+
     # check that the email is valid - otherwise flag an error
-    my $raw_email = lc( $c->get_param('email') || '' );
+    my $raw_email = lc( $email || '' );
 
     my $email_checker = Email::Valid->new(
         -mxcheck  => 1,
@@ -119,9 +139,8 @@ sub email_sign_in : Private {
 
     my $good_email = $email_checker->address($raw_email);
     if ( !$good_email ) {
-        $c->stash->{email} = $raw_email;
-        $c->stash->{email_error} =
-          $raw_email ? $email_checker->details : 'missing';
+        $c->stash->{username} = $raw_email;
+        $c->stash->{username_error} = $raw_email ? $email_checker->details : 'missing_email';
         return;
     }
 
@@ -130,7 +149,7 @@ sub email_sign_in : Private {
     # NB this uses the same template as a successful sign in to stop
     # enumeration of valid email addresses.
     if ( FixMyStreet->config('SIGNUPS_DISABLED')
-         && !$c->model('DB::User')->search({ email => $good_email })->count
+         && !$c->model('DB::User')->find({ email => $good_email })
          && !$c->stash->{current_user} # don't break the change email flow
     ) {
         $c->stash->{template} = 'auth/token.html';
@@ -168,6 +187,20 @@ sub email_sign_in : Private {
     $c->stash->{template} = 'auth/token.html';
 }
 
+sub get_token : Private {
+    my ( $self, $c, $token, $scope ) = @_;
+
+    $c->stash->{token_not_found} = 1, return unless $token;
+
+    my $token_obj = $c->model('DB::Token')->find({ scope => $scope, token => $token });
+
+    $c->stash->{token_not_found} = 1, return unless $token_obj;
+    $c->stash->{token_not_found} = 1, return if $token_obj->created < DateTime->now->subtract( days => 1 );
+
+    my $data = $token_obj->data;
+    return $data;
+}
+
 =head2 token
 
 Handle the 'email_sign_in' tokens. Find the account for the email address
@@ -178,35 +211,21 @@ Handle the 'email_sign_in' tokens. Find the account for the email address
 sub token : Path('/M') : Args(1) {
     my ( $self, $c, $url_token ) = @_;
 
-    # retrieve the token or return
-    my $token_obj = $url_token
-      ? $c->model('DB::Token')->find( {
-          scope => 'email_sign_in', token => $url_token
-        } )
-      : undef;
+    my $data = $c->forward('get_token', [ $url_token, 'email_sign_in' ]) || return;
 
-    if ( !$token_obj ) {
-        $c->stash->{token_not_found} = 1;
-        return;
-    }
+    $c->stash->{token_not_found} = 1, return
+        if $data->{old_email} && (!$c->user_exists || $c->user->email ne $data->{old_email});
 
-    if ( $token_obj->created < DateTime->now->subtract( days => 1 ) ) {
-        $c->stash->{token_not_found} = 1;
-        return;
-    }
+    $c->detach( '/auth/process_login', [ $data, 'email' ] );
+}
 
-    # find or create the user related to the token.
-    my $data = $token_obj->data;
-
-    if ($data->{old_email} && (!$c->user_exists || $c->user->email ne $data->{old_email})) {
-        $c->stash->{token_not_found} = 1;
-        return;
-    }
+sub process_login : Private {
+    my ( $self, $c, $data, $type ) = @_;
 
     # sign out in case we are another user
     $c->logout();
 
-    my $user = $c->model('DB::User')->find_or_new({ email => $data->{email} });
+    my $user = $c->model('DB::User')->find_or_new({ $type => $data->{$type} });
 
     # Bail out if this is a new user and SIGNUPS_DISABLED is set
     $c->detach( '/page_error_403_access_denied', [] )
@@ -233,7 +252,7 @@ sub token : Path('/M') : Args(1) {
     $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
     $user->update_or_insert;
-    $c->authenticate( { email => $user->email, email_verified => 1 }, 'no_password' );
+    $c->authenticate( { $type => $data->{$type}, "${type}_verified" => 1 }, 'no_password' );
 
     # send the user to their page
     $c->detach( 'redirect_on_signin', [ $data->{r}, $data->{p} ] );
@@ -341,7 +360,7 @@ sub ajax_sign_in : Path('ajax/sign_in') {
     my ( $self, $c ) = @_;
 
     my $return = {};
-    if ( $c->forward( 'sign_in' ) ) {
+    if ( $c->forward( 'sign_in', [ $c->get_param('email') ] ) ) {
         $return->{name} = $c->user->name;
     } else {
         $return->{error} = 1;

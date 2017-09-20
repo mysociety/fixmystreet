@@ -40,8 +40,8 @@ for my $test (
     $mech->submit_form_ok(
         {
             form_name => 'general_auth',
-            fields    => { email => $email, },
-            button    => 'email_sign_in',
+            fields => { username => $email, },
+            button => 'sign_in_by_code',
         },
         "try to create an account with email '$email'"
     );
@@ -59,8 +59,8 @@ $mech->get_ok('/auth');
 $mech->submit_form_ok(
     {
         form_name => 'general_auth',
-        fields => { email => $test_email, password_register => $test_password },
-        button    => 'email_sign_in',
+        fields => { username => $test_email, password_register => $test_password },
+        button => 'sign_in_by_code',
     },
     "create an account for '$test_email'"
 );
@@ -107,11 +107,11 @@ foreach my $remember_me ( '1', '0' ) {
             {
                 form_name => 'general_auth',
                 fields    => {
-                    email       => $test_email,
+                    username => $test_email,
                     password_sign_in => $test_password,
                     remember_me => ( $remember_me ? 1 : undef ),
                 },
-                button => 'sign_in',
+                button => 'sign_in_by_password',
             },
             "sign in with '$test_email' & '$test_password'"
         );
@@ -133,15 +133,15 @@ $mech->submit_form_ok(
     {
         form_name => 'general_auth',
         fields    => {
-            email    => $test_email,
+            username => $test_email,
             password_sign_in => 'not the password',
         },
-        button => 'sign_in',
+        button => 'sign_in_by_password',
     },
     "sign in with '$test_email' & 'not the password'"
 );
 is $mech->uri->path, '/auth', "redirected to correct page";
-$mech->content_contains( 'problem with your email/password combination', 'found error message' );
+$mech->content_contains( 'problem with your login information', 'found error message' );
 
 subtest "sign in but have email form autofilled" => sub {
     $mech->get_ok('/auth');
@@ -149,11 +149,11 @@ subtest "sign in but have email form autofilled" => sub {
         {
             form_name => 'general_auth',
             fields    => {
-                email    => $test_email,
+                username => $test_email,
                 password_sign_in => $test_password,
                 name => 'Auto-completed from elsewhere',
             },
-            button => 'sign_in',
+            button => 'sign_in_by_password',
         },
         "sign in with '$test_email' and auto-completed name"
     );
@@ -169,10 +169,10 @@ subtest "sign in with uppercase email" => sub {
         {
             form_name => 'general_auth',
             fields    => {
-                email    => $uc_test_email,
+                username => $uc_test_email,
                 password_sign_in => $test_password,
             },
-            button => 'sign_in',
+            button => 'sign_in_by_password',
         },
         "sign in with '$uc_test_email' and auto-completed name"
     );
@@ -197,8 +197,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {
                 form_name => 'general_auth',
-                fields    => { email => $test_email3, },
-                button    => 'email_sign_in',
+                fields => { username => $test_email3, },
+                button => 'sign_in_by_code',
             },
             "create a new account"
         );
@@ -218,13 +218,13 @@ FixMyStreet::override_config {
             {
                 form_name => 'general_auth',
                 fields    => {
-                    email             => "$test_email",
+                    username => "$test_email",
                     password_register => $new_password,
                     r                 => 'faq', # Just as a test
                 },
-                button    => 'email_sign_in',
+                button => 'sign_in_by_code',
             },
-            "email_sign_in with '$test_email'"
+            "sign_in_by_code with '$test_email'"
         );
 
         $mech->not_logged_in_ok;
@@ -241,10 +241,10 @@ FixMyStreet::override_config {
             {
                 form_name => 'general_auth',
                 fields    => {
-                    email    => $test_email,
+                    username => $test_email,
                     password_sign_in => $new_password,
                 },
-                button => 'sign_in',
+                button => 'sign_in_by_password',
             },
             "sign in with '$test_email' and new password"
         );

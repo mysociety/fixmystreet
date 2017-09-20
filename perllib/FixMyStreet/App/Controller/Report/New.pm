@@ -785,7 +785,7 @@ sub process_user : Private {
 
     # The user is trying to sign in. We only care about email from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
-        unless ( $c->forward( '/auth/sign_in' ) ) {
+        unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.');
             return 1;
         }

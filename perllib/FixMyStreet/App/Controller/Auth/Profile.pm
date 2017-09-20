@@ -85,7 +85,7 @@ sub change_email : Path('/auth/change_email') {
     $c->forward('/auth/check_csrf_token');
     $c->stash->{current_user} = $c->user;
     $c->stash->{email_template} = 'change_email.txt';
-    $c->forward('/auth/email_sign_in');
+    $c->forward('/auth/email_sign_in', [ $c->get_param('email') ]);
 }
 
 __PACKAGE__->meta->make_immutable;

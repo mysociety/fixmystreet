@@ -345,7 +345,7 @@ $.extend(fixmystreet.set_up, {
     $('#facebook_sign_in, #twitter_sign_in').click(function(e){
         $('#form_email').removeClass();
         $('#form_rznvy').removeClass();
-        $('#email').removeClass();
+        $('#username').removeClass();
     });
 
     $('#planned_form').submit(function(e) {

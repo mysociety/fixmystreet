@@ -1,0 +1,34 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirm account') %]
+
+[% IF token_not_found %]
+
+  <div class="confirmation-header confirmation-header--failure">
+    <h1>[% loc('Sorry, that wasn&rsquo;t a valid link') %]</h1>
+    <p>[% loc('The link might have expired, or maybe you didn&rsquo;t quite copy and paste it correctly.') %]</p>
+  </div>
+
+[% ELSE %]
+
+[% DEFAULT submit_url = '/auth/phone' %]
+
+  <div class="confirmation-header confirmation-header--phone">
+    [% IF incorrect_code %]
+        <h1>[% loc('Sorry, that wasn&rsquo;t the correct code') %]</h1>
+        <p>[% loc('Try again') %]:</p>
+    [% ELSE %]
+        <h1>[% loc("Nearly done! Now check your phone&hellip;") %]</h1>
+        <p>[% loc("We have sent a confirmation code to your phone. Please enter it below:") %]</p>
+    [% END %]
+    <form action="[% submit_url %]" method="post">
+        <input type="hidden" name="token" value="[% token | html %]">
+        <label for="code">[% loc('Code') %]</label>
+        <div class="form-txt-submit-box">
+            <input class="form-control" type="number" id="code" name="code" value="" required>
+            <input type="submit" value="[% loc('Submit') %]" class="btn-primary">
+        </div>
+    </form>
+  </div>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]

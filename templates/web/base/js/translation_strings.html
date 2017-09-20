@@ -59,7 +59,11 @@
         upload_cancel_confirmation: '[% loc ('Are you sure you want to cancel this upload?') | replace("'", "\\'") %]',
         upload_invalid_file_type: '[% loc ('Please upload an image only') | replace("'", "\\'") %]',
 
+        [% IF c.config.SMS_AUTHENTICATION ~%]
+        login_with_email: '[% loc('Log in with email/text') | replace("'", "\\'") %]',
+        [% ELSE ~%]
         login_with_email: '[% loc('Log in with email') | replace("'", "\\'") %]',
+        [% END ~%]
 
         offline: {
             your_reports: '[% loc('Your offline reports') | replace("'", "\\'") %]',

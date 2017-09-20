@@ -12,14 +12,14 @@
     <input type="hidden" name="token" value="[% csrf_token %]">
 
     <fieldset>
-    [% IF email_error;
+    [% IF username_error;
         errors = {
-            missing = loc('Please enter your email'),
-            other   = loc('Please check your email address is correct')
+            missing_email = loc('Please enter your email'),
+            other_email = loc('Please check your email address is correct')
         };
-        loc_email_error = errors.$email_error || errors.other;
+        loc_username_error = errors.$username_error || errors.other_email;
     %]
-    <div class="form-error">[% loc_email_error %]</div>
+    <div class="form-error">[% loc_username_error %]</div>
     [% END %]
 
     <div class="form-field">
