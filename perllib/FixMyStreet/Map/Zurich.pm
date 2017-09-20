@@ -34,12 +34,8 @@ sub tile_parameters {
         dpi             => 96,
         inches_per_unit => 39.3701, # BNG uses metres
         projection      => 'EPSG:2056',
-        # The original tile origin values from the getCapabilities call are
-        # -27386400.0/31814500.0, but this results in the map tile being offset
-        # slightly. These corrected values were figured out manually by
-        # trial and error...
-        origin_x        => -27386322.5,
-        origin_y        => 31814423.0,
+        origin_x        => -27386400.0,
+        origin_y        => 31814500.0,
     };
     return $params;
 }

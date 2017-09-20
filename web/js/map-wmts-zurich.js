@@ -4,10 +4,10 @@
 
 // From 'fullExtent' from http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled95/LuftbildHybrid/MapServer?f=pjson
 fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
-    2676000.9069999997, // W
-    1241399.842, // S
-    2689900.9069999997, // E
-    1254599.842); // N
+    2674687.5, // W
+    1240500, // S
+    2690000, // E
+    1255500); // N
 
 fixmystreet.maps.matrix_ids = [
   // The two highest zoom levels are pretty much useless so they're disabled.
