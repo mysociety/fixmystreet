@@ -1,4 +1,4 @@
-$mappage-header-height: 41px + 100px + 37px; // .navbar-inverse + #top-header + #mega-menu-navbar
+$mappage-header-height: 49px + 50px; // .navbar + #main-nav
 
 @import "_colours";
 @import "../sass/layout";
@@ -10,25 +10,6 @@ $mappage-header-height: 41px + 100px + 37px; // .navbar-inverse + #top-header + 
     }
 }
 
-body.mappage {
-    footer, .footer-container, #footer-container, #footer-logos-bottom {
-        display: none;
-    }
-
-    #wrapper.container:before, #wrapper.container:after {
-        display: none;
-    }
-
-    #site-header .navbar {
-        margin-top: 0; // remove space between FMS nav links and green header
-    }
-
-    #mega-menu-navbar .navbar-inner {
-        border-width: 0 0 1px 0;
-        border-radius: 0;
-    }
-}
-
 body.twothirdswidthpage .content .sticky-sidebar {
     z-index: 0;
 
@@ -37,28 +18,16 @@ body.twothirdswidthpage .content .sticky-sidebar {
     }
 }
 
-#footer-logos-bottom .container {
-    background: $base_bg;
+#main-nav {
+    text-align: inherit;
+    min-height: 0;
+    display: block; // undo flex-container()
+    float: none;
 }
 
-#top-header {
-    [class*="span"] {
-        margin-left: 2%;
+body.mappage {
+    & > .navbar .container,
+    & > #main-nav .container {
+        width: auto !important; // override bootstrap media queries
     }
-
-    .span12 {
-        width: 98%;
-    }
-
-    .span3 {
-        width: 23%;
-    }
-
-    .span9 {
-        width: 73%;
-    }
-}
-
-#site-search.navbar-form input {
-    width: 16em;
 }

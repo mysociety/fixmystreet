@@ -1,6 +1,7 @@
 /* COLOURS */
 
 $green: #006d3c;
+$purple: #90428C;
 
 $primary: $green;
 $primary_b: #000000;
@@ -13,7 +14,9 @@ $map_nav_bg: #fff;
 $nav_fg: #000;
 $nav_fg_hover: $primary;
 
-$col_click_map: $green;
+$col_click_map: $purple;
 
 $col_fixed_label: #00BD08;
 $col_fixed_label_dark: #4B8304;
+
+$header-top-border: false;

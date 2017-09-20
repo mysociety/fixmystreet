@@ -7,16 +7,36 @@
 <head>
     <meta name="viewport" content="initial-scale=1.0">
 
-    <link rel="shortcut icon" href="/cobrands/warwickshire/vendor/gamma/images/favicon.ico" />
+    <link rel="shortcut icon" href="/cobrands/warwickshire/vendor/gamma/images/favicon_wcc.ico" />
+    <link rel="icon" type="image/png" href="/cobrands/warwickshire/vendor/gamma/images/favicon-WCC.png" />
+    <link rel="apple-touch-icon" href="/cobrands/warwickshire/vendor/gamma/images/apple-touch-icon-WCC.png" />
 
-    <!-- Style -->
-    <link rel="stylesheet" type="text/css" href="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/style.css') %]" />
-    <link rel="stylesheet" type="text/css" href="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/bootstrap-responsive.css') %]">
-    <!-- Scripts -->
+    <link rel="stylesheet" href="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/style.css') %]" />
+    <link rel="stylesheet" href="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/bootstrap-responsive.css') %]" />
+    <link rel="stylesheet" href="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/image-navigation.css') %]" />
+    <link rel="stylesheet" href="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/venues.css') %]" />
+    <link rel="stylesheet" media="print" href="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/print.css') %]" />
+
     <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/modernizr-2.6.2-respond-1.1.0.min.js') %]" type="text/javascript"></script>
     <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/jquery-1.9.0.min.js') %]" type="text/javascript"></script>
     <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/bootstrap.min.js') %]" type="text/javascript"></script>
     <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/main.js') %]" type="text/javascript"></script>
+    <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/jquery.tabSlideOut.v1.3.js') %]" type="text/javascript"></script>
+    <script type="text/javascript">
+        function popup(mylink, wname) {
+            if (! window.focus)return true;
+            var href;
+            if (typeof(mylink) == 'string')
+            href=mylink;
+            else
+            href=mylink.href;
+            window.open(href,wname,'width=345, height=590,scrollbars=no');
+            return false;
+        }
+    </script>
+    <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/jquery.cycle.js') %]" type="text/javascript"></script>
+    <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/jquery.zrssfeed.o.js') %]" type="text/javascript"></script>
+    <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/homepage-slider-test.js') %]" type="text/javascript"></script>
 
     <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
     <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
@@ -30,140 +50,10 @@
 
 [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
 <body class="style-1 [% bodyclass | html IF bodyclass %]">
-    <div id="beta-label" style="position:fixed; top:0; left:0; z-index:1059">
-        <img alt="" src="https://news.warwickshire.gov.uk/wp-content/themes/fullscreen-maps/images/beta.png">
-    </div>
-    <!--[if lt IE 7]>
-        <div class="alert alert-error"><strong>You are using an outdated browser</strong>. You may want to <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
-    <![endif]-->
-    <div id="site-header">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>
-                    <a class="brand" href="//www.warwickshire.gov.uk/"><img src="//www.warwickshire.gov.uk/wp-content/themes/gamma/images/corpwhitelogo.png" alt="Warwickshire Direct" style="width:60px;" /></a>
-                    <div class="nav-collapse collapse">
-                        <nav>
-                            <ul class="nav">
-                                <li class="dropdown">
-                                    <a href="#"  class="dropdown-toggle" data-toggle="dropdown">Residents<b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="//www.warwickshire.gov.uk/" accesskey="2">Residents - home</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/environment">Environment</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/health" accesskey="2">Health</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/librariesandleisure">Libraries and leisure</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/roadsandtravel">Roads and travel</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/registrations">Registrations</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/safetyandcrime">Safety and crime</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/schoolsandlearning">Schools and learning</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/socialcareandhealth">Social care and support</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Business <b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="//www.warwickshire.gov.uk/business" accesskey="3">Business - home</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/businesssupportorganisations">Business support organisations</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/growingyourbusiness">Growing your business</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/businesshealthandsafety" accesskey="2">Health and safety for businesses</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/locatingyourbusiness">Locating your business</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/otherbusinessservices">Other business services</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/businessadvice">Regulatory business service and advice</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/startingabusiness" accesskey="2">Starting a business</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">The council <b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="//www.warwickshire.gov.uk/corporate" accesskey="3">The council - home</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/democracy">Democracy</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/financeandsuppliers">Finance and suppliers</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/listsanddata">Lists, data and information</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/organisation" accesskey="2">Organisation</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/performance">Our performance</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/partnerships">Partnerships</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/policies">Policies, standards and legislation</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/projects">Projects</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/strategies">Strategies and priorities</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="//countryparks.warwickshire.gov.uk/" accesskey="4">Country Parks</a></li>
-                                        <li><a href="//hwb.warwickshire.gov.uk/">Health and Wellbeing</a></li>
-                                        <li><a href="//heritage.warwickshire.gov.uk/">Heritage and Culture</a></li>
-                                        <li><a href="//invest.warwickshire.gov.uk/">Invest in Warwickshire</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/jobs">Jobs</a></li>
-                                        <li><a href="//www.livingwellwithdementia.org/">Living well with dementia</a></li>
-                                        <li><a href="//laf.warwickshire.gov.uk/">Local Access Forum</a></li>
-                                        <li><a href="//news.warwickshire.gov.uk/" accesskey="2">News</a></li>
-                                        <li><a href="//publichealth.warwickshire.gov.uk/">Public Health</a></li>
-                                        <li><a href="//www.warwickshire.gov.uk/spp">Staff, Partners and Practitioners</a></li>
-                                        <li><a href="//wwp.warwickshire.gov.uk/">Waste Partnership</a></li>
-                                        <li><a href="//whittlefordpark.warwickshire.gov.uk/">Whittle Park</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div><!--/.nav-collapse -->
-                    <div class="nav-collapse collapse pull-right span2">
-                        <ul class="nav">
-                            <li class="dropdown">
-                            <a href="//www.warwickshire.gov.uk/myaccount" class="dropdown-toggle" data-toggle="dropdown">My Account <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                <li>
-                                <a href="//www.warwickshire.gov.uk/me@wcc">Me@WCC</a>
-                                <p class="nav-header" style="font-weight:normal;text-transform:none !important;">Manage event submissions, submit licence applications, or access Atlas</p>
-                                </li>
-                                <li>
-                                <a href="//www.warwickshire.gov.uk/librarylogin">Library account</a>
-                                <p class="nav-header" style="font-weight:normal;text-transform:none !important;">Renew and reserve paper books or borrow eBooks</p>
-                                </li>
-                                <li>
-                                <a href="//www.warwickshire.gov.uk/jobslogin">Jobs</a>
-                                <p class="nav-header" style="font-weight:normal;text-transform:none !important;">Apply for roles or setup alerts</p>
-                                </li>
-                                <li>
-                                <a href="//www.warwickshire.gov.uk/myaccount">Other accounts</a>
-                                </li>
-                            </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row style-1-gradient" id="top-header">
-            <div class="container">
-                <div class="span12" style="height:100px;">
-                    <div class="row">
-                        <div id="logo-wrap" class="span3" style="padding-top:15px;padding-bottom:15px;">
-                            <a href="//www.warwickshire.gov.uk/"><img src="//www.warwickshire.gov.uk/wp-content/themes/gamma/images/wdwhitelogo.png" alt="Warwickshire County Council - home" title="Warwickshire County Council - home" ></a>
-                        </div>
-                        <div class="span9">
-                            <form action="//search3.openobjects.com/kb5/warwickshire/search/results.page" method="get" name="kbs" class="navbar-form pull-right" id="site-search">
-                                <label for="qtbottom" class="skip" style="display:none;">Search again</label>
-                                <input type="text" maxlength="1000" size="40" name="qt" id="qtbottom" alt="Search" placeholder="eg; libraries, roadworks" accesskey="4">
-                                <button type="submit" value="Search" id="kbsubmitbottom" class="btn btn-mini searchbutton">Search</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container navbar-container">
-            <div class="navbar" id="mega-menu-navbar">
-                <div class="navbar-inner">
-                    [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area hide_all_reports_link=1 omit_wrapper=1 ul_class="menu nav" ul_id="mega-menu" %]
-                </div>
-            </div>
-        </div>
-    </div>
+
+    [% INCLUDE 'warwickshire_masthead.html' %]
+
+    [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area hide_all_reports_link=1 ul_class='container' %]
 
     <div id="wrapper" class="container wrapper">
         <div id="mysociety">

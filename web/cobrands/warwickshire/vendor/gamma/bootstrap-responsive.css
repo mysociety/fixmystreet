@@ -790,8 +790,13 @@
   body {
     padding-right: 20px;
     padding-left: 20px;
-	min-width:320px; /*PL edit*/
+  min-width:320px; /*PL edit*/
   }
+
+  .show-search .mobile-search{
+    display:block;
+  }
+
   .navbar-fixed-top,
   .navbar-fixed-bottom,
   .navbar-static-top {
@@ -800,6 +805,8 @@
   }
   .container-fluid {
     padding: 0;
+    padding-left: 10%; /*added 05-09-2016 - DJ */
+    padding-right: 10%;
   }
   .dl-horizontal dt {
     float: none;
@@ -889,6 +896,9 @@
   .nav-collapse {
     -webkit-transform: translate3d(0, 0, 0);
   }
+
+
+
   .page-header h1 small {
     display: block;
     line-height: 20px;
@@ -941,6 +951,15 @@
   body {
     padding-top: 0;
   }
+
+ .show-search .mobile-search{
+    display:block;
+  }
+
+nav #site-search{
+  display: none;
+}
+
   .navbar-fixed-top,
   .navbar-fixed-bottom {
     position: static;
@@ -989,8 +1008,9 @@
   .nav-collapse .nav > li > a,
   .nav-collapse .dropdown-menu a {
     padding: 9px 15px;
-    font-weight: bold;
+    font-weight: normal; /*bold;*/
     color: #777777;
+    text-decoration: none;
     -webkit-border-radius: 3px;
        -moz-border-radius: 3px;
             border-radius: 3px;
@@ -1079,8 +1099,10 @@
     height: 0;
     overflow: hidden;
   }
-  .navbar .btn-navbar {
+  /*added margin top to icons */
+  .navbar .btn-navbar, .navbar .btn-search {
     display: block;
+    margin-top: 10px;
   }
   .navbar-static .navbar-inner {
     padding-right: 10px;
@@ -1093,4 +1115,20 @@
     height: auto !important;
     overflow: visible !important;
   }
+  .show-search{
+    height: 10px !important;
+  }
+
+  .sign-in::before {
+    content: "| ";
+} 
+
+  .sign-in::after {
+    content: " |";
+} 
+
+
+
+
+
 }
