@@ -21,6 +21,7 @@
         - Clearer wording and more prominent email input on alert page. #1829
         - Cobrands can implement `hide_areas_on_reports` to hide outline on map.
         - Templates to allow extra messages through problem confirmation. #1837
+        - Optimised sprite file down from 97 KB to 36 KB. #1852
     - Admin improvements:
         - Highlight current shortlisted user in list tooltip. #1788
         - Extra fields on contacts can be edited. #1743
