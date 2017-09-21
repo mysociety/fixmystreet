@@ -7,6 +7,14 @@ has texts => (
     default => sub { [] },
 );
 
+sub get_text_code {
+    my $self = shift;
+    my $text = shift @{$self->texts};
+    return unless $text;
+    my ($code) = $text->{Body} =~ /(\d+)/;
+    return $code;
+}
+
 sub dispatch_request {
     my $self = shift;
 

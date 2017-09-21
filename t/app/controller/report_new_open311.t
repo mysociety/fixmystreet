@@ -54,6 +54,7 @@ foreach my $test (
             photo3        => '',
             name          => '',
             may_show_name => '1',
+            username      => '',
             email         => '',
             phone         => '',
             category      => 'Street lighting',
@@ -76,7 +77,7 @@ foreach my $test (
             title => 'test',
             detail => 'test detail',
             name => 'Test User',
-            email => 'testopen311@example.com',
+            username => 'testopen311@example.com',
             category => 'Street lighting',
             number => 27,
         },
@@ -100,7 +101,7 @@ foreach my $test (
         $mech->clear_emails_ok;
 
         # check that the user does not exist
-        my $test_email = $test->{submit_with}->{email};
+        my $test_email = $test->{submit_with}->{username};
         my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
         if ( $user ) {
             $user->problems->delete;

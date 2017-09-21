@@ -13,6 +13,7 @@ use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
 use JSON::MaybeXS;
+use FixMyStreet::SMS;
 
 =head1 NAME
 
@@ -116,18 +117,24 @@ sub report_new : Path : Args(0) {
     $c->forward('redirect_or_confirm_creation');
 }
 
-# This is for the new phonegap versions of the app. It looks a lot like
-# report_new but there's a few workflow differences as we only ever want
-# to sent JSON back here
-
 sub report_new_test : Path('_test_') : Args(0) {
     my ( $self, $c ) = @_;
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = $c->get_param('email_type');
 }
 
+# This is for the new phonegap versions of the app. It looks a lot like
+# report_new but there's a few workflow differences as we only ever want
+# to sent JSON back here
+
 sub report_new_ajax : Path('mobile') : Args(0) {
     my ( $self, $c ) = @_;
+
+    # Apps are sending email as username
+    # Prepare for when they upgrade
+    if (!$c->get_param('username')) {
+        $c->set_param('username', $c->get_param('email'));
+    }
 
     # create the report - loading a partial if available
     $c->forward('initialize_report');
@@ -737,14 +744,12 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => $c->get_param($_) }
-      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
-
-    my $user_title = Utils::trim_text( $params{fms_extra_title} );
+      ( 'username', 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
 
     if ( $c->cobrand->allow_anonymous_reports ) {
         my $anon_details = $c->cobrand->anonymous_account;
 
-        for my $key ( qw( email name ) ) {
+        for my $key ( qw( username email name ) ) {
             $params{ $key } ||= $anon_details->{ $key };
         }
     }
@@ -759,34 +764,29 @@ sub process_user : Private {
             last;
         }
 
-        $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
-        $user->phone( Utils::trim_text( $params{phone} ) );
-        $user->title( $user_title ) if $user_title;
         $report->user( $user );
+        $c->forward('update_user', [ \%params ]);
 
         if ($c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies}) or
             $c->stash->{contributing_as_anonymous_user} = $user->contributing_as('anonymous_user', $c, $c->stash->{bodies})) {
             $report->name($user->from_body->name);
             $user->name($user->from_body->name) unless $user->name;
             $c->stash->{no_reporter_alert} = 1;
-        } else {
-            $report->name($user->name);
         }
 
         return 1;
     } }
 
-    # cleanup the email address
-    my $email = $params{email} ? lc $params{email} : '';
-    $email =~ s{\s+}{}g;
-
-    $report->user( $c->model('DB::User')->find_or_new( { email => $email } ) )
+    my $parsed = FixMyStreet::SMS->parse_username($params{username});
+    my $type = $parsed->{type} || 'email';
+    $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION');
+    $report->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) )
         unless $report->user;
 
-    # The user is trying to sign in. We only care about email from the params.
+    # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
-        unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
-            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.');
+        unless ( $c->forward( '/auth/sign_in', [ $params{username} ] ) ) {
+            $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form.');
             return 1;
         }
         my $user = $c->user->obj;
@@ -798,15 +798,26 @@ sub process_user : Private {
         return 1;
     }
 
-    # set the user's name, phone, and password
-    $report->user->name( Utils::trim_text( $params{name} ) ) if $params{name};
-    $report->user->phone( Utils::trim_text( $params{phone} ) );
+    $c->forward('update_user', [ \%params ]);
     $report->user->password( Utils::trim_text( $params{password_register} ) )
         if $params{password_register};
-    $report->user->title( $user_title ) if $user_title;
-    $report->name( Utils::trim_text( $params{name} ) );
 
     return 1;
+}
+
+sub update_user : Private {
+    my ($self, $c, $params) = @_;
+    my $report = $c->stash->{report};
+    my $user = $report->user;
+    $user->name( Utils::trim_text( $params->{name} ) );
+    $report->name($user->name);
+    if (!$user->phone_verified) {
+        $user->phone( Utils::trim_text( $params->{phone} ) );
+    } elsif (!$user->email_verified) {
+        $user->email( Utils::trim_text( $params->{email} ) );
+    }
+    my $user_title = Utils::trim_text( $params->{fms_extra_title} );
+    $user->title( $user_title ) if $user_title;
 }
 
 =head2 process_report
@@ -1031,11 +1042,11 @@ sub check_for_errors : Private {
         delete $field_errors{name};
     }
 
-    # if using social login then we don't care about name and email errors
+    # if using social login then we don't care about other errors
     $c->stash->{is_social_user} = $c->get_param('facebook_sign_in') || $c->get_param('twitter_sign_in');
     if ( $c->stash->{is_social_user} ) {
         delete $field_errors{name};
-        delete $field_errors{email};
+        delete $field_errors{username};
     }
 
     # add the photo error if there is one.
@@ -1056,7 +1067,8 @@ sub tokenize_user : Private {
     my ($self, $c, $report) = @_;
     $c->stash->{token_data} = {
         name => $report->user->name,
-        phone => $report->user->phone,
+        (!$report->user->phone_verified ? (phone => $report->user->phone) : ()),
+        (!$report->user->email_verified ? (email => $report->user->email) : ()),
         password => $report->user->password,
         title => $report->user->title,
     };
@@ -1087,6 +1099,114 @@ sub send_problem_confirm_email : Private {
     $c->send_email( $template, {
         to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
     } );
+}
+
+sub send_problem_confirm_text : Private {
+    my ( $self, $c ) = @_;
+    my $data = $c->stash->{token_data} || {};
+    my $report = $c->stash->{report};
+
+    $data->{id} = $report->id;
+    $c->forward('/auth/phone/send_token', [ $data, 'problem', $report->user->phone ]);
+    $c->stash->{submit_url} = '/report/new/text';
+}
+
+sub confirm_by_text : Path('text') {
+    my ( $self, $c ) = @_;
+
+    my $token = $c->stash->{token} = $c->get_param('token');
+    my $code = $c->get_param('code') || '';
+
+    my $data = $c->stash->{token_data} = $c->forward('/auth/get_token', [ $token, 'problem' ]) || return;
+    if ($data->{code} ne $code) {
+        $c->stash->{template} = 'auth/smsform.html';
+        $c->stash->{submit_url} = '/report/new/text';
+        $c->stash->{incorrect_code} = 1;
+        return;
+    }
+
+    $c->detach('process_confirmation');
+}
+
+sub process_confirmation : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{template} = 'tokens/confirm_problem.html';
+    my $data = $c->stash->{token_data};
+
+    unless ($c->stash->{report}) {
+        # Look at all problems, not just cobrand, in case am approving something we don't actually show
+        $c->stash->{report} = $c->model('DB::Problem')->find({ id => $data->{id} }) || return;
+    }
+    my $problem = $c->stash->{report};
+
+    # check that this email or domain are not the cause of abuse. If so hide it.
+    if ( $problem->is_from_abuser ) {
+        $problem->update(
+            { state => 'hidden', lastupdate => \'current_timestamp' } );
+        $c->stash->{template} = 'tokens/abuse.html';
+        return;
+    }
+
+    # For Zurich, email confirmation simply sets a flag, it does not change the
+    # problem state, log in, or anything else
+    if ($c->cobrand->moniker eq 'zurich') {
+        $problem->set_extra_metadata( email_confirmed => 1 );
+        $problem->update( {
+            confirmed => \'current_timestamp',
+        } );
+
+        if ( $data->{name} || $data->{password} ) {
+            $problem->user->name( $data->{name} ) if $data->{name};
+            $problem->user->phone( $data->{phone} ) if $data->{phone};
+            $problem->user->update;
+        }
+
+        return 1;
+    }
+
+    if ($problem->state ne 'unconfirmed') {
+        my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
+        $c->res->redirect($report_uri);
+        return;
+    }
+
+    # We have an unconfirmed problem
+    $problem->update(
+        {
+            state      => 'confirmed',
+            confirmed  => \'current_timestamp',
+            lastupdate => \'current_timestamp',
+        }
+    );
+
+    # Subscribe problem reporter to email updates
+    $c->forward( '/report/new/create_reporter_alert' );
+
+    # log the problem creation user in to the site
+    if ( $data->{name} || $data->{password} ) {
+        if (!$problem->user->email_verified) {
+            $problem->user->email( $data->{email} ) if $data->{email};
+        } elsif (!$problem->user->phone_verified) {
+            $problem->user->phone( $data->{phone} ) if $data->{phone};
+        }
+        $problem->user->password( $data->{password}, 1 ) if $data->{password};
+        for (qw(name title facebook_id twitter_id)) {
+            $problem->user->$_( $data->{$_} ) if $data->{$_};
+        }
+        $problem->user->update;
+    }
+    if ($problem->user->email_verified) {
+        $c->authenticate( { email => $problem->user->email, email_verified => 1 }, 'no_password' );
+    } elsif ($problem->user->phone_verified) {
+        $c->authenticate( { phone => $problem->user->phone, phone_verified => 1 }, 'no_password' );
+    } else {
+        warn "Reached user authentication with no username verification";
+    }
+    $c->set_session_cookie_expire(0);
+
+    $c->stash->{created_report} = 'fromemail';
+    return 1;
 }
 
 =head2 save_user_and_report
@@ -1143,11 +1263,7 @@ sub save_user_and_report : Private {
 
     # Save or update the user if appropriate
     if ( $c->cobrand->never_confirm_reports ) {
-        if ( $report->user->in_storage() ) {
-            $report->user->update();
-        } else {
-            $report->user->insert();
-        }
+        $report->user->update_or_insert;
         $report->confirm();
     } elsif ( $c->forward('created_as_someone_else', [ $c->stash->{bodies} ]) ) {
         # If created on behalf of someone else, we automatically confirm it,
@@ -1157,7 +1273,11 @@ sub save_user_and_report : Private {
         # User does not exist.
         $c->forward('tokenize_user', [ $report ]);
         $report->user->name( undef );
-        $report->user->phone( undef );
+        if (!$report->user->email_verified) {
+            $report->user->email( undef );
+        } elsif (!$report->user->phone_verified) {
+            $report->user->phone( undef );
+        }
         $report->user->password( '', 1 );
         $report->user->title( undef );
         $report->user->insert();
@@ -1177,8 +1297,7 @@ sub save_user_and_report : Private {
         $c->log->info($report->user->id . ' exists, but is not logged in for this report');
     }
 
-    # save the report;
-    $report->in_storage ? $report->update : $report->insert();
+    $report->update_or_insert;
 
     # tidy up
     if ( my $token = $c->stash->{partial_token} ) {
@@ -1264,13 +1383,20 @@ sub redirect_or_confirm_creation : Private {
         return 1;
     }
 
-    # otherwise email a confirm token to them.
-    $c->forward( 'send_problem_confirm_email' );
-
-    # tell user that they've been sent an email
-    $c->stash->{template}   = 'email_sent.html';
-    $c->stash->{email_type} = 'problem';
-    $c->log->info($report->user->id . ' created ' . $report->id . ', email sent, ' . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
+    # otherwise email or text a confirm token to them.
+    my $thing = 'email';
+    if ($report->user->email_verified) {
+        $c->forward( 'send_problem_confirm_email' );
+        # tell user that they've been sent an email
+        $c->stash->{template}   = 'email_sent.html';
+        $c->stash->{email_type} = 'problem';
+    } elsif ($report->user->phone_verified) {
+        $c->forward( 'send_problem_confirm_text' );
+        $thing = 'text';
+    } else {
+        warn "Reached problem confirmation with no username verification";
+    }
+    $c->log->info($report->user->id . ' created ' . $report->id . ", $thing sent, " . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
 }
 
 sub create_reporter_alert : Private {

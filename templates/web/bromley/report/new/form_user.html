@@ -50,11 +50,11 @@
     </div>
 [% ELSE %]
 
-    <label for="form_email">[% loc('Your email') %]</label>
-    [% IF field_errors.email %]
-        <p class='form-error'>[% field_errors.email %]</p>
+    <label for="form_username">[% loc('Your email') %]</label>
+    [% IF field_errors.username %]
+        <p class='form-error'>[% field_errors.username %]</p>
     [% END %]
-    <input class="form-control" type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
+    <input class="form-control" type="email" value="[% report.user.email | html %]" name="username" id="form_username" placeholder="[% loc('Please enter your email address') %]" required>
 
     <div id="form_sign_in">
 

@@ -1,5 +1,9 @@
 <div id="form_sign_in_no" class="form-box">
+  [% IF c.config.SMS_AUTHENTICATION %]
+    <h5>[% loc('<strong>No</strong> Let me confirm my report by email/text') %]</h5>
+  [% ELSE %]
     <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
+  [% END %]
 
     [% INCLUDE 'report/new/extra_name.html' %]
     [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
@@ -22,8 +26,14 @@
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
     </div>
 
-    <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
-    <input class="form-control form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+    <div id="js-hide-if-username-phone">
+        <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
+        <input class="form-control form-focus-hidden" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
+    </div>
+    <div id="js-hide-if-username-email">
+        <label class="form-focus-hidden" for="form_email">[% loc('Email address (optional)') %]</label>
+        <input class="form-control form-focus-hidden" type="text" value="[% report.user.email | html %]" name="email" id="form_email">
+    </div>
 
     <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
 

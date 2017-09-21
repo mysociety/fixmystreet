@@ -56,8 +56,7 @@ subtest 'Log in using mobile, by text' => sub {
         }, 'submit incorrect code');
         $mech->content_contains('Try again');
 
-        my $text = shift @{$twilio->texts};
-        my ($code) = $text->{Body} =~ /(\d+)/;
+        my $code = $twilio->get_text_code;
         $mech->submit_form_ok({
             with_fields => { code => $code }
         }, 'submit correct code');

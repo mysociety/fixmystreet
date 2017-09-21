@@ -74,7 +74,7 @@ for my $test (
         cobrand => 'bromley',
         fields => {
             submit_update   => 1,
-            rznvy           => 'unregistered@example.com',
+            username => 'unregistered@example.com',
             update          => 'Update from an unregistered user',
             add_alert       => undef,
             first_name            => 'Unreg',
@@ -87,7 +87,7 @@ for my $test (
         cobrand => 'fixmystreet',
         fields => {
             submit_update   => 1,
-            rznvy           => 'unregistered@example.com',
+            username => 'unregistered@example.com',
             update          => 'Update from an unregistered user',
             add_alert       => undef,
             name            => 'Unreg User',

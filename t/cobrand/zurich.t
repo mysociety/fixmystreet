@@ -808,7 +808,7 @@ subtest "photo must be supplied for categories that require it" => sub {
         $mech->get_ok('/report/new?lat=47.381817&lon=8.529156');
         $mech->submit_form_ok({ with_fields => {
             detail => 'Problem-Bericht',
-            email => 'user@example.org',
+            username => 'user@example.org',
             category => 'Graffiti - photo required',
         }});
         is $mech->res->code, 200, "missing photo shouldn't return anything but 200";

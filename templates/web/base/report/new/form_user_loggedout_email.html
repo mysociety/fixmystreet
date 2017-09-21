@@ -1,7 +1,17 @@
-<label for="form_email">[% loc('Your email') %]</label>
-[% IF field_errors.email %]
-    <p class='form-error'>[% field_errors.email %]</p>
+[% IF c.config.SMS_AUTHENTICATION %]
+    [% SET username_label = loc('Your email or mobile') %]
+    [% SET username_type = 'text' %]
+    [% SET username_value = report.user.username %]
+[% ELSE %]
+    [% SET username_label = loc('Your email') %]
+    [% SET username_type = 'email' %]
+    [% SET username_value = report.user.email %]
 [% END %]
-<input class="form-control" type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]"
+
+<label for="form_username">[% username_label %]</label>
+[% IF field_errors.username %]
+    <p class='form-error'>[% field_errors.username %]</p>
+[% END %]
+<input type="[% username_type %]" value="[% username_value | html %]" name="username" id="form_username"
     [% IF required %]required[% END %]
-    class="required">
+    class="form-control required">

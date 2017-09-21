@@ -65,11 +65,12 @@ Create a test user (or find it and return if it already exists).
 
 sub create_user_ok {
     my $self = shift;
-    my ( $email, %extra ) = @_;
+    my ( $username, %extra ) = @_;
 
-    my $params = { email => $email, %extra };
+    my $params = { %extra };
+    $username =~ /@/ ? $params->{email} = $username : $params->{phone} = $username;
     my $user = FixMyStreet::DB->resultset('User')->find_or_create($params);
-    ok $user, "found/created user for $email";
+    ok $user, "found/created user for $username";
 
     return $user;
 }
@@ -78,15 +79,15 @@ sub create_user_ok {
 
     $user = $mech->log_in_ok( $email_address );
 
-Log in with the email given. If email does not match an account then create one.
+Log in with the email/phone given. If email/phone does not match an account then create one.
 
 =cut
 
 sub log_in_ok {
     my $mech  = shift;
-    my $email = shift;
+    my $username = shift;
 
-    my $user = $mech->create_user_ok($email);
+    my $user = $mech->create_user_ok($username);
 
     # remember the old password and then change it to a known one
     my $old_password = $user->password || '';
@@ -95,7 +96,7 @@ sub log_in_ok {
     # log in
     $mech->get_ok('/auth');
     $mech->submit_form_ok(
-        { with_fields => { username => $email, password_sign_in => 'secret' } },
+        { with_fields => { username => $username, password_sign_in => 'secret' } },
         "sign in using form" );
     $mech->logged_in_ok;
 
@@ -135,6 +136,7 @@ sub log_out_ok {
 
     $mech->delete_user( $user );
     $mech->delete_user( $email );
+    $mech->delete_user( $phone );
 
 Delete the current user, including linked objects like problems etc. Can be
 either a user object or an email address.
@@ -142,14 +144,14 @@ either a user object or an email address.
 =cut
 
 sub delete_user {
-    my $mech          = shift;
-    my $email_or_user = shift;
+    my $mech = shift;
+    my $user_or_username = shift;
 
-    my $user =
-      ref $email_or_user
-      ? $email_or_user
-      : FixMyStreet::DB->resultset('User')
-      ->find( { email => $email_or_user } );
+    my $user = ref $user_or_username ? $user_or_username : undef;
+    $user = FixMyStreet::DB->resultset('User')->find( { email => $user_or_username } )
+        unless $user;
+    $user = FixMyStreet::DB->resultset('User')->find( { phone => $user_or_username } )
+        unless $user;
 
     # If no user found we can't delete them
     return 1 unless $user;

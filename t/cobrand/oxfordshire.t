@@ -217,7 +217,7 @@ subtest 'response times messages displayed' => sub {
                     title         => 'Test Report',
                     detail        => 'Test report details.',
                     photo1        => '',
-                    email         => 'test-2@example.com',
+                    username      => 'test-2@example.com',
                     name          => 'Test User',
                     category      => 'Pothole',
                 }

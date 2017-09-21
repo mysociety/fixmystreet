@@ -13,9 +13,9 @@ Returns true if the user's email or its domain is listed in the 'abuse' table.
 sub is_from_abuser {
     my $self = shift;
 
-    # get the domain
     my $email = $self->user->email;
-    my ($domain) = $email =~ m{ @ (.*) \z }x;
+    my ($domain) = $email =~ m{ @ (.*) \z }x if $email;
+    my $phone = $self->user->phone;
 
     # search for an entry in the abuse table
     my $abuse_rs = $self->result_source->schema->resultset('Abuse');
@@ -23,6 +23,7 @@ sub is_from_abuser {
     return
          $abuse_rs->find( { email => $email } )
       || $abuse_rs->find( { email => $domain } )
+      || $abuse_rs->find( { email => $phone } )
       || undef;
 }
 

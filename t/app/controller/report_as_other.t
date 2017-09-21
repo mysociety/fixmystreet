@@ -47,7 +47,7 @@ subtest "Body user, has permission to add report as another user" => sub {
         detail => 'Test report details.',
         category => 'Potholes',
         name => 'Another User',
-        email => 'another@example.net',
+        username => 'another@example.net',
     );
     is $report->name, 'Another User', 'report name is given name';
     is $report->user->name, 'Another User', 'user name matches';
@@ -66,7 +66,7 @@ subtest "Body user, has permission to add report as another (existing) user" => 
         detail => 'Test report details.',
         category => 'Potholes',
         name => 'Existing Yooser',
-        email => 'existing@example.net',
+        username => 'existing@example.net',
     );
     is $report->name, 'Existing Yooser', 'report name is given name';
     is $report->user->name, 'Existing User', 'user name remains same';
@@ -108,7 +108,7 @@ subtest "Body user, has permission to add update as another user" => sub {
         form_as => 'another_user',
         update => 'Test Update',
         name => 'Another User',
-        rznvy => 'another2@example.net',
+        username => 'another2@example.net',
     );
     is $update->name, 'Another User', 'update name is given name';
     is $update->user->name, 'Another User', 'user name matches';
@@ -124,7 +124,7 @@ subtest "Body user, has permission to add update as another (existing) user" => 
         form_as => 'another_user',
         update => 'Test Update',
         name => 'Existing Yooser',
-        rznvy => 'existing@example.net',
+        username => 'existing@example.net',
     );
     is $update->name, 'Existing Yooser', 'update name is given name';
     is $update->user->name, 'Existing User', 'user name remains same';

@@ -117,6 +117,7 @@ __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
 use Moo;
+use FixMyStreet::SMS;
 use mySociety::EmailUtil;
 use namespace::clean -except => [ 'meta' ];
 
@@ -178,11 +179,19 @@ sub check_for_errors {
         $errors{name} = _('Please enter your name');
     }
 
-    if ( $self->email !~ /\S/ ) {
-        $errors{email} = _('Please enter your email');
-    }
-    elsif ( !mySociety::EmailUtil::is_valid_email( $self->email ) ) {
-        $errors{email} = _('Please enter a valid email');
+    if ($self->email_verified) {
+        if ($self->email !~ /\S/) {
+            $errors{username} = _('Please enter your email');
+        } elsif (!mySociety::EmailUtil::is_valid_email($self->email)) {
+            $errors{username} = _('Please enter a valid email');
+        }
+    } elsif ($self->phone_verified) {
+        my $parsed = FixMyStreet::SMS->parse_username($self->phone);
+        if (!$parsed->{phone}) {
+            $errors{username} = _('Please check your phone number is correct');
+        } elsif (!$parsed->{phone}->is_mobile) {
+            $errors{username} = _('Please enter a mobile number');
+        }
     }
 
     return \%errors;

@@ -29,12 +29,19 @@
     </select>
 [% END %]
 
-    <label for="form_email">[% loc('Email address') %]</label>
-    <input class="form-control" id="form_email" name="email"
+[% IF c.user.phone_verified %]
+    <label for="form_phone">[% loc('Phone number') %]</label>
+    <input class="form-control" id="form_phone" name="phone" disabled type="text" value="[% c.user.phone | html %]">
+[% END %]
+
+[% IF c.user.email_verified %]
+    <label for="form_username">[% loc('Email address') %]</label>
+    <input class="form-control" id="form_username" name="username"
     [%- IF NOT can_contribute_as_another_user -%]
     disabled
     [%- END -%]
     type="text" value="[% c.user.email | html %]">
+[% END %]
 
     [% INCLUDE 'report/new/extra_name.html' %]
     [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
@@ -56,8 +63,14 @@
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %] </label>
     </div>
 
+[% IF NOT c.user.phone_verified %]
     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
     <input class="form-control" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone">
+[% END %]
+[% IF NOT c.user.email_verified %]
+    <label for="form_username">[% loc('Email address (optional)') %]</label>
+    <input class="form-control" type="text" value="[% report.user.email | html %]" name="email" id="form_email">
+[% END %]
 
     <div class="form-txt-submit-box">
         <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">

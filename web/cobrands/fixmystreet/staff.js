@@ -171,7 +171,7 @@ $.extend(fixmystreet.set_up, {
         var opt = this.options[this.selectedIndex],
             val = opt.value,
             txt = opt.text;
-        var $emailInput = $('input[name=email]').add('input[name=rznvy]');
+        var $emailInput = $('input[name=username]');
         var $nameInput = $('input[name=name]');
         var $phoneInput = $('input[name=phone]');
         var $showNameCheckbox = $('input[name=may_show_name]');
