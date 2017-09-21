@@ -45,10 +45,11 @@ foreach my $inspector (@inspectors) {
         my $hdrs = {
             To => join('', 'fms', '_', 'admin', '@', $cobrand->admin_user_domain),
             _attachments_ => [ {
-                body => $rdi->construct,
+                body_str => $rdi->construct,
                 attributes => {
                     filename => $rdi->filename,
                     charset => 'utf-8',
+                    encoding => 'quoted-printable',
                     content_type => 'text/csv',
                     name => $rdi->filename,
                 }
