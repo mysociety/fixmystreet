@@ -32,4 +32,6 @@ sub contact_email {
 }
 sub contact_name { 'Warwickshire County Council (do not reply)'; }
 
+sub send_questionnaires { 0 }
+
 1;
