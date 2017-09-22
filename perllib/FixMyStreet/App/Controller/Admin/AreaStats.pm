@@ -78,6 +78,8 @@ sub stats : Private {
     my ($self, $c) = @_;
 
     my $date = DateTime->now->subtract(days => 30);
+    # set it to midnight so we get consistent result through the day
+    $date->truncate( to => 'day' );
 
     $c->forward('/admin/fetch_contacts');
 
@@ -145,21 +147,21 @@ sub stats : Private {
     my $comments = $c->model('DB::Comment')->to_body(
         $c->stash->{body}
     )->search(
-        $params,
         {
-            join     => 'problem'
+            %$params,
+            'me.id' => { 'in' => \"(select min(id) from comment where me.problem_id=comment.problem_id and problem_state not in ('', 'confirmed') group by problem_state)" },
+        },
+        {
+            join     => 'problem',
+            group_by => [ 'problem_state' ],
+            select   => [ 'problem_state', { count => 'me.id' } ],
+            as       => [ qw/problem_state state_count/ ],
         }
     );
 
-    # you can have multiple comments with the same problem state so need to only count
-    # one instance.
-    my %state_seen = ();
     while (my $comment = $comments->next) {
         my $meta_state = $state_map->{$comment->problem_state};
-        my $key = $comment->problem->id . "-$meta_state";
-        next if $state_seen{$key};
-        $c->stash->{$meta_state} += 1;
-        $state_seen{$key} = 1;
+        $c->stash->{$meta_state} += $comment->get_column('state_count');
     }
 
     $params = {

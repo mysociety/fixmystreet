@@ -183,6 +183,17 @@ FixMyStreet::override_config {
         $mech->text_contains('Traffic lights3730');
     };
 
+    subtest 'ignores second state change if first was last month' => sub {
+        my $comment = $scheduled_problems[0]->comments->search({}, { order_by => { '-asc' => 'id' } } )->first;
+        $comment->update({ confirmed => DateTime->now->subtract(days => 40) });
+        $mech->get_ok("/admin/areastats/$body_id?area=20720");
+
+        $mech->content_contains('15 opened, 6 scheduled, 3 closed, 4 fixed');
+        $mech->text_contains('Potholes2004');
+        $mech->text_contains('Traffic lights3730');
+        $comment->update({ confirmed => DateTime->now });
+    };
+
     subtest 'average is only to first state change' => sub {
         for my $i (0..4) {
             $scheduled_problems[$i]->comments->first->update({ confirmed => $scheduled_problems[$i]->confirmed });
