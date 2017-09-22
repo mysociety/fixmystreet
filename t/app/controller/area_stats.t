@@ -98,6 +98,8 @@ FixMyStreet::override_config {
 
         $mech->text_contains('Potholes6');
         $mech->text_contains('Traffic lights13');
+
+        $mech->text_contains('average time between issue being opened and set to another status was 0 days');
     };
 
     subtest 'shows correct stats to area user' => sub {
@@ -212,6 +214,16 @@ FixMyStreet::override_config {
         $mech->get_ok("/admin/areastats/$body_id?area=20720");
         $mech->text_contains('average time between issue being opened and set to another status was 4 days');
     };
+
+    subtest 'shows no problems changed state if no average' => sub {
+        for my $p (@scheduled_problems, @fixed_problems, @closed_problems) {
+            $p->comments->delete;
+        }
+
+        $mech->get_ok("/admin/areastats/$body_id?area=20720");
+        $mech->text_contains('17 opened, 0 scheduled, 0 closed, 0 fixed');
+        $mech->text_contains('no problems changed state');
+    }
 };
 
 END {

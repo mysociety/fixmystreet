@@ -47,7 +47,7 @@
   [% END %]
 </table>
 
-[% IF average > 0 %]
+[% IF average >= 0 %]
 <p>[% tprintf(loc('In the last month – average time between issue being opened and set to another status was %s days'), average) %]</p>
 [% ELSE %]
 <p>[% loc('In the last month no problems changed state') %]</p>

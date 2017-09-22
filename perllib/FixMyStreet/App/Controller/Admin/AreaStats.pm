@@ -207,7 +207,12 @@ sub stats : Private {
             join     => 'problem'
         }
     )->first;
-    $c->stash->{average} = int( ($comments->get_column('time')||0)/ 60 / 60 / 24 + 0.5 );
+    my $raw_average = $comments->get_column('time');
+    if (defined $raw_average) {
+        $c->stash->{average} = int( $raw_average / 60 / 60 / 24 + 0.5 );
+    } else {
+        $c->stash->{average} = -1;
+    }
 }
 
 sub load_user_body : Private {
