@@ -3,6 +3,8 @@
 * Unreleased
     - New features:
         - Area summary statistics page in admin #1834
+    - Bugfixes
+        - Shortlist menu item always remains a link #1855
 
 * v2.2 (13th September 2017)
     - New features:

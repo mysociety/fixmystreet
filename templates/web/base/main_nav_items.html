@@ -7,7 +7,7 @@
 [%~ END ~%]
 
 [%~ IF c.user_exists AND c.user.has_body_permission_to('planned_reports') ~%]
-    [%~ INCLUDE navitem uri='/my/planned' label=loc('Shortlist') ~%]
+    [%~ INCLUDE navitem always_url=1 uri='/my/planned' label=loc('Shortlist') ~%]
 [%~ END ~%]
 
 

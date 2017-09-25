@@ -8,7 +8,7 @@
 %]
 [% BLOCK navitem ~%]
     <li [% liattrs %]>
-      [%~ IF c.req.uri.path == uri ~%]
+      [%~ IF c.req.uri.path == uri AND NOT always_url ~%]
           <span [% attrs %]>[% label %]</span>
       [%~ ELSE ~%]
           <a href="[% base %][% uri %][% suffix IF suffix %]" [% attrs %]>[% label %]</a>
