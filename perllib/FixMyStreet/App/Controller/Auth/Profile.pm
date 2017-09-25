@@ -10,8 +10,8 @@ FixMyStreet::App::Controller::Auth::Profile - Catalyst Controller
 
 =head1 DESCRIPTION
 
-Controller for all the authentication profile related pages - changing email,
-password.
+Controller for all the authentication profile related pages - adding/ changing/
+verifying email, phone, password.
 
 =head1 METHODS
 
@@ -86,6 +86,64 @@ sub change_email : Path('/auth/change_email') {
     $c->stash->{current_user} = $c->user;
     $c->stash->{email_template} = 'change_email.txt';
     $c->forward('/auth/email_sign_in', [ $c->get_param('email') ]);
+}
+
+sub change_phone : Path('/auth/change_phone') {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{template} = 'auth/change_phone.html';
+
+    $c->forward('/auth/get_csrf_token');
+
+    # If not a post then no submission
+    return unless $c->req->method eq 'POST';
+
+    $c->forward('/auth/check_csrf_token');
+    $c->stash->{current_user} = $c->user;
+
+    my $phone = $c->stash->{username} = $c->get_param('username') || '';
+    my $parsed = FixMyStreet::SMS->parse_username($phone);
+
+    # Allow removal of phone number, if we have verified email
+    if (!$phone && !$c->stash->{verifying} && $c->user->email_verified) {
+        $c->user->update({ phone => undef, phone_verified => 0 });
+        $c->flash->{flash_message} = _('You have successfully removed your phone number.');
+        $c->res->redirect('/my');
+        $c->detach;
+    }
+
+    $c->stash->{username_error} = 'missing_phone', return unless $phone;
+    $c->stash->{username_error} = 'other_phone', return unless $parsed->{phone};
+
+    # If we've not used a mobile and we're not specifically verifying,
+    # and phone isn't our only verified way of logging in,
+    # then allow change of number (for e.g. landline).
+    if (!FixMyStreet->config('SMS_AUTHENTICATION') || (!$parsed->{phone}->is_mobile && !$c->stash->{verifying} && $c->user->email_verified)) {
+        $c->user->update({ phone => $phone, phone_verified => 0 });
+        $c->flash->{flash_message} = _('You have successfully added your phone number.');
+        $c->res->redirect('/my');
+        $c->detach;
+    }
+
+    $c->forward('/auth/phone/sign_in', [ $parsed->{phone} ]);
+}
+
+sub verify_item : Path('/auth/verify') : Args(1) {
+    my ( $self, $c, $type ) = @_;
+    $c->stash->{verifying} = 1;
+    $c->detach("change_$type");
+}
+
+sub change_email_success : Path('/auth/change_email/success') {
+    my ( $self, $c ) = @_;
+    $c->flash->{flash_message} = _('You have successfully confirmed your email address.');
+    $c->res->redirect('/my');
+}
+
+sub change_phone_success : Path('/auth/change_phone/success') {
+    my ( $self, $c ) = @_;
+    $c->flash->{flash_message} = _('You have successfully verified your phone number.');
+    $c->res->redirect('/my');
 }
 
 __PACKAGE__->meta->make_immutable;

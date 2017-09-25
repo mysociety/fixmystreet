@@ -176,6 +176,10 @@ sub setup_page_data : Private {
         any_zoom  => 1,
     )
         if @$pins;
+
+    foreach (qw(flash_message)) {
+        $c->stash->{$_} = $c->flash->{$_} if $c->flash->{$_};
+    }
 }
 
 sub planned_change : Path('planned/change') {

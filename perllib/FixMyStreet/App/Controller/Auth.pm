@@ -114,7 +114,7 @@ they come back with a token (which contains the email/phone).
 sub code_sign_in : Private {
     my ( $self, $c ) = @_;
 
-    my $username = $c->get_param('username') || '';
+    my $username = $c->stash->{username} = $c->get_param('username') || '';
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
 
@@ -139,7 +139,6 @@ sub email_sign_in : Private {
 
     my $good_email = $email_checker->address($raw_email);
     if ( !$good_email ) {
-        $c->stash->{username} = $raw_email;
         $c->stash->{username_error} = $raw_email ? $email_checker->details : 'missing_email';
         return;
     }
@@ -172,7 +171,7 @@ sub email_sign_in : Private {
     $token_data->{twitter_id} = $c->session->{oauth}{twitter_id}
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
     if ($c->stash->{current_user}) {
-        $token_data->{old_email} = $c->stash->{current_user}->email;
+        $token_data->{old_user_id} = $c->stash->{current_user}->id;
         $token_data->{r} = 'auth/change_email/success';
     }
 
@@ -214,7 +213,7 @@ sub token : Path('/M') : Args(1) {
     my $data = $c->forward('get_token', [ $url_token, 'email_sign_in' ]) || return;
 
     $c->stash->{token_not_found} = 1, return
-        if $data->{old_email} && (!$c->user_exists || $c->user->email ne $data->{old_email});
+        if $data->{old_user_id} && (!$c->user_exists || $c->user->id ne $data->{old_user_id});
 
     my $type = $data->{login_type} || 'email';
     $c->detach( '/auth/process_login', [ $data, $type ] );
@@ -227,24 +226,27 @@ sub process_login : Private {
     $c->logout();
 
     my $user = $c->model('DB::User')->find_or_new({ $type => $data->{$type} });
+    my $ver = "${type}_verified";
 
     # Bail out if this is a new user and SIGNUPS_DISABLED is set
     $c->detach( '/page_error_403_access_denied', [] )
-        if FixMyStreet->config('SIGNUPS_DISABLED') && !$user->in_storage && !$data->{old_email};
+        if FixMyStreet->config('SIGNUPS_DISABLED') && !$user->in_storage && !$data->{old_user_id};
 
-    if ($data->{old_email}) {
-        # Were logged in as old_email, want to switch to email ($user)
+    if ($data->{old_user_id}) {
+        # Were logged in as old_user_id, want to switch to $user
         if ($user->in_storage) {
-            my $old_user = $c->model('DB::User')->find({ email => $data->{old_email} });
+            my $old_user = $c->model('DB::User')->find({ id => $data->{old_user_id} });
             if ($old_user) {
                 $old_user->adopt($user);
                 $user = $old_user;
-                $user->email($data->{email});
+                $user->$type($data->{$type});
+                $user->$ver(1);
             }
         } else {
-            # Updating to a new (to the db) email address, easier!
-            $user = $c->model('DB::User')->find({ email => $data->{old_email} });
-            $user->email($data->{email});
+            # Updating to a new (to the db) email address/phone number, easier!
+            $user = $c->model('DB::User')->find({ id => $data->{old_user_id} });
+            $user->$type($data->{$type});
+            $user->$ver(1);
         }
     }
 
@@ -253,7 +255,7 @@ sub process_login : Private {
     $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
     $user->update_or_insert;
-    $c->authenticate( { $type => $data->{$type}, "${type}_verified" => 1 }, 'no_password' );
+    $c->authenticate( { $type => $data->{$type}, $ver => 1 }, 'no_password' );
 
     # send the user to their page
     $c->detach( 'redirect_on_signin', [ $data->{r}, $data->{p} ] );

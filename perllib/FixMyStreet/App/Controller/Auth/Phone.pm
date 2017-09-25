@@ -53,7 +53,6 @@ sub sign_in : Private {
     }
 
     unless ($phone->is_mobile) {
-        $c->stash->{username} = $c->get_param('username'); # What was entered
         $c->stash->{username_error} = 'nonmobile';
         return;
     }
@@ -62,6 +61,7 @@ sub sign_in : Private {
 
     if ( FixMyStreet->config('SIGNUPS_DISABLED')
          && !$c->model('DB::User')->find({ phone => $number })
+         && !$c->stash->{current_user} # don't break the change phone flow
     ) {
         $c->stash->{template} = 'auth/token.html';
         return;
@@ -78,6 +78,10 @@ sub sign_in : Private {
         name => $c->get_param('name'),
         password => $user->password,
     };
+    if ($c->stash->{current_user}) {
+        $token_data->{old_user_id} = $c->stash->{current_user}->id;
+        $token_data->{r} = 'auth/change_phone/success';
+    }
 
     $c->forward('send_token', [ $token_data, 'phone_sign_in', $number ]);
 }

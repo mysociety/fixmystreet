@@ -147,6 +147,13 @@ sub username {
     return $self->phone_display if $self->phone_verified;
 }
 
+sub phone_display {
+    my $self = shift;
+    return $self->phone unless $self->phone;
+    my $parsed = FixMyStreet::SMS->parse_username($self->phone);
+    return $parsed->{phone} ? $parsed->{phone}->format : $self->phone;
+}
+
 sub latest_anonymity {
     my $self = shift;
     my $p = $self->problems->search(undef, { order_by => { -desc => 'id' } } )->first;

@@ -228,6 +228,7 @@ input[type=file] {
     width: 100%;
 }
 
+input[type=tel],
 input[type=number],
 input[type=text],
 input[type=password],
@@ -403,6 +404,7 @@ select.form-control {
 .form-txt-submit-box {
   @include clearfix();
   input[type=password],
+  input[type=tel],
   input[type=number],
   input[type=text],
   input[type=email] {
