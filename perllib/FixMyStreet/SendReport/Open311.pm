@@ -49,7 +49,11 @@ sub send {
             } elsif ($_->{code} eq 'closest_address' && $h->{closest_address}) {
                 push @$extra, { name => $_->{code}, value => $h->{$_->{code}} };
             } elsif ($_->{code} =~ /^(easting|northing)$/) {
-                if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
+                # NB If there's ever a cobrand with always_send_latlong=0 and
+                # send_notpinpointed=0 then this line will need changing to
+                # consider the send_notpinpointed check, as per the
+                # '#NOTPINPOINTED#' code in perllib/Open311.pm.
+                if ( $row->used_map || $open311_params{always_send_latlong} ) {
                     push @$extra, { name => $_->{code}, value => $h->{$_->{code}} };
                 }
             }
