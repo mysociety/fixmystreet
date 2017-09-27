@@ -127,12 +127,14 @@ sub _populate_service_request_params {
     my ( $firstname, $lastname ) = ( $problem->name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
-        email => $problem->user->email,
         description => $description,
         service_code => $service_code,
         first_name => $firstname,
         last_name => $lastname || '',
     };
+
+    $params->{phone} = $problem->user->phone if $problem->user->phone;
+    $params->{email} = $problem->user->email if $problem->user->email;
 
     # if you click nearby reports > skip map then it's possible
     # to end up with used_map = f and nothing in postcode
@@ -151,10 +153,6 @@ sub _populate_service_request_params {
         $params->{address_id} = '#NOTPINPOINTED#';
     } else {
         $params->{address_string} = $problem->postcode;
-    }
-
-    if ( $problem->user->phone ) {
-        $params->{ phone } = $problem->user->phone;
     }
 
     if ( $extra->{image_url} ) {
@@ -327,11 +325,13 @@ sub _populate_service_request_update_params {
         updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed->set_nanosecond(0)),
         service_request_id => $comment->problem->external_id,
         status => $status,
-        email => $comment->user->email,
         description => $comment->text,
         last_name => $lastname,
         first_name => $firstname,
     };
+
+    $params->{phone} = $comment->user->phone if $comment->user->phone;
+    $params->{email} = $comment->user->email if $comment->user->email;
 
     if ( $self->use_extended_updates ) {
         $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',

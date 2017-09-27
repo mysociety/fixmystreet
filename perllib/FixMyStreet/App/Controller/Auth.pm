@@ -216,7 +216,8 @@ sub token : Path('/M') : Args(1) {
     $c->stash->{token_not_found} = 1, return
         if $data->{old_email} && (!$c->user_exists || $c->user->email ne $data->{old_email});
 
-    $c->detach( '/auth/process_login', [ $data, 'email' ] );
+    my $type = $data->{login_type} || 'email';
+    $c->detach( '/auth/process_login', [ $data, $type ] );
 }
 
 sub process_login : Private {

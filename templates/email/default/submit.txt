@@ -15,9 +15,11 @@ please visit the following link:
 
 Name: [% name %]
 
-Email: [% email %]
+Email: [% email OR "None provided" %]
 
-[% phone_line %][% category_line %]Subject: [% title %]
+Phone: [% phone OR "None provided" %]
+
+[% category_line %]Subject: [% title %]
 
 Details: [% detail %]
 

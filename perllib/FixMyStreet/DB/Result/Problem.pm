@@ -485,12 +485,21 @@ Return a url for this problem report that logs a user in
 sub tokenised_url {
     my ($self, $user, $params) = @_;
 
+    my %params;
+    if ($user->email_verified) {
+        $params{email} = $user->email;
+    } elsif ($user->phone_verified) {
+        $params{phone} = $user->phone;
+        # This is so the email token can look up/ log in a phone user
+        $params{login_type} = 'phone';
+    }
+
     my $token = FixMyStreet::App->model('DB::Token')->create(
         {
             scope => 'email_sign_in',
             data  => {
+                %params,
                 id    => $self->id,
-                email => $user->email,
                 r     => $self->url,
                 p     => $params,
             }
