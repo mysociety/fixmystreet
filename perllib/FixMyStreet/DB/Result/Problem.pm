@@ -896,16 +896,20 @@ sub photos {
         # if LOGIN_REQUIRED is set. To stop this happening, Varnish should be
         # configured to not strip cookies if the cookie_passthrough param is
         # present, which this line ensures will be if LOGIN_REQUIRED is set.
-        my $extra = (FixMyStreet->config('LOGIN_REQUIRED')) ? "&cookie_passthrough=1" : "";
+        my $extra = '';
+        if (FixMyStreet->config('LOGIN_REQUIRED')) {
+            $cachebust .= '&cookie_passthrough=1';
+            $extra = '?cookie_passthrough=1';
+        }
         my ($hash, $format) = split /\./, $_;
         {
             id => $hash,
             url_temp => "/photo/temp.$hash.$format$extra",
             url_temp_full => "/photo/fulltemp.$hash.$format$extra",
-            url => "/photo/$id.$i.$format?$cachebust$extra",
-            url_full => "/photo/$id.$i.full.$format?$cachebust$extra",
-            url_tn => "/photo/$id.$i.tn.$format?$cachebust$extra",
-            url_fp => "/photo/$id.$i.fp.$format?$cachebust$extra",
+            url => "/photo/$id.$i.$format?$cachebust",
+            url_full => "/photo/$id.$i.full.$format?$cachebust",
+            url_tn => "/photo/$id.$i.tn.$format?$cachebust",
+            url_fp => "/photo/$id.$i.fp.$format?$cachebust",
             idx => $i++,
         }
     } $photoset->all_ids;
