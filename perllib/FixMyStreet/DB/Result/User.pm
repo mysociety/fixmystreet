@@ -133,6 +133,19 @@ __PACKAGE__->add_columns(
     },
 );
 
+=head2 username
+
+Returns a verified email or phone for this user, preferring email,
+or undef if neither verified (shouldn't happen).
+
+=cut
+
+sub username {
+    my $self = shift;
+    return $self->email if $self->email_verified;
+    return $self->phone_display if $self->phone_verified;
+}
+
 sub latest_anonymity {
     my $self = shift;
     my $p = $self->problems->search(undef, { order_by => { -desc => 'id' } } )->first;

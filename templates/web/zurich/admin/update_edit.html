@@ -20,7 +20,7 @@
     [% END %]
 </select></li>
 <input type='hidden' name='name' id='name' value='[% update.name | html %]'>
-<input type='hidden' id='email' name='email' value='[% update.user.email | html %]'>
+<input type='hidden' id='username' name='username' value='[% update.user.username | html %]'>
 [% IF update.problem_state %]
 <li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) %]</li>
 [% END %]

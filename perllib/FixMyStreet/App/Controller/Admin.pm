@@ -14,6 +14,7 @@ use List::MoreUtils 'uniq';
 use mySociety::ArrayUtils;
 
 use FixMyStreet::SendReport;
+use FixMyStreet::SMS;
 
 =head1 NAME
 
@@ -678,6 +679,10 @@ sub reports : Path('reports') {
 
         my $like_search = "%$search%";
 
+        my $parsed = FixMyStreet::SMS->parse_username($search);
+        my $valid_phone = $parsed->{phone};
+        my $valid_email = $parsed->{email};
+
         # when DBIC creates the join it does 'JOIN users user' in the
         # SQL which makes PostgreSQL unhappy as user is a reserved
         # word. So look up user ID for email separately.
@@ -686,9 +691,18 @@ sub reports : Path('reports') {
         }, { columns => [ 'id' ] } )->all;
         @user_ids = map { $_->id } @user_ids;
 
-        if (is_valid_email($search)) {
+        my @user_ids_phone = $c->model('DB::User')->search({
+            phone => { ilike => $like_search },
+        }, { columns => [ 'id' ] } )->all;
+        @user_ids_phone = map { $_->id } @user_ids_phone;
+
+        if ($valid_email) {
             $query->{'-or'} = [
                 'me.user_id' => { -in => \@user_ids },
+            ];
+        } elsif ($valid_phone) {
+            $query->{'-or'} = [
+                'me.user_id' => { -in => \@user_ids_phone },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query->{'-or'} = [
@@ -705,7 +719,7 @@ sub reports : Path('reports') {
         } else {
             $query->{'-or'} = [
                 'me.id' => $search_n,
-                'me.user_id' => { -in => \@user_ids },
+                'me.user_id' => { -in => [ @user_ids, @user_ids_phone ] },
                 'me.external_id' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
                 'me.title' => { ilike => $like_search },
@@ -726,9 +740,13 @@ sub reports : Path('reports') {
         $c->stash->{problems} = [ $problems->all ];
         $c->stash->{problems_pager} = $problems->pager;
 
-        if (is_valid_email($search)) {
+        if ($valid_email) {
             $query = [
                 'me.user_id' => { -in => \@user_ids },
+            ];
+        } elsif ($valid_phone) {
+            $query = [
+                'me.user_id' => { -in => \@user_ids_phone },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query = [
@@ -741,7 +759,7 @@ sub reports : Path('reports') {
             $query = [
                 'me.id' => $search_n,
                 'problem.id' => $search_n,
-                'me.user_id' => { -in => \@user_ids },
+                'me.user_id' => { -in => [ @user_ids, @user_ids_phone ] },
                 'me.name' => { ilike => $like_search },
                 text => { ilike => $like_search },
                 'me.cobrand_data' => { ilike => $like_search },
@@ -834,7 +852,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         return if $done;
     }
 
-    $c->forward('check_email_for_abuse', [ $problem->user->email ] );
+    $c->forward('check_username_for_abuse', [ $problem->user ] );
 
     $c->stash->{updates} =
       [ $c->model('DB::Comment')
@@ -884,11 +902,12 @@ sub report_edit : Path('report_edit') : Args(1) {
 
         $c->forward( '/admin/report_edit_category', [ $problem ] );
 
-        my $email = lc $c->get_param('email');
-        if ( $email ne $problem->user->email ) {
-            my $user = $c->model('DB::User')->find_or_create({ email => $email });
-            $user->insert unless $user->in_storage;
-            $problem->user( $user );
+        my $parsed = FixMyStreet::SMS->parse_username($c->get_param('username'));
+        if ($parsed->{email} || ($parsed->{phone} && $parsed->{phone}->is_mobile)) {
+            my $user = $c->model('DB::User')->find_or_create({ $parsed->{type} => $parsed->{username} });
+            if ($user->id && $user->id != $problem->user->id) {
+                $problem->user( $user );
+            }
         }
 
         # Deal with photos
@@ -1145,28 +1164,15 @@ sub users: Path('users') : Args(0) {
             {
                 -or => [
                     email => { ilike => $isearch },
+                    phone => { ilike => $isearch },
                     name => { ilike => $isearch },
                     from_body => $search_n,
                 ]
             }
         );
         my @users = $users->all;
-        my %email2user = map { $_->email => $_ } @users;
         $c->stash->{users} = [ @users ];
-
-        if ( $c->user->is_superuser ) {
-            my $emails = $c->model('DB::Abuse')->search(
-                { email => { ilike => $isearch } }
-            );
-            foreach my $email ($emails->all) {
-                # Slight abuse of the boolean flagged value
-                if ($email2user{$email->email}) {
-                    $email2user{$email->email}->flagged( 2 );
-                } else {
-                    push @{$c->stash->{users}}, { email => $email->email, flagged => 2 };
-                }
-            }
-        }
+        $c->forward('add_flags', [ { email => { ilike => $isearch } } ]);
 
     } else {
         $c->forward('/auth/get_csrf_token');
@@ -1178,9 +1184,7 @@ sub users: Path('users') : Args(0) {
             { order_by => 'name' }
         );
         my @users = $users->all;
-        my %email2user = map { $_->email => $_ } @users;
         $c->stash->{users} = \@users;
-
     }
 
     return 1;
@@ -1203,7 +1207,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         return 1;
     }
 
-    $c->forward('check_email_for_abuse', [ $update->user->email ] );
+    $c->forward('check_username_for_abuse', [ $update->user ] );
 
     if ( $c->get_param('banuser') ) {
         $c->forward('ban_user');
@@ -1227,9 +1231,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         # $update->name can be null which makes ne unhappy
         my $name = $update->name || '';
 
-        my $email = lc $c->get_param('email');
         if ( $c->get_param('name') ne $name
-          || $email ne $update->user->email
           || $c->get_param('anonymous') ne $update->anonymous
           || $c->get_param('text') ne $update->text ) {
               $edited = 1;
@@ -1249,10 +1251,13 @@ sub update_edit : Path('update_edit') : Args(1) {
         $update->anonymous( $c->get_param('anonymous') );
         $update->state( $new_state );
 
-        if ( $email ne $update->user->email ) {
-            my $user = $c->model('DB::User')->find_or_create({ email => $email });
-            $user->insert unless $user->in_storage;
-            $update->user($user);
+        my $parsed = FixMyStreet::SMS->parse_username($c->get_param('username'));
+        if ($parsed->{email} || ($parsed->{phone} && $parsed->{phone}->is_mobile)) {
+            my $user = $c->model('DB::User')->find_or_create({ $parsed->{type} => $parsed->{username} });
+            if ($user->id && $user->id != $update->user->id) {
+                $edited = 1;
+                $update->user( $user );
+            }
         }
 
         if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
@@ -1305,25 +1310,53 @@ sub user_add : Path('user_edit') : Args(0) {
     $c->forward('/auth/check_csrf_token');
 
     $c->stash->{field_errors} = {};
-    unless ($c->get_param('email')) {
+    my $email = lc $c->get_param('email');
+    my $phone = $c->get_param('phone');
+    my $email_v = $c->get_param('email_verified');
+    my $phone_v = $c->get_param('phone_verified');
+
+    unless ($email || $phone) {
+        $c->stash->{field_errors}->{username} = _('Please enter a valid email or phone number');
+    }
+    if (!$email_v && !$phone_v) {
+        $c->stash->{field_errors}->{username} = _('Please verify at least one of email/phone');
+    }
+    if ($email && !is_valid_email($email)) {
         $c->stash->{field_errors}->{email} = _('Please enter a valid email');
     }
     unless ($c->get_param('name')) {
         $c->stash->{field_errors}->{name} = _('Please enter a name');
     }
+
+    if ($phone_v) {
+        my $parsed = FixMyStreet::SMS->parse_username($phone);
+        if ($parsed->{phone} && $parsed->{phone}->is_mobile) {
+            $phone = $parsed->{username};
+        } elsif ($parsed->{phone}) {
+            $c->stash->{field_errors}->{phone} = _('Please enter a mobile number');
+        } else {
+            $c->stash->{field_errors}->{phone} = _('Please check your phone number is correct');
+        }
+    }
+
+    my $existing_email = $email_v && $c->model('DB::User')->find( { email => $email } );
+    my $existing_phone = $phone_v && $c->model('DB::User')->find( { phone => $phone } );
+    if ($existing_email || $existing_phone) {
+        $c->stash->{field_errors}->{username} = _('User already exists');
+    }
+
     return if %{$c->stash->{field_errors}};
 
-    my $user = $c->model('DB::User')->find_or_create( {
+    my $user = $c->model('DB::User')->create( {
         name => $c->get_param('name'),
-        email => lc $c->get_param('email'),
-        email_verified => 1,
-        phone => $c->get_param('phone') || undef,
+        email => $email ? $email : undef,
+        email_verified => $email && $email_v ? 1 : 0,
+        phone => $phone || undef,
+        phone_verified => $phone && $phone_v ? 1 : 0,
         from_body => $c->get_param('body') || undef,
         flagged => $c->get_param('flagged') || 0,
         # Only superusers can create superusers
         is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
-    }, {
-        key => 'users_email_verified_key'
     } );
     $c->stash->{user} = $user;
     $c->forward('user_cobrand_extra_fields');
@@ -1367,19 +1400,72 @@ sub user_edit : Path('user_edit') : Args(1) {
         my $edited = 0;
 
         my $email = lc $c->get_param('email');
-        if ( $user->email ne $email ||
+        my $phone = $c->get_param('phone');
+        my $email_v = $c->get_param('email_verified') || 0;
+        my $phone_v = $c->get_param('phone_verified') || 0;
+
+        $c->stash->{field_errors} = {};
+
+        unless ($email || $phone) {
+            $c->stash->{field_errors}->{username} = _('Please enter a valid email or phone number');
+        }
+        if (!$email_v && !$phone_v) {
+            $c->stash->{field_errors}->{username} = _('Please verify at least one of email/phone');
+        }
+        if ($email && !is_valid_email($email)) {
+            $c->stash->{field_errors}->{email} = _('Please enter a valid email');
+        }
+
+        if ($phone_v) {
+            my $parsed = FixMyStreet::SMS->parse_username($phone);
+            if ($parsed->{phone} && $parsed->{phone}->is_mobile) {
+                $phone = $parsed->{username};
+            } elsif ($parsed->{phone}) {
+                $c->stash->{field_errors}->{phone} = _('Please enter a mobile number');
+            } else {
+                $c->stash->{field_errors}->{phone} = _('Please check your phone number is correct');
+            }
+        }
+
+        unless ($user->name) {
+            $c->stash->{field_errors}->{name} = _('Please enter a name');
+        }
+
+        my $email_params = { email => $email, email_verified => 1, id => { '!=', $user->id } };
+        my $phone_params = { phone => $phone, phone_verified => 1, id => { '!=', $user->id } };
+        my $existing_email = $email_v && $c->model('DB::User')->search($email_params)->first;
+        my $existing_phone = $phone_v && $c->model('DB::User')->search($phone_params)->first;
+        my $existing_user = $existing_email || $existing_phone;
+        my $existing_email_cobrand = $email_v && $c->cobrand->users->search($email_params)->first;
+        my $existing_phone_cobrand = $phone_v && $c->cobrand->users->search($phone_params)->first;
+        my $existing_user_cobrand = $existing_email_cobrand || $existing_phone_cobrand;
+        if ($existing_phone_cobrand && $existing_email_cobrand && $existing_email_cobrand->id != $existing_phone_cobrand->id) {
+            $c->stash->{field_errors}->{username} = _('User already exists');
+        }
+
+        return if %{$c->stash->{field_errors}};
+
+        if ( ($user->email || "") ne $email ||
             $user->name ne $c->get_param('name') ||
-            ($user->phone || "") ne $c->get_param('phone') ||
+            ($user->phone || "") ne $phone ||
             ($user->from_body && $c->get_param('body') && $user->from_body->id ne $c->get_param('body')) ||
             (!$user->from_body && $c->get_param('body'))
         ) {
                 $edited = 1;
         }
 
+        if ($existing_user_cobrand) {
+            $existing_user->adopt($user);
+            $c->forward( 'log_edit', [ $id, 'user', 'merge' ] );
+            return $c->res->redirect( $c->uri_for( 'user_edit', $existing_user->id ) );
+        }
+
+        $user->email($email) if !$existing_email;
+        $user->phone($phone) if !$existing_phone;
+        $user->email_verified( $email_v );
+        $user->phone_verified( $phone_v );
         $user->name( $c->get_param('name') );
-        my $original_email = $user->email;
-        $user->email( $email );
-        $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
+
         $user->flagged( $c->get_param('flagged') || 0 );
         # Only superusers can grant superuser status
         $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
@@ -1458,8 +1544,6 @@ sub user_edit : Path('user_edit') : Args(1) {
             }
         }
 
-        $c->stash->{field_errors} = {};
-
         # Update the categories this user operates in
         if ( $user->from_body ) {
             $c->stash->{body} = $user->from_body;
@@ -1470,33 +1554,12 @@ sub user_edit : Path('user_edit') : Args(1) {
             $user->set_extra_metadata('categories', \@new_contact_ids);
         }
 
-        unless ($user->email) {
-            $c->stash->{field_errors}->{email} = _('Please enter a valid email');
+        $user->update;
+        if ($edited) {
+            $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
         }
-        unless ($user->name) {
-            $c->stash->{field_errors}->{name} = _('Please enter a name');
-        }
-        return if %{$c->stash->{field_errors}};
-
-        my $existing_user = $c->model('DB::User')->search({ email => $user->email, id => { '!=', $user->id } })->first;
-        my $existing_user_cobrand = $c->cobrand->users->search({ email => $user->email, id => { '!=', $user->id } })->first;
-        if ($existing_user_cobrand) {
-            $existing_user->adopt($user);
-            $c->forward( 'log_edit', [ $id, 'user', 'merge' ] );
-            $c->res->redirect( $c->uri_for( 'user_edit', $existing_user->id ) );
-        } else {
-            if ($existing_user) {
-                # Tried to change email to an existing one lacking permission
-                # so make sure it's switched back
-                $user->email($original_email);
-            }
-            $user->update;
-            if ($edited) {
-                $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
-            }
-            $c->flash->{status_message} = _("Updated!");
-            $c->res->redirect( $c->uri_for( 'user_edit', $user->id ) );
-        }
+        $c->flash->{status_message} = _("Updated!");
+        return $c->res->redirect( $c->uri_for( 'user_edit', $user->id ) );
     }
 
     if ( $user->from_body ) {
@@ -1527,6 +1590,27 @@ sub user_cobrand_extra_fields : Private {
     }
 }
 
+sub add_flags : Private {
+    my ( $self, $c, $search ) = @_;
+
+    return unless $c->user->is_superuser;
+
+    my $users = $c->stash->{users};
+    my %email2user = map { $_->email => $_ } grep { $_->email } @$users;
+    my %phone2user = map { $_->phone => $_ } grep { $_->phone } @$users;
+    my %username2user = (%email2user, %phone2user);
+    my $usernames = $c->model('DB::Abuse')->search($search);
+
+    foreach my $username (map { $_->email } $usernames->all) {
+        # Slight abuse of the boolean flagged value
+        if ($username2user{$username}) {
+            $username2user{$username}->flagged( 2 );
+        } else {
+            push @{$c->stash->{users}}, { email => $username, flagged => 2 };
+        }
+    }
+}
+
 sub flagged : Path('flagged') : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -1536,23 +1620,10 @@ sub flagged : Path('flagged') : Args(0) {
     # which has to use an array ref for sql quoting reasons
     $c->stash->{problems} = [ $problems->all ];
 
-    my $users = $c->cobrand->users->search( { flagged => 1 } );
-    my @users = $users->all;
-    my %email2user = map { $_->email => $_ } @users;
+    my @users = $c->cobrand->users->search( { flagged => 1 } )->all;
     $c->stash->{users} = [ @users ];
 
-    my @abuser_emails = $c->model('DB::Abuse')->all()
-        if $c->user->is_superuser;
-
-    foreach my $email (@abuser_emails) {
-        # Slight abuse of the boolean flagged value
-        if ($email2user{$email->email}) {
-            $email2user{$email->email}->flagged( 2 );
-        } else {
-            push @{$c->stash->{users}}, { email => $email->email, flagged => 2 };
-        }
-    }
-
+    $c->forward('add_flags', [ {} ]);
     return 1;
 }
 
@@ -1735,47 +1806,60 @@ sub log_edit : Private {
 
 =head2 ban_user
 
-Add the email address in the email param of the request object to
-the abuse table if they are not already in there and sets status_message
-accordingly
+Add the user's email address/phone number to the abuse table if they are not
+already in there and sets status_message accordingly.
 
 =cut
 
 sub ban_user : Private {
     my ( $self, $c ) = @_;
 
-    my $email = lc $c->get_param('email');
-
-    return unless $email;
-
-    my $abuse = $c->model('DB::Abuse')->find_or_new({ email => $email });
-
-    if ( $abuse->in_storage ) {
-        $c->stash->{status_message} = _('Email already in abuse list');
-    } else {
-        $abuse->insert;
-        $c->stash->{status_message} = _('Email added to abuse list');
+    my $user;
+    if ($c->stash->{problem}) {
+        $user = $c->stash->{problem}->user;
+    } elsif ($c->stash->{update}) {
+        $user = $c->stash->{update}->user;
     }
+    return unless $user;
 
-    $c->stash->{email_in_abuse} = 1;
-
+    if ($user->email_verified && $user->email) {
+        my $abuse = $c->model('DB::Abuse')->find_or_new({ email => $user->email });
+        if ( $abuse->in_storage ) {
+            $c->stash->{status_message} = _('User already in abuse list');
+        } else {
+            $abuse->insert;
+            $c->stash->{status_message} = _('User added to abuse list');
+        }
+        $c->stash->{username_in_abuse} = 1;
+    }
+    if ($user->phone_verified && $user->phone) {
+        my $abuse = $c->model('DB::Abuse')->find_or_new({ email => $user->phone });
+        if ( $abuse->in_storage ) {
+            $c->stash->{status_message} = _('User already in abuse list');
+        } else {
+            $abuse->insert;
+            $c->stash->{status_message} = _('User added to abuse list');
+        }
+        $c->stash->{username_in_abuse} = 1;
+    }
     return 1;
 }
 
 =head2 flag_user
 
-Sets the flag on a user with the given email
+Sets the flag on a user
 
 =cut
 
 sub flag_user : Private {
     my ( $self, $c ) = @_;
 
-    my $email = lc $c->get_param('email');
-
-    return unless $email;
-
-    my $user = $c->cobrand->users->find({ email => $email });
+    my $user;
+    if ($c->stash->{problem}) {
+        $user = $c->stash->{problem}->user;
+    } elsif ($c->stash->{update}) {
+        $user = $c->stash->{update}->user;
+    }
 
     if ( !$user ) {
         $c->stash->{status_message} = _('Could not find user');
@@ -1792,18 +1876,19 @@ sub flag_user : Private {
 
 =head2 remove_user_flag
 
-Remove the flag on a user with the given email
+Remove the flag on a user
 
 =cut
 
 sub remove_user_flag : Private {
     my ( $self, $c ) = @_;
 
-    my $email = lc $c->get_param('email');
-
-    return unless $email;
-
-    my $user = $c->cobrand->users->find({ email => $email });
+    my $user;
+    if ($c->stash->{problem}) {
+        $user = $c->stash->{problem}->user;
+    } elsif ($c->stash->{update}) {
+        $user = $c->stash->{update}->user;
+    }
 
     if ( !$user ) {
         $c->stash->{status_message} = _('Could not find user');
@@ -1817,20 +1902,20 @@ sub remove_user_flag : Private {
 }
 
 
-=head2 check_email_for_abuse
+=head2 check_username_for_abuse
 
-    $c->forward('check_email_for_abuse', [ $email ] );
+    $c->forward('check_username_for_abuse', [ $user ] );
 
-Checks if $email is in the abuse table and sets email_in_abuse accordingly
+Checks if $user is in the abuse table and sets username_in_abuse accordingly.
 
 =cut
 
-sub check_email_for_abuse : Private {
-    my ( $self, $c, $email ) =@_;
+sub check_username_for_abuse : Private {
+    my ( $self, $c, $user ) = @_;
 
-    my $is_abuse = $c->model('DB::Abuse')->find({ email => $email });
+    my $is_abuse = $c->model('DB::Abuse')->find({ email => [ $user->phone, $user->email ] });
 
-    $c->stash->{email_in_abuse} = 1 if $is_abuse;
+    $c->stash->{username_in_abuse} = 1 if $is_abuse;
 
     return 1;
 }
