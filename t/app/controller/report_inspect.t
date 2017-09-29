@@ -11,9 +11,17 @@ my $rp = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
     name => 'High Priority',
 });
+my $rp2 = FixMyStreet::DB->resultset("ResponsePriority")->create({
+    body => $oxon,
+    name => 'Low Priority',
+});
 FixMyStreet::DB->resultset("ContactResponsePriority")->create({
     contact => $contact,
     response_priority => $rp,
+});
+FixMyStreet::DB->resultset("ContactResponsePriority")->create({
+    contact => $contact3,
+    response_priority => $rp2,
 });
 my $wodc = $mech->create_body_ok(2420, 'West Oxfordshire District Council');
 $mech->create_contact_ok( body_id => $wodc->id, category => 'Horses', email => 'horses@example.net' );
@@ -254,13 +262,75 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({
                 button => 'save',
                 with_fields => {
-                    $test->{priority} ? (priority => 1) : (),
+                    $test->{priority} ? (priority => $rp->id) : (),
                     $test->{category} ? (category => 'Cows') : (),
                     $test->{detailed} ? (detailed_information => 'Highland ones') : (),
                 }
             });
         };
     }
+
+    subtest "check priority not set for category with no priorities" => sub {
+        $report->discard_changes;
+        $report->update({ category => 'Cows', response_priority_id => undef });
+        $report->discard_changes;
+        is $report->response_priority, undef, 'response priority not set';
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_category' });
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({
+            button => 'save',
+            with_fields => {
+                priority => $rp->id,
+                category => 'Sheep',
+            }
+        });
+
+        $report->discard_changes;
+        is $report->response_priority, undef, 'response priority not set';
+    };
+
+    subtest "check can set priority for category when changing from category with no priorities" => sub {
+        $report->discard_changes;
+        $report->update({ category => 'Sheep', response_priority_id => undef });
+        $report->discard_changes;
+        is $report->response_priority, undef, 'response priority not set';
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_category' });
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({
+            button => 'save',
+            with_fields => {
+                priority => $rp->id,
+                category => 'Cows',
+            }
+        });
+
+        $report->discard_changes;
+        is $report->response_priority->id, $rp->id, 'response priority set';
+    };
+
+    subtest "check can't set priority that isn't for a category" => sub {
+        $report->discard_changes;
+        $report->update({ category => 'Cows', response_priority_id => $rp->id });
+        $report->discard_changes;
+        is $report->response_priority->id, $rp->id, 'response priority set';
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_category' });
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({
+            button => 'save',
+            with_fields => {
+                priority => $rp2->id,
+            }
+        });
+
+        $report->discard_changes;
+        is $report->response_priority, undef, 'response priority set';
+    };
 
     subtest "check nearest address display" => sub {
         $mech->get_ok("/report/$report_id");
@@ -405,6 +475,61 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';
     };
 
+};
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'fixmystreet',
+}, sub {
+    subtest "test category not updated if fail to include public update" => sub {
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers' });
+
+        $report->discard_changes;
+        is $report->category, "Cows", "Report in correct category";
+        $mech->content_contains('Badgers" selected', 'Changed category still selected');
+    };
+
+    subtest "test invalid form maintains Category and priority" => sub {
+        $mech->get_ok("/report/$report_id");
+        my $expected_fields = {
+          state => 'action scheduled',
+          category => 'Cows',
+          public_update => '',
+          priority => $rp->id,
+          include_update => '1',
+          detailed_information => 'XXX172XXXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+          defect_type => '',
+          traffic_information => ''
+        };
+        my $values = $mech->visible_form_values('report_inspect_form');
+        is_deeply $values, $expected_fields, 'correct form fields present';
+
+        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers', priority => $rp2->id });
+
+        $expected_fields->{category} = 'Badgers';
+        $expected_fields->{priority} = $rp2->id;
+
+        my $new_values = $mech->visible_form_values('report_inspect_form');
+        is_deeply $new_values, $expected_fields, 'correct form fields present';
+    };
+
+    subtest "test changing category and leaving an update only creates one comment" => sub {
+        $report->comments->delete;
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form(
+            button => 'save',
+            with_fields => {
+                category => 'Badgers',
+                include_update => 1,
+                public_update => 'This is a public update',
+        });
+
+        $report->discard_changes;
+        is $report->category, "Badgers", "Report in correct category";
+        is $report->comments->count, 1, "Only leaves one update";
+        like $report->comments->first->text, qr/Category changed.*Badgers/, 'update text included category change';
+    };
 };
 
 FixMyStreet::override_config {

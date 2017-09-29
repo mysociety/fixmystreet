@@ -9,6 +9,8 @@
     - Bugfixes
         - Shortlist menu item always remains a link #1855
         - Fix encoded entities in RSS output. #1859
+        - Only save category changes if staff user update valid #1857
+        - Only create one update when staff user updating category #1857
     - Admin improvements:
       - Character length limit can be placed on report detailed information #1848
       - Inspector panel shows nearest address if available #1850

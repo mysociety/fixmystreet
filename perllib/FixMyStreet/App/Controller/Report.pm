@@ -424,7 +424,11 @@ sub inspect : Private {
         }
 
         if ($permissions->{report_inspect} || $permissions->{report_edit_category}) {
-            $c->forward( '/admin/report_edit_category', [ $problem ] );
+            $c->forward( '/admin/report_edit_category', [ $problem, 1 ] );
+
+            if ($c->stash->{update_text}) {
+                $update_text .= "\n\n" . $c->stash->{update_text};
+            }
 
             # The new category might require extra metadata (e.g. pothole size), so
             # we need to update the problem with the new values.
