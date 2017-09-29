@@ -8,7 +8,11 @@ subtest "check that the form goes to /around" => sub {
     $mech->get_ok('/');
     is $mech->uri->path, '/', "still on '/'";
 
-    $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } } );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/'
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'SW1A 1AA', } } );
+    };
 
     # check that we are at /around
     is $mech->uri->path, '/around', "Got to /around";
