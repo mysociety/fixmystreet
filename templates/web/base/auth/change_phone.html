@@ -1,0 +1,57 @@
+[%
+IF c.user.phone_verified OR (c.user.phone AND NOT verifying);
+    SET title = loc('Change phone number');
+ELSIF c.user.phone;
+    SET title = loc('Verify phone number');
+ELSE;
+    SET title = loc('Add phone number');
+END
+-%]
+[% INCLUDE 'header.html' bodyclass = 'authpage' %]
+
+<h1>[% title %]</h1>
+
+[% IF c.req.args.0 == 'success' %]
+    <p class="form-success">[% loc('You have successfully confirmed your phone number.') %]</p>
+[% END %]
+
+[% IF c.user.phone_verified OR (c.user.phone AND NOT verifying) %]
+[% loc('Your phone number') %]: [% c.user.phone_display %]
+[% ELSIF c.user.phone %]
+[% DEFAULT username = c.user.phone %]
+[% END %]
+
+<form method="post" name="change_phone">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    <fieldset>
+    [% IF username_error;
+        errors = {
+            nonmobile = loc('Please enter a mobile number'),
+            missing_phone = loc('Please enter your phone number'),
+            other_phone = loc('Please check your phone number is correct')
+        };
+        loc_username_error = errors.$username_error || errors.other_phone;
+    %]
+    <div class="form-error">[% loc_username_error %]</div>
+    [% END %]
+
+    <div class="form-field">
+        <label for="phone">
+          [% IF NOT c.user.phone_verified AND c.user.phone AND verifying %]
+            [% loc('Phone number') %]:
+          [% ELSE %]
+            [% loc('New phone number:') %]
+          [% END %]
+        </label>
+        <input class="form-control" type="tel" name="username" id="phone" value="[% username | html %]">
+    </div>
+    <div class="final-submit">
+        <input type="submit" class="btn" value="[% title %]">
+    </div>
+
+    </fieldset>
+</form>
+
+
+[% INCLUDE 'footer.html' %]

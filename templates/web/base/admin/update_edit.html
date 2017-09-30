@@ -31,8 +31,10 @@
         <option [% 'selected ' IF state.0 == update.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
 </select></li>
-<li>[% loc('Name:') %] <input type='text' class="form-control" name='name' id='name' value='[% update.name | html %]'></li>
-<li>[% loc('Email:') %] <input type='text' class="form-control" id='email' name='email' value='[% update.user.email | html %]'>
+<li><label for="name">[% loc('Name:') %]</label>
+    <input type='text' class="form-control" name='name' id='name' value='[% update.name | html %]'></li>
+<li><label for="username">[% loc('User:') %]</label>
+    <input type='text' class="form-control" id='username' name='username' value='[% update.user.username | html %]'>
 [%- IF update.user.from_body && update.user.from_body.id == update.problem.bodies_str %]
 [% ' (' _ tprintf(loc('user is from same council as problem - %d'), update.user.from_body.id ) _')' %]
 [% END -%]

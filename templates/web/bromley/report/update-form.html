@@ -78,14 +78,14 @@
 
         [% ELSE %]
 
-            <label for="form_rznvy">[% loc('Email' ) %]
+            <label for="form_username">[% loc('Email' ) %]
                 <span class="muted">([% loc('We never show your email') %])</span>
             </label>
 
-            [% IF field_errors.email %]
-                <p class='form-error'>[% field_errors.email %]</p>
+            [% IF field_errors.username %]
+                <p class='form-error'>[% field_errors.username %]</p>
             [% END %]
-            <input class="form-control" type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
+            <input class="form-control" type="email" name="username" id="form_username" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
 
             <div id="form_sign_in">
                 <p>To submit your update you now need to confirm it either by email or by using a FixMyStreet password.</p>

@@ -101,6 +101,7 @@ subtest 'Default hash layout' => sub {
 subtest 'Get named field values' => sub {
     my $user = $db->resultset('User')->create({
         email => 'test-moderation@example.com',
+        email_verified => 1,
         name => 'Test User'
     });
     my $report = $db->resultset('Problem')->create(

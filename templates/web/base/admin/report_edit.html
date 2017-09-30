@@ -126,12 +126,17 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </select></li>
 <li><label for="name">[% loc('Name:') %]</label>
     <input type='text' class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
-<li><label for="email">[% loc('Email:') %]</label>
-    <input type='text' class="form-control" id='email' name='email' value='[% problem.user.email | html %]'>
+<li><label for="username">[% loc('User:') %]</label>
+    <input type='text' class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
     [% PROCESS abuse_button %]
     [% PROCESS flag_button user=problem.user %]
 </li>
-<li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
+[% IF problem.user.phone_display != problem.user.username %]
+<li>[% loc('Phone:') %] [% problem.user.phone_display | html %]</li>
+[% END %]
+[% IF problem.user.email != problem.user.username %]
+<li>[% loc('Email:') %] [% problem.user.email | html %]</li>
+[% END %]
 <li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
     <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
 <li><label class="inline-text" for="non_public">[% loc('Private') %]:</label>

@@ -102,11 +102,7 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->content_contains('We need your email address, please give it below.');
                 # We don't have an email, so check that we can still submit it,
                 # and the ID carries through the confirmation
-                if ($page eq 'update') {
-                    $fields->{rznvy} = $fb_email;
-                } else {
-                    $fields->{email} = $fb_email;
-                }
+                $fields->{username} = $fb_email;
                 $fields->{name} = 'Ffion Tester';
                 $mech->submit_form(with_fields => $fields);
                 $mech->content_contains('Nearly done! Now check your email');
@@ -214,11 +210,7 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->content_contains('We need your email address, please give it below.');
                 # We don't have an email, so check that we can still submit it,
                 # and the ID carries through the confirmation
-                if ($page eq 'update') {
-                    $fields->{rznvy} = $tw_email;
-                } else {
-                    $fields->{email} = $tw_email;
-                }
+                $fields->{username} = $tw_email;
                 $fields->{name} = 'Ffion Tester';
                 $mech->submit_form(with_fields => $fields);
                 $mech->content_contains('Nearly done! Now check your email');

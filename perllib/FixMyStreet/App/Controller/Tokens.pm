@@ -45,10 +45,10 @@ sub confirm_problem : Path('/P') {
     # Load the problem
     my $data = $auth_token->data;
     $data = { id => $data } unless ref $data;
+    $c->stash->{token_data} = $data;
 
-    my $problem_id = $data->{id};
     # Look at all problems, not just cobrand, in case am approving something we don't actually show
-    my $problem = $c->model('DB::Problem')->find( { id => $problem_id } )
+    my $problem = $c->model('DB::Problem')->find( { id => $data->{id} } )
       || $c->detach('token_error');
     $c->stash->{report} = $problem;
 
@@ -56,64 +56,7 @@ sub confirm_problem : Path('/P') {
         if $problem->state eq 'unconfirmed'
         && $auth_token->created < DateTime->now->subtract( months => 1 );
 
-    # check that this email or domain are not the cause of abuse. If so hide it.
-    if ( $problem->is_from_abuser ) {
-        $problem->update(
-            { state => 'hidden', lastupdate => \'current_timestamp' } );
-        $c->stash->{template} = 'tokens/abuse.html';
-        return;
-    }
-
-    # For Zurich, email confirmation simply sets a flag, it does not change the
-    # problem state, log in, or anything else
-    if ($c->cobrand->moniker eq 'zurich') {
-        $problem->set_extra_metadata( email_confirmed => 1 );
-        $problem->update( {
-            confirmed => \'current_timestamp',
-        } );
-
-        if ( $data->{name} || $data->{password} ) {
-            $problem->user->name( $data->{name} ) if $data->{name};
-            $problem->user->phone( $data->{phone} ) if $data->{phone};
-            $problem->user->update;
-        }
-
-        return 1;
-    }
-
-    if ($problem->state ne 'unconfirmed') {
-        my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
-        $c->res->redirect($report_uri);
-        return;
-    }
-
-    # We have an unconfirmed problem
-    $problem->update(
-        {
-            state      => 'confirmed',
-            confirmed  => \'current_timestamp',
-            lastupdate => \'current_timestamp',
-        }
-    );
-
-    # Subscribe problem reporter to email updates
-    $c->forward( '/report/new/create_reporter_alert' );
-
-    # log the problem creation user in to the site
-    if ( $data->{name} || $data->{password} ) {
-        $problem->user->name( $data->{name} ) if $data->{name};
-        $problem->user->phone( $data->{phone} ) if $data->{phone};
-        $problem->user->password( $data->{password}, 1 ) if $data->{password};
-        $problem->user->title( $data->{title} ) if $data->{title};
-        $problem->user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
-        $problem->user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
-        $problem->user->update;
-    }
-    $c->authenticate( { email => $problem->user->email }, 'no_password' );
-    $c->set_session_cookie_expire(0);
-
-    $c->stash->{created_report} = 'fromemail';
-    return 1;
+    $c->forward('/report/new/process_confirmation');
 }
 
 =head2 redirect_to_partial_problem
@@ -170,7 +113,7 @@ sub confirm_alert : Path('/A') {
     }
 
     if (!$alert->confirmed && $c->stash->{confirm_type} ne 'unsubscribe') {
-        $c->authenticate( { email => $alert->user->email }, 'no_password' );
+        $c->authenticate( { email => $alert->user->email, email_verified => 1 }, 'no_password' );
         $c->set_session_cookie_expire(0);
     }
 
@@ -205,11 +148,9 @@ sub confirm_update : Path('/C') {
       $c->forward( 'load_auth_token', [ $token_code, 'comment' ] );
 
     # Load the update
-    my $data = $auth_token->data;
-    my $comment_id = $data->{id};
-    $c->stash->{add_alert} = $data->{add_alert};
+    my $data = $c->stash->{token_data} = $auth_token->data;
 
-    my $comment = $c->model('DB::Comment')->find( { id => $comment_id } )
+    my $comment = $c->model('DB::Comment')->find( { id => $data->{id} } )
       || $c->detach('token_error');
     $c->stash->{update} = $comment;
 
@@ -217,32 +158,7 @@ sub confirm_update : Path('/C') {
         if $comment->state ne 'confirmed'
         && $auth_token->created < DateTime->now->subtract( months => 1 );
 
-    # check that this email or domain are not the cause of abuse. If so hide it.
-    if ( $comment->is_from_abuser ) {
-        $c->stash->{template} = 'tokens/abuse.html';
-        return;
-    }
-
-    if ( $comment->state ne 'unconfirmed' ) {
-        my $report_uri = $c->cobrand->base_url_for_report( $comment->problem ) . $comment->problem->url;
-        $c->res->redirect($report_uri);
-        return;
-    }
-
-    if ( $data->{name} || $data->{password} ) {
-        $comment->user->name( $data->{name} ) if $data->{name};
-        $comment->user->password( $data->{password}, 1 ) if $data->{password};
-        $comment->user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
-        $comment->user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
-        $comment->user->update;
-    }
-
-    $c->authenticate( { email => $comment->user->email }, 'no_password' );
-    $c->set_session_cookie_expire(0);
-
-    $c->forward('/report/update/confirm');
-
-    return 1;
+    $c->forward('/report/update/process_confirmation');
 }
 
 sub load_questionnaire : Private {
@@ -269,7 +185,7 @@ sub questionnaire : Path('/Q') : Args(1) {
 
     my $questionnaire = $c->stash->{questionnaire};
     if (!$questionnaire->whenanswered) {
-        $c->authenticate( { email => $questionnaire->problem->user->email }, 'no_password' );
+        $c->authenticate( { email => $questionnaire->problem->user->email, email_verified => 1 }, 'no_password' );
         $c->set_session_cookie_expire(0);
     }
     $c->forward( '/questionnaire/show' );

@@ -1,33 +1,48 @@
-[% INCLUDE 'header.html', title = loc('Change email address'), bodyclass = 'authpage' %]
+[%
+IF c.user.email_verified OR (c.user.email AND NOT verifying);
+    SET title = loc('Change email address');
+ELSIF c.user.email;
+    SET title = loc('Verify email address');
+ELSE;
+    SET title = loc('Add email address');
+END
+-%]
+[% INCLUDE 'header.html' bodyclass = 'authpage' %]
 
-<h1>[% loc('Change email address') %]</h1>
+<h1>[% title %]</h1>
 
-[% IF c.req.args.0 == 'success' %]
-    <p class="form-success">[% loc('You have successfully confirmed your email address.') %]</p>
+[% IF c.user.email_verified OR (c.user.email AND NOT verifying) %]
+[% loc('Your email address') %]: [% c.user.email %]
+[% ELSIF c.user.email %]
+[% DEFAULT username = c.user.email %]
 [% END %]
 
-[% loc('Your email address') %]: [% c.user.email %]
-
-<form action="[% c.uri_for('change_email') %]" method="post" name="change_email">
+<form method="post" name="change_email">
     <input type="hidden" name="token" value="[% csrf_token %]">
 
     <fieldset>
-    [% IF email_error;
+    [% IF username_error;
         errors = {
-            missing = loc('Please enter your email'),
-            other   = loc('Please check your email address is correct')
+            missing_email = loc('Please enter your email'),
+            other_email = loc('Please check your email address is correct')
         };
-        loc_email_error = errors.$email_error || errors.other;
+        loc_username_error = errors.$username_error || errors.other_email;
     %]
-    <div class="form-error">[% loc_email_error %]</div>
+    <div class="form-error">[% loc_username_error %]</div>
     [% END %]
 
     <div class="form-field">
-        <label for="email">[% loc('New email address:') %]</label>
-        <input class="form-control" type="email" name="email" id="email" value="[% email | html %]">
+        <label for="email">
+          [% IF NOT c.user.email_verified AND c.user.email AND verifying %]
+            [% loc('Email address') %]:
+          [% ELSE %]
+            [% loc('New email address:') %]
+          [% END %]
+        </label>
+        <input class="form-control" type="email" name="email" id="email" value="[% username | html %]">
     </div>
     <div class="final-submit">
-        <input type="submit" class="btn" value="[% loc('Change email address') %]">
+        <input type="submit" class="btn" value="[% title %]">
     </div>
 
     </fieldset>

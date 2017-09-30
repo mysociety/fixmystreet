@@ -15,9 +15,11 @@ vennligst besøk følgende lenke:
 
 Navn: [% name %]
 
-E-post: [% email %]
+E-post: [% email OR '-' %]
 
-[% phone_line %][% category_line %]Tema: [% title %]
+Telefon: [% phone OR '-' %]
+
+[% category_line %]Tema: [% title %]
 
 Detajer: [% detail %]
 

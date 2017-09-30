@@ -1,5 +1,9 @@
 <div id="form_sign_in_no" class="form-box">
+  [% IF c.config.SMS_AUTHENTICATION %]
+    <h5>[% loc('<strong>No</strong> Let me confirm my update by email/text') %]</h5>
+  [% ELSE %]
     <h5>[% loc('<strong>No</strong> Let me confirm my update by email') %]</h5>
+  [% END %]
 
     [% INCLUDE 'report/update/form_name.html' %]
 

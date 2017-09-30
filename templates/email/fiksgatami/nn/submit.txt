@@ -15,9 +15,11 @@ problemet, ver venleg og besøk følgjande lenkje:
 
 Namn: [% name %]
 
-E-post: [% email %]
+E-post: [% email OR '-' %]
 
-[% phone_line %][% category_line %]Tema: [% title %]
+Telefon: [% phone OR '-' %]
+
+[% category_line %]Tema: [% title %]
 
 Detaljer: [% detail %]
 

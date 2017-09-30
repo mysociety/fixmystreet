@@ -17,11 +17,50 @@
 
 <h1>[% loc('Your account') %]</h1>
 
-<p>[% c.user.name %] [% c.user.email %]</p>
+[% IF flash_message %]
+<p class="form-success">[% flash_message %]</p>
+[% END %]
+
+<style>
+/* TODO XXX */
+li .my-account-buttons {
+    float: right;
+    margin: 0;
+}
+li .my-account-buttons a {
+    padding: 0 0.5em;
+}
+</style>
+<ul>
+<li>[% loc('Name:') %] [% c.user.name %]
+<li>[% loc('Email:') %] [% c.user.email OR '-' %]
+    <p class="my-account-buttons">
+      [% IF NOT c.user.email %]
+        <a href="/auth/change_email">[% loc('Add') %]</a>
+      [% ELSIF c.user.email_verified %]
+        <a href="/auth/change_email">[% loc('Change') %]</a>
+      [% ELSE %]
+        <a href="/auth/verify/email">[% loc('Verify') %]</a>
+        <a href="/auth/change_email">[% loc('Change') %]</a>
+      [% END %]
+    </p>
+<li>[% loc('Phone:') %] [% c.user.phone_display OR '-' %]
+    <p class="my-account-buttons">
+      [% IF NOT c.user.phone %]
+        <a href="/auth/change_phone">[% loc('Add') %]</a>
+      [% ELSIF c.user.phone_verified %]
+        <a href="/auth/change_phone">[% loc('Change') %]</a>
+      [% ELSE %]
+       [% IF c.config.SMS_AUTHENTICATION %]
+        <a href="/auth/verify/phone">[% loc('Verify') %]</a>
+       [% END %]
+        <a href="/auth/change_phone">[% loc('Change') %]</a>
+      [% END %]
+    </p>
+</ul>
 
 <p class="my-account-buttons">
   <a href="/auth/change_password">[% loc('Change password') %]</a>
-  <a href="/auth/change_email">[% loc('Change email') %]</a>
   <a href="/auth/sign_out">[% loc('Sign out') %]</a>
 </p>
 

@@ -106,19 +106,21 @@ sub report_moderate_audit : Private {
         reason => (sprintf '%s (%s)', $reason, $types_csv),
     });
 
-    my $token = $c->model("DB::Token")->create({
-        scope => 'moderation',
-        data => { id => $problem->id }
-    });
+    if ($problem->user->email_verified) {
+        my $token = $c->model("DB::Token")->create({
+            scope => 'moderation',
+            data => { id => $problem->id }
+        });
 
-    $c->send_email( 'problem-moderated.txt', {
-        to => [ [ $problem->user->email, $problem->name ] ],
-        types => $types_csv,
-        user => $problem->user,
-        problem => $problem,
-        report_uri => $c->stash->{report_uri},
-        report_complain_uri => $c->stash->{cobrand_base} . '/contact?m=' . $token->token,
-    });
+        $c->send_email( 'problem-moderated.txt', {
+            to => [ [ $problem->user->email, $problem->name ] ],
+            types => $types_csv,
+            user => $problem->user,
+            problem => $problem,
+            report_uri => $c->stash->{report_uri},
+            report_complain_uri => $c->stash->{cobrand_base} . '/contact?m=' . $token->token,
+        });
+    }
 }
 
 sub report_moderate_hide : Private {

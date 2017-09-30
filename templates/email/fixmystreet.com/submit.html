@@ -27,7 +27,13 @@ of a local problem that they believe might require your attention.</p>
     </tr>
     <tr>
       <th style="[% contact_th_style %]">Email</th>
-      <td style="[% contact_td_style %]"><a href="mailto:[% email | html %]">[% email | html %]</a></td>
+      <td style="[% contact_td_style %]">
+        [%~ IF email ~%]
+          <a href="mailto:[% email | html %]">[% email | html %]</a>
+        [%~ ELSE ~%]
+          <strong>No email address provided, only phone number</strong>
+        [%~ END ~%]
+      </td>
     </tr>
     [%~ IF phone %]
       <tr>

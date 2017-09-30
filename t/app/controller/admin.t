@@ -316,7 +316,7 @@ foreach my $test (
             detail     => 'Detail for Report to Edit',
             state      => 'confirmed',
             name       => 'Test User',
-            email      => $user->email,
+            username => $user->email,
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
@@ -332,7 +332,7 @@ foreach my $test (
             detail     => 'Detail for Report to Edit',
             state      => 'confirmed',
             name       => 'Test User',
-            email      => $user->email,
+            username => $user->email,
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
@@ -348,7 +348,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'confirmed',
             name       => 'Test User',
-            email      => $user->email,
+            username => $user->email,
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
@@ -365,7 +365,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'confirmed',
             name       => 'Edited User',
-            email      => $user->email,
+            username => $user->email,
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
@@ -384,12 +384,12 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'confirmed',
             name       => 'Edited User',
-            email      => $user->email,
+            username => $user->email,
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
         },
-        changes     => { email => $user2->email, },
+        changes     => { username => $user2->email, },
         log_entries => [qw/edit edit edit edit edit/],
         resend      => 0,
         user        => $user2,
@@ -401,7 +401,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'confirmed',
             name       => 'Edited User',
-            email      => $user2->email,
+            username => $user2->email,
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
@@ -417,7 +417,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'unconfirmed',
             name       => 'Edited User',
-            email      => $user2->email,
+            username => $user2->email,
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
@@ -433,7 +433,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'confirmed',
             name       => 'Edited User',
-            email      => $user2->email,
+            username => $user2->email,
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
@@ -450,7 +450,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'fixed',
             name       => 'Edited User',
-            email      => $user2->email,
+            username => $user2->email,
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
@@ -468,7 +468,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'hidden',
             name       => 'Edited User',
-            email      => $user2->email,
+            username => $user2->email,
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
@@ -489,7 +489,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'confirmed',
             name       => 'Edited User',
-            email      => $user2->email,
+            username => $user2->email,
             anonymous  => 1,
             flagged    => 'on',
             non_public => undef,
@@ -507,7 +507,7 @@ foreach my $test (
             detail     => 'Edited Detail',
             state      => 'confirmed',
             name       => 'Edited User',
-            email      => $user2->email,
+            username => $user2->email,
             anonymous  => 1,
             flagged    => 'on',
             non_public => undef,
@@ -555,7 +555,7 @@ foreach my $test (
         $test->{changes}->{flagged} = 1 if $test->{changes}->{flagged};
         $test->{changes}->{non_public} = 1 if $test->{changes}->{non_public};
 
-        is $report->$_, $test->{changes}->{$_}, "$_ updated" for grep { $_ ne 'email' } keys %{ $test->{changes} };
+        is $report->$_, $test->{changes}->{$_}, "$_ updated" for grep { $_ ne 'username' } keys %{ $test->{changes} };
 
         if ( $test->{user} ) {
             is $report->user->id, $test->{user}->id, 'user changed';
@@ -603,7 +603,7 @@ subtest 'change email to new user' => sub {
         detail => $report->detail,
         state  => $report->state,
         name   => $report->name,
-        email  => $report->user->email,
+        username => $report->user->email,
         category => 'Other',
         anonymous => 1,
         flagged => 'on',
@@ -616,12 +616,10 @@ subtest 'change email to new user' => sub {
     is_deeply( $mech->visible_form_values(), $fields, 'initial form values' );
 
     my $changes = {
-        email => 'test3@example.com'
+        username => 'test3@example.com'
     };
 
-    $user3 =
-      FixMyStreet::App->model('DB::User')
-      ->find( { email => 'test3@example.com', name => 'Test User 2' } );
+    $user3 = FixMyStreet::App->model('DB::User')->find( { email => 'test3@example.com' } );
 
     ok !$user3, 'user not in database';
 
@@ -640,9 +638,7 @@ subtest 'change email to new user' => sub {
     is $log_entries->first->action, 'edit', 'log action';
     is_deeply( $mech->visible_form_values(), $new_fields, 'changed form values' );
 
-    $user3 =
-      FixMyStreet::App->model('DB::User')
-      ->find( { email => 'test3@example.com', name => 'Test User 2' } );
+    $user3 = FixMyStreet::App->model('DB::User')->find( { email => 'test3@example.com' } );
 
     $report->discard_changes;
 
@@ -657,18 +653,18 @@ subtest 'adding email to abuse list from report page' => sub {
     $abuse->delete if $abuse;
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('Ban email address');
+    $mech->content_contains('Ban user');
 
     $mech->click_ok('banuser');
 
-    $mech->content_contains('Email added to abuse list');
-    $mech->content_contains('<small>(Email in abuse table)</small>');
+    $mech->content_contains('User added to abuse list');
+    $mech->content_contains('<small>(User in abuse table)</small>');
 
     $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
     ok $abuse, 'entry created in abuse table';
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('<small>(Email in abuse table)</small>');
+    $mech->content_contains('<small>(User in abuse table)</small>');
 };
 
 subtest 'flagging user from report page' => sub {
@@ -742,7 +738,7 @@ for my $test (
             state => 'confirmed',
             name => '',
             anonymous => 1,
-            email => 'test@example.com',
+            username => 'test@example.com',
         },
         changes => {
             text => 'this is a changed update',
@@ -757,7 +753,7 @@ for my $test (
             state => 'confirmed',
             name => '',
             anonymous => 1,
-            email => 'test@example.com',
+            username => 'test@example.com',
         },
         changes => {
             name => 'A User',
@@ -772,7 +768,7 @@ for my $test (
             state => 'confirmed',
             name => 'A User',
             anonymous => 1,
-            email => 'test@example.com',
+            username => 'test@example.com',
         },
         changes => {
             anonymous => 0,
@@ -787,11 +783,10 @@ for my $test (
             state => 'confirmed',
             name => 'A User',
             anonymous => 0,
-            email => $update->user->email,
-            email => 'test@example.com',
+            username => 'test@example.com',
         },
         changes => {
-            email => 'test2@example.com',
+            username => 'test2@example.com',
         },
         log_count => 4,
         log_entries => [qw/edit edit edit edit/],
@@ -804,7 +799,7 @@ for my $test (
             state => 'confirmed',
             name => 'A User',
             anonymous => 0,
-            email => 'test2@example.com',
+            username => 'test2@example.com',
         },
         changes => {
             state => 'unconfirmed',
@@ -819,7 +814,7 @@ for my $test (
             state => 'unconfirmed',
             name => 'A User',
             anonymous => 0,
-            email => 'test2@example.com',
+            username => 'test2@example.com',
         },
         changes => {
             text => 'this is a twice changed update',
@@ -849,7 +844,7 @@ for my $test (
 
         $update->discard_changes;
 
-        is $update->$_, $test->{changes}->{$_} for grep { $_ ne 'email' } keys %{ $test->{changes} };
+        is $update->$_, $test->{changes}->{$_} for grep { $_ ne 'username' } keys %{ $test->{changes} };
         if ( $test->{changes}{state} && $test->{changes}{state} eq 'confirmed' ) {
             isnt $update->confirmed, undef;
         }
@@ -935,9 +930,7 @@ for my $test (
 }
 
 subtest 'editing update email creates new user if required' => sub {
-    my $user = FixMyStreet::App->model('DB::User')->find(
-        { email => 'test4@example.com' } 
-    );
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => 'test4@example.com' } );
 
     $user->delete if $user;
 
@@ -946,14 +939,12 @@ subtest 'editing update email creates new user if required' => sub {
             state => 'hidden',
             name => 'A User',
             anonymous => 0,
-            email => 'test4@example.com',
+            username => 'test4@example.com',
     };
 
     $mech->submit_form_ok( { with_fields => $fields } );
 
-    $user = FixMyStreet::App->model('DB::User')->find(
-        { email => 'test4@example.com' } 
-    );
+    $user = FixMyStreet::App->model('DB::User')->find( { email => 'test4@example.com' } );
 
     is_deeply $mech->visible_form_values, $fields, 'submitted form values';
 
@@ -970,18 +961,18 @@ subtest 'adding email to abuse list from update page' => sub {
     $abuse->delete if $abuse;
 
     $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('Ban email address');
+    $mech->content_contains('Ban user');
 
     $mech->click_ok('banuser');
 
-    $mech->content_contains('Email added to abuse list');
-    $mech->content_contains('<small>(Email in abuse table)</small>');
+    $mech->content_contains('User added to abuse list');
+    $mech->content_contains('<small>(User in abuse table)</small>');
 
     $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
     ok $abuse, 'entry created in abuse table';
 
     $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('<small>(Email in abuse table)</small>');
+    $mech->content_contains('<small>(User in abuse table)</small>');
 };
 
 subtest 'flagging user from update page' => sub {
@@ -1029,13 +1020,12 @@ subtest 'hiding comment marked as fixed reopens report' => sub {
     $report->state('fixed - user');
     $report->update;
 
-
     my $fields = {
             text => 'this is a changed update',
             state => 'hidden',
             name => 'A User',
             anonymous => 0,
-            email => 'test2@example.com',
+            username => 'test2@example.com',
     };
 
     $mech->submit_form_ok( { with_fields => $fields } );
@@ -1092,7 +1082,7 @@ subtest 'report search' => sub {
 
 subtest 'search abuse' => sub {
     $mech->get_ok( '/admin/users?search=example' );
-    $mech->content_like(qr{test4\@example.com.*</td>\s*<td>.*?</td>\s*<td>\(Email in abuse table}s);
+    $mech->content_like(qr{test4\@example.com.*</td>\s*<td>.*?</td>\s*<td>\(User in abuse table}s);
 };
 
 subtest 'show flagged entries' => sub {
@@ -1167,6 +1157,69 @@ $user->flagged( 0 );
 $user->update;
 
 my $southend = $mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
+
+for my $test (
+    {
+        desc => 'add user - blank form',
+        fields => {
+            email => '', email_verified => 0,
+            phone => '', phone_verified => 0,
+        },
+        error => ['Please verify at least one of email/phone', 'Please enter a name'],
+    },
+    {
+        desc => 'add user - blank, verify phone',
+        fields => {
+            email => '', email_verified => 0,
+            phone => '', phone_verified => 1,
+        },
+        error => ['Please enter a valid email or phone number', 'Please enter a name'],
+    },
+    {
+        desc => 'add user - bad email',
+        fields => {
+            name => 'Norman',
+            email => 'bademail', email_verified => 0,
+            phone => '', phone_verified => 0,
+        },
+        error => ['Please enter a valid email'],
+    },
+    {
+        desc => 'add user - bad phone',
+        fields => {
+            name => 'Norman',
+            phone => '01214960000000', phone_verified => 1,
+        },
+         error => ['Please check your phone number is correct'],
+    },
+    {
+        desc => 'add user - landline',
+        fields => {
+            name => 'Norman Name',
+            phone => '+441214960000',
+            phone_verified => 1,
+        },
+        error => ['Please enter a mobile number'],
+    },
+    {
+        desc => 'add user - good details',
+        fields => {
+            name => 'Norman Name',
+            phone => '+61491570156',
+            phone_verified => 1,
+        },
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->get_ok('/admin/users');
+        $mech->submit_form_ok( { with_fields => $test->{fields} } );
+        if ($test->{error}) {
+            $mech->content_contains($_) for @{$test->{error}};
+        } else {
+            $mech->content_contains('Updated');
+        }
+    };
+}
 
 my %default_perms = (
     "permissions[moderate]" => undef,
@@ -1358,6 +1411,32 @@ FixMyStreet::override_config {
     }
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    SMS_AUTHENTICATION => 1,
+}, sub {
+    subtest "Test edit user add verified phone" => sub {
+        $mech->get_ok( '/admin/user_edit/' . $user->id );
+        $mech->submit_form_ok( { with_fields => {
+            phone => '+61491570157',
+            phone_verified => 1,
+        } } );
+        $mech->content_contains( 'Updated!' );
+    };
+
+    subtest "Test changing user to an existing one" => sub {
+        my $existing_user = $mech->create_user_ok('existing@example.com', name => 'Existing User');
+        $mech->create_problems_for_body(2, 2514, 'Title', { user => $existing_user });
+        my $count = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
+        $mech->get_ok( '/admin/user_edit/' . $user->id );
+        $mech->submit_form_ok( { with_fields => { email => 'existing@example.com' } }, 'submit email change' );
+        is $mech->uri->path, '/admin/user_edit/' . $existing_user->id, 'redirected';
+        my $p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $existing_user->id })->count;
+        is $p, $count + 2, 'reports merged';
+    };
+
+};
+
 subtest "Test setting a report from unconfirmed to something else doesn't cause a front end error" => sub {
     $report->update( { confirmed => undef, state => 'unconfirmed', non_public => 0 } );
     $mech->get_ok("/admin/report_edit/$report_id");
@@ -1380,6 +1459,7 @@ subtest "Check admin_base_url" => sub {
 $mech->log_out_ok;
 
 subtest "Users without from_body can't access admin" => sub {
+    $user = FixMyStreet::App->model('DB::User')->find( { email => 'existing@example.com' } );
     $user->from_body( undef );
     $user->update;
 

@@ -31,7 +31,7 @@ FixMyStreet::override_config {
     $mech->content_contains( 'sign in' );
 
     $mech->submit_form(
-        with_fields => { email => $test_user, password_sign_in => $test_pass }
+        with_fields => { username => $test_user, password_sign_in => $test_pass }
     );
 
     is $mech->status, '404', 'If not council user get 404';
@@ -42,7 +42,7 @@ FixMyStreet::override_config {
     $mech->log_out_ok;
     $mech->get_ok('/dashboard');
     $mech->submit_form_ok( {
-        with_fields => { email => $test_user, password_sign_in => $test_pass }
+        with_fields => { username => $test_user, password_sign_in => $test_pass }
     } );
 
     $mech->content_contains( 'Area 2651' );

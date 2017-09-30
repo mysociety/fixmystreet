@@ -128,7 +128,7 @@ subtest "test a good report" => sub {
 
     my %fields = (
         name      => '',
-        rznvy     => '',
+        username => '',
         update    => '',
         add_alert => 1, # defaults to true
         fixed     => undef

@@ -36,18 +36,6 @@ sub report_update : Path : Args(0) {
     $c->forward('redirect_or_confirm_creation');
 }
 
-sub confirm : Private {
-    my ( $self, $c ) = @_;
-
-    $c->stash->{update}->confirm;
-    $c->stash->{update}->update;
-
-    $c->forward('update_problem');
-    $c->forward('signup_for_alerts');
-
-    return 1;
-}
-
 sub update_problem : Private {
     my ( $self, $c ) = @_;
 
@@ -109,6 +97,10 @@ sub process_user : Private {
 
     my $update = $c->stash->{update};
 
+    # Extract all the params to a hash to make them easier to work with
+    my %params = map { $_ => $c->get_param($_) }
+      ( 'username', 'name', 'password_register', 'fms_extra_title' );
+
     # Extra block to use 'last'
     if ( $c->user_exists ) { {
         my $user = $c->user->obj;
@@ -118,13 +110,9 @@ sub process_user : Private {
             last;
         }
 
-        my $name = $c->get_param('name');
-        $user->name( Utils::trim_text( $name ) ) if $name;
-        my $title = $c->get_param('fms_extra_title');
-        if ( $title ) {
-            $c->log->debug( 'user exists and title is ' . $title );
-            $user->title( Utils::trim_text( $title ) );
-        }
+        $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
+        my $title = Utils::trim_text( $params{fms_extra_title} );
+        $user->title( $title ) if $title;
         $update->user( $user );
 
         # Just in case, make sure the user will have a name
@@ -135,21 +123,16 @@ sub process_user : Private {
         return 1;
     } }
 
-    # Extract all the params to a hash to make them easier to work with
-    my %params = map { $_ => $c->get_param($_) }
-      ( 'rznvy', 'name', 'password_register', 'fms_extra_title' );
-
-    # cleanup the email address
-    my $email = $params{rznvy} ? lc $params{rznvy} : '';
-    $email =~ s{\s+}{}g;
-
-    $update->user( $c->model('DB::User')->find_or_new( { email => $email } ) )
+    my $parsed = FixMyStreet::SMS->parse_username($params{username});
+    my $type = $parsed->{type} || 'email';
+    $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION');
+    $update->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) )
         unless $update->user;
 
-    # The user is trying to sign in. We only care about email from the params.
+    # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
-        unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
-            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.');
+        unless ( $c->forward( '/auth/sign_in', [ $params{username} ] ) ) {
+            $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form.');
             return 1;
         }
         my $user = $c->user->obj;
@@ -328,8 +311,6 @@ sub process_update : Private {
         $update->extra( $extra );
     }
 
-    $c->log->debug( 'name is ' . $c->get_param('name') );
-
     $c->stash->{add_alert} = $c->get_param('add_alert');
 
     return 1;
@@ -372,7 +353,7 @@ sub check_for_errors : Private {
     $c->stash->{is_social_user} = $c->get_param('facebook_sign_in') || $c->get_param('twitter_sign_in');
     if ( $c->stash->{is_social_user} ) {
         delete $field_errors{name};
-        delete $field_errors{email};
+        delete $field_errors{username};
     }
 
     if ( my $photo_error  = delete $c->stash->{photo_error} ) {
@@ -438,18 +419,14 @@ sub save_update : Private {
         $c->stash->{detach_args} = [$token->token];
 
         if ( $c->get_param('facebook_sign_in') ) {
-            $c->detach('/auth/facebook_sign_in');
+            $c->detach('/auth/social/facebook_sign_in');
         } elsif ( $c->get_param('twitter_sign_in') ) {
-            $c->detach('/auth/twitter_sign_in');
+            $c->detach('/auth/social/twitter_sign_in');
         }
     }
 
     if ( $c->cobrand->never_confirm_updates ) {
-        if ( $update->user->in_storage() ) {
-            $update->user->update();
-        } else {
-            $update->user->insert();
-        }
+        $update->user->update_or_insert;
         $update->confirm();
     } elsif ( $c->forward('/report/new/created_as_someone_else', [ $update->problem->bodies_str ]) ) {
         # If created on behalf of someone else, we automatically confirm it,
@@ -464,7 +441,6 @@ sub save_update : Private {
     }
     elsif ( $c->user && $c->user->id == $update->user->id ) {
         # Logged in and same user, so can confirm update straight away
-        $c->log->debug( 'user exists' );
         $update->user->update;
         $update->confirm;
     } else {
@@ -473,12 +449,7 @@ sub save_update : Private {
         $update->user->discard_changes();
     }
 
-    if ( $update->in_storage ) {
-        $update->update;
-    }
-    else {
-        $update->insert;
-    }
+    $update->update_or_insert;
 
     return 1;
 }
@@ -507,28 +478,108 @@ sub redirect_or_confirm_creation : Private {
         return 1;
     }
 
-    # otherwise create a confirm token and email it to them.
-    my $data = $c->stash->{token_data} || {};
-    my $token = $c->model("DB::Token")->create(
-        {
-            scope => 'comment',
-            data  => {
-                %$data,
-                id        => $update->id,
-                add_alert => ( $c->get_param('add_alert') ? 1 : 0 ),
-            }
-        }
-    );
-    $c->stash->{token_url} = $c->uri_for_email( '/C', $token->token );
-    $c->send_email( 'update-confirm.txt', {
-        to => $update->name
-            ? [ [ $update->user->email, $update->name ] ]
-            : $update->user->email,
-    } );
+    my $data = $c->stash->{token_data};
+    $data->{id} = $update->id;
+    $data->{add_alert} = $c->get_param('add_alert') ? 1 : 0;
 
-    # tell user that they've been sent an email
-    $c->stash->{template}   = 'email_sent.html';
-    $c->stash->{email_type} = 'update';
+    if ($update->user->email_verified) {
+        $c->forward('send_confirmation_email');
+        # tell user that they've been sent an email
+        $c->stash->{template}   = 'email_sent.html';
+        $c->stash->{email_type} = 'update';
+    } elsif ($update->user->phone_verified) {
+        $c->forward('send_confirmation_text');
+    } else {
+        warn "Reached update confirmation with no username verification";
+    }
+
+    return 1;
+}
+
+sub send_confirmation_email : Private {
+    my ( $self, $c ) = @_;
+
+    my $update = $c->stash->{update};
+    my $token = $c->model("DB::Token")->create( {
+        scope => 'comment',
+        data  => $c->stash->{token_data},
+    } );
+    my $template = 'update-confirm.txt';
+    $c->stash->{token_url} = $c->uri_for_email( '/C', $token->token );
+    $c->send_email( $template, {
+        to => [ $update->name ? [ $update->user->email, $update->name ] : $update->user->email ],
+    } );
+}
+
+sub send_confirmation_text : Private {
+    my ( $self, $c ) = @_;
+    my $update = $c->stash->{update};
+    $c->forward('/auth/phone/send_token', [ $c->stash->{token_data}, 'comment', $update->user->phone ]);
+    $c->stash->{submit_url} = '/report/update/text';
+}
+
+sub confirm_by_text : Path('text') {
+    my ( $self, $c ) = @_;
+
+    my $token = $c->stash->{token} = $c->get_param('token');
+    my $code = $c->get_param('code') || '';
+
+    my $data = $c->stash->{token_data} = $c->forward('/auth/get_token', [ $token, 'comment' ]) || return;
+    if ($data->{code} ne $code) {
+        $c->stash->{template} = 'auth/smsform.html';
+        $c->stash->{submit_url} = '/report/update/text';
+        $c->stash->{incorrect_code} = 1;
+        return;
+    }
+
+    $c->detach('process_confirmation');
+}
+
+sub process_confirmation : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{template} = 'tokens/confirm_update.html';
+    my $data = $c->stash->{token_data};
+
+    unless ($c->stash->{update}) {
+        $c->stash->{update} = $c->model('DB::Comment')->find({ id => $data->{id} }) || return;
+    }
+    my $comment = $c->stash->{update};
+
+    # check that this email or domain are not the cause of abuse. If so hide it.
+    if ( $comment->is_from_abuser ) {
+        $c->stash->{template} = 'tokens/abuse.html';
+        return;
+    }
+
+    if ( $comment->state ne 'unconfirmed' ) {
+        my $report_uri = $c->cobrand->base_url_for_report( $comment->problem ) . $comment->problem->url;
+        $c->res->redirect($report_uri);
+        return;
+    }
+
+    if ( $data->{name} || $data->{password} ) {
+        for (qw(name facebook_id twitter_id)) {
+            $comment->user->$_( $data->{$_} ) if $data->{$_};
+        }
+        $comment->user->password( $data->{password}, 1 ) if $data->{password};
+        $comment->user->update;
+    }
+
+    if ($comment->user->email_verified) {
+        $c->authenticate( { email => $comment->user->email, email_verified => 1 }, 'no_password' );
+    } elsif ($comment->user->phone_verified) {
+        $c->authenticate( { phone => $comment->user->phone, phone_verified => 1 }, 'no_password' );
+    } else {
+        warn "Reached user authentication with no username verification";
+    }
+    $c->set_session_cookie_expire(0);
+
+    $c->stash->{update}->confirm;
+    $c->stash->{update}->update;
+    $c->forward('update_problem');
+    $c->stash->{add_alert} = $data->{add_alert};
+    $c->forward('signup_for_alerts');
 
     return 1;
 }

@@ -49,7 +49,11 @@ sub send_questionnaires_period {
 
         # Not all cobrands send questionnaires
         next unless $cobrand->send_questionnaires;
-        next if $row->is_from_abuser;
+
+        if ($row->is_from_abuser || !$row->user->email_verified) {
+            $row->update( { send_questionnaire => 0 } );
+            next;
+        }
 
         # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
         # should specify a vhost to send the reports for each cobrand, so that they don't get sent 

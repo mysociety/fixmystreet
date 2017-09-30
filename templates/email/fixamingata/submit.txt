@@ -16,9 +16,11 @@ tror medborgaren behöver er uppmärksamhet.
 
 Namn: [% name %]
 
-Epost: [% email %]
+Epost: [% email OR '-' %]
 
-[% phone_line %]** Information om ärendet
+Telefonnummer: [% phone OR '-' %]
+
+** Information om ärendet
 
 ID: [% id %]
 

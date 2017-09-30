@@ -74,14 +74,21 @@ sub send {
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
     my $params = {
         To => $self->to,
-        From => $self->send_from( $row ),
     };
 
     $cobrand->call_hook(munge_sendreport_params => $row, $h, $params);
 
     $params->{Bcc} = $self->bcc if @{$self->bcc};
 
-    my $sender = FixMyStreet::Email::unique_verp_id('report', $row->id);
+    my $sender;
+    if ($row->user->email && $row->user->email_verified) {
+        $sender = FixMyStreet::Email::unique_verp_id('report', $row->id);
+        $params->{From} = $self->send_from( $row );
+    } else {
+        $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+        my $name = sprintf(_("On behalf of %s"), $params->{From}[1]);
+        $params->{From} = [ $sender, $name ];
+    }
 
     if (FixMyStreet::Email::test_dmarc($params->{From}[0])
       || Utils::Email::same_domain($params->{From}, $params->{To})) {

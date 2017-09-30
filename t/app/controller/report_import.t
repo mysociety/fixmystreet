@@ -362,14 +362,12 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
         photo2         => '',
         photo3         => '',
         phone         => '',
-        email => 'test-ll@example.com',
+        username => 'test-ll@example.com',
       },
       "check imported fields are shown"
           or diag Dumper( $mech->visible_form_values ); use Data::Dumper;
 
-    my $user =
-      FixMyStreet::App->model('DB::User')
-      ->find( { email => 'test-ll@example.com' } );
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => 'test-ll@example.com' } );
     ok $user, "Found a user";
 
     my $report = $user->problems->first;
