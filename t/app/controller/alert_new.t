@@ -547,6 +547,187 @@ subtest "Test alerts are not sent for no-text updates" => sub {
     $mech->delete_user($user3);
 };
 
+subtest "Test no marked as confirmed added to alerts" => sub {
+    $mech->delete_user( 'reporter@example.com' );
+    $mech->delete_user( 'alerts@example.com' );
+
+    my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
+    my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
+    my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
+    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
+
+    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
+    my $report_time = '2011-03-01 12:00:00';
+    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+        postcode           => 'EH1 1BB',
+        bodies_str         => '1',
+        areas              => ',11808,135007,14419,134935,2651,20728,',
+        category           => 'Street lighting',
+        title              => 'Testing',
+        detail             => 'Testing Detail',
+        used_map           => 1,
+        name               => $user1->name,
+        anonymous          => 0,
+        state              => 'confirmed',
+        confirmed          => $dt_parser->format_datetime($dt),
+        lastupdate         => $dt_parser->format_datetime($dt),
+        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 1,
+        latitude           => '55.951963',
+        longitude          => '-3.189944',
+        user_id            => $user1->id,
+    } );
+    my $report_id = $report->id;
+    ok $report, "created test report - $report_id";
+
+    my $alert = FixMyStreet::App->model('DB::Alert')->create( {
+        parameter  => $report_id,
+        alert_type => 'new_updates',
+        user       => $user2,
+    } )->confirm;
+    ok $alert, 'created alert for other user';
+
+    my $update = FixMyStreet::App->model('DB::Comment')->create( {
+        problem_id    => $report_id,
+        user_id       => $user3->id,
+        name          => 'Staff User',
+        mark_fixed    => 'false',
+        text          => 'this is update',
+        state         => 'confirmed',
+        problem_state => 'confirmed',
+        confirmed     => $dt->clone->add( hours => 9 ),
+        anonymous     => 'f',
+    } );
+    my $update_id = $update->id;
+    ok $update, "created test update from staff user - $update_id";
+
+    $mech->clear_emails_ok;
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        FixMyStreet::Script::Alerts::send();
+    };
+
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    my $body = $mech->get_text_body_from_email($email);
+    like $body, qr/The following updates have been left on this report:/, 'email is about updates to existing report';
+    like $body, qr/Staff User/, 'Update comes from correct user';
+    unlike $body, qr/State changed to: Open/s, 'no marked as confirmed text';
+
+    $mech->delete_user($user1);
+    $mech->delete_user($user2);
+    $mech->delete_user($user3);
+};
+
+for my $test (
+    {
+        update_text => '',
+        problem_state => 'investigating',
+        expected_text => 'State changed to: Investigating',
+        desc => 'comment changing status included in email',
+    },
+    {
+        update_text => 'Category changed to Potholes',
+        problem_state => '',
+        expected_text => 'Category changed to Potholes',
+        desc => 'comment about category included',
+    },
+    {
+        update_text => 'Category changed to Potholes',
+        problem_state => 'investigating',
+        expected_text => 'Category changed to Potholes.*Investigating',
+        desc => 'comment about category and status change included',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->delete_user( 'reporter@example.com' );
+        $mech->delete_user( 'alerts@example.com' );
+
+        my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
+        my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
+        my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
+        my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
+
+        my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
+        my $report_time = '2011-03-01 12:00:00';
+        my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+            postcode           => 'EH1 1BB',
+            bodies_str         => '1',
+            areas              => ',11808,135007,14419,134935,2651,20728,',
+            category           => 'Street lighting',
+            title              => 'Testing',
+            detail             => 'Testing Detail',
+            used_map           => 1,
+            name               => $user1->name,
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => $dt_parser->format_datetime($dt),
+            lastupdate         => $dt_parser->format_datetime($dt),
+            whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
+            lang               => 'en-gb',
+            service            => '',
+            cobrand            => 'default',
+            cobrand_data       => '',
+            send_questionnaire => 1,
+            latitude           => '55.951963',
+            longitude          => '-3.189944',
+            user_id            => $user1->id,
+        } );
+        my $report_id = $report->id;
+        ok $report, "created test report - $report_id";
+
+        my $alert = FixMyStreet::App->model('DB::Alert')->create( {
+            parameter  => $report_id,
+            alert_type => 'new_updates',
+            user       => $user2,
+        } )->confirm;
+        ok $alert, 'created alert for other user';
+
+        my $update = FixMyStreet::App->model('DB::Comment')->create( {
+            problem_id    => $report_id,
+            user_id       => $user3->id,
+            name          => 'Staff User',
+            mark_fixed    => 'false',
+            text          => $test->{update_text},
+            problem_state => $test->{problem_state},
+            state         => 'confirmed',
+            confirmed     => $dt->clone->add( hours => 9 ),
+            anonymous     => 'f',
+        } );
+        my $update_id = $update->id;
+        ok $update, "created test update from staff user - $update_id";
+
+        $mech->clear_emails_ok;
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            FixMyStreet::Script::Alerts::send();
+        };
+
+        $mech->email_count_is(1);
+        my $expected_text = $test->{expected_text};
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/The following updates have been left on this report:/, 'email is about updates to existing report';
+        like $body, qr/Staff User/, 'Update comes from correct user';
+        like $body, qr/$expected_text/s, 'Expected text present';
+
+        my @urls = $mech->get_link_from_email($email, 1);
+        is $urls[0], "http://www.example.org/report/" . $report_id, "Correct report URL in email";
+
+        $mech->delete_user($user1);
+        $mech->delete_user($user2);
+        $mech->delete_user($user3);
+    };
+}
+
 subtest "Test signature template is used from cobrand" => sub {
     $mech->delete_user( 'reporter@example.com' );
     $mech->delete_user( 'alerts@example.com' );

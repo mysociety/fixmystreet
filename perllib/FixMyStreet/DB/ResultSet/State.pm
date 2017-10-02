@@ -58,7 +58,7 @@ sub fixed { [ $_[0]->_filter(sub { $_->type eq 'fixed' }) ] }
 # This function can be used to return that label's display name.
 
 sub display {
-    my ($rs, $label, $single_fixed) = @_;
+    my ($rs, $label, $single_fixed, $cobrand) = @_;
     my $unchanging = {
         unconfirmed => _("Unconfirmed"),
         hidden => _("Hidden"),
@@ -72,6 +72,10 @@ sub display {
     };
     $label = 'fixed' if $single_fixed && $label =~ /^fixed - (council|user)$/;
     return $unchanging->{$label} if $unchanging->{$label};
+    if ($cobrand && $label eq 'not responsible') {
+        return 'third party responsibility' if $cobrand eq 'bromley';
+        return _("not the council's responsibility");
+    }
     my ($state) = $rs->_filter(sub { $_->label eq $label });
     return $label unless $state;
     $state->name($translate_now->{$label}) if $translate_now->{$label};

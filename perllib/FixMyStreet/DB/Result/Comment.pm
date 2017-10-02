@@ -274,14 +274,9 @@ sub problem_state_display {
         return FixMyStreet::DB->resultset("State")->display('confirmed', 1);
     } elsif ($self->problem_state) {
         my $state = $self->problem_state;
-        if ($state eq 'not responsible') {
-            $update_state = _( "not the council's responsibility" );
-            if ($cobrand eq 'bromley' || $self->problem->to_body_named('Bromley')) {
-                $update_state = 'third party responsibility';
-            }
-        } else {
-            $update_state = FixMyStreet::DB->resultset("State")->display($state, 1);
-        }
+        my $cobrand_name = $cobrand;
+        $cobrand_name = 'bromley' if $self->problem->to_body_named('Bromley');
+        $update_state = FixMyStreet::DB->resultset("State")->display($state, 1, $cobrand_name);
     }
 
     return $update_state;
