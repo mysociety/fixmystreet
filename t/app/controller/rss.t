@@ -1,3 +1,4 @@
+use open ':std', ':locale';
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 
@@ -18,7 +19,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
     bodies_str         => '2651',
     areas              => ',11808,135007,14419,134935,2651,20728,',
     category           => 'Street lighting',
-    title              => 'Testing',
+    title              => '&Test’i<n>g \'☃"',
     detail             => 'Testing Detail',
     used_map           => 1,
     name               => $user1->name,
@@ -44,7 +45,7 @@ FixMyStreet::override_config {
 }, sub {
     $mech->get_ok("/rss/pc/EH11BB/2");
 };
-$mech->content_contains( "Testing, 10th October" );
+$mech->content_contains( "&amp;Test’i&lt;n&gt;g &#39;☃&quot;, 10th October" );
 $mech->content_lacks( 'Nearest road to the pin' );
 is $mech->response->header('Access-Control-Allow-Origin'), '*';
 
@@ -118,7 +119,7 @@ FixMyStreet::override_config {
 }, sub {
     $mech->get_ok("/rss/pc/EH11BB/2");
 };
-$mech->content_contains( "Testing, 10th October" );
+$mech->content_contains( "&amp;Test’i&lt;n&gt;g &#39;☃&quot;, 10th October" );
 $mech->content_contains( '18 North Bridge, Edinburgh' );
 
 $report->delete();

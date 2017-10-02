@@ -6,7 +6,11 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 
 use Try::Tiny;
 use Encode;
-use HTML::Entities;
+use HTML::Entities qw();
+
+sub encode_entities {
+    HTML::Entities::encode_entities($_[0], '\x00-\x1f\x7f<>&"\'');
+}
 
 sub construct_message {
     my %h = @_;

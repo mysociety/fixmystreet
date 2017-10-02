@@ -3,7 +3,7 @@ package FixMyStreet::App::Controller::Rss;
 use Moose;
 use namespace::autoclean;
 use POSIX qw(strftime);
-use HTML::Entities;
+use HTML::Entities qw();
 use URI::Escape;
 use XML::RSS;
 
@@ -27,6 +27,10 @@ Catalyst Controller.
 =head1 METHODS
 
 =cut
+
+sub encode_entities {
+    HTML::Entities::encode_entities($_[0], '\x00-\x1f\x7f<>&"\'');
+}
 
 sub updates : LocalRegex('^(\d+)$') {
     my ( $self, $c ) = @_;
