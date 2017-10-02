@@ -475,7 +475,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     $mech->delete_user($user2);
 };
 
-subtest "Test alerts are correct for no-text updates" => sub {
+subtest "Test alerts are not sent for no-text updates" => sub {
     $mech->delete_user( 'reporter@example.com' );
     $mech->delete_user( 'alerts@example.com' );
 
@@ -540,14 +540,7 @@ subtest "Test alerts are correct for no-text updates" => sub {
         FixMyStreet::Script::Alerts::send();
     };
 
-    $mech->email_count_is(1);
-    my $email = $mech->get_email;
-    my $body = $mech->get_text_body_from_email($email);
-    like $body, qr/The following updates have been left on this report:/, 'email is about updates to existing report';
-    like $body, qr/Staff User/, 'Update comes from correct user';
-
-    my @urls = $mech->get_link_from_email($email, 1);
-    is $urls[0], "http://www.example.org/report/" . $report_id, "Correct report URL in email";
+    $mech->email_count_is(0);
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);
