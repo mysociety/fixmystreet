@@ -430,9 +430,7 @@ LANGUAGES:
   <dd>
     If these parameters are set to a Facebook App's ID and secret, then
     a user will be able to log in using their Facebook account when reporting,
-    updating, or logging in. (The Facebook App's domain should be set to your
-    site's domain, and under advanced settings the OAuth redirect UL should be
-    yourdomain/auth/Facebook)
+    updating, or logging in. <a href="../login/">More details</a>
   </dd>
 
   <dt>
@@ -442,7 +440,7 @@ LANGUAGES:
   <dd>
     If these parameters are set to a Twitter App's key and secret, then
     a user will be able to log in using their Twitter account when reporting,
-    updating, or logging in.
+    updating, or logging in. <a href="../login/">More details</a>
   </dd>
 
   <dt>
@@ -452,6 +450,7 @@ LANGUAGES:
     Set this to 1 if you wish people to be able to use their mobiles as login
     identifiers, receiving confirmation codes by text to report, update or
     login in a similar way to how they receive a link in a confirmation email.
+    <a href="../login/">More details</a>
   </dd>
 
   <dt>

@@ -1183,6 +1183,10 @@ technical information, see
     contain unique <strong>tokens</strong> (these look like runs of random
     letters and numbers).
     <p>
+    If text authentication is switched on, authentication can also be
+    performed by text, sending a numeric code to enter in order to proceed.
+    </p>
+    <p>
       Tokens are typically used to confirm the final part (authorisation) of an
       action, and are therefore often related to a specific <a href="#report"
       class="glossary__link">report</a>. FixMyStreet generally doesn't delete tokens

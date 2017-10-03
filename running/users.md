@@ -142,30 +142,30 @@ have made). Choose the appropriate body from the **Body** dropdown. Normal
 understand how it works. For normal operation, you don't need to worry about
 it.*
 
-By default, FixMyStreet uses email confirmation links to check that the user
-is a genuine person, with access to the email address they have provided.
-There are, of course, other more rigorous ways of identifying people online,
-but so far email remains the most universal and least complex mechanism
-available.
+By default, FixMyStreet uses email confirmation links, text confirmation codes,
+or Facebook/Twitter login tokens, to check that the user is a genuine person,
+with access to the email address/phone number they have provided. Even if
+Facebook/Twitter are used, the site still performs email confirmation.
 
-So FixMyStreet uses the email address as the key piece of information when
-identifying a user. It sends a confirmation link -- with a unique token within
-it -- to the specified email address when an unidentified user performs a task
-that requires authentication, such as submitting a report, or changing their
-password.
+So FixMyStreet uses the email address or phone number as the key piece of
+information when identifying a user. For email authentication, it sends a
+confirmation link -- with a unique token within it -- to the specified email
+address when an unidentified user performs a task that requires authentication,
+such as submitting a report, or changing their password. For phone
+authentication, it sends a confirmation code by text.
 
-Clicking on a valid email confirmation link not only confirms the action it
-was created for (for example, the report is marked as *confirmed*, or the
-password is changed), but also starts a user session. This means that, for the
-remainder of the session, other such actions do not trigger further email
-confirmations. This is an nonintrusive way of authenticating report
-submissions without explicitly using usernames, or accounts, and is a
-deliberate part of FixMyStreet's design.
+Clicking on a valid email confirmation link, or entering a text confirmation
+code, not only confirms the action it was created for (for example, the report
+is marked as *confirmed*, or the password is changed), but also starts a user
+session. This means that, for the remainder of the session, other such actions
+do not trigger further email confirmations. This is an nonintrusive way of
+authenticating report submissions without explicitly using usernames, or
+accounts, and is a deliberate part of FixMyStreet's design.
 
 It *is* nonetheless possible to set a password, and log into FixMyStreet using
 the email address as the identifier. Regular users, of course, use this
 mechanism. When this happens, a user session is created when they log in.
 
-A **sign out** link is shown on FixMyStreet pages once a user session has
+A **sign out** link is shown on a user's account page once a user session has
 begun. Clicking on it ends the session. User sessions are browser sessions:
 they automatically expire when the user's browser shuts down.
