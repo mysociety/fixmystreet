@@ -14,7 +14,7 @@ of the methods from the default Cobrand.
 
 Many of the functions in the Cobrand module are used by FixMyStreet in the UK
 to allow the site to offer versions localised to a single authority and should
-not be needed for most installs. Listed below are the most useful options that
+not be needed for most installs. Listed below are some of the options that
 can be changed:
 
 * language_override
@@ -22,6 +22,29 @@ can be changed:
     Return a language code string from this function if you wish your cobrand
 to always be in a particular language, rather than try and work it out from the
 domain name or the browser’s settings.
+
+* add_response_headers
+
+    Any extra headers you wish to send with your HTTP responses. For example,
+    fixmystreet.com uses this to send a Content-Security-Policy header.
+
+* on_map_default_max_pin_age
+
+    How far back to go by default showing pins on your around map.
+
+* areas_on_around
+
+    If you would like to plot the boundaries of MapIt IDs on an around page
+(not just reports page), you specify them here.
+
+* pin_colour
+
+    This can be used if you wish to specify different pin colours depending upon
+some aspect of the report - its state, category, and so on.
+
+* pin_new_report_colour
+
+    What colour to use for the pin when reporting a new issue.
 
 * geocode_postcode
 
