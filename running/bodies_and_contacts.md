@@ -138,12 +138,15 @@ specify their own send method and details.
 
 ## Deleting contacts
 
-If a contact is no longer valid, you can delete it. Find it on the body's admin
-page, click to edit it, and check **deleted**.
+If a contact is no longer valid, you can delete it or mark it as inactive. Find
+it on the body's admin page, click to edit it, and select **inactive** or
+**deleted**.
 
-This does not remove the contact from the FixMyStreet database (because doing
-so might break any existing problem reports that used it), but it prevents the
-contact from being used for new reports.
+Inactive contacts can still be filtered on map pages, but deleted contacts will
+not appear there at all. Neither sort of contact can be used for new reports.
+
+Deleted contacts are not removed from the FixMyStreet database because doing
+so might break any existing problem reports that used it.
 
 ## Deleting bodies
 
