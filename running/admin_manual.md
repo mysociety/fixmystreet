@@ -272,7 +272,7 @@ one of these <a href="{{ "/glossary/#state" | relative_url }}" class="glossary__
       generally means that the body has not yet attended to the problem. Also,
       this implies that the report is not <em>unconfirmed</em> (see above). <a
       href="{{ "/glossary/#staff-user" | relative_url }}" class="glossary__link">Staff users</a> can set
-      problems to have alternative "open" states:
+      problems to have alternative "open" states, which by default are:
     </p>
     <ul>
       <li>
@@ -285,6 +285,7 @@ one of these <a href="{{ "/glossary/#state" | relative_url }}" class="glossary__
         <em>action scheduled</em>
       </li>
     </ul>
+    <p>This list of states can be edited in the admin interface.</p>
   </dd>
   <dt>
     Fixed
@@ -319,14 +320,15 @@ one of these <a href="{{ "/glossary/#state" | relative_url }}" class="glossary__
       associated with the report's body (or an <a
       href="{{ "/glossary/#administrator" | relative_url }}" class="glossary__link">administrator</a>) can
       mark a report as <em>closed</em> without declaring it to be
-      <em>fixed</em>. Possible states are:
+      <em>fixed</em>. Possible states by default are:
     </p>
     <ul>
-      <li><em>unable to fix</em></li>
+      <li><em>no further action</em></li>
       <li><em>not responsible</em></li>
       <li><em>duplicate</em></li>
       <li><em>internal referral</em></li>
     </ul>
+    <p>This list of states can also be edited in the admin interface.</p>
   </dd>
   <dt>
     Hidden
