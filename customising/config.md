@@ -714,7 +714,6 @@ MAPIT_ID_GENERATION: 4
       <a href="{{ "/customising/geocoder" | relative_url }}">page about geocoding</a>.
     </p>
     <p>
-    <p>
       It's also possible to add a new geocoder (for example, if your
       jurisdiction provides a custom one). This requires some coding work, but
       you can see exampes of <a
