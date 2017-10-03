@@ -25,5 +25,11 @@ example, if your site is available in Welsh and French, you could have
 
 <hr>
 
+As a special case, if you create an `about/homepage.html` template file, then
+it will be used as the front page of your site, and the normal front page will
+instead be available at `/report`.
+
+<hr>
+
 If you wish to do more complex pages, or wish to then we recommend setting up
 e.g. a WordPress installation running at a subdomain of your site.
