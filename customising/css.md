@@ -191,10 +191,21 @@ stylesheet:
     </tr>
     <tr>
         <td>
-            <code>$base_bg</code>
+            <code>$base_bg</code><br>
+            <code>$base_fg</code>
         </td>
         <td>
-            page background (bleeding to edge)
+            Large width page background/foreground (bleeding to edge)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>$map_nav_bg</code><br>
+            <code>$nav_fg</code>
+        </td>
+        <td>
+            Mobile width, the header's colours; large width, the navigation's
+            foreground colour
         </td>
     </tr>
     <tr>
@@ -209,11 +220,10 @@ stylesheet:
     <tr>
         <td>
             <code>$col_click_map</code><br>
-            <code>$col_click_map_dark</code>
         </td>
         <td>
             background of the "click map to report problem" banner on the
-            map page, and its darker underside
+            map page
         </td>
     </tr>
     <tr>
@@ -224,6 +234,14 @@ stylesheet:
         <td>
             background of the colour of the "fixed" label that appears on
             fixed reports, and its darker underside
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>$col_big_numbers</code>
+        </td>
+        <td>
+            Colour to use for the step numbers on the front page.
         </td>
     </tr>
 </table>
@@ -260,7 +278,8 @@ will report it here.
 
 If you look at your site in a browser, you'll see the new colours. Remember
 that every time you edit them, you need to run `bin/make_css` to make
-FixMyStreet include the changes.
+FixMyStreet include the changes, or run `bin/make_css --watch` to have it
+monitor for changes itself.
 
 
 ## Or... use your own CSS and HTML
