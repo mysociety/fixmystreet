@@ -7,7 +7,7 @@ title: Changing the language
 
 <p class="lead">Here we explain how to change what language is displayed on 
 FixMyStreet, how to contribute your own if we don&rsquo;t have yours, and how to
-run a site in multiple languages. <strong>Work in progress.</strong></p>
+run a site in multiple languages.</p>
 
 ## Setup
 
@@ -131,3 +131,10 @@ translation of the FAQ:
 
 For other languages the file should be `faq-<lang>.html`. If there is
 not a translated template it will fall back to `faq.html`.
+
+## Translating body names, categories, and report states
+
+As long as you have set up the <code>LANGUAGES</code> configuration first, you
+will find that in the admin you can give translations for each of body names,
+report categories, and report states. These translations will be used as
+appropriate depending upon the language of the front end.
