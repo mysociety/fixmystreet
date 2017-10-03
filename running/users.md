@@ -14,12 +14,6 @@ managing your users.</p>
 Regular users or staff can benefit from having an account -- they can set a
 password to make future visits to the site easier. But this is not mandatory.
 
-## FixMyStreet users are for the front-end, not the admin
-
-Administrators typically access the admin using htauth credentials, which are entirely separate from FixMyStreet users. Some FixMyStreet installations *do* use the users, but the default version does not.
-
-This means you'd don't normally need to create a user just to use the admin.
-
 ## How users are normally created
 
 You do not need to create users before the system goes live. Public user
@@ -40,6 +34,9 @@ account).
 
 Sometimes it's helpful to manually create a new account for someone --
 typically this is for a staff user (see below).
+
+Firstly if you don't have admin access, you'll want to run the
+`bin/createsuperuser` script to create a user that has access to the admin.
 
 You can create a new user account explicitly using the admin. Go to
 `admin/users` and fill in the form. A confirmation email is not sent to the
@@ -118,21 +115,18 @@ FixMyStreet website).
 ## Staff user accounts (associated with a body)
 
 You can mark any FixMyStreet user as belonging to a body. This marks them as a
-"staff user" for that body. Staff users have extra privileges *which only apply to problem reports under the jurisdiction of the body to which the use belongs*:
-
-* When updating an existing report, most users can only change its status to
-  *Fixed* (or, sometimes, *Open*). But staff users can choose from a range of
-  statuses, for example, *Investigating*, *In progress*, and so on.
-
-* Staff users can access the dashboard (at `/dashboard`) which shows summary
-  statistics for the body to which they belong.
-
-* Staff users can hide abusive reports from public view.
+"staff user" for that body. Staff users have extra privileges *which only apply
+to problem reports under the jurisdiction of the body to which the use
+belongs*. These permissions can be set on a per-user basis.
 
 To set (or revoke) staff user status, choose **Users** in the admin, and enter
 the email or name. (It's also possible to access a user via the reports they
 have made). Choose the appropriate body from the **Body** dropdown. Normal
-(not staff) users have no body associated.
+(not staff) users have no body associated. Then you can assign permissions
+to that user, depending upon what they require access to.
+
+For full details of what staff accounts can do, please see the
+dedicated [staff user](../staff/) page.
 
 <a name="sessions"> </a>
 
