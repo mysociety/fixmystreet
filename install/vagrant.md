@@ -60,7 +60,7 @@ To start the dev server:
     cd fixmystreet
 
     # run the dev server
-    script/fixmystreet_app_server.pl -d -r --fork
+    script/server
 
 The server will now be running and you can visit it at the address
 `http://fixmystreet.127.0.0.1.xip.io:3000/`

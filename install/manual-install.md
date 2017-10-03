@@ -191,7 +191,7 @@ $ commonlib/bin/gettext-makemo FixMyStreet
 The development server can now hopefully be run with:
 
 {% highlight bash %}
-$ script/fixmystreet_app_server.pl -d --fork
+$ script/server
 {% endhighlight %}
 
 The server will be accessible as <http://localhost:3000/>. You can run with -r
