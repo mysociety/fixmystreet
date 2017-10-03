@@ -47,6 +47,7 @@ The following are all the configuration settings that you can change in `conf/ge
 
 * <code><a href="#allowed_cobrands">ALLOWED_COBRANDS</a></code>
 * <code><a href="#rss_limit">RSS_LIMIT</a></code>
+* <code><a href="#open311_limit">OPEN311_LIMIT</a></code>
 * <code><a href="#all_reports_per_page">ALL_REPORTS_PER_PAGE</a></code>
 * <code><a href="#area_links_from_problems">AREA_LINKS_FROM_PROBLEMS</a></code>
 
@@ -70,15 +71,30 @@ The following are all the configuration settings that you can change in `conf/ge
     <code><a href="#smtp_username">SMTP_USERNAME</a></code>,
     and <code><a href="#smtp_password">SMTP_PASSWORD</a></code>
 
+### Login methods, authentication
+
+* Social login: <code><a href="#facebook_app_id">FACEBOOK_APP_ID</a></code>,
+    <code><a href="#facebook_app_secret">FACEBOOK_APP_SECRET</a></code>,
+    <code><a href="#twitter_key">TWITTER_KEY</a></code>, and
+    <code><a href="#twitter_secret">TWITTER_SECRET</a></code>
+* SMS text authentication: <code><a href="#sms_authentication">SMS_AUTHENTICATION</a></code>,
+    <code><a href="#phone_country">PHONE_COUNTRY</a></code>,
+    <code><a href="#twilio_account_sid">TWILIO_ACCOUNT_SID</a></code>,
+    <code><a href="#twilio_auth_token">TWILIO_AUTH_TOKEN</a></code>, and
+    <code><a href="#twilio_from_parameter">TWILIO_FROM_PARAMETER</a></code>
+* <code><a href="#login_required">LOGIN_REQUIRED</a></code>
+* <code><a href="#signups_disabled">SIGNUPS_DISABLED</a></code>
+
 ### Staging site (not production) behaviour
 
 * <code><a href="#staging_site">STAGING_SITE</a></code>
-* <code><a href="#send_reports_on_staging">SEND_REPORTS_ON_STAGING</a></code>
+* <code><a href="#staging_flags">STAGING_FLAGS</a></code>
 
 ### MapIt (admin boundary service)
 
 * <code><a href="#mapit_url">MAPIT_URL</a></code>
 * <code><a href="#mapit_types">MAPIT_TYPES</a></code>
+* <code><a href="#mapit_api_key">MAPIT_API_KEY</a></code>
 * <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
 * <code><a href="#mapit_generation">MAPIT_GENERATION</a></code>
 * <code><a href="#mapit_types_children">MAPIT_TYPES_CHILDREN</a></code>
@@ -93,7 +109,6 @@ The following are all the configuration settings that you can change in `conf/ge
 * <code><a href="#map_type">MAP_TYPE</a></code>
 * <code><a href="#google_maps_api_key">GOOGLE_MAPS_API_KEY</a></code>
 * <code><a href="#bing_maps_api_key">BING_MAPS_API_KEY</a></code>
-
 
 ### Sundry external services
 
@@ -221,7 +236,7 @@ The following are all the configuration settings that you can change in `conf/ge
     <p>
       On a staging site, templates/CSS modified times aren't cached. Staging
       sites also don't send reports to bodies unless explicitly configured to
-      (see <code><a href="#send_reports_on_staging">SEND_REPORTS_ON_STAGING</a></code>)
+      (see <code><a href="#staging_flags">STAGING_FLAGS</a></code>)
       &mdash; this means you can easily test your site without really sending
       emails to the bodies' contacts that may be in your database.
     </p>
@@ -247,28 +262,21 @@ The following are all the configuration settings that you can change in `conf/ge
   </dd>
 
   <dt>
-    <a name="send_reports_on_staging"><code>SEND_REPORTS_ON_STAGING</code></a>
+    <a name="staging_flags"><code>STAGING_FLAGS</code></a>
   </dt>
   <dd>
-    There is a safety mechanism on staging sites (where
-    <code><a href="#staging_site">STAGING_SITE</a></code> is <code>1</code>):
-    your staging site will <a href="{{ "/customising/send_reports" | relative_url }}">send reports</a> to a convenient email
-    address <em>instead of</em> the relevant body's contact address.
-    This is very useful for testing!
     <p>
-     The actual address used will vary on the version of FixMyStreet you're
-     running, because we've recently changed this behaviour:
+      A variety of flags that change the behaviour of a site when
+      <code><a href="#staging_site">STAGING_SITE</a></code> is <code>1</code>.
+      <code>send_reports</code> being set to 0 will
+      <a href="{{ "/customising/send_reports" | relative_url }}">send
+      reports</a> to the reporter <em>instead of</em> the relevant body's
+      contact address; <code>skip_checks</code> will stop cobrands from
+      performing some checks such as the map pin location being within their
+      covered area, which makes testing multiple cobrands much easier;
+      <code>enable_appcache</code> lets you say whether the appcache should be
+      active or not.
     </p>
-    <ul>
-      <li>
-        If you're running version 1.4 or later, the report will be sent to the
-        reporter; that is, the email address you used to confirm the report.
-      </li>
-      <li>
-        If you're running version 1.3 or earlier, then the report will be sent
-        to your site's <code><a href="#contact_email">CONTACT_EMAIL</a></code>.
-      </li>
-    </ul>
     <p>
       Note that this setting is only relevant on a
       <a href="{{ "/glossary/#staging" | relative_url }}" class="glossary__link">staging</a>
@@ -281,17 +289,18 @@ The following are all the configuration settings that you can change in `conf/ge
     </p>
     <div class="more-info">
       <p>Example:</p>
-      <ul class="examples">
-        <li>
-          <code>SEND_REPORTS_ON_STAGING: 0</code>
-          <p>
-            Any reports created will now be sent to the email of the
-            reporter (or, for version 1.3 sites,  the <code><a href="#contact_email">CONTACT_EMAIL</a></code>)
-            and <em>not</em> the body's. Great for testing!
-          </p>
-        </li>
-      </ul>
+<pre>
+STAGING_FLAGS:
+  send_reports: 0
+  skip_checks: 1
+  enable_appcache: 0
+</pre>
     </div>
+          <p>
+            Any reports created will now be sent to the email of the reporter
+            and <em>not</em> the body's; any location checks are skipped, and
+            we won't ever use appcache. Great for testing!
+          </p>
   </dd>
 
   <dt>
@@ -415,8 +424,97 @@ LANGUAGES:
   </dd>
 
   <dt>
-    <a name="mapit_url"><code>MAPIT_URL</code></a> &amp;
-    <a name="mapit_types"><code>MAPIT_TYPES</code></a>
+    <code><a name="facebook_app_id">FACEBOOK_APP_ID</a></code> &amp;
+    <code><a name="facebook_app_secret">FACEBOOK_APP_SECRET</a></code>
+  </dt>
+  <dd>
+    If these parameters are set to a Facebook App's ID and secret, then
+    a user will be able to log in using their Facebook account when reporting,
+    updating, or logging in. (The Facebook App's domain should be set to your
+    site's domain, and under advanced settings the OAuth redirect UL should be
+    yourdomain/auth/Facebook)
+  </dd>
+
+  <dt>
+    <code><a name="twitter_key">TWITTER_KEY</a></code> &amp;
+    <code><a name="twitter_secret">TWITTER_SECRET</a></code>
+  </dt>
+  <dd>
+    If these parameters are set to a Twitter App's key and secret, then
+    a user will be able to log in using their Twitter account when reporting,
+    updating, or logging in.
+  </dd>
+
+  <dt>
+    <code><a name="sms_authentication">SMS_AUTHENTICATION</a></code>
+  </dt>
+  <dd>
+    Set this to 1 if you wish people to be able to use their mobiles as login
+    identifiers, receiving confirmation codes by text to report, update or
+    login in a similar way to how they receive a link in a confirmation email.
+  </dd>
+
+  <dt>
+    <code><a name="phone_country">PHONE_COUNTRY</a></code>
+  </dt>
+  <dd>
+    Set this to the country code of where you are operating the site, so that
+    phone number parsing knows how to deal with national phone numbers entered.
+  </dd>
+
+  <dt>
+    <a name="twilio_account_sid"><code>TWILIO_ACCOUNT_SID</code></a> &amp;
+    <a name="twilio_auth_token"><code>TWILIO_AUTH_TOKEN</code></a>
+  </dt>
+  <dd>
+    These are your Twilio account details to use for sending text messages for
+    report and update verification.
+  </dd>
+
+  <dt>
+    <a name="twilio_from_parameter"><code>TWILIO_FROM_PARAMETER</code></a>
+  </dt>
+  <dd>
+    This is the phone number or alphanumeric string to use as the From of any
+    sent text messages.
+  </dd>
+
+  <dt>
+    <a name="login_required"><code>LOGIN_REQUIRED</code></a>
+  </dt>
+  <dd>
+    If you're running an installation that should only be accessible to logged
+    in people, set this variable.
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <code>LOGIN_REQUIRED: 1</code>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="signups_disabled"><code>SIGNUPS_DISABLED</code></a>
+  </dt>
+  <dd>
+    If you don't want any new people to be able to use the site, only the users
+    you have already created, then set this variable.
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <code>SIGNUPS_DISABLED: 1</code>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="mapit_url"><code>MAPIT_URL</code></a>,
+    <a name="mapit_types"><code>MAPIT_TYPES</code></a>,
+    <a name="mapit_api_key"><code>MAPIT_API_KEY</code></a>
   </dt>
   <dd>
     FixMyStreet uses the external service MapIt to map locations (points) to
@@ -427,6 +525,7 @@ LANGUAGES:
       You must provide the URL of a MapIt server, and nominate what types of
       area from it you want to use. If you leave this blank, a default area
       will be used everywhere (a URL needs to be given for non-web things, like sending of reports, to function). <!-- TODO explain this: function? -->
+      If the MapIt you are using requires an API key, you can provide one.
     </p>
     <p>
       See also <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code> to 
@@ -447,6 +546,7 @@ LANGUAGES:
           In the UK, you probably want, to cover all councils:
           <p><code>
             MAPIT_URL: 'https://mapit.mysociety.org/'<br>
+            MAPIT_API_KEY: '12345'<br>
             MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
           </code></p>
           <p>
@@ -874,6 +974,21 @@ ALLOWED_COBRANDS:
       <ul class="examples">
         <li>
           <code>RSS_LIMIT: '20'</code>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="open311_limit"><code>OPEN311_LIMIT</code></a>
+  </dt>
+  <dd>
+    How many items are returned by default in an Open311 response?
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <code>OPEN311_LIMIT: 100</code>
         </li>
       </ul>
     </div>
