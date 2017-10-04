@@ -50,6 +50,9 @@ my $TEST_MODE = undef;
 sub test_mode {
     my $class = shift;
     $TEST_MODE = shift if scalar @_;
+    # Make sure we don't run on live config
+    # uncoverable branch true
+    die "Do not run tests except through run-tests\n" if $TEST_MODE && $CONF_FILE eq 'general.yml';
     return $TEST_MODE;
 }
 
