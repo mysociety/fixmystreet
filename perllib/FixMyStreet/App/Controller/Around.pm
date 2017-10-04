@@ -373,13 +373,11 @@ sub lookup_by_ref : Private {
         0;
     };
 
-    if ( $count == 0 ) {
-        $c->detach( '/page_error_404_not_found', [] );
-    } elsif ( $count == 1 ) {
-        $c->res->redirect( $c->uri_for( '/report', $problems->first->id ) );
-    } else {
+    if ($count > 1) {
         $c->stash->{ref} = $ref;
         $c->stash->{matching_reports} = [ $problems->all ];
+    } elsif ($count == 1) {
+        $c->res->redirect( $c->uri_for( '/report', $problems->first->id ) );
     }
 }
 

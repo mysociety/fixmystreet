@@ -92,15 +92,22 @@ foreach my $test (
     };
 }
 
-subtest 'check non public reports are not displayed on around page' => sub {
-    my $params = {
-        postcode  => 'EH1 1BB',
-        latitude  => 55.9519637512,
-        longitude => -3.17492254484,
-    };
-    my @edinburgh_problems =
-      $mech->create_problems_for_body( 5, 2651, 'Around page', $params );
+my @edinburgh_problems = $mech->create_problems_for_body( 5, 2651, 'Around page', {
+    postcode  => 'EH1 1BB',
+    latitude  => 55.9519637512,
+    longitude => -3.17492254484,
+});
 
+subtest 'check lookup by reference' => sub {
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => 'ref:12345' } }, 'bad ref');
+    $mech->content_contains('Searching found no reports');
+    my $id = $edinburgh_problems[0]->id;
+    $mech->submit_form_ok( { with_fields => { pc => "ref:$id" } }, 'good ref');
+    is $mech->uri->path, "/report/$id", "redirected to report page";
+};
+
+subtest 'check non public reports are not displayed on around page' => sub {
     $mech->get_ok('/');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],

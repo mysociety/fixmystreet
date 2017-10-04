@@ -1,7 +1,7 @@
 [% pre_container_extra = INCLUDE 'around/postcode_form.html', pc = ref %]
 [% INCLUDE 'header.html', title = loc('Reporting a problem'), bodyclass = 'frontpage fullwidthpage' %]
 
-<div class="tablewrapper">
+[% IF matching_reports %]
   <p>[% loc('We found more than one match for that problem reference:') %]</p>
   <ul class="pc_alternatives">
       [% FOREACH report IN matching_reports %]
@@ -13,6 +13,8 @@
       </li>
       [% END %]
   </ul>
-</div>
+ [% ELSE %]
+  <p>[% loc('Searching found no reports.') %]</p>
+[% END %]
 
 [% INCLUDE 'footer.html' %]
