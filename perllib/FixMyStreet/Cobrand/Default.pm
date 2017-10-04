@@ -7,7 +7,6 @@ use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Geocode::Bing;
 use DateTime;
-use Encode;
 use List::MoreUtils 'none';
 use URI;
 use Digest::MD5 qw(md5_hex);
@@ -897,9 +896,8 @@ sub _fallback_body_sender {
 };
 
 sub example_places {
-    my $e = FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
-    $e = [ map { Encode::decode('UTF-8', $_) } @$e ];
-    return $e;
+    # uncoverable branch true
+    FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
 }
 
 =head2 title_list
