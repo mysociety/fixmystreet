@@ -6,6 +6,7 @@
           using confirmation by phone text.
         - Improved email/phone management in your profile.
         - Area summary statistics page in admin #1834
+        - Allow multiple wards to be shown on reports page
     - Bugfixes
         - Shortlist menu item always remains a link #1855
         - Fix encoded entities in RSS output. #1859

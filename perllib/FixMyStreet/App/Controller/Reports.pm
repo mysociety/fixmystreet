@@ -131,9 +131,10 @@ sub ward : Path : Args(2) {
 
     $c->forward('/auth/get_csrf_token');
 
+    my @wards = split /\|/, $ward || "";
     $c->forward( 'body_check', [ $body ] );
-    $c->forward( 'ward_check', [ $ward ] )
-        if $ward;
+    $c->forward( 'ward_check', [ @wards ] )
+        if @wards;
     $c->forward( 'check_canonical_url', [ $body ] );
     $c->forward( 'stash_report_filter_status' );
     $c->forward( 'load_and_group_problems' );
@@ -166,7 +167,7 @@ sub ward : Path : Args(2) {
     my %map_params = (
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
         longitude => @$pins ? $pins->[0]{longitude} : 0,
-        area      => $c->stash->{ward} ? $c->stash->{ward}->{id} : [ keys %{$c->stash->{body}->areas} ],
+        area      => [ $c->stash->{wards} ? map { $_->{id} } @{$c->stash->{wards}} : keys %{$c->stash->{body}->areas} ],
         any_zoom  => 1,
     );
     FixMyStreet::Map::display_map(
@@ -176,7 +177,7 @@ sub ward : Path : Args(2) {
     $c->cobrand->tweak_all_reports_map( $c );
 
     # List of wards
-    if ( !$c->stash->{ward} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
+    if ( !$c->stash->{wards} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
         my $children = mySociety::MaPit::call('area/children', [ $c->stash->{body}->body_areas->first->area_id ],
             type => $c->cobrand->area_types_children,
         );
@@ -343,18 +344,20 @@ sub body_check : Private {
 
 =head2 ward_check
 
-This action checks the ward name from a URI exists and is part of the right
+This action checks the ward names from a URI exists and are part of the right
 parent, already found with body_check. It either stores the ward Area if
 okay, or redirects to the body page if bad.
 
 =cut
 
 sub ward_check : Private {
-    my ( $self, $c, $ward ) = @_;
+    my ( $self, $c, @wards ) = @_;
 
-    $ward =~ s/\+/ /g;
-    $ward =~ s/\.html//;
-    $ward =~ s{_}{/}g;
+    foreach (@wards) {
+        s/\+/ /g;
+        s/\.html//;
+        s{_}{/}g;
+    }
 
     # Could be from RSS area, or body...
     my $parent_id;
@@ -366,15 +369,20 @@ sub ward_check : Private {
         $parent_id = $c->stash->{area}->{id};
     }
 
-    my $qw = mySociety::MaPit::call('areas', $ward,
+    my $qw = mySociety::MaPit::call('area/children', [ $parent_id ],
         type => $c->cobrand->area_types_children,
     );
+    my %names = map { $_ => 1 } @wards;
+    my @areas;
     foreach my $area (sort { $a->{name} cmp $b->{name} } values %$qw) {
-        if ($area->{parent_area} == $parent_id) {
-            $c->stash->{ward} = $area;
-            return;
-        }
+        push @areas, $area if $names{$area->{name}};
     }
+    if (@areas) {
+        $c->stash->{ward} = $areas[0] if @areas == 1;
+        $c->stash->{wards} = \@areas;
+        return;
+    }
+
     # Given a false ward name
     $c->stash->{body} = $c->stash->{area}
         unless $c->stash->{body};
@@ -448,8 +456,10 @@ sub load_and_group_problems : Private {
 
     my $problems = $c->cobrand->problems;
 
-    if ($c->stash->{ward}) {
-        $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
+    if ($c->stash->{wards}) {
+        $where->{areas} = [
+            map { { 'like', '%,' . $_->{id} . ',%' } } @{$c->stash->{wards}}
+        ];
         $problems = $problems->to_body($c->stash->{body});
     } elsif ($c->stash->{body}) {
         $problems = $problems->to_body($c->stash->{body});
@@ -510,8 +520,8 @@ sub redirect_body : Private {
     $url   .= "/rss" if $c->stash->{rss};
     $url   .= '/reports';
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{body} );
-    $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
-        if $c->stash->{ward};
+    $url   .= '/' . join('|', map { $c->cobrand->short_name($_) } @{$c->stash->{wards}})
+        if $c->stash->{wards};
     $c->res->redirect( $c->uri_for($url, $c->req->params ) );
 }
 

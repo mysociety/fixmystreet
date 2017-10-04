@@ -81,10 +81,6 @@ sub dispatch_request {
             $self->output({2226 => {parent_area => undef, id => 2226, name => "Gloucestershire County Council", type => "CTY"}});
         } elsif ($areas eq 'Cheltenham') {
             $self->output({2326 => {parent_area => undef, id => 2326, name => "Cheltenham Borough Council", type => "DIS"}});
-        } elsif ($areas eq 'Lansdown and Park') {
-            $self->output({22261 => {parent_area => 2226, id => 22261, name => "Lansdown and Park", type => "CED"}});
-        } elsif ($areas eq 'Lansdown') {
-            $self->output({23261 => {parent_area => 2326, id => 23261, name => "Lansdown", type => "DIW"}});
         } elsif ($areas eq 'UTA') {
             $self->output({2650 => {parent_area => undef, id => 2650, name => "Aberdeen Council", type => "UTA"}});
         }
@@ -104,6 +100,18 @@ sub dispatch_request {
 
     sub (GET + /area/*/children) {
         my ($self, $area) = @_;
+        if ($area eq '2514') {
+            return $self->output({
+                8794 => {parent_area => 2514, id => 8794, name => "Aston", type => "MTW"},
+                8773 => {parent_area => 2514, id => 8773, name => "Bournville", type => "MTW"},
+            });
+        }
+        if ($area eq '2326') {
+            return $self->output({23261 => {parent_area => 2326, id => 23261, name => "Lansdown", type => "DIW"}});
+        }
+        if ($area eq '2226') {
+            return $self->output({22261 => {parent_area => 2226, id => 22261, name => "Lansdown and Park", type => "CED"}});
+        }
         my $response = {
             "60705" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 60705, "codes" => { "ons" => "00HY226", "gss" => "E04011842", "unit_id" => "17101" }, "name" => "Trowbridge", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },
             "62883" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 62883, "codes" => { "ons" => "00HY026", "gss" => "E04011642", "unit_id" => "17205" }, "name" => "Bradford-on-Avon", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },

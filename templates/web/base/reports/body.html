@@ -42,7 +42,12 @@
         [% ward.name %]
     </h1>
     <a href="[% body_url %]">[% body.name %]</a>
-    [% ELSE %]
+  [% ELSIF wards %]
+    <h1 id="reports_heading">
+    [% FOREACH w IN wards %][% w.name %][% IF NOT loop.last %], [% END %][% END %]
+    </h1>
+    <a href="[% body_url %]">[% body.name %]</a>
+  [% ELSE %]
     <h1 id="reports_heading">
         [% body.name %]
     </h1>
