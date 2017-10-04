@@ -13,6 +13,11 @@ has json => (
 sub dispatch_request {
     my $self = shift;
 
+    sub (GET + /reverse + ?*) {
+        my ($self) = @_;
+        return [ 200, [ 'Content-Type' => 'text/xml' ], [ '<result></result>' ] ];
+    },
+
     sub (GET + /search + ?q=) {
         my ($self, $q) = @_;
         my $response = $self->query($q);

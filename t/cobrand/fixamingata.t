@@ -1,13 +1,10 @@
-use Test::MockModule;
-
 use mySociety::Locale;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
-# Closest road reverse geocode mock
-my $resolver = Test::MockModule->new('LWP::Simple');
-$resolver->mock('get', sub($) { "<result></result>" });
+use t::Mock::Nominatim;
+LWP::Protocol::PSGI->register(t::Mock::Nominatim->to_psgi_app, host => 'nominatim.openstreetmap.org');
 
 # Front page test
 
@@ -103,6 +100,9 @@ subtest "Test ajax decimal points" => sub {
         $mech->get_ok('/ajax/lookup_location?term=12345');
         # We want an actual decimal point in a JSON response...
         $mech->content_contains('51.5');
+
+        $mech->get_ok('/ajax/lookup_location?term=high+street');
+        $mech->content_contains('Edinburgh');
     };
 };
 
