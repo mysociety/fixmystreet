@@ -45,19 +45,19 @@ and sets up the token/etc to deal with the response.
 =cut
 
 sub sign_in : Private {
-    my ( $self, $c, $phone ) = @_;
+    my ( $self, $c, $parsed ) = @_;
 
-    unless ($phone) {
+    unless ($parsed->{phone}) {
         $c->stash->{username_error} = 'other_phone';
         return;
     }
 
-    unless ($phone->is_mobile) {
+    unless ($parsed->{may_be_mobile}) {
         $c->stash->{username_error} = 'nonmobile';
         return;
     }
 
-    (my $number = $phone->format) =~ s/\s+//g;
+    (my $number = $parsed->{phone}->format) =~ s/\s+//g;
 
     if ( FixMyStreet->config('SIGNUPS_DISABLED')
          && !$c->model('DB::User')->find({ phone => $number })

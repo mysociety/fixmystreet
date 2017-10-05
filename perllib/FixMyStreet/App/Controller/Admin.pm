@@ -797,6 +797,19 @@ sub reports : Path('reports') {
 
 }
 
+sub update_user : Private {
+    my ($self, $c, $object) = @_;
+    my $parsed = FixMyStreet::SMS->parse_username($c->get_param('username'));
+    if ($parsed->{email} || ($parsed->{phone} && $parsed->{may_be_mobile})) {
+        my $user = $c->model('DB::User')->find_or_create({ $parsed->{type} => $parsed->{username} });
+        if ($user->id && $user->id != $object->user->id) {
+            $object->user( $user );
+            return 1;
+        }
+    }
+    return 0;
+}
+
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
@@ -901,14 +914,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->set_inflated_columns(\%columns);
 
         $c->forward( '/admin/report_edit_category', [ $problem ] );
-
-        my $parsed = FixMyStreet::SMS->parse_username($c->get_param('username'));
-        if ($parsed->{email} || ($parsed->{phone} && $parsed->{phone}->is_mobile)) {
-            my $user = $c->model('DB::User')->find_or_create({ $parsed->{type} => $parsed->{username} });
-            if ($user->id && $user->id != $problem->user->id) {
-                $problem->user( $user );
-            }
-        }
+        $c->forward('update_user', [ $problem ]);
 
         # Deal with photos
         my $remove_photo_param = $self->_get_remove_photo_param($c);
@@ -1256,14 +1262,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         $update->anonymous( $c->get_param('anonymous') );
         $update->state( $new_state );
 
-        my $parsed = FixMyStreet::SMS->parse_username($c->get_param('username'));
-        if ($parsed->{email} || ($parsed->{phone} && $parsed->{phone}->is_mobile)) {
-            my $user = $c->model('DB::User')->find_or_create({ $parsed->{type} => $parsed->{username} });
-            if ($user->id && $user->id != $update->user->id) {
-                $edited = 1;
-                $update->user( $user );
-            }
-        }
+        $edited = 1 if $c->forward('update_user', [ $update ]);
 
         if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
             $update->confirmed( \'current_timestamp' );
@@ -1303,6 +1302,18 @@ sub update_edit : Path('update_edit') : Args(1) {
     return 1;
 }
 
+sub phone_check : Private {
+    my ($self, $c, $phone) = @_;
+    my $parsed = FixMyStreet::SMS->parse_username($phone);
+    if ($parsed->{phone} && $parsed->{may_be_mobile}) {
+        return $parsed->{username};
+    } elsif ($parsed->{phone}) {
+        $c->stash->{field_errors}->{phone} = _('Please enter a mobile number');
+    } else {
+        $c->stash->{field_errors}->{phone} = _('Please check your phone number is correct');
+    }
+}
+
 sub user_add : Path('user_edit') : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -1334,14 +1345,8 @@ sub user_add : Path('user_edit') : Args(0) {
     }
 
     if ($phone_v) {
-        my $parsed = FixMyStreet::SMS->parse_username($phone);
-        if ($parsed->{phone} && $parsed->{phone}->is_mobile) {
-            $phone = $parsed->{username};
-        } elsif ($parsed->{phone}) {
-            $c->stash->{field_errors}->{phone} = _('Please enter a mobile number');
-        } else {
-            $c->stash->{field_errors}->{phone} = _('Please check your phone number is correct');
-        }
+        my $parsed_phone = $c->forward('phone_check', [ $phone ]);
+        $phone = $parsed_phone if $parsed_phone;
     }
 
     my $existing_email = $email_v && $c->model('DB::User')->find( { email => $email } );
@@ -1422,14 +1427,8 @@ sub user_edit : Path('user_edit') : Args(1) {
         }
 
         if ($phone_v) {
-            my $parsed = FixMyStreet::SMS->parse_username($phone);
-            if ($parsed->{phone} && $parsed->{phone}->is_mobile) {
-                $phone = $parsed->{username};
-            } elsif ($parsed->{phone}) {
-                $c->stash->{field_errors}->{phone} = _('Please enter a mobile number');
-            } else {
-                $c->stash->{field_errors}->{phone} = _('Please check your phone number is correct');
-            }
+            my $parsed_phone = $c->forward('phone_check', [ $phone ]);
+            $phone = $parsed_phone if $parsed_phone;
         }
 
         unless ($user->name) {

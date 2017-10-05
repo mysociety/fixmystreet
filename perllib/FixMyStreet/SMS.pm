@@ -94,15 +94,19 @@ sub parse_username {
         }
     };
 
+    my $may_be_mobile = 0;
     if ($phone) {
         $type = 'phone';
         # Store phone without spaces
         ($username = $phone->format) =~ s/\s+//g;
+        # Is this mobile definitely or possibly a mobile? (+1 numbers)
+        $may_be_mobile = 1 if $phone->is_mobile || (!defined $phone->is_mobile && $phone->is_geographic);
     }
 
     return {
         type => $type,
         phone => $phone,
+        may_be_mobile => $may_be_mobile,
         username => $username,
     };
 }

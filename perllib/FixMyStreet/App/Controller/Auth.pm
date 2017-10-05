@@ -119,7 +119,7 @@ sub code_sign_in : Private {
     my $parsed = FixMyStreet::SMS->parse_username($username);
 
     if ($parsed->{type} eq 'phone' && FixMyStreet->config('SMS_AUTHENTICATION')) {
-        $c->forward('phone/sign_in', [ $parsed->{phone} ]);
+        $c->forward('phone/sign_in', [ $parsed ]);
     } else {
         $c->forward('email_sign_in', [ $parsed->{username} ]);
     }
