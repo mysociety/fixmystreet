@@ -8,6 +8,7 @@ use FixMyStreet::Map;
 use Encode;
 use JSON::MaybeXS;
 use Utils;
+use Try::Tiny;
 
 =head1 NAME
 
@@ -366,9 +367,15 @@ sub lookup_by_ref : Private {
         external_id => $ref
     ]);
 
-    if ( $problems->count == 0) {
+    my $count = try {
+        $problems->count;
+    } catch {
+        0;
+    };
+
+    if ( $count == 0 ) {
         $c->detach( '/page_error_404_not_found', [] );
-    } elsif ( $problems->count == 1 ) {
+    } elsif ( $count == 1 ) {
         $c->res->redirect( $c->uri_for( '/report', $problems->first->id ) );
     } else {
         $c->stash->{ref} = $ref;
