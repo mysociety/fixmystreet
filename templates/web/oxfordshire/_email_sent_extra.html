@@ -1,1 +1,2 @@
-[% INCLUDE '_response_time.html' problem=report %]
+[% DEFAULT problem = report %]
+[% IF problem %][% INCLUDE '_response_time.html' %][% END %]
