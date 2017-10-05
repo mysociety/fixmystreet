@@ -118,14 +118,14 @@ sub change_phone : Path('/auth/change_phone') {
     # If we've not used a mobile and we're not specifically verifying,
     # and phone isn't our only verified way of logging in,
     # then allow change of number (for e.g. landline).
-    if (!FixMyStreet->config('SMS_AUTHENTICATION') || (!$parsed->{phone}->is_mobile && !$c->stash->{verifying} && $c->user->email_verified)) {
+    if (!FixMyStreet->config('SMS_AUTHENTICATION') || (!$parsed->{may_be_mobile} && !$c->stash->{verifying} && $c->user->email_verified)) {
         $c->user->update({ phone => $phone, phone_verified => 0 });
         $c->flash->{flash_message} = _('You have successfully added your phone number.');
         $c->res->redirect('/my');
         $c->detach;
     }
 
-    $c->forward('/auth/phone/sign_in', [ $parsed->{phone} ]);
+    $c->forward('/auth/phone/sign_in', [ $parsed ]);
 }
 
 sub verify_item : Path('/auth/verify') : Args(1) {
