@@ -513,6 +513,40 @@ subtest "Test alerts are not sent for no-text updates" => sub {
     my $report_id = $report->id;
     ok $report, "created test report - $report_id";
 
+    my $report2 = FixMyStreet::App->model('DB::Problem')->create( {
+        postcode           => 'EH1 1BB',
+        bodies_str         => '1',
+        areas              => ',11808,135007,14419,134935,2651,20728,',
+        category           => 'Street lighting',
+        title              => 'Testing',
+        detail             => 'Testing Detail',
+        used_map           => 1,
+        name               => $user1->name,
+        anonymous          => 0,
+        state              => 'fixed - user',
+        confirmed          => $dt_parser->format_datetime($dt),
+        lastupdate         => $dt_parser->format_datetime($dt),
+        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 1,
+        latitude           => '55.951963',
+        longitude          => '-3.189944',
+        user_id            => $user1->id,
+    } );
+    my $report2_id = $report2->id;
+    ok $report2, "created test report - $report2_id";
+
+    # Must be first
+    my $alert2 = FixMyStreet::App->model('DB::Alert')->create( {
+        parameter  => $report2_id,
+        alert_type => 'new_updates',
+        user       => $user2,
+    } )->confirm;
+    ok $alert2, 'created alert for other user';
+
     my $alert = FixMyStreet::App->model('DB::Alert')->create( {
         parameter  => $report_id,
         alert_type => 'new_updates',
@@ -533,6 +567,19 @@ subtest "Test alerts are not sent for no-text updates" => sub {
     my $update_id = $update->id;
     ok $update, "created test update from staff user - $update_id";
 
+    my $update2 = FixMyStreet::App->model('DB::Comment')->create( {
+        problem_id    => $report2_id,
+        user_id       => $user3->id,
+        name          => 'Staff User',
+        mark_fixed    => 'false',
+        text          => 'This is a normal update',
+        state         => 'confirmed',
+        confirmed     => $dt->clone->add( hours => 9 ),
+        anonymous     => 'f',
+    } );
+    my $update2_id = $update2->id;
+    ok $update2, "created test update from staff user - $update2_id";
+
     $mech->clear_emails_ok;
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
@@ -540,7 +587,7 @@ subtest "Test alerts are not sent for no-text updates" => sub {
         FixMyStreet::Script::Alerts::send();
     };
 
-    $mech->email_count_is(0);
+    $mech->email_count_is(1);
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);

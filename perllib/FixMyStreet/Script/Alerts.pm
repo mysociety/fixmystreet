@@ -88,6 +88,24 @@ sub send() {
                 alert_id  => $row->{alert_id},
                 parameter => $row->{item_id},
             } );
+
+            # this is currently only for new_updates
+            if (defined($row->{item_text})) {
+                # this might throw up the odd false positive but only in cases where the
+                # state has changed and there was already update text
+                if ($row->{item_problem_state} &&
+                    !( $last_problem_state eq '' && $row->{item_problem_state} eq 'confirmed' ) &&
+                    $last_problem_state ne $row->{item_problem_state}
+                ) {
+                    my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand);
+
+                    my $update = _('State changed to:') . ' ' . $state;
+                    $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
+                                                            $update;
+                }
+                next unless $row->{item_text};
+            }
+
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 $last_problem_state = '';
                 _send_aggregated_alert_email(%data);
@@ -106,19 +124,6 @@ sub send() {
             my $url = $cobrand->base_url_for_report($row);
             # this is currently only for new_updates
             if (defined($row->{item_text})) {
-                # this might throw up the odd false positive but only in cases where the
-                # state has changed and there was already update text
-                if ($row->{item_problem_state} &&
-                    !( $last_problem_state eq '' && $row->{item_problem_state} eq 'confirmed' ) &&
-                    $last_problem_state ne $row->{item_problem_state}
-                ) {
-                    my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand);
-
-                    my $update = _('State changed to:') . ' ' . $state;
-                    $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
-                                                            $update;
-                }
-                next unless $row->{item_text};
                 if ( $cobrand->moniker ne 'zurich' && $row->{alert_user_id} == $row->{user_id} ) {
                     # This is an alert to the same user who made the report - make this a login link
                     # Don't bother with Zurich which has no accounts
