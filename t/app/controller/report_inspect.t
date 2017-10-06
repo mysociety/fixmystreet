@@ -148,6 +148,67 @@ FixMyStreet::override_config {
         $report2->update;
     };
 
+    subtest "can mark a report as duplicate without supplying a duplicate and a public update" => sub {
+        my $old_state = $report->state;
+        $report->comments->delete_all;
+
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', include_update => "0" } });
+
+        $mech->content_contains('provide a duplicate ID', "error message about missing duplicate id");
+        $report->discard_changes;
+        $report2->discard_changes;
+
+        is $report->state, $old_state, 'report not marked as duplicate';
+        is $report->comments->search({ problem_state => 'duplicate' })->count, 0, 'no update marking report as duplicate was left';
+
+        is $report->get_extra_metadata('duplicate_of'), undef;
+
+        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', public_update => 'This is a duplicate', include_update => "1" } });
+        $mech->content_lacks('provide a duplicate ID', "no error message about missing duplicate id");
+        $report->discard_changes;
+        $report2->discard_changes;
+
+        is $report->state, 'duplicate', 'report marked as duplicate';
+        is $report->comments->search({ problem_state => 'duplicate' })->count, 1, 'update marking report as duplicate was left';
+        is $report->get_extra_metadata('duplicate_of'), undef;
+        is_deeply $report2->get_extra_metadata('duplicates'), undef;
+
+        $report->update({ state => $old_state });
+    };
+
+    subtest "can mark a report as duplicate without supplying a public update and a duplicate id" => sub {
+        my $old_state = $report->state;
+        $report->comments->delete_all;
+
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', include_update => "0" } });
+
+        $mech->content_contains('provide a duplicate ID', "error message about missing duplicate id");
+        $report->discard_changes;
+        $report2->discard_changes;
+
+        is $report->state, $old_state, 'report not marked as duplicate';
+        is $report->comments->search({ problem_state => 'duplicate' })->count, 0, 'no update marking report as duplicate was left';
+
+        is $report->get_extra_metadata('duplicate_of'), undef;
+
+        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', duplicate_of => $report2->id, include_update => "0" } });
+        $mech->content_lacks('provide a duplicate ID', "no error message about missing duplicate id");
+        $report->discard_changes;
+        $report2->discard_changes;
+
+        is $report->state, 'duplicate', 'report marked as duplicate';
+        is $report->comments->search({ problem_state => 'duplicate' })->count, 1, 'update marking report as duplicate was left';
+        is $report->get_extra_metadata('duplicate_of'), $report2->id;
+        is_deeply $report2->get_extra_metadata('duplicates'), [ $report->id ];
+
+        $report->set_extra_metadata('duplicate_of', undef);
+        $report->update({ state => $old_state });
+        $report2->set_extra_metadata('duplicates', undef);
+        $report2->update;
+    };
+
     subtest "marking a report as a duplicate with update correctly sets update status" => sub {
         my $old_state = $report->state;
         $report->comments->delete_all;

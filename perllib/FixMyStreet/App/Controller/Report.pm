@@ -377,15 +377,15 @@ sub inspect : Private {
             if ( $problem->state eq 'hidden' ) {
                 $problem->get_photoset->delete_cached;
             }
-            if ( $problem->state eq 'duplicate' && $old_state ne 'duplicate' ) {
-                # If the report is being closed as duplicate, make sure the
-                # update records this.
-                $update_params{problem_state} = "duplicate";
-            }
-            if ( $problem->state ne 'duplicate' ) {
+            if ( $problem->state eq 'duplicate') {
+                if (my $duplicate_of = $c->get_param('duplicate_of')) {
+                    $problem->set_duplicate_of($duplicate_of);
+                } elsif (not $c->get_param('public_update')) {
+                    $valid = 0;
+                    push @{ $c->stash->{errors} }, _('Please provide a duplicate ID or public update for this report.');
+                }
+            } else {
                 $problem->unset_extra_metadata('duplicate_of');
-            } elsif (my $duplicate_of = $c->get_param('duplicate_of')) {
-                $problem->set_duplicate_of($duplicate_of);
             }
 
             if ( $problem->state ne $old_state ) {
