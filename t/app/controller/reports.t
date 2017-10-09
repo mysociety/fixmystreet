@@ -114,6 +114,18 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->submit_form_ok( { with_fields => { body => $body_edin_id } }, 'Submitted dropdown okay' );
+    is $mech->uri->path, '/reports/City+of+Edinburgh+Council';
+
+    subtest "test ward pages" => sub {
+        $mech->get_ok('/reports/Birmingham/Bad-Ward');
+        is $mech->uri->path, '/reports/Birmingham+City+Council';
+        $mech->get_ok('/reports/Birmingham/Aston');
+        is $mech->uri->path, '/reports/Birmingham+City+Council/Aston';
+        $mech->get_ok('/reports/Birmingham/Aston|Bournville');
+        is $mech->uri->path, '/reports/Birmingham+City+Council/Aston%7CBournville';
+        $mech->content_contains('Aston, Bournville');
+    };
+
     $mech->get_ok('/reports/Westminster');
 };
 
