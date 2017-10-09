@@ -720,6 +720,14 @@ body.authpage {
     margin-bottom: 0;
 }
 
+#loading-indicator {
+  height: 64px;
+  width: 64px;
+  background-color: rgba(0, 0, 0, 0.7);
+  // Reset the base left, as zoom buttons now elsewhere
+  left: 0.5em;
+}
+
 .big-green-banner {
   top: auto;
   margin: (-1em/1.375) (-1em/1.375) 0 (-1em/1.375);

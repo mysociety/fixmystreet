@@ -1626,24 +1626,6 @@ html.js #map .noscript {
   }
 }
 
-// Loading indicator
-
-#loading-indicator {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: #000;
-  opacity: 0.4;
-  text-align: center;
-
-  img {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-}
-
 .big-green-banner {
   position: relative;
   top: -1.75em;
@@ -1783,6 +1765,23 @@ a:hover.rap-notes-trigger {
   body {
     height: 100%;
     overflow: hidden;
+  }
+}
+
+#loading-indicator {
+  height: 32px;
+  width: 32px;
+  position: relative;
+  background-color: #333;
+  border-radius: 0.25em;
+  padding: 0.25em;
+  // Offset from top same as fms_pan_zoom, from left so as not
+  // to appear on top of zoom buttons (0.5em, 36px, 0.5em)
+  top: 0.5em;
+  left: 3.25em;
+  .map-reporting & {
+    // Same as fms_pan_zoom above, leaving space for the top bar when reporting
+    top: 2.75em;
   }
 }
 
