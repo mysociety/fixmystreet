@@ -659,7 +659,7 @@ $.extend(fixmystreet.set_up, {
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
-        if (fixmystreet.page === 'report' || fixmystreet.page === 'reports') {
+        if (fixmystreet.page !== 'around') {
             $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" class="expand" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
         }
     }
