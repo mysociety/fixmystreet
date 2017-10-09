@@ -1,0 +1,13 @@
+[% IF username_error;
+    # other keys include fqdn, mxcheck if you'd like to write a custom error message
+    errors = {
+        nonmobile = loc('Please enter a mobile number'),
+        sms_failed = tprintf(loc('Sending a confirmation text failed: "%s"'), sms_error),
+        missing_phone = loc('Please enter your phone number'),
+        other_phone = loc('Please check your phone number is correct'),
+        missing_email = loc('Please enter your email'),
+        other_email = loc('Please check your email address is correct')
+    };
+    default = "other_$default";
+    errors.$username_error || errors.$default;
+END ~%]

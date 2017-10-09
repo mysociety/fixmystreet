@@ -90,6 +90,12 @@ sub send_token : Private {
     my ( $self, $c, $token_data, $token_scope, $to ) = @_;
 
     my $result = FixMyStreet::SMS->send_token($token_data, $token_scope, $to);
+    if ($result->{error}) {
+        $c->log->debug("Failure sending text containing code *$result->{random}*");
+        $c->stash->{sms_error} = $result->{error};
+        $c->stash->{username_error} = 'sms_failed';
+        return;
+    }
     $c->stash->{token} = $result->{token};
     $c->log->debug("Sending text containing code *$result->{random}*");
     $c->stash->{template} = 'auth/smsform.html';
