@@ -211,6 +211,7 @@ PHONE_COUNTRY: ''
 TWILIO_ACCOUNT_SID: ''
 TWILIO_AUTH_TOKEN: ''
 TWILIO_FROM_PARAMETER: ''
+TWILIO_MESSAGING_SERVICE_SID: ''
 
 # If you want to hide all pages from non-logged-in users, set this to 1.
 LOGIN_REQUIRED: 0

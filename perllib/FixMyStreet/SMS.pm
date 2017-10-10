@@ -28,6 +28,11 @@ has from => (
     default => sub { FixMyStreet->config('TWILIO_FROM_PARAMETER') },
 );
 
+has messaging_service => (
+    is => 'lazy',
+    default => sub { FixMyStreet->config('TWILIO_MESSAGING_SERVICE_SID') },
+);
+
 sub send_token {
     my ($class, $token_data, $token_scope, $to) = @_;
 
@@ -51,7 +56,8 @@ sub send_token {
 sub send {
     my ($self, %params) = @_;
     my $output = $self->twilio->POST('Messages.json', 
-        From => $self->from,
+        $self->from ? (From => $self->from) : (),
+        $self->messaging_service ? (MessagingServiceSid => $self->messaging_service) : (),
         To => $params{to},
         Body => $params{body},
     );
