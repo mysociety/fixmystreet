@@ -1114,18 +1114,8 @@ sub send_problem_confirm_text : Private {
 sub confirm_by_text : Path('text') {
     my ( $self, $c ) = @_;
 
-    my $token = $c->stash->{token} = $c->get_param('token');
-    my $code = $c->get_param('code') || '';
-
-    my $data = $c->stash->{token_data} = $c->forward('/auth/get_token', [ $token, 'problem' ]) || return;
-    if ($data->{code} ne $code) {
-        $c->stash->{template} = 'auth/smsform.html';
-        $c->stash->{submit_url} = '/report/new/text';
-        $c->stash->{incorrect_code} = 1;
-        return;
-    }
-
-    $c->detach('process_confirmation');
+    $c->stash->{submit_url} = '/report/new/text';
+    $c->forward('/auth/phone/code', [ 'problem', '/report/new/process_confirmation' ]);
 }
 
 sub process_confirmation : Private {

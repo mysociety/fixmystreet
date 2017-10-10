@@ -23,17 +23,19 @@ Handle the submission of a code sent by text to a mobile number.
 =cut
 
 sub code : Path('') {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $scope, $success_action ) = @_;
     $c->stash->{template} = 'auth/smsform.html';
+    $scope ||= 'phone_sign_in';
+    $success_action ||= '/auth/process_login';
 
     my $token = $c->stash->{token} = $c->get_param('token');
     my $code = $c->get_param('code') || '';
 
-    my $data = $c->forward('/auth/get_token', [ $token, 'phone_sign_in' ]) || return;
+    my $data = $c->stash->{token_data} = $c->forward('/auth/get_token', [ $token, $scope ]) || return;
 
     $c->stash->{incorrect_code} = 1, return if $data->{code} ne $code;
 
-    $c->detach( '/auth/process_login', [ $data, 'phone' ] );
+    $c->detach( $success_action, [ $data, 'phone' ] );
 }
 
 =head2 sign_in
