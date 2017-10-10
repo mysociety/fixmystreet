@@ -1362,9 +1362,13 @@ sub redirect_or_confirm_creation : Private {
                 to => [ [ $report->user->email, $report->name ] ],
             } );
         }
-        if ($c->user_exists && $c->user->has_body_permission_to('planned_reports')) {
+        # If the user has shortlist permission, and either we're not on a
+        # council cobrand or the just-created problem is owned by the cobrand
+        # (so we'll stay on-cobrand), redirect to the problem.
+        if ($c->user_exists && $c->user->has_body_permission_to('planned_reports') &&
+            (!$c->cobrand->is_council || $c->cobrand->owns_problem($report))) {
             $c->log->info($report->user->id . ' is an inspector - redirecting straight to report page for ' . $report->id);
-            $c->res->redirect( '/report/'. $report->id );
+            $c->res->redirect( $report->url );
         } else {
             $c->log->info($report->user->id . ' was logged in, showing confirmation page for ' . $report->id);
             $c->stash->{created_report} = 'loggedin';
