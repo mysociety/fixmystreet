@@ -55,7 +55,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 </tr>
 [% INCLUDE with_cobrand value="MAP_TYPE" cob=c.cobrand.map_type %]
 [% INCLUDE with_cobrand value="EXAMPLE_PLACES"
-    conf = decode(c.config.EXAMPLE_PLACES.join(', '))
+    conf = c.config.EXAMPLE_PLACES.join(', ')
     cob = c.cobrand.example_places %]
 [% INCLUDE with_cobrand value="LANGUAGES"
     cob = c.cobrand.languages %]

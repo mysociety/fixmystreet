@@ -73,18 +73,19 @@ sub cache {
     my $cache_file = $cache_dir->child(md5_hex($url));
     my $js;
     if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
-        $js = $cache_file->slurp;
+        # uncoverable statement
+        $js = $cache_file->slurp_utf8;
     } else {
         $url .= '&' . $args if $args;
         $ua->timeout(15);
         $js = LWP::Simple::get($url);
-        $js = encode_utf8($js) if utf8::is_utf8($js);
         $cache_dir->mkpath;
         if ($js && (!$re || $js !~ $re) && !FixMyStreet->config('STAGING_SITE')) {
-            $cache_file->spew($js);
+            # uncoverable statement
+            $cache_file->spew_utf8($js);
         }
     }
-    $js = JSON->new->utf8->allow_nonref->decode($js) if $js;
+    $js = JSON->new->allow_nonref->decode($js) if $js;
     return $js;
 }
 

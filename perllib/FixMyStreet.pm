@@ -12,7 +12,7 @@ use Sub::Override;
 
 use mySociety::Config;
 
-my $CONF_FILE = $ENV{FMS_OVERRIDE_CONFIG} || 'general';
+my $CONF_FILE = $ENV{FMS_OVERRIDE_CONFIG} || 'general.yml';
 
 # load the config file and store the contents in a readonly hash
 mySociety::Config::set_file( __PACKAGE__->path_to("conf/${CONF_FILE}") );
@@ -50,6 +50,9 @@ my $TEST_MODE = undef;
 sub test_mode {
     my $class = shift;
     $TEST_MODE = shift if scalar @_;
+    # Make sure we don't run on live config
+    # uncoverable branch true
+    die "Do not run tests except through run-tests\n" if $TEST_MODE && $CONF_FILE eq 'general.yml';
     return $TEST_MODE;
 }
 
@@ -105,8 +108,7 @@ sub override_config($&) {
             my ($class, $key) = @_;
             return { %CONFIG, %$config } unless $key;
             return $config->{$key} if exists $config->{$key};
-            my $orig_config = mySociety::Config::load_default();
-            return $orig_config->{$key} if exists $orig_config->{$key};
+            return $CONFIG{$key} if exists $CONFIG{$key};
         }
     );
 

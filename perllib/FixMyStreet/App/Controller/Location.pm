@@ -96,7 +96,6 @@ sub determine_location_from_pc : Private {
     if ( ref($error) eq 'ARRAY' ) {
         foreach (@$error) {
             my $a = $_->{address};
-            $a = decode_utf8($a) if !utf8::is_utf8($a);
             $a =~ s/, United Kingdom//;
             $a =~ s/, UK//;
             $_->{address} = $a;

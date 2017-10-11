@@ -994,7 +994,6 @@ sub _admin_send_email {
 
     my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
     my $sender_name = $c->cobrand->contact_name;
-    utf8::decode($sender_name) unless utf8::is_utf8($sender_name);
 
     $c->send_email( $template, {
         to => [ $to ],
