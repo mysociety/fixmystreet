@@ -20,6 +20,10 @@ sub dispatch_request {
 
     sub (POST + /2010-04-01/Accounts/*/Messages.json + %*) {
         my ($self, $sid, $data) = @_;
+        if ($data->{To} eq '+18165550101') {
+            return [ 400, [ 'Content-Type' => 'application/json' ],
+                [ '{"code":"21408", "message": "Unable to send"}' ] ];
+        }
         push @{$self->texts}, $data;
         return [ 200, [ 'Content-Type' => 'application/json' ], [ '{}' ] ];
     },

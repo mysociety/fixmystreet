@@ -36,20 +36,7 @@
       <div id="js-social-email-hide">
 [% END %]
 
-            [% IF username_error;
-
-                # other keys include fqdn, mxcheck if you'd like to write a custom error message
-
-                errors = {
-                    nonmobile = loc('Please enter a mobile number'),
-                    missing_email = loc('Please enter your email'),
-                    other_email = loc('Please check your email address is correct')
-                    missing_phone = loc('Please enter your phone number'),
-                    other_phone = loc('Please check your phone number is correct')
-                };
-
-                loc_username_error = errors.$username_error || errors.other_email;
-            END %]
+        [% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
 
 [% IF c.config.SMS_AUTHENTICATION %]
     [% SET username_label = loc('Your email or mobile') %]

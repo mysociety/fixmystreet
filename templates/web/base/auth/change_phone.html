@@ -25,14 +25,8 @@ END
     <input type="hidden" name="token" value="[% csrf_token %]">
 
     <fieldset>
-    [% IF username_error;
-        errors = {
-            nonmobile = loc('Please enter a mobile number'),
-            missing_phone = loc('Please enter your phone number'),
-            other_phone = loc('Please check your phone number is correct')
-        };
-        loc_username_error = errors.$username_error || errors.other_phone;
-    %]
+    [% loc_username_error = INCLUDE 'auth/_username_error.html' default='phone' %]
+    [% IF loc_username_error  %]
     <div class="form-error">[% loc_username_error %]</div>
     [% END %]
 
