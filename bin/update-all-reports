@@ -16,16 +16,18 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
+use FixMyStreet::DB;
 use FixMyStreet::Script::UpdateAllReports;
-use File::Path ();
-use File::Slurp;
+use Path::Tiny;
 use Getopt::Long::Descriptive;
 use JSON::MaybeXS;
 
 my ($opt, $usage) = describe_options(
     '%c %o',
     [ 'table', "Output JSON for old table-style page." ],
-    [ 'areas', "Include area IDs in output JSON." ],
+    [ 'body=i', "Restrict results to a particular body (dashboard-style)." ],
+    [ 'all-bodies', "Generate set of results for all bodies." ],
+    [ 'areas', "Include area IDs in output JSON (table-style)." ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
 print($usage->text), exit if $opt->help;
@@ -33,12 +35,26 @@ print($usage->text), exit if $opt->help;
 my ($data, $filename);
 if ($opt->table) {
     $data = FixMyStreet::Script::UpdateAllReports::generate($opt->areas);
-    $filename = 'all-reports.json';
+    output('all-reports', $data);
+} elsif ($opt->all_bodies) {
+    my $bodies = FixMyStreet::DB->resultset("Body")->search({ deleted => 0 });
+    while (my $body = $bodies->next) {
+        my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard($body->id);
+        output("all-reports-dashboard-" . $body->id, $data);
+    }
+} elsif (my $body_id = $opt->body) {
+    my $body = FixMyStreet::DB->resultset("Body")->find({ id => $body_id });
+    die "Could not find body $body_id" unless $body;
+    $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard($body);
+    output("all-reports-dashboard-$body_id", $data);
 } else {
     $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
-    $filename = 'all-reports-dashboard.json';
+    output("all-reports-dashboard", $data);
 }
 
-my $json = encode_json($data);
-File::Path::mkpath(FixMyStreet->path_to('../data/')->stringify);
-File::Slurp::write_file(FixMyStreet->path_to("../data/$filename")->stringify, \$json);
+sub output {
+    my ($filename, $data) = @_;
+    my $json = encode_json($data);
+    path(FixMyStreet->path_to('../data/'))->mkpath;
+    path(FixMyStreet->path_to("../data/$filename.json"))->spew_utf8($json);
+}
