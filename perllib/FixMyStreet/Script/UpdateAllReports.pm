@@ -6,9 +6,6 @@ use warnings;
 use FixMyStreet;
 use FixMyStreet::DB;
 
-use File::Path ();
-use File::Slurp;
-use JSON::MaybeXS;
 use List::MoreUtils qw(zip);
 use List::Util qw(sum);
 
@@ -81,13 +78,10 @@ sub generate {
         }
     }
 
-    my $body = encode_json( {
+    return {
         fixed => \%fixed,
         open  => \%open,
-    } );
-
-    File::Path::mkpath( FixMyStreet->path_to( '../data/' )->stringify );
-    File::Slurp::write_file( FixMyStreet->path_to( '../data/all-reports.json' )->stringify, \$body );
+    };
 }
 
 sub end_period {
@@ -247,9 +241,7 @@ sub generate_dashboard {
     }
     $data{other_categories} = $last_seven_days;
 
-    my $body = encode_json( \%data );
-    File::Path::mkpath( FixMyStreet->path_to( '../data/' )->stringify );
-    File::Slurp::write_file( FixMyStreet->path_to( '../data/all-reports-dashboard.json' )->stringify, \$body );
+    return \%data;
 }
 
 sub stuff_by_day_or_year {

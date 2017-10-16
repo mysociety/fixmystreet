@@ -2,9 +2,9 @@ package FixMyStreet::App::Controller::Reports;
 use Moose;
 use namespace::autoclean;
 
-use File::Slurp;
 use JSON::MaybeXS;
 use List::MoreUtils qw(any);
+use Path::Tiny;
 use POSIX qw(strcoll);
 use RABX;
 use mySociety::MaPit;
@@ -83,16 +83,15 @@ sub index : Path : Args(0) {
     $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
 
     my $dashboard = eval {
-        my $data = File::Slurp::read_file(
-            FixMyStreet->path_to( '../data/all-reports-dashboard.json' )->stringify
-        );
-        $c->stash(decode_json($data));
+        my $data = FixMyStreet->config('TEST_DASHBOARD_DATA');
+        unless ($data) {
+            $data = decode_json(path(FixMyStreet->path_to('../data/all-reports-dashboard.json'))->slurp_utf8);
+        }
+        $c->stash($data);
         return 1;
     };
     my $table = eval {
-        my $data = File::Slurp::read_file(
-            FixMyStreet->path_to( '../data/all-reports.json' )->stringify
-        );
+        my $data = path(FixMyStreet->path_to('../data/all-reports.json'))->slurp_utf8;
         $c->stash(decode_json($data));
         return 1;
     };

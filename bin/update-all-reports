@@ -17,7 +17,10 @@ BEGIN {
 }
 
 use FixMyStreet::Script::UpdateAllReports;
+use File::Path ();
+use File::Slurp;
 use Getopt::Long::Descriptive;
+use JSON::MaybeXS;
 
 my ($opt, $usage) = describe_options(
     '%c %o',
@@ -27,8 +30,15 @@ my ($opt, $usage) = describe_options(
 );
 print($usage->text), exit if $opt->help;
 
+my ($data, $filename);
 if ($opt->table) {
-    FixMyStreet::Script::UpdateAllReports::generate($opt->areas);
+    $data = FixMyStreet::Script::UpdateAllReports::generate($opt->areas);
+    $filename = 'all-reports.json';
 } else {
-    FixMyStreet::Script::UpdateAllReports::generate_dashboard();
+    $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
+    $filename = 'all-reports-dashboard.json';
 }
+
+my $json = encode_json($data);
+File::Path::mkpath(FixMyStreet->path_to('../data/')->stringify);
+File::Slurp::write_file(FixMyStreet->path_to("../data/$filename")->stringify, \$json);
