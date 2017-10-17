@@ -69,39 +69,52 @@ sub index : Path : Args(0) {
         }
     }
 
-    # Fetch all bodies
-    my @bodies = $c->model('DB::Body')->search({
-        deleted => 0,
-    }, {
-        '+select' => [ { count => 'area_id' } ],
-        '+as' => [ 'area_count' ],
-        join => 'body_areas',
-        distinct => 1,
-    })->all;
-    @bodies = sort { strcoll($a->name, $b->name) } @bodies;
-    $c->stash->{bodies} = \@bodies;
-    $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
-
     my $dashboard = eval {
         my $data = FixMyStreet->config('TEST_DASHBOARD_DATA');
         unless ($data) {
-            $data = decode_json(path(FixMyStreet->path_to('../data/all-reports-dashboard.json'))->slurp_utf8);
+            my $fn = '../data/all-reports-dashboard';
+            if ($c->stash->{body}) {
+                $fn .= '-' . $c->stash->{body}->id;
+            }
+            $data = decode_json(path(FixMyStreet->path_to($fn . '.json'))->slurp_utf8);
         }
         $c->stash($data);
         return 1;
     };
-    my $table = eval {
+    my $table = !$c->stash->{body} && eval {
         my $data = path(FixMyStreet->path_to('../data/all-reports.json'))->slurp_utf8;
         $c->stash(decode_json($data));
         return 1;
     };
     if (!$dashboard && !$table) {
+        $c->detach('/page_error_404_not_found') if $c->stash->{body};
+
         my $message = _("There was a problem showing the All Reports page. Please try again later.");
         if ($c->config->{STAGING_SITE}) {
             $message .= '</p><p>Perhaps the bin/update-all-reports script needs running. Use: bin/update-all-reports</p><p>'
                 . sprintf(_('The error was: %s'), $@);
         }
         $c->detach('/page_error_500_internal_error', [ $message ]);
+    }
+
+    if ($c->stash->{body}) {
+        my $children = $c->stash->{body}->first_area_children;
+        unless ($children->{error}) {
+            $c->stash->{children} = $children;
+        }
+    } else {
+        # Fetch all bodies
+        my @bodies = $c->model('DB::Body')->search({
+            deleted => 0,
+        }, {
+            '+select' => [ { count => 'area_id' } ],
+            '+as' => [ 'area_count' ],
+            join => 'body_areas',
+            distinct => 1,
+        })->all;
+        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+        $c->stash->{bodies} = \@bodies;
+        $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
     }
 
     # Down here so that error pages aren't cached.
@@ -132,6 +145,19 @@ sub ward : Path : Args(2) {
 
     my @wards = split /\|/, $ward || "";
     $c->forward( 'body_check', [ $body ] );
+
+    my $body_short = $c->cobrand->short_name( $c->stash->{body} );
+    $c->stash->{body_url} = '/reports/' . $body_short;
+
+    if ($ward && $ward eq 'summary') {
+        if (my $actual_ward = $c->get_param('ward')) {
+            $ward = $c->cobrand->short_name({ name => $actual_ward });
+            $c->res->redirect($ward);
+            $c->detach;
+        }
+        $c->go('index');
+    }
+
     $c->forward( 'ward_check', [ @wards ] )
         if @wards;
     $c->forward( 'check_canonical_url', [ $body ] );
@@ -142,12 +168,9 @@ sub ward : Path : Args(2) {
         $c->detach('ajax', [ 'reports/_problem-list.html' ]);
     }
 
-    my $body_short = $c->cobrand->short_name( $c->stash->{body} );
     $c->stash->{rss_url} = '/rss/reports/' . $body_short;
     $c->stash->{rss_url} .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
         if $c->stash->{ward};
-
-    $c->stash->{body_url} = '/reports/' . $body_short;
 
     $c->stash->{stats} = $c->cobrand->get_report_stats();
 
@@ -177,9 +200,7 @@ sub ward : Path : Args(2) {
 
     # List of wards
     if ( !$c->stash->{wards} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
-        my $children = mySociety::MaPit::call('area/children', [ $c->stash->{body}->body_areas->first->area_id ],
-            type => $c->cobrand->area_types_children,
-        );
+        my $children = $c->stash->{body}->first_area_children;
         unless ($children->{error}) {
             foreach (values %$children) {
                 $_->{url} = $c->uri_for( $c->stash->{body_url}
