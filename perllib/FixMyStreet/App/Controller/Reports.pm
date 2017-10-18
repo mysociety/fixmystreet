@@ -71,6 +71,7 @@ sub index : Path : Args(0) {
 
     my $dashboard = eval {
         my $data = FixMyStreet->config('TEST_DASHBOARD_DATA');
+        # uncoverable branch true
         unless ($data) {
             my $fn = '../data/all-reports-dashboard';
             if ($c->stash->{body}) {
@@ -155,6 +156,7 @@ sub ward : Path : Args(2) {
             $c->res->redirect($ward);
             $c->detach;
         }
+        $c->cobrand->call_hook('council_dashboard_hook');
         $c->go('index');
     }
 
@@ -330,17 +332,35 @@ sub body_check : Private {
     # Oslo/ kommunes sharing a name in Norway
     return if $c->cobrand->reports_body_check( $c, $q_body );
 
+    my $body = $c->forward('body_find', [ $q_body ]);
+    if ($body) {
+        $c->stash->{body} = $body;
+        return;
+    }
+
+    # No result, bad body name.
+    $c->detach( 'redirect_index' );
+}
+
+=head2
+
+Given a string, try and find a body starting with/matching that string.
+Returns the matching body object if found.
+
+=cut
+
+sub body_find : Private {
+    my ($self, $c, $q_body) = @_;
+
     # We must now have a string to check
     my @bodies = $c->model('DB::Body')->search( { name => { -like => "$q_body%" } } )->all;
 
     if (@bodies == 1) {
-        $c->stash->{body} = $bodies[0];
-        return;
+        return $bodies[0];
     } else {
         foreach (@bodies) {
             if (lc($_->name) eq lc($q_body) || $_->name =~ /^\Q$q_body\E (Borough|City|District|County) Council$/i) {
-                $c->stash->{body} = $_;
-                return;
+                return $_;
             }
         }
     }
@@ -353,13 +373,9 @@ sub body_check : Private {
 
     if (@translations == 1) {
         if ( my $body = $c->model('DB::Body')->find( { id => $translations[0]->object_id } ) ) {
-            $c->stash->{body} = $body;
-            return;
+            return $body;
         }
     }
-
-    # No result, bad body name.
-    $c->detach( 'redirect_index' );
 }
 
 =head2 ward_check

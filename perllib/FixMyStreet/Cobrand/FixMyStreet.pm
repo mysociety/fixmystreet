@@ -1,6 +1,9 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
 
+use strict;
+use warnings;
+
 use mySociety::Random;
 
 use constant COUNCIL_ID_BROMLEY => 2482;
@@ -62,5 +65,98 @@ sub extra_contact_validation {
     return %errors;
 }
 
-1;
+=head2 council_dashboard_hook
 
+This is for council-specific dashboard pages, which can only be seen by
+superusers and logged-in users with an email domain matching a body name.
+
+=cut
+
+sub council_dashboard_hook {
+    my $self = shift;
+    my $c = $self->{c};
+
+    unless ( $c->user_exists ) {
+        $c->res->redirect('/about/council-dashboard');
+        $c->detach;
+    }
+
+    return if $c->user->is_superuser;
+
+    my $body = $c->user->from_body || _user_to_body($c);
+    if ($body) {
+        # Matching URL and user's email body
+        return if $body->id eq $c->stash->{body}->id;
+
+        # Matched /a/ body, redirect to its summary page
+        $c->stash->{body} = $body;
+        $c->stash->{wards} = [ { name => 'summary' } ];
+        $c->detach('/reports/redirect_body');
+    }
+
+    $c->res->redirect('/about/council-dashboard');
+}
+
+sub _user_to_body {
+    my $c = shift;
+    my $email = lc $c->user->email;
+    return _email_to_body($c, $email);
+}
+
+sub _email_to_body {
+    my ($c, $email) = @_;
+    my ($domain) = $email =~ m{ @ (.*) \z }x;
+
+    my @data = eval { FixMyStreet->path_to('../data/fixmystreet-councils.csv')->slurp };
+    my $body;
+    foreach (@data) {
+        chomp;
+        my ($d, $b) = split /\|/;
+        if ($d eq $domain) {
+            $body = $b;
+            last;
+        }
+    }
+    # If we didn't find a lookup entry, default to the first part of the domain
+    unless ($body) {
+        $domain =~ s/\.gov\.uk$//;
+        $body = ucfirst $domain;
+    }
+
+    $body = $c->forward('/reports/body_find', [ $body ]);
+    return $body;
+}
+
+sub about_hook {
+    my $self = shift;
+    my $c = $self->{c};
+
+    if ($c->stash->{template} eq 'about/council-dashboard.html') {
+        $c->stash->{form_name} = $c->get_param('name') || '';
+        $c->stash->{email} = $c->get_param('username') || '';
+        if ($c->user_exists) {
+            my $body = _user_to_body($c);
+            if ($body) {
+                $c->stash->{body} = $body;
+                $c->stash->{wards} = [ { name => 'summary' } ];
+                $c->detach('/reports/redirect_body');
+            }
+        }
+        if (my $email = $c->get_param('username')) {
+            $email = lc $email;
+            $email =~ s/\s+//g;
+            my $body = _email_to_body($c, $email);
+            if ($body) {
+                # Send confirmation email (hopefully)
+                $c->stash->{template} = 'auth/general.html';
+                $c->detach('/auth/general');
+            } else {
+                $c->stash->{no_body_found} = 1;
+                $c->set_param('em', $email); # What the contact form wants
+                $c->detach('/contact/submit');
+            }
+        }
+    }
+}
+
+1;
