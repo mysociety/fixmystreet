@@ -7,17 +7,17 @@
         "4": { "id": 4, "name": "South Ward" }
     },
     "category_options": [
-        "Abandoned vehicles",
-        "Grafitti",
-        "Potholes",
-        "Street lighting",
-        "Trees",
-        "Other"
+        { "name": "Abandoned vehicles", "value": "Abandoned vehicles" },
+        { "name": "Grafitti", "value": "Grafitti" },
+        { "name": "Potholes", "value": "Potholes" },
+        { "name": "Street lighting", "value": "Street lighting" },
+        { "name": "Trees", "value": "Trees" },
+        { "name": "Other", "value": "Other" }
     ],
     "counts_all": {
         "wtd": {
             "total": 10,
-            "planned": 2,
+            "action scheduled": 2,
             "in progress": 1,
             "investigating": 1,
             "fixed - council": 3,
@@ -28,7 +28,7 @@
         },
         "week": {
             "total": 21,
-            "planned": 5,
+            "action scheduled": 5,
             "in progress": 3,
             "investigating": 4,
             "fixed - council": 6,
@@ -39,7 +39,7 @@
         },
         "weeks": {
             "total": 57,
-            "planned": 5,
+            "action scheduled": 5,
             "in progress": 16,
             "investigating": 4,
             "fixed - council": 23,
@@ -50,7 +50,7 @@
         },
         "ytd": {
             "total": 171,
-            "planned": 23,
+            "action scheduled": 23,
             "in progress": 34,
             "investigating": 9,
             "fixed - council": 72,
@@ -63,7 +63,7 @@
     "counts_some": {
         "wtd": {
             "total": 5,
-            "planned": 0,
+            "action scheduled": 0,
             "in progress": 1,
             "investigating": 1,
             "fixed - council": 2,
@@ -74,7 +74,7 @@
         },
         "week": {
             "total": 7,
-            "planned": 1,
+            "action scheduled": 1,
             "in progress": 2,
             "investigating": 1,
             "fixed - council": 2,
@@ -85,7 +85,7 @@
         },
         "weeks": {
             "total": 57,
-            "planned": 5,
+            "action scheduled": 5,
             "in progress": 16,
             "investigating": 4,
             "fixed - council": 23,
@@ -96,7 +96,7 @@
         },
         "ytd": {
             "total": 57,
-            "planned": 5,
+            "action scheduled": 5,
             "in progress": 16,
             "investigating": 4,
             "fixed - council": 23,
