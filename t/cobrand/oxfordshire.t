@@ -107,6 +107,7 @@ subtest 'Exor file looks okay' => sub {
         foreach my $problem (@problems) {
             $problem->update({ state => 'action scheduled', external_id => $i });
             $problem->update({ defect_type => $dt }) if $i == 123;
+            $problem->set_extra_metadata(traffic_information => 'Signs and Cones') if $i == 124;
             $problem->update({ defect_type => $dt2 }) if $i == 124;
             FixMyStreet::DB->resultset('AdminLog')->create({
                 admin_user => $inspector->name,
@@ -129,19 +130,19 @@ subtest 'Exor file looks okay' => sub {
 "1,1.8,1.0.0.0,ENHN,"
 "G,1989169,,,XX,170505,1600,D,INS,N,,,,"
 "H,FC"
-"I,FC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","123 ""
+"I,FC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","123 XX TM0 ""
 "J,SFP1,2,,,434970,209683,,,,,"
 "M,resolve,,,/CFC,,"
 "P,0,999999"
 "G,1989169,,,XX,170505,1600,D,INS,N,,,,"
 "H,MC"
-"I,MC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","125 ""
+"I,MC,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","125 XX TM0 ""
 "J,SFP2,2,,,434970,209683,,,,,"
 "M,resolve,,,/CMC,,"
 "P,0,999999"
 "G,1989169,,,XX,170505,1600,D,INS,N,,,,"
 "H,S"
-"I,S,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM none","124 ""
+"I,S,,XXX,"434970E 209683N Nearest postcode: OX28 4DS.",1200,,,,,,,,"TM Signs and Cones","124 XX TM1 ""
 "J,ACC2,2,,,434970,209683,,,,,"
 "M,resolve,,,/CSI,,"
 "P,0,999999"

@@ -46,6 +46,9 @@ sub construct {
         time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone
     );
 
+    my $tmo = $cobrand->traffic_management_options;
+    my %tm_lookup = map { $tmo->[$_] => $_ + 1 } 0..$#$tmo;
+
     my $missed_cutoff = $now - DateTime::Duration->new( hours => 24 );
     my %params = (
         -and => [
@@ -102,7 +105,7 @@ sub construct {
     my $i = 0;
     foreach my $inspector_id (keys %$inspectors) {
         my $inspections = $inspectors->{$inspector_id};
-        my $initials = $inspector_initials->{$inspector_id};
+        my $initials = $inspector_initials->{$inspector_id} || "XX";
 
         my %body_by_activity_code;
         foreach my $report (@$inspections) {
@@ -116,13 +119,17 @@ sub construct {
                 $location .= " Nearest postcode: $closest_address->{postcode}{postcode}." if $closest_address->{postcode};
             }
 
-            my $description = sprintf("%s %s", $report->external_id || "", $report->get_extra_metadata('detailed_information') || "");
+            my $traffic_information = $report->get_extra_metadata('traffic_information') || 'none';
+            my $description = sprintf("%s %s %s %s",
+                $report->external_id || "",
+                $initials,
+                'TM' . ($tm_lookup{$traffic_information} || '0'),
+                $report->get_extra_metadata('detailed_information') || "");
+            # Maximum length of 180 characters total
+            $description = substr($description, 0, 180);
             my $activity_code = $report->defect_type ?
                 $report->defect_type->get_extra_metadata('activity_code')
                 : 'MC';
-            my $traffic_information = $report->get_extra_metadata('traffic_information') ?
-                'TM ' . $report->get_extra_metadata('traffic_information')
-                : 'TM none';
             $body_by_activity_code{$activity_code} ||= [];
 
             $csv->add_row($body_by_activity_code{$activity_code},
@@ -133,7 +140,7 @@ sub construct {
                 $location, # defect location field, which we don't capture from inspectors
                 $report->inspection_log_entry->whenedited->strftime("%H%M"), # defect time raised
                 "","","","","","","", # empty fields
-                $traffic_information,
+                "TM $traffic_information",
                 $description, # defect description
             );
 
@@ -169,7 +176,7 @@ sub construct {
                 "G", # start of an area/sequence
                 $link_id, # area/link id, fixed value for our purposes
                 "","", # must be empty
-                $initials || "XX", # inspector initials
+                $initials, # inspector initials
                 $self->inspection_date->strftime("%y%m%d"), # date of inspection yymmdd
                 "1600", # time of inspection hhmm, set to static value for now
                 "D", # inspection variant, should always be D

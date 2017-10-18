@@ -447,36 +447,36 @@ foreach my $test (
                 button => 'save',
                 with_fields => {
                     include_update => 0,
-                    detailed_information => 'XXX172XXX' . 'x' x 163,
+                    detailed_information => 'XXX164XXX' . 'x' x (164-9)
                 }
             });
 
             $report->discard_changes;
-            like $report->get_extra_metadata('detailed_information'), qr/XXX172XXX/, 'detailed information saved';
-            $mech->content_lacks('limited to 172 characters', "172 charcters of detailed information ok");
-            $mech->content_contains('XXX172XXX', "Detailed information field contains submitted text");
+            like $report->get_extra_metadata('detailed_information'), qr/XXX164XXX/, 'detailed information saved';
+            $mech->content_lacks('limited to 164 characters', "164 charcters of detailed information ok");
+            $mech->content_contains('XXX164XXX', "Detailed information field contains submitted text");
 
             $mech->submit_form_ok({
                 button => 'save',
                 with_fields => {
                     include_update => 0,
-                    detailed_information => 'XXX173XXX' . 'x' x 164,
+                    detailed_information => 'XXX165XXX' . 'x' x (164-8)
                 }
             });
             if ($test->{limited}) {
-                $mech->content_contains('172 characters maximum');
-                $mech->content_contains('limited to 172 characters', "173 charcters of detailed information not ok");
-                $mech->content_contains('XXX173XXX', "Detailed information field contains submitted text");
+                $mech->content_contains('164 characters maximum');
+                $mech->content_contains('limited to 164 characters', "165 charcters of detailed information not ok");
+                $mech->content_contains('XXX165XXX', "Detailed information field contains submitted text");
 
                 $report->discard_changes;
-                like $report->get_extra_metadata('detailed_information'), qr/XXX172XXX/, 'detailed information not saved';
+                like $report->get_extra_metadata('detailed_information'), qr/XXX164XXX/, 'detailed information not saved';
             } else {
                 $mech->content_lacks(' characters maximum');
-                $mech->content_lacks('limited to 172 characters', "173 charcters of detailed information ok");
-                $mech->content_contains('XXX173XXX', "Detailed information field contains submitted text");
+                $mech->content_lacks('limited to 164 characters', "165 charcters of detailed information ok");
+                $mech->content_contains('XXX165XXX', "Detailed information field contains submitted text");
 
                 $report->discard_changes;
-                like $report->get_extra_metadata('detailed_information'), qr/XXX173XXX/, 'detailed information saved';
+                like $report->get_extra_metadata('detailed_information'), qr/XXX165XXX/, 'detailed information saved';
             }
         };
     };
@@ -559,7 +559,7 @@ FixMyStreet::override_config {
           public_update => '',
           priority => $rp->id,
           include_update => '1',
-          detailed_information => 'XXX172XXXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+          detailed_information => 'XXX164XXXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
           defect_type => '',
           traffic_information => ''
         };
