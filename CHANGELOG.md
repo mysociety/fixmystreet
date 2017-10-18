@@ -21,6 +21,7 @@
       - Inspector panel shows nearest address if available #1850
       - Return a 200 rather than 404 for ref ID lookup.
       - Public report page shows state changes made in admin interface #1846
+      - Remove hidden from default staff state dropdown. #1878
       - Marking an item as a duplicate enforces providing duplicate id or
         a public update #1873
 
