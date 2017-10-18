@@ -1,13 +1,9 @@
-[% IF c.user_exists %]
-    [% DEFAULT permissions = c.user.permissions(c, problem.bodies_str) %]
-[%- END %]
-
 <a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
     class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
 
 <div class="problem-header clearfix" data-lastupdate="[% problem.lastupdate %]">
 
-[% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) %]
+[% IF permissions.planned_reports %]
 <form method="post" action="/my/planned/change" id="planned_form" class="hidden-label-target">
     <input type="hidden" name="id" value="[% problem.id %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
@@ -124,16 +120,12 @@
     </form>
   [% END %]
 
-  [% IF
-      (permissions.moderate)
-     OR
-       (c.user.has_permission_to('planned_reports', problem.bodies_str_ids))
-  %]
+  [% IF permissions.moderate OR permissions.planned_reports %]
     <div class="moderate-display segmented-control" role="menu">
       [% IF permissions.moderate %]
         <a class="js-moderate btn" role="menuitem" aria-label="[% loc('Moderate this report') %]">[% loc('Moderate') %]</a>
       [% END %]
-      [% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) %]
+      [% IF permissions.planned_reports %]
           [%~ IF c.user.is_planned_report(problem) ~%]
             <label class="btn btn--shortlisted" for="shortlist-report" role="menuitem" aria-label="[% loc('Remove from shortlist') %]">[% loc('Shortlisted') %]</label>
           [%~ ELSE ~%]

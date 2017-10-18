@@ -21,10 +21,7 @@ data to change.
 (Authentication requires:
 
   - user to be from_body
-  - user to have a "moderate" record in user_body_permissions (there is
-        currently no admin interface for this.  Should be added, but
-        while we're trialing this, it's a simple case of adding a DB record
-        manually)
+  - user to have a "moderate" record in user_body_permissions
 
 The original data of the report is stored in moderation_original_data, so
 that it can be reverted/consulted if required.  All moderation events are

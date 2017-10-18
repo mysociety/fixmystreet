@@ -39,6 +39,9 @@
 [% END %]
 
 [% INCLUDE 'report/banner.html' %]
+[% IF c.user_exists %]
+    [% DEFAULT permissions = c.user.permissions(c, problem.bodies_str) %]
+[%- END %]
 [% INCLUDE 'report/_main.html' %]
 
 [% IF problem.duplicate_of %]
