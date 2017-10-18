@@ -1,0 +1,29 @@
+[% INCLUDE 'report/new/extra_name.html' %]
+
+[% PROCESS 'user/_anonymity.html' anonymous = update.anonymous %]
+
+[% IF c.user_exists %]
+    [% names = c.user.split_name %]
+[% END %]
+
+<label for="form_first_name">[% loc('First Name') %]</label>
+[% IF field_errors.first_name %]
+    <p class='form-error'>[% field_errors.first_name %]</p>
+[% END %]
+<input class="js-form-name form-control" type="text" value="[% names.first || first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
+
+<label for="form_last_name">[% loc('Last Name') %]</label>
+[% IF field_errors.last_name %]
+    <p class='form-error'>[% field_errors.last_name %]</p>
+[% END %]
+<input class="js-form-name form-control" type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
+
+<div class="checkbox-group">
+    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
+    <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+</div>
+
+<div class="checkbox-group">
+    <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+    <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+</div>
