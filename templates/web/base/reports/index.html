@@ -15,7 +15,9 @@
 [% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass => 'dashboard fullwidthpage' %]
 
 <div class="dashboard-header">
-    <h1>[% loc('Dashboard') %]</h1>
+    <h1>[% loc('Dashboard') %]
+    [% IF body %] – [% body.name %] [% END %]
+    </h1>
 </div>
 
 <div class="dashboard-row">
@@ -58,19 +60,31 @@
         </div>
     </div>
     <div class="dashboard-item dashboard-item--6">
-        <form class="dashboard-search" action="/reports">
+        <form class="dashboard-search">
             <h2>[% loc('Show reports in your area') %]</h2>
+          [% IF body %]
+            <label for="ward">[% loc('Pick your ward') %]</label>
+            <div class="dashboard-search__input">
+                <select id="ward" name="ward" class="js-autocomplete">
+                    <option value="">[% loc('Pick your ward') %]</option>
+                  [% FOR child IN children.values.sort('name') %]
+                    <option>[% child.name | html ~%]</option>
+                  [% END %]
+                </select>
+            </div>
+          [% ELSE %]
             <label for="body">[% loc('Pick your council') %]</label>
             <div class="dashboard-search__input">
                 <select id="body" name="body" class="js-autocomplete">
                     <option value="">[% loc('Pick your council') %]</option>
-                  [% FOR body IN bodies %]
-                    <option value="[% body.id %]">[% body.name | html ~%]
-                        [% IF NOT body.get_column("area_count") %] [% loc('(no longer exists)') %][% END ~%]
+                  [% FOR b IN bodies # Not body as 'body' may be on stash %]
+                    <option value="[% b.id %]">[% b.name | html ~%]
+                        [% IF NOT b.get_column("area_count") %] [% loc('(no longer exists)') %][% END ~%]
                     </option>
                   [% END %]
                 </select>
             </div>
+          [% END %]
             <div class="dashboard-search__submit">
                 <input type="submit" value="[% loc('Go') %]">
             </div>
@@ -80,6 +94,20 @@
 
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--6">
+      [% IF body %]
+        <h2 class="dashboard-subheading">[% loc('Top 5 wards') %]</h2>
+        <p>[% loc('Number of problems reported in each ward, in the last 7 days.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN wards %]
+                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s report", "%s reports", line.reports), line.reports) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% loc('Other wards') %]</td><td>[% tprintf(nget("%s report", "%s reports", other_wards), other_wards) %]</td></tr>
+            </tfoot>
+        </table>
+      [% ELSE %]
         <h2 class="dashboard-subheading">[% loc('Top 5 responsive councils') %]</h2>
         <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
         <table class="dashboard-ranking-table">
@@ -92,6 +120,7 @@
                 <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
             </tfoot>
         </table>
+      [% END %]
     </div>
     <div class="dashboard-item dashboard-item--6">
         <h2 class="dashboard-subheading">[% loc('Top 5 most used categories') %]</h2>

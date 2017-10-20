@@ -12,9 +12,6 @@ END {
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
-# Run the cron script with empty database
-FixMyStreet::Script::UpdateAllReports::generate_dashboard();
-
 $mech->create_body_ok(2514, 'Birmingham City Council');
 my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
 my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
@@ -99,10 +96,14 @@ $fife_problems[10]->update( {
 });
 
 # Run the cron script that makes the data for /reports so we don't get an error.
-FixMyStreet::Script::UpdateAllReports::generate_dashboard();
+my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
 
 # check that we can get the page
-$mech->get_ok('/reports');
+FixMyStreet::override_config {
+    TEST_DASHBOARD_DATA => $data,
+}, sub {
+    $mech->get_ok('/reports');
+};
 $mech->title_like(qr{Dashboard});
 $mech->content_contains('Birmingham');
 
@@ -138,6 +139,7 @@ is scalar @$problems, 5, 'correct number of problems displayed';
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
+    TEST_DASHBOARD_DATA => $data,
 }, sub {
     $mech->get_ok('/reports');
     $mech->submit_form_ok({ with_fields => { body => $body_slash_id } }, 'Submitted dropdown okay');
@@ -199,13 +201,18 @@ is scalar @$problems, 4, 'only public problems are displayed';
 $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible');
 
 # No change to numbers if report is non-public
-$mech->get_ok('/reports');
+FixMyStreet::override_config {
+    TEST_DASHBOARD_DATA => $data,
+}, sub {
+    $mech->get_ok('/reports');
+};
 $mech->content_contains('&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;');
 $mech->content_contains('5,9,10,22');
 
 subtest "test fiksgatami all reports page" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fiksgatami' ],
+        TEST_DASHBOARD_DATA => $data, # Not relevant to what we're testing, just so page loads
     }, sub {
         $mech->create_body_ok(3, 'Oslo');
         ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';

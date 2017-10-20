@@ -1,0 +1,60 @@
+[% extra_css = BLOCK %]
+    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet.com/fmsforcouncils.css') %]">
+    <link href="https://fonts.googleapis.com/css?family=Rubik:400,500" rel="stylesheet">
+[% END %]
+
+[% IF no_body_found %]
+
+[% INCLUDE header.html
+    title = 'FixMyStreet Professional', bodyclass = 'fullwidthpage'
+%]
+
+<div class="confirmation-header confirmation-header--inbox">
+    <h1>Thanks!</h1>
+    <p>We will be in touch with a confirmation link soon.</p>
+</div>
+
+[% ELSE %]
+
+[% INCLUDE header.html
+    title = 'FixMyStreet Professional', bodyclass = 'fms-for-councils fullwidthpage'
+%]
+
+<div class="fixed-container">
+  <div class="council-header">
+    <h1 class="councils-logo">FixMyStreet Professional</h1>
+  </div>
+  <div class="councils-hero">
+    <div class="councils-hero__demo-access">
+      <p>To access a council-specific version of our main dashboard page,
+      please provide your name and email below and we'll send you a link.</p>
+      <form method="post" class="councils-hero__demo-access__form">
+        <div class="form-group">
+          <label for="demo-name">Name</label>
+          <span class="required">required</span>
+          <input type="text" name="name" id="demo-name" required value="[% form_name | html %]">
+        </div>
+        <div class="form-group">
+          <label for="demo-email">Contact email</label>
+          <span class="required">required</span>
+          <input type="email" name="username" id="demo-email" required value="[% email | html %]">
+          <p class="form-note">Ending in .gov.uk, or other official council domain</p>
+        </div>
+        <div class="form-group submit-group">
+          <input type="hidden" name="r" value="about/council-dashboard">
+          <input type="hidden" name="extra.referer" value="[% c.req.headers.referer | html %]">
+          <input type="hidden" name="subject" value="Council dashboard request">
+          <input type="hidden" name="message" value="Filled in the council dashboard form">
+          <input type="hidden" name="recipient" value="bettercities">
+          <input type="hidden" name="dest" value="from_council">
+          <input type="submit" value="Let me in" class="btn">
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+[% END %]
+
+[% INCLUDE footer.html %]

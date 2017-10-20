@@ -9,6 +9,7 @@
         - Allow multiple wards to be shown on reports page
         - Don't cover whole map with pin loading indicator.
         - Add Expand map toggle to more mobile maps.
+        - Add functionality to have per-body /reports page.
     - Bugfixes
         - Shortlist menu item always remains a link #1855
         - Fix encoded entities in RSS output. #1859

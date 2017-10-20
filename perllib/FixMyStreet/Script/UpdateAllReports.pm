@@ -4,11 +4,9 @@ use strict;
 use warnings;
 
 use FixMyStreet;
+use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 
-use File::Path ();
-use File::Slurp;
-use JSON::MaybeXS;
 use List::MoreUtils qw(zip);
 use List::Util qw(sum);
 
@@ -20,6 +18,11 @@ my $age_column = 'confirmed';
 if ( FixMyStreet->config('BASE_URL') =~ /zurich|zueri/ ) {
     $age_column = 'created';
 }
+
+my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('default')->new;
+FixMyStreet::DB->schema->cobrand($cobrand);
 
 sub generate {
     my $include_areas = shift;
@@ -81,13 +84,10 @@ sub generate {
         }
     }
 
-    my $body = encode_json( {
+    return {
         fixed => \%fixed,
         open  => \%open,
-    } );
-
-    File::Path::mkpath( FixMyStreet->path_to( '../data/' )->stringify );
-    File::Slurp::write_file( FixMyStreet->path_to( '../data/all-reports.json' )->stringify, \$body );
+    };
 }
 
 sub end_period {
@@ -107,10 +107,18 @@ sub loop_period {
 }
 
 sub generate_dashboard {
+    my $body = shift;
+
     my %data;
 
+    my $rs = FixMyStreet::DB->resultset('Problem');
+    $rs = $rs->to_body($body) if $body;
+
+    my $rs_c = FixMyStreet::DB->resultset('Comment');
+    $rs_c = $rs_c->to_body($body) if $body;
+
     my $end_today = end_period('day');
-    my $min_confirmed = FixMyStreet::DB->resultset('Problem')->search({
+    my $min_confirmed = $rs->search({
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         select => [ { min => 'confirmed' } ],
@@ -134,11 +142,11 @@ sub generate_dashboard {
     my @problem_periods = loop_period($min_confirmed, $group_by, $extra);
 
     my %problems_reported_by_period = stuff_by_day_or_year(
-        $group_by, 'Problem',
+        $group_by, $rs,
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
     my %problems_fixed_by_period = stuff_by_day_or_year(
-        $group_by, 'Problem',
+        $group_by, $rs,
         state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
     );
 
@@ -158,24 +166,23 @@ sub generate_dashboard {
     );
     $data{last_seven_days} = \%last_seven_days;
 
-    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
     my $eight_ago = $dtf->format_datetime(DateTime->now->subtract(days => 8));
     %problems_reported_by_period = stuff_by_day_or_year('day',
-        'Problem',
+        $rs,
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
-        confirmed => { '>=', $eight_ago },
+        'me.confirmed' => { '>=', $eight_ago },
     );
     %problems_fixed_by_period = stuff_by_day_or_year('day',
-        'Comment',
-        confirmed => { '>=', $eight_ago },
+        $rs_c,
+        'me.confirmed' => { '>=', $eight_ago },
         -or => [
             problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
             mark_fixed => 1,
         ],
     );
     my %problems_updated_by_period = stuff_by_day_or_year('day',
-        'Comment',
-        confirmed => { '>=', $eight_ago },
+        $rs_c,
+        'me.confirmed' => { '>=', $eight_ago },
     );
 
     my $date = DateTime->today->subtract(days => 7);
@@ -189,13 +196,65 @@ sub generate_dashboard {
     $last_seven_days{fixed_total} = sum @{$last_seven_days{fixed}};
     $last_seven_days{updated_total} = sum @{$last_seven_days{updated}};
 
+    if ($body) {
+        calculate_top_five_wards(\%data, $rs, $body);
+    } else {
+        calculate_top_five_bodies(\%data, $rs_c);
+    }
+
+    my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));
+    my $last_seven_days = $rs->search({
+        confirmed => { '>=', $week_ago },
+    })->count;
+    my @top_five_categories = $rs->search({
+        confirmed => { '>=', $week_ago },
+        category => { '!=', 'Other' },
+    }, {
+        select => [ 'category', { count => 'id' } ],
+        as => [ 'category', 'count' ],
+        group_by => 'category',
+        rows => 5,
+        order_by => { -desc => 'count' },
+    });
+    $data{top_five_categories} = [ map {
+        { category => $_->category, count => $_->get_column('count') }
+        } @top_five_categories ];
+    foreach (@top_five_categories) {
+        $last_seven_days -= $_->get_column('count');
+    }
+    $data{other_categories} = $last_seven_days;
+
+    return \%data;
+}
+
+sub stuff_by_day_or_year {
+    my $period = shift;
+    my $rs = shift;
+    my %params = @_;
+    my $results = $rs->search({
+        %params
+    }, {
+        select => [ { extract => \"$period from me.confirmed", -as => $period }, { count => 'me.id' } ],
+        as => [ $period, 'count' ],
+        group_by => [ $period ],
+    });
+    my %out;
+    while (my $row = $results->next) {
+        my $p = $row->get_column($period);
+        $out{$p} = $row->get_column('count');
+    }
+    return %out;
+}
+
+sub calculate_top_five_bodies {
+    my ($data, $rs_c) = @_;
+
     my(@top_five_bodies);
-    $data{top_five_bodies} = \@top_five_bodies;
 
     my $bodies = FixMyStreet::DB->resultset('Body')->search;
     my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and (problem_state in ('fixed', 'fixed - council', 'fixed - user') or mark_fixed)";
     while (my $body = $bodies->next) {
-        my $subquery = FixMyStreet::DB->resultset('Comment')->to_body($body)->search({
+        my $subquery = $rs_c->to_body($body)->search({
             -or => [
                 problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
                 mark_fixed => 1,
@@ -220,55 +279,33 @@ sub generate_dashboard {
             if defined $avg;
     }
     @top_five_bodies = sort { $a->{days} <=> $b->{days} } @top_five_bodies;
-    $data{average} = @top_five_bodies
+    $data->{average} = @top_five_bodies
         ? int((sum map { $_->{days} } @top_five_bodies) / @top_five_bodies + 0.5) : undef;
 
     @top_five_bodies = @top_five_bodies[0..4] if @top_five_bodies > 5;
-
-    my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));
-    my $last_seven_days = FixMyStreet::DB->resultset("Problem")->search({
-        confirmed => { '>=', $week_ago },
-    })->count;
-    my @top_five_categories = FixMyStreet::DB->resultset("Problem")->search({
-        confirmed => { '>=', $week_ago },
-        category => { '!=', 'Other' },
-    }, {
-        select => [ 'category', { count => 'id' } ],
-        as => [ 'category', 'count' ],
-        group_by => 'category',
-        rows => 5,
-        order_by => { -desc => 'count' },
-    });
-    $data{top_five_categories} = [ map {
-        { category => $_->category, count => $_->get_column('count') }
-        } @top_five_categories ];
-    foreach (@top_five_categories) {
-        $last_seven_days -= $_->get_column('count');
-    }
-    $data{other_categories} = $last_seven_days;
-
-    my $body = encode_json( \%data );
-    File::Path::mkpath( FixMyStreet->path_to( '../data/' )->stringify );
-    File::Slurp::write_file( FixMyStreet->path_to( '../data/all-reports-dashboard.json' )->stringify, \$body );
+    $data->{top_five_bodies} = \@top_five_bodies;
 }
 
-sub stuff_by_day_or_year {
-    my $period = shift;
-    my $table = shift;
-    my %params = @_;
-    my $results = FixMyStreet::DB->resultset($table)->search({
-        %params
-    }, {
-        select => [ { extract => \"$period from confirmed", -as => $period }, { count => 'id' } ],
-        as => [ $period, 'count' ],
-        group_by => [ $period ],
-    });
-    my %out;
-    while (my $row = $results->next) {
-        my $p = $row->get_column($period);
-        $out{$p} = $row->get_column('count');
+sub calculate_top_five_wards {
+    my ($data, $rs, $body) = @_;
+
+    my $children = $body->first_area_children;
+    die $children->{error} if $children->{error};
+
+    my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));
+    my $last_seven_days = $rs->search({ confirmed => { '>=', $week_ago } });
+    my $last_seven_days_count = $last_seven_days->count;
+    $last_seven_days = $last_seven_days->search(undef, { select => 'areas' });
+
+    while (my $row = $last_seven_days->next) {
+        $children->{$_}{reports}++ foreach grep { $children->{$_} } split /,/, $row->areas;
     }
-    return %out;
+    my @wards = sort { $b->{reports} <=> $a->{reports} } grep { $_->{reports} } values %$children;
+    @wards = @wards[0..4] if @wards > 5;
+
+    my $sum_five = (sum map { $_->{reports} } @wards) || 0;
+    $data->{other_wards} = $last_seven_days_count - $sum_five;
+    $data->{wards} = \@wards;
 }
 
 1;

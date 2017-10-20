@@ -23,6 +23,7 @@ sub page : Path("/about") : Args(1) {
     my $template = $c->forward('find_template');
     $c->detach('/page_error_404_not_found', []) unless $template;
     $c->stash->{template} = $template;
+    $c->cobrand->call_hook('about_hook');
 }
 
 sub index : Path("/about") : Args(0) {
