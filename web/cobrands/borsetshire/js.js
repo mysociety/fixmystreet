@@ -1,7 +1,7 @@
 (function(){
 
     function set_redirect(form) {
-        var e = form.email.value;
+        var e = form.username.value;
         if (e == 'inspector@example.org') {
             form.r.value = 'my/planned';
         } else if (e == 'cs@example.org') {
@@ -13,7 +13,7 @@
 
     $('#demo-user-list dt').click(function(){
         var form = document.forms.general_auth;
-        form.email.value = $(this).text();
+        form.username.value = $(this).text();
         form.password_sign_in.value = 'password';
         set_redirect(form);
         form.submit();
