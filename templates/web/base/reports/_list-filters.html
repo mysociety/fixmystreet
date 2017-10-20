@@ -1,10 +1,18 @@
 [% select_status = BLOCK %]
     <select class="form-control js-multiple" name="status" id="statuses" multiple
-      data-all="[% loc('All') %]" data-all-options='["open","closed","fixed"]'
-    [%~ IF c.cobrand.on_map_default_status == 'open' %]
-      data-none="[% loc('Unfixed reports') %]"
+    data-all="[% loc('All') %]"
+    [% IF c.user_exists AND c.user.is_superuser OR c.user.belongs_to_body(body.id) %]
+    [% options = []; FOR group IN filter_states; FOR state IN group.1; NEXT IF state == 'hidden'; options.push(state); END; END %]
+    data-all-options='["[% options.join('", "') %]"]'
+    [%~ ELSE ~%]
+      [%~ IF has_fixed_state ~%]
+        data-all-options='["open","closed","fixed"]'
+      [%~ ELSE ~%]
+        data-all-options='["open","closed"]'
+      [%~ END ~%]
     [%~ END ~%]
-      >
+    [% INCLUDE 'reports/_status_filter_options.html' %]
+    >
       [% IF c.user_exists AND c.user.has_body_permission_to('planned_reports') AND !shortlist %]
         <option value="shortlisted"[% ' selected' IF filter_status.shortlisted %]>[% loc('Shortlisted') %]</option>
         <option value="unshortlisted"[% ' selected' IF filter_status.unshortlisted %]>[% loc('Unshortlisted') %]</option>

@@ -1,0 +1,7 @@
+    [% IF c.user_exists AND c.user.is_superuser OR c.user.belongs_to_body(body.id) %]
+      data-none="All unresolved"
+      data-extra="All unresolved"
+      data-extra-options='["confirmed","investigating","action scheduled"]'
+    [% ELSE %]
+      data-none="Open"
+    [%~ END ~%]
