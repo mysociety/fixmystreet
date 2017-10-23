@@ -85,15 +85,15 @@ my $perms_cs = [
     'moderate', 'view_body_contribute_details',
 ];
 foreach (
-    { name => 'Inspector Gadget', email => 'inspector@example.org', body => $body, permissions => $perms_inspector },
-    { name => 'Harriet Helpful', email => 'cs@example.org', body => $body, permissions => $perms_cs },
-    { name => 'Super User', email => 'super@example.org', body => $body, permissions => [
+    { name => 'Inspector Gadget', email => 'inspector@example.org', email_verified => 1, body => $body, permissions => $perms_inspector },
+    { name => 'Harriet Helpful', email_verified => 1, email => 'cs@example.org', body => $body, permissions => $perms_cs },
+    { name => 'Super User', email_verified => 1, email => 'super@example.org', body => $body, permissions => [
         @$perms_cs, @$perms_inspector, 'report_edit',
         'category_edit', 'template_edit', 'responsepriority_edit',
         'user_assign_body', 'user_manage_permissions', 'user_edit',
     ] },
-    { name => 'Wizard of Oz', email => 'admin@example.org', is_superuser => 't' },
-    { name => "Norma User", email => 'user@example.org' },
+    { name => 'Wizard of Oz', email_verified => 1, email => 'admin@example.org', is_superuser => 't' },
+    { name => "Norma User", email_verified => 1, email => 'user@example.org' },
 ) {
     $users{$_->{email}} = FixMyStreet::DB::Factory::User->find_or_create($_);
     my $perms = $_->{permissions} ? " (" . join(', ', @{$_->{permissions} || []}) . ")" : "";
