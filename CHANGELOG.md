@@ -29,6 +29,7 @@
       - Remove hidden from default staff state dropdown. #1878
       - Marking an item as a duplicate enforces providing duplicate id or
         a public update #1873
+      - Report field pre-filling for inspectors configurable #1854
 
 * v2.2 (13th September 2017)
     - New features:

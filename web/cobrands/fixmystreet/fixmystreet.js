@@ -436,11 +436,10 @@ $.extend(fixmystreet.set_up, {
     // Delegation is necessary because #form_category may be replaced during the lifetime of the page
     $("#problem_form").on("change.category", "select#form_category", function(){
         var args = {
-            category: $(this).val()
+            category: $(this).val(),
+            latitude: $('input[name="latitude"]').val(),
+            longitude: $('input[name="longitude"]').val()
         };
-
-        args.latitude = $('input[name="latitude"]').val();
-        args.longitude = $('input[name="longitude"]').val();
 
         $.getJSON('/report/new/category_extras', args, function(data) {
             var $category_meta = $('#category_meta');
@@ -458,7 +457,11 @@ $.extend(fixmystreet.set_up, {
         });
 
         if (fixmystreet.hooks.update_problem_fields) {
-            fixmystreet.hooks.update_problem_fields($(this).data('role'), $(this).data('body'), args);
+            args.prefill_reports = $(this).data('prefill');
+            args.role = $(this).data('role');
+            args.body = $(this).data('body');
+
+            fixmystreet.hooks.update_problem_fields(args);
         }
     });
   },

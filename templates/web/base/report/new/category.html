@@ -5,7 +5,11 @@
     <label for='form_category' id="form_category_label">
         [%~ loc('Category') ~%]
     </label>[% =%]
-    <select class="form-control" name='category' id='form_category' data-role='[% c.user.has_body_permission_to('planned_reports') ? 'inspector' : 'user'  %]' data-body='[% c.user.from_body.name %]'>
+    <select class="form-control" name="category" id="form_category"
+    [%~ IF c.user.from_body =%]
+      data-role="[% c.user.has_body_permission_to('planned_reports') ? 'inspector' : 'user'  %]" data-body="[% c.user.from_body.name %]" data-prefill="[% c.cobrand.prefill_report_fields_for_inspector %]"
+    [%~ END ~%]
+    >
         [%~ FOREACH cat_op IN category_options ~%]
         [% cat_op_lc = cat_op.name | lower =%]
         <option value='[% cat_op.name | html %]'[% ' selected' IF report.category == cat_op.name || category_lc == cat_op_lc || (category_options.size == 2 AND loop.last) ~%]

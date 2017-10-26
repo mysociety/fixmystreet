@@ -429,10 +429,10 @@ $.extend(fixmystreet.set_up, {
 });
 
 $.extend(fixmystreet.hooks, {
-    update_problem_fields: function(role, body, args) {
-        if (role == 'inspector') {
+    update_problem_fields: function(args) {
+        if (args.prefill_reports && args.role == 'inspector') {
             var title = args.category + ' problem has been scheduled for fixing';
-            var description = args.category + ' problem found - scheduled for fixing by ' + body;
+            var description = args.category + ' problem found - scheduled for fixing by ' + args.body;
 
             var $title_field = $('#form_title');
             var $description_field = $('#form_detail');

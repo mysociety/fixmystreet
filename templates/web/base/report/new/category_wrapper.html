@@ -1,7 +1,11 @@
 <div id="form_category_row">
 [% IF js %]
     <label for="form_category">[% loc('Category') %]</label>
-    <select class="form-control" name="category" id="form_category" data-role="[% c.user.has_body_permission_to('planned_reports') ? 'inspector' : 'user'  %]" data-body="[% c.user.from_body.name %]" required><option>[% loc('Loading...') %]</option></select>
+    <select class="form-control" name="category" id="form_category"
+    [%~ IF c.user.from_body =%]
+      data-role="[% c.user.has_body_permission_to('planned_reports') ? 'inspector' : 'user'  %]" data-body="[% c.user.from_body.name %]" data-prefill="[% c.cobrand.prefill_report_fields_for_inspector %]"
+    [%~ END =%]
+    required><option>[% loc('Loading...') %]</option></select>
 [% ELSE %]
     [% IF category_options.size %]
         [% IF field_errors.category %]

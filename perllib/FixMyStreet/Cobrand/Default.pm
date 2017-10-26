@@ -1073,6 +1073,8 @@ sub state_groups_inspect {
 
 sub max_detailed_info_length { 0 }
 
+sub prefill_report_fields_for_inspector { 0 }
+
 =head2 never_confirm_updates
 
 If true then we never send an email to confirm an update
