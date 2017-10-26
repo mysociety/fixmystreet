@@ -189,17 +189,21 @@ sub planned_change : Path('planned/change') {
     $c->go('planned') if grep { /^shortlist-(up|down|\d+)$/ } keys %{$c->req->params};
 
     my $id = $c->get_param('id');
-    $c->forward( '/report/load_problem_or_display_error', [ $id ] );
-
     my $add = $c->get_param('shortlist-add');
     my $remove = $c->get_param('shortlist-remove');
-    $c->detach('/page_error_403_access_denied', [])
-        unless $add || $remove;
 
-    if ($add) {
+    # we can't lookup the report for removing via load_problem_or_display_error
+    # as then there is no way to remove a report that has been hidden or moved
+    # to another body by a category change from the shortlist.
+    if ($remove) {
+        my $report = $c->model('DB::Problem')->find({ id => $id })
+            or $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
+        $c->user->remove_from_planned_reports($report);
+    } elsif ($add) {
+        $c->forward( '/report/load_problem_or_display_error', [ $id ] );
         $c->user->add_to_planned_reports($c->stash->{problem});
-    } elsif ($remove) {
-        $c->user->remove_from_planned_reports($c->stash->{problem});
+    } else {
+        $c->detach('/page_error_403_access_denied', []);
     }
 
     if ($c->get_param('ajax')) {

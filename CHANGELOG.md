@@ -18,6 +18,7 @@
         - Do not include blank updates in email alerts #1857
         - Redirect inspectors correctly on creation in two-tier.
         - Report status filter All option works for body users #1845
+        - Always allow reports to be removed from shortlist #1882
     - Admin improvements:
       - Character length limit can be placed on report detailed information #1848
       - Inspector panel shows nearest address if available #1850
