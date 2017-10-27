@@ -15,7 +15,7 @@ SET state_groups = c.cobrand.state_groups_admin;
 
 [% BLOCK abuse_button -%]
 [% IF allowed_pages.abuse_edit -%]
-[% IF username_in_abuse %]<small>[% loc('(User in abuse table)') %]</small>[% ELSE %]<input type="submit" class="btn" name="banuser" value="[% loc('Ban user') %]" />[% END %]
+[% IF username_in_abuse %]<small>[% loc('User in abuse table') %]</small>[% ELSE %]<input type="submit" class="btn" name="banuser" value="[% loc('Ban user') %]" />[% END %]
 [%- END %]
 [%- END %]
 

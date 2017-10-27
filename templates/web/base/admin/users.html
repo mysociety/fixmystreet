@@ -29,7 +29,7 @@
             [% IF user.is_superuser %] * [% END %]
         </td>
       [% IF c.cobrand.moniker != 'zurich' %]
-        <td>[% user.flagged == 2 ? loc('(User in abuse table)') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
+        <td>[% user.flagged == 2 ? loc('User in abuse table') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
       [% END %]
         <td>[% IF user.id %]<a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a>[% END %]</td>
     </tr>

@@ -1415,6 +1415,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     }
 
     $c->stash->{user} = $user;
+    $c->forward( 'check_username_for_abuse', [ $user ] );
 
     if ( $user->from_body && $c->user->has_permission_to('user_manage_permissions', $user->from_body->id) ) {
         $c->stash->{available_permissions} = $c->cobrand->available_permissions;
@@ -1428,7 +1429,10 @@ sub user_edit : Path('user_edit') : Args(1) {
             '<p><em>' . $c->flash->{status_message} . '</em></p>';
     }
 
-    if ( $c->get_param('submit') ) {
+    if ( $c->get_param('submit') and $c->get_param('unban') ) {
+        $c->forward('/auth/check_csrf_token');
+        $c->forward('unban_user', [ $user ]);
+    } elsif ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
 
         my $edited = 0;
@@ -1874,6 +1878,28 @@ sub ban_user : Private {
     return 1;
 }
 
+sub unban_user : Private {
+    my ( $self, $c, $user ) = @_;
+
+    my @username;
+    if ($user->email_verified && $user->email) {
+        push @username, $user->email;
+    }
+    if ($user->phone_verified && $user->phone) {
+        push @username, $user->phone;
+    }
+    if (@username) {
+        my $abuse = $c->model('DB::Abuse')->search({ email => \@username });
+        if ( $abuse ) {
+            $abuse->delete;
+            $c->stash->{status_message} = _('user removed from abuse list');
+        } else {
+            $c->stash->{status_message} = _('user not in abuse list');
+        }
+        $c->stash->{username_in_abuse} = 0;
+    }
+}
+
 =head2 flag_user
 
 Sets the flag on a user
@@ -1945,8 +1971,6 @@ sub check_username_for_abuse : Private {
     my $is_abuse = $c->model('DB::Abuse')->find({ email => [ $user->phone, $user->email ] });
 
     $c->stash->{username_in_abuse} = 1 if $is_abuse;
-
-    return 1;
 }
 
 =head2 rotate_photo

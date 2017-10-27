@@ -33,6 +33,7 @@
       - Marking an item as a duplicate enforces providing duplicate id or
         a public update #1873
       - Report field pre-filling for inspectors configurable #1854
+      - Admins can now unban users #1881
     - UK:
         - Use SVG logo, inlined on front page. #1887
 

@@ -33,6 +33,12 @@
         <input type="hidden" name="phone_verified" value="0">
       [% END %]
 
+      [% IF username_in_abuse %]
+      <li>
+            <p class="error">[% loc('User in abuse table') %] <input name="unban" type="submit" value="[% loc('Unban') %]"></p>
+      </li>
+      [% END %]
+
       [% IF c.user.is_superuser || c.cobrand.moniker == 'zurich' %]
         <li>
           <div class="admin-hint">
