@@ -133,7 +133,6 @@
 
 <h2>[% loc('Reports') %]</h2>
 
-                </select>
 <p>[% loc('Report state:') %] <select class="form-control" name="state">
 <option value=''>[% loc('All') %]</option>
     [% FOR group IN filter_states %]
@@ -143,6 +142,14 @@
       [% END %]
     [% END %]
 </select>
+</p>
+<p>
+<label for="start_date">[% loc('Start Date') %]</label><input name="start_date" type="date" value="[% start_date | html %]">
+</p>
+
+<p>
+<label for="end_date">[% loc('End Date') %]</label><input name="end_date" type="date" value="[% end_date | html %]">
+</p>
 <input type="submit" class="btn" value="[% loc('Look up') %]">
 <a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">[% loc('Export as CSV') %]</a>
 
