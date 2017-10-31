@@ -39,6 +39,15 @@ subtest 'check basic functionality' => sub {
 
     my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->count();
     is $contact_count, 3, 'correct number of contacts';
+
+    for my $test (
+        { code => "001", group => "sanitation" },
+        { code => "002", group => "street" },
+        { code => "003", group => "street" },
+    ) {
+        my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1, email => $test->{code} } )->first;
+        is $contact->get_extra->{group}, $test->{group}, "Group set correctly";
+    }
 };
 
 subtest 'check non open311 contacts marked as deleted' => sub {
