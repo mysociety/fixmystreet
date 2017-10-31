@@ -12,6 +12,7 @@ requires 'Guard', '1.023';
 requires 'PadWalker', '2.2';
 requires 'aliased', '0.34';
 requires 'Net::SSLeay', '1.81';
+requires 'Module::ScanDeps', '1.24';
 
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.80031';

@@ -3860,18 +3860,17 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Module-ScanDeps-1.10
-    pathname: R/RS/RSCHUPP/Module-ScanDeps-1.10.tar.gz
+  Module-ScanDeps-1.24
+    pathname: R/RS/RSCHUPP/Module-ScanDeps-1.24.tar.gz
     provides:
-      Module::ScanDeps 1.10
-      Module::ScanDeps::Cache undef
-      Module::ScanDeps::DataFeed undef
+      Module::ScanDeps 1.24
     requirements:
-      ExtUtils::MakeMaker 6.59
+      ExtUtils::MakeMaker 0
       File::Spec 0
       File::Temp 0
-      Module::Build::ModuleInfo 0
-      Test::More 0
+      Getopt::Long 0
+      Module::Metadata 0
+      Text::ParseWords 0
       perl 5.008001
       version 0
   Moo-2.003001
@@ -4947,19 +4946,6 @@ DISTRIBUTIONS
       strict 0
       vars 0
       warnings 0
-  Parse-CPAN-Meta-1.4405
-    pathname: D/DA/DAGOLDEN/Parse-CPAN-Meta-1.4405.tar.gz
-    provides:
-      Parse::CPAN::Meta 1.4405
-    requirements:
-      CPAN::Meta::YAML 0.008
-      Carp 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.30
-      File::Spec 0.80
-      JSON::PP 2.27200
-      Test::More 0.47
-      strict 0
   Parse-RecDescent-1.967015
     pathname: J/JT/JTBRAUN/Parse-RecDescent-1.967015.tar.gz
     provides:
