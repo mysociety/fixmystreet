@@ -2,22 +2,24 @@
 // by mySociety
 // https://github.com/mysociety/jquery-multi-select
 
-(function($) {
+;(function($) {
+
+  "use strict";
 
   var pluginName = "multiSelect",
     defaults = {
-      containerHTML: '<div class="multi-select-container">',
-      menuHTML: '<div class="multi-select-menu">',
-      buttonHTML: '<span class="multi-select-button">',
-      menuItemsHTML: '<div class="multi-select-menuitems">',
-      menuItemHTML: '<label class="multi-select-menuitem">',
-      presetsHTML: '<div class="multi-select-presets">',
-      activeClass: 'multi-select-container--open',
-      noneText: '-- Select --',
-      allText: undefined,
-      presets: undefined,
-      positionedMenuClass: 'multi-select-container--positioned',
-      positionMenuWithin: undefined
+      'containerHTML': '<div class="multi-select-container">',
+      'menuHTML': '<div class="multi-select-menu">',
+      'buttonHTML': '<span class="multi-select-button">',
+      'menuItemsHTML': '<div class="multi-select-menuitems">',
+      'menuItemHTML': '<label class="multi-select-menuitem">',
+      'presetsHTML': '<div class="multi-select-presets">',
+      'activeClass': 'multi-select-container--open',
+      'noneText': '-- Select --',
+      'allText': undefined,
+      'presets': undefined,
+      'positionedMenuClass': 'multi-select-container--positioned',
+      'positionMenuWithin': undefined
     };
 
   function Plugin(element, options) {
@@ -72,14 +74,14 @@
     },
 
     constructContainer: function() {
-      this.$container = $(this.settings.containerHTML);
+      this.$container = $(this.settings['containerHTML']);
       this.$element.data('multi-select-container', this.$container);
       this.$container.insertAfter(this.$element);
     },
 
     constructButton: function() {
       var _this = this;
-      this.$button = $(this.settings.buttonHTML);
+      this.$button = $(this.settings['buttonHTML']);
       this.$button.attr({
         'role': 'button',
         'aria-haspopup': 'true',
@@ -120,10 +122,10 @@
 
       this.$button.empty();
 
-      if (selected.length === 0) {
-        this.$button.text( this.settings.noneText );
-      } else if ( (selected.length === options.length) && this.settings.allText) {
-        this.$button.text( this.settings.allText );
+      if (selected.length == 0) {
+        this.$button.text( this.settings['noneText'] );
+      } else if ( (selected.length === options.length) && this.settings['allText']) {
+        this.$button.text( this.settings['allText'] );
       } else {
         this.$button.text( selected.join(', ') );
       }
@@ -132,7 +134,7 @@
     constructMenu: function() {
       var _this = this;
 
-      this.$menu = $(this.settings.menuHTML);
+      this.$menu = $(this.settings['menuHTML']);
       this.$menu.attr({
         'role': 'menu'
       }).on('keyup.multiselect', function(e){
@@ -146,7 +148,7 @@
 
       this.constructMenuItems();
 
-      if ( this.settings.presets ) {
+      if ( this.settings['presets'] ) {
         this.constructPresets();
       }
     },
@@ -154,7 +156,7 @@
     constructMenuItems: function() {
       var _this = this;
 
-      this.$menuItems = $(this.settings.menuItemsHTML);
+      this.$menuItems = $(this.settings['menuItemsHTML']);
       this.$menu.append(this.$menuItems);
 
       this.$element.on('change.multiselect', function(e, internal) {
@@ -180,12 +182,12 @@
 
     constructPresets: function() {
       var _this = this;
-      this.$presets = $(this.settings.presetsHTML);
+      this.$presets = $(this.settings['presetsHTML']);
       this.$menu.prepend(this.$presets);
 
-      $.each(this.settings.presets, function(i, preset){
+      $.each(this.settings['presets'], function(i, preset){
         var unique_id = _this.$element.attr('name') + '_preset_' + i;
-        var $item = $(_this.settings.menuItemHTML)
+        var $item = $(_this.settings['menuItemHTML'])
           .attr({
             'for': unique_id,
             'role': 'menuitem'
@@ -217,7 +219,7 @@
     updatePresets: function() {
       var _this = this;
 
-      $.each(this.settings.presets, function(i, preset){
+      $.each(this.settings['presets'], function(i, preset){
         var unique_id = _this.$element.attr('name') + '_preset_' + i;
         var $input = _this.$presets.find('#' + unique_id);
 
@@ -231,7 +233,7 @@
 
     constructMenuItem: function($option, option_index) {
       var unique_id = this.$element.attr('name') + '_' + option_index;
-      var $item = $(this.settings.menuItemHTML)
+      var $item = $(this.settings['menuItemHTML'])
         .attr({
           'for': unique_id,
           'role': 'menuitem'
@@ -293,27 +295,28 @@
     },
 
     menuShow: function() {
-      this.$container.addClass(this.settings.activeClass);
-      if (this.settings.positionMenuWithin && this.settings.positionMenuWithin instanceof $) {
+      $('html').trigger('click.multiselect'); // Close any other open menus
+      this.$container.addClass(this.settings['activeClass']);
+      if (this.settings['positionMenuWithin'] && this.settings['positionMenuWithin'] instanceof $) {
         var menuLeftEdge = this.$menu.offset().left + this.$menu.outerWidth();
-        var withinLeftEdge = this.settings.positionMenuWithin.offset().left +
-          this.settings.positionMenuWithin.outerWidth();
+        var withinLeftEdge = this.settings['positionMenuWithin'].offset().left +
+          this.settings['positionMenuWithin'].outerWidth();
 
         if( menuLeftEdge > withinLeftEdge ) {
           this.$menu.css( 'width', (withinLeftEdge - this.$menu.offset().left) );
-          this.$container.addClass(this.settings.positionedMenuClass);
+          this.$container.addClass(this.settings['positionedMenuClass']);
         }
       }
     },
 
     menuHide: function() {
-      this.$container.removeClass(this.settings.activeClass);
-      this.$container.removeClass(this.settings.positionedMenuClass);
+      this.$container.removeClass(this.settings['activeClass']);
+      this.$container.removeClass(this.settings['positionedMenuClass']);
       this.$menu.css('width', 'auto');
     },
 
     menuToggle: function() {
-      if ( this.$container.hasClass(this.settings.activeClass) ) {
+      if ( this.$container.hasClass(this.settings['activeClass']) ) {
         this.menuHide();
       } else {
         this.menuShow();
