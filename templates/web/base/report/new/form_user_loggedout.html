@@ -1,4 +1,4 @@
-[% IF c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY %]
+[% IF c.cobrand.social_auth_enabled %]
   [% IF c.config.FACEBOOK_APP_ID %]
     <div class="form-box">
     <button name="facebook_sign_in" id="facebook_sign_in" value="facebook_sign_in" class="btn btn--block btn--social btn--facebook">
@@ -27,6 +27,6 @@
     [% PROCESS 'report/new/form_user_loggedout_by_email.html' %]
 </div>
 
-[% IF c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY %]
+[% IF c.cobrand.social_auth_enabled %]
     </div>
 [% END %]
