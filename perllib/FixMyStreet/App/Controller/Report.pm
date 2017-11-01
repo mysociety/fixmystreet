@@ -520,6 +520,9 @@ sub nearby_json : Private {
     my $p = $c->stash->{problem};
     my $dist = 1;
 
+    # This is for the list template, this is a list on that page.
+    $c->stash->{page} = 'report';
+
     my $nearby = $c->model('DB::Nearby')->nearby(
         $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, undef, [ $p->category ], undef
     );
