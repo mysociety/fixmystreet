@@ -601,13 +601,6 @@ $.extend(fixmystreet.set_up, {
     }
   },
 
-  fixed_thead: function() {
-    var thead = $('.nicetable thead');
-    if (thead.fixedThead) {
-        thead.fixedThead();
-    }
-  },
-
   report_list_filters: function() {
     // Hide the pin filter submit button. Not needed because we'll use JS
     // to refresh the map when the filter inputs are changed.
@@ -620,12 +613,6 @@ $.extend(fixmystreet.set_up, {
   mobile_ui_tweaks: function() {
     //move 'skip this step' link on mobile
     $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
-
-    // nicetable - on mobile shift 'name' col to be a row
-    $('.mobile .nicetable th.title').remove();
-    $('.mobile .nicetable td.title').each(function(i) {
-        $(this).attr('colspan', 5).insertBefore($(this).parent('tr')).wrap('<tr class="heading" />');
-    });
   },
 
   on_mobile_nav_click: function() {
@@ -802,26 +789,6 @@ $.extend(fixmystreet.set_up, {
         });
         $('body').append(form);
         form.submit();
-    });
-  },
-
-  promo_elements: function() {
-    // Add close buttons for .promo's
-    if ($('.promo').length) {
-        $('.promo').append('<a href="#" class="close-promo">x</a>');
-    }
-    //only close its own parent
-    $('.promo').on('click', '.close-promo', function(e) {
-        e.preventDefault();
-        $(this).parent('.promo').animate({
-            'height':0,
-            'margin-bottom':0,
-            'padding-top':0,
-            'padding-bottom':0
-        },{
-            duration:500,
-            queue:false
-        }).fadeOut(500);
     });
   },
 
