@@ -217,7 +217,7 @@ fixmystreet.geolocate = {
                 var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color") ? 'white' : 'yellow';
                 $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
             }
-            geo_position_js.getCurrentPosition(function(pos) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
                 $link.find('img').remove();
                 success_callback(pos);
             }, function(err) {
@@ -409,10 +409,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   report_geolocation: function() {
-    if (!geo_position_js.init()) {
-        return;
-    }
-    if ($('.js-geolocate').length) {
+    if ('geolocation' in navigator && $('.js-geolocate').length) {
         var link = $('.js-geolocate').attr('action');
         link = '<a href="' + link + '" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
         if ($('body.frontpage').length) {
