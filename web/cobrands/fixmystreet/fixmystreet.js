@@ -424,6 +424,75 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  category_groups: function() {
+    var $category_select = $("select#form_category.js-grouped-select");
+    if ($category_select.length === 0) {
+        return;
+    }
+    var $group_select = $("<select></select>").addClass("form-control");
+    var $subcategory_label = $("#form_subcategory_label");
+    var $empty_option = $category_select.find("option").first();
+
+    $group_select.change(function() {
+        var subcategory_id = $(this).find(":selected").data("subcategory_id");
+        $(".js-subcategory").hide();
+        if (subcategory_id === undefined) {
+            $subcategory_label.addClass("hidden");
+            $category_select.val($(this).val()).change();
+        } else {
+            $("#" + subcategory_id).show().change();
+            $("#form_subcategory_label").removeClass("hidden");
+        }
+    });
+
+    var subcategory_change = function() {
+        $category_select.val($(this).val()).change();
+    };
+
+    var add_optgroup = function(el) {
+        var $el = $(el);
+        var $options = $el.find("option");
+
+        if ($options.length == 1) {
+            add_option($options.get(0));
+        } else {
+            var label = $el.attr("label");
+            var subcategory_id = "subcategory_" + label.replace(/[^a-zA-Z]+/g, '');
+            var $opt = $("<option></option>").text(label).val(label);
+            $opt.data("subcategory_id", subcategory_id);
+            $group_select.append($opt);
+
+            var $sub_select = $("<select></select>").addClass("form-control js-subcategory");
+            $sub_select.attr("id", subcategory_id);
+            $sub_select.append($empty_option.clone());
+            $options.each(function() {
+                var $newopt = $(this).clone();
+                $sub_select.append($newopt);
+                // Make sure any preselected value is preserved in the new UI:
+                if ($newopt.attr('selected')) {
+                    $group_select.val(label);
+                }
+            });
+            $sub_select.hide().insertAfter($subcategory_label).change(subcategory_change);
+        }
+    };
+
+    var add_option = function(el) {
+        $group_select.append($(el).clone());
+    };
+
+    $category_select.hide();
+    $group_select.insertAfter($category_select);
+    $category_select.find("optgroup, > option").each(function() {
+        if (this.tagName.toLowerCase() === 'optgroup') {
+            add_optgroup(this);
+        } else if (this.tagName.toLowerCase() === 'option') {
+            add_option(this);
+        }
+    });
+    $group_select.change();
+  },
+
   hide_name: function() {
       $('body').on('click', '.js-hide-name', function(e){
           e.preventDefault();
@@ -862,6 +931,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         if (category_select.val() != '-- Pick a category --') {
             category_select.change();
         }
+        fixmystreet.run(fixmystreet.set_up.category_groups);
 
         if (data.contribute_as) {
             var $select = $('.js-contribute-as');
