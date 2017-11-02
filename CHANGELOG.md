@@ -31,6 +31,8 @@
       - Remove hidden from default staff state dropdown. #1878
       - Marking an item as a duplicate enforces providing duplicate id or
         a public update #1873
+    - UK:
+        - Use SVG logo, inlined on front page. #1887
 
 * v2.2 (13th September 2017)
     - New features:

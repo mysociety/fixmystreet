@@ -168,7 +168,25 @@ body.frontpage {
         margin: 2em 0;
         width: 300px;
         height: 60px;
-        background: url($image-sprite) -2px -108px no-repeat;
+        background: none;
+
+        // Override the width="175" height="35" attributes on the svg element,
+        // forcing the SVG contents to stretch to the new, larger, size.
+        svg {
+            width: 300px;
+            height: 60px;
+            margin-top: 0; // no need for the vertical centering any more
+        }
+    }
+
+    .site-logo__fallback {
+        width: 300px;
+        padding-top: 60px;
+        // No need for svg-background-image() here because the
+        // logo on the homepage is an inline SVG, and the only browsers
+        // not to show it will be IE8 and below, which are @1x.
+        background-image: url("/cobrands/fixmystreet.com/images/site-logo-homepage.png");
+        background-size: 300px 60px;
     }
 
     .content {
