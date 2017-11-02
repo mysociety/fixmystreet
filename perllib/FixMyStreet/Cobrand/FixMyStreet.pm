@@ -55,10 +55,9 @@ sub extra_contact_validation {
 
     $c->stash->{dest} = $c->get_param('dest');
 
-    $errors{dest} = "Please enter who your message is for"
-        unless $c->get_param('dest');
-
-    if ( $c->get_param('dest') eq 'council' || $c->get_param('dest') eq 'update' ) {
+    if (!$c->get_param('dest')) {
+        $errors{dest} = "Please enter who your message is for";
+    } elsif ( $c->get_param('dest') eq 'council' || $c->get_param('dest') eq 'update' ) {
         $errors{not_for_us} = 1;
     }
 
