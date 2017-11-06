@@ -1958,6 +1958,9 @@ label .muted {
     }
   }
 }
+.no-js #geolocate_link {
+    display: none !important;
+}
 
 #front-howto {
   #front_stats {

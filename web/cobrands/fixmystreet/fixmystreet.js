@@ -409,20 +409,15 @@ $.extend(fixmystreet.set_up, {
   },
 
   report_geolocation: function() {
-    if ('geolocation' in navigator && $('.js-geolocate').length) {
-        var link = $('.js-geolocate').attr('action');
-        link = '<a href="' + link + '" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
-        if ($('body.frontpage').length) {
-            $('.js-geolocate').after(link);
-        } else{
-            $('.js-geolocate').append(link);
-        }
+    if ('geolocation' in navigator) {
         fixmystreet.geolocate.setup(function(pos) {
             var latitude = pos.coords.latitude;
             var longitude = pos.coords.longitude;
             var page = $('#geolocate_link').attr('href');
             location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
         });
+    } else {
+        $('#geolocate_link').hide();
     }
   },
 
