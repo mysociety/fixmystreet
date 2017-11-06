@@ -289,6 +289,7 @@ subtest 'check text output' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '?text=1');
     is $mech->content_type, 'text/plain';
     $mech->content_contains('test category');
+    $mech->content_lacks('<body');
 };
 
 
