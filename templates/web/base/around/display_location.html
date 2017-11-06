@@ -61,14 +61,6 @@
             [% ELSE %]
                 <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
             [% END %]
-            [% IF c.cobrand.country == 'GB' || c.cobrand.country == 'NO' %]
-                <span class="hidden">|</span>
-                [% IF c.req.params.all_pins %]
-                    <a id='all_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => undef, all_pins => undef } ) %]">[% loc('Hide old') %]</a>
-                [% ELSE %]
-                    <a id='all_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => undef, all_pins => 1 } ) %]">[% loc('Show old') %]</a>
-                [% END %]
-            [% END %]
         </p>
 
         <div class="mobile-map-banner">

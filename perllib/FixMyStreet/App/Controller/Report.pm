@@ -524,24 +524,23 @@ sub nearby_json : Private {
     $c->stash->{page} = 'report';
 
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, undef, [ $p->category ], undef
+        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, [ $p->category ], undef
     );
     my @pins = map {
         my $p = $_->problem;
-        my $colour = $c->cobrand->pin_colour( $p, 'around' );
-        [ $p->latitude, $p->longitude,
-          $colour,
-          $p->id, $p->title_safe, 'small', JSON->false
+        $p = $p->pin_data($c, 'around');
+        [ $p->{latitude}, $p->{longitude}, $p->{colour},
+          $p->{id}, $p->{title}, 'small', JSON->false
         ]
     } @$nearby;
 
-    my $on_map_list_html = $c->render_fragment(
+    my $list_html = $c->render_fragment(
         'around/on_map_list_items.html',
-        { on_map => [], around_map => $nearby }
+        { around_map => [], on_map => $nearby }
     );
 
     my $json = { pins => \@pins };
-    $json->{reports_list} = $on_map_list_html if $on_map_list_html;
+    $json->{reports_list} = $list_html if $list_html;
     my $body = encode_json($json);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);

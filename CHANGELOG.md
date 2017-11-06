@@ -42,6 +42,7 @@
         - Always show pagination figures even if only one page. #1787
         - Report pages list more updates to a report. #1806
         - Clearer wording and more prominent email input on alert page. #1829
+        - Paginate reports on `/around`. #1805 #1577 #525
         - Cobrands can implement `hide_areas_on_reports` to hide outline on map.
         - Templates to allow extra messages through problem confirmation. #1837
         - Optimised sprite file down from 97 KB to 36 KB. #1852

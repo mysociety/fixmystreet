@@ -1,5 +1,23 @@
 var fixmystreet = fixmystreet || {};
 
+fixmystreet.utils = fixmystreet.utils || {};
+
+$.extend(fixmystreet.utils, {
+    parse_query_string: function() {
+        var qs = {};
+        if (!location.search) {
+            return qs;
+        }
+        location.search.substring(1).split(/[;&]/).forEach(function(i) {
+            var s = i.split('='),
+                k = s[0],
+                v = s[1] && decodeURIComponent(s[1].replace(/\+/g, ' '));
+            qs[k] = v;
+        });
+        return qs;
+    }
+});
+
 (function() {
 
     fixmystreet.maps = fixmystreet.maps || {};
@@ -282,7 +300,7 @@ var fixmystreet = fixmystreet || {};
         if (!location.search) {
             return qs;
         }
-        location.search.substring(1).split('&').forEach(function(i) {
+        location.search.substring(1).split(/[&;]/).forEach(function(i) {
             var s = i.split('='),
                 k = s[0],
                 v = s[1] && decodeURIComponent(s[1].replace(/\+/g, ' '));
@@ -301,15 +319,7 @@ var fixmystreet = fixmystreet || {};
         return value;
     }
 
-    function categories_or_status_changed_history() {
-        if (!('pushState' in history)) {
-            return;
-        }
-        var qs = parse_query_string();
-        var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
-        var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
-        var sort_key = replace_query_parameter(qs, 'sort', 'sort');
-        delete qs.p;
+    function update_url(qs) {
         var new_url;
         if ($.isEmptyObject(qs)) {
             new_url = location.href.replace(location.search, "");
@@ -318,6 +328,37 @@ var fixmystreet = fixmystreet || {};
         } else {
             new_url = location.href + '?' + $.param(qs);
         }
+        return new_url;
+    }
+
+    function page_changed_history() {
+        if (!('pushState' in history)) {
+            return;
+        }
+        var qs = fixmystreet.utils.parse_query_string();
+
+        var page = $('.pagination').data('page');
+        if (page > 1) {
+            qs.p = page;
+        } else {
+            delete qs.p;
+        }
+        var new_url = update_url(qs);
+        history.pushState({
+            page_change: { 'page': page }
+        }, null, new_url);
+    }
+
+    function categories_or_status_changed_history() {
+        if (!('pushState' in history)) {
+            return;
+        }
+        var qs = fixmystreet.utils.parse_query_string();
+        var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
+        var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
+        var sort_key = replace_query_parameter(qs, 'sort', 'sort');
+        delete qs.p;
+        var new_url = update_url(qs);
         history.pushState({
             filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses, 'sort': sort_key }
         }, null, new_url);
@@ -387,7 +428,7 @@ var fixmystreet = fixmystreet || {};
                     f.geometry = new_geometry;
                     this.removeAllFeatures();
                     this.addFeatures([f]);
-                    var qs = parse_query_string();
+                    var qs = fixmystreet.utils.parse_query_string();
                     if (!qs.bbox) {
                         zoomToBounds(extent);
                     }
@@ -482,19 +523,14 @@ var fixmystreet = fixmystreet || {};
         if (fixmystreet.page == 'around') {
             fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.FixMyStreet();
             pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
-            pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
-                url: '/ajax',
-                params: fixmystreet.all_pins ? { all_pins: 1 } : { },
-                format: new OpenLayers.Format.FixMyStreet()
-            });
         }
         if (fixmystreet.page == 'reports') {
-            pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetRefreshOnZoom() ];
+            pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetNoLoad() ];
         }
         if (fixmystreet.page == 'my') {
             pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetFixed() ];
         }
-        if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
+        if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
             pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
                 url: fixmystreet.original.href.split('?')[0] + '?ajax=1',
                 format: new OpenLayers.Format.FixMyStreet()
@@ -549,9 +585,22 @@ var fixmystreet = fixmystreet || {};
             $("#filter_categories").on("change.filters", categories_or_status_changed);
             $("#statuses").on("change.filters", categories_or_status_changed);
             $("#sort").on("change.filters", categories_or_status_changed);
+            $('.js-pagination').on('change.filters', categories_or_status_changed);
+            $('.js-pagination').on('click', 'a', function(e) {
+                e.preventDefault();
+                var page = $('.pagination').data('page');
+                if ($(this).hasClass('next')) {
+                    $('.pagination').data('page', page + 1);
+                } else {
+                    $('.pagination').data('page', page - 1);
+                }
+                fixmystreet.markers.protocol.use_page = true;
+                $(this).trigger('change');
+            });
             $("#filter_categories").on("change.user", categories_or_status_changed_history);
             $("#statuses").on("change.user", categories_or_status_changed_history);
             $("#sort").on("change.user", categories_or_status_changed_history);
+            $('.js-pagination').on('click', 'a', page_changed_history);
         } else if (fixmystreet.page == 'new') {
             drag.activate();
         }
@@ -577,37 +626,6 @@ var fixmystreet = fixmystreet || {};
                 this.innerHTML = translation_strings.show_pins;
             }
         });
-
-        $('#all_pins_link').click(function(e) {
-            e.preventDefault();
-            fixmystreet.markers.setVisibility(true);
-            var texts = [
-                'en', 'Show old', 'Hide old',
-                'nb', 'Vis gamle', 'Skjul gamle',
-                'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
-            ];
-            for (var i=0; i<texts.length; i+=3) {
-                if (this.innerHTML == texts[i+1]) {
-                    this.innerHTML = texts[i+2];
-                    fixmystreet.markers.protocol.options.params = { all_pins: 1 };
-                    fixmystreet.markers.refresh( { force: true } );
-                    lang = texts[i];
-                } else if (this.innerHTML == texts[i+2]) {
-                    this.innerHTML = texts[i+1];
-                    fixmystreet.markers.protocol.options.params = { };
-                    fixmystreet.markers.refresh( { force: true } );
-                    lang = texts[i];
-                }
-            }
-            if (lang == 'cy') {
-                document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
-            } else if (lang == 'nb') {
-                document.getElementById('hide_pins_link').innerHTML = 'Skjul nåler';
-            } else {
-                document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
-            }
-        });
-
     }
 
     $(function(){
@@ -761,6 +779,8 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
 });
 
 OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
+    // Update when the zoom changes, pagination means there might be new things
+    resFactor: 1.5,
     ratio: 1,
     // The transform in Strategy.BBOX's getMapBounds could mean you end up with
     // co-ordinates too precise, which could then cause the Strategy to think
@@ -787,11 +807,8 @@ OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     }
 });
 
-/* This strategy will call for updates whenever the zoom changes,
- * unlike the parent which only will if new area is included. It
- * also does not update on load, as we already have the data. */
-OpenLayers.Strategy.FixMyStreetRefreshOnZoom = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
-    resFactor: 1.5,
+/* This strategy additionally does not update on load, as we already have the data. */
+OpenLayers.Strategy.FixMyStreetNoLoad = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
     activate: function() {
         var activated = OpenLayers.Strategy.prototype.activate.call(this);
         if (activated) {
@@ -821,12 +838,15 @@ OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixe
 });
 
 /* Pan data request handler */
-// This class is used to get a JSON object from /ajax that contains
+// This class is used to get a JSON object from /around?ajax that contains
 // pins for the map and HTML for the sidebar. It does a fetch whenever the map
 // is dragged (modulo a buffer extending outside the viewport).
 // This subclass is required so we can pass the 'filter_category' and 'status' query
-// params to /ajax if the user has filtered the map.
+// params to /around?ajax if the user has filtered the map.
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    initial_page: null,
+    use_page: false,
+
     read: function(options) {
         // Show the loading indicator over the map
         $('#loading-indicator').removeClass('hidden');
@@ -839,6 +859,16 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
                 options.params[key] = val;
             }
         });
+        if (this.use_page) {
+            var page = $('.pagination').data('page');
+            this.use_page = false;
+        } else if (this.initial_page) {
+            page = 1;
+        } else {
+            var qs = fixmystreet.utils.parse_query_string();
+            this.initial_page = page = qs.p || 1;
+        }
+        options.params.p = page;
         return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
     },
     CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"

@@ -110,6 +110,21 @@ sub determine_location_from_pc : Private {
     return;
 }
 
+sub determine_location_from_bbox : Private {
+    my ( $self, $c ) = @_;
+
+    my $bbox = $c->get_param('bbox');
+    return unless $bbox;
+
+    my ($min_lon, $min_lat, $max_lon, $max_lat) = split /,/, $bbox;
+    my $longitude = ($max_lon + $min_lon ) / 2;
+    my $latitude = ($max_lat + $min_lat ) / 2;
+    $c->stash->{bbox} = $bbox;
+    $c->stash->{latitude} = $latitude;
+    $c->stash->{longitude} = $longitude;
+    return $c->forward('check_location');
+}
+
 =head2 check_location
 
 Just make sure that for UK installs, our co-ordinates are indeed in the UK.

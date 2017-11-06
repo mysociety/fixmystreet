@@ -59,10 +59,6 @@ sub map_type {
     'Bromley';
 }
 
-sub on_map_default_max_pin_age {
-    return '1 month';
-}
-
 # Bromley pins always yellow
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
