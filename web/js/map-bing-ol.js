@@ -95,10 +95,10 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 
     get_urls: function(bounds, z) {
         return [
-            "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=3467",
-            "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=3467",
-            "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=3467",
-            "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=3467"
+            "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=5941",
+            "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=5941",
+            "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=5941",
+            "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=5941"
         ];
     },
 

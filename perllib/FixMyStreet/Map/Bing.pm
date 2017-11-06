@@ -26,7 +26,7 @@ sub get_quadkey {
 }
 
 sub map_tile_base {
-    '', "//ecn.%s.tiles.virtualearth.net/tiles/r%s.png?g=3467";
+    '', "//ecn.%s.tiles.virtualearth.net/tiles/r%s.png?g=5941";
 }
 
 sub map_tiles {
