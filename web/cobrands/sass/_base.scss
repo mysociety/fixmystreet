@@ -1697,14 +1697,12 @@ html.js #map .noscript {
     img {
         cursor: move;
     }
-    img.pin {
-        z-index: 100;
-        background-color: inherit;
-    }
-    a img.pin {
-        cursor: pointer;
-        cursor: hand;
-    }
+}
+
+/* For non-JS situations, as the image file is 2x pixel size */
+img.pin {
+    width: 48px;
+    height: 64px;
 }
 
 // only on mobile
