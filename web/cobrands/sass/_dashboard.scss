@@ -175,18 +175,11 @@
         display: inline-block;
         width: 16px;
         height: 16px;
-        background: transparent url(/cobrands/fixmystreet/images/crosshairs.png) no-repeat 0 0;
+        background-repeat: no-repeat;
+        @include svg-background-image('/cobrands/fixmystreet/images/crosshairs');
         background-size: 16px 16px;
         margin-#{$right}: 0.5em;
         vertical-align: -0.1em;
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/crosshairs@2x.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/crosshairs.svg), none;
-        }
     }
 }
 

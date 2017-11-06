@@ -1,0 +1,8 @@
+<a href="[% c.cobrand.base_url IF admin %]/" id="site-logo" aria-label="Fix My Street">[% FILTER collapse %]
+    [% IF c.req.uri.path == '/' %]
+        [% INSERT site_logo_with_fallback.svg %]
+    [% ELSE %]
+        <span class="site-logo__fallback"></span>
+    [% END %]
+[% END %]</a>
+<a href="[% c.cobrand.base_url IF admin %]/" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>

@@ -155,8 +155,7 @@ body.fullwidthpage {
             height: 34px;
             padding-#{$left}: 24px;
             margin-top: 0.25em;
-            @media only screen and (min-resolution: 320dpi),
-            only screen and (-webkit-min-device-pixel-ratio: 2) {
+            @media ($high-dpi-screen) {
                 background-image: url(images/locate-me@2.png);
                 background-size: 22px 34px;
             }
@@ -169,7 +168,25 @@ body.frontpage {
         margin: 2em 0;
         width: 300px;
         height: 60px;
-        background: url($image-sprite) -2px -108px no-repeat;
+        background: none;
+
+        // Override the width="175" height="35" attributes on the svg element,
+        // forcing the SVG contents to stretch to the new, larger, size.
+        svg {
+            width: 300px;
+            height: 60px;
+            margin-top: 0; // no need for the vertical centering any more
+        }
+    }
+
+    .site-logo__fallback {
+        width: 300px;
+        padding-top: 60px;
+        // No need for svg-background-image() here because the
+        // logo on the homepage is an inline SVG, and the only browsers
+        // not to show it will be IE8 and below, which are @1x.
+        background-image: url("/cobrands/fixmystreet.com/images/site-logo-homepage.png");
+        background-size: 300px 60px;
     }
 
     .content {
@@ -254,7 +271,7 @@ body.unresponsive-council {
     background-position: $right center;
     background-repeat: no-repeat;
 
-    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    @media ($high-dpi-screen) {
         background-image: url(images/unresponsive-council-cta-arrow@2.png);
         background-size: 60px;
     }

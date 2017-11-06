@@ -9,7 +9,7 @@
     background-size: 120px 32px;
     height: 32px;
     width: 120px;
-    @include high-dpi-background-image('images/site-logo-mobile');
+    @include svg-background-image('images/site-logo-mobile');
 }
 
 #site-header {

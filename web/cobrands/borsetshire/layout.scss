@@ -9,7 +9,7 @@
     background-size: 180px 48px;
     height: 48px;
     width: 180px;
-    @include high-dpi-background-image('images/site-logo');
+    @include svg-background-image('images/site-logo');
 }
 
 #site-header {

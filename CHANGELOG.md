@@ -10,6 +10,8 @@
         - Don't cover whole map with pin loading indicator.
         - Add Expand map toggle to more mobile maps.
         - Add functionality to have per-body /reports page.
+    - Front end improvements:
+        - Remove unneeded 2x PNG fallback images.
     - Bugfixes
         - Shortlist menu item always remains a link #1855
         - Fix encoded entities in RSS output. #1859
@@ -30,6 +32,8 @@
       - Marking an item as a duplicate enforces providing duplicate id or
         a public update #1873
       - Report field pre-filling for inspectors configurable #1854
+    - UK:
+        - Use SVG logo, inlined on front page. #1887
 
 * v2.2 (13th September 2017)
     - New features:
