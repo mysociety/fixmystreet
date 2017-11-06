@@ -526,9 +526,10 @@ sub nearby_json : Private {
     my $nearby = $c->model('DB::Nearby')->nearby(
         $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, [ $p->category ], undef
     );
+    # Want to treat these as if they were on map
+    $nearby = [ map { $_->problem } @$nearby ];
     my @pins = map {
-        my $p = $_->problem;
-        $p = $p->pin_data($c, 'around');
+        my $p = $_->pin_data($c, 'around');
         [ $p->{latitude}, $p->{longitude}, $p->{colour},
           $p->{id}, $p->{title}, 'small', JSON->false
         ]
