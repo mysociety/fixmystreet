@@ -124,7 +124,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Invalid location');
         $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 51.754926, longitude => -1.256179, include_update => undef } });
         $mech->content_lacks('Invalid location');
-        $user->user_body_permissions->search({ body_id => $oxon->id, permission_type => 'planned_reports' })->delete;
     };
 
     subtest "test duplicate reports are shown" => sub {
@@ -203,6 +202,10 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('duplicate_of'), $report2->id;
         is_deeply $report2->get_extra_metadata('duplicates'), [ $report->id ];
 
+        # Check that duplicate does not include shortlist add button (no form in form)
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('item-list__item__shortlist-add');
+
         $report->set_extra_metadata('duplicate_of', undef);
         $report->update({ state => $old_state });
         $report2->set_extra_metadata('duplicates', undef);
@@ -241,6 +244,9 @@ FixMyStreet::override_config {
         my $old_state = $report->state;
         $report->comments->delete_all;
 
+        $mech->get_ok("/report/$report2_id/nearby.json");
+        $mech->content_lacks('Add to shortlist');
+
         $mech->get_ok("/report/$report_id");
         my $update_text = "This text was entered as an update by the user.";
         $mech->submit_form_ok({ button => 'save', with_fields => {
@@ -253,6 +259,7 @@ FixMyStreet::override_config {
 
         is $report->state, 'duplicate', 'report marked as duplicate';
         is $report->comments->search({ problem_state => 'duplicate' })->count, 1, 'update marked report as duplicate';
+        $mech->get_ok("/report/$report_id"); # Get again as planned_reports permission means redirect to referer...
         $mech->content_contains($update_text);
         $mech->content_lacks("Thank you for your report. This problem has already been reported.");
 
@@ -260,7 +267,6 @@ FixMyStreet::override_config {
     };
 
     subtest "post-inspect redirect is to the right place if URL set" => sub {
-        $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
         $mech->get_ok("/report/$report_id");
         my $update_text = "This text was entered as an update by the user.";
         $mech->submit_form_ok({ button => 'save', with_fields => {
@@ -271,11 +277,9 @@ FixMyStreet::override_config {
         is $mech->res->code, 200, "got 200";
         is $mech->res->previous->code, 302, "got 302 for redirect";
         is $mech->uri->path, '/', 'redirected to front page';
-        $user->user_body_permissions->search({ body_id => $oxon->id, permission_type => 'planned_reports' })->delete;
     };
 
     subtest "post-inspect redirect is to the right place if URL not set" => sub {
-        $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
         $user->set_extra_metadata(categories => [ $contact->id ]);
         $user->update;
         $mech->get_ok("/report/$report_id");
@@ -292,7 +296,6 @@ FixMyStreet::override_config {
         is $params{lat}, $report->latitude, "latitude param is correct";
         is $params{lon}, $report->longitude, "longitude param is correct";
         is $params{filter_category}, $contact->category, "categories param is correct";
-        $user->user_body_permissions->search({ body_id => $oxon->id, permission_type => 'planned_reports' })->delete;
     };
 
     subtest "default response priorities display correctly" => sub {
