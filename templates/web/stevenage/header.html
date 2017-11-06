@@ -10,13 +10,7 @@
         <meta name="HandHeldFriendly" content="true">
         <meta name="mobileoptimized" content="0">
 
-        <link rel="stylesheet" href="[% version('/cobrands/stevenage/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/stevenage/layout.css') %]" media="(min-width:48em)">
-        [% extra_css %]
-        <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
-        <![endif]-->
-
+        [% INCLUDE 'header/css.html' %]
         [% INCLUDE 'common_header_tags.html' %]
 
         [% INCLUDE 'tracking_code.html' %]

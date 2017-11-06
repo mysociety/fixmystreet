@@ -16,13 +16,7 @@
         <meta name="mobileoptimized" content="0">
 
         [% INCLUDE 'header_opengraph.html' %]
-        <link rel="stylesheet" href="[% version('/cobrands/angus/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/angus/layout.css') %]" media="(min-width:48em)">
-        [% extra_css %]
-        <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% version('/cobrands/angus/layout.css') %]">
-        <![endif]-->
-
+        [% INCLUDE 'header/css.html' %]
         [% INCLUDE 'common_header_tags.html' %]
 
         [% IF c.req.uri.host == 'osm.fixmystreet.com' %]

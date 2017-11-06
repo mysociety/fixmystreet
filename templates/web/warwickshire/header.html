@@ -38,13 +38,7 @@
     <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/jquery.zrssfeed.o.js') %]" type="text/javascript"></script>
     <script src="[% version ('/cobrands/' _ c.cobrand.moniker _ '/vendor/gamma/homepage-slider-test.js') %]" type="text/javascript"></script>
 
-    <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
-    <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
-    [% extra_css %]
-    <!--[if (lt IE 9) & (!IEMobile)]>
-        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
-    <![endif]-->
-
+    [% INCLUDE 'header/css.html' %]
     [% INCLUDE 'common_header_tags.html' %]
 </head>
 

@@ -1,0 +1,11 @@
+[% SET base_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]
+[% SET layout_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]
+
+<link rel="stylesheet" href="[% base_css %]">
+<link rel="stylesheet" href="[% layout_css %]" media="screen and (min-width:48em)">
+<!--[if (lt IE 9) & (!IEMobile)]>
+    <link rel="stylesheet" href="[% layout_css %]">
+<![endif]-->
+<link rel="stylesheet" href="[% version('/vendor/OpenLayers/theme/default/style.css') %]">
+
+[% extra_css %]

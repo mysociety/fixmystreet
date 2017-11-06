@@ -11,15 +11,8 @@
         <meta name="mobileoptimized" content="0">
 
         [% INCLUDE 'header_opengraph.html' %]
-
-        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+        [% INCLUDE 'header/css.html' %]
         <link rel="stylesheet" href="[% version('/cobrands/hart/hart.css') %]">
-        [% extra_css %]
-        <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
-        <![endif]-->
-
         [% INCLUDE 'common_header_tags.html' %]
 
         <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/hart/favicon.ico">
