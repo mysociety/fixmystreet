@@ -608,9 +608,12 @@ sub edit_body : Chained('body') : PathPart('') : Args(0) {
     $c->set_param('posted', '');
 
     $c->forward('fetch_translations');
+
+    # don't set this last as fetch_contacts might over-ride it
+    # to display email addresses as text
+    $c->stash->{template} = 'admin/body.html';
     $c->forward('fetch_contacts');
 
-    $c->stash->{template} = 'admin/body.html';
     return 1;
 }
 
