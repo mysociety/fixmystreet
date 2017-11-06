@@ -34,6 +34,7 @@
       - Report field pre-filling for inspectors configurable #1854
     - UK:
         - Use SVG logo, inlined on front page. #1887
+        - Inline critical CSS on front page.
 
 * v2.2 (13th September 2017)
     - New features:

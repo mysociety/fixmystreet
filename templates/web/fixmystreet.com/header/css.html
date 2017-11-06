@@ -1,0 +1,37 @@
+[% SET base_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]
+[% SET layout_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]
+[% SET ol_css = version('/vendor/OpenLayers/theme/default/style.css') %]
+
+[% TRY %][% critical = INSERT "header/critical.auto.min.css" %][% CATCH file %][% END %]
+
+[% IF inline_css AND critical %]
+<style id="critical">
+[% critical %]
+</style>
+
+<noscript><link rel="stylesheet" href="[% base_css %]"></noscript>
+<link rel="stylesheet" href="[% base_css %]" media="(min-width:48em)">
+<link rel="prefetch" href="[% ol_css %]" as="style">
+<link id="preload_base_css" rel="preload" href="[% base_css %]" as="style">
+<script nonce="[% csp_nonce %]">
+/* If browser *does* support preload, use stylesheets when loaded */
+document.getElementById('preload_base_css').onload = function(){this.rel='stylesheet'};
+/* Create link elements with JS because we can't use inline onload */
+// (function(d){var c=d.getElementById('critical');function a(p){var l=d.createElement("link");l.rel="preload";l.href=p;l.as="style";l.onload=function(){this.rel='stylesheet'};c.parentNode.insertBefore(l,c)}
+// a("[% base_css %]");
+// })(document);
+/*! loadCSS & rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
+(function(a){var b=function(b,h,e){function c(a){if(f.body)return a();setTimeout(function(){c(a)})}function k(){d.addEventListener&&d.removeEventListener("load",k);d.media=e||"all"}var f=a.document,d=f.createElement("link");var p=f.styleSheets;d.rel="stylesheet";d.href=b;d.media="only x";c(function(){h.parentNode.insertBefore(d,h)});var l=function(a){for(var b=d.href,c=p.length;c--;)if(p[c].href===
+b)return a();setTimeout(function(){l(a)})};d.addEventListener&&d.addEventListener("load",k);l(k)};a.loadCSS=b})(this);
+(function(a){var b={};b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}};b.poly=function(){for(var b=a.document.getElementsByTagName("link"),e=0;e<b.length;e++){var c=b[e];"preload"===c.rel&&"style"===c.getAttribute("as")&&(a.loadCSS(c.href,c,c.getAttribute("media")),c.rel=null)}};if(!b.support()){b.poly()}})(this);
+</script>
+[% ELSE %]
+<link rel="stylesheet" href="[% ol_css %]">
+<link rel="stylesheet" href="[% base_css %]">
+[% END %]
+<link rel="stylesheet" href="[% layout_css %]" media="screen and (min-width:48em)">
+<!--[if (lt IE 9) & (!IEMobile)]>
+    <link rel="stylesheet" href="[% layout_css %]">
+<![endif]-->
+
+[% extra_css %]
