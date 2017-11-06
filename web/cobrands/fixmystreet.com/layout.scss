@@ -155,8 +155,7 @@ body.fullwidthpage {
             height: 34px;
             padding-#{$left}: 24px;
             margin-top: 0.25em;
-            @media only screen and (min-resolution: 320dpi),
-            only screen and (-webkit-min-device-pixel-ratio: 2) {
+            @media ($high-dpi-screen) {
                 background-image: url(images/locate-me@2.png);
                 background-size: 22px 34px;
             }
@@ -254,7 +253,7 @@ body.unresponsive-council {
     background-position: $right center;
     background-repeat: no-repeat;
 
-    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    @media ($high-dpi-screen) {
         background-image: url(images/unresponsive-council-cta-arrow@2.png);
         background-size: 60px;
     }

@@ -324,17 +324,10 @@ select.form-control {
         display: inline-block;
         width: 16px;
         height: 18px;
-        background: transparent url(/cobrands/fixmystreet/images/padlock.png) 0 0 no-repeat;
+        background-repeat: no-repeat;
+        @include svg-background-image('/cobrands/fixmystreet/images/padlock');
         background-size: 16px 18px;
         margin-#{$right}: 0.5em;
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/padlock@2.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/padlock.svg), none;
-        }
     }
 }
 
@@ -771,60 +764,29 @@ input.final-submit {
         display: inline-block;
         width: 16px;
         height: 16px;
-        background: transparent url(/cobrands/fixmystreet/images/navigate.png) no-repeat 0 0;
+        background-repeat: no-repeat;
+        @include svg-background-image('/cobrands/fixmystreet/images/navigate');
         background-size: 16px 16px;
         margin-#{$right}: 0.5em;
         vertical-align: -0.1em; // vertically centre icon in button
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/navigate@2x.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/navigate.svg), none;
-        }
     }
 }
 
 .btn--geolocate {
     &:before {
-        background-image: url(/cobrands/fixmystreet/images/crosshairs.png);
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/crosshairs@2x.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/crosshairs.svg), none;
-        }
+        @include svg-background-image('/cobrands/fixmystreet/images/crosshairs');
     }
 }
 
 .btn--shortlist {
     &:before {
-        background-image: url(/cobrands/fixmystreet/images/icon-shortlist-mini.png);
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/icon-shortlist-mini@2x.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/icon-shortlist-mini.svg), none;
-        }
+        @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-mini');
     }
 }
 
 .btn--shortlisted {
     &:before {
-        background-image: url(/cobrands/fixmystreet/images/icon-shortlisted-mini.png);
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/icon-shortlisted-mini@2x.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/icon-shortlisted-mini.svg), none;
-        }
+        @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlisted-mini');
     }
 }
 
@@ -1124,31 +1086,31 @@ input.final-submit {
 
 .item-list__item__shortlist-add {
   @extend %list-item-action-button;
-  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive');
+  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive');
 
   &:hover,
   &:focus {
-    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive-hover');
+    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive-hover');
   }
 }
 
 .item-list__item__shortlist-remove {
   @extend %list-item-action-button;
-  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-active');
+  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-active');
 
   &:hover,
   &:focus {
-    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-active-hover');
+    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-active-hover');
   }
 }
 
 .item-list__item__shortlist-take {
   @extend %list-item-action-button;
-  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken');
+  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken');
 
   &:hover,
   &:focus {
-    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken-hover');
+    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken-hover');
   }
 }
 
@@ -1158,18 +1120,18 @@ input.final-submit {
   padding-top: 24px; // half the normal height, because shorter icon
   background-size: 24px 14px;
 
-  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
+  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
 
   &:hover,
   &:focus {
-    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-up-hover');
+    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-up-hover');
   }
 
   &[disabled] {
     opacity: 0.5;
     cursor: default;
 
-    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
+    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
   }
 }
 
@@ -1180,18 +1142,18 @@ input.final-submit {
   padding-top: 24px; // half the normal height, because shorter icon
   background-size: 24px 14px;
 
-  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
+  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
 
   &:hover,
   &:focus {
-    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-down-hover');
+    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-down-hover');
   }
 
   &[disabled] {
     opacity: 0.5;
     cursor: default;
 
-    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
+    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
   }
 }
 
@@ -1369,16 +1331,11 @@ input.final-submit {
   padding: 1em 1em 1em 4em; // Icon is always displayed on left, even in RtL mode
   border-radius: 0.25em;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.5) url(/cobrands/fixmystreet/images/shortlist.png) 1em 50% no-repeat;
+  background-color: rgba(255, 255, 255, 0.5);
+  background-position: 1em 50%;
+  background-repeat: no-repeat;
   background-size: 2em 2em;
-
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    background-image: url(/cobrands/fixmystreet/images/shortlist@2.png);
-  }
-
-  @media all {
-    background-image: url(/cobrands/fixmystreet/images/shortlist.svg), none;
-  }
+  @include svg-background-image('/cobrands/fixmystreet/images/shortlist');
 
   h3 {
     margin: 0;
@@ -1516,15 +1473,7 @@ html.js #map .noscript {
          display: inline-block;
          width: 16px;
          height: 16px;
-         background-image: url(/cobrands/fixmystreet/images/map-marker.png);
-
-         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-             background-image: url(/cobrands/fixmystreet/images/map-marker@2x.png);
-         }
-
-         @media all {
-             background-image: url(/cobrands/fixmystreet/images/map-marker.svg), none;
-         }
+         @include svg-background-image('/cobrands/fixmystreet/images/map-marker');
          background-size: 16px 16px;
          vertical-align: middle;
          margin: flip(0 0 0 8px, 0 8px 0 0);
@@ -1546,26 +1495,10 @@ html.js #map .noscript {
         margin-#{$left}: 8px;
       }
       &.expand:after {
-        background-image: url(/cobrands/fixmystreet/images/expand.png);
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/expand@2x.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/expand.svg), none;
-        }
+        @include svg-background-image('/cobrands/fixmystreet/images/expand');
       }
       &.compress:after {
-        background-image: url(/cobrands/fixmystreet/images/compress.png);
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/compress@2x.png);
-        }
-
-        @media all {
-            background-image: url(/cobrands/fixmystreet/images/compress.svg), none;
-        }
+        @include svg-background-image('/cobrands/fixmystreet/images/compress');
       }
     }
     &:hover {

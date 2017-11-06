@@ -220,12 +220,9 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
 
 .mysoc-footer__org__logo--fms-platform {
   width: 205px;
-  background: transparent url('#{$mysoc-footer-image-path}logo-fms-platform.png') 0 0 no-repeat;
+  background-repeat: no-repeat;
   background-size: 205px 32px;
-  @media ($high-dpi-screen) {
-    background-image: url('#{$mysoc-footer-image-path}logo-fms-platform@2x.png');
-  }
-  background-image: url('#{$mysoc-footer-image-path}logo-fms-platform.svg'), none;
+  @include svg-background-image('#{$mysoc-footer-image-path}logo-fms-platform');
 }
 
 .fms-app-badges {

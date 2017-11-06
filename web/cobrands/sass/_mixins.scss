@@ -206,14 +206,7 @@ $right: right;
   order: $order;
 }
 
-@mixin high-dpi-background-image($path) {
+@mixin svg-background-image($path) {
   background-image: url("#{$path}.png");
-
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    background-image: url("#{$path}@2x.png");
-  }
-
-  @media screen {
-    background-image: url("#{$path}.svg"), none;
-  }
+  background-image: url("#{$path}.svg"), none;
 }
