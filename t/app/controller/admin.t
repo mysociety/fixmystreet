@@ -1325,6 +1325,10 @@ my %default_perms = (
     trusted_bodies => undef,
 );
 
+# Start this section with user having no name
+# Regression test for mysociety/fixmystreetforcouncils#250
+$user->update({ name => '' });
+
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
@@ -1332,7 +1336,7 @@ FixMyStreet::override_config {
         {
             desc => 'edit user name',
             fields => {
-                name => 'Test User',
+                name => '',
                 email => 'test@example.com',
                 body => $haringey->id,
                 phone => '',

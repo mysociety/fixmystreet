@@ -1430,6 +1430,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         my $edited = 0;
 
+        my $name = $c->get_param('name');
         my $email = lc $c->get_param('email');
         my $phone = $c->get_param('phone');
         my $email_v = $c->get_param('email_verified') || 0;
@@ -1452,7 +1453,7 @@ sub user_edit : Path('user_edit') : Args(1) {
             $phone = $parsed_phone if $parsed_phone;
         }
 
-        unless ($user->name) {
+        unless ($name) {
             $c->stash->{field_errors}->{name} = _('Please enter a name');
         }
 
@@ -1471,7 +1472,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         return if %{$c->stash->{field_errors}};
 
         if ( ($user->email || "") ne $email ||
-            $user->name ne $c->get_param('name') ||
+            $user->name ne $name ||
             ($user->phone || "") ne $phone ||
             ($user->from_body && $c->get_param('body') && $user->from_body->id ne $c->get_param('body')) ||
             (!$user->from_body && $c->get_param('body'))
@@ -1489,7 +1490,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->phone($phone) if !$existing_phone;
         $user->email_verified( $email_v );
         $user->phone_verified( $phone_v );
-        $user->name( $c->get_param('name') );
+        $user->name( $name );
 
         $user->flagged( $c->get_param('flagged') || 0 );
         # Only superusers can grant superuser status
