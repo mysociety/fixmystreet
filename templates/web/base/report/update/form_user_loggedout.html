@@ -1,4 +1,4 @@
-[% IF c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY %]
+[% IF c.cobrand.social_auth_enabled %]
     <h3>[% loc("Now to submit your update&hellip;") %]</h3>
   [% IF c.config.FACEBOOK_APP_ID %]
     <div class="form-box">
@@ -29,6 +29,6 @@
     [% INCLUDE 'report/update/form_user_loggedout_by_email.html' %]
 </div>
 
-[% IF c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY %]
+[% IF c.cobrand.social_auth_enabled %]
     </div>
 [% END %]
