@@ -76,7 +76,7 @@ body.frontpage {
     #site-logo {
         width: 300px;
         height: 55px;
-        background: url($image-sprite) -2px -115px no-repeat;
+        background: transparent url('images/homepage-logo.png') 0 50% no-repeat;
     }
 
     #main-nav {
