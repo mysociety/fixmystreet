@@ -24,6 +24,7 @@
         - Remove shortlist form from inspect duplicate list.
         - Fix pin size when JavaScript unavailable.
         - Fix display of text only body contacts #1895
+        - Prevent text overflow bug on homepage stats #1722
     - Admin improvements:
       - Character length limit can be placed on report detailed information #1848
       - Inspector panel shows nearest address if available #1850
