@@ -10,7 +10,6 @@
 </style>
 
 <noscript><link rel="stylesheet" href="[% base_css %]"></noscript>
-<link rel="stylesheet" href="[% base_css %]" media="(min-width:48em)">
 <link rel="prefetch" href="[% ol_css %]" as="style">
 <link id="preload_base_css" rel="preload" href="[% base_css %]" as="style">
 <script nonce="[% csp_nonce %]">
@@ -21,6 +20,7 @@ document.getElementById('preload_base_css').onload = function(){this.rel='styles
 b)return a();setTimeout(function(){l(a)})};d.addEventListener&&d.addEventListener("load",k);l(k)};a.loadCSS=b})(this);
 (function(a){var b={};b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}};b.poly=function(){for(var b=a.document.getElementsByTagName("link"),e=0;e<b.length;e++){var c=b[e];"preload"===c.rel&&"style"===c.getAttribute("as")&&(a.loadCSS(c.href,c,c.getAttribute("media")),c.rel=null)}};if(!b.support()){b.poly()}})(this);
 </script>
+<link rel="stylesheet" href="[% base_css %]" media="(min-width:48em)">
 [% ELSE %]
 <link rel="stylesheet" href="[% ol_css %]">
 <link rel="stylesheet" href="[% base_css %]">
