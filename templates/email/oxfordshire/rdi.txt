@@ -1,8 +1,11 @@
-Subject: RDI report for [% user.name %]
+Subject:[% IF staging_site %] [STAGING][% END %] RDI report for [% user.name %]
 
 Please find attached RDI file for [% start_date %]
 to [% end_date %].
-
+[% IF staging_site %]
+NB: This RDI file was generated on a staging site and is for testing
+purposes only.
+[% END %]
 ----
 
 The mySociety team and Oxfordshire County Council

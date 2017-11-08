@@ -40,6 +40,12 @@ foreach my $inspector (@inspectors) {
         user => $inspector,
         mark_as_processed => 1,
     };
+    my $email_params = {
+        start_date => $start_date,
+        end_date => $end_date,
+        user => $inspector,
+        staging_site => FixMyStreet->config('STAGING_SITE'),
+    };
     my $rdi = FixMyStreet::Integrations::ExorRDI->new($params);
     try {
         my $hdrs = {
@@ -58,7 +64,7 @@ foreach my $inspector (@inspectors) {
 
         my $result = FixMyStreet::Email::send_cron(
             FixMyStreet::DB->schema,
-            "rdi.txt", $params, $hdrs,
+            "rdi.txt", $email_params, $hdrs,
             undef, 0, $cobrand,
         );
         if ($result) {
