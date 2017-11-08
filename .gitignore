@@ -19,7 +19,7 @@ FixMyBarangay.po
 /web/css/main.css
 /web/cobrands/*/*.css
 /web/cobrands/*/*.css.map
-*.auto.min.js
+*.auto.*
 
 # Photo upload cache
 /web/photo

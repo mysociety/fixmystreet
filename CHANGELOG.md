@@ -38,6 +38,7 @@
       - Admins can now unban users #1881
     - UK:
         - Use SVG logo, inlined on front page. #1887
+        - Inline critical CSS on front page.
 
 * v2.2 (13th September 2017)
     - New features:

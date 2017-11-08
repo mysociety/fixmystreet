@@ -1832,67 +1832,6 @@ label .muted {
 }
 
 
-table.nicetable {
-  width:100%;
-  margin-bottom:2em;
-  thead {
-    border-bottom:0.25em solid #ccc;
-    th {
-      font-size:0.75em;
-    }
-  }
-  tr {
-    &.a {
-      background:#f6f6f6;
-    }
-    &.gone {
-        color: #666666;
-        background-color: #cccccc;
-    }
-    &:hover {
-      background:#FFF5CC;
-      cursor:pointer;
-    }
-    td {
-      padding:0.25em;
-      a {
-        &:hover {
-          text-decoration:none;
-        }
-      }
-    }
-  }
-  .title {
-    text-align: $left;
-  }
-  .data {
-    width:12%;
-  }
-}
-
-.promo {
-  margin: 0 -1em 1em;
-  color: $primary_text;
-  background: $primary;
-  padding:1em;
-  overflow:hidden;
-  position: relative;
-  .close-promo {
-    position:absolute;
-    top:0.5em;
-    #{$right}: 0.5em;
-    display:block;
-    width:16px;
-    height:16px;
-    text-indent:-999999px;
-    background:url($image-sprite) -341px -263px no-repeat;
-    @include border-radius(4px);
-    &:hover {
-      background:#222 url($image-sprite) -341px -223px no-repeat;
-    }
-  }
-}
-
 .alert {
   margin: 0 -1em 1em;
   background:#ff0000;
@@ -2018,6 +1957,9 @@ table.nicetable {
       background:#2a2a2a;
     }
   }
+}
+.no-js #geolocate_link {
+    display: none !important;
 }
 
 #front-howto {
@@ -2408,7 +2350,6 @@ table.nicetable {
 }
 
 @import "_admin";
-@import "_fixedthead";
 @import "_dropzone";
 @import "_multiselect";
 @import "_autocomplete";

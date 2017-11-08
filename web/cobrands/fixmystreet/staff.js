@@ -313,7 +313,7 @@ $.extend(fixmystreet.set_up, {
         });
     }
 
-    if (geo_position_js.init()) {
+    if ('geolocation' in navigator) {
         fixmystreet.geolocate.setup(function(pos) {
             var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
             var bng = latlon.clone().transform(

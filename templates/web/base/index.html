@@ -1,7 +1,7 @@
 [% PROCESS 'front/javascript.html' %]
 
 [% pre_container_extra = PROCESS 'around/postcode_form.html' %]
-[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
+[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' inline_css = 1 %]
 
 [% IF error %]
     <p class="form-error">[% error %]</p>
