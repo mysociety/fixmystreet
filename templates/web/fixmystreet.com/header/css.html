@@ -16,10 +16,6 @@
 <script nonce="[% csp_nonce %]">
 /* If browser *does* support preload, use stylesheets when loaded */
 document.getElementById('preload_base_css').onload = function(){this.rel='stylesheet'};
-/* Create link elements with JS because we can't use inline onload */
-// (function(d){var c=d.getElementById('critical');function a(p){var l=d.createElement("link");l.rel="preload";l.href=p;l.as="style";l.onload=function(){this.rel='stylesheet'};c.parentNode.insertBefore(l,c)}
-// a("[% base_css %]");
-// })(document);
 /*! loadCSS & rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
 (function(a){var b=function(b,h,e){function c(a){if(f.body)return a();setTimeout(function(){c(a)})}function k(){d.addEventListener&&d.removeEventListener("load",k);d.media=e||"all"}var f=a.document,d=f.createElement("link");var p=f.styleSheets;d.rel="stylesheet";d.href=b;d.media="only x";c(function(){h.parentNode.insertBefore(d,h)});var l=function(a){for(var b=d.href,c=p.length;c--;)if(p[c].href===
 b)return a();setTimeout(function(){l(a)})};d.addEventListener&&d.addEventListener("load",k);l(k)};a.loadCSS=b})(this);
