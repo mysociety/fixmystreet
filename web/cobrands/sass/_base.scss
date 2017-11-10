@@ -1258,19 +1258,24 @@ input.final-submit {
   a {
     display: block;
     position: relative;
+
     span {
-      position:absolute;
-      top:0;
+      position: absolute;
+      top: 0;
       #{$right}: 0;
-      display:block;
-      width:20px;
-      height:20px;
+      display: block;
+      width: 20px;
+      height: 0;
+      padding-top: 20px;
       opacity: 0.5;
-      background:#fff url($image-sprite) -16px -1098px no-repeat;
-      //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
-      font: 0/0 a;
-      color: transparent;
+      overflow: hidden;
+      background-color: #fff;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: 16px 16px;
+      @include svg-background-image('/cobrands/fixmystreet/images/magnify');
     }
+
     &:hover span {
       opacity: 1;
     }
