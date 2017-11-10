@@ -1399,47 +1399,50 @@ html.js #map .noscript {
   position: absolute;
   cursor: pointer;
   width: 36px;
-  height: 36px;
-  text-indent: flip(-999999px, 999999px); // text-align from OL style makes this necessary
-  background: url($image-sprite) no-repeat;
+  height: 0;
+  padding-top: 36px;
+  overflow: hidden;
+  @include svg-background-image('/cobrands/fixmystreet/images/fms-pan-zoom');
+  background-size: 156px 72px;
+  background-repeat: no-repeat;
   filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
 
 #fms_pan_zoom_panup {
-  background-position: -42px -222px;
+  background-position: 0 0;
   #{$right}: 30px;
   #{$left}: auto;
   top: 0;
 }
 #fms_pan_zoom_pandown {
-  background-position: -42px -282px;
+  background-position: 0 -36px;
   #{$right}: 30px;
   #{$left}: auto;
   top: 72px;
 }
 #fms_pan_zoom_panleft {
-  background-position: -12px -252px;
+  background-position: -36px 0;
   width: 48px;
   #{$right}: flip(48px, 0);
   #{$left}: auto;
   top: 36px;
 }
 #fms_pan_zoom_panright {
-  background-position: -60px -252px;
+  background-position: -36px -36px;
   width: 48px;
   #{$right}: flip(0, 48px);
   #{$left}: auto;
   top: 36px;
 }
 #fms_pan_zoom_zoomin {
-  background-position: -152px -223px;
-  height: 44px;
+  background-position: -84px 0;
+  padding-top: 44px;
   #{$left}: 0;
   top: 0;
 }
 #fms_pan_zoom_zoomout {
-  background-position: -152px -259px;
-  height: 44px;
+  background-position: -120px 100%;
+  padding-top: 44px;
   #{$left}: 0;
   top: 44px;
 }
