@@ -613,27 +613,57 @@ body.authpage {
 #sub_map_links {
   #{$left}: auto;
   bottom: 2em;
-  #map_links_toggle {
-    display:block;
-    cursor: pointer;
-    position:absolute;
-    #{$left}: -0.97em; /* 1em leaves a tiny gap, font issue */
-    width: 1em;
-    height:100%;
-    background:#000 inline-image("../fixmystreet/images/triangle-grey-#{$right}.svg") 50% 50% no-repeat;
-    @include border-radius(flip(0.25em 0 0 0.25em, 0 0.25em 0.25em 0));
-    &:hover {
-      #{$left}: -1.5em;
-      //use border so we don't have to redefine the background-position
-      border-#{$right}: 0.5em solid #000;
+}
+
+#map_links_toggle {
+  display: block;
+  cursor: pointer;
+  position: absolute;
+  #{$left}: -1em;
+  width: 1em;
+  height: 100%;
+  border-radius: flip(0.25em 0 0 0.25em, 0 0.25em 0.25em 0);
+  background-color: #333;
+
+  &:hover {
+    #{$left}: -1.2em;
+    width: 1.2em;
+    background-color: #000;
+  }
+
+  &:after {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    width: 6px;
+    height: 12px;
+    margin-#{$left}: ((16px - 6px) / 2); // horizontally centre in 16px wide parent
+    background-size: 96px 12px;
+    @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
+  }
+
+  // Expanded arrow points towards edge of window.
+  // Closed arrow points away from edge of window.
+  @if ($right == 'right') {
+
+    &:after {
+      background-position: -6px 0;
     }
-    &.closed {
-      background-image: inline-image("../fixmystreet/images/triangle-grey-#{$left}.svg");
+
+    &.closed:after {
+      background-position: 0 0;
+    }
+
+  } @else {
+
+    &:after {
+      background-position: 0 0;
+    }
+
+    &.closed:after {
+      background-position: -6px 0;
     }
   }
-}
-.iel8 #sub_map_links #map_links_toggle {
-    height: 1.75em;
 }
 
 

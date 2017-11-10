@@ -1458,62 +1458,55 @@ html.js #map .noscript {
   #{$left}: 0;
   #{$right}: 0;
   bottom: 0;
-  background:#333;
-  background:rgba(0, 0, 0, 0.7);
-  margin:0;
+  background: #333;
+  background: rgba(0, 0, 0, 0.7);
+  margin: 0;
+
   a {
-    @include inline-block;
-    font-size:0.6875em;
-    color:#fff;
-    padding: flip(0.6em 3em 0.5em 1em, 0.6em 1em 0.5em 3em);
-    background-repeat:no-repeat;
-    &#hide_pins_link {
-      background-image:url($image-sprite);
-      background-position: flip(right, -341px) -3976px;
-    }
-    &#map_permalink {
-      background-image:url($image-sprite);
-      background-position: flip(right, -341px) -4070px;
-    }
-    &#fms_shortlist_all {
-      padding: 0.6em 1em 0.5em 1em;
-      &:after {
-         content: "";
-         display: inline-block;
-         width: 16px;
-         height: 16px;
-         @include svg-background-image('/cobrands/fixmystreet/images/map-marker');
-         background-size: 16px 16px;
-         vertical-align: middle;
-         margin: flip(0 0 0 8px, 0 8px 0 0);
-       }
-    }
-    &.feed {
-      background-image:url($image-sprite);
-      background-position: flip(right, -341px) -3936px;
-    }
-    &#toggle-fullscreen {
-      padding: 0.6em 1em 0.5em 1em;
-      &:after {
-        content: "";
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        background-size: 16px 16px;
-        vertical-align: middle;
-        margin-#{$left}: 8px;
-      }
-      &.expand:after {
-        @include svg-background-image('/cobrands/fixmystreet/images/expand');
-      }
-      &.compress:after {
-        @include svg-background-image('/cobrands/fixmystreet/images/compress');
-      }
-    }
+    display: inline-block;
+    font-size: 0.6875em;
+    color: #fff;
+    padding: 0.6em 1em 0.5em 1em;
+
     &:hover {
-      background-color:#000;
-      text-decoration:none;
+      background-color: #000;
+      text-decoration: none;
     }
+
+    &:after {
+      content: "";
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-#{left}: 8px;
+      vertical-align: -0.1em;
+      background-size: 96px 12px;
+      @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
+    }
+  }
+
+  .feed:after {
+    background-position: -12px 0;
+  }
+
+  #hide_pins_link:after {
+    background-position: -24px 0;
+  }
+
+  #map_permalink:after {
+    background-position: -48px 0;
+  }
+
+  #fms_shortlist_all:after {
+    background-position: -60px 0;
+  }
+
+  #toggle-fullscreen:after {
+    background-position: -72px 0;
+  }
+
+  #toggle-fullscreen.compress:after {
+    background-position: -84px 0;
   }
 }
 

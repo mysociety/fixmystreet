@@ -667,7 +667,6 @@ $.extend(fixmystreet.set_up, {
     //add open/close toggle button (if its not there)
     if ($('#map_links_toggle').length === 0) {
         $('<span>')
-            .html('&nbsp;')
             .attr('id', 'map_links_toggle')
             .on('click', function() {
                 var sub_map_links_css = {},
