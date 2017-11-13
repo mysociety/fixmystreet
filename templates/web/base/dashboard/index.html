@@ -34,11 +34,9 @@
         </select>
     </p>
 
-    <p>
+    <p class="no-label">
         <input type="submit" class="btn" value="[% loc('Look up') %]">
     </p>
-
-    <br clear="all" />
 </div>
 
 
@@ -133,25 +131,32 @@
 
 <h2>[% loc('Reports') %]</h2>
 
-<p>[% loc('Report state:') %] <select class="form-control" name="state">
-<option value=''>[% loc('All') %]</option>
-    [% FOR group IN filter_states %]
-      [% FOR state IN group.1 %]
-        [% NEXT IF state == 'hidden' %]
-        <option [% 'selected ' IF state == q_state %] value="[% state %]">[% prettify_state(state, 1) %]</option>
-      [% END %]
-    [% END %]
-</select>
-</p>
-<p>
-<label for="start_date">[% loc('Start Date') %]</label><input name="start_date" type="date" value="[% start_date | html %]">
-</p>
-
-<p>
-<label for="end_date">[% loc('End Date') %]</label><input name="end_date" type="date" value="[% end_date | html %]">
-</p>
-<input type="submit" class="btn" value="[% loc('Look up') %]">
-<a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">[% loc('Export as CSV') %]</a>
+<div class="filters">
+    <p>
+        <label for="state">[% loc('Report state:') %]</label>
+        <select class="form-control" name="state">
+            <option value=''>[% loc('All') %]</option>
+          [% FOR group IN filter_states %]
+          [% FOR state IN group.1 %]
+            [% NEXT IF state == 'hidden' %]
+            <option [% 'selected ' IF state == q_state %] value="[% state %]">[% prettify_state(state, 1) %]</option>
+          [% END %]
+          [% END %]
+        </select>
+    </p>
+    <p>
+        <label for="start_date">[% loc('Start Date') %]</label>
+        <input name="start_date" type="date" value="[% start_date | html %]" class="form-control">
+    </p>
+    <p>
+        <label for="end_date">[% loc('End Date') %]</label>
+        <input name="end_date" type="date" value="[% end_date | html %]" class="form-control">
+    </p>
+    <p class="no-label">
+        <input type="submit" class="btn" value="[% loc('Look up') %]">
+        <a class="btn export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">[% loc('Export as CSV') %]</a>
+    </p>
+</div>
 
 <table width="100%" id="reports">
     <tr>
