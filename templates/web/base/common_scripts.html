@@ -19,6 +19,11 @@ IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
     scripts.push(
         version('/cobrands/fixmystreet/staff.js')
     );
+    IF c.user.has_body_permission_to('planned_reports');
+        scripts.push(
+            version('/cobrands/fixmystreet/offline.js'),
+        );
+    END;
 END;
 
 FOR script IN map_js;
@@ -27,7 +32,6 @@ END;
 
 scripts.push(
     version('/cobrands/fixmystreet/map.js'),
-    version('/cobrands/fixmystreet/offline.js'),
 );
 
 IF admin;
