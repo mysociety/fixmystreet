@@ -644,6 +644,9 @@ sub category : Chained('body') : PathPart('') {
 sub reports : Path('reports') {
     my ( $self, $c ) = @_;
 
+    $c->stash->{edit_body_contacts} = 1
+        if grep { $_ eq 'body' } keys %{$c->stash->{allowed_pages}};
+
     my $query = {};
     if ( $c->cobrand->moniker eq 'zurich' ) {
         my $type = $c->stash->{admin_type};
@@ -665,6 +668,8 @@ sub reports : Path('reports') {
 
     my $p_page = $c->get_param('p') || 1;
     my $u_page = $c->get_param('u') || 1;
+
+    return if $c->cobrand->call_hook(report_search_query => $query, $p_page, $u_page, $order);
 
     if (my $search = $c->get_param('search')) {
         $c->stash->{searched} = $search;
@@ -786,10 +791,6 @@ sub reports : Path('reports') {
         $c->stash->{problems} = [ $problems->all ];
         $c->stash->{problems_pager} = $problems->pager;
     }
-
-    $c->stash->{edit_body_contacts} = 1
-        if ( grep {$_ eq 'body'} keys %{$c->stash->{allowed_pages}});
-
 }
 
 sub update_user : Private {
