@@ -15,11 +15,12 @@ $(function(){
 
     $('.top_banner__close').live('click', function() {
         $('.top_banner--country').hide();
-        $.cookie('has_seen_country_message', 1, {expires: 365, path: '/'});
+        var t = new Date(); t.setFullYear(t.getFullYear() + 1);
+        document.cookie = 'has_seen_country_message=1; path=/; expires=' + t.toUTCString();
     });
 
     if ( $('body.frontpage').length && -1 == navigator.userAgent.indexOf('Google Page Speed')) {
-        if (!$.cookie('has_seen_country_message')) {
+        if (document.cookie.indexOf('has_seen_country_message') === -1) {
             $.ajax({
                 url: 'https://gaze.mysociety.org/gaze-rest?f=get_country_from_ip',
                 success: function(data) {
