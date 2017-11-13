@@ -95,9 +95,14 @@ a:active {
 
 // Darken the "key tools" links because we've darkened our background and as a
 // result they have very little contrast
-.shadow-wrap ul#key-tools li a,
-.shadow-wrap ul#key-tools li input[type=submit] {
-  background-color: darken(#f5f5f5, 10%);
+#key-tools {
+  a, button {
+    background-color: darken(#f5f5f5, 10%);
+
+    &:after {
+      @include svg-background-image("/cobrands/bromley/images/report-tools");
+    }
+  }
 }
 
 .item-list--reports__item a {

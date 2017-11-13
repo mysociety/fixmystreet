@@ -3,7 +3,7 @@
         [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_body( problem.bodies_str ) %]
         <li><form method="post" action="/report/delete/[% problem.id %]" id="remove-from-site-form">
             <input type="hidden" name="token" value="[% csrf_token %]">
-            <input type="submit" id="key-tool-report-abuse" class="abuse btn" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site" value="[% loc('Remove from site') %]">
+            <button type="submit" id="key-tool-report-abuse" class="abuse" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site">[% loc('Remove from site') %]</button>
         </form></li>
         [% ELSIF c.cobrand.moniker != 'zurich' %]
         <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[%

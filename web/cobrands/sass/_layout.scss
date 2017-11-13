@@ -678,62 +678,33 @@ body.authpage {
   overflow: hidden;
   padding-top: 2em;
 
-  ul#key-tools {
-    border-top: 0.25em solid $primary;
-    margin: 0;
-    @include box-shadow(0 0 1em 1em #fff);
-    li {
-      border:none;
-      a, input[type=submit] {
-        font-size: 0.75em;
-        line-height: 18px; // match `body`
-        color:#666;
-        padding: flip(0.5em 1.5em 0.5em 0, 0.5em 0 0.5em 1.5em);
-        text-transform:none;
-        &.abuse {
-          background-image:url($image-sprite);
-          background-position: flip(right, -337px) -2935px;
-        }
-        &.feed {
-          background-image:url($image-sprite);
-          background-position: flip(right, -337px) -3074px;
-        }
-        &.share {
-          min-width: 5em;
-          background-image: url(/cobrands/fixmystreet/images/share.png);
-          background-position: flip(80%, 20%) 50%;
-        }
-        &.chevron {
-          border-#{$right}: solid 1em transparent;
-          padding-#{$right}: 0.5em;
-          background-position: $right 50%;
-          background-size: 12px 15px;
-        }
-        &.chevron.hover {
-          // Reset things that changed
-          border-#{$right}: none;
-          padding-#{$right}: 1.5em;
-          background-size: auto auto;
-        }
-        &.hover {
-          background-image: url($image-sprite);
-          background-position: flip(right, -337px) -1876px;
-        }
-      }
-    }
-    &.singleton {
-      li {
-        text-align: $right;
-        a {
-          padding-#{$right}: 3em;
-        }
-      }
-    }
-  }
   &.static {
     padding: 0 0 1em;
     position: static;
     width: auto; // avoid horizontal scrollbar as drawer opens (on devices with permanent scroll bars)
+  }
+}
+
+#key-tools {
+  border-top: 0.25em solid $primary;
+  margin: 0;
+  @include box-shadow(0 0 1em 1em #fff);
+
+  li {
+    border-#{$right}: none; // undo border-right/left from _base.scss
+
+    // Cancel centre alignment, if the *only child* in list.
+    &:first-child:last-child {
+      text-align: $right;
+    }
+  }
+
+  a, button {
+    font-size: 0.75em;
+    line-height: 18px; // match `body`
+    color: #666;
+    padding: 0.5em;
+    text-transform: none; // undo uppercase from _base.scss
   }
 }
 

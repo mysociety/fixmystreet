@@ -225,11 +225,9 @@ h4.static-with-rule {
   }
 }
 
-.shadow-wrap {
-    ul#key-tools {
-        @include box-shadow(0 0 1em 1em $oxfordshire_very_light_green);
-        border-top-width: 2px;
-    }
+#key-tools {
+  @include box-shadow(0 0 1em 1em $oxfordshire_very_light_green);
+  border-top-width: 2px;
 }
 
 #oxford-wrapper #front-main #postcodeForm div {
