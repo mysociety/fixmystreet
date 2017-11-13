@@ -171,12 +171,12 @@ fixmystreet.resize_to = {
     if ($rapSidebar.length) {
         $rapSidebar.hide();
         $('<a>')
-            .addClass('rap-notes-trigger button-fwd')
+            .addClass('rap-notes-trigger btn btn--block btn--forward')
             .html(translation_strings.how_to_send)
             .insertBefore($rapSidebar)
             .on('click', function(){
                 $rapSidebar.slideToggle(100);
-                $(this).toggleClass('clicked');
+                $(this).toggleClass('btn--forward btn--cancel');
             });
     }
 

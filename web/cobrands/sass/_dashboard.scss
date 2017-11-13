@@ -176,8 +176,9 @@
         width: 16px;
         height: 16px;
         background-repeat: no-repeat;
-        @include svg-background-image('/cobrands/fixmystreet/images/crosshairs');
-        background-size: 16px 16px;
+        background-size: 112px 16px;
+        @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
+        background-position: -96px 0;
         margin-#{$right}: 0.5em;
         vertical-align: -0.1em;
     }
