@@ -1572,11 +1572,20 @@ html.js #map .noscript {
       display: block;
       #{$right}: 1em;
       bottom: 0;
-      height: 20px;
-      padding-top: 30px;
       width: 4em;
-      background: #fff url($image-sprite) 12px -4140px no-repeat;
+      background: #fff;
       color: #000;
+
+      &:before {
+        content: "";
+        display: block;
+        width: 16px;
+        height: 16px;
+        margin: 0 auto 2px auto;
+        background-size: 112px 16px;
+        @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
+        background-position: -32px 0;
+      }
     }
   }
 }
