@@ -11,7 +11,11 @@ use strict;
 
 sub map_type { '' }
 
-sub map_template { 'osm-streetview' }
+sub map_javascript { [
+    '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
+    '/js/map-OpenLayers.js',
+    '/js/map-streetview.js',
+] }
 
 sub base_tile_url {
     return 'os.openstreetmap.org/sv';

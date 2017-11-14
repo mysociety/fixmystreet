@@ -8,7 +8,11 @@ use strict;
 
 sub map_type { '' }
 
-sub map_template { 'bing' }
+sub map_javascript { [
+    '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
+    '/js/map-OpenLayers.js',
+    '/js/map-bing-ol.js',
+] }
 
 sub copyright { '' }
 

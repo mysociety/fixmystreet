@@ -24,6 +24,8 @@ sub example_places {
     return ( 'DD8 3AP', "Canmore Street" );
 }
 
+sub map_type { 'Angus' }
+
 sub default_show_name { 0 }
 
 sub disambiguate_location {
