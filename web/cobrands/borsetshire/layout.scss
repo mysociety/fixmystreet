@@ -46,3 +46,11 @@
         margin: 0 0.5em 0 0;
     }
 }
+
+.homepage-login-hint {
+    .container {
+        &:before {
+            right: 16.4em;
+        }
+    }
+}

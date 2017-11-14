@@ -1,3 +1,12 @@
+[% UNLESS c.user_exists %]
+<div class="homepage-login-hint">
+    <div class="container">
+        <h2>Psssst… Want to see behind the curtain?</h2>
+        <p>Try out FixMyStreet as a customer service rep, a highways inspector, or a site administrator. <a href="/auth">Sign in</a> to begin!</p>
+    </div>
+</div>
+[% END %]
+
 <div id="front-main">
     <div id="front-main-container">
         [% INCLUDE 'around/intro.html' %]
