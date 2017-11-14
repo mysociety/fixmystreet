@@ -1,8 +1,8 @@
 [%
     PROCESS "maps/${map.type}.html" admin = 1;
+    SET bodyclass = 'mappage with-notes';
     INCLUDE 'admin/header.html'
-        title = tprintf(loc('Editing problem %d'), problem.id ),
-        bodyclass = 'mappage with-notes';
+        title = tprintf(loc('Editing problem %d'), problem.id );
     PROCESS 'admin/report_blocks.html'
 -%]
 

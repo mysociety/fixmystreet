@@ -1,9 +1,9 @@
 [%
     PROCESS "report/photo-js.html";
     PROCESS "maps/zurich.html";
+    SET bodyclass = 'mappage';
     PROCESS 'admin/header.html'
-        title = tprintf(loc('Editing problem %d'), problem.id ),
-        bodyclass = 'mappage';
+        title = tprintf(loc('Editing problem %d'), problem.id );
     PROCESS 'admin/report_blocks.html'
 -%]
 

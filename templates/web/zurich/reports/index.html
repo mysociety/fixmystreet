@@ -1,8 +1,8 @@
 [%
     PROCESS "maps/${map.type}.html";
+    SET bodyclass = 'mappage';
     INCLUDE 'header.html',
-        title = loc('Summary reports'),
-        bodyclass = 'mappage';
+        title = loc('Summary reports');
 %]
 [% map_html %]
 </div>
