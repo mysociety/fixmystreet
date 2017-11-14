@@ -888,12 +888,14 @@ input.final-submit {
       border-#{$left}: 0.5em solid transparent;
       border-bottom: 0.5em solid #888;
     }
-    &#fixed {
-      color:#fff;
-      background: $col_fixed_label;
-      &:before {
-        border-bottom: 0.5em solid $col_fixed_label_dark;
-      }
+  }
+
+  #fixed {
+    color:#fff;
+    background: $col_fixed_label;
+
+    &:before {
+      border-bottom: 0.5em solid $col_fixed_label_dark;
     }
   }
 }

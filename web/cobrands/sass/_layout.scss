@@ -755,23 +755,24 @@ body.authpage {
       border-#{$left}: 0.75em solid transparent;
       border-bottom: 0.75em solid #888;
     }
-    &#fixed {
-      padding-top:5em;
-      background-image:url($image-sprite);
-      background-position:-324px -326px;
-      background-repeat:no-repeat;
-      &:before {
-        border-bottom: 0.75em solid $col_fixed_label_dark;
-      }
+  }
+
+  #fixed,
+  #closed {
+    padding-top: 48px;
+    padding-top: calc(1.5em + 32px);
+    background-image: url('/i/pin-flat-white-small.png');
+    background-size: 24px 32px;
+    background-position: 50% 1em;
+    background-repeat:no-repeat;
+    &:before {
+      border-bottom: 0.75em solid $col_fixed_label_dark;
     }
-    &#closed {
-      padding-top:5em;
-      background-image:url($image-sprite);
-      background-position:-318px -326px;
-      background-repeat:no-repeat;
-      &:before {
-        border-bottom: 0.75em solid #666;
-      }
+  }
+
+  #closed {
+    &:before {
+      border-bottom-color: #666;
     }
   }
 }
