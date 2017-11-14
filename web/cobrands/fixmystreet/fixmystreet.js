@@ -205,40 +205,6 @@ fixmystreet.resize_to = {
   }
 };
 
-fixmystreet.geolocate = {
-    setup: function(success_callback) {
-        $('#geolocate_link').click(function(e) {
-            var $link = $(this);
-            e.preventDefault();
-            // Spinny thing!
-            if ($('.mobile').length) {
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
-            } else {
-                var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color") ? 'white' : 'yellow';
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
-            }
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                $link.find('img').remove();
-                success_callback(pos);
-            }, function(err) {
-                $link.find('img').remove();
-                if (err.code === 1) { // User said no
-                    $link.html(translation_strings.geolocation_declined);
-                } else if (err.code === 2) { // No position
-                    $link.html(translation_strings.geolocation_no_position);
-                } else if (err.code === 3) { // Too long
-                    $link.html(translation_strings.geolocation_no_result);
-                } else { // Unknown
-                    $link.html(translation_strings.geolocation_unknown);
-                }
-            }, {
-                enableHighAccuracy: true,
-                timeout: 10000
-            });
-        });
-    }
-};
-
 fixmystreet.update_list_item_buttons = function($list) {
     if (!$list) {
         return;
@@ -408,19 +374,6 @@ $.extend(fixmystreet.set_up, {
             defaultValue: ''
         });
     });
-  },
-
-  report_geolocation: function() {
-    if ('geolocation' in navigator) {
-        fixmystreet.geolocate.setup(function(pos) {
-            var latitude = pos.coords.latitude;
-            var longitude = pos.coords.longitude;
-            var page = $('#geolocate_link').attr('href');
-            location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
-        });
-    } else {
-        $('#geolocate_link').hide();
-    }
   },
 
   category_change: function() {

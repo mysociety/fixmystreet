@@ -12,7 +12,18 @@ scripts.push(
     version('/cobrands/fixmystreet/fixmystreet.js'),
 );
 
-IF NOT bodyclass.match('frontpage');
+SET geolocation_loaded = 0;
+IF bodyclass.match('frontpage');
+    SET geolocation_loaded = 1;
+    scripts.push(
+        version('/js/geolocation.js'),
+    );
+ELSIF bodyclass.match('alertpage');
+    SET geolocation_loaded = 1;
+    scripts.push(
+        version('/js/geolocation.js'),
+    );
+ELSE;
     scripts.push(
         version('/js/validation_rules.js'),
         version('/vendor/jquery.validate.min.js'),
@@ -24,6 +35,11 @@ FOR script IN extra_js;
 END;
 
 IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
+    IF NOT geolocation_loaded;
+        scripts.push(
+            version('/js/geolocation.js'),
+        );
+    END;
     scripts.push(
         version('/cobrands/fixmystreet/staff.js')
     );

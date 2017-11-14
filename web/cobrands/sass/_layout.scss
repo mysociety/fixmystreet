@@ -912,6 +912,9 @@ textarea.form-error {
       background:none;
     }
   }
+  a#geolocate_link.loading {
+      border-right: none;
+  }
 }
 .ie7 #front-main {
   #postcodeForm {
