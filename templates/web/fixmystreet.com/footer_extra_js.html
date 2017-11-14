@@ -3,7 +3,14 @@ IF bodyclass.match('mappage');
     scripts.push(
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
     );
-END ~%]
-[% scripts.push(
-    version('/cobrands/fixmystreet.com/js.js'),
-) %]
+END;
+IF bodyclass.match('frontpage');
+    scripts.push(
+        version('/cobrands/fixmystreet.com/front.js'),
+    );
+ELSE;
+    scripts.push(
+        version('/cobrands/fixmystreet.com/js.js'),
+    );
+END;
+%]
