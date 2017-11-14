@@ -48,8 +48,6 @@ $(function(){
         }
     });
 
-    $("select.js-multiple[multiple]").make_multi();
-
     // on a body's page, hide/show deleted contact categories
     var $table_with_deleted_contacts = $('table tr.is-deleted td.contact-category').closest('table');
     if ($table_with_deleted_contacts.length == 1) {

@@ -601,8 +601,7 @@ $.extend(fixmystreet.set_up, {
     // to refresh the map when the filter inputs are changed.
     $(".report-list-filters [type=submit]").hide();
 
-    $('#statuses').make_multi();
-    $('#filter_categories').make_multi();
+    $('.js-multiple').make_multi();
   },
 
   mobile_ui_tweaks: function() {
