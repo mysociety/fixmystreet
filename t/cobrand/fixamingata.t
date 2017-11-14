@@ -102,7 +102,7 @@ subtest "Test ajax decimal points" => sub {
         $mech->content_contains('51.5');
 
         $mech->get_ok('/ajax/lookup_location?term=high+street');
-        $mech->content_contains('Edinburgh');
+        $mech->content_contains("Ed\xc3\xadnburgh");
     };
 };
 
