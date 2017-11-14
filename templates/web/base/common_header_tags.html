@@ -33,3 +33,16 @@
     [% "$title :: " | html IF title %]
     [% site_name -%]
 </title>
+
+[% IF bodyclass.match('frontpage') %]
+    <link rel="prefetch" href="[% version('/js/validation_rules.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/jquery.validate.min.js') %]">
+[% END %]
+[% IF NOT bodyclass.match('mappage') %]
+    [% FOR script IN map_js %]
+        <link rel="prefetch" href="[% IF script.match('^/'); version(script); ELSE; script; END %]">
+    [% END %]
+    <link rel="prefetch" href="[% version('/cobrands/fixmystreet/map.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/dropzone.min.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js') %]">
+[% END %]

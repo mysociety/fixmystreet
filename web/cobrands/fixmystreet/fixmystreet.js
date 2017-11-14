@@ -303,8 +303,10 @@ $.extend(fixmystreet.set_up, {
 
   form_validation: function() {
     // FIXME - needs to use translated string
-    jQuery.validator.addMethod('validCategory', function(value, element) {
-        return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+    if (jQuery.validator) {
+        jQuery.validator.addMethod('validCategory', function(value, element) {
+            return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+    }
 
     var submitted = false;
 

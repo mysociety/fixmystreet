@@ -1,4 +1,7 @@
 (function(){
+    if (!jQuery.validator) {
+        return;
+    }
     var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
     function valid_name_factory(single) {
         return function(value, element) {

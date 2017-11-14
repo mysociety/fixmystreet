@@ -1,4 +1,9 @@
+[%
+IF bodyclass.match('mappage');
+    scripts.push(
+        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
+    );
+END ~%]
 [% scripts.push(
-    version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
     version('/cobrands/fixmystreet.com/js.js'),
 ) %]
