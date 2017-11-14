@@ -8,7 +8,7 @@ IF bodyclass.match('frontpage');
     scripts.push(
         version('/cobrands/fixmystreet.com/front.js'),
     );
-ELSE;
+ELSIF NOT bodyclass.match('alertpage');
     scripts.push(
         version('/cobrands/fixmystreet.com/js.js'),
     );

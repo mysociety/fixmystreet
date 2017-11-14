@@ -7,15 +7,14 @@ scripts = [];
 
 scripts.push(
     start _ "/js/translation_strings." _ lang_code _ ".js?" _ Math.int( date.now / 3600 ),
-    version('/jslib/jquery-1.7.2.min.js'),
-    version('/js/jquery.multi-select.js'),
-    version('/cobrands/fixmystreet/fixmystreet.js'),
 );
 
+SET jquery_loaded = 0;
 SET geolocation_loaded = 0;
 IF bodyclass.match('frontpage');
     SET geolocation_loaded = 1;
     scripts.push(
+        version('/js/front.js'),
         version('/js/geolocation.js'),
     );
 ELSIF bodyclass.match('alertpage');
@@ -24,9 +23,13 @@ ELSIF bodyclass.match('alertpage');
         version('/js/geolocation.js'),
     );
 ELSE;
+    SET jquery_loaded = 1;
     scripts.push(
         version('/js/validation_rules.js'),
+        version('/jslib/jquery-1.7.2.min.js'),
+        version('/js/jquery.multi-select.js'),
         version('/vendor/jquery.validate.min.js'),
+        version('/cobrands/fixmystreet/fixmystreet.js'),
     );
 END;
 
@@ -38,6 +41,11 @@ IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
     IF NOT geolocation_loaded;
         scripts.push(
             version('/js/geolocation.js'),
+        );
+    END;
+    IF NOT jquery_loaded;
+        scripts.push(
+            version('/jslib/jquery-1.7.2.min.js'),
         );
     END;
     scripts.push(

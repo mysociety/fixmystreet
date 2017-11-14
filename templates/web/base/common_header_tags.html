@@ -36,7 +36,12 @@
 
 [% IF bodyclass.match('frontpage') %]
     <link rel="prefetch" href="[% version('/js/validation_rules.js') %]">
+  [%~ IF NOT c.user_exists OR NOT (c.user.from_body OR c.user.is_superuser) %]
+    <link rel="prefetch" href="[% version('/jslib/jquery-1.7.2.min.js') %]">
+  [%~ END %]
+    <link rel="prefetch" href="[% version('/js/jquery.multi-select.js') %]">
     <link rel="prefetch" href="[% version('/vendor/jquery.validate.min.js') %]">
+    <link rel="prefetch" href="[% version('/cobrands/fixmystreet/fixmystreet.js') %]">
 [% END %]
 [% IF NOT bodyclass.match('mappage') %]
     [% FOR script IN map_js %]
