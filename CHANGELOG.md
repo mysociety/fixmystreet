@@ -11,6 +11,7 @@
         - Add Expand map toggle to more mobile maps.
         - Add functionality to have per-body /reports page.
     - Front end improvements:
+        - SVG assets for core elements like button icons and map controls #1888
         - Remove unneeded 2x PNG fallback images.
         - Individual cobrands can disable social login #1890
     - Bugfixes
