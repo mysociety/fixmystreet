@@ -233,6 +233,10 @@ input[type=number],
 input[type=text],
 input[type=password],
 input[type=email],
+input[type=date],
+input[type=time],
+input[type=datetime],
+input[type=url],
 textarea {
   @include box-sizing(border-box);
   display: block;

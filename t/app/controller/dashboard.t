@@ -634,6 +634,45 @@ FixMyStreet::override_config {
         is $rows[5]->[15], '610591', 'Correct Easting conversion';
         is $rows[5]->[16], '126573', 'Correct Northing conversion';
     };
+
+    delete_problems();
+    subtest 'check date restriction' => sub {
+        make_problem({ state => 'confirmed', conf_dt => DateTime->now->subtract( 'days' => 1 ) });
+        make_problem({ state => 'confirmed', conf_dt => DateTime->now->subtract( 'days' => 50 ) });
+        make_problem({ state => 'confirmed', conf_dt => DateTime->now->subtract( 'days' => 31 ) });
+
+        $mech->get_ok('/dashboard?export=1');
+        open my $data_handle, '<', \$mech->content;
+        my $csv = Text::CSV->new( { binary => 1 } );
+        my @rows;
+        while ( my $row = $csv->getline( $data_handle ) ) {
+            push @rows, $row;
+        }
+
+        is scalar @rows, 2, '1 (header) + 1 (reports) = 2 lines';
+
+        $mech->get_ok('/dashboard?export=1&start_date=' . DateTime->now->subtract('days' => 32)->ymd);
+
+        open $data_handle, '<', \$mech->content;
+        $csv = Text::CSV->new( { binary => 1 } );
+        @rows = ();
+        while ( my $row = $csv->getline( $data_handle ) ) {
+            push @rows, $row;
+        }
+
+        is scalar @rows, 3, '1 (header) + 2 (reports) = 3 lines';
+
+        $mech->get_ok('/dashboard?export=1&start_date=' . DateTime->now->subtract('days' => 51)->ymd . '&end_date=' . DateTime->now->subtract('days' => 49)->ymd );
+
+        open $data_handle, '<', \$mech->content;
+        $csv = Text::CSV->new( { binary => 1 } );
+        @rows = ();
+        while ( my $row = $csv->getline( $data_handle ) ) {
+            push @rows, $row;
+        }
+
+        is scalar @rows, 2, '1 (header) + 1 (reports) = 2 lines';
+    };
 };
 restore_time;
 
