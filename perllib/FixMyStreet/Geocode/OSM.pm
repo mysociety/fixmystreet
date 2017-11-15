@@ -41,7 +41,7 @@ sub string {
         if $params->{bounds};
     $query_params{countrycodes} = $params->{country}
         if $params->{country};
-    $url .= join('&', map { "$_=$query_params{$_}" } keys %query_params);
+    $url .= join('&', map { "$_=$query_params{$_}" } sort keys %query_params);
 
     my $js = FixMyStreet::Geocode::cache('osm', $url);
     if (!$js) {

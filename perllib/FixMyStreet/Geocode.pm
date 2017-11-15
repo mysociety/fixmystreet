@@ -79,8 +79,12 @@ sub cache {
         $url .= '&' . $args if $args;
         $ua->timeout(15);
         $js = LWP::Simple::get($url);
-        $cache_dir->mkpath;
+        # The returned data is not correctly decoded if the content type is
+        # e.g. application/json. Which all of our geocoders return.
+        # uncoverable branch false
+        $js = decode_utf8($js) if !utf8::is_utf8($js);
         if ($js && (!$re || $js !~ $re) && !FixMyStreet->config('STAGING_SITE')) {
+            $cache_dir->mkpath; # uncoverable statement
             # uncoverable statement
             $cache_file->spew_utf8($js);
         }
