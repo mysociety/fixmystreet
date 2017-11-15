@@ -1975,9 +1975,19 @@ label .muted {
       background:#2a2a2a;
     }
   }
+  a#geolocate_link.loading {
+      background: #1a1a1a url("/cobrands/fixmystreet/images/spinner-black.gif") 100% 50% no-repeat;
+      border-right: solid 0.5em #1a1a1a;
+      padding-right: 1.5em;
+  }
 }
 .no-js #geolocate_link {
     display: none !important;
+}
+
+a#geolocate_link.loading, .btn--geolocate.loading {
+    background: url("/cobrands/fixmystreet/images/spinner-white.gif") 100% 50% no-repeat;
+    padding-right: 1.5em;
 }
 
 #front-howto {

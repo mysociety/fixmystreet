@@ -7,38 +7,81 @@ scripts = [];
 
 scripts.push(
     start _ "/js/translation_strings." _ lang_code _ ".js?" _ Math.int( date.now / 3600 ),
-    version('/jslib/jquery-1.7.2.min.js'),
-    version('/js/validation_rules.js'),
-    version('/vendor/jquery.validate.min.js'),
-    version('/vendor/dropzone.min.js'),
-    version('/js/jquery.multi-select.js'),
-    version('/cobrands/fixmystreet/fixmystreet.js'),
 );
 
-IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
+SET jquery_loaded = 0;
+SET geolocation_loaded = 0;
+IF bodyclass.match('frontpage');
+    SET geolocation_loaded = 1;
     scripts.push(
-        version('/cobrands/fixmystreet/staff.js')
+        version('/js/front.js'),
+        version('/js/geolocation.js'),
+    );
+ELSIF bodyclass.match('alertpage');
+    SET geolocation_loaded = 1;
+    scripts.push(
+        version('/js/geolocation.js'),
+    );
+ELSE;
+    SET jquery_loaded = 1;
+    scripts.push(
+        version('/js/validation_rules.js'),
+        version('/jslib/jquery-1.7.2.min.js'),
+        version('/js/jquery.multi-select.js'),
+        version('/vendor/jquery.validate.min.js'),
+        version('/cobrands/fixmystreet/fixmystreet.js'),
     );
 END;
 
-FOR script IN map_js;
+FOR script IN extra_js;
     scripts.push(script);
 END;
 
-scripts.push(
-    version('/cobrands/fixmystreet/map.js'),
-    version('/cobrands/fixmystreet/offline.js'),
-);
+IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
+    IF NOT geolocation_loaded;
+        scripts.push(
+            version('/js/geolocation.js'),
+        );
+    END;
+    IF NOT jquery_loaded;
+        scripts.push(
+            version('/jslib/jquery-1.7.2.min.js'),
+        );
+    END;
+    scripts.push(
+        version('/cobrands/fixmystreet/staff.js')
+    );
+    IF c.user.has_body_permission_to('planned_reports');
+        scripts.push(
+            version('/cobrands/fixmystreet/offline.js'),
+        );
+    END;
+END;
+
+IF bodyclass.match('mappage');
+    FOR script IN map_js;
+        IF script.match('^/');
+            scripts.push(version(script));
+        ELSE;
+            scripts.push(script);
+        END;
+    END;
+    scripts.push(
+        version('/cobrands/fixmystreet/map.js'),
+        version('/vendor/dropzone.min.js'),
+        version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js'),
+    );
+ELSE;
+    scripts.push(
+        version('/cobrands/fixmystreet/prefetch-polyfill.js'),
+    );
+END;
 
 IF admin;
     scripts.push(
         version('/vendor/jquery-ui/js/jquery-ui-1.10.3.custom.min.js'),
         version('/cobrands/fixmystreet/admin.js'),
     );
-END;
-
-FOR script IN extra_js;
-    scripts.push(script);
 END;
 
 TRY;

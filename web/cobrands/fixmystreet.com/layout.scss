@@ -160,6 +160,9 @@ body.fullwidthpage {
                 background-size: 22px 34px;
             }
         }
+        a#geolocate_link.loading {
+            background: url("/cobrands/fixmystreet/images/spinner-yellow.gif") 100% 33% no-repeat
+        }
     }
 }
 

@@ -11,8 +11,6 @@ use strict;
 
 sub map_type { 'OpenLayers.Layer.OSM.MapQuestOpen' }
 
-sub map_template { 'mapquest-attribution' }
-
 sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );

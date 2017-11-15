@@ -1,3 +1,15 @@
+[% IF NOT bodyclass.match('mappage') %]
+<link rel="prefetch" href="[% version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js') %]">
+[% END %]
+
+[% IF bodyclass.match('frontpage') %]
+<link rel="prefetch" href="[% version('/cobrands/fixmystreet.com/js.js') %]">
+[% END %]
+
+[% IF c.req.uri.host == 'osm.fixmystreet.com' %]
+    <link rel="canonical" href="https://www.fixmystreet.com[% c.req.uri.path_query %]">
+[% END %]
+
 <meta name='theme-color' content='#ffd000'>
 <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/fixmystreet.com/favicon.ico">
 

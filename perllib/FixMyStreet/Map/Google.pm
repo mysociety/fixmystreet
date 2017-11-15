@@ -13,6 +13,11 @@ use Utils;
 use constant ZOOM_LEVELS    => 6;
 use constant MIN_ZOOM_LEVEL => 13;
 
+sub map_javascript { [
+    "http://maps.googleapis.com/maps/api/js?sensor=false",
+    '/js/map-google.js',
+] }
+
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map

@@ -205,40 +205,6 @@ fixmystreet.resize_to = {
   }
 };
 
-fixmystreet.geolocate = {
-    setup: function(success_callback) {
-        $('#geolocate_link').click(function(e) {
-            var $link = $(this);
-            e.preventDefault();
-            // Spinny thing!
-            if ($('.mobile').length) {
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
-            } else {
-                var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color") ? 'white' : 'yellow';
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
-            }
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                $link.find('img').remove();
-                success_callback(pos);
-            }, function(err) {
-                $link.find('img').remove();
-                if (err.code === 1) { // User said no
-                    $link.html(translation_strings.geolocation_declined);
-                } else if (err.code === 2) { // No position
-                    $link.html(translation_strings.geolocation_no_position);
-                } else if (err.code === 3) { // Too long
-                    $link.html(translation_strings.geolocation_no_result);
-                } else { // Unknown
-                    $link.html(translation_strings.geolocation_unknown);
-                }
-            }, {
-                enableHighAccuracy: true,
-                timeout: 10000
-            });
-        });
-    }
-};
-
 fixmystreet.update_list_item_buttons = function($list) {
     if (!$list) {
         return;
@@ -303,8 +269,10 @@ $.extend(fixmystreet.set_up, {
 
   form_validation: function() {
     // FIXME - needs to use translated string
-    jQuery.validator.addMethod('validCategory', function(value, element) {
-        return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+    if (jQuery.validator) {
+        jQuery.validator.addMethod('validCategory', function(value, element) {
+            return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+    }
 
     var submitted = false;
 
@@ -406,20 +374,6 @@ $.extend(fixmystreet.set_up, {
             defaultValue: ''
         });
     });
-  },
-
-  report_geolocation: function() {
-    if ('geolocation' in navigator) {
-        fixmystreet.geolocate.setup(function(pos) {
-            var latitude = pos.coords.latitude.toFixed(6);
-            var longitude = pos.coords.longitude.toFixed(6);
-            var page = $('#geolocate_link').attr('href');
-            var coords = 'latitude=' + latitude + ';longitude=' + longitude;
-            location.href = page + (page.indexOf('?') > -1 ? ';' : '?') + coords;
-        });
-    } else {
-        $('#geolocate_link').hide();
-    }
   },
 
   category_change: function() {
@@ -602,8 +556,7 @@ $.extend(fixmystreet.set_up, {
     // to refresh the map when the filter inputs are changed.
     $(".report-list-filters [type=submit]").hide();
 
-    $('#statuses').make_multi();
-    $('#filter_categories').make_multi();
+    $('.js-multiple').make_multi();
   },
 
   mobile_ui_tweaks: function() {

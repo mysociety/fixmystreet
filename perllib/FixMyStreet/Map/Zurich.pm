@@ -65,6 +65,13 @@ sub copyright {
 
 sub map_template { 'zurich' }
 
+sub map_javascript { [
+    '/vendor/OpenLayers/OpenLayers.zurich.js',
+    '/js/OpenLayers.Projection.CH1903Plus.js',
+    '/js/map-OpenLayers.js',
+    '/js/map-wmts-base.js',
+    '/js/map-wmts-zurich.js',
+] }
 
 # Reproject a WGS84 lat/lon into Swiss easting/northing
 sub reproject_from_latlon($$$) {

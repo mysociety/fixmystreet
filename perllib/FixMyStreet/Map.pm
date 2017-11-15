@@ -67,6 +67,10 @@ sub display_map {
     return $map_class->display_map(@_);
 }
 
+sub map_javascript {
+    $map_class->map_javascript;
+}
+
 sub map_features {
     my ( $c, %p ) = @_;
 

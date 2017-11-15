@@ -314,7 +314,8 @@ $.extend(fixmystreet.set_up, {
     }
 
     if ('geolocation' in navigator) {
-        fixmystreet.geolocate.setup(function(pos) {
+        var el = document.querySelector('.btn--geolocate');
+        fixmystreet.geolocate(el, function(pos) {
             var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
             var bng = latlon.clone().transform(
                 new OpenLayers.Projection("EPSG:4326"),

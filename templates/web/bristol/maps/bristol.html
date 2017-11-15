@@ -1,12 +1,3 @@
-[%
-map_js = [
-    version('/vendor/OpenLayers/OpenLayers.bristol.js'),
-    version('/js/map-OpenLayers.js'),
-    version('/js/map-wmts-base.js'),
-    version('/js/map-wmts-bristol.js'),
-]
-%]
-
 [% map_html = BLOCK %]
 [% INCLUDE maps/openlayers.html %]
 [% INCLUDE maps/wmts_config.html %]

@@ -18,6 +18,12 @@ sub map_type { 'OpenLayers.Layer.OSM.Mapnik' }
 
 sub map_template { 'osm' }
 
+sub map_javascript { [
+    '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
+    '/js/map-OpenLayers.js',
+    '/js/map-OpenStreetMap.js',
+] }
+
 sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );

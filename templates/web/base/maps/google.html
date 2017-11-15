@@ -6,12 +6,6 @@
     color: #000;
 }
 </style>
-[%
-map_js = [
-    "http://maps.googleapis.com/maps/api/js?sensor=false",
-    version('/js/map-google.js'),
-]
-%]
 
 [% map_html = BLOCK %]
 <script nonce="[% csp_nonce %]">

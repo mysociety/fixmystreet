@@ -58,6 +58,13 @@ sub copyright {
 
 sub map_template { 'bristol' }
 
+sub map_javascript { [
+    '/vendor/OpenLayers/OpenLayers.bristol.js',
+    '/js/map-OpenLayers.js',
+    '/js/map-wmts-base.js',
+    '/js/map-wmts-bristol.js',
+] }
+
 # Reproject a WGS84 lat/lon into BNG easting/northing
 sub reproject_from_latlon($$$) {
     my ($self, $lat, $lon) = @_;

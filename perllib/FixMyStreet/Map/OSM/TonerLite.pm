@@ -16,7 +16,12 @@ use strict;
 
 sub map_type { 'OpenLayers.Layer.Stamen' }
 
-sub map_template { 'osm-toner-lite' }
+sub map_javascript { [
+    '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
+    "https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0",
+    '/js/map-OpenLayers.js',
+    '/js/map-toner-lite.js',
+] }
 
 sub copyright {
     'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
