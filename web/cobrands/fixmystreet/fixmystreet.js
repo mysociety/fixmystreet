@@ -411,8 +411,8 @@ $.extend(fixmystreet.set_up, {
   report_geolocation: function() {
     if ('geolocation' in navigator) {
         fixmystreet.geolocate.setup(function(pos) {
-            var latitude = pos.coords.latitude;
-            var longitude = pos.coords.longitude;
+            var latitude = pos.coords.latitude.toFixed(6);
+            var longitude = pos.coords.longitude.toFixed(6);
             var page = $('#geolocate_link').attr('href');
             var coords = 'latitude=' + latitude + ';longitude=' + longitude;
             location.href = page + (page.indexOf('?') > -1 ? ';' : '?') + coords;
