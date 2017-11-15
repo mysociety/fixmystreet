@@ -414,7 +414,8 @@ $.extend(fixmystreet.set_up, {
             var latitude = pos.coords.latitude;
             var longitude = pos.coords.longitude;
             var page = $('#geolocate_link').attr('href');
-            location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
+            var coords = 'latitude=' + latitude + ';longitude=' + longitude;
+            location.href = page + (page.indexOf('?') > -1 ? ';' : '?') + coords;
         });
     } else {
         $('#geolocate_link').hide();
