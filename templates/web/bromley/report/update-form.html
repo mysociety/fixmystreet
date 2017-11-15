@@ -1,5 +1,7 @@
 <div id="update_form">
-    <h2 class="update-form-heading">[% loc( 'Provide an update') %]</h2>
+  [% UNLESS hide_header %]
+    <h2[% IF two_column_sidebar %] class="hidden-js"[% END %]>[% loc('Provide an update') %]</h2>
+  [% END %]
 
     [% INCLUDE 'errors.html' %]
 
