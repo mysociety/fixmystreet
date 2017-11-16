@@ -605,7 +605,7 @@ $.extend(fixmystreet.set_up, {
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
-        if (fixmystreet.page !== 'around') {
+        if (fixmystreet.page !== 'around' && !$('#toggle-fullscreen').length) {
             $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" class="expand" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
         }
     }
@@ -636,7 +636,7 @@ $.extend(fixmystreet.set_up, {
             .prependTo('#sub_map_links');
     }
 
-    $('#toggle-fullscreen').click(function() {
+    $('#toggle-fullscreen').off('click').on('click', function() {
       var btnClass = $('html').hasClass('map-fullscreen') ? 'expand' : 'compress';
       var text = $(this).data(btnClass + '-text');
 

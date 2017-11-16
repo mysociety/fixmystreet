@@ -29,6 +29,7 @@
         - Fix display of text only body contacts #1895
         - Prevent text overflow bug on homepage stats #1722
         - Stop page jumping too far down on inspect form. #1863
+        - Prevent multiple 'Expand map' links appearing. #1909
     - Admin improvements:
       - Character length limit can be placed on report detailed information #1848
       - Inspector panel shows nearest address if available #1850
