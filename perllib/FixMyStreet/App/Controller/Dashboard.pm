@@ -166,8 +166,9 @@ sub index : Path : Args(0) {
             $c->stash->{start_date} = $c->get_param('start_date');
         }
         if ($c->get_param('end_date')) {
+            my $one_day = DateTime::Duration->new( days => 1 );
             my $date = $dtf->parse_datetime( $c->get_param('end_date') );
-            push @parts, { '<=', $dtf->format_datetime( $date ) };
+            push @parts, { '<', $dtf->format_datetime( $date + $one_day ) };
             $c->stash->{end_date} = $c->get_param('end_date');
         }
 
@@ -232,7 +233,7 @@ sub export_as_csv {
             'Closed',
             'Status',
             'Latitude', 'Longitude',
-            'Nearest Postcode',
+            'Query',
             'Ward',
             'Easting',
             'Northing',

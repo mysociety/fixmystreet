@@ -621,7 +621,7 @@ FixMyStreet::override_config {
                 'Status',
                 'Latitude',
                 'Longitude',
-                'Nearest Postcode',
+                'Query',
                 'Ward',
                 'Easting',
                 'Northing',
