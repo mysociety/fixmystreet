@@ -41,7 +41,7 @@
     <link rel="prefetch" href="[% version('/cobrands/fixmystreet/fixmystreet.js') %]">
 [% END %]
 [% IF NOT bodyclass.match('mappage') %]
-    [% FOR script IN map_js %]
+    [% FOR script IN map_js.merge(c.cobrand.call_hook('map_js_extra', c)) %]
         <link rel="prefetch" href="[% IF script.match('^/'); version(script); ELSE; script; END %]">
     [% END %]
     <link rel="prefetch" href="[% version('/cobrands/fixmystreet/map.js') %]">
