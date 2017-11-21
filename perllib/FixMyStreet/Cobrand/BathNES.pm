@@ -13,6 +13,7 @@ sub contact_email {
     my $self = shift;
     return join( '@', 'fixmystreet', 'bathnes.gov.uk' );
 }
+sub map_type { 'BathNES' }
 
 sub example_places {
     return ( 'BA1 1JQ', "Lansdown Grove" );
@@ -41,14 +42,23 @@ sub pin_colour {
     return 'yellow';
 }
 
-sub send_questionnaires {
-    return 0;
-}
+sub send_questionnaires { 0 }
 
 sub enable_category_groups { 1 }
 
 sub default_show_name { 0 }
 
 sub default_map_zoom { 3 }
+
+sub map_js_extra {
+    my ($self, $c) = @_;
+
+    return unless $c->user_exists;
+
+    my $banes_user = $c->user->from_body && $c->user->from_body->areas->{$self->council_area_id};
+    if ( $banes_user || $c->user->is_superuser ) {
+        return ['/cobrands/bathnes/staff.js'];
+    }
+}
 
 1;
