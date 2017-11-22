@@ -10,6 +10,7 @@
         - Don't cover whole map with pin loading indicator.
         - Add Expand map toggle to more mobile maps.
         - Add functionality to have per-body /reports page.
+        - Cobrands can disable sending of moderation emails. #1910
     - Front end improvements:
         - SVG assets for core elements like button icons and map controls #1888
         - Remove unneeded 2x PNG fallback images.
@@ -31,16 +32,16 @@
         - Stop page jumping too far down on inspect form. #1863
         - Prevent multiple 'Expand map' links appearing. #1909
     - Admin improvements:
-      - Character length limit can be placed on report detailed information #1848
-      - Inspector panel shows nearest address if available #1850
-      - Return a 200 rather than 404 for ref ID lookup.
-      - Public report page shows state changes made in admin interface #1846
-      - Remove hidden from default staff state dropdown. #1878
-      - Marking an item as a duplicate enforces providing duplicate id or
-        a public update #1873
-      - Report field pre-filling for inspectors configurable #1854
-      - Admins can now unban users #1881
-      - Council dashboard has date range for report generation #1885
+        - Character length limit can be placed on report detailed information #1848
+        - Inspector panel shows nearest address if available #1850
+        - Return a 200 rather than 404 for ref ID lookup.
+        - Public report page shows state changes made in admin interface #1846
+        - Remove hidden from default staff state dropdown. #1878
+        - Marking an item as a duplicate enforces providing duplicate id or
+          a public update #1873
+        - Report field pre-filling for inspectors configurable #1854
+        - Admins can now unban users #1881
+        - Council dashboard has date range for report generation #1885
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.

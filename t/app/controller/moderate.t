@@ -1,3 +1,11 @@
+package FixMyStreet::Cobrand::Tester;
+
+use parent 'FixMyStreet::Cobrand::Default';
+
+sub send_moderation_notifications { 0 }
+
+package main;
+
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 use Data::Dumper;
@@ -175,6 +183,30 @@ subtest 'Problem moderation' => sub {
 
         # reset
         $report->update({ state => 'confirmed' });
+    };
+
+    subtest 'Hide report without sending email' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'tester' => '.' } ]
+        }, sub {
+
+            $mech->clear_emails_ok;
+
+            $mech->get_ok($REPORT_URL);
+            $mech->submit_form_ok({ with_fields => {
+                %problem_prepopulated,
+                problem_hide => 1,
+            }});
+            $mech->base_unlike( qr{/report/}, 'redirected to front page' );
+
+            $report->discard_changes;
+            is $report->state, 'hidden', 'Is hidden';
+
+            ok $mech->email_count_is(0), "Email wasn't sent";
+
+            # reset
+            $report->update({ state => 'confirmed' });
+        }
     };
 };
 

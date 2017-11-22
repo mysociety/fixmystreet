@@ -103,7 +103,7 @@ sub report_moderate_audit : Private {
         reason => (sprintf '%s (%s)', $reason, $types_csv),
     });
 
-    if ($problem->user->email_verified) {
+    if ($problem->user->email_verified && $c->cobrand->send_moderation_notifications) {
         my $token = $c->model("DB::Token")->create({
             scope => 'moderation',
             data => { id => $problem->id }

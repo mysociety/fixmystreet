@@ -1250,4 +1250,19 @@ sub social_auth_enabled {
     return $key_present && !$self->call_hook("social_auth_disabled");
 }
 
+
+=head2 send_moderation_notifications
+
+Used to control whether an email is sent to the problem reporter when a report
+is moderated.
+
+Note that this is called in the context of the cobrand used to perform the
+moderation, so e.g. if a UK council cobrand disables the moderation
+notifications and a report is moderated on fixmystreet.com, the email will
+still be sent (because it wasn't disabled on the FixMyStreet cobrand).
+
+=cut
+
+sub send_moderation_notifications { 1 }
+
 1;
