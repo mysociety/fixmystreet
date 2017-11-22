@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use mySociety::AuthToken;
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Auth::Profile - Catalyst Controller
@@ -144,6 +146,26 @@ sub change_phone_success : Path('/auth/change_phone/success') {
     my ( $self, $c ) = @_;
     $c->flash->{flash_message} = _('You have successfully verified your phone number.');
     $c->res->redirect('/my');
+}
+
+sub generate_token : Path('/auth/generate_token') {
+    my ($self, $c) = @_;
+
+    $c->detach( '/page_error_403_access_denied', [] )
+        unless $c->user and ( $c->user->is_superuser or $c->user->from_body );
+
+    $c->stash->{template} = 'auth/generate_token.html';
+    $c->forward('/auth/get_csrf_token');
+
+    if ($c->req->method eq 'POST') {
+        $c->forward('/auth/check_csrf_token');
+        my $token = mySociety::AuthToken::random_token();
+        $c->user->set_extra_metadata('access_token', $token);
+        $c->user->update();
+        $c->stash->{token_generated} = 1;
+    }
+
+    $c->stash->{existing_token} = $c->user->get_extra_metadata('access_token');
 }
 
 __PACKAGE__->meta->make_immutable;
