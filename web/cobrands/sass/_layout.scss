@@ -585,7 +585,8 @@ body.authpage {
 #fms_pan_zoom_panleft,
 #fms_pan_zoom_panright,
 #fms_pan_zoom_zoomin,
-#fms_pan_zoom_zoomout {
+#fms_pan_zoom_zoomout,
+.big-hide-pins-link {
   opacity: 0.85;
   &:hover {
     opacity: 1;
@@ -612,6 +613,44 @@ body.authpage {
 #sub_map_links {
   #{$left}: auto;
   bottom: 2em;
+}
+
+// Show the extra button if there is vertical space.
+@media (min-height: 450px) {
+  .big-hide-pins-link {
+    $fms_pan_zoom_top: 8px;
+    $fms_pan_zoom_right: 8px;
+    $fms_pan_zoom_zoomout_top: 174px;
+    $fms_pan_zoom_zoomout_right: 30px;
+    $fms_pan_zoom_zoomout_height: 44px;
+    $gap: 22px;
+
+    display: block;
+    position: absolute;
+    top: $fms_pan_zoom_top + $fms_pan_zoom_zoomout_top + $fms_pan_zoom_zoomout_height + $gap;
+    right: $fms_pan_zoom_right + $fms_pan_zoom_zoomout_right;
+    border-radius: 5px;
+    color: #fff;
+    width: 36px;
+    height: 0;
+    padding-top: 36px;
+    overflow: hidden;
+
+    background: #222;
+    background-size: 36px 36px;
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+    @include svg-background-image('/cobrands/fixmystreet/images/hide-pins-link');
+
+    &:hover {
+      text-decoration: none;
+      color: #fff;
+      width: auto;
+      height: auto;
+      padding: 6px 40px 6px 10px;
+      overflow: visible;
+    }
+  }
 }
 
 #map_links_toggle {

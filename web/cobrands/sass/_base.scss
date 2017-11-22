@@ -1576,6 +1576,10 @@ html.js #map .noscript {
   }
 }
 
+.big-hide-pins-link {
+    display: none; // will become `block` in layout.scss
+}
+
 .big-green-banner {
   position: relative;
   top: -1.75em;
