@@ -419,6 +419,8 @@ Mainly intended for testing but might also be useful for ajax calls.
 sub check_auth : Local {
     my ( $self, $c ) = @_;
 
+    $c->authenticate(undef, 'access_token') unless $c->user;
+
     # choose the response
     my ( $body, $code )    #
       = $c->user
