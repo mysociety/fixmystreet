@@ -91,6 +91,10 @@ Show the dashboard table.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    if ($c->get_param('export')) {
+        $c->authenticate(undef, "access_token");
+    }
+
     my $body = $c->forward('check_page_allowed');
     $c->stash->{body} = $body;
 

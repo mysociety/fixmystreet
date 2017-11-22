@@ -673,6 +673,22 @@ FixMyStreet::override_config {
 
         is scalar @rows, 2, '1 (header) + 1 (reports) = 2 lines';
     };
+
+    subtest 'export as csv using token' => sub {
+        $mech->log_out_ok;
+
+        $user->set_extra_metadata('access_token', '1234567890abcdefgh');
+        $user->update();
+
+        $mech->get_ok('/dashboard?export=1');
+        like $mech->res->header('Content-type'), qr'text/html';
+        $mech->content_lacks('Report ID');
+
+        $mech->add_header('Authorization', 'Bearer 1234567890abcdefgh');
+        $mech->get_ok('/dashboard?export=1');
+        like $mech->res->header('Content-type'), qr'text/csv';
+        $mech->content_contains('Report ID');
+    };
 };
 restore_time;
 
