@@ -614,16 +614,19 @@ $.extend(fixmystreet.utils, {
             zoomToBounds( fixmystreet.markers.getDataExtent() );
         }
 
-        $('#hide_pins_link').click(function(e) {
+        $('#hide_pins_link, .big-hide-pins-link').click(function(e) {
             e.preventDefault();
             if (this.innerHTML == translation_strings.show_pins) {
                 fixmystreet.markers.setVisibility(true);
                 fixmystreet.select_feature.activate();
-                this.innerHTML = translation_strings.hide_pins;
+                $('#hide_pins_link, .big-hide-pins-link').html(translation_strings.hide_pins);
             } else if (this.innerHTML == translation_strings.hide_pins) {
                 fixmystreet.markers.setVisibility(false);
                 fixmystreet.select_feature.deactivate();
-                this.innerHTML = translation_strings.show_pins;
+                $('#hide_pins_link, .big-hide-pins-link').html(translation_strings.show_pins);
+            }
+            if (typeof ga !== 'undefined') {
+                ga('send', 'event', 'toggle-pins-on-map', 'click');
             }
         });
     }
