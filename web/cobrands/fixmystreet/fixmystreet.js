@@ -867,6 +867,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             if (!data.contribute_as.body) {
                 $select.find('option[value=body]').remove();
             }
+            $select.change();
             $('#js-contribute-as-wrapper').show();
         } else {
             $('#js-contribute-as-wrapper').hide();
