@@ -18,7 +18,8 @@ Offline pages Catalyst Controller.
 
 sub have_appcache : Private {
     my ($self, $c) = @_;
-    return $c->user_exists && $c->user->has_body_permission_to('planned_reports');
+    return $c->user_exists && $c->user->has_body_permission_to('planned_reports')
+        && !($c->user->is_superuser && FixMyStreet->staging_flag('enable_appcache', 0));
 }
 
 sub manifest : Path("/offline/appcache.manifest") {
