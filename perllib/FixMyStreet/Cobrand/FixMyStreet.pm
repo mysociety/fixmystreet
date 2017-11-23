@@ -80,6 +80,9 @@ sub council_dashboard_hook {
         $c->detach;
     }
 
+    $c->forward('/admin/fetch_contacts');
+    $c->stash->{display_contacts} = 1;
+
     return if $c->user->is_superuser;
 
     my $body = $c->user->from_body || _user_to_body($c);

@@ -184,15 +184,12 @@
     }
 }
 
-.dashboard-ranking-table {
+.dashboard-ranking-table,
+.dashboard-contacts-table {
     width: 100%;
 
     td {
         padding: 0.4em 0.8em;
-
-        &:last-child {
-            text-align: $right;
-        }
     }
 
     tbody tr:nth-child(odd) {
@@ -203,5 +200,20 @@
 
     tfoot td {
         font-weight: bold;
+    }
+}
+
+.dashboard-ranking-table {
+    td {
+        &:last-child {
+            text-align: $right;
+        }
+    }
+}
+
+.dashboard-contacts-table {
+    th {
+        text-align: $left;
+        padding: 0.4em 0.8em;
     }
 }
