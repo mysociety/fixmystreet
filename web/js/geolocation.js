@@ -29,7 +29,8 @@ fixmystreet.geolocate = function(element, success_callback) {
 (function(){
     var link = document.getElementById('geolocate_link');
     if (!link) { return; }
-    if ('geolocation' in navigator) {
+    var https = window.location.protocol.toLowerCase() === 'https:';
+    if ('geolocation' in navigator && https) {
         fixmystreet.geolocate(link, function(pos) {
             var latitude = pos.coords.latitude.toFixed(6);
             var longitude = pos.coords.longitude.toFixed(6);

@@ -16,6 +16,7 @@
         - Remove unneeded 2x PNG fallback images.
         - Individual cobrands can disable social login #1890
         - Improve performance of various pages, especially front. #1903
+        - Don't show geolocation link on non-HTTPS pages.
     - Bugfixes
         - Shortlist menu item always remains a link #1855
         - Fix encoded entities in RSS output. #1859
