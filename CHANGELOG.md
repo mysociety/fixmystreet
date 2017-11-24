@@ -33,6 +33,7 @@
         - Stop page jumping too far down on inspect form. #1863
         - Prevent multiple 'Expand map' links appearing. #1909
         - Superusers without a from_body can make reports again. #1913
+        - Fix crash when viewing /around in certain locales. #1916
     - Admin improvements:
         - Character length limit can be placed on report detailed information #1848
         - Inspector panel shows nearest address if available #1850

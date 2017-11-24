@@ -83,13 +83,13 @@ sub map_features {
         # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
         my $lat_delta = 0.00438;
         my $lon_delta = 0.00736;
-        $p{min_lon} = $p{longitude} - $lon_delta;
-        $p{min_lat} = $p{latitude} - $lat_delta;
-        $p{max_lon} = $p{longitude} + $lon_delta;
-        $p{max_lat} = $p{latitude} + $lat_delta;
+        $p{min_lon} = Utils::truncate_coordinate($p{longitude} - $lon_delta);
+        $p{min_lat} = Utils::truncate_coordinate($p{latitude} - $lat_delta);
+        $p{max_lon} = Utils::truncate_coordinate($p{longitude} + $lon_delta);
+        $p{max_lat} = Utils::truncate_coordinate($p{latitude} + $lat_delta);
     } else {
-        $p{longitude} = ($p{max_lon} + $p{min_lon} ) / 2;
-        $p{latitude} = ($p{max_lat} + $p{min_lat} ) / 2;
+        $p{longitude} = Utils::truncate_coordinate(($p{max_lon} + $p{min_lon} ) / 2);
+        $p{latitude} = Utils::truncate_coordinate(($p{max_lat} + $p{min_lat} ) / 2);
     }
 
     $p{page} = $c->get_param('p') || 1;
