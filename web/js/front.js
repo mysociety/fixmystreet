@@ -10,4 +10,9 @@ document.getElementById('pc').focus();
         el.value = 1;
         form.insertBefore(el, form.firstChild);
     }
+    var around_links = document.querySelectorAll('a[href*="around"]');
+    for (i=0; i<around_links.length; i++) {
+        var link = around_links[i];
+        link.href = link.href + (link.href.indexOf('?') > -1 ? '&js=1' : '?js=1');
+    }
 })();
