@@ -53,9 +53,9 @@
 [% END %]
 [% ELSE %]
 <ul>
-<li><a href="stats/questionnaire">[% loc('Survey Results') %]</a></li>
-<li><a href="stats/state">[% loc('Problem breakdown by state') %]</a></li>
-<li><a href="stats/fix-rate">[% loc('Category fix rate for problems > 4 weeks old') %]</a></li>
+<li><a href="[% c.uri_for_action('admin/stats/questionnaire') %]">[% loc('Survey Results') %]</a></li>
+<li><a href="[% c.uri_for_action('admin/stats/state') %]">[% loc('Problem breakdown by state') %]</a></li>
+<li><a href="[% c.uri_for_action('admin/stats/fix_rate') %]">[% loc('Category fix rate for problems > 4 weeks old') %]</a></li>
 </ul>
 
 [% END %]
@@ -66,7 +66,7 @@
     [% END %]
 [% END %]
 
-<form method="post" action="[% c.uri_for('stats') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="post" action="[% c.uri_for_action('admin/stats/index') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p>
     <label for="start_date">[% loc('Start Date:') %]</label><input type="text" class="form-control"
       placeholder="[% loc('Click here or enter as dd/mm/yyyy') %]" name="start_date" id="start_date"

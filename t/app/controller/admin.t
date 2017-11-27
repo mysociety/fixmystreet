@@ -1746,4 +1746,10 @@ subtest "response priorities can't be viewed across councils" => sub {
     };
 };
 
+subtest "smoke view some stats pages" => sub {
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok('/admin/stats/fix-rate');
+    $mech->get_ok('/admin/stats/questionnaire');
+};
+
 done_testing();
