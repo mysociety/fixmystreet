@@ -630,6 +630,14 @@ sub delete_defect_type {
     $defect_type->delete;
 }
 
+sub delete_response_template {
+    my $mech = shift;
+    my $response_template = shift;
+
+    $response_template->contact_response_templates->delete_all;
+    $response_template->delete;
+}
+
 sub create_contact_ok {
     my $self = shift;
     my %contact_params = (

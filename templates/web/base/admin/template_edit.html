@@ -9,6 +9,11 @@
     accept-charset="utf-8"
     class="validate">
 
+    [% IF errors %]
+        <p class="error">[% loc('Please correct the errors below') %]</p>
+    [% END %]
+
+
     <div class="admin-hint">
       <p>
         [% loc('This is a <strong>private</strong> name for this template so you can identify it when updating reports or editing in the admin.') %]
@@ -46,6 +51,9 @@
       [% INCLUDE 'admin/state_groups_select.html' current_state=rt.state include_empty=1 %]
     </p>
 
+    [% IF errors.auto_response %]
+        <div class="form-error">[% errors.auto_response %]</div>
+    [% END %]
     <div class="admin-hint">
       <p>
         [% loc('If ticked, this template will be used for Open311 updates that put problems in this state.') %]

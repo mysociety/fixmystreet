@@ -1659,6 +1659,108 @@ subtest "response templates are included on page" => sub {
     };
 };
 
+subtest "auto-response templates that duplicate a single category can't be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    my $template = $oxfordshire->response_templates->create({
+        title => "Report fixed - potholes",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 1,
+        state => 'fixed - council',
+    });
+    $template->contact_response_templates->find_or_create({
+        contact_id => $oxfordshirecontact->id,
+    });
+    is $oxfordshire->response_templates->count, 1, "Initial response template was created";
+
+
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    # This response template has the same category & state as an existing one
+    # so won't be allowed.
+    my $fields = {
+        title => "Report marked fixed - potholes",
+        text => "Thank you for your report. This pothole has been fixed.",
+        auto_response => 'on',
+        state => 'fixed - council',
+        "contacts[".$oxfordshirecontact->id."]" => 1,
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
+    $mech->content_contains( 'Please correct the errors below' );
+    $mech->content_contains( 'There is already an auto-response template for this category/state.' );
+
+    is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
+};
+
+subtest "auto-response templates that duplicate all categories can't be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    $oxfordshire->response_templates->create({
+        title => "Report investigating - all cats",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 1,
+        state => 'fixed - council',
+    });
+    is $oxfordshire->response_templates->count, 1, "Initial response template was created";
+
+
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    # There's already a response template for all categories and this state, so
+    # this new template won't be allowed.
+    my $fields = {
+        title => "Report investigating - single cat",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 'on',
+        state => 'fixed - council',
+        "contacts[".$oxfordshirecontact->id."]" => 1,
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
+    $mech->content_contains( 'Please correct the errors below' );
+    $mech->content_contains( 'There is already an auto-response template for this category/state.' );
+
+
+    is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
+};
+
+subtest "all-category auto-response templates that duplicate a single category can't be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    my $template = $oxfordshire->response_templates->create({
+        title => "Report fixed - potholes",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 1,
+        state => 'fixed - council',
+    });
+    $template->contact_response_templates->find_or_create({
+        contact_id => $oxfordshirecontact->id,
+    });
+    is $oxfordshire->response_templates->count, 1, "Initial response template was created";
+
+
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    # This response template is implicitly for all categories, but there's
+    # already a template for a specific category in this state, so it won't be
+    # allowed.
+    my $fields = {
+        title => "Report marked fixed - all cats",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 'on',
+        state => 'fixed - council',
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
+    $mech->content_contains( 'Please correct the errors below' );
+    $mech->content_contains( 'There is already an auto-response template for this category/state.' );
+
+    is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
+};
+
+
+
 $mech->log_in_ok( $superuser->email );
 
 subtest "response priorities can be added" => sub {
@@ -1674,8 +1776,8 @@ subtest "response priorities can be added" => sub {
     };
     $mech->submit_form_ok( { with_fields => $fields } );
 
-     is $oxfordshire->response_priorities->count, 1, "Response template was added to body";
-     is $oxfordshirecontact->response_priorities->count, 1, "Response template was added to contact";
+     is $oxfordshire->response_priorities->count, 1, "Response priority was added to body";
+     is $oxfordshirecontact->response_priorities->count, 1, "Response priority was added to contact";
 };
 
 subtest "response priorities can set to default" => sub {
@@ -1693,7 +1795,7 @@ subtest "response priorities can set to default" => sub {
     $mech->submit_form_ok( { with_fields => $fields } );
 
      is $oxfordshire->response_priorities->count, 1, "Still one response priority";
-     is $oxfordshirecontact->response_priorities->count, 1, "Still one response template";
+     is $oxfordshirecontact->response_priorities->count, 1, "Still one response priority";
      ok $oxfordshire->response_priorities->first->is_default, "Response priority set to default";
 };
 
@@ -1710,8 +1812,8 @@ subtest "response priorities are limited by body" => sub {
         name => "Bromley Cat 0",
     } );
 
-     is $bromley->response_priorities->count, 1, "Response template was added to Bromley";
-     is $oxfordshire->response_priorities->count, 1, "Response template wasn't added to Oxfordshire";
+     is $bromley->response_priorities->count, 1, "Response priority was added to Bromley";
+     is $oxfordshire->response_priorities->count, 1, "Response priority wasn't added to Oxfordshire";
 
      $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
      $mech->content_lacks( $bromleypriority->name );
