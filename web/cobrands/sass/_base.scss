@@ -294,6 +294,9 @@ select.form-control {
     &[multiple] {
         height: auto;
     }
+
+    // Prevent a flash of tall select elements
+    // before $.multiSelect() has replaced them.
     .js &.js-multiple[multiple] {
         height: 2.2em;
     }

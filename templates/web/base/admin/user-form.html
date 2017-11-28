@@ -127,7 +127,7 @@
             </div>
             [% IF c.user.is_superuser %]
               [% loc('Trusted by bodies:') %]<br />
-              <select class="form-control" id='body' name='trusted_bodies' multiple>
+              <select class="form-control js-multiple" id='body' name='trusted_bodies' multiple>
                 [% FOR body IN bodies %]
                   <option value="[% body.id %]"[% ' selected' IF user.has_permission_to('trusted', body.id) %]>[% body.name %]</option>
                 [% END %]

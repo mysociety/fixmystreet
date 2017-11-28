@@ -48,6 +48,7 @@
         - Report field pre-filling for inspectors configurable #1854
         - Admins can now unban users #1881
         - Council dashboard has date range for report generation #1885
+        - More JavaScript-enhanced `<select multiple>` elements #1589
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.

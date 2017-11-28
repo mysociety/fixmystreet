@@ -22,8 +22,7 @@
 
     <p>
         <label for="area_ids">[% loc('Area covered') %]</label>
-        <select class="form-control" name="area_ids" id="area_ids" multiple>
-            <option value=""> -- [% loc('Select an area') %] -- </option>
+        <select class="form-control js-multiple" name="area_ids" id="area_ids" multiple data-none="-- [% loc('Select an area') %] --">
             [% SET body_areas = body.areas %]
             [% FOR area IN areas %]
             [% SET aid = area.id %]

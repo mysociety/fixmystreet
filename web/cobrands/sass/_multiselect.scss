@@ -1,14 +1,15 @@
 .multi-select-container {
     position: relative;
+    display: inline-block; // shrink to width of .multi-select-button
 }
 
 .multi-select-menu {
     position: absolute;
     left: 0;
     top: 0.8em;
-    z-index: 1;
-    float: left;
-    min-width: 100%;
+    z-index: 2; // stack above mysoc-footer
+    float: left; // shrink to width of child elements
+    min-width: 100%; // always at least as wide as its .multi-select-button sibling
     background: #fff;
     margin: 1em 0;
     border: 1px solid #aaa;
@@ -20,6 +21,7 @@
     display: block;
     font-size: 0.875em;
     padding: 0.6em 1em 0.6em 30px;
+    margin: 0;
     white-space: nowrap;
 
     & + & {

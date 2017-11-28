@@ -112,27 +112,38 @@ function isR2L() {
     },
 
     make_multi: function() {
-        var $this = $(this),
-            all = $this.data('all'),
-            none = $this.data('none') || all,
-            allOpts = $this.data('all-options') || [],
-            extra = $this.data('extra'),
-            extraOpts = $this.data('extra-options') || [];
+        // A convenience wrapper around $.multiSelect() that translates HTML
+        // data-* attributes into settings for the multiSelect constructor.
+        var $select = $(this);
+        var settings = {};
 
-            var presets = [{
-                name: all,
-                options: allOpts
-            }];
+        if ( $select.data('none') ) {
+            settings.noneText = $select.data('none');
+        }
 
-            if (extra) {
-                presets.push({name: extra, options: extraOpts});
-            }
-        $this.multiSelect({
-            allText: all,
-            noneText: none,
-            positionMenuWithin: $('#side'),
-            presets: presets
-        });
+        if ( $select.data('all') ) {
+            settings.allText = $select.data('all');
+            settings.noneText = settings.noneText || settings.allText;
+            settings.presets = [];
+            settings.presets.push({
+                name: settings.allText,
+                options: $select.data('all-options') || []
+            });
+        }
+
+        if ( $select.data('extra') && $select.data('extra-options') ) {
+            settings.presets = settings.presets || [];
+            settings.presets.push({
+                name: $select.data('extra'),
+                options: $select.data('extra-options')
+            });
+        }
+
+        if ( document.querySelector('#side') && document.querySelector('#side').contains($select[0]) ) {
+            settings.positionMenuWithin = $('#side');
+        }
+
+        $select.multiSelect(settings);
     }
 
   });
