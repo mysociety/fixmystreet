@@ -1,3 +1,5 @@
+[% USE Number.Format %]
+
 [% extra_css = BLOCK %]
 	    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/dashboard.css') %]">
 [% END %]
@@ -11,11 +13,17 @@
 
 <form>
 
+[% IF body %]
 <hgroup>
-    [% tprintf(loc('<h2>Reports, Statistics and Actions for</h2> <h1>%s</h1>'), council.name) %]
+    [% tprintf(loc('<h2>Reports, Statistics and Actions for</h2> <h1>%s</h1>'), body_name) %]
 </hgroup>
+[% ELSE %]
+<h1>[% loc('Summary statistics') %]</h1>
+[% END %]
 
 <div class="filters">
+  [% IF body %]
+    [% IF NOT c.user.area_id %]
     <p>
         <label for="ward">[% loc('Ward:') %]</label>
         <select class="form-control" name="ward"><option value=''>[% loc('All') %]</option>
@@ -24,114 +32,30 @@
             [% END %]
         </select>
     </p>
+    [% END %]
 
     <p>
         <label for="category">[% loc('Category:') %]</label>
         <select class="form-control" name="category"><option value=''>[% loc('All') %]</option>
-            [% FOR cat_op IN category_options %]
-                <option value='[% cat_op.name | html %]'[% ' selected' IF category == cat_op.name %]>[% cat_op.value | html %]</option>
+            [% FOR cat IN contacts %]
+                <option value='[% cat.category | html %]'[% ' selected' IF category == cat.category %]>[% cat.category_display | html %]</option>
             [% END %]
         </select>
     </p>
 
-    <p class="no-label">
-        <input type="submit" class="btn" value="[% loc('Look up') %]">
+  [% ELSE %]
+
+    <p>
+        <label for="ward">[% loc('Council:') %]</label>
+        <select class="form-control" name="body"><option value=''>[% loc('All') %]</option>
+            [% FOR b IN bodies %]
+                <option value="[% b.id %]">[% b.name %]</option>
+            [% END %]
+        </select>
     </p>
-</div>
 
+  [% END %]
 
-<table width="100%" id="overview">
-    <tr>
-        <th>&nbsp;</th>
-        <th scope="col"><abbr title="[% loc('Week To Date') %]">[% loc('WTD', "Week to date") %]</abbr></th>
-        <th scope="col">[% loc('Last 7 days') %]</th>
-        <th scope="col">[% loc('Last 4 weeks') %]</th>
-        <th scope="col">[% loc('YTD', "Year to date") %]</th>
-    </tr>
-
-    [%
-    rows = {
-        '0' => [ "total", loc("Total reports received") ]
-        '1' => [ "fixed - council", loc("Council has marked as fixed") ]
-        '2' => [ "fixed_user", loc("User has marked as fixed") ]
-    };
-    FOR row IN rows %]
-    <tr id="[% row.value.0.replace('[^\w]+', '_' ) %]">
-        <th scope="row">[% row.value.1 %]</th>
-        <td>[% problems.wtd.${row.value.0} %]</td>
-        <td>[% problems.week.${row.value.0} %]</td>
-        <td>[% problems.weeks.${row.value.0} %]</td>
-        <td>[% problems.ytd.${row.value.0} %]</td>
-    </tr>
-    [% END %]
-
-    <tr class='subtotal' id="total_fixed">
-        <th scope="row">[% loc('Total marked as fixed') %]</th>
-        <td>[% problems.wtd.${"fixed - council"} + problems.wtd.fixed_user %]</td>
-        <td>[% problems.week.${"fixed - council"} + problems.week.fixed_user %]</td>
-        <td>[% problems.weeks.${"fixed - council"} + problems.weeks.fixed_user %]</td>
-        <td>[% problems.ytd.${"fixed - council"} + problems.ytd.fixed_user %]</td>
-    </tr>
-
-    [%
-    rows = {
-        '0' => [ "in progress", loc("Council has marked as in progress") ]
-        '1' => [ "action scheduled", loc("Council has marked as planned") ]
-        '2' => [ "investigating", loc("Council has marked as investigating") ]
-        '3' => [ "closed", loc("Council has marked as closed") ]
-    };
-    wtd = 0, week = 0, weeks = 0, ytd = 0;
-    FOR row IN rows %]
-    <tr id="[% row.value.0.replace('[^\w]+', '_' ) %]">
-        <th scope="row">[% row.value.1 %]</th>
-        <td>[% problems.wtd.${row.value.0} %]</td>
-        <td>[% problems.week.${row.value.0} %]</td>
-        <td>[% problems.weeks.${row.value.0} %]</td>
-        <td>[% problems.ytd.${row.value.0} %]</td>
-    </tr>
-    [% END %]
-
-    <tr class='subtotal' id="marked">
-        <th scope="row">[% loc('Total marked') %]</th>
-        <td>[% problems.wtd.${"in progress"} + problems.wtd.${"action scheduled"} +
-            problems.wtd.investigating + problems.wtd.closed %]</td>
-        <td>[% problems.week.${"in progress"} + problems.week.${"action scheduled"} +
-            problems.week.investigating + problems.wtd.closed %]</td>
-        <td>[% problems.weeks.${"in progress"} + problems.weeks.${"action scheduled"} +
-            problems.weeks.investigating + problems.wtd.closed %]</td>
-        <td>[% problems.ytd.${"in progress"} + problems.ytd.${"action scheduled"} +
-            problems.ytd.investigating + problems.wtd.closed %]</td>
-    </tr>
-
-    <tr id="avg_fixed">
-        <th scope="row">[% loc('Average time to council marking fixed (days)') %]</th>
-        <td>[% problems.wtd.time_to_fix %]</td>
-        <td>[% problems.week.time_to_fix %]</td>
-        <td>[% problems.weeks.time_to_fix %]</td>
-        <td>[% problems.ytd.time_to_fix %]</td>
-    </tr>
-
-    <tr id="avg_marked">
-        <th scope="row">[% loc('Average time to first council state change (days)') %]</th>
-        <td>[% problems.wtd.time_to_mark %]</td>
-        <td>[% problems.week.time_to_mark %]</td>
-        <td>[% problems.weeks.time_to_mark %]</td>
-        <td>[% problems.ytd.time_to_mark %]</td>
-    </tr>
-
-    <tr class='subtotal' id="not_marked">
-        <th scope="row">[% loc('Total not marked') %]</th>
-        <td>[% problems.wtd.not_marked %]</td>
-        <td>[% problems.week.not_marked %]</td>
-        <td>[% problems.weeks.not_marked %]</td>
-        <td>[% problems.ytd.not_marked %]</td>
-    </tr>
-
-</table>
-
-<h2>[% loc('Reports') %]</h2>
-
-<div class="filters">
     <p>
         <label for="state">[% loc('Report state:') %]</label>
         <select class="form-control" name="state">
@@ -152,31 +76,94 @@
         <label for="end_date">[% loc('End Date') %]</label>
         <input name="end_date" type="date" value="[% end_date | html %]" class="form-control">
     </p>
-    <p class="no-label">
-        <input type="submit" class="btn" value="[% loc('Look up') %]">
-        <a class="btn export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">[% loc('Export as CSV') %]</a>
-    </p>
 </div>
 
-<table width="100%" id="reports">
-    <tr>
-        <th scope="col">[% loc('Less than 7 days old') %]</th>
-        <th scope="col">[% loc('7-14 days old') %]</th>
-        <th scope="col">[% loc('14-30 days old') %]</th>
-    </tr>
-    <tr>
-        <td width="34%"><ul>[% INCLUDE list, list = lists.1 %]</ul></td>
-        <td width="33%"><ul>[% INCLUDE list, list = lists.2 %]</ul></td>
-        <td width="33%"><ul>[% INCLUDE list, list = lists.3 %]</ul></td>
-    </tr>
-</table>
+<p align="center">
+    <input type="hidden" name="group_by" value="[% group_by | html %]">
+    <input type="hidden" name="body" value="[% body.id | html %]">
+    <input type="submit" class="btn" value="[% loc('Look up') %]">
+    <input type="submit" class="btn" name="export" value="[% loc('Export as CSV') %]">
+</p>
 
 </form>
 
-[% INCLUDE 'footer.html' %]
+[% BLOCK gb %]
+[% IF group_by == new_gb %]
+    <strong>[% text %]</strong>
+[% ELSE %]
+    <a href="[% c.uri_with({ group_by => new_gb }) %]">[% text %]</a>
+[% END %]
+[% END %]
 
-[% BLOCK list %]
-[% FOR p IN list %]
-<li><a href="/report/[% p.id %]">[% p.title | html %]</a> <date>[% p.confirmed.dmy('/') %]</date></li>
-[% END %]
-[% END %]
+<table width="100%" id="overview">
+    <caption>
+        [% loc('Current state of filtered reports') %]
+        <p>
+        [% loc('Group by:') %]
+        [% INCLUDE gb new_gb='category' text=loc('Category') %]
+        | [% INCLUDE gb new_gb='state' text=loc('State') %]
+        | [% INCLUDE gb new_gb='month' text=loc('Month') %]
+        | [% INCLUDE gb new_gb='category+state' text=loc('Category and State') %]
+        | [% INCLUDE gb new_gb='device+site' text=loc('Device and Site') %]
+        </p>
+    </caption>
+    <tr>
+      <th></th>
+      [% IF group_by == 'category+state' %]
+        <th scope="col">[% loc('Open') %]</th>
+        <th scope="col">[% loc('Closed') %]</th>
+        <th scope="col">[% loc('Fixed') %]</th>
+        <th scope="col">[% loc('Total') %]</th>
+      [% ELSE %]
+        [% FOR k2 IN columns.sort %]
+          <th scope="col">[% k2 or loc('Website') %]</td>
+        [% END %]
+        <th scope="col">[% loc('Total') %]</th>
+      [% END %]
+    </tr>
+  [% FOR k IN rows %]
+    <tr>
+      [% IF group_by == 'state' %]
+        <th scope="row">[% prettify_state(k) %]</th>
+      [% ELSE %]
+        <th scope="row">[% k %]</th>
+      [% END %]
+      [% IF group_by == 'category+state' %]
+        <td>[% grouped.$k.open OR 0 %]</td>
+        <td>[% grouped.$k.closed OR 0 %]</td>
+        <td>[% grouped.$k.fixed OR 0 %]</td>
+        <td>[% grouped.$k.total OR 0 %]</td>
+      [% ELSE %]
+        [% FOR k2 IN columns.sort %]
+          <td>[% grouped.$k.$k2 OR 0 %]</td>
+        [% END %]
+        <td>[% grouped.$k.total OR 0 %]</td>
+      [% END %]
+    </tr>
+  [% END %]
+    <tr class="subtotal">
+        <th scope="row">[% loc('Total') %]</th>
+      [% IF group_by == 'category+state' %]
+        <td>[% totals.open OR 0 %]</td>
+        <td>[% totals.closed OR 0 %]</td>
+        <td>[% totals.fixed OR 0 %]</td>
+      [% ELSE %]
+        [% FOR k2 IN columns.sort %]
+          <td>[% totals.$k2 OR 0 %]</td>
+        [% END %]
+      [% END %]
+        <td>[% totals.total OR 0 %]</td>
+    </tr>
+</table>
+
+<p>
+[% loc('Within the specified timeframe:') %]
+[%
+summary_open = summary_open | format_number;
+summary_closed = summary_closed | format_number;
+summary_fixed = summary_fixed | format_number;
+tprintf( loc('%s opened, %s closed, %s fixed'),
+    decode(summary_open), decode(summary_closed), decode(summary_fixed) ) %]
+</p>
+
+[% INCLUDE 'footer.html' %]

@@ -49,6 +49,7 @@
         - Admins can now unban users #1881
         - Council dashboard has date range for report generation #1885
         - More JavaScript-enhanced `<select multiple>` elements #1589
+        - Consolidate various admin summary statistics page. #1919.
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.

@@ -3,8 +3,9 @@ use Moose;
 use namespace::autoclean;
 
 use DateTime;
-use File::Slurp;
 use JSON::MaybeXS;
+use Path::Tiny;
+use Time::Piece;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -20,43 +21,21 @@ Catalyst Controller.
 
 =cut
 
+sub auto : Private {
+    my ($self, $c) = @_;
+    $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
+    return 1;
+}
+
 sub example : Local : Args(0) {
     my ( $self, $c ) = @_;
     $c->stash->{template} = 'dashboard/index.html';
 
-    $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
-
-    $c->stash->{children} = {};
-    for my $i (1..3) {
-        $c->stash->{children}{$i} = { id => $i, name => "Ward $i" };
-    }
-
-    # TODO Set up manual version of what the below would do
-    #$c->forward( '/report/new/setup_categories_and_bodies' );
-
-    # See if we've had anything from the dropdowns - perhaps vary results if so
-    $c->stash->{ward} = $c->get_param('ward');
-    $c->stash->{category} = $c->get_param('category');
-    $c->stash->{q_state} = $c->get_param('state');
+    $c->stash->{group_by} = 'category+state';
 
     eval {
-        my $data = File::Slurp::read_file(
-            FixMyStreet->path_to( 'data/dashboard.json' )->stringify
-        );
-        my $j = decode_json($data);
-        if ( !$c->stash->{ward} && !$c->stash->{category} ) {
-            $c->stash->{problems} = $j->{counts_all};
-        } else {
-            $c->stash->{problems} = $j->{counts_some};
-        }
-        $c->stash->{council} = $j->{council};
-        $c->stash->{children} = $j->{wards};
-        $c->stash->{category_options} = $j->{category_options};
-        if ( lc($c->stash->{q_state}) eq 'all' or !$c->stash->{q_state} ) {
-            $c->stash->{lists} = $j->{lists}->{all};
-        } else {
-            $c->stash->{lists} = $j->{lists}->{filtered};
-        }
+        my $j = decode_json(path(FixMyStreet->path_to('data/dashboard.json'))->slurp_utf8);
+        $c->stash($j);
     };
     if ($@) {
         my $message = _("There was a problem showing this page. Please try again later.") . ' ' .
@@ -77,141 +56,244 @@ sub check_page_allowed : Private {
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     $c->detach( '/page_error_404_not_found' )
-        unless $c->user_exists && $c->user->from_body;
+        unless $c->user->from_body || $c->user->is_superuser;
 
-    return $c->user->from_body;
+    my $body = $c->user->from_body;
+    if (!$body && $c->get_param('body')) {
+        # Must be a superuser, so allow query parameter if given
+        $body = $c->model('DB::Body')->find({ id => $c->get_param('body') });
+    }
+
+    return $body;
 }
 
 =head2 index
 
-Show the dashboard table.
+Show the summary statistics table.
 
 =cut
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $body = $c->forward('check_page_allowed');
-    $c->stash->{body} = $body;
+    my $body = $c->stash->{body} = $c->forward('check_page_allowed');
 
-    # Set up the data for the dropdowns
-    $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
+    if ($body) {
+        $c->stash->{body_name} = $body->name;
 
-    # Just take the first area ID we find
-    my $area_id = $body->body_areas->first->area_id;
+        my $area_id = $body->body_areas->first->area_id;
+        my $children = mySociety::MaPit::call('area/children', $area_id,
+            type => $c->cobrand->area_types_children,
+        );
+        $c->stash->{children} = $children;
 
-    my $council_detail = mySociety::MaPit::call('area', $area_id );
-    $c->stash->{council} = $council_detail;
+        $c->forward('/admin/fetch_contacts');
+        $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
 
-    my $children = mySociety::MaPit::call('area/children', $area_id,
-        type => $c->cobrand->area_types_children,
-    );
-    $c->stash->{children} = $children;
+        # See if we've had anything from the body dropdowns
+        $c->stash->{category} = $c->get_param('category');
+        $c->stash->{ward} = $c->get_param('ward');
+        if ($c->user->area_id) {
+            $c->stash->{ward} = $c->user->area_id;
+            $c->stash->{body_name} = join "", map { $children->{$_}->{name} } grep { $children->{$_} } $c->user->area_id;
+        }
+    } else {
+        $c->forward('/admin/fetch_all_bodies');
+    }
 
-    $c->stash->{all_areas} = { $area_id => $council_detail };
-    $c->forward( '/report/new/setup_categories_and_bodies' );
+    $c->stash->{start_date} = $c->get_param('start_date');
+    $c->stash->{end_date} = $c->get_param('end_date');
+    $c->stash->{q_state} = $c->get_param('state') || '';
 
-    # See if we've had anything from the dropdowns
+    $c->forward('construct_rs_filter');
 
-    $c->stash->{ward} = $c->get_param('ward');
-    $c->stash->{category} = $c->get_param('category');
+    if ( $c->get_param('export') ) {
+        $self->export_as_csv($c);
+    } else {
+        $self->generate_data($c);
+    }
+}
 
-    my %where = (
-        'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
-    );
+sub construct_rs_filter : Private {
+    my ($self, $c) = @_;
+
+    my %where;
     $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }
         if $c->stash->{ward};
     $where{category} = $c->stash->{category}
         if $c->stash->{category};
-    $c->stash->{where} = \%where;
-    my $prob_where = { %where };
-    $prob_where->{'me.state'} = $prob_where->{'problem.state'};
-    delete $prob_where->{'problem.state'};
-    $c->stash->{prob_where} = $prob_where;
+
+    my $state = $c->stash->{q_state};
+    if ( FixMyStreet::DB::Result::Problem->fixed_states->{$state} ) { # Probably fixed - council
+        $where{'me.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
+    } elsif ( $state ) {
+        $where{'me.state'} = $state;
+    } else {
+        $where{'me.state'} = [ FixMyStreet::DB::Result::Problem->visible_states() ];
+    }
 
     my $dtf = $c->model('DB')->storage->datetime_parser;
+    my $date = DateTime->now( time_zone => FixMyStreet->local_time_zone )->subtract(days => 30);
+    $date->truncate( to => 'day' );
 
-    my %counts;
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $t = $now->clone->truncate( to => 'day' );
-    $counts{wtd} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( $t->clone->subtract( days => $t->dow - 1 ) ) ] );
-    $counts{week} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( $now->clone->subtract( weeks => 1 ) ) ] );
-    $counts{weeks} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( $now->clone->subtract( weeks => 4 ) ) ] );
-    $counts{ytd} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( $t->clone->set( day => 1, month => 1 ) ) ] );
+    $where{'me.confirmed'} = { '>=', $dtf->format_datetime($date) };
 
-    $c->stash->{problems} = \%counts;
-
-    # List of reports underneath summary table
-
-    $c->stash->{q_state} = $c->get_param('state') || '';
-    if ( $c->stash->{q_state} eq 'fixed - council' ) {
-        $prob_where->{'me.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
-    } elsif ( $c->stash->{q_state} ) {
-        $prob_where->{'me.state'} = $c->stash->{q_state};
-    }
-    my $params = {
-        %$prob_where,
-        'me.confirmed' => { '>=', $dtf->format_datetime( $now->clone->subtract( days => 30 ) ) },
-    };
-
-    if ( $c->get_param('start_date') or $c->get_param('end_date') ) {
+    my $start_date = $c->stash->{start_date};
+    my $end_date = $c->stash->{end_date};
+    if ($start_date or $end_date) {
         my @parts;
-        if ($c->get_param('start_date')) {
-            my $date = $dtf->parse_datetime( $c->get_param('start_date') );
+        if ($start_date) {
+            my $date = $dtf->parse_datetime($start_date);
             push @parts, { '>=', $dtf->format_datetime( $date ) };
-            $c->stash->{start_date} = $c->get_param('start_date');
         }
-        if ($c->get_param('end_date')) {
+        if ($end_date) {
             my $one_day = DateTime::Duration->new( days => 1 );
-            my $date = $dtf->parse_datetime( $c->get_param('end_date') );
+            my $date = $dtf->parse_datetime($end_date);
             push @parts, { '<', $dtf->format_datetime( $date + $one_day ) };
-            $c->stash->{end_date} = $c->get_param('end_date');
         }
 
         if (scalar @parts == 2) {
-            $params->{'me.confirmed'} = [ -and => $parts[0], $parts[1] ];
+            $where{'me.confirmed'} = [ -and => $parts[0], $parts[1] ];
         } else {
-            $params->{'me.confirmed'} = $parts[0];
+            $where{'me.confirmed'} = $parts[0];
         }
     }
 
-    my $problems_rs = $c->cobrand->problems->to_body($body)->search( $params );
-    my @problems = $problems_rs->all;
+    $c->stash->{params} = \%where;
+    $c->stash->{problems_rs} = $c->cobrand->problems->to_body($c->stash->{body})->search( \%where );
+}
 
-    my %problems;
-    foreach (@problems) {
-        if ($_->confirmed >= $now->clone->subtract(days => 7)) {
-            push @{$problems{1}}, $_;
-        } elsif ($_->confirmed >= $now->clone->subtract(days => 14)) {
-            push @{$problems{2}}, $_;
-        } else {
-            push @{$problems{3}}, $_;
-        }
+sub generate_data {
+    my ($self, $c) = @_;
+
+    my $state_map = $c->stash->{state_map} = {};
+    $state_map->{$_} = 'open' foreach FixMyStreet::DB::Result::Problem->open_states;
+    $state_map->{$_} = 'closed' foreach FixMyStreet::DB::Result::Problem->closed_states;
+    $state_map->{$_} = 'fixed' foreach FixMyStreet::DB::Result::Problem->fixed_states;
+
+    $self->generate_grouped_data($c);
+    $self->generate_summary_figures($c);
+}
+
+sub generate_grouped_data {
+    my ($self, $c) = @_;
+    my $state_map = $c->stash->{state_map};
+
+    my $group_by = $c->get_param('group_by') || '';
+    my (%grouped, @groups, %totals);
+    if ($group_by eq 'category') {
+        %grouped = map { $_->category => {} } @{$c->stash->{contacts}};
+        @groups = qw/category/;
+    } elsif ($group_by eq 'state') {
+        @groups = qw/state/;
+    } elsif ($group_by eq 'month') {
+        @groups = (
+                { extract => \"month from confirmed", -as => 'c_month' },
+                { extract => \"year from confirmed", -as => 'c_year' },
+        );
+    } elsif ($group_by eq 'device+site') {
+        @groups = qw/cobrand service/;
+    } else {
+        $group_by = 'category+state';
+        @groups = qw/category state/;
+        %grouped = map { $_->category => {} } @{$c->stash->{contacts}};
     }
-    $c->stash->{lists} = \%problems;
+    my $problems = $c->stash->{problems_rs}->search(undef, {
+        group_by => [ map { ref $_ ? $_->{-as} : $_ } @groups ],
+        select   => [ @groups, { count => 'me.id' } ],
+        as       => [ @groups == 2 ? qw/key1 key2 count/ : qw/key1 count/ ],
+    } );
+    $c->stash->{group_by} = $group_by;
 
-    if ( $c->get_param('export') ) {
-        $self->export_as_csv($c, $problems_rs, $body);
+    my %columns;
+    while (my $p = $problems->next) {
+        my %cols = $p->get_columns;
+        my ($col1, $col2) = ($cols{key1}, $cols{key2});
+        if ($group_by eq 'category+state') {
+            $col2 = $state_map->{$cols{key2}};
+        } elsif ($group_by eq 'month') {
+            $col1 = Time::Piece->strptime("2017-$cols{key1}-01", '%Y-%m-%d')->fullmonth;
+        }
+        $grouped{$col1}->{$col2} += $cols{count} if defined $col2;
+        $grouped{$col1}->{total} += $cols{count};
+        $totals{$col2} += $cols{count} if defined $col2;
+        $totals{total} += $cols{count};
+        $columns{$col2} = 1 if defined $col2;
+    }
+
+    my @columns = keys %columns;
+    my @rows = keys %grouped;
+    if ($group_by eq 'month') {
+        my %months;
+        my @months = qw/January February March April May June
+            July August September October November December/;
+        @months{@months} = (0..11);
+        @rows = sort { $months{$a} <=> $months{$b} } @rows;
+    } elsif ($group_by eq 'state') {
+        my $state_map = $c->stash->{state_map};
+        my %map = (confirmed => 0, open => 1, fixed => 2, closed => 3);
+        @rows = sort {
+            my $am = $map{$a} // $map{$state_map->{$a}};
+            my $bm = $map{$b} // $map{$state_map->{$b}};
+            $am <=> $bm;
+        } @rows;
+    } else {
+        @rows = sort @rows;
+    }
+    $c->stash->{rows} = \@rows;
+    $c->stash->{columns} = \@columns;
+
+    $c->stash->{grouped} = \%grouped;
+    $c->stash->{totals} = \%totals;
+}
+
+sub generate_summary_figures {
+    my ($self, $c) = @_;
+    my $state_map = $c->stash->{state_map};
+
+    # problems this month by state
+    $c->stash->{"summary_$_"} = 0 for values %$state_map;
+
+    $c->stash->{summary_open} = $c->stash->{problems_rs}->count;
+
+    my $params = $c->stash->{params};
+    $params = { map { my $n = $_; s/me\./problem\./ unless /me\.confirmed/; $_ => $params->{$n} } keys %$params };
+
+    my $comments = $c->model('DB::Comment')->to_body(
+        $c->stash->{body}
+    )->search(
+        {
+            %$params,
+            'me.id' => { 'in' => \"(select min(id) from comment where me.problem_id=comment.problem_id and problem_state not in ('', 'confirmed') group by problem_state)" },
+        },
+        {
+            join     => 'problem',
+            group_by => [ 'problem_state' ],
+            select   => [ 'problem_state', { count => 'me.id' } ],
+            as       => [ qw/problem_state count/ ],
+        }
+    );
+
+    while (my $comment = $comments->next) {
+        my $meta_state = $state_map->{$comment->problem_state};
+        next if $meta_state eq 'open';
+        $c->stash->{"summary_$meta_state"} += $comment->get_column('count');
     }
 }
 
 sub export_as_csv {
-    my ($self, $c, $problems_rs, $body) = @_;
+    my ($self, $c) = @_;
     require Text::CSV;
-    my $problems = $problems_rs->search(
+    my $problems = $c->stash->{problems_rs}->search(
         {}, { prefetch => 'comments', order_by => 'me.confirmed' });
 
     my $filename = do {
         my %where = (
-            body     => $body->id,
             category => $c->stash->{category},
             state    => $c->stash->{q_state},
             ward     => $c->stash->{ward},
         );
+        $where{body} = $c->stash->{body}->id if $c->stash->{body};
         join '-',
             $c->req->uri->host,
             map {
@@ -304,88 +386,13 @@ sub export_as_csv {
     $c->res->body( join "", @body );
 }
 
-sub updates_search : Private {
-    my ( $self, $c, $time ) = @_;
-
-    my $body = $c->stash->{body};
-
-    my $params = {
-        %{$c->stash->{where}},
-        'me.confirmed' => { '>=', $time },
-    };
-
-    my $comments = $c->model('DB::Comment')->to_body($body)->search(
-        $params,
-        {
-            group_by => [ 'problem_state' ],
-            select   => [ 'problem_state', { count => 'me.id' } ],
-            as       => [ qw/state state_count/ ],
-            join     => 'problem'
-        }
-    );
-
-    my %counts =
-      map { ($_->state||'-') => $_->get_column('state_count') } $comments->all;
-    %counts =
-      map { $_ => $counts{$_} || 0 }
-      ('confirmed', 'investigating', 'in progress', 'closed', 'fixed - council',
-          'fixed - user', 'fixed', 'unconfirmed', 'hidden',
-          'partial', 'action scheduled', 'planned');
-
-      $counts{'action scheduled'} += $counts{planned} || 0;
-
-    for my $vars (
-        [ 'time_to_fix', 'fixed - council' ],
-        [ 'time_to_mark', 'in progress', 'action scheduled', 'investigating', 'closed' ],
-    ) {
-        my $col = shift @$vars;
-        my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and problem_state in ('"
-            . join("','", @$vars) . "')";
-        $comments = $c->model('DB::Comment')->to_body($body)->search(
-            { %$params,
-                problem_state => $vars,
-                'me.id' => \"= ($substmt)",
-            },
-            {
-                select   => [
-                    { count => 'me.id' },
-                    { avg => { extract => "epoch from me.confirmed-problem.confirmed" } },
-                ],
-                as       => [ qw/state_count time/ ],
-                join     => 'problem'
-            }
-        )->first;
-        $counts{$col} = int( ($comments->get_column('time')||0) / 60 / 60 / 24 + 0.5 );
-    }
-
-    $counts{fixed_user} = $c->model('DB::Comment')->to_body($body)->search(
-        { %$params, mark_fixed => 1, problem_state => undef }, { join     => 'problem' }
-    )->count;
-
-    $params = {
-        %{$c->stash->{prob_where}},
-        'me.confirmed' => { '>=', $time },
-    };
-    $counts{total} = $c->cobrand->problems->to_body($body)->search( $params )->count;
-
-    $params = {
-        %{$c->stash->{prob_where}},
-        'me.confirmed' => { '>=', $time },
-        state => 'confirmed',
-        '(select min(id) from comment where me.id=problem_id and problem_state is not null)' => undef,
-    };
-    $counts{not_marked} = $c->cobrand->problems->to_body($body)->search( $params )->count;
-
-    return \%counts;
-}
-
 =head1 AUTHOR
 
 Matthew Somerville
 
 =head1 LICENSE
 
-Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
+Copyright (c) 2017 UK Citizens Online Democracy. All rights reserved.
 Licensed under the Affero GPL.
 
 =cut
