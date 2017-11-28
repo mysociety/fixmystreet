@@ -1073,8 +1073,12 @@ fixmystreet.display = {
   reports_list: function(reportListUrl, callback) {
     // If the report list is already in the DOM,
     // just reveal it, rather than loading new page.
-    if ($('#side').length) {
-        $('#side').show();
+    var side = document.getElementById('side');
+    if (side) {
+        if (side.style.display !== 'none') {
+            return;
+        }
+        side.style.display = '';
         $('#side-form').hide();
         // Report page may have been one or two columns, remove either
         $('#side-report').remove();
@@ -1178,6 +1182,7 @@ $(function() {
                     $('#sort').val(e.state.filter_change.sort);
                     $('#filter_categories').add('#statuses')
                         .trigger('change.filters').trigger('change.multiselect');
+                    fixmystreet.display.reports_list(location.href);
                 } else if ('hashchange' in e.state) {
                     // This popstate was just here because the hash changed.
                     // (eg: mobile nav click.) We want to ignore it.
