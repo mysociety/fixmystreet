@@ -11,6 +11,7 @@
         - Add Expand map toggle to more mobile maps.
         - Add functionality to have per-body /reports page.
         - Cobrands can disable sending of moderation emails. #1910
+        - Open311 category group support. #1923
     - Front end improvements:
         - SVG assets for core elements like button icons and map controls #1888
         - Remove unneeded 2x PNG fallback images.

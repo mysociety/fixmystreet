@@ -1,4 +1,10 @@
-[% IF category_options.size ~%]
+[% IF category_options.size OR category_groups.size ~%]
+    [%~ BLOCK category_option ~%]
+    [% cat_op_lc = cat_op.name | lower =%]
+    <option value='[% cat_op.name | html %]'[% ' selected' IF report.category == cat_op.name || category_lc == cat_op_lc || (category_options.size == 2 AND loop.last) ~%]
+    >[% IF loop.first %][% cat_op.value %][% ELSE %][% cat_op.value | html %][% END %]</option>
+    [%~ END ~%]
+
     [% IF category;
         category_lc = category | lower;
        END; ~%]
@@ -10,10 +16,18 @@
       data-role="[% c.user.has_body_permission_to('planned_reports') ? 'inspector' : 'user'  %]" data-body="[% c.user.from_body.name %]" data-prefill="[% c.cobrand.prefill_report_fields_for_inspector %]"
     [%~ END ~%]
     >
-        [%~ FOREACH cat_op IN category_options ~%]
-        [% cat_op_lc = cat_op.name | lower =%]
-        <option value='[% cat_op.name | html %]'[% ' selected' IF report.category == cat_op.name || category_lc == cat_op_lc || (category_options.size == 2 AND loop.last) ~%]
-        >[% IF loop.first %][% cat_op.value %][% ELSE %][% cat_op.value | html %][% END %]</option>
-        [%~ END =%]
+        [%~ IF category_groups.size ~%]
+            [%~ FOREACH group IN category_groups ~%]
+                [% IF group.name %]<optgroup label="[% group.name %]">[% END %]
+                [%~ FOREACH cat_op IN group.categories ~%]
+                    [% INCLUDE category_option %]
+                [%~ END ~%]
+                [% IF group.name %]</optgroup>[% END %]
+            [%~ END =%]
+        [%~ ELSE ~%]
+            [%~ FOREACH cat_op IN category_options ~%]
+                [% INCLUDE category_option %]
+            [%~ END =%]
+        [%~ END ~%]
     </select>
 [%~ END ~%]

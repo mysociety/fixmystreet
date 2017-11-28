@@ -664,7 +664,7 @@ sub setup_categories_and_bodies : Private {
         $bodies_to_list{ $contact->body_id } = $contact->body;
 
         unless ( $seen{$contact->category} ) {
-            push @category_options, { name => $contact->category, value => $contact->category_display };
+            push @category_options, { name => $contact->category, value => $contact->category_display, group => $contact->get_extra_metadata('group') || '' };
 
             my $metas = $contact->get_metadata_for_input;
             $category_extras{$contact->category} = $metas if @$metas;
@@ -682,9 +682,9 @@ sub setup_categories_and_bodies : Private {
     if (@category_options) {
         # If there's an Other category present, put it at the bottom
         @category_options = (
-            { name => _('-- Pick a category --'), value => _('-- Pick a category --') },
+            { name => _('-- Pick a category --'), value => _('-- Pick a category --'), group => '' },
             grep { $_->{name} ne _('Other') } @category_options );
-        push @category_options, { name => _('Other'), value => $seen{_('Other')} } if $seen{_('Other')};
+        push @category_options, { name => _('Other'), value => $seen{_('Other')}, group => _('Other') } if $seen{_('Other')};
     }
 
     $c->cobrand->call_hook(munge_category_list => \@category_options, \@contacts, \%category_extras);
@@ -705,6 +705,18 @@ sub setup_categories_and_bodies : Private {
 
     $c->stash->{missing_details_bodies} = \@missing_details_bodies;
     $c->stash->{missing_details_body_names} = \@missing_details_body_names;
+
+    my %category_groups = ();
+    for my $category (@category_options) {
+        push @{$category_groups{$category->{group}}}, $category;
+    }
+
+    my @category_groups = ();
+    for my $group ( grep { $_ ne _('Other') } sort keys %category_groups ) {
+        push @category_groups, { name => $group, categories => $category_groups{$group} };
+    }
+    push @category_groups, { name => _('Other'), categories => $category_groups{_('Other')} } if ($category_groups{_('Other')});
+    $c->stash->{category_groups}  = \@category_groups;
 }
 
 sub setup_report_extra_fields : Private {
