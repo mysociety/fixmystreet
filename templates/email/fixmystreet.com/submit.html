@@ -1,10 +1,10 @@
 [%
 
+PROCESS '_email_settings.html';
+
 email_summary = "A new problem in your area has been reported by a " _ site_name _ " user.";
 email_footer = PROCESS '_submit_footer.html';
 email_columns = 2;
-
-PROCESS '_email_settings.html';
 
 INCLUDE '_email_top.html';
 
@@ -48,7 +48,7 @@ of a local problem that they believe might require your attention.</p>
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% title | html %]</h2>
     [%~ IF category_line %]
-    <p style="[% secondary_p_style %]">[% category | html %]</p>
+    <p style="[% secondary_p_style %]"><strong>Category:</strong> [% category | html %]</p>
     [%~ END %]
     <p style="[% secondary_p_style %]">[% detail | html %]</p>
     [%~ IF additional_information %]
