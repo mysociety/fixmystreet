@@ -620,7 +620,6 @@ sub admin_pages {
          'summary' => [_('Summary'), 0],
          'timeline' => [_('Timeline'), 5],
          'stats'  => [_('Stats'), 8],
-         'areastats' => [_('Area Stats'), 14],
     };
 
     # There are some pages that only super users can see

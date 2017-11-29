@@ -8,10 +8,6 @@
         th[scope=col] {
             font-size:0.8em;
         }
-
-        tr:nth-child(2) {
-            background-color:#fee;
-        }
     }
 
     th {
@@ -93,6 +89,7 @@
             color:#737373;
             font-size:1.25em;
             margin-bottom:0.5em;
+            margin-top: 0;
         }
         h1 {
             color:#333;

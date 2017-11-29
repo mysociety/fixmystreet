@@ -1,236 +1,58 @@
 {
-    "council": { "name": "South Borsetshire District Council" },
-    "wards": {
+    "body": { "name": "South Borsetshire District Council" },
+    "children": {
         "1": { "id": 1, "name": "West Ward" },
         "2": { "id": 2, "name": "East Ward" },
         "3": { "id": 3, "name": "North Ward" },
         "4": { "id": 4, "name": "South Ward" }
     },
-    "category_options": [
-        { "name": "Abandoned vehicles", "value": "Abandoned vehicles" },
-        { "name": "Grafitti", "value": "Grafitti" },
-        { "name": "Potholes", "value": "Potholes" },
-        { "name": "Street lighting", "value": "Street lighting" },
-        { "name": "Trees", "value": "Trees" },
-        { "name": "Other", "value": "Other" }
+    "contacts": [
+        { "category": "Abandoned vehicles", "category_display": "Abandoned vehicles" },
+        { "category": "Grafitti", "category_display": "Grafitti" },
+        { "category": "Potholes", "category_display": "Potholes" },
+        { "category": "Street lighting", "category_display": "Street lighting" },
+        { "category": "Trees", "category_display": "Trees" },
+        { "category": "Other", "category_display": "Other" }
     ],
-    "counts_all": {
-        "wtd": {
-            "total": 10,
-            "action scheduled": 2,
-            "in progress": 1,
-            "investigating": 1,
-            "fixed - council": 3,
-            "fixed_user": 2,
-            "time_to_fix": 2,
-            "time_to_mark": 2,
-            "not_marked": 1
-        },
-        "week": {
-            "total": 21,
-            "action scheduled": 5,
-            "in progress": 3,
-            "investigating": 4,
-            "fixed - council": 6,
-            "fixed_user": 3,
-            "time_to_fix": 3,
-            "time_to_mark": 2,
-            "not_marked": 1
-        },
-        "weeks": {
-            "total": 57,
-            "action scheduled": 5,
-            "in progress": 16,
-            "investigating": 4,
-            "fixed - council": 23,
-            "fixed_user": 9,
-            "time_to_fix": 2,
-            "time_to_mark": 2,
-            "not_marked": 1
-        },
-        "ytd": {
-            "total": 171,
-            "action scheduled": 23,
-            "in progress": 34,
-            "investigating": 9,
-            "fixed - council": 72,
-            "fixed_user": 33,
-            "time_to_fix": 2,
-            "time_to_mark": 2,
-            "not_marked": 1
-        }
+    "summary_open": 3133,
+    "summary_closed": 1928,
+    "summary_fixed": 1895,
+    "totals": {
+        "total": 543,
+        "open": 139,
+        "closed": 178,
+        "fixed": 226
     },
-    "counts_some": {
-        "wtd": {
-            "total": 5,
-            "action scheduled": 0,
-            "in progress": 1,
-            "investigating": 1,
-            "fixed - council": 2,
-            "fixed_user": 1,
-            "time_to_fix": 2,
-            "time_to_mark": 2,
-            "not_marked": 0
+    "grouped": {
+        "Abandoned vehicles": {
+            "total": 140,
+            "open": 21,
+            "closed": 59,
+            "fixed": 10
         },
-        "week": {
-            "total": 7,
-            "action scheduled": 1,
-            "in progress": 2,
-            "investigating": 1,
-            "fixed - council": 2,
-            "fixed_user": 1,
-            "time_to_fix": 3,
-            "time_to_mark": 2,
-            "not_marked": 0
+        "Graffiti": {
+            "total": 96,
+            "open": 7,
+            "closed": 5,
+            "fixed": 84
         },
-        "weeks": {
-            "total": 57,
-            "action scheduled": 5,
-            "in progress": 16,
-            "investigating": 4,
-            "fixed - council": 23,
-            "fixed_user": 9,
-            "time_to_fix": 2,
-            "time_to_mark": 2,
-            "not_marked": 1
+        "Street lighting": {
+            "total": 175,
+            "open": 39,
+            "closed": 23,
+            "fixed": 113
         },
-        "ytd": {
-            "total": 57,
-            "action scheduled": 5,
-            "in progress": 16,
-            "investigating": 4,
-            "fixed - council": 23,
-            "fixed_user": 9,
-            "time_to_fix": 2,
-            "time_to_mark": 2,
-            "not_marked": 1
-        }
-    },
-    "lists": {
-        "all": {
-            "1": [
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Fly tipping" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Uneven paving" }
-            ],
-            "2": [
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Fly tipping" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Uneven paving" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Blocked drain" }
-            ],
-            "3": [
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Fly tipping" },
-                { "id": 0, "title": "Uneven paving" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Fly tipping" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Uneven paving" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Pothole" }
-            ]
+        "Trees": {
+            "total": 67,
+            "open": 39,
+            "closed": 27,
+            "fixed": 1
         },
-        "filtered": {
-            "1": [
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Uneven paving" }
-            ],
-            "2": [
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Fly tipping" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Fly tipping" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Uneven paving" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Pothole" }
-            ],
-            "3": [
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Uneven paving" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Loose kerb" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Fallen Tree" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Fly tipping" },
-                { "id": 0, "title": "Burst pipe" },
-                { "id": 0, "title": "Abandoned car" },
-                { "id": 0, "title": "Pothole" },
-                { "id": 0, "title": "Uneven paving" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Blocked drain" },
-                { "id": 0, "title": "Pothole" }
-            ]
+        "Potholes": {
+            "total": 115,
+            "open": 33,
+            "closed": 64,
+            "fixed": 18
         }
     }
 }

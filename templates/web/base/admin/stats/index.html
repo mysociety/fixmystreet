@@ -1,0 +1,10 @@
+[% INCLUDE 'admin/header.html' title=loc('Stats') %]
+
+<ul>
+<li><a href="[% c.uri_for_action('admin/stats/questionnaire') %]">[% loc('Survey Results') %]</a></li>
+<li><a href="[% c.uri_for_action('admin/stats/state') %]">[% loc('Problem breakdown by state') %]</a></li>
+<li><a href="[% c.uri_for_action('admin/stats/fix_rate') %]">[% loc('Category fix rate for problems > 4 weeks old') %]</a></li>
+<li><a href="[% c.uri_for_action('dashboard/index') %]">[% loc('Summary statistics') %]</a></li>
+</ul>
+
+[% INCLUDE 'admin/footer.html' %]
