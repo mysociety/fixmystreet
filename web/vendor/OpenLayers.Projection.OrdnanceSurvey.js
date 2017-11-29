@@ -107,11 +107,19 @@ OpenLayers.Projection.OS = {
     },
   
     goog2osgb: function(point) {
-        return OpenLayers.Projection.OS.projectForwardBritish(OpenLayers.Layer.SphericalMercator.projectInverse(point));
+        var p1 = OpenLayers.Layer.SphericalMercator.inverseMercator(point.x, point.y);
+        var p2 = OpenLayers.Projection.OS.projectForwardBritish({x: p1.lon, y: p1.lat});
+        point.x = p2.x;
+        point.y = p2.y;
+        return point;
     },
   
     osgb2goog: function(point) {
-        return OpenLayers.Layer.SphericalMercator.projectForward(OpenLayers.Projection.OS.projectInverseBritish(point));
+        var p1 = OpenLayers.Projection.OS.projectInverseBritish(point);
+        var p2 = OpenLayers.Layer.SphericalMercator.forwardMercator(p1.x, p1.y);
+        point.x = p2.lon;
+        point.y = p2.lat;
+        return point;
     },
     
     /*****
