@@ -292,6 +292,14 @@ sub _delete_contacts_not_in_service_list {
                 email => { -not_like => '%@%' }
             }
         );
+    } elsif ($self->_current_body->name eq 'East Hertfordshire District Council') {
+        # For EHDC we need to leave the 'Other' category alone or reports made
+        # in this category will be sent only to Hertfordshire County Council.
+        $found_contacts = $found_contacts->search(
+            {
+                category => { '!=' => 'Other' }
+            }
+        );
     }
 
     $found_contacts->update(
