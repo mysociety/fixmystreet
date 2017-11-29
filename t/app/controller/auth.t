@@ -251,3 +251,28 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/my', "redirected to correct page";
     };
 };
+
+subtest "check logging in with token" => sub {
+    $mech->log_out_ok;
+    $mech->not_logged_in_ok;
+
+    my $user =  FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    # token needs to be 18 characters
+    $user->set_extra_metadata('access_token', '1234567890abcdefgh');
+    $user->update();
+
+    $mech->add_header('Authorization', 'Bearer 1234567890abcdefgh');
+    $mech->logged_in_ok;
+
+    $mech->delete_header('Authorization');
+    $mech->not_logged_in_ok;
+
+    $mech->get_ok('/auth/check_auth?access_token=1234567890abcdefgh');
+
+    $mech->add_header('Authorization', 'Bearer 1234567890abcdefgh');
+    $user->set_extra_metadata('access_token', 'XXXXXXXXXXXXXXXXXX');
+    $user->update();
+    $mech->not_logged_in_ok;
+
+    $mech->delete_header('Authorization');
+};

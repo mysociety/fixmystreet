@@ -1,0 +1,44 @@
+[%
+INCLUDE 'header.html', title = loc('Generate token'), bodyclass = 'fullwidthpage'
+%]
+
+[% IF token_generated %]
+
+  <div class="confirmation-header">
+    <h1>[% loc('Your token has been generated') %]</h1>
+
+    <p>
+        <strong>[% loc('Token:') %]</strong>
+        <span>[% existing_token | html %]</span>
+    </p>
+
+    <p><a href="/my">[% loc('Your account') %]</a></p>
+  </div>
+
+[% ELSE %]
+
+<h1>[% loc('Generate token') %]</h1>
+
+<form action="[% c.uri_for_action('/auth/profile/generate_token') %]" method="post" name="generate_token">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    [% IF existing_token %]
+        <p>
+            <strong>[% loc('Current token:') %]</strong>
+            <span>[% existing_token | html %]</span>
+        </p>
+    [% END %]
+
+    <p>
+    <input name="generate_token" type="submit" class="btn" value="[% existing_token ? loc('Replace token') : loc('Generate token') %]">
+    </p>
+</form>
+
+[% IF existing_token %]
+  <p>
+  [% loc('If you generate a new token the existing token will no longer work.') %]
+  </p>
+[% END %]
+[% END %]
+
+[% INCLUDE 'footer.html' %]
