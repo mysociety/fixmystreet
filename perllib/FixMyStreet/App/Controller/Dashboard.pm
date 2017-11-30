@@ -346,11 +346,11 @@ sub export_as_csv {
             my $problem_state = $comment->problem_state or next;
             next unless $comment->state eq 'confirmed';
             next if $problem_state eq 'confirmed';
-            $hashref->{acknowledged_pp} //= $c->cobrand->prettify_dt( $comment->created );
-            $hashref->{fixed_pp} //= $fixed_states->{ $problem_state } || $comment->mark_fixed ?
-                $c->cobrand->prettify_dt( $comment->created ): undef;
+            $hashref->{acknowledged} //= $comment->confirmed;
+            $hashref->{fixed} //= $fixed_states->{ $problem_state } || $comment->mark_fixed ?
+                $comment->confirmed : undef;
             if ($closed_states->{ $problem_state }) {
-                $hashref->{closed_pp} = $c->cobrand->prettify_dt( $comment->created );
+                $hashref->{closed} = $comment->confirmed;
                 last;
             }
         }
@@ -369,11 +369,11 @@ sub export_as_csv {
                 'detail',
                 'user_name_display',
                 'category',
-                'created_pp',
-                'confirmed_pp',
-                'acknowledged_pp',
-                'fixed_pp',
-                'closed_pp',
+                'created',
+                'confirmed',
+                'acknowledged',
+                'fixed',
+                'closed',
                 'state',
                 'latitude', 'longitude',
                 'postcode',
