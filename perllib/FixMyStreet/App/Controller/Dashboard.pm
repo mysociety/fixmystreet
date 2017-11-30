@@ -344,9 +344,10 @@ sub export_as_csv {
 
         for my $comment ($report->comments) {
             my $problem_state = $comment->problem_state or next;
+            next unless $comment->state eq 'confirmed';
             next if $problem_state eq 'confirmed';
             $hashref->{acknowledged_pp} //= $c->cobrand->prettify_dt( $comment->created );
-            $hashref->{fixed_pp} //= $fixed_states->{ $problem_state } ?
+            $hashref->{fixed_pp} //= $fixed_states->{ $problem_state } || $comment->mark_fixed ?
                 $c->cobrand->prettify_dt( $comment->created ): undef;
             if ($closed_states->{ $problem_state }) {
                 $hashref->{closed_pp} = $c->cobrand->prettify_dt( $comment->created );
