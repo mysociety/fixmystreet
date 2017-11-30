@@ -81,14 +81,13 @@ sub council_dashboard_hook {
     }
 
     $c->forward('/admin/fetch_contacts');
-    $c->stash->{display_contacts} = 1;
 
-    return if $c->user->is_superuser;
+    $c->detach('/reports/summary') if $c->user->is_superuser;
 
     my $body = $c->user->from_body || _user_to_body($c);
     if ($body) {
         # Matching URL and user's email body
-        return if $body->id eq $c->stash->{body}->id;
+        $c->detach('/reports/summary') if $body->id eq $c->stash->{body}->id;
 
         # Matched /a/ body, redirect to its summary page
         $c->stash->{body} = $body;

@@ -69,19 +69,8 @@ sub index : Path : Args(0) {
         }
     }
 
-    my $dashboard = eval {
-        my $data = FixMyStreet->config('TEST_DASHBOARD_DATA');
-        # uncoverable branch true
-        unless ($data) {
-            my $fn = '../data/all-reports-dashboard';
-            if ($c->stash->{body}) {
-                $fn .= '-' . $c->stash->{body}->id;
-            }
-            $data = decode_json(path(FixMyStreet->path_to($fn . '.json'))->slurp_utf8);
-        }
-        $c->stash($data);
-        return 1;
-    };
+    my $dashboard = $c->forward('load_dashboard_data');
+
     my $table = !$c->stash->{body} && eval {
         my $data = path(FixMyStreet->path_to('../data/all-reports.json'))->slurp_utf8;
         $c->stash(decode_json($data));
@@ -425,6 +414,65 @@ sub ward_check : Private {
     $c->detach( 'redirect_body' );
 }
 
+=head2 summary
+
+This is the summary page used on fixmystreet.com
+
+=cut
+
+sub summary : Private {
+    my ($self, $c) = @_;
+    my $dashboard = $c->forward('load_dashboard_data');
+
+    eval {
+        my $data = path(FixMyStreet->path_to('../data/all-reports-dashboard.json'))->slurp_utf8;
+        $data = decode_json($data);
+        $c->stash(
+            top_five_bodies => $data->{top_five_bodies},
+            average => $data->{average},
+        );
+    };
+
+    my $dtf = $c->model('DB')->storage->datetime_parser;
+    my $period = $c->stash->{period} = $c->get_param('period') || '';
+    my $start_date;
+    if ($period eq 'ever') {
+        $start_date = DateTime->new(year => 2007);
+    } elsif ($period eq 'year') {
+        $start_date = DateTime->now->subtract(years => 1);
+    } elsif ($period eq '3months') {
+        $start_date = DateTime->now->subtract(months => 3);
+    } elsif ($period eq 'week') {
+        $start_date = DateTime->now->subtract(weeks => 1);
+    } else {
+        $c->stash->{period} = 'month';
+        $start_date = DateTime->now->subtract(months => 1);
+    }
+
+    # required to stop errors in generate_grouped_data
+    $c->stash->{q_state} = '';
+    $c->stash->{ward} = $c->get_param('ward');
+    $c->stash->{start_date} = $dtf->format_date($start_date);
+    $c->stash->{end_date} = $c->get_param('end_date');
+
+    $c->stash->{group_by_default} = 'category';
+
+    my $area_id = $c->stash->{body}->body_areas->first->area_id;
+    my $children = mySociety::MaPit::call('area/children', $area_id,
+        type => $c->cobrand->area_types_children,
+    );
+    $c->stash->{children} = $children;
+
+    $c->forward('/admin/fetch_contacts');
+    $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
+
+    $c->forward('/dashboard/construct_rs_filter');
+
+    $c->forward('/dashboard/generate_grouped_data');
+
+    $c->stash->{template} = 'reports/summary.html';
+}
+
 =head2 check_canonical_url
 
 Given an already found (case-insensitively) body, check what URL
@@ -439,6 +487,25 @@ sub check_canonical_url : Private {
     my $url_short = URI::Escape::uri_escape_utf8($q_body);
     $url_short =~ s/%2B/+/g;
     $c->detach( 'redirect_body' ) unless $body_short eq $url_short;
+}
+
+sub load_dashboard_data : Private {
+    my ($self, $c) = @_;
+    my $dashboard = eval {
+        my $data = FixMyStreet->config('TEST_DASHBOARD_DATA');
+        # uncoverable branch true
+        unless ($data) {
+            my $fn = '../data/all-reports-dashboard';
+            if ($c->stash->{body}) {
+                $fn .= '-' . $c->stash->{body}->id;
+            }
+            $data = decode_json(path(FixMyStreet->path_to($fn . '.json'))->slurp_utf8);
+        }
+        $c->stash($data);
+        return 1;
+    };
+
+    return $dashboard;
 }
 
 sub load_and_group_problems : Private {

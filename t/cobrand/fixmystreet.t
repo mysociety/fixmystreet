@@ -44,7 +44,6 @@ FixMyStreet::override_config {
     # Logged in, redirects
     $mech->get_ok('/about/council-dashboard');
     is $mech->uri->path, '/reports/Birmingham/summary';
-    $mech->content_contains('Top 5 wards');
     $mech->content_contains('Where we send Birmingham');
     $mech->content_contains('lights@example.com');
 
