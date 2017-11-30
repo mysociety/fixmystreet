@@ -468,10 +468,49 @@ sub summary : Private {
 
     $c->forward('/dashboard/construct_rs_filter');
 
+    if ( $c->get_param('csv') ) {
+        $c->detach('export_summary_csv');
+    }
+
     $c->forward('/dashboard/generate_grouped_data');
     $c->forward('/dashboard/generate_body_response_time');
 
     $c->stash->{template} = 'reports/summary.html';
+}
+
+sub export_summary_csv : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{csv} = {
+        problems => $c->stash->{problems_rs}->search_rs({}, {
+            rows => 100,
+            order_by => { '-desc' => 'me.confirmed' },
+        }),
+        headers => [
+            'Report ID',
+            'Title',
+            'Category',
+            'Created',
+            'Confirmed',
+            'Status',
+            'Latitude', 'Longitude',
+            'Query',
+            'Report URL',
+        ],
+        columns => [
+            'id',
+            'title',
+            'category',
+            'created_pp',
+            'confirmed_pp',
+            'state',
+            'latitude', 'longitude',
+            'postcode',
+            'url',
+        ],
+        filename => 'fixmystreet-data.csv',
+    };
+    $c->forward('/dashboard/generate_csv');
 }
 
 =head2 check_canonical_url
