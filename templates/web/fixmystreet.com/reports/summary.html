@@ -100,6 +100,7 @@
               [% END %]
             </tbody>
             <tfoot>
+                <tr><td>[% body.name %]</td><td>[% tprintf(nget("%s day", "%s days", body_average), body_average) %]</td></tr>
                 <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
             </tfoot>
         </table>

@@ -469,6 +469,7 @@ sub summary : Private {
     $c->forward('/dashboard/construct_rs_filter');
 
     $c->forward('/dashboard/generate_grouped_data');
+    $c->forward('/dashboard/generate_body_response_time');
 
     $c->stash->{template} = 'reports/summary.html';
 }

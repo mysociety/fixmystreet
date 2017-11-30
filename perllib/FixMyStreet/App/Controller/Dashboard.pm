@@ -287,6 +287,13 @@ sub generate_summary_figures {
     }
 }
 
+sub generate_body_response_time : Private {
+    my ( $self, $c ) = @_;
+
+    my $avg = $c->stash->{body}->calculate_average;
+    $c->stash->{body_average} = $avg ? int($avg / 60 / 60 / 24 + 0.5) : 0;
+}
+
 sub export_as_csv {
     my ($self, $c) = @_;
     require Text::CSV;

@@ -199,7 +199,7 @@ sub generate_dashboard {
     if ($body) {
         calculate_top_five_wards(\%data, $rs, $body);
     } else {
-        calculate_top_five_bodies(\%data, $rs_c);
+        calculate_top_five_bodies(\%data);
     }
 
     my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));
@@ -247,34 +247,13 @@ sub stuff_by_day_or_year {
 }
 
 sub calculate_top_five_bodies {
-    my ($data, $rs_c) = @_;
+    my ($data) = @_;
 
     my(@top_five_bodies);
 
     my $bodies = FixMyStreet::DB->resultset('Body')->search;
-    my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and (problem_state in ('fixed', 'fixed - council', 'fixed - user') or mark_fixed)";
     while (my $body = $bodies->next) {
-        my $subquery = $rs_c->to_body($body)->search({
-            -or => [
-                problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
-                mark_fixed => 1,
-            ],
-            'me.id' => \"= ($substmt)",
-            'me.state' => 'confirmed',
-        }, {
-            select   => [
-                { extract => "epoch from me.confirmed-problem.confirmed", -as => 'time' },
-            ],
-            as => [ qw/time/ ],
-            rows => 100,
-            order_by => { -desc => 'me.confirmed' },
-            join => 'problem'
-        })->as_subselect_rs;
-        my $avg = $subquery->search({
-        }, {
-            select => [ { avg => "time" } ],
-            as => [ qw/avg/ ],
-        })->first->get_column('avg');
+        my $avg = $body->calculate_average;
         push @top_five_bodies, { name => $body->name, days => int($avg / 60 / 60 / 24 + 0.5) }
             if defined $avg;
     }
