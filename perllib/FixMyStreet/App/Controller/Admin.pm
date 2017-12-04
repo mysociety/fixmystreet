@@ -1102,19 +1102,52 @@ sub template_edit : Path('templates') : Args(2) {
     } } @live_contacts;
     $c->stash->{contacts} = \@all_contacts;
 
-    if ($c->req->method eq 'POST') {
+    # bare block to use 'last' if form is invalid.
+    if ($c->req->method eq 'POST') { {
         if ($c->get_param('delete_template') && $c->get_param('delete_template') eq _("Delete template")) {
             $template->contact_response_templates->delete_all;
             $template->delete;
         } else {
+            my @live_contact_ids = map { $_->id } @live_contacts;
+            my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @live_contact_ids;
+            my %new_contacts = map { $_ => 1 } @new_contact_ids;
+            for my $contact (@all_contacts) {
+                $contact->{active} = $new_contacts{$contact->{id}};
+            }
+
             $template->title( $c->get_param('title') );
             $template->text( $c->get_param('text') );
             $template->state( $c->get_param('state') );
-            $template->auto_response( $c->get_param('auto_response') ? 1 : 0 );
-            $template->update_or_insert;
 
-            my @live_contact_ids = map { $_->id } @live_contacts;
-            my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @live_contact_ids;
+            $template->auto_response( $c->get_param('auto_response') && $template->state ? 1 : 0 );
+            if ($template->auto_response) {
+                my @check_contact_ids = @new_contact_ids;
+                # If the new template has not specific categories (i.e. it
+                # applies to all categories) then we need to check each of those
+                # category ids for existing auto-response templates.
+                if (!scalar @check_contact_ids) {
+                    @check_contact_ids = @live_contact_ids;
+                }
+                my $query = {
+                    'auto_response' => 1,
+                    'contact.id' => [ @check_contact_ids, undef ],
+                    'me.state' => $template->state,
+                };
+                if ($template->in_storage) {
+                    $query->{'me.id'} = { '!=', $template->id };
+                }
+                if ($c->stash->{body}->response_templates->search($query, {
+                    join => { 'contact_response_templates' => 'contact' },
+                })->count) {
+                    $c->stash->{errors} = {
+                        auto_response => _("There is already an auto-response template for this category/state.")
+                    };
+                }
+            }
+
+            last if $c->stash->{errors};
+
+            $template->update_or_insert;
             $template->contact_response_templates->search({
                 contact_id => { '!=' => \@new_contact_ids },
             })->delete;
@@ -1126,7 +1159,7 @@ sub template_edit : Path('templates') : Args(2) {
         }
 
         $c->res->redirect( $c->uri_for( 'templates', $c->stash->{body}->id ) );
-    }
+    } }
 
     $c->stash->{response_template} = $template;
 

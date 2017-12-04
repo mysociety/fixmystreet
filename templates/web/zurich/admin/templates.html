@@ -1,0 +1,28 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Response Templates for %s'), body.name) -%]
+
+<h2> [% tprintf(loc('Response Templates for %s'), body.name) %] </h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>  [% loc('Title') %] </th>
+        <th>  [% loc('Text') %] </th>
+        <th>  [% loc('Created') %] </th>
+        <th>  &nbsp; </th>
+    </tr>
+    </thead>
+    <tbody>
+[% FOR t IN response_templates %]
+    <tr>
+        <td>  [% t.title %] </td>
+        <td> [% t.text %] </td>
+        <td> [% t.created %] </td>
+        <td> <a href="[% c.uri_for('templates', body.id, t.id) %]" class="btn">[% loc('Edit') %]</a> </td>
+    </tr>
+[% END %]
+    </tbody>
+</table>
+
+<a href="[% c.uri_for('templates', body.id, 'new') %]" class="btn">[% loc('New template') %]</a>
+
+[% INCLUDE 'admin/footer.html' %]

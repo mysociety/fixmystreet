@@ -51,6 +51,8 @@
         - More JavaScript-enhanced `<select multiple>` elements #1589
         - Council dashboard CSV export now has token based authentication #1911
         - Consolidate various admin summary statistics page. #1919.
+        - 'Auto-response' flag on response templates is honoured for fetched
+          Open311 updates. #1924
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.

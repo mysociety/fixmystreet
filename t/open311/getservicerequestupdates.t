@@ -20,10 +20,17 @@ my $user = FixMyStreet::DB->resultset('User')->find_or_create(
 
 my %bodies = (
     2237 => FixMyStreet::DB->resultset("Body")->create({ name => 'Oxfordshire' }),
-    2482 => FixMyStreet::DB->resultset("Body")->new({ id => 2482 }),
+    2482 => FixMyStreet::DB->resultset("Body")->create({ name=> 'Bromley', id => 2482 }),
     2651 => FixMyStreet::DB->resultset("Body")->new({ id => 2651 }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
+
+my $response_template = $bodies{2482}->response_templates->create({
+    title => "investigating template",
+    text => "We are investigating this report.",
+    auto_response => 1,
+    state => "investigating"
+});
 
 my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
 <service_requests_updates>
@@ -157,6 +164,10 @@ for my $test (
         end_state => 'confirmed',
     },
 
+    # NB because we have an auto-response ResponseTemplate set up for
+    # the 'investigating' state, this test is also testing that the
+    # response template isn't used if the update XML has a non-empty
+    # <description>.
     {
         desc => 'investigating status changes problem status',
         description => 'This is a note',
@@ -334,6 +345,18 @@ for my $test (
         end_state => 'fixed - council',
     },
     {
+        desc => 'empty description triggers auto-response template',
+        description => 'We are investigating this report.',
+        xml_description => '',
+        external_id => 638344,
+        start_state => 'fixed - council',
+        comment_status => 'INVESTIGATING',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => 'investigating',
+        end_state => 'investigating',
+    },
+    {
         desc => 'open status does not re-open hidden report',
         description => 'This is a note',
         external_id => 638344,
@@ -346,7 +369,7 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
-        my $local_requests_xml = setup_xml($problem->external_id, $problem->id, $test->{comment_status});
+        my $local_requests_xml = setup_xml($problem->external_id, $problem->id, $test->{comment_status}, $test->{xml_description});
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
         $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
@@ -762,13 +785,14 @@ foreach my $test ( {
 done_testing();
 
 sub setup_xml {
-    my ($id, $id_ext, $status) = @_;
+    my ($id, $id_ext, $status, $description) = @_;
     my $xml = $requests_xml;
     my $updated_datetime = sprintf( '<updated_datetime>%s</updated_datetime>', $dt );
     $xml =~ s/UPDATED_DATETIME/$updated_datetime/;
     $xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>$id</service_request_id>#;
     $xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>$id_ext</service_request_id_ext>#;
     $xml =~ s#<status>\w+</status>#<status>$status</status># if $status;
+    $xml =~ s#<description>.+</description>#<description>$description</description># if defined $description;
     return $xml;
 
 

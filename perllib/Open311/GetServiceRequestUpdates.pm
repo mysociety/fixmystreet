@@ -103,16 +103,17 @@ sub update_comments {
         $problem = $self->schema->resultset('Problem')->to_body($body)->search( $criteria );
 
         if (my $p = $problem->first) {
-            next unless defined $request->{update_id} && defined $request->{description};
+            next unless defined $request->{update_id};
             my $c = $p->comments->search( { external_id => $request->{update_id} } );
 
             if ( !$c->first ) {
+                my $state = $self->map_state( $request->{status} );
                 my $comment = $self->schema->resultset('Comment')->new(
                     {
                         problem => $p,
                         user => $self->system_user,
                         external_id => $request->{update_id},
-                        text => $request->{description},
+                        text => $self->comment_text_for_request($request, $p, $state),
                         mark_fixed => 0,
                         mark_open => 0,
                         anonymous => 0,
@@ -138,8 +139,6 @@ sub update_comments {
                 # do not change the status of the problem as it's
                 # tricky to determine the right thing to do.
                 if ( $comment->created > $p->lastupdate ) {
-                    my $state = $self->map_state( $request->{status} );
-
                     # don't update state unless it's an allowed state and it's
                     # actually changing the state of the problem
                     if ( FixMyStreet::DB::Result::Problem->visible_states()->{$state} && $p->state ne $state &&
@@ -178,6 +177,22 @@ sub update_comments {
     }
 
     return 1;
+}
+
+sub comment_text_for_request {
+    my ($self, $request, $problem, $state) = @_;
+
+    return $request->{description} if $request->{description};
+
+    if (my $template = $problem->response_templates->search({
+        auto_response => 1,
+        'me.state' => $state
+    })->first) {
+        return $template->text;
+    }
+
+    print STDERR "Couldn't determine update text for $request->{update_id} (report " . $problem->id . ")\n";
+    return "";
 }
 
 sub map_state {
