@@ -21,7 +21,9 @@ sub dispatch_request {
     sub (GET + /search + ?q=) {
         my ($self, $q) = @_;
         my $response = $self->query($q);
-        my $json = $self->json->encode($response);
+        my $json = mySociety::Locale::in_gb_locale {
+            $self->json->encode($response);
+        };
         return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
 }
