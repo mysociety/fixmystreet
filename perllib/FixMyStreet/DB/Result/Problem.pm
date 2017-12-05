@@ -871,6 +871,8 @@ sub as_hashref {
     my $self = shift;
     my $c    = shift;
 
+    my $state_t = FixMyStreet::DB->resultset("State")->display($self->state);
+
     return {
         id        => $self->id,
         title     => $self->title,
@@ -881,12 +883,16 @@ sub as_hashref {
         postcode  => $self->postcode,
         areas     => $self->areas,
         state     => $self->state,
-        state_t   => _( $self->state ),
+        state_t   => $state_t,
         used_map  => $self->used_map,
         is_fixed  => $self->fixed_states->{ $self->state } ? 1 : 0,
         photos    => [ map { $_->{url} } @{$self->photos} ],
         meta      => $self->confirmed ? $self->meta_line( $c ) : '',
-        confirmed_pp => $self->confirmed ? $c->cobrand->prettify_dt( $self->confirmed ): '',
+        ($self->confirmed ? (
+            confirmed => $self->confirmed,
+            confirmed_pp => $c->cobrand->prettify_dt( $self->confirmed ),
+        ) : ()),
+        created => $self->created,
         created_pp => $c->cobrand->prettify_dt( $self->created ),
     };
 }

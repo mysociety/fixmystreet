@@ -51,6 +51,7 @@
         - Council dashboard has date range for report generation #1885
         - More JavaScript-enhanced `<select multiple>` elements #1589
         - Council dashboard CSV export now has token based authentication #1911
+        - And uses machine-readable dates. #1929
         - Consolidate various admin summary statistics page. #1919.
         - 'Auto-response' flag on response templates is honoured for fetched
           Open311 updates. #1924
