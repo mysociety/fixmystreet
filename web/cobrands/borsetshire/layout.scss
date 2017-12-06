@@ -82,3 +82,23 @@ body.authpage {
         margin-top: 0;
     }
 }
+
+.fms-pro-promo {
+  margin: 1em 0 3em 0;
+  padding: 2em;
+
+  p {
+    font-size: 1.2em;
+    max-width: 26em;
+  }
+
+  h2 {
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 2em;
+  }
+
+  @media (min-width: 60em) {
+    padding: 3em;
+  }
+}

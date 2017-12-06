@@ -92,3 +92,26 @@ body.authpage {
         margin-top: 0.5em;
     }
 }
+
+.fms-pro-promo {
+  margin: 2em -1em;
+  padding: 1em;
+  background: $primary;
+  color: $primary_text;
+
+  .lead {
+    font-weight: bold;
+  }
+
+  & > :first-child {
+    margin-top: 0;
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.btn--borsetshire {
+  @include button-reset($text: #000, $hover-text: #000);
+}
