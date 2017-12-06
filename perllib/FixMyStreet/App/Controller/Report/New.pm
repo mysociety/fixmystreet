@@ -706,17 +706,19 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{missing_details_bodies} = \@missing_details_bodies;
     $c->stash->{missing_details_body_names} = \@missing_details_body_names;
 
-    my %category_groups = ();
-    for my $category (@category_options) {
-        push @{$category_groups{$category->{group}}}, $category;
-    }
+    if ( $c->cobrand->call_hook('enable_category_groups') ) {
+        my %category_groups = ();
+        for my $category (@category_options) {
+            push @{$category_groups{$category->{group}}}, $category;
+        }
 
-    my @category_groups = ();
-    for my $group ( grep { $_ ne _('Other') } sort keys %category_groups ) {
-        push @category_groups, { name => $group, categories => $category_groups{$group} };
+        my @category_groups = ();
+        for my $group ( grep { $_ ne _('Other') } sort keys %category_groups ) {
+            push @category_groups, { name => $group, categories => $category_groups{$group} };
+        }
+        push @category_groups, { name => _('Other'), categories => $category_groups{_('Other')} } if ($category_groups{_('Other')});
+        $c->stash->{category_groups}  = \@category_groups;
     }
-    push @category_groups, { name => _('Other'), categories => $category_groups{_('Other')} } if ($category_groups{_('Other')});
-    $c->stash->{category_groups}  = \@category_groups;
 }
 
 sub setup_report_extra_fields : Private {
