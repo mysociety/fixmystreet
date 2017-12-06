@@ -38,6 +38,7 @@
         - Superusers without a from_body can make reports again. #1913
         - Fix crash when viewing /around in certain locales. #1916
         - Fix back bug, from report after using list filters. #1920
+        - Fix issues with send method category change. #1933
     - Admin improvements:
         - Character length limit can be placed on report detailed information #1848
         - Inspector panel shows nearest address if available #1850
