@@ -63,3 +63,32 @@
         text-decoration: underline;
     }
 }
+
+body.authpage {
+    .content {
+        max-width: 27em;
+        margin-#{$left}: auto;
+        margin-#{$right}: auto;
+    }
+}
+
+#demo-user-list {
+    @include list-reset-soft();
+    border-bottom: 1px solid #eee;
+    margin-bottom: 2em;
+
+    li {
+        margin: 2em 0;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    span {
+        color: #666;
+        font-size: (14em / 16);
+        display: block;
+        margin-top: 0.5em;
+    }
+}

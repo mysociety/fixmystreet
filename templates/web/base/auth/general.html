@@ -50,7 +50,8 @@
       [% ELSIF sign_in_error %]
         <div class="form-error">[% loc('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form.') %]</div>
       [% END %]
-        <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]" autofocus>
+        <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]"
+        [%~ IF c.cobrand.moniker != 'borsetshire' %] autofocus[% END %]>
 
         <div id="form_sign_in">
             <h3>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name)  %]</h3>

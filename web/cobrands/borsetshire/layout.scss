@@ -54,3 +54,31 @@
         }
     }
 }
+
+body.authpage {
+    .content {
+        width: auto;
+        max-width: 30em;
+    }
+
+    input {
+        max-width: none;
+    }
+}
+
+#demo-user-list {
+    li {
+        @include clearfix();
+    }
+
+    button {
+        float: left;
+        width: 40%;
+    }
+
+    span {
+        float: right;
+        width: 55%;
+        margin-top: 0;
+    }
+}

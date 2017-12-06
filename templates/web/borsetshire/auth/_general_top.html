@@ -1,28 +1,23 @@
-<p>The following users exist, all with password <kbd>password</kbd>
-(click them to quickly log in):</p>
-<style>
-#demo-user-list dt {
-    padding: 0 0.5em;
-}
-#demo-user-list dd {
-    color: #666;
-    font-size: 87.5%;
-    padding: 0 0.5em;
-}
-.js #demo-user-list dt:hover {
-    background-color: #faebac;
-    cursor: pointer;
-}
-</style>
+<p>
+Click on one of the buttons below to log in as one of the four
+different types of user we’ve set up on this demo site:
+</p>
 
-<dl id='demo-user-list'>
-    <dt>inspector@example.org</dt>
-        <dd>an inspector, who can shortlist and inspect reports.</dd>
-    <dt>cs@example.org</dt>
-        <dd>a customer service rep, who can create reports as the council or another user, and moderate reports.</dd>
-    <dt>super@example.org</dt>
-        <dd>a council super user, who can do all the above, plus also edit users, templates, priorities, and more.</dd>
-    <dt>user@example.org</dt>
-        <dd>a normal user, who has created the example reports on the site.</dd>
-</dl>
+<ul id='demo-user-list' class="clearfix">
+        <li>
+<button class="btn" data-email="user@example.org">Normal user</button>
+<span>A local resident who has created reports and updates on the site.</span>
+        <li>
+<button class="btn" data-email="cs@example.org">Customer service</button>
+<span>A customer service staff member, who can create and moderate existing reports.</span>
+        <li>
+<button class="btn" data-email="inspector@example.org">Inspector</button>
+<span>An inspector staff member, who can inspect reports and create shortlists.</span>
+        <li>
+<button class="btn" data-email="super@example.org">Super user</button>
+<span>A superuser staff member, who can do all the above, plus also edit users, templates, and priorities in the Admin screen.</span>
+</ul>
 
+<p>
+Or sign in as normal, with an email address and password:
+</p>
