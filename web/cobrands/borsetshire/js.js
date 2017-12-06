@@ -1,5 +1,9 @@
 (function(){
 
+    if (typeof jQuery === 'undefined') {
+        return;
+    }
+
     function set_redirect(form) {
         var e = form.username.value;
         if (e == 'inspector@example.org') {
