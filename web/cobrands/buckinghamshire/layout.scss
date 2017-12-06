@@ -17,9 +17,14 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   #site-logo {
     background-size: 60px;
     text-indent: 80px;
-    height: 92px;
+    padding-left: 0;
     line-height: 92px;
+    font-size: 24px;
     margin: 0;
+    height: 92px;
+    strong {
+      display: inline;
+    }
   }
 
   .nav-wrapper {

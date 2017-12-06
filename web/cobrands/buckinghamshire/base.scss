@@ -11,15 +11,18 @@
 
   background: url(/cobrands/buckinghamshire/img/bucks-logo.png) 0 50% no-repeat;
   background-size: 37px;
-  text-indent: 47px;
-  line-height: 37px;
-  font-size: 24px;
+  text-indent: 0;
+  padding-left: 47px;
+  padding-right: 7em;
+  line-height: 1.3em;
+  font-size: 0.875em;
   margin: 9px 0;
   color: black;
   width: auto;
   height: 37px;
 
   strong {
+      display: block;
       @extend %bold-font;
   }
 }
