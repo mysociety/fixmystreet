@@ -1,0 +1,16 @@
+Subject:[% IF staging_site %] [STAGING][% END %] RDI missing report
+
+The following reports have had a defect raised, but have not been
+included in an RDI file as they lack an Exor ID.
+
+[% FOR report IN reports %]
+* [% report.url %]
+[% END %]
+
+[% IF staging_site %]
+NB: This RDI file was generated on a staging site and is for testing
+purposes only.
+[% END %]
+----
+
+The mySociety team and Oxfordshire County Council

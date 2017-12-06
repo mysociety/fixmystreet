@@ -76,4 +76,25 @@ foreach my $inspector (@inspectors) {
     }
 }
 
-1;
+# Catch any missed
+rdi_missed();
+
+# ---
+
+sub rdi_missed {
+    my @problems = $cobrand->problems->search({
+        state => 'action scheduled',
+        external_id => undef,
+        'admin_log_entries.action' => 'inspected',
+    }, {
+        join => 'admin_log_entries',
+        distinct => 1,
+    })->all;
+
+    FixMyStreet::Email::send_cron(
+        FixMyStreet::DB->schema, "rdi-missed.txt",
+        { reports => \@problems },
+        { To => join('', 'fms', '_', 'admin', '@', $cobrand->admin_user_domain) },
+        undef, 0, $cobrand,
+    );
+}
