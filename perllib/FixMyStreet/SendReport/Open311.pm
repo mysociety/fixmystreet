@@ -84,7 +84,6 @@ sub send {
 
         if ( $resp ) {
             $row->external_id( $resp );
-            $row->send_method_used('Open311');
             $result *= 0;
             $self->success( 1 );
         } else {

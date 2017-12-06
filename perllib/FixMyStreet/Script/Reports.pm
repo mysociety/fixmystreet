@@ -222,7 +222,9 @@ sub send(;$) {
         for my $sender ( keys %reporters ) {
             debug_print("sending using " . $sender, $row->id) if $debug_mode;
             $sender = $reporters{$sender};
-            $result *= $sender->send( $row, \%h );
+            my $res = $sender->send( $row, \%h );
+            $result *= $res;
+            $row->add_send_method($sender) if !$res;
             if ( $sender->unconfirmed_counts) {
                 foreach my $e (keys %{ $sender->unconfirmed_counts } ) {
                     foreach my $c (keys %{ $sender->unconfirmed_counts->{$e} }) {

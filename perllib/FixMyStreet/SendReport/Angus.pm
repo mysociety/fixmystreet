@@ -154,7 +154,6 @@ sub send {
         my $external_id = $self->get_external_id( $result );
         if ( $external_id ) {
             $row->external_id( $external_id );
-            $row->send_method_used('Angus');
             $return = 0;
         }
     } catch {

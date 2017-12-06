@@ -1,5 +1,5 @@
 <p>
-  [% IF problem.send_method_used != 'Open311' OR NOT problem.to_body_named('Bromley|Stevenage') %]
+  [% IF NOT problem.send_method_used.match('Open311') OR NOT problem.to_body_named('Bromley|Stevenage') %]
     [% loc( 'Please note that updates are not sent to the council.' ) %]
   [% END %]
     [% loc( 'Your information will only be used in accordance with our <a href="/privacy">privacy policy</a>' ) %]
