@@ -15,6 +15,7 @@ BEGIN {
     require "$d/../../setenv.pl";
 }
 
+use List::Util qw(shuffle);
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB::Factories;
@@ -68,13 +69,26 @@ my $body = FixMyStreet::DB::Factory::Body->find_or_create({
 });
 say "Created body " . $body->name . " for MapIt area ID " . $opt->area_id . ', categories ' . join(', ', @$categories);
 
-FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Generic' });
-FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Fixed', state => 'fixed - council' });
-FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Monitoring', state => 'unable to fix' });
-my $template = FixMyStreet::DB::Factory::ResponseTemplate->create({ body => $body, title => 'Not us', state => 'not responsible' });
+FixMyStreet::DB::Factory::ResponseTemplate->create({
+    body => $body, title => 'Generic',
+    text => 'Thank you for your report, we will be in touch with an update soon.' });
+FixMyStreet::DB::Factory::ResponseTemplate->create({
+    body => $body, title => 'Fixed', state => 'fixed - council',
+    text => 'Thank you for reporting that issue, it has now been resolved.' });
+FixMyStreet::DB::Factory::ResponseTemplate->create({
+    body => $body, title => 'Monitoring', state => 'unable to fix',
+    text => 'Thank you for your enquiry. I have visited the site and assessed the problem that you have identified. Unfortunately it doesn’t meet our current intervention criteria so I cannot arrange a repair. We will continue to monitor this during our routine inspections.' });
+FixMyStreet::DB::Factory::ResponseTemplate->create({
+    body => $body, title => 'Taxed in date', state => 'unable to fix',
+    text => 'We have investigated this report and found the vehicle to be taxed therefore no further action will be taken.  Please note that from October 2014 it is no longer a legal requirement to display a tax disc.' });
+my $template = FixMyStreet::DB::Factory::ResponseTemplate->create({
+    body => $body, title => 'Not responsible', state => 'not responsible',
+    text => 'This report is not the responsibility of the council and will be passed to the relevant organisation.' });
 $template->add_to_contacts($body->contacts->first);
-my $priority = FixMyStreet::DB::Factory::ResponsePriority->create_batch(3, { body => $body });
-$priority->[0]->add_to_contacts($body->contacts->first);
+my $priority = FixMyStreet::DB::Factory::ResponsePriority->create({ body => $body, description => '4 hour fix' });
+FixMyStreet::DB::Factory::ResponsePriority->create({ body => $body, description => '28 day fix' });
+FixMyStreet::DB::Factory::ResponsePriority->create({ body => $body, description => 'For information only' });
+$priority->add_to_contacts($body->contacts->first);
 
 # Users
 say "Created users, all with password 'password':";
@@ -109,6 +123,37 @@ my %titles = (
     'Graffiti' => ['Graffiti', 'Graffiti', 'Offensive graffiti', 'Graffiti on the bridge', 'Remove graffiti'],
     'Other' => ['Loose drain cover', 'Flytipping on country lane', 'Vehicle blocking footpath', 'Hedge encroaching pavement', 'Full litter bins'],
 );
+my %descriptions = (
+    'Potholes' => [
+        '6” deep pothole in the very centre of the Bristol road; cars are swerving to avoid it. Please treat this as a matter of urgency.',
+        'It’s small but it’s a trip hazard. Right where people cross over to get into the school or church. About 3” across but will become larger if not attended to.',
+        'Just went over my handlebars as I didn’t see this pothole on Banbury road, just before the traffic lights. Dread to think what might have happened if the traffic had been busier.',
+        'I work in the cafe at 34 Clarington Avenue and we’ve had four people come in having tripped over in the last seven days. The pothole’s right outside the key-cutting shop, just near the alleyway.',
+        'This has been here, next to the side of the road, for a month',
+        'A manhole on the junction of Etherington Road is sinking into the road surface. Not only is it an accident waiting to happen but it’s making a terrible noise every time a car passes over it.',
+    ],
+    'Street lighting' => [
+        'I saw a workman attempting to fix this streetlight over a week ago, and ever since then it’s come on in the daytime and gone off as soon as it gets dark. Come and sort it out please!',
+        'Every Tuesday night I have to walk across the carpark outside the station at around 9pm. Not a problem in summer but now the nights are drawing in I feel very unsafe. Please get the streetlight by the exit fixed as I’m sure I can’t be the only woman feeling vulnerable.',
+        'My toddler is too scared to go in now, as soon as you’re more than a few paces in it’s absolutely pitch black with no hope of seeing any puddles or worse on the floor. I think this needs seeing to as a priority. Thank you.',
+        'I think the lights in the multi storey carpark are motion sensitive but I’ve actually never seen them come on. Maybe the bulb needs replacing??',
+        'This streetlight is right outside my bedroom window. It is on 24 hours a day, even in blazing sunlight. Apart from the fact that it’s a waste of electricity, it makes my bedroom feel like an interrogation chamber. Please come and fix it.',
+    ],
+    'Graffiti' => [
+        'Someone has scrawled a really offensive piece of graffiti (are they called ‘tags’??) on the side of the town hall. You might want to see about getting it cleaned off. Wouldn’t want my own children to see that, I’m sure others feel the same.',
+        'Can’t see the timetable at the bus shelter cos some idiot’s covered it all in red spray paint. Honestly. Kids of today.',
+        'Not gonna write down what it depicts cos I suspect that’d get caught in your profanity filter lol. But please do come and paint over this monstrosity before it causes an accident.',
+        'That same guy that’s graffitied all over town has gone and done the same on the passenger bridge over the tracks, you can see it as you come into the station. Ugly bit of garbage graffiti. Bit of a poor first impression for the town eh.',
+        'What’s the procedure for requesting a bit of graffiti be removed? There’s been a huge scrawl on the wall outside the club for months. Nice sentiment maybe but really brings the tone of the area down.',
+    ],
+    'Other' => [
+        'Surprised me so much when I crossed the road I nearly took a tumble! Glad I didn’t fall in, this really needs securing now.',
+        'Some unmentionable has driven down Larker’s Lane and left a huge heap of old rubbish on the verge. Talk about ruining the view! Such a beautiful spot and these lowlifes come and dump their junk. Probably trying to avoid paying the tip.',
+        'Well someone on foot can just about squeeze through but good luck if you’ve got a pushchair or god forbid a wheelchair. Think someone’s abandoned this car; it hasn’t moved in weeks.',
+        'Awful trying to walk past after a rain shower, well any time really.',
+        'I think these need seeing to more frequently, they’re always full to overflowing by midday.',
+    ],
+);
 
 my ($location, $lat, $lon);
 if ($opt->coords) {
@@ -139,6 +184,8 @@ for (1..$num) {
     $confirmed->add(seconds => rand(7000));
     my $category = $categories->[int(rand(@$categories))];
     my $titles = $titles{$category};
+    my $descs = $descriptions{$category};
+    my $rand = int(rand(@$titles));
     push @$problems, FixMyStreet::DB::Factory::Problem->create({
         body => $body,
         areas => ',' . $opt->area_id . ',',
@@ -148,8 +195,8 @@ for (1..$num) {
         longitude => $lon + rand(3 * $inaccurate_km) - 1.5 * $inaccurate_km,
         category => $category,
         cobrand => $cobrand,
-        title => $titles->[int(rand(@$titles))],
-        detail => 'The details of the report would be here, provided by the user, including exact location and how long it has been here.',
+        title => $titles->[$rand],
+        detail => $descs->[$rand],
         confirmed => DateTime::Format::Pg->format_datetime($confirmed),
     });
 }
@@ -159,16 +206,101 @@ for (1..3) {
     $users{'inspector@example.org'}->add_to_planned_reports($p);
 }
 
-# Comment
+# Flow comments
+my @fixed_user = (
+    'Brilliant! Seen to within two days and no more problems, thanks.',
+    'Thank you for getting this sorted out so quickly.',
+    'Walked past last Tuesday and it seems to have been fixed, hooray.',
+    'Well it took a few emails back and forth to understand the exact location etc but pleased to say it’s all ok now.',
+    'Yep, all good.',
+    'The council deserve every penny of their salaries, honestly can’t give them higher praise for the way they’ve handled this issue. Bravo.',
+    'All seems ok now, fingers crossed.',
+    'Bish bash bosh. Sorted. Thanks so much.',
+);
 
-my $updates = [];
-for (1..$num) {
-    $confirmed->add(seconds => rand(1000));
-    push @$updates, FixMyStreet::DB::Factory::Comment->create({
-        problem => $problems->[int(rand(@$problems))],
+my @problems = shuffle(@$problems);
+
+for (1..3) {
+    my $problem = $problems[$_];
+    $confirmed->add(seconds => rand(10000));
+    FixMyStreet::DB::Factory::Comment->create({
+        problem => $problem,
+        user => $users{'cs@example.org'},
+        text => 'Could you please provide a better picture so we can locate this issue more easily.',
+        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+    });
+    $confirmed->add(seconds => rand(10000));
+    FixMyStreet::DB::Factory::Comment->create({
+        problem => $problem,
         user => $user,
-        text => 'This is an update on this problem, perhaps providing further relevant information or letting everyone know it is being worked on or fixed.',
+        text => 'Here you go!',
+        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+    });
+    $confirmed->add(seconds => rand(10000));
+    FixMyStreet::DB::Factory::Comment->create({
+        problem => $problem,
+        problem_state => 'investigating',
+        user => $users{'cs@example.org'},
+        text => 'Thanks, we are now looking into this.',
+        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+    });
+    $confirmed->add(seconds => rand(10000));
+    FixMyStreet::DB::Factory::Comment->create({
+        problem => $problem,
+        problem_state => 'action scheduled',
+        user => $users{'inspector@example.org'},
+        text => 'Confirmed and scheduled for fixing.',
+        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+    });
+    $confirmed->add(seconds => rand(10000));
+    FixMyStreet::DB::Factory::Comment->create({
+        problem => $problem,
+        problem_state => 'fixed - council',
+        user => $users{'inspector@example.org'},
+        text => 'Fixed',
+        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+    });
+    $problem->update({ state => 'fixed - council' });
+    $confirmed->add(seconds => rand(10000));
+    FixMyStreet::DB::Factory::Comment->create({
+        problem => $problem,
+        user => $user,
+        text => $fixed_user[int(rand(@fixed_user))],
         confirmed => DateTime::Format::Pg->format_datetime($confirmed),
     });
 }
-say "Created $num updates on problems " . join(', ', map { $_->problem_id } @$updates);
+
+# Some 'still open' updates
+my @open_user = (
+    'I’m afraid this problem is recurrent. Could it be prioritised please?',
+    'Ongoing issue.',
+    'Council rang to say they’re aware and it’s on their list.',
+    'Still awaiting news on this one.',
+    'Council let me know it’s not a top priority, which TBH I  do understand now they’ve talked it through.',
+);
+
+my $updates = [];
+for (5..9) {
+    $confirmed->add(seconds => rand(10000));
+    push @$updates, FixMyStreet::DB::Factory::Comment->create({
+        problem => $problems[$_],
+        user => $user,
+        text => $open_user[int(rand(@open_user))],
+        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+    });
+}
+
+# Some not responsible updates
+for (11..13) {
+    my $problem = $problems[$_];
+    $confirmed->add(seconds => rand(10000));
+    push @$updates, FixMyStreet::DB::Factory::Comment->create({
+        problem => $problem,
+        problem_state => 'not responsible',
+        user => $users{'cs@example.org'},,
+        text => 'This issue is outside our responsibility.',
+        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+    });
+    $problem->update({ state => 'not responsible' });
+}
+say "Created updates on problems " . join(', ', map { $_->problem_id } @$updates);

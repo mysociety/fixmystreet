@@ -118,7 +118,7 @@ use parent "DBIx::Class::Factory";
 __PACKAGE__->resultset(FixMyStreet::DB->resultset("ResponsePriority"));
 
 __PACKAGE__->fields({
-    name => __PACKAGE__->seq(sub { 'Priority #' . (shift()+1) }),
+    name => __PACKAGE__->seq(sub { 'Priority ' . (shift()+1) }),
     description => __PACKAGE__->seq(sub { 'Description #' . (shift()+1) }),
 });
 
