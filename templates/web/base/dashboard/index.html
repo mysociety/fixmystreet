@@ -23,10 +23,11 @@
 
 <div class="filters">
   [% IF body %]
+    <input type="hidden" name="body" value="[% body.id | html %]">
     [% IF NOT c.user.area_id %]
     <p>
         <label for="ward">[% loc('Ward:') %]</label>
-        <select class="form-control" name="ward"><option value=''>[% loc('All') %]</option>
+        <select class="form-control" name="ward" id="ward"><option value=''>[% loc('All') %]</option>
             [% FOR w IN children.values.sort('name') %]
                 <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
             [% END %]
@@ -36,7 +37,7 @@
 
     <p>
         <label for="category">[% loc('Category:') %]</label>
-        <select class="form-control" name="category"><option value=''>[% loc('All') %]</option>
+        <select class="form-control" name="category" id="category"><option value=''>[% loc('All') %]</option>
             [% FOR cat IN contacts %]
                 <option value='[% cat.category | html %]'[% ' selected' IF category == cat.category %]>[% cat.category_display | html %]</option>
             [% END %]
@@ -47,7 +48,7 @@
 
     <p>
         <label for="ward">[% loc('Council:') %]</label>
-        <select class="form-control" name="body"><option value=''>[% loc('All') %]</option>
+        <select class="form-control" name="body" id="body"><option value=''>[% loc('All') %]</option>
             [% FOR b IN bodies %]
                 <option value="[% b.id %]">[% b.name %]</option>
             [% END %]
@@ -58,7 +59,7 @@
 
     <p>
         <label for="state">[% loc('Report state:') %]</label>
-        <select class="form-control" name="state">
+        <select class="form-control" name="state" id="state">
             <option value=''>[% loc('All') %]</option>
           [% FOR group IN filter_states %]
           [% FOR state IN group.1 %]
@@ -70,43 +71,40 @@
     </p>
     <p>
         <label for="start_date">[% loc('Start Date') %]</label>
-        <input name="start_date" type="date" value="[% start_date | html %]" class="form-control">
+        <input name="start_date" id="start_date" type="date" value="[% start_date | html %]" class="form-control">
     </p>
     <p>
         <label for="end_date">[% loc('End Date') %]</label>
-        <input name="end_date" type="date" value="[% end_date | html %]" class="form-control">
+        <input name="end_date" id="end_date" type="date" value="[% end_date | html %]" class="form-control">
+    </p>
+    <p class="no-label">
+        <input type="submit" class="btn" value="[% loc('Look up') %]">
     </p>
 </div>
 
-<p align="center">
-    <input type="hidden" name="group_by" value="[% group_by | html %]">
-    <input type="hidden" name="body" value="[% body.id | html %]">
-    <input type="submit" class="btn" value="[% loc('Look up') %]">
-    <input type="submit" class="btn" name="export" value="[% loc('Export as CSV') %]">
-</p>
+<input type="hidden" name="group_by" value="[% group_by | html %]">
 
 </form>
 
 [% BLOCK gb %]
-[% IF group_by == new_gb %]
-    <strong>[% text %]</strong>
-[% ELSE %]
-    <a href="[% c.uri_with({ group_by => new_gb }) %]">[% text %]</a>
-[% END %]
+  [% IF group_by == new_gb %]
+    <strong title="[% tprintf(loc('Currently grouped by %s'), text) %]">[% text %]</strong>
+  [% ELSE %]
+    <a href="[% c.uri_with({ group_by => new_gb }) %]" title="[% tprintf(loc('Group by %s'), text) %]">[% text %]</a>
+  [% END %]
 [% END %]
 
+<ul class="dashboard-options-tabs">
+    <li role="presentation"><span>[% loc('Group by:') %]</span><li>
+    <li>[% INCLUDE gb new_gb='category' text=loc('Category') %]</li>
+    <li>[% INCLUDE gb new_gb='state' text=loc('State') %]</li>
+    <li>[% INCLUDE gb new_gb='month' text=loc('Month') %]</li>
+    <li>[% INCLUDE gb new_gb='category+state' text=loc('Category and State') %]</li>
+    <li>[% INCLUDE gb new_gb='device+site' text=loc('Device and Site') %]</li>
+    <li class="pull-right"><a href="[% c.uri_with({ csv => 1 }) %]">[% loc('Export as CSV') %]</a></li>
+</ul>
+
 <table width="100%" id="overview">
-    <caption>
-        [% loc('Current state of filtered reports') %]
-        <p>
-        [% loc('Group by:') %]
-        [% INCLUDE gb new_gb='category' text=loc('Category') %]
-        | [% INCLUDE gb new_gb='state' text=loc('State') %]
-        | [% INCLUDE gb new_gb='month' text=loc('Month') %]
-        | [% INCLUDE gb new_gb='category+state' text=loc('Category and State') %]
-        | [% INCLUDE gb new_gb='device+site' text=loc('Device and Site') %]
-        </p>
-    </caption>
     <tr>
       <th></th>
       [% IF group_by == 'category+state' %]

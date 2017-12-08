@@ -60,30 +60,6 @@
         }
     }
 
-    .filters {
-        @include clearfix();
-        background-color:#ffec99;
-        margin: 0 -1em 1em -1em;
-        border-top:#ffd000 solid 0.75em;
-        padding:0 1em;
-
-        p {
-            float: $left;
-            padding:0 1em;
-            max-width:25%;
-            font-size:0.75em;
-            color:#333333;
-        }
-
-        .no-label {
-            margin-top: 1.25em + 1.5em + 0.5em; // label line-height + margin-top + margin-bottom
-        }
-
-        select {
-            width:100%;
-        }
-    }
-
     hgroup {
         h2 {
             color:#737373;

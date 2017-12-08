@@ -25,7 +25,7 @@
     padding: 1em;
 
     @media (min-width: 48em) {
-        float: left;
+        float: $left;
         padding: 2em;
     }
 
@@ -78,19 +78,19 @@
     @include box-sizing(border-box);
 
     @media (min-width: 48em) {
-        padding-right: 20%;
+        padding-#{$right}: 20%;
     }
 
     .label {
-        float: left;
-        margin-right: 2em;
+        float: $left;
+        margin-#{$right}: 2em;
     }
 }
 .js .labelled-line-chart .label {
     @media (min-width: 48em) {
         position: absolute;
         margin-top: -1em;
-        margin-right: 0;
+        margin-#{$right}: 0;
     }
 }
 
@@ -150,13 +150,13 @@
 .dashboard-search__input {
     @include box-sizing(border-box);
     width: 80%;
-    float: left;
-    padding-right: 1em;
+    float: $left;
+    padding-#{$right}: 1em;
 }
 
 .dashboard-search__submit {
     width: 20%;
-    float: right;
+    float: $right;
 
     input {
         width: 100%;
@@ -215,5 +215,111 @@
     th {
         text-align: $left;
         padding: 0.4em 0.8em;
+    }
+}
+
+.filters {
+    @include clearfix();
+    background-color: mix(#fff, $primary, 60%);
+    margin: 0 -1em 1em -1em;
+    border-top: $primary solid 0.75em;
+    padding: 0 1em;
+
+    // No border-top when visually preceded by .dashboard-header
+    .dashboard-header + * & {
+        border-top: none;
+    }
+
+    // Quick fix for too much spacing when followed by .dashboard-item(s)
+    & + .dashboard-row {
+        margin-top: -1em;
+    }
+
+    p {
+        padding: 0 1em;
+        font-size: 0.75em;
+
+        @media (min-width: 48em) {
+            float: $left;
+            max-width: 25%;
+        }
+    }
+
+    .no-label {
+        margin-top: 1.25em + 1.5em + 0.5em; // label line-height + margin-top + margin-bottom
+    }
+
+    select {
+        width: 100%;
+    }
+
+    .pro-feature {
+        color: mix(#222, mix(#fff, $primary, 60%), 30%);
+        cursor: help;
+
+        label {
+            cursor: inherit;
+
+            &:after {
+                display: inline-block;
+                content: "PRO";
+                color: #fff;
+                background: mix(#222, mix(#fff, $primary, 60%), 30%);
+                border-radius: 0.3em;
+                padding: 0.2em 0.4em;
+                margin-#{$left}: 1em;
+                font-size: 0.8em;
+                line-height: 1em;
+            }
+        }
+    }
+
+    .form-control[disabled] {
+        border-color: #ccc;
+        color: #999;
+        box-shadow: none;
+    }
+}
+
+.dashboard-options-tabs {
+    @include clearfix();
+    @include list-reset-soft();
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2em;
+
+    li {
+        float: $left;
+    }
+
+    .pull-right {
+        float: $right;
+    }
+
+    a, span, strong {
+        display: inline-block;
+        padding: 0.4em 0.8em;
+    }
+
+    strong {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-bottom-color: #fff;
+        border-radius: 0.3em 0.3em 0 0;
+        margin-bottom: -1px;
+    }
+}
+
+.dashboard-options-tabs--below {
+    margin-bottom: 0;
+    margin-top: 2em;
+    border-bottom: none;
+    border-top: 1px solid #ddd;
+
+    strong {
+        border-top-color: #fff;
+        border-bottom-color: #ddd;
+        border-radius: 0 0 0.3em 0.3em;
+        margin-bottom: 0;
+        margin-top: -1px;
     }
 }
