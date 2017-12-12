@@ -638,7 +638,7 @@ foreach my $test (
             } else {
                 ok !$comment->get_extra_metadata('is_body_user'), 'body user metadata not set';
                 ok $comment->get_extra_metadata('is_superuser'), 'superuser metadata set';
-                is $comment->name, _('an adminstrator'), 'comment name is admin';
+                is $comment->name, _('an administrator'), 'comment name is admin';
             }
         } else {
             is $report->comments->count, 0, 'report has no comments';

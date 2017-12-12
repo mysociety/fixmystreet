@@ -906,7 +906,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         if ( $problem->state ne $old_state ) {
             $c->forward( 'log_edit', [ $id, 'problem', 'state_change' ] );
 
-            my $name = _('an adminstrator');
+            my $name = _('an administrator');
             my $extra = { is_superuser => 1 };
             if ($c->user->from_body) {
                 $name = $c->user->from_body->name;
