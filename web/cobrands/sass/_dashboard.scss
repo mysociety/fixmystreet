@@ -53,15 +53,20 @@
 }
 
 .labelled-line-chart,
-.labelled-sparkline {
+.labelled-sparkline,
+.responsive-bar-chart {
     position: relative;
     width: 100%;
-    line-height: 1.2em;
 
     canvas {
         width: 100% !important;
         height: auto !important;
     }
+}
+
+.labelled-line-chart,
+.labelled-sparkline {
+    line-height: 1.2em;
 
     .label {
         strong {
@@ -184,37 +189,27 @@
     }
 }
 
-.dashboard-ranking-table,
-.dashboard-contacts-table {
+.dashboard-ranking-table {
     width: 100%;
 
-    td {
+    td, th {
         padding: 0.4em 0.8em;
-    }
 
-    tbody tr:nth-child(odd) {
-        td {
-            background-color: mix($primary, #fff, 15%);
-        }
-    }
-
-    tfoot td {
-        font-weight: bold;
-    }
-}
-
-.dashboard-ranking-table {
-    td {
         &:last-child {
             text-align: $right;
         }
     }
-}
 
-.dashboard-contacts-table {
     th {
-        text-align: $left;
-        padding: 0.4em 0.8em;
+        text-align: inherit;
+    }
+
+    tbody tr:nth-child(odd) > * {
+        background-color: mix($primary, #fff, 15%);
+    }
+
+    tfoot tr > * {
+        font-weight: bold;
     }
 }
 
@@ -278,6 +273,10 @@
         border-color: #ccc;
         color: #999;
         box-shadow: none;
+    }
+
+    .btn {
+        padding: 0.5em 0.75em;
     }
 }
 
