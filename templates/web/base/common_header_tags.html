@@ -17,10 +17,6 @@
     (function(b){var a=b.documentElement;a.className=a.className.replace(/\bno-js\b/,"js");var c=-1<a.className.indexOf("iel8"),c=Modernizr.mq("(min-width: 48em)")||c?"desktop":"mobile";b=b.getElementById("js-meta-data");fixmystreet.page=b.getAttribute("data-page");fixmystreet.cobrand=b.getAttribute("data-cobrand");"mobile"==c&&(a.className+=" mobile","around"==fixmystreet.page&&(a.className+=" map-fullscreen only-map map-reporting"))})(document);
 </script>
 
-[% IF admin %]
-  <link rel="stylesheet" href="[% version('/vendor/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css') %]">
-[% END %]
-
 [% IF robots %]
     <meta name="robots" content="[% robots %]">
 [% ELSIF c.config.STAGING_SITE %]

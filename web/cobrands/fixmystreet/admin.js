@@ -66,36 +66,11 @@ $(function(){
         });
     }
 
-    // On some cobrands the datepicker ends up beneath items in the header, e.g.
-    // the logo.
-    // This function sets an appropriate z-index when the datepicker is shown.
-    // Sadly there's no way to set the z-index when creating the datepicker, so
-    // we have to run this little helper using the datepicker beforeShow
-    // handler.
-    function fixZIndex() {
-        setTimeout(function() {
-            $('.ui-datepicker').css('z-index', 10);
-        }, 0);
-    }
-
-    $( "#start_date" ).datepicker({
-      defaultDate: "-1w",
-      changeMonth: true,
-      dateFormat: 'dd/mm/yy' ,
-      // This sets the other fields minDate to our date
-      onClose: function( selectedDate ) {
-        $( "#end_date" ).datepicker( "option", "minDate", selectedDate );
-      },
-      beforeShow: fixZIndex
+    $("#start_date").change(function(){
+        $('#end_date').attr('min', $(this).val());
     });
-    $( "#end_date" ).datepicker({
-     /// defaultDate: "+1w",
-      changeMonth: true,
-      dateFormat: 'dd/mm/yy' ,
-      onClose: function( selectedDate ) {
-        $( "#start_date" ).datepicker( "option", "maxDate", selectedDate );
-      },
-      beforeShow: fixZIndex
+    $("#end_date").change(function(){
+        $('#start_date').attr('max', $(this).val());
     });
 
     // On user edit page, hide the area/categories fields if body changes
