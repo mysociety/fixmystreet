@@ -3,12 +3,13 @@
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
 [% IF possible_location_matches %]
-    <p>[% loc('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') %]</p>
-    <ul class="pc_alternatives plain-list">
+    <p>[% loc('We found more than one match for that location.') %]</p>
+    <ul class="pc_alternatives">
         [% FOREACH match IN possible_location_matches %]
         <li><a href="[% choose_target_uri %]?latitude=[% match.latitude | uri %];longitude=[% match.longitude | uri %]">[% match.address | html %]</a></li>
         [% END %]
     </ul>
+    <p>[% loc('We show up to ten matches, please try a different search if yours is not here.') %]</p>
 [% END %]
 
 [% INCLUDE 'footer.html' %]
