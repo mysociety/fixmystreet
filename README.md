@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 2.2; see CHANGELOG.md for a version history.
+Platform is now at version 2.3; see CHANGELOG.md for a version history.
 
 ## Installation
 
