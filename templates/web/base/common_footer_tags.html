@@ -5,8 +5,13 @@
 <!--[if lte IE 9]>
   <script src="[% version('/vendor/history.polyfill.min.js') %]"></script>
 <![endif]-->
-[% FOR script IN scripts ~%]
-    [% script = script.0 ? script : [ script ] ~%]
+[%
+scripts_seen = {};
+FOR script IN scripts;
+    script = script.0 ? script : [ script ];
+    NEXT IF scripts_seen.${script.0};
+    scripts_seen.${script.0} = 1;
+    ~%]
     <script src="[% script.0 %]"
         [%~ FOR attr IN script.1 %] [% attr.key %]="[% attr.value %]"[% END ~%]
         ></script>
