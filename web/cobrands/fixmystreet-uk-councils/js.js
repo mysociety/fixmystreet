@@ -1,5 +1,5 @@
 (function(){
-    if (!jQuery.validator) {
+    if (typeof jQuery === 'undefined' || !jQuery.validator) {
         return;
     }
     var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
