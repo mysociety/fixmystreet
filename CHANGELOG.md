@@ -38,6 +38,7 @@
         - Superusers without a from_body can make reports again. #1913
         - Fix crash when viewing /around in certain locales. #1916
         - Fix back bug, from report after using list filters. #1920
+        - Fix issues with send method category change. #1933
     - Admin improvements:
         - Character length limit can be placed on report detailed information #1848
         - Inspector panel shows nearest address if available #1850
@@ -55,6 +56,7 @@
         - Consolidate various admin summary statistics page. #1919.
         - 'Auto-response' flag on response templates is honoured for fetched
           Open311 updates. #1924
+        - Store all successful send methods. #1933
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.

@@ -867,6 +867,17 @@ sub update_send_failed {
     } );
 }
 
+sub add_send_method {
+    my $self = shift;
+    my $sender = shift;
+    ($sender = ref $sender) =~ s/^.*:://;
+    if (my $send_method = $self->send_method_used) {
+        $self->send_method_used("$send_method,$sender");
+    } else {
+        $self->send_method_used($sender);
+    }
+}
+
 sub as_hashref {
     my $self = shift;
     my $c    = shift;

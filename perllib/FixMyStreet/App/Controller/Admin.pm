@@ -960,17 +960,14 @@ sub report_edit_category : Private {
             $problem->whensent(undef);
         }
         # If the send methods of the old/new contacts differ we need to resend the report
-        my @old_contacts = grep { $_->category eq $category_old } @{$c->stash->{contacts}};
         my @new_send_methods = uniq map {
             ( $_->body->can_be_devolved && $_->send_method ) ?
-            $_->send_method : $_->body->send_method;
+            $_->send_method : $_->body->send_method
+                ? $_->body->send_method
+                : $c->cobrand->_fallback_body_sender()->{method};
         } @contacts;
-        my @old_send_methods = map {
-            ( $_->body->can_be_devolved && $_->send_method ) ?
-            $_->send_method : $_->body->send_method;
-        } @old_contacts;
-        if ( scalar @{ mySociety::ArrayUtils::symmetric_diff(\@old_send_methods, \@new_send_methods) } ) {
-            $c->log->debug("Report changed, resending");
+        my %old_send_methods = map { $_ => 1 } split /,/, ($problem->send_method_used || "Email");
+        if (grep !$old_send_methods{$_}, @new_send_methods) {
             $problem->whensent(undef);
         }
 
