@@ -6,7 +6,7 @@
     <p>[% loc('We found more than one match for that location.') %]</p>
     <ul class="pc_alternatives">
         [% FOREACH match IN possible_location_matches %]
-        <li><a href="/around?latitude=[% match.latitude | uri %];longitude=[% match.longitude | uri %]">[% match.address | html %]</a></li>
+        <li><a href="/around?latitude=[% match.latitude | uri %];longitude=[% match.longitude | uri %][% IF c.req.params.category %];category=[% c.req.params.category | uri %][% END %]">[% match.address | html %]</a></li>
         [% END %]
     </ul>
     <p>[% loc('We show up to ten matches, please try a different search if yours is not here.') %]</p>

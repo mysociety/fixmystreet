@@ -60,18 +60,22 @@ sub index : Path : Args(0) {
     # Check to see if the spot is covered by a area - if not show an error.
     return unless $c->forward('check_location_is_acceptable', []);
 
-    # If we have a partial - redirect to /report/new so that it can be
-    # completed.
-    if ($partial_report) {
-        my $new_uri = $c->uri_for(
-            '/report/new',
-            {
-                partial   => $c->stash->{partial_token}->token,
-                latitude  => $c->stash->{latitude},
-                longitude => $c->stash->{longitude},
-                pc        => $c->stash->{pc},
-            }
-        );
+    # Redirect to /report/new in two cases:
+    #  - if we have a partial report, so that it can be completed.
+    #  - if the cobrand doesn't show anything on /around (e.g. a private
+    #    reporting site)
+    if ($partial_report || $c->cobrand->call_hook("skip_around_page")) {
+        my $params = {
+            latitude  => $c->stash->{latitude},
+            longitude => $c->stash->{longitude},
+            pc        => $c->stash->{pc}
+        };
+        if ($partial_report) {
+            $params->{partial} = $c->stash->{partial_token}->token;
+        } elsif ($c->get_param("category")) {
+            $params->{category} = $c->get_param("category");
+        }
+        my $new_uri = $c->uri_for('/report/new', $params);
         return $c->res->redirect($new_uri);
     }
 
