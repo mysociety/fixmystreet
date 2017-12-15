@@ -6,26 +6,29 @@
 [% END %]
 
 <form method="get" action="[% c.uri_for('download') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <div class="filters">
     <p>
-    <label for="start_date">[% ('Start Date:') %]</label><input type="text" class="form-control"
-      placeholder="[% ('Click here or enter as dd/mm/yyyy') %]" name="start_date" id="start_date"
-      value="[% start_date ? start_date.strftime( '%d/%m/%Y') : '' | html %]" />
+    <label for="start_date">[% ('Start Date:') %]</label><input type="date" class="form-control"
+      name="start_date" id="start_date"
+      value="[% start_date ? start_date.strftime( '%Y-%m-%d') : '' | html %]" />
     </p>
 
     <p>
-    <label for="end_date">[% ('End Date:') %]</label><input type="text" class="form-control"
-      placeholder="[% ('Click here or enter as dd/mm/yyyy') %]" name="end_date" id="end_date" size="5"
-      value="[% end_date ? end_date.strftime( '%d/%m/%Y') : '' | html %]" />
+    <label for="end_date">[% ('End Date:') %]</label><input type="date" class="form-control"
+      name="end_date" id="end_date" size="5"
+      value="[% end_date ? end_date.strftime( '%Y-%m-%d') : '' | html %]" />
     </p>
 
     <p>
-    [% ('Inspector:') %] <select class="form-control" id='user_id' name='user_id'>
+    <label for="user_id">[% ('Inspector:') %]</label>
+    <select class="form-control" id='user_id' name='user_id'>
         <option value=''>[% ('All inspectors') %]</option>
         [% FOR inspector IN inspectors %]
             <option value="[% inspector.id %]" [% 'selected' IF user_id == inspector.id %]>[% inspector.name %] ([% inspector.get_extra_metadata('initials') %])</option>
         [% END %]
     </select>
     </p>
+    </div>
 
     <p>
     <input type="submit" class="btn" size="30" value="Download RDI file" />

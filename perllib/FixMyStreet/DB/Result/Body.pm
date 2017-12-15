@@ -183,4 +183,33 @@ sub get_cobrand_handler {
     return FixMyStreet::Cobrand->body_handler($self->areas);
 }
 
+sub calculate_average {
+    my ($self) = @_;
+
+    my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and (problem_state in ('fixed', 'fixed - council', 'fixed - user') or mark_fixed)";
+    my $subquery = FixMyStreet::DB->resultset('Comment')->to_body($self)->search({
+        -or => [
+            problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
+            mark_fixed => 1,
+        ],
+        'me.id' => \"= ($substmt)",
+        'me.state' => 'confirmed',
+    }, {
+        select   => [
+            { extract => "epoch from me.confirmed-problem.confirmed", -as => 'time' },
+        ],
+        as => [ qw/time/ ],
+        rows => 100,
+        order_by => { -desc => 'me.confirmed' },
+        join => 'problem'
+    })->as_subselect_rs;
+
+    my $avg = $subquery->search({
+    }, {
+        select => [ { avg => "time" } ],
+        as => [ qw/avg/ ],
+    })->first->get_column('avg');
+    return $avg;
+}
+
 1;

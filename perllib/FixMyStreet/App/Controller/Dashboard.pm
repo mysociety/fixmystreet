@@ -5,6 +5,7 @@ use namespace::autoclean;
 use DateTime;
 use JSON::MaybeXS;
 use Path::Tiny;
+use Text::CSV;
 use Time::Piece;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -112,7 +113,7 @@ sub index : Path : Args(0) {
     $c->forward('construct_rs_filter');
 
     if ( $c->get_param('export') ) {
-        $self->export_as_csv($c);
+        $c->forward('export_as_csv');
     } else {
         $self->generate_data($c);
     }
@@ -175,15 +176,15 @@ sub generate_data {
     $state_map->{$_} = 'closed' foreach FixMyStreet::DB::Result::Problem->closed_states;
     $state_map->{$_} = 'fixed' foreach FixMyStreet::DB::Result::Problem->fixed_states;
 
-    $self->generate_grouped_data($c);
+    $c->forward('generate_grouped_data');
     $self->generate_summary_figures($c);
 }
 
-sub generate_grouped_data {
+sub generate_grouped_data : Private {
     my ($self, $c) = @_;
     my $state_map = $c->stash->{state_map};
 
-    my $group_by = $c->get_param('group_by') || '';
+    my $group_by = $c->get_param('group_by') || $c->stash->{group_by_default} || '';
     my (%grouped, @groups, %totals);
     if ($group_by eq 'category') {
         %grouped = map { $_->category => {} } @{$c->stash->{contacts}};
@@ -197,6 +198,8 @@ sub generate_grouped_data {
         );
     } elsif ($group_by eq 'device+site') {
         @groups = qw/cobrand service/;
+    } elsif ($group_by eq 'device') {
+        @groups = qw/service/;
     } else {
         $group_by = 'category+state';
         @groups = qw/category state/;
@@ -285,28 +288,22 @@ sub generate_summary_figures {
     }
 }
 
-sub export_as_csv {
+sub generate_body_response_time : Private {
+    my ( $self, $c ) = @_;
+
+    my $avg = $c->stash->{body}->calculate_average;
+    $c->stash->{body_average} = $avg ? int($avg / 60 / 60 / 24 + 0.5) : 0;
+}
+
+sub export_as_csv : Private {
     my ($self, $c) = @_;
-    require Text::CSV;
-    my $problems = $c->stash->{problems_rs}->search(
-        {}, { prefetch => 'comments', order_by => 'me.confirmed' });
 
-    my $filename = do {
-        my %where = (
-            category => $c->stash->{category},
-            state    => $c->stash->{q_state},
-            ward     => $c->stash->{ward},
-        );
-        $where{body} = $c->stash->{body}->id if $c->stash->{body};
-        join '-',
-            $c->req->uri->host,
-            map {
-                my $value = $where{$_};
-                (defined $value and length $value) ? ($_, $value) : ()
-            } sort keys %where };
-
-    my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
-    $csv->combine(
+    my $csv = $c->stash->{csv} = {
+        problems => $c->stash->{problems_rs}->search_rs({}, {
+            prefetch => 'comments',
+            order_by => 'me.confirmed'
+        }),
+        headers => [
             'Report ID',
             'Title',
             'Detail',
@@ -324,68 +321,116 @@ sub export_as_csv {
             'Easting',
             'Northing',
             'Report URL',
+        ],
+        columns => [
+            'id',
+            'title',
+            'detail',
+            'user_name_display',
+            'category',
+            'created',
+            'confirmed',
+            'acknowledged',
+            'fixed',
+            'closed',
+            'state',
+            'latitude', 'longitude',
+            'postcode',
+            'wards',
+            'local_coords_x',
+            'local_coords_y',
+            'url',
+        ],
+        filename => do {
+            my %where = (
+                category => $c->stash->{category},
+                state    => $c->stash->{q_state},
+                ward     => $c->stash->{ward},
             );
+            $where{body} = $c->stash->{body}->id if $c->stash->{body};
+            join '-',
+                $c->req->uri->host,
+                map {
+                    my $value = $where{$_};
+                    (defined $value and length $value) ? ($_, $value) : ()
+                } sort keys %where
+        },
+    };
+    $c->forward('generate_csv');
+}
+
+=head2 generate_csv
+
+Generates a CSV output, given a 'csv' stash hashref containing:
+* filename: filename to be used in output
+* problems: a resultset of the rows to output
+* headers: an arrayref of the header row strings
+* columns: an arrayref of the columns (looked up in the row's as_hashref, plus
+the following: user_name_display, acknowledged, fixed, closed, wards,
+local_coords_x, local_coords_y, url).
+
+=cut
+
+sub generate_csv : Private {
+    my ($self, $c) = @_;
+
+    my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
+    $csv->combine(@{$c->stash->{csv}->{headers}});
     my @body = ($csv->string);
 
     my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
     my $closed_states = FixMyStreet::DB::Result::Problem->closed_states;
 
+    my $wards = 0;
+    my $comments = 0;
+    foreach (@{$c->stash->{csv}->{columns}}) {
+        $wards = 1 if $_ eq 'wards';
+        $comments = 1 if $_ eq 'acknowledged';
+    }
+
+    my $problems = $c->stash->{csv}->{problems};
     while ( my $report = $problems->next ) {
-        my $external_body;
-        my $body_name = "";
-        if ( $external_body = $report->body($c) ) {
-            # seems to be a zurich specific thing
-            $body_name = $external_body->name if ref $external_body;
-        }
         my $hashref = $report->as_hashref($c);
 
-        $hashref->{user_name_display} = $report->anonymous?
-            '(anonymous)' : $report->user->name;
+        $hashref->{user_name_display} = $report->anonymous
+            ? '(anonymous)' : $report->user->name;
 
-        for my $comment ($report->comments) {
-            my $problem_state = $comment->problem_state or next;
-            next unless $comment->state eq 'confirmed';
-            next if $problem_state eq 'confirmed';
-            $hashref->{acknowledged} //= $comment->confirmed;
-            $hashref->{fixed} //= $fixed_states->{ $problem_state } || $comment->mark_fixed ?
-                $comment->confirmed : undef;
-            if ($closed_states->{ $problem_state }) {
-                $hashref->{closed} = $comment->confirmed;
-                last;
+        if ($comments) {
+            for my $comment ($report->comments) {
+                my $problem_state = $comment->problem_state or next;
+                next unless $comment->state eq 'confirmed';
+                next if $problem_state eq 'confirmed';
+                $hashref->{acknowledged} //= $comment->confirmed;
+                $hashref->{fixed} //= $fixed_states->{ $problem_state } || $comment->mark_fixed ?
+                    $comment->confirmed : undef;
+                if ($closed_states->{ $problem_state }) {
+                    $hashref->{closed} = $comment->confirmed;
+                    last;
+                }
             }
         }
 
-        my $wards = join ', ',
-          map { $c->stash->{children}->{$_}->{name} }
-          grep {$c->stash->{children}->{$_} }
-          split ',', $hashref->{areas};
+        if ($wards) {
+            $hashref->{wards} = join ', ',
+              map { $c->stash->{children}->{$_}->{name} }
+              grep {$c->stash->{children}->{$_} }
+              split ',', $hashref->{areas};
+        }
 
-        my @local_coords = $report->local_coords;
+        ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
+            $report->local_coords;
+        $hashref->{url} = join '', $c->cobrand->base_url_for_report($report), $report->url;
 
         $csv->combine(
             @{$hashref}{
-                'id',
-                'title',
-                'detail',
-                'user_name_display',
-                'category',
-                'created',
-                'confirmed',
-                'acknowledged',
-                'fixed',
-                'closed',
-                'state',
-                'latitude', 'longitude',
-                'postcode',
-                },
-            $wards,
-            $local_coords[0],
-            $local_coords[1],
-            (join '', $c->cobrand->base_url_for_report($report), $report->url),
+                @{$c->stash->{csv}->{columns}}
+            },
         );
 
         push @body, $csv->string;
     }
+
+    my $filename = $c->stash->{csv}->{filename};
     $c->res->content_type('text/csv; charset=utf-8');
     $c->res->header('content-disposition' => "attachment; filename=${filename}.csv");
     $c->res->body( join "", @body );

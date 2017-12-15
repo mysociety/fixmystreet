@@ -1,0 +1,174 @@
+[% USE Number.Format -%]
+[%
+    other_categories_formatted = other_categories | format_number;
+-%]
+[% extra_js = [
+    version('/vendor/chart.min.js'),
+    version('/js/dashboard.js')
+] -%]
+[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass => 'dashboard fullwidthpage' %]
+
+<div class="dashboard-header">
+    <h1>FMS [% loc('Dashboard') %]
+    [% IF body %] – [% body.name %] [% END %]
+    </h1>
+</div>
+
+<form method="GET">
+    <div class="filters">
+        <p>
+            <label for="ward">[% loc('Problems reported in area:') %]</label>
+            <select class="form-control" id="ward" name="ward">
+                <option value="">[% body.name %]</option>
+              [% FOR w IN children.values.sort('name') %]
+                <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
+              [% END %]
+            </select>
+        </p>
+        <p class="pro-feature">
+            <label for="category">[% loc('Category:') %]</label>
+            <select class="form-control" id="category" disabled>
+                <option>[% loc('All categories') %]</option>
+            </select>
+        </p>
+        <p class="pro-feature">
+            <label for="state">[% loc('Report state:') %]</label>
+            <select class="form-control" id="state" disabled>
+                <option>[% loc('All states') %]</option>
+            </select>
+        </p>
+        <p>
+            <label for="period">[% loc('Reported:') %]</label>
+            <select class="form-control" id="period" name="period">
+                <option value="week"[% ' selected' IF period == 'week' %]>This past week</option>
+                <option value="month"[% ' selected' IF period == 'month' %]>This past month</option>
+                <option value="3months"[% ' selected' IF period == '3months' %]>In the past 3 months</option>
+                <option value="year"[% ' selected' IF period == 'year' %]>This past year</option>
+                <option value="ever"[% ' selected' IF period == 'ever' %]>Any time</option>
+                <option disabled>Custom date range (Pro)</option>
+            </select>
+        </p>
+        <p class="no-label">
+            <input type="submit" class="btn" value="[% loc('Look up') %]">
+        </p>
+    </div>
+    <input type="hidden" name="group_by" value="[% group_by %]">
+
+    [% BLOCK gb %]
+      [% IF group_by == new_gb %]
+        <strong title="Currently grouped by [% text %]">[% text %]</strong>
+      [% ELSE %]
+        <a href="[% c.uri_with({ group_by => new_gb }) %]" title="Group by [% text %]">[% text %]</a>
+      [% END %]
+    [% END %]
+
+    <div class="dashboard-row">
+        <div class="dashboard-item dashboard-item--12">
+            <table class="dashboard-ranking-table js-make-bar-chart">
+              [% FOR k IN rows %]
+                <tr>
+                  [% IF group_by == 'state' %]
+                    <th scope="row">[% prettify_state(k) %]</th>
+                  [% ELSE %]
+                    <th scope="row">[% k or loc('Website') %]</th>
+                  [% END %]
+                    <td>[% grouped.$k.total OR 0 %]</td>
+                </tr>
+              [% END %]
+            </table>
+
+            <ul class="dashboard-options-tabs dashboard-options-tabs--below">
+                <li role="presentation"><span>[% loc('Group by:') %]</span><li>
+                <li>[% INCLUDE gb new_gb='category' text='category' %]</li>
+                <li>[% INCLUDE gb new_gb='device' text='device' %]</li>
+                <li>[% INCLUDE gb new_gb='state' text='state' %]</li>
+                <li class="pull-right"><a href="[% c.uri_with({ csv => 1 }) %]">[% loc('Export as CSV') %]</a></li>
+            </ul>
+        </div>
+    </div>
+
+</form>
+
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% tprintf( loc('How responsive is %s?'), body.name ) %]</h2>
+        <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN top_five_bodies %]
+                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s day", "%s days", line.days), line.days) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% body.name %]</td><td>[% tprintf(nget("%s day", "%s days", body_average), body_average) %]</td></tr>
+                <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% tprintf( loc('Most popular categories in %s'), body.name ) %]</h2>
+        <p>[% loc('Number of problems reported in each category, in the last 7 days.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN top_five_categories %]
+                [% line_count = line.count | format_number ~%]
+                <tr><td>[% line.category %]</td><td>[% tprintf(nget("%s report", "%s reports", line.count), decode(line_count)) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% loc('Other categories') %]</td><td>[% tprintf(nget("%s report", "%s reports", other_categories), decode(other_categories_formatted)) %]</td></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--12">
+        <h2 class="dashboard-subheading">[% tprintf( loc('Where we send %s reports'), body.name ) %]</h2>
+        [% IF body.send_method == 'Refused' %]
+          <p>
+            [% tprintf( loc('%s currently does not accept reports from FixMyStreet.'), body.name) %]
+          </p>
+
+          <p>
+            [% loc('If you&rsquo;d like to discuss this then <a href="/contact">get in touch</a>.') %]
+          </p>
+        [% ELSIF body.send_method == 'Noop' %]
+          <p>
+            [% tprintf( loc('Reports are currently not being sent to %s.'), body.name ) %]
+          </p>
+        [% ELSIF body.send_method != 'Email' AND body.send_method != ''  %]
+          <p>
+              [% tprintf( loc('Reports to %s are currently sent directly into backend services.'), body.name) %]
+          </p>
+        [% ELSE %]
+        <p>
+          [% loc('We currently send all reports to the email addresses below.') %]
+        </p>
+        <table class="dashboard-ranking-table" style="margin-bottom: 1em;">
+          <tr>
+            <th>[% loc('Category') %]</th>
+            <th>[% loc('Contact') %]</th>
+          </tr>
+          [% WHILE ( cat = live_contacts.next ) %]
+            <tr>
+              <td class="contact-category"><a href="[% body_url %]?filter_category=[% cat.category | uri %]">[% cat.category_display | html %]</a>
+              </td>
+              <td>[% cat.email | html %]</td>
+            </tr>
+          [% END %]
+        </table>
+        <p>
+          [% loc('If you would like to change either the categories or the contact emails above then <a href="/contact">get in touch</a>.') %]
+        <p>
+        <p>
+          [% loc('Did you know that if you used the approved open standard Open311 you could send reports directly into your own backend services &ndash; and get much more control over what additional information you request?') %]
+        </p>
+        <p>
+          [% loc('If that&rsquo;s new to you, <a href="https://www.mysociety.org/2013/01/10/open311-introduced/">take a look at our simple Open311 primer</a> to see what you need to do to get up and running in a few days.') %]
+        </p>
+        [% END %]
+    </div>
+</div>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
