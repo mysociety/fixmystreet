@@ -115,7 +115,8 @@ sub index : Path : Args(0) {
     if ( $c->get_param('export') ) {
         $c->forward('export_as_csv');
     } else {
-        $self->generate_data($c);
+        $c->forward('generate_grouped_data');
+        $self->generate_summary_figures($c);
     }
 }
 
@@ -168,21 +169,13 @@ sub construct_rs_filter : Private {
     $c->stash->{problems_rs} = $c->cobrand->problems->to_body($c->stash->{body})->search( \%where );
 }
 
-sub generate_data {
+sub generate_grouped_data : Private {
     my ($self, $c) = @_;
 
     my $state_map = $c->stash->{state_map} = {};
     $state_map->{$_} = 'open' foreach FixMyStreet::DB::Result::Problem->open_states;
     $state_map->{$_} = 'closed' foreach FixMyStreet::DB::Result::Problem->closed_states;
     $state_map->{$_} = 'fixed' foreach FixMyStreet::DB::Result::Problem->fixed_states;
-
-    $c->forward('generate_grouped_data');
-    $self->generate_summary_figures($c);
-}
-
-sub generate_grouped_data : Private {
-    my ($self, $c) = @_;
-    my $state_map = $c->stash->{state_map};
 
     my $group_by = $c->get_param('group_by') || $c->stash->{group_by_default} || '';
     my (%grouped, @groups, %totals);
