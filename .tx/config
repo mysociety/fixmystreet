@@ -2,7 +2,7 @@
 host = https://www.transifex.com
 type = PO
 
-[fixmystreet.v2-2]
+[fixmystreet.v2-3]
 file_filter = locale/<lang>.UTF-8/LC_MESSAGES/FixMyStreet.po
 source_file = locale/FixMyStreet.po
 source_lang = en_GB

@@ -981,7 +981,7 @@ for my $test(
     },
     {
       user => $user2,
-      name => 'an adminstrator',
+      name => 'an administrator',
       superuser => 1,
       desc =>"check first comment from super user with status change but no text is displayed"
     }
