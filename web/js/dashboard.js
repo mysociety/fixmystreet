@@ -179,6 +179,10 @@ $(function(){
             rowValues.push( parseInt($(this).find('td').text(), 10) );
         });
 
+        for (var i=colours.length; i<rowLabels.length; i++) {
+            colours[i] = colours[i % colours.length];
+        }
+
         var barChart = new Chart($canvas, {
             type: 'horizontalBar',
             data: {
