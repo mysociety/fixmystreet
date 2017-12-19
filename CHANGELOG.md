@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes:
+        - Make sure dashboard filters all fit onto one line.
 
 * v2.3 (18th December 2017)
     - New features:

@@ -220,6 +220,11 @@
     border-top: $primary solid 0.75em;
     padding: 0 1em;
 
+    // Force field elements onto a single line.
+    @media (min-width: 48em) {
+        @include flex-container();
+    }
+
     // No border-top when visually preceded by .dashboard-header
     .dashboard-header + * & {
         border-top: none;
