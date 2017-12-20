@@ -41,7 +41,7 @@ sub get_updates {
 sub update_reports {
     my ( $self, $report_ids, $open311, $body ) = @_;
 
-    my $service_requests = $open311->get_service_requests( $report_ids );
+    my $service_requests = $open311->get_service_requests( { report_ids => $report_ids } );
     my $requests = $service_requests->{request};
 
     for my $request (@$requests) {
