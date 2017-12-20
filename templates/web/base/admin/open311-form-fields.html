@@ -68,6 +68,21 @@
     <div class="admin-hint">
       <p>
         [% loc(
+            "Enable <strong>Open311 problem-fetching</strong> if you want to display reports created at
+          the endpoint to FixMyStreet. If you're not sure, it probably does not, so leave this unchecked.
+          For more information, see 
+          <a href='https://www.mysociety.org/2013/02/20/open311-extended/' class='admin-offsite-link'>this article</a>."
+        ) %]
+      </p>
+    </div>
+    <p>
+        <input type="checkbox" id="fetch_problems" name="fetch_problems"[% ' checked' IF object.fetch_problems %]>
+        <label for="fetch_problems" class="inline">[% loc('Use Open311 problem fetching') %]</label>
+    </p>
+
+    <div class="admin-hint">
+      <p>
+        [% loc(
           "If you've enabled Open311 update-sending above, you must identify which 
           FixMyStreet <strong>user</strong> will be attributed as the creator of those updates
           when they are shown on the site. Enter the ID (number) of that user."
