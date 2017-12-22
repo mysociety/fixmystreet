@@ -101,7 +101,7 @@
     <li>[% INCLUDE gb new_gb='month' text=loc('Month') %]</li>
     <li>[% INCLUDE gb new_gb='category+state' text=loc('Category and State') %]</li>
     <li>[% INCLUDE gb new_gb='device+site' text=loc('Device and Site') %]</li>
-    <li class="pull-right"><a href="[% c.uri_with({ csv => 1 }) %]">[% loc('Export as CSV') %]</a></li>
+    <li class="pull-right"><a href="[% c.uri_with({ export => 1 }) %]">[% loc('Export as CSV') %]</a></li>
 </ul>
 
 <table width="100%" id="overview">
