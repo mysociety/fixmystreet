@@ -468,7 +468,7 @@ sub summary : Private {
 
     $c->forward('/dashboard/construct_rs_filter');
 
-    if ( $c->get_param('csv') ) {
+    if ( $c->get_param('export') ) {
         $c->detach('export_summary_csv');
     }
 

@@ -56,7 +56,7 @@ FixMyStreet::override_config {
             areas => ",2514,",
         });
 
-        $mech->get_ok('/reports/Birmingham/summary?csv=1');
+        $mech->get_ok('/reports/Birmingham/summary?export=1');
         open my $data_handle, '<', \$mech->content;
         my $csv = Text::CSV->new( { binary => 1 } );
         my @rows;
