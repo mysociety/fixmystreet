@@ -41,6 +41,7 @@ subtest 'testing special Open311 behaviour', sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet', 'rutland' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $test_data = FixMyStreet::Script::Reports::send();
     };

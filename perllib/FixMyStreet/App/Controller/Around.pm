@@ -308,6 +308,27 @@ sub ajax : Path('/ajax') {
     $c->forward('/reports/ajax', [ 'around/on_map_list_items.html' ]);
 }
 
+sub location_closest_address : Path('/ajax/closest') {
+    my ( $self, $c ) = @_;
+    $c->res->content_type('application/json; charset=utf-8');
+
+    my $lat = $c->get_param('lat');
+    my $lon = $c->get_param('lon');
+    unless ($lat && $lon) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    my $closest = $c->cobrand->find_closest({ latitude => $lat, longitude => $lon });
+    my $data = {
+        road => $closest->{address}{addressLine},
+        full_address => $closest->{name},
+    };
+
+    $c->res->body(encode_json($data));
+}
+
 sub location_autocomplete : Path('/ajax/geocode') {
     my ( $self, $c ) = @_;
     $c->res->content_type('application/json; charset=utf-8');

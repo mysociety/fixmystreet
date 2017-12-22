@@ -514,6 +514,7 @@ foreach my $test ( {
     subtest $test->{ desc } => sub {
         my $override = {
             ALLOWED_COBRANDS => [ 'fixmystreet' ],
+            MAPIT_URL => 'http://mapit.uk/',
             BASE_URL => 'http://www.fixmystreet.com',
         };
         if ( $test->{cobrand} && $test->{cobrand} =~ /hart/ ) {
@@ -587,9 +588,10 @@ foreach my $test ( {
     };
 }
 
-subtest 'check can set mutiple emails as a single contact' => sub {
+subtest 'check can set multiple emails as a single contact' => sub {
     my $override = {
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
     };
 
     my $contact = {

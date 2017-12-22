@@ -37,6 +37,7 @@ subtest 'testing Open311 behaviour', sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $test_data = FixMyStreet::Script::Reports::send();
     };
@@ -72,6 +73,7 @@ subtest 'test report with multiple photos only sends one', sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $test_data = FixMyStreet::Script::Reports::send();
     };
@@ -104,6 +106,7 @@ subtest 'test sending multiple photos', sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'tester' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $test_data = FixMyStreet::Script::Reports::send();
     };

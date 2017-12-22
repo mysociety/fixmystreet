@@ -159,6 +159,7 @@ EOF
 subtest 'Reports are marked as inspected correctly' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         my $date = DateTime->new(year => 2017, month => 5, day => 5, hour => 12);
 
