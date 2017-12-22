@@ -113,9 +113,9 @@ sub construct {
 
             my $location = "${eastings}E ${northings}N";
             $location = "[DID NOT USE MAP] $location" unless $report->used_map;
-            my $closest_address = $cobrand->find_closest($report, 1);
+            my $closest_address = $cobrand->find_closest($report);
             if (%$closest_address) {
-                $location .= " Nearest road: $closest_address->{road}." if $closest_address->{road};
+                $location .= " Nearest road: $closest_address->{name}." if $closest_address->{name};
                 $location .= " Nearest postcode: $closest_address->{postcode}{postcode}." if $closest_address->{postcode};
             }
 

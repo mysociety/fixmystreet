@@ -117,27 +117,23 @@ sub short_name {
 }
 
 sub find_closest {
-    my ( $self, $problem, $as_data ) = @_;
+    my ($self, $data) = @_;
 
-    my $data = $self->SUPER::find_closest($problem, $as_data);
+    $data = { problem => $data } if ref $data ne 'HASH';
 
-    my $mapit_url = FixMyStreet->config('MAPIT_URL');
-    my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $problem->latitude, $problem->longitude;
-    my $url = $mapit_url . "nearest/4326/$lon,$lat";
-    my $j = LWP::Simple::get($url);
-    if ($j) {
-        $j = JSON->new->utf8->allow_nonref->decode($j);
-        if ($j->{postcode}) {
-            if ($as_data) {
-                $data->{postcode} = $j->{postcode};
-            } else {
-                $data .= sprintf(_("Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"),
-                    $j->{postcode}{postcode}, $j->{postcode}{distance}) . "\n\n";
-            }
-        }
+    my $problem = $data->{problem};
+    my $lat = $problem ? $problem->latitude : $data->{latitude};
+    my $lon = $problem ? $problem->longitude : $data->{longitude};
+
+    my $closest = $self->SUPER::find_closest($data);
+
+    ($lat, $lon) = map { Utils::truncate_coordinate($_) } $lat, $lon;
+    my $j = mySociety::MaPit::call('nearest', "4326/$lon,$lat");
+    if ($j->{postcode}) {
+        $closest->{postcode} = $j->{postcode};
     }
 
-    return $data;
+    return $closest;
 }
 
 sub reports_body_check {

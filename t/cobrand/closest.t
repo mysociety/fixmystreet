@@ -72,8 +72,18 @@ FixMyStreet::override_config {
     $near = $c->find_closest_address_for_rss($report);
 
     ok !$near, 'no closest address for RSS if not cached';
+
+    my $json = $mech->get_ok_json('/ajax/closest?lat=55&lon=-1');
+    is_deeply $json, {"road"=> "Constitution Hill","full_address"=>"Constitution Hill, London, SW1A"};
 };
 
-END {
-    done_testing();
-}
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+    BING_MAPS_API_KEY => 'test',
+}, sub {
+    my $json = $mech->get_ok_json('/ajax/closest?lat=55.952055&lon=-3.189579');
+    is_deeply $json, {"road"=> "Constitution Hill","full_address"=>"Constitution Hill, London, SW1A"};
+};
+
+done_testing();
