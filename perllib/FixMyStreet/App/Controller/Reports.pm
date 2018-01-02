@@ -5,7 +5,6 @@ use namespace::autoclean;
 use JSON::MaybeXS;
 use List::MoreUtils qw(any);
 use Path::Tiny;
-use POSIX qw(strcoll);
 use RABX;
 use mySociety::MaPit;
 
@@ -93,18 +92,8 @@ sub index : Path : Args(0) {
             $c->stash->{children} = $children;
         }
     } else {
-        # Fetch all bodies
-        my @bodies = $c->model('DB::Body')->search({
-            deleted => 0,
-        }, {
-            '+select' => [ { count => 'area_id' } ],
-            '+as' => [ 'area_count' ],
-            join => 'body_areas',
-            distinct => 1,
-        })->all;
-        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+        my @bodies = $c->model('DB::Body')->active->with_area_count->all_sorted;
         $c->stash->{bodies} = \@bodies;
-        $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
     }
 
     # Down here so that error pages aren't cached.
@@ -457,10 +446,7 @@ sub summary : Private {
 
     $c->stash->{group_by_default} = 'category';
 
-    my $area_id = $c->stash->{body}->body_areas->first->area_id;
-    my $children = mySociety::MaPit::call('area/children', $area_id,
-        type => $c->cobrand->area_types_children,
-    );
+    my $children = $c->stash->{body}->first_area_children;
     $c->stash->{children} = $children;
 
     $c->forward('/admin/fetch_contacts');

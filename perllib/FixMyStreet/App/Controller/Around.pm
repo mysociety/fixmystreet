@@ -225,10 +225,7 @@ sub check_and_stash_category : Private {
     my ( $self, $c ) = @_;
 
     my $all_areas = $c->stash->{all_areas};
-    my @bodies = $c->model('DB::Body')->search(
-        { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
-        { join => 'body_areas' }
-    )->all;
+    my @bodies = $c->model('DB::Body')->active->for_areas(keys %$all_areas)->all;
     my %bodies = map { $_->id => $_ } @bodies;
 
     my @contacts = $c->model('DB::Contact')->not_deleted->search(

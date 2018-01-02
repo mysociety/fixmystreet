@@ -41,9 +41,7 @@ sub restriction {
 # UK cobrands assume that each MapIt area ID maps both ways with one body
 sub body {
     my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->search({
-        'body_areas.area_id' => $self->council_area_id
-    }, { join => 'body_areas' })->first;
+    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->first;
     return $body;
 }
 

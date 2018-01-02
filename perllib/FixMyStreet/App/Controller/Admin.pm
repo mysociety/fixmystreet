@@ -1938,11 +1938,9 @@ sub check_page_allowed : Private {
 sub fetch_all_bodies : Private {
     my ($self, $c ) = @_;
 
-    my @bodies = $c->model('DB::Body')->all_translated;
+    my @bodies = $c->model('DB::Body')->translated->all_sorted;
     if ( $c->cobrand->moniker eq 'zurich' ) {
         @bodies = $c->cobrand->admin_fetch_all_bodies( @bodies );
-    } else {
-        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
     }
     $c->stash->{bodies} = \@bodies;
 
@@ -1952,20 +1950,15 @@ sub fetch_all_bodies : Private {
 sub fetch_body_areas : Private {
     my ($self, $c, $body ) = @_;
 
-    my $body_area = $body->body_areas->first;
-
-    unless ( $body_area ) {
+    my $children = $body->first_area_children;
+    unless ($children) {
         # Body doesn't have any areas defined.
         delete $c->stash->{areas};
         delete $c->stash->{fetched_areas_body_id};
         return;
     }
 
-    my $areas = mySociety::MaPit::call('area/children', [ $body_area->area_id ],
-        type => $c->cobrand->area_types_children,
-    );
-
-    $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
+    $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$children ];
     # Keep track of the areas we've fetched to prevent a duplicate fetch later on
     $c->stash->{fetched_areas_body_id} = $body->id;
 }

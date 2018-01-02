@@ -86,11 +86,7 @@ sub index : Path : Args(0) {
     if ($body) {
         $c->stash->{body_name} = $body->name;
 
-        my $area_id = $body->body_areas->first->area_id;
-        my $children = mySociety::MaPit::call('area/children', $area_id,
-            type => $c->cobrand->area_types_children,
-        );
-        $c->stash->{children} = $children;
+        my $children = $c->stash->{children} = $body->first_area_children;
 
         $c->forward('/admin/fetch_contacts');
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];

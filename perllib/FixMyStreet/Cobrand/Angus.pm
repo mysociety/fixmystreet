@@ -72,9 +72,7 @@ sub temp_update_contacts {
 
     my $contact_rs = $self->{c}->model('DB::Contact');
 
-    my $body = FixMyStreet::DB->resultset('Body')->search({
-        'body_areas.area_id' => $self->council_area_id,
-    }, { join => 'body_areas' })->first;
+    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->first;
 
     my $_update = sub {
         my ($category, $field, $category_details) = @_;

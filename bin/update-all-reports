@@ -37,7 +37,7 @@ if ($opt->table) {
     $data = FixMyStreet::Script::UpdateAllReports::generate($opt->areas);
     output('all-reports', $data);
 } elsif ($opt->all_bodies) {
-    my $bodies = FixMyStreet::DB->resultset("Body")->search({ deleted => 0 });
+    my $bodies = FixMyStreet::DB->resultset("Body")->active;
     while (my $body = $bodies->next) {
         next unless $body->body_areas->first;
         my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard($body);

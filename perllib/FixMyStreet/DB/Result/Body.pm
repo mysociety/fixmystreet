@@ -158,10 +158,11 @@ sub areas {
 sub first_area_children {
     my ( $self ) = @_;
 
-    my $area_id = $self->body_areas->first->area_id;
+    my $body_area = $self->body_areas->first;
+    return unless $body_area;
 
     my $cobrand = $self->result_source->schema->cobrand;
-    my $children = mySociety::MaPit::call('area/children', $area_id,
+    my $children = mySociety::MaPit::call('area/children', $body_area->area_id,
         type => $cobrand->area_types_children,
     );
 

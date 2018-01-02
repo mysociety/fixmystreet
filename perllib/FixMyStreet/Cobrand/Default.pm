@@ -15,7 +15,16 @@ use Carp;
 use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 
-=head1 path_to_web_templates
+=head1 The default cobrand
+
+This module provides the default cobrand functions used by the codebase,
+if not overridden by the cobrand in use.
+
+=head1 Functions
+
+=over
+
+=item path_to_web_templates
 
     $path = $cobrand->path_to_web_templates(  );
 
@@ -32,7 +41,7 @@ sub path_to_web_templates {
     return $paths;
 }
 
-=head1 path_to_email_templates
+=item path_to_email_templates
 
     $path = $cobrand->path_to_email_templates(  );
 
@@ -50,7 +59,7 @@ sub path_to_email_templates {
     return $paths;
 }
 
-=head1 country
+=item country
 
 Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.
 Default is none. This is not really used for anything important (minor GB only
@@ -62,7 +71,7 @@ sub country {
     return '';
 }
 
-=head1 problems
+=item problems
 
 Returns a ResultSet of Problems, potentially restricted to a subset if we're on
 a cobrand that only wants some of the data.
@@ -74,7 +83,7 @@ sub problems {
     return $self->problems_restriction(FixMyStreet::DB->resultset('Problem'));
 }
 
-=head1 problems_on_map
+=item problems_on_map
 
 Returns a ResultSet of Problems to be shown on the /around map, potentially
 restricted to a subset if we're on a cobrand that only wants some of the data.
@@ -86,7 +95,7 @@ sub problems_on_map {
     return $self->problems_on_map_restriction(FixMyStreet::DB->resultset('Problem'));
 }
 
-=head1 updates
+=item updates
 
 Returns a ResultSet of Comments, potentially restricted to a subset if we're on
 a cobrand that only wants some of the data.
@@ -98,7 +107,7 @@ sub updates {
     return $self->updates_restriction(FixMyStreet::DB->resultset('Comment'));
 }
 
-=head1 problems_restriction/updates_restriction
+=item problems_restriction/updates_restriction
 
 Used to restricts reports and updates in a cobrand in a particular way. Do
 nothing by default.
@@ -115,7 +124,7 @@ sub updates_restriction {
     return $rs;
 }
 
-=head1 categories_restriction
+=item categories_restriction
 
 Used to restrict categories available when making new report in a cobrand in a
 particular way. Do nothing by default.
@@ -128,7 +137,7 @@ sub categories_restriction {
 }
 
 
-=head1 problems_on_map_restriction
+=item problems_on_map_restriction
 
 Used to restricts reports shown on the /around map in a cobrand in a particular way. Do
 nothing by default.
@@ -140,7 +149,7 @@ sub problems_on_map_restriction {
     return $rs;
 }
 
-=head1 users
+=item users
 
 Returns a ResultSet of Users, potentially restricted to a subset if we're on
 a cobrand that only wants some of the data.
@@ -152,7 +161,7 @@ sub users {
     return $self->users_restriction(FixMyStreet::DB->resultset('User'));
 }
 
-=head1 users_restriction
+=item users_restriction
 
 Used to restricts users in the admin in a cobrand in a particular way. Do
 nothing by default.
@@ -166,7 +175,7 @@ sub users_restriction {
 
 sub site_key { return 0; }
 
-=head2 restriction
+=item restriction
 
 Return a restriction to data saved while using this specific cobrand site.
 
@@ -178,7 +187,7 @@ sub restriction {
     return $self->moniker ? { cobrand => $self->moniker } : {};
 }
 
-=head2 base_url_with_lang
+=item base_url_with_lang
 
 =cut
 
@@ -187,7 +196,7 @@ sub base_url_with_lang {
     return $self->base_url;
 }
 
-=head2 admin_base_url
+=item admin_base_url
 
 Base URL for the admin interface.
 
@@ -198,7 +207,7 @@ sub admin_base_url {
     return FixMyStreet->config('ADMIN_BASE_URL') || $self->base_url . "/admin";
 }
 
-=head2 base_url
+=item base_url
 
 Return the base url for the cobranded version of the site
 
@@ -206,7 +215,7 @@ Return the base url for the cobranded version of the site
 
 sub base_url { FixMyStreet->config('BASE_URL') }
 
-=head2 base_url_for_report
+=item base_url_for_report
 
 Return the base url for a report (might be different in a two-tier county, but
 most of the time will be same as base_url_with_lang). Report may be an object,
@@ -219,7 +228,7 @@ sub base_url_for_report {
     return $self->base_url_with_lang;
 }
 
-=head2 base_host
+=item base_host
 
 Return the base host for the cobranded version of the site
 
@@ -231,7 +240,7 @@ sub base_host {
     return $uri->host;
 }
 
-=head2 enter_postcode_text
+=item enter_postcode_text
 
 Return override text that prompts the user to enter their postcode/place name.
 Can be specified in template.
@@ -240,7 +249,7 @@ Can be specified in template.
 
 sub enter_postcode_text { }
 
-=head2 set_lang_and_domain
+=item set_lang_and_domain
 
     my $set_lang = $cobrand->set_lang_and_domain( $lang, $unicode, $dir )
 
@@ -276,7 +285,7 @@ sub languages { FixMyStreet->config('LANGUAGES') || [] }
 sub language_domain { }
 sub language_override { }
 
-=head2 alert_list_options
+=item alert_list_options
 
 Return HTML for a list of alert options for the cobrand, given QUERY and
 OPTIONS.
@@ -285,7 +294,7 @@ OPTIONS.
 
 sub alert_list_options { 0 }
 
-=head2 recent_photos
+=item recent_photos
 
 Return N recent photos. If EASTING, NORTHING and DISTANCE are supplied, the
 photos must be attached to problems within DISTANCE of the point defined by
@@ -299,7 +308,7 @@ sub recent_photos {
     return $self->problems->recent_photos(@_);
 }
 
-=head2 recent
+=item recent
 
 Return recent problems on the site.
 
@@ -321,7 +330,7 @@ sub shorten_recency_if_new_greater_than_fixed {
     return 1;
 }
 
-=head2 front_stats_data
+=item front_stats_data
 
 Return a data structure containing the front stats information that a template
 can then format.
@@ -353,7 +362,7 @@ sub front_stats_data {
     return $stats;
 }
 
-=head2 disambiguate_location
+=item disambiguate_location
 
 Returns any disambiguating information available. Defaults to none.
 
@@ -361,7 +370,7 @@ Returns any disambiguating information available. Defaults to none.
 
 sub disambiguate_location { FixMyStreet->config('GEOCODING_DISAMBIGUATION') or {}; }
 
-=head2 cobrand_data_for_generic_update
+=item cobrand_data_for_generic_update
 
 Parameter is UPDATE_DATA, a reference to a hash of non-cobranded update data.
 Return cobrand extra data for the update
@@ -370,7 +379,7 @@ Return cobrand extra data for the update
 
 sub cobrand_data_for_generic_update { '' }
 
-=head2 cobrand_data_for_generic_update
+=item cobrand_data_for_generic_update
 
 Parameter is PROBLEM_DATA, a reference to a hash of non-cobranded problem data.
 Return cobrand extra data for the problem
@@ -379,7 +388,7 @@ Return cobrand extra data for the problem
 
 sub cobrand_data_for_generic_problem { '' }
 
-=head2 uri
+=item uri
 
 Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params
 needed appended to it.
@@ -398,7 +407,7 @@ sub uri {
 }
 
 
-=head2 header_params
+=item header_params
 
 Return any params to be added to responses
 
@@ -406,7 +415,7 @@ Return any params to be added to responses
 
 sub header_params { return {} }
 
-=head2 map_type
+=item map_type
 
 Return an override type of map if necessary.
 
@@ -417,7 +426,7 @@ sub map_type {
     return;
 }
 
-=head2 reports_per_page
+=item reports_per_page
 
 The number of reports to show per page on all reports page.
 
@@ -427,7 +436,7 @@ sub reports_per_page {
     return FixMyStreet->config('ALL_REPORTS_PER_PAGE') || 100;
 }
 
-=head2 reports_ordering
+=item reports_ordering
 
 The order_by clause to use for reports on all reports page
 
@@ -437,7 +446,7 @@ sub reports_ordering {
     return 'updated-desc';
 }
 
-=head2 on_map_default_status
+=item on_map_default_status
 
 Return the default ?status= query parameter to use for filter on map page.
 
@@ -445,7 +454,7 @@ Return the default ?status= query parameter to use for filter on map page.
 
 sub on_map_default_status { return 'all'; }
 
-=head2 allow_photo_upload
+=item allow_photo_upload
 
 Return a boolean indicating whether the cobrand allows photo uploads
 
@@ -453,7 +462,7 @@ Return a boolean indicating whether the cobrand allows photo uploads
 
 sub allow_photo_upload { return 1; }
 
-=head2 allow_photo_display
+=item allow_photo_display
 
 Return a boolean indicating whether the cobrand allows photo display
 
@@ -464,7 +473,7 @@ sub allow_photo_display {
     return 1;
 }
 
-=head2 allow_update_reporting
+=item allow_update_reporting
 
 Return a boolean indication whether users should see links next to updates
 allowing them to report them as offensive.
@@ -473,7 +482,7 @@ allowing them to report them as offensive.
 
 sub allow_update_reporting { return 0; }
 
-=head2 geocode_postcode
+=item geocode_postcode
 
 Given a QUERY, return LAT/LON and/or ERROR.
 
@@ -484,7 +493,7 @@ sub geocode_postcode {
     return {};
 }
 
-=head2 geocoded_string_check
+=item geocoded_string_check
 
 Parameters are LOCATION, QUERY. Return a boolean indicating whether the
 string LOCATION passes the cobrands checks.
@@ -493,7 +502,7 @@ string LOCATION passes the cobrands checks.
 
 sub geocoded_string_check { return 1; }
 
-=head2 find_closest
+=item find_closest
 
 Used by send-reports and similar to attach nearest things to the bottom of the
 report.
@@ -526,7 +535,7 @@ sub find_closest {
     return $data;
 }
 
-=head2 find_closest_address_for_rss
+=item find_closest_address_for_rss
 
 Used by rss feeds to provide a bit more context
 
@@ -553,7 +562,7 @@ sub find_closest_address_for_rss {
     return $str;
 }
 
-=head2 format_postcode
+=item format_postcode
 
 Takes a postcode string and if it looks like a valid postcode then transforms it
 into the canonical postcode.
@@ -570,7 +579,7 @@ sub format_postcode {
 
     return $postcode;
 }
-=head2 area_check
+=item area_check
 
 Paramters are AREAS, QUERY, CONTEXT. Return a boolean indicating whether
 AREAS pass any extra checks. CONTEXT is where we are on the site.
@@ -579,7 +588,7 @@ AREAS pass any extra checks. CONTEXT is where we are on the site.
 
 sub area_check { return ( 1, '' ); }
 
-=head2 all_reports_single_body
+=item all_reports_single_body
 
 Return a boolean indicating whether the cobrand displays a report of all
 councils
@@ -588,7 +597,7 @@ councils
 
 sub all_reports_single_body { 0 }
 
-=head2 ask_ever_reported
+=item ask_ever_reported
 
 Return a boolean indicating whether people should be asked whether this is the
 first time they' ve reported a problem
@@ -597,7 +606,7 @@ first time they' ve reported a problem
 
 sub ask_ever_reported { 1 }
 
-=head2 send_questionnaires
+=item send_questionnaires
 
 Return a boolean indicating whether people should be sent questionnaire emails.
 
@@ -605,7 +614,7 @@ Return a boolean indicating whether people should be sent questionnaire emails.
 
 sub send_questionnaires { 1 }
 
-=head2 admin_pages
+=item admin_pages
 
 List of names of pages to display on the admin interface
 
@@ -660,14 +669,14 @@ sub admin_pages {
     return $pages;
 }
 
-=head2 admin_show_creation_graph
+=item admin_show_creation_graph
 
 Show the problem creation graph in the admin interface
 =cut
 
 sub admin_show_creation_graph { 1 }
 
-=head2 admin_allow_user
+=item admin_allow_user
 
 Perform checks on whether this user can access admin. By default only superusers
 are allowed.
@@ -679,7 +688,7 @@ sub admin_allow_user {
     return 1 if $user->is_superuser;
 }
 
-=head2 available_permissions
+=item available_permissions
 
 Grouped lists of permission types available for use in the admin
 
@@ -723,7 +732,7 @@ sub available_permissions {
 }
 
 
-=head2 area_types
+=item area_types
 
 The MaPit types this site handles
 
@@ -732,7 +741,7 @@ The MaPit types this site handles
 sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
 sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
 
-=head2 contact_name, contact_email
+=item contact_name, contact_email
 
 Return the contact name or email for the cobranded version of the site (to be
 used in emails).
@@ -827,7 +836,7 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
-=head2 reports_body_check
+=item reports_body_check
 
 This function is called by the All Reports page, and lets you do some cobrand
 specific checking on the URL passed to try and match to a relevant body.
@@ -839,7 +848,7 @@ sub reports_body_check {
     return 0;
 }
 
-=head2 default_photo_resize
+=item default_photo_resize
 
 Size that photos are to be resized to for display. If photos aren't
 to be resized then return 0;
@@ -848,7 +857,7 @@ to be resized then return 0;
 
 sub default_photo_resize { return 0; }
 
-=head2 get_report_stats
+=item get_report_stats
 
 Get stats to display on the council reports page
 
@@ -883,7 +892,7 @@ sub example_places {
     FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
 }
 
-=head2 title_list
+=item title_list
 
 Returns an arrayref of possible titles for a person to send to the mobile app.
 
@@ -891,7 +900,7 @@ Returns an arrayref of possible titles for a person to send to the mobile app.
 
 sub title_list { return undef; }
 
-=head2 only_authed_can_create
+=item only_authed_can_create
 
 If true, only users with the from_body flag set are able to create reports.
 
@@ -901,7 +910,7 @@ sub only_authed_can_create {
     return 0;
 }
 
-=head2 areas_on_around
+=item areas_on_around
 
 If set to an arrayref, will plot those area ID(s) from mapit on all the /around pages.
 
@@ -909,7 +918,7 @@ If set to an arrayref, will plot those area ID(s) from mapit on all the /around 
 
 sub areas_on_around { []; }
 
-=head2
+=item report_form_extras
 
 A list of extra fields we wish to save to the database in the 'extra' column of
 problems based on variables passed in by the form. Return a list of hashrefs
@@ -922,7 +931,7 @@ sub report_form_extras {}
 
 sub process_open311_extras {}
 
-=head 2 pin_colour
+=item pin_colour
 
 Returns the colour of pin to be used for a particular report
 (so perhaps different depending upon the age of the report).
@@ -935,7 +944,7 @@ sub pin_colour {
     return $p->is_fixed ? 'green' : 'red';
 }
 
-=head2 pin_new_report_colour
+=item pin_new_report_colour
 
 Returns the colour of pin to be used for a new report.
 
@@ -944,7 +953,7 @@ sub pin_new_report_colour {
     return 'green';
 }
 
-=head2 path_to_pin_icons
+=item path_to_pin_icons
 
 Used to override the path for the pin icons if you want to add custom pin icons
 for your cobrand.
@@ -956,7 +965,7 @@ sub path_to_pin_icons {
 }
 
 
-=head2 tweak_all_reports_map
+=item tweak_all_reports_map
 
 Used to tweak the display settings of the map on the all reports pages.
 
@@ -968,7 +977,7 @@ sub tweak_all_reports_map {}
 
 sub can_support_problems { return 0; }
 
-=head2 default_map_zoom / default_link_zoom
+=item default_map_zoom / default_link_zoom
 
 default_map_zoom is used when displaying a map overriding the
 default of max-4 or max-3 depending on population density.
@@ -983,7 +992,7 @@ sub default_link_zoom { 3 }
 
 sub users_can_hide { return 0; }
 
-=head2 default_show_name
+=item default_show_name
 
 Returns true if the show name checkbox should be ticked by default.
 
@@ -993,7 +1002,7 @@ sub default_show_name {
     1;
 }
 
-=head2 report_check_for_errors
+=item report_check_for_errors
 
 Perform validation for new reports. Takes Catalyst context object as an argument
 
@@ -1012,7 +1021,7 @@ sub report_check_for_errors {
 
 sub report_sent_confirmation_email { 0; }
 
-=head2 never_confirm_reports
+=item never_confirm_reports
 
 If true then we never send an email to confirm a report
 
@@ -1020,7 +1029,7 @@ If true then we never send an email to confirm a report
 
 sub never_confirm_reports { 0; }
 
-=head2 allow_anonymous_reports
+=item allow_anonymous_reports
 
 If true then can have reports that are truely anonymous - i.e with no email or name. You
 need to also put details in the anonymous_account function too.
@@ -1029,7 +1038,7 @@ need to also put details in the anonymous_account function too.
 
 sub allow_anonymous_reports { 0; }
 
-=head2 anonymous_account
+=item anonymous_account
 
 Details to use for anonymous reports. This should return a hashref with an email and
 a name key
@@ -1038,7 +1047,7 @@ a name key
 
 sub anonymous_account { undef; }
 
-=head2 show_unconfirmed_reports
+=item show_unconfirmed_reports
 
 Whether reports in state 'unconfirmed' should still be shown on the public site.
 (They're always included in the admin interface.)
@@ -1074,7 +1083,7 @@ sub max_detailed_info_length { 0 }
 
 sub prefill_report_fields_for_inspector { 0 }
 
-=head2 never_confirm_updates
+=item never_confirm_updates
 
 If true then we never send an email to confirm an update
 
@@ -1084,7 +1093,7 @@ sub never_confirm_updates { 0; }
 
 sub include_time_in_update_alerts { 0; }
 
-=head2 prettify_dt
+=item prettify_dt
 
     my $date = $c->prettify_dt( $datetime );
 
@@ -1099,7 +1108,7 @@ sub prettify_dt {
     return Utils::prettify_dt( $dt, 1 );
 }
 
-=head2 extra_contact_validation
+=item extra_contact_validation
 
 Perform any extra validation on the contact form.
 
@@ -1108,7 +1117,7 @@ Perform any extra validation on the contact form.
 sub extra_contact_validation { (); }
 
 
-=head2 get_geocoder
+=item get_geocoder
 
 Return the default geocoder from config.
 
@@ -1141,7 +1150,7 @@ sub jurisdiction_id_example {
     return $self->moniker;
 }
 
-=head2 body_details_data
+=item body_details_data
 
 Returns a list of bodies to create with ensure_body.  These
 are mostly just passed to ->find_or_create, but there is some
@@ -1174,7 +1183,7 @@ sub body_details_data {
     return ();
 }
 
-=head2 contact_details_data
+=item contact_details_data
 
 Returns a list of contact_data to create with setup_contacts.
 See Zurich for an example.
@@ -1185,7 +1194,7 @@ sub contact_details_data {
     return ()
 }
 
-=head2 lookup_by_ref_regex
+=item lookup_by_ref_regex
 
 Returns a regex to match postcode form input against to determine if a lookup
 by id should be done.
@@ -1196,7 +1205,7 @@ sub lookup_by_ref_regex {
     return qr/^\s*ref:\s*(\d+)\s*$/;
 }
 
-=head2 category_extra_hidden
+=item category_extra_hidden
 
 Return true if an Open311 service attribute should be a hidden field.
 =cut
@@ -1206,7 +1215,7 @@ sub category_extra_hidden {
 	return 0;
 }
 
-=head2 reputation_increment_states/reputation_decrement_states
+=item reputation_increment_states/reputation_decrement_states
 
 Get a hashref of states that cause the reporting user's reputation to be
 incremented/decremented, if a report is changed to this state upon inspection.
@@ -1224,7 +1233,7 @@ sub traffic_management_options {
 }
 
 
-=head2 display_days_ago_threshold
+=item display_days_ago_threshold
 
 Used to control whether a relative 'n days ago' or absolute date is shown
 for problems/updates. If a problem/update's `days_ago` value is <= this figure,
@@ -1233,7 +1242,7 @@ the 'n days ago' format is used. By default the absolute date is always used.
 =cut
 sub display_days_ago_threshold { 0 }
 
-=head2 allow_report_extra_fields
+=item allow_report_extra_fields
 
 Used to control whether site-wide extra fields are available. If true,
 users with the category_edit permission can add site-wide fields via the
@@ -1250,7 +1259,7 @@ sub social_auth_enabled {
 }
 
 
-=head2 send_moderation_notifications
+=item send_moderation_notifications
 
 Used to control whether an email is sent to the problem reporter when a report
 is moderated.
@@ -1259,6 +1268,8 @@ Note that this is called in the context of the cobrand used to perform the
 moderation, so e.g. if a UK council cobrand disables the moderation
 notifications and a report is moderated on fixmystreet.com, the email will
 still be sent (because it wasn't disabled on the FixMyStreet cobrand).
+
+=back
 
 =cut
 
