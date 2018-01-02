@@ -99,7 +99,8 @@ sub index : Path : Args(0) {
             $c->stash->{body_name} = join "", map { $children->{$_}->{name} } grep { $children->{$_} } $c->user->area_id;
         }
     } else {
-        $c->forward('/admin/fetch_all_bodies');
+        my @bodies = $c->model('DB::Body')->active->translated->with_area_count->all_sorted;
+        $c->stash->{bodies} = \@bodies;
     }
 
     $c->stash->{start_date} = $c->get_param('start_date');
