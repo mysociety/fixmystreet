@@ -4,6 +4,7 @@
     - Bugfixes:
         - Make sure dashboard filters all fit onto one line.
         - Fix issue with red bars on bar graph of many categories.
+        - Prefetch translations in /reports list of bodies.
 
 * v2.3 (18th December 2017)
     - New features:

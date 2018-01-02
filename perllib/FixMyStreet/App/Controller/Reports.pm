@@ -92,7 +92,7 @@ sub index : Path : Args(0) {
             $c->stash->{children} = $children;
         }
     } else {
-        my @bodies = $c->model('DB::Body')->active->with_area_count->all_sorted;
+        my @bodies = $c->model('DB::Body')->active->translated->with_area_count->all_sorted;
         $c->stash->{bodies} = \@bodies;
     }
 
