@@ -1,4 +1,4 @@
-// Standard mySociety Footer v1.0.2
+// Standard mySociety Footer v1.0.6
 // https://github.com/mysociety/standard-footer
 
 $mysoc-footer-background-color: #fff !default;
@@ -26,8 +26,6 @@ $mysoc-footer-legal-text-color: #6C6B68 !default;
 
 $mysoc-footer-image-path: '../img/mysoc-footer/' !default;
 $mysoc-footer-breakpoint-sm: 768px !default;
-
-$high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi' !default;
 
 .mysoc-footer {
   -webkit-box-sizing: border-box;
@@ -166,9 +164,6 @@ $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
   width: 152px;
   background: transparent url('#{$mysoc-footer-image-path}logo-mysociety.png') 0 0 no-repeat;
   background-size: 152px 32px;
-  @media ($high-dpi-screen) {
-    background-image: url('#{$mysoc-footer-image-path}logo-mysociety@2x.png');
-  }
   background-image: url('#{$mysoc-footer-image-path}logo-mysociety.svg'), none;
 }
 
@@ -205,26 +200,17 @@ $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
 .mysoc-footer__badge--github {
   background: transparent url('#{$mysoc-footer-image-path}icon-github.png') 0 0 no-repeat;
   background-size: 32px 32px;
-  @media ($high-dpi-screen) {
-    background-image: url('#{$mysoc-footer-image-path}icon-github@2x.png');
-  }
   background-image: url('#{$mysoc-footer-image-path}icon-github.svg'), none;
 }
 
 .mysoc-footer__badge--twitter {
   background: transparent url('#{$mysoc-footer-image-path}icon-twitter.png') 0 0 no-repeat;
   background-size: 32px 32px;
-  @media ($high-dpi-screen) {
-    background-image: url('#{$mysoc-footer-image-path}icon-twitter@2x.png');
-  }
   background-image: url('#{$mysoc-footer-image-path}icon-twitter.svg'), none;
 }
 
 .mysoc-footer__badge--facebook {
   background: transparent url('#{$mysoc-footer-image-path}icon-facebook.png') 0 0 no-repeat;
   background-size: 32px 32px;
-  @media ($high-dpi-screen) {
-    background-image: url('#{$mysoc-footer-image-path}icon-facebook@2x.png');
-  }
   background-image: url('#{$mysoc-footer-image-path}icon-facebook.svg'), none;
 }
