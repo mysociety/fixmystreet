@@ -1,4 +1,7 @@
 [%
+scripts.push(
+    version('/js/lazyload.js'),
+);
 IF bodyclass.match('mappage');
     scripts.push(
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
