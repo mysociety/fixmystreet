@@ -137,31 +137,42 @@ subtest 'check non public reports are not displayed on around page' => sub {
 };
 
 
-subtest 'check category and status filtering works on /around?ajax' => sub {
+subtest 'check category and status filtering works on /around' => sub {
+    my $body = $mech->create_body_ok(2237, "Oxfordshire");
+
     my $categories = [ 'Pothole', 'Vegetation', 'Flytipping' ];
     my $params = {
-        postcode  => 'OX1 1ND',
-        latitude  => 51.7435918829363,
-        longitude => -1.23201966270446,
+        postcode  => 'OX20 1SZ',
+        latitude  => 51.754926,
+        longitude => -1.256179,
     };
     my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
                 . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
 
     # Create one open and one fixed report in each category
     foreach my $category ( @$categories ) {
+        $mech->create_contact_ok( category => $category, body_id => $body->id, email => "$category\@example.org" );
         foreach my $state ( 'confirmed', 'fixed' ) {
             my %report_params = (
                 %$params,
                 category => $category,
                 state => $state,
             );
-            $mech->create_problems_for_body( 1, 2237, 'Around page', \%report_params );
+            $mech->create_problems_for_body( 1, $body->id, 'Around page', \%report_params );
         }
     }
 
     my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
     my $pins = $json->{pins};
     is scalar @$pins, 6, 'correct number of reports when no filters';
+
+    # Regression test for filter_category in /around URL
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok( '/around?filter_category=Pothole&bbox=' . $bbox );
+        $mech->content_contains('<option value="Pothole" selected>');
+    };
 
     $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Pothole&bbox=' . $bbox );
     $pins = $json->{pins};

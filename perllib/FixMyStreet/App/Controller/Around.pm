@@ -240,7 +240,7 @@ sub check_and_stash_category : Private {
     )->all;
     my @categories = map { { name => $_->category, value => $_->category_display } } @contacts;
     $c->stash->{filter_categories} = \@categories;
-    my %categories_mapped = map { $_ => 1 } @categories;
+    my %categories_mapped = map { $_->{name} => 1 } @categories;
 
     my $categories = [ $c->get_param_list('filter_category', 1) ];
     my %valid_categories = map { $_ => 1 } grep { $_ && $categories_mapped{$_} } @$categories;

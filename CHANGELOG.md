@@ -2,6 +2,7 @@
 
 * Unreleased
     - Bugfixes:
+        - Fix bug specifying category in URL on /around. #1950
         - Make sure dashboard filters all fit onto one line.
         - Fix issue with red bars on bar graph of many categories.
         - Prefetch translations in /reports list of bodies.
