@@ -112,8 +112,9 @@ function isR2L() {
     },
 
     make_multi: function() {
-        // A convenience wrapper around $.multiSelect() that translates HTML
-        // data-* attributes into settings for the multiSelect constructor.
+      // A convenience wrapper around $.multiSelect() that translates HTML
+      // data-* attributes into settings for the multiSelect constructor.
+      return this.each(function() {
         var $select = $(this);
         var settings = {};
 
@@ -144,6 +145,7 @@ function isR2L() {
         }
 
         $select.multiSelect(settings);
+      });
     }
 
   });
