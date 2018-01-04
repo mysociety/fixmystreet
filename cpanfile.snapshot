@@ -130,19 +130,19 @@ DISTRIBUTIONS
       perl 5.008001
       strict 0
       warnings 0
-  CGI-4.43
-    pathname: L/LE/LEEJO/CGI-4.43.tar.gz
+  CGI-4.54
+    pathname: L/LE/LEEJO/CGI-4.54.tar.gz
     provides:
-      CGI 4.43
-      CGI::Carp 4.43
-      CGI::Cookie 4.43
-      CGI::File::Temp 4.43
+      CGI 4.54
+      CGI::Carp 4.54
+      CGI::Cookie 4.54
+      CGI::File::Temp 4.54
       CGI::HTML::Functions undef
-      CGI::MultipartBuffer 4.43
-      CGI::Pretty 4.43
-      CGI::Push 4.43
-      CGI::Util 4.43
-      Fh 4.43
+      CGI::MultipartBuffer 4.54
+      CGI::Pretty 4.54
+      CGI::Push 4.54
+      CGI::Util 4.54
+      Fh 4.54
     requirements:
       Carp 0
       Config 0
@@ -8952,61 +8952,6 @@ DISTRIBUTIONS
       utf8 0
       vars 0
       warnings 0
-  libwww-perl-6.05
-    pathname: G/GA/GAAS/libwww-perl-6.05.tar.gz
-    provides:
-      LWP 6.05
-      LWP::Authen::Basic undef
-      LWP::Authen::Digest undef
-      LWP::Authen::Ntlm 6.00
-      LWP::ConnCache 6.02
-      LWP::Debug undef
-      LWP::DebugFile undef
-      LWP::MemberMixin undef
-      LWP::Protocol 6.00
-      LWP::Protocol::GHTTP undef
-      LWP::Protocol::MyFTP undef
-      LWP::Protocol::cpan undef
-      LWP::Protocol::data undef
-      LWP::Protocol::file undef
-      LWP::Protocol::ftp undef
-      LWP::Protocol::gopher undef
-      LWP::Protocol::http undef
-      LWP::Protocol::http::Socket undef
-      LWP::Protocol::http::SocketMethods undef
-      LWP::Protocol::loopback undef
-      LWP::Protocol::mailto undef
-      LWP::Protocol::nntp undef
-      LWP::Protocol::nogo undef
-      LWP::RobotUA 6.03
-      LWP::Simple 6.00
-      LWP::UserAgent 6.05
-    requirements:
-      Digest::MD5 0
-      Encode 2.12
-      Encode::Locale 0
-      ExtUtils::MakeMaker 0
-      File::Listing 6
-      HTML::Entities 0
-      HTML::HeadParser 0
-      HTTP::Cookies 6
-      HTTP::Daemon 6
-      HTTP::Date 6
-      HTTP::Negotiate 6
-      HTTP::Request 6
-      HTTP::Request::Common 6
-      HTTP::Response 6
-      HTTP::Status 6
-      IO::Select 0
-      IO::Socket 0
-      LWP::MediaTypes 6
-      MIME::Base64 2.1
-      Net::FTP 2.58
-      Net::HTTP 6.04
-      URI 1.10
-      URI::Escape 0
-      WWW::RobotRules 6
-      perl 5.008001
   libwww-perl-6.61
     pathname: O/OA/OALDERS/libwww-perl-6.61.tar.gz
     provides:

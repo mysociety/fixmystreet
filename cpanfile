@@ -10,7 +10,7 @@ requires 'ExtUtils::ParseXS', '3.30'; # [1]
 requires 'Test::Differences', '0.67'; # [3]
 
 # Minimum versions of dependencies to upgrade for bugfixes
-requires 'CGI', '4.43';
+requires 'CGI', '4.54';
 requires 'Net::Server', '2.009';
 # For perl 5.20/5.22 support
   requires 'Guard', '1.023';
