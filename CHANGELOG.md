@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Include "SameSite=Lax" with all cookies.
     - Bugfixes:
         - Make sure dashboard filters all fit onto one line.
         - Fix issue with red bars on bar graph of many categories.

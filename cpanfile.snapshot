@@ -75,19 +75,19 @@ DISTRIBUTIONS
       perl 5.008001
       strict 0
       warnings 0
-  CGI-4.28
-    pathname: L/LE/LEEJO/CGI-4.28.tar.gz
+  CGI-4.38
+    pathname: L/LE/LEEJO/CGI-4.38.tar.gz
     provides:
-      CGI 4.28
-      CGI::Carp 4.28
-      CGI::Cookie 4.28
-      CGI::File::Temp 4.28
+      CGI 4.38
+      CGI::Carp 4.38
+      CGI::Cookie 4.38
+      CGI::File::Temp 4.38
       CGI::HTML::Functions undef
-      CGI::Pretty 4.28
-      CGI::Push 4.28
-      CGI::Util 4.28
-      Fh 4.28
-      MultipartBuffer 4.28
+      CGI::MultipartBuffer 4.38
+      CGI::Pretty 4.38
+      CGI::Push 4.38
+      CGI::Util 4.38
+      Fh 4.38
     requirements:
       Carp 0
       Config 0
@@ -95,7 +95,7 @@ DISTRIBUTIONS
       Exporter 0
       ExtUtils::MakeMaker 0
       File::Spec 0.82
-      File::Temp 0
+      File::Temp 0.17
       HTML::Entities 3.69
       base 0
       if 0
