@@ -13,6 +13,7 @@ requires 'PadWalker', '2.2';
 requires 'aliased', '0.34';
 requires 'Net::SSLeay', '1.81';
 requires 'Module::ScanDeps', '1.24';
+requires 'CGI', '4.38';
 
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.80031';
@@ -32,7 +33,6 @@ requires 'Catalyst::View::TT';
 requires 'Authen::SASL';
 requires 'Cache::Memcached';
 requires 'Carp';
-requires 'CGI';
 requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'DateTime';
 requires 'DateTime::Format::HTTP';

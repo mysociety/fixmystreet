@@ -13,7 +13,7 @@ around 'redirect' => sub {
     return $self->$orig() unless @_;  # getter
 
     my $agent = $self->_context->request->user_agent;
-    return $self->$orig(@_) unless $agent =~ /Edge\/14/;  # Only care about Edge
+    return $self->$orig(@_) unless $agent && $agent =~ /Edge\/14/;  # Only care about Edge
 
     # Instead of a redirect, output HTML that redirects
     $self->body(<<END

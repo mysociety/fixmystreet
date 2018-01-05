@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Include "SameSite=Lax" with all cookies.
     - Bugfixes:
         - Fix bug specifying category in URL on /around. #1950
         - Fix bug with multiple select-multiples on a page. #1951
