@@ -277,16 +277,10 @@ html.lazyload .js-lazyload {
   margin-right: 0.5em;
 }
 .fms-app-badge--ios {
-  background-image: url('/cobrands/fixmystreet/images/itunes_store_logo.png');
-  @media ($high-dpi-screen) {
-    background-image: url('/cobrands/fixmystreet/images/itunes_store_logo@2.png');
-  }
+  @include svg-background-image('/cobrands/fixmystreet/images/itunes_store_logo');
 }
 .fms-app-badge--android {
-  background-image: url('/cobrands/fixmystreet/images/google_play_logo.png');
-  @media ($high-dpi-screen) {
-    background-image: url('/cobrands/fixmystreet/images/google_play_logo@2.png');
-  }
+  @include svg-background-image('/cobrands/fixmystreet/images/google_play_logo');
 }
 
 .fms-pro-promo {
