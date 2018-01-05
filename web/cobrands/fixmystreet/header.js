@@ -8,6 +8,9 @@ var fixmystreet = fixmystreet || {};
     var iel8 = E.className.indexOf('iel8') > -1;
     var type = Modernizr.mq('(min-width: 48em)') || iel8 ? 'desktop' : 'mobile';
     var meta = D.getElementById('js-meta-data');
+    if ('IntersectionObserver' in window) {
+        E.className += ' lazyload';
+    }
     fixmystreet.page = meta.getAttribute('data-page');
     fixmystreet.cobrand = meta.getAttribute('data-cobrand');
     if (type == 'mobile') {

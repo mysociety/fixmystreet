@@ -67,6 +67,10 @@ h3, h4,
 @import "_colours";
 @import "../sass/layout";
 
+body.mappage {
+    background-image: none;
+}
+
 #site-header {
     background: $map_nav_bg;
     padding: 1em 0;

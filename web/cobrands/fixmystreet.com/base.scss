@@ -199,6 +199,10 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
 
 @import "mysoc_footer";
 
+html.lazyload .js-lazyload {
+  background-image: none;
+}
+
 .mysoc-footer {
 
   @media print {
@@ -261,15 +265,22 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
 
 .fms-app-badges {
   margin: 1em 0;
-
-  a {
-    text-decoration: none;
-  }
-
-  img {
-    border: none;
-    margin-right: 0.5em;
-  }
+}
+.fms-app-badge {
+  display: inline-block;
+  text-decoration: none;
+  width: 135px;
+  height: 0;
+  padding-top: 40px;
+  background-size: 135px 40px;
+  overflow: hidden;
+  margin-right: 0.5em;
+}
+.fms-app-badge--ios {
+  @include svg-background-image('/cobrands/fixmystreet/images/itunes_store_logo');
+}
+.fms-app-badge--android {
+  @include svg-background-image('/cobrands/fixmystreet/images/google_play_logo');
 }
 
 .fms-pro-promo {
