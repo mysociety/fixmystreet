@@ -101,9 +101,9 @@
     <p>[% loc('Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?') %]</p>
     <p class="segmented-control segmented-control--radio">
         <input type="radio" name="another" id="another_yes" value="Yes"[% ' checked' IF another == 'Yes' %]>
-        <label for="another_yes">[% loc('Yes') %]</label>
+        <label class="btn" for="another_yes">[% loc('Yes') %]</label>
         <input type="radio" name="another" id="another_no" value="No"[% ' checked' IF another == 'No' %]>
-        <label for="another_no">[% loc('No') %]</label>
+        <label class="btn" for="another_no">[% loc('No') %]</label>
     </p>
 </div>
 
