@@ -236,7 +236,8 @@ $.extend(fixmystreet.utils, {
      * we already have the pins when the page loaded */
     function zoomToBounds(bounds) {
         if (!bounds) { return; }
-        fixmystreet.markers.strategies[0].deactivate();
+        var strategy = fixmystreet.markers.strategies[0];
+        strategy.deactivate();
         var center = bounds.getCenterLonLat();
         var z = fixmystreet.map.getZoomForExtent(bounds);
         if ( z < 13 && $('html').hasClass('mobile') ) {
@@ -244,9 +245,11 @@ $.extend(fixmystreet.utils, {
         }
         fixmystreet.map.setCenter(center, z);
         // Reactivate the strategy and make it think it's done an update
-        fixmystreet.markers.strategies[0].activate();
-        fixmystreet.markers.strategies[0].calculateBounds();
-        fixmystreet.markers.strategies[0].resolution = fixmystreet.map.getResolution();
+        strategy.activate();
+        if (strategy instanceof OpenLayers.Strategy.BBOX) {
+            strategy.calculateBounds();
+            strategy.resolution = fixmystreet.map.getResolution();
+        }
     }
 
     function sidebar_highlight(problem_id) {

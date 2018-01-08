@@ -10,7 +10,8 @@
         - Fix issue with red bars on bar graph of many categories.
         - Prefetch translations in /reports list of bodies.
         - Ignore deleted/area-less bodies in dashboard list.
-        - Add missing CSS class from final questionnaire question.
+        - Add missing CSS class from final questionnaire question. #1953
+        - Fix JavaScript error on /my calculating bounds #1954
         - Change text on /reports to match lower down (fix translation).
         - Ensure all reports graph can't dip downward. #1956
     - UK:
