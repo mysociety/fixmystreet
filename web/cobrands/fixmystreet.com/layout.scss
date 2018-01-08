@@ -352,3 +352,38 @@ footer {
 .footer-marketing {
   color: #ccc;
 }
+
+.healthcheck-unit {
+    padding-left: 94px;
+    background-size: 64px;
+
+    & + & {
+        margin-top: 2em;
+    }
+}
+
+.healthcheck-cta-trio {
+    @include clearfix();
+    margin: 0 -2em;
+    text-align: center;
+
+    .dashboard-item {
+        padding-top: 1em;
+        padding-bottom: 1em;
+    }
+}
+
+.dashboard-fms-case-studies {
+    & > div {
+        @include flex-container();
+        @include flex-wrap(wrap);
+        @include justify-content(space-between);
+
+        a {
+            @include box-sizing(border-box);
+            display: block;
+            width: 48%;
+            margin-bottom: 0;
+        }
+    }
+}

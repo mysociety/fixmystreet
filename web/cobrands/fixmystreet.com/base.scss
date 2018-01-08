@@ -387,3 +387,74 @@ input.postcode-form-test__postcode {
         }
     }
 }
+
+.healthcheck-unit {
+    padding-left: 50px;
+    @include svg-background-image('/cobrands/fixmystreet.com/images/healthcheck-good');
+    background-size: 32px;
+    background-repeat: no-repeat;
+    background-position: $left 0;
+
+    & > :first-child {
+        margin-top: 0;
+    }
+
+    & > :last-child {
+        margin-bottom: 0;
+    }
+
+    & + & {
+        margin-top: 1em;
+    }
+}
+
+.healthcheck-unit--bad {
+    @include svg-background-image('/cobrands/fixmystreet.com/images/healthcheck-bad');
+}
+
+.healthcheck-cta-trio {
+    margin: -1em;
+
+    h3 {
+        font-size: 1em;
+        font-weight: bold;
+    }
+}
+
+.dashboard-row--yellow {
+    border-top: $primary solid 0.75em;
+    background-color: mix(#fff, $primary, 60%);
+}
+
+.dashboard-fms-case-studies {
+    & > div {
+        a {
+            display: block;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+            padding: 1.5em;
+            background-color: #fff;
+            margin-bottom: 1em;
+            border-radius: 3px;
+
+            & > :first-child {
+                margin-top: 0;
+            }
+
+            & > :last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        small {
+            display: inline-block; // prevent inheritance of underline from parent
+            text-transform: uppercase;
+            color: #767676;
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        h3 {
+            margin-top: 0.8em;
+        }
+    }
+}
