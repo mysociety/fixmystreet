@@ -137,6 +137,11 @@ $(function(){
                         setUpLabelsForChart(this);
                     }
                 },
+                elements: {
+                    line: {
+                        cubicInterpolationMode: 'monotone'
+                    }
+                },
                 layout: {
                     padding: {
                         top: 4

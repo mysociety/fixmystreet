@@ -12,6 +12,7 @@
         - Ignore deleted/area-less bodies in dashboard list.
         - Add missing CSS class from final questionnaire question.
         - Change text on /reports to match lower down (fix translation).
+        - Ensure all reports graph can't dip downward. #1956
     - UK:
         - Lazy load images in the footer.
 
