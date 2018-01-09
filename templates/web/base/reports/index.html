@@ -30,7 +30,7 @@
                 data-values-fixed="[[% problems_fixed_by_period.join(',') %]]"
                 ></canvas>
             <span class="label" data-datasetindex="0"><strong style="color: #F4A140">[% tprintf(nget("%s problem reported", "%s problems reported", problems_reported_by_period.last), decode(problems_reported) _ '</strong>') %]</span>
-            <span class="label" data-datasetindex="1"><strong style="color: #62B356">[% tprintf(nget("%s report marked as fixed", "%s reports marked as fixed", problems_fixed_by_period.last), decode(problems_fixed) _ '</strong>') %]</span>
+            <span class="label" data-datasetindex="1"><strong style="color: #62B356">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", problems_fixed_by_period.last), decode(problems_fixed) _ '</strong>') %]</span>
         </div>
     </div>
 </div>

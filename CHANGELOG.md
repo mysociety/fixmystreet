@@ -11,6 +11,7 @@
         - Prefetch translations in /reports list of bodies.
         - Ignore deleted/area-less bodies in dashboard list.
         - Add missing CSS class from final questionnaire question.
+        - Change text on /reports to match lower down (fix translation).
     - UK:
         - Lazy load images in the footer.
 
