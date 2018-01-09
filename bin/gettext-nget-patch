@@ -15,9 +15,9 @@ find( sub {
         next unless /nget/;
         my $line = $.;
         my $text = $_;
-        do {
+        while ($text !~ /\)/) {
             $text .= <FP>;
-        } until $text =~ /\)/;
+        }
         if ($text =~ /nget\(\s*(['"])(.*?)\1\s*,\s*(['"])(.*?)\3\s*,\s*(.*?)\s*\)/s) {
             $out{$2} = {
                 file => $File::Find::name,
