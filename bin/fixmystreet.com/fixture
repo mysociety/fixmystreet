@@ -16,9 +16,11 @@ BEGIN {
 }
 
 use List::Util qw(shuffle);
+use Path::Tiny;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB::Factories;
+use FixMyStreet::App::Model::Photoset;
 use DateTime::Format::Pg;
 use Getopt::Long::Descriptive;
 
@@ -123,6 +125,12 @@ my %titles = (
     'Graffiti' => ['Graffiti', 'Graffiti', 'Offensive graffiti', 'Graffiti on the bridge', 'Remove graffiti'],
     'Other' => ['Loose drain cover', 'Flytipping on country lane', 'Vehicle blocking footpath', 'Hedge encroaching pavement', 'Full litter bins'],
 );
+my %photos = (
+    'Potholes' => [ '33717571655_46dfc6f65f_z.jpg', '37855543925_9dbbbecf41_z.jpg', '19119222668_a3c866d7c8_z.jpg', '12049724866_404b066875_z.jpg', '3705226606_eac71cf195_z.jpg', '6304445383_bd216ca892_z.jpg' ],
+    'Street lighting' => ['38110448864_fd71227247_z.jpg', '27050321819_ac123400eb_z.jpg', '35732107202_b790c61f63_z.jpg', '31889115854_01cdf38b0d_z.jpg', undef ],
+    'Graffiti' => ['12205918375_f37f0b27a9_z.jpg', '8895442578_376a9b0be0_z.jpg', '22998854352_17555b7536_z.jpg', '22593395257_3d48f23bfa_z.jpg', '20515339175_f4ed9fc1d9_z.jpg' ],
+    'Other' => ['14347396807_20737504f7_z.jpg', '14792525771_167bc20e3d_z.jpg', undef, '36296226976_a83a118ff8_z.jpg', '23222004240_273977b2b2_z.jpg'],
+);
 my %descriptions = (
     'Potholes' => [
         '6” deep pothole in the very centre of the Bristol road; cars are swerving to avoid it. Please treat this as a matter of urgency.',
@@ -186,6 +194,20 @@ for (1..$num) {
     my $titles = $titles{$category};
     my $descs = $descriptions{$category};
     my $rand = int(rand(@$titles));
+
+    my $photo;
+    if (my $file = $photos{$category}->[$rand]) {
+        my $files = [ $file ];
+        if ($category eq 'Graffiti') {
+            push @$files, $photos{$category}->[int(rand(@$titles))];
+        }
+        $files = [ map { path(FixMyStreet->path_to("t/images/$_"))->slurp_raw } @$files ];
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+            data_items => $files,
+        });
+        $photo = $photoset->data;
+    }
+
     push @$problems, FixMyStreet::DB::Factory::Problem->create({
         body => $body,
         areas => ',' . $opt->area_id . ',',
@@ -197,6 +219,7 @@ for (1..$num) {
         cobrand => $cobrand,
         title => $titles->[$rand],
         detail => $descs->[$rand],
+        photo_id => $photo,
         confirmed => DateTime::Format::Pg->format_datetime($confirmed),
     });
 }
