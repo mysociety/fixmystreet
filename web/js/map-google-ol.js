@@ -10,6 +10,7 @@ $(function(){
             fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
         }
     });
+    // jshint undef:false
     if (typeof fixmystreet_google_default !== 'undefined' && fixmystreet_google_default == 'satellite') {
         $('#map_layer_toggle').click();
     }
@@ -36,7 +37,9 @@ fixmystreet.maps.config = function() {
     var road_layer = {}; // Empty object defaults to standard road layer
 
     function apply_map_styles() {
+        // jshint undef:false
         var styledMapType = new google.maps.StyledMapType(fixmystreet_google_maps_custom_style);
+        // jshint undef:true
         this.mapObject.mapTypes.set('styled', styledMapType);
         this.mapObject.setMapTypeId('styled');
     }

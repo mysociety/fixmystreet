@@ -41,7 +41,7 @@ fixmystreet.maps = {};
             });
             fixmystreet.report_marker = marker;
             google.maps.event.removeListener(fixmystreet.event_update_map);
-            for (m=0; m<fixmystreet.markers.length; m++) {
+            for (var m=0; m<fixmystreet.markers.length; m++) {
                 fixmystreet.markers[m].setMap(null);
             }
         }

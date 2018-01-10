@@ -451,6 +451,10 @@ $.extend(fixmystreet.set_up, {
         $category_select.val($(this).val()).change();
     };
 
+    var add_option = function(el) {
+        $group_select.append($(el).clone());
+    };
+
     var add_optgroup = function(el) {
         var $el = $(el);
         var $options = $el.find("option");
@@ -477,10 +481,6 @@ $.extend(fixmystreet.set_up, {
             });
             $sub_select.hide().insertAfter($subcategory_label).change(subcategory_change);
         }
-    };
-
-    var add_option = function(el) {
-        $group_select.append($(el).clone());
     };
 
     $category_select.hide();
@@ -1235,7 +1235,10 @@ $(function() {
 
                 if (e.state === null) {
                     // Hashchange or whatever, we don't care.
-                } else if ('initial' in e.state) {
+                    return;
+                }
+
+                if ('initial' in e.state) {
                     // User has navigated Back from a pushStated state, presumably to
                     // see the list of all reports (which was shown on pageload). By
                     // this point, the browser has *already* updated the URL bar so
@@ -1266,7 +1269,7 @@ $(function() {
                     $('#filter_categories').add('#statuses')
                         .trigger('change.filters').trigger('change.multiselect');
                     fixmystreet.display.reports_list(location.href);
-                } else if ('hashchange' in e.state) {
+                // } else if ('hashchange' in e.state) {
                     // This popstate was just here because the hash changed.
                     // (eg: mobile nav click.) We want to ignore it.
                 }

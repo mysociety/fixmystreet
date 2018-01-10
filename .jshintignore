@@ -1,0 +1,3 @@
+**/vendor/
+web/jslib/
+**/*.auto.min.js

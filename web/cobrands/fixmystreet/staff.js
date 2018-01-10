@@ -233,8 +233,8 @@ $.extend(fixmystreet.set_up, {
     function populateSelect($select, data, label_formatter) {
       $select.find('option:gt(0)').remove();
       $.each(data, function(k,v) {
-        label = window.fixmystreet.utils[label_formatter](v);
-        $opt = $('<option></option>').attr('value', v.id).text(label);
+        var label = window.fixmystreet.utils[label_formatter](v);
+        var $opt = $('<option></option>').attr('value', v.id).text(label);
         if (v.state) {
             $opt.attr('data-problem-state', v.state);
         }

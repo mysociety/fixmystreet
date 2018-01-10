@@ -22,6 +22,23 @@ $.extend(fixmystreet.utils, {
 
     fixmystreet.maps = fixmystreet.maps || {};
 
+    var drag = {
+        activate: function() {
+            this._drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
+                onComplete: function(feature, e) {
+                    fixmystreet.update_pin( feature.geometry );
+                }
+            } );
+            fixmystreet.map.addControl( this._drag );
+            this._drag.activate();
+        },
+        deactivate: function() {
+            if (this._drag) {
+              this._drag.deactivate();
+            }
+        }
+    };
+
     $.extend(fixmystreet.maps, {
       // This function might be passed either an OpenLayers.LonLat (so has
       // lon and lat), or an OpenLayers.Geometry.Point (so has x and y).
@@ -214,23 +231,6 @@ $.extend(fixmystreet.utils, {
           fixmystreet.markers.redraw();
       }
     });
-
-    var drag = {
-        activate: function() {
-            this._drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
-                onComplete: function(feature, e) {
-                    fixmystreet.update_pin( feature.geometry );
-                }
-            } );
-            fixmystreet.map.addControl( this._drag );
-            this._drag.activate();
-        },
-        deactivate: function() {
-            if (this._drag) {
-              this._drag.deactivate();
-            }
-        }
-    };
 
     /* Make sure pins aren't going to reload just because we're zooming out,
      * we already have the pins when the page loaded */
@@ -862,8 +862,9 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
                 options.params[key] = val;
             }
         });
+        var page;
         if (this.use_page) {
-            var page = $('.pagination').data('page');
+            page = $('.pagination').data('page');
             this.use_page = false;
         } else if (this.initial_page) {
             page = 1;
@@ -883,6 +884,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         // Remove loading indicator
         $('#loading-indicator').addClass('hidden');
         $('#loading-indicator').attr('aria-hidden', true);
+        var obj;
         if (typeof json == 'string') {
             obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
         } else {

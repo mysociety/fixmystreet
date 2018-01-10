@@ -1,0 +1,39 @@
+{
+    "curly": true,
+    "forin": true,
+    "freeze": true,
+    "futurehostile": true,
+    "immed": true,
+    "indent": true,
+    "iterator": true,
+    "latedef": "nofunc",
+    "newcap": true,
+    "noarg": true,
+    "nocomma": true,
+    "noempty": true,
+    "nonbsp": true,
+    "nonew": true,
+    "undef": true,
+//    "unused": true,
+
+    "browser": true,
+    "devel": true,
+    "jquery": true,
+
+    "globals": {
+        "fixmystreet": true,
+        "validation_rules": true,
+        "translation_strings": false,
+
+        "IntersectionObserver": false,
+
+        "accessibleAutocomplete": false,
+        "Chart": false,
+        "Dropzone": false,
+        "ga": false,
+        "google": false,
+        "Modernizr": false,
+        "OpenLayers": false,
+        "stamen": false
+    }
+}
