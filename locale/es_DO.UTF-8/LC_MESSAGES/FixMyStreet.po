@@ -4672,9 +4672,8 @@ msgstr "Barrios de este ayuntamiento"
 
 #: templates/web/base/alert/choose.html:6
 #: templates/web/base/around/_error_multiple.html:6
-#, fuzzy
 msgid "We found more than one match for that location."
-msgstr "Hemos encontrado más de una coincidencia para el problema de referencia:"
+msgstr "Hemos encontrado más de una dirección para la ubicación descrita."
 
 #: templates/web/base/around/lookup_by_ref.html:6
 msgid "We found more than one match for that problem reference:"
@@ -4700,9 +4699,8 @@ msgstr "Se lo enviamos al Ayuntamiento en su nombre"
 
 #: templates/web/base/alert/choose.html:12
 #: templates/web/base/around/_error_multiple.html:12
-#, fuzzy
 msgid "We show up to ten matches, please try a different search if yours is not here."
-msgstr "Hemos encontrado más de una coincidencia para esa ubicación. Se muestran un máximo de diez. Prueba una búsqueda diferente si no encuentra aquí su ubicación."
+msgstr "Selecciona uno de los enlaces proporcionados, y si aún no encuentras la ubicación exacta, realiza una búsqueda diferente hasta encontrar tu ubicación."
 
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
