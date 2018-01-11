@@ -61,4 +61,11 @@ sub map_js_extra {
     }
 }
 
+sub category_extra_hidden {
+    my ($self, $meta) = @_;
+    return 1 if $meta eq 'unitid' || $meta eq 'asset_details';
+    return 0;
+}
+
+
 1;
