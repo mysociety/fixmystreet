@@ -1,0 +1,44 @@
+Subject: Street Light Fault: [% title %]
+
+Customer Details
+
+Name: [% name %]
+
+Email: [% email OR 'None provided' %]
+
+Phone: [% phone OR 'None provided' %]
+
+
+Enquiry Details
+
+Date & Time logged: [% confirmed %]
+
+Report type: [% report.get_extra_field_value('FaultType') %]
+
+5 or more lights affected: [% report.get_extra_field_value('5Lights') %]
+
+Unit Number: [% report.get_extra_field_value('unitid') %]
+
+
+Title: [% title %]
+
+Description: [% detail %]
+
+[% additional_information %]
+
+[% url %]
+
+Location Details
+
+Unit description and location: [% report.get_extra_field_value('asset_details') %]
+
+Easting/Northing: [% easting %]/[% northing %]
+
+Latitude: [% latitude %]
+
+Longitude: [% longitude %]
+
+[% closest_address %]
+
+
+Replies to this email will go to the user who submitted the problem.

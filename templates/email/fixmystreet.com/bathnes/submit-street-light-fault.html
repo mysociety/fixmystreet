@@ -1,0 +1,79 @@
+<h2>Customer Details</h2>
+
+<table>
+<tr>
+<th>Name</th>
+<td>[% name %]</td>
+</tr>
+<tr>
+<th>Email</th>
+<td>[% email OR 'None provided' %]</td>
+</tr>
+<tr>
+<th>Phone</th>
+<td>[% phone OR 'None provided' %]</td>
+</tr>
+</table>
+
+
+<h2>Enquiry Details</h2>
+
+<table>
+<tr>
+<th>Date & Time logged</th>
+<td>[% confirmed %]</td>
+</tr>
+<tr>
+<th>Report type</th>
+<td>[% report.get_extra_field_value('FaultType') %]</td>
+</tr>
+<tr>
+<th>5 or more lights affected</th>
+<td>[% report.get_extra_field_value('5Lights') %]</td>
+</tr>
+<tr>
+<th>Unit Number</th>
+<td>[% report.get_extra_field_value('unitid') %]</td>
+</tr>
+<tr>
+<th>Title</th>
+<td>[% title %]</td>
+</tr>
+<tr>
+<th>Description</th>
+<td>[% detail %]</td>
+</tr>
+<tr>
+<th>URL</th>
+<td>[% url %]</td>
+</tr>
+</table>
+[% additional_information %]
+
+
+<h2>Location Details</h2>
+
+<table>
+<tr>
+<th>Unit description and location</th>
+<td>[% report.get_extra_field_value('asset_details') %]</td>
+</tr>
+<tr>
+<th>Easting/Northing</th>
+<td>[% easting %] [% northing %]</td>
+</tr>
+<tr>
+<th>Latitude</th>
+<td>[% latitude %]</td>
+</tr>
+<tr>
+<th>Longitude</th>
+<td>[% longitude %]</td>
+</tr>
+<tr>
+<th></th>
+<td>[% closest_address %]</td>
+</tr>
+</table>
+
+<strong>NB:</strong> Replies to this email will go to the user who submitted the problem.
