@@ -34,8 +34,13 @@ function asset_selected(e) {
 
     // Set the extra field to the value of the selected feature
     $.each(this.fixmystreet.attributes, function (field_name, attribute_name) {
-        var id = e.feature.attributes[attribute_name];
-        $("#form_" + field_name).val(id);
+        var field_value;
+        if (typeof attribute_name === 'function') {
+            field_value = attribute_name.apply(e.feature);
+        } else {
+            field_value = e.feature.attributes[attribute_name];
+        }
+        $("#form_" + field_name).val(field_value);
     });
 
     // Hide the normal markers layer to keep things simple, but
@@ -121,7 +126,9 @@ function layer_visibilitychanged() {
         // to show the marker again.
         fixmystreet.markers.setVisibility(true);
     }
-    select_nearest_asset.call(this);
+    if (!this.fixmystreet.non_interactive) {
+        select_nearest_asset.call(this);
+    }
 }
 
 function zoom_to_assets(layer) {
@@ -208,7 +215,7 @@ function get_asset_stylemap() {
             popupYOffset: -40,
             graphicOpacity: 1.0
         }),
-        'temporary': new OpenLayers.Style({
+        'hover': new OpenLayers.Style({
             fillColor: "#55BB00",
             fillOpacity: 0.8,
             strokeColor: "#000000",
@@ -297,7 +304,7 @@ fixmystreet.add_assets = function(options) {
             visibility: false,
             maxResolution: options.max_resolution,
             minResolution: options.min_resolution,
-            styleMap: get_asset_stylemap()
+            styleMap: options.stylemap || get_asset_stylemap()
         };
         if (options.srsName !== undefined) {
             layer_options.projection = new OpenLayers.Projection(options.srsName);
@@ -333,43 +340,63 @@ fixmystreet.add_assets = function(options) {
             asset_layer.fixmystreet.fault_layer = asset_fault_layer;
         }
 
-        // Set up handlers for selecting/unselecting markers and panning/zooming the map
-        var select_feature_control = new OpenLayers.Control.SelectFeature( asset_layer );
-        asset_layer.events.register( 'featureselected', asset_layer, asset_selected);
-        asset_layer.events.register( 'featureunselected', asset_layer, asset_unselected);
-        asset_layer.events.register( 'loadend', asset_layer, layer_loadend);
-        asset_layer.events.register( 'visibilitychanged', asset_layer, layer_visibilitychanged);
-        fixmystreet.map.events.register( 'zoomend', asset_layer, check_zoom_message_visibility);
+        var hover_feature_control, select_feature_control;
+        if (!options.non_interactive) {
+            // Set up handlers for selecting/unselecting markers
+            select_feature_control = new OpenLayers.Control.SelectFeature( asset_layer );
+            asset_layer.events.register( 'featureselected', asset_layer, asset_selected);
+            asset_layer.events.register( 'featureunselected', asset_layer, asset_unselected);
+            // When panning/zooming the map check that this layer is still correctly shown
+            // and any selected marker is preserved
+            asset_layer.events.register( 'loadend', asset_layer, layer_loadend);
+        }
+
+        // Even if an asset layer is marked as non-interactive it can still have
+        // a hover style which we'll need to set up.
+        if (!options.non_interactive || (options.stylemap && options.stylemap.styles.hover)) {
+            // Set up handlers for simply hovering over a street light marker
+            hover_feature_control = new OpenLayers.Control.SelectFeature(
+                asset_layer,
+                {
+                    hover: true,
+                    highlightOnly: true,
+                    renderIntent: 'hover'
+                }
+            );
+            hover_feature_control.events.register('beforefeaturehighlighted', null, function(e) {
+                // Don't let marker go from selected->hover state,
+                // as it causes some mad flickering effect.
+                if (e.feature.renderIntent == 'select') {
+                    return false;
+                }
+            });
+        }
+        if (options.asset_category) {
+            fixmystreet.map.events.register( 'zoomend', asset_layer, check_zoom_message_visibility);
+        }
+        if (!options.always_visible) {
+            asset_layer.events.register( 'visibilitychanged', asset_layer, layer_visibilitychanged);
+        }
 
         // Make sure the user knows something is happening (some asset layers can be sllooowwww)
         asset_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
         asset_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
 
-        // Set up handlers for simply hovering over a street light marker
-        var hover_feature_control = new OpenLayers.Control.SelectFeature(
-            asset_layer,
-            {
-                hover: true,
-                highlightOnly: true,
-                renderIntent: 'temporary'
-            }
-        );
-        hover_feature_control.events.register('beforefeaturehighlighted', null, function(e) {
-            // Don't let marker go from selected->hover state,
-            // as it causes some mad flickering effect.
-            if (e.feature.renderIntent == 'select') {
-                return false;
-            }
-        });
-
         fixmystreet.map.addLayer(asset_layer);
+        if (options.always_visible) {
+            asset_layer.setVisibility(true);
+        }
         if (asset_fault_layer) {
             fixmystreet.map.addLayer(asset_fault_layer);
         }
-        fixmystreet.map.addControl( hover_feature_control );
-        hover_feature_control.activate();
-        fixmystreet.map.addControl( select_feature_control );
-        select_feature_control.activate();
+        if (hover_feature_control) {
+            fixmystreet.map.addControl( hover_feature_control );
+            hover_feature_control.activate();
+        }
+        if (select_feature_control) {
+            fixmystreet.map.addControl( select_feature_control );
+            select_feature_control.activate();
+        }
 
         // Make sure the fault markers always appear beneath the street lights
         if (asset_fault_layer) {
