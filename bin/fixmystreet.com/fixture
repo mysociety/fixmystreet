@@ -20,7 +20,7 @@ use Path::Tiny;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB::Factories;
-use FixMyStreet::App::Model::Photoset;
+use FixMyStreet::App::Model::PhotoSet;
 use DateTime::Format::Pg;
 use Getopt::Long::Descriptive;
 
