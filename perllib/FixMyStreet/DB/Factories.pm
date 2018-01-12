@@ -22,7 +22,7 @@ use parent "DBIx::Class::Factory";
 
 __PACKAGE__->resultset(FixMyStreet::DB->resultset("Problem"));
 
-__PACKAGE__->exclude(['body']);
+__PACKAGE__->exclude(['body', 'photo_id']);
 
 __PACKAGE__->fields({
     postcode => '',
@@ -30,6 +30,7 @@ __PACKAGE__->fields({
     detail => __PACKAGE__->seq(sub { 'Detail #' . (shift()+1) }),
     name => __PACKAGE__->callback(sub { shift->get('user')->name }),
     bodies_str => __PACKAGE__->callback(sub { shift->get('body')->id }),
+    photo => __PACKAGE__->callback(sub { shift->get('photo_id') }),
     confirmed => \'current_timestamp',
     whensent => \'current_timestamp',
     state => 'confirmed',
