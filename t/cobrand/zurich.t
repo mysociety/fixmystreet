@@ -7,6 +7,7 @@ use LWP::Protocol::PSGI;
 use Test::LongString;
 use Path::Tiny;
 use t::Mock::MapItZurich;
+use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -36,7 +37,7 @@ sub send_reports_for_zurich {
         ALLOWED_COBRANDS => ['zurich']
     }, sub {
         # Actually send the report
-        FixMyStreet::DB->resultset('Problem')->send_reports('zurich');
+        FixMyStreet::Script::Reports::send('zurich');
     };
 }
 sub reset_report_state {

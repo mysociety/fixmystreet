@@ -1,4 +1,5 @@
 use CGI::Simple;
+use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -25,7 +26,7 @@ subtest 'testing Open311 behaviour', sub {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
     }, sub {
-        $test_data = FixMyStreet::DB->resultset('Problem')->send_reports();
+        $test_data = FixMyStreet::Script::Reports::send();
     };
     $report->discard_changes;
     ok $report->whensent, 'Report marked as sent';

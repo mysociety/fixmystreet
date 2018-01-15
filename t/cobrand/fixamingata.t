@@ -1,5 +1,6 @@
 use mySociety::Locale;
 
+use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -35,7 +36,7 @@ $mech->email_count_is(0);
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixamingata' ],
 }, sub {
-    FixMyStreet::DB->resultset('Problem')->send_reports();
+    FixMyStreet::Script::Reports::send();
 };
 my $email = $mech->get_email;
 my $plain = $mech->get_text_body_from_email($email, 1);

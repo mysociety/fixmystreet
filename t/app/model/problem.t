@@ -2,6 +2,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet;
 use FixMyStreet::App;
 use FixMyStreet::DB;
+use FixMyStreet::Script::Reports;
 use Sub::Override;
 
 my $problem_rs = FixMyStreet::DB->resultset('Problem');
@@ -541,7 +542,7 @@ foreach my $test ( {
         } );
 
         FixMyStreet::override_config $override, sub {
-            $problem_rs->send_reports();
+            FixMyStreet::Script::Reports::send();
         };
 
         $mech->email_count_is( $test->{ email_count } );
@@ -619,7 +620,7 @@ subtest 'check can set mutiple emails as a single contact' => sub {
     } );
 
     FixMyStreet::override_config $override, sub {
-        $problem_rs->send_reports();
+        FixMyStreet::Script::Reports::send();
     };
 
     $mech->email_count_is(1);
@@ -652,7 +653,7 @@ subtest 'check can turn on report sent email alerts' => sub {
         send_fail_count => 0,
     } );
 
-    $problem_rs->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $mech->email_count_is( 2 );
     my @emails = $mech->get_email;
@@ -698,7 +699,7 @@ subtest 'check iOS app store test reports not sent' => sub {
         send_fail_count => 0,
     } );
 
-    $problem_rs->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $mech->email_count_is( 0 );
 
@@ -727,7 +728,7 @@ subtest 'check reports from abuser not sent' => sub {
         send_fail_count => 0,
     } );
 
-    $problem_rs->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $mech->email_count_is( 1 );
 
@@ -743,7 +744,7 @@ subtest 'check reports from abuser not sent' => sub {
     my $abuse = FixMyStreet::DB->resultset('Abuse')->create( { email => $problem->user->email } );
 
     $mech->clear_emails_ok;
-    $problem_rs->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $mech->email_count_is( 0 );
 

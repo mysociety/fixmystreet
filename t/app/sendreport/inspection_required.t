@@ -1,7 +1,7 @@
 use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::TestMech;
-use FixMyStreet::SendReport::Email;
+use FixMyStreet::Script::Reports;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
@@ -31,7 +31,7 @@ my $report = $reports[0];
 subtest "Report isn't sent if uninspected" => sub {
     $mech->clear_emails_ok;
 
-    FixMyStreet::DB->resultset('Problem')->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $mech->email_count_is( 0 );
     is $report->whensent, undef, "Report hasn't been sent";
@@ -42,7 +42,7 @@ subtest 'Report is sent when inspected' => sub {
     $report->set_extra_metadata(inspected => 1);
     $report->update;
 
-    FixMyStreet::DB->resultset('Problem')->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $report->discard_changes;
     $mech->email_count_is( 1 );
@@ -61,7 +61,7 @@ subtest 'Uninspected report is sent when made by trusted user' => sub {
     });
     ok  $user->has_permission_to('trusted', $report->bodies_str_ids), 'User can make trusted reports';
 
-    FixMyStreet::DB->resultset('Problem')->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $report->discard_changes;
     $mech->email_count_is( 1 );
@@ -81,7 +81,7 @@ subtest "Uninspected report isn't sent when user rep is too low" => sub {
     $contact->set_extra_metadata(reputation_threshold => 20);
     $contact->update;
 
-    FixMyStreet::DB->resultset('Problem')->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $report->discard_changes;
     $mech->email_count_is( 0 );
@@ -92,7 +92,7 @@ subtest 'Uninspected report is sent when user rep is high enough' => sub {
     $user->set_extra_metadata(reputation => 21);
     $user->update;
 
-    FixMyStreet::DB->resultset('Problem')->send_reports();
+    FixMyStreet::Script::Reports::send();
 
     $report->discard_changes;
     $mech->email_count_is( 1 );

@@ -232,12 +232,6 @@ sub categories_summary {
     return \%categories;
 }
 
-sub send_reports {
-    my ( $rs, $site_override ) = @_;
-    require FixMyStreet::Script::Reports;
-    return FixMyStreet::Script::Reports::send($site_override);
-}
-
 sub include_comment_counts {
     my $rs = shift;
     my $order_by = $rs->{attrs}{order_by};
