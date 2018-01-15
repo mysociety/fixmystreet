@@ -135,7 +135,9 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li>[% loc('Phone:') %] [% problem.user.phone_display | html %]</li>
 [% END %]
 [% IF problem.user.email != problem.user.username %]
-<li>[% loc('Email:') %] [% problem.user.email | html %]</li>
+<li>[% loc('Email:') %]
+<a href="mailto:[% problem.user.email | html %]">[% problem.user.email | html %]</a>
+</li>
 [% END %]
 <li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
     <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
