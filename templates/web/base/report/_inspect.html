@@ -65,9 +65,9 @@
                data-defect-types='[% category_defect_types.$cat_name %]'
                data-templates='[% templates_by_category.$cat_name %]'>
               [% IF cat_name == problem.category %]
-                  [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$category %]
+                  [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$cat_name hide_notices=1 %]
               [% ELSE %]
-                  [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$category report_meta='' %]
+                  [% INCLUDE 'report/new/category_extras_fields.html' report_meta='' metas=category_extras.$cat_name hide_notices=1 %]
               [% END %]
             </p>
         [% END %]
