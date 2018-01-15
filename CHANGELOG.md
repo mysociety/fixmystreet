@@ -14,6 +14,7 @@
         - Fix JavaScript error on /my calculating bounds #1954
         - Change text on /reports to match lower down (fix translation).
         - Ensure all reports graph can't dip downward. #1956
+        - Fix error sending `requires_inspection` reports. #1961
     - UK:
         - Lazy load images in the footer.
 

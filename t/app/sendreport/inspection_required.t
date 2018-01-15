@@ -5,9 +5,6 @@ use FixMyStreet::Script::Reports;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
-use_ok 'FixMyStreet::Cobrand';
-FixMyStreet::DB->schema->cobrand(FixMyStreet::Cobrand::FixMyStreet->new());
-
 my $user = $mech->create_user_ok( 'user@example.com' );
 
 my $body = $mech->create_body_ok( 2237, 'Oxfordshire County Council');

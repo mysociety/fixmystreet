@@ -45,6 +45,7 @@ sub send(;$) {
     while (my $row = $unsent->next) {
 
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+        FixMyStreet::DB->schema->cobrand($cobrand);
 
         if ($debug_mode) {
             $debug_unsent_count++;
