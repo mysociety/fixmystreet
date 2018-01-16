@@ -6,9 +6,7 @@
     </p>
 
   [% IF problem.state != 'unconfirmed' %]
-    [% IF c.cobrand.allow_photo_display(problem) %]
-      [% INCLUDE 'report/photo.html' object=problem %]
-    [% END %]
+    [% INCLUDE 'report/photo.html' object=problem %]
     [% problem.detail | add_links | html_para %]
   [% ELSE %]
     [% loc('This report is awaiting moderation.') %]

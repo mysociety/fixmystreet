@@ -117,10 +117,10 @@
         </div>
         <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]" class="screen-only">
         <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]" class="screen-only">
+        <br>
+        <input type="checkbox" id="publish_photo_[% loop.index %]" name="publish_photo_[% loop.index %]" value="1"[% ' checked' IF problem.extra.publish_photo.${loop.index} %]  class="screen-only">
+        <label class="inline screen-only" for="publish_photo_[% loop.index %]">[% loc("Publish photo") %]</label></li>
       [% END %]
-    <br>
-    <input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]  class="screen-only">
-    <label class="inline screen-only" for="publish_photo">[% loc("Publish photo") %]</label></li>
   [% END %]
 
 </dl>

@@ -4,6 +4,7 @@ use base 'FixMyStreet::Cobrand::Default';
 use DateTime;
 use POSIX qw(strcoll);
 use RABX;
+use List::Util qw(min);
 use Scalar::Util 'blessed';
 use DateTime::Format::Pg;
 
@@ -223,19 +224,30 @@ sub updates_as_hashref {
     return $hashref;
 }
 
+# If $num is undefined, we want to return the minimum photo number that can be
+# shown (1-indexed), or false for no display. If $num is defined, return
+# boolean whether that indexed photo can be shown.
 sub allow_photo_display {
-    my ( $self, $r ) = @_;
+    my ( $self, $r, $num ) = @_;
+    my $publish_photo;
     if (blessed $r) {
-        return $r->get_extra_metadata( 'publish_photo' );
+        $publish_photo = $r->get_extra_metadata('publish_photo');
+    } else {
+        # additional munging in case $r isn't an object, TODO see if we can remove this
+        my $extra = $r->{extra};
+        utf8::encode($extra) if utf8::is_utf8($extra);
+        my $h = new IO::String($extra);
+        $extra = RABX::wire_rd($h);
+        return unless ref $extra eq 'HASH';
+        $publish_photo = $extra->{publish_photo};
     }
+    # Old style stored 1/0 integer, which can still be used if present.
+    return $publish_photo unless ref $publish_photo;
+    return $publish_photo->{$num} if defined $num;
 
-    # additional munging in case $r isn't an object, TODO see if we can remove this
-    my $extra = $r->{extra};
-    utf8::encode($extra) if utf8::is_utf8($extra);
-    my $h = new IO::String($extra);
-    $extra = RABX::wire_rd($h);
-    return unless ref $extra eq 'HASH';
-    return $extra->{publish_photo};
+    # We return a 1-indexed number so that '0' can be taken as 'not allowed'
+    my $i = min grep { $publish_photo->{$_} } keys %$publish_photo;
+    return $i + 1;
 }
 
 sub show_unconfirmed_reports {
@@ -581,7 +593,19 @@ sub admin_report_edit {
 
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
-        $problem->set_extra_metadata('publish_photo' => $c->get_param('publish_photo') || 0 );
+
+        my @keys = grep { /^publish_photo/ } keys %{ $c->req->params };
+        my %publish_photo;
+        foreach my $key (@keys) {
+            my ($index) = $key =~ /(\d+)$/;
+            $publish_photo{$index} = 1 if $c->get_param($key);
+        }
+
+        if (%publish_photo) {
+            $problem->set_extra_metadata('publish_photo' => \%publish_photo);
+        } else {
+            $problem->unset_extra_metadata('publish_photo');
+        }
         $problem->set_extra_metadata('third_personal' => $c->get_param('third_personal') || 0 );
 
         # Make sure we have a copy of the original detail field
@@ -1020,23 +1044,28 @@ sub _admin_send_email {
 
 sub munge_sendreport_params {
     my ($self, $row, $h, $params) = @_;
-    if ($row->state =~ /^(closed|investigating)$/ && $row->get_extra_metadata('publish_photo')) {
+
+    if ($row->state =~ /^(closed|investigating)$/) {
         # we attach images to reports sent to external bodies
         my $photoset = $row->get_photoset();
         my $num = $photoset->num_images
             or return;
         my $id = $row->id;
         my @attachments = map {
-            my $image = $photoset->get_raw_image($_);
-            {
-                body => $image->{data},
-                attributes => {
-                    filename => "$id.$_." . $image->{extension},
-                    content_type => $image->{content_type},
-                    encoding => 'base64',
-                        # quoted-printable ends up with newlines corrupting binary data
-                    name => "$id.$_." . $image->{extension},
-                },
+            if ($self->allow_photo_display($row, $_)) {
+                my $image = $photoset->get_raw_image($_);
+                {
+                    body => $image->{data},
+                    attributes => {
+                        filename => "$id.$_." . $image->{extension},
+                        content_type => $image->{content_type},
+                        encoding => 'base64',
+                            # quoted-printable ends up with newlines corrupting binary data
+                        name => "$id.$_." . $image->{extension},
+                    },
+                };
+            } else {
+                ();
             }
         } (0..$num-1);
         $params->{_attachments_} = \@attachments;
@@ -1180,7 +1209,10 @@ sub admin_stats {
             $public_response =~ s{\r?\n}{ <br/> }g if $public_response;
 
             # Assemble photo URL, if report has a photo
-            my $media_url = ( @{$report->photos} && $c->cobrand->allow_photo_display($report) ) ? ($c->cobrand->base_url . $report->photos->[0]->{url}) : '';
+            my $photo_to_display = $c->cobrand->allow_photo_display($report);
+            my $media_url = (@{$report->photos} && $photo_to_display)
+                ? $c->cobrand->base_url . $report->photos->[$photo_to_display-1]->{url}
+                : '';
 
             my @columns = (
                 $report->id,
@@ -1246,7 +1278,7 @@ sub admin_stats {
     # pictures taken
     my $pictures_taken = $c->model('DB::Problem')->search( { photo => { '!=', undef }, %params } )->count;
     # pictures published
-    my $pictures_published = $c->model('DB::Problem')->search( { extra => { like => '%publish_photo,I1:1%' }, %params } )->count;
+    my $pictures_published = $c->model('DB::Problem')->search( { extra => { like => '%publish_photo%' }, %params } )->count;
     # how many times was a telephone number provided
     # XXX => How many users have a telephone number stored
     # my $phone = $c->model('DB::User')->search( { phone => { '!=', undef } } )->count;

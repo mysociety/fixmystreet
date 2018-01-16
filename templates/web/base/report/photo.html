@@ -1,13 +1,15 @@
-[% IF c.cobrand.allow_photo_display(object) && object.photo %]
+[% IF object.photo %]
   [% IF object.photos.size > 1 %]
     <div class="update-img-set">
   [% END %]
   [% FOR photo IN object.photos %]
-    <div class="update-img">
-        <a href="[% photo.url_full %]" rel="fancy">
-            <img alt="Photo of this report" src="[% photo.url %]">
-        <span>zoom</span></a>
-    </div>
+    [% IF c.cobrand.allow_photo_display(object, photo.idx) %]
+      <div class="update-img">
+          <a href="[% photo.url_full %]" rel="fancy">
+              <img alt="Photo of this report" src="[% photo.url %]">
+          <span>zoom</span></a>
+      </div>
+    [% END %]
   [% END %]
   [% IF object.photos.size > 1 %]
     </div>
