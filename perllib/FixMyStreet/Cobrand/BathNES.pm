@@ -23,7 +23,7 @@ sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
-    my $town = 'Bath';
+    my $town = 'Bath and North East Somerset';
 
     return {
         %{ $self->SUPER::disambiguate_location() },
