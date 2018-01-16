@@ -19,11 +19,15 @@ sub example_places {
     return ( 'BA1 1JQ', "Lansdown Grove" );
 }
 
+sub get_geocoder {
+    return 'OSM'; # default of Bing gives poor results, let's try overriding.
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
-    my $town = 'Bath';
+    my $town = 'Bath and North East Somerset';
 
     return {
         %{ $self->SUPER::disambiguate_location() },
