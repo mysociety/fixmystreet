@@ -1426,11 +1426,13 @@ sub user_edit : Path('user_edit') : Args(1) {
             '<p><em>' . $c->flash->{status_message} . '</em></p>';
     }
 
+    $c->forward('/auth/check_csrf_token') if $c->get_param('submit');
+
     if ( $c->get_param('submit') and $c->get_param('unban') ) {
-        $c->forward('/auth/check_csrf_token');
         $c->forward('unban_user', [ $user ]);
+    } elsif ( $c->get_param('submit') and $c->get_param('anon_everywhere') ) {
+        $c->forward('user_anon_everywhere', [ $user ]);
     } elsif ( $c->get_param('submit') ) {
-        $c->forward('/auth/check_csrf_token');
 
         my $edited = 0;
 
@@ -1757,6 +1759,13 @@ sub ban_user : Private {
         $c->stash->{username_in_abuse} = 1;
     }
     return 1;
+}
+
+sub user_anon_everywhere : Private {
+    my ( $self, $c, $user ) = @_;
+    $user->problems->update({anonymous => 1});
+    $user->comments->update({anonymous => 1});
+    $c->stash->{status_message} = _('That user has been made anonymous on all reports and updates.');
 }
 
 sub unban_user : Private {

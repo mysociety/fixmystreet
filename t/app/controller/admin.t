@@ -1556,6 +1556,18 @@ FixMyStreet::override_config {
 
 };
 
+subtest "Anonymizing user from admin" => sub {
+    my $user = $mech->create_user_ok('existing@example.com', name => 'Existing User');
+    my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
+    my $count_u = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id })->count;
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->submit_form_ok({ button => 'anon_everywhere' });
+    my $c = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id, anonymous => 1 })->count;
+    is $c, $count_p;
+    $c = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id, anonymous => 1 })->count;
+    is $c, $count_u;
+};
+
 subtest "Test setting a report from unconfirmed to something else doesn't cause a front end error" => sub {
     $report->update( { confirmed => undef, state => 'unconfirmed', non_public => 0 } );
     $mech->get_ok("/admin/report_edit/$report_id");

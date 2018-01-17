@@ -195,5 +195,13 @@
       [% END %]
       [% TRY %][% INCLUDE 'admin/user-form-extra-fields.html' %][% CATCH file %][% END %]
     </ul>
-    <input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
+    <p>
+      <input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
+    </p>
+  [% IF user AND NOT user.from_body %]
+    <p class="danger-zone">
+      <input class="btn-danger" type="submit" name="anon_everywhere" value="[% loc('Make anonymous on all reports and updates') %]">
+    </p>
+  [% END %]
+
 </form>
