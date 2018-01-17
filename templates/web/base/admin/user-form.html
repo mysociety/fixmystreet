@@ -51,23 +51,27 @@
               %]
             </p>
           </div>
-          [% loc('Body:') %] <select class="form-control" id='body' name='body'>
+          <label for="body">[% loc('Body:') %]</label>
+          <select class="form-control" id='body' name='body'>
             <option value=''>[% loc('No body') %]</option>
           [% FOR body IN bodies %]
             <option value="[% body.id %]"[% ' selected data-originally-selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
           [% END %]
           </select>
         </li>
-        [% ELSE %]
-          <li>
+      [% ELSE %]
+        <li>
             <div class="admin-hint">
               <p>
                 [% loc("Staff users have permission to log in to the admin.") %]
               </p>
             </div>
-            [% loc('Staff:') %] <input type="checkbox" id="body" name="body" value="[% c.user.from_body.id %]" [% user.from_body.id == c.user.from_body.id ? ' checked' : '' %] [% 'disabled' UNLESS c.user.has_body_permission_to('user_assign_body') %]>
+            <label>
+              [% loc('Staff:') %]
+              <input type="checkbox" id="body" name="body" value="[% c.user.from_body.id %]" [% user.from_body.id == c.user.from_body.id ? ' checked' : '' %] [% 'disabled' UNLESS c.user.has_body_permission_to('user_assign_body') %]>
+            </label>
           </li>
-        [% END %]
+      [% END %]
 
         [% IF areas AND c.cobrand.moniker != 'zurich' %]
           <li>
@@ -79,7 +83,7 @@
                 %]
               </p>
             </div>
-            [% loc('Area:') %]
+            <label for="area_id">[% loc('Area:') %]</label>
             <select class="form-control" id='area_id' name='area_id' [% 'disabled' UNLESS c.user.has_permission_to('user_assign_areas', user.from_body.id) %]>
               <option value=''>[% loc('No area') %]</option>
               [% FOREACH area IN areas %]
@@ -115,7 +119,10 @@
             </p>
           </div>
 
-          [% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]>
+          <label>
+            [% loc('Flagged:') %]
+            <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]>
+          </label>
         </li>
 
         [% UNLESS user.is_superuser %]
@@ -126,8 +133,8 @@
               </p>
             </div>
             [% IF c.user.is_superuser %]
-              [% loc('Trusted by bodies:') %]<br />
-              <select class="form-control js-multiple" id='body' name='trusted_bodies' multiple>
+              <label for="trusted_bodies">[% loc('Trusted by bodies:') %]</label>
+              <select class="form-control js-multiple" id='trusted_bodies' name='trusted_bodies' multiple>
                 [% FOR body IN bodies %]
                   <option value="[% body.id %]"[% ' selected' IF user.has_permission_to('trusted', body.id) %]>[% body.name %]</option>
                 [% END %]
@@ -148,7 +155,10 @@
                 [% loc("Superusers have permission to perform <strong>all actions</strong> within the admin.") %]
               </p>
             </div>
-            [% loc('Superuser:') %] <input type="checkbox" id="is_superuser" name="is_superuser"[% user.is_superuser ? ' checked' : '' %]>
+            <label>
+              [% loc('Superuser:') %]
+              <input type="checkbox" id="is_superuser" name="is_superuser"[% user.is_superuser ? ' checked' : '' %]>
+            </label>
           </li>
         [% END %]
 
