@@ -1,15 +1,12 @@
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
 
-<script type="text/javascript">
-
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-22094787-2']);
-    _gaq.push(['_setDomainName', '.oxfordshire.gov.uk']);
-    _gaq.push(['_setCustomVar',1,'level1','Roads and transport',3]);
-    _gaq.push(['_setCustomVar',2,'level2','FixMyStreet',3]);
-    _gaq.push(['_trackPageview']);
-
-</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NT76GJ5');</script>
+<!-- End Google Tag Manager -->
 
 [% ELSE %]
 <!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
