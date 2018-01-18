@@ -12,7 +12,7 @@
   }
 /* header image added DJ - 17-02-2016 */
 header:before { 
-    content: url(http://www.warwickshire.gov.uk/wp-content/uploads/2016/02/WCC-Logo.gif);
+    content: url(https://www.warwickshire.gov.uk/wp-content/uploads/2016/02/WCC-Logo.gif);
 
 } 
         /*header.entry-header {left:none;}*/
@@ -66,7 +66,7 @@ header:before {
 
 }
 /*footer { 
-    content: url(http://www.warwickshire.gov.uk/wp-content/uploads/2016/02/footer-text.jpg);
+    content: url(https://www.warwickshire.gov.uk/wp-content/uploads/2016/02/footer-text.jpg);
 
  }
  */
