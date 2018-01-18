@@ -867,6 +867,33 @@ sub update_send_failed {
     } );
 }
 
+=head2 updates_sent_to_body
+
+Returns 1 if updates left on this report will be sent to any of the receiving
+bodies by some mechanism. Right now that mechanism is Open311.
+
+=cut
+
+sub updates_sent_to_body {
+    my $self = shift;
+    return unless $self->send_method_used && $self->send_method_used eq 'Open311';
+
+    # Some bodies only send updates *to* FMS, they don't receive updates.
+    # NB See also the list in bin/send-comments
+    my $excluded = qr{Lewisham|Oxfordshire};
+
+    my @bodies = values %{ $self->bodies };
+    my @updates_sent = grep {
+        $_->send_comments &&
+        (
+            $_->send_method eq 'Open311' ||
+            $_->send_method eq 'Noop' # Sending might be temporarily disabled
+        ) &&
+        !($_->name =~ /$excluded/)
+    } @bodies;
+    return scalar @updates_sent;
+}
+
 sub add_send_method {
     my $self = shift;
     my $sender = shift;

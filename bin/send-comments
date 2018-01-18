@@ -49,7 +49,7 @@ my $bodies = FixMyStreet::DB->resultset('Body')->search( {
 
 while ( my $body = $bodies->next ) {
 
-    # XXX Cobrand specific
+    # XXX Cobrand specific - see also list in Problem->updates_sent_to_body
     if ($site eq 'fixmystreet.com') {
         # Oxfordshire (OCC) is special:
         # we do *receive* service_request_updates (aka comments) for OCC, but we never *send* them, so skip this pass
