@@ -8913,7 +8913,7 @@ border-radius:5px;
   font-weight:500;
   color:white;
   text-decoration:none;
- /* background-image: url(http://www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow.png);*/
+ /* background-image: url(//www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow.png);*/
   background-size:25px 20px;
   background-repeat:no-repeat;
   background-position: 130px 15px;
@@ -8936,7 +8936,7 @@ border-radius:5px;
   font-weight:500;
   color:white;
   text-decoration:none;
-  background-image: url(http://www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png);
+  background-image: url(//www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png);
   background-size:25px 20px;
   background-repeat:no-repeat;
   background-position: 155px 15px;
@@ -8960,7 +8960,7 @@ border-radius:5px;
 /*  background: -ms-linear-gradient(left, #0F7C4B 39%,#0F8E50 100%); /* IE10+ */
 /*  background: linear-gradient(to right, #0F7C4B 39%,#0F8E50 100%); /* W3C */
 /*  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0F7C4B', endColorstr='#0F8E50',GradientType=1 );
-/*  background-image: url(http://www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow.png);
+/*  background-image: url(//www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow.png);
   background-size:25px 20px;
     background-position: 130px 15px;*/
   /*  background-repeat:no-repeat; */
@@ -8969,7 +8969,7 @@ border-radius:5px;
 
 .style-2 ul#super-menu li a:hover {
   background: rgb(0, 85, 161);
- /* background-image: url(http://www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png);*/
+ /* background-image: url(//www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png);*/
   background-repeat: no-repeat;
   background-size:25px 20px;
   background-position: 155px 15px;
@@ -8982,7 +8982,7 @@ border-radius:5px;
   background-color: #F2F5F2;
   background: #F2F5F2;
   background-image: url(//www.warwickshire.gov.uk/wp-content/uploads/2014/10/menu-arrow1.png);
-  /*  background-image: url(http://www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png); */
+  /*  background-image: url(//www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png); */
   background-size: 25px 20px;
   background-repeat: no-repeat;
   background-position: 130px 15px;
@@ -9272,15 +9272,15 @@ border-bottom: solid 1px #FFFFFF;
 
 /*.style-5 ul#super-menu li a:hover, .style-4 ul#super-menu li a:hover {
   .style-5 ul#super-menu li a:hover {
-background-image: url(http://www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png);
+background-image: url(//www.warwickshire.gov.uk/Web/corporate/wccweb.nsf/Links/B6876CFE9798941F80257855005D6E89/$file/menu-arrow2.png);
 }*/
 .style-4 ul#super-menu li.active a{
-background-image: url(http://www.warwickshire.gov.uk/wp-content/uploads/2014/10/menu-arrow4.png);
+background-image: url(//www.warwickshire.gov.uk/wp-content/uploads/2014/10/menu-arrow4.png);
 color:#666666;
 }
 
 .style-5 ul#super-menu li.active a{
-background-image: url(http://www.warwickshire.gov.uk/wp-content/uploads/2013/06/menu-arrow5.png);
+background-image: url(//www.warwickshire.gov.uk/wp-content/uploads/2013/06/menu-arrow5.png);
 color:#666666;
 }
 
@@ -10777,7 +10777,7 @@ h3.home-header {
 #home-social    {background-image:url(//www.warwickshire.gov.uk/wp-content/uploads/2014/10/wd-socialcare.png);}
 #home-events    {background-image:url(//www.warwickshire.gov.uk/wp-content/uploads/2014/10/wd-events.png);}
 #home-council     {background-image:url(//www.warwickshire.gov.uk/wp-content/uploads/2014/10/wd-council.png);}
-#home-audience    {background-image:url(http://www.warwickshire.gov.uk/wp-content/uploads/2014/10/wd-volunteering.png);}
+#home-audience    {background-image:url(//www.warwickshire.gov.uk/wp-content/uploads/2014/10/wd-volunteering.png);}
 #home-a-z    {background-image:none; margin-left: -1.5em;}
 
 
