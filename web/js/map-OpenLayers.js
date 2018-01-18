@@ -855,10 +855,10 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         $('#loading-indicator').removeClass('hidden');
         $('#loading-indicator').attr('aria-hidden', false);
         // Pass the values of the category, status, and sort fields as query params
+        options.params = options.params || {};
         $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
             var val = $('#' + id).val();
             if (val !== undefined) {
-                options.params = options.params || {};
                 options.params[key] = val;
             }
         });
