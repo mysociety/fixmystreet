@@ -62,7 +62,7 @@
         <strong>[% IF problem.name %][% problem.name | html %][% ELSE %][% loc('(No name)') %][% END %]</strong>
         <input type='hidden' name='name' id='name' value='[% problem.name | html %]'>
         <br>
-        [% problem.user.email | html %]
+        <a href="mailto:[% problem.user.email | html %]">[% problem.user.email | html %]</a>
         [% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
         <input type='hidden' id='username' name='username' value='[% problem.user.username | html %]'>
         <br>

@@ -919,38 +919,6 @@ sub latest_moderation_log_entry {
     return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => { -desc => 'id' } })->first;
 }
 
-sub photos {
-    my $self = shift;
-    my $photoset = $self->get_photoset;
-    my $i = 0;
-    my $id = $self->id;
-    my @photos = map {
-        my $cachebust = substr($_, 0, 8);
-        # Some Varnish configurations (e.g. on mySociety infra) strip cookies from
-        # images, which means image requests will be redirected to the login page
-        # if LOGIN_REQUIRED is set. To stop this happening, Varnish should be
-        # configured to not strip cookies if the cookie_passthrough param is
-        # present, which this line ensures will be if LOGIN_REQUIRED is set.
-        my $extra = '';
-        if (FixMyStreet->config('LOGIN_REQUIRED')) {
-            $cachebust .= '&cookie_passthrough=1';
-            $extra = '?cookie_passthrough=1';
-        }
-        my ($hash, $format) = split /\./, $_;
-        {
-            id => $hash,
-            url_temp => "/photo/temp.$hash.$format$extra",
-            url_temp_full => "/photo/fulltemp.$hash.$format$extra",
-            url => "/photo/$id.$i.$format?$cachebust",
-            url_full => "/photo/$id.$i.full.$format?$cachebust",
-            url_tn => "/photo/$id.$i.tn.$format?$cachebust",
-            url_fp => "/photo/$id.$i.fp.$format?$cachebust",
-            idx => $i++,
-        }
-    } $photoset->all_ids;
-    return \@photos;
-}
-
 __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",

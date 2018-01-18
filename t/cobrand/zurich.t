@@ -3,6 +3,7 @@
 
 use DateTime;
 use Email::MIME;
+use File::Temp;
 use LWP::Protocol::PSGI;
 use Test::LongString;
 use Path::Tiny;
@@ -25,7 +26,6 @@ my $cobrand = FixMyStreet::Cobrand::Zurich->new();
 
 my $sample_file = path(__FILE__)->parent->parent->child("app/controller/sample.jpg");
 ok $sample_file->exists, "sample file $sample_file exists";
-my $sample_photo = $sample_file->slurp_raw;
 
 # This is a helper method that will send the reports but with the config
 # correctly set - notably STAGING_FLAGS send_reports needs to be true, and
@@ -103,7 +103,7 @@ my $superuser;
 subtest "set up superuser" => sub {
     $superuser = $mech->log_in_ok( 'super@example.org' );
     # a user from body $zurich is a superuser, as $zurich has no parent id!
-    $superuser->update({ from_body => $zurich->id }); 
+    $superuser->update({ from_body => $zurich->id });
     $EXISTING_REPORT_COUNT = get_export_rows_count($mech);
     $mech->log_out_ok;
 };
@@ -112,7 +112,6 @@ my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
-    photo         => $sample_photo,
     areas => ',423017,',
 });
 my $report = $reports[0];
@@ -315,15 +314,30 @@ subtest "report_edit" => sub {
     }
 };
 
+# Give the report three photos
+my $UPLOAD_DIR = File::Temp->newdir();
+my @files = map { $_ x 40 . ".jpeg" } (1..3);
+$sample_file->copy(path($UPLOAD_DIR, $_)) for @files;
+$report->photo(join(',', @files));
+$report->update;
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
+    MAPIT_URL => 'http://mapit.zurich/',
     MAP_TYPE => 'Zurich,OSM',
+    UPLOAD_DIR => $UPLOAD_DIR,
 }, sub {
     # Photo publishing
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { state => 'confirmed', publish_photo => 1 } } );
+    $mech->submit_form_ok( { with_fields => { state => 'confirmed', publish_photo_1 => 1 } } );
+    $mech->get_ok( '/around?lat=' . $report->latitude . ';lon=' . $report->longitude);
+    $mech->content_lacks('photo/' . $report->id . '.0.fp.jpeg');
+    $mech->content_contains('photo/' . $report->id . '.1.fp.jpeg');
+    $mech->content_lacks('photo/' . $report->id . '.2.fp.jpeg');
     $mech->get_ok( '/report/' . $report->id );
-    $mech->content_contains('photo/' . $report->id . '.0.jpeg');
+    $mech->content_lacks('photo/' . $report->id . '.0.jpeg');
+    $mech->content_contains('photo/' . $report->id . '.1.jpeg');
+    $mech->content_lacks('photo/' . $report->id . '.2.jpeg');
 
     # Internal notes
     $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -451,12 +465,16 @@ $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 
 # User confirms their email address
 $report->set_extra_metadata(email_confirmed => 1);
+$report->confirmed(DateTime->now);
 $report->update;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
     MAP_TYPE => 'Zurich,OSM',
 }, sub {
+    # Quick RSS check here, while we have a report
+    $mech->get_ok('/rss/problems');
+
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_lacks( 'Unbest&auml;tigt' ); # Confirmed email
     $mech->submit_form_ok( { with_fields => { status_update => 'FINAL UPDATE' } } );
@@ -480,7 +498,6 @@ $mech->clear_emails_ok;
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
-    photo         => $sample_photo,
     areas => ',423017,',
 });
 $report = $reports[0];
@@ -522,7 +539,6 @@ $mech->email_count_is(0);
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
-    photo         => $sample_photo,
     areas => ',423017,',
 });
 $report = $reports[0];
@@ -830,7 +846,7 @@ subtest "test stats" => sub {
         $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 3');
         # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
         # diag Dumper(\@data); use Data::Dumper;
-        
+
         my $export_count = get_export_rows_count($mech);
         if (defined $export_count) {
             is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
@@ -865,7 +881,7 @@ subtest 'email images to external partners' => sub {
         });
         my $fileid = $photoset->data;
 
-        $report->set_extra_metadata('publish_photo' => 1);
+        $report->set_extra_metadata('publish_photo' => { 0 => 1 });
         # The below email comparison must not have an external message.
         $report->unset_extra_metadata('external_message');
         $report->update({

@@ -465,11 +465,12 @@ sub allow_photo_upload { return 1; }
 =item allow_photo_display
 
 Return a boolean indicating whether the cobrand allows photo display
+for the particular report and photo.
 
 =cut
 
 sub allow_photo_display {
-    my ( $self, $r ) = @_;
+    my ( $self, $r, $num ) = @_;
     return 1;
 }
 

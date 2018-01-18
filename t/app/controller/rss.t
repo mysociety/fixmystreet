@@ -14,28 +14,19 @@ my $user1 = $mech->create_user_ok('reporter-rss@example.com', name => 'Reporter 
 
 my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+my ($report) = $mech->create_problems_for_body(1, 2651, '', {
     postcode           => 'eh1 1BB',
-    bodies_str         => '2651',
     areas              => ',11808,135007,14419,134935,2651,20728,',
     category           => 'Street lighting',
     title              => '&Test’i<n>g \'☃"',
     detail             => 'Testing Detail',
-    used_map           => 1,
     name               => $user1->name,
-    anonymous          => 0,
-    state              => 'confirmed',
     confirmed          => $dt_parser->format_datetime($dt),
     lastupdate         => $dt_parser->format_datetime($dt),
     whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
-    lang               => 'en-gb',
-    service            => '',
-    cobrand            => 'default',
-    cobrand_data       => '',
-    send_questionnaire => 1,
     latitude           => '55.951963',
     longitude          => '-3.189944',
-    user_id            => $user1->id,
+    user => $user1,
 } );
 
 $mech->host('www.fixmystreet.com');
@@ -127,54 +118,19 @@ $report->delete();
 my $council = $mech->create_body_ok(2333, 'Hart Council');
 my $county = $mech->create_body_ok(2227, 'Hampshire Council');
 
-my $now = DateTime->now();
-my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
-    {
-        postcode           => 'GU51 4AE',
-        bodies_str         => $council->id,
+my ($report_to_council) = $mech->create_problems_for_body(1, $council->id, '', {
+        user => $user1,
         areas              => ',2333,2227,',
-        category           => 'Other',
-        title              => 'council report',
-        detail             => 'Test 2 Detail',
-        used_map           => 't',
-        name               => 'Test User',
-        anonymous          => 'f',
-        state              => 'closed',
-        confirmed          => $now->ymd . ' ' . $now->hms,
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 't',
         latitude           => '51.279616',
         longitude          => '-0.846040',
-        user_id            => $user1->id,
-    }
-);
+});
 
-my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
-    {
-        postcode           => 'GU51 4AE',
-        bodies_str         => $county->id,
+my ($report_to_county_council) = $mech->create_problems_for_body(1, $county->id, '', {
+        user => $user1,
         areas              => ',2333,2227,',
-        category           => 'Other',
-        title              => 'county report',
-        detail             => 'Test 2 Detail',
-        used_map           => 't',
-        name               => 'Test User',
-        anonymous          => 'f',
-        state              => 'closed',
-        confirmed          => $now->ymd . ' ' . $now->hms,
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 't',
         latitude           => '51.279616',
         longitude          => '-0.846040',
-        user_id            => $user1->id,
-    }
-);
+});
 
 subtest "check RSS feeds on cobrand have correct URLs for non-cobrand reports" => sub {
     $mech->host('hart.fixmystreet.com');

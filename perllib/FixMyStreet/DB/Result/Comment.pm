@@ -156,26 +156,6 @@ sub url {
     return "/report/" . $self->problem_id . '#update_' . $self->id;
 }
 
-sub photos {
-    my $self = shift;
-    my $photoset = $self->get_photoset;
-    my $i = 0;
-    my $id = $self->id;
-    my @photos = map {
-        my $cachebust = substr($_, 0, 8);
-        my ($hash, $format) = split /\./, $_;
-        {
-            id => $hash,
-            url_temp => "/photo/temp.$hash.$format",
-            url_temp_full => "/photo/fulltemp.$hash.$format",
-            url => "/photo/c/$id.$i.$format?$cachebust",
-            url_full => "/photo/c/$id.$i.full.$format?$cachebust",
-            idx => $i++,
-        }
-    } $photoset->all_ids;
-    return \@photos;
-}
-
 =head2 latest_moderation_log_entry
 
 Return most recent ModerationLog object

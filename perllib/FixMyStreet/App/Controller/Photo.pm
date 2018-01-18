@@ -63,7 +63,7 @@ sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp))?\.(?:jpeg|
 
     $c->detach( 'no_photo' ) unless $item;
 
-    $c->detach( 'no_photo' ) unless $c->cobrand->allow_photo_display($item); # Should only be for reports, not updates
+    $c->detach( 'no_photo' ) unless $c->cobrand->allow_photo_display($item, $photo_number); # Should only be for reports, not updates
 
     my $photo;
     $photo = $item->get_photoset
