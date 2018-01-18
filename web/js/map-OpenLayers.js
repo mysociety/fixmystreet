@@ -229,6 +229,32 @@ $.extend(fixmystreet.utils, {
               }
           }
           fixmystreet.markers.redraw();
+      },
+
+      /* Keep track of how many things are loading simultaneously, and only hide
+       * the loading spinner when everything has finished.
+       * This allows multiple layers to be loading at once without each layer
+       * having to keep track of the others or be responsible for manipulating
+       * the spinner in the DOM.
+       */
+      loading_spinner: {
+          count: 0,
+          show: function() {
+              fixmystreet.maps.loading_spinner.count++;
+              if (fixmystreet.maps.loading_spinner.count > 0) {
+                  // Show the loading indicator over the map
+                  $('#loading-indicator').removeClass('hidden');
+                  $('#loading-indicator').attr('aria-hidden', false);
+              }
+          },
+          hide: function() {
+              fixmystreet.maps.loading_spinner.count--;
+              if (fixmystreet.maps.loading_spinner.count <= 0) {
+                  // Remove loading indicator
+                  $('#loading-indicator').addClass('hidden');
+                  $('#loading-indicator').attr('aria-hidden', true);
+              }
+          }
       }
     });
 
@@ -851,9 +877,7 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     use_page: false,
 
     read: function(options) {
-        // Show the loading indicator over the map
-        $('#loading-indicator').removeClass('hidden');
-        $('#loading-indicator').attr('aria-hidden', false);
+        fixmystreet.maps.loading_spinner.show();
         // Pass the values of the category, status, and sort fields as query params
         options.params = options.params || {};
         $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
@@ -881,9 +905,7 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
-        // Remove loading indicator
-        $('#loading-indicator').addClass('hidden');
-        $('#loading-indicator').attr('aria-hidden', true);
+        fixmystreet.maps.loading_spinner.hide();
         var obj;
         if (typeof json == 'string') {
             obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
