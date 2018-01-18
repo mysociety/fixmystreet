@@ -240,9 +240,6 @@ $.extend(fixmystreet.utils, {
         strategy.deactivate();
         var center = bounds.getCenterLonLat();
         var z = fixmystreet.map.getZoomForExtent(bounds);
-        if ( z < 13 && $('html').hasClass('mobile') ) {
-            z = 13;
-        }
         fixmystreet.map.setCenter(center, z);
         // Reactivate the strategy and make it think it's done an update
         strategy.activate();
