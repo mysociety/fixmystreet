@@ -957,7 +957,7 @@ sub contacts_to_bodies : Private {
 
     my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
 
-    if ($c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL}) {
+    if ($c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL} || !@contacts) {
         [];
     } else {
         if ( $c->cobrand->call_hook('singleton_bodies_str') ) {
