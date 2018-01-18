@@ -568,6 +568,8 @@ $.extend(fixmystreet.utils, {
                 fixmystreet.map.removePopup(fixmystreet.map.popups[0]);
             }
         });
+        fixmystreet.markers.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
+        fixmystreet.markers.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
 
         var markers = fixmystreet.maps.markers_list( fixmystreet.pins, true );
         fixmystreet.markers.addFeatures( markers );
@@ -877,7 +879,6 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     use_page: false,
 
     read: function(options) {
-        fixmystreet.maps.loading_spinner.show();
         // Pass the values of the category, status, and sort fields as query params
         options.params = options.params || {};
         $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
@@ -905,7 +906,6 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
-        fixmystreet.maps.loading_spinner.hide();
         var obj;
         if (typeof json == 'string') {
             obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);

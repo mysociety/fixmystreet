@@ -306,6 +306,8 @@ fixmystreet.add_assets = function(options) {
             };
             OpenLayers.Util.applyDefaults(lo, layer_options);
             asset_fault_layer = new OpenLayers.Layer.Vector("WFS", lo);
+            asset_fault_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
+            asset_fault_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
             asset_layer.fixmystreet.fault_layer = asset_fault_layer;
         }
 
@@ -316,6 +318,11 @@ fixmystreet.add_assets = function(options) {
         asset_layer.events.register( 'loadend', asset_layer, layer_loadend);
         asset_layer.events.register( 'visibilitychanged', asset_layer, layer_visibilitychanged);
         fixmystreet.map.events.register( 'zoomend', asset_layer, check_zoom_message_visibility);
+
+        // Make sure the user knows something is happening (some asset layers can be sllooowwww)
+        asset_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
+        asset_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
+
         // Set up handlers for simply hovering over a street light marker
         var hover_feature_control = new OpenLayers.Control.SelectFeature(
             asset_layer,
