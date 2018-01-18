@@ -221,7 +221,8 @@ sub _add_meta_to_contact {
         warn sprintf( "Empty meta data for %s at %s",
                       $self->_current_service->{service_code},
                       $self->_current_body->endpoint )
-        if $self->verbose;
+        # Bristol has a habit of returning empty metadata, stop noise from that.
+        if $self->verbose and $self->_current_body->name ne 'Bristol City Council';
         return;
     }
 
