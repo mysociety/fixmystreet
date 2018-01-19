@@ -494,7 +494,7 @@ sub export_summary_csv : Private {
             'postcode',
             'url',
         ],
-        filename => 'fixmystreet-data.csv',
+        filename => 'fixmystreet-data',
     };
     $c->forward('/dashboard/generate_csv');
 }
