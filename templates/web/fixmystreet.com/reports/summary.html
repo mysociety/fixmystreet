@@ -17,8 +17,8 @@
 <form method="GET">
     <div class="filters">
         <p>
-            <label for="ward">[% loc('Problems reported in area:') %]</label>
-            <select class="form-control" id="ward" name="ward">
+            <label for="area">[% loc('Problems reported in area:') %]</label>
+            <select class="form-control" id="area" name="area">
                 <option value="">[% body.name %]</option>
               [% FOR w IN children.values.sort('name') %]
                 <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>

@@ -440,7 +440,7 @@ sub summary : Private {
 
     # required to stop errors in generate_grouped_data
     $c->stash->{q_state} = '';
-    $c->stash->{ward} = $c->get_param('ward');
+    $c->stash->{ward} = $c->get_param('area');
     $c->stash->{start_date} = $dtf->format_date($start_date);
     $c->stash->{end_date} = $c->get_param('end_date');
 
