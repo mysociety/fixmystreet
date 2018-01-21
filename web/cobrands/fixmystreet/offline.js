@@ -11,9 +11,9 @@ fixmystreet.offlineBanner = (function() {
     function formText() {
         var num = fixmystreet.offlineData.getForms().length;
         if ( num === 1 ) {
-            return num + translation_strings.offline.update_single;
+            return num + ' ' + translation_strings.offline.update_single;
         } else {
-            return num + translation_strings.offline.update_plural;
+            return num + ' ' + translation_strings.offline.update_plural;
         }
     }
 
@@ -338,12 +338,16 @@ fixmystreet.offline = (function() {
             });
         }
 
-        $('#report_inspect_form').submit(function() {
+        // If we catch the form submit, e.g. Chrome still seems to
+        // try and submit and we get the Chrome offline error page
+        var btn = $('#report_inspect_form input[type=submit]');
+        btn.click(function() {
             var data = $(this).serialize() + '&save=1&saved_at=' + Math.floor(+new Date() / 1000);
             fixmystreet.offlineData.addForm(this.action, data);
             location.href = '/my/planned?saved=1';
             return false;
         });
+        btn[0].type = 'button';
 
         return true;
     }
