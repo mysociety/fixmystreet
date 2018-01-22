@@ -33,6 +33,11 @@ sub auto : Private {
 
     $c->uri_disposition('relative');
 
+    # Enable auth with the access token for Zürich stats page
+    if ( $c->cobrand->moniker eq 'zurich' && $c->get_param('export') ) {
+        $c->authenticate(undef, "access_token");
+    }
+
     # User must be logged in to see cobrand, and meet whatever checks the
     # cobrand specifies. Default cobrand just requires superuser flag to be set.
     unless ( $c->user_exists ) {
