@@ -2,7 +2,6 @@
 
 * Unreleased
     - Front end improvements:
-        - Include "SameSite=Lax" with all cookies.
 	- Zoom out as much as necessary on body map page, even on mobile. #1958
     - Bugfixes:
         - Fix bug specifying category in URL on /around. #1950

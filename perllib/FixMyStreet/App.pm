@@ -98,7 +98,6 @@ __PACKAGE__->config(
 );
 
 __PACKAGE__->response_class('FixMyStreet::App::Response');
-__PACKAGE__->engine_class('FixMyStreet::App::Engine');
 
 # Start the application
 __PACKAGE__->setup();
