@@ -706,9 +706,9 @@ sub stash_report_filter_status : Private {
         $filter_status{unshortlisted} = 1;
     }
 
-    if ($c->user and ($c->user->is_superuser or (
-          $c->stash->{body} and $c->user->belongs_to_body($c->stash->{body}->id)
-    ))) {
+    my $body_user = $c->user_exists && $c->stash->{body} && $c->user->belongs_to_body($c->stash->{body}->id);
+    my $staff_user = $c->user_exists && ($c->user->is_superuser || $body_user);
+    if ($staff_user || $c->cobrand->call_hook('filter_show_all_states')) {
         $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
         foreach my $state (FixMyStreet::DB::Result::Problem->visible_states()) {
             if ($status{$state}) {
