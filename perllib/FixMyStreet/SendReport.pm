@@ -19,10 +19,12 @@ has 'unconfirmed_notes' => ( 'is' => 'rw', isa => HashRef, default => sub { {} }
 
 
 sub should_skip {
-    my $self = shift;
-    my $row  = shift;
+    my $self  = shift;
+    my $row   = shift;
+    my $debug = shift;
 
     return 0 unless $row->send_fail_count;
+    return 0 if $debug;
 
     my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
     my $diff = $now - $row->send_fail_timestamp;

@@ -80,6 +80,7 @@
     - Development improvements:
         - Add hook for pre-wrapper content.
         - Include JSON representation of extra fields in category_extras output
+        - send-reports will never skip failed reports when using --debug
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page. #1893

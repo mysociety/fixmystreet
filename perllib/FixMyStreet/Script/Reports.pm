@@ -159,7 +159,7 @@ sub send(;$) {
                 }
             }
 
-            if ( $reporters{ $sender }->should_skip( $row ) ) {
+            if ( $reporters{ $sender }->should_skip( $row, $debug_mode ) ) {
                 $skip = 1;
                 debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;
             } else {
