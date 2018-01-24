@@ -1,7 +1,8 @@
+[% SET show_all_states = c.cobrand.filter_show_all_states OR (c.user_exists AND (c.user.is_superuser OR c.user.belongs_to_body(body.id))) %]
 [% select_status = BLOCK %]
     <select class="form-control js-multiple" name="status" id="statuses" multiple
     data-all="[% loc('All') %]"
-    [% IF c.user_exists AND c.user.is_superuser OR c.user.belongs_to_body(body.id) %]
+    [% IF show_all_states %]
     [% options = []; FOR group IN filter_states; FOR state IN group.1; NEXT IF state == 'hidden'; options.push(state); END; END %]
     data-all-options='["[% options.join('", "') %]"]'
     [%~ ELSE ~%]
@@ -17,7 +18,7 @@
         <option value="shortlisted"[% ' selected' IF filter_status.shortlisted %]>[% loc('Shortlisted') %]</option>
         <option value="unshortlisted"[% ' selected' IF filter_status.unshortlisted %]>[% loc('Unshortlisted') %]</option>
       [% END %]
-      [% IF c.user_exists AND c.user.is_superuser OR c.user.belongs_to_body(body.id) %]
+      [% IF show_all_states %]
         [% FOR group IN filter_states %]
           [% FOR state IN group.1 %]
             [% NEXT IF state == 'hidden' %]
