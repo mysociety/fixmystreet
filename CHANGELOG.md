@@ -27,6 +27,8 @@
         - Admin can log a user out. #1975
         - Admin can remove a user's account details. #1944
         - Superusers can have optional two-factor authentication. #1973
+    - Development improvements:
+        - 'components' parameter can be passed to Google geocoder. #1994
     - UK:
         - Lazy load images in the footer.
 
