@@ -1051,7 +1051,7 @@ subtest 'editing update email creates new user if required' => sub {
 
     my $fields = {
             text => 'this is a changed update',
-            state => 'hidden',
+            state => 'confirmed',
             name => 'A User',
             anonymous => 0,
             username => 'test4@example.com',
@@ -1153,6 +1153,7 @@ subtest 'hiding comment marked as fixed reopens report' => sub {
 $log_entries->delete;
 
 subtest 'report search' => sub {
+    $update->discard_changes;
     $update->state('confirmed');
     $update->user($report->user);
     $update->update;
@@ -1565,6 +1566,18 @@ subtest "Anonymizing user from admin" => sub {
     my $c = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id, anonymous => 1 })->count;
     is $c, $count_p;
     $c = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id, anonymous => 1 })->count;
+    is $c, $count_u;
+};
+
+subtest "Hiding user's reports from admin" => sub {
+    my $user = $mech->create_user_ok('existing@example.com', name => 'Existing User');
+    my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
+    my $count_u = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id })->count;
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->submit_form_ok({ button => 'hide_everywhere' });
+    my $c = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id, state => 'hidden' })->count;
+    is $c, $count_p;
+    $c = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id, state => 'hidden' })->count;
     is $c, $count_u;
 };
 

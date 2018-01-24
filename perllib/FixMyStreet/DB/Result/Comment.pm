@@ -293,4 +293,29 @@ sub problem_state_display {
     return $update_state;
 }
 
+sub is_latest {
+    my $self = shift;
+    my $latest_update = $self->result_source->resultset->search(
+        { problem_id => $self->problem_id, state => 'confirmed' },
+        { order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ] }
+    )->first;
+    return $latest_update->id == $self->id;
+}
+
+sub hide {
+    my $self = shift;
+
+    my $ret = {};
+
+    # If we're hiding an update, see if it marked as fixed and unfix if so
+    if ($self->mark_fixed && $self->is_latest && $self->problem->state =~ /^fixed/) {
+        $self->problem->state('confirmed');
+        $self->problem->update;
+        $ret->{reopened} = 1;
+    }
+    $self->get_photoset->delete_cached;
+    $self->update({ state => 'hidden' });
+    return $ret;
+}
+
 1;
