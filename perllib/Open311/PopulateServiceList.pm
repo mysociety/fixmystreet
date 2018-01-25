@@ -262,6 +262,7 @@ sub _add_meta_to_contact {
         ) ],
         #2551
         'Bath and North East Somerset Council' => [qw(
+            report_url
             title
             description
         ) ],
