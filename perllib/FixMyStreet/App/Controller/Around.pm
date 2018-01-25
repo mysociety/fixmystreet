@@ -284,11 +284,11 @@ sub map_features : Private {
 
 Handle the ajax calls that the map makes when it is dragged. The info returned
 is used to update the pins on the map and the text descriptions on the side of
-the map.
+the map. Used via /around?ajax=1 but also available at /ajax for mobile app.
 
 =cut
 
-sub ajax : Private {
+sub ajax : Path('/ajax') {
     my ( $self, $c ) = @_;
 
     my $ret = $c->forward('/location/determine_location_from_bbox');
