@@ -45,4 +45,16 @@ sub send_questionnaires {
     return 0;
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+    push @$extra,
+        { name => 'report_url',
+          value => $h->{url} };
+
+    $row->set_extra_fields(@$extra);
+}
+
+
 1;
