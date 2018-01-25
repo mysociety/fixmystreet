@@ -256,9 +256,13 @@ sub _add_meta_to_contact {
             public_anonymity_required
             email_alerts_requested
         ) ],
-        #2243, 
+        #2243,
         'Warwickshire County Council' => [qw(
             closest_address
+        ) ],
+        #2217
+        'Buckinghamshire County Council' => [qw(
+            report_url
         ) ],
     );
 
