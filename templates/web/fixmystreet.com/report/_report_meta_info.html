@@ -1,6 +1,6 @@
 [% problem.meta_line(c) | html %]
 [% IF c.cobrand.moniker != problem.get_cobrand_logged.moniker AND problem.get_cobrand_logged.is_council %]
-    using <a href="https://www.fixmystreet.com/about/professional">FixMyStreet Professional</a>
+    using <a href="https://www.fixmystreet.com/pro/">FixMyStreet Pro</a>
 [% END %]
 [% IF c.user_exists AND c.user.id == problem.user_id AND !problem.anonymous %]
     <small>(<a href="/my/anonymize?problem=[% problem.id | uri %]" class="js-hide-name">[% loc('Hide your name?') %]</a>)</small>
