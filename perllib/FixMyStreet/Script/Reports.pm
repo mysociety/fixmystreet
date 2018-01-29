@@ -106,10 +106,6 @@ sub send(;$) {
              $row->user->email eq $cobrand->anonymous_account->{'email'}
          ) {
             $h{anonymous_report} = 1;
-            $h{user_details} = _('This report was submitted anonymously');
-        } else {
-            $h{user_details} = sprintf(_('Name: %s'), $row->name) . "\n\n";
-            $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
         }
 
         $cobrand->call_hook(process_additional_metadata_for_email => $row, \%h);

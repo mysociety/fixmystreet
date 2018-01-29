@@ -35,7 +35,7 @@
 [% END %]
 
 [% IF c.user.email_verified %]
-    <label for="form_username">[% loc('Email address') %]</label>
+    <label for="form_username">[% loc('Email address') %]<span class="hidden"> [% loc('(optional)') %]</span></label>
     <input class="form-control" id="form_username" name="username"
     [%- IF NOT can_contribute_as_another_user -%]
     disabled

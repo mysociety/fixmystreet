@@ -200,9 +200,13 @@ sub check_for_errors {
     } elsif ($self->phone_verified) {
         my $parsed = FixMyStreet::SMS->parse_username($self->phone);
         if (!$parsed->{phone}) {
+            # Errors with the phone number may apply to both the username or
+            # phone field depending on the form.
             $errors{username} = _('Please check your phone number is correct');
+            $errors{phone} = _('Please check your phone number is correct');
         } elsif (!$parsed->{may_be_mobile}) {
             $errors{username} = _('Please enter a mobile number');
+            $errors{phone} = _('Please enter a mobile number');
         }
     }
 

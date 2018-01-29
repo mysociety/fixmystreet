@@ -206,9 +206,12 @@ TESTING_COUNCILS: ''
 # if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
 MESSAGE_MANAGER_URL: ''
 
+# If you want to use SMS login or 'report as' with just a phone number, you'll
+# need to set the site's two-digit ISO 3166 country code (e.g. GB) here.
+PHONE_COUNTRY: ''
+
 # If you enable login via SMS authentication, you'll need a twilio account
 SMS_AUTHENTICATION: 0
-PHONE_COUNTRY: ''
 TWILIO_ACCOUNT_SID: ''
 TWILIO_AUTH_TOKEN: ''
 TWILIO_FROM_PARAMETER: ''

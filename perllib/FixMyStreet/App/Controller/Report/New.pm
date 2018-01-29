@@ -790,11 +790,19 @@ sub process_user : Private {
         return 1;
     } }
 
+    if ( $c->stash->{contributing_as_another_user} && !$params{username} ) {
+        # If the 'username' (i.e. email) field is blank, then use the phone
+        # field for the username.
+        $params{username} = $params{phone};
+    }
+
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
     my $type = $parsed->{type} || 'email';
-    $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION');
+    $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION') || $c->stash->{contributing_as_another_user};
     $report->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) )
         unless $report->user;
+
+    $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
 
     # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
@@ -1074,6 +1082,12 @@ sub check_for_errors : Private {
     if ( $c->stash->{is_social_user} ) {
         delete $field_errors{name};
         delete $field_errors{username};
+    }
+
+    # if we're contributing as someone else then allow landline numbers
+    if ( $field_errors{phone} && $c->stash->{contributing_as_another_user} && !$c->stash->{phone_may_be_mobile}) {
+        delete $field_errors{username};
+        delete $field_errors{phone};
     }
 
     # add the photo error if there is one.
@@ -1384,7 +1398,7 @@ sub redirect_or_confirm_creation : Private {
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
-        if ($c->stash->{contributing_as_another_user}) {
+        if ($c->stash->{contributing_as_another_user} && $report->user->email) {
             $c->send_email( 'other-reported.txt', {
                 to => [ [ $report->user->email, $report->name ] ],
             } );

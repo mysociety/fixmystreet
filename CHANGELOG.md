@@ -7,6 +7,7 @@
         - Ask for current password/send email on password change. #1974
         - Add minimum password length and common password checking.
         - Nicer display of national phone numbers.
+        - 'Report as another user' allows phone number without email. #1978
     - Bugfixes:
         - Fix bug specifying category in URL on /around. #1950
         - Fix bug with multiple select-multiples on a page. #1951
