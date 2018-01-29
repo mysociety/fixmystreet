@@ -14,7 +14,11 @@
     </li>
 [% ELSE %]
     <li class="item-list__item item-list__item--empty">
-        <p>[% loc('There are no reports to show.') %]</p>
+        [% IF c.get_param('js') %]
+            <p>[% loc('Loading reports…') %]</p>
+        [% ELSE %]
+            <p>[% loc('There are no reports to show.') %]</p>
+        [% END %]
     </li>
 [% END %]
 </ul>
