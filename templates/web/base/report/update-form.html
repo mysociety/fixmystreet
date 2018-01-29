@@ -3,7 +3,11 @@
 
 <div id="update_form">
   [% IF NOT login_success AND NOT oauth_need_email %]
-    <h2[% IF two_column_sidebar %] class="hidden-js"[% END %]>[% loc( 'Provide an update') %]</h2>
+    [% TRY %]
+      [% INCLUDE 'report/_update-form-heading.html' %]
+    [% CATCH file %]
+      <h2[% IF two_column_sidebar %] class="hidden-js"[% END %]>[% loc( 'Provide an update') %]</h2>
+    [% END %]
 
     [% IF c.cobrand.moniker != 'stevenage' %]
     <div class="general-notes">
