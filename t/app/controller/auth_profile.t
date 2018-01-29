@@ -75,9 +75,68 @@ subtest "Test change password page" => sub {
         {
             form_name => 'change_password',
             fields =>
-              { new_password => $test_password, confirm => $test_password, },
+              { new_password => 'new_password', confirm => 'new_password', },
         },
-        "change_password with '$test_password' and '$test_password'"
+        "change_password with 'new_password' and 'new_password'"
+    );
+    is $mech->uri->path, '/auth/change_password',
+      "still on change password page";
+    $mech->content_contains('check your email');
+
+    $link = $mech->get_link_from_email;
+    $mech->get_ok($link);
+    is $mech->uri->path, '/my', "redirected to /my";
+
+    $mech->content_contains( 'password has been changed',
+        "found password changed" );
+
+    $user->discard_changes();
+    ok $user->password, "user now has a password";
+};
+
+# Change password, when already got one
+subtest "Test change password page with current password" => sub {
+    $mech->get_ok('/auth/change_password');
+
+    ok my $form = $mech->form_name('change_password'),
+      "found change password form";
+    is_deeply [ sort grep { $_ } map { $_->name } $form->inputs ],    #
+      [ 'confirm', 'current_password', 'new_password', 'token' ],
+      "check we got expected fields (ie not old_password)";
+
+    # check the various ways the form can be wrong
+    for my $test (
+        { current => '', new => '', conf => '', err => 'check the passwords', },
+        { current => 'new_password', new => '', conf => '', err => 'enter a password', },
+        { current => 'new_password', new => 'secret', conf => '', err => 'do not match', },
+        { current => 'new_password', new => '', conf => 'secret', err => 'do not match', },
+        { current => 'new_password', new => 'secret', conf => 'not_secret', err => 'do not match', },
+      )
+    {
+        $mech->get_ok('/auth/change_password');
+        $mech->content_lacks( $test->{err}, "did not find expected error" );
+        $mech->submit_form_ok(
+            {
+                form_name => 'change_password',
+                fields =>
+                  { current_password => $test->{current}, new_password => $test->{new}, confirm => $test->{conf}, },
+            },
+            "change_password with '$test->{current}', '$test->{new}' and '$test->{conf}'"
+        );
+        $mech->content_contains( $test->{err}, "found expected error" );
+    }
+
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    ok $user, "got a user";
+
+    $mech->get_ok('/auth/change_password');
+    $mech->submit_form_ok(
+        {
+            form_name => 'change_password',
+            fields =>
+              { current_password => 'new_password', new_password => $test_password, confirm => $test_password },
+        },
+        "change_password with 'new_password' and '$test_password'"
     );
     is $mech->uri->path, '/auth/change_password',
       "still on change password page";

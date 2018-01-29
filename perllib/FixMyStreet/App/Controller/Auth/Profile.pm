@@ -19,7 +19,7 @@ verifying email, phone, password.
 
 =cut
 
-sub auto {
+sub auto : Private {
     my ( $self, $c ) = @_;
 
     $c->detach( '/auth/redirect' ) unless $c->user;
@@ -49,8 +49,17 @@ sub change_password : Path('/auth/change_password') {
     my $new = $c->get_param('new_password') // '';
     my $confirm = $c->get_param('confirm') // '';
 
+    my $password_error;
+
+    # Check existing password, if available
+    if ($c->user->password) {
+        my $current = $c->get_param('current_password') // '';
+        $c->stash->{current_password} = $current;
+        $password_error = 'incorrect' unless $c->user->check_password($current);
+    }
+
     # check for errors
-    my $password_error =
+    $password_error ||=
        !$new && !$confirm ? 'missing'
       : $new ne $confirm ? 'mismatch'
       :                    '';
@@ -62,10 +71,17 @@ sub change_password : Path('/auth/change_password') {
         return;
     }
 
-    # we should have a usable password - save it to the user
-    $c->user->obj->update( { password => $new } );
-    $c->stash->{password_changed} = 1;
-
+    if ($c->user->password) {
+        # we should have a usable password - save it to the user
+        $c->user->obj->update( { password => $new } );
+        $c->stash->{password_changed} = 1;
+    } else {
+        # Set up arguments for code sign in
+        $c->set_param('username', $c->user->username);
+        $c->set_param('password_register', $new);
+        $c->set_param('r', 'auth/change_password/success');
+        $c->detach('/auth/code_sign_in');
+    }
 }
 
 =head2 change_email
@@ -145,6 +161,12 @@ sub change_email_success : Path('/auth/change_email/success') {
 sub change_phone_success : Path('/auth/change_phone/success') {
     my ( $self, $c ) = @_;
     $c->flash->{flash_message} = _('You have successfully verified your phone number.');
+    $c->res->redirect('/my');
+}
+
+sub change_password_success : Path('/auth/change_password/success') {
+    my ( $self, $c ) = @_;
+    $c->flash->{flash_message} = _('Your password has been changed');
     $c->res->redirect('/my');
 }
 
