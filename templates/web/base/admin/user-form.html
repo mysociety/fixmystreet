@@ -18,20 +18,12 @@
         </li>
         <li><label for="email">[% loc('Email:') %]</label>
         <input type='text' class="form-control" id='email' name='email' value='[% user.email | html %]'></li>
-      [% IF c.config.SMS_AUTHENTICATION %]
         <li><label class="inline" for="email_verified">[% loc('Email verified:') %]</label>
         <input type="checkbox" id="email_verified" name="email_verified" value="1" [% user.email_verified ? ' checked' : '' %]>
-      [% ELSE %]
-        <input type="hidden" name="email_verified" value="1">
-      [% END %]
         <li><label for="phone">[% loc('Phone:') %]</label>
         <input type='text' class="form-control" id='phone' name='phone' value='[% user.phone | html %]'></li>
-      [% IF c.config.SMS_AUTHENTICATION %]
         <li><label class="inline" for="phone_verified">[% loc('Phone verified:') %]</label>
         <input type="checkbox" id="phone_verified" name="phone_verified" value="1" [% user.phone_verified ? ' checked' : '' %]>
-      [% ELSE %]
-        <input type="hidden" name="phone_verified" value="0">
-      [% END %]
 
       [% IF username_in_abuse %]
       <li>
