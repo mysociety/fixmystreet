@@ -125,11 +125,15 @@ with 'FixMyStreet::Roles::Extra';
 
 __PACKAGE__->many_to_many( planned_reports => 'user_planned_reports', 'report' );
 
+sub cost {
+    FixMyStreet->test_mode ? 1 : 12;
+}
+
 __PACKAGE__->add_columns(
     "password" => {
         encode_column => 1,
         encode_class => 'Crypt::Eksblowfish::Bcrypt',
-        encode_args => { cost => 8 },
+        encode_args => { cost => cost() },
         encode_check_method => 'check_password',
     },
 );

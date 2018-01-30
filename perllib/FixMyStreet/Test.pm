@@ -7,6 +7,13 @@ use warnings FATAL => 'all';
 use utf8;
 use Test::More;
 use mySociety::Locale;
+
+BEGIN {
+    use FixMyStreet;
+    FixMyStreet->test_mode(1);
+    mySociety::Locale::gettext_domain('FixMyStreet', 1);
+}
+
 use FixMyStreet::DB;
 
 my $db = FixMyStreet::DB->schema->storage;
@@ -17,12 +24,6 @@ sub import {
     utf8->import;
     Test::More->export_to_level(1);
     $db->txn_begin;
-}
-
-BEGIN {
-    use FixMyStreet;
-    FixMyStreet->test_mode(1);
-    mySociety::Locale::gettext_domain('FixMyStreet', 1);
 }
 
 END {
