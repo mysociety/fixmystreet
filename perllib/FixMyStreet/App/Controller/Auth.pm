@@ -84,6 +84,12 @@ sub sign_in : Private {
     my $parsed = FixMyStreet::SMS->parse_username($username);
 
     if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
+        # Upgrade hash count if necessary
+        my $cost = sprintf("%02d", FixMyStreet::DB::Result::User->cost);
+        if ($c->user->password =~ /^\$2a\$$cost\$/) {
+            $c->user->update({ password => $password });
+        }
+
         # unless user asked to be remembered limit the session to browser
         $c->set_session_cookie_expire(0)
           unless $remember_me;
