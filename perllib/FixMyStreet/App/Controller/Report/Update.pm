@@ -125,9 +125,11 @@ sub process_user : Private {
 
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
     my $type = $parsed->{type} || 'email';
-    $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION');
+    $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION') || $c->stash->{contributing_as_another_user};
     $update->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) )
         unless $update->user;
+
+    $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
 
     # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
@@ -364,6 +366,12 @@ sub check_for_errors : Private {
         delete $field_errors{username};
     }
 
+    # if we're contributing as someone else then allow landline numbers
+    if ( $field_errors{phone} && $c->stash->{contributing_as_another_user} && !$c->stash->{phone_may_be_mobile}) {
+        delete $field_errors{username};
+        delete $field_errors{phone};
+    }
+
     if ( my $photo_error  = delete $c->stash->{photo_error} ) {
         $field_errors{photo} = $photo_error;
     }
@@ -477,7 +485,7 @@ sub redirect_or_confirm_creation : Private {
     if ( $update->confirmed ) {
         $c->forward( 'update_problem' );
         $c->forward( 'signup_for_alerts' );
-        if ($c->stash->{contributing_as_another_user}) {
+        if ($c->stash->{contributing_as_another_user} && $update->user->email) {
             $c->send_email( 'other-updated.txt', {
                 to => [ [ $update->user->email, $update->name ] ],
             } );
