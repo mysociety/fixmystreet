@@ -86,6 +86,16 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub available_permissions {
+    my $self = shift;
+
+    my $permissions = $self->SUPER::available_permissions();
+
+    $permissions->{Problems}->{report_reject} = "Reject reports";
+
+    return $permissions;
+}
+
 
 
 1;
