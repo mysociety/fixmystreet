@@ -892,7 +892,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             $self->remove_photo($c, $problem, $remove_photo_param);
         }
 
-        if ( $remove_photo_param || $problem->state eq 'hidden' ) {
+        if ($problem->state eq 'hidden') {
             $problem->get_photoset->delete_cached;
         }
 
@@ -1274,8 +1274,14 @@ sub update_edit : Path('update_edit') : Args(1) {
             $self->remove_photo($c, $update, $remove_photo_param);
         }
 
-        if ( $remove_photo_param || $new_state eq 'hidden' ) {
-            $update->get_photoset->delete_cached;
+        $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
+
+        # Must call update->hide while it's not hidden (so is_latest works)
+        if ($new_state eq 'hidden') {
+            my $outcome = $update->hide;
+            $c->stash->{status_message} .=
+              '<p><em>' . _('Problem marked as open.') . '</em></p>'
+                if $outcome->{reopened};
         }
 
         $update->name( $c->get_param('name') || '' );
@@ -1295,19 +1301,6 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
 
         $update->update;
-
-        $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
-
-        # If we're hiding an update, see if it marked as fixed and unfix if so
-        if ( $new_state eq 'hidden' && $update->mark_fixed ) {
-            if ( $update->problem->state =~ /^fixed/ ) {
-                $update->problem->state('confirmed');
-                $update->problem->update;
-            }
-
-            $c->stash->{status_message} .=
-              '<p><em>' . _('Problem marked as open.') . '</em></p>';
-        }
 
         if ( $new_state ne $old_state ) {
             $c->forward( 'log_edit',
@@ -1426,11 +1419,15 @@ sub user_edit : Path('user_edit') : Args(1) {
             '<p><em>' . $c->flash->{status_message} . '</em></p>';
     }
 
+    $c->forward('/auth/check_csrf_token') if $c->get_param('submit');
+
     if ( $c->get_param('submit') and $c->get_param('unban') ) {
-        $c->forward('/auth/check_csrf_token');
         $c->forward('unban_user', [ $user ]);
+    } elsif ( $c->get_param('submit') and $c->get_param('anon_everywhere') ) {
+        $c->forward('user_anon_everywhere', [ $user ]);
+    } elsif ( $c->get_param('submit') and $c->get_param('hide_everywhere') ) {
+        $c->forward('user_hide_everywhere', [ $user ]);
     } elsif ( $c->get_param('submit') ) {
-        $c->forward('/auth/check_csrf_token');
 
         my $edited = 0;
 
@@ -1759,6 +1756,27 @@ sub ban_user : Private {
     return 1;
 }
 
+sub user_anon_everywhere : Private {
+    my ( $self, $c, $user ) = @_;
+    $user->problems->update({anonymous => 1});
+    $user->comments->update({anonymous => 1});
+    $c->stash->{status_message} = _('That user has been made anonymous on all reports and updates.');
+}
+
+sub user_hide_everywhere : Private {
+    my ( $self, $c, $user ) = @_;
+    my $problems = $user->problems->search({ state => { '!=' => 'hidden' } });
+    while (my $problem = $problems->next) {
+        $problem->get_photoset->delete_cached;
+        $problem->update({ state => 'hidden' });
+    }
+    my $updates = $user->comments->search({ state => { '!=' => 'hidden' } });
+    while (my $update = $updates->next) {
+        $update->hide;
+    }
+    $c->stash->{status_message} = _('That user’s reports and updates have been hidden.');
+}
+
 sub unban_user : Private {
     my ( $self, $c, $user ) = @_;
 
@@ -1904,6 +1922,7 @@ sub remove_photo : Private {
     my ($self, $c, $object, $keys) = @_;
     if ($keys eq 'ALL') {
         $object->photo(undef);
+        $object->get_photoset->delete_cached;
     } else {
         my $fileids = $object->get_photoset->remove_images($keys);
         $object->photo($fileids);

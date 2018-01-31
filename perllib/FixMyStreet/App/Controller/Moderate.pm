@@ -128,6 +128,7 @@ sub report_moderate_hide : Private {
     if ($c->get_param('problem_hide')) {
 
         $problem->update({ state => 'hidden' });
+        $problem->get_photoset->delete_cached;
 
         $c->res->redirect( '/' ); # Go directly to front-page
         $c->detach( 'report_moderate_audit', ['hide'] ); # break chain here.
@@ -267,7 +268,7 @@ sub update_moderate_hide : Private {
     my $comment = $c->stash->{comment} or die;
 
     if ($c->get_param('update_hide')) {
-        $comment->update({ state => 'hidden' });
+        $comment->hide;
         $c->detach( 'update_moderate_audit', ['hide'] ); # break chain here.
     }
     return;
