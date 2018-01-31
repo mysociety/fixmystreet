@@ -93,6 +93,10 @@ sub determine_contact_type : Private {
 
             $c->stash->{update} = $update;
         }
+
+        if ( $c->get_param("reject") && $c->user->has_permission_to(report_reject => $c->stash->{problem}->bodies_str_ids) ) {
+            $c->stash->{rejecting_report} = 1;
+        }
     }
 
     return 1;
