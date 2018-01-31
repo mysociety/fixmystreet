@@ -1,0 +1,62 @@
+// Adapted from .ms-header component in FMS Pro WordPress theme.
+
+.ms-header {
+    background-color: #3B3F44;
+    color: #fff;
+}
+
+.ms-header__logo,
+.ms-header__back-to-fms {
+    box-sizing: border-box;
+    margin: 10px 0;
+}
+
+.ms-header__logo {
+    @media (min-width: 48em) {
+        float: right;
+        width: 25%;
+    }
+    padding-left: 1em;
+
+    a {
+        display: block;
+        width: 101px;
+        height: 0;
+        padding-top: 21px;
+        overflow: hidden;
+        background: transparent;
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        background-size: 101px 21px;
+        @include svg-background-image('../fixmystreet.com/images/mysoc-footer/logo-mysociety');
+
+        // Centre on narrow screens, right align on wider screens.
+        margin: 0 auto;
+        @media (min-width: 48em) {
+            margin-right: 0;
+        }
+    }
+}
+
+.ms-header__back-to-fms {
+    @media (min-width: 48em) {
+        width: 75%;
+        float: left;
+    }
+
+    padding-right: 1em;
+
+    display: block; // .ms-header__back-to-fms is an <a> element
+
+    color: #ddd;
+    font-size: 0.875em;
+
+    &:visited {
+        color: #ddd;
+    }
+    &:hover,
+    &:focus {
+        color: #fff;
+        text-decoration: none;
+    }
+}
