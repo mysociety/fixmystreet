@@ -1429,6 +1429,8 @@ sub user_edit : Path('user_edit') : Args(1) {
         $c->forward('user_anon_everywhere', [ $user ]);
     } elsif ( $c->get_param('submit') and $c->get_param('hide_everywhere') ) {
         $c->forward('user_hide_everywhere', [ $user ]);
+    } elsif ( $c->get_param('submit') and $c->get_param('remove_account') ) {
+        $c->forward('user_remove_account', [ $user ]);
     } elsif ( $c->get_param('submit') ) {
 
         my $edited = 0;
@@ -1786,6 +1788,28 @@ sub user_hide_everywhere : Private {
         $update->hide;
     }
     $c->stash->{status_message} = _('That user’s reports and updates have been hidden.');
+}
+
+# Anonymize and remove name from all problems/updates, disable all alerts.
+# Remove their account's email address, phone number, password, etc.
+sub user_remove_account : Private {
+    my ( $self, $c, $user ) = @_;
+    $c->forward('user_logout_everywhere', [ $user ]);
+    $user->problems->update({ anonymous => 1, name => '', send_questionnaire => 0 });
+    $user->comments->update({ anonymous => 1, name => '' });
+    $user->alerts->update({ whendisabled => \'current_timestamp' });
+    $user->password('', 1);
+    $user->update({
+        email => 'removed-' . $user->id . '@' . FixMyStreet->config('EMAIL_DOMAIN'),
+        email_verified => 0,
+        name => '',
+        phone => '',
+        phone_verified => 0,
+        title => undef,
+        twitter_id => undef,
+        facebook_id => undef,
+    });
+    $c->stash->{status_message} = _('That user’s personal details have been removed.');
 }
 
 sub unban_user : Private {

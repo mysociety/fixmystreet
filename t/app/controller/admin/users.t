@@ -420,4 +420,20 @@ subtest "Logging user out" => sub {
     $mech2->not_logged_in_ok;
 };
 
+subtest "Removing account from admin" => sub {
+    $mech->create_problems_for_body(4, 2237, 'Title');
+    my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
+    my $count_u = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id })->count;
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->submit_form_ok({ button => 'remove_account' }, 'Removing account');
+    my $c = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id, anonymous => 1, name => '' })->count;
+    is $c, $count_p, 'All reports anon/nameless';
+    $c = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id, anonymous => 1, name => '' })->count;
+    is $c, $count_u, 'All updates anon/nameless';
+    $user->discard_changes;
+    is $user->name, '', 'Name gone';
+    is $user->password, '', 'Password gone';
+    is $user->email, 'removed-' . $user->id . '@example.org', 'Email gone'
+};
+
 done_testing();
