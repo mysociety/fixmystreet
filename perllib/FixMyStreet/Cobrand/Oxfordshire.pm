@@ -15,8 +15,6 @@ sub is_council_with_case_management {
     return FixMyStreet->config('STAGING_SITE');
 }
 
-sub map_type { 'OSM' }
-
 sub base_url {
     my $self = shift;
     return $self->next::method() if FixMyStreet->config('STAGING_SITE');
