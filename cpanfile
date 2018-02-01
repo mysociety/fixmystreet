@@ -34,6 +34,7 @@ requires 'Authen::SASL';
 requires 'Cache::Memcached';
 requires 'Carp';
 requires 'Crypt::Eksblowfish::Bcrypt';
+requires 'Data::Password::Common';
 requires 'DateTime';
 requires 'DateTime::Format::HTTP';
 requires 'DateTime::Format::ISO8601';

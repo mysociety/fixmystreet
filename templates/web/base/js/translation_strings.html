@@ -1,4 +1,7 @@
 [% FILTER collapse %]
+var fixmystreet = fixmystreet || {};
+fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
+
     translation_strings = {
         update: '[% loc('Please enter a message') | replace("'", "\\'") %]',
         title: '[% loc('Please enter a subject') | replace("'", "\\'") %]',
@@ -18,6 +21,9 @@
         },
         password_sign_in: {
             required: '[% loc('Please enter a password') | replace("'", "\\'") %]'
+        },
+        password_register: {
+            short: '[% tprintf(loc('Please make sure your password is at least %d characters long'), c.cobrand.password_minimum_length) | replace("'", "\\'") %]',
         },
         phone: {
             required: '[% loc('Please enter your phone number') | replace("'", "\\'") %]'

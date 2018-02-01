@@ -144,10 +144,13 @@ sub process_user : Private {
 
     $update->user->name( Utils::trim_text( $params{name} ) )
         if $params{name};
-    $update->user->password( Utils::trim_text( $params{password_register} ) )
-        if $params{password_register};
     $update->user->title( Utils::trim_text( $params{fms_extra_title} ) )
         if $params{fms_extra_title};
+
+    if ($params{password_register}) {
+        $c->forward('/auth/test_password', [ $params{password_register} ]);
+        $update->user->password(Utils::trim_text($params{password_register}));
+    }
 
     return 1;
 }

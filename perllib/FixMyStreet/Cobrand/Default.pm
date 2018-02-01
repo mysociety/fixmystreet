@@ -59,6 +59,14 @@ sub path_to_email_templates {
     return $paths;
 }
 
+=item password_minimum_length
+
+Returns the minimum length a password can be set to.
+
+=cut
+
+sub password_minimum_length { 6 }
+
 =item country
 
 Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.

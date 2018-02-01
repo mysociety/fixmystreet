@@ -8,7 +8,7 @@ LWP::Protocol::PSGI->register($twilio->to_psgi_app, host => 'api.twilio.com');
 
 my $test_email    = 'test@example.com';
 my $test_email2   = 'test@example.net';
-my $test_password = 'foobar';
+my $test_password = 'foobar123';
 
 END {
     done_testing();
@@ -86,6 +86,20 @@ subtest "Test change password page" => sub {
 
     $user->discard_changes();
     ok $user->password, "user now has a password";
+};
+
+subtest 'check password length/common' => sub {
+    $mech->get_ok('/auth/change_password');
+    $mech->submit_form_ok({
+        form_name => 'change_password',
+        fields => { new_password => 'short', confirm => 'short' },
+    });
+    $mech->content_contains("Please make sure your password is at least");
+    $mech->submit_form_ok({
+        form_name => 'change_password',
+        fields => { new_password => 'common', confirm => 'common' },
+    });
+    $mech->content_contains("Please choose a less commonly-used password");
 };
 
 subtest "Test change email page" => sub {
