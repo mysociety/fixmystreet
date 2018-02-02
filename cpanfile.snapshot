@@ -28,6 +28,22 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+  Auth-GoogleAuth-1.02
+    pathname: G/GR/GRYPHON/Auth-GoogleAuth-1.02.tar.gz
+    provides:
+      Auth::GoogleAuth 1.02
+    requirements:
+      Carp 0
+      Class::Accessor 0
+      Convert::Base32 0
+      Digest::HMAC_SHA1 0
+      ExtUtils::MakeMaker 0
+      Math::Random::MT 0
+      URI::Escape 0
+      base 0
+      perl 5.008
+      strict 0
+      warnings 0
   Authen-SASL-2.16
     pathname: G/GB/GBARR/Authen-SASL-2.16.tar.gz
     provides:
@@ -292,6 +308,14 @@ DISTRIBUTIONS
       HTTP::Request::AsCGI 0
       MRO::Compat 0
       Test::More 0.88
+  Catalyst-Authentication-Credential-MultiFactor-1.2
+    pathname: T/TE/TENGU/Catalyst-Authentication-Credential-MultiFactor-1.2.tar.gz
+    provides:
+      Catalyst::Authentication::Credential::MultiFactor 1.2
+    requirements:
+      ExtUtils::MakeMaker 0
+      Moose 0
+      namespace::autoclean 0
   Catalyst-Authentication-Store-DBIx-Class-0.1503
     pathname: B/BO/BOBTFISH/Catalyst-Authentication-Store-DBIx-Class-0.1503.tar.gz
     provides:
@@ -909,6 +933,14 @@ DISTRIBUTIONS
       Test::Exception 0
       Test::More 0
       ok 0
+  Convert-Base32-0.06
+    pathname: I/IK/IKEGAMI/Convert-Base32-0.06.tar.gz
+    provides:
+      Convert::Base32 0.06
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::Exception 0
+      Test::More 0
   Cpanel-JSON-XS-3.0210
     pathname: R/RU/RURBAN/Cpanel-JSON-XS-3.0210.tar.gz
     provides:
@@ -3671,6 +3703,14 @@ DISTRIBUTIONS
       Net::Domain 1.05
       Net::SMTP 1.03
       Test::More 0
+  Math-Random-MT-1.17
+    pathname: F/FA/FANGLY/Math-Random-MT-1.17.tar.gz
+    provides:
+      Math::Random::MT 1.17
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
+      Test::Number::Delta 0
   Memoize-ExpireLRU-0.55
     pathname: B/BP/BPOWERS/Memoize-ExpireLRU-0.55.tar.gz
     provides:
@@ -6082,6 +6122,19 @@ DISTRIBUTIONS
       Test::More 0.47
       Test::Tester 0.107
       perl 5.006
+  Test-Number-Delta-1.06
+    pathname: D/DA/DAGOLDEN/Test-Number-Delta-1.06.tar.gz
+    provides:
+      Test::Number::Delta 1.06
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 6.17
+      Test::Builder 0
+      perl 5.006
+      strict 0
+      vars 0
+      warnings 0
   Test-Output-1.01
     pathname: B/BD/BDFOY/Test-Output-1.01.tar.gz
     provides:

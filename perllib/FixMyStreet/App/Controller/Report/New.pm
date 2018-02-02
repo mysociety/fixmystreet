@@ -1391,6 +1391,9 @@ sub redirect_or_confirm_creation : Private {
         return 1;
     }
 
+    # Superusers using 2FA can not log in by code
+    $c->detach( '/page_error_403_access_denied', [] ) if $report->user->has_2fa;
+
     # otherwise email or text a confirm token to them.
     my $thing = 'email';
     if ($report->user->email_verified) {

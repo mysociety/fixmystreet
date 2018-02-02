@@ -232,6 +232,9 @@ sub process_login : Private {
     $c->detach( '/page_error_403_access_denied', [] )
         if FixMyStreet->config('SIGNUPS_DISABLED') && !$user->in_storage && !$data->{old_user_id};
 
+    # Superusers using 2FA can not log in by code
+    $c->detach( '/page_error_403_access_denied', [] ) if $user->has_2fa;
+
     if ($data->{old_user_id}) {
         # Were logged in as old_user_id, want to switch to $user
         if ($user->in_storage) {

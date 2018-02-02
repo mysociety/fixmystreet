@@ -18,6 +18,7 @@
         - Fix error sending `requires_inspection` reports. #1961
     - Admin improvements:
         - Admin can anonymize/hide all a user's reports. #1942 #1943
+        - Superusers can have optional two-factor authentication. #1973
     - UK:
         - Lazy load images in the footer.
 

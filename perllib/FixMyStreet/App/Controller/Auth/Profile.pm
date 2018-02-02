@@ -157,14 +157,34 @@ sub generate_token : Path('/auth/generate_token') {
     $c->stash->{template} = 'auth/generate_token.html';
     $c->forward('/auth/get_csrf_token');
 
+    my $has_2fa = $c->user->get_extra_metadata('2fa_secret');
+
     if ($c->req->method eq 'POST') {
         $c->forward('/auth/check_csrf_token');
-        my $token = mySociety::AuthToken::random_token();
-        $c->user->set_extra_metadata('access_token', $token);
+
+        if ($c->get_param('generate_token')) {
+            my $token = mySociety::AuthToken::random_token();
+            $c->user->set_extra_metadata('access_token', $token);
+            $c->stash->{token_generated} = 1;
+        }
+
+        if ($c->get_param('toggle_2fa') && $c->user->is_superuser) {
+            if ($has_2fa) {
+                $c->user->unset_extra_metadata('2fa_secret');
+                $c->stash->{toggle_2fa_off} = 1;
+            } else {
+                my $auth = Auth::GoogleAuth->new;
+                $c->stash->{qr_code} = $auth->qr_code(undef, $c->user->email, 'FixMyStreet');
+                $c->stash->{secret32} = $auth->secret32;
+                $c->user->set_extra_metadata('2fa_secret', $auth->secret32);
+                $c->stash->{toggle_2fa_on} = 1;
+            }
+        }
+
         $c->user->update();
-        $c->stash->{token_generated} = 1;
     }
 
+    $c->stash->{has_2fa} = $has_2fa ? 1 : 0;
     $c->stash->{existing_token} = $c->user->get_extra_metadata('access_token');
 }
 

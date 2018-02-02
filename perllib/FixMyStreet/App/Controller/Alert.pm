@@ -281,20 +281,25 @@ then display confirmation page.
 sub send_confirmation_email : Private {
     my ( $self, $c ) = @_;
 
+    my $user = $c->stash->{alert}->user;
+
+    # Superusers using 2FA can not log in by code
+    $c->detach( '/page_error_403_access_denied', [] ) if $user->has_2fa;
+
     my $token = $c->model("DB::Token")->create(
         {
             scope => 'alert',
             data  => {
                 id    => $c->stash->{alert}->id,
                 type  => 'subscribe',
-                email => $c->stash->{alert}->user->email
+                email => $user->email
             }
         }
     );
 
     $c->stash->{token_url} = $c->uri_for_email( '/A', $token->token );
 
-    $c->send_email( 'alert-confirm.txt', { to => $c->stash->{alert}->user->email } );
+    $c->send_email( 'alert-confirm.txt', { to => $user->email } );
 
     $c->stash->{email_type} = 'alert';
     $c->stash->{template} = 'email_sent.html';

@@ -274,7 +274,7 @@ subtest "Test superuser can access generate token page" => sub {
         },
     });
 
-    $mech->content_lacks('Generate token');
+    $mech->content_lacks('Security');
 
     $mech->get('/auth/generate_token');
     is $mech->res->code, 403, "access denied";
@@ -282,7 +282,7 @@ subtest "Test superuser can access generate token page" => sub {
     ok $user->update({ is_superuser => 1 }), 'user is superuser';
 
     $mech->get_ok('/my');
-    $mech->content_contains('Generate token');
+    $mech->content_contains('Security');
     $mech->get_ok('/auth/generate_token');
 };
 
@@ -299,7 +299,7 @@ subtest "Test staff user can access generate token page" => sub {
         },
     });
 
-    $mech->content_lacks('Generate token');
+    $mech->content_lacks('Security');
 
     my $body = $mech->create_body_ok(2237, 'Oxfordshire');
 
@@ -309,7 +309,7 @@ subtest "Test staff user can access generate token page" => sub {
     ok $user->update({ from_body => $body }), 'user is staff user';
 
     $mech->get_ok('/my');
-    $mech->content_contains('Generate token');
+    $mech->content_contains('Security');
     $mech->get_ok('/auth/generate_token');
 };
 
@@ -333,7 +333,7 @@ subtest "Test generate token page" => sub {
     $mech->follow_link_ok({url => '/auth/generate_token'});
     $mech->content_lacks('Token:');
     $mech->submit_form_ok(
-        { with_fields => { generate_token => 'Generate token' } },
+        { button => 'generate_token' },
         "submit generate token form"
     );
     $mech->content_contains( 'Your token has been generated', "token generated" );
@@ -352,4 +352,28 @@ subtest "Test generate token page" => sub {
     $mech->log_out_ok;
     $mech->add_header('Authorization', "Bearer $token");
     $mech->logged_in_ok;
-}
+};
+
+subtest "Test two-factor authentication admin" => sub {
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    ok $user->update({ is_superuser => 1 }), 'user set to superuser';
+
+    $mech->log_in_ok($test_email);
+    $mech->get_ok('/auth/generate_token');
+    ok !$user->get_extra_metadata('2fa_secret');
+
+    $mech->submit_form_ok({ button => 'toggle_2fa' }, "submit 2FA activation");
+    $mech->content_contains('has been activated', "2FA activated");
+
+    $user->discard_changes();
+    my $token = $user->get_extra_metadata('2fa_secret');
+    ok $token, '2FA secret set';
+
+    $mech->content_contains($token, 'secret displayed');
+
+    $mech->get_ok('/auth/generate_token');
+    $mech->content_lacks($token, 'secret no longer displayed');
+
+    $mech->submit_form_ok({ button => 'toggle_2fa' }, "submit 2FA deactivation");
+    $mech->content_contains('has been deactivated', "2FA deactivated");
+};
