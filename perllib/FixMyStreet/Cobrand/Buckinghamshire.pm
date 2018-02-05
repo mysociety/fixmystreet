@@ -56,5 +56,6 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub map_type { 'Buckinghamshire' }
 
 1;
