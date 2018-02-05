@@ -81,7 +81,7 @@ requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.10';
 requires 'Net::OAuth';
 requires 'Net::Twitter::Lite::WithAPIv1_1', '0.12008';
-requires 'Number::Phone';
+requires 'Number::Phone', '3.4003';
 requires 'Path::Class';
 requires 'POSIX';
 requires 'Readonly';

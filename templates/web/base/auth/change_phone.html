@@ -18,7 +18,7 @@ END
 [% IF c.user.phone_verified OR (c.user.phone AND NOT verifying) %]
 [% loc('Your phone number') %]: [% c.user.phone_display %]
 [% ELSIF c.user.phone %]
-[% DEFAULT username = c.user.phone %]
+[% DEFAULT username = c.user.phone_display %]
 [% END %]
 
 <form method="post" name="change_phone">

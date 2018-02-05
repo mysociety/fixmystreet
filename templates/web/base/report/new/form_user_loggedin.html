@@ -31,7 +31,7 @@
 
 [% IF c.user.phone_verified %]
     <label for="form_phone">[% loc('Phone number') %]</label>
-    <input class="form-control" id="form_phone" name="phone" disabled type="text" value="[% c.user.phone | html %]">
+    <input class="form-control" id="form_phone" name="phone" disabled type="text" value="[% c.user.phone_display | html %]">
 [% END %]
 
 [% IF c.user.email_verified %]
@@ -65,7 +65,7 @@
 
 [% IF NOT c.user.phone_verified %]
     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
-    <input class="form-control" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone">
+    <input class="form-control" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
 [% END %]
 [% IF NOT c.user.email_verified %]
     <label for="form_username">[% loc('Email address (optional)') %]</label>

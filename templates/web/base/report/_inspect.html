@@ -17,7 +17,7 @@
         [% IF permissions.report_inspect AND problem.user.phone %]
           <p>
             <strong>[% loc('Phone Reporter:') %]</strong>
-            <a href="tel:[% problem.user.phone | html %]">[% problem.user.phone | html %]</a>
+            <a href="tel:[% problem.user.phone | html %]">[% problem.user.phone_display | html %]</a>
           </p>
         [% END %]
         <p>

@@ -45,8 +45,8 @@ foreach my $test (
             password_register => '', password_sign_in => '',
         },
         changes => {
-            username => '+44 121 496 0000',
-            phone => '+44 121 496 0000',
+            username => '0121 496 0000',
+            phone => '0121 496 0000',
         },
         errors => [ 'Please enter a mobile number', ],
     },

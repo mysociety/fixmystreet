@@ -154,8 +154,9 @@ sub username {
 sub phone_display {
     my $self = shift;
     return $self->phone unless $self->phone;
+    my $country = FixMyStreet->config('PHONE_COUNTRY');
     my $parsed = FixMyStreet::SMS->parse_username($self->phone);
-    return $parsed->{phone} ? $parsed->{phone}->format : $self->phone;
+    return $parsed->{phone} ? $parsed->{phone}->format_for_country($country) : $self->phone;
 }
 
 sub latest_anonymity {

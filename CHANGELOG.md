@@ -5,6 +5,7 @@
         - Zoom out as much as necessary on body map page, even on mobile. #1958
         - Show loading message on initial /around map load #1976
         - Ask for current password/send email on password change. #1974
+        - Nicer display of national phone numbers.
     - Bugfixes:
         - Fix bug specifying category in URL on /around. #1950
         - Fix bug with multiple select-multiples on a page. #1951

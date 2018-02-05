@@ -95,7 +95,7 @@ for my $test (
             password_sign_in => '',
         },
         changes => {
-            username => '+44 121 496 0000',
+            username => '0121 496 0000',
         },
         field_errors => [ 'Please enter a mobile number' ]
     },
