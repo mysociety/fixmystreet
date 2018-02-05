@@ -410,4 +410,14 @@ subtest "Hiding user's reports from admin" => sub {
     is $c, $count_u;
 };
 
+subtest "Logging user out" => sub {
+    my $mech2 = FixMyStreet::TestMech->new;
+    $mech2->log_in_ok($user->email);
+    $mech2->logged_in_ok;
+
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->submit_form_ok({ button => 'logout_everywhere' }, 'Logging user out');
+    $mech2->not_logged_in_ok;
+};
+
 done_testing();

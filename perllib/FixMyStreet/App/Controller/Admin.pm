@@ -1423,6 +1423,8 @@ sub user_edit : Path('user_edit') : Args(1) {
 
     if ( $c->get_param('submit') and $c->get_param('unban') ) {
         $c->forward('unban_user', [ $user ]);
+    } elsif ( $c->get_param('submit') and $c->get_param('logout_everywhere') ) {
+        $c->forward('user_logout_everywhere', [ $user ]);
     } elsif ( $c->get_param('submit') and $c->get_param('anon_everywhere') ) {
         $c->forward('user_anon_everywhere', [ $user ]);
     } elsif ( $c->get_param('submit') and $c->get_param('hide_everywhere') ) {
@@ -1754,6 +1756,15 @@ sub ban_user : Private {
         $c->stash->{username_in_abuse} = 1;
     }
     return 1;
+}
+
+sub user_logout_everywhere : Private {
+    my ( $self, $c, $user ) = @_;
+    my $sessions = $user->get_extra_metadata('sessions');
+    foreach (grep { $_ ne $c->sessionid } @$sessions) {
+        $c->delete_session_data("session:$_");
+    }
+    $c->stash->{status_message} = _('That user has been logged out.');
 }
 
 sub user_anon_everywhere : Private {
