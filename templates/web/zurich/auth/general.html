@@ -1,16 +1,6 @@
 [% INCLUDE 'header.html', title = loc('Sign in or create an account') %]
 
-[% IF username_error;
-
-    # other keys include fqdn, mxcheck if you'd like to write a custom error message
-
-    errors = {
-        missing_email = loc('Please enter your email'),
-        other_email = loc('Please check your email address is correct')
-    };
-
-    loc_username_error = errors.$username_error || errors.other_email;
-END %]
+[% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
 
 <form action="/auth" method="post" name="general_auth_login" class="validate">
     <fieldset>
@@ -61,9 +51,16 @@ END %]
             <input type="text" class="required" name="name" value="" placeholder="[% loc('Your name') %]">
 
             <label for="password_register">[% loc('Password (optional)') %]</label>
+          [% IF field_errors.password_register %]
+            <p class='form-error'>[% field_errors.password_register %]</p>
+          [% END %]
             <div class="form-txt-submit-box">
-                <input type="password" class="required" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+                <input type="password" class="required js-password-validate" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
                 <input class="green-btn" type="submit" name="sign_in_by_code" value="Registrieren">
+            </div>
+
+            <div class="general-notes">
+                <p>[% tprintf(loc('Your password should include %d or more characters.'), c.cobrand.password_minimum_length) %]</p>
             </div>
 
         </div>

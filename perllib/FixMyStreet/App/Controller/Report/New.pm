@@ -813,8 +813,10 @@ sub process_user : Private {
     }
 
     $c->forward('update_user', [ \%params ]);
-    $report->user->password( Utils::trim_text( $params{password_register} ) )
-        if $params{password_register};
+    if ($params{password_register}) {
+        $c->forward('/auth/test_password', [ $params{password_register} ]);
+        $report->user->password(Utils::trim_text($params{password_register}));
+    }
 
     return 1;
 }

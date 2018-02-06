@@ -62,6 +62,7 @@ sub change_password : Path('/auth/change_password') {
     $password_error ||=
        !$new && !$confirm ? 'missing'
       : $new ne $confirm ? 'mismatch'
+      : !$c->forward('/auth/test_password', [ $new ]) ? 'failed'
       :                    '';
 
     if ($password_error) {

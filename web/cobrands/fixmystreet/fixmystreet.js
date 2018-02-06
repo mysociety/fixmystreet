@@ -285,6 +285,9 @@ $.extend(fixmystreet.set_up, {
     if (jQuery.validator) {
         jQuery.validator.addMethod('validCategory', function(value, element) {
             return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+        jQuery.validator.addMethod('js-password-validate', function(value, element) {
+            return !value || value.length >= fixmystreet.password_minimum_length;
+        }, translation_strings.password_register.short);
     }
 
     var submitted = false;

@@ -59,6 +59,11 @@ sub sign_in : Private {
         return;
     }
 
+    my $password = $c->get_param('password_register');
+    if ($password) {
+        return unless $c->forward('/auth/test_password', [ $password ]);
+    }
+
     (my $number = $parsed->{phone}->format) =~ s/\s+//g;
 
     if ( FixMyStreet->config('SIGNUPS_DISABLED')
@@ -70,8 +75,7 @@ sub sign_in : Private {
     }
 
     my $user_params = {};
-    $user_params->{password} = $c->get_param('password_register')
-        if $c->get_param('password_register');
+    $user_params->{password} = $password if $password;
     my $user = $c->model('DB::User')->new( $user_params );
 
     my $token_data = {

@@ -1401,6 +1401,20 @@ DISTRIBUTIONS
       Module::Build 0.35
       Test::Exception 0
       Test::More 0
+  Data-Password-Common-0.004
+    pathname: D/DA/DAGOLDEN/Data-Password-Common-0.004.tar.gz
+    provides:
+      Data::Password::Common 0.004
+    requirements:
+      ExtUtils::MakeMaker 6.17
+      File::ShareDir 0
+      File::ShareDir::Install 0.03
+      IO::File 0
+      Search::Dict 0
+      Sub::Exporter 0
+      autodie 2.00
+      strict 0
+      warnings 0
   Data-Visitor-0.28
     pathname: D/DO/DOY/Data-Visitor-0.28.tar.gz
     provides:
