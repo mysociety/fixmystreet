@@ -40,7 +40,7 @@ install:
   - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cpanm --quiet --notest https://github.com/mysociety/codecov-perl/tarball/cover-uncoverables; fi'
 before_script:
   - commonlib/bin/gettext-makemo FixMyStreet
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst,perllib/DBIx,perllib/Email,perllib/Template,^t"; fi'
+  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/DBIx,perllib/Email,perllib/Template,^t"; fi'
 script: "script/test --jobs 3 t"
 after_success:
   - .travis/after_script
