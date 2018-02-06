@@ -21,6 +21,7 @@
         - Change text on /reports to match lower down (fix translation).
         - Ensure all reports graph can't dip downward. #1956
         - Fix error sending `requires_inspection` reports. #1961
+        - Fix timezone related test failure. #1984
     - Admin improvements:
         - Admin can anonymize/hide all a user's reports. #1942 #1943
         - Admin can log a user out. #1975

@@ -67,7 +67,9 @@ is Utils::cleanup_text( "This has new\n\n\nlines in it", { allow_multiline => 1 
 
 
 is Utils::prettify_dt(), "[unknown time]";
-my $dt = DateTime->now;
+# Make sure we create the date using the FMS timezone that prettify_dt uses
+# otherwise this can fail if the local timezone is not the same as the FMS one
+my $dt = DateTime->now( time_zone =>  FixMyStreet->time_zone || FixMyStreet->local_time_zone );
 is Utils::prettify_dt($dt), $dt->strftime("%H:%M today");
 
 # Same week test
