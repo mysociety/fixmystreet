@@ -109,8 +109,8 @@ sub report_new : Path : Args(0) {
     return unless $c->forward('check_form_submitted');
 
     $c->forward('/auth/check_csrf_token');
-    $c->forward('process_user');
     $c->forward('process_report');
+    $c->forward('process_user');
     $c->forward('/photo/process_photo');
     return unless $c->forward('check_for_errors');
     $c->forward('save_user_and_report');
@@ -147,8 +147,8 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     $c->forward('setup_categories_and_bodies');
     $c->forward('setup_report_extra_fields');
-    $c->forward('process_user');
     $c->forward('process_report');
+    $c->forward('process_user');
     $c->forward('/photo/process_photo');
 
     unless ($c->forward('check_for_errors')) {
@@ -418,7 +418,9 @@ sub report_import : Path('/import') {
 
 sub oauth_callback : Private {
     my ( $self, $c, $token_code ) = @_;
-    $c->stash->{oauth_report} = $token_code;
+    my $auth_token = $c->forward(
+        '/tokens/load_auth_token', [ $token_code, 'problem/social' ]);
+    $c->stash->{oauth_report} = $auth_token->data;
     $c->detach('report_new');
 }
 
@@ -475,9 +477,7 @@ sub initialize_report : Private {
     }
 
     if (!$report && $c->stash->{oauth_report}) {
-        my $auth_token = $c->forward( '/tokens/load_auth_token',
-            [ $c->stash->{oauth_report}, 'problem/social' ] );
-        $report = $c->model("DB::Problem")->new($auth_token->data);
+        $report = $c->model("DB::Problem")->new($c->stash->{oauth_report});
     }
 
     if ($report) {
@@ -772,7 +772,7 @@ sub process_user : Private {
     if ( $c->user_exists ) { {
         my $user = $c->user->obj;
 
-        if ($c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $c->stash->{bodies})) {
+        if ($c->stash->{contributing_as_another_user}) {
             # Act as if not logged in (and it will be auto-confirmed later on)
             $report->user(undef);
             last;
@@ -781,8 +781,7 @@ sub process_user : Private {
         $report->user( $user );
         $c->forward('update_user', [ \%params ]);
 
-        if ($c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies}) or
-            $c->stash->{contributing_as_anonymous_user} = $user->contributing_as('anonymous_user', $c, $c->stash->{bodies})) {
+        if ($c->stash->{contributing_as_body} or $c->stash->{contributing_as_anonymous_user}) {
             $report->name($user->from_body->name);
             $user->name($user->from_body->name) unless $user->name;
             $c->stash->{no_reporter_alert} = 1;
@@ -799,6 +798,11 @@ sub process_user : Private {
 
     # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
+        $c->stash->{tfa_data} = {
+            detach_to => '/report/new/report_new',
+            login_success => 1,
+            oauth_report => { $report->get_inflated_columns }
+        };
         unless ( $c->forward( '/auth/sign_in', [ $params{username} ] ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form.');
             return 1;
@@ -866,6 +870,13 @@ sub process_report : Private {
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
     $report->send_questionnaire( $c->cobrand->send_questionnaires() );
+
+    if ( $c->user_exists ) {
+        my $user = $c->user->obj;
+        $c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $c->stash->{bodies});
+        $c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies});
+        $c->stash->{contributing_as_anonymous_user} = $user->contributing_as('anonymous_user', $c, $c->stash->{bodies});
+    }
 
     # set some simple bool values (note they get inverted)
     if ($c->stash->{contributing_as_body}) {

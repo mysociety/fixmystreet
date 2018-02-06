@@ -24,7 +24,25 @@ sub authenticate {
         # We don't care unless user is a superuser and has a 2FA secret
         return $user_obj unless $user_obj->is_superuser;
         return $user_obj unless $user_obj->get_extra_metadata('2fa_secret');
-        return $user_obj if $self->check_2fa($c, $user_obj);
+
+        $c->stash->{token} = $c->get_param('token');
+
+        if ($self->check_2fa($c, $user_obj)) {
+            if ($c->stash->{token}) {
+                my $token = $c->forward('/tokens/load_auth_token', [ $c->stash->{token}, '2fa' ]);
+                # Will contain a detach_to and report/update data
+                $c->stash($token->data);
+            }
+            return $user_obj;
+        }
+
+        if ($c->stash->{tfa_data}) {
+            my $token = $c->model("DB::Token")->create( {
+                scope => '2fa',
+                data => $c->stash->{tfa_data},
+            });
+            $c->stash->{token} = $token->token;
+        }
 
         $c->stash->{template} = 'auth/2faform.html';
         $c->detach;

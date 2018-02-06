@@ -273,6 +273,11 @@ Used after signing in to take the person back to where they were.
 
 sub redirect_on_signin : Private {
     my ( $self, $c, $redirect, $params ) = @_;
+
+    if ($c->stash->{detach_to}) {
+        $c->detach($c->stash->{detach_to}, $c->stash->{detach_args});
+    }
+
     unless ( $redirect ) {
         $c->detach('redirect_to_categories') if $c->user->from_body && scalar @{ $c->user->categories };
         $redirect = 'my';
