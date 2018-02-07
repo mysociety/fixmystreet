@@ -1,0 +1,66 @@
+[% INCLUDE 'report/new/form_heading.html' %]
+
+[% IF field_errors.bodies %]
+    <p class='form-error'>[% field_errors.bodies %]</p>
+[% END %]
+
+[% PROCESS "report/new/category_wrapper.html" %]
+[% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
+
+    <h2 class="form-section-heading">[% loc( 'Public details' ) %]</h2>
+    <div class="form-section-description" id="js-councils_text">
+      [% IF js %]
+        [% PROCESS 'report/new/councils_text_all.html' list_of_names = [ loc('the local council') ] %]
+      [% ELSE %]
+        [% PROCESS 'report/new/councils_text.html' %]
+      [% END %]
+    </div>
+
+    <label for="form_title">[% loc('Summarise the problem') %]</label>
+[% IF field_errors.title %]
+    <p class='form-error'>[% field_errors.title %]</p>
+[% END %]
+    <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="Exact location" required>
+
+[% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
+
+[% IF c.cobrand.allow_photo_upload %]
+    <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+    <label for="form_photo">
+        <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
+    </label>
+
+  [% IF field_errors.photo %]
+    <p class='form-error'>[% field_errors.photo %]</p>
+  [% END %]
+
+    <div id="form_photos">
+      [% IF upload_fileid %]
+        <p>[% loc('You have already attached photos to this report.  Note that you can attach a maximum of 3 to this report (if you try to upload more, the oldest will be removed).') %]</p>
+        [% FOREACH id IN upload_fileid.split(',') %]
+        <img align="right" src="/photo/temp.[% id %]" alt="">
+        [% END %]
+      [% END %]
+        <input type="file" name="photo1" id="form_photo">
+        <label for="form_photo2">[% loc('Photo') %]</label>
+        <input type="file" name="photo2" id="form_photo2">
+        <label for="form_photo3">[% loc('Photo') %]</label>
+        <input type="file" name="photo3" id="form_photo3">
+    </div>
+[% END %]
+
+[% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
+
+    <label for="form_detail">[% loc('Explain what’s wrong') %]</label>
+[% IF field_errors.detail %]
+    <p class='form-error'>[% field_errors.detail %]</p>
+[% END %]
+    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" placeholder="Dimensions, landmarks, direction of travel etc." required>[% report.detail | html %]</textarea>
+
+[% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
+
+[% IF partial_token %]
+    <input type="hidden" name="partial" value="[% partial_token.token %]">
+[% END %]
+
+    <input type="hidden" name="submit_problem" value="1">
