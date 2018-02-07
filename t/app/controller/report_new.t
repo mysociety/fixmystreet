@@ -1236,9 +1236,7 @@ for my $test (
         is $user->title, $test->{'user_title'}, 'user title correct';
         is_deeply $extras, $test->{extra}, 'extra contains correct values';
 
-        $user->problems->delete;
-        $user->alerts->delete;
-        $user->delete;
+        $mech->delete_user($user);
     };
 }
 
@@ -1705,9 +1703,7 @@ subtest "extra google analytics code displayed on email confirmation problem cre
 
         $mech->content_contains( "'id': 'report/" . $report->id . "'", 'extra google code present' );
 
-        $user->problems->delete;
-        $user->alerts->delete;
-        $user->delete;
+        $mech->delete_user($user);
     };
 };
 

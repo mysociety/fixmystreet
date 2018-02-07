@@ -18,13 +18,14 @@ use URI;
 use URI::QueryParam;
 
 use Catalyst (
-    'Static::Simple',    #
+    'Static::Simple',
     'Unicode::Encoding',
     'Session',
     'Session::Store::DBIC',
     'Session::State::Cookie',    # FIXME - we're using our own override atm
     'Authentication',
     'SmartURI',
+    'FixMyStreet::Session::StoreSessions',
 );
 
 extends 'Catalyst';

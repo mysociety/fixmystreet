@@ -21,6 +21,8 @@
         - Fix error sending `requires_inspection` reports. #1961
     - Admin improvements:
         - Admin can anonymize/hide all a user's reports. #1942 #1943
+        - Admin can log a user out. #1975
+        - Admin can remove a user's account details. #1944
     - UK:
         - Lazy load images in the footer.
 
