@@ -23,6 +23,7 @@
         - Admin can anonymize/hide all a user's reports. #1942 #1943
         - Admin can log a user out. #1975
         - Admin can remove a user's account details. #1944
+        - Superusers can have optional two-factor authentication. #1973
     - UK:
         - Lazy load images in the footer.
 

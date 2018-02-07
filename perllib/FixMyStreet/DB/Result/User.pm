@@ -400,6 +400,11 @@ sub admin_user_body_permissions {
     });
 }
 
+sub has_2fa {
+    my $self = shift;
+    return $self->is_superuser && $self->get_extra_metadata('2fa_secret');
+}
+
 sub contributing_as {
     my ($self, $other, $c, $bodies) = @_;
     $bodies = [ keys %$bodies ] if ref $bodies eq 'HASH';

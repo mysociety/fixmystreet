@@ -62,10 +62,19 @@ __PACKAGE__->config(
     'Plugin::Authentication' => {
         default_realm => 'default',
         default       => {
-            credential => {    # Catalyst::Authentication::Credential::Password
-                class              => 'Password',
-                password_field     => 'password',
-                password_type      => 'self_check',
+            credential => {
+                class => 'MultiFactor',
+                factors => [
+                  # Catalyst::Authentication::Credential::Password
+                  {
+                      class => 'Password',
+                      password_field => 'password',
+                      password_type => 'self_check',
+                  },
+                  {
+                      class => '2FA',
+                  },
+                ],
             },
             store => {         # Catalyst::Authentication::Store::DBIx::Class
                 class      => 'DBIx::Class',

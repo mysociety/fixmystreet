@@ -18,6 +18,7 @@ requires 'CGI', '4.38';
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.80031';
 requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Authentication::Credential::MultiFactor';
 requires 'Catalyst::Authentication::Store::DBIx::Class';
 requires 'Catalyst::Devel';
 requires 'Catalyst::Model::Adaptor';
@@ -30,6 +31,7 @@ requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'Catalyst::View::TT';
 
 # Modules used by FixMyStreet
+requires 'Auth::GoogleAuth';
 requires 'Authen::SASL';
 requires 'Cache::Memcached';
 requires 'Carp';

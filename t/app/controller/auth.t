@@ -299,3 +299,26 @@ subtest 'check common password AJAX call' => sub {
     $mech->post_ok('/auth/common_password', { password_register => 'squirblewirble' });
     $mech->content_contains("true");
 };
+
+subtest "Test two-factor authentication login" => sub {
+    use Auth::GoogleAuth;
+    my $auth = Auth::GoogleAuth->new;
+    my $code = $auth->code;
+    my $wrong_code = $auth->code(undef, time() - 120);
+
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    $user->is_superuser(1);
+    $user->password('password');
+    $user->set_extra_metadata('2fa_secret', $auth->secret32);
+    $user->update;
+
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        { with_fields => { username => $test_email, password_sign_in => 'password' } },
+        "sign in using form" );
+    $mech->content_contains('Please generate a two-factor code');
+    $mech->submit_form_ok({ with_fields => { '2fa_code' => $wrong_code } }, "provide wrong 2FA code" );
+    $mech->content_contains('Try again');
+    $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+    $mech->logged_in_ok;
+};

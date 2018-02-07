@@ -705,7 +705,11 @@ subtest "test password errors for a user who is signing in as they report" => su
     ], "check there were errors";
 };
 
-subtest "test report creation for a user who is signing in as they report" => sub {
+foreach my $test (
+  { two_factor => 0, desc => '', },
+  { two_factor => 1, desc => ' with two-factor', },
+) {
+  subtest "test report creation for a user who is signing in as they report$test->{desc}" => sub {
     $mech->log_out_ok;
     $mech->cookie_jar({});
     $mech->clear_emails_ok;
@@ -721,6 +725,15 @@ subtest "test report creation for a user who is signing in as they report" => su
         phone    => '01234 567 890',
         password => 'secret2',
     } ), "set user details";
+
+    my $auth;
+    if ($test->{two_factor}) {
+        use Auth::GoogleAuth;
+        $auth = Auth::GoogleAuth->new;
+        $user->is_superuser(1);
+        $user->set_extra_metadata('2fa_secret', $auth->generate_secret32);
+        $user->update;
+    }
 
     # submit initial pc form
     $mech->get_ok('/around');
@@ -742,13 +755,22 @@ subtest "test report creation for a user who is signing in as they report" => su
                     title         => 'Test Report',
                     detail        => 'Test report details.',
                     photo1        => '',
-                    username      => 'test-2@example.com',
+                    username      => $test_email,
                     password_sign_in => 'secret2',
                     category      => 'Street lighting',
                 }
             },
             "submit good details"
         );
+
+        if ($test->{two_factor}) {
+            my $code = $auth->code;
+            my $wrong_code = $auth->code(undef, time() - 120);
+            $mech->content_contains('Please generate a two-factor code');
+            $mech->submit_form_ok({ with_fields => { '2fa_code' => $wrong_code } }, "provide wrong 2FA code" );
+            $mech->content_contains('Try again');
+            $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+        }
 
         # check that we got the message expected
         $mech->content_contains( 'You have successfully signed in; please check and confirm your details are accurate:' );
@@ -768,7 +790,10 @@ subtest "test report creation for a user who is signing in as they report" => su
     my $report = $user->problems->first;
     ok $report, "Found the report";
 
-    $mech->content_contains('Thank you for reporting this issue');
+    if (!$test->{two_factor}) {
+        # The superuser account will be immediately redirected
+        $mech->content_contains('Thank you for reporting this issue');
+    }
 
     # Check the report has been assigned appropriately
     is $report->bodies_str, $body_ids{2651};
@@ -793,7 +818,8 @@ subtest "test report creation for a user who is signing in as they report" => su
 
     # cleanup
     $mech->delete_user($user)
-};
+  };
+}
 
 #### test report creation for user with account and logged in
 my ($saved_lat, $saved_lon);

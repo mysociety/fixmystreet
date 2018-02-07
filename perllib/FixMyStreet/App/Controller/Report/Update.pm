@@ -131,6 +131,11 @@ sub process_user : Private {
 
     # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
+        $c->stash->{tfa_data} = {
+            detach_to => '/report/update/report_update',
+            login_success => 1,
+            oauth_update => { $update->get_inflated_columns }
+        };
         unless ( $c->forward( '/auth/sign_in', [ $params{username} ] ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form.');
             return 1;
@@ -164,7 +169,9 @@ what we have so far.
 
 sub oauth_callback : Private {
     my ( $self, $c, $token_code ) = @_;
-    $c->stash->{oauth_update} = $token_code;
+    my $auth_token = $c->forward('/tokens/load_auth_token',
+        [ $token_code, 'update/social' ]);
+    $c->stash->{oauth_update} = $auth_token->data;
     $c->detach('report_update');
 }
 
@@ -179,9 +186,7 @@ sub initialize_update : Private {
 
     my $update;
     if ($c->stash->{oauth_update}) {
-        my $auth_token = $c->forward( '/tokens/load_auth_token',
-            [ $c->stash->{oauth_update}, 'update/social' ] );
-        $update = $c->model("DB::Comment")->new($auth_token->data);
+        $update = $c->model("DB::Comment")->new($c->stash->{oauth_update});
     }
 
     if ($update) {
@@ -480,6 +485,9 @@ sub redirect_or_confirm_creation : Private {
         $c->stash->{template} = 'tokens/confirm_update.html';
         return 1;
     }
+
+    # Superusers using 2FA can not log in by code
+    $c->detach( '/page_error_403_access_denied', [] ) if $update->user->has_2fa;
 
     my $data = $c->stash->{token_data};
     $data->{id} = $update->id;

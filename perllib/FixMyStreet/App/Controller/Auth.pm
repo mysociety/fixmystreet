@@ -243,6 +243,9 @@ sub process_login : Private {
     $c->detach( '/page_error_403_access_denied', [] )
         if FixMyStreet->config('SIGNUPS_DISABLED') && !$user->in_storage && !$data->{old_user_id};
 
+    # Superusers using 2FA can not log in by code
+    $c->detach( '/page_error_403_access_denied', [] ) if $user->has_2fa;
+
     if ($data->{old_user_id}) {
         # Were logged in as old_user_id, want to switch to $user
         if ($user->in_storage) {
@@ -281,6 +284,11 @@ Used after signing in to take the person back to where they were.
 
 sub redirect_on_signin : Private {
     my ( $self, $c, $redirect, $params ) = @_;
+
+    if ($c->stash->{detach_to}) {
+        $c->detach($c->stash->{detach_to}, $c->stash->{detach_args});
+    }
+
     unless ( $redirect ) {
         $c->detach('redirect_to_categories') if $c->user->from_body && scalar @{ $c->user->categories };
         $redirect = 'my';
