@@ -263,6 +263,8 @@ sub _add_meta_to_contact {
         #2217
         'Buckinghamshire County Council' => [qw(
             report_url
+            title
+            description
         ) ],
     );
 

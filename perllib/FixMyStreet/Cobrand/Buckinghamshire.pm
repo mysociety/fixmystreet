@@ -51,11 +51,23 @@ sub open311_config {
     my $extra = $row->get_extra_fields;
     push @$extra,
         { name => 'report_url',
-          value => $h->{url} };
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail };
 
     $row->set_extra_fields(@$extra);
 }
 
 sub map_type { 'Buckinghamshire' }
+
+sub default_map_zoom { 3 }
+
+sub category_extra_hidden {
+    my ($self, $meta) = @_;
+    return 1 if $meta eq 'asset_details';
+    return 0;
+}
 
 1;
