@@ -55,7 +55,7 @@ sub check_2fa {
     if (my $code = $c->get_param('2fa_code')) {
         my $auth = Auth::GoogleAuth->new;
         my $secret32 = $user->get_extra_metadata('2fa_secret');
-        return 1 if $auth->verify($code, 1, $secret32);
+        return 1 if $auth->verify($code, 2, $secret32);
         $c->stash->{incorrect_code} = 1;
     }
     return 0;
