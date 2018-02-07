@@ -31,6 +31,7 @@ PATH=/usr/local/bin:/usr/bin:/bin
 13 * * * * "$FMS/bin/update-all-reports"
 
 # Once a day on all servers
+0  0 * * * "$FMS/bin/expire-sessions"
 39 2 * * * "$FMS/bin/problems-filed-graph"
 43 2 * * * "$FMS/bin/problem-creation-graph"
 00 8 * * * "$FMS/bin/check-for-zombies" $UNIX_USER

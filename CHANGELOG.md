@@ -27,6 +27,7 @@
         - Admin can log a user out. #1975
         - Admin can remove a user's account details. #1944
         - Superusers can have optional two-factor authentication. #1973
+        - Add script to remove expired sessions. #1987
     - UK:
         - Lazy load images in the footer.
 

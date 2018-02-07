@@ -1,0 +1,79 @@
+#!/usr/bin/env perl
+
+# expire-sessions: Run regularly to remove old sessions (plus
+# can set up data for 'log user out' admin functionality).
+
+use strict;
+use warnings;
+require 5.8.0;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use Getopt::Long;
+use List::Util qw(uniq);
+use MIME::Base64;
+use Storable;
+
+GetOptions(
+    'init' => \my $init,
+);
+
+my $rs = FixMyStreet::DB->resultset("Session");
+
+# Delete expired sessions (including from in User object)
+while (my $session = $rs->search({ expires => { '<', time() } })->next) {
+    if (my $user = get_user($session)) {
+        my $id = get_id($session);
+        my $sessions = $user->get_extra_metadata('sessions');
+        my @new_sessions = grep { $_ ne $id } @$sessions;
+        update_user_sessions($user, \@new_sessions) if @new_sessions != @$sessions;
+    }
+    $session->delete;
+}
+
+if ($init) {
+    # Update sessions to make sure all present in User objects
+    print "Setting up sessions in user objects\n";
+    while (my $session = $rs->next) {
+        my $user = get_user($session) or next;
+        my $id = get_id($session);
+        my $sessions = $user->get_extra_metadata('sessions');
+        my @new_sessions = uniq @$sessions, $id;
+        update_user_sessions($user, \@new_sessions) if @new_sessions != @$sessions;
+    }
+}
+
+# ---
+
+sub get_user {
+    my $session = shift;
+    return unless $session->session_data;
+    my $data = Storable::thaw(MIME::Base64::decode($session->session_data));
+    return unless $data->{__user};
+    my $user = FixMyStreet::DB->resultset("User")->find($data->{__user}{id});
+    return $user;
+}
+
+sub get_id {
+    my $session = shift;
+    my $id = $session->id;
+    $id =~ s/^session://;
+    $id =~ s/\s+$//;
+    return $id;
+}
+
+sub update_user_sessions {
+    my ($user, $sessions) = @_;
+    if (@$sessions) {
+        $user->set_extra_metadata('sessions', $sessions);
+    } else {
+        $user->unset_extra_metadata('sessions');
+    }
+    $user->update;
+}
