@@ -23,7 +23,7 @@ fixmystreet.assets.add({
     min_resolution: 0.5971642833948135,
     asset_id_field: 'central_as',
     attributes: {
-        column_id: 'n'
+        asset_details: 'central_as'
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:3857"
@@ -48,7 +48,7 @@ fixmystreet.assets.add({
     min_resolution: 0.5971642833948135,
     asset_id_field: 'central_as',
     attributes: {
-        column_id: 'n'
+        asset_details: 'central_as'
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:3857"
