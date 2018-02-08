@@ -96,6 +96,6 @@ sub available_permissions {
     return $permissions;
 }
 
-
+sub report_sent_confirmation_email { 1 }
 
 1;
