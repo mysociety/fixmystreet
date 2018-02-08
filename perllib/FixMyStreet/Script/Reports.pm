@@ -306,9 +306,9 @@ sub _send_report_sent_email {
         $h,
         {
             To => $row->user->email,
-            From => [ FixMyStreet->config('CONTACT_EMAIL'), $cobrand->contact_name ],
+            From => [ $cobrand->contact_email, $cobrand->contact_name ],
         },
-        FixMyStreet->config('CONTACT_EMAIL'),
+        $cobrand->contact_email,
         $nomail,
         $cobrand,
         $row->lang,
