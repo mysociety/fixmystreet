@@ -25,6 +25,7 @@
         - Admin can log a user out. #1975
         - Admin can remove a user's account details. #1944
         - Superusers can have optional two-factor authentication. #1973
+        - Inspectors can set non_public status of reports. #1992
     - UK:
         - Lazy load images in the footer.
 

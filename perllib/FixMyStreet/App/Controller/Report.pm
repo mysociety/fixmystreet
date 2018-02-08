@@ -76,7 +76,7 @@ sub _display : Private {
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
 
-    my $permissions = $c->stash->{_permissions} = $c->forward( 'check_has_permission_to',
+    my $permissions = $c->stash->{_permissions} ||= $c->forward( 'check_has_permission_to',
         [ qw/report_inspect report_edit_category report_edit_priority/ ] );
     if (any { $_ } values %$permissions) {
         $c->stash->{template} = 'report/inspect.html';
@@ -128,7 +128,11 @@ sub load_problem_or_display_error : Private {
             [ _('That report has been removed from FixMyStreet.') ]    #
         );
     } elsif ( $problem->non_public ) {
-        if ( !$c->user || $c->user->id != $problem->user->id ) {
+        # Creator, and inspection users can see non_public reports
+        $c->stash->{problem} = $problem;
+        my $permissions = $c->stash->{_permissions} = $c->forward( 'check_has_permission_to',
+            [ qw/report_inspect report_edit_category report_edit_priority/ ] );
+        if ( !$c->user || ($c->user->id != $problem->user->id && !$permissions->{report_inspect}) ) {
             $c->detach(
                 '/page_error_403_access_denied',
                 [ sprintf(_('That report cannot be viewed on %s.'), $c->stash->{site_name}) ]
@@ -337,6 +341,8 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
+            $problem->non_public($c->get_param('non_public') ? 1 : 0);
+
             $problem->set_extra_metadata( traffic_information => $c->get_param('traffic_information') );
 
             if ( my $info = $c->get_param('detailed_information') ) {
