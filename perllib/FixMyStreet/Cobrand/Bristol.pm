@@ -20,7 +20,7 @@ sub example_places {
 }
 
 sub map_type {
-    'Bristol';
+    'OSM';
 }
 
 sub default_link_zoom { 6 }
