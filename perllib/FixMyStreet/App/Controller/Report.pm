@@ -450,22 +450,24 @@ sub inspect : Private {
             }
             $problem->lastupdate( \'current_timestamp' );
             $problem->update;
-            my $timestamp = \'current_timestamp';
-            if (my $saved_at = $c->get_param('saved_at')) {
-                $timestamp = DateTime->from_epoch( epoch => $saved_at );
+            if ($update_text || %update_params) {
+                my $timestamp = \'current_timestamp';
+                if (my $saved_at = $c->get_param('saved_at')) {
+                    $timestamp = DateTime->from_epoch( epoch => $saved_at );
+                }
+                my $name = $c->user->from_body ? $c->user->from_body->name : $c->user->name;
+                $problem->add_to_comments( {
+                    text => $update_text,
+                    created => $timestamp,
+                    confirmed => $timestamp,
+                    user_id => $c->user->id,
+                    name => $name,
+                    state => 'confirmed',
+                    mark_fixed => 0,
+                    anonymous => 0,
+                    %update_params,
+                } );
             }
-            my $name = $c->user->from_body ? $c->user->from_body->name : $c->user->name;
-            $problem->add_to_comments( {
-                text => $update_text,
-                created => $timestamp,
-                confirmed => $timestamp,
-                user_id => $c->user->id,
-                name => $name,
-                state => 'confirmed',
-                mark_fixed => 0,
-                anonymous => 0,
-                %update_params,
-            } );
 
             my $redirect_uri;
             $problem->discard_changes;
