@@ -172,7 +172,7 @@ sub setup_page_data : Private {
         $c,
         latitude  => $pins->[0]{latitude},
         longitude => $pins->[0]{longitude},
-        pins      => $pins,
+        pins      => $c->get_param('no_pins') ? [] : $pins,
         any_zoom  => 1,
     )
         if @$pins;

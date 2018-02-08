@@ -7,6 +7,21 @@
 
 [% IF problems.size %]
     [% map_html %]
+
+  [% IF c.req.params.no_pins %]
+    <a class="big-hide-pins-link" rel='nofollow' href="[% c.uri_with( { no_pins => undef } ) %]">[% loc('Show pins') %]</a>
+  [% ELSE %]
+    <a class="big-hide-pins-link" rel='nofollow' href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
+  [% END %]
+
+    <p id='sub_map_links'>
+      [% IF c.req.params.no_pins %]
+        <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => undef } ) %]">[% loc('Show pins') %]</a>
+      [% ELSE %]
+        <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
+      [% END %]
+    </p>
+
     </div>
     <div id="map_sidebar">
         <div id="side">
