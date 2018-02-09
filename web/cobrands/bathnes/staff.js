@@ -64,25 +64,6 @@ $(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     always_visible: true
 })));
 
-// var highways = $.extend(true, {}, fixmystreet.maps.banes_defaults, {
-//     http_options: {
-//         url: "https://confirmdev.eu.ngrok.io/localmaps/",
-//         params: {
-//             TYPENAMES: "ms:adoptedhighwaysbng",
-//             TYPENAME: null,
-//             mapsource: null,
-//             SRSNAME: "urn:ogc:def:crs:EPSG::27700",
-//             outputFormat: 'geojson'
-//         },
-//     },
-//     srsName: "EPSG:27700",
-//     stylemap: highways_stylemap,
-//     non_interactive: true,
-//     always_visible: true
-// });
-// console.log(highways);
-
-// $(fixmystreet.add_assets(highways));
 
 
 })();
