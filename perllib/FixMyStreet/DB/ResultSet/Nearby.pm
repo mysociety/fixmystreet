@@ -17,12 +17,13 @@ sub nearby {
     }
 
     my $params = {
-        non_public => 0,
         state => [ keys %$states ],
     };
     $params->{id} = { -not_in => $ids }
         if $ids;
     $params->{category} = $categories if $categories && @$categories;
+
+    FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c);
 
     $rs = $c->cobrand->problems_restriction($rs);
 
