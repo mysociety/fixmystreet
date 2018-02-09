@@ -86,7 +86,7 @@ sub send {
         $params->{From} = $self->send_from( $row );
     } else {
         $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
-        my $name = sprintf(_("On behalf of %s"), $params->{From}[1]);
+        my $name = sprintf(_("On behalf of %s"), @{ $self->send_from($row) }[1]);
         $params->{From} = [ $sender, $name ];
     }
 
