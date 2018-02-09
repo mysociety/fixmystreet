@@ -113,7 +113,7 @@ function check_zoom_message_visibility() {
 
 function layer_visibilitychanged() {
     check_zoom_message_visibility.call(this);
-    var layers = fixmystreet.map.getLayersByName('WFS');
+    var layers = fixmystreet.map.getLayersBy('assets', true);
     var visible = 0;
     for (var i = 0; i<layers.length; i++) {
         if (layers[i].getVisibility()) {
@@ -304,7 +304,8 @@ fixmystreet.add_assets = function(options) {
             visibility: false,
             maxResolution: options.max_resolution,
             minResolution: options.min_resolution,
-            styleMap: options.stylemap || get_asset_stylemap()
+            styleMap: options.stylemap || get_asset_stylemap(),
+            assets: true
         };
         if (options.srsName !== undefined) {
             layer_options.projection = new OpenLayers.Projection(options.srsName);
@@ -319,7 +320,7 @@ fixmystreet.add_assets = function(options) {
                 value: options.filter_value
             });
         }
-        asset_layer = new OpenLayers.Layer.Vector("WFS", layer_options);
+        asset_layer = new OpenLayers.Layer.Vector(options.name || "WFS", layer_options);
 
         // A non-interactive layer to display existing street light faults
         if (options.wfs_fault_feature) {
@@ -331,7 +332,8 @@ fixmystreet.add_assets = function(options) {
             var lo = {
                 strategies: [new OpenLayers.Strategy.BBOX()],
                 protocol: fault_protocol,
-                styleMap: get_fault_stylemap()
+                styleMap: get_fault_stylemap(),
+                assets: true
             };
             OpenLayers.Util.applyDefaults(lo, layer_options);
             asset_fault_layer = new OpenLayers.Layer.Vector("WFS", lo);
