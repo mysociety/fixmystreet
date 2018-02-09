@@ -33,7 +33,7 @@ fixmystreet.maps.banes_defaults = {
 };
 
 
-$(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "Gritbins"
@@ -44,7 +44,7 @@ $(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     attributes: {
         asset_details: 'feature_location'
     }
-})));
+}));
 
 
 
@@ -143,7 +143,7 @@ var lighting_stylemap = new OpenLayers.StyleMap({
 });
 
 
-$(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "StreetLighting"
@@ -164,6 +164,6 @@ $(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
                    "description: " + a.unitdescription;
         }
     }
-})));
+}));
 
 })();

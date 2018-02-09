@@ -40,7 +40,7 @@ var highways_stylemap = new OpenLayers.StyleMap({
 });
 
 
-$(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "LLPG"
@@ -51,9 +51,9 @@ $(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     stylemap: llpg_stylemap,
     non_interactive: true,
     always_visible: true
-})));
+}));
 
-$(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "AdoptedHighways"
@@ -62,8 +62,7 @@ $(fixmystreet.add_assets($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     stylemap: highways_stylemap,
     non_interactive: true,
     always_visible: true
-})));
-
+}));
 
 
 })();
