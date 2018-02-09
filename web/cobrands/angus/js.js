@@ -4,7 +4,7 @@ if (!fixmystreet.maps) {
     return;
 }
 
-$(fixmystreet.add_assets({
+fixmystreet.assets.add({
     wfs_url: "https://data.angus.gov.uk/geoserver/services/wfs",
     wfs_feature: "lighting_column_v",
     wfs_fault_feature: "lighting_faults_v",
@@ -18,6 +18,6 @@ $(fixmystreet.add_assets({
         column_id: 'n'
     },
     geometryName: 'g'
-}));
+});
 
 })();

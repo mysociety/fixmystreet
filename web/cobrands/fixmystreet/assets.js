@@ -17,7 +17,7 @@ function asset_selected(e) {
     close_fault_popup();
     var lonlat = e.feature.geometry.getBounds().getCenterLonLat();
 
-    // Check if there is a known fault with the light that's been clicked,
+    // Check if there is a known fault with the asset that's been clicked,
     // and disallow selection if so.
     var fault_feature = find_matching_feature(e.feature, this.fixmystreet.fault_layer, this.fixmystreet.asset_id_field);
     if (!!fault_feature) {
@@ -45,7 +45,7 @@ function asset_selected(e) {
 
     // Hide the normal markers layer to keep things simple, but
     // move the green marker to the point of the click to stop
-    // it jumping around unexpectedly if the user deselects street light.
+    // it jumping around unexpectedly if the user deselects the asset.
     fixmystreet.markers.setVisibility(false);
     fixmystreet.markers.features[0].move(lonlat);
 
@@ -191,6 +191,10 @@ function layer_loadend() {
 }
 
 function get_asset_stylemap() {
+    // fixmystreet.pin_prefix isn't always available here (e.g. on /report/new),
+    // so get it from the DOM directly
+    var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data').getAttribute('data-pin_prefix');
+
     return new OpenLayers.StyleMap({
         'default': new OpenLayers.Style({
             fillColor: "#FFFF00",
@@ -201,13 +205,13 @@ function get_asset_stylemap() {
             pointRadius: 6
         }),
         'select': new OpenLayers.Style({
-            externalGraphic: fixmystreet.pin_prefix + "pin-spot.png",
+            externalGraphic: pin_prefix + "pin-spot.png",
             fillColor: "#55BB00",
             graphicWidth: 48,
             graphicHeight: 64,
             graphicXOffset: -24,
             graphicYOffset: -56,
-            backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow.png",
+            backgroundGraphic: pin_prefix + "pin-shadow.png",
             backgroundWidth: 60,
             backgroundHeight: 30,
             backgroundXOffset: -7,
@@ -240,31 +244,14 @@ function get_fault_stylemap() {
     });
 }
 
-fixmystreet.add_assets = function(options) {
-    var asset_layer = null;
-    var asset_fault_layer = null;
+fixmystreet.assets = {
+    layers: [],
+    controls: [],
 
-    function add_assets() {
-        if (asset_layer !== null) {
-            // Layer has already been added
-            return;
-        }
-        if (window.fixmystreet === undefined) {
-            // We're on a page without a map, yet somehow still got called...
-            // Nothing to do.
-            return;
-        }
-        if (fixmystreet.map === undefined) {
-            // Map's not loaded yet, let's try again soon...
-            setTimeout(add_assets, 250);
-            return;
-        }
-        if (fixmystreet.page != 'new' && fixmystreet.page != 'around') {
-            // We only want to show light markers when making a new report
-            return;
-        }
+    add: function(options) {
+        var asset_fault_layer = null;
 
-        // An interactive layer for selecting a street light
+        // An interactive layer for selecting an asset (e.g. street light)
         var protocol_options;
         var protocol;
         if (options.http_options !== undefined) {
@@ -273,7 +260,6 @@ fixmystreet.add_assets = function(options) {
                 protocol_options.format = new protocol_options.format_class(protocol_options.format_options);
             } else {
                 protocol_options.format = new OpenLayers.Format.GML({
-                    featureNS: "http://mapserver.gis.umn.edu/mapserver",
                     geometryName: options.geometryName
                 });
             }
@@ -287,8 +273,7 @@ fixmystreet.add_assets = function(options) {
             };
             if (options.srsName !== undefined) {
                 protocol_options.srsName = options.srsName;
-            }
-            if (fixmystreet.wmts_config && protocol_options.srsName === undefined) {
+            } else if (fixmystreet.wmts_config) {
                 protocol_options.srsName = fixmystreet.wmts_config.map_projection;
             }
             if (options.propertyNames) {
@@ -309,8 +294,7 @@ fixmystreet.add_assets = function(options) {
         };
         if (options.srsName !== undefined) {
             layer_options.projection = new OpenLayers.Projection(options.srsName);
-        }
-        if (fixmystreet.wmts_config && layer_options.projection === undefined) {
+        } else if (fixmystreet.wmts_config) {
             layer_options.projection = new OpenLayers.Projection(fixmystreet.wmts_config.map_projection);
         }
         if (options.filter_key) {
@@ -320,9 +304,10 @@ fixmystreet.add_assets = function(options) {
                 value: options.filter_value
             });
         }
-        asset_layer = new OpenLayers.Layer.Vector(options.name || "WFS", layer_options);
 
-        // A non-interactive layer to display existing street light faults
+        var asset_layer = new OpenLayers.Layer.Vector(options.name || "WFS", layer_options);
+
+        // A non-interactive layer to display existing asset faults
         if (options.wfs_fault_feature) {
             var po = {
                 featureType: options.wfs_fault_feature
@@ -356,7 +341,7 @@ fixmystreet.add_assets = function(options) {
         // Even if an asset layer is marked as non-interactive it can still have
         // a hover style which we'll need to set up.
         if (!options.non_interactive || (options.stylemap && options.stylemap.styles.hover)) {
-            // Set up handlers for simply hovering over a street light marker
+            // Set up handlers for simply hovering over an asset marker
             hover_feature_control = new OpenLayers.Control.SelectFeature(
                 asset_layer,
                 {
@@ -373,9 +358,6 @@ fixmystreet.add_assets = function(options) {
                 }
             });
         }
-        if (options.asset_category) {
-            fixmystreet.map.events.register( 'zoomend', asset_layer, check_zoom_message_visibility);
-        }
         if (!options.always_visible) {
             asset_layer.events.register( 'visibilitychanged', asset_layer, layer_visibilitychanged);
         }
@@ -384,59 +366,83 @@ fixmystreet.add_assets = function(options) {
         asset_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
         asset_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
 
-        fixmystreet.map.addLayer(asset_layer);
+        fixmystreet.assets.layers.push(asset_layer);
         if (options.always_visible) {
             asset_layer.setVisibility(true);
         }
         if (asset_fault_layer) {
-            fixmystreet.map.addLayer(asset_fault_layer);
+            fixmystreet.assets.layers.push(asset_fault_layer);
         }
         if (hover_feature_control) {
-            fixmystreet.map.addControl( hover_feature_control );
-            hover_feature_control.activate();
+            fixmystreet.assets.controls.push(hover_feature_control);
         }
         if (select_feature_control) {
-            fixmystreet.map.addControl( select_feature_control );
-            select_feature_control.activate();
+            fixmystreet.assets.controls.push(select_feature_control);
         }
 
-        // Make sure the fault markers always appear beneath the street lights
+        // Make sure the fault markers always appear beneath the linked assets
         if (asset_fault_layer) {
             asset_fault_layer.setZIndex(asset_layer.getZIndex()-1);
         }
 
-        // Show/hide the asset layer when the category is chosen
-        $("#problem_form").on("change.category", "select#form_category", function(){
-            var category = $(this).val();
-            if (category == options.asset_category) {
-                asset_layer.setVisibility(true);
-                if (asset_fault_layer) {
-                    asset_fault_layer.setVisibility(true);
+        if (!asset_layer.fixmystreet.always_visible) {
+            // Show/hide the asset layer when the category is chosen
+            $("#problem_form").on("change.category", "select#form_category", function(){
+                var category = $(this).val();
+                if (category == options.asset_category) {
+                    asset_layer.setVisibility(true);
+                    if (asset_fault_layer) {
+                        asset_fault_layer.setVisibility(true);
+                    }
+                    zoom_to_assets(asset_layer);
+                } else {
+                    asset_layer.setVisibility(false);
+                    if (asset_fault_layer) {
+                        asset_fault_layer.setVisibility(false);
+                    }
                 }
-                zoom_to_assets(asset_layer);
-            } else {
-                asset_layer.setVisibility(false);
-                if (asset_fault_layer) {
-                    asset_fault_layer.setVisibility(false);
-                }
-            }
-        });
-    }
-
-    // Make sure the assets get hidden if the back button is pressed
-    fixmystreet.maps.display_around = (function(original) {
-        function hide_assets() {
-            asset_layer.setVisibility(false);
-            if (asset_fault_layer) {
-                asset_fault_layer.setVisibility(false);
-            }
-            fixmystreet.markers.setVisibility(true);
-            original.apply(fixmystreet.maps);
+            });
         }
-        return hide_assets;
-    })(fixmystreet.maps.display_around);
+    },
 
-    return add_assets;
+    init: function() {
+        if (fixmystreet.page != 'new' && fixmystreet.page != 'around') {
+            // We only want to show asset markers when making a new report
+            return;
+        }
+
+        // Make sure the assets get hidden if the back button is pressed
+        fixmystreet.maps.display_around = (function(original) {
+            function hide_assets() {
+                for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
+                    var layer = fixmystreet.assets.layers[i];
+                    if (!layer.fixmystreet.always_visible) {
+                        layer.setVisibility(false);
+                    }
+                }
+                fixmystreet.markers.setVisibility(true);
+                original.apply(fixmystreet.maps);
+            }
+            return hide_assets;
+        })(fixmystreet.maps.display_around);
+
+        for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
+            var layer = fixmystreet.assets.layers[i];
+            fixmystreet.map.addLayer(layer);
+            if (layer.fixmystreet.asset_category) {
+                fixmystreet.map.events.register( 'zoomend', layer, check_zoom_message_visibility);
+            }
+        }
+
+        for (i = 0; i < fixmystreet.assets.controls.length; i++) {
+            fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
+            fixmystreet.assets.controls[i].activate();
+        }
+    }
 };
+
+$(function() {
+    fixmystreet.assets.init();
+});
 
 })();
