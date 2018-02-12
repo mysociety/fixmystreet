@@ -1,21 +1,23 @@
 ## Releases
 
 * Unreleased
+
+* v2.3.1 (12th February 2018)
     - Front end improvements:
         - Zoom out as much as necessary on body map page, even on mobile. #1958
         - Show loading message on initial /around map load #1976
         - Ask for current password/send email on password change. #1974
-        - Add minimum password length and common password checking.
-        - Nicer display of national phone numbers.
+        - Add minimum password length and common password checking. #1981
+        - Nicer display of national phone numbers. #1982
         - 'Report as another user' allows phone number without email. #1978
         - Display loading spinner on map when asset layers are loading. #1991
     - Bugfixes:
         - Fix bug specifying category in URL on /around. #1950
         - Fix bug with multiple select-multiples on a page. #1951
-        - Make sure dashboard filters all fit onto one line.
-        - Fix issue with red bars on bar graph of many categories.
-        - Prefetch translations in /reports list of bodies.
-        - Ignore deleted/area-less bodies in dashboard list.
+        - Make sure dashboard filters all fit onto one line. #1938
+        - Fix issue with red bars on bar graph of many categories. #1938
+        - Prefetch translations in /reports list of bodies. #1941
+        - Ignore deleted/area-less bodies in dashboard list. #1941
         - Add missing CSS class from final questionnaire question. #1953
         - Fix JavaScript error on /my calculating bounds #1954
         - Change text on /reports to match lower down (fix translation).
