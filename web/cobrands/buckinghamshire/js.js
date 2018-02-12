@@ -25,7 +25,8 @@ fixmystreet.assets.add({
         asset_details: 'central_as'
     },
     geometryName: 'msGeometry',
-    srsName: "EPSG:3857"
+    srsName: "EPSG:3857",
+    strategy_class: OpenLayers.Strategy.FixMyStreet
 });
 
 fixmystreet.assets.add({
@@ -49,7 +50,8 @@ fixmystreet.assets.add({
         asset_details: 'central_as'
     },
     geometryName: 'msGeometry',
-    srsName: "EPSG:3857"
+    srsName: "EPSG:3857",
+    strategy_class: OpenLayers.Strategy.FixMyStreet
 });
 
 
