@@ -6,14 +6,13 @@ if (!fixmystreet.maps) {
 
 fixmystreet.assets.add({
     http_options: {
-        url: "https://davea.tilma.dev.mysociety.org/mapserv.fcgi?map=fixmystreet.map",
-        // url: "https://confirmdev.eu.ngrok.io/tilma/mapserv.fcgi?map=fixmystreet.map",
+        url: "https://davea.tilma.dev.mysociety.org/mapserver/bucks",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
             REQUEST: "GetFeature",
             SRSNAME: "urn:ogc:def:crs:EPSG::3857",
-            TYPENAME: "bucksgritbins"
+            TYPENAME: "Grit_Bins"
         }
     },
     asset_category: "Grit bins",
@@ -31,14 +30,13 @@ fixmystreet.assets.add({
 
 fixmystreet.assets.add({
     http_options: {
-        url: "https://davea.tilma.dev.mysociety.org/mapserv.fcgi?map=fixmystreet.map",
-        // url: "https://confirmdev.eu.ngrok.io/tilma/mapserv.fcgi?map=fixmystreet.map",
+        url: "https://davea.tilma.dev.mysociety.org/mapserver/bucks",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
             REQUEST: "GetFeature",
             SRSNAME: "urn:ogc:def:crs:EPSG::3857",
-            TYPENAME: "bucksstreetlamps"
+            TYPENAME: "SL_Merged"
         }
     },
     asset_category: "Street lighting",
