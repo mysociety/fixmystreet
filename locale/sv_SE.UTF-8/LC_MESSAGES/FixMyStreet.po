@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2017-12-15 17:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Jon Kristensen <info@jonkri.com>, 2017\n"
+"Last-Translator: Jon Kristensen <info@jonkri.com>, 2018\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +34,7 @@ msgstr " eller "
 
 #: templates/web/base/report/_inspect.html:152
 msgid "%d characters maximum"
-msgstr ""
+msgstr "som flest %d tecken"
 
 #: templates/web/base/admin/edit-league.html:12
 msgid "%d edits by %s"
@@ -90,7 +90,7 @@ msgstr "%s uppdateringar"
 #: templates/web/base/dashboard/index.html:159
 #: templates/web/base/dashboard/index.html:163
 msgid "%s opened, %s closed, %s fixed"
-msgstr ""
+msgstr "%s öppnade, %s stängda, %s lösta"
 
 #: templates/web/base/status/stats.html:25
 msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
@@ -211,18 +211,16 @@ msgid "<strong>No</strong> Let me confirm my report by email"
 msgstr "<strong>Nej</strong> Låt mig bekräfta min rapport via epost"
 
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:3
-#, fuzzy
 msgid "<strong>No</strong> Let me confirm my report by email/text"
-msgstr "<strong>Nej</strong> Låt mig bekräfta min rapport via epost"
+msgstr "<strong>Nej</strong> Låt mig bekräfta min rapport via epost/SMS"
 
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:5
 msgid "<strong>No</strong> Let me confirm my update by email"
 msgstr "<strong>Nej</strong> Låt mig bekräfta uppdateringen via epost"
 
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:3
-#, fuzzy
 msgid "<strong>No</strong> Let me confirm my update by email/text"
-msgstr "<strong>Nej</strong> Låt mig bekräfta uppdateringen via epost"
+msgstr "<strong>Nej</strong> Låt mig bekräfta min uppdatering via epost/SMS"
 
 #: templates/web/base/auth/general.html:110
 #: templates/web/zurich/auth/general.html:51
@@ -230,9 +228,8 @@ msgid "<strong>No</strong> let me sign in by email"
 msgstr "<strong>Nej</strong> Låt mig logga in med min epostadress"
 
 #: templates/web/base/auth/general.html:108
-#, fuzzy
 msgid "<strong>No</strong> let me sign in by email or text"
-msgstr "<strong>Nej</strong> Låt mig logga in med min epostadress"
+msgstr "<strong>Nej</strong> låt mig logga in via epost eller SMS"
 
 #: templates/web/base/report/_inspect.html:177
 msgid "<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on."
@@ -250,7 +247,7 @@ msgstr "<strong>Ja</strong>, jag har ett lösenord"
 
 #: templates/web/base/my/my.html:39 templates/web/base/my/my.html:50
 msgid "Add"
-msgstr ""
+msgstr "Lägg till"
 
 #: templates/web/base/admin/body-form.html:3
 #: templates/web/base/admin/body-form.html:4
@@ -272,9 +269,8 @@ msgstr "Lägg till förvaltning"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:7
-#, fuzzy
 msgid "Add email address"
-msgstr "Förbjud epostadress"
+msgstr "Lägg till epostadress"
 
 #: templates/web/base/admin/reportextrafields/index.html:24
 msgid "Add extra fields"
@@ -299,9 +295,8 @@ msgstr "Lägg till alternativ"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:7
-#, fuzzy
 msgid "Add phone number"
-msgstr "(Inget telefonnummer)"
+msgstr "Lägg till telefonnummer"
 
 #: templates/web/base/report/_item.html:10
 #: templates/web/base/report/_item.html:16
@@ -497,9 +492,8 @@ msgid "Authorised staff users can be associated with the categories in which the
 msgstr "Bemyndigade kommunanvändare kan vara associerade med de kategorier som de arbetar med."
 
 #: templates/web/base/admin/templates.html:9
-#, fuzzy
 msgid "Auto Response"
-msgstr "Autosvar:"
+msgstr "Automatiskt svar"
 
 #: templates/web/base/admin/template_edit.html:64
 msgid "Auto-response:"
@@ -531,9 +525,8 @@ msgid "Back to all reports"
 msgstr "Tillbaka till samtliga rapporter"
 
 #: templates/web/base/admin/report_blocks.html:18
-#, fuzzy
 msgid "Ban user"
-msgstr "Flagga användare"
+msgstr "Förbjud användare"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:633
 #: perllib/FixMyStreet/Cobrand/Default.pm:717
@@ -595,9 +588,8 @@ msgid "Category"
 msgstr "Kategori"
 
 #: templates/web/base/dashboard/index.html:102
-#, fuzzy
 msgid "Category and State"
-msgstr "Kategori"
+msgstr "Kategori och tillstånd"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:975
 msgid "Category changed from ‘%s’ to ‘%s’"
@@ -623,9 +615,8 @@ msgstr "Kategori: %s"
 
 #: templates/web/base/my/my.html:41 templates/web/base/my/my.html:44
 #: templates/web/base/my/my.html:52 templates/web/base/my/my.html:57
-#, fuzzy
 msgid "Change"
-msgstr "Ändra e-postadress"
+msgstr "Ändra"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:3
@@ -642,9 +633,8 @@ msgstr "Ändra lösenord"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:3
-#, fuzzy
 msgid "Change phone number"
-msgstr "(Inget telefonnummer)"
+msgstr "Ändra telefonnummer"
 
 #: templates/web/base/admin/contact-form.html:80
 msgid "Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent."
@@ -884,13 +874,12 @@ msgid "Created:"
 msgstr "Skapad:"
 
 #: templates/web/base/auth/generate_token.html:27
-#, fuzzy
 msgid "Current token:"
-msgstr "Nuvarande status"
+msgstr "Nuvarande token:"
 
 #: templates/web/base/dashboard/index.html:91
 msgid "Currently grouped by %s"
-msgstr ""
+msgstr "För närvarande grupperade efter %s"
 
 #: templates/web/base/admin/bodies.html:9
 #: templates/web/base/admin/index.html:17
@@ -956,7 +945,7 @@ msgstr "Beskrivning:"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:350
 msgid "Detailed information is limited to %d characters."
-msgstr ""
+msgstr "Detaljerad information är begränsad till %d tecken."
 
 #: templates/web/base/js/translation_strings.html:33
 #: templates/web/zurich/report/new/fill_in_details_form.html:45
@@ -972,7 +961,7 @@ msgstr "Detaljer:"
 
 #: templates/web/base/dashboard/index.html:103
 msgid "Device and Site"
-msgstr ""
+msgstr "Enhet och sajt"
 
 #: templates/web/base/admin/body.html:92
 msgid "Devolved"
@@ -1126,9 +1115,8 @@ msgstr "E-postadress"
 
 #: templates/web/base/report/new/form_user_loggedin.html:71
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:34
-#, fuzzy
 msgid "Email address (optional)"
-msgstr "E-postadress"
+msgstr "Epostadress (valfri)"
 
 #: templates/web/base/tokens/confirm_alert.html:6
 msgid "Email alert created"
@@ -1140,7 +1128,7 @@ msgstr "E-postnotifikation borttagen"
 
 #: templates/web/base/admin/user-form.html:22
 msgid "Email verified:"
-msgstr ""
+msgstr "Epost bekräftad:"
 
 #: templates/web/base/admin/report_edit.html:138
 #: templates/web/base/admin/user-form.html:19 templates/web/base/my/my.html:36
@@ -1174,9 +1162,8 @@ msgid ""
 msgstr "Aktivera <strong>Kan överlåtas</strong>-inställningen om en eller flera kontakter har en annorlunda ändpunkt (och utskicksmetod) än förvaltningen. Vissa kategorier kan exempelvis skickas över e-post, medan andra över Open311."
 
 #: templates/web/base/dashboard/index.html:77
-#, fuzzy
 msgid "End Date"
-msgstr "Slutdatum:"
+msgstr "Slutdatum"
 
 #: templates/web/base/admin/open311-form-fields.html:21
 msgid "Endpoint"
@@ -1403,7 +1390,7 @@ msgstr "Vanliga frågor"
 #: templates/web/base/auth/generate_token.html:33
 #: templates/web/base/my/my.html:65
 msgid "Generate token"
-msgstr ""
+msgstr "Generera token"
 
 #: templates/web/base/around/_updates.html:3
 #: templates/web/base/report/display_tools.html:14
@@ -1457,13 +1444,12 @@ msgid "Graph of problem creation by status over time"
 msgstr "Visualisering av rapporter över tid"
 
 #: templates/web/base/dashboard/index.html:93
-#, fuzzy
 msgid "Group by %s"
-msgstr "av %s"
+msgstr "Gruppera efter %s"
 
 #: templates/web/base/dashboard/index.html:98
 msgid "Group by:"
-msgstr ""
+msgstr "Gruppera efter:"
 
 #: templates/web/base/questionnaire/index.html:48
 msgid "Has this problem been fixed?"
@@ -1486,9 +1472,8 @@ msgid "Help <strong>%s</strong> resolve your problem quicker, by providing some 
 msgstr "Hjälp <strong>%s</strong> lösa ditt problem snabbare genom att tillhandahålla lite extra uppgifter. Den här informationen kommer inte att visas offentligt på sajten."
 
 #: templates/web/base/around/on_map_list_items.html:8
-#, fuzzy
 msgid "Here are some other nearby reports:"
-msgstr "Foton från närliggande rapporter"
+msgstr "Här är några andra närliggande rapporter:"
 
 #: templates/web/zurich/footer.html:11
 msgid "Hi %s"
@@ -1607,7 +1592,7 @@ msgstr "Om ikryssad så kommer användaren inte att se ett textfält, utan endas
 
 #: templates/web/base/admin/template_edit.html:59
 msgid "If ticked, this template will be used for Open311 updates that put problems in this state."
-msgstr ""
+msgstr "Om ikryssad kommer den här mallen att användas för Open311-uppdateringar som försätter rapporter i detta tillstånd."
 
 #: templates/web/base/admin/contact-form.html:14
 msgid ""
@@ -1617,7 +1602,7 @@ msgstr "Om två eller fler förvaltningar delar på ett geografiskt område, kom
 
 #: templates/web/base/auth/generate_token.html:39
 msgid "If you generate a new token the existing token will no longer work."
-msgstr ""
+msgstr "Om du genererar en ny token så kommer den token som används nu att sluta fungera."
 
 #: templates/web/base/questionnaire/completed.html:8
 msgid "If you get some more information about the status of your problem, please come back to the site and leave an update."
@@ -1872,9 +1857,8 @@ msgid "Log in with email"
 msgstr "Logga in med e-post"
 
 #: templates/web/base/js/translation_strings.html:63
-#, fuzzy
 msgid "Log in with email/text"
-msgstr "Logga in med e-post"
+msgstr "Logga in med epost/SMS"
 
 #: templates/web/base/dashboard/index.html:81
 msgid "Look up"
@@ -2007,9 +1991,8 @@ msgid "Navigate to this problem"
 msgstr "Navigera till det här problemet"
 
 #: templates/web/base/report/_inspect.html:39
-#, fuzzy
 msgid "Nearest calculated address:"
-msgstr "Ny e-postadress:"
+msgstr "Beräknad närmaste adress:"
 
 #: perllib/FixMyStreet/Geocode/FixaMinGata.pm:160
 #: perllib/FixMyStreet/Geocode/OSM.pm:145
@@ -2042,9 +2025,8 @@ msgid "Nearly done! Now check your email&hellip;"
 msgstr "Nästan klart! Kolla nu din epost."
 
 #: templates/web/base/auth/smsform.html:19
-#, fuzzy
 msgid "Nearly done! Now check your phone&hellip;"
-msgstr "Nästan klart! Kolla nu din epost."
+msgstr "Nästan klart! Kolla meddelandet som har skickats till din telefon."
 
 #: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:131
 msgid "New"
@@ -2080,9 +2062,8 @@ msgid "New password:"
 msgstr "Nytt lösenord:"
 
 #: templates/web/base/auth/change_phone.html:38
-#, fuzzy
 msgid "New phone number:"
-msgstr "(Inget telefonnummer)"
+msgstr "Nytt telefonnummer:"
 
 #: templates/web/base/admin/responsepriorities/edit.html:4
 #: templates/web/base/admin/responsepriorities/list.html:34
@@ -2188,7 +2169,7 @@ msgstr "Inga inspektioner i det valda datumintervallet."
 
 #: templates/web/base/around/on_map_list_items.html:13
 msgid "No reports to show on map, here are some nearby:"
-msgstr ""
+msgstr "Det finns inga rapporter att visa på kartan. Här är några närliggande rapporter:"
 
 #: templates/web/base/js/translation_strings.html:37
 msgid "No result returned"
@@ -2287,9 +2268,8 @@ msgid "Number of problems reported in each category, in the last 7 days."
 msgstr "Antalet problem rapporterade för varje kategori, under de senaste sju dagarna."
 
 #: templates/web/base/reports/index.html:99
-#, fuzzy
 msgid "Number of problems reported in each ward, in the last 7 days."
-msgstr "Antalet problem rapporterade för varje kategori, under de senaste sju dagarna."
+msgstr "Antalet problem rapporterad i varje kommun, under de senaste sju dagarna."
 
 #: templates/web/base/js/translation_strings.html:43
 msgid "OK"
@@ -2313,7 +2293,7 @@ msgstr "Äldst"
 
 #: perllib/FixMyStreet/SendReport/Email.pm:89
 msgid "On behalf of %s"
-msgstr ""
+msgstr "På uppdrag av %s"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:174
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:905
@@ -2380,9 +2360,8 @@ msgid "Other categories"
 msgstr "Andra kategorier"
 
 #: templates/web/base/reports/index.html:107
-#, fuzzy
 msgid "Other wards"
-msgstr "andra områden:"
+msgstr "Andra kommuner"
 
 #: templates/web/base/reports/index.html:120
 msgid "Overall average"
@@ -2442,9 +2421,8 @@ msgid "Phone number (optional)"
 msgstr "Telefonnummer (valfritt)"
 
 #: templates/web/base/admin/user-form.html:30
-#, fuzzy
 msgid "Phone verified:"
-msgstr "Telefonrapportör:"
+msgstr "Telefonnummer verifierat:"
 
 #: templates/web/base/admin/report_edit.html:135
 #: templates/web/base/admin/user-form.html:27 templates/web/base/my/my.html:47
@@ -2497,7 +2475,6 @@ msgstr "Välj din kommun"
 
 #: templates/web/base/reports/index.html:66
 #: templates/web/base/reports/index.html:69
-#, fuzzy
 msgid "Pick your ward"
 msgstr "Välj din kommun"
 
@@ -2536,9 +2513,8 @@ msgstr "Vänligen kontrollera att din epostadress är korrekt"
 #: perllib/FixMyStreet/DB/Result/User.pm:198
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:7
-#, fuzzy
 msgid "Please check your phone number is correct"
-msgstr "Vänligen kontrollera att din epostadress är korrekt"
+msgstr "Kontrollera att ditt telefonnummer är korrekt"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:297
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:905
@@ -2575,9 +2551,8 @@ msgstr "Skriv in ett meddelande"
 #: perllib/FixMyStreet/DB/Result/User.pm:200
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:4
-#, fuzzy
 msgid "Please enter a mobile number"
-msgstr "Skriv in ditt telefonnummer"
+msgstr "Skriv in ett mobiltelefonnummer"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1365
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1461
@@ -2616,9 +2591,8 @@ msgstr "Skriv in en giltig epostadress"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1356
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1446
-#, fuzzy
 msgid "Please enter a valid email or phone number"
-msgstr "Skriv in ditt telefonnummer"
+msgstr "Skriv in en giltig epostadress eller ett giltigt telefonnummer"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:369
 #: templates/web/base/js/translation_strings.html:5
@@ -2719,9 +2693,8 @@ msgid "Please note:"
 msgstr "Observera:"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:385
-#, fuzzy
 msgid "Please provide a duplicate ID or public update for this report."
-msgstr "Tillhandahåll en offentlig uppdatering för den här rapporten."
+msgstr "Ange ett dublett-ID eller en offentlig uppdatering för den här rapporten."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:367
 msgid "Please provide a public update for this report."
@@ -2766,7 +2739,7 @@ msgstr "Ladda upp endast en bild"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1359
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1449
 msgid "Please verify at least one of email/phone"
-msgstr ""
+msgstr "Verifiera epostadressen, telefonnumret, eller båda"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:116
 msgid "Please write a message"
@@ -3082,7 +3055,7 @@ msgstr "Ta bort foto (kan inte ångras!)"
 
 #: templates/web/base/auth/generate_token.html:33
 msgid "Replace token"
-msgstr ""
+msgstr "Ersätt token"
 
 #: templates/web/zurich/admin/report_edit.html:239
 msgid "Reply to user:"
@@ -3435,7 +3408,7 @@ msgstr "Skicka utökade Open311-statusar med Service Request-uppdateringar"
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:5
 msgid "Sending a confirmation text failed: \"%s\""
-msgstr ""
+msgstr "SMS-bekräftelsetexten kunde inte skickas: \"%s\""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:831
 msgid "Sent report back"
@@ -3535,9 +3508,8 @@ msgid "Sign in by email instead, providing a new password. When you click the li
 msgstr "Sätt ett nytt lösenord och logga in med din e-postadress istället. När du klickar på länken i vårt e-postmeddelande så kommer ditt lösenord att uppdateras."
 
 #: templates/web/base/auth/general.html:96
-#, fuzzy
 msgid "Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated."
-msgstr "Sätt ett nytt lösenord och logga in med din e-postadress istället. När du klickar på länken i vårt e-postmeddelande så kommer ditt lösenord att uppdateras."
+msgstr "Ange ett nytt lösenord och logga in via epost eller SMS. När du klickar på länken i mejlet eller anger SMS-koden så kommer ditt lösenord att uppdateras."
 
 #: templates/web/base/auth/general.html:1
 #: templates/web/zurich/auth/general.html:1
@@ -3580,9 +3552,8 @@ msgid "Sorry, that wasn&rsquo;t a valid link"
 msgstr "Länken är tyvärr ogiltig"
 
 #: templates/web/base/auth/smsform.html:16
-#, fuzzy
 msgid "Sorry, that wasn&rsquo;t the correct code"
-msgstr "Länken är tyvärr ogiltig"
+msgstr "Koden var inkorrekt."
 
 #: templates/web/base/tokens/abuse.html:5
 msgid "Sorry, there has been an error confirming your problem."
@@ -3634,9 +3605,8 @@ msgid "Staff:"
 msgstr "Personal:"
 
 #: templates/web/base/dashboard/index.html:73
-#, fuzzy
 msgid "Start Date"
-msgstr "Startdatum:"
+msgstr "Startdatum"
 
 #: templates/web/base/admin/body.html:73
 #: templates/web/base/admin/category_edit.html:29
@@ -3704,9 +3674,8 @@ msgid "String"
 msgstr "Sträng"
 
 #: templates/web/base/report/new/category.html:35
-#, fuzzy
 msgid "Subcategory"
-msgstr "Underkategori: %s"
+msgstr "Underkategori"
 
 #: perllib/FixMyStreet/Script/Reports.pm:191
 msgid "Subcategory: %s"
@@ -3797,9 +3766,8 @@ msgstr "Sammanställningsrapporter"
 
 #: templates/web/base/admin/stats/index.html:7
 #: templates/web/base/dashboard/index.html:21
-#, fuzzy
 msgid "Summary statistics"
-msgstr "Sammanställningsrapporter"
+msgstr "Sammanfattningsstatistik"
 
 #: templates/web/base/admin/user-form.html:151
 msgid "Superuser:"
@@ -4043,7 +4011,7 @@ msgstr "Det finns inga rapporter att visa."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1140
 msgid "There is already an auto-response template for this category/state."
-msgstr ""
+msgstr "Det finns redan en automatiskt svarsmall för denna kategori eller detta tillstånd."
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:82
 msgid "There was a problem showing the All Reports page. Please try again later."
@@ -4062,9 +4030,8 @@ msgstr "Felaktigt lösenord eller epostadress. Försök igen."
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:135
 #: templates/web/base/auth/general.html:51
 #: templates/web/zurich/auth/general.html:28
-#, fuzzy
 msgid "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form."
-msgstr "Felaktigt lösenord eller epostadress. Om du har glömt bort ditt lösenord, eller om du inte har ett lösenord, kan du fylla i &lsquo;logga in via epost&rsquo;."
+msgstr "Dina inloggningsuppgifter stämde inte. Om du inte kommer ihåg ditt lösenord, eller inte har ett lösenord, fyll då i &lsquo;Nej&rsquo;-sektionen av formuläret."
 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:338
 msgid "There was a problem with your update. Please try again."
@@ -4147,7 +4114,7 @@ msgstr "Den här informationen krävs"
 
 #: templates/web/base/admin/template_edit.html:19
 msgid "This is a <strong>private</strong> name for this template so you can identify it when updating reports or editing in the admin."
-msgstr ""
+msgstr "Detta är ett <strong>ej offentligt</strong> namn för den här mallen, så att du kan känna igen den när du uppdaterar rapporter eller gör ändringar i administrationsgränssnittet."
 
 #: templates/web/base/debug_header.html:3
 msgid "This is a developer site; things might break at any time, and the database will be periodically deleted."
@@ -4155,7 +4122,7 @@ msgstr "Det här är en utvecklingsplats: olika saker kan komma att gå sönder 
 
 #: templates/web/base/admin/template_edit.html:29
 msgid "This is the <strong>public</strong> text that will be shown on the site."
-msgstr ""
+msgstr "Detta är den <strong>offentliga</strong> text som kommer att visas på sajten."
 
 #: templates/web/base/report/new/form_report.html:58
 msgid "This pothole has been here for two months and…"
@@ -4254,7 +4221,7 @@ msgstr "För att visa en karta med den exakta positionen för problemet"
 
 #: templates/web/base/auth/generate_token.html:11
 msgid "Token:"
-msgstr ""
+msgstr "Token:"
 
 #: templates/web/base/reports/index.html:126
 msgid "Top 5 most used categories"
@@ -4266,7 +4233,7 @@ msgstr "De mest responsiva kommunerna"
 
 #: templates/web/base/reports/index.html:98
 msgid "Top 5 wards"
-msgstr ""
+msgstr "Topp 5-kommuner"
 
 #: templates/web/base/admin/stats/fix_rate.html:4
 #: templates/web/base/admin/stats/questionnaire.html:24
@@ -4319,7 +4286,7 @@ msgstr "Typ"
 
 #: templates/web/base/admin/user-form.html:38
 msgid "Unban"
-msgstr ""
+msgstr "Ta tillbaka förbud"
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:63
 #: templates/web/base/admin/contact-form.html:55
@@ -4480,20 +4447,18 @@ msgstr "Användar-ID att attribuera hämtade kommentarer till"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1745
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1755
-#, fuzzy
 msgid "User added to abuse list"
-msgstr "Epostadressen tillagd till missbrukslistan"
+msgstr "Användaren har lagts till i missbruklistan"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1376
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1473
 msgid "User already exists"
-msgstr ""
+msgstr "Användaren finns redan"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1742
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1752
-#, fuzzy
 msgid "User already in abuse list"
-msgstr "Epostadressen finns redan i missbrukslistan"
+msgstr "Användaren finns redan i missbruklistan"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1834
 msgid "User flag removed"
@@ -4506,9 +4471,8 @@ msgstr "Användaren flaggad"
 #: templates/web/base/admin/report_blocks.html:18
 #: templates/web/base/admin/user-form.html:38
 #: templates/web/base/admin/users.html:32
-#, fuzzy
 msgid "User in abuse table"
-msgstr "I missbrukstabellen?"
+msgstr "Användare i missbruktabell"
 
 #: templates/web/base/admin/users.html:5
 msgid "User search finds matches in users' names and email addresses."
@@ -4516,9 +4480,8 @@ msgstr "Användarsökningen matchar mot användares namn och e-postadresser."
 
 #: templates/web/base/admin/report_edit.html:129
 #: templates/web/base/admin/update_edit.html:36
-#, fuzzy
 msgid "User:"
-msgstr "Användare"
+msgstr "Användare:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:652
 #: perllib/FixMyStreet/Cobrand/Default.pm:711
@@ -4539,19 +4502,17 @@ msgstr "Värden uppdaterade"
 
 #: templates/web/base/my/my.html:43 templates/web/base/my/my.html:55
 msgid "Verify"
-msgstr ""
+msgstr "Verifiera"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:5
-#, fuzzy
 msgid "Verify email address"
-msgstr "Ny e-postadress:"
+msgstr "Verifiera epostadress"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:5
-#, fuzzy
 msgid "Verify phone number"
-msgstr "Ditt telefonnummer"
+msgstr "Verifiera telefonnummer"
 
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/update_edit.html:18
@@ -4584,9 +4545,8 @@ msgstr "Delområden i denna kommun"
 
 #: templates/web/base/alert/choose.html:6
 #: templates/web/base/around/_error_multiple.html:6
-#, fuzzy
 msgid "We found more than one match for that location."
-msgstr "Vi hittade mer än en träff för den problemreferensen:"
+msgstr "Vi hittade fler än en träff för den platsen."
 
 #: templates/web/base/around/lookup_by_ref.html:6
 msgid "We found more than one match for that problem reference:"
@@ -4594,7 +4554,7 @@ msgstr "Vi hittade mer än en träff för den problemreferensen:"
 
 #: templates/web/base/auth/smsform.html:20
 msgid "We have sent a confirmation code to your phone. Please enter it below:"
-msgstr ""
+msgstr "Vi har skickat en bekräftelsekod till din telefon. Skriv in den nedan:"
 
 #: templates/web/base/auth/general.html:8
 #: templates/web/base/report/display.html:35
@@ -4612,9 +4572,8 @@ msgstr "Vi skickar rapportern till berörd kommun"
 
 #: templates/web/base/alert/choose.html:12
 #: templates/web/base/around/_error_multiple.html:12
-#, fuzzy
 msgid "We show up to ten matches, please try a different search if yours is not here."
-msgstr "Vi hittade fler än en träff. Vi visar upp till tio träffar nedan. Om ingen av dem överenstämmer med vald adress kan du söka igen. Om du söker efter en gata, lägg till stad efteråt: \"Vasagatan, Göteborg\" för att förfina sökningen."
+msgstr "Vi visar upp till tio träffar. Försök med en annan sökning om din inte finns med."
 
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
@@ -4627,7 +4586,7 @@ msgstr "Tråkigt att problemet inte åtgärdats. Du kan prova att skriva direkt 
 
 #: templates/web/base/dashboard/index.html:117
 msgid "Website"
-msgstr ""
+msgstr "Webbplats"
 
 #: templates/web/base/contact/submit.html:7
 msgid "We’ll get back to you as soon as we can."
@@ -4679,7 +4638,7 @@ msgstr "Vid sökningar är det också möjligt att söka efter agency_responsibl
 
 #: templates/web/base/dashboard/index.html:158
 msgid "Within the specified timeframe:"
-msgstr ""
+msgstr "Inom den specificerade tidsramen:"
 
 #: templates/web/base/front/footer-marketing.html:3
 msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
@@ -4804,9 +4763,8 @@ msgid "You have located the problem at the point marked with a green pin on the 
 msgstr "Du har markerat problemet med den gröna nålmarkören på kartan. Om det inte är rätt position, klicka på rätt plats på kartan igen."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:125
-#, fuzzy
 msgid "You have successfully added your phone number."
-msgstr "Du har bekräftat din e-postadress."
+msgstr "Du har lagt till ditt telefonnummer."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:141
 #: templates/web/zurich/tokens/confirm_problem.html:5
@@ -4815,14 +4773,12 @@ msgid "You have successfully confirmed your email address."
 msgstr "Du har bekräftat din e-postadress."
 
 #: templates/web/base/auth/change_phone.html:15
-#, fuzzy
 msgid "You have successfully confirmed your phone number."
-msgstr "Du har bekräftat din e-postadress."
+msgstr "Du har bekräftat ditt telefonnummer."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:112
-#, fuzzy
 msgid "You have successfully removed your phone number."
-msgstr "Du har bekräftat din e-postadress."
+msgstr "Du har tagit bort ditt telefonnummer."
 
 #: templates/web/base/report/display.html:25
 #: templates/web/base/report/new/login_success_form.html:3
@@ -4830,9 +4786,8 @@ msgid "You have successfully signed in; please check and confirm your details ar
 msgstr "Du har loggats in. Verifiera att dina uppgifter stämmer:"
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:147
-#, fuzzy
 msgid "You have successfully verified your phone number."
-msgstr "Du har bekräftat din e-postadress."
+msgstr "Du har verifierat ditt telefonnummer."
 
 #: templates/web/base/my/my.html:73
 msgid "You haven&rsquo;t created any reports yet.  <a href=\"%s\">Report a problem now.</a>"
@@ -4884,9 +4839,8 @@ msgstr "Din epostadress"
 #: templates/web/base/auth/general.html:42
 #: templates/web/base/report/new/form_user_loggedout_email.html:2
 #: templates/web/base/report/update/form_user_loggedout_email.html:2
-#, fuzzy
 msgid "Your email or mobile"
-msgstr "Din epostadress"
+msgstr "Din epostadress eller ditt mobiltelefonnummer"
 
 #: templates/web/base/report/updates-sidebar-notes.html:3
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
@@ -4948,9 +4902,8 @@ msgid "Your shortlist"
 msgstr "Din slutlista"
 
 #: templates/web/base/auth/generate_token.html:8
-#, fuzzy
 msgid "Your token has been generated"
-msgstr "Ditt namn har dolts."
+msgstr "Din token har genererats"
 
 #: templates/web/base/js/translation_strings.html:70
 msgid "Your update has been saved offline for submission when back online."
@@ -4962,7 +4915,7 @@ msgstr "Dina uppdateringar"
 
 #: perllib/FixMyStreet/SMS.pm:46
 msgid "Your verification code is %s"
-msgstr ""
+msgstr "Din verifieringskod är %s"
 
 #: templates/web/base/report/new/form_user_loggedin.html:19
 #: templates/web/base/report/update/form_name.html:12
@@ -4978,7 +4931,7 @@ msgstr "samtliga"
 #: perllib/FixMyStreet/App/Controller/Moderate.pm:85
 #: perllib/FixMyStreet/DB/Result/Comment.pm:236
 msgid "an administrator"
-msgstr ""
+msgstr "en administratör"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:270
 msgid "and a defect raised"
@@ -5106,14 +5059,12 @@ msgid "user is problem owner"
 msgstr "användaren är inte problemägare"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1778
-#, fuzzy
 msgid "user not in abuse list"
-msgstr "Epostadressen finns redan i missbrukslistan"
+msgstr "användare inte i missbruklista"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1776
-#, fuzzy
 msgid "user removed from abuse list"
-msgstr "Ta bort från slutlista"
+msgstr "användare borttagen från missbruklista"
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:3
@@ -5273,106 +5224,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "rapport"
 msgstr[1] "rapporter"
-
-#, fuzzy
-#~ msgid "Current state of filtered reports"
-#~ msgstr "Dina offline-rapporter"
-
-#~ msgid "(Email in abuse table)"
-#~ msgstr "(Epost i missbrukstabellen)"
-
-#~ msgid "14-30 days old"
-#~ msgstr "14-30 dagar gamla"
-
-#~ msgid "7-14 days old"
-#~ msgstr "7-14 dagar gamla"
-
-#~ msgid "Average time to council marking fixed (days)"
-#~ msgstr "Genomsnittlig tid för kommun att markera som löst (dagar)"
-
-#~ msgid "Average time to first council state change (days)"
-#~ msgstr "Genomsnittlig tid för kommun till första rapportstatusändring (dagar)"
-
-#~ msgid "By Date"
-#~ msgstr "Efter datum"
-
-#~ msgid "Click here or enter as dd/mm/yyyy"
-#~ msgstr "Klicka här eller ange som dd/mm/yyyy"
-
-#~ msgid "Confirmed reports between %s and %s"
-#~ msgstr "Bekräftade rapporter mellan %s och %s"
-
-#~ msgid "Council has marked as closed"
-#~ msgstr "Kommun har markerat som stängd"
-
-#~ msgid "Council has marked as fixed"
-#~ msgstr "Kommun har markerat som löst"
-
-#~ msgid "Council has marked as in progress"
-#~ msgstr "Kommun har markerat som pågående"
-
-#~ msgid "Council has marked as investigating"
-#~ msgstr "Kommun har markerat som under utredning"
-
-#~ msgid "Council has marked as planned"
-#~ msgstr "Kommun har markerat som planerad"
-
-#~ msgid "Get Count"
-#~ msgstr "Hämta Antal"
-
-#~ msgid "Hide old"
-#~ msgstr "Göm äldre"
-
-#~ msgid "Include unconfirmed reports"
-#~ msgstr "Inkludera obekräftade rapporter"
-
-#~ msgid "Invalid end date"
-#~ msgstr "Inkorrekt slutdatum"
-
-#~ msgid "Invalid start date"
-#~ msgstr "Inkorrekt startdatum"
-
-#~ msgid "Last 4 weeks"
-#~ msgstr "De senaste fyra veckorna"
-
-#~ msgid "Less than 7 days old"
-#~ msgstr "Mindre än sju dagar gammal"
-
-#~ msgid "No council"
-#~ msgstr "Ingen kommun"
-
-#~ msgid "Note that when including unconfirmed reports we use the date the report was created which may not be in the same month the report was confirmed so the numbers may jump about a little"
-#~ msgstr "Observera att när vi listar obegräftade rapporter använder vi datumet när rapporten skapades, vilket inte nödvändigtvis är samma månad som när rapporten bekräftades, så vissa avvikelser kan uppstå."
-
-#~ msgid "Show old"
-#~ msgstr "Visa äldre"
-
-#~ msgid "Total marked"
-#~ msgstr "Markerade, totalt"
-
-#~ msgid "Total marked as fixed"
-#~ msgstr "Markerade som lösta, totalt"
-
-#~ msgid "Total not marked"
-#~ msgstr "Ej markerade, totalt"
-
-#~ msgid "Total reports received"
-#~ msgstr "Uppdateringar mottagna, totalt"
-
-#~ msgid "Unfixed reports"
-#~ msgstr "ej lösta rapporter"
-
-#~ msgid "User has marked as fixed"
-#~ msgstr "Användaren har markerat som löst"
-
-#~ msgid "WTD"
-#~ msgstr "VTI"
-
-#~ msgid "Week To Date"
-#~ msgstr "Veckor Till Idag"
-
-#~ msgid "YTD"
-#~ msgstr "ÅTI"
-
-#~ msgid "Year"
-#~ msgstr "År"

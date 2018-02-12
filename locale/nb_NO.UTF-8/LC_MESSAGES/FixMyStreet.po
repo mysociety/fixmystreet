@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2017-12-15 17:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2017\n"
+"Last-Translator: pere <pere-transifex@hungry.com>, 2018\n"
 "Language-Team: Norwegian Bokmål (Norway) (https://www.transifex.com/mysociety/teams/12067/nb_NO/)\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +34,7 @@ msgstr " eller "
 
 #: templates/web/base/report/_inspect.html:152
 msgid "%d characters maximum"
-msgstr ""
+msgstr "ikke mer enn %d tegn"
 
 #: templates/web/base/admin/edit-league.html:12
 msgid "%d edits by %s"
@@ -94,7 +94,7 @@ msgstr "%s aktive oppdateringer"
 #: templates/web/base/dashboard/index.html:159
 #: templates/web/base/dashboard/index.html:163
 msgid "%s opened, %s closed, %s fixed"
-msgstr ""
+msgstr "åpnet %s, lukket %s, fikset %s"
 
 #: templates/web/base/status/stats.html:25
 msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
@@ -124,16 +124,15 @@ msgstr "(Uten telefonnummer)"
 
 #: templates/web/base/admin/states/index.html:95
 msgid "(a-z and space only)"
-msgstr ""
+msgstr "(kun a-z og mellomrom)"
 
 #: templates/web/zurich/report/_item.html:19
 msgid "(closed)"
 msgstr "(lukket)"
 
 #: templates/web/base/alert/_list.html:30
-#, fuzzy
 msgid "(covers roughly 200,000 people)"
-msgstr "(en standardavstand som dekker en befolkning på omtrent 200 000)"
+msgstr "(dekker cirka 200 000 folk)"
 
 #: templates/web/zurich/report/_item.html:17
 msgid "(fixed)"
@@ -141,7 +140,7 @@ msgstr "(løst)"
 
 #: templates/web/base/admin/extra-metadata-form.html:53
 msgid "(ignored if type is \"String\")"
-msgstr ""
+msgstr "(ignorert hvis typen er \"String\")"
 
 #: templates/web/base/around/intro.html:2
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
@@ -149,7 +148,7 @@ msgstr "(som tagging, søppel, hull i veien, eller ødelagte gatelys)"
 
 #: templates/web/base/reports/index.html:82
 msgid "(no longer exists)"
-msgstr ""
+msgstr "(eksisterer ikke lenger)"
 
 #: templates/web/base/report/_item.html:70
 msgid "(not sent to council)"
@@ -165,9 +164,8 @@ msgstr "(sendt til begge)"
 
 #. ("%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]")
 #: templates/web/base/alert/_list.html:36
-#, fuzzy
 msgid "(we also have RSS feeds for problems within %s)"
-msgstr "RSS-strøm for problemer innenfor %s"
+msgstr "(vi har også RSS-strømmer for problemer innenfor %s)"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:252
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:688
@@ -193,17 +191,16 @@ msgstr "<code>MAPIT_URL</code> er satt (<code>%s</code>) men ingen <code>MAPIT_T
 
 #: templates/web/base/dashboard/index.html:18
 msgid "<h2>Reports, Statistics and Actions for</h2> <h1>%s</h1>"
-msgstr ""
+msgstr "<h2>Rapporter, statistikk og handlinger for</h2> <h1>%s</h1>"
 
 #. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:56
-#, fuzzy
 msgid "<label for=\"statuses\">Show</label> %s reports <label for=\"filter_categories\">about</label> %s"
-msgstr "<label for=\"statuses\">Vis</label> %s <label for=\"filter_categories\">om</label> %s"
+msgstr "<label for=\"statuses\">Vis</label> %s rapporter <label for=\"filter_categories\">om</label> %s"
 
 #: templates/web/base/js/translation_strings.html:78
 msgid "<span>%s</span> saved."
-msgstr ""
+msgstr "<span>%s</span> lagret."
 
 #: templates/web/base/status/stats.html:18
 #: templates/web/zurich/admin/index.html:4
@@ -215,18 +212,16 @@ msgid "<strong>No</strong> Let me confirm my report by email"
 msgstr "<strong>Nei</strong> La meg bekrefte min rapport med e-post"
 
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:3
-#, fuzzy
 msgid "<strong>No</strong> Let me confirm my report by email/text"
-msgstr "<strong>Nei</strong> La meg bekrefte min rapport med e-post"
+msgstr "<strong>Nei</strong> La meg bekrefte min rapport med e-post/melding"
 
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:5
 msgid "<strong>No</strong> Let me confirm my update by email"
 msgstr "<strong>Nei</strong> La meg bekrefte min oppdatering med e-post"
 
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:3
-#, fuzzy
 msgid "<strong>No</strong> Let me confirm my update by email/text"
-msgstr "<strong>Nei</strong> La meg bekrefte min oppdatering med e-post"
+msgstr "<strong>Nei</strong> La meg bekrefte min oppdatering med e-post/melding"
 
 #: templates/web/base/auth/general.html:110
 #: templates/web/zurich/auth/general.html:51
@@ -234,9 +229,8 @@ msgid "<strong>No</strong> let me sign in by email"
 msgstr "<strong>Nei</strong>, la meg logge inn med e-post:"
 
 #: templates/web/base/auth/general.html:108
-#, fuzzy
 msgid "<strong>No</strong> let me sign in by email or text"
-msgstr "<strong>Nei</strong>, la meg logge inn med e-post:"
+msgstr "<strong>Nei</strong>, la meg logge inn med e-post eller melding"
 
 #: templates/web/base/report/_inspect.html:177
 msgid "<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on."
@@ -254,7 +248,7 @@ msgstr "<strong>Ja</strong>, jeg har et passord"
 
 #: templates/web/base/my/my.html:39 templates/web/base/my/my.html:50
 msgid "Add"
-msgstr ""
+msgstr "Legg til"
 
 #: templates/web/base/admin/body-form.html:3
 #: templates/web/base/admin/body-form.html:4
@@ -276,17 +270,16 @@ msgstr "Legg til administrasjon"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:7
-#, fuzzy
 msgid "Add email address"
-msgstr "Bannlys epostadresse"
+msgstr "Legg til e-postadresse"
 
 #: templates/web/base/admin/reportextrafields/index.html:24
 msgid "Add extra fields"
-msgstr ""
+msgstr "Legg til ekstra felter"
 
 #: templates/web/base/admin/extra-metadata-form.html:79
 msgid "Add field"
-msgstr ""
+msgstr "Legg til felt"
 
 #: templates/web/base/admin/states/index.html:85
 msgid "Add fixed state"
@@ -298,15 +291,13 @@ msgid "Add new category"
 msgstr "Legg til ny kategori"
 
 #: templates/web/base/admin/extra-metadata-form.html:72
-#, fuzzy
 msgid "Add option"
-msgstr "valgfri"
+msgstr ""
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:7
-#, fuzzy
 msgid "Add phone number"
-msgstr "(Uten telefonnummer)"
+msgstr "Legg til telefonnummer"
 
 #: templates/web/base/report/_item.html:10
 #: templates/web/base/report/_item.html:16
@@ -368,7 +359,7 @@ msgstr "Send meg varsel ved fremtidige oppdateringer"
 #: templates/web/base/dashboard/index.html:63
 #: templates/web/base/reports/_list-filters.html:3
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: templates/web/zurich/reports/index.html:13
 msgid "All Reports"
@@ -385,13 +376,12 @@ msgid "All categories"
 msgstr "Alle kategorier"
 
 #: templates/web/base/admin/reportextrafields/edit.html:26
-#, fuzzy
 msgid "All cobrands"
-msgstr "Merkevaresamarbeid"
+msgstr ""
 
 #: templates/web/base/admin/reportextrafields/edit.html:47
 msgid "All languages"
-msgstr ""
+msgstr "Alle språk"
 
 #: templates/web/base/main_nav_items.html:0
 #: templates/web/base/main_nav_items.html:27
@@ -425,9 +415,8 @@ msgstr "Anonym"
 
 #: templates/web/base/report/new/form_user_loggedin.html:21
 #: templates/web/base/report/update/form_name.html:17
-#, fuzzy
 msgid "Anonymous user"
-msgstr "Anonym"
+msgstr "Anonym bruker"
 
 #: templates/web/base/admin/report_edit.html:122
 #: templates/web/base/admin/update_edit.html:23
@@ -504,9 +493,8 @@ msgid "Authorised staff users can be associated with the categories in which the
 msgstr "Autorisert personale kan bli assosiert med en kategori hvor de operer."
 
 #: templates/web/base/admin/templates.html:9
-#, fuzzy
 msgid "Auto Response"
-msgstr "Auto-svar:"
+msgstr "Autorespons"
 
 #: templates/web/base/admin/template_edit.html:64
 msgid "Auto-response:"
@@ -538,9 +526,8 @@ msgid "Back to all reports"
 msgstr "Tilbake til alle rapporter"
 
 #: templates/web/base/admin/report_blocks.html:18
-#, fuzzy
 msgid "Ban user"
-msgstr "Flag bruker"
+msgstr "Bannlys bruker"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:633
 #: perllib/FixMyStreet/Cobrand/Default.pm:717
@@ -602,9 +589,8 @@ msgid "Category"
 msgstr "Kategori"
 
 #: templates/web/base/dashboard/index.html:102
-#, fuzzy
 msgid "Category and State"
-msgstr "Kategori"
+msgstr "Kategori og tilstand"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:975
 msgid "Category changed from ‘%s’ to ‘%s’"
@@ -630,9 +616,8 @@ msgstr "Kategori: %s"
 
 #: templates/web/base/my/my.html:41 templates/web/base/my/my.html:44
 #: templates/web/base/my/my.html:52 templates/web/base/my/my.html:57
-#, fuzzy
 msgid "Change"
-msgstr "Endre epost"
+msgstr "Endre"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:3
@@ -649,9 +634,8 @@ msgstr "Bytt passord"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:3
-#, fuzzy
 msgid "Change phone number"
-msgstr "(Uten telefonnummer)"
+msgstr "Endre telefonnummer"
 
 #: templates/web/base/admin/contact-form.html:80
 msgid "Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent."
@@ -681,11 +665,11 @@ msgstr "Velg et <strong>kategorinavn</strong> som gir mening for innbyggerne (f.
 
 #: templates/web/base/report/_inspect.html:109
 msgid "Choose another"
-msgstr ""
+msgstr "Velg en annen"
 
 #: templates/web/base/js/translation_strings.html:72
 msgid "Clear offline data"
-msgstr ""
+msgstr "Nullstill lokalt lagrede data"
 
 #: templates/web/base/around/_report_banner.html:2
 msgid "Click map to report a problem"
@@ -708,9 +692,8 @@ msgid "Click the link in our confirmation email to sign in."
 msgstr "Klikk lenken i bekreftelses-eposten for å logge inn."
 
 #: templates/web/base/auth/token.html:20
-#, fuzzy
 msgid "Click the link in that email to sign in."
-msgstr "Klikk lenken i bekreftelses-eposten for å logge inn."
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:134
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:194
@@ -754,7 +737,7 @@ msgstr "Merkevaresamarbeid:"
 #: templates/web/base/admin/extra-metadata-form.html:14
 #: templates/web/base/auth/smsform.html:24
 msgid "Code"
-msgstr ""
+msgstr "Kode"
 
 #: templates/web/base/js/translation_strings.html:50
 msgid "Collapse map"
@@ -851,9 +834,8 @@ msgid "Count"
 msgstr "Antall"
 
 #: templates/web/base/admin/states/index.html:114
-#, fuzzy
 msgid "Create"
-msgstr "Opprettet"
+msgstr ""
 
 #: templates/web/base/email_sent.html:1
 msgid "Create a report"
@@ -869,9 +851,8 @@ msgid "Create priority"
 msgstr "Opprett prioritet"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:701
-#, fuzzy
 msgid "Create reports/updates as anonymous user"
-msgstr "Opprett rapporter/oppdateringer på vegne av en bruker"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:702
 msgid "Create reports/updates as the council"
@@ -899,9 +880,8 @@ msgid "Created:"
 msgstr "Opprettet:"
 
 #: templates/web/base/auth/generate_token.html:27
-#, fuzzy
 msgid "Current token:"
-msgstr "Gjeldende tilstand"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:91
 msgid "Currently grouped by %s"
@@ -933,9 +913,8 @@ msgid "Default"
 msgstr ""
 
 #: templates/web/base/admin/responsepriorities/edit.html:39
-#, fuzzy
 msgid "Default priority"
-msgstr "Opprett prioritet"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:78
 msgid "Defect type"
@@ -1145,9 +1124,8 @@ msgstr "Epostadresse"
 
 #: templates/web/base/report/new/form_user_loggedin.html:71
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:34
-#, fuzzy
 msgid "Email address (optional)"
-msgstr "Epostadresse"
+msgstr ""
 
 #: templates/web/base/tokens/confirm_alert.html:6
 msgid "Email alert created"
@@ -1196,9 +1174,8 @@ msgstr ""
 " e-postes, mens andre kan sendes med  Open311."
 
 #: templates/web/base/dashboard/index.html:77
-#, fuzzy
 msgid "End Date"
-msgstr "Slutt-dato:"
+msgstr ""
 
 #: templates/web/base/admin/open311-form-fields.html:21
 msgid "Endpoint"
@@ -1300,9 +1277,8 @@ msgstr "Eksternt lag"
 #: perllib/FixMyStreet/Cobrand/Default.pm:656
 #: templates/web/base/admin/reportextrafields/edit.html:1
 #: templates/web/base/admin/reportextrafields/index.html:1
-#, fuzzy
 msgid "Extra Fields"
-msgstr "Ekstra detaljer"
+msgstr ""
 
 #: templates/web/base/admin/contact-form.html:141
 #: templates/web/base/admin/report_edit.html:94
@@ -1480,9 +1456,8 @@ msgid "Graph of problem creation by status over time"
 msgstr "Graf over problemoppretting fordelt på status over tid"
 
 #: templates/web/base/dashboard/index.html:93
-#, fuzzy
 msgid "Group by %s"
-msgstr "av %s"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:98
 msgid "Group by:"
@@ -1509,9 +1484,8 @@ msgid "Help <strong>%s</strong> resolve your problem quicker, by providing some 
 msgstr "Hjelp <strong>%s</strong> å løse problemet ditt fortere, ved å oppgi noen ekstra detaljer. Denne ekstra informasjonen vil ikke bli publisert på nettsiden."
 
 #: templates/web/base/around/on_map_list_items.html:8
-#, fuzzy
 msgid "Here are some other nearby reports:"
-msgstr "Bilder av nye problemer i nærheten"
+msgstr ""
 
 #: templates/web/zurich/footer.html:11
 msgid "Hi %s"
@@ -2036,9 +2010,8 @@ msgid "Navigate to this problem"
 msgstr "Naviger til dette problemet"
 
 #: templates/web/base/report/_inspect.html:39
-#, fuzzy
 msgid "Nearest calculated address:"
-msgstr "Ny epostadresse:"
+msgstr ""
 
 #: perllib/FixMyStreet/Geocode/FixaMinGata.pm:160
 #: perllib/FixMyStreet/Geocode/OSM.pm:145
@@ -2071,14 +2044,12 @@ msgid "Nearly done! Now check your email&hellip;"
 msgstr "Nesten ferdig! Nå må du sjekke e-posten din..."
 
 #: templates/web/base/auth/smsform.html:19
-#, fuzzy
 msgid "Nearly done! Now check your phone&hellip;"
-msgstr "Nesten ferdig! Nå må du sjekke e-posten din..."
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:131
-#, fuzzy
 msgid "New"
-msgstr "Nyeste"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:230
 msgid "New body added"
@@ -2110,9 +2081,8 @@ msgid "New password:"
 msgstr "Nytt passord:"
 
 #: templates/web/base/auth/change_phone.html:38
-#, fuzzy
 msgid "New phone number:"
-msgstr "(Uten telefonnummer)"
+msgstr ""
 
 #: templates/web/base/admin/responsepriorities/edit.html:4
 #: templates/web/base/admin/responsepriorities/list.html:34
@@ -2386,9 +2356,8 @@ msgid "Open311 specification"
 msgstr "Open311-spesifikasjon"
 
 #: templates/web/base/admin/extra-metadata-form.html:53
-#, fuzzy
 msgid "Options"
-msgstr "valgfri"
+msgstr ""
 
 #: templates/web/base/alert/_list.html:84
 msgid "Or subscribe by RSS"
@@ -2417,9 +2386,8 @@ msgid "Other categories"
 msgstr ""
 
 #: templates/web/base/reports/index.html:107
-#, fuzzy
 msgid "Other wards"
-msgstr "andre områder:"
+msgstr ""
 
 #: templates/web/base/reports/index.html:120
 msgid "Overall average"
@@ -2464,9 +2432,8 @@ msgid "Permissions:"
 msgstr "Rettigheter:"
 
 #: templates/web/base/report/_inspect.html:19
-#, fuzzy
 msgid "Phone Reporter:"
-msgstr "Rapportert:"
+msgstr ""
 
 #: templates/web/base/auth/change_phone.html:36
 #: templates/web/base/report/new/form_user_loggedin.html:33
@@ -2480,9 +2447,8 @@ msgid "Phone number (optional)"
 msgstr "Telefonnummer (valgfritt)"
 
 #: templates/web/base/admin/user-form.html:30
-#, fuzzy
 msgid "Phone verified:"
-msgstr "Rapportert:"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:135
 #: templates/web/base/admin/user-form.html:27 templates/web/base/my/my.html:47
@@ -2573,9 +2539,8 @@ msgstr "Vennligst sjekk at du har skrevet en gyldig e-postadresse"
 #: perllib/FixMyStreet/DB/Result/User.pm:198
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:7
-#, fuzzy
 msgid "Please check your phone number is correct"
-msgstr "Vennligst sjekk at du har skrevet en gyldig e-postadresse"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:297
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:905
@@ -2615,9 +2580,8 @@ msgstr "Vennligst legg til en melding"
 #: perllib/FixMyStreet/DB/Result/User.pm:200
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:4
-#, fuzzy
 msgid "Please enter a mobile number"
-msgstr "Legg inn ditt telefonnummer."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1365
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1461
@@ -2656,9 +2620,8 @@ msgstr "Legg inn din e-post"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1356
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1446
-#, fuzzy
 msgid "Please enter a valid email or phone number"
-msgstr "Legg inn ditt telefonnummer."
+msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:369
 #: templates/web/base/js/translation_strings.html:5
@@ -2761,9 +2724,8 @@ msgid "Please note:"
 msgstr "Vennligst merk deg:"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:385
-#, fuzzy
 msgid "Please provide a duplicate ID or public update for this report."
-msgstr "Vennligst bidra med en offentlig oppdatering for denne rapporten."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:367
 msgid "Please provide a public update for this report."
@@ -2913,9 +2875,8 @@ msgid "Problems"
 msgstr "Problemer"
 
 #: templates/web/base/alert/_list.html:22
-#, fuzzy
 msgid "Problems in an area"
-msgstr "Problemer innenfor %s bydel"
+msgstr ""
 
 #: templates/web/base/report/display_tools.html:22
 msgid "Problems nearby"
@@ -2930,9 +2891,8 @@ msgid "Problems recently reported fixed on FixMyStreet"
 msgstr "Problemer nylig rapportert fikset på FiksGataMi"
 
 #: templates/web/base/alert/_list.html:29
-#, fuzzy
 msgid "Problems within %.1fkm of %s"
-msgstr "Problemer innenfor %.1fkm av denne posisjonen"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:821
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:137
@@ -2946,9 +2906,8 @@ msgid "Problems within %s ward"
 msgstr "Problemer innenfor %s bydel"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:263 perllib/FixMyStreet/Cobrand/UK.pm:275
-#, fuzzy
 msgid "Problems within %s ward, %s"
-msgstr "Problemer innenfor %s bydel"
+msgstr ""
 
 #. ("First %s is the body name, second %s the site name")
 #: templates/web/base/reports/body.html:0
@@ -3096,14 +3055,12 @@ msgid "Remember that FixMyStreet is primarily for reporting physical problems th
 msgstr "Husk at FiksGataMi primert er laget for å rapportere fysiske problemer som kan bli fikset. Hvis ditt problem ikke er egnet for å sende inn via denne tjenesten, så husk at du kan kontakte administrasjonen direkte via deres egen nettside."
 
 #: templates/web/base/admin/extra-metadata-form.html:68
-#, fuzzy
 msgid "Remove"
-msgstr "Fjern flagg"
+msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:4
-#, fuzzy
 msgid "Remove field"
-msgstr "Fjern flagg"
+msgstr ""
 
 #: templates/web/base/admin/report_blocks.html:23
 msgid "Remove flag"
@@ -3255,9 +3212,8 @@ msgid "Reports awaiting approval"
 msgstr "Rapporter som venter på godkjenning"
 
 #: templates/web/base/alert/_list.html:54
-#, fuzzy
 msgid "Reports by destination"
-msgstr "Publisert av %s %s"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:125
 msgid "Reports made by trusted users will be sent to the responsible body without being inspected first."
@@ -3276,14 +3232,12 @@ msgid "Reports saved offline."
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:283 perllib/FixMyStreet/Cobrand/UK.pm:295
-#, fuzzy
 msgid "Reports sent to %s"
-msgstr "Rapport på %s"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:290 perllib/FixMyStreet/Cobrand/UK.pm:302
-#, fuzzy
 msgid "Reports sent to %s, within %s ward"
-msgstr "RSS-strøm av %s, innenfor %s bydel"
+msgstr ""
 
 #: templates/web/base/admin/index.html:56
 msgid "Reports waiting to be sent"
@@ -3298,9 +3252,8 @@ msgid "Reputation threshold"
 msgstr "Omdømme terskel"
 
 #: templates/web/base/admin/extra-metadata-form.html:20
-#, fuzzy
 msgid "Required"
-msgstr "påkrevd"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:84
 msgid "Resend report"
@@ -3416,9 +3369,8 @@ msgid "Saving reports offline"
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:132
-#, fuzzy
 msgid "Scheduled"
-msgstr "Handling planlagt"
+msgstr ""
 
 #: templates/web/base/admin/index.html:26
 #: templates/web/base/admin/reports.html:1
@@ -3587,9 +3539,8 @@ msgid "Sign in by email instead, providing a new password. When you click the li
 msgstr "Logg inn med epost is tedet, og oppgi et nytt passord.  Når du besøker lenken du fikk i epost vil passordet ditt bli oppdatert."
 
 #: templates/web/base/auth/general.html:96
-#, fuzzy
 msgid "Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated."
-msgstr "Logg inn med epost is tedet, og oppgi et nytt passord.  Når du besøker lenken du fikk i epost vil passordet ditt bli oppdatert."
+msgstr ""
 
 #: templates/web/base/auth/general.html:1
 #: templates/web/zurich/auth/general.html:1
@@ -3633,9 +3584,8 @@ msgid "Sorry, that wasn&rsquo;t a valid link"
 msgstr "Beklager, det var ikke en gyldig lenke"
 
 #: templates/web/base/auth/smsform.html:16
-#, fuzzy
 msgid "Sorry, that wasn&rsquo;t the correct code"
-msgstr "Beklager, det var ikke en gyldig lenke"
+msgstr ""
 
 #: templates/web/base/tokens/abuse.html:5
 msgid "Sorry, there has been an error confirming your problem."
@@ -3687,9 +3637,8 @@ msgid "Staff:"
 msgstr "Personale:"
 
 #: templates/web/base/dashboard/index.html:73
-#, fuzzy
 msgid "Start Date"
-msgstr "Start-dato:"
+msgstr ""
 
 #: templates/web/base/admin/body.html:73
 #: templates/web/base/admin/category_edit.html:29
@@ -3710,9 +3659,8 @@ msgstr "Tilstand"
 
 #: perllib/FixMyStreet/Script/Alerts.pm:102
 #: templates/web/base/report/update.html:49
-#, fuzzy
 msgid "State changed to:"
-msgstr "Lagre endringer"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:116
 #: templates/web/base/admin/update_edit.html:28
@@ -3725,9 +3673,8 @@ msgstr "Tilstand:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:628
 #: templates/web/base/admin/states/index.html:1
-#, fuzzy
 msgid "States"
-msgstr "Tilstand"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:622
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:391
@@ -3759,9 +3706,8 @@ msgid "String"
 msgstr ""
 
 #: templates/web/base/report/new/category.html:35
-#, fuzzy
 msgid "Subcategory"
-msgstr "Underkategori: %s"
+msgstr ""
 
 #: perllib/FixMyStreet/Script/Reports.pm:191
 msgid "Subcategory: %s"
@@ -3822,9 +3768,8 @@ msgid "Subscribe"
 msgstr "Abonner"
 
 #: templates/web/base/alert/_list.html:72
-#, fuzzy
 msgid "Subscribe by email"
-msgstr "Jeg ønsker å abonnere på e-postvarsel"
+msgstr ""
 
 #: templates/web/base/report/new/form_report.html:19
 msgid "Summarise the problem"
@@ -3853,9 +3798,8 @@ msgstr "Oppsummeringsrapporter"
 
 #: templates/web/base/admin/stats/index.html:7
 #: templates/web/base/dashboard/index.html:21
-#, fuzzy
 msgid "Summary statistics"
-msgstr "Oppsummeringsrapporter"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:151
 msgid "Superuser:"
@@ -4134,9 +4078,8 @@ msgstr "Det var problemer med din epost/passord-kombinasjon.  Vær så snill å 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:135
 #: templates/web/base/auth/general.html:51
 #: templates/web/zurich/auth/general.html:28
-#, fuzzy
 msgid "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form."
-msgstr "Det var problemer med din e-post/passord-kombinasjon. Hvis du har glemt ditt passord, eller hvis du ikke har et, vennligst fyll inn «Logg inn via e-post»-delen av skjemaet"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:338
 msgid "There was a problem with your update. Please try again."
@@ -4494,14 +4437,12 @@ msgid "Updated"
 msgstr "Oppdatert"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:260
-#, fuzzy
 msgid "Updated by <strong>%s</strong> (%s) at %s"
-msgstr "Lagt inn av <strong>%s</strong> (%s) %s"
+msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:262
-#, fuzzy
 msgid "Updated by <strong>%s</strong> at %s"
-msgstr "Lagt inn av <strong>%s</strong> %s"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1299
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1398
@@ -4563,9 +4504,8 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1745
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1755
-#, fuzzy
 msgid "User added to abuse list"
-msgstr "Epost lagt til misbruksliste"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1376
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1473
@@ -4574,9 +4514,8 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1742
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1752
-#, fuzzy
 msgid "User already in abuse list"
-msgstr "Epost allerede i misbrukslisten"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1834
 msgid "User flag removed"
@@ -4589,9 +4528,8 @@ msgstr "Bruker flagget"
 #: templates/web/base/admin/report_blocks.html:18
 #: templates/web/base/admin/user-form.html:38
 #: templates/web/base/admin/users.html:32
-#, fuzzy
 msgid "User in abuse table"
-msgstr "I misbrukstabell?"
+msgstr ""
 
 #: templates/web/base/admin/users.html:5
 msgid "User search finds matches in users' names and email addresses."
@@ -4599,9 +4537,8 @@ msgstr "Brukersøk leter etter treff gjennom brukernavn og epostadresser. "
 
 #: templates/web/base/admin/report_edit.html:129
 #: templates/web/base/admin/update_edit.html:36
-#, fuzzy
 msgid "User:"
-msgstr "Brukere"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:652
 #: perllib/FixMyStreet/Cobrand/Default.pm:711
@@ -4626,15 +4563,13 @@ msgstr ""
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:5
-#, fuzzy
 msgid "Verify email address"
-msgstr "Ny epostadresse:"
+msgstr ""
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:5
-#, fuzzy
 msgid "Verify phone number"
-msgstr "Ditt telefonnummer"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/update_edit.html:18
@@ -4667,9 +4602,8 @@ msgstr "Bydeler innenfor denne administrasjonen"
 
 #: templates/web/base/alert/choose.html:6
 #: templates/web/base/around/_error_multiple.html:6
-#, fuzzy
 msgid "We found more than one match for that location."
-msgstr "Vi fant mer enn et treff for problemreferansen:"
+msgstr ""
 
 #: templates/web/base/around/lookup_by_ref.html:6
 msgid "We found more than one match for that problem reference:"
@@ -4695,9 +4629,8 @@ msgstr "Vi sender til administrasjon på dine vegne"
 
 #: templates/web/base/alert/choose.html:12
 #: templates/web/base/around/_error_multiple.html:12
-#, fuzzy
 msgid "We show up to ten matches, please try a different search if yours is not here."
-msgstr "Vi fant mer en ett treff for den plassen.  Vi viser opp til ti treff, så forsøk et annet søk hvis din plass ikke er her."
+msgstr ""
 
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
@@ -4889,9 +4822,8 @@ msgid "You have located the problem at the point marked with a green pin on the 
 msgstr "Du har plassert problemet ved punktet i kartet som er markert med en grønn nål.  Hvis dette ikke er korrekt plassering kan du klikke i kartet på nytt."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:125
-#, fuzzy
 msgid "You have successfully added your phone number."
-msgstr "Du har nå lykkes med å bekrefte din e-postadresse."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:141
 #: templates/web/zurich/tokens/confirm_problem.html:5
@@ -4900,14 +4832,12 @@ msgid "You have successfully confirmed your email address."
 msgstr "Du har nå lykkes med å bekrefte din e-postadresse."
 
 #: templates/web/base/auth/change_phone.html:15
-#, fuzzy
 msgid "You have successfully confirmed your phone number."
-msgstr "Du har nå lykkes med å bekrefte din e-postadresse."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:112
-#, fuzzy
 msgid "You have successfully removed your phone number."
-msgstr "Du har nå lykkes med å bekrefte din e-postadresse."
+msgstr ""
 
 #: templates/web/base/report/display.html:25
 #: templates/web/base/report/new/login_success_form.html:3
@@ -4915,9 +4845,8 @@ msgid "You have successfully signed in; please check and confirm your details ar
 msgstr "Du har lykkes med å logge inn. Vennligst sjekk og bekreft at dine detaljer er korrekte:"
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:147
-#, fuzzy
 msgid "You have successfully verified your phone number."
-msgstr "Du har nå lykkes med å bekrefte din e-postadresse."
+msgstr ""
 
 #: templates/web/base/my/my.html:73
 msgid "You haven&rsquo;t created any reports yet.  <a href=\"%s\">Report a problem now.</a>"
@@ -4971,9 +4900,8 @@ msgstr "Din e-postadresse"
 #: templates/web/base/auth/general.html:42
 #: templates/web/base/report/new/form_user_loggedout_email.html:2
 #: templates/web/base/report/update/form_user_loggedout_email.html:2
-#, fuzzy
 msgid "Your email or mobile"
-msgstr "Din e-postadresse"
+msgstr ""
 
 #: templates/web/base/report/updates-sidebar-notes.html:3
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
@@ -5035,9 +4963,8 @@ msgid "Your shortlist"
 msgstr "Din hurtigliste"
 
 #: templates/web/base/auth/generate_token.html:8
-#, fuzzy
 msgid "Your token has been generated"
-msgstr "Ditt passord har blitt endret"
+msgstr ""
 
 #: templates/web/base/js/translation_strings.html:70
 msgid "Your update has been saved offline for submission when back online."
@@ -5120,9 +5047,8 @@ msgid "none"
 msgstr "ingen"
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:77
-#, fuzzy
 msgid "not the council's responsibility"
-msgstr "markert som ikke administrasjonens ansvar"
+msgstr ""
 
 #: templates/web/base/alert/index.html:38
 #: templates/web/base/around/postcode_form.html:26
@@ -5162,9 +5088,8 @@ msgid "there is no pin shown as the user did not use the map"
 msgstr "Det vises ingen nål på grunn av at brukeren ikke brukte kartet"
 
 #: templates/web/base/alert/_list.html:1
-#, fuzzy
 msgid "this location"
-msgstr "Ser på et sted"
+msgstr ""
 
 #: perllib/FixMyStreet/Script/Reports.pm:183
 msgid "this type of local problem"
@@ -5195,14 +5120,12 @@ msgid "user is problem owner"
 msgstr "bruker er eier av problemet"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1778
-#, fuzzy
 msgid "user not in abuse list"
-msgstr "Epost allerede i misbrukslisten"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1776
-#, fuzzy
 msgid "user removed from abuse list"
-msgstr "Fjern fra hurtiglisten"
+msgstr ""
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:3
@@ -5362,147 +5285,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "(Email in abuse table)"
-#~ msgstr "(Epost i misbrukstabellen)"
-
-#~ msgid "By Date"
-#~ msgstr "På dato"
-
-#~ msgid "Click here or enter as dd/mm/yyyy"
-#~ msgstr "Klikk her eller tast inn dato på formatet dd/mm/åååå"
-
-#~ msgid "Confirmed reports between %s and %s"
-#~ msgstr "Bekreftede rapporter mellom %s og %s"
-
-#~ msgid "Hide old"
-#~ msgstr "Skjul gamle"
-
-#~ msgid "Include unconfirmed reports"
-#~ msgstr "Inkluder ubekreftede problemer"
-
-#~ msgid "Invalid end date"
-#~ msgstr "Ugyldig slutt-dato"
-
-#~ msgid "Invalid start date"
-#~ msgstr "Ugyldig startdato"
-
-#~ msgid "No council"
-#~ msgstr "Ingen administrasjon"
-
-#~ msgid "Note that when including unconfirmed reports we use the date the report was created which may not be in the same month the report was confirmed so the numbers may jump about a little"
-#~ msgstr "Merk at når vi tar med ubekreftede rapporter så brukes datoen rapporten var opprettet, hvilket ikke trenger være den samme måneden som rapporten var bekreftet, så tallene kan hoppe litt opp og ned."
-
-#~ msgid "Show old"
-#~ msgstr "Vis gamle"
-
-#~ msgid "Unfixed reports"
-#~ msgstr "uløste rapporter"
-
-#~ msgid "Year"
-#~ msgstr "År"
-
-#~ msgid ""
-#~ "%s sends different categories of problem\n"
-#~ "to the appropriate council, so problems within the boundary of a particular council\n"
-#~ "might not match the problems sent to that council. For example, a graffiti report\n"
-#~ "will be sent to the district council, so will appear in both of the district\n"
-#~ "council&rsquo;s alerts, but will only appear in the \"Within the boundary\" alert\n"
-#~ "for the county council."
-#~ msgstr "%s sender forskjellige kategorier problemer til rett administrasjon, så problemer innenfor grensene til en gitt administrasjon vil ikke alltid samsvare med problemrapporter sendt til den administrasjonen. For eksempel, en grafitti-rapport vil bli sendt til kommunen, og vil dukke opp på kommunens varsler, men vil kun vises i \"innenfor grensen\" varselet for fylket."
-
-#~ msgid "%s ward, %s"
-#~ msgstr "%s bydel, %s"
-
-#~ msgid "%s, within %s ward"
-#~ msgstr "%s, innefor bydel %s"
-
-#~ msgid "(alternatively the RSS feed can be customised, within %s)"
-#~ msgstr "(alternativt kan RSS-strømmen tilpasses, innenfor %s)"
-
-#~ msgid "-- Pick a property type --"
-#~ msgstr "-- Velg en eiendomsstype --"
-
-#~ msgid "Closed reports"
-#~ msgstr "lukkede rapporter"
-
-#~ msgid "Closed:"
-#~ msgstr "Lukket:"
-
-#~ msgid "Duplicate"
-#~ msgstr "Duplikat"
-
-#~ msgid "Fixed reports"
-#~ msgstr "løste rapporter"
-
-#~ msgid "Fixed:"
-#~ msgstr "Løst:"
-
-#~ msgid "Here are the types of local problem alerts for &lsquo;%s&rsquo;."
-#~ msgstr "Her er de forskjellige typene lokale problemvarsler for &lsquo;%s&rsquo;."
-
-#~ msgid "In Progress"
-#~ msgstr "Under arbeid"
-
-#~ msgid "Internal referral"
-#~ msgstr "Interne referanser"
-
-#~ msgid "Investigating"
-#~ msgstr "Undersøkes"
-
-#~ msgid "No further action"
-#~ msgstr "Kan ikke fikses"
-
-#~ msgid "Not Responsible"
-#~ msgstr "Ikke ansvarlig"
-
-#~ msgid "Or problems reported to:"
-#~ msgstr "Eller problemer meldt til:"
-
-#~ msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
-#~ msgstr "Eller du kan abonnere på varsel basert på bydel eller administrasjon du hører inn under:"
-
-#~ msgid "Please choose a property type"
-#~ msgstr "Velg en type egenskap"
-
-#~ msgid "Problems within the boundary of:"
-#~ msgstr "Problemer innenfor grensene av:"
-
-#~ msgid "Select which type of alert you’d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert."
-#~ msgstr "Velg hvilken type varsel du ønsker og klikk på knappen for en RSS-kilde, eller skriv inn din e-postadresse for å abonnere på et e-postvarsel."
-
-#~ msgid "The simplest alert is our geographic one:"
-#~ msgstr "Den enkleste meldingen er vår geografiske:"
-
-#~ msgid "closed as a duplicate report"
-#~ msgstr "markert som duplisert rapport"
-
-#~ msgid "marked as action scheduled"
-#~ msgstr "markert som planlagt"
-
-#~ msgid "marked as an internal referral"
-#~ msgstr "markert som en intern henvisning"
-
-#~ msgid "marked as closed"
-#~ msgstr "markert som lukket"
-
-#~ msgid "marked as fixed"
-#~ msgstr "markert som fikset"
-
-#~ msgid "marked as in progress"
-#~ msgstr "markert som under arbeid"
-
-#~ msgid "marked as investigating"
-#~ msgstr "markert som undersøkes"
-
-#~ msgid "marked as no further action"
-#~ msgstr "markert som uløselig"
-
-#~ msgid "marked as planned"
-#~ msgstr "markert som planlagt"
-
-#~ msgid "or"
-#~ msgstr "eller"
-
-#~ msgid "reopened"
-#~ msgstr "åpnet på nytt"
