@@ -1398,10 +1398,11 @@ sub redirect_or_confirm_creation : Private {
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
-        if ($c->stash->{contributing_as_another_user} && $report->user->email) {
-            $c->send_email( 'other-reported.txt', {
-                to => [ [ $report->user->email, $report->name ] ],
-            } );
+        if ($c->stash->{contributing_as_another_user} && $report->user->email
+            && !$c->cobrand->report_sent_confirmation_email) {
+                $c->send_email( 'other-reported.txt', {
+                    to => [ [ $report->user->email, $report->name ] ],
+                } );
         }
         # If the user has shortlist permission, and either we're not on a
         # council cobrand or the just-created problem is owned by the cobrand

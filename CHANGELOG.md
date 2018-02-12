@@ -22,12 +22,15 @@
         - Ensure all reports graph can't dip downward. #1956
         - Fix error sending `requires_inspection` reports. #1961
         - Fix timezone related test failure. #1984
+        - Restore display of extra fields on inspector form. #1994
     - Admin improvements:
         - Admin can anonymize/hide all a user's reports. #1942 #1943
         - Admin can log a user out. #1975
         - Admin can remove a user's account details. #1944
         - Superusers can have optional two-factor authentication. #1973
+    - Development improvements:
         - Add script to remove expired sessions. #1987
+        - 'components' parameter can be passed to Google geocoder. #1994
     - UK:
         - Lazy load images in the footer.
 

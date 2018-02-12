@@ -5,7 +5,7 @@
 
       <input type="hidden" value="" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]">
 
-  [% ELSE %]
+  [% ELSIF meta.variable != 'false' || NOT hide_notices %]
 
       <label for="[% cat_prefix %]form_[% meta_name %]">[% meta.description %]</label>
       [% IF field_errors.$meta_name %]
