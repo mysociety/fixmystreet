@@ -40,19 +40,32 @@ $.extend(fixmystreet.utils, {
     };
 
     $.extend(fixmystreet.maps, {
-      // This function might be passed either an OpenLayers.LonLat (so has
-      // lon and lat), or an OpenLayers.Geometry.Point (so has x and y).
       update_pin: function(lonlat) {
+        // This function might be passed either an OpenLayers.LonLat (so has
+        // lon and lat), or an OpenLayers.Geometry.Point (so has x and y).
+        if (lonlat.x !== undefined && lonlat.y !== undefined) {
+            // It's a Point, convert to a LatLon
+            lonlat = new OpenLayers.LonLat(lonlat.x, lonlat.y);
+        }
+
         var transformedLonlat = lonlat.clone().transform(
             fixmystreet.map.getProjectionObject(),
             new OpenLayers.Projection("EPSG:4326")
         );
 
-        var lat = transformedLonlat.lat || transformedLonlat.y;
-        var lon = transformedLonlat.lon || transformedLonlat.x;
+        var lat = transformedLonlat.lat;
+        var lon = transformedLonlat.lon;
 
         document.getElementById('fixmystreet.latitude').value = lat;
         document.getElementById('fixmystreet.longitude').value = lon;
+
+        // This tight coupling isn't ideal. A better solution would be for the
+        // asset code to register an event handler somewhere, but the correct
+        // place isn't apparent.
+        if (fixmystreet.assets) {
+            fixmystreet.assets.select_usrn(lonlat);
+        }
+
         return {
             'url': { 'lon': lon, 'lat': lat },
             'state': { 'lon': lonlat.lon, 'lat': lonlat.lat }

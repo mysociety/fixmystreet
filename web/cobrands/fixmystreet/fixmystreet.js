@@ -417,6 +417,9 @@ $.extend(fixmystreet.set_up, {
             } else {
                 $category_meta.empty();
             }
+            if (fixmystreet.assets) {
+                fixmystreet.assets.update_usrn_field();
+            }
         });
 
         if (fixmystreet.hooks.update_problem_fields) {

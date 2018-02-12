@@ -4,6 +4,8 @@ var fixmystreet = fixmystreet || {};
 
 var selected_feature = null;
 var fault_popup = null;
+var selected_usrn = null;
+var usrn_field = null;
 
 function close_fault_popup() {
     if (!!fault_popup) {
@@ -31,6 +33,11 @@ function asset_selected(e) {
         get_select_control(this).unselect(e.feature);
         return;
     }
+
+    // Pick up the USRN for the location of this asset. NB we do this *before*
+    // handling the attributes on the selected feature in case the feature has
+    // its own USRN which should take precedence.
+    fixmystreet.assets.select_usrn(lonlat);
 
     // Set the extra field to the value of the selected feature
     $.each(this.fixmystreet.attributes, function (field_name, attribute_name) {
@@ -164,18 +171,9 @@ function select_nearest_asset() {
         // No marker to be found so bail out
         return;
     }
-    var closest_feature;
-    var closest_distance = null;
-    for (var i = 0; i < this.features.length; i++) {
-        var candidate = this.features[i];
-        var distance = candidate.geometry.distanceTo(marker.geometry);
-        if (closest_distance === null || distance < closest_distance) {
-            closest_feature = candidate;
-            closest_distance = distance;
-        }
-    }
-    if (closest_distance <= threshold && !!closest_feature) {
-        get_select_control(this).select(closest_feature);
+    var nearest_feature = this.getNearestFeature(marker.geometry, threshold);
+    if (nearest_feature) {
+        get_select_control(this).select(nearest_feature);
     }
 }
 
@@ -443,11 +441,86 @@ fixmystreet.assets = {
             fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
             fixmystreet.assets.controls[i].activate();
         }
+    },
+
+    select_usrn: function(lonlat) {
+        var usrn_providers = fixmystreet.map.getLayersBy('fixmystreet', {
+            test: function(options) {
+                return options && options.usrn;
+            }
+        });
+        if (usrn_providers.length) {
+            var usrn_layer = usrn_providers[0];
+            usrn_field = usrn_layer.fixmystreet.usrn.field;
+            var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+            var feature = usrn_layer.getFeatureAtPoint(point);
+            if (feature == null) {
+                // The click wasn't directly over a road, try and find one
+                // nearby
+                feature = usrn_layer.getNearestFeature(point, 10);
+            }
+            if (feature !== null) {
+                selected_usrn = feature.attributes[usrn_layer.fixmystreet.usrn.attribute];
+            } else {
+                selected_usrn = null;
+            }
+            fixmystreet.assets.update_usrn_field();
+        }
+    },
+
+    update_usrn_field: function() {
+        $("input[name="+usrn_field+"]").val(selected_usrn);
     }
 };
 
 $(function() {
     fixmystreet.assets.init();
 });
+
+OpenLayers.Layer.Vector.prototype.getFeatureAtPoint = function(point) {
+    for (var i = 0; i < this.features.length; i++) {
+        var feature = this.features[i];
+        if (!feature.geometry || !feature.geometry.containsPoint) {
+            continue;
+        }
+        if (feature.geometry.containsPoint(point)) {
+            return feature;
+        }
+    }
+    return null;
+};
+
+
+/*
+ * Returns this layer's feature that's closest to the given
+ * OpenLayers.Geometry.Point, as long as it's within <threshold> metres.
+ * Returns null if no feature meeting these criteria is found.
+ */
+OpenLayers.Layer.Vector.prototype.getNearestFeature = function(point, threshold) {
+    var nearest_feature = null;
+    var nearest_distance = null;
+    for (var i = 0; i < this.features.length; i++) {
+        var candidate = this.features[i];
+        if (!candidate.geometry || !candidate.geometry.distanceTo) {
+            continue;
+        }
+        var details = candidate.geometry.distanceTo(point, {details: true});
+        if (nearest_distance === null || details.distance < nearest_distance) {
+            nearest_distance = details.distance;
+            // The units used for details.distance aren't metres, they're
+            // whatever the map projection uses. Convert to metres in order to
+            // draw a meaningful comparison to the threshold value.
+            var p1 = new OpenLayers.Geometry.Point(details.x0, details.y0);
+            var p2 = new OpenLayers.Geometry.Point(details.x1, details.y1);
+            var line = new OpenLayers.Geometry.LineString([p1, p2]);
+            var distance_m = line.getGeodesicLength(this.map.getProjectionObject());
+
+            if (distance_m <= threshold) {
+                nearest_feature = candidate;
+            }
+        }
+    }
+    return nearest_feature;
+};
 
 })();
