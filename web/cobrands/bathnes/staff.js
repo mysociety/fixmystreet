@@ -61,7 +61,8 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     },
     stylemap: highways_stylemap,
     non_interactive: true,
-    always_visible: true
+    always_visible: true,
+    usrn_field: 'usrn'
 }));
 
 
