@@ -3,7 +3,7 @@
 
   [% IF c.cobrand.category_extra_hidden(meta_name) %]
 
-      <input type="hidden" value="" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]">
+      <input type="hidden" value="[% report_meta.$meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]">
 
   [% ELSIF meta.variable != 'false' || NOT hide_notices %]
 
