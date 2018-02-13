@@ -108,6 +108,23 @@ foreach my $test (
     };
 }
 
+subtest "If been_fixed is provided in the URL" => sub {
+    $mech->get_ok("/Q/" . $token->token . "?been_fixed=Yes");
+    $mech->content_contains('id="been_fixed_yes" value="Yes" checked');
+    $report->discard_changes;
+    is $report->state, 'fixed - user';
+    $questionnaire->discard_changes;
+    is $questionnaire->old_state, 'confirmed';
+    is $questionnaire->new_state, 'fixed - user';
+    $mech->submit_form_ok({ with_fields => { been_fixed => 'Unknown', reported => 'Yes', another => 'No' } });
+    $report->discard_changes;
+    is $report->state, 'confirmed';
+    $questionnaire->discard_changes;
+    is $questionnaire->old_state, 'confirmed';
+    is $questionnaire->new_state, 'unknown';
+    $questionnaire->update({ whenanswered => undef, ever_reported => undef, old_state => undef, new_state => undef });
+};
+
 $mech->get_ok("/Q/" . $token->token);
 $mech->title_like( qr/Questionnaire/ );
 $mech->submit_form_ok( );
