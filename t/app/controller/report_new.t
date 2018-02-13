@@ -1733,7 +1733,11 @@ subtest "extra google analytics code displayed on email confirmation problem cre
     };
 };
 
-subtest "inspectors get redirected directly to the report page" => sub {
+foreach my $test (
+  { non_public => 0 },
+  { non_public => 1 },
+) {
+  subtest "inspectors get redirected directly to the report page, non_public=$test->{non_public}" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         BASE_URL => 'https://www.fixmystreet.com',
@@ -1746,10 +1750,14 @@ subtest "inspectors get redirected directly to the report page" => sub {
             body => $bodies[0],
             permission_type => 'planned_reports',
         });
+        $user->user_body_permissions->find_or_create({
+            body => $bodies[0],
+            permission_type => 'report_inspect',
+        });
 
         $mech->log_in_ok('inspector@example.org');
         $mech->get_ok('/');
-        $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR' } },
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
             "submit location" );
         $mech->follow_link_ok(
             { text_regex => qr/skip this step/i, },
@@ -1766,6 +1774,7 @@ subtest "inspectors get redirected directly to the report page" => sub {
                     may_show_name => '1',
                     phone         => '07903 123 456',
                     category      => 'Trees',
+                    non_public => $test->{non_public},
                 }
             },
             "submit good details"
@@ -1773,6 +1782,7 @@ subtest "inspectors get redirected directly to the report page" => sub {
 
         like $mech->uri->path, qr/\/report\/[0-9]+/, 'Redirects directly to report';
     }
-};
+  };
+}
 
 done_testing();

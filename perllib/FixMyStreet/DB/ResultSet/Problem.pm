@@ -15,15 +15,41 @@ sub set_restriction {
     $site_key = $key;
 }
 
-sub to_body {
-    my ($rs, $bodies, $join) = @_;
-    return $rs unless $bodies;
+sub body_query {
+    my ($rs, $bodies) = @_;
     unless (ref $bodies eq 'ARRAY') {
         $bodies = [ map { ref $_ ? $_->id : $_ } $bodies ];
     }
+    \[ "regexp_split_to_array(bodies_str, ',') && ?", [ {} => $bodies ] ]
+}
+
+# Edits PARAMS in place to either hide non_public reports, or show them
+# if user is superuser (all) or inspector (correct body)
+sub non_public_if_possible {
+    my ($rs, $params, $c) = @_;
+    if ($c->user_exists) {
+        if ($c->user->is_superuser) {
+            # See all reports, no restriction
+        } elsif ($c->user->has_body_permission_to('report_inspect')) {
+            $params->{'-or'} = [
+                non_public => 0,
+                $rs->body_query($c->user->from_body->id),
+            ];
+        } else {
+            $params->{non_public} = 0;
+        }
+    } else {
+        $params->{non_public} = 0;
+    }
+}
+
+sub to_body {
+    my ($rs, $bodies, $join) = @_;
+    return $rs unless $bodies;
     $join = { join => 'problem' } if $join;
     $rs = $rs->search(
-        \[ "regexp_split_to_array(bodies_str, ',') && ?", [ {} => $bodies ] ],
+        # This isn't using $rs->body_query because $rs might be Problem, Comment, or Nearby
+        FixMyStreet::DB::ResultSet::Problem->body_query($bodies),
         $join
     );
     return $rs;
@@ -151,12 +177,13 @@ sub around_map {
     }
 
     my $q = {
-            non_public => 0,
             state => [ keys %{$p{states}} ],
             latitude => { '>=', $p{min_lat}, '<', $p{max_lat} },
             longitude => { '>=', $p{min_lon}, '<', $p{max_lon} },
     };
     $q->{category} = $p{categories} if $p{categories} && @{$p{categories}};
+
+    $rs->non_public_if_possible($q, $c);
 
     my $problems = mySociety::Locale::in_gb_locale {
         $rs->search( $q, $attr )->include_comment_counts->page($p{page});

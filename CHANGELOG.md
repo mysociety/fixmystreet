@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Admin improvements:
+        - Inspectors can set non_public status of reports. #1992
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:

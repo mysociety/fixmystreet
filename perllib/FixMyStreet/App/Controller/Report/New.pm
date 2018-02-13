@@ -870,6 +870,7 @@ sub process_report : Private {
         'subcategory',                              #
         'partial',                               #
         'service',                               #
+        'non_public',
       );
 
     # load the report
@@ -896,6 +897,8 @@ sub process_report : Private {
     } else {
         $report->anonymous( $params{may_show_name} ? 0 : 1 );
     }
+
+    $report->non_public($params{non_public} ? 1 : 0);
 
     # clean up text before setting
     $report->title( Utils::cleanup_text( $params{title} ) );

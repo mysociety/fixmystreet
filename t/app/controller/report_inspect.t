@@ -559,6 +559,7 @@ FixMyStreet::override_config {
         my $expected_fields = {
           state => 'action scheduled',
           category => 'Cows',
+          non_public => undef,
           public_update => '',
           priority => $rp->id,
           include_update => '1',
@@ -593,6 +594,31 @@ FixMyStreet::override_config {
         is $report->category, "Badgers", "Report in correct category";
         is $report->comments->count, 1, "Only leaves one update";
         like $report->comments->first->text, qr/Category changed.*Badgers/, 'update text included category change';
+    };
+
+    subtest "test non-public changing" => sub {
+        $report->comments->delete;
+        is $report->non_public, 0, 'Not set to non-public';
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form(button => 'save', with_fields => { include_update => 0, non_public => 1 });
+        is $report->comments->count, 0, "No updates left";
+        $report->discard_changes;
+        is $report->non_public, 1, 'Now set to non-public';
+        $mech->submit_form(button => 'save', with_fields => { include_update => 0, non_public => 0 });
+        is $report->comments->count, 0, "No updates left";
+        $report->discard_changes;
+        is $report->non_public, 0, 'Not set to non-public';
+    };
+
+    subtest "test saved-at setting" => sub {
+        $report->comments->delete;
+        $mech->get_ok("/report/$report_id");
+        my $now = DateTime->now->subtract(days => 1);
+        $mech->submit_form(button => 'save', form_id => 'report_inspect_form',
+            fields => { include_update => 1, public_update => 'An update', saved_at => $now->epoch });
+        $report->discard_changes;
+        is $report->comments->count, 1, "One update";
+        is $report->comments->first->confirmed, $now;
     };
 };
 

@@ -544,20 +544,27 @@ sub load_and_group_problems : Private {
 
     my $states = $c->stash->{filter_problem_states};
     my $where = {
-        non_public => 0,
         state      => [ keys %$states ]
     };
+
+    my $body = $c->stash->{body}; # Might be undef
+
+    if ($c->user_exists && ($c->user->is_superuser || ($body && $c->user->has_permission_to('report_inspect', $body->id)))) {
+        # See all reports, no restriction
+    } else {
+        $where->{non_public} = 0;
+    }
+
     my $filter = {
         order_by => $c->stash->{sort_order},
         rows => $c->cobrand->reports_per_page,
     };
-    if ($c->user_exists && $c->stash->{body}) {
-        my $bid = $c->stash->{body}->id;
+    if ($c->user_exists && $body) {
         my $prefetch = [];
-        if ($c->user->has_permission_to('planned_reports', $bid)) {
+        if ($c->user->has_permission_to('planned_reports', $body->id)) {
             push @$prefetch, 'user_planned_reports';
         }
-        if ($c->user->has_permission_to('report_edit_priority', $bid) || $c->user->has_permission_to('report_inspect', $bid)) {
+        if ($c->user->has_permission_to('report_edit_priority', $body->id) || $c->user->has_permission_to('report_inspect', $body->id)) {
             push @$prefetch, 'response_priority';
         }
         $prefetch = $prefetch->[0] if @$prefetch == 1;
@@ -589,9 +596,9 @@ sub load_and_group_problems : Private {
         $where->{areas} = [
             map { { 'like', '%,' . $_->{id} . ',%' } } @{$c->stash->{wards}}
         ];
-        $problems = $problems->to_body($c->stash->{body});
-    } elsif ($c->stash->{body}) {
-        $problems = $problems->to_body($c->stash->{body});
+        $problems = $problems->to_body($body);
+    } elsif ($body) {
+        $problems = $problems->to_body($body);
     }
 
     if (my $bbox = $c->get_param('bbox')) {
@@ -609,7 +616,7 @@ sub load_and_group_problems : Private {
 
     my ( %problems, @pins );
     while ( my $problem = $problems->next ) {
-        if ( !$c->stash->{body} ) {
+        if ( !$body ) {
             add_row( $c, $problem, 0, \%problems, \@pins );
             next;
         }
@@ -623,7 +630,7 @@ sub load_and_group_problems : Private {
             # Add to bodies it was sent to
             my $bodies = $problem->bodies_str_ids;
             foreach ( @$bodies ) {
-                next if $_ != $c->stash->{body}->id;
+                next if $_ != $body->id;
                 add_row( $c, $problem, $_, \%problems, \@pins );
             }
         }
