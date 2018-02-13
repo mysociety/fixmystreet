@@ -163,7 +163,10 @@ sub load_updates : Private {
         {
             problem_id => $c->stash->{problem}->id,
             whenanswered => { '!=', undef },
-            old_state => 'confirmed', new_state => 'confirmed',
+            old_state => [ -and =>
+                { -in => [ FixMyStreet::DB::Result::Problem::closed_states, FixMyStreet::DB::Result::Problem::open_states ] },
+                \'= new_state',
+            ]
         },
         { order_by => 'whenanswered' }
     );
