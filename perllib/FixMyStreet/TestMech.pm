@@ -247,7 +247,7 @@ sub get_text_body_from_email {
 }
 
 sub get_link_from_email {
-    my ($mech, $email, $multiple) = @_;
+    my ($mech, $email, $multiple, $mismatch) = @_;
     unless ($email) {
         $email = $mech->get_email;
         $mech->clear_emails_ok;
@@ -261,7 +261,7 @@ sub get_link_from_email {
         if (@links) {
             # Must be an HTML part now, first two links are in header
             my @html_links = $part->body =~ m{https?://[^"]+}g;
-            is $links[0], $html_links[2], 'HTML link matches text link';
+            is $links[0], $html_links[2], 'HTML link matches text link' unless $mismatch;
         } else {
             @links = $part->body =~ m{https?://\S+}g;
             ok @links, "Found links in email '@links'";

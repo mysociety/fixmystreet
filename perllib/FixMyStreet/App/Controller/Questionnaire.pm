@@ -46,6 +46,7 @@ sub check_questionnaire : Private {
 
     $c->stash->{problem} = $problem;
     $c->stash->{answered_ever_reported} = $problem->user->answered_ever_reported;
+    $c->stash->{been_fixed} = $c->get_param('been_fixed') || '';
 }
 
 =head2 submit
@@ -223,7 +224,7 @@ sub submit_standard : Private {
 sub process_questionnaire : Private {
     my ( $self, $c ) = @_;
 
-    map { $c->stash->{$_} = $c->get_param($_) || '' } qw(been_fixed reported another update);
+    map { $c->stash->{$_} = $c->get_param($_) || '' } qw(reported another update);
 
     $c->stash->{update} = Utils::cleanup_text($c->stash->{update}, { allow_multiline => 1 });
 

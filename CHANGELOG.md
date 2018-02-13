@@ -2,7 +2,8 @@
 
 * Unreleased
     - Front end improvements:
-        - Include don't know link in questionnaire email. #1939
+        - Include don't know link in questionnaire email, and
+          prefill form question. #1939
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:

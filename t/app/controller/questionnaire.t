@@ -52,7 +52,7 @@ like $plain->body, qr/fill in our short questionnaire/i, "got questionnaire emai
 like $plain->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character';
 is $plain->header('Content-Type'), 'text/plain; charset="utf-8"', 'in the right character set';
 
-my $url = $mech->get_link_from_email($email);
+my $url = $mech->get_link_from_email($email, 0, 1);
 my ($token) = $url =~ m{/Q/(\S+)};
 ok $token, "extracted questionnaire token '$token'";
 $mech->clear_emails_ok;
@@ -399,7 +399,7 @@ FixMyStreet::override_config {
     $mech->clear_emails_ok;
     $body =~ s/\s+/ /g;
     like $body, qr/fill in our short questionnaire/i, "got questionnaire email";
-    my $url = $mech->get_link_from_email($email);
+    my $url = $mech->get_link_from_email($email, 0, 1);
     ($token) = $url =~ m{/Q/(\S+)};
     ok $token, "extracted questionnaire token '$token'";
 
