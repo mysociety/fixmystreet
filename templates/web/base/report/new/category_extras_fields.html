@@ -1,7 +1,7 @@
 [%- FOR meta IN metas %]
   [%- meta_name = meta.code -%]
 
-  [% IF c.cobrand.category_extra_hidden(meta_name) %]
+  [% IF c.cobrand.category_extra_hidden(meta_name) AND NOT show_hidden %]
 
       <input type="hidden" value="[% report_meta.$meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]">
 
