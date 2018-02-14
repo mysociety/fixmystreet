@@ -32,6 +32,7 @@ has use_service_as_deviceid => ( is => 'ro', isa => Bool, default => 0 );
 has use_extended_updates => ( is => 'ro', isa => Bool, default => 0 );
 has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
+has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -163,7 +164,11 @@ sub _populate_service_request_params {
     }
 
     if ( $extra->{image_url} ) {
-        $params->{media_url} = $extra->{image_url};
+        if ( $self->multi_photos ) {
+            $params->{media_url} = $extra->{all_image_urls};
+        } else {
+            $params->{media_url} = $extra->{image_url};
+        }
     }
 
     if ( $self->use_service_as_deviceid && $problem->service ) {

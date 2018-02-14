@@ -21,6 +21,8 @@ sub open311_config {
         push @$extra, { name => 'closest_address', value => $h->{closest_address} }
     }
     $row->set_extra_fields( @$extra );
+
+    $params->{multi_photos} = 1;
 }
 
 sub example_places {
