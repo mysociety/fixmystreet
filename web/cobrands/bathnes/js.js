@@ -166,4 +166,26 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     }
 }));
 
+
+var highways_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: false,
+        stroke: false
+    })
+});
+
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "AdoptedHighways"
+        }
+    },
+    stylemap: highways_stylemap,
+    non_interactive: true,
+    always_visible: true,
+    usrn_field: 'usrn',
+    name: "Adopted Highways"
+}));
+
+
 })();

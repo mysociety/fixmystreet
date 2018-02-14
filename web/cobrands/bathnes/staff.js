@@ -21,24 +21,6 @@ var llpg_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-var highways_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fill: true,
-        fillOpacity: 0,
-        strokeColor: "#55BB00",
-        strokeOpacity: 0.5,
-        strokeWidth: 2,
-        title: '${description}\n${notes}'
-    })
-    // Defining a 'hover' style means this layer will have hover
-    // behaviour even if set as non_interactive.
-    // 'hover': new OpenLayers.Style({
-    //     strokeOpacity: 1,
-    //     strokeWidth: 3
-    // })
-
-});
-
 
 fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     http_options: {
@@ -53,17 +35,23 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     always_visible: true
 }));
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "AdoptedHighways"
-        }
-    },
-    stylemap: highways_stylemap,
-    non_interactive: true,
-    always_visible: true,
-    usrn_field: 'usrn'
-}));
 
+// Staff can actually see the adopted highways layer, so replace the invisible
+// stylemap of that layer.
+var highways_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: true,
+        fillOpacity: 0,
+        strokeColor: "#55BB00",
+        strokeOpacity: 0.5,
+        strokeWidth: 2,
+        title: '${description}\n${notes}'
+    })
+});
+$.each(fixmystreet.assets.layers, function() {
+    if (this.name == "Adopted Highways") {
+        this.styleMap = highways_stylemap;
+    }
+});
 
 })();
