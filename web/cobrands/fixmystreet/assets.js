@@ -370,19 +370,11 @@ fixmystreet.assets = {
         if (options.always_visible) {
             asset_layer.setVisibility(true);
         }
-        if (asset_fault_layer) {
-            fixmystreet.assets.layers.push(asset_fault_layer);
-        }
         if (hover_feature_control) {
             fixmystreet.assets.controls.push(hover_feature_control);
         }
         if (select_feature_control) {
             fixmystreet.assets.controls.push(select_feature_control);
-        }
-
-        // Make sure the fault markers always appear beneath the linked assets
-        if (asset_fault_layer) {
-            asset_fault_layer.setZIndex(asset_layer.getZIndex()-1);
         }
 
         if (!asset_layer.fixmystreet.always_visible) {
@@ -391,14 +383,14 @@ fixmystreet.assets = {
                 var category = $(this).val();
                 if (category == options.asset_category) {
                     asset_layer.setVisibility(true);
-                    if (asset_fault_layer) {
-                        asset_fault_layer.setVisibility(true);
+                    if (asset_layer.fixmystreet.fault_layer) {
+                        asset_layer.fixmystreet.fault_layer.setVisibility(true);
                     }
                     zoom_to_assets(asset_layer);
                 } else {
                     asset_layer.setVisibility(false);
-                    if (asset_fault_layer) {
-                        asset_fault_layer.setVisibility(false);
+                    if (asset_layer.fixmystreet.fault_layer) {
+                        asset_layer.fixmystreet.fault_layer.setVisibility(false);
                     }
                 }
             });
@@ -426,12 +418,25 @@ fixmystreet.assets = {
             return hide_assets;
         })(fixmystreet.maps.display_around);
 
+        var pins_layer = fixmystreet.map.getLayersByName("Pins")[0];
         for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
             var layer = fixmystreet.assets.layers[i];
             fixmystreet.map.addLayer(layer);
             if (layer.fixmystreet.asset_category) {
                 fixmystreet.map.events.register( 'zoomend', layer, check_zoom_message_visibility);
             }
+
+            // Don't cover the existing pins layer
+            if (pins_layer) {
+                layer.setZIndex(pins_layer.getZIndex()-1);
+            }
+
+            // Make sure the fault markers always appear beneath the linked assets
+            if (layer.fixmystreet.fault_layer) {
+                fixmystreet.map.addLayer(layer.fixmystreet.fault_layer);
+                layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
+            }
+
         }
 
         for (i = 0; i < fixmystreet.assets.controls.length; i++) {

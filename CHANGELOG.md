@@ -3,6 +3,8 @@
 * Unreleased
     - Front end improvements:
         - Improve questionnaire process. #1939 #1998
+    - Bugfixes:
+        - Stop asset layers obscuring marker layer. #1999
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
 
