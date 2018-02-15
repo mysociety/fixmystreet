@@ -13,7 +13,9 @@ var defaults = {
             VERSION: "1.1.0",
             REQUEST: "GetFeature",
             SRSNAME: "urn:ogc:def:crs:EPSG::3857"
-        }
+        },
+        format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
+        format_options: {geometryName: 'msGeometry'}
     },
     asset_type: 'spot',
     max_resolution: 2.388657133579254,
@@ -54,6 +56,28 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: "Street lighting",
     asset_item: 'street light'
+}));
+
+var highways_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: false,
+        fillOpacity: 0,
+        strokeColor: "#55BB00",
+        strokeOpacity: 0.3,
+        strokeWidth: 8
+    })
+});
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Whole_Street"
+        }
+    },
+    stylemap: highways_stylemap,
+    always_visible: true,
+    non_interactive: true,
+    usrn_field: 'site_code'
 }));
 
 })();
