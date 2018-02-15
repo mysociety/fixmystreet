@@ -206,6 +206,7 @@ sub submit_standard : Private {
                 anonymous    => $problem->anonymous,
             }
         );
+        $update->set_extra_metadata( questionnaire_id => $q->id );
         if ( my $fileid = $c->stash->{upload_fileid} ) {
             $update->photo( $fileid );
         }

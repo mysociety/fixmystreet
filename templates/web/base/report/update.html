@@ -60,6 +60,9 @@
                         [% mlog = update.latest_moderation_log_entry(); IF mlog %]
                             <br />[% tprintf(loc('Moderated by %s at %s'), mlog.admin_user, prettify_dt(mlog.whenedited)) %]
                         [% END %]
+                        [% IF update.get_extra_metadata('open_from_questionnaire') %]
+                            <br />[% loc('Still open, via questionnaire') %]
+                        [% END %]
                     </p>
                 </div>
             [% END %]

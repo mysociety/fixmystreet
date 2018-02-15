@@ -169,11 +169,19 @@ sub load_updates : Private {
     );
 
     my @combined;
+    my %questionnaires_with_updates;
     while (my $update = $updates->next) {
         push @combined, [ $update->confirmed, $update ];
+        if (my $qid = $update->get_extra_metadata('questionnaire_id')) {
+            $questionnaires_with_updates{$qid} = $update;
+        }
     }
-    while (my $update = $questionnaires->next) {
-        push @combined, [ $update->whenanswered, $update ];
+    while (my $q = $questionnaires->next) {
+        if (my $update = $questionnaires_with_updates{$q->id}) {
+            $update->set_extra_metadata('open_from_questionnaire', 1);
+            next;
+        }
+        push @combined, [ $q->whenanswered, $q ];
     }
     @combined = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @combined;
     $c->stash->{updates} = \@combined;
