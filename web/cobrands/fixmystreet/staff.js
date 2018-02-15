@@ -432,8 +432,8 @@ $.extend(fixmystreet.set_up, {
 $.extend(fixmystreet.hooks, {
     update_problem_fields: function(args) {
         if (args.prefill_reports && args.role == 'inspector') {
-            var title = args.category + ' problem has been scheduled for fixing';
-            var description = args.category + ' problem found - scheduled for fixing by ' + args.body;
+            var title = 'A ' + args.category + ' problem has been found';
+            var description = 'A ' + args.category + ' problem has been found by ' + args.body;
 
             var $title_field = $('#form_title');
             var $description_field = $('#form_detail');
