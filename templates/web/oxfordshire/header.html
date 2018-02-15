@@ -54,6 +54,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
             </header>
 
+[% IF c.req.uri.path == '/' %]
+<p class="oxfordshire-preamble">
+Winter weather over the past few weeks has caused widespread damage to
+Oxfordshire’s roads. We are of course dealing with the most dangerous issues
+first but please do carry on alerting us to new ones so that we can continue to
+prioritise this work efficiently and so keep the whole county moving about its
+business as quickly as possible.
+</p>
+[% END %]
+
             [% pre_container_extra %]
 
             <div class="container">

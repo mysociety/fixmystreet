@@ -67,6 +67,11 @@ sub problem_response_days {
     my $self = shift;
     my $p = shift;
 
+    return 'emergency' if $p->category eq 'Street lighting';
+
+    # Temporary, see https://github.com/mysociety/fixmystreetforcouncils/issues/291
+    return 0;
+
     return 10 if $p->category eq 'Bridges';
     return 10 if $p->category eq 'Carriageway Defect'; # phone if urgent
     return 10 if $p->category eq 'Debris/Spillage';
@@ -87,7 +92,6 @@ sub problem_response_days {
     return 10 if $p->category eq 'Road traffic signs';
     return 10 if $p->category eq 'Roads/highways';
     return 10 if $p->category eq 'Skips and scaffolding';
-    return 'emergency' if $p->category eq 'Street lighting';
     return 10 if $p->category eq 'Traffic lights'; # phone if urgent
     return 10 if $p->category eq 'Traffic';
     return 10 if $p->category eq 'Trees';
