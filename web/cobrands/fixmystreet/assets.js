@@ -523,4 +523,25 @@ OpenLayers.Layer.Vector.prototype.getNearestFeature = function(point, threshold)
     return nearest_feature;
 };
 
+
+/*
+ * MapServer 6 (the version available on Debian Wheezy) outputs incorrect
+ * GML for MultiCurve geometries - see https://github.com/mapserver/mapserver/issues/4924
+ * The end result is that features with 'curveMembers' elements in their
+ * geometries will be missing from the map as the default GML parser doesn't
+ * know how to handle these elements.
+ * This subclass works around the problem by parsing 'curveMembers' elements.
+ */
+OpenLayers.Format.GML.v3.MultiCurveFix = OpenLayers.Class(OpenLayers.Format.GML.v3, {
+    readers: $.extend(true, {}, OpenLayers.Format.GML.v3.prototype.readers, {
+        "gml": {
+            "curveMembers": function(node, obj) {
+                this.readChildNodes(node, obj);
+            }
+        }
+    }),
+
+    CLASS_NAME: "OpenLayers.Format.GML.v3.MultiCurveFix"
+});
+
 })();
