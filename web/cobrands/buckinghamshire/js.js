@@ -77,7 +77,10 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     stylemap: highways_stylemap,
     always_visible: true,
     non_interactive: true,
-    usrn_field: 'site_code'
+    usrn: {
+        attribute: 'site_code',
+        field: 'site_code'
+    }
 }));
 
 })();
