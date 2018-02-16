@@ -148,6 +148,26 @@ subtest "unconfirmed updates not displayed" => sub {
 subtest "several updates shown in correct order" => sub {
     for my $fields ( {
             problem_id => $report_id,
+            whensent => '2011-03-10 12:23:16',
+            whenanswered => '2011-03-10 12:23:16',
+            old_state => 'confirmed',
+            new_state => 'confirmed',
+        },
+        {
+            problem_id => $report_id,
+            whensent => '2011-03-15 08:12:36',
+            whenanswered => '2011-03-15 08:12:36',
+            old_state => 'confirmed',
+            new_state => 'fixed - user',
+        },
+    ) {
+        my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
+            $fields
+        );
+    }
+
+    for my $fields ( {
+            problem_id => $report_id,
             user_id    => $user2->id,
             name       => 'Other User',
             mark_fixed => 'false',
@@ -185,11 +205,13 @@ subtest "several updates shown in correct order" => sub {
     $mech->get_ok("/report/$report_id");
 
     my $meta = $mech->extract_update_metas;
-    is scalar @$meta, 4, 'number of updates';
+    is scalar @$meta, 5, 'number of updates';
     is $meta->[0], 'Posted by Other User at 12:23, Thu 10 March 2011', 'first update';
     is $meta->[1], 'Posted by Main User at 12:23, Thu 10 March 2011', 'second update';
-    is $meta->[2], 'State changed to: Fixed', 'third update, part 1';
-    is $meta->[3], 'Posted anonymously at 08:12, Tue 15 March 2011', 'third update, part 2';
+    is $meta->[2], 'Still open, via questionnaire, 12:23, Thu 10 March 2011', 'questionnaire';
+    is $meta->[3], 'State changed to: Fixed', 'third update, part 1';
+    is $meta->[4], 'Posted anonymously at 08:12, Tue 15 March 2011', 'third update, part 2';
+    $report->questionnaires->delete;
 };
 
 for my $test (
