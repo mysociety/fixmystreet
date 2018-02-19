@@ -1,0 +1,96 @@
+@import "_colours";
+@import "../sass/layout";
+
+/* Top */
+
+.tfl-mayor-logo {
+  display: block;
+  background-color: #1F2025;
+  color: #fff;
+  padding: 6px 0;
+  padding-right: 9px;
+  
+  img {
+    float: right;
+  }
+}
+
+.logo {
+  width: 155px;
+}
+#site-logo {
+  position: absolute;
+}
+.logo .name {
+    color: #fff;
+    display: inline-block;
+    margin: 7px 0 0 52px;
+    font-size: 15px;
+    font-family: "Johnston100-Regular";
+    line-height: 100%;
+    text-transform: uppercase;
+}
+
+/* Bottom */
+
+.secondary-footer {
+  padding: 7px 0;
+}
+.secondary-footer li {
+  float: left;
+  margin: 0 1% 0 0;
+}
+
+#footer .secondary-footer span {
+    margin-top: 11px;
+    float: right;
+    display: block;
+}
+
+/* Navigation */
+
+.top-row-extras { display: none; }
+
+#main-nav {
+  min-height: 55px; /* Not 58 */
+}
+
+.nav-menu--main a, .nav-menu--main span, .nav-menu--main a.report-a-problem-btn {
+  font-size: 1em;
+  color: #fff;
+  padding: 18px 8px 13px;
+  margin: 0;
+  background-color: inherit;
+  border-radius: 0;
+    display: block;
+    -webkit-transition: background-color 0.3s;
+    -moz-transition: background-color 0.3s;
+    transition: background-color 0.3s;
+  &:hover {
+    -webkit-transition: none;
+    -moz-transition: none;
+    transition: none;
+  }
+  &:hover, &:focus {
+    background-color: #444856;
+    border-bottom: 3px solid #2070B0;
+    margin-bottom: -3px
+  }
+}
+
+/* Map page */
+
+body.mappage #site-header {
+  top: 23px;
+  height: 55px; /* Not 58 */
+}
+
+body.mappage .nav-wrapper {
+  top: 23px;
+}
+
+body.mappage #footer { display: none; }
+
+.big-green-banner {
+  text-transform: none;
+}
