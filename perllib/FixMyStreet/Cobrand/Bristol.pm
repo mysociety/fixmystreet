@@ -71,4 +71,10 @@ sub categories_restriction {
     return $rs->search( { 'me.send_method' => undef } );
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{always_send_email} = 1;
+}
+
 1;

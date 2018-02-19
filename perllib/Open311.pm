@@ -31,6 +31,7 @@ has extended_description => ( is => 'ro', isa => Str, default => 1 );
 has use_service_as_deviceid => ( is => 'ro', isa => Bool, default => 0 );
 has use_extended_updates => ( is => 'ro', isa => Bool, default => 0 );
 has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
+has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -135,6 +136,12 @@ sub _populate_service_request_params {
 
     $params->{phone} = $problem->user->phone if $problem->user->phone;
     $params->{email} = $problem->user->email if $problem->user->email;
+
+    # Some endpoints don't follow the Open311 spec correctly and require an
+    # email address for service requests.
+    if ($self->always_send_email && !$params->{email}) {
+        $params->{email} = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+    }
 
     # if you click nearby reports > skip map then it's possible
     # to end up with used_map = f and nothing in postcode
