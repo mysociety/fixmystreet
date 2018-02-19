@@ -1,0 +1,292 @@
+@font-face {
+    font-family: 'Johnston100-Light';
+    src: url("fonts/Johnston100-Light.woff2") format("woff2"),url("fonts/Johnston100-Light.woff") format("woff")
+}
+
+@font-face {
+    font-family: 'Johnston100-Medium';
+    src: url("fonts/Johnston100-Medium.woff2") format("woff2"),url("fonts/Johnston100-Medium.woff") format("woff")
+}
+
+@font-face {
+    font-family: 'Johnston100-Regular';
+    src: url("fonts/Johnston100-Regular.woff2") format("woff2"),url("fonts/Johnston100-Regular.woff") format("woff")
+}
+
+@font-face {
+    font-family: 'Johnston100-Bold';
+    src: url("fonts/Johnston100-Bold.woff2") format("woff2"),url("fonts/Johnston100-Bold.woff") format("woff")
+}
+
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+
+
+/* General */
+
+body {
+    font-family: $body-font;
+    font-size: 18px;
+    letter-spacing: 0.1px;
+}
+
+h1 {
+    font-family: $heading-font;
+    letter-spacing: -0.85px;
+    font-size: 1.888888889em; //34px
+    line-height: 1.235294118em; //42px
+}
+
+h2 {
+    font-family: $heading-font;
+    font-size: 1.444444444em; //26px
+    line-height: 1.230769231em; //32px
+}
+
+h3 {
+    font-family: $heading-font;
+    font-size: 1.166666667em; //21px
+    line-height: 1.238095238em; //26px
+}
+
+a, .fake-link {
+    text-decoration: underline;
+}
+
+.btn--primary,
+.btn,
+.green-btn {
+    @include tflbutton;
+}
+
+.form-control, .dropzone {
+    @include tflfield;
+}
+
+div.form-error, p.form-error {
+    background: $red;
+}
+
+input.form-error, textarea.form-error {
+    border-color: $red;
+}
+
+
+.btn--back,
+.btn--forward,
+.btn--cancel,
+.btn--navigate,
+.btn--geolocate,
+.btn--shortlist,
+.btn--shortlisted {
+    &:before {
+        @include svg-background-image('/cobrands/fixmystreet/images/button-icons-white');
+    }
+}
+
+/* Header */
+
+#site-logo {
+    @include svg-background-image("/cobrands/tfl/images/Tfl_Logo_Blue-banner");
+    background-repeat: no-repeat;
+    background-size: 170px 60px;
+    height: 60px;
+    width: 170px;
+    padding: 0;
+    float: left;
+}
+
+#site-header {
+    background-color: $dark;
+    position: relative
+}
+
+
+/* Homepage */
+#front-main {
+    background-color: transparent;
+    text-align: left;
+    #postcodeForm {
+        color: $johnston-black;
+        margin-top: 1em;
+        background-color: transparent;
+        label {
+            font-family: $bold-font;
+        }
+        div {
+            display: block;
+            border: 0;
+            input#sub {
+                @include tflbutton;
+                flex: unset;
+                margin-top: 1em;
+            }
+            input#pc {
+                width: 100%;
+                flex: unset;
+                @include tflfield;
+            }
+        } 
+    }
+    a#geolocate_link {
+        color: $beck-blue;
+        font-family: $heading-font;
+        text-decoration: underline;
+        font-size: 1.125em;
+        background: transparent;
+        &:hover,
+        &:active,
+        &:focus {
+            background: transparent;
+        }
+    }
+    h2 {
+        font-style: normal;
+        font-family: $body-font;
+        font-size: 1.625em;
+        max-width: 29em;
+    }
+}
+
+.item-list__heading {
+    font-family: $body-font;
+}
+
+ol.big-numbers>li {
+    list-style: decimal;
+    padding: 0;
+    margin-left: 1em;
+    margin-bottom: 1em;
+
+    &:before {
+        display: none;
+    }
+}
+
+#front_stats {
+    background-color: transparent;
+    font-family: $heading-font;
+    div {
+        font-size: 1em;
+    }
+    big {
+        color: $beck-blue;
+        letter-spacing: -1px;
+    }
+}
+
+.item-list--front-page {
+    .item-list--reports__item {
+        border-bottom: 1px solid $grey50;
+    }
+}
+
+.item-list--reports li > a,
+#key-tools a,
+.problem-back {
+    text-decoration: none;
+}
+
+/* Mobile navigation links */
+
+.top-row-extras a, .top-row-extras a:visited {
+  color: #fff;
+}
+.top-row-extras a:first-child {
+  border-left: 1px solid #565961;
+  margin-right: -1em;
+}
+.top-row-extras a {
+  float: right;
+  padding: 18px 8px 13px;
+  text-decoration: none;
+  .arrow {
+    display: inline-block;
+    background-image: url("/cobrands/tfl/images/arrow@2x.png");
+    background-image: url("/cobrands/tfl/images/arrow.png") \9;
+    background-size: 32px 32px;
+    height: 28px;
+    width: 21px;
+    margin: -4px 0 0 -8px;
+  }
+}
+
+.nav-menu {
+    border-top: 1px solid $grey50;
+}
+
+.nav-menu a, .nav-menu span {
+    color: $beck-blue;
+    font-family: $heading-font;
+    border: 0;
+    background-color: transparent;
+    text-decoration: underline;
+    &:hover,
+    &:active,
+    &:focus,
+    &:visited {
+        color: $blue-dark;
+        background-color: transparent;
+    }
+}
+
+.top-row-extras span {
+    float: left;
+}
+
+.top-row-extras a {
+    display: block;
+    -webkit-transition: background-color 0.3s;
+    -moz-transition: background-color 0.3s;
+    transition: background-color 0.3s
+}
+.top-row-extras a:hover {
+    -webkit-transition: none;
+    -moz-transition: none;
+    transition: none;
+}
+
+.top-row-extras a:hover,.top-row-extras a:focus {
+    background-color: #444856;
+    border-bottom: 3px solid #2070B0;
+    margin-bottom: -3px
+}
+
+/* Footer */
+
+#footer {
+    border-top: 3px solid $grey50;
+    background-color: $dark;
+    padding: 3em 0;
+}
+
+#footer ul, #footer li {
+    list-style-type: none outside none;
+    margin: 0;
+}
+
+#footer a,#footer a:visited {
+    color: $white;
+    text-decoration: underline;
+}
+
+
+#footer .about-tfl-menu,#footer .terms-and-conditions-menu {
+    margin: 0
+}
+
+.pagination a {
+    border-radius: 22.5px;
+    color: #fff;
+    padding: 0.3em 1em;
+    font-size: 14px;
+    &:hover,
+    &:active,
+    &:focus,
+    &:visited {
+        color: #fff;
+    }
+}

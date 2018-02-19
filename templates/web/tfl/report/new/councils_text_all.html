@@ -1,0 +1,16 @@
+<p>
+[% UNLESS non_public_categories.$category;
+
+    tprintf(
+        'Information you enter here will be sent to us and published for others to see, in accordance with our <a href="%s">privacy policy</a>.',
+        c.cobrand.privacy_policy_url
+    );
+
+ELSE;
+
+    tprintf(
+        'Information you enter here will be sent to us but not published online.',
+    );
+
+END %]
+</p>
