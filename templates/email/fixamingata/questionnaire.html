@@ -16,8 +16,11 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">[% created %] sedan lämnade du en rapport på FixaMinGata.</p>
   <p style="[% p_style %]">För att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde informera oss om huruvida problemet har blivit fixat än:</p>
   <p style="margin: 20px auto; text-align: center">
-    <a style="[% fixed_button_style %]" href="[% url %]">Fixat</a>
-    <a style="[% notfixed_button_style %]" href="[% url %]">Ej fixat</a>
+    <a style="[% fixed_button_style %]" href="[% url %]?been_fixed=Yes">Fixat</a>
+    <a style="[% notfixed_button_style %]" href="[% url %]?been_fixed=No">Ej fixat</a>
+  </p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% dontknow_button_style %]" href="[% url %]?been_fixed=Unknown">Vet ej</a>
   </p>
   <p style="[% p_style %]">Tack! Din feedback är värdefull.</p>
   [% end_padded_box %]

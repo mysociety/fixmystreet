@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Improve questionnaire process. #1939 #1998
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
 

@@ -13,7 +13,7 @@
 
     [% IF update.whenanswered %]
         [%# A questionnaire update, currently saying report is still open %]
-        [% tprintf( loc( 'Still open, via questionnaire, %s' ), prettify_dt( update.whenanswered ) ) %]
+        [% loc('Still open, via questionnaire') %], [% prettify_dt( update.whenanswered ) %]
         [% RETURN %]
     [% END %]
 

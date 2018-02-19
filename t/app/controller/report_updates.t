@@ -146,6 +146,42 @@ subtest "unconfirmed updates not displayed" => sub {
 };
 
 subtest "several updates shown in correct order" => sub {
+    my @qs;
+    for my $fields ( { # One with an associated update below
+            problem_id => $report_id,
+            whensent => '2011-03-10 12:23:16',
+            whenanswered => '2011-03-10 12:23:16',
+            old_state => 'confirmed',
+            new_state => 'confirmed',
+        },
+        { # One with no associated update
+            problem_id => $report_id,
+            whensent => '2011-03-11 12:23:16',
+            whenanswered => '2011-03-11 12:23:16',
+            old_state => 'confirmed',
+            new_state => 'confirmed',
+        },
+        { # One with no associated update, different state (doesn't match problem state, never mind)
+            problem_id => $report_id,
+            whensent => '2011-03-12 12:23:16',
+            whenanswered => '2011-03-12 12:23:16',
+            old_state => 'investigating',
+            new_state => 'investigating',
+        },
+        { # One for the fixed update
+            problem_id => $report_id,
+            whensent => '2011-03-15 08:12:36',
+            whenanswered => '2011-03-15 08:12:36',
+            old_state => 'confirmed',
+            new_state => 'fixed - user',
+        },
+    ) {
+        my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
+            $fields
+        );
+        push @qs, $q;
+    }
+
     for my $fields ( {
             problem_id => $report_id,
             user_id    => $user2->id,
@@ -180,16 +216,27 @@ subtest "several updates shown in correct order" => sub {
         my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
             $fields
         );
+        if ($fields->{text} eq 'Second update') {
+            $comment->set_extra_metadata(questionnaire_id => $qs[0]->id);
+            $comment->update;
+        }
+        if ($fields->{text} eq 'Third update') {
+            $comment->set_extra_metadata(questionnaire_id => $qs[3]->id);
+            $comment->update;
+        }
     }
 
     $mech->get_ok("/report/$report_id");
 
     my $meta = $mech->extract_update_metas;
-    is scalar @$meta, 4, 'number of updates';
+    is scalar @$meta, 6, 'number of updates';
     is $meta->[0], 'Posted by Other User at 12:23, Thu 10 March 2011', 'first update';
-    is $meta->[1], 'Posted by Main User at 12:23, Thu 10 March 2011', 'second update';
-    is $meta->[2], 'State changed to: Fixed', 'third update, part 1';
-    is $meta->[3], 'Posted anonymously at 08:12, Tue 15 March 2011', 'third update, part 2';
+    is $meta->[1], 'Posted by Main User at 12:23, Thu 10 March 2011 Still open, via questionnaire', 'second update';
+    is $meta->[2], 'Still open, via questionnaire, 12:23, Fri 11 March 2011', 'questionnaire';
+    is $meta->[3], 'Still open, via questionnaire, 12:23, Sat 12 March 2011', 'questionnaire';
+    is $meta->[4], 'State changed to: Fixed', 'third update, part 1';
+    is $meta->[5], 'Posted anonymously at 08:12, Tue 15 March 2011', 'third update, part 2';
+    $report->questionnaires->delete;
 };
 
 for my $test (

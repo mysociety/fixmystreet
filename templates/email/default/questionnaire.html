@@ -16,8 +16,11 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">[% created %] ago, you reported a problem using [% site_name %].</p>
   <p style="[% p_style %]">Help us keep [% site_name %] up to date by letting us know whether the problem has been fixed yet:</p>
   <p style="margin: 20px auto; text-align: center">
-    <a style="[% fixed_button_style %]" href="[% url %]">Fixed</a>
-    <a style="[% notfixed_button_style %]" href="[% url %]">Not fixed</a>
+    <a style="[% fixed_button_style %]" href="[% url %]?been_fixed=Yes">Fixed</a>
+    <a style="[% notfixed_button_style %]" href="[% url %]?been_fixed=No">Not fixed</a>
+  </p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% dontknow_button_style %]" href="[% url %]?been_fixed=Unknown">Don’t know</a>
   </p>
   <p style="[% p_style %]">Thank you! Your feedback is really valuable.</p>
   [% end_padded_box %]

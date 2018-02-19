@@ -52,7 +52,7 @@ like $plain->body, qr/fill in our short questionnaire/i, "got questionnaire emai
 like $plain->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character';
 is $plain->header('Content-Type'), 'text/plain; charset="utf-8"', 'in the right character set';
 
-my $url = $mech->get_link_from_email($email);
+my $url = $mech->get_link_from_email($email, 0, 1);
 my ($token) = $url =~ m{/Q/(\S+)};
 ok $token, "extracted questionnaire token '$token'";
 $mech->clear_emails_ok;
@@ -107,6 +107,23 @@ foreach my $test (
         $questionnaire->update;
     };
 }
+
+subtest "If been_fixed is provided in the URL" => sub {
+    $mech->get_ok("/Q/" . $token->token . "?been_fixed=Yes");
+    $mech->content_contains('id="been_fixed_yes" value="Yes" checked');
+    $report->discard_changes;
+    is $report->state, 'fixed - user';
+    $questionnaire->discard_changes;
+    is $questionnaire->old_state, 'confirmed';
+    is $questionnaire->new_state, 'fixed - user';
+    $mech->submit_form_ok({ with_fields => { been_fixed => 'Unknown', reported => 'Yes', another => 'No' } });
+    $report->discard_changes;
+    is $report->state, 'confirmed';
+    $questionnaire->discard_changes;
+    is $questionnaire->old_state, 'confirmed';
+    is $questionnaire->new_state, 'unknown';
+    $questionnaire->update({ whenanswered => undef, ever_reported => undef, old_state => undef, new_state => undef });
+};
 
 $mech->get_ok("/Q/" . $token->token);
 $mech->title_like( qr/Questionnaire/ );
@@ -399,7 +416,7 @@ FixMyStreet::override_config {
     $mech->clear_emails_ok;
     $body =~ s/\s+/ /g;
     like $body, qr/fill in our short questionnaire/i, "got questionnaire email";
-    my $url = $mech->get_link_from_email($email);
+    my $url = $mech->get_link_from_email($email, 0, 1);
     ($token) = $url =~ m{/Q/(\S+)};
     ok $token, "extracted questionnaire token '$token'";
 
