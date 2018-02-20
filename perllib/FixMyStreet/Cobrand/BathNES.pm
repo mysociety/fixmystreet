@@ -4,6 +4,11 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use LWP::Simple;
+use URI;
+use Try::Tiny;
+use JSON::MaybeXS;
+
 sub council_area_id { return 2551; }
 sub council_area { return 'Bath and North East Somerset'; }
 sub council_name { return 'Bath and North East Somerset Council'; }
@@ -83,6 +88,18 @@ sub open311_config {
         { name => 'description',
           value => $row->detail };
 
+    # Reports made via FMS.com or the app probably won't have a USRN
+    # value because we don't display the adopted highways layer on those
+    # frontends. Instead we'll look up the closest asset from the WFS
+    # service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_usrn($row)) {
+            push @$extra,
+                { name => 'usrn',
+                value => $usrn };
+        }
+    }
+
     $row->set_extra_fields(@$extra);
 }
 
@@ -97,5 +114,39 @@ sub available_permissions {
 }
 
 sub report_sent_confirmation_email { 1 }
+
+sub lookup_usrn {
+    my $self = shift;
+    my $row = shift;
+
+    my $buffer = 5; # metres
+    my ($x, $y) = $row->local_coords;
+    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+
+    my $uri = URI->new("https://isharemaps.bathnes.gov.uk/getows.ashx");
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
+        TYPENAME => "AdoptedHighways",
+        VERSION => "1.1.0",
+        mapsource => "BathNES/WFS",
+        outputformat => "application/json",
+        BBOX => "$w,$s,$e,$n"
+    );
+
+    my $response = get($uri);
+
+    my $j = JSON->new->utf8->allow_nonref;
+    try {
+        $j = $j->decode($response);
+        return $j->{features}->[0]->{properties}->{usrn};
+    } catch {
+        # There was either no asset found, or an error with the WFS
+        # call - in either case let's just proceed without the USRN.
+        return;
+    }
+
+}
 
 1;
