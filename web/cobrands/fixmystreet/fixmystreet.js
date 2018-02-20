@@ -409,6 +409,10 @@ $.extend(fixmystreet.set_up, {
             if ( data.category_extra ) {
                 if ( $category_meta.length ) {
                     $category_meta.replaceWith( data.category_extra );
+                    // Preserve any existing values
+                    $category_meta.find("[name]").each(function() {
+                        $('#category_meta').find("[name="+this.name+"]").val(this.value);
+                    });
                 } else {
                     $('#form_category_row').after( data.category_extra );
                 }
