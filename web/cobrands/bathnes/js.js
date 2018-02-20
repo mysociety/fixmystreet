@@ -6,7 +6,7 @@ if (!fixmystreet.maps) {
 
 fixmystreet.maps.banes_defaults = {
     http_options: {
-        url: "https://isharemapstest.bathnes.gov.uk/getows.ashx",
+        url: "https://isharemaps.bathnes.gov.uk/getows.ashx",
         // url: "https://confirmdev.eu.ngrok.io/banesmaps/getows.ashx",
         params: {
             mapsource: "BathNES/WFS",
