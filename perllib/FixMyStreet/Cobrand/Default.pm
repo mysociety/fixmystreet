@@ -667,6 +667,7 @@ sub admin_pages {
         $pages->{responsepriority_edit} = [ undef, undef ];
     };
     if ( $user->has_body_permission_to('user_edit') ) {
+        $pages->{reports} = [ _('Reports'), 2 ];
         $pages->{users} = [ _('Users'), 6 ];
         $pages->{user_edit} = [ undef, undef ];
     }
@@ -727,7 +728,7 @@ sub available_permissions {
             # trusted => _("Trusted to make reports that don't need to be inspected"),
         },
         _("Users") => {
-            user_edit => _("Edit other users' details"),
+            user_edit => _("Edit users' details/search for their reports"),
             user_manage_permissions => _("Edit other users' permissions"),
             user_assign_body => _("Grant access to the admin"),
             user_assign_areas => _("Assign users to areas"), # future use

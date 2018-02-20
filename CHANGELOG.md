@@ -13,6 +13,7 @@
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
+        - Users with 'user_edit' permission can search for users/reports. #2027
     - Development improvements:
         - Add HTML email previewer.
 
