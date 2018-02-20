@@ -555,8 +555,8 @@ sub nearby_json : Private {
     } @$nearby;
 
     my $list_html = $c->render_fragment(
-        'around/on_map_list_items.html',
-        { around_map => [], on_map => $nearby }
+        'report/nearby.html',
+        { reports => $nearby }
     );
 
     my $json = { pins => \@pins };
