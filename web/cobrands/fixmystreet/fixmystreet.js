@@ -459,6 +459,9 @@ $.extend(fixmystreet.set_up, {
 
     var add_option = function(el) {
         $group_select.append($(el).clone());
+        if (el.selected) {
+            $group_select.val(el.value);
+        }
     };
 
     var add_optgroup = function(el) {
@@ -478,11 +481,11 @@ $.extend(fixmystreet.set_up, {
             $sub_select.attr("id", subcategory_id);
             $sub_select.append($empty_option.clone());
             $options.each(function() {
-                var $newopt = $(this).clone();
-                $sub_select.append($newopt);
+                $sub_select.append($(this).clone());
                 // Make sure any preselected value is preserved in the new UI:
-                if ($newopt.attr('selected')) {
+                if (this.selected) {
                     $group_select.val(label);
+                    $sub_select.val(this.value);
                 }
             });
             $sub_select.hide().insertAfter($subcategory_label).change(subcategory_change);
