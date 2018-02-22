@@ -42,7 +42,8 @@ var highways_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
         fill: true,
         fillOpacity: 0,
-        strokeColor: "#55BB00",
+        // strokeColor: "#55BB00",
+        strokeColor: "#FFFF00",
         strokeOpacity: 0.5,
         strokeWidth: 2,
         title: '${description}\n${notes}'
