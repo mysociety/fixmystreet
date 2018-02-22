@@ -149,4 +149,10 @@ sub lookup_usrn {
 
 }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a location in ' . $self->council_area;
+}
+
+
 1;
