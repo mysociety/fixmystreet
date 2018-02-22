@@ -7,6 +7,7 @@
     - Bugfixes:
         - Stop asset layers obscuring marker layer. #1999
         - Don't delete hidden field values when inspecting reports. #1999
+        - Fix text layout issues in /reports/…/summary dashboard charts.
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
 

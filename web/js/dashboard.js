@@ -226,7 +226,6 @@ $(function(){
                             ctx = chartInstance.ctx;
 
                         ctx.font = Chart.helpers.fontString( Chart.defaults.global.defaultFontSize * 0.8, 'bold', Chart.defaults.global.defaultFontFamily);
-                        ctx.textAlign = 'right';
                         ctx.textBaseline = 'middle';
 
                         this.data.datasets.forEach(function (dataset, i) {
@@ -238,10 +237,12 @@ $(function(){
                                 var gutter = (bar._model.height - (Chart.defaults.global.defaultFontSize * 0.8)) / 2;
                                 var textX;
                                 if (width_text + 2 * gutter > width_bar) {
-                                    textX = bar._model.x + 2 * gutter;
+                                    textX = bar._model.x + gutter;
+                                    ctx.textAlign = 'left';
                                     ctx.fillStyle = bar._model.backgroundColor;
                                 } else {
                                     textX = bar._model.x - gutter;
+                                    ctx.textAlign = 'right';
                                     ctx.fillStyle = '#fff';
                                 }
                                 ctx.fillText( dataValue, textX, bar._model.y );
