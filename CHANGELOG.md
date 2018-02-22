@@ -5,6 +5,7 @@
         - Improve questionnaire process. #1939 #1998
         - Increase size of "sub map links" (hide pins, permalink, etc) #2003
         - Edge-to-edge email layout on narrow screens #2010
+        - Add default placeholder to report extra fields. #2027
     - Bugfixes:
         - Stop asset layers obscuring marker layer. #1999
         - Don't delete hidden field values when inspecting reports. #1999

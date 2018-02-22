@@ -14,6 +14,7 @@
       [% IF meta.variable != 'false' %]
         [% IF meta.exists('values') %]
           <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+            <option value="">[% loc('-- Pick an option --') %]</option>
             [% FOR option IN meta.values %]
               <option value="[% option.key %]"[% IF option.key == report_meta.$meta_name.value %] selected[% END %]>[% option.name %]</option>
             [% END %]

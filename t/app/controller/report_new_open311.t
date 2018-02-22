@@ -64,7 +64,7 @@ foreach my $test (
         },
         changes => {
             number => '',
-            type   => 'old',
+            type   => '',
         },
         errors  => [
             'This information is required',
@@ -80,6 +80,7 @@ foreach my $test (
             username => 'testopen311@example.com',
             category => 'Street lighting',
             number => 27,
+            type => 'old',
         },
         extra => [
             {
@@ -146,7 +147,7 @@ foreach my $test (
             }
             ->scrape( $mech->response );
 
-            is_deeply $result->{option}, [ qw/old modern/], 'displayed streetlight type select';
+            is_deeply $result->{option}, [ "", qw/old modern/], 'displayed streetlight type select';
         }
 
         $new_values = {
