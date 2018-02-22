@@ -1,7 +1,7 @@
 $(function(){
 
     Chart.defaults.global.defaultFontSize = 16;
-    Chart.defaults.global.defaultFontFamily = $('body').css('font-family');
+    // Chart.defaults.global.defaultFontFamily = $('body').css('font-family');
 
     var colours = [
         '#FF4343', // red
@@ -51,6 +51,26 @@ $(function(){
         }
         pointRadius.push(radius);
         return pointRadius;
+    };
+
+    // Wraps a row label onto two equal equal lines,
+    // if it is longer than 4 words.
+    var linewrapLabel = function(text) {
+        if ( text.split(' ').length < 5 ) {
+            return text;
+        }
+
+        var middle = Math.floor(text.length / 2);
+        var before = text.lastIndexOf(' ', middle);
+        var after = text.indexOf(' ', middle + 1);
+
+        if (before < after) {
+            middle = after;
+        } else {
+            middle = before;
+        }
+
+        return [ text.substr(0, middle), text.substr(middle + 1) ];
     };
 
     var makeSparkline = function makeSparkline($el, valuesStr, color, title){
@@ -180,7 +200,7 @@ $(function(){
         var rowValues = [];
 
         $trs.each(function(){
-            rowLabels.push( $(this).find('th').text() );
+            rowLabels.push( linewrapLabel($(this).find('th').text()) );
             rowValues.push( parseInt($(this).find('td').text(), 10) );
         });
 
