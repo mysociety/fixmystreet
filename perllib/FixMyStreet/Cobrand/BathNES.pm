@@ -34,6 +34,27 @@ sub disambiguate_location {
 
     my $town = 'Bath and North East Somerset';
 
+    # The council have provided a list of common typos which we should correct:
+    my %replacements = (
+        "broom" => "brougham",
+        "carnarvon" => "caernarvon",
+        "cornation" => "coronation",
+        "beafort" => "beaufort",
+        "beechan" => "beechen",
+        "malreword" => "malreward",
+        "canyerberry"=> "canterbury",
+        "clairemont"=> "claremont",
+        "salsbury"=> "salisbury",
+        "solsberry"=> "solsbury",
+        "lawn road" => "lorne",
+        "new road high littleton" => "danis house",
+    );
+
+    foreach my $original (keys %replacements) {
+        my $replacement = $replacements{$original};
+        $string =~ s/$original/$replacement/ig;
+    }
+
     return {
         %{ $self->SUPER::disambiguate_location() },
         town   => $town,
