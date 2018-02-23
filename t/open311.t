@@ -482,7 +482,7 @@ for my $test (
         desc         => 'update name taken from extra if available',
         comment_name => 'First Last',
         user_name    => 'Personal Family',
-        extra        => { first_name => 'Forename', last_name => 'Surname' },
+        extra        => { first_name => 'Forename', last_name => 'Surname', title => 'Ms' },
         first_name   => 'Forename',
         last_name    => 'Surname'
     },
