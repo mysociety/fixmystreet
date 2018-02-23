@@ -184,7 +184,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     always_visible: true,
     usrn: {
         attribute: 'usrn',
-        field: 'usrn'
+        field: 'site_code'
     },
     name: "Adopted Highways"
 }));

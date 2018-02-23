@@ -93,8 +93,10 @@ sub map_js_extra {
 
 sub category_extra_hidden {
     my ($self, $meta) = @_;
-    return 1 if $meta eq 'unitid' || $meta eq 'asset_details';
-    return 0;
+    my $code = $meta->{code};
+    # These two are used in the non-Open311 'Street light fault' category.
+    return 1 if $code eq 'unitid' || $code eq 'asset_details';
+    return $self->SUPER::category_extra_hidden($meta);
 }
 
 sub open311_config {
@@ -113,10 +115,10 @@ sub open311_config {
     # value because we don't display the adopted highways layer on those
     # frontends. Instead we'll look up the closest asset from the WFS
     # service at the point we're sending the report over Open311.
-    if (!$row->get_extra_field_value('usrn')) {
+    if (!$row->get_extra_field_value('site_code')) {
         if (my $usrn = $self->lookup_usrn($row)) {
             push @$extra,
-                { name => 'usrn',
+                { name => 'site_code',
                 value => $usrn };
         }
     }
