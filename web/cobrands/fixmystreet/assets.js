@@ -49,6 +49,49 @@ $(fixmystreet).on('report_new:category_change:extras_received', fixmystreet.usrn
 var selected_feature = null;
 var fault_popup = null;
 
+/*
+ * Adds the layer to the map and sets up event handlers and whatnot.
+ * Called as part of fixmystreet.assets.init for each asset layer on the map.
+ */
+function init_asset_layer(layer, pins_layer) {
+    fixmystreet.map.addLayer(layer);
+    if (layer.fixmystreet.asset_category) {
+        fixmystreet.map.events.register( 'zoomend', layer, check_zoom_message_visibility);
+    }
+
+    // Don't cover the existing pins layer
+    if (pins_layer) {
+        layer.setZIndex(pins_layer.getZIndex()-1);
+    }
+
+    // Make sure the fault markers always appear beneath the linked assets
+    if (layer.fixmystreet.fault_layer) {
+        fixmystreet.map.addLayer(layer.fixmystreet.fault_layer);
+        layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
+    }
+
+    if (!layer.fixmystreet.always_visible) {
+        // Show/hide the asset layer when the category is chosen
+        $("#problem_form").on("change.category", "select#form_category", function(){
+            var category = $(this).val();
+            if (category == layer.fixmystreet.asset_category) {
+                layer.setVisibility(true);
+                if (layer.fixmystreet.fault_layer) {
+                    layer.fixmystreet.fault_layer.setVisibility(true);
+                }
+                zoom_to_assets(layer);
+            } else {
+                layer.setVisibility(false);
+                if (layer.fixmystreet.fault_layer) {
+                    layer.fixmystreet.fault_layer.setVisibility(false);
+                }
+            }
+        });
+    }
+
+}
+
+
 function close_fault_popup() {
     if (!!fault_popup) {
         fixmystreet.map.removePopup(fault_popup);
@@ -417,25 +460,6 @@ fixmystreet.assets = {
         if (select_feature_control) {
             fixmystreet.assets.controls.push(select_feature_control);
         }
-
-        if (!asset_layer.fixmystreet.always_visible) {
-            // Show/hide the asset layer when the category is chosen
-            $("#problem_form").on("change.category", "select#form_category", function(){
-                var category = $(this).val();
-                if (category == options.asset_category) {
-                    asset_layer.setVisibility(true);
-                    if (asset_layer.fixmystreet.fault_layer) {
-                        asset_layer.fixmystreet.fault_layer.setVisibility(true);
-                    }
-                    zoom_to_assets(asset_layer);
-                } else {
-                    asset_layer.setVisibility(false);
-                    if (asset_layer.fixmystreet.fault_layer) {
-                        asset_layer.fixmystreet.fault_layer.setVisibility(false);
-                    }
-                }
-            });
-        }
     },
 
     init: function() {
@@ -461,23 +485,7 @@ fixmystreet.assets = {
 
         var pins_layer = fixmystreet.map.getLayersByName("Pins")[0];
         for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
-            var layer = fixmystreet.assets.layers[i];
-            fixmystreet.map.addLayer(layer);
-            if (layer.fixmystreet.asset_category) {
-                fixmystreet.map.events.register( 'zoomend', layer, check_zoom_message_visibility);
-            }
-
-            // Don't cover the existing pins layer
-            if (pins_layer) {
-                layer.setZIndex(pins_layer.getZIndex()-1);
-            }
-
-            // Make sure the fault markers always appear beneath the linked assets
-            if (layer.fixmystreet.fault_layer) {
-                fixmystreet.map.addLayer(layer.fixmystreet.fault_layer);
-                layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
-            }
-
+            init_asset_layer(fixmystreet.assets.layers[i], pins_layer);
         }
 
         for (i = 0; i < fixmystreet.assets.controls.length; i++) {
