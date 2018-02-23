@@ -671,11 +671,13 @@ body.authpage {
 
   &:after {
     content: "";
-    display: inline-block;
-    vertical-align: middle;
+    display: block;
+    position: absolute;
     width: 6px;
     height: 12px;
-    margin-#{$left}: ((16px - 6px) / 2); // horizontally centre in 16px wide parent
+    top: 50%;
+    margin-top: -6px;
+    #{$left}: ((16px - 6px) / 2); // horizontally centre in 16px wide parent
     background-size: 96px 12px;
     @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
   }
