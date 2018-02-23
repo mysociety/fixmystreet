@@ -13,19 +13,4 @@
 <meta name='theme-color' content='#ffd000'>
 <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/fixmystreet.com/favicon.ico">
 
-[%# Code for flex box usage on councils page %]
-<script nonce="[% csp_nonce %]">
-(function(d){
-  var c = " ", f = "flex", fw = "-webkit-"+f, g = d.createElement('b');
-  try {
-    g.style.display = fw;
-    g.style.display = f;
-    c += (g.style.display == f || g.style.display == fw) ? f : "no-"+f;
-  } catch(e) {
-    c += "no-"+f;
-  }
-  d.documentElement.className += c;
-})(document);
-</script>
-
 [% INCLUDE 'tracking_code.html' %]
