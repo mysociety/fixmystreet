@@ -66,7 +66,7 @@ sub default_map_zoom { 3 }
 
 sub category_extra_hidden {
     my ($self, $meta) = @_;
-    return 1 if $meta eq 'site_code' || $meta eq 'central_asset_id';
+    return 1 if $meta eq 'asset_details' || $meta eq 'site_code' || $meta eq 'central_asset_id';
     return 0;
 }
 
