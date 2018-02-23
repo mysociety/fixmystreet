@@ -67,7 +67,8 @@ more superusers.  To add such a user, you can use the `createsuperuser`
 command, as follows:
 
     ubuntu@ip-10-58-66-208:~$ sudo su - fms
-    fms@ip-10-58-191-98:~$ bin/createsuperuser fmsadmin@example.org password
+    fms@ip-10-58-191-98:~$ cd fixmystreet
+    fms@ip-10-58-191-98:~/fixmystreet$ bin/createsuperuser fmsadmin@example.org password
     fmsadmin@example.org is now a superuser.
 
 The script will install postfix to allow outgoing email; you can change the
