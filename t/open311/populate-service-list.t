@@ -646,6 +646,96 @@ subtest 'check bromely skip code' => sub {
     is_deeply $contact->get_extra_fields, $extra, 'all meta data saved for non bromley';
 };
 
+subtest 'check automated meta skip code' => sub {
+    my $processor = Open311::PopulateServiceList->new();
+
+    my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
+<service_definition>
+    <service_code>100</service_code>
+    <attributes>
+        <attribute>
+            <variable>true</variable>
+            <code>type</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+        <attribute>
+            <automated>server_set</automated>
+            <variable>true</variable>
+            <code>title</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+        <attribute>
+            <automated>hidden_field</automated>
+            <variable>true</variable>
+            <code>asset_id</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Id of bin</datatype_description>
+            <order>1</order>
+            <description>Id of bin</description>
+        </attribute>
+    </attributes>
+</service_definition>
+    ';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create(
+        {
+            body_id => 1,
+            email =>   '001',
+            category => 'Bins left out 24x7',
+            state => 'confirmed',
+            editor => $0,
+            whenedited => \'current_timestamp',
+            note => 'test contact',
+        }
+    );
+
+    my $o = Open311->new(
+        jurisdiction => 'mysociety',
+        endpoint => 'http://example.com',
+        test_mode => 1,
+        test_get_returns => { 'services/100.xml' => $meta_xml }
+    );
+
+    $processor->_current_open311( $o );
+    $processor->_current_body( $body );
+    $processor->_current_service( { service_code => 100 } );
+
+    $processor->_add_meta_to_contact( $contact );
+
+    my $extra = [ {
+            variable => 'true',
+            code => 'type',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Type of bin',
+            order => 1,
+            description => 'Type of bin'
+        },
+        {
+            automated => 'hidden_field',
+            variable => 'true',
+            code => 'asset_id',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'Id of bin',
+            order => 1,
+            description => 'Id of bin'
+    } ];
+
+    $contact->discard_changes;
+
+    is_deeply $contact->get_extra_fields, $extra, 'only hidden automated meta data saved';
+};
+
 sub get_standard_xml {
     return qq{<?xml version="1.0" encoding="utf-8"?>
 <services>
