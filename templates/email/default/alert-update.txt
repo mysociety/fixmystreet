@@ -1,7 +1,7 @@
-Subject: New [% site_name %] updates on report: '[% title %]'
+Subject: New [% site_name %] updates on report: '[% report.title %]'
 
 You asked us to send you an email every time an update was made to the
-[% site_name %] report: [% title %].
+[% site_name %] report: [% report.title %].
 
 The following updates have been left on this report:
 
@@ -22,7 +22,7 @@ please do not reply to it.
 Unsubscribe?
 
 We currently email you whenever someone leaves an update on the
-[% site_name %] report: [% title %].
+[% site_name %] report: [% report.title %].
 
 If you no longer wish to receive an email whenever this report is updated,
 please follow this link: [% unsubscribe_url %]

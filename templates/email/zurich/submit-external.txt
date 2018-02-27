@@ -1,4 +1,4 @@
-Subject: Züri wie neu: Weitergeleitete Meldung #[% id %]
+Subject: Züri wie neu: Weitergeleitete Meldung #[% report.id %]
 
 Grüezi [% bodies_name %],
 

@@ -1,4 +1,4 @@
-Subject: Ny rapport: [% title %]
+Subject: Ny rapport: [% report.title %]
 
 Till [% bodies_name %],
 
@@ -14,25 +14,27 @@ tror medborgaren behöver er uppmärksamhet.
 
 ** Uppgiftslämnare
 
-Namn: [% name %]
+Namn: [% report.name %]
 
-Epost: [% email OR '-' %]
+Epost: [% report.user.email OR '-' %]
 
-Telefonnummer: [% phone OR '-' %]
+Telefonnummer: [% report.user.phone OR '-' %]
 
 ** Information om ärendet
 
-ID: [% id %]
+ID: [% report.id %]
 
-[% category_line %]Ärende: [% title %]
+Kategori: [% report.category %]
 
-[% detail %]
+Ärende: [% report.title %]
+
+[% report.detail %]
 
 ** Geografisk position
 
-Latitude: [% latitude %]
+Latitude: [% report.latitude %]
 
-Longitude: [% longitude %]
+Longitude: [% report.longitude %]
 
 ** Övrigt
 

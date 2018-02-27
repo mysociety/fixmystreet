@@ -1,17 +1,17 @@
-Subject: Züri wie neu: Weitergeleitete Meldung #[% id %]
+Subject: Züri wie neu: Weitergeleitete Meldung #[% report.id %]
 
 Grüezi [% bodies_name %],
 
 [% external_message %]
 
 
-Name des Meldenden: [% name %]
+Name des Meldenden: [% report.name %]
 
-Email des Meldenden: [% email %]
+Email des Meldenden: [% report.user.email %]
 
-Telefonnummer des Meldenden: [% phone %]
+Telefonnummer des Meldenden: [% report.user.phone %]
 
-Meldung: [% detail %]
+Meldung: [% report.detail %]
 
 Standort in AV-Online anzeigen:
 http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% west %]&Nord=[% nord %]&B=300
