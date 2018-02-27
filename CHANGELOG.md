@@ -8,6 +8,8 @@
         - Don't delete hidden field values when inspecting reports. #1999
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
+    - Development improvements:
+        - Add HTML email previewer.
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:
