@@ -1,0 +1,55 @@
+//-----------
+// Footer
+//-----------
+
+.global-footer {
+    background-color: $bathnes-grey-4;
+    border-top: 5px solid $bathnes-primary;
+}
+
+.footer-wrapper {
+    position: relative;
+    max-width: $site-width;
+    margin: 0 auto;
+    padding-top: 2em;
+    padding-bottom: 2em;
+    padding-left: 15px;
+    padding-right: 15px;
+    @include media($site-width) {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.footer-marque {
+    position: absolute;
+    top: -35px;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 35px 0 0 35px;
+    border-color: transparent transparent transparent $bathnes-primary;
+}
+
+.footer-logo {
+    width: (321px/2.5);
+    height: auto;
+    img {
+        max-width: 100%;
+    }
+}
+
+.footer-list {
+    margin-top: 1.5em;
+    font-size: 16px;
+    li {
+        display: inline-block;
+        border-left: 1px solid $border-colour;
+        padding: 0 10px;
+        &:first-child {
+            border-left: none;
+            padding-left: 0;
+        }
+    }
+}

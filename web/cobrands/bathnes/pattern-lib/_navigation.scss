@@ -1,0 +1,92 @@
+//-----------
+// Navigation
+//-----------
+
+.navigation-primary {
+    position: relative;
+    overflow: hidden;
+    body.js-enabled & {
+      transition: max-height ease-out 0.35s;
+		  max-height: 0;
+    }
+    border-top: 5px solid #fff;
+    &--active {
+      border-top: 5px solid $bathnes-primary;
+  		body.js-enabled & {
+  			transition: max-height ease-out 0.5s;
+  			max-height: 1000px;
+  		}
+  	}
+    @include media(desktop) {
+        display: block;
+        border-top: 1px solid $border-colour;
+        body.js-enabled & {
+            max-height: 100%;
+        }
+    }
+}
+
+.navigation-primary-list {
+    overflow: hidden;
+    list-style: none;
+    max-width: $site-width;
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    @include media($site-width) {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.navigation-primary-list__item {
+    display: block;
+    a {
+        display: block;
+        padding: 0.5em 0;
+        text-decoration: none;
+        color: $text-colour;
+        font-size: 16px;
+        &:hover, &:active {
+            text-decoration: underline;
+        }
+    }
+    @include media(desktop) {
+        display: inline-block;
+        a {
+            padding: 0.75em 1em;
+        }
+        &:first-child a {
+            padding-left: 0;
+        }
+    }
+}
+
+.navigation-trigger {
+    position: absolute;
+    top: 1.65em;
+    right: 15px;
+    text-decoration: none;
+    color: $text-colour;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 5px 10px;
+    background-color: #f4f4f4;
+    &:hover, &:active {
+        background-color: #eee;
+    }
+    &:after {
+        display: inline-block;
+        font-size: 8px;
+        height: 8px;
+        padding-left: 5px;
+        vertical-align: middle;
+        content: " \25BC";
+    }
+    @include media(desktop) {
+        display: none;
+    }
+}

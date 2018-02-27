@@ -1,0 +1,36 @@
+[%#
+* Taken from https://style.bathnes.gov.uk/02-components.html#headers
+* Image path updated
+* Menu button changed to link, and other FMS Report link added
+* Seach box made functional
+* .visually-hidden to .visuallyhidden
+%]
+<header id="site-header" role="banner">
+    <div class="header-wrapper">
+        <div class="header-global">
+            <div class="header-logo">
+                <a href="https://www.bathnes.gov.uk/" id="logo">
+                    <img src="/cobrands/bathnes/bathnes-logo-colour.png" alt="Bath & North East Somerset Council" />
+                </a>
+            </div>
+
+            <a href="[% c.cobrand.base_url IF admin %]/" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>
+            <a href="#main-nav" class="navigation-trigger">Menu</a>
+
+            <div class="header-search header-search--desktop">
+                <form id="search" class="site-search" action="http://www.bathnes.gov.uk/search/site/" method="post">
+                    <label class="form-label visuallyhidden" for="search-site">Search across the site</label>
+                    <input class="form-control" id="search-site" type="text" name="search_block_form" placeholder="Search bathnes.gov.uk">
+                    <input type="hidden" name="form_id" value="search_block_form">
+                    <input class="button" type="submit" value="Search">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <nav role="navigation" id="navigation-primary" class="navigation-primary">
+        [% INCLUDE 'main_nav.html' omit_wrapper=1 ul_class='navigation-primary-list' liattrs='class="navigation-primary-list__item"' %]
+    </nav>
+
+    <div class="header-marque"></div>
+</header>
