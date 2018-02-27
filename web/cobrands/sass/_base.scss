@@ -560,6 +560,9 @@ ul.error {
     font-size: 1.25em;
     border-bottom: 0.25em solid #333;
   }
+  a:visited {
+    color: #333;
+  }
   a:hover, span.hover {
     background-color: #333;
     color: #fff;
