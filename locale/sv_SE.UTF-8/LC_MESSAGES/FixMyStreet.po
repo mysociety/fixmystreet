@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-02-12 15:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Jon Kristensen <info@jonkri.com>, 2018\n"
+"Last-Translator: Jon Kristensen <info@jonkri.com>, 2017\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
@@ -405,7 +405,7 @@ msgstr "Alla rapporter mellan %s och %s"
 
 #: templates/web/base/reports/index.html:25
 msgid "All time"
-msgstr "All tid"
+msgstr "Ärenden på årsbasis"
 
 #: templates/web/base/my/anonymize.html:20
 msgid "Alternatively, we can hide your name on <strong>all of your reports and updates</strong> across the site:"
