@@ -121,8 +121,7 @@ sub load_problem_or_display_error : Private {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
             unless $c->cobrand->show_unconfirmed_reports ;
     }
-    elsif ( $problem->hidden_states->{ $problem->state } or
-            (($problem->get_extra_metadata('closure_status')||'') eq 'hidden')) {
+    elsif ( $problem->hidden_states->{ $problem->state } ) {
         $c->detach(
             '/page_error_410_gone',
             [ _('That report has been removed from FixMyStreet.') ]    #
