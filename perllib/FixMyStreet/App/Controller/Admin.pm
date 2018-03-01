@@ -446,6 +446,7 @@ sub body_params : Private {
     %defaults = ( %defaults,
         send_comments => 0,
         fetch_problems => 0,
+        blank_updates_permitted => 0,
         suppress_alerts => 0,
         comment_user_id => undef,
         send_extended_statuses => 0,

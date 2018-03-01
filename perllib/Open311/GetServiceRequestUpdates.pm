@@ -12,6 +12,7 @@ has end_date => ( is => 'ro', default => sub { undef } );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
+has blank_updates_permitted => ( is => 'rw', default => 0 );
 
 Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
@@ -49,6 +50,7 @@ sub fetch {
         }
 
         $self->suppress_alerts( $body->suppress_alerts );
+        $self->blank_updates_permitted( $body->blank_updates_permitted );
         $self->system_user( $body->comment_user );
         $self->update_comments( $o, $body );
     }
@@ -182,6 +184,8 @@ sub comment_text_for_request {
     })->first) {
         return $template->text;
     }
+
+    return "" if $self->blank_updates_permitted;
 
     print STDERR "Couldn't determine update text for $request->{update_id} (report " . $problem->id . ")\n";
     return "";

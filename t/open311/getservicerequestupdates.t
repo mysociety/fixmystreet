@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use FixMyStreet::Test;
+use Test::Output;
 use CGI::Simple;
 use LWP::Protocol::PSGI;
 use t::Mock::Static;
@@ -778,6 +779,53 @@ foreach my $test ( {
         for my $alert (@alerts) {
             $alert->delete;
         }
+        $problem->comments->delete;
+    }
+}
+
+foreach my $test ( {
+        desc => 'normally blank text produces a warning',
+        num_alerts => 1,
+        blank_updates_permitted => 0,
+    },
+    {
+        desc => 'no warning if blank updates permitted',
+        num_alerts => 1,
+        blank_updates_permitted => 1,
+    },
+) {
+    subtest $test->{desc}  => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638344</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <status>closed</status>
+        <description></description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        $problem->state( 'confirmed' );
+        $problem->lastupdate( $dt->clone->subtract( hours => 3 ) );
+        $problem->update;
+
+        $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            blank_updates_permitted => $test->{blank_updates_permitted},
+        );
+
+        if ( $test->{blank_updates_permitted} ) {
+            stderr_is { $update->update_comments( $o, $bodies{2482} ) } '', 'No error message'
+        } else {
+            stderr_like { $update->update_comments( $o, $bodies{2482} ) } qr/Couldn't determine update text for/, 'Error message displayed'
+        }
+        $problem->discard_changes;
         $problem->comments->delete;
     }
 }

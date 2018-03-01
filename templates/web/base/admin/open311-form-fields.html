@@ -49,6 +49,17 @@
   </p>
 
   [% IF show_body_fields %]
+    <div class="admin-hint">
+      <p>
+        [% loc(
+            "Enabling this will suppress the error message that is normally emitted when an update has no description"
+        ) %]
+      </p>
+    </div>
+    <p>
+        <input type="checkbox" id="blank_updates_permitted" name="blank_updates_permitted"[% ' checked' IF object.blank_updates_permitted %]>
+        <label for="blank_updates_permitted" class="inline">[% loc('Permit blank updates') %]</label>
+    </p>
     [%# These fields aren't shown for contacts %]
     <div class="admin-hint">
       <p>

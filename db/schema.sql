@@ -55,6 +55,7 @@ create table body (
     can_be_devolved boolean not null default 'f',
     send_extended_statuses boolean not null default 'f',
     fetch_problems boolean not null default 'f',
+    blank_updates_permitted boolean not null default 'f',
     deleted boolean not null default 'f'
 );
 
