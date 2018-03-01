@@ -22,14 +22,11 @@
     font-family: [% body_font_family %] !important;
   }
 
-  [%~ # 550px = 5+5+5+520+5+5+5 %]
-  @media only screen and (max-width: 549px) {
-    #main {
+  @media only screen and (max-width: [% wrapper_min_width - 1 %]px) {
+    #main, .hint {
       min-width: 0 !important;
     }
-  }
 
-  @media only screen and (max-width: 500px) {
     #main table, #main tr, #main th {
       display: block !important;
     }
@@ -45,13 +42,17 @@
   <table [% wrapper_table %] style="[% wrapper_style %]">
     <tr>
       <th></th>
-      <th width="620" style="[% td_style %] min-width: 520px;" id="main">
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
+        [% email_summary %]
+      </th>
+      <th></th>
+    </tr>
+  </table>
+  <table [% wrapper_table %] style="[% wrapper_style %]">
+    <tr>
+      <th></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %] min-width: [% wrapper_min_width %]px;" id="main">
         <table [% table_reset %]>
-          <tr>
-            <th colspan="[% email_columns %]" style="[% td_style %][% hint_style %]" class="hint">
-              [% email_summary %]
-            </th>
-          </tr>
           <tr>
             <th colspan="[% email_columns %]" style="[% td_style %][% header_style %]">
               [%~ IF file_exists("web/cobrands/${ img_dir }/images/email-logo.gif") ~%]
