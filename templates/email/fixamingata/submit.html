@@ -23,21 +23,21 @@ tror medborgaren behöver er uppmärksamhet.</p>
   <table [% table_reset %]>
     <tr>
       <th style="[% contact_th_style %]">Namn</th>
-      <td style="[% contact_td_style %]">[% name | html %]</td>
+      <td style="[% contact_td_style %]">[% report.name | html %]</td>
     </tr>
     <tr>
       <th style="[% contact_th_style %]">Epost</th>
       <td style="[% contact_td_style %]">
-        [%~ IF email ~%]
-          <a href="mailto:[% email | html %]">[% email | html %]</a>
+        [%~ IF report.user.email ~%]
+          <a href="mailto:[% report.user.email | html %]">[% report.user.email | html %]</a>
         [%~ ELSE ~%]
         [%~ END ~%]
       </td>
     </tr>
-    [%~ IF phone %]
+    [%~ IF report.user.phone %]
       <tr>
         <th style="[% contact_th_style %]">Telefon</th>
-        <td style="[% contact_td_style %]"><a href="tel:[% phone | html %]">[% phone | html %]</a></td>
+        <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
       </tr>
     [%~ END %]
   </table>
@@ -45,15 +45,13 @@ tror medborgaren behöver er uppmärksamhet.</p>
   [% end_padded_box %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
-    <h2 style="[% h2_style %]">[% title | html %]</h2>
-    [%~ IF category_line %]
-    <p style="[% secondary_p_style %]">[% category | html %]</p>
-    [%~ END %]
-    <p style="[% secondary_p_style %]">[% detail | html %]</p>
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% report.category | html %]</p>
+    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
     <p style="[% secondary_p_style %]">
       <strong>Plats:</strong>
       <a href="[% osm_url %]" title="Se den här platsen på OpenStreetMap">
-        [%~ latitude %], [% longitude ~%]
+        [%~ report.latitude %], [% report.longitude ~%]
       </a>
       [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
     </p>

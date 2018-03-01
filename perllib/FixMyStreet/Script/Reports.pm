@@ -178,16 +178,8 @@ sub send(;$) {
 
         if ($h{category} eq _('Other')) {
             $h{category_footer} = _('this type of local problem');
-            $h{category_line} = '';
         } else {
             $h{category_footer} = "'" . $h{category} . "'";
-            $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
-        }
-
-        if ( $row->subcategory ) {
-            $h{subcategory_line} = sprintf(_("Subcategory: %s"), $row->subcategory) . "\n\n";
-        } else {
-            $h{subcategory_line} = "\n\n";
         }
 
         $h{bodies_name} = join(_(' and '), @dear);

@@ -1,4 +1,4 @@
-Subject: Problem Report: [% title %]
+Subject: Problem Report: [% report.title %]
 
 Dear [% bodies_name %],
 
@@ -13,15 +13,17 @@ please visit the following link:
 
 [% has_photo %]----------
 
-Name: [% name %]
+Name: [% report.name %]
 
-Email: [% email OR 'None provided' %]
+Email: [% report.user.email OR 'None provided' %]
 
-Phone: [% phone OR 'None provided' %]
+Phone: [% report.user.phone OR 'None provided' %]
 
-[% category_line %]Subject: [% title %]
+Category: [% report.category %]
 
-Details: [% detail %]
+Subject: [% report.title %]
+
+Details: [% report.detail %]
 
 [% additional_information %]
 
@@ -29,9 +31,9 @@ Easting/Northing
 [%- " (IE)" IF coordsyst == "I" -%]
 : [% easting %]/[% northing %]
 
-Latitude: [% latitude %]
+Latitude: [% report.latitude %]
 
-Longitude: [% longitude %]
+Longitude: [% report.longitude %]
 
 View OpenStreetMap of this location: [% osm_url %]
 

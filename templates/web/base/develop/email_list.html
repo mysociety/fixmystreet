@@ -1,0 +1,11 @@
+[% INCLUDE 'header.html' %]
+
+<h1>[% loc('Templates') %]</h1>
+
+<ul>
+[% FOR template IN templates %]
+<li><a href="[% template.url %]">[% template.name %]</a></li>
+[% END %]
+</ul>
+
+[% INCLUDE 'footer.html' %]

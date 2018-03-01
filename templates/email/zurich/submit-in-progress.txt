@@ -1,4 +1,4 @@
-Subject: Züri wie neu: Neue Meldung #[% id %]
+Subject: Züri wie neu: Neue Meldung #[% report.id %]
 
 Guten Tag [% bodies_name %],
 
