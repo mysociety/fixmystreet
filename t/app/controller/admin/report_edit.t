@@ -364,6 +364,10 @@ foreach my $test (
             $mech->content_lacks( 'type="submit" name="resend"', 'no resend button' );
         }
 
+        if ($report->state eq 'fixed') {
+            $mech->content_contains('pin-green');
+        }
+
         $test->{changes}->{flagged} = 1 if $test->{changes}->{flagged};
         $test->{changes}->{non_public} = 1 if $test->{changes}->{non_public};
 
