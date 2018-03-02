@@ -358,6 +358,8 @@ Generates a CSV output, given a 'csv' stash hashref containing:
 * columns: an arrayref of the columns (looked up in the row's as_hashref, plus
 the following: user_name_display, acknowledged, fixed, closed, wards,
 local_coords_x, local_coords_y, url).
+* extra_data: If present, a function that is passed the report and returns a
+hashref of extra data to include that can be used by 'columns'.
 
 =cut
 
@@ -410,6 +412,11 @@ sub generate_csv : Private {
         ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
             $report->local_coords;
         $hashref->{url} = join '', $c->cobrand->base_url_for_report($report), $report->url;
+
+        if (my $fn = $c->stash->{csv}->{extra_data}) {
+            my $extra = $fn->($report);
+            $hashref = { %$hashref, %$extra };
+        }
 
         $csv->combine(
             @{$hashref}{
