@@ -639,7 +639,7 @@ sub admin_report_edit {
         my $closure_states = $self->zurich_closed_states;
         delete $closure_states->{'fixed - council'}; # may not be needed?
 
-        my $old_closure_state = $problem->get_extra_metadata('closure_status');
+        my $old_closure_state = $problem->get_extra_metadata('closure_status') || '';
 
         # update the public update from DM
         if (my $update = $c->get_param('status_update')) {
@@ -661,9 +661,8 @@ sub admin_report_edit {
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
-        } elsif ( $closure_states->{$state} and
-                    ( $oldstate ne 'planned' )
-                    || (($old_closure_state ||'') ne $state))
+        } elsif ( $oldstate ne $state and $closure_states->{$state} and
+                  $oldstate ne 'planned' || $old_closure_state ne $state)
         {
             # for these states
             #  - closed (Extern)
