@@ -269,7 +269,7 @@ subtest "report_edit" => sub {
 
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( { with_fields => { state => 'hidden' } } );
-        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->get_ok( '/report/' . $report->id, 'still visible as response not published yet' );
 
         $report->discard_changes;
         is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Still marked moderated_overdue' );
@@ -280,6 +280,7 @@ subtest "report_edit" => sub {
             or diag $report->get_column('extra');
 
         # publishing actually sets hidden
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->form_with_fields( 'status_update' );
         $mech->submit_form_ok( { button => 'publish_response' } );
         $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -288,7 +289,8 @@ subtest "report_edit" => sub {
         is ( $report->get_extra_metadata('closed_overdue'),    0, "Closing as hidden sets closed_overdue..." );
         is ( $report->state, 'hidden', 'Closing as hidden sets state to hidden');
         is ( $report->get_extra_metadata('closure_status'), undef, 'Closing as hidden unsets closure_status');
-
+        $mech->get( '/report/' . $report->id);
+        is $mech->res->code, 410;
 
         reset_report_state($report);
         is ( $report->get_extra_metadata('moderated_overdue'), undef, 'Sanity check' );

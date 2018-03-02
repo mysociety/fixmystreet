@@ -780,6 +780,28 @@ sub update_user : Private {
     return 0;
 }
 
+sub report_edit_display : Private {
+    my ( $self, $c ) = @_;
+
+    my $problem = $c->stash->{problem};
+
+    $c->stash->{page} = 'admin';
+    FixMyStreet::Map::display_map(
+        $c,
+        latitude  => $problem->latitude,
+        longitude => $problem->longitude,
+        pins      => $problem->used_map
+        ? [ {
+            latitude  => $problem->latitude,
+            longitude => $problem->longitude,
+            colour    => $c->cobrand->pin_colour($problem, 'admin'),
+            type      => 'big',
+          } ]
+        : [],
+        print_report => 1,
+    );
+}
+
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
@@ -799,41 +821,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('/auth/get_csrf_token');
 
-    $c->stash->{page} = 'admin';
-    FixMyStreet::Map::display_map(
-        $c,
-        latitude  => $problem->latitude,
-        longitude => $problem->longitude,
-        pins      => $problem->used_map
-        ? [ {
-            latitude  => $problem->latitude,
-            longitude => $problem->longitude,
-            colour    => $c->cobrand->pin_colour($problem, 'admin'),
-            type      => 'big',
-          } ]
-        : [],
-        print_report => 1,
-    );
-
-    if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
-        $self->rotate_photo($c, $problem, @$rotate_photo_param);
-        if ( $c->cobrand->moniker eq 'zurich' ) {
-            # Clicking the photo rotation buttons should do nothing
-            # except for rotating the photo, so return the user
-            # to the report screen now.
-            $c->res->redirect( $c->uri_for( 'report_edit', $problem->id ) );
-            return;
-        } else {
-            return 1;
-        }
-    }
-
     $c->forward('categories_for_point');
-
-    if ( $c->cobrand->moniker eq 'zurich' ) {
-        my $done = $c->cobrand->admin_report_edit();
-        return if $done;
-    }
 
     $c->forward('check_username_for_abuse', [ $problem->user ] );
 
@@ -841,6 +829,16 @@ sub report_edit : Path('report_edit') : Args(1) {
       [ $c->model('DB::Comment')
           ->search( { problem_id => $problem->id }, { order_by => 'created' } )
           ->all ];
+
+    if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
+        $self->rotate_photo($c, $problem, @$rotate_photo_param);
+        $c->detach('report_edit_display');
+    }
+
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        my $done = $c->cobrand->admin_report_edit();
+        $c->detach('report_edit_display') if $done;
+    }
 
     if ( $c->get_param('resend') ) {
         $c->forward('/auth/check_csrf_token');
@@ -937,7 +935,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->discard_changes;
     }
 
-    return 1;
+    $c->detach('report_edit_display');
 }
 
 =head2 report_edit_category
