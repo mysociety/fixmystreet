@@ -11,11 +11,6 @@ $mappage-header-height: 7em;
     color: #3c3c3c;
 }
 
-// Fix positioning of images in the admin
-body.admin .admin-nav-wrapper {
-    z-index: 1;
-}
-
 // Different header and logo
 #site-header {
     background-color: #fff;
@@ -239,10 +234,6 @@ body.twothirdswidthpage {
 
 // Admin specific changes
 
-body.fullwidthpage.admin .content {
-    width: 100%;
-}
-
 body.mappage.admin {
     // Shuffle things around so they're in the right place
     #map_box {
@@ -254,11 +245,6 @@ body.mappage.admin {
         width: 40em;
         padding: 0;
         background: #fff url(/cobrands/zurich/admin-faux-columns.gif) top center repeat-y;
-        @include box-shadow(0 0 5px rgba(0,0,0,0.5));
-    }
-    .content {
-        // To push down the admin navigation
-        margin-top: 6em;
     }
 }
 
@@ -347,15 +333,9 @@ body.mappage.admin {
 }
 
 .admin-nav-wrapper {
-    background-color: white;
     padding: 1.5em 0 1em;
 }
 
 body.mappage .admin-nav-wrapper {
-    box-sizing: border-box;
-    padding-left: 10px;
-    padding-right: 10px;
-    position: fixed;
-    width: 100%;
-    @include box-shadow(0 0 5px rgba(0,0,0,0.5));
+    margin-top: 6em;
 }
