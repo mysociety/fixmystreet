@@ -1114,27 +1114,34 @@ sub admin_stats {
     my $self = shift;
     my $c = $self->{c};
 
-    my %date_params;
+    my %optional_params;
     my $ym = $c->get_param('ym');
     my ($m, $y) = $ym ? ($ym =~ /^(\d+)\.(\d+)$/) : ();
     $c->stash->{ym} = $ym;
     if ($y && $m) {
         $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
         $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
-        $date_params{created} = {
+        $optional_params{created} = {
             '>=', DateTime::Format::Pg->format_datetime($c->stash->{start_date}), 
             '<',  DateTime::Format::Pg->format_datetime($c->stash->{end_date}),
         };
     }
 
+    my $cat = $c->stash->{category} = $c->get_param('category');
+    $optional_params{category} = $cat if $cat;
+
     my %params = (
-        %date_params,
+        %optional_params,
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
 
     if ( $c->get_param('export') ) {
-        return $self->export_as_csv($c, \%date_params);
+        return $self->export_as_csv($c, \%optional_params);
     }
+
+    # Can change category to any other
+    my @categories = $c->model('DB::Contact')->not_deleted->all;
+    $c->stash->{category_options} = [ map { { name => $_->category, value => $_->category } } @categories ];
 
     # Total reports (non-hidden)
     my $total = $c->model('DB::Problem')->search( \%params )->count;
@@ -1145,17 +1152,17 @@ sub admin_stats {
         group_by => [ 'service' ],
     });
     # Reports solved
-    my $solved = $c->model('DB::Problem')->search( { state => 'fixed - council', %date_params } )->count;
+    my $solved = $c->model('DB::Problem')->search( { state => 'fixed - council', %optional_params } )->count;
     # Reports marked as spam
-    my $hidden = $c->model('DB::Problem')->search( { state => 'hidden', %date_params } )->count;
+    my $hidden = $c->model('DB::Problem')->search( { state => 'hidden', %optional_params } )->count;
     # Reports assigned to third party
-    my $closed = $c->model('DB::Problem')->search( { state => 'closed', %date_params } )->count;
+    my $closed = $c->model('DB::Problem')->search( { state => 'closed', %optional_params } )->count;
     # Reports moderated within 1 day
-    my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %date_params } )->count;
+    my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %optional_params } )->count;
     # Reports solved within 5 days (sent back from subdiv)
     my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
     # Reports solved within 5 days (marked as 'fixed - council', 'closed', or 'hidden'
-    my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { like => '%closed_overdue,I1:0%' }, %date_params } )->count;
+    my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { like => '%closed_overdue,I1:0%' }, %optional_params } )->count;
     # Reports per category
     my $per_category = $c->model('DB::Problem')->search( \%params, {
         select   => [ 'category', { count => 'id' } ],

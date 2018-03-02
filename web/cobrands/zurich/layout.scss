@@ -283,6 +283,10 @@ body.mappage.admin {
     }
 }
 
+.admin-report-edit--interact {
+    margin-top: -1.25em; // To counteract the label's default top margin
+}
+
 .admin {
     .content {
         margin: 2em 0 1em;
@@ -299,10 +303,6 @@ body.mappage.admin {
         .mock-label {
           font-weight: bold;
           padding-right: 0.333em;
-        }
-        :first-child > label {
-            // avoid empty space above first label in a container
-            margin-top: 0;
         }
         textarea {
             min-height: 0;
