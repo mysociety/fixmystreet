@@ -289,6 +289,11 @@ subtest "report_edit" => sub {
         is ( $report->get_extra_metadata('closed_overdue'),    0, "Closing as hidden sets closed_overdue..." );
         is ( $report->state, 'hidden', 'Closing as hidden sets state to hidden');
         is ( $report->get_extra_metadata('closure_status'), undef, 'Closing as hidden unsets closure_status');
+
+        $mech->submit_form_ok( { with_fields => { new_internal_note => 'Initial internal note.' } } );
+        $report->discard_changes;
+        is ( $report->state, 'hidden', 'Another internal note does not reopen');
+
         $mech->get( '/report/' . $report->id);
         is $mech->res->code, 410;
 
