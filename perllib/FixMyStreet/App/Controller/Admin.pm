@@ -1008,11 +1008,18 @@ sub report_edit_location : Private {
 
     my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $problem->latitude, $problem->longitude;
     if ( $c->stash->{latitude} != $lat || $c->stash->{longitude} != $lon ) {
+        # The two actions below change the stash, setting things up for e.g. a
+        # new report. But here we're only doing it in order to check the found
+        # bodies match; we don't want to overwrite the existing report data if
+        # this lookup is bad. So let's save the stash and restore it after the
+        # comparison.
+        my $safe_stash = { %{$c->stash} };
         $c->forward('/council/load_and_check_areas', []);
         $c->forward('/report/new/setup_categories_and_bodies');
         my %allowed_bodies = map { $_ => 1 } @{$problem->bodies_str_ids};
         my @new_bodies = @{$c->stash->{bodies_to_list}};
         my $bodies_match = grep { exists( $allowed_bodies{$_} ) } @new_bodies;
+        $c->stash($safe_stash);
         return unless $bodies_match;
         $problem->latitude($c->stash->{latitude});
         $problem->longitude($c->stash->{longitude});
@@ -1035,7 +1042,6 @@ sub categories_for_point : Private {
     # Remove the "Pick a category" option
     shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
 
-    $c->stash->{category_options_copy} = $c->stash->{category_options};
     $c->stash->{categories_hash} = { map { $_->{name} => 1 } @{$c->stash->{category_options}} };
 }
 
