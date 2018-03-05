@@ -1159,50 +1159,6 @@ sub jurisdiction_id_example {
     return $self->moniker;
 }
 
-=item body_details_data
-
-Returns a list of bodies to create with ensure_body.  These
-are mostly just passed to ->find_or_create, but there is some
-pre-processing so that you can enter:
-
-    area_id => 123,
-    parent => 'Big Town',
-
-instead of
-
-    body_areas => [ { area_id => 123 } ],
-    parent => { name => 'Big Town' },
-
-For example:
-
-    return (
-        {
-            name => 'Big Town',
-        },
-        {
-            name => 'Small town',
-            parent => 'Big Town',
-            area_id => 1234,
-        },
-
-
-=cut
-
-sub body_details_data {
-    return ();
-}
-
-=item contact_details_data
-
-Returns a list of contact_data to create with setup_contacts.
-See Zurich for an example.
-
-=cut
-
-sub contact_details_data {
-    return ()
-}
-
 =item lookup_by_ref_regex
 
 Returns a regex to match postcode form input against to determine if a lookup

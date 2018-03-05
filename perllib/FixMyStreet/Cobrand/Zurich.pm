@@ -10,7 +10,6 @@ use DateTime::Format::Pg;
 
 use strict;
 use warnings;
-use feature 'say';
 use utf8;
 
 =head1 NAME
@@ -1303,100 +1302,6 @@ sub problem_confirm_email_extras {
     })->count;
 
     $self->{c}->stash->{email_confirmed} = $confirmed_reports;
-}
-
-sub body_details_data {
-    return (
-        {
-            name => 'Stadt Zurich'
-        },
-        {
-            name => 'Elektrizitäwerk Stadt Zürich',
-            parent => 'Stadt Zurich',
-            area_id => 423017,
-        },
-        {
-            name => 'ERZ Entsorgung + Recycling Zürich',
-            parent => 'Stadt Zurich',
-            area_id => 423017,
-        },
-        {
-            name => 'Fachstelle Graffiti',
-            parent => 'Stadt Zurich',
-            area_id => 423017,
-        },
-        {
-            name => 'Grün Stadt Zürich',
-            parent => 'Stadt Zurich',
-            area_id => 423017,
-        },
-        {
-            name => 'Tiefbauamt Stadt Zürich',
-            parent => 'Stadt Zurich',
-            area_id => 423017,
-        },
-        {
-            name => 'Dienstabteilung Verkehr',
-            parent => 'Stadt Zurich',
-            area_id => 423017,
-        },
-    );
-}
-
-sub contact_details_data {
-    return (
-        {
-            category => 'Beleuchtung/Uhren',
-            body_name => 'Elektrizitätswerk Stadt Zürich',
-            fields => [
-                {
-                    code => 'strasse',
-                    description => 'Strasse',
-                    datatype => 'string',
-                    required => 'yes',
-                },
-                {
-                    code => 'haus_nr',
-                    description => 'Haus-Nr.',
-                    datatype => 'string',
-                },
-                {
-                    code => 'mast_nr',
-                    description => 'Mast-Nr.',
-                    datatype => 'string',
-                }
-            ],
-        },
-        {
-            category => 'Brunnen/Hydranten',
-            # body_name ???
-            fields => [
-                {
-                    code => 'hydranten_nr',
-                    description => 'Hydranten-Nr.',
-                    datatype => 'string',
-                },
-            ],
-        },
-        {
-            category => "Grünflächen/Spielplätze",
-            body_name => 'Grün Stadt Zürich',
-            rename_from => "Tiere/Grünflächen",
-        },
-        {
-            category => 'Spielplatz/Sitzbank',
-            body_name => 'Grün Stadt Zürich',
-            delete => 1,
-        },
-    );
-}
-
-sub contact_details_data_body_default {
-    my ($self) = @_;
-    # temporary measure to assign un-bodied contacts to parent
-    # (this isn't at all how things will be setup in live, but is
-    # handy during dev.)
-    return $self->{c}->model('DB::Body')->find({ name => 'Stadt Zurich' });
 }
 
 sub reports_per_page { return 20; }

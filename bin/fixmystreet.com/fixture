@@ -16,12 +16,9 @@ BEGIN {
 }
 
 use List::Util qw(shuffle);
-use Path::Tiny;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB::Factories;
-use FixMyStreet::App::Model::PhotoSet;
-use DateTime::Format::Pg;
 use Getopt::Long::Descriptive;
 
 my ($opt, $usage) = describe_options(
@@ -35,32 +32,7 @@ my ($opt, $usage) = describe_options(
 );
 print($usage->text), exit if $opt->help;
 
-my $db = FixMyStreet::DB->schema->storage;
-$db->txn_begin;
-END {
-    if ($db) {
-        $opt->commit ? $db->txn_commit : $db->txn_rollback;
-    }
-}
-if (!$opt->commit) {
-    say "NOT COMMITTING TO DATABASE";
-}
-
-if ($opt->empty) {
-    $db->dbh->do(q{
-DO
-$func$
-BEGIN
-    EXECUTE
-    (SELECT 'TRUNCATE TABLE ' || string_agg(quote_ident(tablename), ', ') || ' RESTART IDENTITY CASCADE '
-        FROM pg_tables WHERE schemaname='public');
-END
-$func$;
-}) or die $!;
-    $db->dbh->do( scalar FixMyStreet->path_to('db/fixture.sql')->slurp ) or die $!;
-    $db->dbh->do( scalar FixMyStreet->path_to('db/generate_secret.sql')->slurp ) or die $!;
-    say "Emptied database";
-}
+FixMyStreet::DB::Factories->setup($opt);
 
 # Body + categories
 my $categories = ['Potholes', 'Street lighting', 'Graffiti', 'Other'];
@@ -119,50 +91,6 @@ foreach (
 
 # Problems
 
-my %titles = (
-    'Potholes' => ['Deep pothole', 'Small pothole', 'Pothole in cycle lane', 'Pothole on busy pavement', 'Large pothole', 'Sinking manhole'],
-    'Street lighting' => ['Faulty light', 'Street light not working', 'Lights out in tunnel', 'Light not coming on', 'Light not going off'],
-    'Graffiti' => ['Graffiti', 'Graffiti', 'Offensive graffiti', 'Graffiti on the bridge', 'Remove graffiti'],
-    'Other' => ['Loose drain cover', 'Flytipping on country lane', 'Vehicle blocking footpath', 'Hedge encroaching pavement', 'Full litter bins'],
-);
-my %photos = (
-    'Potholes' => [ '33717571655_46dfc6f65f_z.jpg', '37855543925_9dbbbecf41_z.jpg', '19119222668_a3c866d7c8_z.jpg', '12049724866_404b066875_z.jpg', '3705226606_eac71cf195_z.jpg', '6304445383_bd216ca892_z.jpg' ],
-    'Street lighting' => ['38110448864_fd71227247_z.jpg', '27050321819_ac123400eb_z.jpg', '35732107202_b790c61f63_z.jpg', '31889115854_01cdf38b0d_z.jpg', undef ],
-    'Graffiti' => ['12205918375_f37f0b27a9_z.jpg', '8895442578_376a9b0be0_z.jpg', '22998854352_17555b7536_z.jpg', '22593395257_3d48f23bfa_z.jpg', '20515339175_f4ed9fc1d9_z.jpg' ],
-    'Other' => ['14347396807_20737504f7_z.jpg', '14792525771_167bc20e3d_z.jpg', undef, '36296226976_a83a118ff8_z.jpg', '23222004240_273977b2b2_z.jpg'],
-);
-my %descriptions = (
-    'Potholes' => [
-        '6” deep pothole in the very centre of the Bristol road; cars are swerving to avoid it. Please treat this as a matter of urgency.',
-        'It’s small but it’s a trip hazard. Right where people cross over to get into the school or church. About 3” across but will become larger if not attended to.',
-        'Just went over my handlebars as I didn’t see this pothole on Banbury road, just before the traffic lights. Dread to think what might have happened if the traffic had been busier.',
-        'I work in the cafe at 34 Clarington Avenue and we’ve had four people come in having tripped over in the last seven days. The pothole’s right outside the key-cutting shop, just near the alleyway.',
-        'This has been here, next to the side of the road, for a month',
-        'A manhole on the junction of Etherington Road is sinking into the road surface. Not only is it an accident waiting to happen but it’s making a terrible noise every time a car passes over it.',
-    ],
-    'Street lighting' => [
-        'I saw a workman attempting to fix this streetlight over a week ago, and ever since then it’s come on in the daytime and gone off as soon as it gets dark. Come and sort it out please!',
-        'Every Tuesday night I have to walk across the carpark outside the station at around 9pm. Not a problem in summer but now the nights are drawing in I feel very unsafe. Please get the streetlight by the exit fixed as I’m sure I can’t be the only woman feeling vulnerable.',
-        'My toddler is too scared to go in now, as soon as you’re more than a few paces in it’s absolutely pitch black with no hope of seeing any puddles or worse on the floor. I think this needs seeing to as a priority. Thank you.',
-        'I think the lights in the multi storey carpark are motion sensitive but I’ve actually never seen them come on. Maybe the bulb needs replacing??',
-        'This streetlight is right outside my bedroom window. It is on 24 hours a day, even in blazing sunlight. Apart from the fact that it’s a waste of electricity, it makes my bedroom feel like an interrogation chamber. Please come and fix it.',
-    ],
-    'Graffiti' => [
-        'Someone has scrawled a really offensive piece of graffiti (are they called ‘tags’??) on the side of the town hall. You might want to see about getting it cleaned off. Wouldn’t want my own children to see that, I’m sure others feel the same.',
-        'Can’t see the timetable at the bus shelter cos some idiot’s covered it all in red spray paint. Honestly. Kids of today.',
-        'Not gonna write down what it depicts cos I suspect that’d get caught in your profanity filter lol. But please do come and paint over this monstrosity before it causes an accident.',
-        'That same guy that’s graffitied all over town has gone and done the same on the passenger bridge over the tracks, you can see it as you come into the station. Ugly bit of garbage graffiti. Bit of a poor first impression for the town eh.',
-        'What’s the procedure for requesting a bit of graffiti be removed? There’s been a huge scrawl on the wall outside the club for months. Nice sentiment maybe but really brings the tone of the area down.',
-    ],
-    'Other' => [
-        'Surprised me so much when I crossed the road I nearly took a tumble! Glad I didn’t fall in, this really needs securing now.',
-        'Some unmentionable has driven down Larker’s Lane and left a huge heap of old rubbish on the verge. Talk about ruining the view! Such a beautiful spot and these lowlifes come and dump their junk. Probably trying to avoid paying the tip.',
-        'Well someone on foot can just about squeeze through but good luck if you’ve got a pushchair or god forbid a wheelchair. Think someone’s abandoned this car; it hasn’t moved in weeks.',
-        'Awful trying to walk past after a rain shower, well any time really.',
-        'I think these need seeing to more frequently, they’re always full to overflowing by midday.',
-    ],
-);
-
 my ($location, $lat, $lon);
 if ($opt->coords) {
     $location = $opt->coords;
@@ -185,42 +113,21 @@ foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
 my $user = $users{'user@example.org'};
 my $num = 20;
 say "Created $num problems around '$location' in cobrand '$cobrand'";
-my $inaccurate_km = 0.01;
 my $confirmed = DateTime->today->subtract(days => 1)->add(hours => 8);
 my $problems = [];
 for (1..$num) {
     $confirmed->add(seconds => rand(7000));
     my $category = $categories->[int(rand(@$categories))];
-    my $titles = $titles{$category};
-    my $descs = $descriptions{$category};
-    my $rand = int(rand(@$titles));
-
-    my $photo;
-    if (my $file = $photos{$category}->[$rand]) {
-        my $files = [ $file ];
-        if ($category eq 'Graffiti') {
-            push @$files, $photos{$category}->[int(rand(@$titles))];
-        }
-        $files = [ map { path(FixMyStreet->path_to("t/images/$_"))->slurp_raw } @$files ];
-        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-            data_items => $files,
-        });
-        $photo = $photoset->data;
-    }
-
-    push @$problems, FixMyStreet::DB::Factory::Problem->create({
+    push @$problems, FixMyStreet::DB::Factory::Problem->create_problem({
         body => $body,
         areas => ',' . $opt->area_id . ',',
         user => $user,
         postcode => $location,
-        latitude => $lat + rand(2 * $inaccurate_km) - $inaccurate_km,
-        longitude => $lon + rand(3 * $inaccurate_km) - 1.5 * $inaccurate_km,
+        latitude => $lat,
+        longitude => $lon,
         category => $category,
         cobrand => $cobrand,
-        title => $titles->[$rand],
-        detail => $descs->[$rand],
-        photo_id => $photo,
-        confirmed => DateTime::Format::Pg->format_datetime($confirmed),
+        confirmed => $confirmed,
     });
 }
 
