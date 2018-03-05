@@ -528,6 +528,15 @@ sub admin {
     }
 }
 
+sub category_options {
+    my ($self, $c) = @_;
+    my @categories = $c->model('DB::Contact')->not_deleted->all;
+    $c->stash->{category_options} = [ map { {
+        name => $_->category, value => $_->category,
+        abbreviation => $_->get_extra_metadata('abbreviation'),
+    } } @categories ];
+}
+
 sub admin_report_edit {
     my $self = shift;
     my $c = $self->{c};
@@ -549,8 +558,7 @@ sub admin_report_edit {
         $c->stash->{bodies} = \@bodies;
 
         # Can change category to any other
-        my @categories = $c->model('DB::Contact')->not_deleted->all;
-        $c->stash->{category_options} = [ map { { name => $_->category, value => $_->category } } @categories ];
+        $self->category_options($c);
 
     } elsif ($type eq 'dm') {
 
@@ -564,8 +572,7 @@ sub admin_report_edit {
         $c->stash->{bodies} = \@bodies;
 
         # Can change category to any other
-        my @categories = $c->model('DB::Contact')->not_deleted->all;
-        $c->stash->{category_options} = [ map { { name => $_->category, value => $_->category } } @categories ];
+        $self->category_options($c);
 
     }
 
@@ -1139,8 +1146,7 @@ sub admin_stats {
     }
 
     # Can change category to any other
-    my @categories = $c->model('DB::Contact')->not_deleted->all;
-    $c->stash->{category_options} = [ map { { name => $_->category, value => $_->category } } @categories ];
+    $self->category_options($c);
 
     # Total reports (non-hidden)
     my $total = $c->model('DB::Problem')->search( \%params )->count;
@@ -1307,5 +1313,7 @@ sub problem_confirm_email_extras {
 sub reports_per_page { return 20; }
 
 sub singleton_bodies_str { 1 }
+
+sub contact_extra_fields { [ 'abbreviation' ] };
 
 1;

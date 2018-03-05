@@ -10,6 +10,11 @@
     </p>
   [% END %]
 
+    <p>
+        <strong>Kürzel</strong>
+        <input type="text" class="form-control" name="extra[abbreviation]" id="abbreviation" size="30" value="[% contact.get_extra_metadata('abbreviation') | html %]">
+    </p>
+
     <p><strong>[% loc('Email:') %] </strong>
     <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
 

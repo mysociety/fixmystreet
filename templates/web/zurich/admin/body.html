@@ -16,6 +16,7 @@
             <th>[% loc('Last editor') %]</th>
             <th>[% loc('Note') %]</th>
             <th>[% loc('When edited') %]</th>
+            <th>Kürzel</th>
         </tr>
         [% WHILE ( cat = contacts.next ) %]
             <tr[% IF cat.deleted %] class="is-deleted"[% END %]>
@@ -24,6 +25,7 @@
                 <td>[% cat.editor %]</td>
                 <td>[% cat.note | html %]</td>
                 <td>[% PROCESS format_date this_date=cat.whenedited %]</td>
+                <td>[% cat.get_extra_metadata('abbreviation') %]</td>
             </tr>
         [% END %]
     </table>
