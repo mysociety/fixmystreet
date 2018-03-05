@@ -646,6 +646,9 @@ subtest "external report triggers email" => sub {
                     body_external => $external_body->id,
                     external_message => $EXTERNAL_MESSAGE,
                 } });
+            # Wishes publicly viewable
+            $mech->get_ok( '/report/' . $report->id );
+            $mech->content_contains('Freundliche Gruesse Ihre Stadt Zuerich');
         };
         send_reports_for_zurich();
         $email = $mech->get_email;

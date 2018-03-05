@@ -56,7 +56,6 @@ you already have, and the countres set so that they shouldn't in future.
 
 sub setup_states {
     FixMyStreet::DB::Result::Problem->visible_states_add('unconfirmed');
-    FixMyStreet::DB::Result::Problem->visible_states_remove('investigating');
 }
 
 sub shorten_recency_if_new_greater_than_fixed {
@@ -65,7 +64,7 @@ sub shorten_recency_if_new_greater_than_fixed {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'green' if $p->is_fixed || $p->is_closed || $p->state eq 'investigating';
     return 'red' if $p->state eq 'unconfirmed' || $p->state eq 'confirmed';
     return 'yellow';
 }
@@ -125,7 +124,7 @@ sub zurich_public_response_states {
     my $states = {
         'fixed - council' => 1,
         'closed'          => 1, # extern
-        'unable to fix'   => 1, # jurisdiction unknown
+        'investigating'   => 1, # wish
     };
 
     return wantarray ? keys %{ $states } : $states;
@@ -133,8 +132,8 @@ sub zurich_public_response_states {
 
 sub zurich_user_response_states {
     my $states = {
+        'unable to fix'   => 1, # jurisdiction unknown
         'hidden'          => 1,
-        'investigating'   => 1, # wish
         'partial'         => 1, # not contactable
     };
 
@@ -187,7 +186,8 @@ sub problem_as_hashref {
             # no banner_id as hidden
         } elsif ( $problem->state eq 'investigating' ) {
             $hashref->{state} = 'wish'; # is this correct?
-            $hashref->{state_t} = _('Wish');
+            $hashref->{banner_id} = 'fixed';
+            $hashref->{state_t} = _('Closed');
         } elsif ( $problem->is_fixed ) {
             $hashref->{state} = 'closed';
             $hashref->{banner_id} = 'fixed';
@@ -209,13 +209,13 @@ sub updates_as_hashref {
 
     my $hashref = {};
 
-    if ( $problem->state eq 'fixed - council' || $problem->state eq 'closed' ) {
+    if (problem_has_public_response($problem)) {
         $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
-        if ( $problem->state eq 'fixed - council' ) {
+        if ( $problem->state ne 'closed' ) {
             $hashref->{details} = FixMyStreet::App::View::Web::add_links(
                 $problem->get_extra_metadata('public_response') || '' );
-        } elsif ( $problem->state eq 'closed' ) {
+        } else {
             $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body($ctx)->name );
         }
     }

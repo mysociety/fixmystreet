@@ -235,12 +235,11 @@
       # (e.g. various pstates) %]
     <ul class="no-bullets screen-only">
         <li id="status_update_container"><label for="status_update">
-        [% SWITCH pstate %]
-            [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
-                [% loc('Reply to user:') %]
-            [% CASE DEFAULT %]
-                [% loc('Public response:') %]
-        [% END %]
+          [% IF c.cobrand.zurich_user_response_states.$pstate %]
+            [% loc('Reply to user:') %]
+          [% ELSE %]
+            [% loc('Public response:') %]
+          [% END %]
         </label>
         [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
         <textarea class="form-control" name='status_update' id='status_update' cols=60 rows=5>
@@ -253,7 +252,7 @@
 <p align="right" class="screen-only">
   [% IF show_publish_response %]
     [%# While we call this 'publish_response', the response will not actually
-      # be "published" for these cases: Wish / Hidden / Not contactable (for these,
+      # be "published" for these cases: Hidden / Not contactable (for these,
       # only a private email will be sent to the user.  However, in all cases,
       # this is the end of processing, so we mark this with the same text used
       # for 'No further updates %]
