@@ -411,6 +411,12 @@ subtest 'SDM' => sub {
         $mech->submit_form_ok( { button => 'no_more_updates' } );
         is $mech->uri->path, '/admin/summary', "redirected now finished with report.";
 
+        # Can still view the edit page but can't change anything
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->content_contains('<input disabled');
+        $mech->submit_form_ok( { with_fields => { status_update => 'This is a disallowed update.' } } );
+        $mech->content_lacks('This is a disallowed update');
+
         $mech->get_ok( '/report/' . $report->id );
         $mech->content_contains('In Bearbeitung');
         $mech->content_contains('Test Test');

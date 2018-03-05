@@ -547,6 +547,8 @@ sub admin_report_edit {
 
     if ($type ne 'super') {
         my %allowed_bodies = map { $_->id => 1 } ( $body->bodies->all, $body );
+        # SDMs can see parent reports but not edit them
+        $allowed_bodies{$body->parent->id} = 1 if $type eq 'sdm';
         $c->detach( '/page_error_404_not_found' )
           unless $allowed_bodies{$problem->bodies_str};
     }
@@ -847,10 +849,13 @@ sub admin_report_edit {
 
     if ($type eq 'sdm') {
 
+        my $editable = $type eq 'sdm' && $body->id eq $problem->bodies_str;
+        $c->stash->{sdm_disabled} = $editable ? '' : 'disabled';
+
         # Has cut-down edit template for adding update and sending back up only
         $c->stash->{template} = 'admin/report_edit-sdm.html';
 
-        if ($c->get_param('send_back') or $c->get_param('not_contactable')) {
+        if ($editable && $c->get_param('send_back') or $c->get_param('not_contactable')) {
             # SDM can send back a report either to be assigned to a different
             # subdivision, or because the customer was not contactable.
             # We handle these in the same way but with different statuses.
@@ -876,7 +881,7 @@ sub admin_report_edit {
             # Make sure the problem's time_spent is updated
             $self->update_admin_log($c, $problem);
             $c->res->redirect( '/admin/summary' );
-        } elsif ($c->get_param('submit')) {
+        } elsif ($editable && $c->get_param('submit')) {
             $c->forward('/auth/check_csrf_token');
 
             my $db_update = 0;
