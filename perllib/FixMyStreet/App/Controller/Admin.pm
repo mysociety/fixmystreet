@@ -340,6 +340,7 @@ sub update_contacts : Private {
         }
 
         $c->forward('update_extra_fields', [ $contact ]);
+        $c->forward('contact_cobrand_extra_fields', [ $contact ]);
 
         if ( %errors ) {
             $c->stash->{updated} = _('Please correct the errors below');
@@ -1614,6 +1615,15 @@ sub user_edit : Path('user_edit') : Args(1) {
     }
 
     return 1;
+}
+
+sub contact_cobrand_extra_fields : Private {
+    my ( $self, $c, $contact ) = @_;
+
+    my $extra_fields = $c->cobrand->call_hook('contact_extra_fields');
+    foreach ( @$extra_fields ) {
+        $contact->set_extra_metadata( $_ => $c->get_param("extra[$_]") );
+    }
 }
 
 sub user_cobrand_extra_fields : Private {
