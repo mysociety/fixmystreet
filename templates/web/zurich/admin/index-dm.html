@@ -4,10 +4,10 @@
 [% status_message %]
 
 <h2 id="submitted">[% loc('Submitted') %]</h2>
-[% INCLUDE list, problems = unconfirmed.all, hash = 'submitted' %]
+[% INCLUDE list, problems = submitted.all, hash = 'submitted' %]
 
-<h2 id="planned">[% loc('Planned') %]</h2>
-[% INCLUDE list, problems = approval.all, hash = 'planned' %]
+<h2 id="feedback_pending">Rückmeldung ausstehend</h2>
+[% INCLUDE list, problems = approval.all, hash = 'feedback_pending' %]
 
 <h2 id="alle">[% loc('All reports') %]</h2>
 [% INCLUDE list, problems = other.all, include_subdiv = 1, hash = 'alle' %]

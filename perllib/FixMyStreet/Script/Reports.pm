@@ -29,7 +29,7 @@ sub send(;$) {
     my $site = $site_override || CronFns::site($base_url);
 
     my $states = [ FixMyStreet::DB::Result::Problem::open_states() ];
-    $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed', 'investigating' ] if $site eq 'zurich';
+    $states = [ 'submitted', 'confirmed', 'in progress', 'feedback pending', 'external', 'wish' ] if $site eq 'zurich';
     my $unsent = $rs->search( {
         state => $states,
         whensent => undef,

@@ -55,7 +55,7 @@ you already have, and the countres set so that they shouldn't in future.
 =cut
 
 sub setup_states {
-    FixMyStreet::DB::Result::Problem->visible_states_add('unconfirmed');
+    FixMyStreet::DB::Result::Problem->visible_states_remove('not contactable');
 }
 
 sub shorten_recency_if_new_greater_than_fixed {
@@ -64,8 +64,8 @@ sub shorten_recency_if_new_greater_than_fixed {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'green' if $p->is_fixed || $p->is_closed || $p->state eq 'investigating';
-    return 'red' if $p->state eq 'unconfirmed' || $p->state eq 'confirmed';
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'red' if $p->state eq 'submitted' || $p->state eq 'confirmed';
     return 'yellow';
 }
 
@@ -96,35 +96,11 @@ sub prettify_dt {
     return Utils::prettify_dt( $dt, 'zurich' );
 }
 
-# problem already has a concept of is_fixed/is_closed, but Zurich has different
-# workflow for this here.
-# 
-# TODO: look at more elegant way of doing this, for example having ::DB::Problem
-# consider cobrand specific state config?
-
-sub zurich_closed_states {
-    my $states = {
-        'fixed - council' => 1,
-        'closed'          => 1, # extern
-        'hidden'          => 1,
-        'investigating'   => 1, # wish
-        'unable to fix'   => 1, # jurisdiction  unknown
-        'partial'         => 1, # not contactable
-    };
-
-    return wantarray ? keys %{ $states } : $states;
-}
-
-sub problem_is_closed {
-    my ($self, $problem) = @_;
-    return exists $self->zurich_closed_states->{ $problem->state } ? 1 : 0;
-}
-
 sub zurich_public_response_states {
     my $states = {
         'fixed - council' => 1,
-        'closed'          => 1, # extern
-        'investigating'   => 1, # wish
+        'external' => 1,
+        'wish' => 1,
     };
 
     return wantarray ? keys %{ $states } : $states;
@@ -132,9 +108,9 @@ sub zurich_public_response_states {
 
 sub zurich_user_response_states {
     my $states = {
-        'unable to fix'   => 1, # jurisdiction unknown
+        'jurisdiction unknown' => 1,
         'hidden'          => 1,
-        'partial'         => 1, # not contactable
+        'not contactable' => 1,
     };
 
     return wantarray ? keys %{ $states } : $states;
@@ -158,44 +134,33 @@ sub problem_as_hashref {
 
     my $hashref = $problem->as_hashref( $ctx );
 
-    if ( $problem->state eq 'unconfirmed' ) {
-        for my $var ( qw( photo detail state state_t is_fixed meta ) ) {
+    if ( $problem->state eq 'submitted' ) {
+        for my $var ( qw( photo is_fixed meta ) ) {
             delete $hashref->{ $var };
         }
         $hashref->{detail} = _('This report is awaiting moderation.');
         $hashref->{title} = _('This report is awaiting moderation.');
-        $hashref->{state} = 'submitted';
-        $hashref->{state_t} = _('Submitted');
         $hashref->{banner_id} = 'closed';
     } else {
+        if ( $problem->state eq 'confirmed' || $problem->state eq 'external' ) {
+            $hashref->{banner_id} = 'closed';
+        } elsif ( $problem->is_fixed || $problem->is_closed ) {
+            $hashref->{banner_id} = 'fixed';
+        } else {
+            $hashref->{banner_id} = 'progress';
+        }
+
         if ( $problem->state eq 'confirmed' ) {
             $hashref->{state} = 'open';
             $hashref->{state_t} = _('Open');
-            $hashref->{banner_id} = 'closed';
-        } elsif ( $problem->state eq 'closed' ) {
-            $hashref->{state} = 'extern'; # is this correct?
-            $hashref->{banner_id} = 'closed';
-            $hashref->{state_t} = _('Extern');
-        } elsif ( $problem->state eq 'unable to fix' ) {
-            $hashref->{state} = 'jurisdiction unknown'; # is this correct?
-            $hashref->{state_t} = _('Jurisdiction Unknown');
-            $hashref->{banner_id} = 'fixed'; # green
-        } elsif ( $problem->state eq 'partial' ) {
-            $hashref->{state} = 'not contactable'; # is this correct?
-            $hashref->{state_t} = _('Not contactable');
-            # no banner_id as hidden
-        } elsif ( $problem->state eq 'investigating' ) {
-            $hashref->{state} = 'wish'; # is this correct?
-            $hashref->{banner_id} = 'fixed';
+        } elsif ( $problem->state eq 'wish' ) {
             $hashref->{state_t} = _('Closed');
         } elsif ( $problem->is_fixed ) {
             $hashref->{state} = 'closed';
-            $hashref->{banner_id} = 'fixed';
             $hashref->{state_t} = _('Closed');
-        } elsif ( $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
+        } elsif ( $problem->state eq 'feedback pending' ) {
             $hashref->{state} = 'in progress';
-            $hashref->{state_t} = _('In progress');
-            $hashref->{banner_id} = 'progress';
+            $hashref->{state_t} = FixMyStreet::DB->resultset("State")->display('in progress');
         }
     }
 
@@ -212,7 +177,7 @@ sub updates_as_hashref {
     if (problem_has_public_response($problem)) {
         $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
-        if ( $problem->state ne 'closed' ) {
+        if ( $problem->state ne 'external' ) {
             $hashref->{details} = FixMyStreet::App::View::Web::add_links(
                 $problem->get_extra_metadata('public_response') || '' );
         } else {
@@ -228,6 +193,7 @@ sub updates_as_hashref {
 # boolean whether that indexed photo can be shown.
 sub allow_photo_display {
     my ( $self, $r, $num ) = @_;
+    return unless $r;
     my $publish_photo;
     if (blessed $r) {
         $publish_photo = $r->get_extra_metadata('publish_photo');
@@ -247,10 +213,6 @@ sub allow_photo_display {
     # We return a 1-indexed number so that '0' can be taken as 'not allowed'
     my $i = min grep { $publish_photo->{$_} } keys %$publish_photo;
     return $i + 1;
-}
-
-sub show_unconfirmed_reports {
-    1;
 }
 
 sub get_body_sender {
@@ -323,25 +285,23 @@ sub overdue {
     return 0 unless $w;
 
     # call with previous state
-    if ( $problem->state eq 'unconfirmed' ) {
+    if ( $problem->state eq 'submitted' ) {
         # One working day
         $w = add_days( $w, 1 );
         return $w < DateTime->now() ? 1 : 0;
-    } elsif ( $problem->state eq 'confirmed' || $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
+    } elsif ( $problem->state eq 'confirmed' || $problem->state eq 'in progress' || $problem->state eq 'feedback pending' ) {
         # States which affect the subdiv_overdue statistic.  TODO: this may no longer be required
         # Six working days from creation
         $w = add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
 
     # call with new state
-    } elsif ( $self->problem_is_closed($problem) ) {
+    } else {
         # States which affect the closed_overdue statistic
         # Five working days from moderation (so 6 from creation)
 
         $w = add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
-    } else {
-        return 0;
     }
 }
 
@@ -429,6 +389,13 @@ sub admin_pages {
         'users' => [_('Users'), 3],
         'user_edit' => [undef, undef],
     };
+
+    # There are some pages that only super users can see
+    if ($self->{c}->user->is_superuser) {
+        $pages->{states} = [ _('States'), 8 ];
+        $pages->{config} = [ _('Configuration'), 9];
+    };
+
     return $pages if $type eq 'super';
 }
 
@@ -470,14 +437,14 @@ sub admin {
         $order .= ' desc' if $dir;
 
         # XXX No multiples or missing bodies
-        $c->stash->{unconfirmed} = $c->cobrand->problems->search({
-            state => [ 'unconfirmed', 'confirmed' ],
+        $c->stash->{submitted} = $c->cobrand->problems->search({
+            state => [ 'submitted', 'confirmed' ],
             bodies_str => $c->stash->{body}->id,
         }, {
             order_by => $order,
         });
         $c->stash->{approval} = $c->cobrand->problems->search({
-            state => 'planned',
+            state => 'feedback pending',
             bodies_str => $c->stash->{body}->id,
         }, {
             order_by => $order,
@@ -485,7 +452,7 @@ sub admin {
 
         my $page = $c->get_param('p') || 1;
         $c->stash->{other} = $c->cobrand->problems->search({
-            state => { -not_in => [ 'unconfirmed', 'confirmed', 'planned' ] },
+            state => { -not_in => [ 'submitted', 'confirmed', 'feedback pending' ] },
             bodies_str => \@all,
         }, {
             order_by => $order,
@@ -511,7 +478,7 @@ sub admin {
             order_by => $order
         } );
         $c->stash->{reports_unpublished} = $c->cobrand->problems->search( {
-            state => 'planned',
+            state => 'feedback pending',
             bodies_str => $body->parent->id,
         }, {
             order_by => $order
@@ -644,8 +611,7 @@ sub admin_report_edit {
         my $state = $c->get_param('state') || '';
         my $oldstate = $problem->state;
 
-        my $closure_states = $self->zurich_closed_states;
-        delete $closure_states->{'fixed - council'}; # may not be needed?
+        my $closure_states = { map { $_ => 1 } FixMyStreet::DB::Result::Problem->closed_states(), FixMyStreet::DB::Result::Problem->hidden_states() };
 
         my $old_closure_state = $problem->get_extra_metadata('closure_status') || '';
 
@@ -670,19 +636,19 @@ sub admin_report_edit {
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( $oldstate ne $state and $closure_states->{$state} and
-                  $oldstate ne 'planned' || $old_closure_state ne $state)
+                  $oldstate ne 'feedback pending' || $old_closure_state ne $state)
         {
             # for these states
-            #  - closed (Extern)
-            #  - investigating (Wish)
+            #  - external
+            #  - wish
             #  - hidden
-            #  - partial (Not contactable)
-            #  - unable to fix (Jurisdiction unknown)
-            # we divert to planned (Rueckmeldung ausstehend) and set closure_status to the requested state
+            #  - not contactable
+            #  - jurisdiction unknown
+            # we divert to feedback pending (Rueckmeldung ausstehend) and set closure_status to the requested state
             # From here, the DM can reply to the user, triggering the setting of problem to correct state
             $problem->set_extra_metadata( closure_status => $state );
-            $self->set_problem_state($c, $problem, 'planned');
-            $state = 'planned';
+            $self->set_problem_state($c, $problem, 'feedback pending');
+            $state = 'feedback pending';
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
 
         } elsif ( my $subdiv = $c->get_param('body_subdivision') ) {
@@ -695,18 +661,18 @@ sub admin_report_edit {
         } else {
             if ($state) {
 
-                if ($oldstate eq 'unconfirmed' and $state ne 'unconfirmed') {
+                if ($oldstate eq 'submitted' and $state ne 'submitted') {
                     # only set this for the first state change
                     $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
                 }
 
                 $self->set_problem_state($c, $problem, $state)
                     unless $closure_states->{$state};
-                    # we'll defer to 'planned' clause below to change the state
+                    # we'll defer to 'feedback pending' clause below to change the state
             }
         }
 
-        if ($problem->state eq 'planned') {
+        if ($problem->state eq 'feedback pending') {
             # Rueckmeldung ausstehend
             # override $state from the metadata set above
             $state = $problem->get_extra_metadata('closure_status') || '';
@@ -719,7 +685,7 @@ sub admin_report_edit {
                 $moderated++;
                 $closed++;
             }
-            elsif ($state =~/^(closed|investigating)$/) { # Extern | Wish
+            elsif ($state =~/^(external|wish)$/) {
                 $moderated++;
                 # Nested if instead of `and` because in these cases, we *don't*
                 # want to close unless we have body_external (so we don't want
@@ -732,7 +698,7 @@ sub admin_report_edit {
                 if ($problem->external_body && $c->get_param('publish_response')) {
                     $problem->whensent( undef );
                     $self->set_problem_state($c, $problem, $state);
-                    my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
+                    my $template = ($state eq 'wish') ? 'problem-wish.txt' : 'problem-external.txt';
                     _admin_send_email( $c, $template, $problem );
                     $redirect = 0;
                     $closed++;
@@ -778,7 +744,7 @@ sub admin_report_edit {
         # send external_message if provided and state is *now* Wish|Extern
         # e.g. was already, or was set in the Rueckmeldung ausstehend clause above.
         if ( my $external_message = $c->get_param('external_message')
-             and $problem->state =~ /^(closed|investigating)$/)
+             and $problem->state =~ /^(external|wish)$/)
         {
             my $external = $problem->external_body;
             my $external_body = $c->model('DB::Body')->find($external)
@@ -790,7 +756,7 @@ sub admin_report_edit {
             $problem->add_to_comments( {
                 text => (
                     sprintf '(%s %s) %s',
-                    $state eq 'closed' ?
+                    $state eq 'external' ?
                         _('Forwarded to external body') :
                         _('Forwarded wish to external body'),
                     $external_body->name,
@@ -867,8 +833,8 @@ sub admin_report_edit {
             $problem->bodies_str( $body->parent->id );
             if ($not_contactable) {
                 # we can't directly set state, but mark the closure_status for DM to confirm.
-                $self->set_problem_state($c, $problem, 'planned');
-                $problem->set_extra_metadata( closure_status => 'partial');
+                $self->set_problem_state($c, $problem, 'feedback pending');
+                $problem->set_extra_metadata( closure_status => 'not contactable');
             }
             else {
                 $self->set_problem_state($c, $problem, 'confirmed');
@@ -915,7 +881,7 @@ sub admin_report_edit {
                 $problem->set_extra_metadata( subdiv_overdue => $self->overdue( $problem ) );
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
-                $self->set_problem_state($c, $problem, 'planned');
+                $self->set_problem_state($c, $problem, 'feedback pending');
                 $problem->update;
                 $c->res->redirect( '/admin/summary' );
             }
@@ -943,61 +909,52 @@ sub stash_states {
     my @states = (
         {
             # Erfasst
-            state => 'unconfirmed',
-            trans => _('Submitted'),
-            unconfirmed => 1,
+            state => 'submitted',
+            submitted => 1,
             hidden => 1,
         },
         {
             # Aufgenommen
             state => 'confirmed',
-            trans => _('Open'),
-            unconfirmed => 1,
+            submitted => 1,
         },
         {
             # Unsichtbar (hidden)
             state => 'hidden',
-            trans => _('Hidden'),
-            unconfirmed => 1,
+            submitted => 1,
             hidden => 1,
         },
         {
             # Extern
-            state => 'closed',
-            trans => _('Extern'),
+            state => 'external',
         },
         {
             # Zustaendigkeit unbekannt
-            state => 'unable to fix',
-            trans => _('Jurisdiction unknown'),
+            state => 'jurisdiction unknown',
         },
         {
-            # Wunsch (hidden)
-            state => 'investigating',
-            trans => _('Wish'),
+            # Wunsch
+            state => 'wish',
         },
         {
             # Nicht kontaktierbar (hidden)
-            state => 'partial',
-            trans => _('Not contactable'),
+            state => 'not contactable',
         },
     );
-    my %state_trans = map { $_->{state} => $_->{trans} } @states;
 
     my $state = $problem->state;
 
     # Rueckmeldung ausstehend may also indicate the status it's working towards.
     push @states, do {
-        if ($state eq 'planned' and my $closure_status = $problem->get_extra_metadata('closure_status')) {
+        if ($state eq 'feedback pending' and my $closure_status = $problem->get_extra_metadata('closure_status')) {
             {
                 state => $closure_status,
-                trans => sprintf '%s (%s)', _('Planned'), $state_trans{$closure_status},
+                trans => sprintf 'Rückmeldung ausstehend (%s)', FixMyStreet::DB->resultset("State")->display($closure_status),
             };
         }
         else {
             {
-                state => 'planned',
-                trans => _('Planned'),
+                state => 'feedback pending',
             };
         }
     };
@@ -1005,25 +962,22 @@ sub stash_states {
     if ($state eq 'in progress') {
         push @states, {
             state => 'in progress',
-            trans => _('In progress'),
         };
     }
     elsif ($state eq 'fixed - council') {
         push @states, {
             state => 'fixed - council',
-            trans => _('Closed'),
         };
     }
-    elsif ($state =~/^(hidden|unconfirmed)$/) {
+    elsif ($state =~/^(hidden|submitted)$/) {
         @states = grep { $_->{$state} } @states;
     }
     $c->stash->{states} = \@states;
-    $c->stash->{states_trans} = { map { $_->{state} => $_->{trans} } @states }; # [% states_trans.${problem.state} %]
 
     # stash details about the public response
     $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
     $c->stash->{show_publish_response} = 
-        ($problem->state eq 'planned');
+        ($problem->state eq 'feedback pending');
 }
 
 =head2 _admin_send_email
@@ -1055,7 +1009,7 @@ sub _admin_send_email {
 sub munge_sendreport_params {
     my ($self, $row, $h, $params) = @_;
 
-    if ($row->state =~ /^(closed|investigating)$/) {
+    if ($row->state =~ /^(external|wish)$/) {
         # we attach images to reports sent to external bodies
         my $photoset = $row->get_photoset();
         my $num = $photoset->num_images
@@ -1166,12 +1120,12 @@ sub admin_stats {
     # Reports marked as spam
     my $hidden = $c->model('DB::Problem')->search( { state => 'hidden', %optional_params } )->count;
     # Reports assigned to third party
-    my $closed = $c->model('DB::Problem')->search( { state => 'closed', %optional_params } )->count;
+    my $external = $c->model('DB::Problem')->search( { state => 'external', %optional_params } )->count;
     # Reports moderated within 1 day
     my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %optional_params } )->count;
     # Reports solved within 5 days (sent back from subdiv)
     my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
-    # Reports solved within 5 days (marked as 'fixed - council', 'closed', or 'hidden'
+    # Reports solved within 5 days (marked as 'fixed - council', 'external', or 'hidden'
     my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { like => '%closed_overdue,I1:0%' }, %optional_params } )->count;
     # Reports per category
     my $per_category = $c->model('DB::Problem')->search( \%params, {
@@ -1201,7 +1155,7 @@ sub admin_stats {
         reports_total => $total,
         reports_solved => $solved,
         reports_spam => $hidden,
-        reports_assigned => $closed,
+        reports_assigned => $external,
         reports_moderated => $moderated,
         reports_dealtwith => $fixed_in_time,
         reports_category_changed => $changed,
@@ -1320,5 +1274,39 @@ sub reports_per_page { return 20; }
 sub singleton_bodies_str { 1 }
 
 sub contact_extra_fields { [ 'abbreviation' ] };
+
+sub db_state_migration {
+    my $rs = FixMyStreet::DB->resultset('State');
+
+    # Create new states needed
+    $rs->create({ label => 'submitted', type => 'open', name => 'Erfasst' });
+    $rs->create({ label => 'feedback pending', type => 'open', name => 'Rückmeldung ausstehend' });
+    $rs->create({ label => 'wish', type => 'closed', name => 'Wunsch' });
+    $rs->create({ label => 'external', type => 'closed', name => 'Extern' });
+    $rs->create({ label => 'jurisdiction unknown', type => 'closed', name => 'Zuständigkeit unbekannt' });
+    $rs->create({ label => 'not contactable', type => 'closed', name => 'Nicht kontaktierbar' });
+
+    # And update used current ones to have correct name
+    $rs->find({ label => 'in progress' })->update({ name => 'In Bearbeitung' });
+    $rs->find({ label => 'fixed' })->update({ name => 'Beantwortet' });
+
+    # Move reports to correct new state
+    my %state_move = (
+        unconfirmed => 'submitted',
+        closed => 'external',
+        investigating => 'wish',
+        'unable to fix' => 'jurisdiction unknown',
+        planned => 'feedback pending',
+        partial => 'not contactable',
+    );
+    foreach (keys %state_move) {
+        FixMyStreet::DB->resultset('Problem')->search({ state => $_ })->update({ state => $state_move{$_} });
+    }
+
+    # Delete unused standard states from the database
+    for ('action scheduled', 'duplicate', 'not responsible', 'internal referral', 'planned', 'investigating', 'unable to fix') {
+        $rs->find({ label => $_ })->delete;
+    }
+}
 
 1;

@@ -5,7 +5,7 @@
         [%- IF !problem.used_map %]<br>[% loc('there is no pin shown as the user did not use the map') %][% END %]
     </p>
 
-  [% IF problem.state != 'unconfirmed' %]
+  [% IF problem.state != 'submitted' %]
     [% INCLUDE 'report/photo.html' object=problem %]
     [% problem.detail | add_links | html_para %]
   [% ELSE %]

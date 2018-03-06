@@ -44,15 +44,15 @@ sub get_template {
     my ( $self, $row ) = @_;
 
     my $template;
-    if ( $row->state eq 'unconfirmed' || $row->state eq 'confirmed' ) {
+    if ( $row->state eq 'submitted' || $row->state eq 'confirmed' ) {
         $template = 'submit.txt';
     } elsif ( $row->state eq 'in progress' ) {
         $template = 'submit-in-progress.txt';
-    } elsif ( $row->state eq 'planned' ) {
+    } elsif ( $row->state eq 'feedback pending' ) {
         $template = 'submit-feedback-pending.txt';
-    } elsif ( $row->state eq 'investigating' ) {
+    } elsif ( $row->state eq 'wish' ) {
         $template = 'submit-external-wish.txt';
-    } elsif ( $row->state eq 'closed' ) {
+    } elsif ( $row->state eq 'external' ) {
         $template = 'submit-external.txt';
         if ( $row->extra->{third_personal} ) {
             $template = 'submit-external-personal.txt';

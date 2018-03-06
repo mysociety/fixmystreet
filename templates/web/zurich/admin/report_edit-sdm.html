@@ -73,7 +73,7 @@
     <dd>[% problem.category_display | html %]</dd>
 
     <dt class="print-only">[% loc('State:') %] <!-- Status --></dt>
-    <dd class="print-only">[% states.${problem.state} %]</dd>
+    <dd class="print-only">[% prettify_state(problem.state) %]</dd>
 
     <dt>[% loc('Time spent (in minutes):') %]</dt>
     <dd>[% problem.get_time_spent %]</dd>

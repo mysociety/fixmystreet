@@ -18,9 +18,10 @@
         <td>[% PROCESS value_or_nbsp value=problem.category_display %]</td>
         <td>[% PROCESS format_date this_date=problem.created %]</td>
         <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
-        <td> [% states.${problem.state} %][% IF problem.state == 'planned';
+        <td>[% prettify_state(problem.state) %]
+            [% IF problem.state == 'feedback pending';
             SET cs=problem.get_extra_metadata('closure_status');
-            IF cs %] ([% states.$cs %]) [% END; END %]</td>
+            IF cs %] ([% prettify_state(cs) %]) [% END; END %]</td>
 
         [% IF include_subdiv %]
             <td>

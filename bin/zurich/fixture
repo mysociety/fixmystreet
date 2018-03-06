@@ -17,6 +17,7 @@ BEGIN {
 }
 
 use FixMyStreet;
+use FixMyStreet::Cobrand::Zurich;
 use FixMyStreet::DB::Factories;
 use Getopt::Long::Descriptive;
 
@@ -29,6 +30,9 @@ my ($opt, $usage) = describe_options(
 print($usage->text), exit if $opt->help;
 
 FixMyStreet::DB::Factories->setup($opt);
+
+my $cobrand = FixMyStreet::Cobrand::Zurich->new();
+$cobrand->db_state_migration;
 
 # Body + categories
 my $body = FixMyStreet::DB::Factory::Body->find_or_create({
@@ -93,11 +97,10 @@ foreach (
 
 my $lat = 47.381416;
 my $lon = 8.531369;
-my $cobrand = 'zurich';
 
 my $user = $users{'user@example.org'};
 my $num = 20;
-say "Created $num problems around '$lat,$lon' in cobrand '$cobrand'";
+say "Created $num problems around '$lat,$lon' in cobrand '" . $cobrand->moniker . "'";
 my $confirmed = DateTime->today->subtract(days => 1)->add(hours => 8);
 my $problems = [];
 for (1..$num) {
@@ -110,7 +113,7 @@ for (1..$num) {
         latitude => $lat,
         longitude => $lon,
         category => $category,
-        cobrand => $cobrand,
+        cobrand => $cobrand->moniker,
         confirmed => $confirmed,
     });
 }
