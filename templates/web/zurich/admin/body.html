@@ -19,7 +19,7 @@
             <th>Kürzel</th>
         </tr>
         [% WHILE ( cat = contacts.next ) %]
-            <tr[% IF cat.deleted %] class="is-deleted"[% END %]>
+            <tr[% IF cat.state == 'deleted' %] class="is-deleted"[% END %]>
                 <td><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category_display %]</a></td>
                 <td>[% cat.email | html %]</td>
                 <td>[% cat.editor %]</td>
