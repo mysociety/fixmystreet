@@ -70,4 +70,6 @@ sub category_extra_hidden {
     return 0;
 }
 
+sub enable_category_groups { 1 }
+
 1;
