@@ -64,4 +64,6 @@ sub map_type { 'Buckinghamshire' }
 
 sub default_map_zoom { 3 }
 
+sub enable_category_groups { 1 }
+
 1;
