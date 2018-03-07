@@ -4,4 +4,4 @@ set -e
 cd "$(dirname "$0")/.."
 
 export FIXMYSTREET_APP_DEBUG=${FIXMYSTREET_APP_DEBUG=1}
-bin/cron-wrapper local/bin/plackup -s Starman --listen :3000 --Reload perllib,conf/general.yml
+bin/cron-wrapper local/bin/plackup -s Starman --listen :3000 --Reload perllib,conf
