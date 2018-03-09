@@ -253,14 +253,15 @@ fixmystreet.assets = {
         var protocol_options;
         var protocol;
         if (options.http_options !== undefined) {
-            protocol_options = OpenLayers.Util.extend(options.http_options, {});
-            if (protocol_options.format_class) {
-                protocol_options.format = new protocol_options.format_class(protocol_options.format_options);
-            } else {
-                protocol_options.format = new OpenLayers.Format.GML({
-                    geometryName: options.geometryName
-                });
+            protocol_options = options.http_options;
+            OpenLayers.Util.applyDefaults(options, {
+                format_class: OpenLayers.Format.GML,
+                format_options: {}
+            });
+            if (options.geometryName) {
+                options.format_options.geometryName = options.geometryName;
             }
+            protocol_options.format = new options.format_class(options.format_options);
             protocol = new OpenLayers.Protocol.HTTP(protocol_options);
         } else {
             protocol_options = {
