@@ -37,7 +37,7 @@ addons:
 
 install:
   - .travis/install
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cpanm --quiet --notest https://github.com/mysociety/codecov-perl/tarball/cover-uncoverables; fi'
+  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cpanm --quiet --notest Devel::Cover::Report::Codecov; fi'
 before_script:
   - commonlib/bin/gettext-makemo FixMyStreet
   - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/DBIx,perllib/Email,perllib/Template,^t"; fi'
