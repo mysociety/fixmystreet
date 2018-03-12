@@ -49,6 +49,11 @@ sub load_and_check_areas : Private {
         $area_types = $c->cobrand->area_types;
     }
 
+    # Cobrand may wish to add area types to look up for a point at runtime.
+    # This can be used for, e.g., parish councils on a particular council
+    # cobrand.
+    $area_types = $c->cobrand->call_hook("add_extra_area_types" => $area_types) || $area_types;
+
     my $all_areas;
 
     my %params;
