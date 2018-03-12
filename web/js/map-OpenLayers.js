@@ -59,12 +59,7 @@ $.extend(fixmystreet.utils, {
         document.getElementById('fixmystreet.latitude').value = lat;
         document.getElementById('fixmystreet.longitude').value = lon;
 
-        // This tight coupling isn't ideal. A better solution would be for the
-        // asset code to register an event handler somewhere, but the correct
-        // place isn't apparent.
-        if (fixmystreet.assets) {
-            fixmystreet.assets.select_usrn(lonlat);
-        }
+        $(fixmystreet).trigger('maps:update_pin', [ lonlat ]);
 
         return {
             'url': { 'lon': lon, 'lat': lat },

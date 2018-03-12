@@ -428,31 +428,33 @@ $.extend(fixmystreet.set_up, {
 
 });
 
-$.extend(fixmystreet.hooks, {
-    update_problem_fields: function(args) {
-        if (args.prefill_reports && args.role == 'inspector') {
-            var title = 'A ' + args.category + ' problem has been found';
-            var description = 'A ' + args.category + ' problem has been found by ' + args.body;
+$(fixmystreet).on('report_new:category_change', function(evt, $this) {
+    var category = $this.val();
+    var prefill_reports = $this.data('prefill');
+    var role = $this.data('role');
+    var body = $this.data('body');
 
-            var $title_field = $('#form_title');
-            var $description_field = $('#form_detail');
+    if (prefill_reports && role == 'inspector') {
+        var title = 'A ' + category + ' problem has been found';
+        var description = 'A ' + category + ' problem has been found by ' + body;
 
-            if ($title_field.val().length === 0 || $title_field.data('autopopulated') === true) {
-                $title_field.val(title);
-                $title_field.data('autopopulated', true);
-            }
+        var $title_field = $('#form_title');
+        var $description_field = $('#form_detail');
 
-            if ($description_field.val().length === 0 || $description_field.data('autopopulated') === true) {
-                $description_field.val(description);
-                $description_field.data('autopopulated', true);
-            }
-
-            $('#form_title, #form_detail').on('keyup', function() {
-              $(this).data('autopopulated', false);
-            });
+        if ($title_field.val().length === 0 || $title_field.data('autopopulated') === true) {
+            $title_field.val(title);
+            $title_field.data('autopopulated', true);
         }
-    }
 
+        if ($description_field.val().length === 0 || $description_field.data('autopopulated') === true) {
+            $description_field.val(description);
+            $description_field.data('autopopulated', true);
+        }
+
+        $('#form_title, #form_detail').on('keyup', function() {
+            $(this).data('autopopulated', false);
+        });
+    }
 });
 
 fixmystreet.maps = fixmystreet.maps || {};
