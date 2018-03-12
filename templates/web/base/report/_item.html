@@ -66,7 +66,8 @@
             [% IF include_sentinfo %]
                 [% IF c.cobrand.is_council && !c.cobrand.owns_problem( problem ) %]
                     (sent to [% problem.body %])
-                [% ELSIF problem.bodies_str_ids.size > 1 %] [% loc('(sent to both)') %]
+                [% ELSIF problem.bodies_str_ids.size > 2 %] [% loc('(sent to all)') %]
+                [% ELSIF problem.bodies_str_ids.size == 2 %] [% loc('(sent to both)') %]
                 [% ELSIF problem.bodies_str_ids.size == 0 %] [% loc('(not sent to council)') %]
                 [% END %]
             [% END %]
