@@ -8,6 +8,7 @@ use strict;
 
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.buckinghamshire.js',
+    '/vendor/OpenLayers.Projection.OrdnanceSurvey.js',
     '/js/map-OpenLayers.js',
     '/js/map-bing-ol.js',
     '/js/map-fms.js',
