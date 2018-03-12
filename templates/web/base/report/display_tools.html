@@ -11,7 +11,7 @@
         %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker != 'zurich' %]
-        <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
+        <li><a rel="nofollow" id="key-tool-report-updates" class="feed js-feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker == 'fixmystreet' %]
         <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>

@@ -16,6 +16,7 @@ BEGIN {
 }
 
 use List::Util qw(shuffle);
+use Path::Tiny;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB::Factories;
