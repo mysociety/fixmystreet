@@ -103,7 +103,10 @@ sub index : Path : Args(0) {
         $c->stash->{bodies} = \@bodies;
     }
 
-    $c->stash->{start_date} = $c->get_param('start_date');
+    my $days30 = DateTime->now(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(days => 30);
+    $days30->truncate( to => 'day' );
+
+    $c->stash->{start_date} = $c->get_param('start_date') || $days30->strftime('%Y-%m-%d');
     $c->stash->{end_date} = $c->get_param('end_date');
     $c->stash->{q_state} = $c->get_param('state') || '';
 
@@ -136,30 +139,14 @@ sub construct_rs_filter : Private {
     }
 
     my $dtf = $c->model('DB')->storage->datetime_parser;
-    my $date = DateTime->now( time_zone => FixMyStreet->local_time_zone )->subtract(days => 30);
-    $date->truncate( to => 'day' );
 
-    $where{'me.confirmed'} = { '>=', $dtf->format_datetime($date) };
+    my $start_date = $dtf->parse_datetime($c->stash->{start_date});
+    $where{'me.confirmed'} = { '>=', $dtf->format_datetime($start_date) };
 
-    my $start_date = $c->stash->{start_date};
-    my $end_date = $c->stash->{end_date};
-    if ($start_date or $end_date) {
-        my @parts;
-        if ($start_date) {
-            my $date = $dtf->parse_datetime($start_date);
-            push @parts, { '>=', $dtf->format_datetime( $date ) };
-        }
-        if ($end_date) {
-            my $one_day = DateTime::Duration->new( days => 1 );
-            my $date = $dtf->parse_datetime($end_date);
-            push @parts, { '<', $dtf->format_datetime( $date + $one_day ) };
-        }
-
-        if (scalar @parts == 2) {
-            $where{'me.confirmed'} = [ -and => $parts[0], $parts[1] ];
-        } else {
-            $where{'me.confirmed'} = $parts[0];
-        }
+    if (my $end_date = $c->stash->{end_date}) {
+        my $one_day = DateTime::Duration->new( days => 1 );
+        $end_date = $dtf->parse_datetime($end_date) + $one_day;
+        $where{'me.confirmed'} = [ -and => $where{'me.confirmed'}, { '<', $dtf->format_datetime($end_date) } ];
     }
 
     $c->stash->{params} = \%where;

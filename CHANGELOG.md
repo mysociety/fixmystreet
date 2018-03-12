@@ -12,6 +12,7 @@
         - Fix post-edit issues on admin report edit page.
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
+        - Default start date is shown on the dashboard.
     - Development improvements:
         - Add HTML email previewer.
 
