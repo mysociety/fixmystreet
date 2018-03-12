@@ -1,0 +1,129 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Getopt::Long ':config' => qw(pass_through auto_help);
+
+my $config_file = 'conf/general.yml-example';
+my $run_server;
+my $run_cypress;
+my $vagrant;
+GetOptions(
+    'config=s' => \$config_file,
+    'server' => \$run_server,
+    'cypress' => \$run_cypress,
+    'vagrant' => \$vagrant,
+);
+
+if ($vagrant) {
+    # Test inception
+    system('vagrant ssh -c "cd fixmystreet && bin/browser-tests --server 2>/dev/null" &');
+
+    require IO::Socket;
+    sub check_connection {
+        my $remote = IO::Socket::INET->new(Proto => "tcp", PeerAddr => "localhost", PeerPort => 3001) or return;
+        $remote->autoflush(1);
+        print $remote "GET / HTTP/1.0\r\n\r\n";
+        while (<$remote>) { return 1; }
+        0;
+    }
+
+    local $| = 1;
+    print 'Waiting for test server';
+    while (!check_connection()) {
+        print '.'; sleep 1;
+    }
+    print " done\n";
+    system('bin/browser-tests', '--cypress', @ARGV);
+    system('vagrant', 'ssh', '-c', 'kill $(cat /tmp/cypress-server.pid)');
+    exit;
+}
+
+if (!$run_server && !$run_cypress) {
+    # If asked for neither, run both
+    $run_server = $run_cypress = 1;
+}
+
+sub run {
+    my $cmd = shift @ARGV;
+    die "Must specify a cypress command\n" unless $cmd || !$run_cypress;
+
+    if ($run_server) {
+        require FixMyStreet::TestAppProve;
+        require t::Mock::MapIt;
+        my $config_out = FixMyStreet::TestAppProve->get_config({
+            config_file => $config_file,
+            # Want this to be like .com
+            ALLOWED_COBRANDS => [ 'fixmystreet' ],
+            MAPIT_URL => 'https://mapit.uk/',
+        });
+        $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
+
+        # Set up, and load in some data
+        system('bin/make_css', 'fixmystreet.com');
+        system('bin/fixmystreet.com/fixture', '--coords', '51.532851,-2.284277', '--name', 'Borsetshire', '--area-id', 2608, '--commit');
+    }
+
+    my $pid;
+    if ($run_server && $run_cypress) {
+        $pid = fork();
+        die if not defined $pid;
+    }
+
+    if (($run_cypress && !$run_server) || $pid) {
+        # Parent, run the test runner (then kill the child)
+        my $exit = system("cypress", $cmd, '--config', 'fixturesFolder=false,pluginsFile=false,supportFile=false,blacklistHosts=[gaze.mysociety.org,*.openstreetmap.org]', '--project', '.cypress', @ARGV);
+        kill 'TERM', $pid if $pid;
+        exit $exit >> 8;
+    } else {
+        # Child, run the server on port 3001
+        local $ENV{FIXMYSTREET_APP_DEBUG} = 0;
+        require Plack::Runner;
+        my $runner = Plack::Runner->new;
+        $runner->parse_options('--listen', ':3001', '-s', 'Starman', '--env', 'deployment', '--pid', '/tmp/cypress-server.pid');
+        $runner->run;
+    }
+}
+
+run();
+
+
+__END__
+
+=head1 NAME
+
+browser-tests - Run Cypress browser tests, set up for FixMyStreet.
+
+=head1 SYNOPSIS
+
+browser-tests [options] [cypress options]
+
+ Options:
+   --config         provide an override general.yml file
+   --server         only run the test server, not cypress
+   --cypress        only run cypress, not the test server
+   --vagrant        run test server inside Vagrant, cypress outside
+   --help           this help message
+
+Use browser-tests instead of running cypress directly, so that a clean
+database is set up for Cypress to use, not affecting your normal dev database.
+If you're running FixMyStreet in a VM, you can use this script to run the test
+server in the VM and Cypress outside of it.
+
+ $ browser-tests open                # to run interactively
+ $ browser-tests run                 # run headlessly
+ $ browser-tests run --record --key  # record and upload a run
+ $ browser-tests --vagrant run       # run if you use Vagrant
+
+You need to have installed cypress already using npm, and it needs to be on
+your PATH.
+
+=cut
