@@ -12,6 +12,7 @@ sub map_javascript { [
     '/js/map-OpenLayers.js',
     '/js/map-bing-ol.js',
     '/js/map-fms.js',
+    '/cobrands/fixmystreet-uk-councils/roadworks.js',
     '/cobrands/fixmystreet/assets.js',
     '/cobrands/buckinghamshire/js.js',
 ] }

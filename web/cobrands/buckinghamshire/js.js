@@ -82,4 +82,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     }
 }));
 
+fixmystreet.assets.add(fixmystreet.roadworks.layer_future);
+fixmystreet.assets.add(fixmystreet.roadworks.layer_planned);
+
 })();
