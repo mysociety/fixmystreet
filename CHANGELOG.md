@@ -9,6 +9,7 @@
         - Optionally supress blank Open311 update errors #1986
         - Fetch/store external status code with Open311 updates. #2048
         - Response templates can be triggered by external status code. #2048
+        - Cobrand hook for adding extra areas to MAPIT_WHITELIST/_TYPES. #2049
     - Front end improvements:
         - Improve questionnaire process. #1939 #1998
         - Increase size of "sub map links" (hide pins, permalink, etc) #2003
