@@ -151,8 +151,6 @@ function isR2L() {
   });
 })(jQuery);
 
-fixmystreet.hooks = fixmystreet.hooks || {};
-
 fixmystreet.mobile_reporting = {
   apply_ui: function() {
     // Creates the "app-like" mobile reporting UI with full screen map
@@ -417,18 +415,10 @@ $.extend(fixmystreet.set_up, {
             } else {
                 $category_meta.empty();
             }
-            if (fixmystreet.assets) {
-                fixmystreet.assets.update_usrn_field();
-            }
+            $(fixmystreet).trigger('report_new:category_change:extras_received');
         });
 
-        if (fixmystreet.hooks.update_problem_fields) {
-            args.prefill_reports = $(this).data('prefill');
-            args.role = $(this).data('role');
-            args.body = $(this).data('body');
-
-            fixmystreet.hooks.update_problem_fields(args);
-        }
+        $(fixmystreet).trigger('report_new:category_change', [ $(this) ]);
     });
   },
 

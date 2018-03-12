@@ -1,11 +1,53 @@
 var fixmystreet = fixmystreet || {};
 
+/* Special USRN handling */
+
+(function(){
+
+var selected_usrn = null;
+var usrn_field = null;
+
+fixmystreet.usrn = {
+    select: function(evt, lonlat) {
+        var usrn_providers = fixmystreet.map.getLayersBy('fixmystreet', {
+            test: function(options) {
+                return options && options.usrn;
+            }
+        });
+        if (usrn_providers.length) {
+            var usrn_layer = usrn_providers[0];
+            usrn_field = usrn_layer.fixmystreet.usrn.field;
+            var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+            var feature = usrn_layer.getFeatureAtPoint(point);
+            if (feature == null) {
+                // The click wasn't directly over a road, try and find one
+                // nearby
+                feature = usrn_layer.getNearestFeature(point, 10);
+            }
+            if (feature !== null) {
+                selected_usrn = feature.attributes[usrn_layer.fixmystreet.usrn.attribute];
+            } else {
+                selected_usrn = null;
+            }
+            fixmystreet.usrn.update_field();
+        }
+    },
+
+    update_field: function() {
+        $("input[name="+usrn_field+"]").val(selected_usrn);
+    }
+};
+
+$(fixmystreet).on('maps:update_pin', fixmystreet.usrn.select);
+$(fixmystreet).on('assets:selected', fixmystreet.usrn.select);
+$(fixmystreet).on('report_new:category_change:extras_received', fixmystreet.usrn.update_field);
+
+})();
+
 (function(){
 
 var selected_feature = null;
 var fault_popup = null;
-var selected_usrn = null;
-var usrn_field = null;
 
 function close_fault_popup() {
     if (!!fault_popup) {
@@ -37,7 +79,7 @@ function asset_selected(e) {
     // Pick up the USRN for the location of this asset. NB we do this *before*
     // handling the attributes on the selected feature in case the feature has
     // its own USRN which should take precedence.
-    fixmystreet.assets.select_usrn(lonlat);
+    $(fixmystreet).trigger('assets:selected', [ lonlat ]);
 
     // Set the extra field to the value of the selected feature
     $.each(this.fixmystreet.attributes, function (field_name, attribute_name) {
@@ -442,35 +484,6 @@ fixmystreet.assets = {
             fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
             fixmystreet.assets.controls[i].activate();
         }
-    },
-
-    select_usrn: function(lonlat) {
-        var usrn_providers = fixmystreet.map.getLayersBy('fixmystreet', {
-            test: function(options) {
-                return options && options.usrn;
-            }
-        });
-        if (usrn_providers.length) {
-            var usrn_layer = usrn_providers[0];
-            usrn_field = usrn_layer.fixmystreet.usrn.field;
-            var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-            var feature = usrn_layer.getFeatureAtPoint(point);
-            if (feature == null) {
-                // The click wasn't directly over a road, try and find one
-                // nearby
-                feature = usrn_layer.getNearestFeature(point, 10);
-            }
-            if (feature !== null) {
-                selected_usrn = feature.attributes[usrn_layer.fixmystreet.usrn.attribute];
-            } else {
-                selected_usrn = null;
-            }
-            fixmystreet.assets.update_usrn_field();
-        }
-    },
-
-    update_usrn_field: function() {
-        $("input[name="+usrn_field+"]").val(selected_usrn);
     }
 };
 
