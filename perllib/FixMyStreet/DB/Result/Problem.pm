@@ -660,16 +660,20 @@ sub body {
         }
     } else {
         my $bodies = $problem->bodies;
-        $body = join( _(' and '),
-            map {
-                my $name = $_->name;
-                if ($c and FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS')) {
-                    '<a href="' . $_->url($c) . '">' . $name . '</a>';
-                } else {
-                    $name;
-                }
-            } values %$bodies
-        );
+        my @body_names = sort map {
+            my $name = $_->name;
+            if ($c and FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS')) {
+                '<a href="' . $_->url($c) . '">' . $name . '</a>';
+            } else {
+                $name;
+            }
+        } values %$bodies;
+        if ( scalar @body_names > 2 ) {
+            $body = join( ', ', splice @body_names, 0, -1);
+            $body = join( ',' . _(' and '), ($body, $body_names[-1]));
+        } else {
+            $body = join( _(' and '), @body_names);
+        }
     }
     return $body;
 }
