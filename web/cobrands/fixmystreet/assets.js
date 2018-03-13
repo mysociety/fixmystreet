@@ -74,7 +74,7 @@ function init_asset_layer(layer, pins_layer) {
         // Show/hide the asset layer when the category is chosen
         $("#problem_form").on("change.category", "select#form_category", function(){
             var category = $(this).val();
-            if (category == layer.fixmystreet.asset_category) {
+            if (layer.fixmystreet.asset_category.indexOf(category) != -1) {
                 layer.setVisibility(true);
                 if (layer.fixmystreet.fault_layer) {
                     layer.fixmystreet.fault_layer.setVisibility(true);
@@ -183,10 +183,10 @@ function find_matching_feature(feature, layer, asset_id_field) {
 
 function check_zoom_message_visibility() {
     var category = $("#problem_form select#form_category").val(),
-        prefix = this.fixmystreet.asset_category.replace(/[^a-z]/gi, ''),
+        prefix = category.replace(/[^a-z]/gi, ''),
         id = "category_meta_message_" + prefix,
         $p = $('#' + id);
-    if (category == this.fixmystreet.asset_category) {
+    if (this.fixmystreet.asset_category.indexOf(category) != -1) {
         if ($p.length === 0) {
             $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
             $p.insertAfter('#form_category_row');
@@ -199,7 +199,12 @@ function check_zoom_message_visibility() {
         }
 
     } else {
-        $p.remove();
+        this.fixmystreet.asset_category.forEach( function(c) {
+            var prefix = c.replace(/[^a-z]/gi, ''),
+            id = "category_meta_message_" + prefix,
+            $p = $('#' + id);
+            $p.remove();
+        });
     }
 }
 
@@ -366,6 +371,13 @@ fixmystreet.assets = {
             protocol = new OpenLayers.Protocol.WFS(protocol_options);
         }
         var StrategyClass = options.strategy_class || OpenLayers.Strategy.BBOX;
+
+        // Upgrade `asset_category` to an array, in the case that this layer is
+        // only associated with a single category.
+        if (options.asset_category && !OpenLayers.Util.isArray(options.asset_category)) {
+            options.asset_category = [ options.asset_category ];
+        }
+
         var layer_options = {
             fixmystreet: options,
             strategies: [new StrategyClass()],
