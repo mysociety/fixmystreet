@@ -18,6 +18,7 @@
         - Clicking the "Click map" instruction banner now begins a new report #2033
         - Homepage postcode input is now marked up as a required input #2037
         - Improved cursor/display of the new report pin. #2038
+        - Asset layers can be attached to more than one category each. #2049
     - Bugfixes:
         - Stop asset layers obscuring marker layer. #1999
         - Don't delete hidden field values when inspecting reports. #1999
