@@ -231,14 +231,15 @@ sub output_requests : Private {
 
         $problem->state( $statusmap{$problem->state} );
 
+        my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $problem->latitude, $problem->longitude;
         my $request =
         {
             'service_request_id' => $id,
             'title' => $problem->title, # Not in Open311 v2
             'detail'  => $problem->detail, # Not in Open311 v2
             'description' => $problem->title .': ' . $problem->detail,
-            'lat' => $problem->latitude,
-            'long' => $problem->longitude,
+            'lat' => $lat,
+            'long' => $lon,
             'status' => $problem->state,
 #            'status_notes' => {},
             # Zurich has visible unconfirmed reports
@@ -441,11 +442,10 @@ sub is_jurisdiction_id_ok : Private {
 
 # Input:  DateTime object
 # Output: 2011-04-23T10:28:55+02:00
-# FIXME Need generic solution to find time zone
 sub w3date : Private {
     my $datestr = shift;
     return unless $datestr;
-    return DateTime::Format::W3CDTF->format_datetime($datestr);
+    return DateTime::Format::W3CDTF->format_datetime($datestr->truncate(to => 'second'));
 }
 
 =head1 AUTHOR

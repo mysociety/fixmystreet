@@ -10,6 +10,7 @@
         - Don't delete hidden field values when inspecting reports. #1999
         - Fix text layout issues in /reports/…/summary dashboard charts.
         - Fix post-edit issues on admin report edit page.
+        - Truncate dates in Open311 output to the second. #2023
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
