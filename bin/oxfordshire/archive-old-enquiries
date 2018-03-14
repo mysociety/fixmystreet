@@ -17,10 +17,11 @@ use Getopt::Long::Descriptive;
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['commit|c',     "actually close reports and send emails. Omitting this flag will do a dry-run"],
-    ['body|b=s',     "which body ID to close reports for"],
-    ['cobrand=s',     "which cobrand template to use for sent emails"],
-    ['closure-cutoff=s',     "Anything before this will be closed with no email"],
-    ['email-cutoff=s',     "Anything before this will be closed with an email sent to the reporter"],
+    ['body|b=s',     "which body ID to close reports for", { required => 1 } ],
+    ['user|u=s',     "which user ID to assign closure updates to", { required => 1 } ],
+    ['cobrand=s',     "which cobrand template to use for sent emails", { required => 1 } ],
+    ['closure-cutoff=s',     "Anything before this will be closed with no email", { required => 1 } ],
+    ['email-cutoff=s',     "Anything before this will be closed with an email sent to the reporter", { required => 1 } ],
     ['limit|l=s',     "limit to a certain number of reports/users to be closed"],
     ['help|h',       "print usage message and exit" ],
 );

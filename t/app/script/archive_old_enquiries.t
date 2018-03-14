@@ -5,15 +5,18 @@ my $mech = FixMyStreet::TestMech->new();
 
 $mech->clear_emails_ok;
 
-my $opts = {
-    commit => 1,
-};
-
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $west_oxon = $mech->create_body_ok(2420, 'West Oxfordshire District Council');
 
-$opts->{body} = $oxfordshire->id;
+my $opts = {
+    commit => 1,
+    body => $oxfordshire->id,
+    cobrand => 'oxfordshire',
+    closure_cutoff => "2015-01-01 00:00:00",
+    email_cutoff => "2016-01-01 00:00:00",
+    user => $user->id,
+};
 
 subtest 'sets reports to the correct status' => sub {
     FixMyStreet::override_config {
@@ -64,6 +67,9 @@ subtest 'sets reports to the correct status' => sub {
         is $report3->state, 'closed', 'Report 3 has been set to closed';
         is $report4->state, 'closed', 'Report 4 has been set to closed';
         is $report5->state, 'closed', 'Report 5 has been set to closed';
+
+        my $comment = $report1->comments->first;
+        is $comment->problem_state, 'closed';
 
         is $report->state, 'confirmed', 'Recent report has been left alone';
     };

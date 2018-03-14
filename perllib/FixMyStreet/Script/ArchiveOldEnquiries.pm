@@ -14,10 +14,6 @@ use FixMyStreet::Email;
 
 my $opts = {
     commit => 0,
-    body => '2237',
-    cobrand => 'oxfordshire',
-    closure_cutoff => "2015-01-01 00:00:00",
-    email_cutoff => "2016-01-01 00:00:00",
 };
 
 sub query {
@@ -84,11 +80,7 @@ sub archive {
     });
 
     printf("Closing %d old reports, without sending emails: ", $problems_to_close->count);
-
-    if ( $opts->{commit} ) {
-        $problems_to_close->update({ state => 'closed', send_questionnaire => 0 });
-    }
-
+    close_problems($problems_to_close);
     printf("done.\n")
 }
 
@@ -132,10 +124,31 @@ sub send_email_and_close {
 
     unless ( $email_error ) {
         printf("done.\n    Closing reports: ");
-
-        $problems->update({ state => 'closed', send_questionnaire => 0 });
+        close_problems($problems);
         printf("done.\n");
     } else {
         printf("error! Not closing reports for this user.\n")
+    }
+}
+
+sub close_problems {
+    return unless $opts->{commit};
+
+    my $problems = shift;
+    while (my $problem = $problems->next) {
+        my $timestamp = \'current_timestamp';
+        $problem->add_to_comments( {
+            text => '',
+            created => $timestamp,
+            confirmed => $timestamp,
+            user_id => $opts->{user},
+            name => _('an administrator'),
+            mark_fixed => 0,
+            anonymous => 0,
+            state => 'confirmed',
+            problem_state => 'closed',
+            extra => { is_superuser => 1 },
+        } );
+        $problem->update({ state => 'closed', send_questionnaire => 0 });
     }
 }
