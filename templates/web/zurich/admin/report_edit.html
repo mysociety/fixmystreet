@@ -27,7 +27,7 @@
 
     <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/stapo/GoogleStreetView.asp?lat=[% problem.latitude %]&amp;lon=[% problem.longitude %]" target="_blank">[% loc('Street View') %]</a></dd>
 
-  [% IF c.cobrand.problem_is_closed(problem) %]
+  [% IF problem.is_fixed || problem.is_closed || problem.is_hidden %]
     <dt><span class="mock-label">[% loc('Details:') %]</span></dt>
     <dd>[% problem.detail | html %]</dd>
     [% IF problem.extra.original_detail %]
@@ -101,7 +101,7 @@
     <dd>[% problem.category_display | html %]</dd>
 
     <dt class="print-only">[% loc('State:') %] <!-- Status --></dt>
-    <dd class="print-only">[% states_trans.${problem.state} %]</dd>
+    <dd class="print-only">[% prettify_state(problem.state) %]</dd>
 
     <dt>[% loc('Time spent (in minutes):') %]</dt>
     <dd>[% problem.get_time_spent %]</dd>
@@ -154,7 +154,8 @@
         <select class="form-control" name="state"  id="state" data-pstate="[% pstate %]">
             <option value="">--</option>
           [% FOREACH s IN states %]
-            <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
+            <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">
+            [% IF s.trans; s.trans; ELSE; prettify_state(s.state); END %]</option>
           [% END %]
         </select>
     </dd>
@@ -170,7 +171,8 @@
             <select class="form-control" name="category" id="category">
                 <option value="">--</option>
               [% FOREACH cat IN category_options %]
-                <option value="[% cat.name %]">[% cat.value %]</option>
+                <option value="[% cat.name %]">[% cat.value ~%]
+                    [% ' (' _ cat.abbreviation _ ')' IF cat.abbreviation %]</option>
               [% END %]
             </select>
         </div>
@@ -195,15 +197,15 @@
 </ul>
 
 
-[% IF problem.state == 'planned' %]
+[% IF problem.state == 'feedback pending' %]
     [%# 3rd party messages sent for Extern/Wunsch states %]
     [% SWITCH pstate %]
-        [% CASE ['closed','investigating'] %]
+        [% CASE ['external','wish'] %]
         <ul class="no-bullets screen-only">
         <li class="assignation" id="assignation__external">
         <span class="error hidden">[% loc('Please select a body.') %]</span>
         <label for="body_external">
-              [% IF pstate == 'closed' %]
+              [% IF pstate == 'external' %]
                 [% loc('Assign to external body:') %]
               [% ELSE %]
                 [% loc('Assign to competent body:') %]
@@ -218,7 +220,7 @@
             </select>
         </li>
         <li>
-          [% IF pstate == 'closed' %]
+          [% IF pstate == 'external' %]
             <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
             <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
           [% END %]
@@ -234,12 +236,11 @@
       # (e.g. various pstates) %]
     <ul class="no-bullets screen-only">
         <li id="status_update_container"><label for="status_update">
-        [% SWITCH pstate %]
-            [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
-                [% loc('Reply to user:') %]
-            [% CASE DEFAULT %]
-                [% loc('Public response:') %]
-        [% END %]
+          [% IF c.cobrand.zurich_user_response_states.$pstate %]
+            [% loc('Reply to user:') %]
+          [% ELSE %]
+            [% loc('Public response:') %]
+          [% END %]
         </label>
         [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
         <textarea class="form-control" name='status_update' id='status_update' cols=60 rows=5>
@@ -252,7 +253,7 @@
 <p align="right" class="screen-only">
   [% IF show_publish_response %]
     [%# While we call this 'publish_response', the response will not actually
-      # be "published" for these cases: Wish / Hidden / Not contactable (for these,
+      # be "published" for these cases: Hidden / Not contactable (for these,
       # only a private email will be sent to the user.  However, in all cases,
       # this is the end of processing, so we mark this with the same text used
       # for 'No further updates %]
@@ -272,9 +273,9 @@
 [% END %]
 
 [% SWITCH problem.state %]
-    [% CASE ['closed','investigating'] %]
+    [% CASE ['external','wish'] %]
     <h2>
-          [% IF problem.state == 'closed' %]
+          [% IF problem.state == 'external' %]
             [% loc('Message to external body:') %]
           [% ELSE %]
             [% loc('Message to competent body:') %]

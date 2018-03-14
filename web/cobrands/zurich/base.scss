@@ -224,9 +224,9 @@ h4.static-with-rule {
     margin-right: 0.2em;
   }
 
-  table tr.is-deleted {
-    background-color: transparent;
-  }
+}
+table#admin_bodies tr.is-deleted {
+  background-color: transparent;
 }
 
 .admin-label--inline {

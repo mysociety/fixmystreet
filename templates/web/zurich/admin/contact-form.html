@@ -1,11 +1,24 @@
 <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="category_edit">
-    <p><strong>[% loc('Category:') %] </strong>[% contact.category_display | html %]
+
+  [% IF contact.in_storage %]
+    <h1>[% contact.category_display | html %]</h1>
     <input type="hidden" name="category" value="[% contact.category | html %]" >
-    <input type="hidden" name="token" value="[% csrf_token %]" >
+  [% ELSE %]
+    <p>
+        <strong>[% loc('Category:') %] </strong>
+        <input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
+    </p>
+  [% END %]
+
+    <p>
+        <strong>Kürzel</strong>
+        <input type="text" class="form-control" name="extra[abbreviation]" id="abbreviation" size="30" value="[% contact.get_extra_metadata('abbreviation') | html %]">
+    </p>
 
     <p><strong>[% loc('Email:') %] </strong>
     <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
 
+  [% IF contact.in_storage %]
     <p>
         <label for="state">[% loc('State') %]</label>
         <select name="state" id="state">
@@ -15,9 +28,15 @@
         <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
         <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
     </p>
+  [% ELSE %]
+    <input type="hidden" name="confirmed" value="1" id="confirmed">
+  [% END %]
 
     <p><strong>[% loc('Note:') %] </strong><textarea class="form-control" name="note" rows="3" cols="40"></textarea>
 
     <input type="hidden" name="posted" value="new">
-    <p><input type="submit" class="btn" name="Save changes" value="[% loc('Save changes') %]">
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+    <p><input type="submit" class="btn" name="Create category" value="[% contact.in_storage ? loc('Save changes') : loc('Create category') %]">
+  </p>
+
 </form>

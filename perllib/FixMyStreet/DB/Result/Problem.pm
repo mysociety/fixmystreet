@@ -341,7 +341,7 @@ around service => sub {
 
 sub title_safe {
     my $self = shift;
-    return _('Awaiting moderation') if $self->cobrand eq 'zurich' && $self->state eq 'unconfirmed';
+    return _('Awaiting moderation') if $self->cobrand eq 'zurich' && $self->state eq 'submitted';
     return $self->title;
 }
 
@@ -507,6 +507,18 @@ sub tokenised_url {
     );
 
     return "/M/". $token->token;
+}
+
+=head2 is_hidden
+
+Returns 1 if the problem is in an hidden state otherwise 0.
+
+=cut
+
+sub is_hidden {
+    my $self = shift;
+
+    return exists $self->hidden_states->{ $self->state } ? 1 : 0;
 }
 
 =head2 is_open

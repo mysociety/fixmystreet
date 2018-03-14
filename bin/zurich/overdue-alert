@@ -32,9 +32,9 @@ exit if FixMyStreet::Cobrand::Zurich::is_public_holiday($now) or FixMyStreet::Co
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('zurich')->new();
 my %bodies = map { $_->id => $_ } FixMyStreet::DB->resultset("Body")->all;
 
-loop_through( 'alert-moderation-overdue.txt', 0, 1, [ 'unconfirmed' ] );
+loop_through( 'alert-moderation-overdue.txt', 0, 1, [ 'submitted' ] );
 loop_through( 'alert-overdue.txt', 1, 6, 'in progress' );
-loop_through( 'alert-overdue.txt', 0, 6, ['confirmed', 'planned'] );
+loop_through( 'alert-overdue.txt', 0, 6, ['confirmed', 'feedback pending'] );
 
 sub loop_through {
     my ( $template, $include_parent, $days, $states ) = @_;

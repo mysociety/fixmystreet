@@ -1,0 +1,119 @@
+#!/usr/bin/env perl
+#
+# This script will create a test body and its categories, covering the area
+# provided, and users associated with that body, which should help testing
+# of report interactions.
+
+use strict;
+use warnings;
+use v5.14;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet;
+use FixMyStreet::Cobrand::Zurich;
+use FixMyStreet::DB::Factories;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'empty', "Empty all tables of the database first" ],
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+FixMyStreet::DB::Factories->setup($opt);
+
+my $cobrand = FixMyStreet::Cobrand::Zurich->new();
+$cobrand->db_state_migration;
+
+# Body + categories
+my $body = FixMyStreet::DB::Factory::Body->find_or_create({
+    name => 'Zürich',
+    body_areas => [],
+    contacts => [],
+});
+say "Created body " . $body->name;
+
+my $categories = ['Potholes', 'Street lighting', 'Graffiti', 'Other'];
+my $div = FixMyStreet::DB::Factory::Body->find_or_create({
+    name => 'Division 1',
+    parent => $body->id,
+    endpoint => 'division@example.org',
+    categories => $categories,
+    area_id => 423017,
+});
+say "Created body " . $div->name;
+
+my $contact = $div->contacts->first;
+$contact->set_extra_fields(
+    map { $_->{variable} = 'true'; $_->{datatype} = 'string'; $_ }
+    { code => 'strasse', description => 'Strasse', required => 'yes', },
+    { code => 'haus_nr', description => 'Haus-Nr.', },
+    { code => 'mast_nr', description => 'Mast-Nr.', }
+);
+$contact->update;
+
+my $subdiv = FixMyStreet::DB::Factory::Body->find_or_create({
+    name => 'Subdivision A',
+    parent => $div->id,
+    endpoint => 'subdivision@example.org',
+    body_areas => [],
+    contacts => [],
+});
+say "Created body " . $subdiv->name;
+
+my $ext = FixMyStreet::DB::Factory::Body->find_or_create({
+    name => 'External Body',
+    endpoint => 'external_body@example.org',
+    body_areas => [],
+    contacts => [],
+});
+say "Created body " . $ext->name;
+
+# Users
+say "Created users, all with password 'password':";
+my %users;
+foreach (
+    { name => 'Super', email => 'super@example.org', email_verified => 1, body => $body },
+    { name => 'DM', email_verified => 1, email => 'dm@example.org', body => $div },
+    { name => 'SDM', email_verified => 1, email => 'sdm@example.org', body => $subdiv },
+    { name => 'Wizard of Oz', email_verified => 1, email => 'admin@example.org', body => $body, is_superuser => 't' },
+    { name => "Norma User", email_verified => 1, email => 'user@example.org' },
+) {
+    $users{$_->{email}} = FixMyStreet::DB::Factory::User->find_or_create($_);
+    my $su = $_->{is_superuser} ? " (superuser)" : "";
+    say "* $_->{email}$su";
+}
+
+# Problems
+
+my $lat = 47.381416;
+my $lon = 8.531369;
+
+my $user = $users{'user@example.org'};
+my $num = 20;
+say "Created $num problems around '$lat,$lon' in cobrand '" . $cobrand->moniker . "'";
+my $confirmed = DateTime->today->subtract(days => 1)->add(hours => 8);
+my $problems = [];
+for (1..$num) {
+    $confirmed->add(seconds => rand(7000));
+    my $category = $categories->[int(rand(@$categories))];
+    push @$problems, FixMyStreet::DB::Factory::Problem->create_problem({
+        body => $div,
+        user => $user,
+        postcode => "$lat,$lon",
+        latitude => $lat,
+        longitude => $lon,
+        category => $category,
+        cobrand => $cobrand->moniker,
+        confirmed => $confirmed,
+    });
+}

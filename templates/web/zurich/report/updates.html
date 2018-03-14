@@ -1,15 +1,11 @@
-[% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
+[% IF c.cobrand.problem_has_public_response(problem) %]
     <h4 class="static-with-rule">[% loc('Updates') %]</h4>
     <ul class="item-list item-list--updates">
         <li class="item-list__item item-list__item--updates">
             <div class="item-list__update-wrap">
                 <div class="item-list__update-text">
                     <p class="meta-2">[% prettify_dt( problem.lastupdate, 'zurich' ) %]</p>
-                    [%# XXX following should honour zurich_closed_states instead? %]
-                    [% IF problem.state == 'fixed - council'
-                    || ( problem.external_body AND problem.state == 'closed' ) %]
                     [% problem.extra.public_response | add_links | html_para %]
-                  [% END %]
                 </div>
             </div>
         </li>

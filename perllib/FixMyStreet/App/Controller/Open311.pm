@@ -307,6 +307,7 @@ sub get_requests : Private {
     # Only provide access to the published reports
     my $states = FixMyStreet::DB::Result::Problem->visible_states();
     delete $states->{unconfirmed};
+    delete $states->{submitted};
     my $criteria = {
         state => [ keys %$states ]
     };
@@ -409,6 +410,7 @@ sub get_request : Private {
 
     my $states = FixMyStreet::DB::Result::Problem->visible_states();
     delete $states->{unconfirmed};
+    delete $states->{submitted};
     my $criteria = {
         state => [ keys %$states ],
         id => $id,

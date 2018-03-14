@@ -5,7 +5,7 @@
 [% INCLUDE list, problems = reports_new.all, hash = 'new' %]
 
 <h2 id="wait">[% loc('Reports awaiting approval') %]</h2>
-[% INCLUDE list, problems = reports_unpublished.all, no_edit = 1, hash = 'wait' %]
+[% INCLUDE list, problems = reports_unpublished.all, hash = 'wait' %]
 
 <h2 id="alle">[% loc('Reports published') %]</h2>
 [% INCLUDE list, problems = reports_published.all, no_edit = 1, hash = 'alle' %]

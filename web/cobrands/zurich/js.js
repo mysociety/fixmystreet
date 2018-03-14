@@ -77,7 +77,7 @@ $(function() {
                 $('#assignation__category').show();
                 $('#assignation__subdivision').show();
             }
-            if ((state === 'closed') || (state === 'investigating')) {
+            if ((state === 'external') || (state === 'wish')) {
                 $('#assignation__external').show();
             } else {
                 $('#assignation__external').hide();

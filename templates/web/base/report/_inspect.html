@@ -58,7 +58,7 @@
           [% INCLUDE 'admin/report-category.html' %]
         </p>
 
-        [% FOREACH category IN category_options_copy %]
+        [% FOREACH category IN category_options %]
           [% cat_name = category.name;
              cat_prefix = cat_name | lower | replace('[^a-z]', '');
              cat_prefix = "category_" _ cat_prefix _ "_" %]

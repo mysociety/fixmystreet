@@ -73,7 +73,7 @@
     <dd>[% problem.category_display | html %]</dd>
 
     <dt class="print-only">[% loc('State:') %] <!-- Status --></dt>
-    <dd class="print-only">[% states.${problem.state} %]</dd>
+    <dd class="print-only">[% prettify_state(problem.state) %]</dd>
 
     <dt>[% loc('Time spent (in minutes):') %]</dt>
     <dd>[% problem.get_time_spent %]</dd>
@@ -101,28 +101,28 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
-<p align="right" class="screen-only"><input type="submit" class="btn" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
-<p align="right" class="screen-only"><input type="submit" class="btn" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
+<p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+<p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
 
 <ul class="no-bullets screen-only">
     <li>
         <label for="new_internal_note">[% loc('New internal note:') %]</label>
-        <textarea class="form-control" name='new_internal_note' id='new_internal_note' cols=60 rows=4></textarea>
+        <textarea [% sdm_disabled %] class="form-control" name='new_internal_note' id='new_internal_note' cols=60 rows=4></textarea>
     </li>
     <li>
         <label for="status_update">[% loc('New note to DM:') %]</label>
-        <textarea class="form-control" name='status_update' id='status_update' cols=60 rows=4></textarea>
+        <textarea [% sdm_disabled %] class="form-control" name='status_update' id='status_update' cols=60 rows=4></textarea>
     </li>
 </ul>
 
 <p class="screen-only">
     <label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
-    <input type="text" class="form-control" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+    <input [% sdm_disabled %] type="text" class="form-control" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
 </p>
 
 <p class="clearfix screen-only">
-    <input style="float:left" type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
-    <input style="float:right" type="submit" class="btn" name="no_more_updates" value="[% loc('No further updates') %]">
+    <input [% sdm_disabled %] style="float:left" type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
+    <input [% sdm_disabled %] style="float:right" type="submit" class="btn" name="no_more_updates" value="[% loc('No further updates') %]">
 </p>
 
 [% INCLUDE 'admin/list_updates.html' %]

@@ -1,11 +1,11 @@
 <li class="item-list__item item-list--reports__item">
 <a href="[% c.uri_for('/report', problem.id ) %]">
     [% photo_to_display = c.cobrand.allow_photo_display(problem) %]
-    [% IF problem.state != 'unconfirmed' AND problem.photo AND photo_to_display %]
+    [% IF problem.state != 'submitted' AND problem.photo AND photo_to_display %]
         [% photo_idx = photo_to_display - 1 ~%]
         <img class="img" height="60" width="90" src="[% problem.photos.${photo_idx}.url_fp %]" alt="">
     [% END %]
-      [% IF problem.state != 'unconfirmed' %]
+      [% IF problem.state != 'submitted' %]
         <h3 class="item-list__heading">[% problem.title | html %]</h3>
       [% ELSE %]
         <h3 class="item-list__heading"><em>[% loc('Awaiting moderation') %]</em></h3>

@@ -4,9 +4,9 @@
         <option selected value="[% problem.category | html %]">[% (problem.category_display OR '-') | html %]</option>
     </optgroup>
   [% END %]
-  [% IF category_options_copy.size %]
+  [% IF category_options.size %]
     <optgroup label="[% loc('Available categories') %]">
-      [% FOREACH cat IN category_options_copy %]
+      [% FOREACH cat IN category_options %]
         <option value="[% cat.name | html %]"[% ' selected' IF problem.category == cat.name %]>[% cat.value | html %]</option>
       [% END %]
     </optgroup>

@@ -16,14 +16,16 @@
             <th>[% loc('Last editor') %]</th>
             <th>[% loc('Note') %]</th>
             <th>[% loc('When edited') %]</th>
+            <th>Kürzel</th>
         </tr>
         [% WHILE ( cat = contacts.next ) %]
-            <tr[% IF cat.deleted %] class="is-deleted"[% END %]>
+            <tr[% IF cat.state == 'deleted' %] class="is-deleted"[% END %]>
                 <td><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category_display %]</a></td>
                 <td>[% cat.email | html %]</td>
                 <td>[% cat.editor %]</td>
                 <td>[% cat.note | html %]</td>
                 <td>[% PROCESS format_date this_date=cat.whenedited %]</td>
+                <td>[% cat.get_extra_metadata('abbreviation') %]</td>
             </tr>
         [% END %]
     </table>
@@ -37,31 +39,7 @@
     </div>
   [% END %]
 
-    <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-
-        <p>
-        <strong>[% loc('Category:') %] </strong>
-        <input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]">
-        </p>
-
-        <p>
-        <strong>[% loc('Email:') %] </strong>
-        <input type="text" class="form-control" name="email" size="30" value="[% contact.email | html %]">
-        </p>
-
-        <input type="hidden" name="confirmed" value="1" id="confirmed">
-
-        <p>
-        <strong>[% loc('Note:') %] </strong>
-        <textarea class="form-control" name="note" rows="3" cols="40"></textarea>
-        </p>
-
-        <p>
-        <input type="hidden" name="posted" value="new" >
-        <input type="hidden" name="token" value="[% csrf_token %]" >
-        <input type="submit" class="btn" name="Create category" value="[% errors ? loc('Save changes') : loc('Create category') %]">
-        </p>
-    </form>
+  [% INCLUDE 'admin/contact-form.html' %]
 
 [% END %]
 
