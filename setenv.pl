@@ -25,12 +25,9 @@ for ( "$root/commonlib/perllib", "$root/perllib" ) {
     $ENV{PERL5LIB} = "$_:$ENV{PERL5LIB}";
 }
 
-# need to make sure we fetch this after our libs are in INC as some 
-# vendor provided versions are old an incompatible with Moose
-use List::MoreUtils 'uniq';
-
 # also set the path to our scripts etc
-$ENV{PATH} = join ':', uniq "$root/bin", split( m/:/, $ENV{PATH} );
+my %seen;
+$ENV{PATH} = join ':', grep { not $seen{$_}++ } "$root/bin", split( m/:/, $ENV{PATH} );
 
 # we might want to require this file to configure something like a CGI script
 if ( $0 eq __FILE__ ) {

@@ -3039,6 +3039,14 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Fcntl 0
       POSIX 0
+      perl 5.004
+  File-Which-1.22
+    pathname: P/PL/PLICEASE/File-Which-1.22.tar.gz
+    provides:
+      File::Which 1.22
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.006
   Filesys-Notify-Simple-0.10
     pathname: M/MI/MIYAGAWA/Filesys-Notify-Simple-0.10.tar.gz
     provides:
@@ -3048,6 +3056,22 @@ DISTRIBUTIONS
       Test::More 0
       Test::SharedFork 0
       perl 5.008001
+  Function-Parameters-2.001003
+    pathname: M/MA/MAUKE/Function-Parameters-2.001003.tar.gz
+    provides:
+      Function::Parameters 2.001003
+      Function::Parameters::Info 2.001003
+      Function::Parameters::Param 2.001003
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 0
+      File::Find 0
+      File::Spec 0
+      Scalar::Util 0
+      XSLoader 0
+      perl 5.014000
+      strict 0
+      warnings 0
   Geography-NationalGrid-1.6
     pathname: P/PK/PKENT/Geography-NationalGrid-1.6.tar.gz
     provides:
@@ -6164,18 +6188,25 @@ DISTRIBUTIONS
       Test::More 0
       Test::Tester 0.107
       perl 5.006
-  Test-PostgreSQL-1.05
-    pathname: T/TJ/TJC/Test-PostgreSQL-1.05.tar.gz
+  Test-PostgreSQL-1.24
+    pathname: T/TJ/TJC/Test-PostgreSQL-1.24.tar.gz
     provides:
-      Test::PostgreSQL 1.05
+      Test::PostgreSQL 1.24
     requirements:
-      Class::Accessor::Lite 0
       DBD::Pg 0
       DBI 0
       ExtUtils::MakeMaker 6.59
+      File::Spec 0
+      File::Which 0
+      Function::Parameters 0
+      Moo 0
+      POSIX 0
       Test::SharedFork 0.06
-      Time::HiRes 0
-      perl 5.008
+      Tie::Hash::Method 0
+      Try::Tiny 0
+      Types::Standard 0
+      User::pwent 0
+      perl 5.014
   Test-Requires-0.06
     pathname: T/TO/TOKUHIROM/Test-Requires-0.06.tar.gz
     provides:
@@ -6406,6 +6437,13 @@ DISTRIBUTIONS
       Scalar::Util 0
       Sub::Quote 0
       overload 0
+  Tie-Hash-Method-0.02
+    pathname: Y/YV/YVES/Tie-Hash-Method-0.02.tar.gz
+    provides:
+      Tie::Hash::Method 0.02
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
   Tie-IxHash-1.23
     pathname: C/CH/CHORNY/Tie-IxHash-1.23.tar.gz
     provides:

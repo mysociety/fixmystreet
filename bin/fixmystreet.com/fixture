@@ -110,6 +110,9 @@ foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
     }
 }
 
+my $cache_dir = path(FixMyStreet->config('UPLOAD_DIR'));
+$cache_dir->mkpath;
+
 my $user = $users{'user@example.org'};
 my $num = 20;
 say "Created $num problems around '$location' in cobrand '$cobrand'";

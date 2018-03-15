@@ -20,9 +20,20 @@ perl:
 # Params::Classify breaks in 5.26, and Lingua::EN::Tagger needs upgrading
 #  - "5.26"
 
+cache:
+  directories:
+    - ~/.npm
+    - node_modules
+
+matrix:
+  include:
+  - perl: "5.22"
+    env: "CYPRESS=1"
+
 env:
   global:
     - "S3_BUCKET=fixmystreet-bundle-cache"
+    - "CYPRESS=0"
     - secure: "llgWNfR/8pH0HjYpg+xhVxuqTaLC0GGUugfuINiUap7JxzjCZ2rlryxCXA4BCM8GUHa9wlYKhrKCSx+DM3EHRE0cLei7LNxAK1JSXLj3NihFQhqnq64tjDwGCSA4l7mlqErA7DK4Dpmh+hBp5f680akITAInM92CbwQZxLDYaCU="
     - secure: "qW+WCgAF68itADxcbcq+nCnKx3vf3GX73HMfjfbkFFUsYmIR+ZaJ9yQMnGJwxIpCHTWLAeqyx4KO8N8T3GmNdKYzIMZemOzp4ED29YC31QOQeq1CwNp2hD5sq/o47d2BzXWwMYNvNXfxz1K6r2c6EMPUtu8X3B8ExZq1RzSFdXs="
 
@@ -38,10 +49,13 @@ addons:
 install:
   - .travis/install
   - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cpanm --quiet --notest Devel::Cover::Report::Codecov; fi'
+  - 'if [ "$CYPRESS" = "1" ]; then npm install cypress; fi'
 before_script:
   - commonlib/bin/gettext-makemo FixMyStreet
   - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/DBIx,perllib/Email,perllib/Template,^t"; fi'
-script: "script/test --jobs 3 t"
+script:
+  - 'if [ "$CYPRESS" = "0" ]; then script/test --jobs 3 t; fi'
+  - 'if [ "$CYPRESS" = "1" ]; then PATH=$(npm bin):$PATH bin/browser-tests run --record; fi'
 after_success:
   - .travis/after_script
   - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cover --report codecov; fi'
