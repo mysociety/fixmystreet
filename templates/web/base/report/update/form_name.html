@@ -32,10 +32,7 @@
 <input type="text" class="form-control validNameU js-form-name"
     name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
 
-<div class="checkbox-group">
-    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
-    <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
-</div>
+[% INCLUDE 'report/_show_name_label.html' %]
 
 <div class="checkbox-group">
     <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
