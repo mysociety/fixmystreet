@@ -134,5 +134,18 @@
         <input type="checkbox" id="send_extended_statuses" name="send_extended_statuses"[% ' checked' IF object.send_extended_statuses %]>
         <label for="send_extended_statuses" class="inline">[% loc('Send extended Open311 statuses with service request updates') %]</label>
     </p>
+
+    <div class="admin-hint">
+      <p>
+        [% loc(
+            "Enable <strong>Convert location from Easting/Northing</strong> if you've enabled Open311 problem-fetching above
+            and problems fetching from the endpoint have the location in Easting/Northings and not Latitude/Longitude."
+        ) %]
+      </p>
+    </div>
+    <p>
+        <input type="checkbox" id="convert_latlong" name="convert_latlong"[% ' checked' IF object.convert_latlong %]>
+        <label for="convert_latlong" class="inline">[% loc('Convert location from Easting/Northing') %]</label>
+    </p>
   [% END %]
 </div>

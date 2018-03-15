@@ -34,6 +34,7 @@ sub fetch {
         );
 
         $self->system_user( $body->comment_user );
+        $self->convert_latlong( $body->convert_latlong );
         $self->create_problems( $o, $body );
     }
 }
