@@ -18,6 +18,12 @@ sub contact_email {
     my $self = shift;
     return join( '@', 'fixmystreet', 'bathnes.gov.uk' );
 }
+
+sub update_email {
+    my $self = shift;
+    return join( '@', 'highways', 'bathnes.gov.uk' );
+}
+
 sub map_type { 'BathNES' }
 
 sub example_places {
