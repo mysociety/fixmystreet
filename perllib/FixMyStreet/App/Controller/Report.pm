@@ -221,9 +221,15 @@ sub format_problem_for_display : Private {
 
     if ( $c->stash->{ajax} ) {
         $c->res->content_type('application/json; charset=utf-8');
+
+        # encode_json doesn't like DateTime objects, so strip them out
+        my $report_hashref = $c->cobrand->problem_as_hashref( $problem, $c );
+        delete $report_hashref->{created};
+        delete $report_hashref->{confirmed};
+
         my $content = encode_json(
             {
-                report => $c->cobrand->problem_as_hashref( $problem, $c ),
+                report => $report_hashref,
                 updates => $c->cobrand->updates_as_hashref( $problem, $c ),
             }
         );

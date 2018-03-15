@@ -115,6 +115,12 @@ subtest "duplicate reports are signposted correctly" => sub {
     $report2->update;
 };
 
+subtest "test /report/ajax" => sub {
+    my $json = $mech->get_ok_json( "/report/ajax/$report_id" );
+    is $json->{report}->{title}, "Test 2", "correct title";
+    is $json->{report}->{state}, "confirmed", "correct state";
+};
+
 subtest "test a good report" => sub {
     $mech->get_ok("/report/$report_id");
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
