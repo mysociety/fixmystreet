@@ -6,6 +6,7 @@ use_ok( 'Open311' );
 use_ok( 'Open311::GetServiceRequests' );
 use DateTime;
 use DateTime::Format::W3CDTF;
+use Test::MockObject::Extends;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -295,6 +296,35 @@ for my $test (
         $p->delete;
     };
 }
+
+subtest "check options passed through from body" => sub {
+    my $xml = prepare_xml( {} );
+
+    $body->update( {
+        send_method => 'Open311',
+        fetch_problems => 1,
+        comment_user_id => $user->id,
+        endpoint => 'http://open311.localhost/',
+        convert_latlong => 1,
+        api_key => 'KEY',
+        jurisdiction => 'test',
+    } );
+
+    my $o = Open311::GetServiceRequests->new();
+
+    my $props = {};
+
+    $o = Test::MockObject::Extends->new($o);
+    $o->mock('create_problems', sub {
+        my $self = shift;
+
+        $props->{convert_latlong} = $self->convert_latlong;
+    } );
+
+    $o->fetch();
+
+    ok $props->{convert_latlong}, "convert latlong set"
+};
 
 sub prepare_xml {
     my $replacements = shift;
