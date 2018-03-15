@@ -11,6 +11,7 @@ has start_date => ( is => 'ro', default => sub { undef } );
 has end_date => ( is => 'ro', default => sub { undef } );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
+has convert_latlong => ( is => 'rw', default => 0 );
 
 sub fetch {
     my $self = shift;
@@ -76,6 +77,10 @@ sub create_problems {
             if mySociety::Config::get('MAPIT_GENERATION');
 
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
+
+        ($latitude, $longitude) = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
+            if $self->convert_latlong;
+
         my $all_areas =
           mySociety::MaPit::call( 'point',
             "4326/$longitude,$latitude", %params );
@@ -146,8 +151,8 @@ sub create_problems {
                     state => $state,
                     postcode => '',
                     used_map => 1,
-                    latitude => $request->{lat},
-                    longitude => $request->{long},
+                    latitude => $latitude,
+                    longitude => $longitude,
                     areas => ',' . $body->id . ',',
                     bodies_str => $body->id,
                     send_method_used => 'Open311',
