@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::Reports;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -15,7 +16,7 @@ my $test_email = 'body-user@example.net';
 my $user = $mech->log_in_ok($test_email);
 $user->update({ from_body => $body->id, name => 'Body User' });
 
-my ($report_to_update) = $mech->create_problems_for_body(1, $body->id, 'Title');
+my ($report_to_update) = $mech->create_problems_for_body(1, $body->id, 'Title', { category => 'Potholes' });
 
 subtest "Body user, no permissions, no special reporting tools shown" => sub {
     start_report();
@@ -100,6 +101,9 @@ subtest "Body user, has permission to add report as another user with landline n
 };
 
 subtest "Body user, has permission to add report as another (existing) user with email" => sub {
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+
     $mech->create_user_ok('existing@example.net', name => 'Existing User');
     my $report = add_report(
         'contribute_as_another_user',
@@ -116,6 +120,15 @@ subtest "Body user, has permission to add report as another (existing) user with
     isnt $report->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
     push @users, $report->user;
+
+    my $send_confirmation_mail_override = Sub::Override->new(
+        "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
+        sub { return 1; }
+    );
+    FixMyStreet::Script::Reports::send();
+    $mech->email_count_is(2);
+    $mech->clear_emails_ok;
+    $send_confirmation_mail_override->restore();
 };
 
 subtest "Body user, has permission to add report as another (existing) user with phone" => sub {
@@ -138,6 +151,9 @@ subtest "Body user, has permission to add report as another (existing) user with
 };
 
 subtest "Body user, has permission to add report as anonymous user" => sub {
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+
     my $report = add_report(
         'contribute_as_anonymous_user',
         form_as => 'anonymous_user',
@@ -149,6 +165,19 @@ subtest "Body user, has permission to add report as anonymous user" => sub {
     is $report->user->name, 'Body User', 'user name unchanged';
     is $report->user->id, $user->id, 'user matches';
     is $report->anonymous, 1, 'report anonymous';
+
+    my $send_confirmation_mail_override = Sub::Override->new(
+        "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
+        sub { return 1; }
+    );
+
+    FixMyStreet::Script::Reports::send();
+    # No report sent email is sent
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    like $email->header('Subject'), qr/Problem Report: Test Report/, 'report email title correct';
+    $mech->clear_emails_ok;
+    $send_confirmation_mail_override->restore();
 };
 
 subtest "Body user, has permission to add update as council" => sub {
