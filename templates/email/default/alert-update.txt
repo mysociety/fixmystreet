@@ -19,6 +19,7 @@ please do not reply to it.
 [% signature %]
 
 
+[% IF NOT hide_unsubscribe %]
 Unsubscribe?
 
 We currently email you whenever someone leaves an update on the
@@ -26,3 +27,4 @@ We currently email you whenever someone leaves an update on the
 
 If you no longer wish to receive an email whenever this report is updated,
 please follow this link: [% unsubscribe_url %]
+[% END %]
