@@ -5,13 +5,10 @@
 #   In Open311 parlance these are 'service request updates' and are sent using
 #   mySociety's proposed extension to the Open311 Georeport v2 spec:
 #   https://github.com/mysociety/fixmystreet/wiki/Open311-FMS---Proposed-differences-to-Open311
-#
-# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
-# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 
 use strict;
 use warnings;
-require 5.8.0;
+use v5.14;
 
 BEGIN {
     use File::Basename qw(dirname);
@@ -26,6 +23,8 @@ use DateTime;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
+use FixMyStreet::Email;
+use FixMyStreet::Map;
 use Open311;
 
 # send_method config values found in by-area config data, for selecting to appropriate method
@@ -35,6 +34,7 @@ use constant SEND_METHOD_OPEN311    => 'Open311';
 use constant COUNCIL_ID_OXFORDSHIRE => 2237;
 use constant COUNCIL_ID_BROMLEY => 2482;
 use constant COUNCIL_ID_LEWISHAM => 2492;
+use constant COUNCIL_ID_BANES => 2551;
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
@@ -133,6 +133,7 @@ while ( my $body = $bodies->next ) {
         my $id = $o->post_service_request_update( $comment );
 
         if ( $id ) {
+            send_comment_email($comment, $cobrand) if $body->areas->{+COUNCIL_ID_BANES};
             $comment->update( {
                 external_id => $id,
                 whensent    => \'current_timestamp',
@@ -158,4 +159,42 @@ sub retry_timeout {
     }
 
     return 0;
+}
+
+sub send_comment_email {
+    my ($comment, $cobrand) = @_;
+
+    my $handler = $cobrand->call_hook(get_body_handler_for_problem => $comment->problem) or return;
+
+    # Set up map/language so things don't error
+    FixMyStreet::Map::set_map_class($handler->map_type);
+    $handler->set_lang_and_domain( $comment->lang, 1, FixMyStreet->path_to('locale')->stringify );
+
+    # Construct the data the alert-update email template needs
+    # (bit annoying that we can't just put $comment in data!)
+    my %data = (
+        cobrand => $handler,
+        hide_unsubscribe => 1,
+        data => [ {
+            item_photo => $comment->photo,
+            item_text => $comment->text,
+            item_name => $comment->name,
+            item_anonymous => $comment->anonymous,
+            confirmed => $comment->confirmed,
+            get_first_image_fp => sub { $comment->get_first_image_fp },
+        } ],
+        report => $comment->problem,
+        problem_url => $handler->base_url_for_report($comment->problem) . $comment->problem->url,
+    );
+
+    FixMyStreet::Email::send_cron(
+        FixMyStreet::DB->schema,
+        "alert-update.txt",
+        \%data,
+        { To => $handler->contact_email },
+        undef,
+        0,
+        $handler,
+        $comment->lang,
+    );
 }

@@ -14,7 +14,9 @@ INCLUDE '_email_top.html';
   [% start_padded_box %]
   <h1 style="[% h1_style %]">New updates on <a href="[% problem_url %]">[% title %]</a></h1>
   [%~ INCLUDE '_email_comment_list.html' %]
+  [% IF NOT hide_unsubscribe %]
   <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about this report</a></p>
+  [% END %]
   [% end_padded_box %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
