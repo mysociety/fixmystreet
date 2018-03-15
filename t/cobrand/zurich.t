@@ -126,6 +126,15 @@ FixMyStreet::override_config {
 $mech->content_contains('&Uuml;berpr&uuml;fung ausstehend')
     or die $mech->content;
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
+}, sub {
+    my $json = $mech->get_ok_json( '/report/ajax/' . $report->id );
+    is $json->{report}->{title}, "&Uuml;berpr&uuml;fung ausstehend", "correct title";
+    is $json->{report}->{state}, "submitted", "correct state";
+};
+
 subtest "Banners are displayed correctly" => sub {
   FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],

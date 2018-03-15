@@ -174,7 +174,7 @@ sub updates_as_hashref {
 
     my $hashref = {};
 
-    if (problem_has_public_response($problem)) {
+    if ($self->problem_has_public_response($problem)) {
         $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
         if ( $problem->state ne 'external' ) {
