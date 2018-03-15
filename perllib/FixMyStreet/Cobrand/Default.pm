@@ -1178,7 +1178,7 @@ Return true if an Open311 service attribute should be a hidden field.
 
 sub category_extra_hidden {
     my ($self, $meta) = @_;
-	return 0;
+    return 0;
 }
 
 =item reputation_increment_states/reputation_decrement_states

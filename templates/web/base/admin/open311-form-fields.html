@@ -49,6 +49,17 @@
   </p>
 
   [% IF show_body_fields %]
+    <div class="admin-hint">
+      <p>
+        [% loc(
+            "Enabling this will suppress the error message that is normally emitted when an update has no description"
+        ) %]
+      </p>
+    </div>
+    <p>
+        <input type="checkbox" id="blank_updates_permitted" name="blank_updates_permitted"[% ' checked' IF object.blank_updates_permitted %]>
+        <label for="blank_updates_permitted" class="inline">[% loc('Permit blank updates') %]</label>
+    </p>
     [%# These fields aren't shown for contacts %]
     <div class="admin-hint">
       <p>
@@ -63,6 +74,21 @@
     <p>
         <input type="checkbox" id="send_comments" name="send_comments"[% ' checked' IF object.send_comments %]>
         <label for="send_comments" class="inline">[% loc('Use Open311 update-sending extension') %]</label>
+    </p>
+
+    <div class="admin-hint">
+      <p>
+        [% loc(
+            "Enable <strong>Open311 problem-fetching</strong> if you want to display reports created at
+          the endpoint to FixMyStreet. If you're not sure, you probably do not, so leave this unchecked.
+          For more information, see 
+          <a href='https://www.mysociety.org/2013/02/20/open311-extended/' class='admin-offsite-link'>this article</a>."
+        ) %]
+      </p>
+    </div>
+    <p>
+        <input type="checkbox" id="fetch_problems" name="fetch_problems"[% ' checked' IF object.fetch_problems %]>
+        <label for="fetch_problems" class="inline">[% loc('Use Open311 problem fetching') %]</label>
     </p>
 
     <div class="admin-hint">

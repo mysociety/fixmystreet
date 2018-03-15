@@ -1,0 +1,16 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+
+#site-logo {
+    background: url("/cobrands/rutland/RCCLogo.gif");
+    background-size: contain;
+    height: 50px;
+    width: 110px;
+}
+
+
+

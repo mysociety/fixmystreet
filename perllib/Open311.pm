@@ -32,6 +32,7 @@ has use_service_as_deviceid => ( is => 'ro', isa => Bool, default => 0 );
 has use_extended_updates => ( is => 'ro', isa => Bool, default => 0 );
 has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
+has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -163,7 +164,11 @@ sub _populate_service_request_params {
     }
 
     if ( $extra->{image_url} ) {
-        $params->{media_url} = $extra->{image_url};
+        if ( $self->multi_photos ) {
+            $params->{media_url} = $extra->{all_image_urls};
+        } else {
+            $params->{media_url} = $extra->{image_url};
+        }
     }
 
     if ( $self->use_service_as_deviceid && $problem->service ) {
@@ -213,13 +218,19 @@ sub _generate_service_request_description {
 
 sub get_service_requests {
     my $self = shift;
-    my $report_ids = shift;
+    my $args = shift;
 
     my $params = {};
 
-    if ( $report_ids ) {
-        $params->{service_request_id} = join ',', @$report_ids;
+    if ( $args->{report_ids} ) {
+        $params->{service_request_id} = join ',', @{$args->{report_ids}};
+        delete $args->{report_ids};
     }
+
+    $params = {
+      %$params,
+      %$args
+    };
 
     my $service_request_xml = $self->_get( $self->endpoints->{requests}, $params || undef );
     return $self->_get_xml_object( $service_request_xml );
@@ -289,6 +300,37 @@ sub post_service_request_update {
             if warn_failure($comment, $comment->problem);
     }
     return 0;
+}
+
+sub add_media {
+    my ($self, $url, $object) = @_;
+
+    my $ua = LWP::UserAgent->new;
+    my $res = $ua->get($url);
+    if ( $res->is_success && $res->content_type eq 'image/jpeg' ) {
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+            data_items => [ $res->decoded_content ],
+        });
+        $object->photo($photoset->data);
+    }
+}
+
+sub map_state {
+    my $self           = shift;
+    my $incoming_state = shift;
+
+    $incoming_state = lc($incoming_state);
+    $incoming_state =~ s/_/ /g;
+
+    my %state_map = (
+        fixed                         => 'fixed - council',
+        'not councils responsibility' => 'not responsible',
+        'no further action'           => 'unable to fix',
+        open                          => 'confirmed',
+        closed                        => 'fixed - council',
+    );
+
+    return $state_map{$incoming_state} || $incoming_state;
 }
 
 sub _populate_service_request_update_params {

@@ -88,6 +88,8 @@ sub send(;$) {
         if ($row->photo) {
             $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
             $h{image_url} = $email_base_url . $row->photos->[0]->{url_full};
+            my @all_images = map { $email_base_url . $_->{url_full} } @{ $row->photos };
+            $h{all_image_urls} = \@all_images;
         } else {
             $h{has_photo} = '';
             $h{image_url} = '';

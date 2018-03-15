@@ -1,6 +1,12 @@
 ## Releases
 
 * Unreleased
+    - New features
+        - Fetch problems over Open311 #1986
+        - Option to send multiple photos over Open311 #1986
+        - Allow Open311 service definitions to include automated
+          attributes #1986
+        - Optionally supress blank Open311 update errors #1986
     - Front end improvements:
         - Improve questionnaire process. #1939 #1998
         - Increase size of "sub map links" (hide pins, permalink, etc) #2003

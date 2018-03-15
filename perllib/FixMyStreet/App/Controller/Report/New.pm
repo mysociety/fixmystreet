@@ -1003,7 +1003,7 @@ sub set_report_extras : Private {
     foreach my $contact (@$contacts) {
         my $metas = $contact->get_metadata_for_input;
         foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field->{code})) {
+            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
                 unless ( $c->get_param($param_prefix . $field->{code}) ) {
                     $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
                 }
@@ -1020,7 +1020,7 @@ sub set_report_extras : Private {
         my $metas = $extra_fields->get_extra_fields;
         $param_prefix = "extra[" . $extra_fields->id . "]";
         foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field->{code})) {
+            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
                 unless ( $c->get_param($param_prefix . $field->{code}) ) {
                     $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
                 }

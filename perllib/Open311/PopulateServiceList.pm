@@ -267,6 +267,8 @@ sub _add_meta_to_contact {
         @meta = grep { ! $ignore{ $_->{ code } } } @meta;
     }
 
+    @meta = grep { !defined $_->{automated} || $_->{ automated } eq 'hidden_field' } @meta;
+
     $contact->set_extra_fields(@meta);
     $contact->update;
 }

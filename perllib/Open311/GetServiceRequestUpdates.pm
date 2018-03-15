@@ -12,6 +12,7 @@ has end_date => ( is => 'ro', default => sub { undef } );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
+has blank_updates_permitted => ( is => 'rw', default => 0 );
 
 Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
@@ -49,6 +50,7 @@ sub fetch {
         }
 
         $self->suppress_alerts( $body->suppress_alerts );
+        $self->blank_updates_permitted( $body->blank_updates_permitted );
         $self->system_user( $body->comment_user );
         $self->update_comments( $o, $body );
     }
@@ -107,7 +109,7 @@ sub update_comments {
             my $c = $p->comments->search( { external_id => $request->{update_id} } );
 
             if ( !$c->first ) {
-                my $state = $self->map_state( $request->{status} );
+                my $state = $open311->map_state( $request->{status} );
                 my $comment = $self->schema->resultset('Comment')->new(
                     {
                         problem => $p,
@@ -124,16 +126,8 @@ sub update_comments {
                     }
                 );
 
-                if ($request->{media_url}) {
-                    my $ua = LWP::UserAgent->new;
-                    my $res = $ua->get($request->{media_url});
-                    if ( $res->is_success && $res->content_type eq 'image/jpeg' ) {
-                        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-                            data_items => [ $res->decoded_content ],
-                        });
-                        $comment->photo($photoset->data);
-                    }
-                }
+                $open311->add_media($request->{media_url}, $comment)
+                    if $request->{media_url};
 
                 # if the comment is older than the last update
                 # do not change the status of the problem as it's
@@ -191,26 +185,10 @@ sub comment_text_for_request {
         return $template->text;
     }
 
+    return "" if $self->blank_updates_permitted;
+
     print STDERR "Couldn't determine update text for $request->{update_id} (report " . $problem->id . ")\n";
     return "";
-}
-
-sub map_state {
-    my $self           = shift;
-    my $incoming_state = shift;
-
-    $incoming_state = lc($incoming_state);
-    $incoming_state =~ s/_/ /g;
-
-    my %state_map = (
-        fixed                         => 'fixed - council',
-        'not councils responsibility' => 'not responsible',
-        'no further action'           => 'unable to fix',
-        open                          => 'confirmed',
-        closed                        => 'fixed - council'
-    );
-
-    return $state_map{$incoming_state} || $incoming_state;
 }
 
 1;
