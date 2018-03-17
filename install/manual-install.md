@@ -136,13 +136,11 @@ you will need to investigate [how to allow access to your PostgreSQL database]({
 
 #### 5b. Install database schema
 
-Now you can use the provided SQL in `db` to create the required
+Now you can use the provided schema migration script to create the required
 tables, triggers, and initial data. Run the following:
 
 {% highlight bash %}
-$ psql -U fms fms < db/schema.sql
-$ psql -U fms fms < db/generate_secret.sql
-$ psql -U fms fms < db/alert_types.sql
+$ bin/update-schema --commit
 {% endhighlight %}
 
 ### 6. Set up config
