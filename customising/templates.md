@@ -103,6 +103,9 @@ time making working HTML emails, you may want to override the
 set your own colours/branding, and then only copy other HTML templates to
 translate or otherwise change the wording.
 
+To preview HTML emails, when running the development server go to `/_dev/email/`
+and click the email you wish to preview.
+
 To include an inline logo in your HTML email, put it at
 `web/cobrands/yourcobrands/images/email-logo.gif` and make sure `logo_width`
 and `logo_height` are set appropriately in your
