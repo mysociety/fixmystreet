@@ -669,6 +669,14 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  clicking_banner_begins_report: function() {
+    $('.big-green-banner').on('click', function(){
+      if (fixmystreet.map.getCenter) {
+        fixmystreet.display.begin_report( fixmystreet.map.getCenter() );
+      }
+    });
+  },
+
   map_controls: function() {
     //add permalink on desktop, force hide on mobile
     //add links container (if its not there)

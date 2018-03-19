@@ -14,3 +14,17 @@ describe('My First Test', function() {
         cy.get('form').submit();
     });
 });
+
+describe('Clicking the "big green banner" on a map page', function() {
+    before(function() {
+        cy.visit('/');
+        cy.get('[name=pc]').type('BS10 5EE');
+        cy.get('#postcodeForm').submit();
+        cy.get('.big-green-banner').click();
+    });
+
+    it('begins a new report', function() {
+        cy.url().should('include', '/report/new');
+        cy.get('#form_title').should('be.visible');
+    });
+});
