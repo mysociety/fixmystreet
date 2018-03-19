@@ -360,21 +360,16 @@ sub generate_csv : Private {
     my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
     my $closed_states = FixMyStreet::DB::Result::Problem->closed_states;
 
-    my $wards = 0;
-    my $comments = 0;
-    foreach (@{$c->stash->{csv}->{columns}}) {
-        $wards = 1 if $_ eq 'wards';
-        $comments = 1 if $_ eq 'acknowledged';
-    }
+    my %asked_for = map { $_ => 1 } @{$c->stash->{csv}->{columns}};
 
     my $problems = $c->stash->{csv}->{problems};
     while ( my $report = $problems->next ) {
-        my $hashref = $report->as_hashref($c);
+        my $hashref = $report->as_hashref($c, \%asked_for);
 
         $hashref->{user_name_display} = $report->anonymous
             ? '(anonymous)' : $report->user->name;
 
-        if ($comments) {
+        if ($asked_for{acknowledged}) {
             for my $comment ($report->comments) {
                 my $problem_state = $comment->problem_state or next;
                 next unless $comment->state eq 'confirmed';
@@ -389,7 +384,7 @@ sub generate_csv : Private {
             }
         }
 
-        if ($wards) {
+        if ($asked_for{wards}) {
             $hashref->{wards} = join ', ',
               map { $c->stash->{children}->{$_}->{name} }
               grep {$c->stash->{children}->{$_} }

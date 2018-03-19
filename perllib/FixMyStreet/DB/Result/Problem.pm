@@ -918,12 +918,11 @@ sub add_send_method {
 }
 
 sub as_hashref {
-    my $self = shift;
-    my $c    = shift;
+    my ($self, $c, $cols) = @_;
 
     my $state_t = FixMyStreet::DB->resultset("State")->display($self->state);
 
-    return {
+    my $out = {
         id        => $self->id,
         title     => $self->title,
         category  => $self->category,
@@ -935,16 +934,17 @@ sub as_hashref {
         state     => $self->state,
         state_t   => $state_t,
         used_map  => $self->used_map,
-        is_fixed  => $self->fixed_states->{ $self->state } ? 1 : 0,
-        photos    => [ map { $_->{url} } @{$self->photos} ],
-        meta      => $self->confirmed ? $self->meta_line( $c ) : '',
-        ($self->confirmed ? (
-            confirmed => $self->confirmed,
-            confirmed_pp => $c->cobrand->prettify_dt( $self->confirmed ),
-        ) : ()),
-        created => $self->created,
-        created_pp => $c->cobrand->prettify_dt( $self->created ),
+        created   => $self->created,
     };
+    $out->{is_fixed} = $self->fixed_states->{ $self->state } ? 1 : 0 if !$cols || $cols->{is_fixed};
+    $out->{photos} = [ map { $_->{url} } @{$self->photos} ] if !$cols || $cols->{photos};
+    $out->{meta} = $self->confirmed ? $self->meta_line( $c ) : '' if !$cols || $cols->{meta};
+    $out->{created_pp} = $c->cobrand->prettify_dt( $self->created ) if !$cols || $cols->{created_pp};
+    if ($self->confirmed) {
+        $out->{confirmed} = $self->confirmed if !$cols || $cols->{confirmed};
+        $out->{confirmed_pp} = $c->cobrand->prettify_dt( $self->confirmed ) if !$cols || $cols->{confirmed_pp};
+    }
+    return $out;
 }
 
 =head2 latest_moderation_log_entry
