@@ -1347,11 +1347,11 @@ msgstr "Beantwortet"
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:66
 msgid "Fixed - Council"
-msgstr ""
+msgstr "Beantwortet"
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:67
 msgid "Fixed - User"
-msgstr ""
+msgstr "Beantwortet"
 
 #: templates/web/base/admin/body-form.html:96
 #: templates/web/base/admin/responsepriorities/edit.html:53
