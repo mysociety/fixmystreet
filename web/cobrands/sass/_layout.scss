@@ -107,6 +107,9 @@ h1 {
     background-color: transparent;
     border-bottom: none;
   }
+  a:visited {
+    color: $nav_fg;
+  }
 }
 .nav-menu--main {
   a, span {
