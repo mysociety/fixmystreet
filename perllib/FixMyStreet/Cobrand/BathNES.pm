@@ -93,6 +93,7 @@ sub map_js_extra {
 
 sub category_extra_hidden {
     my ($self, $meta) = @_;
+    $meta = $meta->{code};
     return 1 if $meta eq 'unitid' || $meta eq 'asset_details' || $meta eq 'site_code' || $meta eq 'central_asset_id';
     return 0;
 }
