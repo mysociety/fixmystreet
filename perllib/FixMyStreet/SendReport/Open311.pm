@@ -54,7 +54,9 @@ sub send {
                 # send_notpinpointed=0 then this line will need changing to
                 # consider the send_notpinpointed check, as per the
                 # '#NOTPINPOINTED#' code in perllib/Open311.pm.
-                if ( $row->used_map || $open311_params{always_send_latlong} ) {
+                if ( $row->used_map || $open311_params{always_send_latlong} || (
+                    !$row->used_map && !$row->postcode && $open311_params{send_notpinpointed}
+                ) ) {
                     push @$extra, { name => $_->{code}, value => $h->{$_->{code}} };
                 }
             }

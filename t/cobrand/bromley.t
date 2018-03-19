@@ -46,29 +46,57 @@ $mech->content_contains( 'State changed to: In progress' );
 $mech->content_contains( 'marks it as unable to fix' );
 $mech->content_contains( 'State changed to: No further action' );
 
-subtest 'testing special Open311 behaviour', sub {
-    $report->set_extra_fields();
-    $report->update;
-    $body->update( { send_method => 'Open311', endpoint => 'http://bromley.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1 } );
-    my $test_data;
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        ALLOWED_COBRANDS => [ 'fixmystreet', 'bromley' ],
-    }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
-    };
-    $report->discard_changes;
-    ok $report->whensent, 'Report marked as sent';
-    is $report->send_method_used, 'Open311', 'Report sent via Open311';
-    is $report->external_id, 248, 'Report has right external ID';
+for my $test (
+    {
+        desc => 'testing special Open311 behaviour',
+        updates => {},
+        expected => {
+          'attribute[easting]' => 529025,
+          'attribute[northing]' => 179716,
+          'attribute[service_request_id_ext]' => $report->id,
+          'jurisdiction_id' => 'FMS',
+          address_id => undef,
+        },
+    },
+    {
+        desc => 'testing Open311 behaviour with no map click or postcode',
+        updates => {
+            used_map => 0,
+            postcode => ''
+        },
+        expected => {
+          'attribute[easting]' => 529025,
+          'attribute[northing]' => 179716,
+          'attribute[service_request_id_ext]' => $report->id,
+          'jurisdiction_id' => 'FMS',
+          'address_id' => '#NOTPINPOINTED#',
+        },
+    },
+) {
+    subtest $test->{desc}, sub {
+        $report->set_extra_fields();
+        $report->$_($test->{updates}->{$_}) for keys %{$test->{updates}};
+        $report->$_(undef) for qw/ whensent send_method_used external_id /;
+        $report->update;
+        $body->update( { send_method => 'Open311', endpoint => 'http://bromley.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1 } );
+        my $test_data;
+        FixMyStreet::override_config {
+            STAGING_FLAGS => { send_reports => 1 },
+            ALLOWED_COBRANDS => [ 'fixmystreet', 'bromley' ],
+        }, sub {
+            $test_data = FixMyStreet::Script::Reports::send();
+        };
+        $report->discard_changes;
+        ok $report->whensent, 'Report marked as sent';
+        is $report->send_method_used, 'Open311', 'Report sent via Open311';
+        is $report->external_id, 248, 'Report has right external ID';
 
-    my $req = $test_data->{test_req_used};
-    my $c = CGI::Simple->new($req->content);
-    is $c->param('attribute[easting]'), 529025, 'Request had easting';
-    is $c->param('attribute[northing]'), 179716, 'Request had northing';
-    is $c->param('attribute[service_request_id_ext]'), $report->id, 'Request had correct ID';
-    is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
-};
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        is $c->param($_), $test->{expected}->{$_}, "Request had correct $_"
+            for keys %{$test->{expected}};
+    };
+}
 
 for my $test (
     {
