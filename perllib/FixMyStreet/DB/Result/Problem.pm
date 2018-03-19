@@ -653,7 +653,8 @@ sub body {
     my $body;
     if ($problem->external_body) {
         if ($problem->cobrand eq 'zurich') {
-            $body = $c->model('DB::Body')->find({ id => $problem->external_body });
+            my $cache = $problem->result_source->schema->cache;
+            return $cache->{bodies}{$problem->external_body} //= $c->model('DB::Body')->find({ id => $problem->external_body });
         } else {
             $body = $problem->external_body;
         }

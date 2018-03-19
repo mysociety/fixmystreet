@@ -1172,11 +1172,12 @@ sub admin_stats {
 
 sub export_as_csv {
     my ($self, $c, $params) = @_;
+    $c->model('DB')->schema->storage->sql_maker->quote_char('"');
     my $csv = $c->stash->{csv} = {
         problems => $c->model('DB::Problem')->search_rs(
             $params,
             {
-                join => 'admin_log_entries',
+                join => ['admin_log_entries', 'user'],
                 distinct => 1,
                 columns => [
                     'id',       'created',
@@ -1190,6 +1191,7 @@ sub export_as_csv {
                     'service',
                     'extra',
                     { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
+                    'name', 'user.id', 'user.email', 'user.phone', 'user.name',
                 ]
             }
         ),
@@ -1258,6 +1260,7 @@ sub export_as_csv {
         filename => 'stats',
     };
     $c->forward('/dashboard/generate_csv');
+    $c->model('DB')->schema->storage->sql_maker->quote_char('');
 }
 
 sub problem_confirm_email_extras {
