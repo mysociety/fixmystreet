@@ -1,0 +1,20 @@
+[% INCLUDE 'admin/header.html' title=loc('Refused bodies') -%]
+
+<ul>
+[%~ FOR temp IN bodies;
+     SET data = temp.value;
+     SET body = data.body %]
+    <li>[% body.name %]
+        <ul>
+          [%~ IF data.all %]
+            <li>ALL</li>
+          [%~ END %]
+          [%~ IF data.contacts.size; FOR c IN data.contacts %]
+            <li>[% c.category %]</li>
+          [%~ END; END %]
+        </ul>
+    </li>
+[%~ END %]
+</ul>
+
+[% INCLUDE admin/footer.html %]
