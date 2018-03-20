@@ -1014,6 +1014,7 @@ fixmystreet.display = {
         document.getElementById('side-form').style.display = 'block';
     }
     $('#side').hide();
+    $('#map_box .big-green-banner').hide();
 
     if (fixmystreet.map.updateSize) {
         fixmystreet.map.updateSize(); // required after changing the size of the map element
@@ -1081,6 +1082,7 @@ fixmystreet.display = {
 
         if ($sideReport.length) {
             $('#side').hide(); // Hide the list of reports
+            $('#map_box .big-green-banner').hide();
             // Remove any existing report page content from sidebar
             $('#side-report').remove();
             $('.two_column_sidebar').remove();
@@ -1173,6 +1175,7 @@ fixmystreet.display = {
             return;
         }
         side.style.display = '';
+        $('#map_box .big-green-banner').show();
         $('#side-form').hide();
         // Report page may have been one or two columns, remove either
         $('#side-report').remove();
