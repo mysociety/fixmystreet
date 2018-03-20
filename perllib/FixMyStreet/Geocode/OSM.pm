@@ -52,6 +52,7 @@ sub string {
 
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
+        $c->cobrand->call_hook(geocoder_munge_results => $_);
         ( $latitude, $longitude ) =
             map { Utils::truncate_coordinate($_) }
             ( $_->{lat}, $_->{lon} );
