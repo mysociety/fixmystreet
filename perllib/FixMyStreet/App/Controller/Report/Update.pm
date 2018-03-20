@@ -444,9 +444,17 @@ sub save_update : Private {
     if ( $c->cobrand->never_confirm_updates ) {
         $update->user->update_or_insert;
         $update->confirm();
-    } elsif ( $c->forward('/report/new/created_as_someone_else', [ $update->problem->bodies_str ]) ) {
-        # If created on behalf of someone else, we automatically confirm it,
-        # but we don't want to update the user account
+    # If created on behalf of someone else, we automatically confirm it,
+    # but we don't want to update the user account
+    } elsif ($c->stash->{contributing_as_another_user}) {
+        $update->set_extra_metadata( contributed_as => 'another_user');
+        $update->set_extra_metadata( contributed_by => $c->user->id );
+        $update->confirm();
+    } elsif ($c->stash->{contributing_as_body}) {
+        $update->set_extra_metadata( contributed_as => 'body' );
+        $update->confirm();
+    } elsif ($c->stash->{contributing_as_anonymous_user}) {
+        $update->set_extra_metadata( contributed_as => 'anonymous_user' );
         $update->confirm();
     } elsif ( !$update->user->in_storage ) {
         # User does not exist.
