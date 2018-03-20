@@ -108,12 +108,13 @@ sub filter_all_council_ids_list {
     return  @all_councils_ids; # Är detta rätt? //Rikard
 }
 
-# The pin is green is it's fixed, yellow if it's closed (but not fixed), and
-# red otherwise.
+# The pin is green is it's fixed or closed, yellow if it's in progress (not in a
+# confirmed state), and red otherwise.
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
+    return 'green' if $p->is_closed;
     return 'green' if $p->is_fixed;
-    return 'yellow' if $p->is_closed;
+    return 'yellow' if $p->is_in_progress;
     return 'red';
 }
 
