@@ -53,6 +53,8 @@
   font-style: normal;
 }
 
+$body-font: MuseoSans, Helmet, Freesans, sans-serif;
+
 /* Opera has a bug (from around 10.5 upwards to current 11.6) with showing the
  * table caption *at all* if the header is set to a font-face :( */
 noindex:-o-prefocus, #site-header {
@@ -122,17 +124,17 @@ body.fullwidthpage {
         h1 {
             font-size: 3em;
             font-weight: bold;
-            font-family: MuseoSans,Helmet,Freesans,sans-serif;
+            font-family: $body-font;
         }
         h2 {
-            font-family: MuseoSans,Helmet,Freesans,sans-serif;
+            font-family: $body-font;
         }
         #postcodeForm {
             div {
                 font-size: 1.3em;
                 width: 24em;
                 label {
-                    font-family: MuseoSans,Helmet,Freesans,sans-serif;
+                    font-family: $body-font;
                 }
                 input#pc {
                     color: #777;
@@ -147,13 +149,13 @@ body.fullwidthpage {
                     font-size: 1.1em;
                     height: 2.4em;
                     width: 3.5em;
-                    font-family: MuseoSans,Helmet,Freesans,sans-serif;
+                    font-family: $body-font;
                     font-weight: bold;
                 }
             }
         }
         a#geolocate_link {
-            font-family: MuseoSans,Helmet,Freesans,sans-serif;
+            font-family: $body-font;
             background: url(images/locate-me.png) $left 0 no-repeat;
             height: 34px;
             padding-#{$left}: 24px;
@@ -207,7 +209,7 @@ body.frontpage {
 }
 
 .next-steps__step {
-  font-family: MuseoSans,Helmet,Freesans,sans-serif;
+  font-family: $body-font;
   float: $left;
   width: 33%;
   padding: 1.8em;
