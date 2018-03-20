@@ -2,6 +2,22 @@
 <link rel="prefetch" href="[% version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js') %]">
 [% END %]
 
+[% IF bodyclass.match('mappage') AND c.config.BASE_URL == "https://www.fixmystreet.com" %]
+<script src="//www.google-analytics.com/cx/api.js?experiment=jydOGgMrQRaWedSNoiW-SQ"></script>
+<script nonce="[% csp_nonce %]">
+    var variation = typeof cxApi !== "undefined" ? cxApi.chooseVariation() : 0,
+        docElement = document.documentElement,
+        className = docElement.className;
+    docElement.className = className + ' banner-position-variant-' + variation;
+</script>
+<style>
+    html .banner-position-variant-1 { display: none !important; }
+    html.banner-position-variant-1 .banner-position-variant-0 { display: none !important; }
+    html.banner-position-variant-1 .banner-position-variant-1 { display: block !important; }
+    html.banner-position-variant-1 #side .big-green-banner ~ section.full-width { margin-top: -1em; }
+</style>
+[% END %]
+
 [% IF bodyclass.match('frontpage') %]
 <link rel="prefetch" href="[% version('/cobrands/fixmystreet.com/js.js') %]">
 [% END %]

@@ -1300,9 +1300,17 @@ sub save_user_and_report : Private {
     if ( $c->cobrand->never_confirm_reports ) {
         $report->user->update_or_insert;
         $report->confirm();
-    } elsif ( $c->forward('created_as_someone_else', [ $c->stash->{bodies} ]) ) {
-        # If created on behalf of someone else, we automatically confirm it,
-        # but we don't want to update the user account
+    # If created on behalf of someone else, we automatically confirm it,
+    # but we don't want to update the user account
+    } elsif ($c->stash->{contributing_as_another_user}) {
+        $report->set_extra_metadata( contributed_as => 'another_user');
+        $report->set_extra_metadata( contributed_by => $c->user->id );
+        $report->confirm();
+    } elsif ($c->stash->{contributing_as_body}) {
+        $report->set_extra_metadata( contributed_as => 'body' );
+        $report->confirm();
+    } elsif ($c->stash->{contributing_as_anonymous_user}) {
+        $report->set_extra_metadata( contributed_as => 'anonymous_user' );
         $report->confirm();
     } elsif ( !$report->user->in_storage ) {
         # User does not exist.
@@ -1340,11 +1348,6 @@ sub save_user_and_report : Private {
     }
 
     return 1;
-}
-
-sub created_as_someone_else : Private {
-    my ($self, $c, $bodies) = @_;
-    return $c->stash->{contributing_as_another_user} || $c->stash->{contributing_as_body} || $c->stash->{contributing_as_anonymous_user};
 }
 
 =head2 generate_map

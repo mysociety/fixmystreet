@@ -49,6 +49,30 @@ svg|g.site-logo__svg {
     @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
 }
 
+// Big green banner A/B test.
+#map_box .big-green-banner {
+    position: absolute;
+    left: 50%;
+    bottom: 80px; // above #sub_map_links
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 1.2em;
+    line-height: 1.3em;
+    padding: 0.6em 1em 0.5em;
+    border-radius: 5px; // match .big-hide-pins-link
+    background-image: none; // remove "arrow" image
+
+    @media (min-width: 64em) {
+        bottom: 32px; // match #sub_map_links
+        left: calc( ( 100% - 220px ) / 2 );
+        max-width: calc( 100% - 300px );
+    }
+
+    @media (min-width: 82em) {
+        left: 50%;
+    }
+}
+
 .next-steps {
   margin: 0 -1em; // counteract padding on parent
   background-color: #faf7e2;
@@ -298,4 +322,68 @@ html.lazyload .js-lazyload {
   & > :last-child {
     margin-bottom: 0;
   }
+}
+
+.postcode-form-test {
+    margin: 0 -1em;
+    padding: 1em;
+    background-color: $primary;
+    color: $primary_text;
+
+    label {
+        margin: 0;
+    }
+
+    // Lots of !important flags here to overpower
+    // selectors like `#front-main a#geolocate_link` and
+    // `body.fullwidthpage #front-main a#geolocate_link`
+    // in the core and fixmystreet.com styles.
+    #geolocate_link {
+        background: transparent !important;
+        border: none;
+        height: auto !important;
+        margin-top: 0 !important;
+        padding: 1em !important;
+
+        &:before {
+            vertical-align: -0.3em;
+        }
+    }
+}
+
+// Overloaded selector to beat input[type="text"]
+input.postcode-form-test__postcode {
+    max-width: 100%;
+    width: 30em;
+    margin: 0.5em auto 0 auto;
+    padding: 0.75em;
+    border: 1px solid darken($primary, 10%);
+    box-shadow: 0 1px 1px rgba(#000, 0.2);
+}
+
+.postcode-form-test__buttons {
+    margin: 1em -10px 0 -10px;
+
+    // Browsers without flex support will just lay out the buttons
+    // side-by-side, breaking onto two lines at narrow widths.
+    @include flex-container();
+    @include justify-content(center);
+
+    $btn-blue: #469bfc;
+
+    .btn {
+        color: #fff !important;
+        background: $btn-blue;
+        background-image: linear-gradient($btn-blue, darken($btn-blue, 5%));
+        border: none;
+        border-radius: 2px;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        margin: 0 10px 10px 10px;
+
+        &:hover, &:focus {
+            background-color: darken($btn-blue, 5%);
+            background-image: linear-gradient(darken($btn-blue, 5%), darken($btn-blue, 10%));
+        }
+    }
 }
