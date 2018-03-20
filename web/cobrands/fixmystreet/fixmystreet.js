@@ -682,11 +682,11 @@ $.extend(fixmystreet.set_up, {
     }
 
     if ($('.mobile').length) {
-        $('#map_permalink').hide();
+        $('#map_permalink').addClass('hidden');
         // Make sure we end up with one Get updates link
-        if ($('#key-tools a.feed').length) {
-            $('#sub_map_links a.feed').remove();
-            $('#key-tools a.feed').appendTo('#sub_map_links');
+        if ($('#key-tools a.js-feed').length) {
+            $('#sub_map_links a.js-feed').remove();
+            $('#key-tools a.js-feed').appendTo('#sub_map_links');
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
@@ -696,7 +696,7 @@ $.extend(fixmystreet.set_up, {
     }
 
     // Show/hide depending on whether it has any children to show
-    if ($('#sub_map_links a:visible').length) {
+    if ($('#sub_map_links a').not('.hidden').length) {
         $('#sub_map_links').show();
     } else {
         $('#sub_map_links').hide();
