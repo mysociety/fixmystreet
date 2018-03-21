@@ -650,6 +650,54 @@ subtest 'check that existing comments are not duplicated' => sub {
     is $problem->comments->count, 2, 'if comments are deleted then they are added';
 };
 
+subtest 'check that external_status_code is stored correctly' => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>open</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    <external_status_code>060</external_status_code>
+    </request_update>
+    <request_update>
+    <update_id>638354</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>open</status>
+    <description>This is a different note</description>
+    <updated_datetime>UPDATED_DATETIME2</updated_datetime>
+    <external_status_code>101</external_status_code>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    my $dt2 = $dt->clone->subtract( hours => 1 );
+    $requests_xml =~ s/UPDATED_DATETIME2/$dt/;
+    $requests_xml =~ s/UPDATED_DATETIME/$dt2/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+    );
+
+    $update->update_comments( $o, $bodies{2482} );
+
+    $problem->discard_changes;
+    is $problem->comments->count, 2, 'two comments after fetching updates';
+
+    my @comments = $problem->comments->all;
+
+    is $comments[0]->get_extra_metadata('external_status_code'), "060", "correct external status code on first comment";
+    is $comments[1]->get_extra_metadata('external_status_code'), "101", "correct external status code on second comment";
+
+    is $problem->get_extra_metadata('external_status_code'), "101", "correct external status code";
+
+};
+
 foreach my $test ( {
         desc => 'check that closed and then open comment results in correct state',
         dt1  => $dt->clone->subtract( hours => 1 ),

@@ -110,6 +110,7 @@ sub update_comments {
 
             if ( !$c->first ) {
                 my $state = $open311->map_state( $request->{status} );
+                my $external_status_code = $request->{external_status_code};
                 my $comment = $self->schema->resultset('Comment')->new(
                     {
                         problem => $p,
@@ -125,6 +126,14 @@ sub update_comments {
                         state => 'confirmed',
                     }
                 );
+
+                # Some Open311 services, e.g. Confirm via open311-adapter, provide
+                # a more fine-grained status code that we use within FMS for
+                # response templates.
+                if ( $external_status_code ) {
+                    $comment->set_extra_metadata(external_status_code =>$external_status_code);
+                    $p->set_extra_metadata(external_status_code =>$external_status_code);
+                }
 
                 $open311->add_media($request->{media_url}, $comment)
                     if $request->{media_url};
