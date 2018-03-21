@@ -20,6 +20,8 @@ sub string {
     my ( $s, $c ) = @_;
 
     my $params = $c->cobrand->disambiguate_location($s);
+    # Allow cobrand to fixup the user input
+    $s = $params->{string} if $params->{string};
 
     $s = FixMyStreet::Geocode::escape($s);
     $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
