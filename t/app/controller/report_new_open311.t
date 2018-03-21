@@ -39,28 +39,42 @@ my $contact2 = $mech->create_contact_ok(
     category => 'Graffiti Removal',
     email => '101',
 );
+$mech->create_contact_ok(
+    body_id => $body->id, # Edinburgh
+    category => 'Ball lighting',
+    email => '102',
+    extra => { _fields => [
+        { description => 'Size', code => 'size', required => 'True', automated => '' },
+        { description => 'Speed', code => 'speed', required => 'True', automated => 'server_set' },
+        { description => 'Colour', code => 'colour', required => 'True', automated => 'hidden_field' },
+    ] },
+);
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
+my $empty_form = {
+    title         => '',
+    detail        => '',
+    photo1        => '',
+    photo2        => '',
+    photo3        => '',
+    name          => '',
+    may_show_name => '1',
+    username      => '',
+    email         => '',
+    phone         => '',
+    category      => '',
+    password_sign_in => '',
+    password_register => '',
+    remember_me => undef,
+};
 foreach my $test (
     {
         msg    => 'all fields empty',
         pc     => 'EH99 1SP',
         fields => {
-            title         => '',
-            detail        => '',
-            photo1        => '',
-            photo2        => '',
-            photo3        => '',
-            name          => '',
-            may_show_name => '1',
-            username      => '',
-            email         => '',
-            phone         => '',
-            category      => 'Street lighting',
-            password_sign_in => '',
-            password_register => '',
-            remember_me => undef,
+            %$empty_form,
+            category => 'Street lighting',
         },
         changes => {
             number => '',
@@ -92,6 +106,45 @@ foreach my $test (
                 name => 'type',
                 value => 'old',
                 description => 'Lamppost type',
+            }
+        ]
+    },
+    {
+        msg    => 'automated things',
+        pc     => 'EH99 1SP',
+        fields => {
+            %$empty_form,
+            category => 'Ball lighting',
+        },
+        changes => {
+            size => '',
+        },
+        hidden => [ 'colour' ],
+        errors  => [
+            'This information is required',
+            'Please enter a subject',
+            'Please enter some details',
+            'Please enter your email',
+            'Please enter your name',
+        ],
+        submit_with => {
+            title => 'test',
+            detail => 'test detail',
+            name => 'Test User',
+            username => 'testopen311@example.com',
+            size => 'big',
+            colour => 'red',
+        },
+        extra => [
+            {
+                name => 'size',
+                value => 'big',
+                description => 'Size',
+            },
+            {
+                name => 'colour',
+                value => 'red',
+                description => 'Colour',
             }
         ]
     },
@@ -140,6 +193,12 @@ foreach my $test (
         };
         is_deeply $mech->visible_form_values, $new_values,
           "values correctly changed";
+        if ($test->{hidden}) {
+            my %hidden_fields = map { $_->name => 1 } grep { $_->type eq 'hidden' } ($mech->forms)[0]->inputs;
+            foreach (@{$test->{hidden}}) {
+                is $hidden_fields{$_}, 1;
+            }
+        }
 
         if ( $test->{fields}->{category} eq 'Street lighting' ) {
             my $result = scraper {
