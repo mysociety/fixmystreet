@@ -13,6 +13,7 @@
         - Edge-to-edge email layout on narrow screens #2010
         - Add default placeholder to report extra fields. #2027
         - Clicking the "Click map" instruction banner now begins a new report #2033
+        - Homepage postcode input is now marked up as a required input #2037
     - Bugfixes:
         - Stop asset layers obscuring marker layer. #1999
         - Don't delete hidden field values when inspecting reports. #1999

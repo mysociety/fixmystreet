@@ -10,7 +10,7 @@
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" class="js-geolocate postcode-form-test">
             <label for="pc">[% question %]:</label>
-            <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" class="postcode-form-test__postcode">
+            <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" class="postcode-form-test__postcode" required>
             <a href="[% c.uri_for('/around') %]" id="geolocate_link" class="btn btn--geolocate">[% loc('or locate me automatically') %]</a>
 
             [%# Form will be submitted via this button when user presses Enter key %]

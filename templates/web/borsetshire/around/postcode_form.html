@@ -19,7 +19,7 @@
             <label for="pc">[% question %]:</label>
             <div>
                 <input type="hidden" name="pc" value="[% c.cobrand.problems.first.postcode | html %]">
-                <input type="text" name="_pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
+                <input type="text" name="_pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" required>
                 <input type="submit" value="[% loc('Go') %]" id="sub">
             </div>
 
