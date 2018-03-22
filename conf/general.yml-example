@@ -27,7 +27,7 @@ BASE_URL: 'http://www.example.org'
 SECURE_PROXY_SSL_HEADER: ''
 # If you're behind a proxy, set this to a two-element list containing the
 # trusted HTTP header and the required value. For example:
-#   SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]
+# SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]
 
 # Email domain used for emails, and contact name/email for admin use.
 EMAIL_DOMAIN: 'example.org'
