@@ -1247,7 +1247,7 @@ sub users: Path('users') : Args(0) {
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my $update = $c->cobrand->updates->search({ id => $id })->first;
+    my $update = $c->cobrand->updates->search({ 'me.id' => $id })->first;
 
     $c->detach( '/page_error_404_not_found', [] )
       unless $update;
