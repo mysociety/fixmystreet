@@ -1649,6 +1649,16 @@ html.js #map .noscript {
     bottom: 3px !important;
     #{$right}: 3px;
 }
+.olControlDragFeatureFMSOver {
+    cursor: move;
+    cursor: -webkit-grab;
+    cursor: grab;
+}
+.olControlDragFeatureFMSActive.olControlDragFeatureFMSOver.olDragDown {
+    cursor: move;
+    cursor: -webkit-grabbing;
+    cursor: grabbing;
+}
 
 /* Drag is only present in noscript form. XXX Copy from core. */
 #drag {

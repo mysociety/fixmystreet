@@ -126,7 +126,7 @@ $.extend(fixmystreet.utils, {
                     fixmystreet.map.getProjectionObject()
                 );
             }
-            var id = +pin[3];
+            var id = pin[3] === undefined ? pin[3] : +pin[3];
             var marker_size = (id === window.selected_problem_id) ? selected_size : size;
             var marker = new OpenLayers.Feature.Vector(loc, {
                 colour: pin[2],
