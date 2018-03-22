@@ -35,6 +35,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "state",
   { data_type => "text", is_nullable => 1 },
+  "external_status_code",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("response_templates_body_id_title_key", ["body_id", "title"]);
@@ -52,8 +54,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-12-01 15:10:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ySPzQpFwJNki8XBjCNiqZQ
+# Created by DBIx::Class::Schema::Loader v0.07048 @ 2018-03-22 11:18:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:p0+/jFma6H9eZ3MZAJQRaQ
 
 __PACKAGE__->many_to_many( contacts => 'contact_response_templates', 'contact' );
 
