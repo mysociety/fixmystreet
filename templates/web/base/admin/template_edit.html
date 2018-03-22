@@ -21,7 +21,7 @@
     </div>
     <p>
         <strong>[% loc('Title:') %] </strong>
-        <input type="text" name="title" class="required form-control" size="30" value="[% rt.title| html %]">
+        <input type="text" name="title" class="required form-control" size="30" value="[% rt.title | html %]">
     </p>
 
     <div class="admin-hint">
@@ -31,7 +31,7 @@
     </div>
     <p>
         <strong>[% loc('Text:') %] </strong>
-        <textarea class="form-control" name="text" class="required">[% rt.text |html %]</textarea>
+        <textarea class="form-control" name="text" class="required">[% rt.text | html %]</textarea>
     </p>
 
     <div class="admin-hint">
@@ -41,6 +41,9 @@
     </div>
     [% INCLUDE 'admin/category-checkboxes.html' %]
 
+    [% IF errors.state %]
+        <div class="form-error">[% errors.state %]</div>
+    [% END %]
     <div class="admin-hint">
       <p>
         [% loc('If you want to use this template to prefill the update field when changing a report&rsquo;s state, select the state here.') %]
@@ -49,6 +52,19 @@
     <p>
       <label for="state">[% loc('State') %]</label>
       [% INCLUDE 'admin/state_groups_select.html' current_state=rt.state include_empty=1 %]
+    </p>
+
+    [% IF errors.external_status_code %]
+        <div class="form-error">[% errors.external_status_code %]</div>
+    [% END %]
+    <div class="admin-hint">
+      <p>
+        [% loc('If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here.') %]
+      </p>
+    </div>
+    <p>
+      <label for="external_status_code">[% loc('External status code') %]</label>
+      <input type="text" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
     </p>
 
     [% IF errors.auto_response %]

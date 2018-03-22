@@ -23,7 +23,10 @@
                 [% END %]
             [% END %]
         </td>
-        <td> [% t.state | html %] </td>
+        <td>
+            [% IF t.state %][% t.state | html %][% END %]
+            [% IF t.external_status_code %][% t.external_status_code | html %] (external)[% END %]
+        </td>
         <td> [% IF t.auto_response %]X[% END %] </td>
         <td> <a href="[% c.uri_for('templates', body.id, t.id) %]" class="btn">[% loc('Edit') %]</a> </td>
     </tr>
