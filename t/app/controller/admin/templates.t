@@ -180,4 +180,55 @@ subtest "all-category auto-response templates that duplicate a single category c
     is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
 };
 
+subtest "auto-response templates that duplicate external_status_code can't be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    my $template = $oxfordshire->response_templates->create({
+        title => "Report fixed - potholes",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 1,
+        external_status_code => '100',
+    });
+    $template->contact_response_templates->find_or_create({
+        contact_id => $oxfordshirecontact->id,
+    });
+    is $oxfordshire->response_templates->count, 1, "Initial response template was created";
+
+
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    my $fields = {
+        title => "Report marked fixed - all cats",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 'on',
+        external_status_code => '100',
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
+    $mech->content_contains( 'Please correct the errors below' );
+    $mech->content_contains( 'There is already an auto-response template for this category/state.' );
+
+    is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
+};
+
+subtest "templates that set state and external_status_code can't be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    my $fields = {
+        title => "Report marked fixed - all cats",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 'on',
+        state => 'fixed - council',
+        external_status_code => '100',
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
+    $mech->content_contains( 'Please correct the errors below' );
+    $mech->content_contains( 'State and external status code cannot be used simultaneously.' );
+
+    is $oxfordshire->response_templates->count, 0, "Invalid response template wasn't added";
+};
+
 done_testing();

@@ -1122,8 +1122,15 @@ sub template_edit : Path('templates') : Args(2) {
             $template->title( $c->get_param('title') );
             $template->text( $c->get_param('text') );
             $template->state( $c->get_param('state') );
+            $template->external_status_code( $c->get_param('external_status_code') );
 
-            $template->auto_response( $c->get_param('auto_response') && $template->state ? 1 : 0 );
+            if ( $template->state && $template->external_status_code ) {
+                $c->stash->{errors} ||= {};
+                $c->stash->{errors}->{state} = _("State and external status code cannot be used simultaneously.");
+                $c->stash->{errors}->{external_status_code} = _("State and external status code cannot be used simultaneously.");
+            }
+
+            $template->auto_response( $c->get_param('auto_response') && ( $template->state || $template->external_status_code ) ? 1 : 0 );
             if ($template->auto_response) {
                 my @check_contact_ids = @new_contact_ids;
                 # If the new template has not specific categories (i.e. it
@@ -1135,7 +1142,10 @@ sub template_edit : Path('templates') : Args(2) {
                 my $query = {
                     'auto_response' => 1,
                     'contact.id' => [ @check_contact_ids, undef ],
-                    'me.state' => $template->state,
+                    -or => {
+                        $template->state ? ('me.state' => $template->state) : (),
+                        $template->external_status_code ? ('me.external_status_code' => $template->external_status_code) : (),
+                    },
                 };
                 if ($template->in_storage) {
                     $query->{'me.id'} = { '!=', $template->id };
@@ -1143,9 +1153,8 @@ sub template_edit : Path('templates') : Args(2) {
                 if ($c->stash->{body}->response_templates->search($query, {
                     join => { 'contact_response_templates' => 'contact' },
                 })->count) {
-                    $c->stash->{errors} = {
-                        auto_response => _("There is already an auto-response template for this category/state.")
-                    };
+                    $c->stash->{errors} ||= {};
+                    $c->stash->{errors}->{auto_response} = _("There is already an auto-response template for this category/state.");
                 }
             }
 
