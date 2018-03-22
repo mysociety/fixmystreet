@@ -101,6 +101,12 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label for="external_team">[% loc('External team') %]:</label>
     <input type="text" class="form-control" name="external_team" team="external_team" value="[% problem.external_team | html %]">
 
+[% IF problem.get_extra_metadata('external_status_code') %]
+<li>
+    <label for="external_status_code">[% loc('External status code') %]:</label>
+    <span>[% problem.get_extra_metadata('external_status_code') %]</span>
+</li>
+[% END %]
 </ul>
 </div>
 

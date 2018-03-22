@@ -53,6 +53,9 @@
 <li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% update.cobrand_data %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
+[% IF update.get_extra_metadata('external_status_code') %]
+<li>[% loc('External status code:') %] [% update.get_extra_metadata('external_status_code') | html %]</li>
+[% END %]
 
 [% IF update.photo %]
 <li>
