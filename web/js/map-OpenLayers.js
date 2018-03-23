@@ -96,6 +96,7 @@ $.extend(fixmystreet.utils, {
             fixmystreet.markers.features[0].move(lonlat);
         } else {
             var markers = fixmystreet.maps.markers_list( [ [ lonlat.lat, lonlat.lon, fixmystreet.pin_new_report_colour ] ], false );
+            fixmystreet.bbox_strategy.layer.protocol.abort(fixmystreet.bbox_strategy.response);
             fixmystreet.bbox_strategy.deactivate();
             fixmystreet.markers.removeAllFeatures();
             fixmystreet.markers.addFeatures( markers );
@@ -578,6 +579,9 @@ $.extend(fixmystreet.utils, {
         });
         fixmystreet.markers.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
         fixmystreet.markers.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
+        OpenLayers.Request.XMLHttpRequest.onabort = function() {
+            fixmystreet.markers.events.triggerEvent("loadend", {response: null});
+        };
 
         var markers = fixmystreet.maps.markers_list( fixmystreet.pins, true );
         fixmystreet.markers.addFeatures( markers );

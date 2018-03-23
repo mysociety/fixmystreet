@@ -21,6 +21,7 @@
         - Fix post-edit issues on admin report edit page.
         - Truncate dates in Open311 output to the second. #2023
         - Fix check for visible sub map links after 'Try again'.
+        - Stop race condition when making a new report quickly.
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
