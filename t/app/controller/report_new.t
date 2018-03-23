@@ -86,6 +86,16 @@ my $contact8 = $mech->create_contact_ok(
     category => 'Street lighting',
     email => 'highways@example.com'
 );
+my $contact9 = $mech->create_contact_ok(
+    body_id => $body_ids{2226}, # Gloucestershire
+    category => 'Street lighting',
+    email => 'streetlights-2226@example.com',
+);
+my $contact10 = $mech->create_contact_ok(
+    body_id => $body_ids{2326}, # Cheltenham
+    category => 'Street lighting',
+    email => 'streetlights-2326@example.com',
+);
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -916,6 +926,104 @@ foreach my $test (
 
         # user is still logged in
         $mech->logged_in_ok;
+
+        # Test that AJAX pages return the right data
+        $mech->get_ok(
+            '/around?ajax=1&bbox=' . ($report->longitude - 0.01) . ',' .  ($report->latitude - 0.01)
+            . ',' . ($report->longitude + 0.01) . ',' .  ($report->latitude + 0.01)
+        );
+        $mech->content_contains( "Test Report at caf\xc3\xa9" );
+        $saved_lat = $report->latitude;
+        $saved_lon = $report->longitude;
+
+        # cleanup
+        $mech->delete_user($user);
+    };
+
+}
+
+# XXX add test for category with multiple bodies
+foreach my $test (
+    { category => 'Street lighting', councils => [ 2226, 2326 ] },
+) {
+    subtest "test report creation for multiple bodies" => sub {
+
+        # check that the user does not exist
+        my $test_email = 'test-2@example.com';
+
+        $mech->clear_emails_ok;
+        my $user = $mech->log_in_ok($test_email);
+
+        # setup the user.
+        ok $user->update(
+            {
+                name  => 'Test User',
+                phone => '01234 567 890',
+            }
+          ),
+          "set users details";
+
+        # submit initial pc form
+        $mech->get_ok('/around');
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR', } },
+                "submit location" );
+
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
+
+            # check that the fields are correctly prefilled
+            is_deeply(
+                $mech->visible_form_values,
+                {
+                    title         => '',
+                    detail        => '',
+                    may_show_name => '1',
+                    name          => 'Test User',
+                    phone         => '01234 567 890',
+                    photo1        => '',
+                    photo2        => '',
+                    photo3        => '',
+                    category      => '-- Pick a category --',
+                },
+                "user's details prefilled"
+            );
+
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        title         => "Test Report at café",
+                        detail        => 'Test report details.',
+                        photo1        => '',
+                        name          => 'Joe Bloggs',
+                        may_show_name => '1',
+                        phone         => '07903 123 456',
+                        category      => $test->{category},
+                    }
+                },
+                "submit good details"
+            );
+        };
+
+        # find the report
+        my $report = $user->problems->first;
+        ok $report, "Found the report";
+
+        # Check the report has been assigned appropriately
+        is $report->bodies_str, join(',', @body_ids{@{$test->{councils}}});
+
+        $mech->content_contains('Thank you for reporting this issue');
+
+        # check that no emails have been sent
+        $mech->email_count_is(0);
+
+        # check report is confirmed and available
+        is $report->state, 'confirmed', "report is now confirmed";
+        $mech->get_ok( '/report/' . $report->id );
 
         # Test that AJAX pages return the right data
         $mech->get_ok(
