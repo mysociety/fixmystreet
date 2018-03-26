@@ -944,9 +944,29 @@ foreach my $test (
 
 # XXX add test for category with multiple bodies
 foreach my $test (
-    { category => 'Street lighting', councils => [ 2226, 2326 ] },
+    {
+        desc => "test report creation for multiple bodies",
+        category => 'Street lighting',
+        councils => [ 2226, 2326 ],
+        extra_fields => {},
+        email_count => 2,
+    },
+    {
+        desc => "test single_body_only means only one report body",
+        category => 'Street lighting',
+        councils => [ 2326 ],
+        extra_fields => { single_body_only => 'Cheltenham Borough Council' },
+        email_count => 1,
+    },
+    {
+        desc => "test invalid single_body_only means multiple report bodies",
+        category => 'Street lighting',
+        councils => [ 2226, 2326 ],
+        extra_fields => { single_body_only => 'Invalid council' },
+        email_count => 1,
+    },
 ) {
-    subtest "test report creation for multiple bodies" => sub {
+    subtest $test->{desc} => sub {
 
         # check that the user does not exist
         my $test_email = 'test-2@example.com';
@@ -1003,6 +1023,7 @@ foreach my $test (
                         may_show_name => '1',
                         phone         => '07903 123 456',
                         category      => $test->{category},
+                        %{$test->{extra_fields}}
                     }
                 },
                 "submit good details"

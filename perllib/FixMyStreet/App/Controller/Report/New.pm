@@ -875,6 +875,7 @@ sub process_report : Private {
         'partial',                               #
         'service',                               #
         'non_public',
+        'single_body_only'
       );
 
     # load the report
@@ -932,7 +933,7 @@ sub process_report : Private {
             return 1;
         }
 
-        my $bodies = $c->forward('contacts_to_bodies', [ $report->category ]);
+        my $bodies = $c->forward('contacts_to_bodies', [ $report->category, $params{single_body_only} ]);
         my $body_string = join(',', map { $_->id } @$bodies) || '-1';
 
         $report->bodies_str($body_string);
@@ -982,9 +983,17 @@ sub process_report : Private {
 }
 
 sub contacts_to_bodies : Private {
-    my ($self, $c, $category) = @_;
+    my ($self, $c, $category, $single_body_only) = @_;
 
     my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
+
+    # check that we've not indicated we only want to sent to a single body
+    # and if we find a matching one then only send to that. e.g. if we clicked
+    # on a TfL road on the map.
+    if ($single_body_only) {
+        my @contacts_filtered = grep { $_->body->name eq $single_body_only } @contacts;
+        @contacts = @contacts_filtered if scalar @contacts_filtered;
+    }
 
     if ($c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL} || !@contacts) {
         [];
