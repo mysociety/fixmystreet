@@ -130,7 +130,7 @@ recommends 'Linux::Inotify2' if $^O eq 'linux';
 recommends 'Mac::FSEvents' if $^O eq 'darwin';
 
 # Modules used by the test suite
-requires 'Test::PostgreSQL', '1.24';
+requires 'Test::PostgreSQL', '1.25';
 requires 'CGI::Simple';
 requires 'HTTP::Headers';
 requires 'HTTP::Response';

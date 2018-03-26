@@ -28,6 +28,7 @@
         - Don't send sent-report emails to as-body/as-anonymous reports.
     - Development improvements:
         - Add HTML email previewer.
+        - Add some Cypress browser-based testing.
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:
