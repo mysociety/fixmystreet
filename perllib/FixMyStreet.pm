@@ -154,7 +154,12 @@ sub dbic_connect_info {
         AutoCommit     => 1,
         pg_enable_utf8 => 1,
     };
-    my $dbic_args = {};
+    my $local_time_zone = local_time_zone();
+    my $dbic_args = {
+        on_connect_do => [
+            "SET TIME ZONE '" . $local_time_zone->name . "'",
+        ],
+    };
 
     return ( $dsn, $user, $password, $dbi_args, $dbic_args );
 }
