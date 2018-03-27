@@ -49,6 +49,8 @@ $(fixmystreet).on('report_new:category_change:extras_received', fixmystreet.usrn
 var selected_road = null;
 
 fixmystreet.roads = {
+    last_road: null,
+
     change_category: function() {
         if (!fixmystreet.map) {
             // Sometimes the category change event is fired before the map has
@@ -79,6 +81,7 @@ fixmystreet.roads = {
         });
         if (road_providers.length) {
             var road_layer = road_providers[0];
+            fixmystreet.roads.last_road = road_layer;
             var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
             var feature = road_layer.getFeatureAtPoint(point);
             if (feature == null) {
@@ -113,6 +116,10 @@ fixmystreet.roads = {
         if (layer && layer.fixmystreet.actions) {
             layer.fixmystreet.actions.not_found(layer);
         } else {
+            if ( fixmystreet.roads.last_road && fixmystreet.roads.last_road.fixmystreet.actions.unselected ) {
+                fixmystreet.roads.last_road.fixmystreet.actions.unselected();
+                fixmystreet.roads.last_road = null;
+            }
             $('#single_body_only').val('');
         }
     },
