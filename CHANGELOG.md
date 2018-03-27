@@ -48,6 +48,7 @@
         - Add HTML email previewer.
         - Add CORS header to Open311 output. #2022
         - Add some Cypress browser-based testing.
+        - Upgrade Vagrantfile to use Ubuntu Xenial. #2093
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:
