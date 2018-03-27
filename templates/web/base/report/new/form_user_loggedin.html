@@ -29,7 +29,7 @@
     </select>
 [% END %]
 
-[% IF c.user.phone_verified %]
+[% IF c.user.phone_verified AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]
     <label for="form_phone">[% loc('Phone number') %]</label>
     <input class="form-control" id="form_phone" name="phone" disabled type="text" value="[% c.user.phone_display | html %]">
 [% END %]
@@ -63,7 +63,7 @@
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %] </label>
     </div>
 
-[% IF NOT c.user.phone_verified %]
+[% IF NOT c.user.phone_verified AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]
     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
     <input class="form-control" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
 [% END %]

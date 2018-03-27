@@ -185,7 +185,14 @@ $.extend(fixmystreet.set_up, {
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
         } else if (val === 'another_user') {
             $emailInput.val('').prop('disabled', false);
-            $emailOptionalLabel.removeClass('hidden');
+            if (!$phoneInput.length) {
+                // Cobrand may have disabled collection of phone numbers.
+                $emailOptionalLabel.addClass('hidden');
+                $emailInput.addClass('required');
+            } else {
+                $emailOptionalLabel.removeClass('hidden');
+                $emailInput.removeClass('required');
+            }
             $nameInput.val('').prop('disabled', false);
             $phoneInput.val('').prop('disabled', false);
             $showNameCheckbox.prop('checked', false).prop('disabled', true);
