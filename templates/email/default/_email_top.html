@@ -36,21 +36,27 @@
       width: auto !important;
     }
   }
+
+  @media only screen and (min-width: [% wrapper_max_width %]px) {
+    .spacer-cell {
+      background-color: [% body_background_color %];
+    }
+  }
   </style>
 </head>
 <body style="[% body_style %]">
   <table [% wrapper_table %] style="[% wrapper_style %]">
     <tr>
-      <th></th>
+      <th class="spacer-cell"></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
         [% email_summary %]
       </th>
-      <th></th>
+      <th class="spacer-cell"></th>
     </tr>
   </table>
   <table [% wrapper_table %] style="[% wrapper_style %]">
     <tr>
-      <th></th>
+      <th class="spacer-cell"></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %] min-width: [% wrapper_min_width %]px;" id="main">
         <table [% table_reset %]>
           <tr>
