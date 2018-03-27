@@ -30,6 +30,7 @@
         - Don't send sent-report emails to as-body/as-anonymous reports.
     - Development improvements:
         - Add HTML email previewer.
+        - Add CORS header to Open311 output. #2022
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:

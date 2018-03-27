@@ -422,6 +422,7 @@ sub get_request : Private {
 sub format_output : Private {
     my ( $self, $c, $hashref ) = @_;
     my $format = $c->stash->{format};
+    $c->response->header('Access-Control-Allow-Origin' => '*');
     if ('json' eq $format) {
         $c->res->content_type('application/json; charset=utf-8');
         $c->res->body( encode_json($hashref) );
