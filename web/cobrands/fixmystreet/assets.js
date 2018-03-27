@@ -46,6 +46,85 @@ $(fixmystreet).on('report_new:category_change:extras_received', fixmystreet.usrn
 
 (function(){
 
+var selected_road = null;
+
+fixmystreet.roads = {
+    change_category: function() {
+        if (!fixmystreet.map) {
+            // Sometimes the category change event is fired before the map has
+            // initialised, for example when visiting /report/new directly
+            // on a cobrand with category groups enabled.
+            return;
+        }
+        var lonlat = new OpenLayers.LonLat(
+            $('input[name="longitude"]').val(),
+            $('input[name="latitude"]').val()
+        );
+        var transformedLonlat = lonlat.clone().transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            fixmystreet.map.getProjectionObject()
+        );
+        fixmystreet.roads.check_for_road(transformedLonlat);
+    },
+
+    select: function(evt, lonlat) {
+        fixmystreet.roads.check_for_road(lonlat);
+    },
+
+    check_for_road: function(lonlat) {
+        var road_providers = fixmystreet.map.getLayersBy('fixmystreet', {
+            test: function(options) {
+                return options && options.road && options.asset_category.indexOf($('select#form_category').val()) != -1;
+            }
+        });
+        if (road_providers.length) {
+            var road_layer = road_providers[0];
+            var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+            var feature = road_layer.getFeatureAtPoint(point);
+            if (feature == null) {
+                // The click wasn't directly over a road, try and find one
+                // nearby
+                feature = road_layer.getNearestFeature(point, 10);
+            }
+            if (feature !== null) {
+                selected_road = feature; //.attributes[road_layer.fixmystreet.road.attribute];
+            } else {
+                selected_road = null;
+            }
+            if (selected_road) {
+                fixmystreet.roads.found();
+            } else {
+                fixmystreet.roads.not_found();
+            }
+        } else {
+            fixmystreet.roads.not_found();
+        }
+    },
+
+    found: function() {
+        var msg = "This road may not be the responsibility of Bromley Borough Council";
+        if ( $('#road-warning').length ) {
+            $('#road-warning').text(msg);
+        } else {
+            $('.change_location').after('<div class="box-warning" id="road-warning">' + msg + '</div>');
+        }
+    },
+
+    not_found: function() {
+        if ( $('#road-warning').length ) {
+            $('#road-warning').remove();
+        }
+    },
+};
+
+$(fixmystreet).on('maps:update_pin', fixmystreet.roads.select);
+$(fixmystreet).on('assets:selected', fixmystreet.roads.select);
+$(fixmystreet).on('report_new:category_change', fixmystreet.roads.change_category);
+
+})();
+
+(function(){
+
 var selected_feature = null;
 var fault_popup = null;
 
