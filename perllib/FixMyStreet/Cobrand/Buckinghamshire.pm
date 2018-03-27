@@ -280,4 +280,6 @@ sub should_skip_sending_update {
     return $update->user_id != $update->problem->user_id;
 }
 
+sub disable_phone_number_entry { 1 }
+
 1;
