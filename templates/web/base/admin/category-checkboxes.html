@@ -9,7 +9,7 @@
     </li>
     [% FOR contact IN contacts %]
       <li>
-        <label>
+        <label title="[% contact.email | html %]">
           <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
           [% contact.category %]
         </label>
