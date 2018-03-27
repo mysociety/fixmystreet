@@ -6188,10 +6188,10 @@ DISTRIBUTIONS
       Test::More 0
       Test::Tester 0.107
       perl 5.006
-  Test-PostgreSQL-1.24
-    pathname: T/TJ/TJC/Test-PostgreSQL-1.24.tar.gz
+  Test-PostgreSQL-1.25
+    pathname: T/TJ/TJC/Test-PostgreSQL-1.25.tar.gz
     provides:
-      Test::PostgreSQL 1.24
+      Test::PostgreSQL 1.25
     requirements:
       DBD::Pg 0
       DBI 0

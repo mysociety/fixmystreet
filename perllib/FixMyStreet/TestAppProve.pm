@@ -37,19 +37,15 @@ my $pg;
 
 sub spin_up_database {
     warn "Spinning up a Pg cluster/database...\n";
-    $pg = Test::PostgreSQL->new();
+    $pg = Test::PostgreSQL->new(
+        seed_scripts => [
+            'db/schema.sql',
+            'db/fixture.sql',
+            'db/generate_secret.sql',
+        ],
+    );
 
     warn sprintf "# Connected to %s\n", $pg->dsn;
-
-    my $dbh = DBI->connect($pg->dsn);
-
-    my $tmpwarn = $SIG{__WARN__};
-    $SIG{__WARN__} =
-      sub { print STDERR @_ if $_[0] !~ m/NOTICE:  CREATE TABLE/; };
-    $dbh->do( path('db/schema.sql')->slurp ) or die $!;
-    $dbh->do( path('db/fixture.sql')->slurp ) or die $!;
-    $dbh->do( path('db/generate_secret.sql')->slurp ) or die $!;
-    $SIG{__WARN__} = $tmpwarn;
 
     return {
         FMS_DB_PORT => $pg->port,
