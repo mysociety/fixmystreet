@@ -1109,6 +1109,7 @@ sub template_edit : Path('templates') : Args(2) {
         id => $_->id,
         category => $_->category_display,
         active => $active_contacts{$_->id},
+        email => $_->email,
     } } @live_contacts;
     $c->stash->{contacts} = \@all_contacts;
 
