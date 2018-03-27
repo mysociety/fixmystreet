@@ -100,7 +100,18 @@ while ( my $body = $bodies->next ) {
     }
 
     while ( my $comment = $comments->next ) {
-        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
+        my $cobrand = $body->get_cobrand_handler ||
+                      FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
+
+        # Some cobrands (e.g. Buckinghamshire) don't want to receive updates
+        # from anyone except the original problem reporter.
+        if ($cobrand->call_hook(should_skip_sending_update => $comment)) {
+            unless (defined $comment->get_extra_metadata('cobrand_skipped_sending')) {
+                $comment->set_extra_metadata(cobrand_skipped_sending => 1);
+                $comment->update;
+            }
+            next;
+        }
 
         # TODO actually this should be OK for any devolved endpoint if original Open311->can_be_devolved, presumably
         if ( 0 ) { # Check can_be_devolved and do this properly if set
