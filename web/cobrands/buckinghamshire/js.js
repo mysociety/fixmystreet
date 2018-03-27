@@ -39,7 +39,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         central_asset_id: 'central_as',
         site_code: 'site_code' // different capitalisation, sigh
     },
-    asset_category: "Grit bins",
+    asset_category: ["Salt bin damaged", "Salt bin refill"],
     asset_item: 'grit bin'
 }));
 
@@ -53,7 +53,11 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         central_asset_id: 'central_as',
         site_code: 'Site_code'
     },
-    asset_category: "Street lighting",
+    asset_category: [
+        'Light on during the day',
+        'Street light dim',
+        'Street light intermittent',
+        'Street light not working' ],
     asset_item: 'street light'
 }));
 
