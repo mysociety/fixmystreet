@@ -94,7 +94,7 @@ fixmystreet.roads = {
             if (selected_road) {
                 fixmystreet.roads.found(road_layer);
             } else {
-                fixmystreet.roads.not_found();
+                fixmystreet.roads.not_found(road_layer);
             }
         } else {
             fixmystreet.roads.not_found();
@@ -102,20 +102,19 @@ fixmystreet.roads = {
     },
 
     found: function(layer) {
-        var msg = "This road may not be the responsibility of Bromley Borough Council";
-        if ( $('#road-warning').length ) {
-            $('#road-warning').text(msg);
+        if (layer.fixmystreet.actions) {
+            layer.fixmystreet.actions.found(layer);
         } else {
-            $('.change_location').after('<div class="box-warning" id="road-warning">' + msg + '</div>');
+            $('#single_body_only').val(layer.fixmystreet.body);
         }
-        $('#single_body_only').val(layer.fixmystreet.body);
     },
 
-    not_found: function() {
-        if ( $('#road-warning').length ) {
-            $('#road-warning').remove();
+    not_found: function(layer) {
+        if (layer && layer.fixmystreet.actions) {
+            layer.fixmystreet.actions.not_found(layer);
+        } else {
+            $('#single_body_only').val('');
         }
-        $('#single_body_only').val('');
     },
 };
 
