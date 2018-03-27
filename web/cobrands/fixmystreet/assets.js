@@ -92,7 +92,7 @@ fixmystreet.roads = {
                 selected_road = null;
             }
             if (selected_road) {
-                fixmystreet.roads.found();
+                fixmystreet.roads.found(road_layer);
             } else {
                 fixmystreet.roads.not_found();
             }
@@ -101,19 +101,21 @@ fixmystreet.roads = {
         }
     },
 
-    found: function() {
+    found: function(layer) {
         var msg = "This road may not be the responsibility of Bromley Borough Council";
         if ( $('#road-warning').length ) {
             $('#road-warning').text(msg);
         } else {
             $('.change_location').after('<div class="box-warning" id="road-warning">' + msg + '</div>');
         }
+        $('#single_body_only').val(layer.fixmystreet.body);
     },
 
     not_found: function() {
         if ( $('#road-warning').length ) {
             $('#road-warning').remove();
         }
+        $('#single_body_only').val('');
     },
 };
 
