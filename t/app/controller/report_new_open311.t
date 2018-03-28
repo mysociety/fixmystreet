@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use Test::LongString;
 use Web::Scraper;
 
 # disable info logs for this test run
@@ -47,6 +48,17 @@ $mech->create_contact_ok(
         { description => 'Size', code => 'size', required => 'True', automated => '' },
         { description => 'Speed', code => 'speed', required => 'True', automated => 'server_set' },
         { description => 'Colour', code => 'colour', required => 'True', automated => 'hidden_field' },
+    ] },
+);
+
+my $body2 = $mech->create_body_ok(2651, 'Edinburgh Council');
+my $contact4 = $mech->create_contact_ok(
+    body_id => $body2->id, # Edinburgh
+    category => 'Pothole',
+    email => '103',
+    extra => { _fields => [
+        { description => 'USRN', code => 'usrn', required => 'true', automated => 'hidden_field', variable => 'true', order => '1' },
+        { description => 'Asset ID', code => 'central_asset_id', required => 'true', automated => 'hidden_field', variable => 'true', order => '2' },
     ] },
 );
 
@@ -231,5 +243,39 @@ foreach my $test (
         $user->delete;
     };
 }
+
+subtest "Category extras omits description label when all fields are hidden" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $json = $mech->get_ok_json('/report/new/category_extras?category=Pothole&latitude=55.952055&longitude=-3.189579');
+        my $category_extra = $json->{category_extra};
+        contains_string($category_extra, "usrn");
+        contains_string($category_extra, "central_asset_id");
+        lacks_string($category_extra, "USRN", "Lacks 'USRN' label");
+        lacks_string($category_extra, "Asset ID", "Lacks 'Asset ID' label");
+        lacks_string($category_extra, "resolve your problem quicker, by providing some extra detail", "Lacks description text");
+    };
+};
+
+subtest "Category extras includes description label for user" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $contact4->push_extra_fields({ description => 'Size?', code => 'size', required => 'true', automated => '', variable => 'true', order => '3' });
+        $contact4->update;
+
+        my $json = $mech->get_ok_json('/report/new/category_extras?category=Pothole&latitude=55.952055&longitude=-3.189579');
+        my $category_extra = $json->{category_extra};
+        contains_string($category_extra, "usrn");
+        contains_string($category_extra, "central_asset_id");
+        lacks_string($category_extra, "USRN", "Lacks 'USRN' label");
+        lacks_string($category_extra, "Asset ID", "Lacks 'Asset ID' label");
+        contains_string($category_extra, "Size?");
+        contains_string($category_extra, "resolve your problem quicker, by providing some extra detail", "Contains description text");
+    };
+};
 
 done_testing();

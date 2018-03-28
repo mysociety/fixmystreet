@@ -7,16 +7,20 @@
   [%- END %]
 
   [%- IF category_extras.$category.size %]
-    <div class="extra-category-questions full-width">
-    <h2 class="form-section-heading">[% category %]</h2>
-    <p class="form-section-description">
-      [% tprintf(
-        loc('Help <strong>%s</strong> resolve your problem quicker, by providing some extra detail. This extra information will not be published online.'),
-        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
-      ); %]
-    </p>
-    [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$category %]
-    </div>
+    [% UNLESS category_extras_hidden.$category %]
+      <div class="extra-category-questions full-width">
+        <h2 class="form-section-heading">[% category %]</h2>
+        <p class="form-section-description">
+          [% tprintf(
+            loc('Help <strong>%s</strong> resolve your problem quicker, by providing some extra detail. This extra information will not be published online.'),
+            list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+          ); %]
+        </p>
+        [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$category %]
+      </div>
+    [% ELSE %]
+      [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$category %]
+    [% END %]
   [%- END %]
 
   [%- IF report_extra_fields %]
