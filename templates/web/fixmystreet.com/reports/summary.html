@@ -9,7 +9,7 @@
 [% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass => 'dashboard fullwidthpage' %]
 
 <div class="dashboard-header">
-    <h1>FMS [% loc('Dashboard') %] – [% body.name %]</h1>
+    <h1>[% loc('Dashboard') %] – [% body.name %]</h1>
 </div>
 
 [% IF body.send_method == 'Email' OR body.send_method == '' %]
