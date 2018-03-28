@@ -329,3 +329,23 @@
         margin-top: -1px;
     }
 }
+
+.ie9 {
+    .labelled-line-chart,
+    .labelled-sparkline,
+    .responsive-bar-chart {
+        canvas {
+            height: 0 !important;
+            width: 0 !important;
+            display: none !important;
+        }
+       
+    }
+    .labelled-line-chart .label {
+        @media (min-width: 48em) {
+            position: static !important;
+            margin-top: inherit !important;
+            margin-#{$right}: 1.5em !important;
+        }
+    }
+}
