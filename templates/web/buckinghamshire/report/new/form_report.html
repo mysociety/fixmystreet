@@ -16,11 +16,11 @@
       [% END %]
     </div>
 
-    <label for="form_title">[% loc('Summarise the problem') %]</label>
+    <label for="form_title">[% loc('Location of the problem') %]</label>
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>
 [% END %]
-    <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="Exact location" required>
+    <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="Exact location, including any landmarks" required>
 
 [% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
 
