@@ -1,0 +1,33 @@
+<div id="front-main">
+    <div id="front-main-container">
+        [% UNLESS possible_location_matches %]
+            <h1>Report problems on the road</h1>
+        [% END %]
+
+        [%
+            question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
+        %]
+
+        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
+            <label for="pc">[% question %]:</label>
+            <div>
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
+                <input type="submit" value="[% loc('Go') %]" id="sub">
+            </div>
+
+            [% IF partial_token %]
+                <input type="hidden" name="partial" value="[% partial_token.token %]">
+            [% END %]
+
+            [% IF c.user_exists AND c.user.categories.size %]
+              <input type="hidden" name="filter_category" value="[% c.user.categories.join(",") | html %]">
+            [% END %]
+        </form>
+        <a href="[% c.uri_for('/around') %]" id="geolocate_link">&hellip; [% loc('or locate me automatically') %]</a>
+
+        [% UNLESS possible_location_matches %]
+            <h2 style='margin-top:1em'><a href="https://www.bathnes.gov.uk/reportit">Report other issues or make enquiries</a></h2>
+            <h2>Report emergencies on 01225 39 40 41 (option 9).</h2>
+        [% END %]
+    </div>
+</div>
