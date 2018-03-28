@@ -24,5 +24,9 @@
             [% END %]
         </form>
         <a href="[% c.uri_for('/around') %]" id="geolocate_link">&hellip; [% loc('or locate me automatically') %]</a>
+
+        [% UNLESS possible_location_matches %]
+            [% INCLUDE 'around/_postcode_form_post.html' %]
+        [% END %]
     </div>
 </div>
