@@ -458,3 +458,39 @@ input.postcode-form-test__postcode {
         }
     }
 }
+
+.council-dashboard-login {
+    margin: 0 -1em;
+    padding: 1em;
+    background: #b2b2b2 url(/cobrands/fixmystreet.com/images/dashboard-teaser-blurred.jpg) 0 0 no-repeat;
+    background-size: 100%;
+
+    form {
+        max-width: 24em;
+        padding: 2em;
+        margin: 2em auto;
+        background: #fff;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    .form-group {
+        position: relative;
+    }
+
+    .submit-group {
+        margin-top: 1.5em;
+    }
+
+    .required {
+        position: absolute;
+        top: 0.5em;
+        right: 0;
+    }
+
+    .required,
+    .form-note {
+        color: #777;
+        font-size: 0.8em;
+        line-height: 1em;
+    }
+}

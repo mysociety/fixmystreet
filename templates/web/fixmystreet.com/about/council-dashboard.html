@@ -1,13 +1,8 @@
-[% extra_css = BLOCK %]
-    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet.com/fmsforcouncils.css') %]">
-    <link href="https://fonts.googleapis.com/css?family=Rubik:400,500" rel="stylesheet">
-[% END %]
+[% INCLUDE header.html
+    title = 'Dashboard :: Request Access', bodyclass = 'fullwidthpage'
+%]
 
 [% IF no_body_found %]
-
-[% INCLUDE header.html
-    title = 'FixMyStreet Pro', bodyclass = 'fullwidthpage'
-%]
 
 <div class="confirmation-header confirmation-header--inbox">
     <h1>Thanks!</h1>
@@ -16,42 +11,39 @@
 
 [% ELSE %]
 
-[% INCLUDE header.html
-    title = 'FixMyStreet Pro', bodyclass = 'fms-for-councils fullwidthpage'
-%]
+<div class="council-dashboard-login">
 
-<div class="fixed-container">
-  <div class="council-header">
-    <h1 class="councils-logo">FixMyStreet Pro</h1>
-  </div>
-  <div class="councils-hero">
-    <div class="councils-hero__demo-access">
-      <p>To access a council-specific version of our main dashboard page,
-      please provide your name and email below and we'll send you a link.</p>
-      <form method="post" class="councils-hero__demo-access__form">
+    <form method="post">
+
+        <h1>Statistics for councils</h1>
+
+        <p>
+            To access statistics on problems and categories in your area,
+            please provide your name and email, and we'll send you a link.
+        </p>
+
         <div class="form-group">
-          <label for="demo-name">Name</label>
-          <span class="required">required</span>
-          <input type="text" name="name" id="demo-name" required value="[% form_name | html %]">
+            <label for="demo-name">Name</label>
+            <span class="required">required</span>
+            <input class="form-control" type="text" name="name" id="demo-name" required value="[% form_name | html %]">
         </div>
         <div class="form-group">
-          <label for="demo-email">Contact email</label>
-          <span class="required">required</span>
-          <input type="email" name="username" id="demo-email" required value="[% email | html %]">
-          <p class="form-note">Ending in .gov.uk, or other official council domain</p>
+            <label for="demo-email">Contact email</label>
+            <span class="required">required</span>
+            <input class="form-control" type="email" name="username" id="demo-email" required value="[% email | html %]">
+            <p class="form-note">Ending in .gov.uk, or other official council domain</p>
         </div>
         <div class="form-group submit-group">
-          <input type="hidden" name="r" value="about/council-dashboard">
-          <input type="hidden" name="extra.referer" value="[% c.req.headers.referer | html %]">
-          <input type="hidden" name="subject" value="Council dashboard request">
-          <input type="hidden" name="message" value="Filled in the council dashboard form">
-          <input type="hidden" name="recipient" value="bettercities">
-          <input type="hidden" name="dest" value="from_council">
-          <input type="submit" value="Let me in" class="btn">
+            <input type="hidden" name="r" value="about/council-dashboard">
+            <input type="hidden" name="extra.referer" value="[% c.req.headers.referer | html %]">
+            <input type="hidden" name="subject" value="Council dashboard request">
+            <input type="hidden" name="message" value="Filled in the council dashboard form">
+            <input type="hidden" name="recipient" value="bettercities">
+            <input type="hidden" name="dest" value="from_council">
+            <input type="submit" value="Request access" class="btn">
         </div>
-      </form>
-    </div>
-  </div>
+
+    </form>
 
 </div>
 
