@@ -27,7 +27,6 @@ $(function(){
 
     var setUpLabelsForChart = function(chart){
         var $parent = $(chart.chart.canvas).parent();
-        var xGutterInPixels = 30;
 
         var lasty = 0;
         $.each(chart.config.data.datasets, function(datasetIndex, dataset){
@@ -38,8 +37,7 @@ $(function(){
                 y = lasty;
             }
             $label.css({
-                top: y,
-                left: latestPoint._model.x + xGutterInPixels
+                top: y
             });
             lasty = y + $label.height() + 8;
         });

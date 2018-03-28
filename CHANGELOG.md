@@ -31,6 +31,7 @@
         - Stop race condition when making a new report quickly.
         - Set a session timezone in case database server is set differently.
         - Fix SQL error on update edit admin page in cobrands. #2049
+        - Improve chart display in old IE versions. #2005
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
