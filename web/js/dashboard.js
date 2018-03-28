@@ -1,4 +1,7 @@
 $(function(){
+    if ($('html').is('.ie9')) {
+        return;
+    }
 
     Chart.defaults.global.defaultFontSize = 16;
     // Chart.defaults.global.defaultFontFamily = $('body').css('font-family');
