@@ -632,6 +632,8 @@ sub setup_categories_and_bodies : Private {
     my %bodies_to_list = ();       # Bodies with categories assigned
     my @category_options = ();       # categories to show
     my %category_extras  = ();       # extra fields to fill in for open311
+    my %category_extras_hidden =
+      (); # whether all of a category's fields are hidden
     my %non_public_categories =
       ();    # categories for which the reports are not public
     $c->stash->{unresponsive} = {};
@@ -668,6 +670,7 @@ sub setup_categories_and_bodies : Private {
 
             my $metas = $contact->get_metadata_for_input;
             $category_extras{$contact->category} = $metas if @$metas;
+            $category_extras_hidden{$contact->category} = (grep { !$c->cobrand->category_extra_hidden($_) } @$metas) ? 0 : 1;
 
             my $body_send_method = $bodies{$contact->body_id}->send_method || '';
             $c->stash->{unresponsive}{$contact->category} = $contact->body_id
@@ -697,6 +700,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{bodies_to_list_urls} = [ map { $_->external_url } values %bodies_to_list ];
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
+    $c->stash->{category_extras_hidden}  = \%category_extras_hidden;
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{extra_name_info} = $first_area->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
 
