@@ -4,7 +4,7 @@ set -e
 
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd | sed -e 's/\/bin$//' )"
 
-$DIR/vendor/bin/carton install --deployment --without uk --without zurich
+$DIR/vendor/bin/carton install --deployment --without uk --without zurich --without kiitc
 
 if ! perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
 then
