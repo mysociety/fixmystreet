@@ -282,4 +282,6 @@ sub should_skip_sending_update {
 
 sub disable_phone_number_entry { 1 }
 
+sub report_sent_confirmation_email { 1 }
+
 1;
