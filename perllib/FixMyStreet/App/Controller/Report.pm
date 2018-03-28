@@ -475,7 +475,13 @@ sub inspect : Private {
             if ($update_text || %update_params) {
                 my $timestamp = \'current_timestamp';
                 if (my $saved_at = $c->get_param('saved_at')) {
-                    $timestamp = DateTime->from_epoch( epoch => $saved_at );
+                    # this comes in as a UTC epoch but the database expects everything
+                    # to have the FMS timezone so we need to add the timezone otherwise
+                    # dates come back out the database at time +/- timezone offset.
+                    $timestamp = DateTime->from_epoch(
+                        time_zone =>  FixMyStreet->time_zone || FixMyStreet->local_time_zone,
+                        epoch => $saved_at
+                    );
                 }
                 my $name = $c->user->from_body ? $c->user->from_body->name : $c->user->name;
                 $problem->add_to_comments( {
