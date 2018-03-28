@@ -284,4 +284,6 @@ sub disable_phone_number_entry { 1 }
 
 sub report_sent_confirmation_email { 1 }
 
+sub is_council_with_case_management { 1 }
+
 1;
