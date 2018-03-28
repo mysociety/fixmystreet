@@ -45,8 +45,17 @@
     h1, h2 {
         color: #fff;
     }
+    h1 {
+        font-weight: bold;
+        font-size: 3em;
+    }
+    h2 {
+        font-weight: normal;
+        font-size: 1.5em;
+    }
     #postcodeForm {
         margin-top: 0;
+        padding: 0;
     }
 }
 
