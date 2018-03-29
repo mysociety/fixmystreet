@@ -481,11 +481,21 @@ fixmystreet.assets = {
             layer_options.projection = new OpenLayers.Projection(fixmystreet.wmts_config.map_projection);
         }
         if (options.filter_key) {
-            layer_options.filter = new OpenLayers.Filter.Comparison({
-                type: OpenLayers.Filter.Comparison.EQUAL_TO,
-                property: options.filter_key,
-                value: options.filter_value
-            });
+            if (OpenLayers.Util.isArray(options.filter_value)) {
+                layer_options.filter = new OpenLayers.Filter.FeatureId({
+                    type: OpenLayers.Filter.Function,
+                    evaluate: function(f) {
+                        return options.filter_value.indexOf(f.attributes[options.filter_key]) != -1;
+                    }
+                });
+                layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
+            } else {
+                layer_options.filter = new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                    property: options.filter_key,
+                    value: options.filter_value
+                });
+            }
         }
 
         var asset_layer = new OpenLayers.Layer.Vector(options.name || "WFS", layer_options);
