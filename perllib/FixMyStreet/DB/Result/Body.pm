@@ -47,6 +47,8 @@ __PACKAGE__->add_columns(
   "fetch_problems",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "blank_updates_permitted",
+  { data_type => "boolean", default_value => \"false", is_nullable => 1 },
+  "convert_latlong",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -122,8 +124,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-03-01 12:27:28
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dzqgZI1wkGDPS2PfJgDEIg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-03-15 12:38:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rturOWpYmPRO0yE9yWHXjA
 
 use Moo;
 use namespace::clean;

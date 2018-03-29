@@ -56,6 +56,7 @@ create table body (
     send_extended_statuses boolean not null default 'f',
     fetch_problems boolean not null default 'f',
     blank_updates_permitted boolean not null default 'f',
+    convert_latlong boolean not null default 'f',
     deleted boolean not null default 'f'
 );
 
