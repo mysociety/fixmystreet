@@ -4,6 +4,8 @@
     <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
 [% END %]
 
+[% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
+
 <div id="js-top-message">
     [% PROCESS 'report/new/top_message.html' %]
 </div>
