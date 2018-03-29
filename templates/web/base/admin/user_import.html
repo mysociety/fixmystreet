@@ -1,0 +1,76 @@
+[% INCLUDE 'admin/header.html' title=loc("User Import") -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% status_message %]
+
+<form method="post" id="user_edit" action="[% c.uri_for( 'user_import' ) %]" enctype="multipart/form-data" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+    <input type="hidden" name="submit" value="1" >
+
+    <p>
+        <label>
+            [% loc('CSV File') %]
+            <input type="file" name="csvfile" id="form_csvfile" />
+        </label>
+      <input type="submit" class="btn" name="Import users" value="[% loc('Import users') %]" />
+    </p>
+</form>
+
+[% IF new_users %]
+    <h2>[% tprintf(loc('Created %d new users'), new_users.size ) %]</h2>
+    <table>
+        <tr>
+            <th>[% loc('Name') %]</th>
+            <th>[% loc('Email') %]</th>
+            <th>[% loc('Body') %]</th>
+        </tr>
+        [% FOREACH user IN new_users %]
+            <tr>
+                <td>
+                    <a href="[% c.uri_for_action( 'admin/user_edit', user.id ) %]">
+                        [% user.name %]
+                    </a>
+                </td>
+                <td>[% user.email %]</td>
+                <td>[% user.from_body.name %]</td>
+            </tr>
+        [% END %]
+    </table>
+[% END %]
+
+[% IF existing_users %]
+    <h2>[% tprintf(loc("%d users already existed"), existing_users.size) %]</h2>
+    <p>[% loc("These users weren't updated.") %]</p>
+    <table>
+        <tr>
+            <th>[% loc('Name') %]</th>
+            <th>[% loc('Email') %]</th>
+            <th>[% loc('Body') %]</th>
+        </tr>
+        [% FOREACH user IN existing_users %]
+            <tr>
+                <td>
+                    <a href="[% c.uri_for_action( 'admin/user_edit', user.id ) %]">
+                        [% user.name %]
+                    </a>
+                </td>
+                <td>[% user.email %]</td>
+                <td>[% user.from_body.name %]</td>
+            </tr>
+        [% END %]
+    </table>
+[% END %]
+
+<h2>[% loc('Usage notes') %]</h2>
+<p>[% loc('This page is a quick way to create many new staff users in one go.') %]</p>
+<p>[% loc("Existing users won't be modified.") %]</p>
+<p>
+    [% loc("The uploaded CSV file must contain a header row, and records must have the following fields (in this order):") %]
+    <pre>name,email,from_body,permissions</pre>
+    <ul>
+        <li><code>from_body</code>: [% loc("the database id of the body to associate that user with, e.g. <code>2217</code> for Buckinghamshire.") %]</li>
+        <li><code>permissions</code>: [% loc("a colon-separated list of permissions to grant that user, e.g. <code>contribute_as_body:moderate:user_edit</code>.") %]</li>
+    </ul>
+</p>
+
+[% INCLUDE 'admin/footer.html' %]

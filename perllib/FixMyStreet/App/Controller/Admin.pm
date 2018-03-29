@@ -12,6 +12,7 @@ use DateTime::Format::Strptime;
 use List::Util 'first';
 use List::MoreUtils 'uniq';
 use mySociety::ArrayUtils;
+use Text::CSV;
 
 use FixMyStreet::SendReport;
 use FixMyStreet::SMS;
@@ -1634,6 +1635,51 @@ sub user_edit : Path('user_edit') : Args(1) {
     }
 
     return 1;
+}
+
+sub user_import : Path('user_import') {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward('/auth/get_csrf_token');
+    return unless $c->user_exists && $c->user->is_superuser;
+
+    if ($c->req->method eq 'POST') {
+        $c->forward('/auth/check_csrf_token');
+        $c->stash->{new_users} = [];
+        $c->stash->{existing_users} = [];
+
+        my @all_permissions = map { keys %$_ } values %{ $c->cobrand->available_permissions };
+        my %available_permissions = map { $_ => 1 } @all_permissions;
+
+        my $csv = Text::CSV->new({ binary => 1});
+        my $fh = $c->req->upload('csvfile')->fh;
+        $csv->getline($fh); # discard the header
+        while (my $row = $csv->getline($fh)) {
+            my ($name, $email, $from_body, $permissions) = @$row;
+            my @permissions = split(/:/, $permissions);
+
+            my $user = FixMyStreet::DB->resultset("User")->find_or_new({ email => $email, email_verified => 1 });
+            if ($user->in_storage) {
+                push @{$c->stash->{existing_users}}, $user;
+                next;
+            }
+
+            $user->name($name);
+            $user->from_body($from_body || undef);
+            $user->update_or_insert;
+
+            my @user_permissions = grep { $available_permissions{$_} } @permissions;
+            foreach my $permission_type (@user_permissions) {
+                $user->user_body_permissions->find_or_create({
+                    body_id => $user->from_body->id,
+                    permission_type => $permission_type,
+                });
+            }
+
+            push @{$c->stash->{new_users}}, $user;
+        }
+
+    }
 }
 
 sub contact_cobrand_extra_fields : Private {

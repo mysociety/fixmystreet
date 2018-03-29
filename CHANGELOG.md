@@ -37,6 +37,7 @@
         - Users with 'user_edit' permission can search for users/reports. #2027
         - Don't send sent-report emails to as-body/as-anonymous reports.
         - Show Open311 service code as tooltip on admin category checkboxes. #2049
+        - Bulk user import admin page. #2057
     - Development improvements:
         - Add HTML email previewer.
         - Add CORS header to Open311 output. #2022
