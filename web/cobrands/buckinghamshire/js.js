@@ -131,7 +131,8 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_item: 'road',
     asset_category: [
         "Pothole",
-        "Road surface"
+        "Road surface",
+        "Road lines / road markings"
     ],
     actions: {
         found: function(layer, feature) {
