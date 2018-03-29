@@ -43,4 +43,13 @@ sub pin_colour {
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'yellow';
 }
+
+sub send_questionnaires {
+    return 0;
+}
+
+sub ask_ever_reported {
+    return 0;
+}
+
 1;
