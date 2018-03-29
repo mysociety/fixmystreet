@@ -61,16 +61,6 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_item: 'street light'
 }));
 
-var highways_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fill: false,
-        fillOpacity: 0,
-        strokeColor: "#55BB00",
-        strokeOpacity: 0.3,
-        strokeWidth: 8
-    })
-});
-
 
 // The "whole street asset" layer indicates who is responsible for maintaining
 // a road via the 'feature_ty' attribute on features.
@@ -103,6 +93,41 @@ var types_to_hide = [
     "9", // HW: NO CARRIAGEWAY
 ];
 
+var highways_style = new OpenLayers.Style({
+    fill: false,
+    strokeColor: "#5555FF",
+    strokeOpacity: 0.1,
+    strokeWidth: 7
+});
+
+function bucks_owns_feature(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.feature_ty &&
+           bucks_types.indexOf(f.attributes.feature_ty) > -1;
+}
+
+function bucks_does_not_own_feature(f) {
+    return !bucks_owns_feature(f);
+}
+
+var rule_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: bucks_owns_feature
+    })
+});
+
+var rule_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: bucks_does_not_own_feature
+    }),
+    symbolizer: {
+        strokeColor: "#555555"
+    }
+});
+highways_style.addRules([rule_owned, rule_not_owned]);
 
 function show_responsibility_error(id) {
     hide_responsibility_errors();
@@ -124,7 +149,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "Whole_Street"
         }
     },
-    stylemap: highways_stylemap,
+    stylemap: new OpenLayers.StyleMap({
+        'default': highways_style
+    }),
     always_visible: true,
     non_interactive: true,
     road: true,
