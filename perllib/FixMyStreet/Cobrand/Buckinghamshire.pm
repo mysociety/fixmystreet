@@ -42,7 +42,7 @@ sub pin_colour {
 
 sub contact_email {
     my $self = shift;
-    return join( '@', 'pjparfitt', 'buckscc.gov.uk' );
+    return join( '@', 'maverill', 'buckscc.gov.uk' );
 }
 
 sub send_questionnaires {
