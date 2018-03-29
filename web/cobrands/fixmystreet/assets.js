@@ -95,7 +95,7 @@ fixmystreet.roads = {
                 selected_road = null;
             }
             if (selected_road) {
-                fixmystreet.roads.found(road_layer);
+                fixmystreet.roads.found(road_layer, selected_road);
             } else {
                 fixmystreet.roads.not_found(road_layer);
             }
@@ -104,9 +104,9 @@ fixmystreet.roads = {
         }
     },
 
-    found: function(layer) {
+    found: function(layer, feature) {
         if (layer.fixmystreet.actions) {
-            layer.fixmystreet.actions.found(layer);
+            layer.fixmystreet.actions.found(layer, feature);
         } else {
             $('#single_body_only').val(layer.fixmystreet.body);
         }
