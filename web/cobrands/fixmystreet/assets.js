@@ -95,7 +95,7 @@ fixmystreet.roads = {
     check_for_road: function(lonlat) {
         var road_providers = fixmystreet.map.getLayersBy('fixmystreet', {
             test: function(options) {
-                return options && options.road && (options.all_categories || options.asset_category.indexOf($('select#form_category').val()) != -1);
+                return options && options.road && (options.all_categories || fixmystreet.assets.check_layer_relevant(options, $('select#form_category') ) );
             }
         });
         if (road_providers.length) {
@@ -193,7 +193,7 @@ function init_asset_layer(layer, pins_layer) {
         // Show/hide the asset layer when the category is chosen
         $("#problem_form").on("change.category", "select#form_category", function(){
             var category = $(this).val();
-            if (layer.fixmystreet.asset_category.indexOf(category) != -1) {
+            if (fixmystreet.assets.check_layer_relevant(layer.fixmystreet, category)) {
                 layer.setVisibility(true);
                 if (layer.fixmystreet.fault_layer) {
                     layer.fixmystreet.fault_layer.setVisibility(true);
@@ -204,6 +204,12 @@ function init_asset_layer(layer, pins_layer) {
                 if (layer.fixmystreet.fault_layer) {
                     layer.fixmystreet.fault_layer.setVisibility(false);
                 }
+            }
+        });
+    } else {
+        $("#problem_form").on("change.category", "select#form_category", function(){
+            if (fixmystreet.map.bodies && layer.fixmystreet.body && fixmystreet.map.bodies.indexOf(layer.fixmystreet.body) == -1) {
+                    layer.setVisibility(false);
             }
         });
     }
@@ -305,7 +311,7 @@ function check_zoom_message_visibility() {
         prefix = category.replace(/[^a-z]/gi, ''),
         id = "category_meta_message_" + prefix,
         $p = $('#' + id);
-    if (this.fixmystreet.asset_category.indexOf(category) != -1) {
+    if (fixmystreet.assets.check_layer_relevant(this.fixmystreet, category)) {
         if ($p.length === 0) {
             $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
             $p.insertAfter('#form_category_row');
@@ -636,7 +642,13 @@ fixmystreet.assets = {
             fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
             fixmystreet.assets.controls[i].activate();
         }
+    },
+
+    check_layer_relevant: function(layer, category) {
+      return layer.asset_category.indexOf(category) != -1 &&
+        ( !fixmystreet.map.bodies || !layer.body || fixmystreet.map.bodies.indexOf(layer.body) != -1 );
     }
+
 };
 
 $(function() {

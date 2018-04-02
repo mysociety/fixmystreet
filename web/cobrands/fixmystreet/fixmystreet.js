@@ -966,6 +966,16 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         } else {
             $('#js-contribute-as-wrapper').hide();
         }
+
+        if (data.bodies) {
+            if (fixmystreet.map) {
+                fixmystreet.map.bodies = data.bodies;
+            }
+        } else {
+            if (fixmystreet.map) {
+                fixmystreet.map.bodies = [];
+            }
+        }
     });
 
     if (!$('#side-form-error').is(':visible')) {
