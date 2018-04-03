@@ -16,12 +16,59 @@ var fixmystreet = fixmystreet || {};
     };
 })();
 
+OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
+    initialize: function(name, options) {
+        OpenLayers.Layer.Vector.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
+    },
+
+    update_layer_visibility: function() {
+        if (!fixmystreet.map) {
+          return;
+        }
+
+        if (!this.fixmystreet.always_visible) {
+            // Show/hide the asset layer when the category is chosen
+            var category = $('#problem_form select#form_category').val();
+            if (fixmystreet.assets.check_layer_relevant(this.fixmystreet, category)) {
+                this.setVisibility(true);
+                if (this.fixmystreet.fault_layer) {
+                    this.fixmystreet.fault_layer.setVisibility(true);
+                }
+                this.zoom_to_assets();
+            } else {
+                this.setVisibility(false);
+                if (this.fixmystreet.fault_layer) {
+                    this.fixmystreet.fault_layer.setVisibility(false);
+                }
+            }
+        } else {
+            if (this.fixmystreet.body) {
+                this.setVisibility(OpenLayers.Util.indexOf(fixmystreet.bodies, this.fixmystreet.body) != -1 );
+            }
+        }
+    },
+
+    zoom_to_assets: function() {
+        // This function is called when the asset category is
+        // selected, and will zoom the map in to the first level that
+        // makes the asset layer visible if it's not already shown.
+        if (!this.inRange) {
+            var firstVisibleResolution = this.resolutions[0];
+            var zoomLevel = fixmystreet.map.getZoomForResolution(firstVisibleResolution);
+            fixmystreet.map.zoomTo(zoomLevel);
+        }
+    },
+
+    CLASS_NAME: 'OpenLayers.Layer.VectorAsset'
+});
+
 // Handles layers such as USRN, TfL roads, and the like
-OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.Vector, {
+OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
     selected_feature: null,
 
     initialize: function(name, options) {
-        OpenLayers.Layer.Vector.prototype.initialize.apply(this, arguments);
+        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
         $(fixmystreet).on('maps:update_pin', this.checkFeature.bind(this));
         $(fixmystreet).on('assets:selected', this.checkFeature.bind(this));
         // Might only be able to fill in fields once they've been returned from the server
@@ -31,10 +78,13 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.Vector, {
     },
 
     checkFeature: function(evt, lonlat) {
+        if (!this.getVisibility()) {
+          return;
+        }
         this.getNearest(lonlat);
         this.updateUSRNField();
         if (this.fixmystreet.road) {
-            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && this.fixmystreet.asset_category.indexOf($('select#form_category').val()) != -1);
+            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && fixmystreet.assets.check_layer_relevant( this.fixmystreet, $('select#form_category').val() ) );
             if (!valid_category || !this.selected_feature) {
                 this.road_not_found();
             } else {
@@ -111,6 +161,7 @@ var fault_popup = null;
  * Called as part of fixmystreet.assets.init for each asset layer on the map.
  */
 function init_asset_layer(layer, pins_layer) {
+    layer.update_layer_visibility();
     fixmystreet.map.addLayer(layer);
     if (layer.fixmystreet.asset_category) {
         fixmystreet.map.events.register( 'zoomend', layer, check_zoom_message_visibility);
@@ -140,27 +191,7 @@ function init_asset_layer(layer, pins_layer) {
         layer.events.register( 'loadend', layer, layer.one_time_select );
     }
 
-    if (!layer.fixmystreet.always_visible) {
-        // Show/hide the asset layer when the category is chosen
-        $("#problem_form").on("change.category", "select#form_category", function(){
-            var category = $(this).val();
-            if (layer.fixmystreet.asset_category.indexOf(category) != -1) {
-                layer.setVisibility(true);
-                if (layer.fixmystreet.fault_layer) {
-                    layer.fixmystreet.fault_layer.setVisibility(true);
-                }
-                zoom_to_assets(layer);
-            } else {
-                layer.setVisibility(false);
-                if (layer.fixmystreet.fault_layer) {
-                    layer.fixmystreet.fault_layer.setVisibility(false);
-                }
-            }
-        });
-    }
-
 }
-
 
 function close_fault_popup() {
     if (!!fault_popup) {
@@ -267,7 +298,7 @@ function check_zoom_message_visibility() {
         prefix = category.replace(/[^a-z]/gi, ''),
         id = "category_meta_message_" + prefix,
         $p = $('#' + id);
-    if (this.fixmystreet.asset_category.indexOf(category) != -1) {
+    if (fixmystreet.assets.check_layer_relevant(this.fixmystreet, category)) {
         if ($p.length === 0) {
             $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
             $p.insertAfter('#form_category_row');
@@ -313,16 +344,6 @@ function layer_visibilitychanged() {
     }
 }
 
-function zoom_to_assets(layer) {
-    // This function is called when the asset category is
-    // selected, and will zoom the map in to the first level that
-    // makes the asset layer visible if it's not already shown.
-    if (!layer.inRange) {
-        var firstVisibleResolution = layer.resolutions[0];
-        var zoomLevel = fixmystreet.map.getZoomForResolution(firstVisibleResolution);
-        fixmystreet.map.zoomTo(zoomLevel);
-    }
-}
 
 function get_select_control(layer) {
     var controls = fixmystreet.map.getControlsByClass('OpenLayers.Control.SelectFeature');
@@ -503,7 +524,7 @@ fixmystreet.assets = {
             }
         }
 
-        var layer_class = OpenLayers.Layer.Vector;
+        var layer_class = OpenLayers.Layer.VectorAsset;
         if (options.usrn || options.road) {
             layer_class = OpenLayers.Layer.VectorNearest;
         }
@@ -631,6 +652,11 @@ fixmystreet.assets = {
             fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
             fixmystreet.assets.controls[i].activate();
         }
+    },
+
+    check_layer_relevant: function(layer, category) {
+      return OpenLayers.Util.indexOf(layer.asset_category, category) != -1 &&
+        ( !layer.body || OpenLayers.Util.indexOf(fixmystreet.bodies, layer.body) != -1 );
     }
 };
 
