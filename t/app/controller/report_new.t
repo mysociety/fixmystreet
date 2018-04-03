@@ -39,6 +39,9 @@ for my $body (
     { area_id => 2482, name => 'Bromley Council' },
     { area_id => 2227, name => 'Hampshire County Council' },
     { area_id => 2333, name => 'Hart Council' },
+    { area_id => 2237, name => 'Oxfordshire County Council' },
+    { area_id => 2421, name => 'Oxford City Council' },
+    { area_id => 2535, name => 'Sandwell Borough Council' },
 ) {
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
     push @bodies, $body_obj;
@@ -95,6 +98,16 @@ my $contact10 = $mech->create_contact_ok(
     body_id => $body_ids{2326}, # Cheltenham
     category => 'Street lighting',
     email => 'streetlights-2326@example.com',
+);
+my $contact11 = $mech->create_contact_ok(
+    body_id => $body_ids{2237}, # Cheltenham
+    category => 'Street lighting',
+    email => 'streetlights-2237@example.com',
+);
+my $contact12 = $mech->create_contact_ok(
+    body_id => $body_ids{2421}, # Cheltenham
+    category => 'Potholes',
+    email => 'potholes-2421@example.com',
 );
 
 # test that the various bit of form get filled in and errors correctly
@@ -1912,6 +1925,130 @@ foreach my $test (
         like $mech->uri->path, qr/\/report\/[0-9]+/, 'Redirects directly to report';
     }
   };
+}
+
+subtest "check map click ajax response" => sub {
+    $mech->log_out_ok;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+    };
+    like $extra_details->{councils_text}, qr/City of Edinburgh Council/, 'correct council text';
+    like $extra_details->{councils_text_private}, qr/^These will be sent to the council, but will never be shown online/, 'correct private council text';
+    like $extra_details->{category}, qr/Street lighting.*Trees/, 'category looks correct';
+    is_deeply $extra_details->{bodies}, [ $body_ids{2651} ], 'correct bodies';
+    ok !$extra_details->{contribute_as}, 'no contribute as section';
+    ok !$extra_details->{titles_list}, 'no titles_list';
+    ok !$extra_details->{top_message}, 'no top message';
+    ok !$extra_details->{extra_name_info}, 'no extra name info';
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.754926&longitude=-1.256179' );
+    };
+    # this order seems to be random so check individually/sort
+    like $extra_details->{councils_text}, qr/Oxford City Council/, 'correct council text for two tier';
+    like $extra_details->{councils_text}, qr/Oxfordshire County Council/, 'correct council text for two tier';
+    like $extra_details->{category}, qr/Potholes.*Street lighting/, 'category looks correct for two tier council';
+    my @sorted_bodies = sort @{ $extra_details->{bodies} };
+    is_deeply \@sorted_bodies, [ $body_ids{2237}, $body_ids{2421} ], 'correct bodies for two tier';
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=52.563074&longitude=-1.991032' );
+    };
+    like $extra_details->{councils_text}, qr/^These will be published online for others to see/, 'correct council text for council with no contacts';
+    is $extra_details->{category}, '', 'category is empty for council with no contacts';
+    is_deeply $extra_details->{bodies}, [ $body_ids{2535} ], 'correct bodies for council with no contacts';
+};
+
+subtest "check map click ajax response for inspector" => sub {
+    $mech->log_out_ok;
+
+    my $user = $mech->create_user_ok('inspector@example.org', name => 'inspector', from_body => $bodies[0]);
+    $user->user_body_permissions->find_or_create({
+        body => $bodies[0],
+        permission_type => 'planned_reports',
+    });
+    $user->user_body_permissions->find_or_create({
+        body => $bodies[0],
+        permission_type => 'report_inspect',
+    });
+
+    $mech->log_in_ok('inspector@example.org');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+    };
+    like $extra_details->{category}, qr/data-role="inspector/, 'category has correct data-role';
+    ok !$extra_details->{contribute_as}, 'no contribute as section';
+};
+
+for my $test (
+    {
+        desc => 'map click ajax for contribute_as_another_user',
+        permissions => {
+            contribute_as_another_user => 1,
+            contribute_as_anonymous_user => undef,
+            contribute_as_body => undef,
+        }
+    },
+    {
+        desc => 'map click ajax for contribute_as_anonymous_user',
+        permissions => {
+            contribute_as_another_user => undef,
+            contribute_as_anonymous_user => 1,
+            contribute_as_body => undef,
+        }
+    },
+    {
+        desc => 'map click ajax for contribute_as_body',
+        permissions => {
+            contribute_as_another_user => undef,
+            contribute_as_anonymous_user => undef,
+            contribute_as_body => 1,
+        }
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->log_out_ok;
+        (my $name = $test->{desc}) =~ s/.*(contri.*)/$1/;
+        my $user = $mech->create_user_ok("$name\@example.org", name => 'test user', from_body => $bodies[0]);
+        for my $p ( keys %{$test->{permissions}} ) {
+            next unless $test->{permissions}->{$p};
+            $user->user_body_permissions->find_or_create({
+                body => $bodies[0],
+                permission_type => $p,
+            });
+        }
+        $mech->log_in_ok("$name\@example.org");
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+        };
+        for my $p ( keys %{$test->{permissions}} ) {
+            (my $key = $p) =~ s/contribute_as_//;
+            is $extra_details->{contribute_as}->{$key}, $test->{permissions}->{$p}, "$key correctly set";
+        }
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.754926&longitude=-1.256179' );
+        };
+        ok !$extra_details->{contribute_as}, 'no contribute as section for other council';
+    };
 }
 
 done_testing();
