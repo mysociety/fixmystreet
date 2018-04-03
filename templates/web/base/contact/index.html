@@ -109,11 +109,15 @@
     </fieldset>
 </form>
 
-<h4>[% loc("Don't like forms?") %]</h4>
+[% TRY %]
+    [% INCLUDE 'contact/_footer.html' %]
+[% CATCH file %]
+    <h4>[% loc("Don't like forms?") %]</h4>
 
-<p>
-[% tprintf( loc("You can contact technical support on <a href='mailto:%s'>%s</a>"), contact_email, contact_email) %]
-</p>
+    <p>
+    [% tprintf( loc("You can contact technical support on <a href='mailto:%s'>%s</a>"), contact_email, contact_email) %]
+    </p>
+[% END %]
 
 [% TRY %][% INCLUDE 'contact/address.html' %][% CATCH file %][% END %]
 

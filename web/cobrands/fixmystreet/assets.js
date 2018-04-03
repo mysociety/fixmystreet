@@ -76,7 +76,7 @@ fixmystreet.roads = {
     check_for_road: function(lonlat) {
         var road_providers = fixmystreet.map.getLayersBy('fixmystreet', {
             test: function(options) {
-                return options && options.road && options.asset_category.indexOf($('select#form_category').val()) != -1;
+                return options && options.road && (options.all_categories || options.asset_category.indexOf($('select#form_category').val()) != -1);
             }
         });
         if (road_providers.length) {

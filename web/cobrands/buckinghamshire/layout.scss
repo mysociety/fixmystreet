@@ -1,0 +1,157 @@
+@import "_colours";
+@import "_fonts";
+
+$header-top-border: false; // There is, but we want to do it ourselves
+
+@import "../sass/layout";
+
+#site-header {
+  border-top-width: 10px;
+  border-bottom: none;
+  margin-bottom: 4em; // Push content past abs. positioned nav
+}
+
+// Don't want larger logo on mappage.
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+  // Display the BCC logo and header correctly
+  #site-logo {
+    background-size: 60px;
+    text-indent: 80px;
+    padding-left: 0;
+    line-height: 92px;
+    font-size: 24px;
+    margin: 0;
+    height: 92px;
+    strong {
+      display: inline;
+    }
+  }
+
+  .nav-wrapper {
+      margin-top: 102px; // 92px image header + 10px top border
+      border-bottom: solid 5px $g6;
+      border-top: solid 5px $g6;
+  }
+
+  #main-nav {
+    float: left;
+    min-height: 0;
+  }
+
+  .nav-menu {
+    a, span {
+      display: inline-block; // So the chevrons appear correctly
+      font-size: 1.2em;
+      padding: 0.5em 0.75em;
+      margin: 0;
+    }
+  }
+}
+
+// Stop the 'report a problem' button being red on non-map pages
+.nav-menu--main a.report-a-problem-btn {
+    color: $b3;
+    background-color: transparent;
+}
+.nav-menu--main a.report-a-problem-btn:hover {
+    background-color: transparent;
+}
+
+.nav-menu {
+    span {
+        color: $g1;
+    }
+    a {
+        text-decoration: underline;
+        color: $b3;
+        &:hover {
+            text-decoration: underline;
+            background-color: transparent;
+            color: $g1;
+        }
+    }
+}
+
+// Put FAQ side nav at correct vertical position
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 14.5em;
+}
+
+#front-main {
+    background-color: white;
+    text-align: left;
+    padding-top: 40px;
+
+    #postcodeForm {
+      margin-top: 0;
+
+      div {
+        margin: 0;
+      }
+    }
+
+    a#geolocate_link {
+      color: $b3;
+    }
+
+    h1 {
+      font-size: 2.5em;
+    }
+
+    h1 + p {
+      font-size: 1.5em;
+      line-height: 1.25em;
+      max-width: 640px;
+    }
+}
+
+body.mappage {
+  // Mappage header is 10px top border, 50px logo (7px 37px 6px), 4px bottom border
+  #site-header {
+      height: 50px;
+      border-bottom: solid 4px $g6;
+  }
+  #site-logo {
+      margin: 7px 0 6px;
+  }
+
+  #main-nav {
+      margin-top: 10px;
+      min-height: 50px;
+  }
+
+  .nav-menu {
+    z-index: 10; // Clickable
+
+    a, span {
+      font-size: 1.1em;
+      padding: 0.5em;
+    }
+    a.report-a-problem-btn {
+      color: white;
+      background-color: $bucks_dark_green;
+      padding: 0.25em;
+      margin: 0.25em;
+      &:hover {
+        background-color: lighten($bucks_green, 5%);
+      };
+    }
+  }
+
+  .big-green-banner {
+    display: block;
+    background-color: $bucks_green;
+    text-transform: none;
+  }
+}
+
+.bucks_footer {
+    background: url(/cobrands/buckinghamshire/img/footer-bg.png) right bottom no-repeat;
+    background-size: contain;
+    min-height: 160px;
+}
+
+// Set the default font colour everywhere
+body, .content {
+  color: $g1;
+}

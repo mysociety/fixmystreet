@@ -1,0 +1,95 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "./_fonts";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+// Put the logo in place, and reveal the text alongside it
+#site-logo {
+  @extend %normal-font;
+
+  background: url(/cobrands/buckinghamshire/img/bucks-logo.png) 0 50% no-repeat;
+  background-size: 37px;
+  text-indent: 0;
+  padding-left: 47px;
+  padding-right: 7em;
+  line-height: 1.3em;
+  font-size: 0.875em;
+  margin: 9px 0;
+  color: black;
+  width: auto;
+  height: 37px;
+
+  strong {
+      display: block;
+      @extend %bold-font;
+  }
+}
+
+#report-cta {
+    border-color: #ddd;
+}
+
+#site-header {
+    border-bottom: solid 5px $g6;
+}
+
+.nav-menu {
+    a:hover, span.hover {
+        color: $bucks_green;
+    }
+}
+
+// Set the default font colour everywhere
+body, .content {
+  color: $g1;
+}
+
+// Make sure the numbers on the front page have the correct font weight
+#front-howto {
+  #front_stats {
+    color: white;
+
+    div {
+      @extend %bold-font;
+    }
+  }
+}
+
+// FAQ/privacy pages should have correctly-weighted headers
+dl dt {
+  @extend %bold-font;
+}
+
+
+#front-main {
+  text-align: left;
+
+  h1 {
+    font-size: 1.75em;
+  }
+
+  #postcodeForm {
+    color: white;
+    margin-top: 1em;
+  }
+}
+
+p, dd, aside {
+  a, a:visited, a:hover {
+    color: $b3;
+  }
+}
+
+a#geolocate_link {
+  color: $b3;
+}
+
+label {
+  @extend %bold-font;
+}
+
+#map #drag .square-map__tile {
+  position: static;
+}
