@@ -38,12 +38,10 @@ my $pg;
 sub spin_up_database {
     warn "Spinning up a Pg cluster/database...\n";
     $pg = Test::PostgreSQL->new(
-        seed_scripts => [
-            'db/schema.sql',
-            'db/fixture.sql',
-            'db/generate_secret.sql',
-        ],
+        run_psql_args => '-1Xq -v ON_ERROR_STOP=1', # No -b on 9.1
     );
+    $pg->run_psql_scripts('db/schema.sql'); # On 9.1, must create tables separately
+    $pg->run_psql_scripts('db/fixture.sql', 'db/generate_secret.sql');
 
     warn sprintf "# Connected to %s\n", $pg->dsn;
 
