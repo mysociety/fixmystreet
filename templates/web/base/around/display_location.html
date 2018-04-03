@@ -74,7 +74,7 @@
             <span>[% loc('Place pin on map') %]</span>
         </div>
 
-      [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+      [% IF c.config.BASE_URL == "https://www.fixmystreet.com" AND c.cobrand.moniker == 'fixmystreet' %]
         <h1 class="big-green-banner banner-position-variant-1">
             [% loc( 'Click map to report a problem' ) %]
         </h1>
