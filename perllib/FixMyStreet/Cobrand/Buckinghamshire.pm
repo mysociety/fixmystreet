@@ -13,6 +13,12 @@ sub example_places {
     return ( 'HP19 7QF', "Walton Road" );
 }
 
+sub base_url {
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
+    return 'https://fixmystreet.buckscc.gov.uk';
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -69,7 +75,6 @@ sub map_type { 'Buckinghamshire' }
 sub default_map_zoom { 3 }
 
 sub enable_category_groups { 1 }
-
 
 # Enable adding/editing of parish councils in the admin
 sub add_extra_areas {
