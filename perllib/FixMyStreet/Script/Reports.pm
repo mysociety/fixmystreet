@@ -78,6 +78,7 @@ sub send(;$) {
         my $email_base_url = $cobrand->base_url_for_report($row);
         my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
         $h{report} = $row;
+        $h{cobrand} = $cobrand;
         map { $h{$_} = $row->user->$_ || '' } qw/email phone/;
         $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) )
             if $row->confirmed;
