@@ -1468,121 +1468,138 @@ html.js #map .noscript {
   top: 44px;
 }
 
-//hide pins, show old reports etc
-#sub_map_links {
-  position: absolute;
-  #{$left}: 0;
-  #{$right}: 0;
-  bottom: 0;
-  background: #333;
-  background: rgba(0, 0, 0, 0.7);
-  margin: 0;
-  font-size: 1em;
-  line-height: 1em;
-
-  a {
+%sub-map-link-icon {
+    content: "";
     display: inline-block;
-    font-size: 0.8em;
-    color: #fff;
-    padding: 0.7em 1em;
-
-    &:hover {
-      background-color: #000;
-      text-decoration: none;
-    }
-
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      margin-#{left}: 8px;
-      vertical-align: -0.1em;
-      background-size: 96px 12px;
-      @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
-    }
-  }
-
-  .feed:after {
-    background-position: -12px 0;
-  }
-
-  #hide_pins_link:after {
-    background-position: -24px 0;
-  }
-
-  #map_permalink:after {
-    background-position: -48px 0;
-  }
-
-  #fms_shortlist_all:after {
-    background-position: -60px 0;
-  }
-
-  #toggle-fullscreen:after {
-    background-position: -72px 0;
-  }
-
-  #toggle-fullscreen.compress:after {
-    background-position: -84px 0;
-  }
+    width: 12px;
+    height: 12px;
+    margin-#{left}: 8px;
+    vertical-align: -0.1em;
+    background-size: 96px 12px;
+    @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
 }
 
-// The "Try again / OK" buttons in mobile reporting UI
-#mob_sub_map_links {
-  position: absolute;
-  bottom:0;
-  display:table;
-  margin:0;
-  width:100%;
-  background:rgba(0, 0, 0, 0.7);
-  a {
-    color:#fff;
-    width:50%;
-    padding:0.5em 0;
-    font-size:1em;
-    display:table-cell;
-    text-align:center;
-    &:hover {
-      background:#000;
-      text-decoration:none;
-    }
-  }
-  &.map_complete {
-    height: 100%;
-    background: none;
-    display: block;
-    border-bottom: 4px solid #fff;
-    a#try_again {
-      position: absolute;
-      display: block;
-      left: 25%; // along with width of 50%, centres it
-      bottom: 0;
-      margin-bottom: 6em;
-      background: rgba(0, 0, 0, 0.8);
-      @include border-radius(0.5em);
-    }
-    a#mob_ok {
-      position: absolute;
-      display: block;
-      #{$right}: 1em;
-      bottom: 0;
-      width: 4em;
-      background: #fff;
-      color: #000;
+// Generic component for presenting a semi-transparent black toolbar
+// at the bottom of the window on map pages. When the window is wide
+// enough, the toolbar docks to the right edge of the screen.
+// We use this for the "OK/Cancel" buttons after you tap a location
+// in the mobile reporting view, and for the "Hide pins / Get updates"
+// etc links on mobile and desktop map pages.
+.sub-map-links {
+    @include flex-container();
 
-      &:before {
-        content: "";
-        display: block;
-        width: 16px;
-        height: 16px;
-        margin: 0 auto 2px auto;
-        background-size: 112px 16px;
-        @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
-        background-position: -32px 0;
-      }
+    position: absolute;
+    #{$left}: 0;
+    #{$right}: 0;
+    bottom: 0;
+    margin: 0;
+
+    a {
+        @include box-sizing(border-box);
+        @include flex(1 1 auto);
+
+        display: inline-block; // fallback for non-flexbox browsers
+        color: inherit;
+        padding: 0.5em;
+        font-size: 1em;
+        text-align: center;
+
+        &:hover,
+        &:focus {
+            background-color: #000;
+            text-decoration: none;
+        }
     }
-  }
+
+    #try_again,
+    #mob_ok {
+        width: 50%;
+    }
+
+    .feed:after {
+        @extend %sub-map-link-icon;
+        background-position: -12px 0;
+    }
+
+    #hide_pins_link:after {
+        @extend %sub-map-link-icon;
+        background-position: -24px 0;
+    }
+
+    #map_permalink:after {
+        @extend %sub-map-link-icon;
+        background-position: -48px 0;
+    }
+
+    #fms_shortlist_all:after {
+        @extend %sub-map-link-icon;
+        background-position: -60px 0;
+    }
+
+    #toggle-fullscreen:after {
+        @extend %sub-map-link-icon;
+        background-position: -72px 0;
+    }
+
+    #toggle-fullscreen.compress:after {
+        @extend %sub-map-link-icon;
+        background-position: -84px 0;
+    }
+}
+
+// Want some visual consistency between the top and bottom bars on mobile.
+.mobile-map-banner,
+.sub-map-links {
+    background-color: #333;
+    background-color: rgba(#000, 0.7);
+    color: #fff;
+}
+
+// On mobile, once #mob_ok has been pressed, the new report form is shown,
+// and .sub-map-links transforms into a completely different-looking set
+// of buttons for return back to the map.
+.sub-map-links.map_complete {
+    // Undo flex.
+    display: block;
+
+    // "Fade out" the map.
+    height: 100%;
+    background-color: rgba(#000, 0.3);
+
+    #try_again,
+    #mob_ok {
+        position: absolute;
+        display: block;
+        bottom: 0;
+    }
+
+    // Turn #try_again into a black button, centred above the viewport.
+    #try_again {
+        left: 25%; // along with width of 50%, centres it
+        margin-bottom: 6em;
+        background: rgba(0, 0, 0, 0.8);
+        @include border-radius(0.5em);
+    }
+
+    // Turn #mob_ok into a white "tab" overlapping the map.
+    #mob_ok {
+        #{$right}: 1em;
+        width: 4em;
+        background: #fff;
+        color: #000;
+
+        // "Down" arrow.
+        &:before {
+            content: "";
+            display: block;
+            width: 16px;
+            height: 16px;
+            margin: 2px auto;
+            background-size: 112px 16px;
+            @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
+            background-position: -32px 0;
+        }
+    }
 }
 
 .big-hide-pins-link {
@@ -1618,8 +1635,6 @@ html.js #map .noscript {
   #{$left}: 0;
   #{$right}: 0;
   font-size:0.75em;
-  color: #fff;
-  background:rgba(0, 0, 0, 0.7);
   padding:0.75em 30px;
   a {
     @include button-reset(#333, #1a1a1a, #1a1a1a, #fff, #333, #1a1a1a, #1a1a1a, #fff);
@@ -2313,7 +2328,7 @@ a#geolocate_link.loading, .btn--geolocate.loading {
   .admin-nav,
   .olControlAttribution,
   .olControlPanZoom,
-  #sub_map_links,
+  .sub-map-links,
   #fms_pan_zoom,
   .screen-only,
   .olMapViewport,

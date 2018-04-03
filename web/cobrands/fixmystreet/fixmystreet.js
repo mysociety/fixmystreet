@@ -682,7 +682,7 @@ $.extend(fixmystreet.set_up, {
     //add links container (if its not there)
     if (fixmystreet.cobrand != 'zurich') {
         if ($('#sub_map_links').length === 0) {
-            $('<p id="sub_map_links" />').insertAfter($('#map'));
+            $('<p class="sub-map-links" id="sub_map_links" />').insertAfter($('#map'));
         }
         if ($('#map_permalink').length === 0) {
             $('#sub_map_links').append('<a href="#" id="map_permalink">' + translation_strings.permalink + '</a>');
@@ -1032,7 +1032,7 @@ fixmystreet.display = {
             width = $map_box.width(),
             height = $map_box.height();
         $map_box.append(
-            '<p id="mob_sub_map_links">' +
+            '<p class="sub-map-links" id="mob_sub_map_links">' +
             '<a href="#" id="try_again">' +
                 translation_strings.try_again +
             '</a>' +
