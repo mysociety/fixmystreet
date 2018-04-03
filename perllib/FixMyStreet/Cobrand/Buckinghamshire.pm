@@ -289,4 +289,11 @@ sub is_council_with_case_management { 1 }
 # Try OSM for Bucks as it provides better disamiguation descriptions.
 sub get_geocoder { 'OSM' }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    # Buckinghamshire is a two-tier council, but only want to display
+    # county-level categories on their cobrand.
+    return $rs->search( { 'body.id' => 2217 } );
+}
+
 1;
