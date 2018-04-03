@@ -134,13 +134,19 @@ function show_responsibility_error(id) {
     $("#js-bucks-responsibility").removeClass("hidden");
     $("#js-bucks-responsibility .js-responsibility-message").addClass("hidden");
     $(id).removeClass("hidden");
-
-    // TODO: Disable report creation at this point?
 }
 
 function hide_responsibility_errors() {
     $("#js-bucks-responsibility").addClass("hidden");
     $("#js-bucks-responsibility .js-responsibility-message").addClass("hidden");
+}
+
+function disable_report_form() {
+    $("#problem_form").hide();
+}
+
+function enable_report_form() {
+    $("#problem_form").show();
 }
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
@@ -156,18 +162,16 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     non_interactive: true,
     road: true,
     asset_item: 'road',
-    asset_category: [
-        "Pothole",
-        "Road surface",
-        "Road lines / road markings"
-    ],
+    all_categories: true,
     actions: {
         found: function(layer, feature) {
             if (bucks_types.indexOf(feature.attributes.feature_ty) != -1) {
                 hide_responsibility_errors();
+                enable_report_form();
             } else {
                 // User has clicked a road that Bucks don't maintain.
                 show_responsibility_error("#js-not-bucks-road");
+                disable_report_form();
             }
         },
 
@@ -175,6 +179,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             // If a feature wasn't found at the location they've clicked, it's
             // probably a field or something. Show an error to that effect.
             show_responsibility_error("#js-not-a-road");
+            disable_report_form();
         }
     },
     usrn: {
