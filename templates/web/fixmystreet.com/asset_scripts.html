@@ -1,0 +1,6 @@
+[%
+    FOR cobrand IN c.config.COBRAND_ASSETS;
+        script = '/cobrands/' _ cobrand _ '/assets.js';
+        scripts.push(version(script));
+    END;
+%]

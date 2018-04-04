@@ -12,7 +12,7 @@ use strict;
 sub map_template { 'fms' }
 
 sub map_javascript { [
-    '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
+    '/vendor/OpenLayers/OpenLayers.wfs.js',
     '/js/map-OpenLayers.js',
     '/js/map-bing-ol.js',
     '/js/map-fms.js',
