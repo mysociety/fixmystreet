@@ -12,7 +12,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('system_user@example.com', name => 'test users');
 my $body = $mech->create_body_ok(2482, 'Bromley');
-my $contact = $mech->create_contact_ok( body_id => $body->id, category => 'sidewalks', email => 'sidewalks@example.com' );
+my $contact = $mech->create_contact_ok( body_id => $body->id, category => 'Sidewalk and Curb Issues', email => 'sidewalks' );
 
 my $dtf = DateTime::Format::W3CDTF->new;
 
@@ -90,13 +90,14 @@ subtest 'basic parsing checks' => sub {
             )->first;
 
     ok $p, 'Found problem';
+    is $p->title, 'Sidewalk and Curb Issues problem', 'correct problem title';
     is $p->detail, 'This is a sidewalk problem', 'correct problem description';
     is $p->created, $p1_date, 'Problem has correct creation date';
     is $p->confirmed, $p1_date, 'Problem has correct confirmed date';
     is $p->whensent, $p1_date, 'Problem has whensent set';
     is $p->state, 'confirmed', 'correct problem state';
     is $p->user->id, $user->id, 'user set to system user';
-    is $p->category, 'sidewalks', 'correct problem category';
+    is $p->category, 'Sidewalk and Curb Issues', 'correct problem category';
 
     my $p2 = FixMyStreet::DB->resultset('Problem')->search( { external_id => 638345 } )->first;
     ok $p2, 'second problem found';

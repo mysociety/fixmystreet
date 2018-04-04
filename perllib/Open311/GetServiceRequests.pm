@@ -137,7 +137,7 @@ sub create_problems {
         };
         $problems = $self->schema->resultset('Problem')->to_body($body)->search( $criteria );
 
-        my @contacts = grep { $request->{service_code} eq $_->category } $contacts->all;
+        my @contacts = grep { $request->{service_code} eq $_->email } $contacts->all;
         my $contact = $contacts[0] ? $contacts[0]->category : 'Other';
 
         my $state = $open311->map_state($request->{status});
