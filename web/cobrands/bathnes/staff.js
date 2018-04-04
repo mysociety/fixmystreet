@@ -6,8 +6,7 @@ if (!fixmystreet.maps || !fixmystreet.maps.banes_defaults) {
 
 var llpg_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
-        fillColor: "#FFFF00",
-        fillOpacity: 0.6,
+        fillOpacity: 0,
         strokeColor: "#000000",
         strokeOpacity: 0.25,
         strokeWidth: 2,
