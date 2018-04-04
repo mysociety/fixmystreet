@@ -58,18 +58,32 @@ my $o = Open311->new(
     test_get_returns => { 'requests.xml' => $requests_xml }
 );
 
+my $p1_date = $dtf->parse_datetime('2010-04-14T06:37:38-08:00')
+                ->set_time_zone(
+                    FixMyStreet->time_zone || FixMyStreet->local_time_zone
+                );
+my $p2_date = $dtf->parse_datetime('2010-04-15T06:37:38-08:00')
+                ->set_time_zone(
+                    FixMyStreet->time_zone || FixMyStreet->local_time_zone
+                );
+my $start_date = $p1_date->clone;
+$start_date->add( hours => -2);
+my $end_date = $p2_date->clone;
+$end_date->add( hours => 2);
+
+
 subtest 'basic parsing checks' => sub {
-    my $update = Open311::GetServiceRequests->new( system_user => $user );
+    my $update = Open311::GetServiceRequests->new(
+        system_user => $user,
+        start_date => $start_date,
+        end_date => $end_date
+    );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $update->create_problems( $o, $body );
     };
 
-    my $p1_date = $dtf->parse_datetime('2010-04-14T06:37:38-08:00')
-                    ->set_time_zone(
-                        FixMyStreet->time_zone || FixMyStreet->local_time_zone
-                  );
 
     my $p = FixMyStreet::DB->resultset('Problem')->search(
                 { external_id => 638344 }
@@ -277,6 +291,8 @@ for my $test (
         my $update = Open311::GetServiceRequests->new(
             system_user => $user,
             convert_latlong => 1,
+            start_date => $start_date,
+            end_date => $end_date
         );
 
         FixMyStreet::override_config {

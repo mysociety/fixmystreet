@@ -47,9 +47,15 @@ sub create_problems {
     if ( $self->start_date || $self->end_date ) {
         return 0 unless $self->start_date && $self->end_date;
 
-
         $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $self->start_date );
         $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $self->end_date );
+    } else {
+        my $end_dt = DateTime->now();
+        my $start_dt = $end_dt->clone;
+        $start_dt->add( hours => -2 );
+
+        $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $start_dt );
+        $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $end_dt );
     }
 
     my $requests = $open311->get_service_requests( $args );

@@ -15,11 +15,21 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
+use DateTime;
+
 use CronFns;
 my ($verbose, $nomail) = CronFns::options();
 
 use Open311::GetServiceRequests;
 
-my $reports = Open311::GetServiceRequests->new( verbose => $verbose );
+my $dt = DateTime->now();
+my $dt_24hrs_ago = $dt->clone;
+$dt_24hrs_ago->add( hours => -24 );
+
+my $reports = Open311::GetServiceRequests->new(
+    verbose => 1,
+    start_date => $dt_24hrs_ago,
+    end_date => $dt
+);
 
 $reports->fetch;
