@@ -132,32 +132,23 @@ sub _recent {
     };
 
     my $probs;
-    my $new = 0;
-    if (defined $lat) {
-        my $dist2 = $dist; # Create a copy of the variable to stop it being stringified into a locale in the next line!
-        $key .= ":$lat:$lon:$dist2";
-        $probs = Memcached::get($key);
-        unless ($probs) {
-            $attrs->{bind} = [ $lat, $lon, $dist ];
-            $attrs->{join} = 'nearby';
-            $probs = [ mySociety::Locale::in_gb_locale {
-                $rs->search( $query, $attrs )->all;
-            } ];
-            $new = 1;
-        }
+    if (defined $lat) { # No caching
+        $attrs->{bind} = [ $lat, $lon, $dist ];
+        $attrs->{join} = 'nearby';
+        $probs = [ mySociety::Locale::in_gb_locale {
+            $rs->search( $query, $attrs )->all;
+        } ];
     } else {
         $probs = Memcached::get($key);
-        unless ($probs) {
+        if ($probs) {
+            # Need to reattach schema so that confirmed column gets reinflated.
+            $probs->[0]->result_source->schema( $rs->result_source->schema ) if $probs->[0];
+            # Catch any cached ones since hidden
+            $probs = [ grep { ! $_->is_hidden } @$probs ];
+        } else {
             $probs = [ $rs->search( $query, $attrs )->all ];
-            $new = 1;
+            Memcached::set($key, $probs, 3600);
         }
-    }
-
-    if ( $new ) {
-        Memcached::set($key, $probs, 3600);
-    } else {
-        # Need to reattach schema so that confirmed column gets reinflated.
-        $probs->[0]->result_source->schema( $rs->result_source->schema ) if $probs->[0];
     }
 
     return $probs;
