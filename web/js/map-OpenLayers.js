@@ -542,8 +542,8 @@ $.extend(fixmystreet.utils, {
                     renderers: ['SVGBig', 'VML', 'Canvas'],
                     strategies: [ new OpenLayers.Strategy.Fixed() ],
                     protocol: new OpenLayers.Protocol.HTTP({
-                        url: "/mapit/area/" + fixmystreet.area[i] + ".kml?simplify_tolerance=0.0001",
-                        format: new OpenLayers.Format.KML()
+                        url: "/mapit/area/" + fixmystreet.area[i] + ".geojson?simplify_tolerance=0.0001",
+                        format: new OpenLayers.Format.GeoJSON()
                     })
                 });
                 fixmystreet.map.addLayer(area);

@@ -28,6 +28,7 @@ fixmystreet.maps.banes_defaults = {
     asset_id_field: 'feature_no',
     attributes: null,
     geometryName: 'msGeometry',
+    body: "Bath and North East Somerset Council",
     srsName: "EPSG:27700"
 };
 

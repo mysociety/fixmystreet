@@ -16,6 +16,7 @@ var options = {
         asset_id: 'COD_ASSET_ID',
         usrn: 'COD_USRN'
     },
+    body: "Bristol City Council",
     geometryName: 'SHAPE'
 };
 
