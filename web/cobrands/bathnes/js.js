@@ -187,7 +187,8 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
         attribute: 'usrn',
         field: 'site_code'
     },
-    name: "Adopted Highways"
+    name: "Adopted Highways",
+    attribution: " © Crown Copyright. All rights reserved. 1000233344"
 }));
 
 
