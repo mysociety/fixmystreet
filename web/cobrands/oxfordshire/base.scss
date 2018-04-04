@@ -81,6 +81,16 @@ dd, p {
     background-color: mix(#fff, $primary, 85%);
 }
 
+.extra-text {
+  padding: 1em;
+  margin: 0 -1em;
+  border-bottom: 1px solid $oxfordshire_mid_grey_green;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
 @media print {
     body {
         background-color: #fff !important;
