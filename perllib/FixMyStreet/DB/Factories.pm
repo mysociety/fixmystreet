@@ -6,6 +6,7 @@ use FixMyStreet::DB;
 
 package FixMyStreet::DB::Factories;
 
+use Path::Tiny;
 my $db;
 my $opt;
 
@@ -25,6 +26,7 @@ sub setup {
     }
 
     if ($opt->empty) {
+        path(FixMyStreet->path_to('web/photo'))->remove_tree({ keep_root => 1 });
         $db->dbh->do(q{
 DO
 $func$
