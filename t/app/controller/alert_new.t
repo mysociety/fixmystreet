@@ -451,9 +451,8 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     is $count, 5, 'Three emails, with five matching lines in them';
 
     my $email = $emails[0];
-    my $body = $mech->get_text_body_from_email($email);
-    like $body, qr/Other User/, 'Update name given';
-    unlike $body, qr/Anonymous User/, 'Update name not given';
+    is +(my $c = () = $email->as_string =~ /Other User/g), 2, 'Update name given, twice';
+    unlike $email->as_string, qr/Anonymous User/, 'Update name not given';
 
     # The update alert was to the problem reporter, so has a special update URL
     $mech->log_out_ok;
