@@ -52,7 +52,7 @@ sub create_problems {
     } else {
         my $end_dt = DateTime->now();
         my $start_dt = $end_dt->clone;
-        $start_dt->add( hours => -2 );
+        $start_dt->add( hours => -1 );
 
         $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $start_dt );
         $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $end_dt );
