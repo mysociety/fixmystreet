@@ -13,7 +13,7 @@
         - Enable conversion from EPSG:27700 when fetching over Open311 #2028
     - Front end improvements:
         - Improve questionnaire process. #1939 #1998
-        - Increase size of "sub map links" (hide pins, permalink, etc) #2003
+        - Increase size of "sub map links" (hide pins, permalink, etc) #2003 #2056
         - Edge-to-edge email layout on narrow screens #2010
         - Add default placeholder to report extra fields. #2027
         - Clicking the "Click map" instruction banner now begins a new report #2033

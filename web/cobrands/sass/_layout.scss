@@ -613,9 +613,14 @@ body.authpage {
   #{$left}: auto !important;
 }
 
-#sub_map_links {
+// Dock to side of screen, rather than filling 100% width.
+.sub-map-links {
   #{$left}: auto;
   bottom: 2em;
+
+  a {
+    padding: 0.5em 1em;
+  }
 }
 
 // Show the extra button if there is vertical space.
