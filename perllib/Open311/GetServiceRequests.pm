@@ -9,6 +9,7 @@ use DateTime::Format::W3CDTF;
 has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => sub { undef } );
 has end_date => ( is => 'ro', default => sub { undef } );
+has fetch_all => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 has convert_latlong => ( is => 'rw', default => 0 );
@@ -26,17 +27,26 @@ sub fetch {
     );
 
     while ( my $body = $bodies->next ) {
-
-        my $o = Open311->new(
-            endpoint     => $body->endpoint,
-            api_key      => $body->api_key,
-            jurisdiction => $body->jurisdiction,
-        );
+        my $o = $self->create_open311_object( $body );
 
         $self->system_user( $body->comment_user );
         $self->convert_latlong( $body->convert_latlong );
+        $self->fetch_all( $body->get_extra_metadata('fetch_all_problems') );
         $self->create_problems( $o, $body );
     }
+}
+
+# this is so we can test
+sub create_open311_object {
+    my ($self, $body) = @_;
+
+    my $o = Open311->new(
+        endpoint     => $body->endpoint,
+        api_key      => $body->api_key,
+        jurisdiction => $body->jurisdiction,
+    );
+
+    return $o;
 }
 
 sub create_problems {
@@ -49,7 +59,7 @@ sub create_problems {
 
         $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $self->start_date );
         $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $self->end_date );
-    } else {
+    } elsif ( !$self->fetch_all ) {
         my $end_dt = DateTime->now();
         my $start_dt = $end_dt->clone;
         $start_dt->add( hours => -1 );

@@ -2,7 +2,7 @@
 
 * Unreleased
     - New features
-        - Fetch problems over Open311 #1986
+        - Fetch problems over Open311 #1986 #2067
         - Option to send multiple photos over Open311 #1986
         - Allow Open311 service definitions to include automated
           attributes #1986

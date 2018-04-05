@@ -273,6 +273,47 @@ for my $test (
     };
 }
 
+subtest 'check fetch_all body setting ignores date errors' => sub {
+    my $xml = prepare_xml({ id => '12345678' });
+
+    $body->update( {
+        send_method => 'Open311',
+        fetch_problems => 1,
+        comment_user_id => $user->id,
+        endpoint => 'http://open311.localhost/',
+        api_key => 'KEY',
+        jurisdiction => 'test',
+    } );
+    $body->set_extra_metadata( fetch_all_problems => 1 );
+    $body->update();
+
+    my $update = Open311::GetServiceRequests->new(
+        verbose => 1,
+        system_user => $user,
+    );
+    $update = Test::MockObject::Extends->new($update);
+
+    $update->mock('create_open311_object', sub {
+        return Open311->new(
+            jurisdiction => 'mysociety',
+            endpoint => 'http://example.com',
+            test_mode => 1,
+            test_get_returns => { 'requests.xml' => $xml}
+        );
+    } );
+
+    my $count = FixMyStreet::DB->resultset('Problem')->count;
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $update->fetch;
+    };
+
+    my $after = FixMyStreet::DB->resultset('Problem')->count;
+
+    is $after, $count + 1, 'problem created';
+};
+
 for my $test (
   {
       desc => 'convert easting/northing to lat/long',
