@@ -127,7 +127,8 @@ sub create_problems {
             $updated_time->clone->set_time_zone('UTC')
         );
         if ($args->{start_date} && $args->{end_date} && ($updated lt $args->{start_date} || $updated gt $args->{end_date}) ) {
-            warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating"
+            warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
+                . "$updated either less than $args->{start_date} or greater than $args->{end_date}"
                 if $self->verbose;
             next;
         }
