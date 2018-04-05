@@ -150,6 +150,45 @@ subtest 'check open311 configuring' => sub {
     is $conf->endpoint, 'http://example.org/open311', 'endpoint updated';
     is $conf->api_key, 'new api key', 'api key updated';
     is $conf->jurisdiction, 'open311', 'jurisdiction configures';
+    ok !$conf->get_extra_metadata('fetch_all_problems'), 'fetch all problems unset';
+
+    $mech->form_number(3);
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                api_key      => 'new api key',
+                endpoint     => 'http://example.org/open311',
+                jurisdiction => 'open311',
+                send_comments => 0,
+                send_method  => 'Open311',
+                fetch_all_problems => 1,
+            }
+        }
+    );
+
+    $mech->content_contains('Values updated');
+
+    $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
+    ok $conf->get_extra_metadata('fetch_all_problems'), 'fetch all problems set';
+
+    $mech->form_number(3);
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                api_key      => 'new api key',
+                endpoint     => 'http://example.org/open311',
+                jurisdiction => 'open311',
+                send_comments => 0,
+                send_method  => 'Open311',
+                fetch_all_problems => 0,
+            }
+        }
+    );
+
+    $mech->content_contains('Values updated');
+
+    $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
+    ok !$conf->get_extra_metadata('fetch_all_problems'), 'fetch all problems unset';
 };
 
 subtest 'check text output' => sub {

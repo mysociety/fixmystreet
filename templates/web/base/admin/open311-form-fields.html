@@ -150,6 +150,20 @@
             <input type="checkbox" id="convert_latlong" name="convert_latlong"[% ' checked' IF object.convert_latlong %]>
             <label for="convert_latlong" class="inline">[% loc('Convert location from Easting/Northing') %]</label>
         </p>
+
+        <div class="admin-hint">
+          <p>
+            [% loc(
+                "Enable <strong>Always fetch all problems</strong> if you've enabled Open311 problem-fetching above
+                and the endpoint always returns a list of all problems. This will suppress error messages about
+                bad dates in the problems fetched."
+            ) %]
+          </p>
+        </div>
+        <p>
+            <input type="checkbox" id="fetch_all_problems" name="fetch_all_problems"[% ' checked' IF object.get_extra_metadata('fetch_all_problems') %]>
+            <label for="fetch_all_problems" class="inline">[% loc('Always fetch all problems') %]</label>
+        </p>
     </div>
   [% END %]
 </div>

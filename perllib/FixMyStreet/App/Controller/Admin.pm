@@ -218,9 +218,14 @@ sub bodies : Path('bodies') : Args(0) {
         $c->forward('check_for_super_user');
         $c->forward('/auth/check_csrf_token');
 
-        my $params = $c->forward('body_params');
+        my $values = $c->forward('body_params');
         unless ( keys %{$c->stash->{body_errors}} ) {
-            my $body = $c->model('DB::Body')->create( $params );
+            my $body = $c->model('DB::Body')->create( $values->{params} );
+            if ($values->{extras}) {
+                $body->set_extra_metadata( $_ => $values->{extras}->{$_} )
+                    for keys %{$values->{extras}};
+                $body->update;
+            }
             my @area_ids = $c->get_param_list('area_ids');
             foreach (@area_ids) {
                 $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
@@ -396,9 +401,14 @@ sub update_contacts : Private {
         $c->forward('check_for_super_user');
         $c->forward('/auth/check_csrf_token');
 
-        my $params = $c->forward( 'body_params' );
+        my $values = $c->forward( 'body_params' );
         unless ( keys %{$c->stash->{body_errors}} ) {
-            $c->stash->{body}->update( $params );
+            $c->stash->{body}->update( $values->{params} );
+            if ($values->{extras}) {
+                $c->stash->{body}->set_extra_metadata( $_ => $values->{extras}->{$_} )
+                    for keys %{$values->{extras}};
+                $c->stash->{body}->update;
+            }
             my @current = $c->stash->{body}->body_areas->all;
             my %current = map { $_->area_id => 1 } @current;
             my @area_ids = $c->get_param_list('area_ids');
@@ -465,7 +475,10 @@ sub body_params : Private {
     );
     my %params = map { $_ => $c->get_param($_) || $defaults{$_} } keys %defaults;
     $c->forward('check_body_params', [ \%params ]);
-    return \%params;
+    my @extras = qw/fetch_all_problems/;
+    %defaults = map { $_ => '' } @extras;
+    my %extras = map { $_ => $c->get_param($_) || $defaults{$_} } @extras;
+    return { params => \%params, extras => \%extras };
 }
 
 sub check_body_params : Private {
