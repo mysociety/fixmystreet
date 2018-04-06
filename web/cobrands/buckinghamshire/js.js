@@ -6,8 +6,7 @@ if (!fixmystreet.maps) {
 
 var defaults = {
     http_options: {
-        url: "https://davea.tilma.dev.mysociety.org/mapserver/bucks",
-        // url: "https://confirmdev.eu.ngrok.io/tilma/mapserver/bucks",
+        url: "https://tilma.staging.mysociety.org/mapserver/bucks",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
