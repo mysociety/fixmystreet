@@ -111,6 +111,11 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     margin: 1em 0;
 }
 
+.admin-open311-section {
+    padding-left: 1em;
+    border-left: 1px solid #ccc;
+}
+
 .admin-hint {
     font-size: 80%; // little question marks are small
     cursor: pointer;

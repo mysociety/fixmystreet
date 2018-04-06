@@ -76,6 +76,52 @@
         <label for="send_comments" class="inline">[% loc('Use Open311 update-sending extension') %]</label>
     </p>
 
+    <div class="admin-open311-section">
+        <div class="admin-hint">
+          <p>
+            [% loc(
+              "If you've enabled Open311 update-sending above, you must identify which 
+              FixMyStreet <strong>user</strong> will be attributed as the creator of those updates
+              when they are shown on the site. Enter the ID (number) of that user."
+            ) %]
+          </p>
+        </div>
+        <p>
+            <label for"comment_user_id">[% loc('User ID to attribute fetched comments to') %]</label>
+            <input type="text" class="form-control" name="comment_user_id" value="[% object.comment_user_id %]">
+            [% IF object.comment_user_id %]
+            <a href="[% c.uri_for('user_edit', object.comment_user_id) %]">[% loc('edit user') %]</a>
+            [% END %]
+        </p>
+
+        <div class="admin-hint">
+          <p>
+            [% loc(
+              "If you've enabled Open311 update-sending above, enable <strong>suppression of alerts</strong> 
+              if you do <strong>not</strong> want that user to be notified whenever these updates are created."
+            ) %]
+          </p>
+        </div>
+        <p>
+            <input type="checkbox" id="suppress_alerts" name="suppress_alerts"[% ' checked' IF object.suppress_alerts %]>
+            <label for="suppress_alerts" class="inline">[% loc('Do not send email alerts on fetched comments to problem creator') %]</label>
+        </p>
+
+        <div class="admin-hint">
+          <p>
+            [% loc(
+              "If you've enabled Open311 update-sending above, Open311 usually only accepts OPEN or CLOSED status in 
+              its updates. Enable <strong>extended Open311 stauses</strong> if you want to allow extra states to be passed.
+              Check that your cobrand supports this feature before switching it on."
+            ) %]
+          </p>
+        </div>
+        <p>
+            <input type="checkbox" id="send_extended_statuses" name="send_extended_statuses"[% ' checked' IF object.send_extended_statuses %]>
+            <label for="send_extended_statuses" class="inline">[% loc('Send extended Open311 statuses with service request updates') %]</label>
+        </p>
+    </div>
+
     <div class="admin-hint">
       <p>
         [% loc(
@@ -91,61 +137,19 @@
         <label for="fetch_problems" class="inline">[% loc('Use Open311 problem fetching') %]</label>
     </p>
 
-    <div class="admin-hint">
-      <p>
-        [% loc(
-          "If you've enabled Open311 update-sending above, you must identify which 
-          FixMyStreet <strong>user</strong> will be attributed as the creator of those updates
-          when they are shown on the site. Enter the ID (number) of that user."
-        ) %]
-      </p>
+    <div class="admin-open311-section">
+        <div class="admin-hint">
+          <p>
+            [% loc(
+                "Enable <strong>Convert location from Easting/Northing</strong> if you've enabled Open311 problem-fetching above
+                and problems fetching from the endpoint have the location in Easting/Northings and not Latitude/Longitude."
+            ) %]
+          </p>
+        </div>
+        <p>
+            <input type="checkbox" id="convert_latlong" name="convert_latlong"[% ' checked' IF object.convert_latlong %]>
+            <label for="convert_latlong" class="inline">[% loc('Convert location from Easting/Northing') %]</label>
+        </p>
     </div>
-    <p>
-        <label for"comment_user_id">[% loc('User ID to attribute fetched comments to') %]</label>
-        <input type="text" class="form-control" name="comment_user_id" value="[% object.comment_user_id %]">
-        [% IF object.comment_user_id %]
-        <a href="[% c.uri_for('user_edit', object.comment_user_id) %]">[% loc('edit user') %]</a>
-        [% END %]
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc(
-          "If you've enabled Open311 update-sending above, enable <strong>suppression of alerts</strong> 
-          if you do <strong>not</strong> want that user to be notified whenever these updates are created."
-        ) %]
-      </p>
-    </div>
-    <p>
-        <input type="checkbox" id="suppress_alerts" name="suppress_alerts"[% ' checked' IF object.suppress_alerts %]>
-        <label for="suppress_alerts" class="inline">[% loc('Do not send email alerts on fetched comments to problem creator') %]</label>
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc(
-          "If you've enabled Open311 update-sending above, Open311 usually only accepts OPEN or CLOSED status in 
-          its updates. Enable <strong>extended Open311 stauses</strong> if you want to allow extra states to be passed.
-          Check that your cobrand supports this feature before switching it on."
-        ) %]
-      </p>
-    </div>
-    <p>
-        <input type="checkbox" id="send_extended_statuses" name="send_extended_statuses"[% ' checked' IF object.send_extended_statuses %]>
-        <label for="send_extended_statuses" class="inline">[% loc('Send extended Open311 statuses with service request updates') %]</label>
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc(
-            "Enable <strong>Convert location from Easting/Northing</strong> if you've enabled Open311 problem-fetching above
-            and problems fetching from the endpoint have the location in Easting/Northings and not Latitude/Longitude."
-        ) %]
-      </p>
-    </div>
-    <p>
-        <input type="checkbox" id="convert_latlong" name="convert_latlong"[% ' checked' IF object.convert_latlong %]>
-        <label for="convert_latlong" class="inline">[% loc('Convert location from Easting/Northing') %]</label>
-    </p>
   [% END %]
 </div>
