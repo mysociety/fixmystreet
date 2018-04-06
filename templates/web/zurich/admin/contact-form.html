@@ -18,19 +18,19 @@
     <p><strong>[% loc('Email:') %] </strong>
     <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
 
-  [% IF contact.in_storage %]
     <p>
+      [% IF contact.in_storage %]
         <label for="state">[% loc('State') %]</label>
         <select name="state" id="state">
           <option value="confirmed"[% ' selected' IF contact.state == 'confirmed' %]>[% loc('Confirmed') %]
           <option value="deleted"[% ' selected' IF contact.state == 'deleted' %]>[% loc('Deleted') %]
         </select>
+      [% ELSE %]
+        <input type="hidden" name="state" value="confirmed" id="confirmed">
+      [% END %]
         <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
         <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
     </p>
-  [% ELSE %]
-    <input type="hidden" name="confirmed" value="1" id="confirmed">
-  [% END %]
 
     <p><strong>[% loc('Note:') %] </strong><textarea class="form-control" name="note" rows="3" cols="40"></textarea>
 
