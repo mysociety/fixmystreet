@@ -141,7 +141,8 @@ sub update_comments {
                 # if the comment is older than the last update
                 # do not change the status of the problem as it's
                 # tricky to determine the right thing to do.
-                if ( $comment->created > $p->lastupdate ) {
+                # Allow the same time in case report/update created at same time (in external system)
+                if ( $comment->created >= $p->lastupdate ) {
                     # don't update state unless it's an allowed state and it's
                     # actually changing the state of the problem
                     if ( FixMyStreet::DB::Result::Problem->visible_states()->{$state} && $p->state ne $state &&
