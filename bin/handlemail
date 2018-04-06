@@ -112,7 +112,7 @@ sub is_out_of_office {
     my (%attributes) = @_;
     return 1 if $attributes{problem} && $attributes{problem} == mySociety::HandleMail::ERR_OUT_OF_OFFICE;
     my $subject = $data{message}->head()->get("Subject");
-    return 1 if $subject =~ /Auto(matic|mated)?[ -]?(reply|response|responder)|Thank you for (your email|contacting)|Thank_you_for_your_email|Out of Office|This office is closed until|^Re: (Problem Report|New updates)|^Auto: |^E-Mail Response$|^Message Received:|have received your email|Acknowledgement of your email/i;
+    return 1 if $subject =~ /Auto(matic|mated)?[ -_]?(reply|response|responder)|Thank[ _]you[ _]for[ _](your[ _]email|contacting)|Out of (the )?Office|away from the office|This office is closed until|^Re: (Problem Report|New updates)|^Auto: |^E-Mail Response$|^Message Received:|have received your email|Acknowledgement of your email|away from my desk/i;
     return 0;
 }
 
