@@ -4,6 +4,11 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
+use LWP::Simple;
+use URI;
+use Try::Tiny;
+use JSON::MaybeXS;
+
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire County Council'; }
@@ -66,6 +71,18 @@ sub open311_config {
           value => $row->title },
         { name => 'description',
           value => $row->detail };
+
+    # Reports made via FMS.com or the app probably won't have a site code
+    # value because we don't display the adopted highways layer on those
+    # frontends. Instead we'll look up the closest asset from the WFS
+    # service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('site_code')) {
+        if (my $site_code = $self->lookup_site_code($row)) {
+            push @$extra,
+                { name => 'site_code',
+                value => $site_code };
+        }
+    }
 
     $row->set_extra_fields(@$extra);
 }
@@ -299,6 +316,39 @@ sub categories_restriction {
     # Buckinghamshire is a two-tier council, but only want to display
     # county-level categories on their cobrand.
     return $rs->search( { 'body.id' => 2217 } );
+}
+
+sub lookup_site_code {
+    my $self = shift;
+    my $row = shift;
+
+    my $buffer = 5; # metres
+    my ($x, $y) = $row->local_coords;
+    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+
+    my $uri = URI->new("https://tilma.staging.mysociety.org/mapserver/bucks");
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
+        TYPENAME => "Whole_Street",
+        VERSION => "1.1.0",
+        outputformat => "geojson",
+        BBOX => "$w,$s,$e,$n"
+    );
+
+    my $response = get($uri);
+
+    my $j = JSON->new->utf8->allow_nonref;
+    try {
+        $j = $j->decode($response);
+        return $j->{features}->[0]->{properties}->{site_code};
+    } catch {
+        # There was either no asset found, or an error with the WFS
+        # call - in either case let's just proceed without the USRN.
+        return;
+    }
+
 }
 
 1;
