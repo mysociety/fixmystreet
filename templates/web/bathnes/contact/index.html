@@ -134,12 +134,6 @@
     </fieldset>
 </form>
 
-<h4>[% loc("Don't like forms?") %]</h4>
-
-<p>
-[% tprintf( loc("You can contact technical support on <a href='mailto:%s'>%s</a>"), contact_email, contact_email) %]
-</p>
-
 [% TRY %][% INCLUDE 'contact/address.html' %][% CATCH file %][% END %]
 
 [% INCLUDE 'footer.html' pagefooter = 'yes' %]
