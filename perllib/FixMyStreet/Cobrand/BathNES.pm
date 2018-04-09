@@ -16,7 +16,7 @@ sub council_url { return 'bathnes'; }
 
 sub contact_email {
     my $self = shift;
-    return join( '@', 'fixmystreet', 'bathnes.gov.uk' );
+    return join( '@', 'councilconnect_rejections', 'bathnes.gov.uk' );
 }
 
 sub update_email {
