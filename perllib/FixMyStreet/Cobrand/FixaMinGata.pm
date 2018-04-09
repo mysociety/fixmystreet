@@ -172,4 +172,12 @@ sub pin_colour {
     return 'red';
 }
 
+sub state_groups_inspect {
+    [
+        [ _('Open'), [ 'confirmed', 'action scheduled', 'in progress', 'investigating' ] ],
+        [ _('Fixed'), [ 'fixed - council' ] ],
+        [ _('Closed'), [ 'duplicate', 'not responsible', 'unable to fix' ] ],
+    ]
+}
+
 1;
