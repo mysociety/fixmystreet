@@ -150,7 +150,7 @@ for my $test (
         comment_status => 'OPEN',
         mark_fixed=> 0,
         mark_open => 0,
-        problem_state => undef,
+        problem_state => 'confirmed',
         end_state => 'confirmed',
     },
     {
