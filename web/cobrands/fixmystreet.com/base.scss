@@ -476,6 +476,10 @@ input.postcode-form-test__postcode {
     background: #b2b2b2 url(/cobrands/fixmystreet.com/images/dashboard-teaser-blurred.jpg) 0 0 no-repeat;
     background-size: 100%;
 
+    strong {
+        color: #c00;
+    }
+
     form {
         max-width: 24em;
         padding: 2em;

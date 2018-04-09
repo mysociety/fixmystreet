@@ -18,6 +18,9 @@ FixMyStreet::override_config {
     $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard($body);
 };
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     TEST_DASHBOARD_DATA => $data,
@@ -29,8 +32,7 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/about/council-dashboard';
 
         $mech->submit_form_ok({ with_fields => { username => 'someone@somewhere.example.org' }});
-        $mech->content_contains('We will be in touch');
-        # XXX Check email arrives
+        $mech->content_contains('did not recognise your email');
 
         $mech->log_in_ok('someone@somewhere.example.org');
         $mech->get_ok('/reports/Birmingham/summary');

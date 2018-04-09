@@ -136,7 +136,7 @@ sub about_hook {
         $c->stash->{form_name} = $c->get_param('name') || '';
         $c->stash->{email} = $c->get_param('username') || '';
         if ($c->user_exists) {
-            my $body = _user_to_body($c);
+            my $body = $c->user->from_body || _user_to_body($c);
             if ($body) {
                 $c->stash->{body} = $body;
                 $c->stash->{wards} = [ { name => 'summary' } ];
@@ -152,9 +152,7 @@ sub about_hook {
                 $c->stash->{template} = 'auth/general.html';
                 $c->detach('/auth/general');
             } else {
-                $c->stash->{no_body_found} = 1;
-                $c->set_param('em', $email); # What the contact form wants
-                $c->detach('/contact/submit');
+                $c->stash->{error} = 'bad_email';
             }
         }
     }

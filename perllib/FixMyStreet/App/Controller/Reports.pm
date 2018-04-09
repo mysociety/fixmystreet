@@ -413,6 +413,8 @@ sub summary : Private {
     my ($self, $c) = @_;
     my $dashboard = $c->forward('load_dashboard_data');
 
+    $c->log->info($c->user->email . ' viewed ' . $c->req->uri->path_query) if $c->user_exists;
+
     eval {
         my $data = path(FixMyStreet->path_to('../data/all-reports-dashboard.json'))->slurp_utf8;
         $data = decode_json($data);

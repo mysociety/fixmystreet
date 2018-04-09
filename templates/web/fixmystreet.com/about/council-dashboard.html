@@ -2,15 +2,6 @@
     title = 'Dashboard :: Request Access', bodyclass = 'fullwidthpage'
 %]
 
-[% IF no_body_found %]
-
-<div class="confirmation-header confirmation-header--inbox">
-    <h1>Thanks!</h1>
-    <p>We will be in touch with a confirmation link soon.</p>
-</div>
-
-[% ELSE %]
-
 <div class="council-dashboard-login">
 
     <form method="post">
@@ -31,7 +22,12 @@
             <label for="demo-email">Contact email</label>
             <span class="required">required</span>
             <input class="form-control" type="email" name="username" id="demo-email" required value="[% email | html %]">
-            <p class="form-note">Ending in .gov.uk, or other official council domain</p>
+            <p class="form-note">
+                [% IF error == 'bad_email' %]<strong>[% END ~%]
+                Ending in .gov.uk, or other official council domain
+                [% IF error == 'bad_email' %]– please <a href="/contact?name=[% form_name | uri %]&amp;em=[% email | uri %]">contact us</a>
+                if we did not recognise your email</strong>[% END ~%]
+            </p>
         </div>
         <div class="form-group submit-group">
             <input type="hidden" name="r" value="about/council-dashboard">
@@ -46,7 +42,5 @@
     </form>
 
 </div>
-
-[% END %]
 
 [% INCLUDE footer.html %]
