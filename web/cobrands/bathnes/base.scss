@@ -1,0 +1,78 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+a { color: $link-colour; }
+a:visited { color: $link-visited-colour; }
+a:active, a:hover { color: $link-hover-colour; }
+
+@import "pattern-lib/header";
+@import "pattern-lib/navigation";
+@import "pattern-lib/footer";
+
+// Header
+
+#site-header {
+    // Performs same function as #global-header-bar
+    border-bottom: solid 5px $bathnes-primary;
+}
+
+.header-logo img {
+    vertical-align: baseline;
+}
+
+#report-cta {
+    right: 7em;
+    top: 1.65em;
+    transform: none;
+    background-color: #f4f4f4;
+    border-color: #d8d8d8 #d1d1d1 #bababa;
+}
+
+.navigation-trigger {
+    // Style guide has a button, we have a link
+    border-color: #d8d8d8 #d1d1d1 #bababa;
+    border-style: solid;
+    border-width: 1px;
+    line-height: normal;
+    &:visited {
+        color: #000;
+    }
+    &:hover, &:active {
+        text-decoration: none;
+    }
+}
+
+.navigation-primary-list {
+    // Navigation at bottom on mobile
+    display: none;
+}
+
+// Footer
+
+.footer-list {
+    // Cancel out default styling
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+// Front page
+
+#front-main {
+    h1 {
+        font-size: 1.7em;
+    }
+    h2 {
+        margin: 0;
+        font-size: 1.1em;
+    }
+}
+
+#front-main #postcodeForm {
+    margin-top: 1em;
+    label {
+        color: #fff;
+    }
+}

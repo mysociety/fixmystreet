@@ -46,7 +46,7 @@ IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
 END;
 
 IF bodyclass.match('mappage');
-    FOR script IN map_js;
+    FOR script IN map_js.merge(c.cobrand.call_hook('map_js_extra', c));
         IF script.match('^/');
             scripts.push(version(script));
         ELSE;

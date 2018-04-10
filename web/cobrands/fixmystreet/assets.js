@@ -475,6 +475,9 @@ fixmystreet.assets = {
             styleMap: options.stylemap || get_asset_stylemap(),
             assets: true
         };
+        if (options.attribution !== undefined) {
+            layer_options.attribution = options.attribution;
+        }
         if (options.srsName !== undefined) {
             layer_options.projection = new OpenLayers.Projection(options.srsName);
         } else if (fixmystreet.wmts_config) {

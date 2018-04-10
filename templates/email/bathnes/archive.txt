@@ -1,0 +1,27 @@
+Subject: Your reports on [% site_name %]
+
+Hello [% user.name %],
+
+FixMyStreet is being updated in Bath & North East Somerset to improve how problems get reported.
+
+As part of this process, we are closing historic reports which remain open in FixMyStreet.
+
+We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system, which we've listed below.
+
+If your report is no longer an issue, you don't need to do anything.
+
+If you believe that the issue has not been resolved you can report it again here: https://www.bathnes.gov.uk/reportit
+
+[% FOR report IN reports %]
+
+[% report.title %]
+
+Reported [% report.time_ago %] ago.
+
+View report: [% cobrand.base_url_for_report( report ) %]/report/[% report.id %]
+
+----
+
+[% END %]
+
+The FixMyStreet team and Bath & North East Somerset Council

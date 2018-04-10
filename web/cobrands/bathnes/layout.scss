@@ -1,0 +1,82 @@
+@import "_colours";
+@import "../sass/layout";
+
+// Header
+
+.header-search .site-search .form-control {
+    // overrides from default .form-control
+    @include border-radius(0);
+    box-shadow: none;
+    border: solid 1px #bfc1c3;
+    display: inline-block;
+}
+
+.header-search .site-search .button {
+    background-color: $button-colour;
+    border: none;
+}
+
+// Navigation
+// Style guide has navigation at top-of-HTML, not bottom
+
+.nav-wrapper {
+    display: none;
+}
+
+.navigation-primary-list {
+    display: block;
+}
+
+.navigation-primary-list__item {
+    margin-bottom: 0; // cancel default
+    span { // display same as links
+        display: block;
+        padding: 0.75em 1em;
+    }
+    &:first-child span {
+        padding-left: 0;
+    }
+}
+
+// Front page
+
+#front-main {
+    background-color: $front_main_background;
+    h1, h2 {
+        color: #fff;
+    }
+    h1 {
+        font-weight: bold;
+        font-size: 3em;
+    }
+    h2 {
+        font-weight: normal;
+        font-size: 1.5em;
+    }
+    #postcodeForm {
+        margin-top: 0;
+        padding: 0;
+    }
+}
+
+// Map page
+
+.big-green-banner {
+    text-transform: none;
+}
+
+body.mappage {
+    #site-header {
+        // So border bottom doesn't overlap map
+        box-sizing: border-box;
+    }
+    .global-footer {
+        display: none;
+    }
+}
+
+// Help
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 12em;
+}

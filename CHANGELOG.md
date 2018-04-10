@@ -22,6 +22,7 @@
         - Asset layers can be attached to more than one category each. #2049
         - Cobrands hook to remove phone number field. #2049
         - Check recent reports for any hidden since cached. #2053
+        - Asset layer attribution automatically shown. #2061
     - Bugfixes:
         - Stop asset layers obscuring marker layer. #1999
         - Don't delete hidden field values when inspecting reports. #1999

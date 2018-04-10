@@ -1,0 +1,97 @@
+/* NOTE: mySociety commented out unused swatches */
+
+// Brand colours
+$bathnes-primary: #00aeef;
+$bathnes-primary-ally: #00728F;
+$bathnes-secondary: #00b259;
+$bathnes-secondary-ally: #00663D;
+$mainstream-brand: $bathnes-primary;
+
+
+// Standard palette, colours
+$bathnes-purple: #5261AC;
+$bathnes-yellow: #ffdd00;
+$bathnes-red: #AF122A;
+
+// Standard palette, greys
+$bathnes-black: #0b0c0c;
+$bathnes-grey-1: #6f777b;
+$bathnes-grey-2: #bfc1c3;
+$bathnes-grey-3: #dee0e2;
+$bathnes-grey-4: #f8f8f8;
+$bathnes-white: #fff;
+
+// Gov UK overrides where they didn't use their own variables
+$white: $bathnes-white;
+$black: $bathnes-black;
+$govuk-blue: $bathnes-secondary-ally;
+$turquoise: $bathnes-primary-ally;
+
+// Semantic colour names
+$link-colour: $bathnes-primary-ally;
+$link-active-colour: $bathnes-purple;
+$link-hover-colour: lighten($bathnes-primary-ally, 10%);
+$link-visited-colour: $bathnes-purple;
+$button-colour: $bathnes-secondary-ally;
+$button-hover-colour: darken($bathnes-secondary-ally, 5%);
+$focus-colour: $bathnes-yellow;
+$text-colour: $bathnes-black;             // Standard text colour
+$secondary-text-colour: $bathnes-grey-1;  // Section headers, help text etc.
+$border-colour: $bathnes-grey-2;          // Borders, seperators, rules, keylines etc.
+$panel-colour: $bathnes-grey-3;           // Related links panel, page footer etc.
+$canvas-colour: $bathnes-grey-4;          // Page background
+$highlight-colour: $bathnes-grey-4;       // Table stripes etc.
+$page-colour: $bathnes-white;             // The page
+$discovery-colour: $bathnes-primary-ally;   // Discovery badges and banners
+$alpha-colour: $bathnes-primary-ally;       // Alpha badges and banners
+$beta-colour: $bathnes-primary-ally;        // Beta badges and banners
+$live-colour: $bathnes-secondary-ally;       // Live badges and banners
+$banner-text-colour: $text-colour;        // Text colour for Alpha & Beta banners
+$error-colour: $bathnes-red;              // Error text and border colour
+$error-background: #fef7f7;       // Error background colour
+
+// ------------------------------------------------------------
+// Colours and fills
+// Add more to the array to populate consistent names across
+// colors, fills (aka background) and rules (aka borders)
+// ------------------------------------------------------------
+
+@each $name, $color in
+	('bathnes-primary', $bathnes-primary),
+	('bathnes-secondary', $bathnes-secondary),
+	('bathnes-purple', $bathnes-purple),
+	('bathnes-yellow', $bathnes-yellow),
+	('bathnes-red', $bathnes-red),
+	('bathnes-grey-1', $bathnes-grey-1),
+	('bathnes-grey-2', $bathnes-grey-2),
+	('bathnes-grey-3', $bathnes-grey-3),
+	('bathnes-grey-4', $bathnes-grey-4),
+
+	('text-colour', $text-colour),
+	('secondary-text-colour', $secondary-text-colour),
+	('page-colour', $page-colour),
+	('link-colour', $link-colour),
+	('link-hover-colour', $link-hover-colour),
+	('link-visited-colour', $link-visited-colour),
+	('border-colour', $border-colour),
+	('panel-colour', $panel-colour),
+	('highlight-colour', $highlight-colour),
+	('button-colour', $button-colour),
+    ('button-hover-colour', $button-hover-colour),
+	('focus-colour', $focus-colour),
+	('error-colour', $error-colour),
+	('mainstream-brand', $mainstream-brand)
+{
+/*
+	.swatch-#{$name} {
+		background-color: $color;
+		.swatch-color {
+			display: block;
+			&:after {
+				content: "#{$color}";
+				display: block;
+			}
+		}
+	}
+*/
+}

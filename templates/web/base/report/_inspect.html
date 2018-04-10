@@ -49,6 +49,11 @@
         <p>
           <a href="#" class="btn btn--block btn--geolocate">[% loc('Set to my current location') %]</a>
         </p>
+        [% IF permissions.report_reject %]
+          <p>
+            <a href="[% c.uri_for( '/contact', { id => problem.id, reject => 1 } ) %]" class="btn btn--block">[% loc('Reject report') %]</a>
+          </p>
+        [% END %]
       </div>
 
     [% IF permissions.report_edit_category OR permissions.report_inspect %]

@@ -6,6 +6,7 @@
 
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
+[% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
     <h2 class="form-section-heading">[% loc( 'Public details' ) %]</h2>
     <div class="form-section-description" id="js-councils_text">
@@ -16,11 +17,13 @@
       [% END %]
     </div>
 
-    <label for="form_title">[% loc('Summarise the problem') %]</label>
+    [% DEFAULT form_title = loc('Summarise the problem') %]
+    <label for="form_title">[% form_title %]</label>
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>
 [% END %]
-    <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('10 inch pothole on Example St, near post box') %]" required>
+    [% DEFAULT form_title_placeholder = loc('10 inch pothole on Example St, near post box') %]
+    <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% form_title_placeholder %]" required>
 
 [% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
 
@@ -55,7 +58,8 @@
 [% IF field_errors.detail %]
     <p class='form-error'>[% field_errors.detail %]</p>
 [% END %]
-    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('This pothole has been here for two months and…') %]" required>[% report.detail | html %]</textarea>
+    [% DEFAULT form_detail_placeholder = loc('This pothole has been here for two months and…') %]
+    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" placeholder="[% form_detail_placeholder %]" required>[% report.detail | html %]</textarea>
 
 [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
 
