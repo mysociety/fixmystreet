@@ -190,5 +190,22 @@ sub enter_postcode_text {
     return 'Enter a location in ' . $self->council_area;
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    # Categories covering BANES have a mixture of Open311 and Email
+    # send methods. BANES only want specific categories to be visible on their
+    # cobrand, not the email categories from FMS.com.
+    # The FMS.com categories have a devolved send_method set to Email, so we can
+    # filter these out.
+    # NB. BANES have a 'Street Light Fault' category that has its
+    # send_method set to 'Email::BathNES' (to use a custom template) which must
+    # be show on the cobrand.
+    return $rs->search( { -or => [
+        'me.send_method' => undef, # Open311 categories
+        'me.send_method' => '', # Open311 categories that have been edited in the admin
+        'me.send_method' => 'Email::BathNES', # Street Light Fault
+    ] } );
+}
+
 
 1;
