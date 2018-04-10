@@ -24,6 +24,12 @@ sub update_email {
     return join( '@', 'highways', 'bathnes.gov.uk' );
 }
 
+sub base_url {
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
+    return 'https://fix.bathnes.gov.uk';
+}
+
 sub map_type { 'BathNES' }
 
 sub example_places {
