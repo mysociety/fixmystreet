@@ -40,8 +40,10 @@ sub spin_up_database {
     $pg = Test::PostgreSQL->new(
         run_psql_args => '-1Xq -v ON_ERROR_STOP=1', # No -b on 9.1
     );
-    $pg->run_psql_scripts('db/schema.sql'); # On 9.1, must create tables separately
-    $pg->run_psql_scripts('db/fixture.sql', 'db/generate_secret.sql');
+    # On 9.1, must run each file separately
+    $pg->run_psql_scripts('db/schema.sql');
+    $pg->run_psql_scripts('db/fixture.sql');
+    $pg->run_psql_scripts('db/generate_secret.sql');
 
     warn sprintf "# Connected to %s\n", $pg->dsn;
 
