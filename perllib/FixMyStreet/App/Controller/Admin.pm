@@ -274,7 +274,7 @@ sub body_form_dropdowns : Private {
 
     $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
 
-    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } sort keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
 }
 
@@ -622,7 +622,7 @@ sub category : Chained('body') : PathPart('') {
         },
     );
     $c->stash->{history} = $history;
-    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } sort keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
 
     return 1;
