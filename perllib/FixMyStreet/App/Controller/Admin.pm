@@ -16,6 +16,7 @@ use Text::CSV;
 
 use FixMyStreet::SendReport;
 use FixMyStreet::SMS;
+use Utils;
 
 =head1 NAME
 
@@ -1656,6 +1657,7 @@ sub user_import : Path('user_import') {
         $csv->getline($fh); # discard the header
         while (my $row = $csv->getline($fh)) {
             my ($name, $email, $from_body, $permissions) = @$row;
+            $email = lc Utils::trim_text($email);
             my @permissions = split(/:/, $permissions);
 
             my $user = FixMyStreet::DB->resultset("User")->find_or_new({ email => $email, email_verified => 1 });
