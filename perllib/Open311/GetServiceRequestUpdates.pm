@@ -138,22 +138,22 @@ sub update_comments {
                 $open311->add_media($request->{media_url}, $comment)
                     if $request->{media_url};
 
-                # if the comment is older than the last update
-                # do not change the status of the problem as it's
-                # tricky to determine the right thing to do.
-                # Allow the same time in case report/update created at same time (in external system)
-                if ( $comment->created >= $p->lastupdate ) {
-                    # don't update state unless it's an allowed state and it's
-                    # actually changing the state of the problem
-                    if ( FixMyStreet::DB::Result::Problem->visible_states()->{$state} && $p->state ne $state &&
-                        # For Oxfordshire, don't allow changes back to Open from other open states
-                        !( $body->areas->{$AREA_ID_OXFORDSHIRE} && $state eq 'confirmed' && $p->is_open ) &&
-                        # Don't let it change between the (same in the front end) fixed states
-                        !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) ) {
-                        if ($p->is_visible) {
-                            $p->state($state);
-                        }
-                        $comment->problem_state($state);
+                # don't update state unless it's an allowed state
+                if ( FixMyStreet::DB::Result::Problem->visible_states()->{$state} &&
+                    # For Oxfordshire, don't allow changes back to Open from other open states
+                    !( $body->areas->{$AREA_ID_OXFORDSHIRE} && $state eq 'confirmed' && $p->is_open ) &&
+                    # Don't let it change between the (same in the front end) fixed states
+                    !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) ) {
+
+                    $comment->problem_state($state);
+
+                    # if the comment is older than the last update do not
+                    # change the status of the problem as it's tricky to
+                    # determine the right thing to do. Allow the same time in
+                    # case report/update created at same time (in external
+                    # system). Only do this if the report is currently visible.
+                    if ( $comment->created >= $p->lastupdate && $p->state ne $state && $p->is_visible ) {
+                        $p->state($state);
                     }
                 }
 
