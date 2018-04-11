@@ -50,18 +50,36 @@ FixMyStreet::override_config {
         $mech->content_lacks('Save changes');
         $mech->content_lacks('Priority');
         $mech->content_lacks('Traffic management');
+        $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
 
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
         $mech->get_ok("/report/$report_id");
         $mech->content_contains('Save changes');
         $mech->content_contains('Priority');
         $mech->content_lacks('Traffic management');
+        $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
 
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
         $mech->get_ok("/report/$report_id");
         $mech->content_contains('Save changes');
         $mech->content_contains('Priority');
         $mech->content_contains('Traffic management');
+        $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
+    };
+
+    subtest "council staff can't see admin report edit link on FMS.com" => sub {
+        my $report_edit_permission = $user->user_body_permissions->create({
+            body => $oxon, permission_type => 'report_edit' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
+        $report_edit_permission->delete;
+    };
+
+    subtest "superusers can see admin report edit link on FMS.com" => sub {
+        $user->update({is_superuser => 1});
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('/admin/report_edit/'.$report_id.'">admin</a>)');
+        $user->update({is_superuser => 0});
     };
 
     subtest "test basic inspect submission" => sub {
@@ -539,6 +557,13 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';
     };
 
+    subtest "admin link present on inspect page on cobrand" => sub {
+        my $report_edit_permission = $user->user_body_permissions->create({
+            body => $oxon, permission_type => 'report_edit' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('/admin/report_edit/'.$report_id.'">admin</a>)');
+        $report_edit_permission->delete;
+    };
 };
 
 FixMyStreet::override_config {
