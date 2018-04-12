@@ -137,7 +137,7 @@ sub close_problems {
     my $problems = shift;
     while (my $problem = $problems->next) {
         my $timestamp = \'current_timestamp';
-        $problem->add_to_comments( {
+        my $comment = $problem->add_to_comments( {
             text => '',
             created => $timestamp,
             confirmed => $timestamp,
@@ -150,5 +150,20 @@ sub close_problems {
             extra => { is_superuser => 1 },
         } );
         $problem->update({ state => 'closed', send_questionnaire => 0 });
+
+        # Stop any alerts being sent out about this closure.
+        my @alerts = FixMyStreet::DB->resultset('Alert')->search( {
+            alert_type => 'new_updates',
+            parameter  => $problem->id,
+            confirmed  => 1,
+        } );
+
+        for my $alert (@alerts) {
+            my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create( {
+                alert_id  => $alert->id,
+                parameter => $comment->id,
+            } );
+        }
+
     }
 }
