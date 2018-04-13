@@ -2,7 +2,7 @@ package FixMyStreet::App::Controller::FakeMapit;
 use Moose;
 use namespace::autoclean;
 use JSON::MaybeXS;
-use LWP::Simple;
+use LWP::UserAgent;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -22,13 +22,25 @@ world is one area, with ID 161 and name "Everywhere".
 
 my $area = { "name" => "Everywhere", "type" => "ZZZ", "id" => 161 };
 
+has user_agent => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $ua = LWP::UserAgent->new;
+        my $api_key = FixMyStreet->config('MAPIT_API_KEY');
+        $ua->agent("FakeMapit proxy");
+        $ua->default_header( 'X-Api-Key' => $api_key ) if $api_key;
+        return $ua;
+    }
+);
+
 # The user should have the web server proxying this,
 # but for development we can also do it on the server.
 sub proxy : Path('/mapit') {
     my ($self, $c) = @_;
     (my $path = $c->req->uri->path_query) =~ s{^/mapit/}{};
     my $url = FixMyStreet->config('MAPIT_URL') . $path;
-    my $kml = LWP::Simple::get($url);
+    my $kml = $self->user_agent->get($url)->content;
     $c->response->body($kml);
 }
 
