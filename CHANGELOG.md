@@ -43,6 +43,7 @@
         - Show Open311 service code as tooltip on admin category checkboxes. #2049
         - Bulk user import admin page. #2057
         - Add link to admin edit page for reports. #2071
+        - Nicer Open311 errors. #2078
     - Development improvements:
         - Add HTML email previewer.
         - Add CORS header to Open311 output. #2022

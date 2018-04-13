@@ -257,7 +257,7 @@ sub get_service_request_updates {
     my $end_date = shift;
 
     my $params = {
-        api_key => $self->api_key,
+        api_key => $self->api_key || '',
     };
 
     if ( $start_date || $end_date ) {
@@ -420,9 +420,12 @@ sub _get {
     $params->{ jurisdiction_id } = $self->jurisdiction
         if $self->jurisdiction;
     $uri->path( $uri->path . $path );
+    my $base_uri = $uri->clone;
     $uri->query_form( $params );
 
-    $self->debug_details( $self->debug_details . "\nrequest:" . $uri->as_string );
+    my $debug_request = "GET " . $base_uri->as_string . "\n\n";
+    $debug_request .= join("\n", map { "$_: $params->{$_}" } keys %$params);
+    $self->debug_details( $self->debug_details . $debug_request );
 
     my $content;
     if ( $self->test_mode ) {
@@ -464,11 +467,13 @@ sub _post {
 
     $params->{jurisdiction_id} = $self->jurisdiction
         if $self->jurisdiction;
-    $params->{api_key} = $self->api_key
+    $params->{api_key} = ($self->api_key || '')
         if $self->api_key;
     my $req = POST $uri->as_string, $params;
 
-    $self->debug_details( $self->debug_details . "\nrequest:" . $req->as_string );
+    my $debug_request = $req->method . ' ' . $uri->as_string . "\n\n";
+    $debug_request .= join("\n", map { "$_: $params->{$_}" } keys %$params);
+    $self->debug_details( $self->debug_details . $debug_request );
 
     my $ua = LWP::UserAgent->new();
     my $res;
