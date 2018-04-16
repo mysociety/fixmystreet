@@ -918,6 +918,7 @@ sub process_report : Private {
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
+    $c->cobrand->call_hook(report_new_munge_category => $report);
     $report->subcategory( $params{subcategory} );
 
     my $areas = $c->stash->{all_areas_mapit};
@@ -1350,6 +1351,8 @@ sub save_user_and_report : Private {
         $report->user->discard_changes();
         $c->log->info($report->user->id . ' exists, but is not logged in for this report');
     }
+
+    $c->cobrand->call_hook(report_new_munge_before_insert => $report);
 
     $report->update_or_insert;
 
