@@ -81,8 +81,8 @@ subtest 'Exor file looks okay' => sub {
         $mech->log_in_ok( $superuser->email );
         $mech->get_ok('/admin/exordefects');
         $mech->submit_form_ok( { with_fields => {
-            start_date => '05/05/2017',
-            end_date => '05/05/2017',
+            start_date => '2017-05-05',
+            end_date => '2017-05-05',
             user_id => $inspector->id,
         } }, 'submit download');
         $mech->content_contains("No inspections by that inspector in the selected date range");
@@ -120,8 +120,8 @@ subtest 'Exor file looks okay' => sub {
             $i++;
         }
         $mech->submit_form_ok( { with_fields => {
-            start_date => '05/05/2017',
-            end_date => '05/05/2017',
+            start_date => '2017-05-05',
+            end_date => '2017-05-05',
             user_id => $inspector->id,
         } }, 'submit download');
         (my $rdi = $mech->content) =~ s/\r\n/\n/g;

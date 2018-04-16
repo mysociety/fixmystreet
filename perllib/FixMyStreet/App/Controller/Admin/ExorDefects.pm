@@ -43,7 +43,7 @@ sub download : Path('download') : Args(0) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
-    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
+    my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d' );
     my $start_date = $parser-> parse_datetime ( $c->get_param('start_date') );
     my $end_date = $parser-> parse_datetime ( $c->get_param('end_date') ) ;
     my $one_day = DateTime::Duration->new( days => 1 );
