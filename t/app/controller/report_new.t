@@ -1169,6 +1169,7 @@ FixMyStreet::override_config {
     $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
 };
 $mech->content_contains( "Pothol\xc3\xa9s" );
+like $extra_details->{councils_text}, qr/<strong>Cheltenham/;
 ok !$extra_details->{titles_list}, 'Non Bromley does not send back list of titles';
 
 FixMyStreet::override_config {

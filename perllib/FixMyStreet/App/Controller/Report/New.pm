@@ -695,9 +695,7 @@ sub setup_categories_and_bodies : Private {
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
     $c->stash->{contacts} = \@contacts;
-    $c->stash->{bodies_to_list} = [ keys %bodies_to_list ];
-    $c->stash->{bodies_to_list_names} = [ map { $_->name } values %bodies_to_list ];
-    $c->stash->{bodies_to_list_urls} = [ map { $_->external_url } values %bodies_to_list ];
+    $c->stash->{bodies_to_list} = \%bodies_to_list;
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_hidden}  = \%category_extras_hidden;
@@ -948,7 +946,7 @@ sub process_report : Private {
         if ( $c->stash->{non_public_categories}->{ $report->category } ) {
             $report->non_public( 1 );
         }
-    } elsif ( @{ $c->stash->{bodies_to_list} } ) {
+    } elsif ( %{ $c->stash->{bodies_to_list} } ) {
 
         # There was an area with categories, but we've not been given one. Bail.
         $c->stash->{field_errors}->{category} = _('Please choose a category');
