@@ -28,6 +28,7 @@ sub site {
     my $site = 'fixmystreet';
     $site = 'zurich' if $base_url =~ /zurich|zueri/;
     $site = 'smidsy' if $base_url =~ /smidsy|collideosco/;
+    $site = 'kiitc' if $base_url =~ /kiitc|acv|keepitinthecommunity/;
     return $site;
 }
 
