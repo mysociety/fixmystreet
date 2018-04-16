@@ -1,21 +1,15 @@
-#
 # Memcached.pm:
-# Trying out memcached on FixMyStreet
-#
-# Copyright (c) 2008 UK Citizens Online Democracy. All rights reserved.
-# Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
+# Tiny FixMyStreet memcached wrapper
 
 package Memcached;
 
 use strict;
 use warnings;
 use Cache::Memcached;
+use FixMyStreet;
 
-my ($memcache, $namespace);
-
-sub set_namespace {
-    $namespace = shift;
-}
+my $memcache;
+my $namespace = FixMyStreet->config('FMS_DB_NAME') . ":";
 
 sub instance {
     return $memcache //= Cache::Memcached->new({

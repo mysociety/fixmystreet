@@ -232,8 +232,6 @@ sub setup_request {
 
     $c->model('DB::Problem')->set_restriction( $cobrand->site_key() );
 
-    Memcached::set_namespace( FixMyStreet->config('FMS_DB_NAME') . ":" );
-
     FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->get_param('map_override') );
     # All pages need this, either loading it or prefetching it
     $c->stash->{map_js} = FixMyStreet::Map::map_javascript();
