@@ -6,23 +6,24 @@ use warnings;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
+use CronFns;
 
 use List::MoreUtils qw(zip);
 use List::Util qw(sum);
+
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 
 my $fourweeks = 4*7*24*60*60;
 
 # Age problems from when they're confirmed, except on Zurich
 # where they appear as soon as they're created.
 my $age_column = 'confirmed';
-if ( FixMyStreet->config('BASE_URL') =~ /zurich|zueri/ ) {
-    $age_column = 'created';
-}
+$age_column = 'created' if $site eq 'zurich';
 
 my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
 
-my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('default')->new;
-FixMyStreet::DB->schema->cobrand($cobrand);
+my $cobrand_cls = FixMyStreet::Cobrand->get_class_for_moniker($site)->new;
+FixMyStreet::DB->schema->cobrand($cobrand_cls);
 
 sub generate {
     my $include_areas = shift;
@@ -34,7 +35,7 @@ sub generate {
         },
         {
             columns => [
-                'id', 'bodies_str', 'state', 'areas', 'cobrand',
+                'id', 'bodies_str', 'state', 'areas', 'cobrand', 'category',
                 { duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 { age      => { extract => "epoch from current_timestamp-$age_column"  } },
             ]
@@ -43,22 +44,32 @@ sub generate {
     $problems = $problems->cursor; # Raw DB cursor for speed
 
     my ( %fixed, %open );
-    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'cobrand', 'duration', 'age' );
+    my %stats = (
+        fixed => \%fixed,
+        open => \%open,
+    );
+    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'cobrand', 'category', 'duration', 'age' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
-        my @bodies;
-        my @areas;
+        my @bodies = split( /,/, $problem{bodies_str} );
         my $cobrand = $problem{cobrand};
+
+        if (my $type = $cobrand_cls->call_hook(dashboard_categorize_problem => \%problem)) {
+            foreach my $body ( @bodies ) {
+                $stats{$type}{$body}++;
+                $stats{$cobrand}{$type}{$body}++;
+            }
+            next;
+        }
+
         my $duration_str = ( $problem{duration} > 2 * $fourweeks ) ? 'old' : 'new';
+
         my $type = ( $problem{duration} > 2 * $fourweeks )
             ? 'unknown'
             : ($problem{age} > $fourweeks ? 'older' : 'new');
         my $problem_fixed =
                FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}}
             || FixMyStreet::DB::Result::Problem->closed_states()->{$problem{state}};
-
-        # Add to bodies it was sent to
-        @bodies = split( /,/, $problem{bodies_str} );
 
         foreach my $body ( @bodies ) {
             if ( $problem_fixed ) {
@@ -73,7 +84,7 @@ sub generate {
         }
 
         if ( $include_areas ) {
-            @areas = grep { $_ } split( /,/, $problem{areas} );
+            my @areas = grep { $_ } split( /,/, $problem{areas} );
             foreach my $area ( @areas ) {
                 if ( $problem_fixed ) {
                     $fixed{areas}{$area}{$duration_str}++;
@@ -84,10 +95,7 @@ sub generate {
         }
     }
 
-    return {
-        fixed => \%fixed,
-        open  => \%open,
-    };
+    return \%stats;
 }
 
 sub end_period {

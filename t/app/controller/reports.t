@@ -95,6 +95,9 @@ $fife_problems[10]->update( {
     state => 'hidden',
 });
 
+# Run the cron script old-data (for the table no longer used by default)
+FixMyStreet::Script::UpdateAllReports::generate(1);
+
 # Run the cron script that makes the data for /reports so we don't get an error.
 my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
 
