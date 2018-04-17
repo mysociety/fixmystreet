@@ -418,6 +418,21 @@ sub split_name {
     return ( $first, $last );
 }
 
+sub _params_to_string {
+    my( $self, $params, $request_string ) = @_;
+
+    my $undefined;
+
+    my $string = join("\n", map {
+        $undefined .= "$_ undefined\n" unless defined $params->{$_};
+        "$_: " . ( $params->{$_} // '' );
+    } keys %$params);
+
+    warn "$request_string $undefined $string" if $undefined;
+
+    return $string;
+}
+
 sub _get {
     my $self   = shift;
     my $path   = shift;
@@ -432,7 +447,7 @@ sub _get {
     $uri->query_form( $params );
 
     my $debug_request = "GET " . $base_uri->as_string . "\n\n";
-    $debug_request .= join("\n", map { "$_: $params->{$_}" } keys %$params);
+    $debug_request .= $self->_params_to_string($params, $debug_request);
     $self->debug_details( $self->debug_details . $debug_request );
 
     my $content;
@@ -480,7 +495,7 @@ sub _post {
     my $req = POST $uri->as_string, $params;
 
     my $debug_request = $req->method . ' ' . $uri->as_string . "\n\n";
-    $debug_request .= join("\n", map { "$_: $params->{$_}" } keys %$params);
+    $debug_request .= $self->_params_to_string($params, $debug_request);
     $self->debug_details( $self->debug_details . $debug_request );
 
     my $ua = LWP::UserAgent->new();
