@@ -126,7 +126,7 @@ sub _populate_service_request_params {
         $description = $problem->detail;
     }
 
-    my ( $firstname, $lastname ) = ( $problem->name =~ /(\w+)\.?\s+(.+)/ );
+    my ( $firstname, $lastname ) = $self->split_name( $problem->name );
 
     my $params = {
         description => $description,
@@ -338,7 +338,7 @@ sub _populate_service_request_update_params {
     my $comment = shift;
 
     my $name = $comment->name || $comment->user->name;
-    my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
+    my ( $firstname, $lastname ) = $self->split_name( $name );
     $lastname ||= '-';
 
     # fall back to problem state as it's probably correct
@@ -408,6 +408,14 @@ sub _populate_service_request_update_params {
     }
 
     return $params;
+}
+
+sub split_name {
+    my ( $self, $name ) = @_;
+
+    my ( $first, $last ) = ( $name =~ /(\w+)(?:\.?\s+(.+))?/ );
+
+    return ( $first, $last );
 }
 
 sub _get {

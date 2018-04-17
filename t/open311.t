@@ -196,6 +196,12 @@ for my $test (
         first_name => 'Nom',
         last_name => 'de Report',
     },
+    {
+        desc => 'Check single word name handled correctly',
+        name => 'Nom',
+        first_name => 'Nom',
+        last_name => '',
+    }
 ) {
     subtest $test->{desc} => sub {
         $problem->extra( undef );
