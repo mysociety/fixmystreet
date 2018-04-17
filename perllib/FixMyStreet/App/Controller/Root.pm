@@ -39,6 +39,7 @@ sub auto : Private {
 
     # decide which cobrand this request should use
     $c->setup_request();
+    $c->detach('/auth/redirect') if $c->cobrand->call_hook('check_login_disallowed');
 
     return 1;
 }

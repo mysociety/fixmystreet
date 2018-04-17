@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - New features
+        - Cobrand hook to allow extra login conditions #2092
     - Front end improvements:
         - Simplify footer CSS. #2107
     - Bugfixes:
