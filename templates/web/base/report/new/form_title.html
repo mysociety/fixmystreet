@@ -1,0 +1,7 @@
+[% DEFAULT form_title = loc('Summarise the problem') %]
+<label for="form_title">[% form_title %]</label>
+[% IF field_errors.title %]
+    <p class='form-error'>[% field_errors.title %]</p>
+[% END %]
+[% DEFAULT form_title_placeholder = loc('10 inch pothole on Example St, near post box') %]
+<input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% form_title_placeholder %]" required>
