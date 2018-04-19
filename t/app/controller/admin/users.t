@@ -401,6 +401,71 @@ FixMyStreet::override_config {
 
 $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
+subtest "Send login email from admin" => sub {
+    $mech->email_count_is(0);
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->submit_form_ok(
+        {
+            button => 'send_login_email'
+        },
+        "send login email form submitted"
+    );
+
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+
+    is $email->header('Subject'), "Your FixMyStreet account details",
+      "subject is correct";
+    is $email->header('To'), $user->email, "to is correct";
+
+    my $link = $mech->get_link_from_email($email);
+
+    my $mech2 = FixMyStreet::TestMech->new;
+    $mech2->not_logged_in_ok;
+    $mech2->get_ok($link);
+    $mech2->logged_in_ok;
+    $mech2->log_out_ok;
+
+    $mech->clear_emails_ok;
+};
+
+subtest "Send login email from admin for unverified email" => sub {
+    $user->update( { email_verified => 0 } );
+    $mech->email_count_is(0);
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->submit_form_ok(
+        {
+            button => 'send_login_email'
+        },
+        "send login email form submitted"
+    );
+
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+
+    is $email->header('Subject'), "Your FixMyStreet account details",
+      "subject is correct";
+    is $email->header('To'), 'test@example.com', "to is correct";
+
+    my $link = $mech->get_link_from_email($email);
+
+    my $mech2 = FixMyStreet::TestMech->new;
+    $mech2->not_logged_in_ok;
+    $mech2->get_ok($link);
+    $mech2->logged_in_ok;
+
+    my $test_user = FixMyStreet::DB->resultset('User')->search({
+        email => $user->email
+    }, { order_by => [ { -desc => 'id' } ] } );
+    $user->discard_changes;
+
+    is $test_user->count, 1, "only one user";
+    is $test_user->first->id, $user->id, "User is same";
+    ok $user->email_verified, 'email is verified now';
+    $mech2->log_out_ok;
+    $user->update( { email_verified => 1 } );
+};
+
 subtest "Anonymizing user from admin" => sub {
     $mech->create_problems_for_body(4, 2237, 'Title');
     my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;

@@ -17,6 +17,7 @@
         - Defect type is recorded if category change made. #2172
     - Admin improvements:
         - Mandatory defect type selection if defect raised.
+        - Send login email button on user edit page #2041
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
 

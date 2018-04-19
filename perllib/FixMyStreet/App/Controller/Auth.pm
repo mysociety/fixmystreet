@@ -224,7 +224,8 @@ sub token : Path('/M') : Args(1) {
     my $data = $c->forward('get_token', [ $url_token, 'email_sign_in' ]) || return;
 
     $c->stash->{token_not_found} = 1, return
-        if $data->{old_user_id} && (!$c->user_exists || $c->user->id ne $data->{old_user_id});
+        if $data->{old_user_id} && $data->{r} && $data->{r} eq 'auth/change_email/success'
+            && (!$c->user_exists || $c->user->id ne $data->{old_user_id});
 
     my $type = $data->{login_type} || 'email';
     $c->detach( '/auth/process_login', [ $data, $type ] );
