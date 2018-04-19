@@ -1,5 +1,21 @@
 var fixmystreet = fixmystreet || {};
 
+(function(){
+    // Retrieves the latitude/longitude from <inputs>
+    // on the page and returns it as a LonLat in the
+    // same projection as the map.
+    fixmystreet.get_lonlat_from_dom = function() {
+        var lonlat = new OpenLayers.LonLat(
+            $('input[name="longitude"]').val(),
+            $('input[name="latitude"]').val()
+        );
+        return lonlat.clone().transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            fixmystreet.map.getProjectionObject()
+        );
+    };
+})();
+
 /* Special USRN handling */
 
 (function(){
@@ -35,6 +51,17 @@ fixmystreet.usrn = {
 
     update_field: function() {
         $("input[name="+usrn_field+"]").val(selected_usrn);
+    },
+
+    one_time_select: function() {
+        // This function takes the current report lat/lon from hidden input
+        // fields and uses that to look up a USRN from the USRN layer.
+        // It's registered as an event handler by init_asset_layer below,
+        // and is only intended to run the once (because if the user drags the
+        // pin the usual USRN lookup event handler is run) so unregisters itself
+        // immediately.
+        this.events.unregister( 'loadend', this, fixmystreet.usrn.one_time_select );
+        fixmystreet.usrn.select(null, fixmystreet.get_lonlat_from_dom());
     }
 };
 
@@ -58,15 +85,7 @@ fixmystreet.roads = {
             // on a cobrand with category groups enabled.
             return;
         }
-        var lonlat = new OpenLayers.LonLat(
-            $('input[name="longitude"]').val(),
-            $('input[name="latitude"]').val()
-        );
-        var transformedLonlat = lonlat.clone().transform(
-            new OpenLayers.Projection("EPSG:4326"),
-            fixmystreet.map.getProjectionObject()
-        );
-        fixmystreet.roads.check_for_road(transformedLonlat);
+        fixmystreet.roads.check_for_road(fixmystreet.get_lonlat_from_dom());
     },
 
     select: function(evt, lonlat) {
@@ -155,6 +174,19 @@ function init_asset_layer(layer, pins_layer) {
     if (layer.fixmystreet.fault_layer) {
         fixmystreet.map.addLayer(layer.fixmystreet.fault_layer);
         layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
+    }
+
+    if (fixmystreet.page == 'new' && layer.fixmystreet.usrn) {
+        // If the user visits /report/new directly and doesn't change the pin
+        // location, then the assets:selected/maps:update_pin events are never
+        // fired and fixmystreet.usrn.select is never called. This results in a
+        // report whose location was never looked up against the USRN layer,
+        // which can cause issues for Open311 endpoints that require a USRN
+        // value.
+        // To prevent this situation we register an event handler that looks up
+        // the new report's lat/lon against the USRN layer, calls usrn.select
+        // and then unregisters itself.
+        layer.events.register( 'loadend', layer, fixmystreet.usrn.one_time_select );
     }
 
     if (!layer.fixmystreet.always_visible) {
