@@ -966,6 +966,14 @@ sub process_report : Private {
         my $value = $c->get_param($form_name) || '';
         $c->stash->{field_errors}->{$form_name} = _('This information is required')
             if $field->{required} && !$value;
+        if ($field->{validator}) {
+            eval {
+                $value = $field->{validator}->($value);
+            };
+            if ($@) {
+                $c->stash->{field_errors}->{$form_name} = $@;
+            }
+        }
         $report->set_extra_metadata( $form_name => $value );
     }
 
