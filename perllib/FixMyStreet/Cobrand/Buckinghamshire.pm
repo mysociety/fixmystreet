@@ -322,7 +322,7 @@ sub lookup_site_code {
     my $self = shift;
     my $row = shift;
 
-    my $buffer = 5; # metres
+    my $buffer = 10; # metres
     my ($x, $y) = $row->local_coords;
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
