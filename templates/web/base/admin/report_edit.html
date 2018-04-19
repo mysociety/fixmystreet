@@ -92,7 +92,6 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]
 <br><small>[% loc('Cobrand data:') %] [% cobrand_data OR '<em>' _ loc('None') _ '</em>' %]</small>
 </li>
-<li>[% loc('Extra data:') %] [% problem.extra ? 'Yes' : 'No' %]</li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
 
 <li><label for="external_id">[% loc('External ID') %]:</label>
@@ -126,6 +125,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label class="inline-text" for="category">[% loc('Category:') %]</label>
     [% INCLUDE 'admin/report-category.html' %]
 </li>
+<li>[% loc('Extra data:') %] [% IF extra_fields.size %]<ul>[% FOREACH field IN extra_fields %]<li><strong>[% field.name %]</strong>: [% field.val %]</li>[% END %]</ul>[% ELSE %]No[% END %]</li>
 <li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
 <select class="form-control" name="anonymous"  id="anonymous">
 <option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>

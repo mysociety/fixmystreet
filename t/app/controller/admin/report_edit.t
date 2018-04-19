@@ -557,4 +557,80 @@ subtest "Test setting a report from unconfirmed to something else doesn't cause 
     $mech->get_ok("/report/$report_id");
 };
 
+subtest "Test display of report extra data" => sub {
+    $report->unset_extra_metadata;
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Extra data: No');
+    $report->set_extra_metadata('extra_field', 'this is extra data');
+    $report->update;
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('extra_field</strong>: this is extra data');
+};
+
+my $report2 = FixMyStreet::App->model('DB::Problem')->find_or_create(
+    {
+        postcode           => 'SW1A 1AA',
+        bodies_str         => '2504',
+        areas              => ',105255,11806,11828,2247,2504,',
+        category           => 'Other',
+        title              => 'Report to Duplicate Edit',
+        detail             => 'Detail for Duplicate Report to Edit',
+        used_map           => 't',
+        name               => 'Test User',
+        anonymous          => 'f',
+        external_id        => '13',
+        state              => 'confirmed',
+        confirmed          => $dt->ymd . ' ' . $dt->hms,
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => '',
+        cobrand_data       => '',
+        send_questionnaire => 't',
+        latitude           => '51.5016605453401',
+        longitude          => '-0.142497580865087',
+        user_id            => $user->id,
+        whensent           => $dt->ymd . ' ' . $dt->hms,
+    }
+);
+
+subtest "Test display of report duplicates extra data" => sub {
+    $report->update( { extra => undef } );
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Extra data: No');
+
+    $report2->set_duplicate_of($report_id);
+    $report2->update;
+
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Duplicates</strong>: ' . $report2->id);
+};
+
+subtest "Test display of fields extra data" => sub {
+    $report->unset_extra_metadata( 'duplicates' );
+    $report->update;
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Extra data: No');
+
+    $report->push_extra_fields( {
+        name => 'report_url',
+        value => 'http://example.com',
+    });
+    $report->update;
+
+    $report->discard_changes;
+
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('report_url</strong>: http://example.com');
+
+    $report->set_extra_fields( {
+        description => 'Report URL',
+        name => 'report_url',
+        value => 'http://example.com',
+    });
+    $report->update;
+
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Report URL (report_url)</strong>: http://example.com');
+};
+
 done_testing();

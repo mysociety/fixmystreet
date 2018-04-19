@@ -843,6 +843,27 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
 
     $c->stash->{problem} = $problem;
+    if ( $problem->extra ) {
+        my @fields;
+        if ( my $fields = $problem->get_extra_fields ) {
+            for my $field ( @{$fields} ) {
+                my $name = $field->{description} ?
+                    "$field->{description} ($field->{name})" :
+                    "$field->{name}";
+                push @fields, { name => $name, val => $field->{value} };
+            }
+        }
+        my $extra = $problem->get_extra_metadata;
+        if ( $extra->{duplicates} ) {
+            push @fields, { name => 'Duplicates', val => join( ',', @{ $problem->get_extra_metadata('duplicates') } ) };
+            delete $extra->{duplicates};
+        }
+        for my $key ( keys %$extra ) {
+            push @fields, { name => $key, val => $extra->{$key} };
+        }
+
+        $c->stash->{extra_fields} = \@fields;
+    }
 
     $c->forward('/auth/get_csrf_token');
 

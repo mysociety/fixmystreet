@@ -46,6 +46,7 @@
         - Add link to admin edit page for reports. #2071
         - Nicer Open311 errors. #2078
         - Deleted body categories now hidden by default #1962
+        - Display contents of report's extra field #1809
     - Development improvements:
         - Add HTML email previewer.
         - Add CORS header to Open311 output. #2022
