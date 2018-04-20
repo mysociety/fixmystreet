@@ -51,7 +51,7 @@ $(function(){
     // on a body's page, hide/show deleted contact categories
     var $table_with_deleted_contacts = $('table tr.is-deleted td.contact-category').closest('table');
     if ($table_with_deleted_contacts.length == 1) {
-        var $toggle_deleted_btn = $("<input type='submit' class='btn' value='Hide deleted contacts' id='toggle-deleted-contacts-btn' style='margin:1em 0;'/>");
+        var $toggle_deleted_btn = $("<input type='submit' class='btn' value='Show deleted contacts' id='toggle-deleted-contacts-btn' style='margin:1em 0;'/>");
         $table_with_deleted_contacts.before($toggle_deleted_btn);
         $toggle_deleted_btn.on('click', function(e){
             e.preventDefault();

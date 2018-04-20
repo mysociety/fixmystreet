@@ -69,6 +69,10 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     }
 }
 
+.js tr.is-deleted {
+  display: none;
+}
+
 .admin-box { // for delimiting forms, etc
     border:1px solid #999;
     padding:0.5em 1em;
