@@ -358,6 +358,18 @@ for my $test (
         end_state => 'investigating',
     },
     {
+        desc => 'unchanging state does not trigger auto-response template',
+        description => '',
+        xml_description => '',
+        external_id => 638344,
+        start_state => 'investigating',
+        comment_status => 'INVESTIGATING',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => 'investigating',
+        end_state => 'investigating',
+    },
+    {
         desc => 'open status does not re-open hidden report',
         description => 'This is a note',
         external_id => 638344,

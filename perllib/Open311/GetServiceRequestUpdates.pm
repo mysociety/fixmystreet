@@ -110,13 +110,18 @@ sub update_comments {
 
             if ( !$c->first ) {
                 my $state = $open311->map_state( $request->{status} );
-                my $external_status_code = $request->{external_status_code};
+                my $old_state = $p->state;
+                my $external_status_code = $request->{external_status_code} || '';
+                my $old_external_status_code = $p->get_extra_metadata('external_status_code') || '';
                 my $comment = $self->schema->resultset('Comment')->new(
                     {
                         problem => $p,
                         user => $self->system_user,
                         external_id => $request->{update_id},
-                        text => $self->comment_text_for_request($request, $p, $state, $external_status_code),
+                        text => $self->comment_text_for_request(
+                            $request, $p, $state, $old_state,
+                            $external_status_code, $old_external_status_code
+                        ),
                         mark_fixed => 0,
                         mark_open => 0,
                         anonymous => 0,
@@ -184,22 +189,28 @@ sub update_comments {
 }
 
 sub comment_text_for_request {
-    my ($self, $request, $problem, $state, $external_status_code) = @_;
+    my ($self, $request, $problem, $state, $old_state,
+        $ext_code, $old_ext_code) = @_;
 
     return $request->{description} if $request->{description};
 
-    my $state_params = {
-        'me.state' => $state
-    };
-    if ($external_status_code) {
-        $state_params->{'me.external_status_code'} = $external_status_code;
-    };
+    # Response templates are only triggered if the state/external status has changed
+    my $state_changed = $state ne $old_state;
+    my $ext_code_changed = $ext_code ne $old_ext_code;
+    if ($state_changed || $ext_code_changed) {
+        my $state_params = {
+            'me.state' => $state
+        };
+        if ($ext_code) {
+            $state_params->{'me.external_status_code'} = $ext_code;
+        };
 
-    if (my $template = $problem->response_templates->search({
-        auto_response => 1,
-        -or => $state_params,
-    })->first) {
-        return $template->text;
+        if (my $template = $problem->response_templates->search({
+            auto_response => 1,
+            -or => $state_params,
+        })->first) {
+            return $template->text;
+        }
     }
 
     return "" if $self->blank_updates_permitted;
