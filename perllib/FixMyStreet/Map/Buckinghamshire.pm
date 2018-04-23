@@ -14,6 +14,7 @@ sub map_javascript { [
     '/cobrands/fixmystreet-uk-councils/roadworks.js',
     '/cobrands/fixmystreet/assets.js',
     '/cobrands/buckinghamshire/js.js',
+    '/cobrands/buckinghamshire/assets.js',
 ] }
 
 1;
