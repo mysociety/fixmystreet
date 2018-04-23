@@ -64,7 +64,7 @@ sub map_javascript { [
     '/js/map-wmts-base.js',
     '/js/map-wmts-bristol.js',
     '/cobrands/fixmystreet/assets.js',
-    '/cobrands/bristol/js.js',
+    '/cobrands/bristol/assets.js',
 ] }
 
 # Reproject a WGS84 lat/lon into BNG easting/northing
