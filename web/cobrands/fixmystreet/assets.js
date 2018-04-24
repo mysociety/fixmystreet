@@ -189,33 +189,7 @@ function init_asset_layer(layer, pins_layer) {
         layer.events.register( 'loadend', layer, fixmystreet.usrn.one_time_select );
     }
 
-    if (!layer.fixmystreet.always_visible) {
-        // Show/hide the asset layer when the category is chosen
-        $("#problem_form").on("change.category", "select#form_category", function(){
-            var category = $(this).val();
-            if (fixmystreet.assets.check_layer_relevant(layer.fixmystreet, category)) {
-                layer.setVisibility(true);
-                if (layer.fixmystreet.fault_layer) {
-                    layer.fixmystreet.fault_layer.setVisibility(true);
-                }
-                zoom_to_assets(layer);
-            } else {
-                layer.setVisibility(false);
-                if (layer.fixmystreet.fault_layer) {
-                    layer.fixmystreet.fault_layer.setVisibility(false);
-                }
-            }
-        });
-    } else {
-        $("#problem_form").on("change.category", "select#form_category", function(){
-            if (fixmystreet.map.bodies && layer.fixmystreet.body && fixmystreet.map.bodies.indexOf(layer.fixmystreet.body) == -1) {
-                    layer.setVisibility(false);
-            }
-        });
-    }
-
 }
-
 
 function close_fault_popup() {
     if (!!fault_popup) {
@@ -642,14 +616,45 @@ fixmystreet.assets = {
             fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
             fixmystreet.assets.controls[i].activate();
         }
+        $("#problem_form").on("change.category", "select#form_category", function(){
+            fixmystreet.assets.update_layer_visibility();
+        });
+            fixmystreet.assets.update_layer_visibility();
     },
 
     check_layer_relevant: function(layer, category) {
       return layer.asset_category.indexOf(category) != -1 &&
-        ( !fixmystreet.map.bodies || !layer.body || fixmystreet.map.bodies.indexOf(layer.body) != -1 );
-    }
+        ( !fixmystreet.bodies || !layer.body || fixmystreet.bodies.indexOf(layer.body) != -1 );
+    },
 
+    update_layer_visibility: function() {
+        for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
+            var layer = fixmystreet.assets.layers[i];
+            if (!layer.fixmystreet.always_visible) {
+                // Show/hide the asset layer when the category is chosen
+                var category = $('#problem_form select#form_category').val();
+                if (fixmystreet.assets.check_layer_relevant(layer.fixmystreet, category)) {
+                    layer.setVisibility(true);
+                    if (layer.fixmystreet.fault_layer) {
+                        layer.fixmystreet.fault_layer.setVisibility(true);
+                    }
+                    zoom_to_assets(layer);
+                } else {
+                    layer.setVisibility(false);
+                    if (layer.fixmystreet.fault_layer) {
+                        layer.fixmystreet.fault_layer.setVisibility(false);
+                    }
+                }
+            } else {
+                if (fixmystreet.bodies && layer.fixmystreet.body) {
+                    layer.setVisibility(fixmystreet.bodies.indexOf(layer.fixmystreet.body) != -1);
+                }
+            }
+        }
+    }
 };
+
+$(fixmystreet).on('maps:update_pin', fixmystreet.assets.update_layer_visibility);
 
 $(function() {
     fixmystreet.assets.init();
