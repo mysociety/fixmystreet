@@ -153,8 +153,12 @@ while ( my $body = $bodies->next ) {
             $comment->update( {
                 send_fail_count => $comment->send_fail_count + 1,
                 send_fail_timestamp => \'current_timestamp',
-                send_fail_reason => 'Failed to post over Open311',
+                send_fail_reason => "Failed to post over Open311\n\n" . $o->error,
             } );
+
+            if ( $verbose && $o->error ) {
+                warn $o->error;
+            }
         }
     }
 }
