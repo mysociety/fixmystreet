@@ -426,7 +426,7 @@ sub inspect : Private {
                     cobrand_data => $problem->cobrand_data,
                     lang         => $problem->lang,
                 };
-                $problem->user->create_alert($problem->id, $options);
+                $c->user->create_alert($problem->id, $options);
             }
 
             # If the state has been changed to action scheduled and they've said

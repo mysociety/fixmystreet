@@ -36,8 +36,8 @@ my $report_id = $report->id;
 my $report2_id = $report2->id;
 my $report3_id = $report3->id;
 
-
-my $user = $mech->log_in_ok('test@example.com');
+$mech->create_user_ok('body@example.com', name => 'Body User');
+my $user = $mech->log_in_ok('body@example.com');
 $user->set_extra_metadata('categories', [ $contact->id ]);
 $user->update( { from_body => $oxon } );
 
