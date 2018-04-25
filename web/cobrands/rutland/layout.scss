@@ -13,3 +13,12 @@ body.frontpage #site-logo {
     height: 100px;
     width: 220px;
 }
+
+
+body.fullwidthpage, body.twothirdswidthpage {
+    .container .content footer {
+        a.platform-logo {
+            background-image: url(/cobrands/fixmystreet/images/fms-platform-logo-dark.svg);
+        }
+    }
+}
