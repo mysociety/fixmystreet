@@ -38,6 +38,7 @@
         - Improve chart display in old IE versions. #2005
         - Improve handling of Open311 state changes. #2069
         - Don't strip whitespace from user passwords. #2111
+        - Make OpenGraph description translatable.
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
