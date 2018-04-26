@@ -1,15 +1,15 @@
 <p>
-[% IF bodies_to_list_names.size == 1 %]
+[% IF bodies_to_list.size == 1 %]
 [%
     tprintf(
         "%s har valt att inte ta emot rapporter från FixaMinGata, utan hänvisar fel- &amp; synpunktsrapportering till <a href='%s'>kommunens egen webbplats</a>.",
-        bodies_to_list_names.first, bodies_to_list_urls.first);
+        bodies_to_list.values.first.name, bodies_to_list.values.first.external_url);
 %]
 [% END %]
 [%
     loc("If you submit a problem here the problem will <strong>not</strong> be reported to the council.");
 %]
-[% IF bodies_to_list_names.size != 1 %]
+[% IF bodies_to_list.size != 1 %]
 [%
     tprintf(
         loc("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."),

@@ -17,13 +17,7 @@
       [% END %]
     </div>
 
-    [% DEFAULT form_title = loc('Summarise the problem') %]
-    <label for="form_title">[% form_title %]</label>
-[% IF field_errors.title %]
-    <p class='form-error'>[% field_errors.title %]</p>
-[% END %]
-    [% DEFAULT form_title_placeholder = loc('10 inch pothole on Example St, near post box') %]
-    <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% form_title_placeholder %]" required>
+    [% INCLUDE 'report/new/form_title.html' %]
 
 [% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
 
@@ -54,7 +48,8 @@
 
 [% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
 
-    <label for="form_detail">[% loc('Explain what’s wrong') %]</label>
+    [% DEFAULT form_detail_label = loc('Explain what’s wrong') %]
+    <label for="form_detail">[% form_detail_label %]</label>
 [% IF field_errors.detail %]
     <p class='form-error'>[% field_errors.detail %]</p>
 [% END %]

@@ -1,4 +1,5 @@
-[% DEFAULT list_of_names = bodies_to_list_names %]
+[% SET default_list = [] %][% FOR b IN bodies_to_list.values %][% default_list.push(b.name) %][% END %]
+[% DEFAULT list_of_names = default_list %]
 
 <p>
 [%

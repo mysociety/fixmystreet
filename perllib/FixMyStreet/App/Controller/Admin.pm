@@ -1042,7 +1042,7 @@ sub report_edit_location : Private {
         $c->forward('/council/load_and_check_areas', []);
         $c->forward('/report/new/setup_categories_and_bodies');
         my %allowed_bodies = map { $_ => 1 } @{$problem->bodies_str_ids};
-        my @new_bodies = @{$c->stash->{bodies_to_list}};
+        my @new_bodies = keys %{$c->stash->{bodies_to_list}};
         my $bodies_match = grep { exists( $allowed_bodies{$_} ) } @new_bodies;
         $c->stash($safe_stash);
         return unless $bodies_match;

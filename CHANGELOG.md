@@ -50,6 +50,7 @@
         - Add CORS header to Open311 output. #2022
         - Add some Cypress browser-based testing.
         - Upgrade Vagrantfile to use Ubuntu Xenial. #2093
+        - Add validation to cobrand-specific custom reporting fields.
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:

@@ -695,9 +695,7 @@ sub setup_categories_and_bodies : Private {
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
     $c->stash->{contacts} = \@contacts;
-    $c->stash->{bodies_to_list} = [ keys %bodies_to_list ];
-    $c->stash->{bodies_to_list_names} = [ map { $_->name } values %bodies_to_list ];
-    $c->stash->{bodies_to_list_urls} = [ map { $_->external_url } values %bodies_to_list ];
+    $c->stash->{bodies_to_list} = \%bodies_to_list;
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_hidden}  = \%category_extras_hidden;
@@ -920,6 +918,7 @@ sub process_report : Private {
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
+    $c->cobrand->call_hook(report_new_munge_category => $report);
     $report->subcategory( $params{subcategory} );
 
     my $areas = $c->stash->{all_areas_mapit};
@@ -948,7 +947,7 @@ sub process_report : Private {
         if ( $c->stash->{non_public_categories}->{ $report->category } ) {
             $report->non_public( 1 );
         }
-    } elsif ( @{ $c->stash->{bodies_to_list} } ) {
+    } elsif ( %{ $c->stash->{bodies_to_list} } ) {
 
         # There was an area with categories, but we've not been given one. Bail.
         $c->stash->{field_errors}->{category} = _('Please choose a category');
@@ -967,6 +966,14 @@ sub process_report : Private {
         my $value = $c->get_param($form_name) || '';
         $c->stash->{field_errors}->{$form_name} = _('This information is required')
             if $field->{required} && !$value;
+        if ($field->{validator}) {
+            eval {
+                $value = $field->{validator}->($value);
+            };
+            if ($@) {
+                $c->stash->{field_errors}->{$form_name} = $@;
+            }
+        }
         $report->set_extra_metadata( $form_name => $value );
     }
 
@@ -1352,6 +1359,8 @@ sub save_user_and_report : Private {
         $report->user->discard_changes();
         $c->log->info($report->user->id . ' exists, but is not logged in for this report');
     }
+
+    $c->cobrand->call_hook(report_new_munge_before_insert => $report);
 
     $report->update_or_insert;
 

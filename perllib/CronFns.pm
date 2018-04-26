@@ -27,6 +27,7 @@ sub site {
     my $base_url = shift;
     my $site = 'fixmystreet';
     $site = 'zurich' if $base_url =~ /zurich|zueri/;
+    $site = 'smidsy' if $base_url =~ /smidsy|collideosco/;
     return $site;
 }
 
