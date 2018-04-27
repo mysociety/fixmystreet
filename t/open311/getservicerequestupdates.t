@@ -368,6 +368,7 @@ for my $test (
         mark_open => 0,
         problem_state => 'investigating',
         end_state => 'investigating',
+        comment_state => 'hidden',
     },
     {
         desc => 'open status does not re-open hidden report',
@@ -401,6 +402,7 @@ for my $test (
         is $c->mark_fixed, $test->{mark_fixed}, 'mark_closed correct';
         is $c->problem_state, $test->{problem_state}, 'problem_state correct';
         is $c->mark_open, $test->{mark_open}, 'mark_open correct';
+        is $c->state, $test->{comment_state} || 'confirmed', 'comment state correct';
         is $problem->state, $test->{end_state}, 'correct problem state';
         $problem->comments->delete;
     };
