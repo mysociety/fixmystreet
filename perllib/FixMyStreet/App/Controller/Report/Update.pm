@@ -156,7 +156,7 @@ sub process_user : Private {
 
     if ($params{password_register}) {
         $c->forward('/auth/test_password', [ $params{password_register} ]);
-        $update->user->password(Utils::trim_text($params{password_register}));
+        $update->user->password($params{password_register});
     }
 
     return 1;

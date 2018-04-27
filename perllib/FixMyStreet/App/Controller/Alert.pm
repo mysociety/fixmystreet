@@ -369,7 +369,7 @@ sub process_user : Private {
 #        return 1;
 #    }
 #
-#    $alert_user->password( Utils::trim_text( $params{password_register} ) );
+#    $alert_user->password( $params{password_register} );
 }
 
 =head2 setup_coordinate_rss_feeds
