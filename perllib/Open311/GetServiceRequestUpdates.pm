@@ -136,8 +136,8 @@ sub update_comments {
                 # a more fine-grained status code that we use within FMS for
                 # response templates.
                 if ( $external_status_code ) {
-                    $comment->set_extra_metadata(external_status_code =>$external_status_code);
-                    $p->set_extra_metadata(external_status_code =>$external_status_code);
+                    $comment->set_extra_metadata(external_status_code => $external_status_code);
+                    $p->set_extra_metadata(external_status_code => $external_status_code);
                 }
 
                 $open311->add_media($request->{media_url}, $comment)
@@ -161,6 +161,10 @@ sub update_comments {
                         $p->state($state);
                     }
                 }
+
+                # If nothing to show (no text, photo, or state change), don't show this update
+                $comment->state('hidden') unless $comment->text || $comment->photo
+                    || ($comment->problem_state && $state ne $old_state);
 
                 $p->lastupdate( $comment->created );
                 $p->update;
