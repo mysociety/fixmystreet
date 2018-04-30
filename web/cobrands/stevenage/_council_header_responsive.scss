@@ -53,13 +53,6 @@
       float: none;
       height: auto;
 
-      // IE7 doesn't support table-cell
-      .ie7 & {
-        display: inline;
-        float: left;
-        width: 16.65%;
-      }
-
       a {
         width: auto;
         padding: 6px 12px;

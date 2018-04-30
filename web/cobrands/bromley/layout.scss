@@ -20,7 +20,7 @@ body.mappage {
 }
 
 // We have to specify this again for IE, since FMS overrides it
-.iel8 {
+.ie8 {
   body.fullwidthpage,
   body.twothirdswidthpage {
     #site-logo {
@@ -179,7 +179,7 @@ body.fullwidthpage .container .content footer .tablewrapper {
 }
 
 // Fix the footer in Old IE because it doesn't like last-child selectors
-.iel8 {
+.ie8 {
   .site-footer {
     .column {
       // Old IE won't float the social media links unless we force the width to be

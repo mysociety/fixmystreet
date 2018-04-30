@@ -210,16 +210,6 @@ footer p.social a:active,footer p.social a:focus,footer p.social a:hover
   text-decoration:none;
 }
 
-// No :before support in IE7, reset things back
-.ie7 {
-  footer p.social a {
-    font-size:1.2em!important;
-    height:1.5em;
-    text-indent:0;
-    width:auto;
-  }
-}
-
 .angus_nav {
   display: block;
   border-bottom: 1px solid $angus_grey_link;

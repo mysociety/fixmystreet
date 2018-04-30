@@ -523,7 +523,7 @@ $.extend(fixmystreet.set_up, {
   on_resize: function() {
     var last_type;
     $(window).on('resize', function() {
-        var type = Modernizr.mq('(min-width: 48em)') || $('html.iel8').length ? 'desktop' : 'mobile';
+        var type = Modernizr.mq('(min-width: 48em)') || $('html.ie8').length ? 'desktop' : 'mobile';
         if (last_type == type) { return; }
         if (type == 'mobile') {
             fixmystreet.resize_to.mobile_page();
