@@ -5,6 +5,11 @@
 [% TRY %][% critical = INSERT "header/critical.auto.min.css" %][% CATCH file %][% END %]
 
 [% IF inline_css AND critical %]
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="[% ol_css %]">
+<link rel="stylesheet" href="[% base_css %]">
+<![endif]-->
+<!--[if gte IE 9]><!-->
 <style id="critical">
 [% critical %]
 </style>
@@ -14,13 +19,12 @@
 <link id="preload_base_css" rel="preload" href="[% base_css %]" as="style">
 <script nonce="[% csp_nonce %]">
 /* If browser *does* support preload, use stylesheets when loaded */
-document.getElementById('preload_base_css').onload = function(){this.rel='stylesheet'};
-/*! loadCSS & rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
-(function(a){var b=function(b,h,e){function c(a){if(f.body)return a();setTimeout(function(){c(a)})}function k(){d.addEventListener&&d.removeEventListener("load",k);d.media=e||"all"}var f=a.document,d=f.createElement("link");var p=f.styleSheets;d.rel="stylesheet";d.href=b;d.media="only x";c(function(){h.parentNode.insertBefore(d,h)});var l=function(a){for(var b=d.href,c=p.length;c--;)if(p[c].href===
-b)return a();setTimeout(function(){l(a)})};d.addEventListener&&d.addEventListener("load",k);l(k)};a.loadCSS=b})(this);
-(function(a){var b={};b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}};b.poly=function(){for(var b=a.document.getElementsByTagName("link"),e=0;e<b.length;e++){var c=b[e];"preload"===c.rel&&"style"===c.getAttribute("as")&&(a.loadCSS(c.href,c,c.getAttribute("media")),c.rel=null)}};if(!b.support()){b.poly()}})(this);
+document.getElementById('preload_base_css').onload = function(){this.onload=null;this.rel='stylesheet'};
+/*!  loadCSS. [c]2017 Filament Group, Inc. MIT License */
+(function(){var e=function(a){function b(){a.removeEventListener("load",b);a.setAttribute("onload",null);a.media=c}var c=a.media||"all";a.addEventListener("load",b);setTimeout(function(){a.rel="stylesheet";a.media="only x"});setTimeout(b,3E3)};try{var d=document.createElement("link").relList.supports("preload")}catch(a){d=!1}d||function(){for(var a=document.getElementsByTagName("link"),b=0;b<a.length;b++){var c=a[b];"preload"===c.rel&&"style"===c.getAttribute("as")&&e(c)}}()})();
 </script>
 <link rel="stylesheet" href="[% base_css %]" media="(min-width:48em)">
+<!--<![endif]-->
 [% ELSE %]
 <link rel="stylesheet" href="[% ol_css %]">
 <link rel="stylesheet" href="[% base_css %]">
