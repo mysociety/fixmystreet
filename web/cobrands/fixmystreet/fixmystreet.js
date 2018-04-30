@@ -1219,6 +1219,7 @@ $(function() {
 
     $(window).on('load', function () {
         setTimeout(function () {
+            if (!window.addEventListener) { return; }
             window.addEventListener('popstate', function(e) {
                 // The user has pressed the Back button, and there is a
                 // stored History state for them to return to.

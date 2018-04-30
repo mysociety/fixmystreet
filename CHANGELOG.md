@@ -54,7 +54,7 @@
         - Add some Cypress browser-based testing.
         - Upgrade Vagrantfile to use Ubuntu Xenial. #2093
         - Add validation to cobrand-specific custom reporting fields.
-        - Drop support for IE7. #2114
+        - Drop support for IE7, improve IE8 support. #2114
 
 * v2.3.1 (12th February 2018)
     - Front end improvements:

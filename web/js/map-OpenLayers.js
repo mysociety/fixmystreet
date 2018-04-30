@@ -8,7 +8,7 @@ $.extend(fixmystreet.utils, {
         if (!location.search) {
             return qs;
         }
-        location.search.substring(1).split(/[;&]/).forEach(function(i) {
+        $.each(location.search.substring(1).split(/[;&]/), function(n, i) {
             var s = i.split('='),
                 k = s[0],
                 v = s[1] && decodeURIComponent(s[1].replace(/\+/g, ' '));
