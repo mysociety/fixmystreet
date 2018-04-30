@@ -22,14 +22,10 @@
     padding-bottom: 0.25em;
     background-color: #6b6969;
     @include linear-gradient(#6b6969, #555454);
-
-    .ie8 & {
-      background-color: #6b6969;
-    }
 }
 
 #main-nav {
-    min-height: 0;
+    min-height: 1.9em; // Should be 0, but IE8 shrinks background as if floated, then
     margin-top: 0;
     float: none;
 }
