@@ -551,13 +551,21 @@ ul.error {
   a:visited {
     color: #333;
   }
-  a:hover, span.hover {
+  a:hover {
     background-color: #333;
     color: #fff;
     text-decoration: none;
   }
   span {
     background-color: #ccc;
+  }
+  span.report-a-problem-btn {
+    cursor: pointer;
+  }
+  span.report-a-problem-btn:hover {
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
   }
 }
 
