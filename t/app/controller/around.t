@@ -137,7 +137,7 @@ subtest 'check non public reports are not displayed on around page' => sub {
 };
 
 
-subtest 'check category and status filtering works on /around' => sub {
+subtest 'check category, status and extra filtering works on /around' => sub {
     my $body = $mech->create_body_ok(2237, "Oxfordshire");
 
     my $categories = [ 'Pothole', 'Vegetation', 'Flytipping' ];
@@ -157,6 +157,7 @@ subtest 'check category and status filtering works on /around' => sub {
                 %$params,
                 category => $category,
                 state => $state,
+                external_body => "$category-$state",
             );
             $mech->create_problems_for_body( 1, $body->id, 'Around page', \%report_params );
         }
@@ -185,6 +186,13 @@ subtest 'check category and status filtering works on /around' => sub {
     $json = $mech->get_ok_json( '/around?ajax=1&status=fixed&filter_category=Vegetation&bbox=' . $bbox );
     $pins = $json->{pins};
     is scalar @$pins, 1, 'correct number of fixed Vegetation reports';
+
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Default');
+    $cobrand->mock('display_location_extra_params', sub { { external_body => "Pothole-fixed" } });
+
+    $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
+    $pins = $json->{pins};
+    is scalar @$pins, 1, 'correct number of external_body reports';
 };
 
 subtest 'check skip_around skips around page' => sub {
