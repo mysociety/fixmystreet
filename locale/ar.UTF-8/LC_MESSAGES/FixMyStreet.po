@@ -1433,8 +1433,8 @@ msgid "For each option, <strong>Key</strong> is the value which is stored in the
 msgstr ""
 
 #: templates/web/base/admin/body-form.html:73
-msgid "For more information, see <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
-msgstr "للمزيد من المعلومات، راجع <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>كيف أصلح شارعي يستخدم الخريطة</a>."
+msgid "For more information, see <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
+msgstr "للمزيد من المعلومات، راجع <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>كيف أصلح شارعي يستخدم الخريطة</a>."
 
 #: templates/web/base/auth/general.html:96
 #: templates/web/base/report/new/form_user_loggedout_password.html:20
@@ -2905,8 +2905,8 @@ msgid "Posted by <strong>%s</strong> at %s"
 msgstr "تم النشر بواسطة <strong>%s</strong> في %s"
 
 #: templates/web/base/front/footer-marketing.html:6
-msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
-msgstr "مشغّل بواسطة <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">نظام FixMyStreet الأساسي</a>"
+msgid "Powered by <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet Platform</a>"
+msgstr "مشغّل بواسطة <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">نظام FixMyStreet الأساسي</a>"
 
 #: templates/web/base/pagination.html:4
 msgid "Previous"
@@ -4891,8 +4891,8 @@ msgid "Within the specified timeframe:"
 msgstr ""
 
 #: templates/web/base/front/footer-marketing.html:3
-msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
-msgstr "هل تريد المساهمة في FixMyStreet؟ التعليمات البرمجية الخاصة بنا مفتوحة المصدر <a href=\"http://fixmystreet.org\">ومتاحة على fixmystreet.org</a>."
+msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"https://fixmystreet.org\">available at fixmystreet.org</a>."
+msgstr "هل تريد المساهمة في FixMyStreet؟ التعليمات البرمجية الخاصة بنا مفتوحة المصدر <a href=\"https://fixmystreet.org\">ومتاحة على fixmystreet.org</a>."
 
 #: templates/web/base/questionnaire/index.html:101
 msgid "Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?"

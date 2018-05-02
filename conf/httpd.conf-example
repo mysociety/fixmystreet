@@ -4,7 +4,7 @@
 # example of such a virtualhost configuration file can be found in the
 # file apache-vhost.conf.example in this directory.
 #
-# See our installation help at http://fixmystreet.org/
+# See our installation help at https://fixmystreet.org/
 
 RewriteEngine on
 # RewriteLog /var/log/apache2/rewrite.log

@@ -23,7 +23,7 @@
                         document.cookie = 'has_seen_country_message=1; path=/; expires=' + t.toUTCString();
                     };
                     var p = document.createElement('p');
-                    p.innerHTML = 'This site is for reporting <strong>problems in the UK</strong>. There are FixMyStreet sites <a href="http://fixmystreet.org/sites/">all over the world</a>, or you could set up your own using the <a href="http://fixmystreet.org/">FixMyStreet Platform</a>.';
+                    p.innerHTML = 'This site is for reporting <strong>problems in the UK</strong>. There are FixMyStreet sites <a href="https://fixmystreet.org/sites/">all over the world</a>, or you could set up your own using the <a href="https://fixmystreet.org/">FixMyStreet Platform</a>.';
                     banner.appendChild(close);
                     banner.appendChild(p);
                     document.body.insertBefore(banner, document.body.firstChild);

@@ -1142,7 +1142,7 @@ msgid "For council(s):"
 msgstr "For council(s):"
 
 #: templates/web/base/admin/body-form.html:65
-msgid "For more information, see <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How reportemptyhomes.com uses Mapit</a>."
+msgid "For more information, see <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How reportemptyhomes.com uses Mapit</a>."
 msgstr ""
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:32
@@ -3641,7 +3641,7 @@ msgstr "With request searches, it is also possible to search for agency_responsi
 #: templates/web/fiksgatami/front/footer-marketing.html:15
 #: templates/web/fixmystreet/front/footer-marketing.html:15
 #, fuzzy
-msgid "Would you like to contribute to reportemptyhomes.com? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
+msgid "Would you like to contribute to reportemptyhomes.com? Our code is open source and <a href=\"https://fixmystreet.org\">available at fixmystreet.org</a>."
 msgstr "Would you like to contribute to reportemptyhomes.com? Our code is open source and <a href=\"http://github.com/mysociety/fixmystreet\">available on GitHub</a>."
 
 #: templates/web/base/questionnaire/index.html:78

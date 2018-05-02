@@ -1386,8 +1386,8 @@ msgid "For each option, <strong>Key</strong> is the value which is stored in the
 msgstr "För varje alternativ är <strong>Nyckel</strong> det värde som är sparat i databasen för det alternativet, och <strong>Namn</strong> är värdet som visas för användaren."
 
 #: templates/web/base/admin/body-form.html:73
-msgid "For more information, see <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
-msgstr "För mer information, se <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
+msgid "For more information, see <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
+msgstr "För mer information, se <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
 
 #: templates/web/base/auth/general.html:96
 #: templates/web/base/report/new/form_user_loggedout_password.html:20
@@ -2824,8 +2824,8 @@ msgid "Posted by <strong>%s</strong> at %s"
 msgstr "Postat av <strong>%s</strong> %s"
 
 #: templates/web/base/front/footer-marketing.html:6
-msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
-msgstr "Byggd på <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet-plattformen</a>"
+msgid "Powered by <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet Platform</a>"
+msgstr "Byggd på <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet-plattformen</a>"
 
 #: templates/web/base/pagination.html:4
 msgid "Previous"
@@ -4760,8 +4760,8 @@ msgid "Within the specified timeframe:"
 msgstr "Inom den specificerade tidsramen:"
 
 #: templates/web/base/front/footer-marketing.html:3
-msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
-msgstr "Vill du bidra till FixaMinGata? Vår kod är öppen programvara och <a href=\"http://fixmystreet.org\">tillgänglig på fixmystreet.org</a>."
+msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"https://fixmystreet.org\">available at fixmystreet.org</a>."
+msgstr "Vill du bidra till FixaMinGata? Vår kod är öppen programvara och <a href=\"https://fixmystreet.org\">tillgänglig på fixmystreet.org</a>."
 
 #: templates/web/base/questionnaire/index.html:101
 msgid "Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?"

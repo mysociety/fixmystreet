@@ -3,10 +3,10 @@
 # contains various configuration parameters, in YAML syntax.
 #
 # For more information about this file, and general documentation on setting up
-# the FixMyStreet platform, please see http://fixmystreet.org/
+# the FixMyStreet platform, please see https://fixmystreet.org/
 #
 # Specific details about this file can be found at
-# http://fixmystreet.org/customising/config/
+# https://fixmystreet.org/customising/config/
 #
 # To start, you can copy this file to one called "general.yml" in the same
 # directory. Or have multiple config files and use a symlink to change between

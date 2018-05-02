@@ -3,12 +3,12 @@
 Thanks for contributing to FixMyStreet! Here is a quick summary of where to
 find information:
 
-* [Documentation](http://fixmystreet.org) – including development installation
+* [Documentation](https://fixmystreet.org) – including development installation
 with Vagrant or manually, and information on customisation;
 * [Coding standards](https://mysociety.github.io/coding-standards.html);
 * [Ticket management](https://waffle.io/mysociety/fixmystreet) – please see
 below for details on our workflow;
-* [Community help](http://fixmystreet.org/community/) – if you are having
+* [Community help](https://fixmystreet.org/community/) – if you are having
 trouble, we have a number of places you can ask for assistance.
 
 Workflow

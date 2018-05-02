@@ -1,6 +1,6 @@
 # An example Apache virtualhost configuration file.
 #
-# See our installation help at http://fixmystreet.org/
+# See our installation help at https://fixmystreet.org/
 #
 # Hopefully you can use either mod_fastcgi or mod_fcgid.
 # Ubuntu has mod_fcgid by default, with mod_fastcgi in multiverse.

@@ -3,7 +3,7 @@
 # An example sysvinit script to help with this is shown given in the file
 # sysvinit-catalyst-fastcgi.example in this directory.
 #
-# See our installation help at http://fixmystreet.org/
+# See our installation help at https://fixmystreet.org/
 
 server {
 

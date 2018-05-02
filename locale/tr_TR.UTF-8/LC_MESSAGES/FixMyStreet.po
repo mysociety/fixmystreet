@@ -1399,8 +1399,8 @@ msgid "For each option, <strong>Key</strong> is the value which is stored in the
 msgstr ""
 
 #: templates/web/base/admin/body-form.html:73
-msgid "For more information, see <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
-msgstr "Daha fazla bilgi için, bakınız <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>  FixMyStreet'in Mapit'i nasıl kullandığını</a>."
+msgid "For more information, see <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
+msgstr "Daha fazla bilgi için, bakınız <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>  FixMyStreet'in Mapit'i nasıl kullandığını</a>."
 
 #: templates/web/base/auth/general.html:96
 #: templates/web/base/report/new/form_user_loggedout_password.html:20
@@ -2832,7 +2832,7 @@ msgid "Posted by <strong>%s</strong> at %s"
 msgstr "<strong>%s</strong> tarafından %s 'te paylaşılmıştır"
 
 #: templates/web/base/front/footer-marketing.html:6
-msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
+msgid "Powered by <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet Platform</a>"
 msgstr ""
 
 #: templates/web/base/pagination.html:4
@@ -4766,8 +4766,8 @@ msgid "Within the specified timeframe:"
 msgstr ""
 
 #: templates/web/base/front/footer-marketing.html:3
-msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
-msgstr "FixMyStreet'e katkıda bulunmak ister misin? Şifremiz herkese açıktır ve <a href=\"http://fixmystreet.org\"> burdan ulaşılabilir fixmystreet.org</a>."
+msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"https://fixmystreet.org\">available at fixmystreet.org</a>."
+msgstr "FixMyStreet'e katkıda bulunmak ister misin? Şifremiz herkese açıktır ve <a href=\"https://fixmystreet.org\"> burdan ulaşılabilir fixmystreet.org</a>."
 
 #: templates/web/base/questionnaire/index.html:101
 msgid "Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?"
