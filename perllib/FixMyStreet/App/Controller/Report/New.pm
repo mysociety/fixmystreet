@@ -666,7 +666,7 @@ sub setup_categories_and_bodies : Private {
         $bodies_to_list{ $contact->body_id } = $contact->body;
 
         unless ( $seen{$contact->category} ) {
-            push @category_options, { name => $contact->category, value => $contact->category_display, group => $contact->get_extra_metadata('group') || '' };
+            push @category_options, $contact;
 
             my $metas = $contact->get_metadata_for_input;
             $category_extras{$contact->category} = $metas if @$metas;
@@ -679,15 +679,15 @@ sub setup_categories_and_bodies : Private {
 
             $non_public_categories{ $contact->category } = 1 if $contact->non_public;
         }
-        $seen{$contact->category} = $contact->category_display;
+        $seen{$contact->category} = $contact;
     }
 
     if (@category_options) {
         # If there's an Other category present, put it at the bottom
         @category_options = (
-            { name => _('-- Pick a category --'), value => _('-- Pick a category --'), group => '' },
-            grep { $_->{name} ne _('Other') } @category_options );
-        push @category_options, { name => _('Other'), value => $seen{_('Other')}, group => _('Other') } if $seen{_('Other')};
+            { category => _('-- Pick a category --'), category_display => _('-- Pick a category --'), group => '' },
+            grep { $_->category ne _('Other') } @category_options );
+        push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }
 
     $c->cobrand->call_hook(munge_category_list => \@category_options, \@contacts, \%category_extras);
@@ -711,7 +711,8 @@ sub setup_categories_and_bodies : Private {
     if ( $c->cobrand->call_hook('enable_category_groups') ) {
         my %category_groups = ();
         for my $category (@category_options) {
-            push @{$category_groups{$category->{group}}}, $category;
+            my $group = $category->{group} // $category->get_extra_metadata('group') // '';
+            push @{$category_groups{$group}}, $category;
         }
 
         my @category_groups = ();

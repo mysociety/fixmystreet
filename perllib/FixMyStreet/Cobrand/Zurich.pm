@@ -499,7 +499,7 @@ sub category_options {
     my ($self, $c) = @_;
     my @categories = $c->model('DB::Contact')->not_deleted->all;
     $c->stash->{category_options} = [ map { {
-        name => $_->category, value => $_->category,
+        category => $_->category, category_display => $_->category,
         abbreviation => $_->get_extra_metadata('abbreviation'),
     } } @categories ];
 }

@@ -171,7 +171,7 @@
             <select class="form-control" name="category" id="category">
                 <option value="">--</option>
               [% FOREACH cat IN category_options %]
-                <option value="[% cat.name %]">[% cat.value ~%]
+                <option value="[% cat.category %]">[% cat.category_display ~%]
                     [% ' (' _ cat.abbreviation _ ')' IF cat.abbreviation %]</option>
               [% END %]
             </select>

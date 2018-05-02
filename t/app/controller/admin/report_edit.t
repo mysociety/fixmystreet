@@ -558,7 +558,6 @@ subtest "Test setting a report from unconfirmed to something else doesn't cause 
 };
 
 subtest "Test display of report extra data" => sub {
-    $report->unset_extra_metadata;
     $mech->get_ok("/admin/report_edit/$report_id");
     $mech->content_contains('Extra data: No');
     $report->set_extra_metadata('extra_field', 'this is extra data');

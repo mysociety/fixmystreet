@@ -7,7 +7,7 @@
   [% IF category_options.size %]
     <optgroup label="[% loc('Available categories') %]">
       [% FOREACH cat IN category_options %]
-        <option value="[% cat.name | html %]"[% ' selected' IF problem.category == cat.name %]>[% cat.value | html %]</option>
+        <option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display | html %]</option>
       [% END %]
     </optgroup>
   [% END %]

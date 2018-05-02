@@ -1,8 +1,8 @@
 [% IF category_options.size OR category_groups.size ~%]
     [%~ BLOCK category_option ~%]
-    [% cat_op_lc = cat_op.name | lower =%]
-    <option value='[% cat_op.name | html %]'[% ' selected' IF report.category == cat_op.name || category_lc == cat_op_lc || (category_options.size == 2 AND loop.last) ~%]
-    >[% IF loop.first %][% cat_op.value %][% ELSE %][% cat_op.value | html %][% END %]</option>
+    [% cat_op_lc = cat_op.category | lower =%]
+    <option value='[% cat_op.category | html %]'[% ' selected' IF report.category == cat_op.category || category_lc == cat_op_lc || (category_options.size == 2 AND loop.last) ~%]
+    >[% IF loop.first %][% cat_op.category_display %][% ELSE %][% cat_op.category_display | html %][% END %]</option>
     [%~ END ~%]
 
     [% IF category;
