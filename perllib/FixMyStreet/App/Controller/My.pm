@@ -159,7 +159,7 @@ sub setup_page_data : Private {
     my @categories = $c->stash->{problems_rs}->search({
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
-        columns => [ 'category' ],
+        columns => [ 'category', 'extra' ],
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;

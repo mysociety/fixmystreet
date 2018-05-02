@@ -156,7 +156,7 @@ sub ward : Path : Args(2) {
     $c->stash->{stats} = $c->cobrand->get_report_stats();
 
     my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
-        columns => [ 'category' ],
+        columns => [ 'category', 'extra' ],
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;

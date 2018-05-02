@@ -233,7 +233,7 @@ sub check_and_stash_category : Private {
             body_id => [ keys %bodies ],
         },
         {
-            columns => [ 'category' ],
+            columns => [ 'category', 'extra' ],
             order_by => [ 'category' ],
             distinct => 1
         }

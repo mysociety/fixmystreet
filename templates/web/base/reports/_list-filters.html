@@ -40,6 +40,7 @@
         [% FOR cat IN filter_categories %]
             <option value="[% cat.category | html %]"[% ' selected' IF filter_category.${cat.category} %]>
                 [% cat.category_display | html %]
+                [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
             </option>
         [% END %]
     </select>
