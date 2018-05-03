@@ -125,9 +125,7 @@ while ( my $body = $bodies->next ) {
             );
         }
 
-        if ( $comment->send_fail_count ) {
-            next if retry_timeout( $comment );
-        }
+        next if !$verbose && $comment->send_fail_count && retry_timeout($comment);
 
         if ( $site eq 'fixmystreet.com' && $body->areas->{+COUNCIL_ID_BROMLEY} ) {
             my $extra = $comment->extra;
