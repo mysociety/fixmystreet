@@ -24,6 +24,8 @@ sub update_email {
     return join( '@', 'highways', 'bathnes.gov.uk' );
 }
 
+sub admin_user_domain { 'bathnes.gov.uk' }
+
 sub base_url {
     my $self = shift;
     return $self->next::method() if FixMyStreet->config('STAGING_SITE');
