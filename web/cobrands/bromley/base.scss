@@ -323,14 +323,6 @@ input.field, input.text,
   border-bottom: none!important;
 }
 
-// Fix the A-Z menu in IE7
-.ie7 {
-  .main-a-z ul li {
-    display:block;
-    float:left;
-  }
-}
-
 // Bromley's breadcrumb
 .breadcrumb {
   width: 100%;

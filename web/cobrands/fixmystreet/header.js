@@ -5,8 +5,8 @@ var fixmystreet = fixmystreet || {};
 (function(D){
     var E = D.documentElement;
     E.className = E.className.replace(/\bno-js\b/, 'js');
-    var iel8 = E.className.indexOf('iel8') > -1;
-    var type = Modernizr.mq('(min-width: 48em)') || iel8 ? 'desktop' : 'mobile';
+    var ie8 = E.className.indexOf('ie8') > -1;
+    var type = Modernizr.mq('(min-width: 48em)') || ie8 ? 'desktop' : 'mobile';
     var meta = D.getElementById('js-meta-data');
     if ('IntersectionObserver' in window) {
         E.className += ' lazyload';

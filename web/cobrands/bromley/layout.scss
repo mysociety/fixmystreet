@@ -19,17 +19,6 @@ body.mappage {
   }
 }
 
-// We have to specify this again for IE, since FMS overrides it
-.iel8 {
-  body.fullwidthpage,
-  body.twothirdswidthpage {
-    #site-logo {
-      width: 159px;
-      height: 114px;
-    }
-  }
-}
-
 #main-nav {
   display: block; // remove flex so nav touches top of parent
   min-height: 0; // no vertical align, so no need for a height
@@ -146,21 +135,16 @@ body.fullwidthpage .container .content footer .tablewrapper {
     .additional-links {
       float: left;
       width: 24%;
-      margin-left: 2%;
-      margin-right: 2%;
       -webkit-box-sizing: border-box;
       -moz-box-sizing: border-box;
       box-sizing: border-box;
-      &:first-child,
-      &:last-child {
-        margin-left: 0%;
-        margin-right: 0%;
-      }
       li {
         padding: 0 1em;
       }
     }
     .footer-list2 {
+      margin-left: 2%;
+      margin-right: 2%;
       width: 48%;
       ul {
         overflow: auto;
@@ -177,32 +161,3 @@ body.fullwidthpage .container .content footer .tablewrapper {
     }
   }
 }
-
-// Fix the footer in Old IE because it doesn't like last-child selectors
-.iel8 {
-  .site-footer {
-    .column {
-      // Old IE won't float the social media links unless we force the width to be
-      // smaller and take a more traditional display/float tack.
-      .social ul li {
-        display: block;
-        width: 36px;
-        float: left;
-      }
-      .additional-links {
-        margin-left: 0%;
-        margin-right: 0%;
-      }
-      .footer-list2 {
-        margin-left: 2%;
-        margin-right: 2%;
-      }
-      .footer-list2 ul li,
-      .footer-list1 ul li {
-        // Old IE needs to know to float these for some reason
-        float: left;
-      }
-    }
-  }
-}
-

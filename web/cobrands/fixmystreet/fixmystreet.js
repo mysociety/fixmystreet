@@ -190,15 +190,6 @@ fixmystreet.resize_to = {
                 $(this).toggleClass('btn--forward btn--cancel');
             });
     }
-
-    // On the front page, make it so that the "report a problem" menu item
-    // scrolls to the top of the page, and has a hover effect, rather than
-    // just being an innert span.
-    $('span.report-a-problem-btn').on('click.reportBtn', function() {
-        $('html, body').animate({scrollTop:0}, 500);
-    }).css({ cursor:'pointer' }).on('hover.reportBtn', function() {
-        $(this).toggleClass('hover');
-    });
   },
 
   desktop_page: function() {
@@ -209,10 +200,6 @@ fixmystreet.resize_to = {
     // been put into place by previous mobile UI.
     $('#report-a-problem-sidebar').show();
     $('.rap-notes-trigger').remove();
-
-    // On a desktop, so reset the "Report a problem" nav item to act
-    // like an innert span again.
-    $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
   }
 };
 
@@ -523,7 +510,7 @@ $.extend(fixmystreet.set_up, {
   on_resize: function() {
     var last_type;
     $(window).on('resize', function() {
-        var type = Modernizr.mq('(min-width: 48em)') || $('html.iel8').length ? 'desktop' : 'mobile';
+        var type = Modernizr.mq('(min-width: 48em)') || $('html.ie8').length ? 'desktop' : 'mobile';
         if (last_type == type) { return; }
         if (type == 'mobile') {
             fixmystreet.resize_to.mobile_page();
@@ -1232,6 +1219,7 @@ $(function() {
 
     $(window).on('load', function () {
         setTimeout(function () {
+            if (!window.addEventListener) { return; }
             window.addEventListener('popstate', function(e) {
                 // The user has pressed the Back button, and there is a
                 // stored History state for them to return to.

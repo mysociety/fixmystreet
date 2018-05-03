@@ -15,4 +15,11 @@ document.getElementById('pc').focus();
         var link = around_links[i];
         link.href = link.href + (link.href.indexOf('?') > -1 ? '&js=1' : '?js=1');
     }
+
+    var lk = document.querySelector('span.report-a-problem-btn');
+    if (lk.addEventListener) {
+        lk.addEventListener('click', function(){
+            scrollTo(0,0);
+        });
+    }
 })();

@@ -22,36 +22,12 @@
     padding-bottom: 0.25em;
     background-color: #6b6969;
     @include linear-gradient(#6b6969, #555454);
-
-    .iel8 & {
-      background-color: #6b6969;
-    }
 }
 
 #main-nav {
-    min-height: 0;
+    min-height: 1.9em; // Should be 0, but IE8 shrinks background as if floated, then
     margin-top: 0;
     float: none;
-}
-
-// We use absolute positioning for the header on IE7,
-// because IE7 doesn't support the table-caption styles.
-// This means, we need to make sure page content doesn't
-// disappear behind the header.
-.ie7 {
-    .content {
-        margin-top: 10em;
-    }
-
-    .frontpage {
-        #front-main {
-            margin-top: 15em;
-        }
-
-        .content {
-            margin-top: 0;
-        }
-    }
 }
 
 .nav-menu {
@@ -156,22 +132,4 @@ body.mappage {
     a.report-a-problem-btn {
         color: #fff;
     }
-
-    // _layout.scss adds 4em of padding to leave space for
-    // an absolutely positioned menu, but I can't tell what
-    // that means. Stevenage, at least, doesn't need it.
-    .wrapper {
-        .ie7 & {
-            padding-top: 0;
-        }
-    }
-
-    // Not sure why IE7 has the old style of "inset" or "floating"
-    // sidebar on the map page, but this makes it stop!
-    .container {
-        .ie7 & {
-            margin-left: 0;
-        }
-    }
-
 }

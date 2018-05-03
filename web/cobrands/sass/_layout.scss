@@ -132,6 +132,14 @@ h1 {
   span {
     color:$primary;
   }
+  /* Stop mobile-only things */
+  span.report-a-problem-btn {
+    cursor: auto;
+  }
+  span.report-a-problem-btn:hover {
+    background-color: transparent;
+    color: $primary;
+  }
 }
 
 // .content Is the white box
@@ -322,7 +330,7 @@ body.mappage.admin {
   // They will no longer stretch the full height of the sidebar, and the
   // width of #side-report will no longer match the width of .shadow-wrap
   // when a scrollbar is present.
-  .iel8 &,
+  .ie8 &,
   .ie9 & {
     @include clearfix();
 
@@ -420,7 +428,7 @@ body.fullwidthpage {
     }
 
 }
-.iel8 {
+.ie8 {
   body.twothirdswidthpage,
   body.fullwidthpage {
     .container .content footer a.platform-logo {
@@ -509,20 +517,6 @@ body.authpage {
   }
 }
 
-//fix table to be a block for ie, float the children
-.ie7 {
-  .tablewrapper {
-    *zoom: 1;
-    display:block;
-    >div {
-      width:48%;
-      display:block;
-      float: $left;
-      border:none !important;
-    }
-  }
-}
-
 // adds border to the top and goes full width
 .bordered {
   margin:0 -1em;
@@ -549,12 +543,6 @@ body.authpage {
 	  border-bottom:none;
   }
 }
-.ie7 {
-  #footer-mobileapps {
-      margin:0 0.5em;
-      margin-#{$right}: 2%;
-  }
-}
 
 #footer-help {
   border-#{$left}: 1em solid transparent;
@@ -565,18 +553,6 @@ body.authpage {
       border-bottom:none;
       &:last-child {
         border-#{$left}: 1.25em solid transparent;
-      }
-    }
-  }
-}
-.ie7 {
-  #footer-help {
-    margin-#{$left}: 2%;
-    ul {
-      width:100%;
-      li {
-        float: $left;
-        width: 45%;
       }
     }
   }
@@ -787,7 +763,7 @@ body.authpage {
     padding-top: 0.5em;
   }
 }
-.iel8 {
+.ie8 {
   .big-green-banner {
     background-image: url(/cobrands/fixmystreet/images/chevron-white-#{$right}-on-green.gif);
   }
@@ -962,16 +938,6 @@ textarea.form-error {
       border-right: none;
   }
 }
-.ie7 #front-main {
-  #postcodeForm {
-    div {
-      input#pc {
-        height:1.5em;
-        width:16em;
-      }
-    }
-  }
-}
 
 #front-howto {
   border-#{$right}: 1em solid transparent;
@@ -994,14 +960,6 @@ textarea.form-error {
     }
   }
 }
-.ie7 {
-  #front_stats {
-    div {
-      width:8em;
-      float: $left;
-    }
-  }
-}
 
 #front-recently {
   border-#{$left}: 1em solid transparent;
@@ -1010,17 +968,6 @@ textarea.form-error {
 #front-howto h2,
 #front-recently h2 {
    margin-top:0;
-}
-
-.ie7 {
-  .tablewrapper {
-    #front-howto {
-      margin-#{$right}: 2%;
-    }
-    #front-recently {
-      margin-#{$left}: 2%;
-    }
-  }
 }
 
 .alerts__columns {

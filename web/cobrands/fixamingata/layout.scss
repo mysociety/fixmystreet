@@ -104,13 +104,6 @@ body.mappage {
         width: auto;
     }
 }
-.ie7 {
-    .tablewrapper {
-        div {
-            width: auto;
-        }
-    }
-}
 
 #footer-help {
     ul {
@@ -119,15 +112,6 @@ body.mappage {
             border-right: 1.25em solid transparent;
             &:last-child {
                 border-left: none;
-            }
-        }
-    }
-}
-.ie7 {
-    #footer-help {
-        ul {
-            li {
-                width: 33%;
             }
         }
     }
