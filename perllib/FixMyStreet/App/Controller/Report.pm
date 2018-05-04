@@ -480,6 +480,8 @@ sub inspect : Private {
             }
         }
 
+        $c->cobrand->call_hook(report_inspect_update_extra => $problem);
+
         if ($valid) {
             if ( $reputation_change != 0 ) {
                 $problem->user->update_reputation($reputation_change);
