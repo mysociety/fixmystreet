@@ -71,6 +71,7 @@ while ( my $body = $bodies->next ) {
         },
         {
             join => 'problem',
+            order_by => [ 'confirmed', 'id' ],
         }
     );
 
