@@ -4,6 +4,7 @@
     <ul class="item-list item-list--updates">
 [% END %]
         <li class="item-list__item item-list__item--updates">
+            <a name="update_[% update.id %]" class="internal-link-fixed-header"></a>
           [% IF permissions.moderate; original_update = update.moderation_original_data %]
             <form method="post" action="/moderate/report/[% problem.id %]/update/[% update.id %]">
                 <input type="hidden" name="token" value="[% csrf_token %]">
@@ -25,7 +26,6 @@
                     <p class="meta-2">[% INCLUDE meta_line %]</p>
                 </div>
             [% ELSE %]
-                <a name="update_[% update.id %]" class="internal-link-fixed-header"></a>
                 [% INCLUDE 'report/photo.html' object=update %]
                 <div class="item-list__update-text">
                     <div class="moderate-display">
