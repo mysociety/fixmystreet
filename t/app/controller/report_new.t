@@ -1,3 +1,4 @@
+use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 use Web::Scraper;
@@ -1084,6 +1085,21 @@ subtest "Test inactive categories" => sub {
         $mech->content_contains('Trees');
         # Change back
         $contact2->update( { state => 'confirmed' } );
+    };
+};
+
+subtest "category groups" => sub {
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::FixMyStreet');
+    $cobrand->mock('enable_category_groups', sub { 1 });
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $contact2->update( { extra => { group => 'Roads' } } );
+        $contact9->update( { extra => { group => 'Roads' } } );
+        $contact10->update( { extra => { group => 'Roads' } } );
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
+        $mech->content_like(qr{<optgroup label="Roads">\s*<option value='Potholes'>Potholes</option>\s*<option value='Street lighting'>Street lighting</option></optgroup>});
     };
 };
 
