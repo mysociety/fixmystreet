@@ -1312,6 +1312,8 @@ sub users: Path('users') : Args(0) {
     } else {
         $c->forward('/auth/get_csrf_token');
         $c->forward('fetch_all_bodies');
+        $c->cobrand->call_hook('admin_user_edit_extra_data');
+
 
         # Admin users by default
         my $users = $c->cobrand->users->search(
@@ -1437,6 +1439,7 @@ sub user_add : Path('user_edit') : Args(0) {
     $c->stash->{template} = 'admin/user_edit.html';
     $c->forward('/auth/get_csrf_token');
     $c->forward('fetch_all_bodies');
+    $c->cobrand->call_hook('admin_user_edit_extra_data');
 
     return unless $c->get_param('submit');
 
@@ -1517,6 +1520,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
     $c->forward('fetch_all_bodies');
     $c->forward('fetch_body_areas', [ $user->from_body ]) if $user->from_body;
+    $c->cobrand->call_hook('admin_user_edit_extra_data');
 
     if ( defined $c->flash->{status_message} ) {
         $c->stash->{status_message} =
