@@ -26,6 +26,9 @@
         - Send login email button on user edit page #2041
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
+    - Development improvements:
+        - Cobrand hook for presenting custom search results. #2183
+
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:

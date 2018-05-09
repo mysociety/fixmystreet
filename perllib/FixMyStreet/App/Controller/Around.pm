@@ -54,6 +54,9 @@ sub index : Path : Args(0) {
         || $c->forward('/location/determine_location_from_pc');
     unless ($ret) {
         return $c->res->redirect('/') unless $c->get_param('pc') || $partial_report;
+        # Cobrand may want to perform custom searching at this point,
+        # e.g. presenting a list of reports matching the user's query.
+        $c->cobrand->call_hook("around_custom_search");
         return;
     }
 
