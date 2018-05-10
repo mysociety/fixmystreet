@@ -468,6 +468,7 @@ LANGUAGES:
   <dd>
     These are your Twilio account details to use for sending text messages for
     report and update verification.
+    See the <a href="https://www.twilio.com/docs/usage/api">Twilio docs</a> for more information.
   </dd>
 
   <dt>
@@ -476,6 +477,17 @@ LANGUAGES:
   <dd>
     This is the phone number or alphanumeric string to use as the From of any
     sent text messages.
+    You must specify either this or <code>TWILIO_MESSAGING_SERVICE_SID</code>.
+    See the <a href="https://www.twilio.com/docs/sms/send-messages">Twilio docs</a> for more information.
+  </dd>
+
+  <dt>
+    <a name="twilio_from_parameter"><code>TWILIO_MESSAGING_SERVICE_SID</code></a>
+  </dt>
+  <dd>
+    This is the unique id of the Twilio Messaging Service you want to associate with this message.
+    You must specify either this or <code>TWILIO_FROM_PARAMETER</code>.
+    See the <a href="https://www.twilio.com/docs/sms/send-messages">Twilio docs</a> for more information.
   </dd>
 
   <dt>

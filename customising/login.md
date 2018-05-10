@@ -29,11 +29,13 @@ advanced settings the OAuth redirect URL should be yourdomain/auth/Facebook.
 
 ## Text authentication
 
-If you set up a Twilio account, you can also activate text authentication,
-whereby instead of a confirmation email being sent, a confirmation text is sent
-to the user's mobile containing a code they enter on the site to continue with
-their report/update/logging in. The user flow behaviour is otherwise identical,
-it is merely using a phone number instead of an email for authentication.
+If you set up a <a href="https://www.twilio.com/">Twilio</a> account and enter
+the correct parameters in your configuration, you can also activate text
+authentication, whereby instead of a confirmation email being sent, a
+confirmation text is sent to the user's mobile containing a code they enter on
+the site to continue with their report/update/logging in. The user flow
+behaviour is otherwise identical, it is merely using a phone number instead of
+an email for authentication.
 
 On their profile page, users can add email/phone number, and verify ones they
 may have entered previously but not verified.
