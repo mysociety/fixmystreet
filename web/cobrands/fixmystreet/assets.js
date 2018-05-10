@@ -95,7 +95,7 @@ fixmystreet.roads = {
     check_for_road: function(lonlat) {
         var road_providers = fixmystreet.map.getLayersBy('fixmystreet', {
             test: function(options) {
-                return options && options.road && (options.all_categories || fixmystreet.assets.check_layer_relevant(options, $('select#form_category') ) );
+                return options && options.road && fixmystreet.assets.check_layer_relevant(options, $('select#form_category'));
             }
         });
         if (road_providers.length) {
@@ -623,7 +623,7 @@ fixmystreet.assets = {
     },
 
     check_layer_relevant: function(layer, category) {
-      return layer.asset_category.indexOf(category) != -1 &&
+      return ( layer.all_categories || layer.asset_category.indexOf(category) != -1 ) &&
         ( !fixmystreet.bodies || !layer.body || fixmystreet.bodies.indexOf(layer.body) != -1 );
     },
 
