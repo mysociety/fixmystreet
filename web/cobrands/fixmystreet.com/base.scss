@@ -49,30 +49,6 @@ svg|g.site-logo__svg {
     @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
 }
 
-// Big green banner A/B test.
-#map_box .big-green-banner {
-    position: absolute;
-    left: 50%;
-    bottom: 80px; // above #sub_map_links
-    transform: translateX(-50%);
-    margin: 0;
-    font-size: 1.2em;
-    line-height: 1.3em;
-    padding: 0.6em 1em 0.5em;
-    border-radius: 5px; // match .big-hide-pins-link
-    background-image: none; // remove "arrow" image
-
-    @media (min-width: 64em) {
-        bottom: 32px; // match #sub_map_links
-        left: calc( ( 100% - 220px ) / 2 );
-        max-width: calc( 100% - 300px );
-    }
-
-    @media (min-width: 82em) {
-        left: 50%;
-    }
-}
-
 .next-steps {
   margin: 0 -1em; // counteract padding on parent
   background-color: #faf7e2;
