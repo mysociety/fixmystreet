@@ -111,7 +111,7 @@ you're doing is [customising your installation](/customising).
     <p><em>documentation notes</em></p>
     <p>
       These are technical notes. This is in addition to the
-      <a href="http://fixmystreet.org/">core documentation</a> &mdash; which you are reading now &mdash;
+      <a href="https://fixmystreet.org/">core documentation</a> &mdash; which you are reading now &mdash;
       which is actually stored in the git repository in the <code>gh-pages</code> branch, and published
       as GitHub pages.
     </p>

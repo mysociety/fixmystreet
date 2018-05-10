@@ -507,7 +507,7 @@ to have access to your site).
 ## Other administration tasks
 
 Remember to check the full documentation on 
-[fixmystreet.org](http://www.fixmystreet.org).
+[fixmystreet.org](https://fixmystreet.org).
 
 If you need help, email us or ask for advice on the (public) FixMyStreet
 mailing list.

@@ -13,7 +13,7 @@ The [FixMyStreet](https://www.fixmystreet.com/) Platform is an open source
 project to help people run websites for reporting common street problems such
 as potholes and broken street lights to an appropriate authority. For
 technical information, see
-[fixmystreet.org](http://fixmystreet.org/).
+[fixmystreet.org](https://fixmystreet.org/).
 
 ## Definitions
 
@@ -316,7 +316,7 @@ technical information, see
       <code>fixmystreet</code> cobrand, which has a yellow-and-asphalt
       appearance, and has an example street from the city of Manchester in the
       "enter a street name" box. But the <a
-      href="http://fixmystreet.oxfordshire.gov.uk/">Oxfordshire site</a> is
+      href="https://fixmystreet.oxfordshire.gov.uk/">Oxfordshire site</a> is
       running the <code>oxfordshire</code> cobrand, which makes the site green
       and suggests a street name from Oxfordshire.
     </p>
@@ -548,14 +548,14 @@ technical information, see
   </dd>
 
   <dt>
-    <a name="git">git</a> (also github,  git repository, and git repo)
+    <a name="git">git</a> (also GitHub, git repository, and git repo)
   </dt>
   <dd>
     We use a popular source code control system called <strong>git</strong>. This
     helps us track changes to the code, and also makes it easy for other people
     to duplicate and even contribute to our software.
     <p>
-      The website <a href="http://github.com/mysociety/">github.com</a> is a central, public
+      The website <a href="https://github.com/mysociety">github.com</a> is a central, public
       place where we make our software available. Because it's Open Source, you can
       inspect the code there (FixMyStreet is mostly written in the programming language
       Perl), report bugs, suggest features and many other useful things.
@@ -578,8 +578,8 @@ technical information, see
           href="http://git-scm.com/">official website</a>.
         </li>
         <li>
-          See <a href="http://github.com/mysociety/">the mySociety projects on
-          github</a>.
+          See <a href="https://github.com/mysociety">the mySociety projects on
+          GitHub</a>.
         </li>
       </ul>
     </div>
@@ -789,7 +789,7 @@ technical information, see
       <ul>
         <li>
           <a href="https://github.com/mysociety/message-manager/">Message
-          Manager on github</a>.
+          Manager on GitHub</a>.
         </li>
         <li>
           More about

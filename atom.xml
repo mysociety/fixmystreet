@@ -5,10 +5,10 @@ layout: null
 <feed xmlns="http://www.w3.org/2005/Atom">
 
     <title>FixMyStreet Platform</title>
-    <link href="http://fixmystreet.org/atom.xml" rel="self"/>
-    <link href="http://fixmystreet.org/"/>
+    <link href="https://fixmystreet.org/atom.xml" rel="self"/>
+    <link href="https://fixmystreet.org/"/>
     <updated>{{ site.time | date_to_xmlschema }}</updated>
-    <id>http://fixmystreet.org/</id>
+    <id>https://fixmystreet.org/</id>
     <author>
         <name>mySociety</name>
     </author>
@@ -16,9 +16,9 @@ layout: null
     {% for post in site.posts %}
     <entry>
         <title>{{ post.title }}</title>
-        <link href="http://fixmystreet.org{{ post.url }}"/>
+        <link href="https://fixmystreet.org{{ post.url }}"/>
         <updated>{{ post.date | date_to_xmlschema }}</updated>
-        <id>http://fixmystreet.org{{ post.id }}</id>
+        <id>https://fixmystreet.org{{ post.id }}</id>
         <content type="html">{{ post.content | xml_escape }}</content>
     </entry>
     {% endfor %}

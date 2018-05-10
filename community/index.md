@@ -43,7 +43,7 @@ href="irc/">web IRC interface</a>).</p>
 <div class="column">
 <h3>Twitter</h3>
 
-<p>You can follow and tweet <a href="http://twitter.com/fixmystreet">@fixmystreet</a>.</p>
+<p>You can follow and tweet <a href="https://twitter.com/fixmystreet">@fixmystreet</a>.</p>
 </div>
 </div>
 

@@ -1,14 +1,14 @@
 fixmystreet.org
 ===============
 
-The gh-pages branch is [fixmystreet.org](http://fixmystreet.org), the
+The gh-pages branch is [fixmystreet.org](https://fixmystreet.org), the
 Jekyll-based static site running on GitHub Pages that is the documentation for
 setting up / running the FixMyStreet platform.
 
 ## Installation
 
 The site is built by Jekyll. We manage our Ruby gem dependencies via
-[bundler](http://bundler.io/) so you’ll need to install that if you don’t
+[bundler](https://bundler.io/) so you’ll need to install that if you don’t
 already have it. Then you need to…
 
 ```

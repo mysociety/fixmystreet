@@ -719,7 +719,7 @@ FixMyStreet site.
       You can log feature requests and bug reports by submitting (or, if you
       prefer, by asking your developer to submit) an issue to the public
       FixMyStreet <a
-      href="http://github.com/mysociety/fixmystreet/issues">github
+      href="https://github.com/mysociety/fixmystreet/issues">GitHub
       repository</a>.
     </p>
     <p>
@@ -950,7 +950,7 @@ Updating is a technical activity, and you'll need to log into the server's
 not confident.
 
 If you've installed FixMyStreet as a git repository cloned from
-[github.com/mysociety/fixmystreet](http://github.com/mysociety/fixmystreet) &mdash;
+[github.com/mysociety/fixmystreet](https://github.com/mysociety/fixmystreet) &mdash;
 which will be the case if you've followed our installation instructions &mdash;
 your developer should find it easy to update. Make sure they know that
 sometimes these updates do require changes to the database schema too (look

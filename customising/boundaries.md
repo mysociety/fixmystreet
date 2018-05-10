@@ -343,7 +343,7 @@ Use this type of boundary if:
       requests or <strong>if you are using it commercially</strong>. We
       rate-limit calls to MapIt, so if your site gets really busy, you should
       set up your own instance (we can help you, and the <a
-      href="http://github.com/mysociety/mapit">code is on github</a>). But when
+      href="https://github.com/mysociety/mapit">code is on GitHub</a>). But when
       you're setting your site up to begin with, you can usually get it running
       using one of our MapIt servers.
     </p>
