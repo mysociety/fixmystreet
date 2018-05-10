@@ -171,21 +171,6 @@ body.fullwidthpage {
     }
 }
 
-.postcode-form-test {
-    background: transparent;
-    padding-top: 1.5em;
-}
-
-// Overloaded selector to beat input[type="text"]
-input.postcode-form-test__postcode {
-    max-width: 25em; // down from 27em, now that "GO" button has gone
-    font-size: 1.2em;
-}
-
-.postcode-form-test__buttons .btn {
-    font-size: 1.2em;
-}
-
 body.frontpage {
     #site-logo {
         margin: 2em 0;
