@@ -31,10 +31,12 @@ subtest 'cobrand assets includes not applied on cobrand sites', sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'bathnes' ],
         MAPIT_URL => 'http://mapit.uk/',
+        MAP_TYPE => 'FMS,OSM,BathNES,Buckinghamshire',
         COBRAND_ASSETS => [ 'buckinghamshire' ]
     }, sub {
         $mech->get_ok("/report/new?latitude=51.494885&longitude=-2.602237");
         $mech->content_lacks('buckinghamshire/assets.js');
+        $mech->content_contains('bathnes/assets.js');
     };
 };
 
