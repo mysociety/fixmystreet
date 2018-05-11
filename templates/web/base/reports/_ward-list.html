@@ -1,16 +1,29 @@
 [% IF children.size %]
-<section id="council_wards" class="hidden-js">
+[% SET show_wards_hidden_class = c.req.params.show_wards ? 'hidden' : 'js-ward-single' %]
+[% SET show_wards_shown_class = c.req.params.show_wards ? '' : 'js-ward-multi hidden' %]
+<section id="council_wards"[% UNLESS c.req.params.show_wards %] class="hidden-js"[% END %]>
 <h2>[% ward_text %]</h2>
-    <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+    <p class="[% show_wards_hidden_class %]">[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+    <p class="[% show_wards_shown_class %]">[% loc('Select multiple wards to view only reports within those wards.') %]</p>
+    <p class="[% show_wards_hidden_class %]"><a href="?show_wards=1" class="js-ward-select-multiple">[% loc('Select multiple wards?') %]</a></p>
+    <form method="get" action="">
     <section class="full-width">
     <ul class="item-list item-list--wards">
       [% FOR child IN children.values.sort('name') %]
         <li class="item-list__item item-list--wards__item">
-            <a href="[% child.url %]">[% child.name %]</a>
+          <label class="[% show_wards_shown_class %]">
+            <input type="checkbox" name="ward" value="[% child.name | html %]">
+            [% child.name %]
+          </label>
+          <a class="[% show_wards_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
         </li>
       [% END %]
     </ul>
     </section>
+    <p>
+      <input class="btn [% show_wards_shown_class %]" type="submit" value="[% loc('View wards') %]" />
+    </p>
+    </form>
 </section>
 [% END %]
 

@@ -126,6 +126,17 @@ sub ward : Path : Args(2) {
     my @wards = split /\|/, $ward || "";
     $c->forward( 'body_check', [ $body ] );
 
+    # If viewing multiple wards, rewrite the url from
+    # /reports/Borsetshire?ward=North&ward=East
+    # to
+    # /reports/Borsetshire/North|East
+    my @ward_params = $c->get_param_list('ward');
+    if ( @ward_params ) {
+        $c->stash->{wards} = [ map { { name => $_ } } (@wards, @ward_params) ];
+        delete $c->req->params->{ward};
+        $c->detach("redirect_body");
+    }
+
     my $body_short = $c->cobrand->short_name( $c->stash->{body} );
     $c->stash->{body_url} = '/reports/' . $body_short;
 

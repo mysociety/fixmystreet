@@ -745,6 +745,14 @@ $.extend(fixmystreet.set_up, {
     $('#key-tool-report-share').small_drawer('report-share');
   },
 
+  ward_select_multiple: function() {
+    $(".js-ward-select-multiple").click(function(e) {
+        e.preventDefault();
+        $(".js-ward-single").addClass("hidden");
+        $(".js-ward-multi").removeClass("hidden");
+    });
+  },
+
   email_login_form: function() {
     // Log in with email button
     var email_form = $('#js-social-email-hide'),

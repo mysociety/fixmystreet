@@ -939,6 +939,11 @@ input.final-submit {
 
 .item-list--wards__item {
   @extend %item-list__item--link;
+
+  label {
+    margin: 0;
+    padding: 0.5em 1em;
+  }
 }
 
 .item-list--reports__item {
