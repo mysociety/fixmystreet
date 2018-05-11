@@ -27,7 +27,7 @@ fixmystreet.usrn = {
     select: function(evt, lonlat) {
         var usrn_providers = fixmystreet.map.getLayersBy('fixmystreet', {
             test: function(options) {
-                return options && options.usrn;
+                return options && (fixmystreet.bodies && ( !options.body || fixmystreet.bodies.indexOf(options.body + '') != -1) ) && options.usrn;
             }
         });
         if (usrn_providers.length) {
