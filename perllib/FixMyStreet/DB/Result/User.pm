@@ -20,10 +20,14 @@ __PACKAGE__->add_columns(
   },
   "email",
   { data_type => "text", is_nullable => 1 },
+  "email_verified",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 1 },
   "phone",
   { data_type => "text", is_nullable => 1 },
+  "phone_verified",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
   "from_body",
@@ -42,10 +46,20 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
-  "email_verified",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "phone_verified",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "created",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 0,
+    original      => { default_value => \"now()" },
+  },
+  "last_active",
+  {
+    data_type     => "timestamp",
+    default_value => \"current_timestamp",
+    is_nullable   => 0,
+    original      => { default_value => \"now()" },
+  },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_facebook_id_key", ["facebook_id"]);
@@ -105,8 +119,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-09-19 18:02:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OKHKCSahWD3Ov6ulj+2f/w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-05-23 18:54:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/V7+Ygv/t6VX8dDhNGN16w
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.
