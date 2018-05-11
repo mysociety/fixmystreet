@@ -451,6 +451,25 @@ sub adopt {
     $other->delete;
 }
 
+sub anonymize_account {
+    my $self = shift;
+
+    $self->problems->update({ anonymous => 1, name => '', send_questionnaire => 0 });
+    $self->comments->update({ anonymous => 1, name => '' });
+    $self->alerts->update({ whendisabled => \'current_timestamp' });
+    $self->password('', 1);
+    $self->update({
+        email => 'removed-' . $self->id . '@' . FixMyStreet->config('EMAIL_DOMAIN'),
+        email_verified => 0,
+        name => '',
+        phone => '',
+        phone_verified => 0,
+        title => undef,
+        twitter_id => undef,
+        facebook_id => undef,
+    });
+}
+
 # Planned reports / shortlist
 
 # Override the default auto-created function as we only want one live entry so
