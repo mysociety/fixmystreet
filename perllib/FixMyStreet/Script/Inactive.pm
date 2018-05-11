@@ -32,12 +32,69 @@ has cobrand => (
     },
 );
 
+has anonymous_user => (
+    is => 'lazy',
+    default => sub {
+        FixMyStreet::DB->resultset("User")->find_or_create({
+            email => 'removed-automatically@' . FixMyStreet->config('EMAIL_DOMAIN'),
+        });
+    }
+);
+
 sub users {
     my $self = shift;
 
     say "DRY RUN" if $self->dry_run;
     $self->anonymize_users;
     $self->email_inactive_users if $self->email;
+}
+
+sub reports {
+    my $self = shift;
+
+    say "DRY RUN" if $self->dry_run;
+
+    # Need to look though them all each time, in case any new updates/alerts
+    my $problems = FixMyStreet::DB->resultset("Problem")->search({
+        lastupdate => { '<', interval($self->anonymize) },
+        state => [
+            FixMyStreet::DB::Result::Problem->closed_states(),
+            FixMyStreet::DB::Result::Problem->fixed_states(),
+            FixMyStreet::DB::Result::Problem->hidden_states(),
+        ],
+    });
+
+    while (my $problem = $problems->next) {
+        say "Anonymizing problem #" . $problem->id if $self->verbose;
+        next if $self->dry_run;
+
+        # Remove personal data from the report
+        $problem->update({
+            user => $self->anonymous_user,
+            name => '',
+            anonymous => 1,
+            send_questionnaire => 0,
+        }) if $problem->user != $self->anonymous_user;
+
+        # Remove personal data from the report's updates
+        $problem->comments->search({
+            user_id => { '!=' => $self->anonymous_user->id },
+        })->update({
+            user_id => $self->anonymous_user->id,
+            name => '',
+            anonymous => 1,
+        });
+
+        # Remove alerts - could just delete, but of interest how many there were, perhaps?
+        FixMyStreet::DB->resultset('Alert')->search({
+            user_id => { '!=' => $self->anonymous_user->id },
+            alert_type => 'new_updates',
+            parameter => $problem->id,
+        })->update({
+            user_id => $self->anonymous_user->id,
+            whendisabled => \'current_timestamp',
+        });
+    }
 }
 
 sub anonymize_users {
