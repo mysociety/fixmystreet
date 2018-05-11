@@ -15,6 +15,41 @@ $t = DateTime->now->subtract(months => 4);
 $user_inactive->last_active($t);
 $user_inactive->update;
 
+my @problems;
+for (my $m = 1; $m <= 12; $m++) {
+    my $t = DateTime->new(year => 2017, month => $m, day => 1, hour => 12);
+    push @problems, $mech->create_problems_for_body(1, 2237, 'Title', {
+        dt => $t,
+        lastupdate => "$t",
+        state => $m % 2 ? 'fixed - user' : 'confirmed',
+    });
+}
+
+$mech->create_comment_for_problem($problems[0], $user, 'Name', 'Update', 0, 'confirmed', $problems[0]->state);
+FixMyStreet::DB->resultset("Alert")->create({ alert_type => 'new_updates', parameter => $problems[2]->id, user => $user });
+
+subtest 'Anonymization of inactive fixed/closed reports' => sub {
+    $in->reports;
+
+    my $count = FixMyStreet::DB->resultset("Problem")->search({ user_id => $user->id })->count;
+    is $count, 6, 'Six non-anonymised';
+
+    my $comment = FixMyStreet::DB->resultset("Comment")->first;
+    my $alert = FixMyStreet::DB->resultset("Alert")->first;
+    is $comment->anonymous, 1, 'Comment anonymized';
+    is $comment->user->email, 'removed-automatically@example.org', 'Comment user anonymized';
+    is $alert->user->email, 'removed-automatically@example.org', 'Alert anonymized';
+    isnt $alert->whendisabled, undef, 'Alert disabled';
+
+    $mech->create_comment_for_problem($problems[0], $user, 'Name 2', 'Update', 0, 'confirmed', $problems[0]->state);
+    $comment = FixMyStreet::DB->resultset("Comment")->search({ name => 'Name 2' })->first;
+
+    $in->reports;
+    $comment->discard_changes;
+    is $comment->anonymous, 1, 'Comment anonymized';
+    is $comment->user->email, 'removed-automatically@example.org', 'Comment user anonymized';
+};
+
 subtest 'Anonymization of inactive users' => sub {
     $in->users;
 
