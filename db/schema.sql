@@ -30,6 +30,8 @@ create table users (
     from_body       integer,
     flagged         boolean not null default 'f',
     is_superuser    boolean not null default 'f',
+    created         timestamp not null default current_timestamp,
+    last_active     timestamp,
     title           text,
     twitter_id      bigint  unique,
     facebook_id     bigint  unique,
