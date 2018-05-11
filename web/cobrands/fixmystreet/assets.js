@@ -576,7 +576,8 @@ fixmystreet.assets = {
         asset_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
 
         fixmystreet.assets.layers.push(asset_layer);
-        if (options.always_visible) {
+        if (options.always_visible &&
+          fixmystreet.bodies && ( !asset_layer.fixmystreet.body || fixmystreet.bodies.indexOf(asset_layer.fixmystreet.body + '') != -1 ) ) {
             asset_layer.setVisibility(true);
         }
         if (hover_feature_control) {
@@ -625,7 +626,7 @@ fixmystreet.assets = {
 
     check_layer_relevant: function(layer, category) {
       return ( layer.all_categories || layer.asset_category.indexOf(category) != -1 ) &&
-        ( !fixmystreet.bodies || !layer.body || fixmystreet.bodies.indexOf(layer.body) != -1 );
+        ( fixmystreet.bodies && ( !layer.body || fixmystreet.bodies.indexOf(layer.body + '') != -1 ) );
     },
 
     update_layer_visibility: function() {
