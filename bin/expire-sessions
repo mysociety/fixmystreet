@@ -26,13 +26,19 @@ my $rs = FixMyStreet::DB->resultset("Session");
 
 # Delete expired sessions (including from in User object)
 while (my $session = $rs->search({ expires => { '<', time() } })->next) {
-    if (my $user = $session->user) {
+    my $user = $session->user;
+    my $expires = $session->expires;
+    if ($user) {
         my $id = $session->id_code;
         my $sessions = $user->get_extra_metadata('sessions');
         my @new_sessions = grep { $_ ne $id } @$sessions;
         update_user_sessions($user, \@new_sessions) if @new_sessions != @$sessions;
     }
     $session->delete;
+    if ($user) {
+        update_user_last_active($user, $expires);
+        $user->update;
+    }
 }
 
 if ($init) {
@@ -44,10 +50,18 @@ if ($init) {
         my $sessions = $user->get_extra_metadata('sessions');
         my @new_sessions = uniq @$sessions, $id;
         update_user_sessions($user, \@new_sessions) if @new_sessions != @$sessions;
+        $user->update;
     }
 }
 
 # ---
+
+sub update_user_last_active {
+    my ($user, $expires) = @_;
+    return unless $expires;
+    my $t = DateTime->from_epoch(epoch => $expires)->subtract(weeks => 4);
+    $user->set_last_active($t) if !$user->last_active || $user->last_active < $t;
+}
 
 sub update_user_sessions {
     my ($user, $sessions) = @_;
@@ -56,5 +70,4 @@ sub update_user_sessions {
     } else {
         $user->unset_extra_metadata('sessions');
     }
-    $user->update;
 }
