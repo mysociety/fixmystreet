@@ -57,7 +57,12 @@ IF bodyclass.match('mappage');
         version('/cobrands/fixmystreet/map.js'),
         version('/vendor/dropzone.min.js'),
         version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js'),
+        version('/cobrands/fixmystreet/assets.js'),
     );
+    TRY;
+        PROCESS 'asset_scripts.html';
+    CATCH file;
+    END;
 ELSE;
     scripts.push(
         version('/cobrands/fixmystreet/prefetch-polyfill.js'),

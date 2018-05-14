@@ -19,7 +19,7 @@ sub map_type { 'OpenLayers.Layer.OSM.Mapnik' }
 sub map_template { 'osm' }
 
 sub map_javascript { [
-    '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
+    '/vendor/OpenLayers/OpenLayers.wfs.js',
     '/js/map-OpenLayers.js',
     '/js/map-OpenStreetMap.js',
 ] }

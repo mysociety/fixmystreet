@@ -168,6 +168,12 @@ ALLOWED_COBRANDS:
   - cobrand2: 'hostname_substring2'
   - cobrand3
 
+# Control the loading of cobrand specific map asset layers.
+# If a cobrand is named here then `/web/cobrands/$cobrand/assets.js` will be
+# included in the JavaScript. You probably want to leave the blank.
+COBRAND_ASSETS:
+  - cobrand1
+
 # This is used in e.g. "offensive report" emails to provide a link directly to
 # the admin interface. Defaults to BASE_URL with "/admin" on the end.
 ADMIN_BASE_URL: ''

@@ -16,7 +16,8 @@ var options = {
         asset_id: 'COD_ASSET_ID',
         usrn: 'COD_USRN'
     },
-    geometryName: 'SHAPE'
+    geometryName: 'SHAPE',
+    body: 2561
 };
 
 fixmystreet.assets.add($.extend({}, options, {

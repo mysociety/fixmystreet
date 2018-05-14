@@ -880,6 +880,15 @@ $.extend(fixmystreet.set_up, {
             }
         });
     });
+  },
+
+  bodies: function() {
+     if (fixmystreet && !fixmystreet.bodies) {
+         if ($('#js-map-data') && $('#js-map-data').data('bodies') ) {
+             var bodies = $('#js-map-data').data('bodies') + '';
+             fixmystreet.bodies = bodies.split(',').map(Number);
+         }
+     }
   }
 
 });
@@ -960,6 +969,16 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             $('#js-contribute-as-wrapper').show();
         } else {
             $('#js-contribute-as-wrapper').hide();
+        }
+
+        if (data.bodies) {
+            if (fixmystreet.map) {
+                fixmystreet.bodies = data.bodies;
+            }
+        } else {
+            if (fixmystreet) {
+                fixmystreet.bodies = [];
+            }
         }
     });
 

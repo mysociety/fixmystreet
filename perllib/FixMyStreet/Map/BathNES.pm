@@ -12,7 +12,7 @@ sub map_javascript { [
     '/js/map-OpenLayers.js',
     '/js/map-OpenStreetMap.js',
     '/cobrands/fixmystreet/assets.js',
-    '/cobrands/bathnes/js.js',
+    '/cobrands/bathnes/assets.js',
 ] }
 
 1;
