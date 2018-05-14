@@ -48,7 +48,7 @@ sub send {
             if ($_->{code} eq $id_field) {
                 push @$extra, { name => $id_field, value => $row->id };
             } elsif ($_->{code} eq 'closest_address' && $h->{closest_address}) {
-                push @$extra, { name => $_->{code}, value => $h->{$_->{code}} };
+                push @$extra, { name => $_->{code}, value => "$h->{closest_address}" };
             } elsif ($_->{code} =~ /^(easting|northing)$/) {
                 # NB If there's ever a cobrand with always_send_latlong=0 and
                 # send_notpinpointed=0 then this line will need changing to

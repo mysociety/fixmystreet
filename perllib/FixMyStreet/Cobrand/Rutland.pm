@@ -18,7 +18,7 @@ sub open311_config {
     push @$extra, { name => 'description', value => $row->detail };
 
     if ($h->{closest_address}) {
-        push @$extra, { name => 'closest_address', value => $h->{closest_address} }
+        push @$extra, { name => 'closest_address', value => "$h->{closest_address}" }
     }
     $row->set_extra_fields( @$extra );
 

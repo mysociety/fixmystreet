@@ -144,7 +144,7 @@ sub open311_config {
     push @$extra, { name => 'external_id', value => $row->id };
 
     if ($h->{closest_address}) {
-        push @$extra, { name => 'closest_address', value => $h->{closest_address} }
+        push @$extra, { name => 'closest_address', value => "$h->{closest_address}" }
     }
     if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
         push @$extra, { name => 'northing', value => $h->{northing} };
