@@ -1,11 +1,11 @@
 #!/usr/bin/env perl
 
 # expire-sessions: Run regularly to remove old sessions (plus
-# can set up data for 'log user out' admin functionality).
+# can set up data for 'log user out' admin functionality, and
+# inactive user processing).
 
-use strict;
+use v5.14;
 use warnings;
-require 5.8.0;
 
 BEGIN {
     use File::Basename qw(dirname);
@@ -19,37 +19,33 @@ use Getopt::Long;
 use List::Util qw(uniq);
 
 GetOptions(
+    # Update sessions to make sure all present in User objects
     'init' => \my $init,
 );
 
 my $rs = FixMyStreet::DB->resultset("Session");
+my $now = time();
 
 # Delete expired sessions (including from in User object)
-while (my $session = $rs->search({ expires => { '<', time() } })->next) {
+# And update last active time of current sessions
+while (my $session = $rs->next) {
+    my $id = $session->id_code;
     my $user = $session->user;
     my $expires = $session->expires;
-    if ($user) {
-        my $id = $session->id_code;
-        my $sessions = $user->get_extra_metadata('sessions');
-        my @new_sessions = grep { $_ ne $id } @$sessions;
-        update_user_sessions($user, \@new_sessions) if @new_sessions != @$sessions;
-    }
-    $session->delete;
-    if ($user) {
-        update_user_last_active($user, $expires);
-        $user->update;
-    }
-}
-
-if ($init) {
-    # Update sessions to make sure all present in User objects
-    print "Setting up sessions in user objects\n";
-    while (my $session = $rs->next) {
-        my $user = $session->user or next;
-        my $id = $session->id_code;
+    if (!$expires || $expires < $now) {
+        if ($user) {
+            my $sessions = $user->get_extra_metadata('sessions');
+            my @new_sessions = grep { $_ ne $id } @$sessions;
+            update_user_sessions($user, \@new_sessions) if @new_sessions != @$sessions;
+        }
+        $session->delete;
+    } elsif ($user && $init) {
         my $sessions = $user->get_extra_metadata('sessions');
         my @new_sessions = uniq @$sessions, $id;
         update_user_sessions($user, \@new_sessions) if @new_sessions != @$sessions;
+    }
+    if ($user) {
+        update_user_last_active($user, $expires);
         $user->update;
     }
 }
