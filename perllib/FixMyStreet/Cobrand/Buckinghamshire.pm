@@ -326,7 +326,7 @@ sub lookup_site_code {
     my ($x, $y) = $row->local_coords;
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
-    my $uri = URI->new("https://tilma.staging.mysociety.org/mapserver/bucks");
+    my $uri = URI->new("https://tilma.mysociety.org/mapserver/bucks");
     $uri->query_form(
         REQUEST => "GetFeature",
         SERVICE => "WFS",
