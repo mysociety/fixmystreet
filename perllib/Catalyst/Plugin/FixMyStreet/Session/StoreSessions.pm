@@ -7,6 +7,7 @@ after set_authenticated => sub {
     my $sessions = $c->user->get_extra_metadata('sessions');
     push @$sessions, $c->sessionid;
     $c->user->set_extra_metadata('sessions', $sessions);
+    $c->user->set_last_active;
     $c->user->update;
 };
 
@@ -16,6 +17,7 @@ before logout => sub {
         my $sessions = $user->get_extra_metadata('sessions');
         $sessions = [ grep { $_ ne $c->sessionid } @$sessions ];
         @$sessions ? $user->set_extra_metadata('sessions', $sessions) : $user->unset_extra_metadata('sessions');
+        $user->set_last_active;
         $user->update;
     }
 };

@@ -544,4 +544,11 @@ has categories => (
     },
 );
 
+sub set_last_active {
+    my $self = shift;
+    my $time = shift;
+    $self->unset_extra_metadata('inactive_email_sent');
+    $self->last_active($time or \'current_timestamp');
+}
+
 1;
