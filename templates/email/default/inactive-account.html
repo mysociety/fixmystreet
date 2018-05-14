@@ -1,0 +1,26 @@
+[%
+
+email_summary = "Your inactive account on " _ site_name;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Your inactive account</h1>
+  <p style="[% p_style %]">
+Your account on [% site_name %] has been inactive for [% email_from %]
+[% nget('month', 'months', email_from) %], and we automatically remove
+accounts that have been inactive after [% anonymize_from %]
+[% nget('month', 'months', anonymize_from) %]. If you wish to keep your
+account, please log in to the site and that will keep it active:
+</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% url %]">Visit [% site_name %]</a>
+  </p>
+  <p style="[% p_style %]">Thanks for using the site.</p>
+
+[% INCLUDE '_email_bottom.html' %]
