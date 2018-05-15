@@ -979,8 +979,7 @@ sub process_report : Private {
     }
 
     # set defaults that make sense
-    $report->state('unconfirmed');
-    $report->state('submitted') if $c->cobrand->moniker eq 'zurich';
+    $report->state($c->cobrand->default_problem_state);
 
     # save the cobrand and language related information
     $report->cobrand( $c->cobrand->moniker );

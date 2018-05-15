@@ -1278,6 +1278,8 @@ sub singleton_bodies_str { 1 }
 
 sub contact_extra_fields { [ 'abbreviation' ] };
 
+sub default_problem_state { 'submitted' }
+
 sub db_state_migration {
     my $rs = FixMyStreet::DB->resultset('State');
 

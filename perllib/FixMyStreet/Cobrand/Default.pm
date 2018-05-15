@@ -1068,6 +1068,8 @@ sub show_unconfirmed_reports {
     0;
 }
 
+sub default_problem_state { 'unconfirmed' }
+
 sub state_groups_admin {
     my $rs = FixMyStreet::DB->resultset("State");
     my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
