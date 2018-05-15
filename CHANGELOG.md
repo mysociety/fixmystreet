@@ -56,6 +56,7 @@
         - Store user creation and last active times.
         - Add scripts to anonymize inactive users and reports,
           email inactive users, or to close reports to new updates.
+        - Admin ability to close reports to new updates. #43
     - Development improvements:
         - Add HTML email previewer.
         - Add CORS header to Open311 output. #2022

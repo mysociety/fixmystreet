@@ -928,6 +928,12 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
         $problem->set_inflated_columns(\%columns);
 
+        if ($c->get_param('closed_updates')) {
+            $problem->set_extra_metadata(closed_updates => 1);
+        } else {
+            $problem->unset_extra_metadata('closed_updates');
+        }
+
         $c->forward( '/admin/report_edit_category', [ $problem, $problem->state ne $old_state ] );
         $c->forward('update_user', [ $problem ]);
 
