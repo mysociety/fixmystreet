@@ -747,6 +747,7 @@ sub stash_report_sort : Private {
         created => 'confirmed',
         comments => 'comment_count',
     );
+    $types{created} = 'created' if $c->cobrand->moniker eq 'zurich';
 
     my $sort = $c->get_param('sort') || $default;
     $sort = $default unless $sort =~ /^((updated|created)-(desc|asc)|comments-desc|shortlist)$/;
