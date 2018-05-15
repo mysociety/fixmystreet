@@ -1,9 +1,17 @@
+package FixMyStreet::Cobrand::Tester;
+
+use parent 'FixMyStreet::Cobrand::Default';
+
+sub enable_category_groups { 1 }
+
+package main;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 $mech->log_in_ok( $superuser->email );
+my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
 
 # This override is wrapped around ALL the /admin/body tests
 FixMyStreet::override_config {
@@ -12,7 +20,6 @@ FixMyStreet::override_config {
     BASE_URL => 'http://www.example.org',
 }, sub {
 
-my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
 $mech->get_ok('/admin/body/' . $body->id);
 $mech->content_contains('Aberdeen City Council');
 $mech->content_like(qr{AB\d\d});
@@ -56,6 +63,7 @@ subtest 'check contact creation' => sub {
 
 subtest 'check contact editing' => sub {
     $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
+    $mech->content_lacks( 'group</strong> is used for the top-level category' );
 
     $mech->submit_form_ok( { with_fields => {
         email    => 'test2@example.com',
@@ -200,5 +208,31 @@ subtest 'check text output' => sub {
 
 
 }; # END of override wrap
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['tester'],
+    MAPIT_URL => 'http://mapit.uk/',
+    MAPIT_TYPES => [ 'UTA' ],
+    BASE_URL => 'http://www.example.org',
+}, sub {
+    subtest 'group editing works' => sub {
+        $mech->get_ok('/admin/body/' . $body->id);
+        $mech->content_contains( 'group</strong> is used for the top-level category' );
+
+        $mech->submit_form_ok( { with_fields => {
+            category   => 'grouped category',
+            email      => 'test@example.com',
+            note       => 'test note',
+            group      => 'group a',
+            non_public => undef,
+            state => 'unconfirmed',
+        } } );
+
+        my $contact = $body->contacts->find({ category => 'grouped category' });
+        is $contact->get_extra_metadata('group'), 'group a', "group stored correctly";
+    };
+
+};
+
 
 done_testing();
