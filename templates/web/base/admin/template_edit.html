@@ -51,7 +51,7 @@
     </div>
     <p>
       <label for="state">[% loc('State') %]</label>
-      [% INCLUDE 'admin/state_groups_select.html' current_state=rt.state include_empty=1 %]
+      [% INCLUDE 'report/inspect/state_groups_select.html' current_state=rt.state include_empty=1 %]
     </p>
 
     [% IF errors.external_status_code %]
