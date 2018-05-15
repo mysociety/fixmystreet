@@ -79,6 +79,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
+            closed_updates => undef,
         },
         changes     => { title => 'Edited Report', },
         log_entries => [qw/edit/],
@@ -95,6 +96,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
+            closed_updates => undef,
         },
         changes     => { detail => 'Edited Detail', },
         log_entries => [qw/edit edit/],
@@ -111,6 +113,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
+            closed_updates => undef,
         },
         changes     => { name => 'Edited User', },
         log_entries => [qw/edit edit edit/],
@@ -128,6 +131,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => undef,
             non_public => undef,
+            closed_updates => undef,
         },
         changes => {
             flagged    => 'on',
@@ -147,6 +151,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         changes     => { username => $user2->email, },
         log_entries => [qw/edit edit edit edit edit/],
@@ -164,6 +169,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         expect_comment => 1,
         changes   => { state => 'unconfirmed' },
@@ -181,6 +187,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         expect_comment => 1,
         changes   => { state => 'confirmed' },
@@ -198,6 +205,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         expect_comment => 1,
         changes   => { state => 'fixed' },
@@ -216,6 +224,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         expect_comment => 1,
         changes     => { state => 'hidden' },
@@ -235,6 +244,7 @@ foreach my $test (
             anonymous  => 0,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         expect_comment => 1,
         changes => {
@@ -257,6 +267,7 @@ foreach my $test (
             anonymous  => 1,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         changes     => {},
         log_entries => [
@@ -275,6 +286,7 @@ foreach my $test (
             anonymous  => 1,
             flagged    => 'on',
             non_public => undef,
+            closed_updates => undef,
         },
         changes     => {
             non_public => 'on',
@@ -283,6 +295,24 @@ foreach my $test (
             qw/edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
+    },
+    {
+        description => 'close to updates',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            username   => $user2->email,
+            anonymous  => 1,
+            flagged    => 'on',
+            non_public => 'on',
+            closed_updates => undef,
+        },
+        changes => { closed_updates => 'on' },
+        log_entries => [
+            qw/edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+        ],
     },
     {
         description => 'change state to investigating as body superuser',
@@ -295,12 +325,13 @@ foreach my $test (
             anonymous  => 1,
             flagged    => 'on',
             non_public => 'on',
+            closed_updates => undef,
         },
         expect_comment => 1,
         user_body => $oxfordshire,
         changes   => { state => 'investigating' },
         log_entries => [
-            qw/edit state_change edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -315,13 +346,14 @@ foreach my $test (
             anonymous  => 1,
             flagged    => 'on',
             non_public => 'on',
+            closed_updates => undef,
         },
         expect_comment => 1,
         expected_text => '*Category changed from ‘Other’ to ‘Potholes’*',
         user_body => $oxfordshire,
         changes   => { state => 'in progress', category => 'Potholes' },
         log_entries => [
-            qw/edit state_change edit state_change edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit state_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -370,6 +402,15 @@ foreach my $test (
 
         $test->{changes}->{flagged} = 1 if $test->{changes}->{flagged};
         $test->{changes}->{non_public} = 1 if $test->{changes}->{non_public};
+
+        if ($test->{changes}->{closed_updates}) {
+            is $report->get_extra_metadata('closed_updates'), 1, "closed_updates updated";
+            $mech->get_ok("/report/$report_id");
+            $mech->content_lacks('Provide an update');
+            $report->unset_extra_metadata('closed_updates');
+            $report->update;
+            delete $test->{changes}->{closed_updates};
+        }
 
         is $report->$_, $test->{changes}->{$_}, "$_ updated" for grep { $_ ne 'username' } keys %{ $test->{changes} };
 
@@ -451,6 +492,7 @@ subtest 'change email to new user' => sub {
         anonymous => 1,
         flagged => 'on',
         non_public => 'on',
+        closed_updates => undef,
         external_id => '13',
         external_body => '',
         external_team => '',
