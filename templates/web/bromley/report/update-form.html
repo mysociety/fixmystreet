@@ -1,3 +1,6 @@
+[% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_body) %]
+[% RETURN IF NOT allow_creation OR problem.extra.closed_updates %]
+
 <div id="update_form">
   [% UNLESS hide_header %]
     <h2[% IF two_column_sidebar %] class="hidden-js"[% END %]>[% loc('Provide an update') %]</h2>

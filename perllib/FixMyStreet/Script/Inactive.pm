@@ -11,6 +11,7 @@ use FixMyStreet::DB;
 use FixMyStreet::Email;
 
 has anonymize => ( is => 'ro' );
+has close => ( is => 'ro' );
 has email => ( is => 'ro' );
 has verbose => ( is => 'ro' );
 has dry_run => ( is => 'ro' );
@@ -53,6 +54,29 @@ sub reports {
     my $self = shift;
 
     say "DRY RUN" if $self->dry_run;
+    $self->anonymize_reports if $self->anonymize;
+    $self->close_updates if $self->close;
+}
+
+sub close_updates {
+    my $self = shift;
+
+    my $problems = FixMyStreet::DB->resultset("Problem")->search({
+        lastupdate => { '<', interval($self->close) },
+        state => [ FixMyStreet::DB::Result::Problem->closed_states(), FixMyStreet::DB::Result::Problem->fixed_states() ],
+        extra => [ undef, { -not_like => '%closed_updates%' } ],
+    });
+
+    while (my $problem = $problems->next) {
+        say "Closing updates on problem #" . $problem->id if $self->verbose;
+        next if $self->dry_run;
+        $problem->set_extra_metadata( closed_updates => 1 );
+        $problem->update;
+    }
+}
+
+sub anonymize_reports {
+    my $self = shift;
 
     # Need to look though them all each time, in case any new updates/alerts
     my $problems = FixMyStreet::DB->resultset("Problem")->search({
