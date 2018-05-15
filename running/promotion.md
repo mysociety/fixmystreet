@@ -190,9 +190,6 @@ You can avoid this with load testing, which makes sure that your servers can
 cope with increased amounts of traffic, or simply by sending out your press
 releases at intervals, over a period of time.
 
-If mySociety is hosting your site, don’t worry: we’ve got it covered. Do let us
-know just before you start your press campaign, though.
-
 > **Pere**: We gathered the email address of every media outlet
 > in Norway, and used this list to send press releases
 > about the service. All local media, all national press,

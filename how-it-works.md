@@ -71,7 +71,6 @@ If you want to get FixMyStreet up and running, this is what you need to do:
     <ul>
       <li><a href="{{ "/install/install-script" | relative_url }}">on your own server</a></li>
       <li><a href="{{ "/install/ami" | relative_url }}">on an Amazon Web Services EC2 server</a></li>
-      <li>...or ask us to <a href="{{ "/install/#hosting" | relative_url }}">host it for you</a></li>
     </ul>
   </dd>  
   <dt>

@@ -14,9 +14,7 @@ Welcome to FixMyStreet Platform
     <h3>Install</h3>
     <p>
       Begin with the <a href="/install/">installation documentation</a>. Put
-      FixMyStreet on your own Debian/Ubuntu server, or on Amazon EC2 (or, if
-      that's a problem for you, <a
-      href="https://www.mysociety.org/contact/">talk to us</a> about hosting).
+      FixMyStreet on your own Debian/Ubuntu server, or on Amazon EC2.
     </p>
   </div>
   <div class="column">

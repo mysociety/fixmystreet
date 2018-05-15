@@ -167,7 +167,7 @@ body, remain as historic data. Users cannot submit reports to a deleted body.
 <div class="attention-box warning">
   If you're testing FixMyStreet and you're sure you want to <em>really</em>
   delete a body, because you just created it as test, you need to delete it
-  directly within the database (or, if we're hosting it for you, ask us to).
+  directly within the database.
   You cannot do destructive deletion like this through the admin interface.
   <p>
     We recommend you do your testing on a

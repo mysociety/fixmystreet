@@ -43,9 +43,6 @@ look and behave differently, depending on how it has been
 
 * an _administrator_ normally logs into the back-end
 
-Depending on the set up (and if you're hosting the site yourself) these
-might even be on _different domains_. 
-
 We encourage you to run the admin over an encrypted connection (that is,
 over `https`).
 
@@ -53,10 +50,6 @@ over `https`).
 ##  How to log in
 
 You can log into the FixMyStreet admin using the username and password provided.
-
-If we're hosting your site for you, and you haven't paid for a SSL certificate,
-then the URL of the admin may be on a different (secure) domain than your site.
-We'll tell you the URL (as well as your username and password) if this is the case.
 
 ###  Using HTAuth
 

@@ -122,8 +122,7 @@ comment is not optional.
 You can see the collected results of surveys by logging in as an
 <a href="{{ "/glossary/#administrator" | relative_url }}" class="glossary__link">administrator</a>
 and visiting `admin/questionnaire` in the admin (or click on **Survey** in the
-admin menu bar). If we are hosting the site for you and you don't have admin
-access, ask us to send you the results.
+admin menu bar).
 
 The survey results are shown as total counts and percentages. They provide the
 following numbers:

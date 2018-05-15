@@ -43,14 +43,10 @@ at the same time as others -- but if you're not sure then just work through the 
 </h3>
   </dt>
   <dd>
-    If you're hosting the site yourself and you already own the domain name,
+    If you already own the domain name,
     you're good to go. But if this is a new project and you don't have the
     domain set up already, don't leave it too late to register the domain
     and point it at your server.
-    <p>
-      If we're hosting the site for you, it's usually easiest if you use a
-      subdomain, and CNAME that onto our server.
-    </p>
   </dd>
   <dt>
     <h3>Translate into language(s) you need</h3>
@@ -69,7 +65,7 @@ at the same time as others -- but if you're not sure then just work through the 
     <p>
       Even if you're not hosting the site yourself, you might want to install
       the software in order to see how your customisation looks before putting
-      it live. If we're hosting it, we might be able to do this for you.
+      it live.
     </p>
   </dd>
   <dt>
