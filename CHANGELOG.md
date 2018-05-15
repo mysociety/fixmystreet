@@ -55,7 +55,7 @@
         - Display contents of report's extra field #1809
         - Store user creation and last active times.
         - Add scripts to anonymize inactive users and reports,
-          or email inactive users.
+          email inactive users, or to close reports to new updates.
     - Development improvements:
         - Add HTML email previewer.
         - Add CORS header to Open311 output. #2022

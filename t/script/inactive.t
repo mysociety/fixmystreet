@@ -50,6 +50,14 @@ subtest 'Anonymization of inactive fixed/closed reports' => sub {
     is $comment->user->email, 'removed-automatically@example.org', 'Comment user anonymized';
 };
 
+subtest 'Closing updates on inactive fixed/closed reports' => sub {
+    my $in = FixMyStreet::Script::Inactive->new( close => 1 );
+    $in->reports;
+    $problems[2]->discard_changes;
+    is $problems[2]->get_extra_metadata('closed_updates'), 1, 'Closed to updates';
+    # TODO Visit page, check closed for updates
+};
+
 subtest 'Anonymization of inactive users' => sub {
     $in->users;
 

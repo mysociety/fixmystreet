@@ -53,7 +53,7 @@
 [% TRY %][% INCLUDE 'report/sharing.html' %][% CATCH file %][% END %]
 [% INCLUDE 'report/updates.html' %]
 
-[% IF two_column_sidebar %]
+[% IF two_column_sidebar AND NOT problem.extra.closed_updates %]
 <button class="btn btn--provide-update js-provide-update hidden-nojs">[% loc('Provide an update') %]</button>
 <div class="hidden-js">
 [% END %]
@@ -62,7 +62,7 @@
 [% ELSIF NOT shown_form %]
     [% INCLUDE 'report/update-form.html' %]
 [% END %]
-[% IF two_column_sidebar %]
+[% IF two_column_sidebar AND NOT problem.extra.closed_updates %]
 </div>
 [% END %]
 
