@@ -356,6 +356,12 @@ sub update_contacts : Private {
         if ( $c->get_param('reputation_threshold') ) {
             $contact->set_extra_metadata( reputation_threshold => int($c->get_param('reputation_threshold')) );
         }
+        if ( my $group = $c->get_param('group') ) {
+            $contact->set_extra_metadata( group => $group );
+        } else {
+            $contact->unset_extra_metadata( 'group' );
+        }
+
 
         $c->forward('update_extra_fields', [ $contact ]);
         $c->forward('contact_cobrand_extra_fields', [ $contact ]);

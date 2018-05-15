@@ -7,6 +7,8 @@
         - Simplify footer CSS. #2107
         - Keep commas in geocode lookups.
         - Show message on reports closed to updates.
+    - Admin improvements:
+        - Category group can be edited.
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156
