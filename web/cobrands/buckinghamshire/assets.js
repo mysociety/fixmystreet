@@ -182,7 +182,13 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             // If a feature wasn't found at the location they've clicked, it's
             // probably a field or something. Show an error to that effect,
             // unless an asset is selected.
+            if (fixmystreet.do_not_send) {
+                fixmystreet.do_not_send[layer.fixmystreet.body] = 1;
+            }
             if (fixmystreet.assets.selectedFeature()) {
+                if (fixmystreet.do_not_send) {
+                    fixmystreet.do_not_send[layer.fixmystreet.body] = 0;
+                }
                 hide_responsibility_errors();
                 enable_report_form();
             } else if (fixmystreet.is_only_body(layer.fixmystreet.body)){

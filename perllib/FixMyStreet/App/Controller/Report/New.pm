@@ -888,6 +888,7 @@ sub process_report : Private {
         'partial',                               #
         'service',                               #
         'non_public',
+        'do_not_send',
       );
 
     # load the report
@@ -954,7 +955,9 @@ sub process_report : Private {
                 my $body = $c->model('DB::Body')->search({ name => $single_body_only })->first;
                 $body ? $body->id : '-1';
             } else {
-                my $bodies = $c->forward('contacts_to_bodies', [ $report->category ]);
+                my $contact_options = {};
+                $contact_options->{do_not_send} = [ split(',', $params{do_not_send}) ] if $params{do_not_send};
+                my $bodies = $c->forward('contacts_to_bodies', [ $report->category, $contact_options ]);
                 join(',', map { $_->id } @$bodies) || '-1';
             }
         };
@@ -1013,9 +1016,18 @@ sub process_report : Private {
 }
 
 sub contacts_to_bodies : Private {
-    my ($self, $c, $category) = @_;
+    my ($self, $c, $category, $options) = @_;
 
     my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
+
+    # check that the front end has not indicated that we should not send to a
+    # body. This is usually because the asset code thinks it's not near enough
+    # to a road.
+    if ($options->{do_not_send}) {
+        my %do_not_send_check = map { $_ => 1 } @{$options->{do_not_send}};
+        my @contacts_filtered = grep { !$do_not_send_check{$_->body->id} } @contacts;
+        @contacts = @contacts_filtered if scalar @contacts_filtered;
+    }
 
     if ($c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL} || !@contacts) {
         [];
