@@ -149,6 +149,7 @@ fixmystreet.roads = {
 $(fixmystreet).on('maps:update_pin', fixmystreet.roads.select);
 $(fixmystreet).on('assets:selected', fixmystreet.roads.select);
 $(fixmystreet).on('report_new:category_change', fixmystreet.roads.change_category);
+$(fixmystreet).on('report_new:category_change:extras_received', fixmystreet.roads.change_category);
 
 })();
 
