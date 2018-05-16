@@ -278,11 +278,13 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html', $vars);
     my $councils_text_private = $c->render_fragment( 'report/new/councils_text_private.html');
 
+    my @bodies = map { "" . $_->id } @$bodies;
     my $body = encode_json({
         category_extra => $category_extra,
         councils_text => $councils_text,
         councils_text_private => $councils_text_private,
         category_extra_json => $category_extra_json,
+        bodies => \@bodies,
     });
 
     $c->res->content_type('application/json; charset=utf-8');

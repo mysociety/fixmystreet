@@ -419,6 +419,11 @@ $.extend(fixmystreet.set_up, {
             } else {
                 $category_meta.empty();
             }
+            if (data.bodies) {
+                if (fixmystreet.map) {
+                    fixmystreet.bodies = data.bodies;
+                }
+            }
             $(fixmystreet).trigger('report_new:category_change:extras_received');
         });
 
