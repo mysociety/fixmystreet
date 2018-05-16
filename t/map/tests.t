@@ -3,11 +3,11 @@ use Test::More;
 
 my $requires = {
     'Angus' => 'angus/js.js',
-    'BathNES' => 'bathnes/js.js',
+    'BathNES' => 'bathnes/assets.js',
     'Bing' => 'map-bing-ol.js',
-    'Bristol' => 'bristol/js.js',
+    'Bristol' => 'bristol/assets.js',
     'Bromley' => 'bromley/map.js',
-    'Buckinghamshire' => 'buckinghamshire/js.js',
+    'Buckinghamshire' => 'buckinghamshire/assets.js',
     'FMS' => 'map-fms.js',
     'Google' => 'map-google.js',
     'GoogleOL' => 'map-google-ol.js',
