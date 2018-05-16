@@ -986,6 +986,23 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
 
 };
 
+fixmystreet.is_only_body = function(body) {
+    body = body + "";
+    if (!fixmystreet.bodies) {
+        return false;
+    }
+
+    if (fixmystreet.bodies.length > 1 ) {
+        return false;
+    }
+
+    if (fixmystreet.bodies[0] == body) {
+        return true;
+    }
+
+    return false;
+};
+
 fixmystreet.display = {
   begin_report: function(lonlat, saveHistoryState) {
     lonlat = fixmystreet.maps.begin_report(lonlat);
