@@ -1,0 +1,37 @@
+<div id="form_sign_in_no" class="form-box">
+    <h5>Confirm my report by email</h5>
+
+    [% INCLUDE 'report/new/extra_name.html' %]
+    [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
+    [% INCLUDE 'report/new/form_user_name.html' extra_class='form-focus-trigger' %]
+    [% INCLUDE 'report/_show_name_label.html' %]
+
+    [% UNLESS c.cobrand.call_hook('disable_phone_number_entry') %]
+        <div id="js-hide-if-username-phone">
+            <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
+            <input class="form-control form-focus-hidden" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
+        </div>
+    [% END %]
+    <div id="js-hide-if-username-email">
+        <label class="form-focus-hidden" for="form_email">[% loc('Email address (optional)') %]</label>
+        <input class="form-control form-focus-hidden" type="text" value="[% report.user.email | html %]" name="email" id="form_email">
+    </div>
+
+    <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
+  [% IF field_errors.password_register %]
+    <p class='form-error'>[% field_errors.password_register %]</p>
+  [% END %]
+    <div class="general-notes form-focus-hidden">
+        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports.') %]</p>
+    </div>
+
+    <div class="form-txt-submit-box form-focus-hidden">
+        <input class="form-control js-password-validate" type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+        <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
+    </div>
+
+    <div class="general-notes">
+        <p>[% tprintf(loc('Your password should include %d or more characters.'), c.cobrand.password_minimum_length) %]</p>
+    </div>
+
+</div>

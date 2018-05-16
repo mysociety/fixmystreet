@@ -5,130 +5,18 @@
     title, first name, and last name separately.
 %]
 
-<h2 class="form-section-heading form-section-heading--private">Private details</h2>
-<p class="form-section-description">
-  [% tprintf(
-    loc('These will be sent to the council, but will never be shown online. <a href="%s">(See our privacy policy.)</a>')
-    '/faq#privacy'
-  ); %]
+<h2 class="form-section-heading form-section-heading--private">[% loc('Private details') %]</h2>
+<p class="form-section-description" id="js-councils_text_private">
+  [% IF js %]
+    [% loc('These will be sent to the council, but will never be shown online.') %]
+    (<a href="/faq#privacy">[% loc('See our privacy policy') %]</a>.)
+  [% ELSE %]
+    [% PROCESS 'report/new/councils_text_private.html' %]
+  [% END %]
 </p>
 
 [% IF c.user_exists %]
-    <div class="form-box">
-        [% INCLUDE 'report/new/extra_name.html' %]
-
-        [% names = c.user.split_name %]
-        <label for="form_first_name">[% loc('First Name') %]</label>
-        [% IF field_errors.first_name %]
-            <p class='form-error'>[% field_errors.first_name %]</p>
-        [% END %]
-        <input class="form-control js-form-name" type="text" value="[% ( first_name || names.first ) | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
-
-        <label for="form_last_name">[% loc('Last Name') %]</label>
-        [% IF field_errors.last_name %]
-            <p class='form-error'>[% field_errors.last_name %]</p>
-        [% END %]
-        <input class="form-control js-form-name" type="text" value="[% ( last_name || names.last ) | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
-
-
-        [%# if there is nothing in the name field then set check box as default on form %]
-        <div class="checkbox-group">
-            <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
-            <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
-        </div>
-
-        <label for="form_phone">[% loc('Phone number (optional)') %]</label>
-        <input class="form-control" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
-
-            <div class="general-notes">
-                <p>[% loc('We never show your email address or phone number.') %]</p>
-            </div>
-
-        <div class="form-txt-submit-box">
-            <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
-        </div>
-    </div>
+  [% PROCESS "report/new/form_user_loggedin.html" %]
 [% ELSE %]
-
-    <label for="form_username">[% loc('Your email') %]</label>
-    [% IF field_errors.username %]
-        <p class='form-error'>[% field_errors.username %]</p>
-    [% END %]
-    <input class="form-control" type="email" value="[% report.user.email | html %]" name="username" id="form_username" placeholder="[% loc('Please enter your email address') %]" required>
-
-    <div id="form_sign_in">
-
-        <p>To submit your report you now need to confirm it either by email or by using a  FixMyStreet password.</p>
-
-        <div id="form_sign_in_no" class="form-box">
-            <h5>Confirm my report by email</h5>
-
-            [% INCLUDE 'report/new/extra_name.html' %]
-
-            <label for="form_first_name">[% loc('First Name') %]</label>
-            [% IF field_errors.first_name %]
-                <p class='form-error'>[% field_errors.first_name %]</p>
-            [% END %]
-            <input type="text" class="form-control form-focus-trigger js-form-name" value="[% first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
-
-            <label for="form_last_name">[% loc('Last Name') %]</label>
-            [% IF field_errors.last_name %]
-                <p class='form-error'>[% field_errors.last_name %]</p>
-            [% END %]
-            <input type="text" class="form-control form-focus-trigger js-form-name" value="[% last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
-
-            [%# if there is nothing in the name field then set check box as default on form %]
-            <div class="checkbox-group">
-                <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
-                <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
-            </div>
-
-            <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
-            <input class="form-control form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
-
-            <div class="general-notes form-focus-hidden">
-                <p>[% loc('We never show your email address or phone number.') %]</p>
-            </div>
-
-            <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
-          [% IF field_errors.password_register %]
-            <p class='form-error'>[% field_errors.password_register %]</p>
-          [% END %]
-
-            <div class="general-notes form-focus-hidden">
-                <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports.') %]</p>
-            </div>
-
-            <div class="form-txt-submit-box form-focus-hidden">
-                <input class="form-control js-password-validate" type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
-                <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
-            </div>
-
-            <div class="general-notes">
-                <p>[% tprintf(loc('Your password should include %d or more characters.'), c.cobrand.password_minimum_length) %]</p>
-            </div>
-
-        </div>
-
-        <div id="form_sign_in_yes" class="form-box">
-
-            <h5>Confirm my report with my FixMyStreet password</h5>
-
-            <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
-            <div class="form-txt-submit-box">
-                [% IF field_errors.password %]
-                    <p class='form-error'>[% field_errors.password %]</p>
-                [% END %]
-                <input class="form-control" type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
-                <input class="green-btn js-submit_sign_in" type="submit" name="submit_sign_in" value="[% loc('Submit') %]">
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-                <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
-            </div>
-        </div>
-
-    </div>
-
+  [% PROCESS "report/new/form_user_loggedout.html" %]
 [% END %]

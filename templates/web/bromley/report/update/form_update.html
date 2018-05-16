@@ -1,0 +1,54 @@
+<input type="hidden" name="submit_update" value="1">
+<input type="hidden" name="id" value="[% problem.id | html %]">
+
+[% IF c.cobrand.allow_photo_upload %]
+    <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+    <label for="form_photo">
+        <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
+    </label>
+
+      [% IF field_errors.photo %]
+        <p class='form-error'>[% field_errors.photo %]</p>
+      [% END %]
+
+    <div id="form_photos">
+      [% IF upload_fileid %]
+        <p>[% loc('You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed).') %]</p>
+        [% FOREACH id IN upload_fileid.split(',') %]
+        <img align="right" src="/photo/temp.[% id %]" alt="">
+        [% END %]
+    [% END %]
+        <input type="file" name="photo1" id="form_photo">
+        <label for="form_photo2">[% loc('Photo') %]</label>
+        <input type="file" name="photo2" id="form_photo2">
+        <label for="form_photo3">[% loc('Photo') %]</label>
+        <input type="file" name="photo3" id="form_photo3">
+    </div>
+[% END %]
+
+<div class="general-notes">
+    <p>Please note that new and separate occurrences of issues
+    should be logged as new reports, to avoid conflicting
+    information or updates and ensure the information is passed
+    promptly to our teams. Please log any new issue via
+    <a href="https://www.bromley.gov.uk/report">https://www.bromley.gov.uk/report</a>
+    using the map marker and description to detail where the issue
+    is located.</p>
+</div>
+
+<label for="form_update">[% loc( 'Update' ) %]</label>
+[% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+  [% INCLUDE 'admin/response_templates_select.html' for='form_update' %]
+[% END %]
+[% IF field_errors.update %]
+    <div class='form-error'>[% field_errors.update %]</div>
+[% END %]
+<textarea rows="7" cols="30" name="update" class="form-control" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
+
+[% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+    <label for="state">[% loc( 'State' ) %]</label>
+    [% INCLUDE 'report/inspect/state_groups_select.html' %]
+[% ELSE %]
+  [% INCLUDE report/update/form_state_checkbox.html %]
+[% END %]
+

@@ -1,0 +1,12 @@
+[% names = c.user.split_name %]
+<label for="form_first_name">[% loc('First Name') %]</label>
+[% IF field_errors.first_name %]
+    <p class='form-error'>[% field_errors.first_name %]</p>
+[% END %]
+<input class="form-control js-form-name [% extra_class %]" type="text" value="[% ( first_name || names.first ) | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
+
+<label for="form_last_name">[% loc('Last Name') %]</label>
+[% IF field_errors.last_name %]
+    <p class='form-error'>[% field_errors.last_name %]</p>
+[% END %]
+<input class="form-control js-form-name [% extra_class %]" type="text" value="[% ( last_name || names.last ) | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
