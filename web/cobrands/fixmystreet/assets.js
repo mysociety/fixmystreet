@@ -136,7 +136,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         if (this.fixmystreet.actions) {
             this.fixmystreet.actions.found(this, this.selected_feature);
         } else if (!fixmystreet.assets.selectedFeature()) {
-            $('#single_body_only').val(this.fixmystreet.body);
+            fixmystreet.body_overrides.only_send(this.fixmystreet.body);
         }
     },
 
@@ -144,7 +144,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         if (this.fixmystreet.actions) {
             this.fixmystreet.actions.not_found(this);
         } else {
-            $('#single_body_only').val('');
+            fixmystreet.body_overrides.remove_only_send();
         }
     },
 
@@ -742,3 +742,62 @@ OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, s
     return this._object.setRequestHeader(sName, sValue);
 };
 })();
+
+/* Handling of body override functionality */
+
+fixmystreet.body_overrides = (function(){
+
+var do_not_send = [];
+var only_send = '';
+
+function update() {
+    $('#do_not_send').val(fixmystreet.utils.array_to_csv_line(do_not_send));
+    $('#single_body_only').val(only_send);
+    $(fixmystreet).trigger('body_overrides:change');
+}
+
+return {
+    clear: function() {
+        do_not_send = [];
+        update();
+    },
+    only_send: function(body) {
+        only_send = body;
+        update();
+    },
+    remove_only_send: function() {
+        only_send = '';
+        update();
+    },
+    do_not_send: function(body) {
+        do_not_send.push(body);
+        update();
+    },
+    allow_send: function(body) {
+        do_not_send = $.grep(do_not_send, function(a) { return a !== body; });
+        update();
+    }
+};
+
+})();
+
+$(fixmystreet).on('body_overrides:change', function() {
+    var councils_text = $('#js-councils_text').html();
+
+    var single_body_only = $('#single_body_only').val();
+    if (single_body_only) {
+        councils_text = councils_text.replace(/<strong>.*<\/strong>/, '<strong>' + single_body_only + '</strong>');
+    }
+
+    var do_not_send = $('#do_not_send').val();
+    if (do_not_send) {
+        do_not_send = fixmystreet.utils.csv_to_array(do_not_send);
+        for (var i=0; i<do_not_send.length; i++) {
+            // XXX Translations
+            councils_text = councils_text.replace(new RegExp('or <strong>' + do_not_send[i] + '</strong>'), '');
+            councils_text = councils_text.replace(new RegExp('<strong>' + do_not_send[i] + '</strong> or '), '');
+        }
+    }
+
+    $('#js-councils_text').html(councils_text);
+});

@@ -410,6 +410,9 @@ $.extend(fixmystreet.set_up, {
                 $category_meta.empty();
             }
             fixmystreet.bodies = data.bodies || [];
+            if (fixmystreet.body_overrides) {
+                fixmystreet.body_overrides.clear();
+            }
             $(fixmystreet).trigger('report_new:category_change:extras_received');
         });
 
@@ -889,14 +892,9 @@ $.extend(fixmystreet.set_up, {
 });
 
 fixmystreet.update_councils_text = function(data) {
-    var single_body_only = $('#single_body_only').val();
-    if (single_body_only) {
-        data.councils_text = data.councils_text.replace(/<strong>.*<\/strong>/, '<strong>' + single_body_only + '</strong>');
-    }
-
     $('#js-councils_text').html(data.councils_text);
     $('#js-councils_text_private').html(data.councils_text_private);
-
+    $(fixmystreet).trigger('body_overrides:change');
 };
 
 // The new location will be saved to a history state unless
@@ -942,6 +940,9 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         }
 
         fixmystreet.bodies = data.bodies || [];
+        if (fixmystreet.body_overrides) {
+            fixmystreet.body_overrides.clear();
+        }
 
         // If the category filter appears on the map and the user has selected
         // something from it, then pre-fill the category field in the report,

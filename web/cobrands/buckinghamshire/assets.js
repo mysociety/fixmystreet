@@ -172,6 +172,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     all_categories: true,
     actions: {
         found: function(layer, feature) {
+            fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
             if (fixmystreet.assets.selectedFeature()) {
                 hide_responsibility_errors();
                 enable_report_form();
@@ -180,6 +181,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
                 enable_report_form();
             } else if (is_only_body(layer.fixmystreet.body)) {
                 // User has clicked a road that Bucks don't maintain.
+                fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
                 show_responsibility_error("#js-not-council-road");
                 disable_report_form();
             }
@@ -189,7 +191,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             // If a feature wasn't found at the location they've clicked, it's
             // probably a field or something. Show an error to that effect,
             // unless an asset is selected.
+            fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
             if (fixmystreet.assets.selectedFeature()) {
+                fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
                 hide_responsibility_errors();
                 enable_report_form();
             } else if (is_only_body(layer.fixmystreet.body)){

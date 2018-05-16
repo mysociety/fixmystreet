@@ -82,11 +82,11 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     actions: {
         found: function(layer, feature) {
             if (!fixmystreet.assets.selectedFeature()) {
-                $('#single_body_only').val('TfL');
+                fixmystreet.body_overrides.only_send('TfL');
             }
         },
         not_found: function(layer) {
-            $('#single_body_only').val('');
+            fixmystreet.body_overrides.remove_only_send();
         }
     }
 }));
