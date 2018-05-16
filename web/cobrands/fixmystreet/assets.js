@@ -312,9 +312,13 @@ function check_zoom_message_visibility() {
         }
 
         if (this.getVisibility() && this.inRange) {
-            $p.html('Or pick a <b class="asset-' + this.fixmystreet.asset_type + '">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+            if (this.fixmystreet.asset_item_message) {
+                $p.html(this.fixmystreet.asset_item_message);
+            } else {
+                $p.html('You can pick a <b class="asset-' + this.fixmystreet.asset_type + '">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+            }
         } else {
-            $p.html('Or zoom in and pick a ' + this.fixmystreet.asset_item + ' from the map');
+            $p.html('Zoom in to pick a ' + this.fixmystreet.asset_item + ' from the map');
         }
 
     } else {
