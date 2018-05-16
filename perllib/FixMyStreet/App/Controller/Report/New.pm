@@ -878,7 +878,8 @@ sub process_report : Private {
         'partial',                               #
         'service',                               #
         'non_public',
-        'single_body_only'
+        'single_body_only',
+        'do_not_send',
       );
 
     # load the report
@@ -936,7 +937,10 @@ sub process_report : Private {
             return 1;
         }
 
-        my $bodies = $c->forward('contacts_to_bodies', [ $report->category, $params{single_body_only} ]);
+        my $contact_options = {};
+        $contact_options->{single_body_only} = $params{single_body_only} if $params{single_body_only};
+        $contact_options->{do_not_send} = [ split(',', $params{do_not_send}) ] if $params{do_not_send};
+        my $bodies = $c->forward('contacts_to_bodies', [ $report->category, $contact_options ]);
         my $body_string = join(',', map { $_->id } @$bodies) || '-1';
 
         $report->bodies_str($body_string);
@@ -986,15 +990,24 @@ sub process_report : Private {
 }
 
 sub contacts_to_bodies : Private {
-    my ($self, $c, $category, $single_body_only) = @_;
+    my ($self, $c, $category, $options) = @_;
 
     my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
 
     # check that we've not indicated we only want to sent to a single body
     # and if we find a matching one then only send to that. e.g. if we clicked
     # on a TfL road on the map.
-    if ($single_body_only) {
-        my @contacts_filtered = grep { $_->body->name eq $single_body_only } @contacts;
+    if ($options->{single_body_only}) {
+        my @contacts_filtered = grep { $_->body->name eq $options->{single_body_only} } @contacts;
+        @contacts = @contacts_filtered if scalar @contacts_filtered;
+    }
+
+    # check that the front end has not indicated that we should not send to a
+    # body. This is usually because the asset code thinks it's not near enough
+    # to a road.
+    if ($options->{do_not_send}) {
+        my %do_not_send_check = map { $_ => 1 } @{$options->{do_not_send}};
+        my @contacts_filtered = grep { !$do_not_send_check{$_->body->id} } @contacts;
         @contacts = @contacts_filtered if scalar @contacts_filtered;
     }
 

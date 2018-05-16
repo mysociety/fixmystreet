@@ -93,6 +93,7 @@ fixmystreet.roads = {
     },
 
     check_for_road: function(lonlat) {
+        fixmystreet.do_not_send = {};
         var road_providers = fixmystreet.map.getLayersBy('fixmystreet', {
             test: function(options) {
                 return options && options.road && fixmystreet.assets.check_layer_relevant(options, $('select#form_category'));
@@ -121,6 +122,7 @@ fixmystreet.roads = {
         } else {
             fixmystreet.roads.not_found();
         }
+        $(fixmystreet).trigger('assets:check_do_not_send');
     },
 
     found: function(layer, feature) {
