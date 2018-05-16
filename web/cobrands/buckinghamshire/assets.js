@@ -4,6 +4,8 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var national_no_road_msg = 'The selected road or location is not maintained by Buckinghamshire County Council.';
+
 var defaults = {
     http_options: {
         url: "https://tilma.staging.mysociety.org/mapserver/bucks",
@@ -166,9 +168,28 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     actions: {
         found: function(layer, feature) {
             if (bucks_types.indexOf(feature.attributes.feature_ty) != -1) {
+                if (fixmystreet.is_national) {
+                    $('#js-layer-message').text('');
+                    $('#js-layer-message').hide();
+                    fixmystreet.enable_report_form();
+                    return;
+                }
                 hide_responsibility_errors();
                 enable_report_form();
             } else {
+                fixmystreet.do_not_send[layer.fixmystreet.body] = 1;
+                if (fixmystreet.is_national) {
+                    if (fixmystreet.is_only_body(layer.fixmystreet.body)) {
+                        $('#js-layer-message').text(national_no_road_msg);
+                        $('#js-layer-message').show();
+                        fixmystreet.disable_report_form();
+                    } else {
+                        $('#js-layer-message').text('');
+                        $('#js-layer-message').hide();
+                        fixmystreet.enable_report_form();
+                    }
+                    return;
+                }
                 // User has clicked a road that Bucks don't maintain.
                 show_responsibility_error("#js-not-bucks-road");
                 disable_report_form();
@@ -176,10 +197,38 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         },
 
         not_found: function(layer) {
+            if (fixmystreet.assets.selectedFeature() !== null) {
+                if (fixmystreet.is_national) {
+                    $('#js-layer-message').text('');
+                    $('#js-layer-message').hide();
+                    fixmystreet.enable_report_form();
+                } else {
+                    hide_responsibility_errors();
+                    enable_report_form();
+                }
+                return;
+            }
+            fixmystreet.do_not_send[layer.fixmystreet.body] = 1;
+            if (fixmystreet.is_national) {
+                if (fixmystreet.is_only_body(layer.fixmystreet.body)) {
+                    $('#js-layer-message').text(national_no_road_msg);
+                    $('#js-layer-message').show();
+                    fixmystreet.disable_report_form();
+                }
+                return;
+            }
             // If a feature wasn't found at the location they've clicked, it's
             // probably a field or something. Show an error to that effect.
             show_responsibility_error("#js-not-a-road");
             disable_report_form();
+        },
+
+        unselected: function() {
+            if (fixmystreet.is_national) {
+                $('#js-layer-message').text('');
+                $('#js-layer-message').hide();
+                fixmystreet.enable_report_form();
+            }
         }
     },
     usrn: {
