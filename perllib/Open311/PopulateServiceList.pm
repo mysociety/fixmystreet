@@ -237,6 +237,14 @@ sub _add_meta_to_contact {
     # Some Open311 endpoints, such as Bromley and Warwickshire send <metadata>
     # for attributes which we *don't* want to display to the user (e.g. as
     # fields in "category_extras"
+    $self->_add_meta_to_contact_cobrand_overrides($contact, \@meta);
+
+    $contact->set_extra_fields(@meta);
+    $contact->update;
+}
+
+sub _add_meta_to_contact_cobrand_overrides {
+    my ( $self, $contact, $meta ) = @_;
 
     if ($self->_current_body->name eq 'Bromley Council') {
         $contact->set_extra_metadata( id_field => 'service_request_id_ext');
@@ -264,11 +272,8 @@ sub _add_meta_to_contact {
 
     if (my $override = $override{ $self->_current_body->name }) {
         my %ignore = map { $_ => 1 } @{ $override };
-        @meta = grep { ! $ignore{ $_->{ code } } } @meta;
+        @$meta = grep { ! $ignore{ $_->{ code } } } @$meta;
     }
-
-    $contact->set_extra_fields(@meta);
-    $contact->update;
 }
 
 sub _normalize_service_name {
@@ -296,6 +301,21 @@ sub _delete_contacts_not_in_service_list {
         }
     );
 
+    $found_contacts = $self->_delete_contacts_not_in_service_list_cobrand_overrides($found_contacts);
+
+    $found_contacts->update(
+        {
+            state => 'deleted',
+            editor  => $0,
+            whenedited => \'current_timestamp',
+            note => 'automatically marked as deleted by script'
+        }
+    );
+}
+
+sub _delete_contacts_not_in_service_list_cobrand_overrides {
+    my ( $self, $found_contacts ) = @_;
+
     # for Warwickshire/Bristol/BANES, which are mixed Open311 and email, don't delete
     # the email addresses
     if ($self->_current_body->name eq 'Warwickshire County Council' ||
@@ -306,8 +326,9 @@ sub _delete_contacts_not_in_service_list {
                 email => { -not_like => '%@%' }
             }
         );
-    } elsif ($self->_current_body->name eq 'East Hertfordshire District Council') {
-        # For EHDC we need to leave the 'Other' category alone or reports made
+    } elsif ($self->_current_body->name eq 'East Hertfordshire District Council' ||
+             $self->_current_body->name eq 'Stevenage Borough Council') {
+        # For EHDC/Stevenage we need to leave the 'Other' category alone or reports made
         # in this category will be sent only to Hertfordshire County Council.
         $found_contacts = $found_contacts->search(
             {
@@ -316,14 +337,7 @@ sub _delete_contacts_not_in_service_list {
         );
     }
 
-    $found_contacts->update(
-        {
-            state => 'deleted',
-            editor  => $0,
-            whenedited => \'current_timestamp',
-            note => 'automatically marked as deleted by script'
-        }
-    );
+    return $found_contacts;
 }
 
 1;
