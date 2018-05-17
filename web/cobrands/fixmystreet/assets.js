@@ -238,6 +238,12 @@ function asset_selected(e) {
         return;
     }
 
+    var layer = e.feature.layer;
+    var feature = e.feature;
+
+    // Keep track of selection in case layer is reloaded or hidden etc.
+    selected_feature = feature.clone();
+
     // Pick up the USRN for the location of this asset. NB we do this *before*
     // handling the attributes on the selected feature in case the feature has
     // its own USRN which should take precedence.
@@ -264,13 +270,8 @@ function asset_selected(e) {
     fixmystreet.maps.update_pin(lonlat);
 
     // Make sure the marker that was clicked is drawn on top of its neighbours
-    var layer = e.feature.layer;
-    var feature = e.feature;
     layer.eraseFeatures([feature]);
     layer.drawFeature(feature);
-
-    // Keep track of selection in case layer is reloaded or hidden etc.
-    selected_feature = feature.clone();
 }
 
 function asset_unselected(e) {
@@ -461,6 +462,10 @@ function get_fault_stylemap() {
 fixmystreet.assets = {
     layers: [],
     controls: [],
+
+    selectedFeature: function() {
+        return selected_feature;
+    },
 
     add: function(options) {
         var asset_fault_layer = null;
