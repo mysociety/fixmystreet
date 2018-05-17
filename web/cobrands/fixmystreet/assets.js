@@ -301,6 +301,9 @@ function find_matching_feature(feature, layer, asset_id_field) {
 }
 
 function check_zoom_message_visibility() {
+    if (this.fixmystreet.non_interactive) {
+        return;
+    }
     var category = $("#problem_form select#form_category").val(),
         prefix = category.replace(/[^a-z]/gi, ''),
         id = "category_meta_message_" + prefix,
