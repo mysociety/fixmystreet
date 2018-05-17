@@ -16,41 +16,59 @@ var fixmystreet = fixmystreet || {};
     };
 })();
 
-/* Special USRN handling */
+// Handles layers such as USRN, TfL roads, and the like
+OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.Vector, {
+    selected_feature: null,
 
-(function(){
+    initialize: function(name, options) {
+        OpenLayers.Layer.Vector.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('maps:update_pin', this.checkFeature.bind(this));
+        $(fixmystreet).on('assets:selected', this.checkFeature.bind(this));
+        // Might only be able to fill in fields once they've been returned from the server
+        $(fixmystreet).on('report_new:category_change:extras_received', this.changeCategory.bind(this));
+        // But also want to do it immediately in case it's hiding the form or something
+        $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
+    },
 
-var selected_usrn = null;
-var usrn_field = null;
-
-fixmystreet.usrn = {
-    select: function(evt, lonlat) {
-        var usrn_providers = fixmystreet.map.getLayersBy('fixmystreet', {
-            test: function(options) {
-                return options && options.usrn;
-            }
-        });
-        if (usrn_providers.length) {
-            var usrn_layer = usrn_providers[0];
-            usrn_field = usrn_layer.fixmystreet.usrn.field;
-            var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-            var feature = usrn_layer.getFeatureAtPoint(point);
-            if (feature == null) {
-                // The click wasn't directly over a road, try and find one
-                // nearby
-                feature = usrn_layer.getNearestFeature(point, 10);
-            }
-            if (feature !== null) {
-                selected_usrn = feature.attributes[usrn_layer.fixmystreet.usrn.attribute];
+    checkFeature: function(evt, lonlat) {
+        this.getNearest(lonlat);
+        this.updateUSRNField();
+        if (this.fixmystreet.road) {
+            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && this.fixmystreet.asset_category.indexOf($('select#form_category').val()) != -1);
+            if (!valid_category || !this.selected_feature) {
+                this.road_not_found();
             } else {
-                selected_usrn = null;
+                this.road_found();
             }
-            fixmystreet.usrn.update_field();
         }
     },
 
-    update_field: function() {
-        $("input[name="+usrn_field+"]").val(selected_usrn);
+    getNearest: function(lonlat) {
+        var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+        var feature = this.getFeatureAtPoint(point);
+        if (feature == null) {
+            // The click wasn't directly over a road, try and find one nearby
+            feature = this.getNearestFeature(point, 10);
+        }
+        this.selected_feature = feature;
+    },
+
+    updateUSRNField: function() {
+        if (this.fixmystreet.usrn) {
+            var usrn_field = this.fixmystreet.usrn.field;
+            var selected_usrn = this.selected_feature ? this.selected_feature.attributes[this.fixmystreet.usrn.attribute] : '';
+            $("input[name=" + usrn_field + "]").val(selected_usrn);
+        }
+    },
+
+    changeCategory: function() {
+        if (!fixmystreet.map) {
+            // Sometimes the category change event is fired before the map has
+            // initialised, for example when visiting /report/new directly
+            // on a cobrand with category groups enabled.
+            return;
+        }
+        this.checkFeature(null, fixmystreet.get_lonlat_from_dom());
     },
 
     one_time_select: function() {
@@ -60,95 +78,28 @@ fixmystreet.usrn = {
         // and is only intended to run the once (because if the user drags the
         // pin the usual USRN lookup event handler is run) so unregisters itself
         // immediately.
-        this.events.unregister( 'loadend', this, fixmystreet.usrn.one_time_select );
-        fixmystreet.usrn.select(null, fixmystreet.get_lonlat_from_dom());
-    }
-};
-
-$(fixmystreet).on('maps:update_pin', fixmystreet.usrn.select);
-$(fixmystreet).on('assets:selected', fixmystreet.usrn.select);
-$(fixmystreet).on('report_new:category_change:extras_received', fixmystreet.usrn.update_field);
-
-})();
-
-(function(){
-
-var selected_road = null;
-
-fixmystreet.roads = {
-    last_road: null,
-
-    change_category: function() {
-        if (!fixmystreet.map) {
-            // Sometimes the category change event is fired before the map has
-            // initialised, for example when visiting /report/new directly
-            // on a cobrand with category groups enabled.
-            return;
-        }
-        fixmystreet.roads.check_for_road(fixmystreet.get_lonlat_from_dom());
+        this.events.unregister( 'loadend', this, this.one_time_select );
+        this.checkFeature(null, fixmystreet.get_lonlat_from_dom());
     },
 
-    select: function(evt, lonlat) {
-        fixmystreet.roads.check_for_road(lonlat);
-    },
-
-    check_for_road: function(lonlat) {
-        var road_providers = fixmystreet.map.getLayersBy('fixmystreet', {
-            test: function(options) {
-                return options && options.road && (options.all_categories || options.asset_category.indexOf($('select#form_category').val()) != -1);
-            }
-        });
-        if (road_providers.length) {
-            var road_layer = road_providers[0];
-            fixmystreet.roads.last_road = road_layer;
-            var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-            var feature = road_layer.getFeatureAtPoint(point);
-            if (feature == null) {
-                // The click wasn't directly over a road, try and find one
-                // nearby
-                feature = road_layer.getNearestFeature(point, 10);
-            }
-            if (feature !== null) {
-                selected_road = feature; //.attributes[road_layer.fixmystreet.road.attribute];
-            } else {
-                selected_road = null;
-            }
-            if (selected_road) {
-                fixmystreet.roads.found(road_layer, selected_road);
-            } else {
-                fixmystreet.roads.not_found(road_layer);
-            }
+    road_found: function() {
+        if (this.fixmystreet.actions) {
+            this.fixmystreet.actions.found(this, this.selected_feature);
         } else {
-            fixmystreet.roads.not_found();
+            $('#single_body_only').val(this.fixmystreet.body);
         }
     },
 
-    found: function(layer, feature) {
-        if (layer.fixmystreet.actions) {
-            layer.fixmystreet.actions.found(layer, feature);
+    road_not_found: function() {
+        if (this.fixmystreet.actions) {
+            this.fixmystreet.actions.not_found(this);
         } else {
-            $('#single_body_only').val(layer.fixmystreet.body);
-        }
-    },
-
-    not_found: function(layer) {
-        if (layer && layer.fixmystreet.actions) {
-            layer.fixmystreet.actions.not_found(layer);
-        } else {
-            if ( fixmystreet.roads.last_road && fixmystreet.roads.last_road.fixmystreet.actions.unselected ) {
-                fixmystreet.roads.last_road.fixmystreet.actions.unselected();
-                fixmystreet.roads.last_road = null;
-            }
             $('#single_body_only').val('');
         }
     },
-};
 
-$(fixmystreet).on('maps:update_pin', fixmystreet.roads.select);
-$(fixmystreet).on('assets:selected', fixmystreet.roads.select);
-$(fixmystreet).on('report_new:category_change', fixmystreet.roads.change_category);
-
-})();
+    CLASS_NAME: 'OpenLayers.Layer.VectorNearest'
+});
 
 (function(){
 
@@ -176,17 +127,17 @@ function init_asset_layer(layer, pins_layer) {
         layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
     }
 
-    if (fixmystreet.page == 'new' && layer.fixmystreet.usrn) {
+    if (fixmystreet.page == 'new' && (layer.fixmystreet.usrn || layer.fixmystreet.road)) {
         // If the user visits /report/new directly and doesn't change the pin
         // location, then the assets:selected/maps:update_pin events are never
-        // fired and fixmystreet.usrn.select is never called. This results in a
+        // fired and USRN's checkFeature is never called. This results in a
         // report whose location was never looked up against the USRN layer,
         // which can cause issues for Open311 endpoints that require a USRN
         // value.
         // To prevent this situation we register an event handler that looks up
         // the new report's lat/lon against the USRN layer, calls usrn.select
         // and then unregisters itself.
-        layer.events.register( 'loadend', layer, fixmystreet.usrn.one_time_select );
+        layer.events.register( 'loadend', layer, layer.one_time_select );
     }
 
     if (!layer.fixmystreet.always_visible) {
@@ -545,7 +496,11 @@ fixmystreet.assets = {
             }
         }
 
-        var asset_layer = new OpenLayers.Layer.Vector(options.name || "WFS", layer_options);
+        var layer_class = OpenLayers.Layer.Vector;
+        if (options.usrn || options.road) {
+            layer_class = OpenLayers.Layer.VectorNearest;
+        }
+        var asset_layer = new layer_class(options.name || "WFS", layer_options);
 
         // A non-interactive layer to display existing asset faults
         if (options.wfs_fault_feature) {
