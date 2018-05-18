@@ -42,6 +42,7 @@
         - Make OpenGraph description translatable.
         - Stop double-escaping title in alert-update email.
         - Use inspection states in response template admin.
+        - Fixed CSS padding/overflow bug during sidebar "drawer" animations. #2132
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
