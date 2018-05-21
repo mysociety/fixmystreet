@@ -132,7 +132,7 @@ sub _populate_service_request_params {
         description => $description,
         service_code => $service_code,
         first_name => $firstname,
-        last_name => $lastname || '',
+        last_name => $lastname,
     };
 
     $params->{phone} = $problem->user->phone if $problem->user->phone;
@@ -413,9 +413,11 @@ sub _populate_service_request_update_params {
 sub split_name {
     my ( $self, $name ) = @_;
 
+    return ('', '') unless $name;
+
     my ( $first, $last ) = ( $name =~ /(\w+)(?:\.?\s+(.+))?/ );
 
-    return ( $first, $last );
+    return ( $first || '', $last || '');
 }
 
 sub _params_to_string {
