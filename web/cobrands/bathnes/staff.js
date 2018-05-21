@@ -35,22 +35,34 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
 }));
 
 
-// Staff can actually see the adopted highways layer, so replace the invisible
-// stylemap of that layer.
-var highways_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fill: true,
-        fillOpacity: 0,
-        // strokeColor: "#55BB00",
-        strokeColor: "#FFFF00",
-        strokeOpacity: 0.5,
-        strokeWidth: 2,
-        title: '${description}\n${notes}'
+// Some normally-invisible layers are visible to staff, so replace their
+// stylemaps accordingly.
+var replacement_stylemaps = {
+    "Adopted Highways": new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fill: true,
+            fillOpacity: 0,
+            // strokeColor: "#55BB00",
+            strokeColor: "#FFFF00",
+            strokeOpacity: 0.5,
+            strokeWidth: 2,
+            title: '${description}\n${notes}'
+        })
+    }),
+    "Parks and Grounds": new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fill: false,
+            strokeColor: "#008800",
+            strokeOpacity: 0.5,
+            strokeWidth: 2,
+            title: '${site_name}'
+        })
     })
-});
+};
+
 $.each(fixmystreet.assets.layers, function() {
-    if (this.name == "Adopted Highways") {
-        this.styleMap = highways_stylemap;
+    if (typeof replacement_stylemaps[this.name] !== 'undefined') {
+        this.styleMap = replacement_stylemaps[this.name];
     }
 });
 

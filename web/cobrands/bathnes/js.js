@@ -70,7 +70,8 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
             var a = this.attributes;
             return a.site_code + " " + a.site_name;
         }
-    }
+    },
+    name: "Parks and Grounds"
 }));
 
 
