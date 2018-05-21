@@ -5,6 +5,6 @@ e-postadress på [% site_name %].
 
 [% c.uri_for_action( 'auth/token', token ) %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 Det går inte att svara på detta mail.

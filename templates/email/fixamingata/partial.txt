@@ -9,4 +9,4 @@ via [% report.service %] måste du klicka på:
 
 Tack!
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]

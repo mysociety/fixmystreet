@@ -7,7 +7,7 @@ Please click on the link below to confirm your email address.
 Once you've done this, you'll be able to view and manage all reports and
 updates you've made on [% site_name %].
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
