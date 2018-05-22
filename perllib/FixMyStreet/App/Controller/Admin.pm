@@ -928,6 +928,12 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
         $problem->set_inflated_columns(\%columns);
 
+        if ($c->get_param('closed_updates')) {
+            $problem->set_extra_metadata(closed_updates => 1);
+        } else {
+            $problem->unset_extra_metadata('closed_updates');
+        }
+
         $c->forward( '/admin/report_edit_category', [ $problem, $problem->state ne $old_state ] );
         $c->forward('update_user', [ $problem ]);
 
@@ -1911,20 +1917,7 @@ sub user_hide_everywhere : Private {
 sub user_remove_account : Private {
     my ( $self, $c, $user ) = @_;
     $c->forward('user_logout_everywhere', [ $user ]);
-    $user->problems->update({ anonymous => 1, name => '', send_questionnaire => 0 });
-    $user->comments->update({ anonymous => 1, name => '' });
-    $user->alerts->update({ whendisabled => \'current_timestamp' });
-    $user->password('', 1);
-    $user->update({
-        email => 'removed-' . $user->id . '@' . FixMyStreet->config('EMAIL_DOMAIN'),
-        email_verified => 0,
-        name => '',
-        phone => '',
-        phone_verified => 0,
-        title => undef,
-        twitter_id => undef,
-        facebook_id => undef,
-    });
+    $user->anonymize_account;
     $c->stash->{status_message} = _('That user’s personal details have been removed.');
 }
 
