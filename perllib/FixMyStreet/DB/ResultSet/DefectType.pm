@@ -4,7 +4,6 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 use Moo;
-use HTML::Entities;
 
 with('FixMyStreet::Roles::ContactExtra');
 
@@ -16,10 +15,10 @@ sub map_extras {
     my ($rs, @ts) = @_;
     return map {
         my $meta = $_->get_extra_metadata();
-        my %extra = map { $_ => encode_entities($meta->{$_}) } keys %$meta;
+        my %extra = map { $_ => $meta->{$_} } keys %$meta;
         {
             id => $_->id,
-            name => encode_entities($_->name),
+            name => $_->name,
             extra => \%extra
         }
     } @ts;

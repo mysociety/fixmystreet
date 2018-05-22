@@ -99,27 +99,6 @@ subtest 'by_categories returns defect types for an area with multiple bodies' =>
     is scalar @$pavements, 3, 'Pavements have 3 defect types';
 };
 
-subtest 'by_categories encodes HTML entities' => sub {
-    my $apostrophe_defect_type = FixMyStreet::App->model('DB::DefectType')->find_or_create(
-        {
-            body_id => $oxfordshire->id,
-            name => 'This defect type\'s name has an apostrophe',
-            description => 'This defect type is for all categories'
-        }
-    );
-    $apostrophe_defect_type->set_extra_metadata('defect_code' => 'Here\'s an apostrophe');
-    $apostrophe_defect_type->update();
-
-    my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $defect_types = FixMyStreet::App->model('DB::DefectType')->by_categories($area_id, @contacts);
-    my $traffic_lights = decode_json($defect_types->{'Traffic lights'});
-    my $defect_type = @$traffic_lights[2];
-    is $defect_type->{name}, 'This defect type&#39;s name has an apostrophe';
-    is $defect_type->{extra}->{defect_code}, 'Here&#39;s an apostrophe';
-
-};
-
-
 END {
     done_testing();
 }

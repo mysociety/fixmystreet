@@ -78,24 +78,6 @@ subtest 'by_categories returns all response priorities for an area with multiple
     is scalar @$traffic_lights, 2, 'Traffic lights have 2 defect types';
 };
 
-subtest 'by_categories encodes HTML entities' => sub {
-    FixMyStreet::App->model('DB::ResponsePriority')->find_or_create(
-        {
-            body_id => $other_body->id,
-            name => 'This priority\'s name has an apostrophe',
-            description => 'This priority is for all categories'
-        }
-    );
-
-    my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $priorities = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($area_id, @contacts);
-
-    my $traffic_lights = decode_json($priorities->{'Traffic lights'});
-    use Data::Dumper;
-    my $priority = @$traffic_lights[2];
-    is $priority->{name}, 'This priority&#39;s name has an apostrophe';
-};
-
 END {
     $mech->delete_body( $other_body );
     $mech->delete_body( $oxfordshire );
