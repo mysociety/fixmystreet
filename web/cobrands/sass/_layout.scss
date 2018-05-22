@@ -699,6 +699,7 @@ body.authpage {
 
   &.static {
     padding: 0 0 1em;
+    margin: 0 -1em; // overlap parent side padding
     position: static;
     width: auto; // avoid horizontal scrollbar as drawer opens (on devices with permanent scroll bars)
   }
