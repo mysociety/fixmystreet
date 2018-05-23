@@ -232,6 +232,9 @@ $.extend(fixmystreet.set_up, {
         opts.state = opts.state || $inspect_form.find('[name=state]').val();
         var selector = "[data-category='" + opts.category + "']";
         var data = $inspect_form.find(selector).data('templates') || [];
+        if (data.constructor !== Array) {
+          return;
+        }
         data = $.grep(data, function(d, i) {
             if (!d.state || d.state == opts.state) {
                 return true;
@@ -243,6 +246,9 @@ $.extend(fixmystreet.set_up, {
 
     function populateSelect($select, data, label_formatter) {
       $select.find('option:gt(0)').remove();
+      if (data.constructor !== Array) {
+        return;
+      }
       $.each(data, function(k,v) {
         var label = window.fixmystreet.utils[label_formatter](v);
         var $opt = $('<option></option>').attr('value', v.id).text(label);
