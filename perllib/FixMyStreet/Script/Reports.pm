@@ -306,7 +306,7 @@ sub _send_report_sent_email {
             To => $row->user->email,
             From => [ $cobrand->contact_email, $cobrand->contact_name ],
         },
-        $cobrand->contact_email,
+        undef,
         $nomail,
         $cobrand,
         $row->lang,
