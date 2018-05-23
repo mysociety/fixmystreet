@@ -22,20 +22,20 @@ sub tile_parameters {
     my $self = shift;
     my $params = {
         urls            => [
-          'https://www.gis.stadt-zuerich.ch/maps/rest/services/tiled95/LuftbildHybrid/MapServer/WMTS/tile',
-          'https://www.gis.stadt-zuerich.ch/maps/rest/services/tiled95/Stadtplan3D/MapServer/WMTS/tile'
+          'http://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
+          'http://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
         ],
         layer_names     => [ 'LuftbildHybrid', 'Stadtplan3D' ],
         wmts_version    => '1.0.0',
         layer_style     => 'default',
-        matrix_set      => 'default028mm',
-        suffix          => '.jpg', # appended to tile URLs
+        matrix_set      => 'stzh',
+        suffix          => '.jpeg', # appended to tile URLs
         size            => 512, # pixels
         dpi             => 96,
         inches_per_unit => 39.3701, # BNG uses metres
         projection      => 'EPSG:2056',
-        origin_x        => -27386400.0,
-        origin_y        => 31814500.0,
+        origin_x        => 2672499.0,
+        origin_y        => 1256999.0,
     };
     return $params;
 }
