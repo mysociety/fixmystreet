@@ -5,7 +5,7 @@
             question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
         %]
 
-        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
             <label for="pc">[% question %]:</label>
             <div>
                 <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
@@ -20,5 +20,6 @@
               <input type="hidden" name="filter_category" value="[% c.user.categories.join(",") | html %]">
             [% END %]
         </form>
+        <a href="[% c.uri_for('/around') %]" id="geolocate_link">&hellip; [% loc('or locate me automatically') %]</a>
     </div>
 </div>

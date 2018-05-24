@@ -1,8 +1,8 @@
 [%
     PROCESS "maps/${map.type}.html" admin = 1;
+    SET bodyclass = 'mappage with-notes';
     INCLUDE 'admin/header.html'
-        title = tprintf(loc('Editing problem %d'), problem.id ),
-        bodyclass = 'mappage with-notes';
+        title = tprintf(loc('Editing problem %d'), problem.id );
     PROCESS 'admin/report_blocks.html'
 -%]
 
@@ -126,12 +126,22 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </select></li>
 <li><label for="name">[% loc('Name:') %]</label>
     <input type='text' class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
-<li><label for="email">[% loc('Email:') %]</label>
-    <input type='text' class="form-control" id='email' name='email' value='[% problem.user.email | html %]'>
+<li><label for="username">[% loc('User:') %]</label>
+    <input type='text' class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
     [% PROCESS abuse_button %]
     [% PROCESS flag_button user=problem.user %]
 </li>
+[% IF problem.user.phone_display != problem.user.username %]
+<li>[% loc('Phone:') %] [% problem.user.phone_display | html %]</li>
+[% END %]
+[% IF problem.extra.phone_number %]
 <li>[% loc('Phone:') %] [% problem.extra.phone_number | html %]</li>
+[% END %]
+[% IF problem.user.email != problem.user.username %]
+<li>[% loc('Email:') %]
+<a href="mailto:[% problem.user.email | html %]">[% problem.user.email | html %]</a>
+</li>
+[% END %]
 <li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
     <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
 <li><label class="inline-text" for="non_public">[% loc('Private') %]:</label>

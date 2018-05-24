@@ -1,8 +1,6 @@
-[% PROCESS 'front/javascript.html' %]
-
 [% pre_container_extra = PROCESS 'around/postcode_form.html' %]
-
-[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
+[% SET bodyclass = 'frontpage fullwidthpage' %]
+[% INCLUDE 'header.html', title = '', inline_css = 1 %]
 
 [% IF error %]
     <p class="form-error">[% error %]</p>
@@ -15,7 +13,6 @@
      [% INCLUDE 'around/intro.html' %]
     </div> 
     <div id="front-howto" class="steps-container">
-
         [% INCLUDE 'index-steps.html' %]
     </div>
     <div class="front-submit-form">
@@ -29,6 +26,5 @@
     </div>
     [% INCLUDE 'front/recent.html' %]
 </div>
-
 
 [% INCLUDE 'footer.html' pagefooter = 'yes' %]
