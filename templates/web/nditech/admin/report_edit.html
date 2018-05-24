@@ -1,0 +1,173 @@
+[%
+    PROCESS "maps/${map.type}.html" admin = 1;
+    INCLUDE 'admin/header.html'
+        title = tprintf(loc('Editing problem %d'), problem.id ),
+        bodyclass = 'mappage with-notes';
+    PROCESS 'admin/report_blocks.html'
+-%]
+
+[% map_html %]
+</div>
+
+<div id="map_sidebar">
+
+[% INCLUDE 'admin/navigation.html' title = tprintf(loc('Editing problem %d'), problem.id ) %]
+
+<div id="side">
+
+<form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+    <input type="hidden" name="submit" value="1" >
+
+<div class="sidebar">
+
+    <p align="center"><input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]"></p>
+
+    <ul>
+    [%- cobrand_data = problem.cobrand_data;
+        cobrand_data = c.data_for_generic_problem IF !problem.cobrand;
+        IF cobrand_data;
+            uri = c.uri_for_email( '/report', problem.id, cobrand_data );
+        ELSE;
+            uri = c.uri_for_email( '/report', problem.id );
+        END;
+    %]
+    <li><a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
+
+<li>[% loc('Co-ordinates:') %]
+<a href="[% c.config.MAPIT_URL %][%
+    '/' UNLESS c.config.MAPIT_URL.search('/$')
+%]point/4326/[% problem.longitude %],[% problem.latitude %].html"
+class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
+
+[% SET local_coords = problem.local_coords;
+   IF local_coords %]
+    ([% local_coords.0 %], [% local_coords.1 %])
+[% END %]
+
+<small>([%
+    SET postcode_safe = problem.postcode | html;
+    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
+%],
+[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</small>
+</li>
+
+<li>[% loc('Bodies') %]:
+  [% IF problem.bodies_str %]
+    [% FOREACH body IN problem.bodies.values %]
+      [% SET body_printed = 1 %]
+      <a href="[% c.uri_for('body', body.id) %]">[% body.name | html %]</a>
+      [%- ',' IF NOT loop.last %]
+    [% END %]
+    [% IF NOT body_printed %]
+      <em>[% problem.bodies_str %]</em>
+    [% END %]
+  [% ELSE %]
+    <em>[% loc('None' ) %]</em>
+  [% END %]
+  <small>([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) | replace(',', ', ') %])</small>
+</li>
+[% IF problem.bodies_missing %]
+<li>[% loc('Missing bodies:') %] [% problem.bodies_missing | html %]</li>
+[% END %]
+[% IF problem.extra.address %]
+<li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
+[% END %]
+
+<li class="sm">[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
+<li class="sm">[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
+<li class="sm">[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %]
+  [% IF problem.send_method_used %]
+    ([% problem.send_method_used %])
+  [% END %]
+  [% IF problem.state == 'confirmed' AND problem.whensent %]
+    <input data-confirm="[% loc('Are you sure?') %]" class="btn" type="submit" name="resend" value="[% loc('Resend report') %]">
+  [% ELSIF NOT problem.whensent %]
+    <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">
+  [% END %]
+</li>
+<li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
+<li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li>
+<li>[% loc('Cobrand:') %] [% problem.cobrand %]
+<br><small>[% loc('Cobrand data:') %] [% cobrand_data OR '<em>' _ loc('None') _ '</em>' %]</small>
+</li>
+<li>[% loc('Extra data:') %] [% problem.extra ? 'Yes' : 'No' %]</li>
+<li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
+
+<li><label for="external_id">[% loc('External ID') %]:</label>
+    <input type="text" class="form-control" name="external_id" id="external_id" value="[% problem.external_id | html %]">
+<li><label for="external_body">[% loc('External body') %]:</label>
+    <input type="text" class="form-control" name="external_body" body="external_body" value="[% problem.external_body | html %]">
+<li><label for="external_team">[% loc('External team') %]:</label>
+    <input type="text" class="form-control" name="external_team" team="external_team" value="[% problem.external_team | html %]">
+
+</ul>
+</div>
+
+[% status_message %]
+
+<ul class="plain-list">
+<li><label for='title'>[% loc('Subject:') %]</label>
+    <input size=60 type='text' class="form-control" id='title' name='title' value='[% problem.title | html %]'></li>
+<li><label for='detail'>[% loc('Details:') %]</label>
+<textarea class="form-control" name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
+
+<li>
+    <label class="inline-text" for="state">[% loc('State:') %]</label>
+    [% INCLUDE 'admin/state_groups_select.html' %]
+</li>
+<li><label class="inline-text" for="category">[% loc('Category:') %]</label>
+    [% INCLUDE 'admin/report-category.html' %]
+</li>
+<li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
+<select class="form-control" name="anonymous"  id="anonymous">
+<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
+<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
+</select></li>
+<li><label for="name">[% loc('Name:') %]</label>
+    <input type='text' class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
+<li><label for="email">[% loc('Email:') %]</label>
+    <input type='text' class="form-control" id='email' name='email' value='[% problem.user.email | html %]'>
+    [% PROCESS abuse_button %]
+    [% PROCESS flag_button user=problem.user %]
+</li>
+<li>[% loc('Phone:') %] [% problem.extra.phone_number | html %]</li>
+<li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
+    <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
+<li><label class="inline-text" for="non_public">[% loc('Private') %]:</label>
+    <input type="checkbox" id="non_public" name="non_public"[% ' checked' IF problem.non_public %]></li>
+
+[% IF problem.photo %]
+<li>
+<ul>
+  [% FOR photo IN problem.photos %]
+    <li>
+        <div class="update-img">
+            <a href="[% c.cobrand.base_url %][% photo.url_temp_full %]" rel="fancy">
+                <img alt="Photo of this report" src="[% c.cobrand.base_url %][% photo.url_temp %]">
+                <span>zoom</span>
+            </a>
+        </div>
+        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
+        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+        <br><input type="checkbox" id="remove_photo_[% loop.index %]" name="remove_photo_[% loop.index %]" value="1">
+        <label class="inline" for="remove_photo_[% loop.index %]">[% loc("Remove photo (can't be undone!)") %]</label></li>
+    </li>
+  [% END %]
+</ul>
+</li>
+[% END %]
+
+</ul>
+<input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]">
+</form>
+
+</div>
+
+<div class="full-width full-width--bottom">
+[% INCLUDE 'admin/list_updates.html' %]
+</div>
+
+</div>
+
+[% INCLUDE 'admin/footer.html' %]
