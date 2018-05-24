@@ -1,3 +1,7 @@
+[% IF c.req.uri.path == '/about/team' %]
+<link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/custom.css') %]">
+[% END %]
+
 <meta name='theme-color' content='#ffd000'>
 <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/nditech/favicon.ico">
 
