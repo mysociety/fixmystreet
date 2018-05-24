@@ -1,0 +1,59 @@
+		 </div><!-- .content role=main -->
+		 </div><!-- .container -->
+
+                    [% IF pagefooter %]
+                    <footer role="contentinfo">
+			[% INCLUDE 'footer-nav.html' %]                       
+                    </footer>
+                    [% END %]
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <!--<ul class="nav-menu nav-menu--mysoc">
+                        <li><a id="mysoc-logo" href="https://www.mysociety.org/">mySociety</a></li>
+                    </ul>-->
+[%
+    SET base = "";
+    SET base = c.cobrand.base_url IF admin;
+%]
+                    <!--<ul class="nav-menu nav-menu--main">
+                        <li><[% IF c.req.uri.path == '/start'
+                            %]span[% ELSE %]a href="[% base %]/start"[% END %] class="report-a-problem-btn"
+                            >[% loc("Report a problems") %]</[% c.req.uri.path == '/start' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/my'
+                            %]span[% ELSE %]a href="[% base %]/my"[% END
+                            %]>[% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/reports'
+                            %]span[% ELSE %]a href="[% base %]/reports[% IF c.user_exists AND c.user.categories.size %]?filter_category=[% c.user.categories.join(",") | uri | html %][% END %]"[% END
+                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/alert'
+                            %]span[% ELSE %]a href="[% base %]/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/faq'
+                            %]span[% ELSE %]a href="[% base %]/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>[%
+                        %]<li class="nav-menu__item--privacy"><[% IF c.req.uri.path == '/privacy'
+                            %]span[% ELSE %]a href="[% base %]/privacy"[% END
+                            %]>[% loc("Privacy") %]</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li>
+                    </ul>-->
+		    <p class="btn-wrapper"><[% IF c.req.uri.path == '/start'
+                            %]span[% ELSE %]a href="[% base %]/start"[% END %] class="green-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/start' ? 'span' : 'a' %]></p>
+		    <!--<ul class="language-switcher">
+			<li><a href="/start" class="active">کوردسه</a></li>
+		 	<li><a href="/start">عربى</a></li>
+		    </ul>-->
+		    <p class="demtools-link"> <strong>[% loc("FixMyCommunity") %]</strong> [% loc("was developed by MySociety and is distributed as a part of the") %] <a href="https://dem.tools" target="_blank">[% loc("Democracy Toolkit (DemTools) by NDItech") %].</a></p>
+		    <h2 class="terms">[% loc("Terms and Conditions") %]</h2>
+		    <p class="terms">[% loc("By using this website, you are agreeing to its terms and conditions. National Democratic Institute does not guarantee that your report will be read by a government representative, nor does it guarantee you will be contacted with follow-up from your report. Mubashir is an independent website, supported  by the National Democratic Institute. Mubashir wants to make it easy for you to report problems in your community, even if you don't know who those reports should go to.") %]</p>
+                </div>
+            </div>
+        </div>
+    </div> <!-- .wrapper -->
+
+    [% INCLUDE 'common_footer_tags.html' %]
+    <script src="/cobrands/nditech/js/script.js"></script>
+</body>
+</html>

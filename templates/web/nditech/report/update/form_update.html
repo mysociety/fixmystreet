@@ -1,0 +1,67 @@
+<input type="hidden" name="submit_update" value="1">
+<input type="hidden" name="id" value="[% problem.id | html %]">
+
+[% IF c.cobrand.allow_photo_upload %]
+    <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+    <label for="form_photo">
+        <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
+    </label>
+
+      [% IF field_errors.photo %]
+        <p class='form-error'>[% field_errors.photo %]</p>
+      [% END %]
+
+    <div id="form_photos">
+      [% IF upload_fileid %]
+        <p>[% loc('You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed).') %]</p>
+        [% FOREACH id IN upload_fileid.split(',') %]
+        <img align="right" src="/photo/temp.[% id %]" alt="">
+        [% END %]
+    [% END %]
+        <input type="file" name="photo1" id="form_photo">
+        <label for="form_photo2">[% loc('Photo') %]</label>
+        <input type="file" name="photo2" id="form_photo2">
+        <label for="form_photo3">[% loc('Photo') %]</label>
+        <input type="file" name="photo3" id="form_photo3">
+    </div>
+[% END %]
+
+<label for="form_update">[% loc( 'Update' ) %]</label>
+[% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+  [% INCLUDE 'admin/response_templates_select.html' for='form_update' %]
+[% END %]
+[% IF field_errors.update %]
+    <div class='form-error'>[% field_errors.update %]</div>
+[% END %]
+<textarea rows="7" cols="30" name="update" class="form-control" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
+
+[% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+    <label for="form_state">[% loc( 'State' ) %]</label>
+    <select name="state" id="form_state" class="form-control">
+    [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
+    loc('Investigating')], ['planned', loc('Planned')], ['in progress', loc('In Progress')],
+    ['action scheduled', loc('Action Scheduled')], ['unable to resolve', loc('Unable to resolve')], 
+    ['duplicate', loc('Duplicate')], ['internal referral', loc('Internal referral')], 
+    ['not responsible', loc('Not Responsible')], ['closed', loc('Closed')] ] %]
+        <option [% 'selected ' IF state.0 == problem.state_display %] value="[% state.0 %]">[% state.1 %]</option>
+    [% END %]
+    </select>
+[% ELSE %]
+  [% IF (problem.is_fixed OR problem.state == 'closed') AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
+
+    <input type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF (update.mark_open || c.req.params.reopen) %]>
+    [% IF problem.is_closed %]
+      <label class="inline" for="form_reopen">[% loc('This problem is still ongoing') %]</label>
+    [% ELSE %]
+      <label class="inline" for="form_reopen">[% loc('This problem has not been fixed') %]</label>
+    [% END %]
+
+  [% ELSIF !problem.is_fixed %]
+
+    <div class="checkbox-group">
+        <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
+        <label class="inline" for="form_fixed">[% loc('This problem has been fixed') %]</label>
+    </div>
+
+  [% END %]
+[% END %]

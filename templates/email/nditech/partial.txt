@@ -1,0 +1,15 @@
+Subject: يرجى تأكيد تقريرك [% INCLUDE 'site-name.txt' | trim %]
+
+Hello [% report.name || report.email %],
+
+To confirm the report you have uploaded to [% INCLUDE 'site-name.txt' | trim %]
+via [% report.service %], and to check or add any details, please visit the
+following URL:
+
+[% token_url %]
+
+Thanks!
+
+[% INCLUDE 'signature.txt' %]
+
+تم إرسال هذه الرسالة الإلكترونية تلقائيا، من حساب بريد إلكتروني غير متابع. يرجى عدم الرد عليه.

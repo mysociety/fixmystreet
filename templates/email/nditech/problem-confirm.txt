@@ -1,0 +1,32 @@
+Subject: يرجى تأكيد تقريرك مباشر
+
+مرحبا [% report.name %],
+
+يرجى النقر على الرابط أدناه لتأكيد أنك تريد إرسال تقريرك إلى
+[% report.body %]. سوف يظهر تقريرك ايضا على موقع الاتصال.:
+
+[% token_url %]
+
+If your email program does not let you click on this link, copy and paste it
+into your web browser and press return.
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Please note that [% c.cobrand.council_name %] is not responsible for this type
+of problem, so it will instead be sent to [% report.body %].
+[% END %]
+Your problem had the title:
+
+[% report.title %]
+
+And details:
+
+[% report.detail %]
+
+إذا لم تعد ترغب في إرسال هذا التقرير، يرجى عدم اتخاذ أي إجراء آخر.
+
+شكراً لاستخدامك مباشر
+
+
+
+[% INCLUDE 'signature.txt' %]
+
+تم إرسال هذه الرسالة الإلكترونية تلقائيا، من حساب بريد إلكتروني غير متابع. يرجى عدم الرد عليه.

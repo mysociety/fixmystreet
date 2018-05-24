@@ -1,0 +1,26 @@
+Subject: تحديثات جديدة على: '[% title %]'
+
+You asked us to send you an email every time an update was made to the
+[% site_name %] report: [% title %].
+
+The following updates have been left on this report:
+
+[% INCLUDE '_email_comment_list.txt' %]
+
+[% state_message %]
+
+If you would like to view or reply to these updates, please visit the following URL:
+
+    [% problem_url %]
+
+تم إرسال هذه الرسالة الإلكترونية تلقائيا، من حساب بريد إلكتروني غير متابع. يرجى عدم الرد عليه.
+
+[% signature %]
+
+
+Unsubscribe?
+
+We currently email you whenever someone leaves an update on the
+[% site_name %] report: [% title %].
+
+إلغاء الاشتراك في التنبيهات حول هذا التقرير: [% unsubscribe_url %]

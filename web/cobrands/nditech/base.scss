@@ -1,0 +1,499 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+/*@import "compass";*/
+
+@import "../sass/base";
+
+@font-face {
+    font-family: 'montserratlight';
+    src: url('fonts/montserrat-light-webfont.eot');
+    src: url('fonts/montserrat-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/montserrat-light-webfont.woff2') format('woff2'),
+         url('fonts/montserrat-light-webfont.woff') format('woff'),
+         url('fonts/montserrat-light-webfont.ttf') format('truetype'),
+         url('fonts/montserrat-light-webfont.svg#montserratlight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+/*@import url(//fonts.googleapis.com/earlyaccess/notonaskharabicui.css);*/
+
+html {
+	background:#000;
+}
+body, #front-howto #front_stats {
+	font-family:'Montserrat', sans-serif;
+}
+html[lang='ar'] body, html[lang='ar'] #front-howto #front_stats {
+	font-family: 'Noto Naskh Arabic UI', serif;
+	direction: rtl;
+}
+ul, ol {
+	margin-right:0;
+	margin-left:2em;
+}
+html[dir='rtl'] ul, html[dir='rtl'] ol {
+	margin-right:2em;
+	margin-left:0;
+}
+html[dir='rtl'] ul.full-width, html[dir='rtl'] ul.nav-menu {
+	margin:0;
+}
+#front-main #postcodeForm {
+	color:inherit;
+	background:none;
+	overflow:hidden;
+	padding-bottom:0;
+	margin-left:0.5em;
+}
+#front-howto #front_stats {
+	background:transparent;
+	border-top:0.25em solid $green;
+}
+
+#front-main #postcodeForm div input#sub {
+	background:$red;
+}
+#front-main #postcodeForm div input#sub:hover {
+	background:$red_hover;
+}
+#front-main #postcodeForm div {
+	border-color:#d3d3d3;
+	border: 0;
+}
+#front-main #postcodeForm label {
+	margin: 0.5em 0;
+}
+#front-main {
+	display: none;
+}
+.tablewrapper.front-tablewrapper .front-submit-form {
+	padding-bottom: 10px;
+	margin-top: 40px;
+	margin-bottom: 40px;
+}
+.front-submit-form {
+	background: #0e753c;
+}
+.front-submit-form #front-main #postcodeForm {
+	color: #fff;
+}
+.front-submit-form #front-main {
+	display: block;
+	padding-top: 0;
+}
+.tablewrapper .steps-container {
+	background: #0e753c;
+	padding: 20px;
+	color: #fff;
+}
+#front-howto h2 {
+	margin-top: 0;
+}
+.front-intro {
+	text-align: center;
+}
+.front-intro h2 {
+	font-size: 1em;
+	margin-top: 0;
+}
+ol.big-numbers>li:last-of-type {
+	margin-bottom: 0;
+}
+ol.big-numbers>li:before {
+	color: #fff;
+}
+html[dir='rtl'] ol.big-numbers {
+	margin-right: 0;
+}
+h1, h2, ol.big-numbers>li:before, #geolocate_link, #front-main a#geolocate_link,
+small, .small-print,.reported-info, .checkbox-group label.inline, textarea, input, .intro, .nicetable {
+	font-family:'montserratlight', Arial, sans-serif;
+}
+small, .small-print {
+	font-style:normal;
+}
+.issue-list-a li .text small, .list-a li .text small, .issue-list-a li .text .small-print, .list-a li .text .small-print,
+.item-list--reports__item small, .item-list--reports__item .small-print {
+	color:#ababab;
+}
+.issue-list-a li, .list-a li {
+	border-bottom:2px solid #ccc;
+	padding-bottom:5px;
+}
+.issue-list-a li:hover, .list-a li:hover, .issue-list-a li a:hover, .list-a li a:hover,
+.item-list__item, .item-list--reports__item a:hover {
+	background:transparent;
+}
+.item-list {
+	padding-bottom:1em;
+	border-color: $green;
+}
+footer {
+	background:#000000;
+}
+.form-box {
+	background:transparent;
+}
+
+.green-btn, button.green-btn, input.green-btn {
+	background:$green;
+	background:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, $lightgreen), color-stop(100%, #green));
+	background: -webkit-linear-gradient($lightgreen,$green);
+	background:-moz-linear-gradient($lightgreen,$green);
+	background:-o-linear-gradient($lightgreen,$green);
+	background:linear-gradient($lightgreen,$green);
+	border:1px solid $green;
+	font-family:'Montserrat', sans-serif;
+}
+.green-btn:hover, button.green-btn:hover, input.green-btn:hover {
+	background:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, $green), color-stop(100%, $lightgreen));
+	background: -webkit-linear-gradient($green,$lightgreen);
+	background:-moz-linear-gradient($green,$lightgreen);
+	background:-o-linear-gradient($green,$lightgreen);
+	background:linear-gradient($green,$lightgreen);	
+	border:1px solid $green;
+}
+ #site-logo {
+        top:.9em;
+        background:url('sprite.png') -3px 0 no-repeat;
+	right:auto;
+	text-indent: 0;
+	min-height: 45px;
+	padding-left: 50px;
+	color: #fff;
+	 @media (min-width:25em) {
+                top:0.9em;
+        }
+	@media (min-width: 48em) {
+		font-size: 1.5em;
+	}
+
+}
+html[dir='rtl'] #site-logo {
+	background:url('sprite-ar.png') -25px 0 no-repeat;
+	right:0.5em;
+	left:auto;
+	padding-left: 0;
+	padding-right: 50px;
+	top: .75em;
+}
+#nav-link {
+	left:auto;
+	right:0;
+}
+html[dir='rtl'] #nav-link {
+	left:0;
+	right:auto;
+}
+#report-cta {
+	left:auto;
+	right:3.5em;
+}
+html[dir='rtl'] #report-cta {
+	left:3.5em;
+	right:auto;
+}
+#site-header {
+	height:6em;
+	@media (min-width:25em) {
+		height:4em;
+	}
+
+}
+body.frontpage #site-logo {
+        top:3em;
+        background:url('sprite.png') -3px -3px no-repeat;
+        min-height:45px;
+	 @media (min-width:25em) {
+                top:0.9em;
+        }
+
+}
+html[dir='rtl'] body.frontpage #site-logo {
+	background-position: 176px 0;
+	@media (min-width: 48em) {
+		background-position: 302px 0;
+	}
+}
+.nav-menu a, .nav-menu span {
+        color:#000;
+	border-bottom:none;
+}
+.nav-menu a:hover, .nav-menu span.hover {
+	background:$green;
+}
+.nav-wrapper .nav-wrapper-2 {
+        background:#000000;
+}
+#front-main {
+        background:transparent;
+}
+#front-main a#geolocate_link {
+        color:$lightblue;
+	background:transparent;
+}
+
+#front-main h2 {
+        font-family:'montserratlight', Arial, sans-serif;
+        font-size:0.9em;
+        color:#9b9b9b;
+}
+#front-howto #front_stats {
+        color:#ababab;
+}
+#footer-nav {
+	display:none;
+}
+.frontpage .wrapper .table-cell .container .content #footer-nav .tablewrapper, 
+body.twothirdswidthpage .container .content footer .tablewrapper, 
+body.fullwidthpage .container .content footer .tablewrapper {
+        background-color:#000;
+}
+.nav-menu span {
+        color:$lightgreen;
+}
+
+.nav-menu--main a.report-a-problem-btn {
+        padding:.75em;
+        color:#fff;
+        background:$green;
+        border-radius:0;
+        -webkit-border-radius:0;
+        -moz-border-radius:0;
+        -ms-border-radius:0;
+        -o-border-radius:0;
+}
+.nav-menu--main a.report-a-problem-btn:hover {
+        background:$lightgreen;
+}
+.nav-menu--main a, .nav-menu--main span {
+        margin:0.5em 0;
+}
+.all-reports .wrapper .table-cell > .container {
+        width:auto;
+}
+.reportswrapper {
+        width:100%;
+        margin:0 auto;
+}
+.reportswrapper {
+        background-color:#f9f9f9;
+        margin-bottom:4em;
+        -webkit-box-shadow: 2px 2px 6px 0px rgba(138,136,138,0.75);
+        -moz-box-shadow: 2px 2px 6px 0px rgba(138,136,138,0.75);
+        box-shadow: 2px 2px 6px 0px rgba(138,136,138,0.75);
+}
+.reportswrapper>div {
+        padding:2em 1em;
+}
+#footer-nav .tablewrapper ul li {
+        list-style:none;
+        display:inline;
+        margin:0;
+        padding:0;
+        float:left;
+}
+.frontpage .wrapper .table-cell>.container .content .tablewrapper,
+body.fullwidthpage .container .content footer .tablewrapper {
+	width:100%;
+	padding:0;
+}
+#front-howto #front_stats div big {
+	color:$green;
+}
+.frontpage .wrapper .table-cell > .container {
+        width:100%;
+        margin:auto;
+	padding:0;
+        .content {
+                background:$lightgrey;
+		padding:1em;
+        }
+}
+.all-reports .wrapper .table-cell>.container {
+	padding:0;
+	.content {
+		margin:0;
+		padding:0;
+	}
+}
+.form-txt-submit-box input[type=password], .form-txt-submit-box input[type=text], .form-txt-submit-box input[type=email] {
+        float:left;
+}
+html[dir='rtl'] .form-txt-submit-box input[type=password], html[dir='rtl'] .form-txt-submit-box input[type=text], 
+html[dir='rtl'] .form-txt-submit-box input[type=email] {
+        float:left;
+}
+
+.tablewrapper>div {
+        padding:0 1em;
+}
+#side section.full-width {
+	margin-bottom:2em;
+}
+#fms_pan_zoom {
+	top: 1.5em;
+}
+html[dir='rtl'] #fms_pan_zoom_pandown {
+        left:auto !important;
+        right:30px !important;
+}
+html[dir='rtl'] #fms_pan_zoom_panright {
+        left:auto!important;
+        right:0!important;
+}
+html[dir='rtl'] #fms_pan_zoom_panup {
+	left:auto!important;
+	right:30px!important;
+}
+html[dir='rtl'] #fms_pan_zoom_panleft {
+	left:auto!important;
+	right:48px!important;
+}
+#fms_pan_zoom_zoomin {
+	right:30px!important;
+	left:auto!important;
+}
+html[dir='rtl'] #fms_pan_zoom_zoomin {
+	right:auto!important;
+	left:30px!important;
+}
+#fms_pan_zoom_zoomout {
+	left:auto!important;
+	right:30px!important;
+}
+html[dir='rtl'] #fms_pan_zoom_zoomout {
+	right:auto!important;
+	left:30px!important;
+}
+#sub_map_links {
+	right:0;
+	left:auto;
+}
+html[dir='rtl'] #sub_map_links {
+	left:0;
+	right:auto;
+}
+.report-list-filters label {
+	margin-top:1em;
+}
+html[lang='ru'] #front-main #postcodeForm div {
+	width:80%;
+	margin:0 auto;
+}
+#front-main #postcodeForm div input#pc {
+	font-size:.75em;
+}
+html[lang='ru'] #front-main #postcodeForm div input#pc {
+	width:59%;
+}
+html[lang='ru'] #front-main #postcodeForm div input#sub {
+	width:41%;
+}
+.shadow-wrap ul#key-tools li a.chevron, .shadow-wrap ul#key-tools li input[type=submit].chevron {
+	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjciIGhlaWdodD0iMzMiPgogICAgPHBvbHlnb24gcG9pbnRzPSIwLDAgMTMsMCAyNiwxNiAxMywzMiAwLDMyIDEzLDE2IiBmaWxsPSIjZDFkMWQxIi8+Cjwvc3ZnPgo=');
+}
+
+html[dir='rtl'] .shadow-wrap ul#key-tools li a.chevron, html[dir='rtl'] .shadow-wrap ul#key-tools li input[type=submit].chevron {
+	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjciIGhlaWdodD0iMzMiPgogICAgPHBvbHlnb24gcG9pbnRzPSIyNiwwIDEzLDAgMCwxNiAxMywzMiAyNiwzMiAxMywxNiIgZmlsbD0iI2QxZDFkMSIvPgo8L3N2Zz4K');
+}
+table.nicetable .title {
+	text-align:left;
+}
+html[dir='ltr'] table.nicetable .title {
+	text-align:right;
+}
+htmp[lang='fr'] .form-txt-submit-box input[type=submit] {
+	width:33%;
+}
+.demtools-link {
+	clear:both;
+	color:#fff;
+	font-size:.85em;
+	text-align:center;
+}
+.demtools-link a, .demtools-link a:visited {
+	color: $lightgreen;
+}
+.demtools-link a:hover {
+	color: $green;
+}
+.banner {
+	padding-top: 30px;
+}
+@media (min-width: 48em) {
+	body.mappage .banner p {
+		top: -1.1em !important;
+	}
+}
+#map_sidebar .item-list--reports {
+	padding: 1em;
+}
+.language-switcher {
+	padding: 0;
+	margin: 0;
+	float:right;
+	margin-top: -35px;
+	li {
+		display: inline-block;
+		list-style: none;
+		padding: 5px 15px;
+		margin: 0;
+		border-right: 1px solid #fff;
+		&:last-of-type {
+			border: 0;
+		}
+	}
+	li a {
+		color: #fff;
+		&.active {
+			text-decoration: underline;
+		}
+	}
+}
+html[dir='rtl'] .language-switcher {
+	position: absolute;
+	left: 0;
+	float: left;
+	margin-top: 0;
+	top: 20px;
+	li {
+		border-left: 1px solid #fff;
+		border-right: 0;
+		&:last-of-type {
+			border: 0;
+		}
+	}
+}
+html[dir="rtl"] .multi-select-menu {
+        left: auto;
+}
+.terms {
+	color: #fff;
+	text-align: center;
+	font-size: .75em;
+}
+p.terms {
+	font-style: italic;
+	padding: 0 10px 10px 10px;
+}
+h2.terms {
+	font-weight: bold;
+	padding-top: 10px;
+	border-top: 1px solid #fff;
+}
+html[dir="rtl"] {
+        .with-notes .sidebar {
+                display: none;
+        }
+	.with-notes #map_sidebar {
+		background: #fff;
+	}
+	.with-actions #side-inspect {
+                display: none;
+        }
+}
+
+

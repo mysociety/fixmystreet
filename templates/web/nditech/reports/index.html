@@ -1,0 +1,51 @@
+[% extra_js = [
+    version('/js/jquery.fixedthead.js')
+] -%]
+
+[% INCLUDE 'header.html', title = loc('Summary reports'), bodyclass => 'fullwidthpage all-reports' %]
+
+<h1>[% loc('All Reports') %]</h1>
+
+<div class="intro">
+<p>
+    [% loc('This is a summary of all reports on this site.') %]
+  [% IF bodies.size > 1 %]
+    [% loc('Select a particular council to see the reports sent there.') %]
+  [% END %]
+  [% IF any_empty_bodies %]
+    [% loc('Greyed-out lines are councils that no longer exist.') %]
+  [% END %]
+</p>
+</div>
+
+<table cellpadding="3" cellspacing="1" border="0" class="nicetable">
+<thead>
+<tr>
+<th class="title">[% loc('Name') %]</th>
+<th title="[% loc('Reported within the last four weeks') %]" class="data">[% loc('New <br>problems') %]</th>
+<th title="[% loc('Open for more than four weeks, with an update within the past eight weeks') %]" class="data">[% loc('Older <br>problems') %]</th>
+<th title="[% loc('Open, but not had any update in eight weeks') %]" class="data">[% loc('Old / unknown <br>problems') %]</th>
+<th title="[% loc('Marked fixed/closed in the past eight weeks') %]" class="data">[% loc('Recently <br>closed') %]</th>
+<th title="[% loc('Marked fixed/closed more than eight weeks ago') %]" class="data">[% loc('Older <br>closed') %]</th>
+</tr>
+</thead>
+
+<tbody>
+[% FOREACH body IN bodies %]
+<tr align="center"
+[%- IF NOT body.get_column("area_count") %] class="gone"
+[%- ELSIF ! (loop.count % 2) %] class="a"
+[%- END %]>
+<td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
+<td class="data">[% IF open.${body.id}.new %]<a href="[% body.url(c, { t => 'new' }) %]">[% open.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF open.${body.id}.older %]<a href="[% body.url(c, { t => 'older' }) %]">[% open.${body.id}.older %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF open.${body.id}.unknown %]<a href="[% body.url(c, { t => 'unknown' }) %]">[% open.${body.id}.unknown %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF fixed.${body.id}.new %]<a href="[% body.url(c, { t => 'fixed' }) %]">[% fixed.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF fixed.${body.id}.old %]<a href="[% body.url(c, { t => 'older_fixed' }) %]">[% fixed.${body.id}.old %]</a>[% ELSE %]0[% END %]</td>
+</tr>
+[% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
+[% END %]
+</tbody>
+</table>
+
+[% INCLUDE 'footer.html', pagefooter = 'yes' %]

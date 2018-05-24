@@ -1,0 +1,67 @@
+[%
+    # SET html_att = ' lang="' _ lang_code _ '"';
+    # For a right-to-left language, use the following line in your own header:
+    IF lang_code  == 'ar';
+                SET html_att = html_att _ ' dir="rtl"';
+        END;
+
+-%]
+<!doctype html>
+<!--[if IE 7]>   <html class="no-js ie7 iel8"[% html_att %]><![endif]-->
+<!--[if IE 8]>   <html class="no-js ie8 iel8"[% html_att %]><![endif]-->
+<!--[if IE 9]>   <html class="no-js ie9"[% html_att %]><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"[% html_att %]><!--<![endif]-->
+    <head>
+        <meta name="viewport" content="initial-scale=1.0">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="HandHeldFriendly" content="true">
+        <meta name="mobileoptimized" content="0">
+
+        [% INCLUDE 'header_opengraph.html' %]
+        [%
+           # For clarity, the 'fixmystreet' moniker (for fixmystreet.com) puts
+           # it stylesheets under fixmystreet.com
+           IF c.cobrand.moniker == 'fixmystreet';
+               SET css_dir = 'fixmystreet.com';
+           ELSE;
+               SET css_dir = c.cobrand.moniker;
+           END %]
+        <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/layout.css') %]" media="(min-width:48em)">
+        [% extra_css %]
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/layout.css') %]">
+        <![endif]-->
+        <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/custom.css') %]">
+        [% INCLUDE 'common_header_tags.html' %]
+
+        [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
+            <link rel="canonical" href="https://www.fixmystreet.com[% c.req.uri.path_query %]">
+        [% END %]
+
+        [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
+	<script>
+  	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  	ga('create', 'UA-105664283-1', 'auto');
+  	ga('send', 'pageview');
+
+	</script>
+    </head>
+    [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
+    <body class="[% bodyclass | html IF bodyclass %] custom-frontpage">
+
+    <div class="wrapper">
+        <div class="table-cell">
+            [% INCLUDE 'header_site_homepage.html' %]
+
+            [% pre_container_extra %]
+
+            <div class="container">
+                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+
+        <!-- [% INCLUDE 'debug_header.html' %] -->

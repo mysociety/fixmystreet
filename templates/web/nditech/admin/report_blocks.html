@@ -1,0 +1,72 @@
+[%
+
+SET state_pretty = {
+    'confirmed' = loc('Open')
+    'investigating' = loc('Investigating')
+    'planned' = loc('Planned')
+    'in progress' = loc('In progress')
+    'action scheduled' = loc('Action Scheduled')
+    'fixed' = loc('Fixed')
+    'fixed - user' = loc('Fixed - User')
+    'fixed - council' = loc('Fixed - Council')
+    'unable to fix' = loc('Unable to resolve')
+    'not responsible' = loc('Not Responsible')
+    'duplicate' = loc('Duplicate')
+    'closed' = loc('Closed')
+    'internal referral' = loc('Internal referral')
+    'hidden' = loc('Hidden')
+    'partial' = loc('Partial')
+    'unconfirmed' = loc('Unconfirmed')
+};
+
+SET state_groups = [
+    [ loc('Open'), [ 'confirmed', 'investigating', 'planned', 'in progress', 'action scheduled' ] ],
+ #   [ loc('Fixed'), [ 'fixed', 'fixed - user', 'fixed - council' ] ],
+    [ loc('Closed'), [ 'unable to fix', 'not responsible', 'duplicate', 'closed', 'internal referral' ] ],
+ #   [ loc('Hidden'), [ 'hidden', 'partial', 'unconfirmed' ] ]
+];
+
+%]
+
+[% BLOCK value_or_nbsp -%]
+    [%- IF value %][% value | html %][% ELSE %]&nbsp;[% END %]
+[%- END %]
+
+[% BLOCK format_time -%]
+    [%- IF time %][% time.ymd %]&nbsp;[% time.hms %][% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
+[%- END %]
+
+[% BLOCK abuse_button -%]
+[% IF allowed_pages.abuse_edit -%]
+[% IF email_in_abuse %]<small>[% loc('(Email in abuse table)') %]</small>[% ELSE %]<input type="submit" class="btn" name="banuser" value="[% loc('Ban email address') %]" />[% END %]
+[%- END %]
+[%- END %]
+
+[% BLOCK flag_button -%]
+[% IF user.flagged || user_flagged %]<input type="submit" class="btn" name="removeuserflag" value="[% loc('Remove flag') %]">[% ELSE %]<input type="submit" class="btn" name="flaguser" value="[% loc('Flag user') %]" />[% END %]
+[%- END %]
+
+[%# note: date format here (i.e., dd.mm.YYYY) currently used by Zurich %]
+[% BLOCK format_date -%]
+    [%- IF this_date %]
+      [% this_date.strftime('%d.%m.%Y') %]
+    [% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
+[%- END %]
+
+[% BLOCK sort_link %][% IF order == choice %][% c.uri_with( d => 1 - dir ) %][% ELSE %][% c.uri_with( { o => choice, d => 0 } ) %][% END %][% END %]
+
+[% BLOCK sort_arrow %]
+    [% IF order == choice %]
+        <span style="font-size:50%">
+        [% IF dir %]
+            &#9660;
+        [% ELSE %]
+            &#9650;
+        [% END %]
+        </span>
+    [% ELSE %]
+        <span style="font-size:50%; color: #999;">
+        &#9650;
+        </span>
+    [% END %]
+[% END %]

@@ -1,0 +1,30 @@
+[%
+
+email_summary = "يجب عليك تأكيد " _ site_name _ " قبل ان يمكن ارساله الى.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">يرجى تأكيد تقريرك</h1>
+  <p style="[% p_style %]">Please click on the link below to confirm that you want your report to appear
+on [% site_name %], despite not being sent to the
+council.</p>
+  <p style="[% p_style %]">سوف يظهر تقريرك ايضا على موقع [% site_name %].</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Yes, publish my report</a>
+  </p>
+  <p style="[% p_style %]">If you no longer wish to publish this report, please take no further action.</p>
+  [% end_padded_box %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

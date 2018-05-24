@@ -1,0 +1,34 @@
+[% PROCESS 'front/javascript.html' %]
+
+[% pre_container_extra = PROCESS 'around/postcode_form.html' %]
+
+[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
+
+[% IF error %]
+    <p class="form-error">[% error %]</p>
+[% END %]
+
+[% TRY %][% PROCESS 'front/pre-steps.html' %][% CATCH file %][% END %]
+
+<div class="tablewrapper front-tablewrapper">
+     <div class="front-intro">
+     [% INCLUDE 'around/intro.html' %]
+    </div> 
+    <div id="front-howto" class="steps-container">
+
+        [% INCLUDE 'index-steps.html' %]
+    </div>
+    <div class="front-submit-form">
+    	[% INCLUDE 'around/postcode_form.html' %]
+    </div>
+    <div id="front-howto">
+     	<section class="full-width">
+		[% INCLUDE "front/stats.html" %]
+		[% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+     	</section>
+    </div>
+    [% INCLUDE 'front/recent.html' %]
+</div>
+
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

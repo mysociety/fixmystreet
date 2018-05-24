@@ -1,0 +1,7 @@
+<label for="form_email">[% loc('Your email') %]</label>
+[% IF field_errors.email %]
+    <p class='form-error'>[% field_errors.email %]</p>
+[% END %]
+<input class="form-control" type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Optional') %]" class="required">
+<label for="phone_number">[% loc('Your Phone Number') %]</label>
+<input class="form-control" type="text" name="phone_number" placeholder="[% loc('Optional') %]">

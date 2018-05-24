@@ -1,0 +1,300 @@
+@import "./_colours";
+
+$screen-sm-col: 600px;
+$screen-sm: 768px;
+
+body.custom-frontpage .container .content {
+	padding: 0;
+	margin: 0;
+}
+body.custom-frontpage #site-header + .container {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+.custom-frontpage {
+	ol {
+		margin-bottom: 0;
+	}
+	#main-nav {
+		float: none;
+		margin-top: 0;
+	}
+        #nav-link, #report-cta {
+                display: none;
+        }
+	#main-nav .demtools-link, #main-nav .terms {
+		display: none;
+	}
+	.nav-wrapper .nav-wrapper-2 {
+		min-height: 4.5em;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		width: 100%;
+		border-top: 4px solid $green;
+	}
+	#footer-main-nav, #footer-help-nav {
+		display: none;
+	}
+	#footer-nav {
+		padding-top: 20px;
+		display: block;
+	}
+	.btn-wrapper {
+		margin-top: 22px;
+		text-align: right;
+		margin-right: 1em;
+		@media (min-width: 30em) {
+			text-align: center;
+			margin-right: 0;
+		}
+		@media (min-width: 48em) {
+			margin-top: 15px;
+		}
+		a {
+			padding: 0.5em;
+			font-size: .8em;
+			@media (min-width: 48em) {
+				padding: 0.75em 1em;
+				font-size: 1em;
+			}
+		}
+	}
+	.language-switcher {
+		top: 5.15em;
+		background: rgba(0,0,0,0.5);
+		border-radius: 0 5px 5px 0;
+		@media (min-width: 30em) {
+			top: 20px;
+		}
+		li {
+			border-color: #fff;
+		}
+		li a {
+			color: #0BA7D1;
+			@media (min-width: 30em) {
+				color: #fff;
+			}
+		}
+	}
+	h1 {
+		margin-top: 2em;
+		@media (min-width: 30em) {
+			margin-top: .5em;
+		}
+	}
+	#site-header {
+		height: 3em;
+		border-top: 0.25em solid $green;
+		@media (min-width: 25em) {
+			height: 4em;
+		}
+	}
+	.col-md-4 {
+		width: 100%;
+		@media (min-width: $screen-sm-col) {
+			width: 33.33333%;
+			float: left;
+		}
+	}
+	.col-md-8 {
+		width: 100%;
+		@media (min-width: $screen-sm-col) {
+			width: 66.66667%;
+			float: left;
+		}
+	}
+	.col-md-3 {
+		width: 100%;
+		@media (min-width: $screen-sm) {
+			width: 16.66667%;
+			float: right;
+		}
+	}
+	.col-md-9 {
+		width: 100%;
+		@media (min-width: $screen-sm) {
+			width: 83.33333%;
+			float: right;
+		}
+	}
+	.col-content {
+		padding: 1em;
+	}
+	.cols-2 {
+		background: $green;
+		padding: 0;
+		.col-md-8 {
+			background: #fff;
+		}
+		.col-md-4 {
+			color: #fff;
+			font-size: 1.5em;
+		}
+		.cols-3 .col-md-4 {
+			color: $black;
+			font-size: 1em;
+		}
+		.cols-3 + p {
+			clear: both;
+		}
+	}
+	.short-row .cols-2 {
+		background: #fff;
+	}
+	.short-row .cols-2 .col-md-4 {
+		background: $green;
+	}	
+	.row-grey {
+		background: $grey;
+		padding: 20px;
+		@media (min-width: $screen-sm) {
+			padding: 20px 0;
+		}
+	}
+	.row-purple {
+		background: $purple;
+		padding: 20px;
+		@media (min-width: $screen-sm) {
+			padding: 20px 0;
+		}
+	}
+	.top_banner + .row-purple {
+		margin-top: 1.5em;
+		@media (min-width: 25em) and (max-width: 48em) {
+			margin-top: .5em;
+		}
+		@media (min-width: 48em) {
+			margin-top: -3px;
+		}
+	}
+	.highlighted-text {
+		font-size: 1.35em;
+		line-height: 1.2;
+	}
+	.icon {
+		text-align: center;
+		@media (min-width: $screen-sm) {
+			min-height: 88px;
+		}
+	}
+	.footer-logo {
+		p {
+			margin-bottom: 0;
+		}
+		.col-content {
+			padding-bottom: 0;
+		}
+	}
+	.row-hero {
+		margin-top: -3px; 
+		.container {
+			padding: 0;
+		}
+		.hero {
+			min-height: 300px;
+			position: relative;
+			background: url(/cobrands/nditech/images/homepage-background-sm.png) 0 0 no-repeat;
+			@media (min-width: 550px) {
+				background: url(/cobrands/nditech/images/homepage-background.png) 50% 0 no-repeat;
+				min-height: 500px;
+			}
+			@media (min-width: 860px) {
+				background-position-x: 100%;
+			}
+			.btn-wrapper {
+				text-align: left;
+			}
+		}
+		.col-md-4 {
+			position: absolute;
+			width: 90%;
+			margin: auto;
+			background: rgba(0,0,0,0.5);
+			top: 56px;
+			left: 0;
+			right: 0; 
+			bottom: 0;
+			border-radius: 10px;
+			height: 150px;
+			color: #fff;
+			@media (min-width: 322px) {
+				width: 75%;
+			}
+			@media (min-width: 475px) {
+				width: 50%;
+				top: 0;
+			}
+			@media (min-width: 900px) {
+				position: static;
+				background: transparent;
+				height: auto;
+				width: 33.333334%;
+				color: $black;
+				margin-top: 10%;
+			}
+		}
+	}
+	.list-cols {
+		display: none;
+		ul {
+			width: 100%;
+			margin-bottom: 0;
+			@media (min-width: $screen-sm-col) {
+				width: 50%;
+				float: left;
+				padding: 0;
+				margin: 0;
+			}
+		}
+		.col-content {
+			padding-bottom: 0;
+			@media (min-width: $screen-sm-col) {
+				padding-bottom: 1em;
+			}
+		}
+	}
+	.toggle span {
+		font-weight: bold;
+	}
+	p:last-of-type {
+		margin-bottom: 0;
+	}
+}
+html[dir="rtl"] .custom-frontpage {
+	.col-md-4, .col-md-8 {
+		float: right;
+	}
+	.row-hero .hero {
+		@media (min-width: 860px) {
+			background-position-x: 0;
+		}
+	}
+	#site-logo {
+                width: auto;
+                background-position-x: -167px;
+		position: fixed;
+		top: 1em;
+                @media (min-width: 48em) {
+                        background-position-x: -145px;
+			top: .75em;
+                }
+        }
+	#main-nav .btn-wrapper {
+		text-align: left;
+		margin-left: 10px;
+		@media (min-width: 30em) {
+			text-align: center;
+		}
+	}
+	.row-hero .hero .btn-wrapper {
+		text-align: right;
+	}
+
+}
+html[dir="rtl"] {
+	.multi-select-menu {
+        	left: auto;
+	}
+}

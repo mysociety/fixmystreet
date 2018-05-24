@@ -1,0 +1,38 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+$direction: right;
+
+/* COLOURS */
+
+$orange: #fa2525;
+$bluey: #fff;
+$lightblue: #61b7f5;
+$lightgrey: #f9f9f9;
+$red_hover: #d51c1c;
+
+$red: #ee292f;
+$purple: #e9f2ff;
+$grey: #f9f9f9;
+$black: #040707;
+$green: #0e753c;
+$lightgreen: #15a154;
+
+$primary: $orange;
+$primary_b: #000000;
+$primary_text: #222222;
+
+$base_bg: $bluey;
+$base_fg: #000;
+
+$map_nav_bg: $bluey;
+$nav_fg: #000;
+$nav_fg_hover: $primary;
+
+$col_click_map: $bluey;
+$col_click_map_dark: darken($bluey, 10%);
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;
+
+

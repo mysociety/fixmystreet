@@ -1,0 +1,64 @@
+[%
+    # The cobrand might come to us a variety of ways
+    # Alert sets cobrand directly, questionnaire/submit have it in report, otherwise web
+    cobrand = cobrand.moniker OR report.cobrand OR c.cobrand.moniker;
+
+    IF cobrand == 'fixmystreet';
+        SET img_dir = 'fixmystreet.com';
+    ELSE;
+        SET img_dir = cobrand;
+    END -%]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+  [%~ # Styles here will be applied by everything except Gmail.com %]
+  a { [% link_style %] }
+  a:hover { [% link_hover_style %] }
+
+  body, table, td, th {
+    font-family: [% body_font_family %] !important;
+  }
+
+  [%~ # 550px = 5+5+5+520+5+5+5 %]
+  @media only screen and (max-width: 549px) {
+    #main {
+      min-width: 0 !important;
+    }
+  }
+
+  @media only screen and (max-width: 500px) {
+    #main table, #main tr, #main th {
+      display: block !important;
+    }
+
+    #primary_column,
+    #secondary_column {
+      width: auto !important;
+    }
+  }
+  </style>
+</head>
+<body style="[% body_style %]">
+  <table [% wrapper_table %] style="[% wrapper_style %]">
+    <tr>
+      <th></th>
+      <th width="620" style="[% td_style %] min-width: 520px;" id="main">
+        <table [% table_reset %]>
+          <tr>
+            <th colspan="[% email_columns %]" style="[% td_style %][% hint_style %]" class="hint">
+              [% email_summary %]
+            </th>
+          </tr>
+          <tr>
+            <th colspan="[% email_columns %]" style="[% td_style %][% header_style %]">
+              [%~ IF file_exists("web/cobrands/${ img_dir }/images/email-logo.gif") ~%]
+                <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/email-logo.gif') %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
+              [%~ ELSE ~%]
+                <span style="[% logo_style %]">مباشر</span>
+              [%~ END %]
+            </th>
+          </tr>
+          <tr>

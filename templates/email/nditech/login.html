@@ -1,0 +1,21 @@
+[%
+
+email_summary = "انقر على هذا الرابط لتأكيد عنوان بريدك الإلكتروني وتسجيل الدخول الى مباشر";
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">شكراً لاستخدامك مباشر مباشر</h1>
+  <p style="[% p_style %]">يرجى النقر على الرابط التالي بغية تأكيد عنوان بريدك الالكتروني وتسجيل الدخول الى مباشر مباشر.</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">نعم، هذا هو عنواني</a>
+  </p>
+  <p style="[% p_style %]">بعد الانتهاء من ذلك، ستتمكن من عرض وإدارة جميع التقارير والتحديثات التي أجريتها من قائمة "حسابك" في مباشر..</p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

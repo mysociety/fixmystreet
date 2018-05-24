@@ -1,0 +1,111 @@
+[%
+
+    rss_alt   = loc('RSS feed');
+    rss_title = loc('RSS feed of recent local problems');
+
+    rss_url
+        = pc
+        ? c.uri_for( "/rss/pc", pc )
+        : c.uri_for( "/rss/l/$latitude,$longitude" );
+
+    email_url = c.uri_for(
+        '/alert/list',
+        {
+            lat  => latitude,
+            lon  => longitude,
+            feed => "local:$latitude:$longitude",
+        }
+    );
+
+    url_skip = c.uri_for(
+        '/report/new',
+        {
+            pc         => pc
+            latitude   => latitude,
+            longitude  => longitude,
+            skipped    => 1,
+        }
+    );
+
+    PROCESS "report/photo-js.html";
+    PROCESS "maps/${map.type}.html" around_page = 1;
+    sidebar_html = PROCESS 'report/new/sidebar.html' js = 1 report.used_map = 1;
+
+    SET bodyclass = 'mappage';
+    SET rss = [ tprintf(loc('Recent local problems, %s', "%s is the site name"), site_name), rss_url ];
+    INCLUDE 'header.html',
+        title  => loc('Viewing a location')
+        robots => 'noindex,nofollow';
+
+    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_body);
+%]
+
+[% IF allow_creation %]
+<form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate" novalidate>
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    [% IF c.req.params.map_override %]
+        <input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
+    [% END %]
+    <input type="hidden" name="pc" value="[% pc | html %]">
+
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% latitude | html %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
+[% END %]
+
+    [% map_html %]
+
+        <p id='sub_map_links'>
+            [% map_sub_links %]
+            [% IF c.req.params.no_pins %]
+                <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => 0 } ) %]">[% loc('Show pins') %]</a>
+            [% ELSE %]
+                <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
+            [% END %]
+            [% IF c.cobrand.country == 'GB' || c.cobrand.country == 'NO' %]
+                <span class="hidden">|</span>
+                [% IF c.req.params.all_pins %]
+                    <a id='all_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => undef, all_pins => undef } ) %]">[% loc('Hide old') %]</a>
+                [% ELSE %]
+                    <a id='all_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => undef, all_pins => 1 } ) %]">[% loc('Show old') %]</a>
+                [% END %]
+            [% END %]
+        </p>
+
+        <div class="mobile-map-banner">
+            <a href="/start">[% loc('Home') %]</a>
+            <span>[% loc('Place pin on map') %]</span>
+        </div>
+    </div>
+
+
+    <div id="map_sidebar">
+
+        <div id="side">
+          [% IF allow_creation %]
+            [% INCLUDE 'around/_report_banner.html' %]
+            [% TRY %][% INCLUDE 'around/extra_text.html' %][% CATCH file %][% END %]
+          [% END %]
+
+          [% INCLUDE 'around/_updates.html' %]
+          <section class="full-width">
+              [% INCLUDE "around/tabbed_lists.html" %]
+          </section>
+        </div>
+
+      [% IF allow_creation %]
+        <div style="display:none" id="side-form">
+        [% INCLUDE "report/new/fill_in_details_form.html"
+            js = 1,
+            report.used_map = 1
+            report.name = c.user.name
+        %]
+        </div>
+      [% END %]
+
+    </div>
+
+[% IF allow_creation %]
+</form>
+[% END %]
+
+[% INCLUDE 'footer.html' %]

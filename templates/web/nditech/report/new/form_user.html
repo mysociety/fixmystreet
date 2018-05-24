@@ -1,0 +1,17 @@
+<h2 class="form-section-heading form-section-heading--private">[% loc('Private details') %]</h2>
+<p class="form-section-description" id="js-councils_text_private">
+  <p>[% loc('If you would like to track your issue, create a Mubashir account by providing your email address and a password before you submit your problem. Once your account is created, you can log onto the Mubashir website at any time to track the status of your report, including when a government representative is addressing your issue.') %]</p> 
+<p>[% loc('If you provide your email address or phone number, please be aware that Mubashir representatives may contact you with questions about your report to help clarify and address your issue.') %]</p>
+  [% IF js %]
+    [% loc('These will be sent to the council, but will never be shown online.') %]
+    (<a href="/privacy">[% loc('See our privacy policy') %]</a>.)
+  [% ELSE %]
+    [% PROCESS 'report/new/councils_text_private.html' %]
+  [% END %]
+</p>
+
+[% IF c.user_exists %]
+  [% PROCESS "report/new/form_user_loggedin.html" %]
+[% ELSE %]
+  [% PROCESS "report/new/form_user_loggedout.html" %]
+[% END %]

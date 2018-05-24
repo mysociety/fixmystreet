@@ -1,0 +1,23 @@
+Subject: Questionnaire about your [% site_name %] report: '[% report.title %]'
+
+Hello [% report.name %],
+
+[% created %] قبل أسابيع، ذكرت مشكلة في أستخدام مباشر [% site_name %].
+
+The details of that report are at the end of this email.
+
+To keep [% site_name %] up to date and relevant, we'd appreciate it
+if you could follow the link below and fill in our short questionnaire
+updating the status of your problem:
+
+    [% url %]
+
+[% signature %]
+
+Your report was as follows:
+
+[% report.title %]
+
+[% report.detail %]
+
+تم إرسال هذه الرسالة الإلكترونية تلقائيا، من حساب بريد إلكتروني غير متابع. يرجى عدم الرد عليه.
