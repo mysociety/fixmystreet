@@ -155,67 +155,32 @@ footer {
 	background:linear-gradient($green,$lightgreen);	
 	border:1px solid $green;
 }
- #site-logo {
-        top:.9em;
-        background:url('sprite.png') -3px 0 no-repeat;
-	right:auto;
+#site-logo {
+        background:url('sprite.png') -3px 8px no-repeat;
 	text-indent: 0;
-	min-height: 45px;
-	padding-left: 50px;
+	line-height: 60px;
+	padding: 0 0 0 50px;
 	color: #fff;
-	 @media (min-width:25em) {
-                top:0.9em;
-        }
 	@media (min-width: 48em) {
 		font-size: 1.5em;
 	}
-
 }
 html[dir='rtl'] #site-logo {
-	background:url('sprite-ar.png') -25px 0 no-repeat;
-	right:0.5em;
-	left:auto;
-	padding-left: 0;
-	padding-right: 50px;
-	top: .75em;
+        background:url('sprite-ar.png') -25px 8px no-repeat;
+    padding: 0 50px 0 0;
 }
-#nav-link {
-	left:auto;
-	right:0;
+html[dir=ltr] #nav-link {
+	left: auto;
+	right: 0;
 }
-html[dir='rtl'] #nav-link {
-	left:0;
-	right:auto;
-}
-#report-cta {
+html[dir=ltr] #report-cta {
 	left:auto;
 	right:3.5em;
 }
-html[dir='rtl'] #report-cta {
-	left:3.5em;
-	right:auto;
-}
 #site-header {
-	height:6em;
-	@media (min-width:25em) {
-		height:4em;
-	}
-
-}
-body.frontpage #site-logo {
-        top:3em;
-        background:url('sprite.png') -3px -3px no-repeat;
-        min-height:45px;
-	 @media (min-width:25em) {
-                top:0.9em;
-        }
-
-}
-html[dir='rtl'] body.frontpage #site-logo {
-	background-position: 176px 0;
-	@media (min-width: 48em) {
-		background-position: 302px 0;
-	}
+	border-top: 0.25em solid $green;
+	background-color: #000;
+        height: 4em;
 }
 .nav-menu a, .nav-menu span {
         color:#000;
@@ -224,7 +189,7 @@ html[dir='rtl'] body.frontpage #site-logo {
 .nav-menu a:hover, .nav-menu span.hover {
 	background:$green;
 }
-.nav-wrapper .nav-wrapper-2 {
+.nav-wrapper .container {
         background:#000000;
 }
 #front-main {
@@ -408,11 +373,17 @@ html[dir='ltr'] table.nicetable .title {
 htmp[lang='fr'] .form-txt-submit-box input[type=submit] {
 	width:33%;
 }
+
+.demtools-footer {
+    padding-top: 0.5em;
+    color: #fff;
+    background-color: #000;
+    text-align: center;
+}
+
 .demtools-link {
 	clear:both;
-	color:#fff;
 	font-size:.85em;
-	text-align:center;
 }
 .demtools-link a, .demtools-link a:visited {
 	color: $lightgreen;
@@ -471,8 +442,6 @@ html[dir="rtl"] .multi-select-menu {
         left: auto;
 }
 .terms {
-	color: #fff;
-	text-align: center;
 	font-size: .75em;
 }
 p.terms {

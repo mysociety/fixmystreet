@@ -1,23 +1,6 @@
 @import "_colours";
 @import "../sass/_layout";
 
-#site-logo {
-        background:url('sprite.png') -3px 0 no-repeat;
-        min-height:45px;
-        width: auto;
-	margin:0 10px;
-	top:0.6em;
-}
-html[dir='rtl'] #site-logo {
-	background-position: -132px 0;
-	padding-right: 70px;
-	@media (min-width: 62.5em) {
-	}
-
-	@media (min-width: 75em) {
-
-	}
-}
 #main-nav {
 	margin-top:2.5em;
 	@media (min-width:51.25em) {
@@ -36,14 +19,11 @@ html[lang='ru'] #main-nav {
                 margin-top:0;
         }
 }
-html[lang='fr'] .nav-wrapper .nav-wrapper-2 {
+html[lang='fr'] .nav-wrapper .container {
 	min-height:7.5em;
 	@media (min-width:56.25em) {
 		min-height:4em;
 	}
-}
-.nav-wrapper .nav-wrapper-2 {
-	border-color: $green;
 }
 html[lang='fr'] .wrapper .table-cell > .container {
 	margin-top:8em;
@@ -55,7 +35,7 @@ html[lang='fr'] .wrapper .table-cell > .container {
 	height:4em;
 }
 body.frontpage #site-header {
-	height: 5em;
+	height: 6em;
 }
 #front-main {
 	background:transparent;
@@ -77,9 +57,7 @@ html[dir='rtl'] .nav-menu li {
 	background: $lightgreen;
 }
 body.frontpage #site-logo {
-        top:0.9em;
-        background:url('sprite.png') -3px 0 no-repeat;
-        height:45px;
+        top:0.5em;
 }
 .all-reports .wrapper .table-cell > .container {
         width:60em;
@@ -103,7 +81,7 @@ body.frontpage #site-logo {
 #footer-nav {
 	display:block;
 }
-#footer-nav .tablewrapper ul li a, #footer-nav .tablewrapper ul li span {
+#footer-nav ul li a, #footer-nav ul li span {
         display:block;
         color:#ffffff;
         background:none;
@@ -111,20 +89,20 @@ body.frontpage #site-logo {
         padding:0.75em;
         font-size:0.9em;
 }
-#footer-nav .tablewrapper ul li {
+#footer-nav ul li {
         list-style:none;
         display:inline;
         margin:0;
         padding:0;
         float:left;
 }
-html[dir='rtl'] #footer-nav .tablewrapper ul li {
+html[dir='rtl'] #footer-nav ul li {
 	float:right;
 }
-.frontpage .wrapper .table-cell .container .content #footer-nav .tablewrapper,
+.frontpage .wrapper .table-cell .container .content #footer-nav,
 body.twothirdswidthpage .container .content footer .tablewrapper,
 body.fullwidthpage .container .content footer .tablewrapper,
-body.mappage .nav-wrapper .nav-wrapper-2 {
+body.mappage .nav-wrapper .container {
         background-color:#000;
 }
 .nav-wrapper {
@@ -136,17 +114,17 @@ body.mappage .nav-wrapper .nav-wrapper-2 {
 body.fullwidthpage .container .content footer {
         margin:40px 0 0 0;
 }
-#footer-nav .tablewrapper #footer-help-nav {
+#footer-nav #footer-help-nav {
 	float:right;
 }
-html[dir='rtl'] #footer-nav .tablewrapper #footer-help-nav {
+html[dir='rtl'] #footer-nav #footer-help-nav {
 	float:left;
 }
-#footer-nav .tablewrapper #footer-main-nav {
+#footer-nav #footer-main-nav {
 	float:left;
 	margin-right:0;
 }
-html[dir='rtl'] #footer-nav .tablewrapper #footer-main-nav {
+html[dir='rtl'] #footer-nav #footer-main-nav {
 	float:right;
 }
 body.frontpage #user-meta {
@@ -164,6 +142,9 @@ body.twothirdswidthpage .content aside {
 	padding:0;
 	margin:0;
 }
+html[dir=ltr] #main-nav {
+	float: right;
+}
 .nav-menu {
 	float:right;
 	margin-right:1em;
@@ -173,8 +154,8 @@ html[dir='rtl'] .nav-menu {
 	margin-left:1em;
 	margin-right:0;
 }
-#nav-link {
-	right:auto;
+html[dir=ltr] #nav-link {
+	left: -99999px;
 }
 #front-main #postcodeForm div input#pc {
 	float:left;

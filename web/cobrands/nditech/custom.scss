@@ -3,12 +3,23 @@
 $screen-sm-col: 600px;
 $screen-sm: 768px;
 
-body.custom-frontpage .container .content {
-	padding: 0;
+.custom-frontpage .container .content {
+	padding: 4em 0 0 0;
 	margin: 0;
+}
+.custom-frontpage #site-header {
+    position: fixed;
+    width: 100%;
+    z-index: 5;
+}
+.custom-frontpage #report-cta {
+    display: block;
+    font-size: 1em;
+    padding: 0.75em 1em;
 }
 body.custom-frontpage #site-header + .container {
 	width: 100%;
+        max-width: none;
 	margin: 0;
 	padding: 0;
 }
@@ -16,23 +27,11 @@ body.custom-frontpage #site-header + .container {
 	ol {
 		margin-bottom: 0;
 	}
-	#main-nav {
-		float: none;
-		margin-top: 0;
-	}
-        #nav-link, #report-cta {
+        #nav-link {
                 display: none;
         }
-	#main-nav .demtools-link, #main-nav .terms {
+	.nav-wrapper .container {
 		display: none;
-	}
-	.nav-wrapper .nav-wrapper-2 {
-		min-height: 4.5em;
-		position: fixed;
-		z-index: 1;
-		top: 0;
-		width: 100%;
-		border-top: 4px solid $green;
 	}
 	#footer-main-nav, #footer-help-nav {
 		display: none;
@@ -82,13 +81,6 @@ body.custom-frontpage #site-header + .container {
 		margin-top: 2em;
 		@media (min-width: 30em) {
 			margin-top: .5em;
-		}
-	}
-	#site-header {
-		height: 3em;
-		border-top: 0.25em solid $green;
-		@media (min-width: 25em) {
-			height: 4em;
 		}
 	}
 	.col-md-4 {
@@ -269,23 +261,6 @@ html[dir="rtl"] .custom-frontpage {
 	.row-hero .hero {
 		@media (min-width: 860px) {
 			background-position-x: 0;
-		}
-	}
-	#site-logo {
-                width: auto;
-                background-position-x: -167px;
-		position: fixed;
-		top: 1em;
-                @media (min-width: 48em) {
-                        background-position-x: -145px;
-			top: .75em;
-                }
-        }
-	#main-nav .btn-wrapper {
-		text-align: left;
-		margin-left: 10px;
-		@media (min-width: 30em) {
-			text-align: center;
 		}
 	}
 	.row-hero .hero .btn-wrapper {

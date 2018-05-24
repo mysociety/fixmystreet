@@ -4,6 +4,8 @@
     # SET html_att = html_att _ ' dir="rtl"';
     IF lang_code  == 'ar';
                 SET html_att = html_att _ ' dir="rtl"';
+    ELSE;
+                SET html_att = html_att _ ' dir="ltr"';
     END;
 
 -%]
@@ -23,33 +25,15 @@
         <meta name="mobileoptimized" content="0">
 
         [% INCLUDE 'header_opengraph.html' %]
-        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]" media="(min-width:48em)">
-        [% extra_css %]
-        <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]">
-        <![endif]-->
-
+        [% INCLUDE 'header/css.html' %]
         [% INCLUDE 'common_header_tags.html' %]
-
-        [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
-            <link rel="canonical" href="https://www.fixmystreet.com[% c.req.uri.path_query %]">
-        [% END %]
-
         [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
-        <script>
-  	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  	ga('create', 'UA-105664283-1', 'auto');
-  	ga('send', 'pageview');
-
-	</script>
     </head>
     [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
     <body class="[% bodyclass | html IF bodyclass %]">
+
+    [% TRY %][% PROCESS 'before_wrapper.html' %][% CATCH file %][% END %]
 
     <div class="wrapper">
         <div class="table-cell">
