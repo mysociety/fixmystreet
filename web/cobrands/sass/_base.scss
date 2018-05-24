@@ -2392,6 +2392,58 @@ a#geolocate_link.loading, .btn--geolocate.loading {
     vertical-align: -2px;
 }
 
+$nicetable-cell-padding: 0.6em 1.5em !default;
+$nicetable-border-color: #ccc !default;
+$nicetable-stripe-background: rgba($primary, 0.05) !default;
+$nicetable-hover-background: rgba($primary, 0.15) !default;
+
+.nicetable {
+    width: 100%;
+    margin-bottom: 1.5em;
+
+    td, th {
+        padding: $nicetable-cell-padding;
+        padding-#{$left}: 0;
+        border-bottom: 1px solid $nicetable-border-color;
+        text-align: $left;
+
+        &:last-child {
+            padding-#{$right}: 0;
+        }
+    }
+
+    // Give your .nicetable an extra .stripe class to stripe alternate rows.
+    &.stripe {
+        td, th {
+            padding: $nicetable-cell-padding;
+        }
+
+        tr:nth-child(even) {
+            background: $nicetable-stripe-background;
+        }
+    }
+
+    // Give your .nicetable an extra .hover class to enable row hover effect.
+    &.hover {
+        td, th {
+            padding: $nicetable-cell-padding;
+        }
+
+        tr:hover {
+            background: $nicetable-hover-background;
+        }
+
+        thead tr {
+            background: transparent;
+        }
+    }
+
+    // For table cells containing numbers (and their associated header cells).
+    .data {
+        text-align: $right;
+    }
+}
+
 @import "_admin";
 @import "_dropzone";
 @import "_multiselect";
