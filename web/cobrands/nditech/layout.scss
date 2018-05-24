@@ -172,12 +172,19 @@ html[dir='rtl'] #front-main #postcodeForm div input#pc {
 ul.full-width {
 	margin:0;
 }
-body.twothirdswidthpage .content .sticky-sidebar aside {
-	right:14em;
-	top:10em;
+html[dir=ltr] body.twothirdswidthpage {
+    .content .sticky-sidebar {
+	left: 42em;
+	right: auto;
+    }
+    @media (max-width: 61em) {
+    .content .sticky-sidebar {
+        left: 32em;
+    }
+  }
 }
-html[dir='rtl'] body.twothirdswidthpage .content .sticky-sidebar aside {
-	right:auto;
+body.twothirdswidthpage .content .sticky-sidebar aside {
+	top:10em;
 }
 #fms_pan_zoom_pandown {
         right:30px !important;
