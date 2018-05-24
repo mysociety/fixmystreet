@@ -1,12 +1,6 @@
 @import "_colours";
 @import "../sass/_layout";
 
-#main-nav {
-	margin-top:2.5em;
-	@media (min-width:51.25em) {
-		margin-top:0;
-	}
-}
 html[lang='fr'] #main-nav {
 	margin-top:3.5em;
 	@media (min-width:56.25em) {
@@ -101,8 +95,7 @@ html[dir='rtl'] #footer-nav ul li {
 }
 .frontpage .wrapper .table-cell .container .content #footer-nav,
 body.twothirdswidthpage .container .content footer .tablewrapper,
-body.fullwidthpage .container .content footer .tablewrapper,
-body.mappage .nav-wrapper .container {
+body.fullwidthpage .container .content footer .tablewrapper {
         background-color:#000;
 }
 .nav-wrapper {
@@ -170,14 +163,6 @@ html[dir=ltr] #nav-link {
 html[dir='rtl'] #front-main #postcodeForm div input#pc {
 	float:right;
 }
-body.mappage #site-logo {
-	left:12px;
-	right:auto;
-}
-html[dir='rtl'] body.mappage #site-logo {
-	left:auto;
-	right:12px;
-}
 #side section.full-width .report-list-filters {
 	margin-bottom:2em;
 }
@@ -193,29 +178,6 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
 }
 html[dir='rtl'] body.twothirdswidthpage .content .sticky-sidebar aside {
 	right:auto;
-}
-body.mappage .content {
-	float:left;
-}
-html[dir='rtl'] body.mappage .content {
-	float:right;
-}
-body.mappage #user-meta p {
-	right:auto;
-	left:0;
-}
-html[lang='fr'] #user-meta p {
-	padding-left:7.5em;
-}
-html[lang='ru'] #user-meta p {
-	padding-left:5em;
-}
-html[dir='rtl'] body.mappage #user-meta p {
-	left:auto;
-	right:0;
-}
-html[dir='rtl'] body.mappage #user-meta p {
-
 }
 #fms_pan_zoom_pandown {
         right:30px !important;
@@ -264,11 +226,6 @@ html[dir='rtl'] #fms_pan_zoom_zoomin {
 html[dir='rtl'] #fms_pan_zoom_zoomout {
         right:auto!important;
         left:30px!important;
-}
-body.mappage .nav-menu--main a.report-a-problem-btn,
-body.mappage .nav-menu--main a, body.mappage .nav-menu--main span {
-	padding:1em 0.75em 1em;
-	margin:0.75em 0;
 }
 .big-green-banner {
 	background:$green url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjciIGhlaWdodD0iMzMiPgogICAgPHBvbHlnb24gcG9pbnRzPSIwLDAgMTMsMCAyNiwxNiAxMywzMiAwLDMyIDEzLDE2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=') right center no-repeat;
@@ -331,9 +288,6 @@ html[dir='rtl'] .shadow-wrap ul#key-tools li a.chevron, html[dir='rtl'] .shadow-
 }
 html[lang='fr'] .shadow-wrap ul#key-tools li a, .shadow-wrap ul#key-tools li input[type=submit] {
 	font-size:0.71em;
-}
-body.mappage .content {
-	margin-top:-10px;
 }
 #main-nav .demtools-link, #main-nav .terms {
 	display:none;
