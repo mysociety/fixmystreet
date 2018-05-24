@@ -354,3 +354,39 @@ table.promo-spreadsheet {
 .toggle-button {
     display: none; /* show() by JavaScript */
 }
+
+.admin-task {
+    border: 1px solid #ddd;
+    padding: 0 24px 1em;
+    margin: 2.5em 0;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    h3 {
+        background-color: $colour_brand;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+        padding: 0.66em 24px;
+        margin: 0 -24px 1em;
+    }
+
+    > h4 {
+        padding: 1em 0 0;
+    }
+
+    .boxout {
+        margin-top: 1.5em;
+    }
+}
+
+.admin-task__permissions {
+    color: $colour_green_dark_2;
+    font-size: 0.875em;
+    line-height: 1.4em;
+}
+
+.admin-screenshot {
+    display: block;
+    margin: 1em auto 2em;
+    padding: 0.5em;
+    border: 3px solid $colour_borders;
+}

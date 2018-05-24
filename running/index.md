@@ -14,6 +14,7 @@ everything running smoothly. </p>
 <div class="span6">
 <ul class="nav nav-pills nav-stacked">
 <li><a href="admin_manual/">Administrator's manual</a></li>
+<li><a href="staff/">Staff user's manual</a></li>
 <li><a href="bodies_and_contacts">About managing bodies and contacts</a></li>
 <li><a href="users">About users</a></li>
 </ul>

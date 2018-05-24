@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ page.title }} | FixMyStreet Platform | mySociety</title>
+    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-org.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro-print.css" | relative_url }}" media="print">
+    <link rel="stylesheet" href="https://www.fixmystreet.com/pro/wp-content/themes/fixmystreet-pro/assets/css/main.css" />
+    <link href="/atom.xml" rel="alternate" title="FixMyStreet Platform" type="application/atom+xml">
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" id="google-fonts-css" href="https://fonts.googleapis.com/css?family=Rubik%3A400%2C500%2C700&amp;ver=4.9.4" type="text/css" media="all">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    {% include google-analytics.html %}
+    <script type="text/javascript" src="/assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/scripts/jquery-migrate.min.js"></script>
+    <script type="text/javascript" src="https://www.fixmystreet.com/pro/wp-content/themes/fixmystreet-pro/assets/javascript/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.fixmystreet.com/pro/wp-content/themes/fixmystreet-pro/assets/javascript/main.js"></script>
+  </head>
+  <body{% if page.bodyclass %} class="{{ page.bodyclass }}"{% endif %}>
+
+  
+    <div class="ms-header">
+        <div class="container">
+            <div class="row">
+              <div class="col-sm-3 col-sm-push-9 ms-header__logo">
+                <a href="https://www.mysociety.org/">mySociety</a>
+              </div>
+              <a class="col-sm-9 col-sm-pull-3 ms-header__back-to-fms" href="https://www.fixmystreet.com">
+                <p><i class="glyphicon glyphicon-chevron-left"></i> <strong>Return to FixMyStreet.com</strong> to report a street issue in the UK</p>
+              </a>
+            </div>
+        </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container">
+          <a href="{{ "/" | relative_url }}" class="site-logo" aria-label="FixMyStreet Pro home">
+              FixMyStreet Pro            </a>
+          <a href="#main-nav" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="main-nav">
+              Menu
+          </a>
+          <nav id="main-nav" class="site-nav collapse">
+            <ul id="menu-main-menu" class="menu js-dropdown-sub-menus">
+              <li id="menu-item-29" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-29"><a href="https://www.fixmystreet.com/pro/take-a-tour/">Take a tour</a></li>
+              <li id="menu-item-537" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-537"><a href="https://www.fixmystreet.com/pro/case-studies/">Case Studies</a>
+              <ul class="sub-menu">
+                <li id="menu-item-615" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-615"><a href="https://www.fixmystreet.com/pro/take-a-tour/banes/">Bath &amp; North East Somerset Council</a></li>
+                <li id="menu-item-538" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-538"><a href="https://www.fixmystreet.com/pro/take-a-tour/bristol/">Bristol Council</a></li>
+                <li id="menu-item-630" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-630"><a href="https://www.fixmystreet.com/pro/take-a-tour/east-herts/">East Herts District Council</a></li>
+                <li id="menu-item-588" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-588"><a href="https://www.fixmystreet.com/pro/take-a-tour/ground-control/">Ground Control</a></li>
+                <li id="menu-item-539" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-539"><a href="https://www.fixmystreet.com/pro/take-a-tour/oxfordshire/">Oxfordshire County Council</a></li>
+              </ul>
+              </li>
+              <li id="menu-item-30" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-30"><a href="https://www.fixmystreet.com/pro/features/">Features</a>
+              <ul class="sub-menu">
+                <li id="menu-item-32" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-32"><a href="https://www.fixmystreet.com/pro/features/fully-integrated/">Fully integrated</a></li>
+                <li id="menu-item-34" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-34"><a href="https://www.fixmystreet.com/pro/features/open-standards/">Open standards</a></li>
+                <li id="menu-item-28" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-28"><a href="https://www.fixmystreet.com/pro/training/">Training</a></li>
+                <li id="menu-item-33" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-33"><a href="https://www.fixmystreet.com/pro/features/hosted-secure/">Hosted &amp; Secure</a></li>
+                <li id="menu-item-752" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-752"><a href="https://www.fixmystreet.com/pro/features/gdpr-and-fixmystreet-pro/">GDPR and FixMyStreet Pro</a></li>
+                <li id="menu-item-35" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-35"><a href="https://www.fixmystreet.com/pro/features/accessible/">Accessible</a></li>
+                <li id="menu-item-31" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-31"><a href="https://www.fixmystreet.com/pro/features/privacy/">Privacy</a></li>
+              </ul>
+            </li>
+            <li id="menu-item-36" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36"><a href="https://www.fixmystreet.com/pro/how-to-buy/">How to buy</a></li>
+            <li id="menu-item-800" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-800"><a href="https://www.fixmystreet.com/pro/blog/">Blog</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <div class="page-wrapper page-wrapper--pro">
+      <div class="page">
+        <div class="main-content-column">
+          {{ content }}
+        </div>
+        <div class="secondary-content-column">
+          <div class="print-controls">
+              <a href="/pro-manual/print/" class="btn btn-primary">Print this guide</a>
+          </div>
+
+          <nav class="sidebar">
+                <ul>
+                  <li><a href="/pro-manual/">What is FixMyStreet Pro?</a></li>
+                  <li><a href="/pro-manual/citizens-experience/">The Citizens Experience</a></li>
+                  <li><a href="/pro-manual/staff-user-accounts/">Staff User Accounts</a></li>
+                  <li><a href="/pro-manual/admin-tasks/">Administrator Tasks</a>
+                    <ul>
+                      <li><a href="/pro-manual/admin-tasks/#navigating-as-pro-staff">Navigating FixMyStreet Pro as a staff user</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#viewing-reports-your-area">Viewing all reports in your area</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#defining-area-interest">Defining the area of interest</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#view-report-specific-area">Viewing a report in a specific area</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#filtering-sorting-reports">Filtering and sorting reports</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#view-single-report">Viewing a single report</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#search-report">Searching for a report</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#search-user">Searching for a user</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#editing-users-information">Editing a user’s information</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#view-reports-non-staff-user">Viewing reports as a non-staff user</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#create-reports-behalf-user">Creating reports on behalf of another user</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#deal-undesirable-content">Dealing with undesirable content</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#correct-reporter-errors">Correcting reporter errors</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#keep-report-maker-informed">Keeping the report-maker informed</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#prioritising-tasks">Prioritising tasks</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#working-with-shortlists">Working with shortlists</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#viewing-editing-reports-offline">Viewing and editing reports offline</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#adminstrating-staff-accounts">Administrating staff accounts</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#creating-editing-categories">Creating and editing categories</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#creating-editing-priorities">Creating and editing priorities</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#creating-editing-response-templates">Creating and editing response templates</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#view-statistics">Viewing statistics</a></li>
+                    </ul>
+                  </li>
+              </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+<div class="site-footer mysoc-footer">
+    <div class="container">
+              <div class="site-footer__primary">
+                      <div class="footer-widget-area">
+                <span class="hidden">Footer Contact Details</span><div class="textwidget custom-html-widget"><ul class="list-inline">
+<li><a href="mailto:enquiries@fixmystreet.com">enquiries@fixmystreet.com</a></li>
+<li><a href="tel:+442032879859">020 3287 9859</a></li>
+</ul></div>            </div>
+                                <nav class="menu-footer-menu-container">
+                                  <ul id="menu-footer-menu" class="footer-nav-menu list-inline">
+                                    <li id="" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/pro-manual/">User guide</a></li>
+                                    <li id="menu-item-261" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-261"><a href="https://www.fixmystreet.com/pro/contact/">Contact</a></li>
+                                    <li id="menu-item-51" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-51"><a href="https://www.mysociety.org/subscribe/">Newsletter</a></li>
+                                    <li id="menu-item-282" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-282"><a href="https://www.fixmystreet.com/pro/features/privacy/">Privacy</a></li>
+                                    </ul>
+                                  </nav>                  
+                                </div>
+        <hr class="mysoc-footer__divider" role="presentation">
+              <div class="row">
+            <div class="col-sm-4">
+                <a href="https://www.mysociety.org?utm_source=fixmystreet.com/pro&amp;utm_content=footer+logo&amp;utm_medium=link&amp;utm_campaign=mysoc_footer" class="mysoc-footer__org__logo mysoc-footer__org__logo--mysociety">mySociety</a>
+            </div>
+            <div class="col-sm-6">
+                <div class="mysoc-footer__legal">
+                    <p>
+                        mySociety Limited is a project of UK Citizens Online Democracy,
+                        a registered charity in England and Wales. For full details visit
+                        <a href="https://www.mysociety.org?utm_source=fixmystreet.com/pro&amp;utm_content=footer+full+legal+details&amp;utm_medium=link&amp;utm_campaign=mysoc_footer">mysociety.org</a>.
+                    </p>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <ul class="mysoc-footer__badges">
+                    <li role="presentation"><a href="https://github.com/mysociety/" class="mysoc-footer__badge mysoc-footer__badge--github">Github</a></li>
+                    <li role="presentation"><a href="https://twitter.com/fixmystreet/" class="mysoc-footer__badge mysoc-footer__badge--twitter">Twitter</a></li>
+                    <li role="presentation"><a href="https://www.facebook.com/fixmystreet" class="mysoc-footer__badge mysoc-footer__badge--facebook">Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
