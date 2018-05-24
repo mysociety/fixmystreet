@@ -1,0 +1,7 @@
+[% PROCESS 'report/new/form_user_loggedout_email.html' required = 1 %]
+
+<div id="form_sign_in">
+    <p>To submit your report you now need to confirm it either by email or by using a  FixMyStreet password.</p>
+    [% PROCESS 'report/new/form_user_loggedout_by_email.html' %]
+    [% PROCESS 'report/new/form_user_loggedout_password.html' %]
+</div>

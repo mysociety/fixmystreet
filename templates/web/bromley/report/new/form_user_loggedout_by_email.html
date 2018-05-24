@@ -1,9 +1,5 @@
 <div id="form_sign_in_no" class="form-box">
-  [% IF c.config.SMS_AUTHENTICATION %]
-    <h5>[% loc('<strong>No</strong> Let me confirm my report by email/text') %]</h5>
-  [% ELSE %]
-    <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
-  [% END %]
+    <h5>Confirm my report by email</h5>
 
     [% INCLUDE 'report/new/extra_name.html' %]
     [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
@@ -26,7 +22,7 @@
     <p class='form-error'>[% field_errors.password_register %]</p>
   [% END %]
     <div class="general-notes form-focus-hidden">
-        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports.') %]</p>
     </div>
 
     <div class="form-txt-submit-box form-focus-hidden">

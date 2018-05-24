@@ -1,0 +1,18 @@
+Subject: Your inactive account on [% site_name %]
+
+Hello [% user.name %],
+
+Your account on [% site_name %] has been inactive for [% email_from %]
+[% nget('month', 'months', email_from) %], and we automatically remove
+accounts that have been inactive after [% anonymize_from %]
+[% nget('month', 'months', anonymize_from) %]. If you wish to keep your
+account, please log in to the site and that will keep it active:
+
+[% url %]
+
+Thanks for using the site.
+
+[% INCLUDE 'signature.txt' %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

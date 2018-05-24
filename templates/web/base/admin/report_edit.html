@@ -172,6 +172,9 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </li>
 [% END %]
 
+<li><label class="inline-text" for="closed_updates">[% loc('Closed to updates') %]:</label>
+    <input type="checkbox" id="closed_updates" name="closed_updates"[% ' checked' IF problem.extra.closed_updates %]></li>
+
 </ul>
 <input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]">
 </form>

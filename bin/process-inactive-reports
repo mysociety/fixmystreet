@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Getopt::Long;
+use FixMyStreet::Script::Inactive;
+use Pod::Usage;
+
+my %h;
+GetOptions(\%h, 'anonymize=i', 'close=i', 'verbose|v', 'help|h', 'dry-run|n');
+pod2usage(0) if $h{help};
+pod2usage(1) unless $h{anonymize} || $h{close};
+
+FixMyStreet::Script::Inactive->new(%h)->reports;
+
+__END__
+
+=head1 NAME
+
+process-inactive-reports - deal with anonymizing inactive non-open reports
+
+=head1 SYNOPSIS
+
+process-inactive-reports [--anonymize N] [--close N]
+
+ Options:
+   --anonymize   Anonymize non-open reports (and related) inactive longer than this time (months)
+   --close       Close comments on non-open reports inactive longer than this time (months)
+   --dry-run     Don't actually anonymize anything or send any emails
+   --verbose     Output as to which reports are being affected
+   --help        This help message
+
+=cut

@@ -1,0 +1,43 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Getopt::Long;
+use FixMyStreet::Script::Inactive;
+use Pod::Usage;
+
+my %h;
+GetOptions(\%h, 'anonymize=i', 'email=i', 'verbose|v', 'help|h', 'dry-run|n');
+pod2usage(0) if $h{help};
+pod2usage(1) if !$h{anonymize};
+pod2usage("Anonymize time must be greater than email time")
+    if $h{email} && $h{email} >= $h{anonymize};
+
+FixMyStreet::Script::Inactive->new(%h)->users;
+
+__END__
+
+=head1 NAME
+
+process-inactive-accounts - deal with anonymizing old inactive accounts
+
+=head1 SYNOPSIS
+
+process-inactive-accounts --anonymize N [--email N]
+
+ Options:
+   --anonymize   Anonymize accounts inactive longer than this time (months)
+   --email       Email accounts inactive longer than this time (months)
+   --dry-run     Don't actually anonymize anything or send any emails
+   --verbose     Output as to which users are being affected
+   --help        This help message
+
+=cut
