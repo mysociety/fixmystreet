@@ -22,4 +22,14 @@ sub anonymous_account {
     };
 }
 
+sub base_url_with_lang {
+    my $self = shift;
+    my $base = $self->base_url;
+    my $lang = $mySociety::Locale::lang;
+    if ($lang eq 'ar') {
+        $base =~ s{en\.}{ar.};
+    }
+    return $base;
+}
+
 1;
