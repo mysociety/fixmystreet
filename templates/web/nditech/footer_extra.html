@@ -3,8 +3,8 @@
 
 <div id="footer-nav">
         <ul id="footer-main-nav">
-            <li><[% IF c.req.uri.path == '/start' %]span[% ELSE %]a href="/start"[% END %] class="report-a-problem-btn"
-                >[% loc("Report a problem") %]</[% c.req.uri.path == '/start' ? 'span' : 'a' %]></li>[%
+            <li><[% IF c.req.uri.path == '/report' %]span[% ELSE %]a href="/report"[% END %] class="report-a-problem-btn"
+                >[% loc("Report a problem") %]</[% c.req.uri.path == '/report' ? 'span' : 'a' %]></li>[%
             %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
                 %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
             %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END

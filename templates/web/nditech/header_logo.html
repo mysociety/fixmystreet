@@ -1,6 +1,6 @@
                     <a href="[% c.cobrand.base_url IF admin %]/" id="site-logo">[% site_name %]</a>
-[% IF c.req.uri.path == '/about/team'%]
-                    <a href="[% c.cobrand.base_url IF admin %]/start" class="green-btn" id="report-cta">[%- loc('Report a problem') -%]</a>
+[% IF c.req.uri.path == '/' %]
+                    <a href="[% c.cobrand.base_url IF admin %]/report" class="green-btn" id="report-cta">[%- loc('Report a problem') -%]</a>
 [% ELSE %]
-                    <a href="[% c.cobrand.base_url IF admin %]/start" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>
+                    <a href="[% c.cobrand.base_url IF admin %]/report" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>
 [% END %]
