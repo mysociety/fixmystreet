@@ -1,0 +1,125 @@
+@import "_colours";
+@import "../sass/layout";
+
+.big-green-banner {
+    text-transform: none;
+}
+
+.nav-menu--main a.report-a-problem-btn {
+    color: $primary_text;
+}
+
+#front-main {
+    background-color: $front_main_background;
+    text-align: left;
+    #postcodeForm div {
+        margin: 0;
+    }
+}
+
+#main-nav {
+    float: none;
+    // Put the main FMS navigation below the site header
+    margin-top: 6.1em;
+
+    .ie9 & > * {
+        #{$right}: auto;
+        #{$left}: 0;
+      }
+}
+
+  
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+
+    // White "nav bar" with red border-top, below the logo
+    #site-header {
+        &:after {
+        content: " ";
+        height: 3.5em;
+        display: block;
+        border-bottom: solid 5px $lincs-border;
+        border-top: solid 5px darken($primary, 5%);
+        background-color: white;
+        }
+    }
+
+    .nav-menu {
+        a, span {
+            display: inline-block; // So the chevrons appear correctly
+            font-size: 1.2em;
+        }
+        a {
+            &:hover {
+                background: transparent;
+                color: $primary;
+            }
+        }
+        span {
+            color: $primary_text;
+        }
+    }
+
+    // Stop the 'report a problem' button being red on non-map pages
+    .nav-menu--main a.report-a-problem-btn {
+        background-color: transparent;
+    }
+
+    // Put FAQ side nav at correct vertical position
+    .content .sticky-sidebar aside {
+        top: 12.5em;
+    }
+}
+
+body.mappage {
+    // Add a red border-bottom *inside* the header
+    #site-header {
+        @include box-sizing(border-box);
+        border-bottom: solid 5px $primary;
+    }
+
+    // Reinstate the floated nav bar on map pages
+    #main-nav {
+        float: #{$right};
+        margin-top: -0.375em;
+
+        // IE9 uses absolute positioning rather than floats.
+        .ie9 & {
+            float: none;
+            & > * {
+                #{$right}: 0;
+                #{$left}: auto;
+            }
+        }
+    }
+
+    // A few changes to the nav items now they're on a different background
+    .nav-menu {
+        a, span {
+            color: white;
+            font-size: 1.1em;
+        }
+
+        a:hover {
+            background: transparent;
+            text-decoration: underline;
+        }
+
+        a.report-a-problem-btn {
+            color: white;
+            padding-left: 0.5em;
+            padding-right: 0.5em;
+            background-color: $lincs-pop;
+            &:hover,
+            &:active,
+            &:focus {
+                background-color: darken($lincs-pop, 10%);
+                text-decoration: none;
+            }
+        }
+    }
+
+    .big-green-banner {
+        display: block;
+        text-transform: none;
+    }
+}
