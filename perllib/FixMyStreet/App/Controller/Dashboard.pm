@@ -333,6 +333,7 @@ sub export_as_csv : Private {
                 } sort keys %where
         },
     };
+    $c->cobrand->call_hook("dashboard_export_add_columns");
     $c->forward('generate_csv');
 }
 
