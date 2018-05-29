@@ -248,7 +248,7 @@ msgstr "<strong>Ja</strong>, jag har ett lösenord"
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Activate two-factor authentication"
-msgstr ""
+msgstr "Aktivera tvåfaktorsautentisering"
 
 #: templates/web/base/my/my.html:39 templates/web/base/my/my.html:50
 msgid "Add"
@@ -890,9 +890,8 @@ msgid "Created:"
 msgstr "Skapad:"
 
 #: templates/web/base/auth/change_password.html:40
-#, fuzzy
 msgid "Current password:"
-msgstr "Nytt lösenord:"
+msgstr "Nuvarande lösenord:"
 
 #: templates/web/base/auth/generate_token.html:46
 msgid "Current token:"
@@ -921,7 +920,7 @@ msgstr "Översikt"
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Deactivate two-factor authentication"
-msgstr ""
+msgstr "Inaktivera tvåfaktorsautentisering"
 
 #: templates/web/zurich/admin/stats/index.html:35
 msgid "Dealt with by subdivision within 5 working days"
@@ -1512,9 +1511,8 @@ msgid "Hidden"
 msgstr "Gömd"
 
 #: templates/web/base/admin/user-form.html:197
-#, fuzzy
 msgid "Hide all reports and updates"
-msgstr "Flaggade rapporter och användare"
+msgstr "Dölj alla rapporter och uppdateringar"
 
 #: templates/web/base/report/_main.html:105
 msgid "Hide entire report"
@@ -1842,9 +1840,8 @@ msgid "List all reported problems"
 msgstr "Lista alla rapporterade problem"
 
 #: templates/web/base/around/on_map_list_items.html:18
-#, fuzzy
 msgid "Loading reports…"
-msgstr "Redigera rapporter"
+msgstr "Laddar rapporter..."
 
 #: templates/web/base/report/new/category_wrapper.html:8
 msgid "Loading..."
@@ -1894,7 +1891,7 @@ msgstr "Logga in med epost/SMS"
 
 #: templates/web/base/admin/user-form.html:195
 msgid "Log out of all sessions"
-msgstr ""
+msgstr "Logga ut från alla sessioner"
 
 #: templates/web/base/dashboard/index.html:82
 msgid "Look up"
@@ -1905,9 +1902,8 @@ msgid "MAP"
 msgstr "KARTA"
 
 #: templates/web/base/admin/user-form.html:196
-#, fuzzy
 msgid "Make anonymous on all reports and updates"
-msgstr "Ditt namn har dolts från alla dina rapporter och uppdateringar."
+msgstr "Gör till anonym på alla rapporter och uppdateringar"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:717
 msgid "Manage shortlist"
@@ -2565,7 +2561,7 @@ msgstr "Välj en kategori"
 #: perllib/FixMyStreet/App/Controller/Auth.pm:383
 #: perllib/FixMyStreet/App/Controller/Auth.pm:409
 msgid "Please choose a less commonly-used password"
-msgstr ""
+msgstr "Välj ett ovanligare lösenord"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:345
 #: templates/web/base/admin/bodies.html:4 templates/web/base/admin/body.html:11
@@ -2709,9 +2705,8 @@ msgid "Please fill in the form below with details of the problem, and describe t
 msgstr "Fyll i information om problemet nedan och beskriv den exakta platsen för problemet så noga du kan."
 
 #: templates/web/base/auth/2faform.html:9
-#, fuzzy
 msgid "Please generate a two-factor code and enter it below:"
-msgstr "Vi har skickat en bekräftelsekod till din telefon. Skriv in den nedan:"
+msgstr "Generera en tvåfaktorskod och skriv in den nedan:"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:239
 msgid "Please indicate whether you'd like to receive another questionnaire"
@@ -2720,7 +2715,7 @@ msgstr "Ange ifall du vill ta emot ett annat frågeformulär"
 #: perllib/FixMyStreet/App/Controller/Auth.pm:406
 #: templates/web/base/js/translation_strings.html:26
 msgid "Please make sure your password is at least %d characters long"
-msgstr ""
+msgstr "Välj ett lösenord som är minst %d tecken långt"
 
 #: templates/web/base/report/updates-sidebar-notes.html:2
 msgid "Please note that updates are not sent to the council."
@@ -3082,7 +3077,7 @@ msgstr "Ta bort"
 
 #: templates/web/base/admin/user-form.html:198
 msgid "Remove account details"
-msgstr ""
+msgstr "Ta bort kontouppgifter"
 
 #: templates/web/base/admin/extra-metadata-form.html:4
 msgid "Remove field"
@@ -3433,7 +3428,7 @@ msgstr "Inga användare hittades."
 #: templates/web/base/auth/generate_token.html:39
 #: templates/web/base/my/my.html:65
 msgid "Security"
-msgstr ""
+msgstr "Säkerhet"
 
 #: templates/web/base/report/new/councils_text_private.html:7
 #: templates/web/base/report/new/form_user.html:5
@@ -3495,9 +3490,8 @@ msgstr "Tjänst:"
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:4
-#, fuzzy
 msgid "Set password"
-msgstr "Nytt lösenord:"
+msgstr "Sätt lösenord"
 
 #: templates/web/base/report/_inspect.html:47
 msgid "Set to my current location"
@@ -3620,19 +3614,16 @@ msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cov
 msgstr "Tyvärr, det verkar vara ett postnummer som vi inte täcker."
 
 #: perllib/FixMyStreet/Cobrand/ACV.pm:73
-#, fuzzy
 msgid "Sorry, that appears to be a Northern Irish postcode, which we don't cover."
-msgstr "Tyvärr, det verkar vara ett postnummer som vi inte täcker."
+msgstr "Det där verkar vara en nordirländsk postkod, vilket vi inte stödjer"
 
 #: perllib/FixMyStreet/Cobrand/ACV.pm:65
-#, fuzzy
 msgid "Sorry, that appears to be a Scottish postcode, which we don't cover."
-msgstr "Tyvärr, det verkar vara ett postnummer som vi inte täcker."
+msgstr "Det där verkar vara en skotsk postkod, vilket vi inte stödjer"
 
 #: perllib/FixMyStreet/Cobrand/ACV.pm:69
-#, fuzzy
 msgid "Sorry, that appears to be a Welsh postcode, which we don't cover."
-msgstr "Tyvärr, det verkar vara ett postnummer som vi inte täcker."
+msgstr "Det där verkar vara en walesisk postkod, vilket vi inte stödjer"
 
 #: templates/web/base/auth/smsform.html:6 templates/web/base/auth/token.html:8
 msgid "Sorry, that wasn&rsquo;t a valid link"
@@ -3963,22 +3954,20 @@ msgid "That report has been removed from FixMyStreet."
 msgstr "Rapporten har tagits bort från FixaMinGata."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1769
-#, fuzzy
 msgid "That user has been logged out."
-msgstr "Rapporten har tagits bort från FixaMinGata."
+msgstr "Den användaren har loggats ut."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1776
-#, fuzzy
 msgid "That user has been made anonymous on all reports and updates."
-msgstr "Ditt namn har dolts från alla dina rapporter och uppdateringar."
+msgstr "Den användaren har gjorts anonym i alla rapporter och uppdateringar."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1812
 msgid "That user’s personal details have been removed."
-msgstr ""
+msgstr "Den användarens personliga information har tagits bort."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1790
 msgid "That user’s reports and updates have been hidden."
-msgstr ""
+msgstr "Den användarens rapporter och uppdateringar har dolts."
 
 #: templates/web/base/admin/contact-form.html:27
 msgid ""
@@ -4389,11 +4378,11 @@ msgstr "Prova att skicka ett e-brev till oss direkt:"
 
 #: templates/web/base/auth/generate_token.html:21
 msgid "Two-factor authentication has been activated"
-msgstr ""
+msgstr "Tvåfaktorsautentisering av aktiverats"
 
 #: templates/web/base/auth/generate_token.html:32
 msgid "Two-factor authentication has been deactivated"
-msgstr ""
+msgstr "Tvåfaktorsautentisering av inaktiverats"
 
 #: templates/web/base/admin/extra-metadata-form.html:44
 #: templates/web/base/admin/states/index.html:10
@@ -5009,7 +4998,7 @@ msgstr "Ditt lösenord har ändrats"
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:25
 #: templates/web/zurich/auth/general.html:63
 msgid "Your password should include %d or more characters."
-msgstr ""
+msgstr "Ditt lösenord måste inkludera %d eller fler tecken."
 
 #: templates/web/base/auth/change_phone.html:19
 #: templates/web/base/contact/index.html:87
@@ -5353,12 +5342,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "rapport"
 msgstr[1] "rapporter"
-
-#~ msgid "Email: %s"
-#~ msgstr "E-post: %s"
-
-#~ msgid "Name: %s"
-#~ msgstr "Namn: %s"
-
-#~ msgid "This report was submitted anonymously"
-#~ msgstr "Den här rapporten skickades anonymt."

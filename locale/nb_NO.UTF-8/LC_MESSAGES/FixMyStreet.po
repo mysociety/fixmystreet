@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-02-12 15:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: pere <pere-transifex@hungry.com>, 2018\n"
+"Last-Translator: pere <pere-transifex@hungry.com>, 2017\n"
 "Language-Team: Norwegian Bokmål (Norway) (https://www.transifex.com/mysociety/teams/12067/nb_NO/)\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
@@ -896,9 +896,8 @@ msgid "Created:"
 msgstr "Opprettet:"
 
 #: templates/web/base/auth/change_password.html:40
-#, fuzzy
 msgid "Current password:"
-msgstr "Nytt passord:"
+msgstr ""
 
 #: templates/web/base/auth/generate_token.html:46
 msgid "Current token:"
@@ -1524,9 +1523,8 @@ msgid "Hidden"
 msgstr "Skjul"
 
 #: templates/web/base/admin/user-form.html:197
-#, fuzzy
 msgid "Hide all reports and updates"
-msgstr "Flaggede rapporter og brukere"
+msgstr ""
 
 #: templates/web/base/report/_main.html:105
 msgid "Hide entire report"
@@ -1861,9 +1859,8 @@ msgid "List all reported problems"
 msgstr "List alle rapporterte problemer"
 
 #: templates/web/base/around/on_map_list_items.html:18
-#, fuzzy
 msgid "Loading reports…"
-msgstr "Endre rapporter"
+msgstr ""
 
 #: templates/web/base/report/new/category_wrapper.html:8
 msgid "Loading..."
@@ -3524,9 +3521,8 @@ msgstr "Tjeneste:"
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:4
-#, fuzzy
 msgid "Set password"
-msgstr "Nytt passord:"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:47
 msgid "Set to my current location"
@@ -3606,7 +3602,7 @@ msgstr "Logg inn"
 
 #: templates/web/base/auth/general.html:100
 msgid "Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated."
-msgstr "Logg inn med epost is tedet, og oppgi et nytt passord.  Når du besøker lenken du fikk i epost vil passordet ditt bli oppdatert."
+msgstr "Logg inn med epost i stedet, og oppgi et nytt passord.  Når du besøker lenken du fikk i epost vil passordet ditt bli oppdatert."
 
 #: templates/web/base/auth/general.html:98
 msgid "Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated."
@@ -3650,19 +3646,16 @@ msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cov
 msgstr "Beklager det ser ut til å være et \"Crown dependency\"-postnummer, som vi ikke dekker."
 
 #: perllib/FixMyStreet/Cobrand/ACV.pm:73
-#, fuzzy
 msgid "Sorry, that appears to be a Northern Irish postcode, which we don't cover."
-msgstr "Beklager det ser ut til å være et \"Crown dependency\"-postnummer, som vi ikke dekker."
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/ACV.pm:65
-#, fuzzy
 msgid "Sorry, that appears to be a Scottish postcode, which we don't cover."
-msgstr "Beklager det ser ut til å være et \"Crown dependency\"-postnummer, som vi ikke dekker."
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/ACV.pm:69
-#, fuzzy
 msgid "Sorry, that appears to be a Welsh postcode, which we don't cover."
-msgstr "Beklager det ser ut til å være et \"Crown dependency\"-postnummer, som vi ikke dekker."
+msgstr ""
 
 #: templates/web/base/auth/smsform.html:6 templates/web/base/auth/token.html:8
 msgid "Sorry, that wasn&rsquo;t a valid link"
@@ -3993,9 +3986,8 @@ msgid "That report has been removed from FixMyStreet."
 msgstr "Den rapporten har blitt fjernet fra FiksGataMi."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1769
-#, fuzzy
 msgid "That user has been logged out."
-msgstr "Den rapporten har blitt fjernet fra FiksGataMi."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1776
 msgid "That user has been made anonymous on all reports and updates."
@@ -5411,12 +5403,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "Email: %s"
-#~ msgstr "E-post: %s"
-
-#~ msgid "Name: %s"
-#~ msgstr "Navn: %s"
-
-#~ msgid "This report was submitted anonymously"
-#~ msgstr "Denne rapporten ble rapportert anonymt"
