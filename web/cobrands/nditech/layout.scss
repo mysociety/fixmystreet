@@ -234,31 +234,6 @@ html[dir='rtl'] #fms_pan_zoom_zoomout {
         right:auto!important;
         left:30px!important;
 }
-.big-green-banner {
-	background:$green url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjciIGhlaWdodD0iMzMiPgogICAgPHBvbHlnb24gcG9pbnRzPSIwLDAgMTMsMCAyNiwxNiAxMywzMiAwLDMyIDEzLDE2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=') right center no-repeat;
-	background-size:63px 33px;
-	right:0;
-	left:auto;
-	padding-left: 0;
-}
-html[dir='rtl'] .big-green-banner {
-	background:$green url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjciIGhlaWdodD0iMzMiPgogICAgPHBvbHlnb24gcG9pbnRzPSIyNiwwIDEzLDAgMCwxNiAxMywzMiAyNiwzMiAxMywxNiIgZmlsbD0iI2ZmZmZmZiIvPgo8L3N2Zz4K') 20px 20px no-repeat;
-	background-size:50px 33px;
-	right:auto;
-	padding-right: 0;
-}
-.big-green-banner:before {
-	border-left:0.5em solid #d51c1c;
-	border-right:none;
-	left:auto;
-	right:0;
-}
-html[dir='rtl'] .big-green-banner:before {
-        border-right:0.5em solid #d51c1c;
-	border-left:none;
-	left:0;
-	right:auto;
-}
 #front-main #postcodeForm div {
 	width:33em;
 }
