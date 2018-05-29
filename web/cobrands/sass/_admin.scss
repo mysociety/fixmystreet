@@ -116,8 +116,8 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 }
 
 .admin-open311-section {
-    padding-left: 1em;
-    border-left: 1px solid #ccc;
+    padding-#{$left}: 1em;
+    border-#{$left}: 1px solid #ccc;
 }
 
 .admin-hint {
@@ -165,11 +165,11 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 .admin-index-search {
     width: 27em;
     form {
-        clear: left;
+        clear: #{$left};
     }
     select {
         max-width: 65%;
-        float: left;
+        float: #{$left};
     }
 }
 
@@ -207,10 +207,10 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     .js-metadata-item-remove {
         position: absolute;
         top: 0.25em;
-        right: 0.25em;
+        #{$right}: 0.25em;
     }
 }
 
 .danger-zone {
-    text-align: right;
+    text-align: #{$right};
 }

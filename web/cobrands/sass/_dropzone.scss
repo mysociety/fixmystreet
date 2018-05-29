@@ -6,6 +6,11 @@ $dropzone-background-color: #fff;
 $dropzone-background-color--awakened: mix($dropzone-link-color, $dropzone-background-color, 10%);
 $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%);
 
+// To prevent a horizontal scrollbar in RTL
+.dz-hidden-input {
+  right: 0;
+}
+
 .dropzone {
   @extend .form-control;
   @include clearfix;

@@ -44,6 +44,7 @@
         - Use inspection states in response template admin.
         - Fixed CSS padding/overflow bug during sidebar "drawer" animations. #2132
         - Response template containing double quote now works.
+        - A few small display issues with RTL text display.
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
