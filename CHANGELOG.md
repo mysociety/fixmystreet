@@ -1,17 +1,6 @@
 ## Releases
 
 * Unreleased
-    - New features
-        - Fetch problems over Open311 #1986 #2067
-        - Option to send multiple photos over Open311 #1986
-        - Allow Open311 service definitions to include automated
-          attributes #1986
-        - Optionally supress blank Open311 update errors #1986
-        - Fetch/store external status code with Open311 updates. #2048
-        - Response templates can be triggered by external status code. #2048
-        - Cobrand hook for adding extra areas to MAPIT_WHITELIST/_TYPES. #2049
-        - Enable conversion from EPSG:27700 when fetching over Open311 #2028
-        - send-comments warns about errors when called with --verbose #2091
     - Front end improvements:
         - Improve questionnaire process. #1939 #1998
         - Increase size of "sub map links" (hide pins, permalink, etc) #2003 #2056
@@ -54,16 +43,26 @@
         - Show Open311 service code as tooltip on admin category checkboxes. #2049
         - Bulk user import admin page. #2057
         - Add link to admin edit page for reports. #2071
-        - Nicer Open311 errors. #2078
         - Deleted body categories now hidden by default #1962
         - Display contents of report's extra field #1809
         - Store user creation and last active times.
         - Add scripts to anonymize inactive users and reports,
           email inactive users, or to close reports to new updates.
         - Admin ability to close reports to new updates. #43
-    - Development improvements:
-        - Add HTML email previewer.
+    - Open311 improvements:
+        - Fetch problems over Open311 #1986 #2067
+        - Option to send multiple photos over Open311 #1986
+        - Allow Open311 service definitions to include automated attributes #1986
+        - Optionally supress blank Open311 update errors #1986
+        - Fetch/store external status code with Open311 updates. #2048
+        - Response templates can be triggered by external status code. #2048
+        - Enable conversion from EPSG:27700 when fetching over Open311 #2028
         - Add CORS header to Open311 output. #2022
+        - Nicer Open311 errors. #2078
+    - Development improvements:
+        - Cobrand hook for adding extra areas to MAPIT_WHITELIST/_TYPES. #2049
+        - send-comments warns about errors when called with --verbose #2091
+        - Add HTML email previewer.
         - Add some Cypress browser-based testing.
         - Upgrade Vagrantfile to use Ubuntu Xenial. #2093
         - Add validation to cobrand-specific custom reporting fields.
