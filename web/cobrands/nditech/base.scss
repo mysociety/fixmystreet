@@ -357,13 +357,7 @@ html[lang='ru'] #front-main #postcodeForm div input#pc {
 html[lang='ru'] #front-main #postcodeForm div input#sub {
 	width:41%;
 }
-.shadow-wrap ul#key-tools li a.chevron, .shadow-wrap ul#key-tools li input[type=submit].chevron {
-	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjciIGhlaWdodD0iMzMiPgogICAgPHBvbHlnb24gcG9pbnRzPSIwLDAgMTMsMCAyNiwxNiAxMywzMiAwLDMyIDEzLDE2IiBmaWxsPSIjZDFkMWQxIi8+Cjwvc3ZnPgo=');
-}
 
-html[dir='rtl'] .shadow-wrap ul#key-tools li a.chevron, html[dir='rtl'] .shadow-wrap ul#key-tools li input[type=submit].chevron {
-	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjciIGhlaWdodD0iMzMiPgogICAgPHBvbHlnb24gcG9pbnRzPSIyNiwwIDEzLDAgMCwxNiAxMywzMiAyNiwzMiAxMywxNiIgZmlsbD0iI2QxZDFkMSIvPgo8L3N2Zz4K');
-}
 table.nicetable .title {
 	text-align:left;
 }
@@ -465,4 +459,25 @@ html[dir="rtl"] {
         }
 }
 
+/* Little icon LTR fixes */
+html[dir=ltr] {
+  .problem-back:before {
+    margin-left: 0;
+    margin-right: 0.5em;
+    background-position: 0 0;
+  }
 
+  #key-tools a:after {
+    margin-right: 0;
+    margin-left: 0.5em;
+  }
+
+  #key-tools a.chevron:after {
+    background-position: -16px 0;
+  }
+
+  #sub_map_links a:after {
+    margin-right: 0;
+    margin-left: 8px;
+  }
+}
