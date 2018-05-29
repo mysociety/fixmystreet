@@ -15,6 +15,8 @@ sub council_name { return 'Lincolnshire County Council'; }
 sub council_url { return 'lincolnshire'; }
 sub is_two_tier { 1 }
 
+sub enable_category_groups { 1 }
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
