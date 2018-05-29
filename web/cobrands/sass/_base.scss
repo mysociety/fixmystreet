@@ -2417,7 +2417,7 @@ $nicetable-hover-background: rgba($primary, 0.15) !default;
             background: $nicetable-hover-background;
         }
 
-        thead tr {
+        thead tr:hover {
             background: transparent;
         }
     }
