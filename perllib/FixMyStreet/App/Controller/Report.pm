@@ -402,7 +402,7 @@ sub inspect : Private {
             if ( $problem->state eq 'duplicate') {
                 if (my $duplicate_of = $c->get_param('duplicate_of')) {
                     $problem->set_duplicate_of($duplicate_of);
-                } elsif (not $c->get_param('public_update')) {
+                } elsif (not $c->get_param('include_update')) {
                     $valid = 0;
                     push @{ $c->stash->{errors} }, _('Please provide a duplicate ID or public update for this report.');
                 }
