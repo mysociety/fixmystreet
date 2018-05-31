@@ -99,6 +99,13 @@ $(function(){
 
     // Bits for the report extra fields form builder:
 
+    // Reveal the UI when 'show' link is clicked
+    $(".js-show-extra-fields").click(function(e) {
+        e.preventDefault();
+        $(this).hide();
+        $(".js-extra-fields-ui").removeClass("hidden-js");
+    });
+
     // If type is changed to 'singlevaluelist' show the options list
     $(".js-metadata-items").on("change", ".js-metadata-item-type", function() {
         var $this = $(this);
