@@ -278,7 +278,7 @@ sub export_as_csv : Private {
     my $csv = $c->stash->{csv} = {
         problems => $c->stash->{problems_rs}->search_rs({}, {
             prefetch => 'comments',
-            order_by => 'me.confirmed'
+            order_by => ['me.confirmed', 'me.id'],
         }),
         headers => [
             'Report ID',
