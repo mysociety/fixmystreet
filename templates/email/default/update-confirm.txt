@@ -1,8 +1,8 @@
-Subject: Confirm your update on [% INCLUDE 'site-name.txt' | trim %]
+Subject: Confirm your update on [% site_name %]
 
 Hello [% update.name %],
 
-Please click on the link below to confirm your update on [% INCLUDE 'site-name.txt' | trim %]:
+Please click on the link below to confirm your update on [% site_name %]:
 
 [% token_url %]
 
@@ -15,7 +15,7 @@ Your update reads:
 
 [% INCLUDE 'update-confirm-donotsend.txt' %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

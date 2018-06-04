@@ -31,7 +31,7 @@ the team at [% report_complain_uri %]
 Thank you for submitting a report through [% site_name %].
 
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

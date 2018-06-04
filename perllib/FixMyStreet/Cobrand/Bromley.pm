@@ -16,6 +16,8 @@ sub base_url {
     return 'https://fix.bromley.gov.uk';
 }
 
+sub default_show_name { 0 }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

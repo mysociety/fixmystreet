@@ -1,4 +1,4 @@
-Subject: Bekräfta din rapport på [% INCLUDE 'site-name.txt' | trim %]
+Subject: Bekräfta din rapport på [% site_name %]
 
 Hej [% report.name %],
 
@@ -16,4 +16,4 @@ Du har angivit följande information om problemet:
 
 [% report.detail %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]

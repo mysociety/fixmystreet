@@ -21,6 +21,6 @@ Och detaljerna:
 
 [% report.detail %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 Det går inte att svara på detta mail.

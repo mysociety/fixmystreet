@@ -10,4 +10,4 @@ just valde att prenumerera till på FixaMinGata:
 Om du inte kan klicka på länken kan du kopiera den och klistra in den
 i adressfältet på din webbläsare.
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]

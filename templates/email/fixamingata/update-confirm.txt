@@ -1,4 +1,4 @@
-Subject: Bekräfta din uppdatering på [% INCLUDE 'site-name.txt' | trim %]
+Subject: Bekräfta din uppdatering på [% site_name %]
 
 Hej [% update.name %],
 
@@ -14,4 +14,4 @@ Din uppdatering var:
 
 [% update.text %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]

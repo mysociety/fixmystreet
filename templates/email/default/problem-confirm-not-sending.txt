@@ -25,7 +25,7 @@ Thank you for supporting [% site_name %].
 
 
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

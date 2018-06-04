@@ -5,7 +5,7 @@ email address on [% site_name %].
 
 [% c.uri_for_action( 'auth/token', token ) %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

@@ -370,6 +370,8 @@ sub construct_email {
         %$extra_stash_values,
         additional_template_paths => \@include_path,
     };
+    $vars->{site_name} = Utils::trim_text($c->view('Email')->render($c, 'site-name.txt', $vars));
+    $vars->{signature} = $c->view('Email')->render($c, 'signature.txt', $vars);
 
     return if FixMyStreet::Email::is_abuser($c->model('DB')->schema, $vars->{to});
 
