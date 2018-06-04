@@ -1,0 +1,30 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+$primary: gray;
+$primary_b: #000000;
+$primary_text: #222222;
+
+$base_bg: white;
+$base_fg: #000;
+
+$map_nav_bg: #eee;
+$nav_fg: #000;
+$nav_fg_hover: $primary;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: #ccc;
+
+$col_click_map: gray;
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;
+
+$menu-image: 'menu-black';
+
+$front_main_background: white;
+// $header-top-border: false;
