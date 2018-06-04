@@ -211,6 +211,20 @@ function asset_selected(e) {
         $("#form_" + field_name).val(field_value);
     });
 
+    if (this.fixmystreet.disable_pin_snapping) {
+        // The simplest way to disable pin snapping is to immediately
+        // unselect this feature now that the form values have been
+        // updates with its attributes.
+        // However, the asset unselect handler will blank the form fields
+        // populated by this asset which isn't very useful.
+        // Adding a new attribute to the feature before unselecting it
+        // allows the unselect handler to understand the intent of this
+        // unselection and not blank the form fields.
+        e.feature.attributes._preserve_form_values_on_unselect = true;
+        get_select_control(this).unselect(e.feature);
+        return;
+    }
+
     // Hide the normal markers layer to keep things simple, but
     // move the green marker to the point of the click to stop
     // it jumping around unexpectedly if the user deselects the asset.
@@ -227,10 +241,14 @@ function asset_selected(e) {
 
 function asset_unselected(e) {
     fixmystreet.markers.setVisibility(true);
+    selected_feature = null;
+    if (e.feature.attributes._preserve_form_values_on_unselect) {
+        e.feature.attributes._preserve_form_values_on_unselect = false;
+        return;
+    }
     $.each(this.fixmystreet.attributes, function (field_name, attribute_name) {
         $("#form_" + field_name).val("");
     });
-    selected_feature = null;
 }
 
 function find_matching_feature(feature, layer, asset_id_field) {

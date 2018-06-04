@@ -45,6 +45,35 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     }
 }));
 
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "ParksOpenSpaces"
+        }
+    },
+    asset_category: [
+        'Play area safety issue',
+        'Obstructive vegetation',
+        'Damaged infrastructure (e.g. broken benches)',
+        'Allotment issue'
+    ],
+    asset_item: "park",
+    disable_pin_snapping: true,
+    stylemap: new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fill: false,
+            stroke: false
+        })
+    }),
+    attributes: {
+        asset_details: function() {
+            var a = this.attributes;
+            return a.site_code + " " + a.site_name;
+        }
+    },
+    name: "Parks and Grounds"
+}));
+
 
 
 /*

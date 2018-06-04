@@ -120,6 +120,24 @@ as well.") %]
     [% INCLUDE 'admin/open311-form-fields.html', object = contact%]
   [% END %]
 
+  [% IF c.cobrand.enable_category_groups %]
+    <div class="admin-hint">
+      <p>
+        [% loc(
+          "The <strong>group</strong> is used for the top-level category field when
+          subcategory grouping is enabled."
+        ) %]
+      </p>
+    </div>
+    <p>
+      <label>
+        [% loc('Group') %]
+        <input class="form-control" type="text" name="group" value="[% contact.extra.group | html %]" size="30">
+      </label>
+    </p>
+  [% END %]
+
+
   <div class="admin-hint">
     <p>
       [% loc("Use this field to record details that are only displayed in the admin. Input is not shown publicly, and is not sent to the body.") %]

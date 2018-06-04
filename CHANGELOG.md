@@ -52,6 +52,7 @@
         - Add scripts to anonymize inactive users and reports,
           email inactive users, or to close reports to new updates.
         - Admin ability to close reports to new updates. #43
+        - Category group can be edited.
     - Open311 improvements:
         - Fetch problems over Open311 #1986 #2067
         - Option to send multiple photos over Open311 #1986
