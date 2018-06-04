@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8">
     <title>{{ page.title }} | FixMyStreet Platform | mySociety</title>
-    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-org.css" | relative_url }}">
-    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro.css" | relative_url }}">
-    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro-print.css" | relative_url }}" media="print">
+    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-org.css" | absolute_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro.css" | absolute_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro-print.css" | absolute_url }}" media="print">
     <link rel="stylesheet" href="https://www.fixmystreet.com/pro/wp-content/themes/fixmystreet-pro/assets/css/main.css" />
-    <link href="/atom.xml" rel="alternate" title="FixMyStreet Platform" type="application/atom+xml">
+    <link href="{{ "/atom.xml" | absolute_url }}" rel="alternate" title="FixMyStreet Platform" type="application/atom+xml">
     <meta name="viewport" content="initial-scale=1">
     <link rel="stylesheet" id="google-fonts-css" href="https://fonts.googleapis.com/css?family=Rubik%3A400%2C500%2C700&amp;ver=4.9.4" type="text/css" media="all">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     {% include google-analytics.html %}
-    <script type="text/javascript" src="/assets/scripts/jquery.min.js"></script>
-    <script type="text/javascript" src="/assets/scripts/jquery-migrate.min.js"></script>
+    <script type="text/javascript" src="{{ "/assets/scripts/jquery.min.js" | absolute_url }}"></script>
+    <script type="text/javascript" src="{{ "/assets/scripts/jquery-migrate.min.js" | absolute_url }}"></script>
     <script type="text/javascript" src="https://www.fixmystreet.com/pro/wp-content/themes/fixmystreet-pro/assets/javascript/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://www.fixmystreet.com/pro/wp-content/themes/fixmystreet-pro/assets/javascript/main.js"></script>
   </head>
@@ -37,7 +37,7 @@
 
     <header class="site-header">
       <div class="container">
-          <a href="{{ "/" | relative_url }}" class="site-logo" aria-label="FixMyStreet Pro home">
+          <a href="https://www.fixmystreet.com/pro/" class="site-logo" aria-label="FixMyStreet Pro home">
               FixMyStreet Pro            </a>
           <a href="#main-nav" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="main-nav">
               Menu
