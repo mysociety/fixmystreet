@@ -54,6 +54,7 @@ for my $test (
           'attribute[easting]' => 529025,
           'attribute[northing]' => 179716,
           'attribute[service_request_id_ext]' => $report->id,
+          'attribute[report_title]' => 'Test Test 1 for ' . $body->id,
           'jurisdiction_id' => 'FMS',
           address_id => undef,
         },
@@ -72,11 +73,20 @@ for my $test (
           'address_id' => '#NOTPINPOINTED#',
         },
     },
+    {
+        desc => 'asset ID',
+        feature_id => '1234',
+        expected => {
+          'attribute[service_request_id_ext]' => $report->id,
+          'attribute[report_title]' => 'Test Test 1 for ' . $body->id . ' | ID: 1234',
+        },
+    },
 ) {
     subtest $test->{desc}, sub {
-        $report->set_extra_fields();
         $report->$_($test->{updates}->{$_}) for keys %{$test->{updates}};
         $report->$_(undef) for qw/ whensent send_method_used external_id /;
+        $report->set_extra_fields({ name => 'feature_id', value => $test->{feature_id} })
+            if $test->{feature_id};
         $report->update;
         $body->update( { send_method => 'Open311', endpoint => 'http://bromley.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1 } );
         my $test_data;

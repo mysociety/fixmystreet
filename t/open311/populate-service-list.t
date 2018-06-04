@@ -192,67 +192,6 @@ subtest 'check conflicting contacts not changed' => sub {
     is $contact_count, 4, 'correct number of contacts';
 };
 
-subtest 'check meta data population' => sub {
-    my $processor = Open311::PopulateServiceList->new();
-
-    my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
-<service_definition>
-    <service_code>100</service_code>
-    <attributes>
-        <attribute>
-            <variable>true</variable>
-            <code>type</code>
-            <datatype>string</datatype>
-            <required>true</required>
-            <datatype_description>Type of bin</datatype_description>
-            <order>1</order>
-            <description>Type of bin</description>
-        </attribute>
-    </attributes>
-</service_definition>
-    ';
-
-    my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create(
-        {
-            body_id => 1,
-            email =>   '001',
-            category => 'Bins left out 24x7',
-            state => 'confirmed',
-            editor => $0,
-            whenedited => \'current_timestamp',
-            note => 'test contact',
-        }
-    );
-
-    my $o = Open311->new(
-        jurisdiction => 'mysociety',
-        endpoint => 'http://example.com',
-        test_mode => 1,
-        test_get_returns => { 'services/100.xml' => $meta_xml }
-    );
-
-    $processor->_current_open311( $o );
-    $processor->_current_body( $bromley );
-    $processor->_current_service( { service_code => 100 } );
-
-    $processor->_add_meta_to_contact( $contact );
-
-    my $extra = [ {
-            variable => 'true',
-            code => 'type',
-            datatype => 'string',
-            required => 'true',
-            datatype_description => 'Type of bin',
-            order => 1,
-            description => 'Type of bin'
-
-    } ];
-
-    $contact->discard_changes;
-
-    is_deeply $contact->get_extra_fields, $extra, 'meta data saved';
-};
-
 for my $test (
     {
         desc => 'check meta data added to existing contact',
@@ -527,7 +466,7 @@ subtest 'check attribute ordering' => sub {
     is_deeply $contact->get_extra_fields, $extra, 'meta data re-ordered correctly';
 };
 
-subtest 'check bromely skip code' => sub {
+subtest 'check Bromley skip code' => sub {
     my $processor = Open311::PopulateServiceList->new();
 
     my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
@@ -598,7 +537,14 @@ subtest 'check bromely skip code' => sub {
             datatype_description => 'Type of bin',
             order => 1,
             description => 'Type of bin'
-
+    }, {
+            automated => 'hidden_field',
+            variable => 'true',
+            code => 'prow_reference',
+            datatype => 'string',
+            required => 'false',
+            order => 101,
+            description => 'Right of way reference'
     } ];
 
     $contact->discard_changes;

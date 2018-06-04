@@ -112,11 +112,19 @@ sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
     my $extra = $row->get_extra_fields;
+    my $title = $row->title;
+
+    foreach (@$extra) {
+        $title .= ' | ID: ' . $_->{value} if $_->{name} eq 'feature_id';
+        $title .= ' | PROW ID: ' . $_->{value} if $_->{name} eq 'prow_reference';
+    }
+    @$extra = grep { $_->{name} !~ /feature_id|prow_reference/ } @$extra;
+
     push @$extra,
         { name => 'report_url',
           value => $h->{url} },
         { name => 'report_title',
-          value => $row->title },
+          value => $title },
         { name => 'public_anonymity_required',
           value => $row->anonymous ? 'TRUE' : 'FALSE' },
         { name => 'email_alerts_requested',

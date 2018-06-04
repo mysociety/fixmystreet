@@ -37,6 +37,7 @@
         - Response template containing double quote now works.
         - A few small display issues with RTL text display.
         - Improve handling of loading spinner display. #2059
+        - Ignore non-interactive layers for asset message.
     - Admin improvements:
         - Inspectors can set non_public status of reports. #1992
         - Default start date is shown on the dashboard.
