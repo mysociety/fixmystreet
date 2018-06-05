@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes:
+        - Fix pointer event issue selecting pin on map. #2130
 
 * v2.3.2 (31st May 2018)
     - Front end improvements:

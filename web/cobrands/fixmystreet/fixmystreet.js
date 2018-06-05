@@ -1145,6 +1145,9 @@ fixmystreet.display = {
                 fixmystreet.maps.markers_resize(); // force a redraw so the selected marker gets bigger
             }
 
+            // We disabled this upon first touch to prevent it taking effect, re-enable now
+            fixmystreet.maps.click_control.activate();
+
             if (typeof callback === 'function') {
                 callback();
             }
