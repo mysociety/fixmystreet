@@ -13,8 +13,13 @@
     <p class='form-error'>[% field_errors.username %]</p>
 [% END %]
 <input type="[% username_type %]" value="[% username_value | html %]" name="username" id="form_username"
+[% IF c.config.SMS_AUTHENTICATION %]
     [% IF required %]required[% END %]
-    class="form-control required">
+    class="form-control required"
+[%~ ELSE %]
+    placeholder="[% loc('Optional') %]"
+    class="form-control"
+[%~ END %]>
 
 [% IF NOT c.config.SMS_AUTHENTICATION %]
 <label for="phone_number">[% loc('Your Phone Number') %]</label>
