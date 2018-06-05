@@ -37,9 +37,52 @@ for my $test (
         detail    => 'More detail on the different problem',
         postcode  => 'EH99 1SP',
         confirmed => '2011-05-03 13:24:28.145168',
+        anonymous => 0,
+        hidden    => 1,
+        meta      => 'Reported anonymously at 13:24, Tue  3 May 2011',
+    },
+    {
+        name      => 'A User',
+        email     => 'problem_report_test@example.com',
+        title     => 'A different problem',
+        detail    => 'More detail on the different problem',
+        postcode  => 'EH99 1SP',
+        confirmed => '2011-05-03 13:24:28.145168',
         anonymous => 1,
         meta      => 'Reported anonymously at 13:24, Tue  3 May 2011',
         update    => {
+            name  => 'Different User',
+            email => 'commenter@example.com',
+            text  => 'This is an update',
+        },
+    },
+    {
+        name      => 'A User',
+        email     => 'problem_report_test@example.com',
+        title     => 'A different problem',
+        detail    => 'More detail on the different problem',
+        postcode  => 'EH99 1SP',
+        confirmed => '2011-05-03 13:24:28.145168',
+        anonymous => 1,
+        meta      => 'Reported anonymously at 13:24, Tue  3 May 2011',
+        update    => {
+            other_problem => 1,
+            name  => 'Different User',
+            email => 'commenter@example.com',
+            text  => 'This is an update',
+        },
+    },
+    {
+        name      => 'A User',
+        email     => 'problem_report_test@example.com',
+        title     => 'A different problem',
+        detail    => 'More detail on the different problem',
+        postcode  => 'EH99 1SP',
+        confirmed => '2011-05-03 13:24:28.145168',
+        anonymous => 1,
+        meta      => 'Reported anonymously at 13:24, Tue  3 May 2011',
+        update    => {
+            hidden => 1,
             name  => 'Different User',
             email => 'commenter@example.com',
             text  => 'This is an update',
@@ -58,7 +101,7 @@ for my $test (
                 confirmed => $test->{confirmed},
                 name      => $test->{name},
                 anonymous => $test->{anonymous},
-                state     => 'confirmed',
+                state     => $test->{hidden} ? 'hidden' : 'confirmed',
                 user      => $user,
                 latitude  => 0,
                 longitude => 0,
@@ -76,9 +119,9 @@ for my $test (
 
             $update = FixMyStreet::App->model('DB::Comment')->create(
                 {
-                    problem_id => $problem->id,
+                    problem_id => $update_info->{other_problem} ? $problem_main->id : $problem->id,
                     user        => $update_user,
-                    state       => 'confirmed',
+                    state       => $update_info->{hidden} ? 'hidden' : 'confirmed',
                     text        => $update_info->{text},
                     confirmed   => \'current_timestamp',
                     mark_fixed => 'f',
@@ -90,9 +133,20 @@ for my $test (
         ok $problem, 'succesfully create a problem';
 
         if ( $update ) {
-            $mech->get_ok( '/contact?id=' . $problem->id . '&update_id=' . $update->id );
-            $mech->content_contains('reporting the following update');
-            $mech->content_contains( $test->{update}->{text} );
+            if ( $test->{update}->{hidden} ) {
+                $mech->get( '/contact?id=' . $problem->id . '&update_id=' . $update->id );
+                is $mech->res->code, 404, 'cannot report a hidden update';
+            } elsif ( $test->{update}->{other_problem} ) {
+                $mech->get( '/contact?id=' . $problem->id . '&update_id=' . $update->id );
+                is $mech->res->code, 404, 'cannot view an update for another problem';
+            } else {
+                $mech->get_ok( '/contact?id=' . $problem->id . '&update_id=' . $update->id );
+                $mech->content_contains('reporting the following update');
+                $mech->content_contains( $test->{update}->{text} );
+            }
+        } elsif ( $test->{hidden} ) {
+            $mech->get( '/contact?id=' . $problem->id );
+            is $mech->res->code, 410, 'cannot report a hidden problem';
         } else {
             $mech->get_ok( '/contact?id=' . $problem->id );
             $mech->content_contains('reporting the following problem');

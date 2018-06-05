@@ -3,6 +3,8 @@
 * Unreleased
     - Front end improvements:
       - Extra help text on contact form #2149
+    - Bugfixes:
+      - Prevent contact form leaking information about updates #2149
 
 * v2.3.2 (31st May 2018)
     - Front end improvements:
