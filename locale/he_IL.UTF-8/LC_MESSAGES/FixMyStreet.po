@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:673
 #: perllib/FixMyStreet/DB/Result/Problem.pm:675
@@ -5298,6 +5298,8 @@ msgid "%d address"
 msgid_plural "%d addresses"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: perllib/Utils.pm:250
 #, perl-format
@@ -5305,6 +5307,8 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: perllib/Utils.pm:252
 #, perl-format
@@ -5312,6 +5316,8 @@ msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: perllib/Utils.pm:254
 #, perl-format
@@ -5319,6 +5325,8 @@ msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: perllib/Utils.pm:246
 #, perl-format
@@ -5326,6 +5334,8 @@ msgid "%d month"
 msgid_plural "%d months"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/report/_support.html:6
 #, perl-format
@@ -5333,6 +5343,8 @@ msgid "%d supporter"
 msgid_plural "%d supporters"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: perllib/Utils.pm:248
 #, perl-format
@@ -5340,6 +5352,8 @@ msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: perllib/Utils.pm:244
 #, perl-format
@@ -5347,6 +5361,8 @@ msgid "%d year"
 msgid_plural "%d years"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/fixmystreet.com/reports/summary.html:153
 #, perl-format
@@ -5354,6 +5370,8 @@ msgid "%s day"
 msgid_plural "%s days"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/reports/index.html:57
 #, perl-format
@@ -5361,6 +5379,8 @@ msgid "%s problem marked as fixed"
 msgid_plural "%s problems marked as fixed"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/reports/index.html:45
 #, perl-format
@@ -5368,6 +5388,8 @@ msgid "%s problem reported"
 msgid_plural "%s problems reported"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/fixmystreet.com/reports/summary.html:168
 #, perl-format
@@ -5375,6 +5397,8 @@ msgid "%s report"
 msgid_plural "%s reports"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/reports/index.html:51
 #, perl-format
@@ -5382,6 +5406,8 @@ msgid "%s update on problems"
 msgid_plural "%s updates on problems"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/front/stats.html:19
 #, perl-format
@@ -5389,6 +5415,8 @@ msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/front/stats.html:8
 #, perl-format
@@ -5396,6 +5424,8 @@ msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/front/stats.html:13
 #, perl-format
@@ -5403,6 +5433,8 @@ msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/front/stats.html:25
 #, perl-format
@@ -5410,6 +5442,8 @@ msgid "<big>%s</big> update on reports"
 msgid_plural "<big>%s</big> updates on reports"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/buckinghamshire/report/_item.html:51
 #, perl-format
@@ -5417,6 +5451,8 @@ msgid "Reported %d day ago"
 msgid_plural "Reported %d days ago"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/report/new/top_message_some.html:3
 #, perl-format
@@ -5424,6 +5460,8 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/report/new/top_message_none.html:3
 #, perl-format
@@ -5431,6 +5469,8 @@ msgid "We do not yet have details for the council that covers this location."
 msgid_plural "We do not yet have details for the councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/buckinghamshire/report/_item.html:61
 #, perl-format
@@ -5438,13 +5478,17 @@ msgid "last updated %d day ago"
 msgid_plural "last updated %d days ago"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/email/default/inactive-account.txt:8
-#, fuzzy, perl-format
+#, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] "חודש"
-msgstr[1] "חודש"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/email/warwickshire/archive.txt:9
 #, perl-format
@@ -5452,6 +5496,8 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #~ msgid "Category: %s"
 #~ msgstr "קטגוריה: %s"

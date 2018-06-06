@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:673
 #: perllib/FixMyStreet/DB/Result/Problem.pm:675
@@ -5338,138 +5338,161 @@ msgstr "bölge"
 msgid "%d address"
 msgid_plural "%d addresses"
 msgstr[0] "%d adres"
+msgstr[1] "%d adres"
 
 #: perllib/Utils.pm:250
 #, perl-format
 msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d gün"
+msgstr[1] "%d gün"
 
 #: perllib/Utils.pm:252
 #, perl-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d saat"
+msgstr[1] "%d saat"
 
 #: perllib/Utils.pm:254
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d dakika"
+msgstr[1] "%d dakika"
 
 #: perllib/Utils.pm:246
 #, perl-format
 msgid "%d month"
 msgid_plural "%d months"
 msgstr[0] "%d ay"
+msgstr[1] "%d ay"
 
 #: templates/web/base/report/_support.html:6
 #, perl-format
 msgid "%d supporter"
 msgid_plural "%d supporters"
 msgstr[0] "%d destekçiler"
+msgstr[1] "%d destekçiler"
 
 #: perllib/Utils.pm:248
 #, perl-format
 msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] "%d hafta"
+msgstr[1] "%d hafta"
 
 #: perllib/Utils.pm:244
 #, perl-format
 msgid "%d year"
 msgid_plural "%d years"
 msgstr[0] "%d yıl"
+msgstr[1] "%d yıl"
 
 #: templates/web/fixmystreet.com/reports/summary.html:153
 #, perl-format
 msgid "%s day"
 msgid_plural "%s days"
 msgstr[0] "%s gün"
+msgstr[1] "%s gün"
 
 #: templates/web/base/reports/index.html:57
 #, perl-format
 msgid "%s problem marked as fixed"
 msgid_plural "%s problems marked as fixed"
 msgstr[0] "%s problem çözüldü olarak işaretlendi"
+msgstr[1] "%s problem çözüldü olarak işaretlendi"
 
 #: templates/web/base/reports/index.html:45
 #, perl-format
 msgid "%s problem reported"
 msgid_plural "%s problems reported"
 msgstr[0] "%s raporlanan problem"
+msgstr[1] "%s raporlanan problem"
 
 #: templates/web/fixmystreet.com/reports/summary.html:168
 #, perl-format
 msgid "%s report"
 msgid_plural "%s reports"
 msgstr[0] "%s rapor"
+msgstr[1] "%s rapor"
 
 #: templates/web/base/reports/index.html:51
 #, perl-format
 msgid "%s update on problems"
 msgid_plural "%s updates on problems"
 msgstr[0] "%s sorun güncelleme"
+msgstr[1] "%s sorun güncelleme"
 
 #: templates/web/base/front/stats.html:19
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
 msgstr[0] "<big>%s</big> geçen ay onarıldı"
+msgstr[1] "<big>%s</big> geçen ay onarıldı"
 
 #: templates/web/base/front/stats.html:8
 #, perl-format
 msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] "<big>%s</big> geçen haftaki bildirimler"
+msgstr[1] "<big>%s</big> geçen haftaki bildirimler"
 
 #: templates/web/base/front/stats.html:13
 #, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
 msgstr[0] "<big>%s</big> son bildirimler"
+msgstr[1] "<big>%s</big> son bildirimler"
 
 #: templates/web/base/front/stats.html:25
 #, perl-format
 msgid "<big>%s</big> update on reports"
 msgid_plural "<big>%s</big> updates on reports"
 msgstr[0] "<big>%s</big> bildirimlerin güncellemeleri"
+msgstr[1] "<big>%s</big> bildirimlerin güncellemeleri"
 
 #: templates/web/buckinghamshire/report/_item.html:51
 #, perl-format
 msgid "Reported %d day ago"
 msgid_plural "Reported %d days ago"
 msgstr[0] "%d gün önce raporlandı"
+msgstr[1] "%d gün önce raporlandı"
 
 #: templates/web/base/report/new/top_message_some.html:3
 #, perl-format
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Bahsettiğiniz alanı kapsayan ilgili diğer kurullar hakkında henüz detaylı  bilgimiz <strong>yok</strong>"
+msgstr[1] "Bahsettiğiniz alanı kapsayan ilgili diğer kurullar hakkında henüz detaylı  bilgimiz <strong>yok</strong>"
 
 #: templates/web/base/report/new/top_message_none.html:3
 #, perl-format
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural "We do not yet have details for the councils that cover this location."
 msgstr[0] " Bahsettiğiniz alanı kapsayan ilgili kurul hakkında detaylı bilgimiz yok."
+msgstr[1] " Bahsettiğiniz alanı kapsayan ilgili kurul hakkında detaylı bilgimiz yok."
 
 #: templates/web/buckinghamshire/report/_item.html:61
 #, perl-format
 msgid "last updated %d day ago"
 msgid_plural "last updated %d days ago"
 msgstr[0] "son güncelleme %dgün önce"
+msgstr[1] "son güncelleme %dgün önce"
 
 #: templates/email/default/inactive-account.txt:8
-#, fuzzy, perl-format
+#, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] "Ay"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/email/warwickshire/archive.txt:9
 #, perl-format
 msgid "report"
 msgid_plural "reports"
 msgstr[0] "raporlar"
+msgstr[1] "raporlar"
 
 #~ msgid "Category: %s"
 #~ msgstr "Kategori: %s"

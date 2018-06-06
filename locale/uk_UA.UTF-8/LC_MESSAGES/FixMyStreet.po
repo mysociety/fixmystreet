@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:673
 #: perllib/FixMyStreet/DB/Result/Problem.pm:675
@@ -5395,6 +5395,7 @@ msgid_plural "%d addresses"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: perllib/Utils.pm:250
 #, perl-format
@@ -5403,6 +5404,7 @@ msgid_plural "%d days"
 msgstr[0] "%d день"
 msgstr[1] "%d днів"
 msgstr[2] "%d днів"
+msgstr[3] "%d днів"
 
 #: perllib/Utils.pm:252
 #, perl-format
@@ -5411,6 +5413,7 @@ msgid_plural "%d hours"
 msgstr[0] "%d година"
 msgstr[1] "%d годин"
 msgstr[2] "%d годин"
+msgstr[3] "%d годин"
 
 #: perllib/Utils.pm:254
 #, perl-format
@@ -5419,6 +5422,7 @@ msgid_plural "%d minutes"
 msgstr[0] "%d хвилина"
 msgstr[1] "%d хвилин"
 msgstr[2] "%d хвилин"
+msgstr[3] "%d хвилин"
 
 #: perllib/Utils.pm:246
 #, perl-format
@@ -5427,6 +5431,7 @@ msgid_plural "%d months"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/report/_support.html:6
 #, perl-format
@@ -5435,6 +5440,7 @@ msgid_plural "%d supporters"
 msgstr[0] "%d прибічник"
 msgstr[1] "%d прибічників"
 msgstr[2] "%d прибічників"
+msgstr[3] "%d прибічників"
 
 #: perllib/Utils.pm:248
 #, perl-format
@@ -5443,6 +5449,7 @@ msgid_plural "%d weeks"
 msgstr[0] "%d тиждень"
 msgstr[1] "%d тижднів"
 msgstr[2] "%d тижднів"
+msgstr[3] "%d тижднів"
 
 #: perllib/Utils.pm:244
 #, perl-format
@@ -5451,6 +5458,7 @@ msgid_plural "%d years"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/fixmystreet.com/reports/summary.html:153
 #, perl-format
@@ -5459,6 +5467,7 @@ msgid_plural "%s days"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/reports/index.html:57
 #, perl-format
@@ -5467,6 +5476,7 @@ msgid_plural "%s problems marked as fixed"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/reports/index.html:45
 #, perl-format
@@ -5475,6 +5485,7 @@ msgid_plural "%s problems reported"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/fixmystreet.com/reports/summary.html:168
 #, perl-format
@@ -5483,6 +5494,7 @@ msgid_plural "%s reports"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/reports/index.html:51
 #, perl-format
@@ -5491,6 +5503,7 @@ msgid_plural "%s updates on problems"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/front/stats.html:19
 #, perl-format
@@ -5499,6 +5512,7 @@ msgid_plural "<big>%s</big> fixed in past month"
 msgstr[0] "<big>%s</big> полагоджено минувшого місяця"
 msgstr[1] "<big>%s</big> полагоджено минувшого місяця"
 msgstr[2] "<big>%s</big> полагоджено минувшого місяця"
+msgstr[3] "<big>%s</big> полагоджено минувшого місяця"
 
 #: templates/web/base/front/stats.html:8
 #, perl-format
@@ -5507,6 +5521,7 @@ msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] "<big>%s</big> звіт за минувший тиждень"
 msgstr[1] "<big>%s</big> звітів за минувший тиждень"
 msgstr[2] "<big>%s</big> звітів за минувший тиждень"
+msgstr[3] "<big>%s</big> звітів за минувший тиждень"
 
 #: templates/web/base/front/stats.html:13
 #, perl-format
@@ -5515,6 +5530,7 @@ msgid_plural "<big>%s</big> reports recently"
 msgstr[0] "<big>%s</big> звіт недавно"
 msgstr[1] "<big>%s</big> звітів недавно"
 msgstr[2] "<big>%s</big> звітів недавно"
+msgstr[3] "<big>%s</big> звітів недавно"
 
 #: templates/web/base/front/stats.html:25
 #, perl-format
@@ -5523,6 +5539,7 @@ msgid_plural "<big>%s</big> updates on reports"
 msgstr[0] "<big>%s</big> оновлення на звіті"
 msgstr[1] "<big>%s</big> оновлень на звіті"
 msgstr[2] "<big>%s</big> оновлень на звіті"
+msgstr[3] "<big>%s</big> оновлень на звіті"
 
 #: templates/web/buckinghamshire/report/_item.html:51
 #, perl-format
@@ -5531,6 +5548,7 @@ msgid_plural "Reported %d days ago"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/report/new/top_message_some.html:3
 #, perl-format
@@ -5539,6 +5557,7 @@ msgid_plural "We do <strong>not</strong> yet have details for the other councils
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/base/report/new/top_message_none.html:3
 #, perl-format
@@ -5547,6 +5566,7 @@ msgid_plural "We do not yet have details for the councils that cover this locati
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/web/buckinghamshire/report/_item.html:61
 #, perl-format
@@ -5555,14 +5575,16 @@ msgid_plural "last updated %d days ago"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: templates/email/default/inactive-account.txt:8
-#, fuzzy, perl-format
+#, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] "Місяць"
-msgstr[1] "Місяць"
-msgstr[2] "Місяць"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: templates/email/warwickshire/archive.txt:9
 #, perl-format
@@ -5571,6 +5593,7 @@ msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #~ msgid "Category: %s"
 #~ msgstr "Категорія: %s"
