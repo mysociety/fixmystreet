@@ -1085,6 +1085,12 @@ fixmystreet.display = {
             // Remove any existing report page content from sidebar
             $('#side-report').remove();
             $('.two_column_sidebar').remove();
+
+            fixmystreet.mobile_reporting.remove_ui();
+            if (fixmystreet.map.updateSize && ($twoColReport.length || $('html').hasClass('mobile'))) {
+                fixmystreet.map.updateSize();
+            }
+
             // Insert this report's content
             if ($twoColReport.length) {
                 $twoColReport.appendTo('#map_sidebar');
@@ -1100,11 +1106,6 @@ fixmystreet.display = {
             var found = html.match(/<title>([\s\S]*?)<\/title>/);
             var page_title = found[1];
             fixmystreet.page = 'report';
-
-            fixmystreet.mobile_reporting.remove_ui();
-            if (fixmystreet.map.updateSize && ($twoColReport.length || $('html').hasClass('mobile'))) {
-                fixmystreet.map.updateSize();
-            }
 
             $('.big-hide-pins-link').hide();
 

@@ -3,6 +3,8 @@
 * Unreleased
     - Front end improvements:
         - Extra help text on contact form #2149
+    - Admin improvements:
+        - Improve inspect form position and configurability.
     - Bugfixes:
         - Prevent contact form leaking information about updates #2149
         - Fix pointer event issue selecting pin on map. #2130
