@@ -320,6 +320,14 @@ sub _delete_contacts_not_in_service_list {
         }
     );
 
+    if ($self->_current_body->can_be_devolved) {
+        # If the body has can_be_devolved switched on, it's most likely a
+        # combination of Open311/email, so ignore any email addresses.
+        $found_contacts = $found_contacts->search(
+            { email => { -not_like => '%@%' } }
+        );
+    }
+
     $found_contacts = $self->_delete_contacts_not_in_service_list_cobrand_overrides($found_contacts);
 
     $found_contacts->update(
@@ -334,27 +342,6 @@ sub _delete_contacts_not_in_service_list {
 
 sub _delete_contacts_not_in_service_list_cobrand_overrides {
     my ( $self, $found_contacts ) = @_;
-
-    # for Warwickshire/Bristol/BANES, which are mixed Open311 and email, don't delete
-    # the email addresses
-    if ($self->_current_body->name eq 'Warwickshire County Council' ||
-        $self->_current_body->name eq 'Bristol City Council' ||
-        $self->_current_body->name eq 'Bath and North East Somerset Council') {
-        $found_contacts = $found_contacts->search(
-            {
-                email => { -not_like => '%@%' }
-            }
-        );
-    } elsif ($self->_current_body->name eq 'East Hertfordshire District Council' ||
-             $self->_current_body->name eq 'Stevenage Borough Council') {
-        # For EHDC/Stevenage we need to leave the 'Other' category alone or reports made
-        # in this category will be sent only to Hertfordshire County Council.
-        $found_contacts = $found_contacts->search(
-            {
-                category => { '!=' => 'Other' }
-            }
-        );
-    }
 
     return $found_contacts;
 }
