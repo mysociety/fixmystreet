@@ -157,7 +157,11 @@ fixmystreet.mobile_reporting = {
     // and special "OK/Cancel" buttons etc.
     $('html').addClass('map-fullscreen only-map map-reporting');
     $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
-    $('html, body').scrollTop(0);
+    // Do this on a timeout, so it takes precedence over the browser’s
+    // remembered position, which we do not want, we want a fixed map.
+    setTimeout(function() {
+        $('html, body').scrollTop(0);
+    }, 0);
   },
 
   remove_ui: function() {

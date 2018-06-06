@@ -7,6 +7,7 @@
         - Prevent contact form leaking information about updates #2149
         - Fix pointer event issue selecting pin on map. #2130
         - Fix admin navigation links in multi-language installs.
+        - Fix map display issue clicking back from report page as inspector.
 
 * v2.3.2 (31st May 2018)
     - Front end improvements:
