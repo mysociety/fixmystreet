@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+
+* v2.3.3 (6th June 2018)
     - Front end improvements:
         - Extra help text on contact form #2149
     - Admin improvements:

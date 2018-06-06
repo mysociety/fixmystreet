@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-05-29 13:33+0100\n"
+"POT-Creation-Date: 2018-06-06 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2017\n"
 "Language-Team: Bulgarian (Bulgaria) (https://www.transifex.com/mysociety/teams/12067/bg_BG/)\n"
@@ -819,7 +819,7 @@ msgid "Confirmation"
 msgstr "Потвърждение"
 
 #: templates/web/base/admin/contact-form.html:56
-#: templates/web/zurich/admin/contact-form.html:25
+#: templates/web/zurich/admin/contact-form.html:35
 #: templates/web/zurich/admin/stats/index.html:61
 msgid "Confirmed"
 msgstr "Потвърдено"
@@ -896,7 +896,7 @@ msgid "Create a report"
 msgstr "Подай сигнал"
 
 #: templates/web/base/admin/contact-form.html:138
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 msgid "Create category"
 msgstr "Създай категория"
 
@@ -999,7 +999,7 @@ msgstr ""
 
 #: templates/web/base/admin/bodies.html:31
 #: templates/web/base/admin/contact-form.html:58
-#: templates/web/zurich/admin/contact-form.html:26
+#: templates/web/zurich/admin/contact-form.html:36
 msgid "Deleted"
 msgstr "Изтрит"
 
@@ -1079,7 +1079,7 @@ msgstr ""
 msgid "Don&rsquo;t know"
 msgstr "Не знам"
 
-#: templates/web/base/contact/index.html:115
+#: templates/web/base/contact/index.html:119
 msgid "Don't like forms?"
 msgstr "Не обичате форми?"
 
@@ -1396,6 +1396,11 @@ msgstr "Допълнителни данни:"
 #: templates/web/base/report/_item.html:109
 msgid "Extra details"
 msgstr ""
+
+#: templates/web/zurich/admin/contact-form.html:22
+#, fuzzy
+msgid "Extra fields:"
+msgstr "Допълнителни данни:"
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1722,6 +1727,10 @@ msgid ""
 "                  the menu. Make sure you use the same category name in the bodies if you want this to happen."
 msgstr ""
 
+#: templates/web/base/contact/index.html:107
+msgid "If you are contacting us about a specific report or update please include a link to the report in the message."
+msgstr ""
+
 #: templates/web/base/auth/generate_token.html:61
 msgid "If you generate a new token the existing token will no longer work."
 msgstr ""
@@ -1784,7 +1793,7 @@ msgid ""
 "              when they are shown on the site. Enter the ID (number) of that user."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:138
+#: perllib/FixMyStreet/App/Controller/Contact.pm:146
 msgid "Illegal ID"
 msgstr "Несъществуващ номер"
 
@@ -2352,7 +2361,7 @@ msgstr "Съгналът не е подаден към общината"
 msgid "Note"
 msgstr "Бележка"
 
-#: templates/web/zurich/admin/contact-form.html:35
+#: templates/web/zurich/admin/contact-form.html:45
 msgid "Note:"
 msgstr "Бележка:"
 
@@ -2572,7 +2581,7 @@ msgstr "Снимка"
 msgid "Photo is required."
 msgstr ""
 
-#: templates/web/zurich/admin/contact-form.html:32
+#: templates/web/zurich/admin/contact-form.html:42
 msgid "Photo required"
 msgstr ""
 
@@ -2687,7 +2696,7 @@ msgstr ""
 msgid "Please enter a password"
 msgstr "Моля въведете парола"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:119
+#: perllib/FixMyStreet/App/Controller/Contact.pm:127
 #: perllib/FixMyStreet/DB/Result/Problem.pm:366
 #: templates/web/base/js/translation_strings.html:7
 msgid "Please enter a subject"
@@ -2703,7 +2712,7 @@ msgid "Please enter a valid email"
 msgstr "Моля въведете валиден имейл"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:355
-#: perllib/FixMyStreet/App/Controller/Contact.pm:129
+#: perllib/FixMyStreet/App/Controller/Contact.pm:137
 msgid "Please enter a valid email address"
 msgstr "Моля въведете валиден имейл адрес"
 
@@ -2718,7 +2727,7 @@ msgstr "Моля въведете фамилия"
 msgid "Please enter some details"
 msgstr "Моля въведете информация"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:118
+#: perllib/FixMyStreet/App/Controller/Contact.pm:126
 #: perllib/FixMyStreet/DB/Result/User.pm:210
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:8
@@ -2742,7 +2751,7 @@ msgstr "Моля въведете име"
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Моля въведете цялото си име, общината се нуждае от тази информация - ако не желаете името Ви да се появява на сайта, моля махнете отметката по-долу"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:117
+#: perllib/FixMyStreet/App/Controller/Contact.pm:125
 #: perllib/FixMyStreet/DB/Result/Comment.pm:125
 #: perllib/FixMyStreet/DB/Result/Problem.pm:377
 #: perllib/FixMyStreet/DB/Result/User.pm:205
@@ -2868,7 +2877,7 @@ msgstr ""
 msgid "Please verify at least one of email/phone"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:120
+#: perllib/FixMyStreet/App/Controller/Contact.pm:128
 msgid "Please write a message"
 msgstr "Моля въведете съобщение"
 
@@ -3469,7 +3478,7 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:200
 #: templates/web/base/report/_main.html:113
 #: templates/web/base/report/update.html:53
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 #: templates/web/zurich/admin/template_edit.html:29
 msgid "Save changes"
 msgstr "Запази промените"
@@ -3565,7 +3574,7 @@ msgstr ""
 msgid "Select:"
 msgstr ""
 
-#: templates/web/base/contact/index.html:107
+#: templates/web/base/contact/index.html:111
 msgid "Send"
 msgstr ""
 
@@ -3805,7 +3814,7 @@ msgstr "Начална дата:"
 #: templates/web/base/report/_inspect.html:99
 #: templates/web/base/report/_item.html:97
 #: templates/web/base/report/update/form_update.html:39
-#: templates/web/zurich/admin/contact-form.html:23
+#: templates/web/zurich/admin/contact-form.html:33
 msgid "State"
 msgstr ""
 
@@ -4237,7 +4246,7 @@ msgstr ""
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Възникна проблем при визуализирането на страницата с всички сигнали. Моля опитайте по-късно."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:142
+#: perllib/FixMyStreet/App/Controller/Contact.pm:150
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:42
 msgid "There was a problem showing this page. Please try again later."
 msgstr "Възникна проблем при визуализирането на страницата. Моля пробвайте по-късно."
@@ -4258,7 +4267,7 @@ msgstr "Възникна проблем с комбинацията имейл/�
 msgid "There was a problem with your update. Please try again."
 msgstr "Възникна проблем с вашата актуализация. Моля опитайте отново."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:146
+#: perllib/FixMyStreet/App/Controller/Contact.pm:154
 msgid "There were problems with your report. Please see below."
 msgstr "Възникна проблем с вашая сигнал. Моля опитайте отново."
 
@@ -4552,6 +4561,11 @@ msgstr "Непозната грешка"
 #: perllib/FixMyStreet/App/Controller/Report.pm:121
 msgid "Unknown problem ID"
 msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Contact.pm:99
+#, fuzzy
+msgid "Unknown update ID"
+msgstr "Непозната грешка"
 
 #: templates/web/base/reports/_list-filters.html:19
 msgid "Unshortlisted"
@@ -4966,7 +4980,7 @@ msgstr ""
 msgid "You can choose to subscribe to all problems reported in an area, or reports based on their destination."
 msgstr ""
 
-#: templates/web/base/contact/index.html:118
+#: templates/web/base/contact/index.html:122
 msgid "You can contact technical support on <a href='mailto:%s'>%s</a>"
 msgstr "За техническа поддръжка моля пишете ни на <a href='mailto:%s'>%s</a>"
 
@@ -5297,6 +5311,10 @@ msgstr "първоначално въведен: &ldquo;%s&rdquo;"
 #: templates/web/base/admin/report_edit.html:69
 msgid "other areas:"
 msgstr "други територии:"
+
+#: templates/web/zurich/admin/contact-form.html:24
+msgid "show"
+msgstr ""
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
