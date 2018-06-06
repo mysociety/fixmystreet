@@ -2,9 +2,11 @@
 
 * Unreleased
     - Front end improvements:
-      - Extra help text on contact form #2149
+        - Extra help text on contact form #2149
     - Bugfixes:
-      - Prevent contact form leaking information about updates #2149
+        - Prevent contact form leaking information about updates #2149
+        - Fix pointer event issue selecting pin on map. #2130
+        - Fix admin navigation links in multi-language installs.
 
 * v2.3.2 (31st May 2018)
     - Front end improvements:
