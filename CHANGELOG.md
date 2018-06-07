@@ -2,6 +2,11 @@
 
 * Unreleased
 
+* v2.3.4 (7th June 2018)
+    - Bugfixes:
+        - Fix pin clicking on non-/around pages, broken in 2.3.3.
+        - Fix issue displaying anonymous account email.
+
 * v2.3.3 (6th June 2018)
     - Front end improvements:
         - Extra help text on contact form #2149
