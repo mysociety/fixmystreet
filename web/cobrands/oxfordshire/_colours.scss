@@ -27,10 +27,8 @@ $col_fixed_label_dark: mix(#000, $color-oxfordshire-bright-green, 50%);
 $itemlist_item_background: $color-oxfordshire-pale-green;
 $itemlist_item_background_hover: #fff;
 
-// TODO: Need to change to flat blue buttons, not orange gradient
-$oxfordshire_button_base: #F35A0E;
-$oxfordshire_button_top: #EC6816;
-$oxfordshire_button_bottom: #FE4602;
-$oxfordshire_button_border: #CCC;
+$body-font: "Open Sans", Arial, Helvetica, "DejaVu Sans Condensed", "DejaVu Sans", sans-serif;;
+$heading-font: $body-font;
+$meta-font: $body-font;
 
 $pin_prefix: '/cobrands/oxfordshire/images/';

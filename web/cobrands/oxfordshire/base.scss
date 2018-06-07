@@ -5,23 +5,16 @@
 @import "../sass/base";
 @import "../sass/report_list_pins";
 
-#site-logo {
-  background: transparent url('images/logo.jpg') 0 50% no-repeat;
-  width: 173px;
-  height: 38px;
-  padding: 0.5em 0;
-}
+a {
+    &:hover {
+        color: $color-oxfordshire-bright-orange;
+    }
 
-#mysoc-logo {
-  background-image: none;
-  background-color: $primary;
-  color: #fff;
-  text-indent: 0;
-  img {
-    display: inline;
-    height: 20px;
-    width: 105px;
-  }
+    &:focus {
+        color: $color-oxfordshire-bright-orange;
+        background-color: $color-oxfordshire-bright-yellow;
+        outline: 2px solid $color-oxfordshire-bright-yellow;
+    }
 }
 
 .oxfordshire-preamble {

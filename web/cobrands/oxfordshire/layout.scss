@@ -5,37 +5,6 @@ $mappage-header-height: 64px;
 @import "_colours";
 @import "../sass/layout";
 
-body, body a {
-  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif;
-}
-
-#front-main {
-  background-color: $primary;
-  background-image: none;
-  @include border-radius(1em 1em 0 0);
-  margin: 2em 1em 0;
-  padding-top: 1em;
-  h1 {
-    margin: 0 auto 0 auto;
-  }
-  h2 {
-      color: $primary_text;
-  }
-  a#geolocate_link {
-      color: $primary_text;
-  }
-}
-
-// Currently hide the nav-wrapper, because it's in going into Oxfordshire's own nav
-.nav-wrapper {
-    display: none;
-}
-
-// hide the site-header, currently has council logo at top of page
-#site-header {
-  display: none;
-}
-
 // White background, so no margin needed.
 .content {
     margin: 0;
@@ -221,17 +190,8 @@ h4.static-with-rule {
 }
 
 #oxford-wrapper #front-main #postcodeForm div {
-  border: 1px solid #fff; // because orange "Go" button (see below) abuts this border, looks a tiny bit better if it's not dark green
-  width: 24em; // up from default 20em
-
-  #pc {
-    padding: 0 0 0 2%;
-    width: 20em;
-    height: 40px;
-  }
-
   input#sub {
-      padding-top: 0;
+      padding-top: 0.7em;
   }
 }
 
