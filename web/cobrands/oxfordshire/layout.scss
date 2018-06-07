@@ -1,12 +1,54 @@
-// We specify a 4em header height in pixels, to make
-// the .menubar link padding calculations simpler.
-$mappage-header-height: 64px;
+$mappage-header-height: 72px;
 
 @import "_colours";
 @import "../sass/layout";
 
-// White background, so no margin needed.
-.content {
+.container {
+    max-width: none; // max-width on #oxford-wrapper sorts this out for us
+}
+
+.nav-menu--main {
+    a,
+    span,
+    a.report-a-problem-btn {
+        padding: 0.3em 0.5em;
+        margin: 0 0.2em;
+    }
+
+    a.report-a-problem-btn {
+        border-radius: 0;
+        background-color: transparent;
+    }
+
+    a:hover,
+    a.report-a-problem-btn:hover {
+        background-color: transparent;
+        color: $color-oxfordshire-bright-yellow;
+        text-decoration: underline;
+    }
+
+    a:focus,
+    a.report-a-problem-btn:focus {
+        color: $color-oxfordshire-bright-orange;
+        background-color: $color-oxfordshire-bright-yellow;
+    }
+
+    span,
+    span:hover,
+    span.report-a-problem-btn,
+    span.report-a-problem-btn:hover {
+        color: mix(#fff, $color-oxfordshire-dark-green, 80%);
+    }
+}
+
+#site-header {
+    background: $color-oxfordshire-dark-green url("/cobrands/oxfordshire/images/occ-badge-nav-bg.png");
+    background-repeat: no-repeat;
+    background-position: 125% 31%;
+}
+
+#site-logo {
+    background-color: transparent;
     margin: 0;
 }
 
@@ -32,54 +74,6 @@ body.mappage {
     width: auto;
     background: none;
     padding: 0;
-  }
-  #oxford-header {
-    width: auto;
-    min-height: $mappage-header-height; // override the normal min-height of 133px
-    padding: 0;
-    background-color: #069b01; // picked from header.jpg
-    background-position: 100% 40%;
-    overflow: auto;
-    @include box-shadow(0 0 5px rgba(0,0,0,0.3));
-
-    & > * {
-      display: none;
-    }
-
-    a.logo {
-      display: block;
-      height: $mappage-header-height;
-      width: 200px;
-      margin: 0;
-      background: transparent url("images/logo-light-green.gif") no-repeat 50% 50%;
-    }
-
-    #navigation {
-      display: block;
-      position: static;
-      float: right;
-    }
-
-    .menubar {
-      display: block;
-      width: auto;
-      border-top: none;
-      padding: 0;
-
-      // override super-specific "#navigation .menubar .menu-inner .menu>li>a"
-      // selector from OCC header styles in oxfordshire.scss
-      .menu-inner .menu {
-        li {
-          margin-bottom: 0;
-        }
-
-        a, span {
-          line-height: 20px;
-          padding-top: ($mappage-header-height - 20px) / 2;
-          padding-bottom: ($mappage-header-height - 20px) / 2;
-        }
-      }
-    }
   }
 
   .wrapper .table-cell {
