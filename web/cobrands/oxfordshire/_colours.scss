@@ -1,37 +1,41 @@
 /* COLOURS */
 
-$oxfordshire_dk_green: #114500;
-$oxfordshire_lt_green: #339E00;
-$oxfordshire_very_light_green: #f6fcf0;
-$oxfordshire_mid_grey_green: #e0e5da;
+$color-oxfordshire-dark-green: #00483a;
+$color-oxfordshire-bright-green: #50B948;
+$color-oxfordshire-pale-green: #f6fcf0;
+$color-oxfordshire-pale-orange: #feead2;
+$color-oxfordshire-pale-grey-green: #e0e5da;
+$color-oxfordshire-bright-blue: #0e73d8; // used for buttons backgrounds
+$color-oxfordshire-bright-orange: #EA6C18; // used for a:hover text color
+$color-oxfordshire-bright-yellow: #edc856; // used for a:focus background
 
-$primary: $oxfordshire_lt_green;
-$primary_b: $oxfordshire_dk_green;
+$color-oxfordshire-link-blue: #0a549d;
+
+$primary: $color-oxfordshire-bright-green;
+$primary_b: $color-oxfordshire-dark-green;
 $primary_text: #fff;
 
-$base_bg: #fff;
-$base_fg: #000;
+$base_bg: #cfcfcf;
+$base_fg: #333;
 
-// Taken from the OCC website
-$oxfordshire_link_colour: #0c62ba;
+$map_nav_bg: $color-oxfordshire-dark-green;
+$nav_fg: #000;
+$nav_fg_hover: $nav_fg;
 
-$map_nav_bg: $oxfordshire_dk_green;
-$nav_fg: #fff;
-$nav_fg_hover: #444;
+$col_click_map: $color-oxfordshire-bright-green;
 
-$col_click_map: $oxfordshire_lt_green;
+$col_fixed_label: $color-oxfordshire-bright-green;
+$col_fixed_label_dark: mix(#000, $color-oxfordshire-bright-green, 50%);
 
-$col_fixed_label: $oxfordshire_lt_green;
-$col_fixed_label_dark: mix(#000, $oxfordshire_lt_green, 50%);
+$itemlist_item_background: #fff;
+$itemlist_item_background_hover: #e0e2e5;
 
-$itemlist_item_background: $oxfordshire_very_light_green;
-$itemlist_item_background_hover: #e3f1d5; // darker version of $oxfordshire_very_light_green
+$body-font: "Open Sans", sans-serif;;
+$heading-font: "Fira Sans", sans-serif;
+$meta-font: $body-font;
 
-// Oxfordshire have toasty orange buttons
+$header-top-border: false;
 
-$oxfordshire_button_base: #F35A0E;
-$oxfordshire_button_top: #EC6816;
-$oxfordshire_button_bottom: #FE4602;
-$oxfordshire_button_border: #CCC;
+$form-control-border-color: #525252;
 
 $pin_prefix: '/cobrands/oxfordshire/images/';
