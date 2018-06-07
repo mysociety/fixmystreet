@@ -22,9 +22,9 @@ servers, called instances. The smallest instance, the Micro, will be [free
 for a year](http://aws.amazon.com/free/).
 
 The AMI we've prepared for you can be found in the **EU West (Ireland)**
-region, with the ID `ami-9b3237e2` and name "FixMyStreet installation
-2018-05-31". You can launch an instance based on that AMI with
-[this link](https://console.aws.amazon.com/ec2/home?region=eu-west-1#launchAmi=ami-9b3237e2).
+region, with the ID `ami-ac3736d5` and name "FixMyStreet installation
+2018-06-06". You can launch an instance based on that AMI with
+[this link](https://console.aws.amazon.com/ec2/home?region=eu-west-1#launchAmi=ami-ac3736d5).
 
 When you create an EC2 instance based on that AMI, make sure that you
 choose Security Groups that allow at least inbound HTTP, HTTPS and
