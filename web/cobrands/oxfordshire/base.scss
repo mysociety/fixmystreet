@@ -56,9 +56,58 @@ a {
 }
 
 .oxfordshire-preamble {
-    background: #E0E0E0;
-    margin: 0em auto 1em auto;
-    padding: 1em 1em 0.5em 1em;
+    background: $color-oxfordshire-pale-orange;
+    margin: 1em;
+    padding: 1em;
+}
+
+#front-main {
+    text-align: $left;
+    margin: 2em 0;
+    padding: 0 1em;
+
+    h1 {
+        font-weight: bold;
+        max-width: 11em; // break nicely onto two lines
+    }
+
+    #postcodeForm {
+        margin: 0;
+        padding: 0;
+        color: inherit;
+        background: inherit;
+
+        div {
+            display: block;
+            width: auto;
+            background: transparent;
+            border: none;
+
+            font-size: 1.25em;
+            margin-top: 0.5em;
+            max-width: 24em;
+
+            @include flex-container();
+
+            input#pc {
+                display: block;
+                background-color: #fff;
+                border: 1px solid $form-control-border-color;
+                @include border-radius(4px);
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+                font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
+                margin: 0 0.5em 0 0;
+                padding: 0.5em;
+            }
+
+            input#sub {
+                padding-top: 0.6em;
+                padding-bottom: 0.5em;
+                width: auto;
+                height: auto;
+            }
+        }
+    }
 }
 
 dd, p {
