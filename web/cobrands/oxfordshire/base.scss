@@ -5,6 +5,17 @@
 @import "../sass/base";
 @import "../sass/report_list_pins";
 
+body {
+    background-color: $base_bg;
+}
+
+#oxford-wrapper {
+    max-width: 75em;
+    margin: 0 auto;
+    background-color: #fff;
+    color: #333;
+}
+
 a {
     &:hover {
         color: $color-oxfordshire-bright-orange;
@@ -61,7 +72,8 @@ dd, p {
 .green-btn,
 button.green-btn,
 input.green-btn,
-.btn-primary {
+.btn-primary,
+.occlss-button--primary {
     @include button-reset(
         $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, #fff,
         darken(#0e73d8, 15%), darken(#0e73d8, 15%), darken(#0e73d8, 15%), #fff
@@ -115,3 +127,6 @@ textarea {
         display: none !important;
     }
 }
+
+@import "oxfordshire-header";
+@import "oxfordshire-footer";
