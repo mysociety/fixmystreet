@@ -2145,6 +2145,8 @@ sub update_extra_fields : Private {
         $meta->{variable} = $notice ? 'false' : 'true';
         $meta->{description} = $c->get_param("metadata[$i].description");
         $meta->{datatype_description} = $c->get_param("metadata[$i].datatype_description");
+        $meta->{automated} = $c->get_param("metadata[$i].automated")
+            if $c->get_param("metadata[$i].automated");
 
         if ( $meta->{datatype} eq "singlevaluelist" ) {
             $meta->{values} = [];
