@@ -1,0 +1,48 @@
+[%~ INCLUDE navitem uri=(homepage_template ? '/report' : '/') label=loc('Report a problem') ~%]
+
+[%~ IF c.user_exists ~%]
+    [%~ INCLUDE navitem uri='/my' label=loc('Your reports') ~%]
+[%~ ELSE ~%]
+    [%~ INCLUDE navitem uri='/auth' label=loc('Your reports') ~%]
+[%~ END ~%]
+
+[%~ IF c.user_exists AND c.user.has_body_permission_to('planned_reports') ~%]
+    [%~ INCLUDE navitem always_url=1 uri='/my/planned' label=loc('Shortlist') ~%]
+[%~ END ~%]
+
+
+[%~ UNLESS hide_all_reports_link ~%]
+  [%~
+    IF c.user_exists AND c.user.categories.size;
+      categories = c.user.categories.join(",") | uri;
+      cat_suffix = "?filter_category=" _ categories;
+    END;
+
+    reports_uri = '/reports';
+    IF body_name;
+       body_name = body_name | uri;
+       reports_uri = "${reports_uri}/${body_name}";
+    END;
+
+    INCLUDE navitem uri=reports_uri label=loc('All reports') suffix=cat_suffix;
+  ~%]
+[%~ END ~%]
+
+[%~
+  IF pc;
+    pc_uri = pc | uri;
+    pc_suffix = "/list?pc=" _ pc_uri;
+  END;
+
+  INCLUDE navitem uri='/alert' label=loc('Local alerts') suffix=pc_suffix;
+~%]
+
+[%~ INCLUDE navitem uri='/faq' label=loc('Help') ~%]
+
+[%~ UNLESS hide_privacy_link ~%]
+  [%~ INCLUDE navitem uri='/privacy' label=loc('Privacy') liattrs='class="nav-menu__item--privacy"' ~%]
+[%~ END ~%]
+
+[%~ IF c.user_exists AND c.cobrand.admin_allow_user(c.user) ~%]
+  [%~ INCLUDE navitem uri='/admin' label=loc('Admin') ~%]
+[%~ END ~%]

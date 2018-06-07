@@ -1,44 +1,182 @@
-// We specify a 4em header height in pixels, to make
-// the .menubar link padding calculations simpler.
-$mappage-header-height: 64px;
+$mappage-header-height: 10em;
 
 @import "_colours";
 @import "../sass/layout";
 
-body, body a {
-  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif;
+.container {
+    max-width: none; // max-width on #oxford-wrapper sorts this out for us
+}
+
+#site-header {
+    @include box-sizing(border-box); // so that $mappage-header-height doesn't have to account for internal padding
+    background: $color-oxfordshire-dark-green url("/cobrands/oxfordshire/images/occ-badge-nav-bg.png");
+    background-repeat: no-repeat;
+    background-position: 125% 31%;
+}
+
+#site-logo {
+    background-color: transparent;
+    margin: 0 1em;
+}
+
+#main-nav {
+    display: block; // undo flexbox
+    height: auto;
+    min-height: 0;
+    float: none;
+
+    .ie9 & {
+        position: static;
+        float: none;
+
+        & > * {
+            position: static;
+            -ms-transform: none;
+        }
+    }
+}
+
+.nav-menu--main {
+    margin-top: 5.5em;
+    float: none;
+    @include flex-container();
+
+    li {
+        @include flex(1 1 0%); // flex-basis (3rd argument) must have a unit, to avoid IE10-11 bugs
+        padding: 8px 16px;
+        position: relative;
+    }
+
+    // No need for `span` in this selector, because Oxfordshire
+    // nav items are always links (see main_nav.html)
+    a,
+    a:hover,
+    a:focus {
+        color: $nav_fg;
+        background-color: transparent;
+    }
+
+    a {
+        display: inline;
+        padding: 0;
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2em;
+        font-weight: 700;
+
+        &:after {
+            content: "";
+            display: block;
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            top: 100%;
+            height: 4px;
+            background: $color-oxfordshire-dark-green;
+            transition: height 0.1s ease-in-out;
+        }
+    }
+
+    a:hover {
+        border-bottom-width: 8px;
+        margin-bottom: -4px;
+
+        &:after {
+            height: 8px;
+        }
+    }
+
+    a:focus {
+        outline: 2px solid $color-oxfordshire-bright-yellow;
+    }
+}
+
+.nav-spacer {
+    height: 5.5em;
 }
 
 #front-main {
-  background-color: $primary;
-  background-image: none;
-  @include border-radius(1em 1em 0 0);
-  margin: 2em 1em 0;
-  padding-top: 1em;
-  h1 {
-    margin: 0 auto 0 auto;
-  }
-  h2 {
-      color: $primary_text;
-  }
-  a#geolocate_link {
-      color: $primary_text;
-  }
+    background: transparent;
+    color: inherit;
+    margin: 2% 0 4% 0;
+
+    h1 {
+        font-size: 42px;
+        line-height: 68px;
+        margin-bottom: 4%;
+    }
+
+    #front-main-container {
+        padding: 0 1em;
+        max-width: none;
+        margin: 0;
+    }
+
+    #postcodeForm {
+        margin-right: 0;
+        overflow: visible;
+
+        div {
+            display: block;
+            width: auto;
+            max-width: 38em;
+            margin: 0.75em 0 0 0;
+            overflow: visible;
+
+            @include flex-container();
+
+            input#pc {
+                display: block;
+                margin: 0 0.5em 0 0;
+                padding: 0.5em;
+                height: auto;
+                width: 100%;
+                max-width: 80%;
+            }
+
+            input#sub {
+                padding: 0.6em 1.5em;
+                width: auto;
+                height: auto;
+                text-transform: none;
+            }
+        }
+    }
+
+    a#geolocate_link {
+        color: $color-oxfordshire-link-blue;
+
+        &:hover {
+            color: $color-oxfordshire-bright-yellow;
+        }
+
+        &:focus {
+            background-color: $color-oxfordshire-bright-yellow;
+            outline: 2px solid $color-oxfordshire-bright-yellow;
+        }
+    }
 }
 
-// Currently hide the nav-wrapper, because it's in going into Oxfordshire's own nav
-.nav-wrapper {
-    display: none;
+.frontpage {
+    .content h2 {
+        font-size: 2em;
+    }
 }
 
-// hide the site-header, currently has council logo at top of page
-#site-header {
-  display: none;
-}
+#front_stats {
+    border-top: none;
+    padding-top: 0;
 
-// White background, so no margin needed.
-.content {
-    margin: 0;
+    div {
+        font-size: 1.2em; // up from 0.8125em in base.scss
+        font-weight: 600;
+    }
+
+    big {
+        font-weight: 900;
+        font-family: $heading-font;
+        color: #24b137;
+    }
 }
 
 // Fix location of aside sidebar
@@ -64,53 +202,24 @@ body.mappage {
     background: none;
     padding: 0;
   }
-  #oxford-header {
-    width: auto;
-    min-height: $mappage-header-height; // override the normal min-height of 133px
-    padding: 0;
-    background-color: #069b01; // picked from header.jpg
-    background-position: 100% 40%;
-    overflow: auto;
-    @include box-shadow(0 0 5px rgba(0,0,0,0.3));
 
-    & > * {
-      display: none;
-    }
+  #site-header {
+      border-bottom: none;
+      background-position: 125% 36%;
+      background-position: calc(100% + 130px) 36%;
+  }
 
-    a.logo {
-      display: block;
-      height: $mappage-header-height;
-      width: 200px;
-      margin: 0;
-      background: transparent url("images/logo-light-green.gif") no-repeat 50% 50%;
-    }
+  .nav-wrapper {
+      top: 70px;
+      background: #fff;
+      border-top: 4px solid $color-oxfordshire-bright-green;
+      border-bottom: 1px solid $color-oxfordshire-pale-grey-green;
+  }
 
-    #navigation {
-      display: block;
-      position: static;
-      float: right;
-    }
-
-    .menubar {
-      display: block;
-      width: auto;
-      border-top: none;
-      padding: 0;
-
-      // override super-specific "#navigation .menubar .menu-inner .menu>li>a"
-      // selector from OCC header styles in oxfordshire.scss
-      .menu-inner .menu {
-        li {
-          margin-bottom: 0;
-        }
-
-        a, span {
-          line-height: 20px;
-          padding-top: ($mappage-header-height - 20px) / 2;
-          padding-bottom: ($mappage-header-height - 20px) / 2;
-        }
-      }
-    }
+  .nav-menu--main {
+      margin-top: 0;
+      height: 40px;
+      padding: 19px 0 27px 0;
   }
 
   .wrapper .table-cell {
@@ -165,17 +274,14 @@ body.mappage {
     }
   }
 
-  #oxford-footer {
+  #occlss-footer,
+  #pagefooter {
     display: none;
   }
 }
 
-#map_sidebar {
-  background-color: $oxfordshire_very_light_green;
-}
-
 .item-list--reports h3 {
-  color: $oxfordshire_link_colour;
+  color: $color-oxfordshire-bright-blue;
 }
 
 h4.static-with-rule {
@@ -190,7 +296,7 @@ h4.static-with-rule {
   margin-top: 0; // no space between list items
 
   // Replicate .item-list--reports styling, a bit
-  border-top: 1px solid $oxfordshire_mid_grey_green;
+  border-top: 1px solid $color-oxfordshire-pale-grey-green;
   padding: 1em 1em 1em 0;
   margin-left: 1em;
 
@@ -204,61 +310,26 @@ h4.static-with-rule {
 }
 
 .form-box {
-  background-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+  background-color: $color-oxfordshire-pale-green;
 }
 
 .extra-category-questions {
-  background-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+  background-color: $color-oxfordshire-pale-green;
 
   &:before {
-    border-bottom-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+    border-bottom-color: $color-oxfordshire-pale-green;
   }
 }
 
 #key-tools {
-  @include box-shadow(0 0 1em 1em $oxfordshire_very_light_green);
   border-top-width: 2px;
 }
 
-#oxford-wrapper #front-main #postcodeForm div {
-  border: 1px solid #fff; // because orange "Go" button (see below) abuts this border, looks a tiny bit better if it's not dark green
-  width: 24em; // up from default 20em
-
-  #pc {
-    padding: 0 0 0 2%;
-    width: 20em;
-    height: 40px;
-  }
-}
-
-// styled Oxfordshire buttons -- including the "Go" button on the postcode form -- to be orange:
-
-#front-main #postcodeForm div input#sub,
-.green-btn,
-button.green-btn,
-input.green-btn{
-  @include button-reset(
-    $oxfordshire_button_top, $oxfordshire_button_bottom, $oxfordshire_button_border, #fff,
-    $oxfordshire_button_top, $oxfordshire_button_bottom, $oxfordshire_button_border, #fff
-  );
-  text-transform:capitalize;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  @include box-shadow(
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 1px 2px rgba(0, 0, 0, 0.05)
-  );
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  font-weight: normal;
-  cursor: pointer;
-}
-
 .click-the-map {
-    border-bottom-color: $oxfordshire_mid_grey_green;
+    border-bottom-color: $color-oxfordshire-pale-grey-green;
 
     p {
-        color: $oxfordshire_lt_green;
+        color: $color-oxfordshire-bright-green;
         background-image: url(images/click-map-chevron-small.gif);
     }
 }
@@ -300,5 +371,3 @@ input.green-btn{
     float: left;
     margin-right: 1em;
 }
-
-@import "oxon";

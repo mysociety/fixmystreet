@@ -1,0 +1,61 @@
+.occlss-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.occlss-page-footer__wraper {
+    color: #fff;
+    background: #000;
+    padding-bottom: 2em;
+}
+
+.s-cms-content-footer {
+    a {
+        color: #fff;
+
+        &:hover {
+            color: $color-oxfordshire-bright-yellow;
+        }
+
+        a:not([class]):focus {
+            background-color: $color-oxfordshire-bright-yellow;
+            outline: 2px solid $color-oxfordshire-bright-yellow;
+        }
+    }
+
+    h1, h2, h3, h4 {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+    }
+
+    p {
+        margin: 0 0 5px 0;
+    }
+}
+
+.occlss-page-footer {
+    margin-top: 0;
+}
+
+.occlss-layout {
+    @include flex-container();
+    @include flex-wrap(wrap);
+    position: relative;
+    padding: 0;
+}
+
+.occlss-layout__col {
+    @include box-sizing(border-box);
+    @include flex-direction(column);
+    position: relative;
+    width: 100%;
+    vertical-align: top;
+    padding: 15px;
+
+    @media (min-width: 768px) {
+        padding: 30px;
+    }
+}

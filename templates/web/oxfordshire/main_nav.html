@@ -1,0 +1,22 @@
+[%
+    # DEFAULT would make sense here, except it treats the empty string as falsy
+    # and some cobrands want to set ul_class to an empty string.
+    SET ul_class="nav-menu nav-menu--main" UNLESS ul_class.defined;
+%]
+[% BLOCK navitem ~%]
+    <li [% liattrs %]>
+        <a href="[% uri %][% suffix IF suffix %]" [% attrs %]>[% label %]</a>
+    </li>
+[%~ END %]
+
+[% UNLESS omit_wrapper %]
+    <div id="main-nav" role="navigation">
+[% END %]
+
+    <ul class="[% ul_class %]"[% " id='" _ ul_id _ "'" IF ul_id %]>
+        [% INCLUDE 'main_nav_items.html' %]
+    </ul>
+
+[% UNLESS omit_wrapper %]
+    </div>
+[% END %]
