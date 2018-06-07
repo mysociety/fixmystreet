@@ -171,11 +171,11 @@ body.mappage {
 }
 
 #map_sidebar {
-  background-color: $oxfordshire_very_light_green;
+  background-color: $color-oxfordshire-pale-green;
 }
 
 .item-list--reports h3 {
-  color: $oxfordshire_link_colour;
+  color: $color-oxfordshire-bright-blue;
 }
 
 h4.static-with-rule {
@@ -190,7 +190,7 @@ h4.static-with-rule {
   margin-top: 0; // no space between list items
 
   // Replicate .item-list--reports styling, a bit
-  border-top: 1px solid $oxfordshire_mid_grey_green;
+  border-top: 1px solid $color-oxfordshire-pale-grey-green;
   padding: 1em 1em 1em 0;
   margin-left: 1em;
 
@@ -204,19 +204,19 @@ h4.static-with-rule {
 }
 
 .form-box {
-  background-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+  background-color: #e3f1d5; // darker version of $color-oxfordshire-pale-green
 }
 
 .extra-category-questions {
-  background-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+  background-color: #e3f1d5; // darker version of $color-oxfordshire-pale-green
 
   &:before {
-    border-bottom-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+    border-bottom-color: #e3f1d5; // darker version of $color-oxfordshire-pale-green
   }
 }
 
 #key-tools {
-  @include box-shadow(0 0 1em 1em $oxfordshire_very_light_green);
+  @include box-shadow(0 0 1em 1em $color-oxfordshire-pale-green);
   border-top-width: 2px;
 }
 
@@ -255,10 +255,10 @@ input.green-btn{
 }
 
 .click-the-map {
-    border-bottom-color: $oxfordshire_mid_grey_green;
+    border-bottom-color: $color-oxfordshire-pale-grey-green;
 
     p {
-        color: $oxfordshire_lt_green;
+        color: $color-oxfordshire-bright-green;
         background-image: url(images/click-map-chevron-small.gif);
     }
 }
