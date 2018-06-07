@@ -64,17 +64,38 @@ dd, p {
   background-color: mix(#fff, $primary, 85%);
 }
 
+#front-main #postcodeForm div input#sub,
+.green-btn,
+button.green-btn,
+input.green-btn,
 .btn-primary {
     @include button-reset(
-        $oxfordshire_button_top,
-        $oxfordshire_button_bottom,
-        $oxfordshire_button_border,
-        #fff,
-        darken($oxfordshire_button_bottom, 3%),
-        darken($oxfordshire_button_top, 3%),
-        $oxfordshire_button_border,
-        #fff
+        $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, #fff,
+        darken(#0e73d8, 15%), darken(#0e73d8, 15%), darken(#0e73d8, 15%), #fff
     );
+    @include box-shadow(
+        inset 0 -4px 0 darken(#0e73d8, 15%),
+        0 2px 4px 0 rgba(26, 26, 26, 0.2)
+    );
+    border: none;
+    padding: 0.7em 1em 0.85em 1em;
+}
+
+.form-txt-submit-box input[type="submit"] {
+    padding: 0.7em 1em 0.85em 1em;
+}
+
+input[type="tel"],
+input[type="number"],
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+input[type="datetime"],
+input[type="url"],
+textarea {
+    padding: 0.7em;
 }
 
 .box-warning {
