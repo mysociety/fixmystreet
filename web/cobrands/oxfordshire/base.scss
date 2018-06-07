@@ -28,6 +28,33 @@ a {
     }
 }
 
+#site-header {
+    border-bottom: 4px solid $color-oxfordshire-bright-green;
+    padding: 10px 0;
+}
+
+#site-logo {
+    @include svg-background-image("images/site-logo-mobile");
+    background-color: $map_nav_bg;
+    background-size: 175px 38px;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    width: 190px;
+    height: 0;
+    padding-top: 52px;
+    overflow: hidden;
+    text-indent: 0;
+    margin: 0 -5px;
+}
+
+#nav-link {
+    height: 0;
+    padding-top: 3em;
+    overflow: hidden;
+    text-indent: 0;
+    #{$right}: 0.5em;
+}
+
 .oxfordshire-preamble {
     background: #E0E0E0;
     margin: 0em auto 1em auto;
