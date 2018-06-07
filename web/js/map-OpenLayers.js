@@ -312,7 +312,9 @@ $.extend(fixmystreet.utils, {
         }
 
         // clickFeature operates on touchstart, we do not want the map click taking place on touchend!
-        fixmystreet.maps.click_control.deactivate();
+        if (fixmystreet.maps.click_control) {
+            fixmystreet.maps.click_control.deactivate();
+        }
 
         // All of this, just so that ctrl/cmd-click on a pin works?!
         var event;

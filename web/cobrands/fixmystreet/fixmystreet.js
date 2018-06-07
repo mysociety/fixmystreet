@@ -1151,7 +1151,9 @@ fixmystreet.display = {
             }
 
             // We disabled this upon first touch to prevent it taking effect, re-enable now
-            fixmystreet.maps.click_control.activate();
+            if (fixmystreet.maps.click_control) {
+                fixmystreet.maps.click_control.activate();
+            }
 
             if (typeof callback === 'function') {
                 callback();
