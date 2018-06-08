@@ -9,6 +9,7 @@
           the #pc search input #2237
         - Clearer relocation options while you’re reporting a problem #2238
         - Speed up fetching lists of bodies. #2248
+        - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
     - Bugfixes:
         - Fix display of area/pins on body page when using Bing or TonerLite map.
         - Do not scan through all problems to show /_dev pages.
