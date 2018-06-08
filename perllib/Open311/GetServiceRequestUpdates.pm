@@ -69,6 +69,8 @@ sub update_comments {
     # default to asking for last 2 hours worth if not Bromley
     } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
         my $end_dt = DateTime->now();
+        # Oxfordshire uses local time and not UTC for dates
+        FixMyStreet->set_time_zone($end_dt) if ( $body->areas->{$AREA_ID_OXFORDSHIRE} );
         my $start_dt = $end_dt->clone;
         $start_dt->add( hours => -2 );
 
