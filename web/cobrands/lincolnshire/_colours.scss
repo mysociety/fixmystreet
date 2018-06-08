@@ -5,11 +5,29 @@
 
 /* COLOURS */
 
-$primary: gray;
-$primary_b: #000000;
-$primary_text: #222222;
+$lincs-highlight: #b0bc22;
+$lincs-pop: #f05441;
+$lincs-border: #bec1c4;
+$lincs-panel: #dee0e2;
+$lincs-page: #ffffff;
+$lincs-text: #212121;
+$lincs-text-2nd: #6f787e;
+$lincs-link: #005fa6; 
+$lincs-link-visited: #4d2f91;
+$lincs-link-hover: #2b8cc4;
+$lincs-link-focus: #fdb81e;
+$lincs-success: #e7f4e3;
+$lincs-warning: #fff2da;
+$lincs-error: #f9dede;
+$lincs-info: #e1f3f8;
+$lincs-plum: #bd3a4b;
+$lincs-pine: #198749;
 
-$base_bg: white;
+$primary: $lincs-highlight;
+$primary_b: $lincs-pop;
+$primary_text: $lincs-text;
+
+$base_bg: $lincs-page;
 $base_fg: #000;
 
 $map_nav_bg: #eee;
@@ -17,12 +35,12 @@ $nav_fg: #000;
 $nav_fg_hover: $primary;
 
 // Colour used for front page 'how to report a problem' steps
-$col_big_numbers: #ccc;
+$col_big_numbers: $lincs-text-2nd;
 
-$col_click_map: gray;
+$col_click_map: $lincs-panel;
 
-$col_fixed_label: #00BD08;
-$col_fixed_label_dark: #4B8304;
+$col_fixed_label: $lincs-highlight;
+$col_fixed_label_dark: darken($lincs-highlight, 10%);
 
 $menu-image: 'menu-black';
 
