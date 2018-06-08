@@ -1,4 +1,4 @@
-$mappage-header-height: 72px;
+$mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical padding, plus 4px border-bottom
 
 @import "_colours";
 @import "../sass/layout";
@@ -42,6 +42,7 @@ $mappage-header-height: 72px;
 }
 
 #site-header {
+    @include box-sizing(border-box); // so that $mappage-header-height doesn't have to account for internal padding
     background: $color-oxfordshire-dark-green url("/cobrands/oxfordshire/images/occ-badge-nav-bg.png");
     background-repeat: no-repeat;
     background-position: 125% 31%;
