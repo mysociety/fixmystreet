@@ -7,6 +7,7 @@
         - Simplify footer CSS. #2107
         - Keep commas in geocode lookups.
         - Show message on reports closed to updates.
+        - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
     - Admin improvements:
         - Category group can be edited.
     - Bugfixes:

@@ -35,7 +35,12 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
 
   #main-nav {
     float: left;
-    min-height: 0;
+    min-height: 3em;
+
+    .ie9 & > * {
+      position: static;
+      -ms-transform: none;
+    }
   }
 
   .nav-menu {

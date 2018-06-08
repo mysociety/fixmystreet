@@ -28,6 +28,11 @@
     min-height: 1.9em; // Should be 0, but IE8 shrinks background as if floated, then
     margin-top: 0;
     float: none;
+
+    .ie9 & > * {
+        #{$right}: auto;
+        #{$left}: 0;
+    }
 }
 
 .nav-menu {
@@ -119,8 +124,17 @@ body.mappage {
 
     // Override the defaults, above
     #main-nav {
-        float: right;
+        float: $right;
         min-height: $mappage-header-height;
+
+        .ie9 & {
+            float: none;
+
+            & > * {
+                #{$right}: 0;
+                #{$left}: auto;
+            }
+        }
     }
 
     .nav-menu a {
