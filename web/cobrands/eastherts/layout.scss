@@ -15,6 +15,10 @@
     width: 100%;
     float: none;
     min-height: 0;
+
+    .ie9 & > * {
+      -ms-transform: none;
+    }
 }
 
 // And make it look the same
