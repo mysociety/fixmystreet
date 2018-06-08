@@ -23,7 +23,7 @@ And details:
 
 [% report.detail %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

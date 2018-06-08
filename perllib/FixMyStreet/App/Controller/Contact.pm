@@ -87,9 +87,17 @@ sub determine_contact_type : Private {
     } elsif ($id) {
         $c->forward( '/report/load_problem_or_display_error', [ $id ] );
         if ($update_id) {
-            my $update = $c->model('DB::Comment')->find(
-                { id => $update_id }
-            );
+            my $update = $c->model('DB::Comment')->search(
+                {
+                    id => $update_id,
+                    problem_id => $id,
+                    state => 'confirmed',
+                }
+            )->first;
+
+            unless ($update) {
+                $c->detach( '/page_error_404_not_found', [ _('Unknown update ID') ] );
+            }
 
             $c->stash->{update} = $update;
         }

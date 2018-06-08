@@ -103,6 +103,10 @@
         [% END %]
         <textarea class="form-control required" name="message" id="form_message" rows="7" cols="50">[% message | html %]</textarea>
 
+        [% IF NOT problem AND NOT update %]
+        <p>[% loc('If you are contacting us about a specific report or update please include a link to the report in the message.') %]</p>
+        [% END %]
+
 
         <input class="final-submit green-btn" type="submit" value="[% loc('Send') %]">
 

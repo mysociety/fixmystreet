@@ -85,7 +85,7 @@
     @include box-sizing(border-box);
 
     @media (min-width: 48em) {
-        padding-#{$right}: 20%;
+        padding-right: 20%; // Same way round, regardless of text direction
     }
 
     .label {

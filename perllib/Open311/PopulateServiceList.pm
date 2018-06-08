@@ -237,9 +237,36 @@ sub _add_meta_to_contact {
     # Some Open311 endpoints, such as Bromley and Warwickshire send <metadata>
     # for attributes which we *don't* want to display to the user (e.g. as
     # fields in "category_extras"
+    $self->_add_meta_to_contact_cobrand_overrides($contact, \@meta);
+
+    $contact->set_extra_fields(@meta);
+    $contact->update;
+}
+
+sub _add_meta_to_contact_cobrand_overrides {
+    my ( $self, $contact, $meta ) = @_;
 
     if ($self->_current_body->name eq 'Bromley Council') {
         $contact->set_extra_metadata( id_field => 'service_request_id_ext');
+        # Lights we want to store feature ID, PROW on all categories.
+        push @$meta, {
+            code => 'prow_reference',
+            datatype => 'string',
+            description => 'Right of way reference',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        };
+        push @$meta, {
+            code => 'feature_id',
+            datatype => 'string',
+            description => 'Feature ID',
+            order => 100,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        } if $self->_current_service->{service_code} eq 'LIGHTS';
     } elsif ($self->_current_body->name eq 'Warwickshire County Council') {
         $contact->set_extra_metadata( id_field => 'external_id');
     }
@@ -264,11 +291,8 @@ sub _add_meta_to_contact {
 
     if (my $override = $override{ $self->_current_body->name }) {
         my %ignore = map { $_ => 1 } @{ $override };
-        @meta = grep { ! $ignore{ $_->{ code } } } @meta;
+        @$meta = grep { ! $ignore{ $_->{ code } } } @$meta;
     }
-
-    $contact->set_extra_fields(@meta);
-    $contact->update;
 }
 
 sub _normalize_service_name {
@@ -296,25 +320,15 @@ sub _delete_contacts_not_in_service_list {
         }
     );
 
-    # for Warwickshire/Bristol/BANES, which are mixed Open311 and email, don't delete
-    # the email addresses
-    if ($self->_current_body->name eq 'Warwickshire County Council' ||
-        $self->_current_body->name eq 'Bristol City Council' ||
-        $self->_current_body->name eq 'Bath and North East Somerset Council') {
+    if ($self->_current_body->can_be_devolved) {
+        # If the body has can_be_devolved switched on, it's most likely a
+        # combination of Open311/email, so ignore any email addresses.
         $found_contacts = $found_contacts->search(
-            {
-                email => { -not_like => '%@%' }
-            }
-        );
-    } elsif ($self->_current_body->name eq 'East Hertfordshire District Council') {
-        # For EHDC we need to leave the 'Other' category alone or reports made
-        # in this category will be sent only to Hertfordshire County Council.
-        $found_contacts = $found_contacts->search(
-            {
-                category => { '!=' => 'Other' }
-            }
+            { email => { -not_like => '%@%' } }
         );
     }
+
+    $found_contacts = $self->_delete_contacts_not_in_service_list_cobrand_overrides($found_contacts);
 
     $found_contacts->update(
         {
@@ -324,6 +338,12 @@ sub _delete_contacts_not_in_service_list {
             note => 'automatically marked as deleted by script'
         }
     );
+}
+
+sub _delete_contacts_not_in_service_list_cobrand_overrides {
+    my ( $self, $found_contacts ) = @_;
+
+    return $found_contacts;
 }
 
 1;

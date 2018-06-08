@@ -1,3 +1,15 @@
+if (!Object.keys) {
+  Object.keys = function(obj) {
+    var result = [];
+    for (var prop in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+        result.push(prop);
+      }
+    }
+    return result;
+  };
+}
+
 var fixmystreet = fixmystreet || {};
 
 fixmystreet.utils = fixmystreet.utils || {};
@@ -247,18 +259,18 @@ $.extend(fixmystreet.utils, {
        * the spinner in the DOM.
        */
       loading_spinner: {
-          count: 0,
+          count: {},
           show: function() {
-              fixmystreet.maps.loading_spinner.count++;
-              if (fixmystreet.maps.loading_spinner.count > 0) {
+              fixmystreet.maps.loading_spinner.count[this.id] = 1;
+              if (Object.keys(fixmystreet.maps.loading_spinner.count).length) {
                   // Show the loading indicator over the map
                   $('#loading-indicator').removeClass('hidden');
                   $('#loading-indicator').attr('aria-hidden', false);
               }
           },
           hide: function() {
-              fixmystreet.maps.loading_spinner.count--;
-              if (fixmystreet.maps.loading_spinner.count <= 0) {
+              delete fixmystreet.maps.loading_spinner.count[this.id];
+              if (!Object.keys(fixmystreet.maps.loading_spinner.count).length) {
                   // Remove loading indicator
                   $('#loading-indicator').addClass('hidden');
                   $('#loading-indicator').attr('aria-hidden', true);
@@ -297,6 +309,11 @@ $.extend(fixmystreet.utils, {
         var $a = $('.item-list--reports a[href$="/' + problem_id + '"]');
         if (!$a[0]) {
             return;
+        }
+
+        // clickFeature operates on touchstart, we do not want the map click taking place on touchend!
+        if (fixmystreet.maps.click_control) {
+            fixmystreet.maps.click_control.deactivate();
         }
 
         // All of this, just so that ctrl/cmd-click on a pin works?!
@@ -708,7 +725,7 @@ $.extend(fixmystreet.utils, {
         }
 
         if (document.getElementById('mapForm')) {
-            var click = new OpenLayers.Control.Click();
+            var click = fixmystreet.maps.click_control = new OpenLayers.Control.Click();
             fixmystreet.map.addControl(click);
             click.activate();
         }

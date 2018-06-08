@@ -87,8 +87,8 @@ h1 {
   } @else {
     top: 0;
   }
-  left: 0;
-  right: 0;
+  #{$left}: 0;
+  #{$right}: 0;
 }
 
 .nav-menu {
@@ -171,8 +171,8 @@ body.mappage {
     position: absolute;
     z-index: auto;
     top: 0;
-    left: 0;
-    right: 0;
+    #{$left}: 0;
+    #{$right}: 0;
     height: $mappage-header-height;
   }
 
@@ -330,7 +330,7 @@ body.mappage.admin {
     @include clearfix();
 
     & > * {
-      float: left;
+      float: #{$left};
       width: 50%;
     }
 
@@ -607,7 +607,7 @@ body.authpage {
     display: block;
     position: absolute;
     top: $fms_pan_zoom_top + $fms_pan_zoom_zoomout_top + $fms_pan_zoom_zoomout_height + $gap;
-    right: $fms_pan_zoom_right + $fms_pan_zoom_zoomout_right;
+    #{$right}: $fms_pan_zoom_right + $fms_pan_zoom_zoomout_right;
     border-radius: 5px;
     color: #fff;
     width: 36px;
@@ -618,7 +618,7 @@ body.authpage {
     background: #222;
     background-size: 36px 36px;
     background-repeat: no-repeat;
-    background-position: 100% 0;
+    background-position: flip(100% 0, 0 0);
     @include svg-background-image('/cobrands/fixmystreet/images/hide-pins-link');
 
     &:hover {
@@ -626,7 +626,7 @@ body.authpage {
       color: #fff;
       width: auto;
       height: auto;
-      padding: 6px 40px 6px 10px;
+      padding: flip(6px 40px 6px 10px, 6px 10px 6px 40px);
       overflow: visible;
     }
   }
@@ -663,25 +663,12 @@ body.authpage {
 
   // Expanded arrow points towards edge of window.
   // Closed arrow points away from edge of window.
-  @if ($right == 'right') {
+  &:after {
+    background-position: flip(-6px 0, 0 0);
+  }
 
-    &:after {
-      background-position: -6px 0;
-    }
-
-    &.closed:after {
-      background-position: 0 0;
-    }
-
-  } @else {
-
-    &:after {
-      background-position: 0 0;
-    }
-
-    &.closed:after {
-      background-position: -6px 0;
-    }
+  &.closed:after {
+    background-position: flip(0 0, -6px 0);
   }
 }
 
@@ -742,7 +729,7 @@ body.authpage {
   width: 64px;
   background-color: rgba(0, 0, 0, 0.7);
   // Reset the base left, as zoom buttons now elsewhere
-  left: 0.5em;
+  #{$left}: 0.5em;
 }
 
 .big-green-banner {
@@ -931,7 +918,7 @@ textarea.form-error {
     }
   }
   a#geolocate_link.loading {
-      border-right: none;
+      border-#{$right}: none;
   }
 }
 

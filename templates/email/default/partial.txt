@@ -1,8 +1,8 @@
-Subject: Confirm your report on [% INCLUDE 'site-name.txt' | trim %]
+Subject: Confirm your report on [% site_name %]
 
 Hello [% report.name || report.email %],
 
-To confirm the report you have uploaded to [% INCLUDE 'site-name.txt' | trim %]
+To confirm the report you have uploaded to [% site_name %]
 via [% report.service %], and to check or add any details, please visit the
 following URL:
 
@@ -10,7 +10,7 @@ following URL:
 
 Thanks!
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

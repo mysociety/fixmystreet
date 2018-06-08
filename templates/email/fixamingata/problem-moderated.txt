@@ -28,6 +28,6 @@ Du kan se rapporten på [% report_uri %]
 Om du inte tycker att rapporten skulle ha blivit modererad kan du kontakta
 FixaMinGata:s support på [% report_complain_uri %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 Det går inte att svara på detta mail.

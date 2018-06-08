@@ -10,6 +10,6 @@ Din uppdatering:
 
 [% update.text %]
 
-[% INCLUDE 'signature.txt' %]
+[% signature %]
 
 Det går inte att svara på detta mail.

@@ -19,6 +19,16 @@
     <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
 
     <p>
+      <strong>[% loc('Extra fields:') %]</strong>
+      [% IF contact.in_storage %]
+        <a href="#" class="js-show-extra-fields hidden-nojs">([% loc('show') %])</a>
+      [% END %]
+    </p>
+    <div class="js-extra-fields-ui[% IF contact.in_storage %] hidden-js[% END %]">
+      [% INCLUDE 'admin/extra-metadata-form.html' metas=(contact.get_metadata_for_input OR []) %]
+    </div>
+
+    <p>
       [% IF contact.in_storage %]
         <label for="state">[% loc('State') %]</label>
         <select name="state" id="state">

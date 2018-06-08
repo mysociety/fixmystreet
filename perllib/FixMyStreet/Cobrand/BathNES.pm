@@ -147,6 +147,7 @@ sub available_permissions {
     my $permissions = $self->SUPER::available_permissions();
 
     $permissions->{Problems}->{report_reject} = "Reject reports";
+    $permissions->{Dashboard}->{export_extra_columns} = "Extra columns in CSV export";
 
     return $permissions;
 }
@@ -209,5 +210,51 @@ sub categories_restriction {
     ] } );
 }
 
+sub dashboard_export_add_columns {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $c->user->has_body_permission_to('export_extra_columns');
+
+    $c->stash->{csv}->{headers} = [
+        @{ $c->stash->{csv}->{headers} },
+        "User Email",
+        "User Phone",
+        "Reported As",
+        "Staff User",
+        "Attribute Data",
+        "Site Used",
+    ];
+
+    $c->stash->{csv}->{columns} = [
+        @{ $c->stash->{csv}->{columns} },
+        "user_email",
+        "user_phone",
+        "reported_as",
+        "staff_user",
+        "attribute_data",
+        "site_used",
+    ];
+
+    $c->stash->{csv}->{extra_data} = sub {
+        my $report = shift;
+
+        my $reported_as = $report->get_extra_metadata('contributed_as') || '';
+        my $staff_user = '';
+        if ( my $contributed_by = $report->get_extra_metadata('contributed_by') ) {
+            $staff_user = $c->model('DB::User')->find({ id => $contributed_by })->email;
+        }
+        my $site_used = $report->service || $report->cobrand || '';
+        my $attribute_data = join "; ", map { $_->{name} . " = " . $_->{value} } @{ $report->get_extra_fields };
+        return {
+            user_email => $report->user->email || '',
+            user_phone => $report->user->phone || '',
+            reported_as => $reported_as,
+            staff_user => $staff_user,
+            attribute_data => $attribute_data,
+            site_used => $site_used,
+        };
+    };
+}
 
 1;
