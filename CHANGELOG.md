@@ -3,6 +3,7 @@
 * Unreleased
     - Front end improvements:
         - Simplify footer CSS. #2107
+        - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156
