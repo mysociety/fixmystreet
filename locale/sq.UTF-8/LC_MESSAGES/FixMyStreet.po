@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-05-29 13:33+0100\n"
+"POT-Creation-Date: 2018-06-06 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2017\n"
 "Language-Team: Albanian (https://www.transifex.com/mysociety/teams/12067/sq/)\n"
@@ -817,7 +817,7 @@ msgid "Confirmation"
 msgstr "Konfirmimi"
 
 #: templates/web/base/admin/contact-form.html:56
-#: templates/web/zurich/admin/contact-form.html:25
+#: templates/web/zurich/admin/contact-form.html:35
 #: templates/web/zurich/admin/stats/index.html:61
 msgid "Confirmed"
 msgstr "Konfirmuar"
@@ -893,7 +893,7 @@ msgid "Create a report"
 msgstr "Krijo raport"
 
 #: templates/web/base/admin/contact-form.html:138
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 msgid "Create category"
 msgstr "Krijo kategori"
 
@@ -995,7 +995,7 @@ msgstr "Fshij shabllonin"
 
 #: templates/web/base/admin/bodies.html:31
 #: templates/web/base/admin/contact-form.html:58
-#: templates/web/zurich/admin/contact-form.html:26
+#: templates/web/zurich/admin/contact-form.html:36
 msgid "Deleted"
 msgstr "Fshirë"
 
@@ -1075,7 +1075,7 @@ msgstr ""
 msgid "Don&rsquo;t know"
 msgstr "Nuk e di"
 
-#: templates/web/base/contact/index.html:115
+#: templates/web/base/contact/index.html:119
 msgid "Don't like forms?"
 msgstr "Nuk ju pëlqejnë formularët?"
 
@@ -1404,6 +1404,11 @@ msgstr "Të dhëna shtesë:"
 msgid "Extra details"
 msgstr "Detaje shtesë:"
 
+#: templates/web/zurich/admin/contact-form.html:22
+#, fuzzy
+msgid "Extra fields:"
+msgstr "Detaje shtesë:"
+
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
 msgstr "Dërgimi i mesazhit dështoi"
@@ -1729,6 +1734,10 @@ msgstr ""
 "Nëse dy apo më shum zyre shërbejnë në të njejtin lokacion, FixMyStreet i kombinon kategoritë identike në një të vetme\n"
 "                  në meny. Sigurohu që do të përdoret e njejta kategori te zyret nëse doni që të kombinohen."
 
+#: templates/web/base/contact/index.html:107
+msgid "If you are contacting us about a specific report or update please include a link to the report in the message."
+msgstr ""
+
 #: templates/web/base/auth/generate_token.html:61
 msgid "If you generate a new token the existing token will no longer work."
 msgstr ""
@@ -1804,7 +1813,7 @@ msgstr ""
 "          <strong>përdorues</strong> të FixMyStreet do të atribuohet si krijues i këtyre përditësimeve\n"
 "          kur paraqiten në faqe. Shenoni ID (numrin) e atij përdoruesi."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:138
+#: perllib/FixMyStreet/App/Controller/Contact.pm:146
 msgid "Illegal ID"
 msgstr "ID e pavlefshme"
 
@@ -2381,7 +2390,7 @@ msgstr "Nuk i është raportuar zyres"
 msgid "Note"
 msgstr "Shenim"
 
-#: templates/web/zurich/admin/contact-form.html:35
+#: templates/web/zurich/admin/contact-form.html:45
 msgid "Note:"
 msgstr "Shenim:"
 
@@ -2600,7 +2609,7 @@ msgstr "Fotografia"
 msgid "Photo is required."
 msgstr "Fotografia është e domosdoshme"
 
-#: templates/web/zurich/admin/contact-form.html:32
+#: templates/web/zurich/admin/contact-form.html:42
 msgid "Photo required"
 msgstr "Foto e domosdoshme"
 
@@ -2716,7 +2725,7 @@ msgstr "Ju lutem shkruani emrin për këtë zyre"
 msgid "Please enter a password"
 msgstr "Ju lutemi shkruani fjalëkalimin"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:119
+#: perllib/FixMyStreet/App/Controller/Contact.pm:127
 #: perllib/FixMyStreet/DB/Result/Problem.pm:366
 #: templates/web/base/js/translation_strings.html:7
 msgid "Please enter a subject"
@@ -2732,7 +2741,7 @@ msgid "Please enter a valid email"
 msgstr "Ju lutemi shkruani një email valid"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:355
-#: perllib/FixMyStreet/App/Controller/Contact.pm:129
+#: perllib/FixMyStreet/App/Controller/Contact.pm:137
 msgid "Please enter a valid email address"
 msgstr "Ju lutemi jepni një adresë valide emaili"
 
@@ -2746,7 +2755,7 @@ msgstr ""
 msgid "Please enter some details"
 msgstr "Ju lutemi shkruani disa detaje"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:118
+#: perllib/FixMyStreet/App/Controller/Contact.pm:126
 #: perllib/FixMyStreet/DB/Result/User.pm:210
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:8
@@ -2770,7 +2779,7 @@ msgstr "Ju lutemi shkruani emrin tuaj"
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Ju lutemi shkruani emrin tuaj të plotë, zyreve u duhen këto informata - nëse nuk doni që emri juaj të shfaqet, hiqni çekimin më poshtë"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:117
+#: perllib/FixMyStreet/App/Controller/Contact.pm:125
 #: perllib/FixMyStreet/DB/Result/Comment.pm:125
 #: perllib/FixMyStreet/DB/Result/Problem.pm:377
 #: perllib/FixMyStreet/DB/Result/User.pm:205
@@ -2895,7 +2904,7 @@ msgstr "Ju lutemi vetëm ngarkoni një fotografi"
 msgid "Please verify at least one of email/phone"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:120
+#: perllib/FixMyStreet/App/Controller/Contact.pm:128
 msgid "Please write a message"
 msgstr "Ju lutemi shkruani një mesazh"
 
@@ -3489,7 +3498,7 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:200
 #: templates/web/base/report/_main.html:113
 #: templates/web/base/report/update.html:53
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 #: templates/web/zurich/admin/template_edit.html:29
 msgid "Save changes"
 msgstr "Ruaj ndryshimet"
@@ -3584,7 +3593,7 @@ msgstr ""
 msgid "Select:"
 msgstr "Zgjedh:"
 
-#: templates/web/base/contact/index.html:107
+#: templates/web/base/contact/index.html:111
 msgid "Send"
 msgstr ""
 
@@ -3828,7 +3837,7 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:99
 #: templates/web/base/report/_item.html:97
 #: templates/web/base/report/update/form_update.html:39
-#: templates/web/zurich/admin/contact-form.html:23
+#: templates/web/zurich/admin/contact-form.html:33
 msgid "State"
 msgstr "Statusi"
 
@@ -4265,7 +4274,7 @@ msgstr ""
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Pati një problem për të shfaqur faqen e të gjitha raporteve. Ju lutemi provoni më vonë."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:142
+#: perllib/FixMyStreet/App/Controller/Contact.pm:150
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:42
 msgid "There was a problem showing this page. Please try again later."
 msgstr "Pati një problem për të shfaqur këtë faqe. Ju lutemi provoni më vonë."
@@ -4285,7 +4294,7 @@ msgstr ""
 msgid "There was a problem with your update. Please try again."
 msgstr "Pati problem me përditësimin tuaj. Ju lutemi provoni përsëri."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:146
+#: perllib/FixMyStreet/App/Controller/Contact.pm:154
 msgid "There were problems with your report. Please see below."
 msgstr "Pati një problem me raportin tuaj. Ju lutemi lexoni mëposhtë."
 
@@ -4589,6 +4598,11 @@ msgstr "Gabim i panjohur"
 #: perllib/FixMyStreet/App/Controller/Report.pm:118
 #: perllib/FixMyStreet/App/Controller/Report.pm:121
 msgid "Unknown problem ID"
+msgstr "ID e panjohur e gabimit"
+
+#: perllib/FixMyStreet/App/Controller/Contact.pm:99
+#, fuzzy
+msgid "Unknown update ID"
 msgstr "ID e panjohur e gabimit"
 
 #: templates/web/base/reports/_list-filters.html:19
@@ -4995,7 +5009,7 @@ msgstr "Mund ta shtoni emailin e përdoruesit abuziv te lista e abuzimeve, gjë 
 msgid "You can choose to subscribe to all problems reported in an area, or reports based on their destination."
 msgstr ""
 
-#: templates/web/base/contact/index.html:118
+#: templates/web/base/contact/index.html:122
 msgid "You can contact technical support on <a href='mailto:%s'>%s</a>"
 msgstr "Ju mund të kontaktoni ndihmën teknike në <a href='mailto:%s'>%s</a>"
 
@@ -5323,6 +5337,10 @@ msgstr "fillimisht shenuar: &ldquo;%s&rdquo;"
 #: templates/web/base/admin/report_edit.html:69
 msgid "other areas:"
 msgstr "zona tjera:"
+
+#: templates/web/zurich/admin/contact-form.html:24
+msgid "show"
+msgstr ""
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"

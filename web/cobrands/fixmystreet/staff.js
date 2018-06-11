@@ -225,7 +225,9 @@ $.extend(fixmystreet.set_up, {
     }
 
     // Focus on form
-    $('html,body').scrollTop($inspect_form.offset().top);
+    if (!fixmystreet.inspect_form_no_scroll_on_load) {
+        document.getElementById('side-inspect').scrollIntoView();
+    }
 
     function updateTemplates(opts) {
         opts.category = opts.category || $inspect_form.find('[name=category]').val();

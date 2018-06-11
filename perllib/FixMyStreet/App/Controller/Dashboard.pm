@@ -368,7 +368,7 @@ sub generate_csv : Private {
         my $hashref = $report->as_hashref($c, \%asked_for);
 
         $hashref->{user_name_display} = $report->anonymous
-            ? '(anonymous)' : $report->user->name;
+            ? '(anonymous)' : $report->name;
 
         if ($asked_for{acknowledged}) {
             for my $comment ($report->comments) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-05-29 13:33+0100\n"
+"POT-Creation-Date: 2018-06-06 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: fixmystreetfr <fixmystreet@fixmystreet.fr>, 2017\n"
 "Language-Team: French (France) (https://www.transifex.com/mysociety/teams/12067/fr_FR/)\n"
@@ -829,7 +829,7 @@ msgid "Confirmation"
 msgstr "Confirmation"
 
 #: templates/web/base/admin/contact-form.html:56
-#: templates/web/zurich/admin/contact-form.html:25
+#: templates/web/zurich/admin/contact-form.html:35
 #: templates/web/zurich/admin/stats/index.html:61
 msgid "Confirmed"
 msgstr "Confirmé"
@@ -905,7 +905,7 @@ msgid "Create a report"
 msgstr "Créer un rapport"
 
 #: templates/web/base/admin/contact-form.html:138
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 msgid "Create category"
 msgstr "Créer une catégorie"
 
@@ -1008,7 +1008,7 @@ msgstr "Supprimer le modèle"
 
 #: templates/web/base/admin/bodies.html:31
 #: templates/web/base/admin/contact-form.html:58
-#: templates/web/zurich/admin/contact-form.html:26
+#: templates/web/zurich/admin/contact-form.html:36
 msgid "Deleted"
 msgstr "Effacé"
 
@@ -1088,7 +1088,7 @@ msgstr "Voulez-vous &eacute;lever automatiquement un d&eacute;faut?"
 msgid "Don&rsquo;t know"
 msgstr "Je ne sais pas"
 
-#: templates/web/base/contact/index.html:115
+#: templates/web/base/contact/index.html:119
 msgid "Don't like forms?"
 msgstr "Vous n'aimez pas les formulaires ?"
 
@@ -1416,6 +1416,11 @@ msgstr "Donnée supplémentaire:"
 msgid "Extra details"
 msgstr "Précisions supplémentaires"
 
+#: templates/web/zurich/admin/contact-form.html:22
+#, fuzzy
+msgid "Extra fields:"
+msgstr "Champs suppl&eacute;mentaires"
+
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
 msgstr "Échec de l'envoi du message"
@@ -1739,6 +1744,10 @@ msgid ""
 "                  the menu. Make sure you use the same category name in the bodies if you want this to happen."
 msgstr "Si deux interlocuteurs ou plus servent le même lieu, FixMyStreet combine les catégories identiques dans une saisie unique du menu. Vérifiez que vous utilisez le même nom de catégorie pour les interlocuteurs si vous voulez que ce mode de fonctionnement. "
 
+#: templates/web/base/contact/index.html:107
+msgid "If you are contacting us about a specific report or update please include a link to the report in the message."
+msgstr ""
+
 #: templates/web/base/auth/generate_token.html:61
 msgid "If you generate a new token the existing token will no longer work."
 msgstr ""
@@ -1814,7 +1823,7 @@ msgstr ""
 "Si vous avez activer Open311 update-sending plus haut, vous devez identifier quel  <strong>utlisateur</strong> FixMyStreet sera défini comme le créateur de ces mises à jour.\n"
 "Lorsqu'elles sont montrées sur le site. saisir l' ID (nombre) de cet utilisateur."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:138
+#: perllib/FixMyStreet/App/Controller/Contact.pm:146
 msgid "Illegal ID"
 msgstr "ID invalide"
 
@@ -2396,7 +2405,7 @@ msgstr "Non signalé à l'administration"
 msgid "Note"
 msgstr "Note"
 
-#: templates/web/zurich/admin/contact-form.html:35
+#: templates/web/zurich/admin/contact-form.html:45
 msgid "Note:"
 msgstr "Note :"
 
@@ -2618,7 +2627,7 @@ msgstr "Photo"
 msgid "Photo is required."
 msgstr "La photo est nécessaire."
 
-#: templates/web/zurich/admin/contact-form.html:32
+#: templates/web/zurich/admin/contact-form.html:42
 msgid "Photo required"
 msgstr "Photo requise"
 
@@ -2737,7 +2746,7 @@ msgstr "S'il vous plaît entrez un nom pour cet organisme"
 msgid "Please enter a password"
 msgstr "Merci d'entrer un mot de passe :"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:119
+#: perllib/FixMyStreet/App/Controller/Contact.pm:127
 #: perllib/FixMyStreet/DB/Result/Problem.pm:366
 #: templates/web/base/js/translation_strings.html:7
 msgid "Please enter a subject"
@@ -2753,7 +2762,7 @@ msgid "Please enter a valid email"
 msgstr "Merci d'entrer un email valide"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:355
-#: perllib/FixMyStreet/App/Controller/Contact.pm:129
+#: perllib/FixMyStreet/App/Controller/Contact.pm:137
 msgid "Please enter a valid email address"
 msgstr "Merci d'entrer une adresse email valide"
 
@@ -2768,7 +2777,7 @@ msgstr "Saisissez votre numéro de téléphone"
 msgid "Please enter some details"
 msgstr "Merci d'entrer quelques détails"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:118
+#: perllib/FixMyStreet/App/Controller/Contact.pm:126
 #: perllib/FixMyStreet/DB/Result/User.pm:210
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:8
@@ -2792,7 +2801,7 @@ msgstr "Saisissez votre prénom"
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Merci de saisir votre nom complet, les administrations ont besoin de cette information. Si vous ne souhaitez pas que votre nom soit affiché sur ce site, décochez la case ci-dessous"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:117
+#: perllib/FixMyStreet/App/Controller/Contact.pm:125
 #: perllib/FixMyStreet/DB/Result/Comment.pm:125
 #: perllib/FixMyStreet/DB/Result/Problem.pm:377
 #: perllib/FixMyStreet/DB/Result/User.pm:205
@@ -2918,7 +2927,7 @@ msgstr "Veuillez uniquement envoyer une image"
 msgid "Please verify at least one of email/phone"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:120
+#: perllib/FixMyStreet/App/Controller/Contact.pm:128
 msgid "Please write a message"
 msgstr "Merci de saisir un message"
 
@@ -3512,7 +3521,7 @@ msgstr "Enregistrer + fermer en double"
 #: templates/web/base/report/_inspect.html:200
 #: templates/web/base/report/_main.html:113
 #: templates/web/base/report/update.html:53
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 #: templates/web/zurich/admin/template_edit.html:29
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
@@ -3607,7 +3616,7 @@ msgstr ""
 msgid "Select:"
 msgstr "Sélectionner :"
 
-#: templates/web/base/contact/index.html:107
+#: templates/web/base/contact/index.html:111
 msgid "Send"
 msgstr "Envoy&eacute;"
 
@@ -3856,7 +3865,7 @@ msgstr "Date de début:"
 #: templates/web/base/report/_inspect.html:99
 #: templates/web/base/report/_item.html:97
 #: templates/web/base/report/update/form_update.html:39
-#: templates/web/zurich/admin/contact-form.html:23
+#: templates/web/zurich/admin/contact-form.html:33
 msgid "State"
 msgstr "État actuel"
 
@@ -4296,7 +4305,7 @@ msgstr ""
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Il y a eu un problème pour montrer la page tous les rapports. Réessayez s'il vous plaît ultérieurement."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:142
+#: perllib/FixMyStreet/App/Controller/Contact.pm:150
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:42
 msgid "There was a problem showing this page. Please try again later."
 msgstr "Il y a eu un problème pour afficher cette page. Merci de réessayer ultérieurement."
@@ -4317,7 +4326,7 @@ msgstr "Il y a un problème avec votre combinaison email / mot de passe. Si vous
 msgid "There was a problem with your update. Please try again."
 msgstr "Il y a un problème avec votre mise à jour. Réessayez s'il vous plaît."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:146
+#: perllib/FixMyStreet/App/Controller/Contact.pm:154
 msgid "There were problems with your report. Please see below."
 msgstr "Il y a un problème avec votre rapport. Voir s'il vous plaît plus bas."
 
@@ -4619,6 +4628,11 @@ msgstr "erreur inconnue"
 #: perllib/FixMyStreet/App/Controller/Report.pm:118
 #: perllib/FixMyStreet/App/Controller/Report.pm:121
 msgid "Unknown problem ID"
+msgstr "ID de problème inconnu"
+
+#: perllib/FixMyStreet/App/Controller/Contact.pm:99
+#, fuzzy
+msgid "Unknown update ID"
 msgstr "ID de problème inconnu"
 
 #: templates/web/base/reports/_list-filters.html:19
@@ -5040,7 +5054,7 @@ msgstr "Vous pouvez ajouter un courriel d'utilisateur abusif dans la liste des a
 msgid "You can choose to subscribe to all problems reported in an area, or reports based on their destination."
 msgstr "Vous pouvez choisir de vous abonner &agrave; tous les problèmes signalés dans une zone ou des rapports suivant leur destination."
 
-#: templates/web/base/contact/index.html:118
+#: templates/web/base/contact/index.html:122
 msgid "You can contact technical support on <a href='mailto:%s'>%s</a>"
 msgstr "Vous pouvez contacte le support technique par le courriel <a href='mailto:%s'>%s</a>"
 
@@ -5371,6 +5385,10 @@ msgstr "saisi initialement: &ldquo;%s&rdquo;"
 #: templates/web/base/admin/report_edit.html:69
 msgid "other areas:"
 msgstr "autres lieux:"
+
+#: templates/web/zurich/admin/contact-form.html:24
+msgid "show"
+msgstr ""
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"

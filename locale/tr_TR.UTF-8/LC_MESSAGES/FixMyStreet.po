@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-05-29 13:33+0100\n"
+"POT-Creation-Date: 2018-06-06 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Zeynep UZER <uzerzeynep@gmail.com>, 2018\n"
 "Language-Team: Turkish (Turkey) (https://www.transifex.com/mysociety/teams/12067/tr_TR/)\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:673
 #: perllib/FixMyStreet/DB/Result/Problem.pm:675
@@ -811,7 +811,7 @@ msgid "Confirmation"
 msgstr "Onay"
 
 #: templates/web/base/admin/contact-form.html:56
-#: templates/web/zurich/admin/contact-form.html:25
+#: templates/web/zurich/admin/contact-form.html:35
 #: templates/web/zurich/admin/stats/index.html:61
 msgid "Confirmed"
 msgstr "Onaylandı"
@@ -887,7 +887,7 @@ msgid "Create a report"
 msgstr "Bildiri oluştur"
 
 #: templates/web/base/admin/contact-form.html:138
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 msgid "Create category"
 msgstr "Kategori oluştur"
 
@@ -989,7 +989,7 @@ msgstr ""
 
 #: templates/web/base/admin/bodies.html:31
 #: templates/web/base/admin/contact-form.html:58
-#: templates/web/zurich/admin/contact-form.html:26
+#: templates/web/zurich/admin/contact-form.html:36
 msgid "Deleted"
 msgstr "Silindi"
 
@@ -1069,7 +1069,7 @@ msgstr ""
 msgid "Don&rsquo;t know"
 msgstr "Don&rsquo;t know"
 
-#: templates/web/base/contact/index.html:115
+#: templates/web/base/contact/index.html:119
 msgid "Don't like forms?"
 msgstr "Şekilleri beğenmediniz mi?"
 
@@ -1388,6 +1388,11 @@ msgstr "İlave veriler:"
 #: templates/web/base/report/_item.html:109
 msgid "Extra details"
 msgstr ""
+
+#: templates/web/zurich/admin/contact-form.html:22
+#, fuzzy
+msgid "Extra fields:"
+msgstr "ekstra alan ekle"
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1710,6 +1715,10 @@ msgid ""
 "                  the menu. Make sure you use the same category name in the bodies if you want this to happen."
 msgstr ""
 
+#: templates/web/base/contact/index.html:107
+msgid "If you are contacting us about a specific report or update please include a link to the report in the message."
+msgstr ""
+
 #: templates/web/base/auth/generate_token.html:61
 msgid "If you generate a new token the existing token will no longer work."
 msgstr ""
@@ -1772,7 +1781,7 @@ msgid ""
 "              when they are shown on the site. Enter the ID (number) of that user."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:138
+#: perllib/FixMyStreet/App/Controller/Contact.pm:146
 msgid "Illegal ID"
 msgstr "Kanunsuz kimlik "
 
@@ -2340,7 +2349,7 @@ msgstr "Kurula bildirilmemiş"
 msgid "Note"
 msgstr "Not"
 
-#: templates/web/zurich/admin/contact-form.html:35
+#: templates/web/zurich/admin/contact-form.html:45
 msgid "Note:"
 msgstr "Not:"
 
@@ -2559,7 +2568,7 @@ msgstr "Fotoğraf"
 msgid "Photo is required."
 msgstr ""
 
-#: templates/web/zurich/admin/contact-form.html:32
+#: templates/web/zurich/admin/contact-form.html:42
 msgid "Photo required"
 msgstr ""
 
@@ -2672,7 +2681,7 @@ msgstr ""
 msgid "Please enter a password"
 msgstr "Şifre giriniz"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:119
+#: perllib/FixMyStreet/App/Controller/Contact.pm:127
 #: perllib/FixMyStreet/DB/Result/Problem.pm:366
 #: templates/web/base/js/translation_strings.html:7
 msgid "Please enter a subject"
@@ -2688,7 +2697,7 @@ msgid "Please enter a valid email"
 msgstr "Geçerli e-posta giriniz"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:355
-#: perllib/FixMyStreet/App/Controller/Contact.pm:129
+#: perllib/FixMyStreet/App/Controller/Contact.pm:137
 msgid "Please enter a valid email address"
 msgstr "Geçerli e-posta adresi giriniz"
 
@@ -2702,7 +2711,7 @@ msgstr ""
 msgid "Please enter some details"
 msgstr "Lütfen bir kaç ayrıntı giriniz"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:118
+#: perllib/FixMyStreet/App/Controller/Contact.pm:126
 #: perllib/FixMyStreet/DB/Result/User.pm:210
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:8
@@ -2726,7 +2735,7 @@ msgstr "Ad giriniz"
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Lütfen adınızı ve soyadınızı giriniz, kurullar için gereklidir – eğer isminizin sitede kullanılmasını istemiyorsanız, aşağıda bulunan kutucuktan tiki kaldırınız."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:117
+#: perllib/FixMyStreet/App/Controller/Contact.pm:125
 #: perllib/FixMyStreet/DB/Result/Comment.pm:125
 #: perllib/FixMyStreet/DB/Result/Problem.pm:377
 #: perllib/FixMyStreet/DB/Result/User.pm:205
@@ -2851,7 +2860,7 @@ msgstr ""
 msgid "Please verify at least one of email/phone"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:120
+#: perllib/FixMyStreet/App/Controller/Contact.pm:128
 msgid "Please write a message"
 msgstr "Mesaj gönderin"
 
@@ -3445,7 +3454,7 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:200
 #: templates/web/base/report/_main.html:113
 #: templates/web/base/report/update.html:53
-#: templates/web/zurich/admin/contact-form.html:39
+#: templates/web/zurich/admin/contact-form.html:49
 #: templates/web/zurich/admin/template_edit.html:29
 msgid "Save changes"
 msgstr "Değişiklikleri kaydet"
@@ -3540,7 +3549,7 @@ msgstr ""
 msgid "Select:"
 msgstr ""
 
-#: templates/web/base/contact/index.html:107
+#: templates/web/base/contact/index.html:111
 msgid "Send"
 msgstr ""
 
@@ -3782,7 +3791,7 @@ msgstr ""
 #: templates/web/base/report/_inspect.html:99
 #: templates/web/base/report/_item.html:97
 #: templates/web/base/report/update/form_update.html:39
-#: templates/web/zurich/admin/contact-form.html:23
+#: templates/web/zurich/admin/contact-form.html:33
 msgid "State"
 msgstr "Devlet"
 
@@ -4208,7 +4217,7 @@ msgstr ""
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Tüm Bildirimlerin görüntülendiği sayfada bir sorun var. Lütfen daha sonra tekrar deneyin."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:142
+#: perllib/FixMyStreet/App/Controller/Contact.pm:150
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:42
 msgid "There was a problem showing this page. Please try again later."
 msgstr "Bu sayfa görüntülenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin."
@@ -4228,7 +4237,7 @@ msgstr ""
 msgid "There was a problem with your update. Please try again."
 msgstr "Güncelleme esnasında bir hata oluştu. Lütfen tekrar deneyiniz."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:146
+#: perllib/FixMyStreet/App/Controller/Contact.pm:154
 msgid "There were problems with your report. Please see below."
 msgstr "Bildiriminiz esnasında hata oluştu. Lütfen aşağıya bakınız."
 
@@ -4521,6 +4530,11 @@ msgstr "Bilinmeyen hata"
 #: perllib/FixMyStreet/App/Controller/Report.pm:118
 #: perllib/FixMyStreet/App/Controller/Report.pm:121
 msgid "Unknown problem ID"
+msgstr "Bilinmeyen ID problemi"
+
+#: perllib/FixMyStreet/App/Controller/Contact.pm:99
+#, fuzzy
+msgid "Unknown update ID"
 msgstr "Bilinmeyen ID problemi"
 
 #: templates/web/base/reports/_list-filters.html:19
@@ -4928,7 +4942,7 @@ msgstr "Kötü niyetli bir kullanıcının e-postasını otomatik olarak gizlene
 msgid "You can choose to subscribe to all problems reported in an area, or reports based on their destination."
 msgstr ""
 
-#: templates/web/base/contact/index.html:118
+#: templates/web/base/contact/index.html:122
 msgid "You can contact technical support on <a href='mailto:%s'>%s</a>"
 msgstr "Teknik destek için <a href='mailto:%s'>%s</a> iletişime geçebilirsiniz."
 
@@ -5253,6 +5267,10 @@ msgstr "özgün giriş: &ldquo;%s&rdquo;"
 msgid "other areas:"
 msgstr "diğer bölgeler:"
 
+#: templates/web/zurich/admin/contact-form.html:24
+msgid "show"
+msgstr ""
+
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
 msgstr "çıkış yap"
@@ -5320,138 +5338,161 @@ msgstr "bölge"
 msgid "%d address"
 msgid_plural "%d addresses"
 msgstr[0] "%d adres"
+msgstr[1] "%d adres"
 
 #: perllib/Utils.pm:250
 #, perl-format
 msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d gün"
+msgstr[1] "%d gün"
 
 #: perllib/Utils.pm:252
 #, perl-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d saat"
+msgstr[1] "%d saat"
 
 #: perllib/Utils.pm:254
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d dakika"
+msgstr[1] "%d dakika"
 
 #: perllib/Utils.pm:246
 #, perl-format
 msgid "%d month"
 msgid_plural "%d months"
 msgstr[0] "%d ay"
+msgstr[1] "%d ay"
 
 #: templates/web/base/report/_support.html:6
 #, perl-format
 msgid "%d supporter"
 msgid_plural "%d supporters"
 msgstr[0] "%d destekçiler"
+msgstr[1] "%d destekçiler"
 
 #: perllib/Utils.pm:248
 #, perl-format
 msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] "%d hafta"
+msgstr[1] "%d hafta"
 
 #: perllib/Utils.pm:244
 #, perl-format
 msgid "%d year"
 msgid_plural "%d years"
 msgstr[0] "%d yıl"
+msgstr[1] "%d yıl"
 
 #: templates/web/fixmystreet.com/reports/summary.html:153
 #, perl-format
 msgid "%s day"
 msgid_plural "%s days"
 msgstr[0] "%s gün"
+msgstr[1] "%s gün"
 
 #: templates/web/base/reports/index.html:57
 #, perl-format
 msgid "%s problem marked as fixed"
 msgid_plural "%s problems marked as fixed"
 msgstr[0] "%s problem çözüldü olarak işaretlendi"
+msgstr[1] "%s problem çözüldü olarak işaretlendi"
 
 #: templates/web/base/reports/index.html:45
 #, perl-format
 msgid "%s problem reported"
 msgid_plural "%s problems reported"
 msgstr[0] "%s raporlanan problem"
+msgstr[1] "%s raporlanan problem"
 
 #: templates/web/fixmystreet.com/reports/summary.html:168
 #, perl-format
 msgid "%s report"
 msgid_plural "%s reports"
 msgstr[0] "%s rapor"
+msgstr[1] "%s rapor"
 
 #: templates/web/base/reports/index.html:51
 #, perl-format
 msgid "%s update on problems"
 msgid_plural "%s updates on problems"
 msgstr[0] "%s sorun güncelleme"
+msgstr[1] "%s sorun güncelleme"
 
 #: templates/web/base/front/stats.html:19
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
 msgstr[0] "<big>%s</big> geçen ay onarıldı"
+msgstr[1] "<big>%s</big> geçen ay onarıldı"
 
 #: templates/web/base/front/stats.html:8
 #, perl-format
 msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] "<big>%s</big> geçen haftaki bildirimler"
+msgstr[1] "<big>%s</big> geçen haftaki bildirimler"
 
 #: templates/web/base/front/stats.html:13
 #, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
 msgstr[0] "<big>%s</big> son bildirimler"
+msgstr[1] "<big>%s</big> son bildirimler"
 
 #: templates/web/base/front/stats.html:25
 #, perl-format
 msgid "<big>%s</big> update on reports"
 msgid_plural "<big>%s</big> updates on reports"
 msgstr[0] "<big>%s</big> bildirimlerin güncellemeleri"
+msgstr[1] "<big>%s</big> bildirimlerin güncellemeleri"
 
 #: templates/web/buckinghamshire/report/_item.html:51
 #, perl-format
 msgid "Reported %d day ago"
 msgid_plural "Reported %d days ago"
 msgstr[0] "%d gün önce raporlandı"
+msgstr[1] "%d gün önce raporlandı"
 
 #: templates/web/base/report/new/top_message_some.html:3
 #, perl-format
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Bahsettiğiniz alanı kapsayan ilgili diğer kurullar hakkında henüz detaylı  bilgimiz <strong>yok</strong>"
+msgstr[1] "Bahsettiğiniz alanı kapsayan ilgili diğer kurullar hakkında henüz detaylı  bilgimiz <strong>yok</strong>"
 
 #: templates/web/base/report/new/top_message_none.html:3
 #, perl-format
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural "We do not yet have details for the councils that cover this location."
 msgstr[0] " Bahsettiğiniz alanı kapsayan ilgili kurul hakkında detaylı bilgimiz yok."
+msgstr[1] " Bahsettiğiniz alanı kapsayan ilgili kurul hakkında detaylı bilgimiz yok."
 
 #: templates/web/buckinghamshire/report/_item.html:61
 #, perl-format
 msgid "last updated %d day ago"
 msgid_plural "last updated %d days ago"
 msgstr[0] "son güncelleme %dgün önce"
+msgstr[1] "son güncelleme %dgün önce"
 
 #: templates/email/default/inactive-account.txt:8
-#, fuzzy, perl-format
+#, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] "Ay"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/email/warwickshire/archive.txt:9
 #, perl-format
 msgid "report"
 msgid_plural "reports"
 msgstr[0] "raporlar"
+msgstr[1] "raporlar"
 
 #~ msgid "Category: %s"
 #~ msgstr "Kategori: %s"

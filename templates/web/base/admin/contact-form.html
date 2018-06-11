@@ -162,5 +162,5 @@ as well.") %]
         <dt>[% pair.key %]</dt> <dd>[% pair.value %]</dd>
       [% END %]
     </dl>
-    [% INCLUDE 'admin/extra-metadata-form.html' metas=(contact.get_metadata_for_input OR []) %]
+    [% INCLUDE 'admin/extra-metadata-form.html' metas=(contact.get_metadata_for_editing OR []) %]
 </form>

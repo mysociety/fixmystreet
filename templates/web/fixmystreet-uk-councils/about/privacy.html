@@ -8,6 +8,23 @@
 
 <h2>Privacy Policy</h2>
 
+[% IF c.cobrand.moniker == 'bathnes' %]
+<p>Your email address identifies you and your report, and so it is your
+personal data. BANES Council is responsible for keeping this information safe,
+and ensuring it is treated lawfully and fairly.  We will use your personal data
+for the purposes of resolving the issue you are reporting to us, and for
+contacting you in this regard.  We will not use it, or share it with anyone
+else, for other purposes.
+
+<p>Further information about the Council’s treatment of personal data, and your
+privacy rights, is available in our
+<a href="http://www.bathnes.gov.uk/services/your-council-and-democracy/data-protection-and-freedom-information/council-privacy-notice">Privacy Notice</a>.
+The Council’s Data Protection Officer may be contacted at
+<a href="mailto:data_protection@bathnes.gov.uk">data_protection@bathnes.gov.uk</a>.
+
+<hr>
+[% END %]
+
 <p>
     FixMyStreet is run by the charity <a href="https://www.mysociety.org/">mySociety</a>.
 </p>
@@ -88,12 +105,18 @@ When you make a report
 </p>
 
 <h3>
-    When you add an update or respond to our ‘has your problem been fixed?’ survey
+    When you add an update
+  [% IF c.cobrand.send_questionnaires %]
+    or respond to our ‘has your problem been fixed?’ survey
+  [% END %]
 </h3>
 
 <p>
-    When you add an update to a report, or click through from our ‘has your problem been
-    fixed?’ survey, we record this along with the initial report and your user data.
+    When you add an update to a report,
+  [% IF c.cobrand.send_questionnaires %]
+    or click through from our ‘has your problem been fixed?’ survey,
+  [% END %]
+    we record this along with the initial report and your user data.
 </p>
 
 <p>
@@ -137,24 +160,6 @@ When you make a report
 </p>
 
 <h2>
-    FixMyStreet Pro
-</h2>
-
-<h3>
-    When you make an enquiry
-</h3>
-
-<p>
-    We collect the names, phone numbers and email addresses of council employees who make
-    an enquiry about FixMyStreet Pro, request a callback or join one of our webinars.
-</p>
-
-<p>
-    These details are stored in our internal CRM. In accordance with your request, you
-    will hear from us via the channel which you have selected (email, phone or by mail).
-</p>
-
-<h2>
     What happens when you use FixMyStreet
 </h2>
 
@@ -175,11 +180,13 @@ When you make a report
     <li>
         We <b>email you if someone leaves an update</b> on a report you’ve made.
     </li>
+  [% IF c.cobrand.send_questionnaires %]
     <li>
         We <b>send you a questionnaire email</b> four weeks after you submit a problem, asking
         for a status update. You can then opt in or out of subsequent status update
         questionnaires.
     </li>
+  [% END %]
     <li>
         If your report is particularly interesting, our Communications Manager may get in
         touch, as we like to feature notable requests on the
@@ -212,20 +219,11 @@ When you make a report
 
 <p>
     Every alert email we send contains an unsubscribe link at the bottom for you to stop
-    receiving that alert. After the first questionnaire email on a report, mentioned
+    receiving that alert.
+  [% IF c.cobrand.send_questionnaires %]
+    After the first questionnaire email on a report, mentioned
     above, you have to opt in to receive any further questionnaire on that report.
-</p>
-
-<h3>
-    Unsubscribing from FixMyStreet Pro marketing activity
-</h3>
-
-<p>
-    All contact will give you the option to opt out of future emails or calls. You may
-    also <a href="mailto:enquiries@mysociety.org">contact us</a> at any time to ask that
-    we remove your details from our CRM. Note that opting out may be a better solution
-    than having your details removed, as it allows us to keep a record that you do not
-    wish to be contacted, and prevents the accidental re-addition of your details.
+  [% END %]
 </p>
 
 <h2>
@@ -301,15 +299,6 @@ When you make a report
     and so that we can view any historic context which may have bearing on subsequent
     support mail, even if members of the support staff change. Support staff adhere to
     internal privacy policies which may be viewed on request.
-</p>
-
-<h3>
-    FixMyStreet Pro
-</h3>
-
-<p>
-    If contact has not been made for a period of 18 months, we will mark your record as
-    inactive, and will not contact you for sales purposes unless you re-establish contact.
 </p>
 
 <h2>

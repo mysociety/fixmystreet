@@ -1,6 +1,26 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
+    - Bugfixes:
+      - Don't remove automated fields when editing contacts #2163
+
+* v2.3.4 (7th June 2018)
+    - Bugfixes:
+        - Fix pin clicking on non-/around pages, broken in 2.3.3.
+        - Fix issue displaying anonymous account email.
+
+* v2.3.3 (6th June 2018)
+    - Front end improvements:
+        - Extra help text on contact form #2149
+    - Admin improvements:
+        - Improve inspect form position and configurability.
+    - Bugfixes:
+        - Prevent contact form leaking information about updates #2149
+        - Fix pointer event issue selecting pin on map. #2130
+        - Fix admin navigation links in multi-language installs.
+        - Fix map display issue clicking back from report page as inspector.
 
 * v2.3.2 (31st May 2018)
     - Front end improvements:

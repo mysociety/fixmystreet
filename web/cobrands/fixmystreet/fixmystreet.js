@@ -157,7 +157,11 @@ fixmystreet.mobile_reporting = {
     // and special "OK/Cancel" buttons etc.
     $('html').addClass('map-fullscreen only-map map-reporting');
     $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
-    $('html, body').scrollTop(0);
+    // Do this on a timeout, so it takes precedence over the browser’s
+    // remembered position, which we do not want, we want a fixed map.
+    setTimeout(function() {
+        $('html, body').scrollTop(0);
+    }, 0);
   },
 
   remove_ui: function() {
@@ -1081,6 +1085,12 @@ fixmystreet.display = {
             // Remove any existing report page content from sidebar
             $('#side-report').remove();
             $('.two_column_sidebar').remove();
+
+            fixmystreet.mobile_reporting.remove_ui();
+            if (fixmystreet.map.updateSize && ($twoColReport.length || $('html').hasClass('mobile'))) {
+                fixmystreet.map.updateSize();
+            }
+
             // Insert this report's content
             if ($twoColReport.length) {
                 $twoColReport.appendTo('#map_sidebar');
@@ -1096,11 +1106,6 @@ fixmystreet.display = {
             var found = html.match(/<title>([\s\S]*?)<\/title>/);
             var page_title = found[1];
             fixmystreet.page = 'report';
-
-            fixmystreet.mobile_reporting.remove_ui();
-            if (fixmystreet.map.updateSize && ($twoColReport.length || $('html').hasClass('mobile'))) {
-                fixmystreet.map.updateSize();
-            }
 
             $('.big-hide-pins-link').hide();
 
@@ -1143,6 +1148,11 @@ fixmystreet.display = {
             }
             if (fixmystreet.maps.markers_resize) {
                 fixmystreet.maps.markers_resize(); // force a redraw so the selected marker gets bigger
+            }
+
+            // We disabled this upon first touch to prevent it taking effect, re-enable now
+            if (fixmystreet.maps.click_control) {
+                fixmystreet.maps.click_control.activate();
             }
 
             if (typeof callback === 'function') {

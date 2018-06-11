@@ -8,6 +8,12 @@
 
 #main-nav {
   float: none;
+  margin-top: 7em; // Put the main FMS navigation below the Bristol header
+
+  .ie9 & > * {
+    #{$right}: auto;
+    #{$left}: 0;
+  }
 }
 
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
@@ -64,9 +70,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   }
 
   .nav-menu {
-    // Put the main FMS navigation below the Bristol header
-    margin-top: 7.25em;
-
     a, span {
       display: inline-block; // So the chevrons appear correctly
       font-size: 1.2em;
@@ -105,7 +108,18 @@ body.mappage {
 
   // Reinstate the floated nav bar on map pages
   #main-nav {
-    float: right;
+    float: #{$right};
+    margin-top: 0;
+
+    // IE9 uses absolute positioning rather than floats.
+    .ie9 & {
+      float: none;
+
+      & > * {
+        #{$right}: 0;
+        #{$left}: auto;
+      }
+    }
   }
 
   // A few changes to the nav items now they're on a black background

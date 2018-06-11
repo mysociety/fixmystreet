@@ -6,7 +6,17 @@
         <div class="admin-hint"><p>[% loc('The ordering of this field on the report page. Fields are shown in ascending order according to this value.') %]</p></div>
         <label>
             [% loc('Order') %]
-            <input name="metadata[[% loop.index %]].order" data-field-name="order" type=text value="[% meta.order | html %]">
+            <input name="metadata[[% loop.index %]].order" data-field-name="order" type=text value="[% meta.order OR 0 | html %]">
+        </label>
+
+        <div class="admin-hint"><p>[% loc('Whether the field is displayed to the user, included as a hidden field and automatically populated, or set by the server upon Open311 submission. This field is usually set automatically.') %]</p></div>
+        <label>
+            [% loc('Automated') %]
+            <select name="metadata[[% loop.index %]].automated" data-field-name="automated" class="js-metadata-item-type">
+                <option value="" [% meta.automated == '' ? 'selected' : '' %]></option>
+                <option value="server_set" [% meta.automated == 'server_set' ? 'selected' : '' %]>[% loc('Server Set') %]</option>
+                <option value="hidden_field" [% meta.automated == 'hidden_field' ? 'selected' : '' %]>[% loc('Hidden Field') %]</option>
+            </select>
         </label>
 
         <div class="admin-hint"><p>[% loc('The code used to store this field value in the database. e.g. <code>address</code> would be available as <code>problem.extra.address</code> in the templates.') %]</p></div>

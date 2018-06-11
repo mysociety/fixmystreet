@@ -164,7 +164,10 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     all_categories: true,
     actions: {
         found: function(layer, feature) {
-            if (bucks_types.indexOf(feature.attributes.feature_ty) != -1) {
+            if (fixmystreet.assets.selectedFeature()) {
+                hide_responsibility_errors();
+                enable_report_form();
+            } else if (bucks_types.indexOf(feature.attributes.feature_ty) != -1) {
                 hide_responsibility_errors();
                 enable_report_form();
             } else {
@@ -176,9 +179,15 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 
         not_found: function(layer) {
             // If a feature wasn't found at the location they've clicked, it's
-            // probably a field or something. Show an error to that effect.
-            show_responsibility_error("#js-not-a-road");
-            disable_report_form();
+            // probably a field or something. Show an error to that effect,
+            // unless an asset is selected.
+            if (fixmystreet.assets.selectedFeature()) {
+                hide_responsibility_errors();
+                enable_report_form();
+            } else {
+                show_responsibility_error("#js-not-a-road");
+                disable_report_form();
+            }
         }
     },
     usrn: {

@@ -34,7 +34,7 @@ body.twothirdswidthpage .content {
     margin: 0;
 }
 
-// Menu *in* the header, pushed down from top
+// "Home | My Services | Residents" etc menu *in* the header
 .nav-menu--hart {
   margin-left: 157px;
   position: relative;
@@ -80,6 +80,7 @@ body.twothirdswidthpage .content {
     float: none;
     margin: 11em auto 0; // To push it under header
     background-color: #fff;
+    height: auto;
 
     // #main-nav acts a bit like a .container, so we give it the same max-width.
     max-width: $container-max-width;
@@ -88,10 +89,21 @@ body.twothirdswidthpage .content {
     body.mappage & {
         max-width: none;
     }
+
+    .ie9 & {
+        position: static;
+
+        & > * {
+            position: static;
+            -ms-transform: none;
+        }
+    }
 }
 
+// FixMyStreet "Report a problem | Sign in | All reports" etc menu
 .nav-menu--first {
     padding: 0.25em 0;
+    float: none;
 
     li {
       float: left;

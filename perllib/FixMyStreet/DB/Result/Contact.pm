@@ -94,14 +94,12 @@ sub category_display {
     $self->translate_column('category');
 }
 
-sub get_metadata_for_input {
+sub get_metadata_for_editing {
     my $self = shift;
     my $id_field = $self->id_field;
     my @metadata = @{$self->get_extra_fields};
     # First, ones we always want to ignore (hard-coded, old system)
     @metadata = grep { $_->{code} !~ /^(easting|northing|closest_address|$id_field)$/ } @metadata;
-    # Also ignore any we have with a 'server_set' automated attribute
-    @metadata = grep { !$_->{automated} || $_->{automated} ne 'server_set' } @metadata;
 
     # Just in case the extra data is in an old parsed format
     foreach (@metadata) {
@@ -109,6 +107,16 @@ sub get_metadata_for_input {
             $_->{values} = [ map { { name => $_->{name}[0], key => $_->{key}[0] } } @{$_->{values}->{value}} ];
         }
     }
+    return \@metadata;
+}
+
+sub get_metadata_for_input {
+    my $self = shift;
+    my $metadata = $self->get_metadata_for_editing;
+
+    # Also ignore any we have with a 'server_set' automated attribute
+    my @metadata = grep { !$_->{automated} || $_->{automated} ne 'server_set' } @$metadata;
+
     return \@metadata;
 }
 

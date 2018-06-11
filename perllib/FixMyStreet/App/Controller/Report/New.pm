@@ -765,10 +765,8 @@ sub process_user : Private {
 
     if ( $c->cobrand->allow_anonymous_reports ) {
         my $anon_details = $c->cobrand->anonymous_account;
-
-        for my $key ( qw( username email name ) ) {
-            $params{ $key } ||= $anon_details->{ $key };
-        }
+        $params{username} ||= $anon_details->{email};
+        $params{name} ||= $anon_details->{name};
     }
 
     # The user is already signed in. Extra bare block for 'last'.
@@ -1123,6 +1121,13 @@ sub check_for_errors : Private {
     return 1 unless scalar keys %field_errors || $c->stash->{login_success};
 
     $c->stash->{field_errors} = \%field_errors;
+
+    if ( $c->cobrand->allow_anonymous_reports ) {
+        my $anon_details = $c->cobrand->anonymous_account;
+        my $report = $c->stash->{report};
+        $report->user->email(undef) if $report->user->email eq $anon_details->{email};
+        $report->name(undef) if $report->name eq $anon_details->{name};
+    }
 
     return;
 }
