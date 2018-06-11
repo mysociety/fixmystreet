@@ -23,6 +23,11 @@ body.mappage {
   display: block; // remove flex so nav touches top of parent
   min-height: 0; // no vertical align, so no need for a height
   margin-top: 0; // don't bother overlapping the border
+
+  .ie9 & > * {
+    position: static;
+    -ms-transform: none;
+  }
 }
 
 // Override the FMS main menu to give it a background colour
