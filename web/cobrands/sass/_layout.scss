@@ -761,6 +761,10 @@ body.authpage {
       #{$left}: -0.75em;
       border-#{$left}: 0.75em solid transparent;
       border-bottom: 0.75em solid #888;
+      @media (min-width: 48em) {
+        border: 0;
+        #{$left}: 0;
+      }
     }
   }
 
