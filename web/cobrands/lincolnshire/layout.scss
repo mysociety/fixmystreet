@@ -19,7 +19,15 @@
 
 #main-nav {
     float: none;
+    // Put the main FMS navigation below the site header
+    margin-top: 6.1em;
+
+    .ie9 & > * {
+        #{$right}: auto;
+        #{$left}: 0;
+      }
 }
+
   
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
 
@@ -36,8 +44,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     }
 
     .nav-menu {
-        // Put the main FMS navigation below the site header
-        margin-top: 6.75em;
         a, span {
             display: inline-block; // So the chevrons appear correctly
             font-size: 1.2em;
@@ -73,26 +79,42 @@ body.mappage {
 
     // Reinstate the floated nav bar on map pages
     #main-nav {
-        float: right;
+        float: #{$right};
+        margin-top: -0.375em;
+
+        // IE9 uses absolute positioning rather than floats.
+        .ie9 & {
+            float: none;
+            & > * {
+                #{$right}: 0;
+                #{$left}: auto;
+            }
+        }
     }
 
-    // A few changes to the nav items now they're on a black background
+    // A few changes to the nav items now they're on a different background
     .nav-menu {
         a, span {
-        color: white;
-        font-size: 1.1em;
+            color: white;
+            font-size: 1.1em;
         }
 
         a:hover {
-        background: transparent;
-        text-decoration: underline;
+            background: transparent;
+            text-decoration: underline;
         }
 
         a.report-a-problem-btn {
-        color: white;
-        padding-left: 0.5em;
-        padding-right: 0.5em;
-
+            color: white;
+            padding-left: 0.5em;
+            padding-right: 0.5em;
+            background-color: $lincs-pop;
+            &:hover,
+            &:active,
+            &:focus {
+                background-color: darken($lincs-pop, 10%);
+                text-decoration: none;
+            }
         }
     }
 
