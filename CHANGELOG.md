@@ -7,6 +7,7 @@
         - Simplify footer CSS. #2107
         - Keep commas in geocode lookups.
         - Show message on reports closed to updates.
+        - Only display last 6 months of reports on around page by default #2098
     - Admin improvements:
         - Category group can be edited.
     - Bugfixes:

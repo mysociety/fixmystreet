@@ -91,6 +91,7 @@ for my $test (
     subtest "pin colour for state $test->{state}" => sub {
         $report->state($test->{state});
         $report->update;
+        $c->stash->{report_age_field} = 'lastupdate';
 
         my ( $on_map, $nearby, $dist ) =
             FixMyStreet::Map::map_features($c, bbox => "0,0,0,0");

@@ -137,9 +137,9 @@ subtest 'check non public reports are not displayed on around page' => sub {
 };
 
 
-subtest 'check category, status and extra filtering works on /around' => sub {
-    my $body = $mech->create_body_ok(2237, "Oxfordshire");
+my $body = $mech->create_body_ok(2237, "Oxfordshire");
 
+subtest 'check category, status and extra filtering works on /around' => sub {
     my $categories = [ 'Pothole', 'Vegetation', 'Flytipping' ];
     my $params = {
         postcode  => 'OX20 1SZ',
@@ -193,6 +193,76 @@ subtest 'check category, status and extra filtering works on /around' => sub {
     $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
     $pins = $json->{pins};
     is scalar @$pins, 1, 'correct number of external_body reports';
+};
+
+subtest 'check old problems not shown by default on around page' => sub {
+    my $params = {
+        postcode  => 'OX20 1SZ',
+        latitude  => 51.754926,
+        longitude => -1.256179,
+    };
+    my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
+                . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
+
+    my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
+    my $pins = $json->{pins};
+    is scalar @$pins, 9, 'correct number of reports when no age';
+
+    my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+    $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
+
+    $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
+    $pins = $json->{pins};
+    is scalar @$pins, 8, 'correct number of reports with old report';
+
+    $json = $mech->get_ok_json( '/around?show_old_reports=1&ajax=1&bbox=' . $bbox );
+    $pins = $json->{pins};
+    is scalar @$pins, 9, 'correct number of reports with show_old_reports';
+
+    $problems->update( { confirmed => \"current_timestamp" } );
+};
+
+subtest 'check sorting by update uses lastupdate to determine age' => sub {
+    my $params = {
+        postcode  => 'OX20 1SZ',
+        latitude  => 51.754926,
+        longitude => -1.256179,
+    };
+    my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
+                . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
+
+    my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+    $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
+
+    my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
+    my $pins = $json->{pins};
+    is scalar @$pins, 8, 'correct number of reports with default sorting';
+
+
+    $json = $mech->get_ok_json( '/around?ajax=1&sort=updated-desc&bbox=' . $bbox );
+    $pins = $json->{pins};
+    is scalar @$pins, 9, 'correct number of reports with updated sort';
+
+    $problems->update( { confirmed => \"current_timestamp" } );
+};
+
+subtest 'check show old reports checkbox shown on around page' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok( '/around?pc=OX20+1SZ' );
+        $mech->content_contains('id="show_old_reports_wrapper" class="report-list-filters hidden"');
+
+        my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+        $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
+
+        $mech->get_ok( '/around?pc=OX20+1SZ' );
+        $mech->content_lacks('id="show_old_reports_wrapper" class="report-list-filters hidden"');
+        $mech->content_contains('id="show_old_reports_wrapper" class="report-list-filters"');
+
+        $problems->update( { confirmed => \"current_timestamp" } );
+    };
 };
 
 subtest 'check skip_around skips around page' => sub {
