@@ -32,4 +32,19 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    # Lincolnshire is a two-tier council, but don't want to display
+    # all district-level categories on their cobrand - just a couple.
+    return $rs->search( { -or => [
+        'body.name' => "Lincolnshire County Council",
+
+        # District categories:
+        'me.category' => { -in => [
+            'Street nameplates',
+            'Bench/cycle rack/litter bin/planter',
+        ] },
+    ] } );
+}
+
 1;
