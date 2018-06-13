@@ -198,9 +198,9 @@ sub timeline {
     return $rs->search(
         {
             -or => {
-                created  => { '>=', \"current_timestamp-'7 days'::interval" },
-                confirmed => { '>=', \"current_timestamp-'7 days'::interval" },
-                whensent  => { '>=', \"current_timestamp-'7 days'::interval" },
+                'me.created' => { '>=', \"current_timestamp-'7 days'::interval" },
+                'me.confirmed' => { '>=', \"current_timestamp-'7 days'::interval" },
+                'me.whensent' => { '>=', \"current_timestamp-'7 days'::interval" },
             }
         },
         {

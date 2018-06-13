@@ -450,4 +450,8 @@ subtest "Removing account from admin" => sub {
     is $user->email, 'removed-' . $user->id . '@example.org', 'Email gone'
 };
 
+subtest "View timeline" => sub {
+    $mech->get_ok('/admin/timeline');
+};
+
 done_testing();

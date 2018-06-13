@@ -4,6 +4,7 @@
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156
+        - Fix issue displaying admin timeline. #2159
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:
