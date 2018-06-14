@@ -79,30 +79,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_category: ["Blocked drains", "Faulty street light", 'Faulty street sign', 'Floral displays', 'Grass needs cutting', 'Obstructions (skips, A boards)', 'Overhanging vegetation from private land', 'Pavement defect', 'Public Tree related issue', "Road defect"],
     non_interactive: true,
     road: true,
-    actions: {
-        found: function(layer) {
-            if (fixmystreet.assets.selectedFeature()) {
-                $('#road-warning').remove();
-                return;
-            }
-            var msg = 'The location selected is a Transport for London Red Route. TfL are responsible for the reported category and can be alerted to issues via: <a href="https://tfl.gov.uk/help-and-contact/contact-us-about-streets-and-other-road-issues">Street issues</a>';
-            if ( $('#road-warning').length ) {
-                $('#road-warning').html(msg);
-            } else {
-                $('.change_location').after('<div class="box-warning" id="road-warning">' + msg + '</div>');
-            }
-            $('#single_body_only').val(layer.fixmystreet.body_found);
-        },
-
-        not_found: function(layer) {
-            if ( $('#road-warning').length ) {
-                $('#road-warning').remove();
-            }
-            $('#single_body_only').val(layer.fixmystreet.body_council);
-        }
-    },
-    body_found: 'TfL',
-    body_council: 'Bromley Council'
+    body: 'TfL'
 }));
 
 var prow_stylemap = new OpenLayers.StyleMap({

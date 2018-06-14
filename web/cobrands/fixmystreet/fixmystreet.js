@@ -395,8 +395,7 @@ $.extend(fixmystreet.set_up, {
 
         $.getJSON('/report/new/category_extras', args, function(data) {
             var $category_meta = $('#category_meta');
-            $('#js-councils_text').html(data.councils_text);
-            $('#js-councils_text_private').html(data.councils_text_private);
+            fixmystreet.update_councils_text(data);
             if ( data.category_extra ) {
                 if ( $category_meta.length ) {
                     $category_meta.replaceWith( data.category_extra );
@@ -888,6 +887,17 @@ $.extend(fixmystreet.set_up, {
 
 });
 
+fixmystreet.update_councils_text = function(data) {
+    var single_body_only = $('#single_body_only').val();
+    if (single_body_only) {
+        data.councils_text = data.councils_text.replace(/<strong>.*<\/strong>/, '<strong>' + single_body_only + '</strong>');
+    }
+
+    $('#js-councils_text').html(data.councils_text);
+    $('#js-councils_text_private').html(data.councils_text_private);
+
+};
+
 // The new location will be saved to a history state unless
 // savePushState is set to false.
 fixmystreet.update_pin = function(lonlat, savePushState) {
@@ -917,8 +927,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         }
         $('#side-form, #site-logo').show();
         var old_category = $("select#form_category").val();
-        $('#js-councils_text').html(data.councils_text);
-        $('#js-councils_text_private').html(data.councils_text_private);
+        fixmystreet.update_councils_text(data);
         $('#js-top-message').html(data.top_message || '');
         $('#form_category_row').html(data.category);
         if ($("select#form_category option[value=\""+old_category+"\"]").length) {
