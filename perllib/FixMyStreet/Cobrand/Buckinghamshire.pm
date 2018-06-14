@@ -4,11 +4,6 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
-use LWP::Simple;
-use URI;
-use Try::Tiny;
-use JSON::MaybeXS;
-
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire County Council'; }
@@ -337,85 +332,23 @@ sub categories_restriction {
     return $rs->search( { 'body.id' => 2217 } );
 }
 
-sub lookup_site_code {
-    my $self = shift;
-    my $row = shift;
-    my $buffer = shift || 200; # metres
+sub lookup_site_code_config { {
+    buffer => 200, # metres
+    url => "https://tilma.mysociety.org/mapserver/bucks",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
+    typename => "Whole_Street",
+    property => "site_code",
+    accept_feature => sub {
+        my $feature = shift;
 
-    my ($x, $y) = $row->local_coords;
-    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
-
-    my $uri = URI->new("https://tilma.mysociety.org/mapserver/bucks");
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
-        TYPENAME => "Whole_Street",
-        VERSION => "1.1.0",
-        outputformat => "geojson",
-        BBOX => "$w,$s,$e,$n"
-    );
-
-    my $response = get($uri);
-
-    my $j = JSON->new->utf8->allow_nonref;
-    try {
-        $j = $j->decode($response);
-    } catch {
-        # There was either no asset found, or an error with the WFS
-        # call - in either case let's just proceed without the USRN.
-        return '';
-    };
-
-    # We have a list of features, and we want to find the one closest to the
-    # report location.
-    my $site_code = '';
-    my $nearest;
-
-    # There are only certain features we care about, the rest can be ignored.
-    my @valid_types = ( "2", "3A", "3B", "4A", "4B", "HE", "HWOA", "HWSA", "P" );
-    my %valid_types = map { $_ => 1 } @valid_types;
-
-    for my $feature ( @{ $j->{features} } ) {
+        # There are only certain features we care about, the rest can be ignored.
+        my @valid_types = ( "2", "3A", "3B", "4A", "4B", "HE", "HWOA", "HWSA", "P" );
+        my %valid_types = map { $_ => 1 } @valid_types;
         my $type = $feature->{properties}->{feature_ty};
-        next unless $valid_types{$type};
 
-        # We shouldn't receive anything aside from these two geometry types, but belt and braces.
-        next unless $feature->{geometry}->{type} eq 'MultiLineString' || $feature->{geometry}->{type} eq 'LineString';
-
-        my @coordinates = @{ $feature->{geometry}->{coordinates} };
-        if ( $feature->{geometry}->{type} eq 'MultiLineString') {
-            # The coordinates are stored as a list of lists, so flatten 'em out
-            @coordinates = map { @{ $_ } } @coordinates;
-        }
-
-        # If any of this feature's points are closer than those we've seen so
-        # far then use the site_code from this feature.
-        for my $coords ( @coordinates ) {
-            my ($fx, $fy) = @$coords;
-            my $distance = $self->_distance($x, $y, $fx, $fy);
-            if ( !defined $nearest || $distance < $nearest ) {
-                $site_code = $feature->{properties}->{site_code};
-                $nearest = $distance;
-            }
-        }
+        return $valid_types{$type};
     }
+} }
 
-    return $site_code;
-}
-
-
-=head2 _distance
-
-Returns the cartesian distance between two coordinates.
-This is not a general-purpose distance function, it's intended for use with
-fairly nearby coordinates in EPSG:27700 where a spheroid doesn't need to be
-taken into account.
-
-=cut
-sub _distance {
-    my ($self, $ax, $ay, $bx, $by) = @_;
-    return sqrt( (($ax - $bx) ** 2) + (($ay - $by) ** 2) );
-}
 
 1;
