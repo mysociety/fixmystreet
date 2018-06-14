@@ -198,64 +198,62 @@ body.twothirdswidthpage .content .sticky-sidebar {
     }
 }
 
-body.fullwidthpage, body.twothirdswidthpage {
-    .container .content footer {
-        a.platform-logo {
-            background-color: $greenwich_dark_grey;
-            background-position: center center;
-            background-size: 13em 1.5em;
-            width: 14em;
-            height: 3em;
-            border-radius: 1.5em;
-        }
+.content footer {
+    a.platform-logo {
+        background-color: $greenwich_dark_grey;
+        background-position: center center;
+        background-size: 13em 1.5em;
+        width: 14em;
+        height: 3em;
+        border-radius: 1.5em;
+    }
 
-        .tablewrapper {
-            padding: 0;
-            margin: 1em 0;
+    .tablewrapper {
+        padding: 0;
+        margin: 1em 0;
 
-            div {
-                text-align: center;
+        div {
+            text-align: center;
 
-                p {
-                    margin: 0;
-                    padding: 0;
-                    line-height: 3em;
-                }
-            }
-        }
-
-        .footer-nav {
-            padding: 0;
-            margin: 1em 0;
-
-            ul {
+            p {
                 margin: 0;
                 padding: 0;
-                text-align: center;
+                line-height: 3em;
+            }
+        }
+    }
 
-                li {
-                    display: inline;
-                    padding: 0 4px 0 7px;
-                    font-size: 0.8em;
-                    border-left: solid 1px $greenwich_dark_grey;
+    .footer-nav {
+        padding: 0;
+        margin: 1em 0;
 
-                    &:first-child {
-                        border-left: none;
-                    }
+        ul {
+            margin: 0;
+            padding: 0;
+            text-align: center;
 
-                    a, a:link, a:visited {
-                        color: $primary_text;
-                    }
+            li {
+                display: inline;
+                padding: 0 4px 0 7px;
+                font-size: 0.8em;
+                border-left: solid 1px $greenwich_dark_grey;
+
+                &:first-child {
+                    border-left: none;
+                }
+
+                a, a:link, a:visited {
+                    color: $primary_text;
                 }
             }
         }
+    }
 
-        hr {
-            padding: 0;
-            margin: 0 -24px;
-            border-bottom: solid 8px $greenwich_red;
-            border-top: solid 48px $greenwich_dark_grey;
-            height: 0;
-        }
+    hr {
+        padding: 0;
+        margin: 0 -24px;
+        border-bottom: solid 8px $greenwich_red;
+        border-top: solid 48px $greenwich_dark_grey;
+        height: 0;
     }
 }
