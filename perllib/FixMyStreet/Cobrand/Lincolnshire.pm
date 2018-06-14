@@ -29,8 +29,30 @@ sub open311_config {
         { name => 'description',
           value => $row->detail };
 
+    # Reports made via FMS.com or the app probably won't have a site code
+    # value because we don't display the adopted highways layer on those
+    # frontends. Instead we'll look up the closest asset from the WFS
+    # service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('site_code')) {
+        if (my $site_code = $self->lookup_site_code($row)) {
+            push @$extra,
+                { name => 'site_code',
+                value => $site_code };
+        }
+    }
+
     $row->set_extra_fields(@$extra);
 }
+
+sub lookup_site_code_config { {
+    buffer => 200, # metres
+    url => "https://tilma.mysociety.org/mapserver/lincs",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
+    typename => "NSG",
+    property => "Site_Code",
+    accept_feature => sub { 1 }
+} }
+
 
 sub categories_restriction {
     my ($self, $rs) = @_;
@@ -46,5 +68,7 @@ sub categories_restriction {
         ] },
     ] } );
 }
+
+sub map_type { 'Lincolnshire' }
 
 1;

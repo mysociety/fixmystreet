@@ -142,6 +142,16 @@ body.mappage .big-green-banner {
   padding: 2em 0 3em;
 }
 
+.js-roadworks-message dd:last-child {
+  margin-bottom: 0;
+}
+
+// Certain categories have linear assets so hide the spot marker in the guidance
+#category_meta_message_Missingsafetyfence, #category_meta_message_Roadsidesafetybarrier {
+  .asset-spot:before {
+    display: none;
+  }
+}
 
 // admin
 
