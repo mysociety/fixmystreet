@@ -39,4 +39,6 @@ sub categories_restriction {
     return $rs->search( { 'body.name' => "Lincolnshire County Council" } );
 }
 
+sub map_type { 'Lincolnshire' }
+
 1;
