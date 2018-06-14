@@ -6,8 +6,8 @@ if (!fixmystreet.maps) {
 
 var defaults = {
     http_options: {
-        // url: "https://tilma.staging.mysociety.org/mapserver/lincs",
-        url: "https://confirmdev.eu.ngrok.io/tilmastaging/mapserver/lincs",
+        url: "https://tilma.staging.mysociety.org/mapserver/lincs",
+        // url: "https://confirmdev.eu.ngrok.io/tilmastaging/mapserver/lincs",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
@@ -37,6 +37,27 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: "Bollards (lit)",
     asset_item: 'bollard'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "NSG"
+        }
+    },
+    always_visible: true,
+    non_interactive: true,
+    usrn: {
+        attribute: 'Site_Code',
+        field: 'site_code'
+    },
+    stylemap: new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fill: false,
+            stroke: false
+        })
+    })
+
 }));
 
 })();
