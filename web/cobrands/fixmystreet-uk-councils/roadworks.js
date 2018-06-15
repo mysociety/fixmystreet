@@ -118,7 +118,7 @@ var roadworks_defaults = {
         params: {
             get: 'Points',
             userid: '1',
-            organisation_id: '1016',
+            organisation_id: '', // Cobrand JS should extend and override this.
             filterimpact: '1,2,3,4',
             extended_func_id: '14',
         },
