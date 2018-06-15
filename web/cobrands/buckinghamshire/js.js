@@ -198,7 +198,12 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     filter_value: types_to_show,
 }));
 
-fixmystreet.assets.add(fixmystreet.roadworks.layer_future);
-fixmystreet.assets.add(fixmystreet.roadworks.layer_planned);
+var bucks_roadworks_org_id = '1016';
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {
+    http_options: { params: { organisation_id: bucks_roadworks_org_id } }
+}));
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_planned, {
+    http_options: { params: { organisation_id: bucks_roadworks_org_id } }
+}));
 
 })();
