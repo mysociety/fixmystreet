@@ -75,6 +75,27 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     filter_value: "SL: Subway Lighting Unit"
 }));
 
+function get_barrier_stylemap() {
+    return new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            strokeColor: "#000000",
+            strokeOpacity: 0.9,
+            strokeWidth: 4
+        }),
+        'select': new OpenLayers.Style({
+            strokeColor: "#55BB00",
+            strokeOpacity: 1,
+            strokeWidth: 8
+        }),
+        'hover': new OpenLayers.Style({
+            strokeWidth: 6,
+            strokeOpacity: 1,
+            strokeColor: "#FFFF00",
+            cursor: 'pointer'
+        })
+    });
+}
+
 fixmystreet.assets.add($.extend(true, {}, defaults, {
     http_options: {
         params: {
@@ -84,7 +105,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_category: "Roadside safety barrier",
     asset_item: 'barrier',
     filter_key: 'Type',
-    filter_value: "ST: Safety Barrier"
+    filter_value: "ST: Safety Barrier",
+    stylemap: get_barrier_stylemap(),
+    max_resolution: 1.194328566789627
 }));
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
@@ -96,7 +119,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_category: "Safety fence",
     asset_item: 'fence',
     filter_key: 'Type',
-    filter_value: "ST: Safety Fences"
+    filter_value: "ST: Safety Fences",
+    stylemap: get_barrier_stylemap(),
+    max_resolution: 1.194328566789627
 }));
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
@@ -105,8 +130,22 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "LCC_Drainage-GulliesOffletsManholes"
         }
     },
-    asset_category: ["Blocked drainage item", "Dyke/Ditch/Culvert defect"],
+    asset_category: "Blocked drainage item",
     asset_item: 'drain'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "ST_All_Structures"
+        }
+    },
+    asset_category: "Dyke/Ditch/Culvert defect",
+    asset_item: 'culvert',
+    filter_key: 'Type',
+    filter_value: [
+        "ST: Culvert 1 Cell", "ST: Culvert 2+ Cells", "ST: Culvert/Pipe"
+    ]
 }));
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
