@@ -511,6 +511,7 @@ fixmystreet.assets = {
                     property: options.filter_key,
                     value: options.filter_value
                 });
+                layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
             }
         }
 
