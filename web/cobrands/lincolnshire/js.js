@@ -42,6 +42,102 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 fixmystreet.assets.add($.extend(true, {}, defaults, {
     http_options: {
         params: {
+            TYPENAME: "SL_Street_Light_Units"
+        }
+    },
+    asset_category: "Street light",
+    asset_item: 'street light'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "SL_Street_Light_Units"
+        }
+    },
+    asset_category: "Street light",
+    asset_item: 'street light',
+    filter_key: 'Type',
+    filter_value: [
+        "SL: Bulkhead Lighting", "SL: Refuge Beacon", "SL: Street Lighting Unit"
+    ]
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "SL_Street_Light_Units"
+        }
+    },
+    asset_category: "Subway light",
+    asset_item: 'light',
+    filter_key: 'Type',
+    filter_value: "SL: Subway Lighting Unit"
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Safety_Barriers"
+        }
+    },
+    asset_category: "Roadside safety barrier",
+    asset_item: 'barrier',
+    filter_key: 'Type',
+    filter_value: "ST: Safety Barrier"
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Safety_Barriers"
+        }
+    },
+    asset_category: "Safety fence",
+    asset_item: 'fence',
+    filter_key: 'Type',
+    filter_value: "ST: Safety Fences"
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "LCC_Drainage-GulliesOffletsManholes"
+        }
+    },
+    asset_category: ["Blocked drainage item", "Dyke/Ditch/Culvert defect"],
+    asset_item: 'drain'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "SL_Lit_Signs"
+        }
+    },
+    asset_category: "Sign (lit)",
+    asset_item: 'street sign'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "ST_All_Structures"
+        }
+    },
+    asset_category: "Bridge",
+    asset_item: 'bridge',
+    filter_key: 'Type',
+    filter_value: [
+        "ST: Bridge", "ST: Bridge Ped/Cycle 1 Span",
+        "ST: Bridge Ped/Cycle 2+ Spans", "ST: Bridge Vehicular 1 Span",
+        "ST: Bridge Vehicular 2-3 Spans", "ST: Bridge Vehicular 4+ Spans"
+    ]
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
             TYPENAME: "NSG"
         }
     },
