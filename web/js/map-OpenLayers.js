@@ -387,7 +387,7 @@ $.extend(fixmystreet.utils, {
         }
         var qs = fixmystreet.utils.parse_query_string();
 
-        var page = $('.pagination').data('page');
+        var page = $('.pagination:first').data('page');
         if (page > 1) {
             qs.p = page;
         } else {
@@ -643,11 +643,11 @@ $.extend(fixmystreet.utils, {
             $('.js-pagination').on('change.filters', categories_or_status_changed);
             $('.js-pagination').on('click', 'a', function(e) {
                 e.preventDefault();
-                var page = $('.pagination').data('page');
+                var page = $('.pagination:first').data('page');
                 if ($(this).hasClass('next')) {
-                    $('.pagination').data('page', page + 1);
+                    $('.pagination:first').data('page', page + 1);
                 } else {
-                    $('.pagination').data('page', page - 1);
+                    $('.pagination:first').data('page', page - 1);
                 }
                 fixmystreet.markers.protocol.use_page = true;
                 $(this).trigger('change');
@@ -916,7 +916,7 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         });
         var page;
         if (this.use_page) {
-            page = $('.pagination').data('page');
+            page = $('.pagination:first').data('page');
             this.use_page = false;
         } else if (this.initial_page) {
             page = 1;

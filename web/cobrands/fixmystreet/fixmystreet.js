@@ -1280,7 +1280,7 @@ $(function() {
                     if (fixmystreet.utils && fixmystreet.utils.parse_query_string) {
                         var qs = fixmystreet.utils.parse_query_string();
                         var page = qs.p || 1;
-                        $('.pagination').data('page', page)
+                        $('.pagination:first').data('page', page)
                             .trigger('change.filters');
                     }
                     fixmystreet.display.reports_list(location.href);
@@ -1289,7 +1289,8 @@ $(function() {
                 } else if ('newReportAtLonlat' in e.state) {
                     fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
                 } else if ('page_change' in e.state) {
-                    $('.pagination').data('page', e.state.page_change.page)
+                    fixmystreet.markers.protocol.use_page = true;
+                    $('.pagination:first').data('page', e.state.page_change.page) //;
                         .trigger('change.filters');
                     if ( fixmystreet.page != 'reports' ) {
                         fixmystreet.display.reports_list(location.href);
