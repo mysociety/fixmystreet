@@ -195,4 +195,13 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 
 }));
 
+var lincs_roadworks_org_id = '1070';
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {
+    http_options: { params: { organisation_id: lincs_roadworks_org_id } }
+}));
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_planned, {
+    http_options: { params: { organisation_id: lincs_roadworks_org_id } }
+}));
+
+
 })();
