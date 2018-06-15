@@ -118,7 +118,7 @@ var roadworks_defaults = {
         params: {
             get: 'Points',
             userid: '1',
-            organisation_id: '1016',
+            organisation_id: '', // Cobrand JS should extend and override this.
             filterimpact: '1,2,3,4',
             extended_func_id: '14',
         },
@@ -136,7 +136,7 @@ var roadworks_defaults = {
     format_class: OpenLayers.Format.RoadworksForwardPlanning,
     strategy_class: OpenLayers.Strategy.FixMyStreet,
     stylemap: stylemap,
-    body: "Buckinghamshire County Council",
+    body: "", // Cobrand JS should extend and override this.
     non_interactive: true,
     always_visible: true
 };
