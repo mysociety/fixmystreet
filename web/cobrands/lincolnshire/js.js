@@ -46,16 +46,6 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         }
     },
     asset_category: "Street light",
-    asset_item: 'street light'
-}));
-
-fixmystreet.assets.add($.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "SL_Street_Light_Units"
-        }
-    },
-    asset_category: "Street light",
     asset_item: 'street light',
     filter_key: 'Type',
     filter_value: [
