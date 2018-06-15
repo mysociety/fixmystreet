@@ -1291,6 +1291,9 @@ $(function() {
                 } else if ('page_change' in e.state) {
                     $('.pagination').data('page', e.state.page_change.page)
                         .trigger('change.filters');
+                    if ( fixmystreet.page != 'reports' ) {
+                        fixmystreet.display.reports_list(location.href);
+                    }
                 } else if ('filter_change' in e.state) {
                     $('#filter_categories').val(e.state.filter_change.filter_categories);
                     $('#statuses').val(e.state.filter_change.statuses);
