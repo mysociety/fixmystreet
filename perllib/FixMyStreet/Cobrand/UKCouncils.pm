@@ -6,6 +6,10 @@ use warnings;
 
 use Carp;
 use URI::Escape;
+use LWP::Simple;
+use URI;
+use Try::Tiny;
+use JSON::MaybeXS;
 
 sub is_council {
     1;
@@ -221,5 +225,98 @@ sub available_permissions {
 sub prefill_report_fields_for_inspector { 1 }
 
 sub social_auth_disabled { 1 }
+
+=head2 lookup_site_code
+
+Reports made via FMS.com or the app probably won't have a site code
+value (required for Confirm integrations) because we don't display
+the adopted highways layer on those frontends.
+Instead we'll look up the closest asset from the WFS
+service at the point we're sending the report over Open311.
+
+NB this requires the cobrand to implement `lookup_site_code_config` -
+see Buckinghamshire or Lincolnshire for an example.
+
+
+=cut
+
+sub lookup_site_code {
+    my $self = shift;
+    my $row = shift;
+
+    my $cfg = $self->lookup_site_code_config;
+
+    my $buffer = $cfg->{buffer}; # metres
+    my ($x, $y) = $row->local_coords;
+    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+
+    my $uri = URI->new($cfg->{url});
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => $cfg->{srsname},
+        TYPENAME => $cfg->{typename},
+        VERSION => "1.1.0",
+        outputformat => "geojson",
+        BBOX => "$w,$s,$e,$n"
+    );
+
+    my $response = get($uri);
+
+    my $j = JSON->new->utf8->allow_nonref;
+    try {
+        $j = $j->decode($response);
+    } catch {
+        # There was either no asset found, or an error with the WFS
+        # call - in either case let's just proceed without the USRN.
+        return '';
+    };
+
+    # We have a list of features, and we want to find the one closest to the
+    # report location.
+    my $site_code = '';
+    my $nearest;
+
+    for my $feature ( @{ $j->{features} } ) {
+        next unless $cfg->{accept_feature}($feature);
+
+        # We shouldn't receive anything aside from these two geometry types, but belt and braces.
+        next unless $feature->{geometry}->{type} eq 'MultiLineString' || $feature->{geometry}->{type} eq 'LineString';
+
+        my @coordinates = @{ $feature->{geometry}->{coordinates} };
+        if ( $feature->{geometry}->{type} eq 'MultiLineString') {
+            # The coordinates are stored as a list of lists, so flatten 'em out
+            @coordinates = map { @{ $_ } } @coordinates;
+        }
+
+        # If any of this feature's points are closer than those we've seen so
+        # far then use the site_code from this feature.
+        for my $coords ( @coordinates ) {
+            my ($fx, $fy) = @$coords;
+            my $distance = $self->_distance($x, $y, $fx, $fy);
+            if ( !defined $nearest || $distance < $nearest ) {
+                $site_code = $feature->{properties}->{$cfg->{property}};
+                $nearest = $distance;
+            }
+        }
+    }
+
+    return $site_code;
+}
+
+
+=head2 _distance
+
+Returns the cartesian distance between two coordinates.
+This is not a general-purpose distance function, it's intended for use with
+fairly nearby coordinates in EPSG:27700 where a spheroid doesn't need to be
+taken into account.
+
+=cut
+sub _distance {
+    my ($self, $ax, $ay, $bx, $by) = @_;
+    return sqrt( (($ax - $bx) ** 2) + (($ay - $by) ** 2) );
+}
+
 
 1;
