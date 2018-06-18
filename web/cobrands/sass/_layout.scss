@@ -379,60 +379,47 @@ body.mappage.admin {
   }
 }
 
-body.twothirdswidthpage,
-body.fullwidthpage {
-    .container {
-        .content {
-            footer {
-                margin-top: 0em;
-                margin-bottom: -1em;
-                .tablewrapper {
-                    padding-top: 2em;
-                    padding-bottom: 3em;
-                    background: $base_bg;
-                    color: $base_fg;
-                    a:link,
-                    a:visited {
-                        color: $primary;
-                    }
-                    #footer-mobileapps {
-                        a {
-                            padding-#{$left}: 0.5em;
-                        }
-                    }
-                    h4 {
-                        font-weight: normal;
-                        padding-bottom: 0.5em;
-                    }
-                }
-
-                a.platform-logo {
-                    vertical-align: baseline;
-                    display: inline-block;
-                    background-position: top left;
-                    background-repeat: no-repeat;
-                    background-size: auto 1.5em;
-                    background-image: url(/cobrands/fixmystreet/images/fms-platform-logo.svg);
-                    text-indent: -1000%;
-                    height: 1.7em;
-                    width: 16em;
-                    padding-#{$right}: 0.25em;
-                }
+// Only want to capture footers that are inside .content
+// (like the one in base)
+.content {
+    footer {
+        margin-top: 0em;
+        margin-bottom: -1em;
+        .tablewrapper {
+            padding-top: 2em;
+            padding-bottom: 3em;
+            background: $base_bg;
+            color: $base_fg;
+            a:link,
+            a:visited {
+                color: $primary;
+            }
+            h4 {
+                font-weight: normal;
+                padding-bottom: 0.5em;
             }
         }
     }
-
 }
-.ie8 {
-  body.twothirdswidthpage,
-  body.fullwidthpage {
-    .container .content footer a.platform-logo {
-      color: #ffffff;
-      background: none;
-      text-indent: 0px;
-      height: auto;
+
+a.platform-logo {
+    vertical-align: baseline;
+    display: inline-block;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: auto 1.5em;
+    background-image: url(/cobrands/fixmystreet/images/fms-platform-logo.svg);
+    text-indent: -1000%;
+    height: 1.7em;
+    width: 16em;
+    padding-#{$right}: 0.25em;
+
+    .ie8 & {
+        color: #ffffff;
+        background: none;
+        text-indent: 0px;
+        height: auto;
     }
-  }
 }
 
 // two thirds width page, also has option for a sidebar which can be sticky or not
@@ -535,7 +522,10 @@ body.authpage {
     margin-top:0;
   }
   p {
-	  border-bottom:none;
+    border-bottom:none;
+  }
+  a {
+    padding-#{$left}: 0.5em;
   }
 }
 
