@@ -78,13 +78,11 @@ body, .content {
 }
 
 // Make sure the numbers on the front page have the correct font weight
-#front-howto {
-  #front_stats {
-    color: white;
+#front_stats {
+  color: white;
 
-    div {
-      @extend %bold-font;
-    }
+  div {
+    @extend %bold-font;
   }
 }
 
