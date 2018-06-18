@@ -104,6 +104,14 @@ $mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical pa
     }
 }
 
+#front_stats {
+    border-top: none;
+
+    div {
+        font-size: 1em; // up from 0.8125em in base.scss
+    }
+}
+
 // Fix location of aside sidebar
 body.twothirdswidthpage {
     .content {
