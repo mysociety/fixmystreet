@@ -110,6 +110,12 @@ a {
     }
 }
 
+.frontpage {
+    .item-list__item img {
+        display: none;
+    }
+}
+
 dd, p {
   line-height: 1.4em;
 }
