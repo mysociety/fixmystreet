@@ -51,6 +51,8 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub admin_user_domain { 'buckscc.gov.uk' }
+
 sub contact_email {
     my $self = shift;
     return join( '@', 'fixmystreetbs', 'email.buckscc.gov.uk' );
