@@ -227,6 +227,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
             titles_list     => $extra_titles_list,
             %$contribute_as ? (contribute_as => $contribute_as) : (),
             $top_message ? (top_message => $top_message) : (),
+            unresponsive => $c->stash->{unresponsive}->{ALL} || '',
         }
     );
 
@@ -259,6 +260,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     my $category_extra = '';
     my $category_extra_json = [];
     my $generate;
+    my $unresponsive = '';
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
         $c->stash->{category_extras} = { $category => $c->stash->{category_extras}->{$category} };
         $generate = 1;
@@ -277,11 +279,13 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html', $vars);
     my $councils_text_private = $c->render_fragment( 'report/new/councils_text_private.html');
 
+    $unresponsive = $c->stash->{unresponsive}->{$category} || $c->stash->{unresponsive}->{ALL} || '';
     my $body = encode_json({
         category_extra => $category_extra,
         councils_text => $councils_text,
         councils_text_private => $councils_text_private,
         category_extra_json => $category_extra_json,
+        unresponsive => $unresponsive,
     });
 
     $c->res->content_type('application/json; charset=utf-8');

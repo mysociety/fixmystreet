@@ -1640,6 +1640,10 @@ subtest "unresponsive body handling works" => sub {
         $mech->get_ok('/report/new/ajax?latitude=55.952055&longitude=-3.189579'); # Edinburgh
         my $body_id = $contact1->body->id;
         ok $mech->content_like( qr{Edinburgh.*accept reports.*/unresponsive\?body=$body_id} );
+        my $extra_details = $mech->get_ok_json('/report/new/ajax?latitude=55.952055&longitude=-3.189579');
+        is $extra_details->{unresponsive}, $body_id, "unresponsive json set";
+        $extra_details = $mech->get_ok_json('/report/new/category_extras?category=Street%20lighting&latitude=55.952055&longitude=-3.189579');
+        is $extra_details->{unresponsive}, $body_id, "unresponsive json set";
 
         my $test_email = 'test-2@example.com';
         $mech->log_out_ok;
@@ -1715,6 +1719,8 @@ subtest "unresponsive body handling works" => sub {
         $contact3->update( { email => 'REFUSED' } );
         $mech->get_ok('/report/new/category_extras?category=Trees&latitude=51.896268&longitude=-2.093063');
         ok $mech->content_like( qr/Cheltenham.*Trees.*unresponsive.*category=Trees/ );
+        $extra_details = $mech->get_ok_json('/report/new/category_extras?category=Trees&latitude=51.896268&longitude=-2.093063');
+        is $extra_details->{unresponsive}, $contact3->body->id, "unresponsive json set";
 
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR', } }, "submit location" );
