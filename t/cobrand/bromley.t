@@ -194,4 +194,21 @@ subtest 'check display of TfL reports' => sub {
     $mech->content_like(qr{<a title="Test Test[^>]*bromley.example.org[^>]*><img[^>]*yellow});
 };
 
+subtest 'check geolocation overrides' => sub {
+    my $cobrand = FixMyStreet::Cobrand::Bromley->new;
+    foreach my $test (
+        { query => 'Main Rd, BR1', town => 'Bromley', string => 'Main Rd' },
+        { query => 'Main Rd, BR3', town => 'Beckenham', string => 'Main Rd' },
+        { query => 'Main Rd, BR4', town => 'West Wickham', string => 'Main Rd' },
+        { query => 'Main Rd, BR5', town => 'Orpington', string => 'Main Rd' },
+        { query => 'Main Rd, BR7', town => 'Chislehurst', string => 'Main Rd' },
+        { query => 'Main Rd, BR8', town => 'Swanley', string => 'Main Rd' },
+        { query => 'Old Priory Avenue', town => 'BR6 0PL', string => 'Old Priory Avenue' },
+    ) {
+        my $res = $cobrand->disambiguate_location($test->{query});
+        is $res->{town}, $test->{town}, "Town matches $test->{town}";
+        is $res->{string}, $test->{string}, "String matches $test->{string}";
+    }
+};
+
 done_testing();

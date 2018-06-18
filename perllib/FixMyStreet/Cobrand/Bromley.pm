@@ -37,18 +37,24 @@ sub disambiguate_location {
     #  a different Priory Avenue in Petts Wood
     #  From Google maps search, "BR6 0PL" is a valid postcode for Old Priory Avenue
     if ($string =~/^old\s+priory\s+av\w*$/i) {
-        $string = 'Ramsden Road';
-        $town = ', BR6 0PL';
+        $town = 'BR6 0PL';
     }
 
     # White Horse Hill is on boundary with Greenwich, so need a
     # specific postcode
-    $string = 'BR7 6DH' if $string =~ /^white\s+horse/i;
+    $town = 'BR7 6DH' if $string =~ /^white\s+horse/i;
 
     $town = '' if $string =~ /orpington/i;
+    $string =~ s/(, *)?br[12]$//i;
+    $town = 'Beckenham' if $string =~ s/(, *)?br3$//i;
+    $town = 'West Wickham' if $string =~ s/(, *)?br4$//i;
+    $town = 'Orpington' if $string =~ s/(, *)?br[56]$//i;
+    $town = 'Chislehurst' if $string =~ s/(, *)?br7$//i;
+    $town = 'Swanley' if $string =~ s/(, *)?br8$//i;
 
     return {
         %{ $self->SUPER::disambiguate_location() },
+        string => $string,
         town => $town,
         centre => '51.366836,0.040623',
         span   => '0.154963,0.24347',
