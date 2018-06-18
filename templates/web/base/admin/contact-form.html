@@ -27,7 +27,7 @@
         [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent. 
         Other categories for this body may have the same email address.") %]
     </p>
-    [% IF (body.send_method AND body.send_method != 'Email') OR body.can_be_devolved  %]
+    [% IF (body.send_method AND body.send_method.match('Email')) OR body.can_be_devolved  %]
       <p>
           [% loc("If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here.") %]
       </p>
