@@ -1989,28 +1989,26 @@ a#geolocate_link.loading, .btn--geolocate.loading {
     padding-#{$right}: 1.5em;
 }
 
-#front-howto {
-  #front_stats {
-    display:table;
-    width:100%;
-    color: $primary_text;
-    background: $primary;
-    font-family: $meta-font;
-    div {
-      display:table-cell;
-      text-align:center;
-      padding:1em;
-      line-height:1.25em;
-      font: {
-        size:0.8125em;
-        weight:bold;
-      }
+#front_stats {
+  display:table;
+  width:100%;
+  color: $primary_text;
+  background: $primary;
+  font-family: $meta-font;
+  div {
+    display:table-cell;
+    text-align:center;
+    padding:1em;
+    line-height:1.25em;
+    font: {
+      size:0.8125em;
+      weight:bold;
     }
-    big {
-      display:block;
-      margin-bottom:0.5em;
-      font-size:1.5385em;
-    }
+  }
+  big {
+    display:block;
+    margin-bottom:0.5em;
+    font-size:1.5385em;
   }
 }
 
