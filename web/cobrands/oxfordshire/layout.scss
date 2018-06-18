@@ -56,10 +56,13 @@ $mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical pa
 #front-main {
     background: transparent;
     color: inherit;
-    margin: 4% 0;
+    margin: 2% 0 4% 0;
 
     h1 {
-        font-size: 2.5em;
+        font-size: 42px;
+        line-height: 68px;
+        color: #1a1a1a;
+        margin-bottom: 4%;
     }
 
     #front-main-container {
@@ -74,7 +77,7 @@ $mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical pa
         div {
             display: block;
             width: auto;
-            max-width: 26em;
+            max-width: 38em;
             margin: 0.75em 0 0 0;
             overflow: visible;
 
@@ -95,20 +98,33 @@ $mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical pa
             }
 
             input#sub {
-                padding-top: 0.6em;
-                padding-bottom: 0.6em;
+                padding: 0.6em 1.5em;
                 width: auto;
                 height: auto;
+                text-transform: none;
             }
         }
     }
 }
 
+.frontpage {
+    .content h2 {
+        font-size: 2em;
+    }
+}
+
 #front_stats {
     border-top: none;
+    padding-top: 0;
 
     div {
-        font-size: 1em; // up from 0.8125em in base.scss
+        font-size: 1.2em; // up from 0.8125em in base.scss
+        font-weight: 600;
+    }
+
+    big {
+        font-weight: 900;
+        font-family: $heading-font;
     }
 }
 
