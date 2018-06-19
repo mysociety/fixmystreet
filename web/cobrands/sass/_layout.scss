@@ -393,60 +393,47 @@ body.mappage.admin {
   }
 }
 
-body.twothirdswidthpage,
-body.fullwidthpage {
-    .container {
-        .content {
-            footer {
-                margin-top: 0em;
-                margin-bottom: -1em;
-                .tablewrapper {
-                    padding-top: 2em;
-                    padding-bottom: 3em;
-                    background: $base_bg;
-                    color: $base_fg;
-                    a:link,
-                    a:visited {
-                        color: $primary;
-                    }
-                    #footer-mobileapps {
-                        a {
-                            padding-#{$left}: 0.5em;
-                        }
-                    }
-                    h4 {
-                        font-weight: normal;
-                        padding-bottom: 0.5em;
-                    }
-                }
-
-                a.platform-logo {
-                    vertical-align: baseline;
-                    display: inline-block;
-                    background-position: top left;
-                    background-repeat: no-repeat;
-                    background-size: auto 1.5em;
-                    background-image: url(/cobrands/fixmystreet/images/fms-platform-logo.svg);
-                    text-indent: -1000%;
-                    height: 1.7em;
-                    width: 16em;
-                    padding-#{$right}: 0.25em;
-                }
+// Only want to capture footers that are inside .content
+// (like the one in base)
+.content {
+    footer {
+        margin-top: 0em;
+        margin-bottom: -1em;
+        .tablewrapper {
+            padding-top: 2em;
+            padding-bottom: 3em;
+            background: $base_bg;
+            color: $base_fg;
+            a:link,
+            a:visited {
+                color: $primary;
+            }
+            h4 {
+                font-weight: normal;
+                padding-bottom: 0.5em;
             }
         }
     }
-
 }
-.ie8 {
-  body.twothirdswidthpage,
-  body.fullwidthpage {
-    .container .content footer a.platform-logo {
-      color: #ffffff;
-      background: none;
-      text-indent: 0px;
-      height: auto;
+
+a.platform-logo {
+    vertical-align: baseline;
+    display: inline-block;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: auto 1.5em;
+    background-image: url(/cobrands/fixmystreet/images/fms-platform-logo.svg);
+    text-indent: -1000%;
+    height: 1.7em;
+    width: 16em;
+    padding-#{$right}: 0.25em;
+
+    .ie8 & {
+        color: #ffffff;
+        background: none;
+        text-indent: 0px;
+        height: auto;
     }
-  }
 }
 
 // two thirds width page, also has option for a sidebar which can be sticky or not
@@ -549,7 +536,10 @@ body.authpage {
     margin-top:0;
   }
   p {
-	  border-bottom:none;
+    border-bottom:none;
+  }
+  a {
+    padding-#{$left}: 0.5em;
   }
 }
 
@@ -775,6 +765,10 @@ body.authpage {
       #{$left}: -0.75em;
       border-#{$left}: 0.75em solid transparent;
       border-bottom: 0.75em solid #888;
+      @media (min-width: 48em) {
+        border: 0;
+        #{$left}: 0;
+      }
     }
   }
 
@@ -938,22 +932,23 @@ textarea.form-error {
 
 #front-howto {
   border-#{$right}: 1em solid transparent;
-  #front_stats {
-    background:none;
-    color: #222;
-    border-top:0.25em solid $primary;
-    padding-top:1em;
-    big {
-      color: $layout_front_stats_color;
-      font-size: 2em;
-      @media (min-width: 54em) {
-        // 54em roughly halfway between 48em and 62em
-        font-size: 2.5em;
-      }
-      @media (min-width: 62em) {
-        // container max-width 60em + 2em side padding
-        font-size: 3em;
-      }
+}
+
+#front_stats {
+  background:none;
+  color: #222;
+  border-top:0.25em solid $primary;
+  padding-top:1em;
+  big {
+    color: $layout_front_stats_color;
+    font-size: 2em;
+    @media (min-width: 54em) {
+      // 54em roughly halfway between 48em and 62em
+      font-size: 2.5em;
+    }
+    @media (min-width: 62em) {
+      // container max-width 60em + 2em side padding
+      font-size: 3em;
     }
   }
 }

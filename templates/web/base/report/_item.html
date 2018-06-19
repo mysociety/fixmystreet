@@ -34,7 +34,11 @@
     [% IF problem.photo %]
         <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
+      [% TRY %]
+        [% PROCESS 'report/_item_heading.html' %]
+      [% CATCH file %]
         <h3 class="item-list__heading">[% problem.title | html %]</h3>
+      [% END %]
     [% IF c.user.has_permission_to('report_inspect', problem.bodies_str_ids) %]
         <div class="item-list__description">[% problem.detail | html %]</div>
     [% END %]

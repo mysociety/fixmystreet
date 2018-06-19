@@ -16,6 +16,13 @@ sub base_url {
     return 'https://fix.bromley.gov.uk';
 }
 
+sub problems_on_map_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    my $tfl = FixMyStreet::DB->resultset('Body')->search({ name => 'TfL' })->first;
+    return $rs->to_body($tfl ? [ $self->body->id, $tfl->id ] : $self->body);
+}
+
 sub default_show_name { 0 }
 
 sub disambiguate_location {
@@ -64,6 +71,7 @@ sub map_type {
 # Bromley pins always yellow
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
+    return 'grey' if !$self->owns_problem( $p );
     return 'yellow';
 }
 

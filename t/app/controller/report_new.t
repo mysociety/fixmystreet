@@ -960,9 +960,9 @@ foreach my $test (
         email_count => 1,
     },
     {
-        desc => "test invalid single_body_only means multiple report bodies",
+        desc => "test invalid single_body_only means no report bodies",
         category => 'Street lighting',
-        councils => [ 2226, 2326 ],
+        councils => [],
         extra_fields => { single_body_only => 'Invalid council' },
         email_count => 1,
     },
@@ -1036,7 +1036,7 @@ foreach my $test (
         ok $report, "Found the report";
 
         # Check the report has been assigned appropriately
-        is $report->bodies_str, join(',', @body_ids{@{$test->{councils}}});
+        is $report->bodies_str, join(',', @body_ids{@{$test->{councils}}}) || undef;
 
         $mech->content_contains('Thank you for reporting this issue');
 

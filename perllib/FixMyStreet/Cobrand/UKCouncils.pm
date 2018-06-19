@@ -42,10 +42,11 @@ sub restriction {
     return { cobrand => shift->moniker };
 }
 
-# UK cobrands assume that each MapIt area ID maps both ways with one body
+# UK cobrands assume that each MapIt area ID maps both ways with one
+# body. Except TfL.
 sub body {
     my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->first;
+    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { '!=', 'TfL' } })->first;
     return $body;
 }
 
@@ -179,28 +180,27 @@ sub owns_problem {
     } else { # Object
         @bodies = values %{$report->bodies};
     }
-    my %areas = map { %{$_->areas} } @bodies;
+    # Want to ignore the TfL body that covers London councils
+    my %areas = map { %{$_->areas} } grep { $_->name ne 'TfL' } @bodies;
     return $areas{$self->council_area_id} ? 1 : undef;
 }
 
-# If the council is two-tier then show pins for the other council as grey
+# If the council is two-tier, or e.g. TfL reports,
+# then show pins for the other council as grey
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $self->is_two_tier && !$self->owns_problem( $p );
+    return 'grey' if !$self->owns_problem( $p );
     return $self->next::method($p, $context);
 }
 
-# If we ever link to a county problem report, needs to be to main FixMyStreet
+# If we ever link to a county problem report, or a TfL report,
+# needs to be to main FixMyStreet
 sub base_url_for_report {
     my ( $self, $report ) = @_;
-    if ( $self->is_two_tier ) {
-        if ( $self->owns_problem( $report ) ) {
-            return $self->base_url;
-        } else {
-            return FixMyStreet->config('BASE_URL');
-        }
-    } else {
+    if ( $self->owns_problem( $report ) ) {
         return $self->base_url;
+    } else {
+        return FixMyStreet->config('BASE_URL');
     }
 }
 

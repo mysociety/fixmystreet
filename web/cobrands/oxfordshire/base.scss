@@ -39,9 +39,9 @@ a {
     background-size: 175px 38px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    width: 190px;
+    width: 175px;
     height: 0;
-    padding-top: 52px;
+    padding-top: 48px;
     overflow: hidden;
     text-indent: 0;
     margin: 0 -5px;
@@ -67,8 +67,7 @@ a {
     padding: 0 1em;
 
     h1 {
-        font-weight: bold;
-        max-width: 11em; // break nicely onto two lines
+        font-weight: 900;
     }
 
     #postcodeForm {
@@ -107,6 +106,26 @@ a {
                 height: auto;
             }
         }
+    }
+}
+
+#front_stats {
+    border-top: none;
+    margin-bottom: 1.5em;
+}
+
+.frontpage {
+    .item-list__item img {
+        display: none;
+    }
+
+    .content h2 {
+        font-weight: 600;
+        font-size: 1.5em;
+        line-height: 1.2em;
+        border-bottom: 2px solid $color-oxfordshire-dark-green;
+        margin-bottom: 1em;
+        padding-bottom: 0.2em;
     }
 }
 

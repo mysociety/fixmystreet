@@ -85,7 +85,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.Vector, {
     road_found: function() {
         if (this.fixmystreet.actions) {
             this.fixmystreet.actions.found(this, this.selected_feature);
-        } else {
+        } else if (!fixmystreet.assets.selectedFeature()) {
             $('#single_body_only').val(this.fixmystreet.body);
         }
     },

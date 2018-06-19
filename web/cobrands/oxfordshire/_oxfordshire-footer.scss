@@ -4,58 +4,10 @@
     padding: 0;
 }
 
-.occlss-a-to-z__wraper,
 .occlss-page-footer__wraper {
     color: #fff;
     background: #000;
-}
-
-.occlss-page-footer__wraper {
     padding-bottom: 2em;
-}
-
-.occlss-a-to-z__wraper {
-    text-align: center;
-    border-bottom: 1px solid #fff;
-    padding: 19px 12px;
-}
-
-.occlss-u-unstyled-list,
-.s-cms-content-footer ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-        margin-bottom: 0;
-        list-style: inherit;
-    }
-}
-
-.occlss-a-to-z__item {
-    display: inline-block;
-    width: 35px;
-    height: 28px;
-    margin: 0;
-    text-align: center;
-    vertical-align: middle;
-    border-right: 2px solid #fff;
-
-    @media (max-width: 992px) {
-        border-right: 0;
-    }
-
-    &:last-child {
-        border-right: 0;
-    }
-}
-
-.occlss-a-to-z__letter {
-    font-size: 24px;
-    text-transform: uppercase;
-    color: #fff;
-    font-weight: 600;
-    line-height: 1.2;
 }
 
 .s-cms-content-footer {
@@ -77,46 +29,10 @@
     p {
         margin: 0 0 5px 0;
     }
-
-    .icon-list {
-        @include clearfix();
-        margin: 20px 0;
-
-        li {
-            float: left;
-            margin-right: 12px;
-        }
-    }
-
-    .occlss-form__sign-up-form-submit {
-        margin-top: 0.5em;
-    }
 }
 
 .occlss-page-footer {
     margin-top: 0;
-}
-
-svg:not(:root) {
-    overflow: hidden;
-}
-
-.occlss-icon__container {
-    vertical-align: middle;
-    fill: #222;
-    width: 32px;
-    height: 32px;
-}
-
-.occlss-u-more-link {
-    font-weight: bold;
-}
-
-.occlss-u-more-link__icon {
-    fill: #fff;
-    width: 19px;
-    height: 19px;
-    margin-left: 10px;
 }
 
 .occlss-layout {
@@ -135,20 +51,6 @@ svg:not(:root) {
     padding: 15px;
 
     @media (min-width: 768px) {
-        padding: 15px 30px;
-    }
-}
-
-@media (min-width: 768px) {
-    .occlss-layout__col--sm-3 {
-        width: 25%;
-    }
-
-    .occlss-layout__col--sm-4 {
-        width: 33.33333%;
-    }
-
-    .occlss-layout__col--sm-5 {
-        width: 41.66667%;
+        padding: 30px;
     }
 }

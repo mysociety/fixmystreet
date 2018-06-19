@@ -15,10 +15,6 @@ body.frontpage #site-logo {
 }
 
 
-body.fullwidthpage, body.twothirdswidthpage {
-    .container .content footer {
-        a.platform-logo {
-            background-image: url(/cobrands/fixmystreet/images/fms-platform-logo-dark.svg);
-        }
-    }
+a.platform-logo {
+    background-image: url(/cobrands/fixmystreet/images/fms-platform-logo-dark.svg);
 }

@@ -71,8 +71,7 @@ h1.main {
 
 // Because we've changed the page background, the footer looks a bit rubbish
 footer,
-body.twothirdswidthpage .container .content footer .tablewrapper,
-body.fullwidthpage .container .content footer .tablewrapper {
+.content footer .tablewrapper {
   background-color: $bromley_blue;
 }
 

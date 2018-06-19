@@ -351,7 +351,7 @@ sub get_body_handler_for_problem {
     my ($self, $row) = @_;
 
     my @bodies = values %{$row->bodies};
-    my %areas = map { %{$_->areas} } @bodies;
+    my %areas = map { %{$_->areas} } grep { $_->name ne 'TfL' } @bodies;
 
     my $cobrand = FixMyStreet::Cobrand->body_handler(\%areas);
     return $cobrand if $cobrand;

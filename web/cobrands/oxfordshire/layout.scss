@@ -1,44 +1,10 @@
-$mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical padding, plus 4px border-bottom
+$mappage-header-height: 10em;
 
 @import "_colours";
 @import "../sass/layout";
 
 .container {
     max-width: none; // max-width on #oxford-wrapper sorts this out for us
-}
-
-.nav-menu--main {
-    a,
-    span,
-    a.report-a-problem-btn {
-        padding: 0.3em 0.5em;
-        margin: 0 0.2em;
-    }
-
-    a.report-a-problem-btn {
-        border-radius: 0;
-        background-color: transparent;
-    }
-
-    a:hover,
-    a.report-a-problem-btn:hover {
-        background-color: transparent;
-        color: $color-oxfordshire-bright-yellow;
-        text-decoration: underline;
-    }
-
-    a:focus,
-    a.report-a-problem-btn:focus {
-        color: $color-oxfordshire-bright-orange;
-        background-color: $color-oxfordshire-bright-yellow;
-    }
-
-    span,
-    span:hover,
-    span.report-a-problem-btn,
-    span.report-a-problem-btn:hover {
-        color: mix(#fff, $color-oxfordshire-dark-green, 80%);
-    }
 }
 
 #site-header {
@@ -50,16 +16,92 @@ $mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical pa
 
 #site-logo {
     background-color: transparent;
-    margin: 0;
+    margin: 0 1em;
+}
+
+#main-nav {
+    display: block; // undo flexbox
+    height: auto;
+    min-height: 0;
+    float: none;
+
+    .ie9 & {
+        position: static;
+        float: none;
+
+        & > * {
+            position: static;
+            -ms-transform: none;
+        }
+    }
+}
+
+.nav-menu--main {
+    margin-top: 5.5em;
+    float: none;
+    @include flex-container();
+
+    li {
+        @include flex(1 1 0%); // flex-basis (3rd argument) must have a unit, to avoid IE10-11 bugs
+        padding: 8px 16px;
+        position: relative;
+    }
+
+    a,
+    span,
+    a:hover,
+    a:focus {
+        color: $nav_fg;
+        background-color: transparent;
+    }
+
+    a,
+    span {
+        display: inline;
+        padding: 0;
+        margin: 0;
+        font-size: 21px;
+        line-height: 1.2em;
+        font-weight: 600;
+        font-family: $heading-font;
+
+        &:after {
+            content: "";
+            display: block;
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            top: 100%;
+            height: 4px;
+            background: $color-oxfordshire-dark-green;
+            transition: height 0.1s ease-in-out;
+        }
+    }
+
+    a:hover {
+        border-bottom-width: 8px;
+        margin-bottom: -4px;
+
+        &:after {
+            height: 8px;
+        }
+    }
+}
+
+.nav-spacer {
+    height: 5.5em;
 }
 
 #front-main {
     background: transparent;
     color: inherit;
-    margin: 4% 0;
+    margin: 2% 0 4% 0;
 
     h1 {
-        font-size: 2.5em;
+        font-size: 42px;
+        line-height: 68px;
+        color: #1a1a1a;
+        margin-bottom: 4%;
     }
 
     #front-main-container {
@@ -74,7 +116,7 @@ $mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical pa
         div {
             display: block;
             width: auto;
-            max-width: 26em;
+            max-width: 38em;
             margin: 0.75em 0 0 0;
             overflow: visible;
 
@@ -95,12 +137,33 @@ $mappage-header-height: 52px + 20px + 4px; // logo height, plus 20px vertical pa
             }
 
             input#sub {
-                padding-top: 0.6em;
-                padding-bottom: 0.6em;
+                padding: 0.6em 1.5em;
                 width: auto;
                 height: auto;
+                text-transform: none;
             }
         }
+    }
+}
+
+.frontpage {
+    .content h2 {
+        font-size: 2em;
+    }
+}
+
+#front_stats {
+    border-top: none;
+    padding-top: 0;
+
+    div {
+        font-size: 1.2em; // up from 0.8125em in base.scss
+        font-weight: 600;
+    }
+
+    big {
+        font-weight: 900;
+        font-family: $heading-font;
     }
 }
 
@@ -126,6 +189,25 @@ body.mappage {
     width: auto;
     background: none;
     padding: 0;
+  }
+
+  #site-header {
+      border-bottom: none;
+      background-position: 125% 36%;
+      background-position: calc(100% + 130px) 36%;
+  }
+
+  .nav-wrapper {
+      top: 70px;
+      background: #fff;
+      border-top: 4px solid $color-oxfordshire-bright-green;
+      border-bottom: 1px solid $color-oxfordshire-pale-grey-green;
+  }
+
+  .nav-menu--main {
+      margin-top: 0;
+      height: 40px;
+      padding: 19px 0 27px 0;
   }
 
   .wrapper .table-cell {

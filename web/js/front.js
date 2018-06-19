@@ -17,7 +17,7 @@ document.getElementById('pc').focus();
     }
 
     var lk = document.querySelector('span.report-a-problem-btn');
-    if (lk.addEventListener) {
+    if (lk && lk.addEventListener) {
         lk.addEventListener('click', function(){
             scrollTo(0,0);
         });

@@ -18,8 +18,16 @@ $contact->set_extra_fields(
     { code => 'service_request_id_ext', datatype => 'number', },
 );
 $contact->update;
+my $tfl = $mech->create_body_ok( 2482, 'TfL');
+$mech->create_contact_ok(
+    body_id => $tfl->id,
+    category => 'Traffic Lights',
+    email => 'tfl@example.org',
+);
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+    latitude => 51.402096,
+    longitude => 0.015784,
     cobrand => 'bromley',
     user => $user,
 });
@@ -51,8 +59,8 @@ for my $test (
         desc => 'testing special Open311 behaviour',
         updates => {},
         expected => {
-          'attribute[easting]' => 529025,
-          'attribute[northing]' => 179716,
+          'attribute[easting]' => 540315,
+          'attribute[northing]' => 168935,
           'attribute[service_request_id_ext]' => $report->id,
           'attribute[report_title]' => 'Test Test 1 for ' . $body->id,
           'jurisdiction_id' => 'FMS',
@@ -66,8 +74,8 @@ for my $test (
             postcode => ''
         },
         expected => {
-          'attribute[easting]' => 529025,
-          'attribute[northing]' => 179716,
+          'attribute[easting]' => 540315,
+          'attribute[northing]' => 168935,
           'attribute[service_request_id_ext]' => $report->id,
           'jurisdiction_id' => 'FMS',
           'address_id' => '#NOTPINPOINTED#',
@@ -167,5 +175,23 @@ for my $test (
         $mech->delete_user( $unreg_user );
     };
 }
+
+subtest 'check display of TfL reports' => sub {
+    $mech->create_problems_for_body( 1, $tfl->id, 'TfL Test', {
+        latitude => 51.402096,
+        longitude => 0.015784,
+        cobrand => 'bromley',
+        user => $user,
+    });
+    $mech->get_ok( '/report/' . $report->id );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->follow_link_ok({ text_regex => qr/Back to all reports/i });
+    };
+    $mech->content_like(qr{<a title="TfL Test[^>]*www.example.org[^>]*><img[^>]*grey});
+    $mech->content_like(qr{<a title="Test Test[^>]*bromley.example.org[^>]*><img[^>]*yellow});
+};
 
 done_testing();
