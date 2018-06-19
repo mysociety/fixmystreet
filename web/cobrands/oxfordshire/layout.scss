@@ -24,6 +24,16 @@ $mappage-header-height: 10em;
     height: auto;
     min-height: 0;
     float: none;
+
+    .ie9 & {
+        position: static;
+        float: none;
+
+        & > * {
+            position: static;
+            -ms-transform: none;
+        }
+    }
 }
 
 .nav-menu--main {
@@ -32,7 +42,7 @@ $mappage-header-height: 10em;
     @include flex-container();
 
     li {
-        @include flex(1 1 0);
+        @include flex(1 1 0%); // flex-basis (3rd argument) must have a unit, to avoid IE10-11 bugs
         padding: 8px 16px;
         position: relative;
     }
