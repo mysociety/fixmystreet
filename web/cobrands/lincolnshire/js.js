@@ -200,14 +200,16 @@ fixmystreet.roadworks.display_message = function(feature) {
         $dl.append("<dt>Summary</dt>");
         var $summary = $("<dd></dd>").appendTo($dl);
         tooltip.split("\n").forEach(function(para) {
-            if (para.match(/^(\d{2}\s+\w{3}\s+\d{4}( - )?){2}/)) {
+            if (para.match(/^(\d{2}\s+\w{3}\s+(\d{2}:\d{2}\s+)?\d{4}( - )?){2}/)) {
                 // skip showing the date again
                 return;
             }
             $summary.append(para).append("<br />");
         });
-        $dl.append("<dt>Description</dt>");
-        $dl.append($("<dd></dd>").text(desc));
+        if (desc) {
+            $dl.append("<dt>Description</dt>");
+            $dl.append($("<dd></dd>").text(desc));
+        }
 
         $('.change_location').after($msg);
 };
