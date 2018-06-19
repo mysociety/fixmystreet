@@ -46,7 +46,7 @@ sub open311_config {
 
 sub lookup_site_code_config { {
     buffer => 200, # metres
-    url => "https://tilma.mysociety.org/mapserver/lincs",
+    url => "https://tilma.staging.mysociety.org/mapserver/lincs",
     # url => "https://confirmdev.eu.ngrok.io/tilmastaging/mapserver/lincs",
     srsname => "urn:ogc:def:crs:EPSG::27700",
     typename => "NSG",
