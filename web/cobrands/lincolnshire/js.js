@@ -186,6 +186,25 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 }));
 
 var lincs_roadworks_org_id = '1070';
+fixmystreet.roadworks.display_message = function(feature) {
+    var attr = feature.attributes,
+        start = new Date(attr.start.replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
+        end = new Date(attr.end.replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
+        tooltip = attr.tooltip.replace(/\\n/g, '\n'),
+        desc = attr.works_desc.replace(/\\n/g, '\n');
+
+        var $msg = $('<div class="js-roadworks-message box-warning"><p>Roadworks are scheduled near this location, so you may not need to report your issue.</p></div>');
+        var $dl = $("<dl></dl>").appendTo($msg);
+        $dl.append("<dt>Dates</dt>");
+        $dl.append($("<dd></dd>").text(start + " until " + end));
+        $dl.append("<dt>Summary</dt>");
+        $dl.append($("<dd></dd>").text(tooltip));
+        $dl.append("<dt>Description</dt>");
+        $dl.append($("<dd></dd>").text(desc));
+
+        $('.change_location').after($msg);
+};
+
 fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {
     http_options: { params: { organisation_id: lincs_roadworks_org_id } }
 }));
