@@ -198,7 +198,14 @@ fixmystreet.roadworks.display_message = function(feature) {
         $dl.append("<dt>Dates</dt>");
         $dl.append($("<dd></dd>").text(start + " until " + end));
         $dl.append("<dt>Summary</dt>");
-        $dl.append($("<dd></dd>").text(tooltip));
+        var $summary = $("<dd></dd>").appendTo($dl);
+        tooltip.split("\n").forEach(function(para) {
+            if (para.match(/^(\d{2}\s+\w{3}\s+\d{4}( - )?){2}/)) {
+                // skip showing the date again
+                return;
+            }
+            $summary.append(para).append("<br />");
+        });
         $dl.append("<dt>Description</dt>");
         $dl.append($("<dd></dd>").text(desc));
 
