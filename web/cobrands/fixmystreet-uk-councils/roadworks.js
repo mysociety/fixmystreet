@@ -59,6 +59,7 @@ OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.
                 'tooltip': data.tooltip[i],
                 'org': data.org_name_disp[i],
                 'promoter': data.promoter[i],
+                'works_desc': data.works_desc[i],
                 'start': data.start_date[i],
                 'end': data.end_date[i],
               }
@@ -169,15 +170,18 @@ fixmystreet.roadworks.show_nearby = function(evt, lonlat) {
             feature = layer.getNearestFeature(point, 100);
         }
         if (feature !== null) {
-            // XXX TODO
-            var attr = feature.attributes,
-                start = attr.start.replace(/{ts '([^ ]*).*/, '$1'),
-                end = attr.end.replace(/{ts '([^ ]*).*/, '$1'),
-                tooltip = attr.tooltip.replace(/\\n/g, '\n');
-            $('.change_location').after('<div class="js-roadworks-message box-warning">Roadworks are scheduled near this location from ' + start + ' to ' + end + ', so you may not need to report your issue: “' + tooltip + '”</div>');
+            fixmystreet.roadworks.display_message(feature);
             return true;
         }
     }
+};
+
+fixmystreet.roadworks.display_message = function(feature) {
+    var attr = feature.attributes,
+        start = attr.start.replace(/{ts '([^ ]*).*/, '$1'),
+        end = attr.end.replace(/{ts '([^ ]*).*/, '$1'),
+        tooltip = attr.tooltip.replace(/\\n/g, '\n');
+    $('.change_location').after('<div class="js-roadworks-message box-warning">Roadworks are scheduled near this location from ' + start + ' to ' + end + ', so you may not need to report your issue: “' + tooltip + '”</div>');
 };
 
 $(fixmystreet).on('maps:update_pin', fixmystreet.roadworks.show_nearby);
