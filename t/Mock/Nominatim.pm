@@ -39,6 +39,6 @@ sub query {
     return [];
 }
 
-
+LWP::Protocol::PSGI->register(t::Mock::Nominatim->to_psgi_app, host => 'nominatim.openstreetmap.org');
 
 __PACKAGE__->run_if_script;

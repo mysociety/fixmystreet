@@ -5,6 +5,7 @@
         - Cobrand hook to allow extra login conditions #2092
     - Front end improvements:
         - Simplify footer CSS. #2107
+        - Keep commas in geocode lookups.
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156

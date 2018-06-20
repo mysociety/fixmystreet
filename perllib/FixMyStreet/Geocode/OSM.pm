@@ -30,7 +30,7 @@ sub string {
     $s = $params->{string} if $params->{string};
 
     $s = FixMyStreet::Geocode::escape($s);
-    $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
+    $s .= '%2C+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
 
     my $url = "${nominatimbase}search?";
     my %query_params = (
