@@ -268,10 +268,6 @@ body.mappage {
   }
 }
 
-#map_sidebar {
-  background-color: $color-oxfordshire-pale-green;
-}
-
 .item-list--reports h3 {
   color: $color-oxfordshire-bright-blue;
 }
@@ -302,19 +298,18 @@ h4.static-with-rule {
 }
 
 .form-box {
-  background-color: #e3f1d5; // darker version of $color-oxfordshire-pale-green
+  background-color: $color-oxfordshire-pale-green;
 }
 
 .extra-category-questions {
-  background-color: #e3f1d5; // darker version of $color-oxfordshire-pale-green
+  background-color: $color-oxfordshire-pale-green;
 
   &:before {
-    border-bottom-color: #e3f1d5; // darker version of $color-oxfordshire-pale-green
+    border-bottom-color: $color-oxfordshire-pale-green;
   }
 }
 
 #key-tools {
-  @include box-shadow(0 0 1em 1em $color-oxfordshire-pale-green);
   border-top-width: 2px;
 }
 
