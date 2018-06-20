@@ -12,7 +12,7 @@
     <h1>[% loc('Dashboard') %] – [% body.name %]</h1>
 </div>
 
-[% IF body.send_method == 'Email' OR body.send_method == '' %]
+[% IF body.send_method.match('Email') OR body.send_method == '' %]
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--12">
         <div class="healthcheck-unit healthcheck-unit--good">
@@ -171,7 +171,7 @@
     </div>
 </div>
 
-[% IF body.send_method == 'Email' OR body.send_method == '' %]
+[% IF body.send_method.match('Email') OR body.send_method == '' %]
 <div class="dashboard-row dashboard-row--yellow">
     <div class="dashboard-item dashboard-item--12 dashboard-fms-case-studies">
         <h2 style="margin-bottom: 1em">How FixMyStreet Pro helps other councils</h2>
@@ -206,7 +206,7 @@
           <p>
             [% tprintf( loc('Reports are currently not being sent to %s.'), body.name ) %]
           </p>
-        [% ELSIF body.send_method != 'Email' AND body.send_method != ''  %]
+        [% ELSIF NOT body.send_method.match('Email') AND body.send_method != ''  %]
           <p>
               [% tprintf( loc('Reports to %s are currently sent directly into backend services.'), body.name) %]
           </p>
