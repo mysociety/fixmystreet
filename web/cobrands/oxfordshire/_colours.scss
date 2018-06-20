@@ -25,8 +25,8 @@ $col_click_map: $color-oxfordshire-bright-green;
 $col_fixed_label: $color-oxfordshire-bright-green;
 $col_fixed_label_dark: mix(#000, $color-oxfordshire-bright-green, 50%);
 
-$itemlist_item_background: $color-oxfordshire-pale-green;
-$itemlist_item_background_hover: #fff;
+$itemlist_item_background: #fff;
+$itemlist_item_background_hover: $color-oxfordshire-pale-green;
 
 $body-font: "Open Sans", Arial, Helvetica, "DejaVu Sans Condensed", "DejaVu Sans", sans-serif;;
 $heading-font: "Fira Sans", sans-serif;
