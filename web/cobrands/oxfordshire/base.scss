@@ -107,6 +107,20 @@ a {
             }
         }
     }
+
+    a#geolocate_link {
+        padding: 0;
+        background: transparent;
+        font-size: inherit;
+        color: #0BA7D1;
+        margin-top: 0.5em;
+
+        &.loading {
+            background: transparent url("/cobrands/fixmystreet/images/spinner-white.gif") 100% 50% no-repeat;
+            padding: 0 1.5em 0 0;
+            border: none;
+        }
+    }
 }
 
 #front_stats {
