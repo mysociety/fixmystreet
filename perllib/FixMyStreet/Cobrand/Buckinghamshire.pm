@@ -101,7 +101,7 @@ sub munge_sendreport_params {
     # service at the point we're sending the report by email.
     my $site_code = $row->get_extra_field_value('site_code') || $self->lookup_site_code($row, 10);
     if ($site_code) {
-        my $e = join('', 'internaltfb', '@', $self->admin_user_domain);
+        my $e = join('', 'crmbusinesssupport', '@', $self->admin_user_domain);
         push @{$hdrs->{To}}, [ $e, 'TfB' ];
     }
 }

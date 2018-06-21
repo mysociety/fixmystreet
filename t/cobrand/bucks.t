@@ -32,7 +32,7 @@ $mech->create_problems_for_body(1, $body->id, 'On Road', {
 subtest 'flytipping on road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
     my $email = $mech->get_email;
-    my $tfb = join('', 'internaltfb', '@', 'buckscc.gov.uk');
+    my $tfb = join('', 'crmbusinesssupport', '@', 'buckscc.gov.uk');
     is $email->header('To'), '"Buckinghamshire" <flytipping@example.org>, "TfB" <' . $tfb . '>';
 };
 
