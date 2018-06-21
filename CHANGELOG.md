@@ -11,6 +11,7 @@
         - Remove small border to left of Fixed banner. #2156
         - Fix issue displaying admin timeline. #2159
         - Send details of unresponsive bodies to mobile app #2164
+        - Fix issue with category filter when category contains comma #2166
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:
