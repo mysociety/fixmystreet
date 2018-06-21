@@ -55,7 +55,8 @@ subtest 'Closing updates on inactive fixed/closed reports' => sub {
     $in->reports;
     $problems[2]->discard_changes;
     is $problems[2]->get_extra_metadata('closed_updates'), 1, 'Closed to updates';
-    # TODO Visit page, check closed for updates
+    $mech->get_ok("/report/" . $problems[2]->id);
+    $mech->content_contains('now closed to updates');
 };
 
 subtest 'Anonymization of inactive users' => sub {
