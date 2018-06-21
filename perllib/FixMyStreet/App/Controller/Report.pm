@@ -508,7 +508,7 @@ sub inspect : Private {
             # shortlist is always a single click away, being on the main nav.
             if ($c->user->has_body_permission_to('planned_reports')) {
                 unless ($redirect_uri = $c->get_param("post_inspect_url")) {
-                    my $categories = join(',', @{ $c->user->categories });
+                    my $categories = $c->user->categories_string;
                     my $params = {
                         lat => $problem->latitude,
                         lon => $problem->longitude,

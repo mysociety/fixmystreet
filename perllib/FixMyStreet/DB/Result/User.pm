@@ -131,6 +131,7 @@ __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
 use Moo;
+use Text::CSV;
 use FixMyStreet::SMS;
 use mySociety::EmailUtil;
 use namespace::clean -except => [ 'meta' ];
@@ -541,6 +542,17 @@ has categories => (
             order_by => 'category',
         })->get_column('category')->all;
         return \@categories;
+    },
+);
+
+has categories_string => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $csv = Text::CSV->new;
+        $csv->combine(@{$self->categories});
+        return $csv->string;
     },
 );
 

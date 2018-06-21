@@ -14,7 +14,7 @@
 [%~ UNLESS hide_all_reports_link ~%]
   [%~
     IF c.user_exists AND c.user.categories.size;
-      categories = c.user.categories.join(",") | uri;
+      categories = c.user.categories_string | uri;
       cat_suffix = "?filter_category=" _ categories;
     END;
 
