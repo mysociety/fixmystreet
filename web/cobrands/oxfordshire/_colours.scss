@@ -9,6 +9,8 @@ $color-oxfordshire-bright-blue: #0e73d8; // used for buttons backgrounds
 $color-oxfordshire-bright-orange: #EA6C18; // used for a:hover text color
 $color-oxfordshire-bright-yellow: #edc856; // used for a:focus background
 
+$color-oxfordshire-link-blue: #0a549d;
+
 $primary: $color-oxfordshire-bright-green;
 $primary_b: $color-oxfordshire-dark-green;
 $primary_text: #fff;
@@ -26,14 +28,14 @@ $col_fixed_label: $color-oxfordshire-bright-green;
 $col_fixed_label_dark: mix(#000, $color-oxfordshire-bright-green, 50%);
 
 $itemlist_item_background: #fff;
-$itemlist_item_background_hover: $color-oxfordshire-pale-green;
+$itemlist_item_background_hover: #e0e2e5;
 
-$body-font: "Open Sans", Arial, Helvetica, "DejaVu Sans Condensed", "DejaVu Sans", sans-serif;;
+$body-font: "Open Sans", sans-serif;;
 $heading-font: "Fira Sans", sans-serif;
 $meta-font: $body-font;
 
 $header-top-border: false;
 
-$form-control-border-color: #aaaaaa;
+$form-control-border-color: #525252;
 
 $pin_prefix: '/cobrands/oxfordshire/images/';
