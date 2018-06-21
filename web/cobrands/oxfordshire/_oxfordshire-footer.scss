@@ -14,8 +14,13 @@
     a {
         color: #fff;
 
-        &:hover, &:focus {
-            color: $color-oxfordshire-bright-orange;
+        &:hover {
+            color: $color-oxfordshire-bright-yellow;
+        }
+
+        a:not([class]):focus {
+            background-color: $color-oxfordshire-bright-yellow;
+            outline: 2px solid $color-oxfordshire-bright-yellow;
         }
     }
 

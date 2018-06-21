@@ -47,23 +47,22 @@ $mappage-header-height: 10em;
         position: relative;
     }
 
+    // No need for `span` in this selector, because Oxfordshire
+    // nav items are always links (see main_nav.html)
     a,
-    span,
     a:hover,
     a:focus {
         color: $nav_fg;
         background-color: transparent;
     }
 
-    a,
-    span {
+    a {
         display: inline;
         padding: 0;
         margin: 0;
-        font-size: 21px;
+        font-size: 18px;
         line-height: 1.2em;
-        font-weight: 600;
-        font-family: $heading-font;
+        font-weight: 700;
 
         &:after {
             content: "";
@@ -86,6 +85,10 @@ $mappage-header-height: 10em;
             height: 8px;
         }
     }
+
+    a:focus {
+        outline: 2px solid $color-oxfordshire-bright-yellow;
+    }
 }
 
 .nav-spacer {
@@ -100,7 +103,6 @@ $mappage-header-height: 10em;
     h1 {
         font-size: 42px;
         line-height: 68px;
-        color: #1a1a1a;
         margin-bottom: 4%;
     }
 
@@ -112,6 +114,7 @@ $mappage-header-height: 10em;
 
     #postcodeForm {
         margin-right: 0;
+        overflow: visible;
 
         div {
             display: block;
@@ -124,11 +127,6 @@ $mappage-header-height: 10em;
 
             input#pc {
                 display: block;
-                background-color: #fff;
-                border: 1px solid $form-control-border-color;
-                @include border-radius(4px);
-                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-                font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
                 margin: 0 0.5em 0 0;
                 padding: 0.5em;
                 height: auto;
@@ -142,6 +140,19 @@ $mappage-header-height: 10em;
                 height: auto;
                 text-transform: none;
             }
+        }
+    }
+
+    a#geolocate_link {
+        color: $color-oxfordshire-link-blue;
+
+        &:hover {
+            color: $color-oxfordshire-bright-yellow;
+        }
+
+        &:focus {
+            background-color: $color-oxfordshire-bright-yellow;
+            outline: 2px solid $color-oxfordshire-bright-yellow;
         }
     }
 }
@@ -164,6 +175,7 @@ $mappage-header-height: 10em;
     big {
         font-weight: 900;
         font-family: $heading-font;
+        color: #24b137;
     }
 }
 
