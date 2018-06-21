@@ -12,6 +12,8 @@
         - Remove small border to left of Fixed banner. #2156
         - Fix issue displaying admin timeline. #2159
         - Send details of unresponsive bodies to mobile app #2164
+    - Open311 improvements:
+        - CLOSED status maps to 'closed' state if extended statuses are enabled.
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:

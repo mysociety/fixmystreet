@@ -32,9 +32,10 @@ sub fetch {
     while ( my $body = $bodies->next ) {
 
         my $o = Open311->new(
-            endpoint     => $body->endpoint,
-            api_key      => $body->api_key,
-            jurisdiction => $body->jurisdiction,
+            endpoint          => $body->endpoint,
+            api_key           => $body->api_key,
+            jurisdiction      => $body->jurisdiction,
+            extended_statuses => $body->send_extended_statuses,
         );
 
         # custom endpoint URLs because these councils have non-standard paths

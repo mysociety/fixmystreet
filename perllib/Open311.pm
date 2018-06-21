@@ -327,7 +327,7 @@ sub map_state {
         'not councils responsibility' => 'not responsible',
         'no further action'           => 'unable to fix',
         open                          => 'confirmed',
-        closed                        => 'fixed - council',
+        closed                        => $self->extended_statuses ? 'closed' : 'fixed - council',
     );
 
     return $state_map{$incoming_state} || $incoming_state;

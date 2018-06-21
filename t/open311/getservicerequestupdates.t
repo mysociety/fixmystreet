@@ -258,6 +258,18 @@ for my $test (
         end_state => 'fixed - council',
     },
     {
+        desc => 'status of CLOSED marks report as closed when using extended statuses',
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'confirmed',
+        comment_status => 'CLOSED',
+        mark_fixed=> 0,
+        mark_open => 0,
+        problem_state => 'closed',
+        end_state => 'closed',
+        extended_statuses => 1,
+    },
+    {
         desc => 'status of OPEN re-opens fixed report',
         description => 'This is a note',
         external_id => 638344,
@@ -384,7 +396,7 @@ for my $test (
 ) {
     subtest $test->{desc} => sub {
         my $local_requests_xml = setup_xml($problem->external_id, $problem->id, $test->{comment_status}, $test->{xml_description});
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', extended_statuses => $test->{extended_statuses}, test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
         $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
         $problem->state( $test->{start_state} );
