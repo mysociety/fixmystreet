@@ -314,7 +314,7 @@ categories this user has been assigned to.
 sub redirect_to_categories : Private {
     my ( $self, $c ) = @_;
 
-    my $categories = join(',', @{ $c->user->categories });
+    my $categories = $c->user->categories_string;
     my $body_short = $c->cobrand->short_name( $c->user->from_body );
 
     $c->res->redirect( $c->uri_for( "/reports/" . $body_short, { filter_category => $categories } ) );

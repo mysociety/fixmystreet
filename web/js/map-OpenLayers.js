@@ -15,6 +15,18 @@ var fixmystreet = fixmystreet || {};
 fixmystreet.utils = fixmystreet.utils || {};
 
 $.extend(fixmystreet.utils, {
+    array_to_csv_line: function(arr) {
+        var out = [], s;
+        for (var i=0; i<arr.length; i++) {
+            s = arr[i];
+            if (/[",]/.test(s)) {
+                s = '"' + s.replace('"', '""') + '"';
+            }
+            out.push(s);
+        }
+        return out.join(',');
+    },
+
     parse_query_string: function() {
         var qs = {};
         if (!location.search) {
@@ -350,7 +362,7 @@ $.extend(fixmystreet.utils, {
     function replace_query_parameter(qs, id, key) {
         var value = $('#' + id).val();
         if (value) {
-            qs[key] = (typeof value === 'string') ? value : value.join(',');
+            qs[key] = (typeof value === 'string') ? value : fixmystreet.utils.array_to_csv_line(value);
         } else {
             delete qs[key];
         }
@@ -898,8 +910,8 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         options.params = options.params || {};
         $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
             var val = $('#' + id).val();
-            if (val !== undefined) {
-                options.params[key] = val;
+            if (val && val.length) {
+                options.params[key] = val.join ? fixmystreet.utils.array_to_csv_line(val) : val;
             }
         });
         var page;

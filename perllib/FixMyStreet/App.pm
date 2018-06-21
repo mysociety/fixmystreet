@@ -14,6 +14,7 @@ use Utils;
 
 use Path::Tiny 'path';
 use Try::Tiny;
+use Text::CSV;
 use URI;
 use URI::QueryParam;
 
@@ -517,7 +518,11 @@ sub get_param_list {
     my $value = $c->req->params->{$param};
     return () unless defined $value;
     my @value = ref $value ? @$value : ($value);
-    return map { split /,/, $_ } @value if $allow_commas;
+    if ($allow_commas) {
+        my $csv = Text::CSV->new;
+        $csv->parse(join ',', @value);
+        @value = $csv->fields;
+    }
     return @value;
 }
 
