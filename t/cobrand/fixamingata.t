@@ -5,7 +5,6 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 use t::Mock::Nominatim;
-LWP::Protocol::PSGI->register(t::Mock::Nominatim->to_psgi_app, host => 'nominatim.openstreetmap.org');
 
 # Front page test
 

@@ -72,6 +72,8 @@ sub send {
 
     my ($verbose, $nomail) = CronFns::options();
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+    $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $row) || $cobrand;
+
     my $params = {
         To => $self->to,
     };

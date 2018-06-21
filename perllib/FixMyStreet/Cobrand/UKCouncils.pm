@@ -243,10 +243,11 @@ see Buckinghamshire or Lincolnshire for an example.
 sub lookup_site_code {
     my $self = shift;
     my $row = shift;
+    my $buffer = shift;
 
     my $cfg = $self->lookup_site_code_config;
 
-    my $buffer = $cfg->{buffer}; # metres
+    $buffer ||= $cfg->{buffer}; # metres
     my ($x, $y) = $row->local_coords;
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 

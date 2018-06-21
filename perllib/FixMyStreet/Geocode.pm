@@ -59,7 +59,7 @@ sub string {
 sub escape {
     my ($s, $c) = @_;
     $s = lc($s);
-    $s =~ s/[^-&\w ']/ /g;
+    $s =~ s/[^-&\w ',]/ /g;
     $s =~ s/\s+/ /g;
     $s = URI::Escape::uri_escape_utf8($s);
     $s =~ s/%20/+/g;

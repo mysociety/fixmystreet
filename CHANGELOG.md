@@ -1,13 +1,17 @@
 ## Releases
 
 * Unreleased
+    - New features
+        - Cobrand hook to allow extra login conditions #2092
     - Front end improvements:
         - Simplify footer CSS. #2107
         - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
+        - Keep commas in geocode lookups.
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156
         - Fix issue displaying admin timeline. #2159
+        - Send details of unresponsive bodies to mobile app #2164
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:
