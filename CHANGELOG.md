@@ -15,6 +15,8 @@
         - Fix issue with category filter when category contains comma #2166
         - Inspectors can unset priority. #2171
         - Defect type is recorded if category change made. #2172
+    - Admin improvements:
+        - Mandatory defect type selection if defect raised.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
 
