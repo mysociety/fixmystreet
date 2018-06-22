@@ -14,6 +14,7 @@
         - Send details of unresponsive bodies to mobile app #2164
         - Fix issue with category filter when category contains comma #2166
         - Inspectors can unset priority. #2171
+        - Defect type is recorded if category change made. #2172
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
 

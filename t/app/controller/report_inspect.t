@@ -7,6 +7,14 @@ my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_de
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $contact2 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Sheep', email => 'SHEEP', send_method => 'Open311' );
 my $contact3 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Badgers', email => 'badgers@example.net' );
+my $dt = FixMyStreet::DB->resultset("DefectType")->create({
+    body => $oxon,
+    name => 'Small Defect', description => "Teeny",
+});
+FixMyStreet::DB->resultset("ContactDefectType")->create({
+    contact => $contact,
+    defect_type => $dt,
+});
 my $rp = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
     name => 'High Priority',
@@ -392,6 +400,24 @@ FixMyStreet::override_config {
 
         $report->discard_changes;
         is $report->response_priority->id, $rp->id, 'response priority set';
+    };
+
+    subtest "check can set defect type for category when changing from category with no defect types" => sub {
+        $report->update({ category => 'Sheep', defect_type_id => undef });
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({
+            button => 'save',
+            with_fields => {
+                include_update => 0,
+                defect_type => $dt->id,
+                category => 'Cows',
+            }
+        });
+        $report->discard_changes;
+        is $report->defect_type->id, $dt->id, 'defect type set';
+        $report->update({ defect_type_id => undef });
     };
 
     subtest "check can't set priority that isn't for a category" => sub {
