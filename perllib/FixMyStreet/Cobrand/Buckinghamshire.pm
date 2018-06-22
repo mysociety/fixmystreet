@@ -99,7 +99,7 @@ sub munge_sendreport_params {
     # value because we don't display the adopted highways layer on those
     # frontends. Instead we'll look up the closest asset from the WFS
     # service at the point we're sending the report by email.
-    my $site_code = $row->get_extra_field_value('site_code') || $self->lookup_site_code($row, 10);
+    my $site_code = $row->get_extra_field_value('site_code') || $self->lookup_site_code($row, 5);
     if ($site_code) {
         my $e = join('', 'crmbusinesssupport', '@', $self->admin_user_domain);
         push @{$hdrs->{To}}, [ $e, 'TfB' ];
