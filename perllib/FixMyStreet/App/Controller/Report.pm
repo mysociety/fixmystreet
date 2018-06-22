@@ -375,12 +375,6 @@ sub inspect : Private {
                 }
             }
 
-            if ( $c->get_param('defect_type') ) {
-                $problem->defect_type($problem->defect_types->find($c->get_param('defect_type')));
-            } else {
-                $problem->defect_type(undef);
-            }
-
             if ( $c->get_param('include_update') ) {
                 $update_text = Utils::cleanup_text( $c->get_param('public_update'), { allow_multiline => 1 } );
                 if (!$update_text) {
@@ -461,9 +455,22 @@ sub inspect : Private {
             $c->forward('/report/new/set_report_extras', [ \@contacts, $param_prefix ]);
         }
 
-        # Updating priority must come after category, in case category has changed (and so might have priorities)
-        if ($c->get_param('priority') && ($permissions->{report_inspect} || $permissions->{report_edit_priority})) {
-            $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
+        # Updating priority/defect type must come after category, in case
+        # category has changed (and so might have priorities/defect types)
+        if ($permissions->{report_inspect} || $permissions->{report_edit_priority}) {
+            if ($c->get_param('priority')) {
+                $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
+            } else {
+                $problem->response_priority(undef);
+            }
+        }
+
+        if ($permissions->{report_inspect}) {
+            if ( $c->get_param('defect_type') ) {
+                $problem->defect_type($problem->defect_types->find($c->get_param('defect_type')));
+            } else {
+                $problem->defect_type(undef);
+            }
         }
 
         if ($valid) {

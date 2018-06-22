@@ -84,10 +84,17 @@ $.extend(fixmystreet.set_up, {
         if ($(this).val() !== "action scheduled") {
             $("#js-inspect-action-scheduled").addClass("hidden");
             $('#raise_defect_yes').prop('required', false);
+            $('#defect_type').prop('required', false);
         } else {
             $("#js-inspect-action-scheduled").removeClass("hidden");
             $('#raise_defect_yes').prop('required', true);
+            var dt_required = $('#defect_type')[0].length > 1 && $('input[name=raise_defect]:checked').val();
+            $('#defect_type').prop('required', dt_required ? true : false);
         }
+    });
+    $('input[name=raise_defect]').change(function() {
+        var dt_required = $('#defect_type')[0].length > 1 && this.value;
+        $('#defect_type').prop('required', dt_required ? true : false);
     });
   },
 
