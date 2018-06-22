@@ -414,6 +414,26 @@ FixMyStreet::override_config {
         is $report->response_priority, undef, 'response priority set';
     };
 
+    subtest "check can unset priority" => sub {
+        $report->discard_changes;
+        $report->update({ category => 'Cows', response_priority_id => $rp->id });
+        $report->discard_changes;
+        is $report->response_priority->id, $rp->id, 'response priority set';
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_category' });
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({
+            button => 'save',
+            with_fields => {
+                priority => "",
+            }
+        });
+
+        $report->discard_changes;
+        is $report->response_priority, undef, 'response priority unset';
+    };
+
     subtest "check nearest address display" => sub {
         $mech->get_ok("/report/$report_id");
         $mech->content_lacks('Nearest calculated address', 'No address displayed');

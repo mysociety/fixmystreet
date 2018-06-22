@@ -462,8 +462,12 @@ sub inspect : Private {
         }
 
         # Updating priority must come after category, in case category has changed (and so might have priorities)
-        if ($c->get_param('priority') && ($permissions->{report_inspect} || $permissions->{report_edit_priority})) {
-            $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
+        if ($permissions->{report_inspect} || $permissions->{report_edit_priority}) {
+            if ($c->get_param('priority')) {
+                $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
+            } else {
+                $problem->response_priority(undef);
+            }
         }
 
         if ($valid) {
