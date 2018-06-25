@@ -68,7 +68,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     attributes: {
         asset_details: function() {
             var a = this.attributes;
-            return a.assetid + " " + a.description;
+            return a.description + " " + a.assetid;
         }
     },
     filter_key: 'category',
