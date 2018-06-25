@@ -525,11 +525,12 @@ ul.error {
 // this is a skip to nav for mobile users only
 #nav-link {
   width: 3em;
-  height: 3em;
+  height: 0;
+  padding-top: 3em;
+  overflow: hidden;
   background: transparent url(../fixmystreet/images/#{$menu-image}.png) center center no-repeat;
   background-image: inline-image("../fixmystreet/images/#{$menu-image}.svg"), none;
   background-size: 22px 18px;
-  text-indent: -999999px;
   #{$right}: 0;
 }
 
