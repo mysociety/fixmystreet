@@ -48,7 +48,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
 fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
-            TYPENAME: "ParksOpenSpaces"
+            TYPENAME: "ParksOpenSpacesAssets"
         }
     },
     asset_category: [
@@ -68,9 +68,19 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     attributes: {
         asset_details: function() {
             var a = this.attributes;
-            return a.site_code + " " + a.site_name;
+            return a.assetid + " " + a.description;
         }
     },
+    filter_key: 'category',
+    filter_value: [
+        'Flower Beds',
+        'Grass',
+        'Hard',
+        'Hedgerow',
+        'Path',
+        'Pitch',
+        'Seats'
+    ],
     name: "Parks and Grounds"
 }));
 
