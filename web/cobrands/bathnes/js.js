@@ -52,10 +52,18 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
         }
     },
     asset_category: [
+        'Abandoned vehicles',
+        'Dead animals',
+        'Dog fouling',
+        'Fly-tipping',
+        'Graffiti',
+        'Excessive or dangerous littering',
+        'Needles',
         'Play area safety issue',
-        'Obstructive vegetation',
-        'Damaged infrastructure (e.g. broken benches)',
-        'Allotment issue'
+        'Damage to bins, benches, and infrastructure',
+        'Allotment issue',
+        'Trees and woodland',
+        'Obstructive vegetation'
     ],
     asset_item: "park",
     disable_pin_snapping: true,
