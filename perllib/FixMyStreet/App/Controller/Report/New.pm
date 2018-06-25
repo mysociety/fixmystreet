@@ -13,6 +13,7 @@ use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
 use JSON::MaybeXS;
+use Text::CSV;
 use FixMyStreet::SMS;
 
 =head1 NAME
@@ -1509,8 +1510,11 @@ sub redirect_to_around : Private {
     foreach (qw(pc zoom)) {
         $params->{$_} = $c->get_param($_);
     }
+
+    my $csv = Text::CSV->new;
     foreach (qw(status filter_category)) {
-        $params->{$_} = join(',', $c->get_param_list($_, 1));
+        $csv->combine($c->get_param_list($_, 1));
+        $params->{$_} = $csv->string;
     }
 
     # delete empty values

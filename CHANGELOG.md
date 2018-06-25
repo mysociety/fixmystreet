@@ -7,11 +7,19 @@
         - Simplify footer CSS. #2107
         - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
         - Keep commas in geocode lookups.
+        - Show message on reports closed to updates.
+    - Admin improvements:
+        - Category group can be edited.
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156
         - Fix issue displaying admin timeline. #2159
         - Send details of unresponsive bodies to mobile app #2164
+        - Fix issue with category filter when category contains comma #2166
+        - Inspectors can unset priority. #2171
+        - Defect type is recorded if category change made. #2172
+    - Admin improvements:
+        - Mandatory defect type selection if defect raised.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
 
