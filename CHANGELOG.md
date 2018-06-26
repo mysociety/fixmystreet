@@ -17,6 +17,7 @@
         - Fix issue with category filter when category contains comma #2166
         - Inspectors can unset priority. #2171
         - Defect type is recorded if category change made. #2172
+        - [UK] Store body ID on council/ward alerts. #2175
     - Admin improvements:
         - Mandatory defect type selection if defect raised.
         - Send login email button on user edit page #2041

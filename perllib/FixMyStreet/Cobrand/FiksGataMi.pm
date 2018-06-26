@@ -125,6 +125,9 @@ sub council_rss_alert_options {
         }
     }
 
+    my $body_kommune = FixMyStreet::DB->resultset('Body')->for_areas($kommune->{id})->first;
+    my $body_fylke = FixMyStreet::DB->resultset('Body')->for_areas($fylke->{id})->first;
+
     if ( $fylke->{id} == 3 ) {    # Oslo
         my $short_name = $self->short_name($fylke, $all_councils);
         ( my $id_name = $short_name ) =~ tr/+/_/;
@@ -132,7 +135,7 @@ sub council_rss_alert_options {
         push @options,
           {
             type => 'council',
-            id   => sprintf( 'council:%s:%s', $fylke->{id}, $id_name ),
+            id   => sprintf( 'council:%s:%s', $body_fylke->id, $id_name ),
             rss_text =>
               sprintf( _('RSS feed of problems within %s'), $fylke->{name} ),
             text => sprintf( _('Problems within %s'), $fylke->{name} ),
@@ -167,7 +170,7 @@ sub council_rss_alert_options {
         push @reported_to_options,
           {
             type => 'council',
-            id => sprintf( 'council:%s:%s', $kommune->{id}, $id_kommune_name ),
+            id => sprintf( 'council:%s:%s', $body_kommune->id, $id_kommune_name ),
             rss_text =>
               sprintf( _('RSS feed of %s'), $kommune->{name} ),
             text => $kommune->{name},
@@ -175,11 +178,11 @@ sub council_rss_alert_options {
           },
           {
             type => 'council',
-            id   => sprintf( 'council:%s:%s', $fylke->{id}, $id_fylke_name ),
+            id   => sprintf( 'council:%s:%s', $body_fylke->id, $id_fylke_name ),
             rss_text =>
               sprintf( _('RSS feed of %s'), $fylke->{name} ),
             text => $fylke->{name},
-            uri => $c->uri_for( '/rss/reports/', $short_fylke_name ),
+            uri => $c->uri_for( '/rss/reports', $short_fylke_name ),
           };
     }
 

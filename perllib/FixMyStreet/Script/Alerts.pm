@@ -185,9 +185,12 @@ sub send() {
                     # Get a report object for its photo and static map
                     $data{report} = $schema->resultset('Problem')->find({ id => $row->{id} });
                 }
-                if ($ref eq 'area_problems' || $ref eq 'council_problems' || $ref eq 'ward_problems') {
+                if ($ref eq 'area_problems') {
                     my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter});
                     $data{area_name} = $va_info->{name};
+                } elsif ($ref eq 'council_problems' || $ref eq 'ward_problems') {
+                    my $body = FixMyStreet::DB->resultset('Body')->find({ id => $row->{alert_parameter} });
+                    $data{area_name} = $body->name;
                 }
                 if ($ref eq 'ward_problems') {
                     my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter2});

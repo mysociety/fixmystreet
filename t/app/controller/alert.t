@@ -9,6 +9,11 @@ $mech->title_like(qr/^Local RSS feeds and email alerts/);
 $mech->content_contains('Local RSS feeds and email alerts');
 $mech->content_contains('html class="no-js" lang="en-gb"');
 
+my $body = $mech->create_body_ok(2651, 'Edinburgh');
+$mech->create_body_ok(2504, 'Birmingham City Council');
+$mech->create_body_ok(2226, 'Gloucestershire County Council');
+$mech->create_body_ok(2326, 'Cheltenham Borough Council');
+
 # check that we can get list page
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
@@ -33,8 +38,8 @@ FixMyStreet::override_config {
     $mech->content_contains('Problems within City Centre ward');
     $mech->content_contains('/rss/reports/Edinburgh');
     $mech->content_contains('/rss/reports/Edinburgh/City+Centre');
-    $mech->content_contains('council:2651:Edinburgh');
-    $mech->content_contains('ward:2651:20728:Edinburgh:City_Centre');
+    $mech->content_contains('council:' . $body->id . ':Edinburgh');
+    $mech->content_contains('ward:' . $body->id . ':20728:Edinburgh:City_Centre');
 
     subtest "Test Nominatim lookup" => sub {
         $mech->get_ok('/alert/list?pc=High Street');
@@ -49,15 +54,11 @@ FixMyStreet::override_config {
     $mech->content_contains('Problems in an area');
     $mech->content_contains('Reports by destination');
 
-    $mech->get_ok('/alert/subscribe?rss=1&type=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=' );
+    $mech->get_ok('/alert/subscribe?rss=1&type=local&pc=EH1+1BB&rss=Give+me+an+RSS+feed&rznvy=' );
     $mech->content_contains('Please select the feed you want');
 
-    $mech->get_ok('/alert/subscribe?rss=1&feed=invalid:1000:A_Locationtype=local&pc=ky16+8yg&rss=Give+me+an+RSS+feed&rznvy=');
+    $mech->get_ok('/alert/subscribe?rss=1&feed=invalid:1000:A_Locationtype=local&pc=EH1+1BB&rss=Give+me+an+RSS+feed&rznvy=');
     $mech->content_contains('Illegal feed selection');
-
-    $mech->create_body_ok(2504, 'Birmingham City Council');
-    $mech->create_body_ok(2226, 'Gloucestershire County Council');
-    $mech->create_body_ok(2326, 'Cheltenham Borough Council');
 
     $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:Birmingham');
     is $mech->uri->path, '/rss/reports/Birmingham';
