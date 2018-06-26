@@ -45,6 +45,53 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     }
 }));
 
+fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "ParksOpenSpacesAssets"
+        }
+    },
+    asset_category: [
+        'Abandoned vehicles',
+        'Dead animals',
+        'Dog fouling',
+        'Fly-tipping',
+        'Graffiti',
+        'Excessive or dangerous littering',
+        'Needles',
+        'Play area safety issue',
+        'Damage to bins, benches, and infrastructure',
+        'Allotment issue',
+        'Trees and woodland',
+        'Obstructive vegetation'
+    ],
+    asset_item: "park",
+    disable_pin_snapping: true,
+    stylemap: new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fill: false,
+            stroke: false
+        })
+    }),
+    attributes: {
+        asset_details: function() {
+            var a = this.attributes;
+            return a.description + " " + a.assetid;
+        }
+    },
+    filter_key: 'category',
+    filter_value: [
+        'Flower Beds',
+        'Grass',
+        'Hard',
+        'Hedgerow',
+        'Path',
+        'Pitch',
+        'Seats'
+    ],
+    name: "Parks and Grounds"
+}));
+
 
 
 /*
