@@ -1,0 +1,54 @@
+[%
+
+email_summary = "Your reports on " _ site_name;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Your reports on [% site_name %]</h1>
+  <p style="[% p_style %]">
+    Hello [% user.name %],
+  </p>
+  <p style="[% p_style %]">
+      Thank you for taking the time to report this issue through
+      FixMyStreet. Rutland County Council have now embedded FixMyStreet
+      within several service areas across the Council, and are adopting
+      this platform as the main reporting tool for all highways and
+      streetscene issues. We will be integrating this system with
+      existing service delivery software.
+  </p>
+  <p style="[% p_style %]">
+      As such, we have taken a decision to close reports prior to 1/5/2018.
+  </p>
+  <p style="[% p_style %]">
+    We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system,
+    which we've listed below.
+  </p>
+  <p style="[% p_style %]">
+    If you believe that the issue has not been resolved you can <a href="https://rutland.fixmystreet.com/">report it again here.</a>
+  </p>
+
+  [% FOR report IN reports %]
+  <div style="[% list_item_style %]">
+  [% IF report.photo %]
+    <a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
+      <img style="[% list_item_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="">
+    </a>
+  [% END %]
+    <h2 style="[% list_item_h2_style %]"><a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
+      [%~ report.title | html ~%]
+    </a></h2>
+    <p style="[% list_item_p_style %]">[% report.detail | html %]</p>
+    <p style="[% list_item_date_style %]">
+      Reported [% report.time_ago %] ago.
+    </p>
+  </div>
+  [% END %]
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
