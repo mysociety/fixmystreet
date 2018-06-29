@@ -152,7 +152,7 @@ subtest 'check category, status and extra filtering works on /around' => sub {
     # Create one open and one fixed report in each category
     foreach my $category ( @$categories ) {
         $mech->create_contact_ok( category => $category, body_id => $body->id, email => "$category\@example.org" );
-        foreach my $state ( 'confirmed', 'fixed' ) {
+        foreach my $state ( 'confirmed', 'fixed - user', 'fixed - council' ) {
             my %report_params = (
                 %$params,
                 category => $category,
@@ -165,7 +165,7 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
     my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
     my $pins = $json->{pins};
-    is scalar @$pins, 6, 'correct number of reports when no filters';
+    is scalar @$pins, 9, 'correct number of reports when no filters';
 
     # Regression test for filter_category in /around URL
     FixMyStreet::override_config {
@@ -177,7 +177,7 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
     $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Pothole&bbox=' . $bbox );
     $pins = $json->{pins};
-    is scalar @$pins, 2, 'correct number of Pothole reports';
+    is scalar @$pins, 3, 'correct number of Pothole reports';
 
     $json = $mech->get_ok_json( '/around?ajax=1&status=open&bbox=' . $bbox );
     $pins = $json->{pins};
@@ -185,10 +185,10 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
     $json = $mech->get_ok_json( '/around?ajax=1&status=fixed&filter_category=Vegetation&bbox=' . $bbox );
     $pins = $json->{pins};
-    is scalar @$pins, 1, 'correct number of fixed Vegetation reports';
+    is scalar @$pins, 2, 'correct number of fixed Vegetation reports';
 
     my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Default');
-    $cobrand->mock('display_location_extra_params', sub { { external_body => "Pothole-fixed" } });
+    $cobrand->mock('display_location_extra_params', sub { { external_body => "Pothole-confirmed" } });
 
     $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
     $pins = $json->{pins};

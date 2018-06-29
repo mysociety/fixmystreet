@@ -3,7 +3,13 @@
     <select class="form-control js-multiple" name="status" id="statuses" multiple
     data-all="[% loc('All') %]"
     [% IF show_all_states %]
-    [% options = []; FOR group IN filter_states; FOR state IN group.1; NEXT IF state == 'hidden'; options.push(state); END; END %]
+    [%  options = [];
+        FOR group IN filter_states; FOR state IN group.1;
+            NEXT IF state == 'hidden';
+            SET state = 'fixed' IF state == 'fixed - council';
+            options.push(state);
+        END; END
+    %]
     data-all-options='["[% options.join('", "') %]"]'
     [%~ ELSE ~%]
       [%~ IF has_fixed_state ~%]
@@ -22,6 +28,7 @@
         [% FOR group IN filter_states %]
           [% FOR state IN group.1 %]
             [% NEXT IF state == 'hidden' %]
+            [% SET state = 'fixed' IF state == 'fixed - council' ~%]
             <option value="[% state %]"[% ' selected' IF filter_status.$state %]>[% prettify_state(state, 1) %]</option>
           [% END %]
         [% END %]
