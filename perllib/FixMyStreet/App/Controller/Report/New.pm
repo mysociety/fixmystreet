@@ -208,6 +208,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $extra_titles_list = $c->cobrand->title_list($c->stash->{all_areas});
 
+    my @list_of_names = map { $_->name } values %{$c->stash->{bodies}};
     my $contribute_as = {};
     if ($c->user_exists) {
         my @bodies = keys %{$c->stash->{bodies}};
@@ -221,6 +222,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $body = encode_json(
         {
+            bodies          => \@list_of_names,
             councils_text   => $councils_text,
             councils_text_private => $councils_text_private,
             category        => $category,
@@ -254,8 +256,9 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $category = '' if $category eq _('-- Pick a category --');
 
     my $bodies = $c->forward('contacts_to_bodies', [ $category ]);
+    my $list_of_names = [ map { $_->name } @$bodies ];
     my $vars = {
-        $category ? (list_of_names => [ map { $_->name } @$bodies ]) : (),
+        $category ? (list_of_names => $list_of_names) : (),
     };
 
     my $category_extra = '';
@@ -281,12 +284,14 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     my $councils_text_private = $c->render_fragment( 'report/new/councils_text_private.html');
 
     $unresponsive = $c->stash->{unresponsive}->{$category} || $c->stash->{unresponsive}->{ALL} || '';
+
     my $body = encode_json({
         category_extra => $category_extra,
         councils_text => $councils_text,
         councils_text_private => $councils_text_private,
         category_extra_json => $category_extra_json,
         unresponsive => $unresponsive,
+        bodies => $list_of_names,
     });
 
     $c->res->content_type('application/json; charset=utf-8');
@@ -706,6 +711,12 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{category_extras_hidden}  = \%category_extras_hidden;
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{extra_name_info} = $first_area->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
+
+    # escape these so we can then split on , cleanly in the template.
+    my @list_of_names = map { $_->name } values %bodies_to_list;
+    my $csv = Text::CSV->new();
+    $csv->combine(@list_of_names);
+    $c->stash->{list_of_names_as_string} = $csv->string;
 
     my @missing_details_bodies = grep { !$bodies_to_list{$_->id} } values %bodies;
     my @missing_details_body_names = map { $_->name } @missing_details_bodies;

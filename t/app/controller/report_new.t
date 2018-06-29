@@ -1191,7 +1191,7 @@ subtest "check map click ajax response" => sub {
     like $extra_details->{councils_text}, qr/Gloucestershire County Council/, 'correct council text for two tier';
     like $extra_details->{category}, qr/Pothol\x{00E9}s.*Street lighting/, 'category looks correct for two tier council';
     my @sorted_bodies = sort @{ $extra_details->{bodies} };
-    is_deeply \@sorted_bodies, [ $body_ids{2226}, $body_ids{2326} ], 'correct bodies for two tier';
+    is_deeply \@sorted_bodies, [ "Cheltenham Borough Council", "Gloucestershire County Council" ], 'correct bodies for two tier';
     ok !$extra_details->{titles_list}, 'Non Bromley does not send back list of titles';
 
     FixMyStreet::override_config {
@@ -1204,7 +1204,7 @@ subtest "check map click ajax response" => sub {
     like $extra_details->{councils_text}, qr/Bromley Council/, 'correct council text';
     like $extra_details->{councils_text_private}, qr/^These will be sent to the council, but will never be shown online/, 'correct private council text';
     like $extra_details->{category}, qr/Trees/, 'category looks correct';
-    is_deeply $extra_details->{bodies}, [ $body_ids{2482} ], 'correct bodies';
+    is_deeply $extra_details->{bodies}, [ "Bromley Council" ], 'correct bodies';
     ok !$extra_details->{contribute_as}, 'no contribute as section';
     ok !$extra_details->{top_message}, 'no top message';
     ok $extra_details->{extra_name_info}, 'extra name info';
@@ -1217,7 +1217,7 @@ subtest "check map click ajax response" => sub {
     };
     like $extra_details->{councils_text}, qr/^These will be published online for others to see/, 'correct council text for council with no contacts';
     is $extra_details->{category}, '', 'category is empty for council with no contacts';
-    is_deeply $extra_details->{bodies}, [ $body_ids{2535} ], 'correct bodies for council with no contacts';
+    is_deeply $extra_details->{bodies}, [ "Sandwell Borough Council" ], 'correct bodies for council with no contacts';
     ok !$extra_details->{extra_name_info}, 'no extra name info';
 };
 

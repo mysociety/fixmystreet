@@ -409,6 +409,7 @@ $.extend(fixmystreet.set_up, {
             } else {
                 $category_meta.empty();
             }
+            fixmystreet.bodies = data.bodies || [];
             $(fixmystreet).trigger('report_new:category_change:extras_received');
         });
 
@@ -939,6 +940,8 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
+
+        fixmystreet.bodies = data.bodies || [];
 
         // If the category filter appears on the map and the user has selected
         // something from it, then pre-fill the category field in the report,
