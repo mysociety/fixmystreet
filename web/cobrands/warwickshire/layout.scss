@@ -21,8 +21,20 @@ body.twothirdswidthpage .content .sticky-sidebar {
 #main-nav {
     text-align: inherit;
     min-height: 0;
+    height: auto;
     display: block; // undo flex-container()
     float: none;
+
+    .ie9 & {
+        position: static;
+        float: none;
+        text-align: $left;
+
+        & > * {
+            position: static;
+            -ms-transform: none;
+        }
+    }
 }
 
 body.mappage {

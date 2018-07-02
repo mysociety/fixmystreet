@@ -1,8 +1,3 @@
-                    [% IF pagefooter %]
-                    <footer role="contentinfo">
-                        <p><a href="/privacy">Privacy and cookies</a></p>
-                    </footer>
-                    [% END %]
                 </div><!-- .content role=main -->
             </div><!-- .container -->
         </div><!-- .table-cell -->
@@ -11,25 +6,23 @@
             <div class="container">
                 <div id="main-nav" role="navigation">
                     [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area omit_wrapper=1 hide_privacy_link=1 %]
-                    <ul class="nav-menu">
-                        <li><a id="mysoc-logo" href="https://www.fixmystreet.com/pro/">Powered by <img src="/cobrands/oxfordshire/images/fms-logo-105x20.png" alt="FixMyStreet"></a></li>
-                    </ul>
                 </div>
             </div>
         </div>
     </div> <!-- .wrapper -->
-    <div id="oxford-footer" class="desk-only">
-        <address>
-            <strong>Oxfordshire County Council</strong><br>
-            <a href="http://www.oxfordshire.gov.uk/cms/public-site/contact-oxfordshire-county-council" title="Contact the council">Contact the council</a><br>
-            <a href="/privacy">View our terms and conditions</a>
-        </address>
-        <ul><!-- use | between items -->
-            <li class="powered-by-fms">
-                <a href="https://www.fixmystreet.com/">Powered&nbsp;by&nbsp;<img src="/cobrands/oxfordshire/images/fms-logo-inverse.png" alt="FixMyStreet"></a>
-            </li>
-        </ul>
-    </div>
+
+    <footer class="occlss-page-footer" id="occlss-footer">
+      <div class="occlss-wrapper occlss-page-footer__wraper">
+        <div class="occlss-layout occlss-layout--gutter-s">
+          <div class="occlss-layout__col s-cms-content-footer">
+            <h4>Oxfordshire County Council</h4>
+            <p>County Hall, New Road, Oxford, OX1 1ND</p>
+            <p><a href="/privacy">Privacy and cookies</a></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
 </div> <!-- oxford-wrapper -->
 
     [% INCLUDE 'common_footer_tags.html' %]
