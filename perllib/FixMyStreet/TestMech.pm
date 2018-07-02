@@ -10,6 +10,7 @@ sub import {
     Test::More->export_to_level(1);
 }
 
+use Encode;
 use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
 use t::Mock::MapIt;
 use Test::More;
@@ -743,4 +744,10 @@ sub create_comment_for_problem {
 
     FixMyStreet::App->model('DB::Comment')->create($params);
 }
+
+sub encoded_content {
+    my $self = shift;
+    return encode_utf8($self->content);
+}
+
 1;

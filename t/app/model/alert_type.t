@@ -22,6 +22,8 @@ my $user3 =
   ->find_or_create( { email => 'bystander@example.com', name => 'Bystander' } );
 ok $user3, "created bystander";
 
+my $body = $mech->create_body_ok(2504, 'Westminster');
+
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,
@@ -34,7 +36,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        bodies_str         => '2504',
+        bodies_str         => $body->id,
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -165,8 +167,8 @@ $report->update();
 my $council_alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {
         user => $user2,
-        parameter => 2504,
-        parameter2 => 2504,
+        parameter => $body->id,
+        parameter2 => $body->id,
         alert_type => 'council_problems',
         whensubscribed => $dt->ymd . ' ' . $dt->hms,
         confirmed => 1,
