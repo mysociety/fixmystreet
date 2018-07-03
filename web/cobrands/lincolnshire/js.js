@@ -106,7 +106,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "Safety_Barriers"
         }
     },
-    asset_category: "Safety fence",
+    asset_category: "Missing safety fence",
     asset_item: 'fence',
     filter_key: 'Type',
     filter_value: "ST: Safety Fences",
