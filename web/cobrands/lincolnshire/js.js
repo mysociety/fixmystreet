@@ -106,7 +106,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "Safety_Barriers"
         }
     },
-    asset_category: "Safety fence",
+    asset_category: "Missing safety fence",
     asset_item: 'fence',
     filter_key: 'Type',
     filter_value: "ST: Safety Fences",
@@ -217,9 +217,7 @@ fixmystreet.roadworks.display_message = function(feature) {
 fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {
     http_options: { params: { organisation_id: lincs_roadworks_org_id } }
 }));
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_planned, {
-    http_options: { params: { organisation_id: lincs_roadworks_org_id } }
-}));
-
+// NB Lincs don't want forward planning works displayed, so
+// fixmystreet.roadworks.layer_planned is deliberately missing here.
 
 })();
