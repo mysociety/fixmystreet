@@ -257,7 +257,7 @@ subtest 'check show old reports checkbox shown on around page' => sub {
         my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
         $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
 
-        $mech->get_ok( '/around?pc=OX20+1SZ' );
+        $mech->get_ok( '/around?pc=OX20+1SZ&status=all' );
         $mech->content_lacks('id="show_old_reports_wrapper" class="report-list-filters hidden"');
         $mech->content_contains('id="show_old_reports_wrapper" class="report-list-filters"');
 

@@ -8,6 +8,8 @@ use mySociety::Random;
 
 use constant COUNCIL_ID_BROMLEY => 2482;
 
+sub on_map_default_status { return 'open'; }
+
 # Special extra
 sub path_to_web_templates {
     my $self = shift;
