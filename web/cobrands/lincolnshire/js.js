@@ -217,9 +217,7 @@ fixmystreet.roadworks.display_message = function(feature) {
 fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {
     http_options: { params: { organisation_id: lincs_roadworks_org_id } }
 }));
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_planned, {
-    http_options: { params: { organisation_id: lincs_roadworks_org_id } }
-}));
-
+// NB Lincs don't want forward planning works displayed, so
+// fixmystreet.roadworks.layer_planned is deliberately missing here.
 
 })();
