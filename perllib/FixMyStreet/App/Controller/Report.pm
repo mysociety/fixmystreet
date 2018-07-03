@@ -357,8 +357,6 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            $problem->non_public($c->get_param('non_public') ? 1 : 0);
-
             $problem->set_extra_metadata( traffic_information => $c->get_param('traffic_information') );
 
             if ( my $info = $c->get_param('detailed_information') ) {
@@ -431,6 +429,8 @@ sub inspect : Private {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
             }
         }
+
+        $problem->non_public($c->get_param('non_public') ? 1 : 0);
 
         if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
             # New lat/lon isn't valid, show an error

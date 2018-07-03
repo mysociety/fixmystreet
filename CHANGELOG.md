@@ -19,6 +19,7 @@
         - Defect type is recorded if category change made. #2172
         - [UK] Store body ID on council/ward alerts. #2175
         - Show all fixed issues when staff user uses map page filter #2176
+        - Allow any user who can see private checkbox to use it.
     - Admin improvements:
         - Mandatory defect type selection if defect raised.
         - Send login email button on user edit page #2041
