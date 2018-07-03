@@ -10,7 +10,7 @@ sub to_body {
 }
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $categories, $states, $extra_params ) = @_;
+    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $categories, $states, $extra_params, $report_age ) = @_;
 
     unless ( $states ) {
         $states = FixMyStreet::DB::Result::Problem->visible_states();
@@ -22,6 +22,9 @@ sub nearby {
     $params->{id} = { -not_in => $ids }
         if $ids;
     $params->{category} = $categories if $categories && @$categories;
+
+    $params->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$report_age'::interval" }
+        if $report_age;
 
     FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c);
 

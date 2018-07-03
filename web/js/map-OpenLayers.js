@@ -361,8 +361,14 @@ $.extend(fixmystreet.utils, {
 
     function replace_query_parameter(qs, id, key) {
         var value = $('#' + id).val();
+        if ( $('#' + id).prop('type') == 'checkbox' ) {
+            value = $('#' + id).prop('checked') ? '1' : '';
+        } else if (value) {
+            value = (typeof value === 'string') ? value : fixmystreet.utils.array_to_csv_line(value);
+        }
+
         if (value) {
-            qs[key] = (typeof value === 'string') ? value : fixmystreet.utils.array_to_csv_line(value);
+            qs[key] = value;
         } else {
             delete qs[key];
         }
@@ -387,15 +393,17 @@ $.extend(fixmystreet.utils, {
         }
         var qs = fixmystreet.utils.parse_query_string();
 
-        var page = $('.pagination').data('page');
+        var show_old_reports = '';
+        var page = $('.pagination:first').data('page');
         if (page > 1) {
+            show_old_reports = replace_query_parameter(qs, 'show_old_reports', 'show_old_reports');
             qs.p = page;
         } else {
             delete qs.p;
         }
         var new_url = update_url(qs);
         history.pushState({
-            page_change: { 'page': page }
+            page_change: { 'page': page, 'show_old_reports': show_old_reports }
         }, null, new_url);
     }
 
@@ -407,10 +415,11 @@ $.extend(fixmystreet.utils, {
         var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
         var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
         var sort_key = replace_query_parameter(qs, 'sort', 'sort');
+        var show_old_reports = replace_query_parameter(qs, 'show_old_reports', 'show_old_reports');
         delete qs.p;
         var new_url = update_url(qs);
         history.pushState({
-            filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses, 'sort': sort_key }
+            filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses, 'sort': sort_key, 'show_old_reports': show_old_reports }
         }, null, new_url);
     }
 
@@ -640,14 +649,17 @@ $.extend(fixmystreet.utils, {
             $("#filter_categories").on("change.filters", categories_or_status_changed);
             $("#statuses").on("change.filters", categories_or_status_changed);
             $("#sort").on("change.filters", categories_or_status_changed);
+            $("#show_old_reports").on("change.filters", categories_or_status_changed);
             $('.js-pagination').on('change.filters', categories_or_status_changed);
             $('.js-pagination').on('click', 'a', function(e) {
                 e.preventDefault();
-                var page = $('.pagination').data('page');
-                if ($(this).hasClass('next')) {
-                    $('.pagination').data('page', page + 1);
+                var page = $('.pagination:first').data('page');
+                if ($(this).hasClass('show_old')) {
+                    $("#show_old_reports").prop('checked', true);
+                } else if ($(this).hasClass('next')) {
+                    $('.pagination:first').data('page', page + 1);
                 } else {
-                    $('.pagination').data('page', page - 1);
+                    $('.pagination:first').data('page', page - 1);
                 }
                 fixmystreet.markers.protocol.use_page = true;
                 $(this).trigger('change');
@@ -655,6 +667,7 @@ $.extend(fixmystreet.utils, {
             $("#filter_categories").on("change.user", categories_or_status_changed_history);
             $("#statuses").on("change.user", categories_or_status_changed_history);
             $("#sort").on("change.user", categories_or_status_changed_history);
+            $("#show_old_reports").on("change.user", categories_or_status_changed_history);
             $('.js-pagination').on('click', 'a', page_changed_history);
         } else if (fixmystreet.page == 'new') {
             drag.activate();
@@ -914,9 +927,12 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
                 options.params[key] = val.join ? fixmystreet.utils.array_to_csv_line(val) : val;
             }
         });
+        if ( $('#show_old_reports').is(':checked') ) {
+            options.params.show_old_reports = 1;
+        }
         var page;
         if (this.use_page) {
-            page = $('.pagination').data('page');
+            page = $('.pagination:first').data('page');
             this.use_page = false;
         } else if (this.initial_page) {
             page = 1;
@@ -942,6 +958,11 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         var reports_list;
         if (typeof(obj.reports_list) != 'undefined' && (reports_list = document.getElementById('js-reports-list'))) {
             reports_list.innerHTML = obj.reports_list;
+            if ( $('.item-list--reports').data('show-old-reports') ) {
+                $('#show_old_reports_wrapper').removeClass('hidden');
+            } else {
+                $('#show_old_reports_wrapper').addClass('hidden');
+            }
         }
         if (typeof(obj.pagination) != 'undefined') {
             $('.js-pagination').html(obj.pagination);

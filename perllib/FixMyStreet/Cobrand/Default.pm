@@ -445,6 +445,10 @@ sub reports_per_page {
     return FixMyStreet->config('ALL_REPORTS_PER_PAGE') || 100;
 }
 
+sub report_age {
+    return '6 months';
+}
+
 =item reports_ordering
 
 The order_by clause to use for reports on all reports page

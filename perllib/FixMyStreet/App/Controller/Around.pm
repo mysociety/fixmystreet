@@ -253,6 +253,7 @@ sub map_features : Private {
 
     $c->forward( '/reports/stash_report_filter_status' );
     $c->forward( '/reports/stash_report_sort', [ 'created-desc' ]);
+    $c->stash->{show_old_reports} = $c->get_param('show_old_reports');
 
     return if $c->get_param('js'); # JS will request the same (or more) data client side
 

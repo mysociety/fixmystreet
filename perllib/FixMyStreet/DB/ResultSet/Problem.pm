@@ -172,6 +172,9 @@ sub around_map {
             latitude => { '>=', $p{min_lat}, '<', $p{max_lat} },
             longitude => { '>=', $p{min_lon}, '<', $p{max_lon} },
     };
+
+    $q->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$p{report_age}'::interval" } if
+        $p{report_age};
     $q->{category} = $p{categories} if $p{categories} && @{$p{categories}};
 
     $rs->non_public_if_possible($q, $c);
