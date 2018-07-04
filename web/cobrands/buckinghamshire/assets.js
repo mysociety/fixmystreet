@@ -171,7 +171,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             } else if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
                 hide_responsibility_errors();
                 enable_report_form();
-            } else {
+            } else if (fixmystreet.is_only_body(layer.fixmystreet.body)) {
                 // User has clicked a road that Bucks don't maintain.
                 show_responsibility_error("#js-not-council-road");
                 disable_report_form();
@@ -185,7 +185,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             if (fixmystreet.assets.selectedFeature()) {
                 hide_responsibility_errors();
                 enable_report_form();
-            } else {
+            } else if (fixmystreet.is_only_body(layer.fixmystreet.body)){
                 show_responsibility_error("#js-not-a-road");
                 disable_report_form();
             }
