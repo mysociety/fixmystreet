@@ -131,14 +131,14 @@ highways_style.addRules([rule_owned, rule_not_owned]);
 
 function show_responsibility_error(id) {
     hide_responsibility_errors();
-    $("#js-bucks-responsibility").removeClass("hidden");
-    $("#js-bucks-responsibility .js-responsibility-message").addClass("hidden");
+    $("#js-roads-responsibility").removeClass("hidden");
+    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
     $(id).removeClass("hidden");
 }
 
 function hide_responsibility_errors() {
-    $("#js-bucks-responsibility").addClass("hidden");
-    $("#js-bucks-responsibility .js-responsibility-message").addClass("hidden");
+    $("#js-roads-responsibility").addClass("hidden");
+    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
 }
 
 function disable_report_form() {
@@ -173,7 +173,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
                 enable_report_form();
             } else {
                 // User has clicked a road that Bucks don't maintain.
-                show_responsibility_error("#js-not-bucks-road");
+                show_responsibility_error("#js-not-council-road");
                 disable_report_form();
             }
         },
