@@ -17,7 +17,7 @@
         [% IF c.get_param('js') %]
             <p>[% loc('Loading reports…') %]</p>
         [% ELSE %]
-            <p>[% loc('There are no reports to show.') %]</p>
+            [% PROCESS 'around/_on_map_empty.html' %]
         [% END %]
     </li>
 [% END %]
