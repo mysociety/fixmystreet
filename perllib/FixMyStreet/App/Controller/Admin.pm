@@ -358,6 +358,8 @@ sub update_contacts : Private {
         }
         if ( my $group = $c->get_param('group') ) {
             $contact->set_extra_metadata( group => $group );
+        } else {
+            $contact->unset_extra_metadata( 'group' );
         }
 
 
@@ -1421,17 +1423,18 @@ sub user_add : Path('user_edit') : Args(0) {
     my $email_v = $c->get_param('email_verified');
     my $phone_v = $c->get_param('phone_verified');
 
-    unless ($email || $phone) {
-        $c->stash->{field_errors}->{username} = _('Please enter a valid email or phone number');
-    }
-    if (!$email_v && !$phone_v) {
-        $c->stash->{field_errors}->{username} = _('Please verify at least one of email/phone');
-    }
     if ($email && !is_valid_email($email)) {
         $c->stash->{field_errors}->{email} = _('Please enter a valid email');
     }
     unless ($c->get_param('name')) {
         $c->stash->{field_errors}->{name} = _('Please enter a name');
+    }
+
+    unless ($email || $phone) {
+        $c->stash->{field_errors}->{username} = _('Please enter a valid email or phone number');
+    }
+    if (!$email_v && !$phone_v) {
+        $c->stash->{field_errors}->{username} = _('Please verify at least one of email/phone');
     }
 
     if ($phone_v) {
@@ -1507,6 +1510,11 @@ sub user_edit : Path('user_edit') : Args(1) {
         $c->forward('user_hide_everywhere', [ $user ]);
     } elsif ( $c->get_param('submit') and $c->get_param('remove_account') ) {
         $c->forward('user_remove_account', [ $user ]);
+    } elsif ( $c->get_param('submit') and $c->get_param('send_login_email') ) {
+        my $email = lc $c->get_param('email');
+        my %args = ( email => $email );
+        $args{user_id} = $id if $user->email ne $email || !$user->email_verified;
+        $c->forward('send_login_email', [ \%args ]);
     } elsif ( $c->get_param('submit') ) {
 
         my $edited = 0;
@@ -1919,6 +1927,31 @@ sub user_hide_everywhere : Private {
         $update->hide;
     }
     $c->stash->{status_message} = _('That user’s reports and updates have been hidden.');
+}
+
+sub send_login_email : Private {
+    my ( $self, $c, $args ) = @_;
+
+    my $token_data = {
+        email => $args->{email},
+    };
+
+    $token_data->{old_user_id} = $args->{user_id} if $args->{user_id};
+    $token_data->{name} = $args->{name} if $args->{name};
+
+    my $token_obj = $c->model('DB::Token')->create({
+        scope => 'email_sign_in',
+        data  => $token_data,
+    });
+
+    $c->stash->{token} = $token_obj->token;
+    my $template = 'login.txt';
+
+    # do not use relative URIs in the email, obvs.
+    $c->uri_disposition('absolute');
+    $c->send_email( $template, { to => $args->{email} } );
+
+    $c->stash->{status_message} = _('The user has been sent a login email');
 }
 
 # Anonymize and remove name from all problems/updates, disable all alerts.

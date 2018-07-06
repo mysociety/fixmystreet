@@ -200,16 +200,7 @@ function asset_selected(e) {
     // its own USRN which should take precedence.
     $(fixmystreet).trigger('assets:selected', [ lonlat ]);
 
-    // Set the extra field to the value of the selected feature
-    $.each(this.fixmystreet.attributes, function (field_name, attribute_name) {
-        var field_value;
-        if (typeof attribute_name === 'function') {
-            field_value = attribute_name.apply(e.feature);
-        } else {
-            field_value = e.feature.attributes[attribute_name];
-        }
-        $("#form_" + field_name).val(field_value);
-    });
+    set_fields_from_attributes(this.fixmystreet.attributes, feature);
 
     if (this.fixmystreet.disable_pin_snapping) {
         // The simplest way to disable pin snapping is to immediately
@@ -242,11 +233,23 @@ function asset_selected(e) {
 function asset_unselected(e) {
     fixmystreet.markers.setVisibility(true);
     selected_feature = null;
-    if (e.feature.attributes._preserve_form_values_on_unselect) {
-        e.feature.attributes._preserve_form_values_on_unselect = false;
-        return;
-    }
-    $.each(this.fixmystreet.attributes, function (field_name, attribute_name) {
+    clear_fields_for_attributes(this.fixmystreet.attributes);
+}
+
+function set_fields_from_attributes(attributes, feature) {
+    // Set the extra fields to the value of the selected feature
+    $.each(attributes, function (field_name, attribute_name) {
+        var $field = $("#form_" + field_name);
+        if (typeof attribute_name === 'function') {
+            $field.val(attribute_name.apply(feature));
+        } else {
+            $field.val(feature.attributes[attribute_name]);
+        }
+    });
+}
+
+function clear_fields_for_attributes(attributes) {
+    $.each(attributes, function (field_name, attribute_name) {
         $("#form_" + field_name).val("");
     });
 }
@@ -551,6 +554,27 @@ fixmystreet.assets = {
             select_feature_control = new OpenLayers.Control.SelectFeature( asset_layer );
             asset_layer.events.register( 'featureselected', asset_layer, asset_selected);
             asset_layer.events.register( 'featureunselected', asset_layer, asset_unselected);
+            if (options.disable_pin_snapping) {
+                // The pin is snapped to the centre of a feature by the select
+                // handler. We can stop this handler from running, and the pin
+                // being snapped, by returning false from a beforefeatureselected
+                // event handler. This handler does need to make sure the
+                // attributes of the clicked feature are applied to the extra
+                // details form fields first though.
+                asset_layer.events.register( 'beforefeatureselected', asset_layer, function(e) {
+                    var attributes = this.fixmystreet.attributes;
+                    set_fields_from_attributes(attributes, e.feature);
+
+                    // The next click on the map may not be on an asset - so
+                    // clear the fields for this layer when the pin is next
+                    // updated. If it is on an asset then the fields will be
+                    // set by whatever feature was selected.
+                    $(fixmystreet).one('maps:update_pin', function() {
+                        clear_fields_for_attributes(attributes);
+                    });
+                    return false;
+                });
+            }
             // When panning/zooming the map check that this layer is still correctly shown
             // and any selected marker is preserved
             asset_layer.events.register( 'loadend', asset_layer, layer_loadend);

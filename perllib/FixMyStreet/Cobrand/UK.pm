@@ -190,9 +190,11 @@ sub council_rss_alert_options {
     my ( @options, @reported_to_options );
     if ( $num_councils == 1 or $num_councils == 2 ) {
         my ($council, $ward);
+        my $body = FixMyStreet::DB->resultset('Body')->active->search({ name => { '!=' => 'TfL' } })->for_areas(keys %$all_areas)->first;
         foreach (values %$all_areas) {
             if ($councils{$_->{type}}) {
                 $council = $_;
+                $council->{id} = $body->id; # Want to use body ID, not MapIt area ID
                 $council->{short_name} = $self->short_name( $council );
                 ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
             } else {
@@ -247,6 +249,9 @@ sub council_rss_alert_options {
         my $county_name = $county->{name};
         my $c_ward_name = $c_ward->{name};
 
+        my $body_dis = FixMyStreet::DB->resultset('Body')->active->for_areas($district->{id})->first;
+        my $body_cty = FixMyStreet::DB->resultset('Body')->active->for_areas($county->{id})->first;
+
         push @options, {
             type  => 'area',
             id    => sprintf( 'area:%s:%s', $district->{id}, $district->{id_name} ),
@@ -275,25 +280,25 @@ sub council_rss_alert_options {
 
         push @reported_to_options, {
             type      => 'council',
-            id        => sprintf( 'council:%s:%s', $district->{id}, $district->{id_name} ),
+            id        => sprintf( 'council:%s:%s', $body_dis->id, $district->{id_name} ),
             text      => sprintf( _('Reports sent to %s'), $district->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $district->{short_name} ),
         }, {
             type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $body_dis->id, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
             text     => sprintf( _('Reports sent to %s, within %s ward'), $district->{name}, $d_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
         }, {
             type      => 'council',
-            id        => sprintf( 'council:%s:%s', $county->{id}, $county->{id_name} ),
+            id        => sprintf( 'council:%s:%s', $body_cty->id, $county->{id_name} ),
             text      => sprintf( _('Reports sent to %s'), $county->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $county->{short_name} ),
         }, {
             type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $body_cty->id, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
             text     => sprintf( _('Reports sent to %s, within %s ward'), $county->{name}, $c_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),

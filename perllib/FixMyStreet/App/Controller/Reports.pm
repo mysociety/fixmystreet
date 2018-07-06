@@ -758,10 +758,13 @@ sub stash_report_sort : Private {
 
     $sort =~ /^(updated|created|comments)-(desc|asc)$/;
     my $order_by = $types{$1} || $1;
+    # field to use for report age cutoff
+    $c->stash->{report_age_field} = $order_by eq 'comment_count' ? 'lastupdate' : $order_by;
     my $dir = $2;
     $order_by = { -desc => $order_by } if $dir eq 'desc';
 
     $c->stash->{sort_order} = $order_by;
+
     return 1;
 }
 

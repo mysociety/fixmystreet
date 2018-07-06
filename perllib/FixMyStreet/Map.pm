@@ -92,19 +92,34 @@ sub map_features {
         $p{latitude} = Utils::truncate_coordinate(($p{max_lat} + $p{min_lat} ) / 2);
     }
 
+    my $report_age = $c->stash->{show_old_reports} ? undef : $c->cobrand->report_age;
+    $p{report_age} = $report_age;
+
     $p{page} = $c->get_param('p') || 1;
     my $on_map = $c->cobrand->problems_on_map->around_map( $c, %p );
     my $pager = $c->stash->{pager} = $on_map->pager;
     $on_map = [ $on_map->all ];
 
+    if ( $c->{stash}->{show_old_reports} ) {
+        # if show_old_reports is on then there must be old reports
+        $c->stash->{num_old_reports} = 1;
+    } else {
+        $p{report_age} = undef;
+        $p{page} = 1;
+        my $older = $c->cobrand->problems_on_map->around_map( $c, %p );
+        $c->stash->{num_old_reports} = $older->pager->total_entries - $pager->total_entries;
+    }
+
     my $dist = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );
 
+    # if there are fewer entries than our paging limit on the map then
+    # also return nearby entries for display
     my $nearby;
     if (@$on_map < $pager->entries_per_page && $pager->current_page == 1) {
         my $limit = 20;
         my @ids = map { $_->id } @$on_map;
         $nearby = $c->model('DB::Nearby')->nearby(
-            $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "categories", "states", "extra"}
+            $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "categories", "states", "extra"}, $report_age
         );
     }
 

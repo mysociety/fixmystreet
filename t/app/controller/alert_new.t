@@ -184,13 +184,15 @@ foreach my $test (
     };
 }
 
+my $body = $mech->create_body_ok(2651, 'Edinburgh Council');
+
 foreach my $test (
     {
         desc       => 'logged in user signing up',
         email      => 'test-sign-in@example.com',
         type       => 'council',
-        param1     => 2651,
-        param2     => 2651,
+        param1     => $body->id,
+        param2     => $body->id,
         confirmed  => 1,
     }
   )
@@ -207,9 +209,9 @@ foreach my $test (
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $mech->get_ok('/alert/list?pc=EH991SP');
+            $mech->get_ok('/alert/list?pc=EH11BB');
         };
-        $mech->set_visible( [ radio => 'council:2651:City_of_Edinburgh' ] );
+        $mech->set_visible( [ radio => 'council:' . $body->id . ':City_of_Edinburgh' ] );
         $mech->click('alert');
 
         my $alert = FixMyStreet::App->model('DB::Alert')->find(
@@ -789,7 +791,7 @@ subtest "Test signature template is used from cobrand" => sub {
     my $report_time = '2011-03-01 12:00:00';
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        bodies_str         => '2651',
+        bodies_str         => $body->id,
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Testing',
@@ -884,15 +886,15 @@ for my $test (
         desc => 'check non public reports are not included in council problems alerts',
         alert_params => {
             alert_type => 'council_problems',
-            parameter => '2651',
-            parameter2 => '2651',
+            parameter => $body->id,
+            parameter2 => $body->id,
         }
     },
     {
         desc => 'check non public reports are not included in ward problems alerts',
         alert_params => {
             alert_type => 'ward_problems',
-            parameter => '2651',
+            parameter => $body->id,
             parameter2 => '20728',
         }
     },
@@ -936,7 +938,7 @@ for my $test (
 
         my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
             postcode           => 'EH1 1BB',
-            bodies_str         => '2651',
+            bodies_str         => $body->id,
             areas              => ',11808,135007,14419,134935,2651,20728,',
             category           => 'Street lighting',
             title              => 'Alert test for non public reports',
@@ -998,7 +1000,7 @@ subtest 'check new updates alerts for non public reports only go to report owner
 
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        bodies_str         => '2651',
+        bodies_str         => $body->id,
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Alert test for non public reports',
@@ -1091,7 +1093,7 @@ subtest 'check setting inlude dates in new updates cobrand option' => sub {
 
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        bodies_str         => '2651',
+        bodies_str         => $body->id,
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Alert test for non public reports',

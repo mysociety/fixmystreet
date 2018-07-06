@@ -1280,7 +1280,8 @@ $(function() {
                     if (fixmystreet.utils && fixmystreet.utils.parse_query_string) {
                         var qs = fixmystreet.utils.parse_query_string();
                         var page = qs.p || 1;
-                        $('.pagination').data('page', page)
+                        $('#show_old_reports').prop('checked', qs.show_old_reports || '');
+                        $('.pagination:first').data('page', page)
                             .trigger('change.filters');
                     }
                     fixmystreet.display.reports_list(location.href);
@@ -1289,12 +1290,18 @@ $(function() {
                 } else if ('newReportAtLonlat' in e.state) {
                     fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
                 } else if ('page_change' in e.state) {
-                    $('.pagination').data('page', e.state.page_change.page)
+                    fixmystreet.markers.protocol.use_page = true;
+                    $('#show_old_reports').prop('checked', e.state.page_change.show_old_reports);
+                    $('.pagination:first').data('page', e.state.page_change.page) //;
                         .trigger('change.filters');
+                    if ( fixmystreet.page != 'reports' ) {
+                        fixmystreet.display.reports_list(location.href);
+                    }
                 } else if ('filter_change' in e.state) {
                     $('#filter_categories').val(e.state.filter_change.filter_categories);
                     $('#statuses').val(e.state.filter_change.statuses);
                     $('#sort').val(e.state.filter_change.sort);
+                    $('#show_old_reports').prop('checked', e.state.filter_change.show_old_reports);
                     $('#filter_categories').add('#statuses')
                         .trigger('change.filters').trigger('change.multiselect');
                     fixmystreet.display.reports_list(location.href);

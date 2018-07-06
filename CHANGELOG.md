@@ -8,6 +8,7 @@
         - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
         - Keep commas in geocode lookups.
         - Show message on reports closed to updates.
+        - Only display last 6 months of reports on around page by default #2098
     - Admin improvements:
         - Category group can be edited.
     - Bugfixes:
@@ -18,10 +19,17 @@
         - Fix issue with category filter when category contains comma #2166
         - Inspectors can unset priority. #2171
         - Defect type is recorded if category change made. #2172
+        - [UK] Store body ID on council/ward alerts. #2175
+        - Show all fixed issues when staff user uses map page filter #2176
+        - Allow any user who can see private checkbox to use it.
     - Admin improvements:
         - Mandatory defect type selection if defect raised.
+        - Send login email button on user edit page #2041
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
+    - Development improvements:
+        - Cobrand hook for presenting custom search results. #2183
+
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:

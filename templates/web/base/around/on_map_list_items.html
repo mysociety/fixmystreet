@@ -1,4 +1,4 @@
-<ul class="item-list item-list--reports">
+<ul class="item-list item-list--reports"[%' data-show-old-reports="1"' IF num_old_reports > 0 %]>
 [% IF on_map.size %]
     [% FOREACH problem IN on_map %]
         [% INCLUDE 'reports/_list-entry.html' %]
@@ -17,7 +17,7 @@
         [% IF c.get_param('js') %]
             <p>[% loc('Loading reports…') %]</p>
         [% ELSE %]
-            <p>[% loc('There are no reports to show.') %]</p>
+            [% PROCESS 'around/_on_map_empty.html' %]
         [% END %]
     </li>
 [% END %]
