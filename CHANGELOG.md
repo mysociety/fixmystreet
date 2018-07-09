@@ -22,6 +22,7 @@
         - [UK] Store body ID on council/ward alerts. #2175
         - Show all fixed issues when staff user uses map page filter #2176
         - Allow any user who can see private checkbox to use it.
+        - Prevent dupliate category listing on /my.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
     - Development improvements:
