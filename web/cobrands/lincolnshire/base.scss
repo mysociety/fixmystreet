@@ -146,6 +146,13 @@ body.mappage .big-green-banner {
   margin-bottom: 0;
 }
 
+// Certain categories have linear assets so hide the spot marker in the guidance
+#category_meta_message_Missingsafetyfence, #category_meta_message_Roadsidesafetybarrier {
+  .asset-spot:before {
+    display: none;
+  }
+}
+
 // admin
 
 .fms-admin-info {
