@@ -85,9 +85,15 @@ foreach my $test (
     },
     {
         desc => 'User goes to questionnaire URL for an already answered questionnaire',
-        answered => \'current_timestamp',
+        answered => \"current_timestamp - '10 minutes'::interval",
         content => 'already answered this questionnaire',
         code => 400,
+    },
+    {
+        desc => 'User goes to questionnaire URL for a very recently answered questionnaire',
+        answered => \"current_timestamp - '10 seconds'::interval",
+        content_lacks => 'already answered this questionnaire',
+        code => 200,
     },
 ) {
     subtest $test->{desc} => sub {
@@ -99,7 +105,8 @@ foreach my $test (
         $token .= $test->{token_extra} if $test->{token_extra};
         $mech->get("/Q/$token");
         is $mech->res->code, $test->{code}, "Right status received";
-        $mech->content_contains( $test->{content} );
+        $mech->content_contains( $test->{content} ) if $test->{content};
+        $mech->content_lacks( $test->{content_lacks} ) if $test->{content_lacks};
         # Reset, no matter what test did
         $report->state( 'confirmed' );
         $report->update;
