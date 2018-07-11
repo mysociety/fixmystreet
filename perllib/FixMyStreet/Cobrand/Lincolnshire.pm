@@ -44,6 +44,21 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub process_open311_extras {
+    my $self = shift;
+    $self->SUPER::process_open311_extras( @_ );
+
+    my $c     = shift;
+    my $body  = shift;
+    my $extra = shift;
+
+    for my $field (@$extra) {
+        if ( $field->{name} =~ /ACCU|PICL/ ) {
+            $field->{value} = 'NK';
+        }
+    }
+}
+
 sub lookup_site_code_config { {
     buffer => 200, # metres
     url => "https://tilma.staging.mysociety.org/mapserver/lincs",
