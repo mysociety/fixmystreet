@@ -48,6 +48,20 @@ my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
 <lat>51.4021</lat>
 <long>0.01578</long>
 </request>
+<request>
+<service_request_id>638346</service_request_id>
+<status>open</status>
+<status_notes>This is a note.</status_notes>
+<service_name>Sidewalk and Curb Issues</service_name>
+<service_code>sidewalks</service_code>
+<agency_responsible></agency_responsible>
+<service_notice></service_notice>
+<requested_datetime>2010-04-14T06:37:38-08:00</requested_datetime>
+<updated_datetime>2010-04-14T06:37:38-08:00</updated_datetime>
+<expected_datetime>2010-04-15T06:37:38-08:00</expected_datetime>
+<lat>51.4021</lat>
+<long>0.01578</long>
+</request>
 </service_requests>
 };
 
@@ -104,6 +118,13 @@ subtest 'basic parsing checks' => sub {
     ok $p2->whensent, 'second problem marked sent';
     is $p2->state, 'investigating', 'second problem correct state';
     is $p2->category, 'Other', 'category falls back to Other';
+
+    my $p3 = FixMyStreet::DB->resultset('Problem')->search( { external_id => 638346 } )->first;
+    ok $p3, 'third problem found';
+    ok $p3->whensent, 'third problem marked sent';
+    is $p3->state, 'confirmed', 'second problem correct state';
+    is $p3->category, 'Sidewalk and Curb Issues', 'correct problem category';
+    is $p3->detail, 'Sidewalk and Curb Issues problem', 'problem detail based on category name';
 };
 
 subtest 'check problems not re-created' => sub {
