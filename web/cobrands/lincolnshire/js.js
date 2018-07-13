@@ -167,6 +167,34 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 fixmystreet.assets.add($.extend(true, {}, defaults, {
     http_options: {
         params: {
+            TYPENAME: "Carriageway"
+        }
+    },
+    asset_category: [
+        "Damaged / missing cats eye",
+        "Damaged road edge",
+        "Give way / stop line fading or missing",
+        "Loose chippings",
+        "Manhole/drain cover on road/cycleway",
+        "Obstruction on road/cycleway",
+        "Pothole on road/cycleway",
+        "Road markings faded/missing",
+        "Road surface issue"
+    ],
+    asset_item: 'road',
+    asset_item_message: null,
+    disable_pin_snapping: true,
+    stylemap: new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fill: false,
+            stroke: false
+        })
+    })
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
             TYPENAME: "NSG"
         }
     },

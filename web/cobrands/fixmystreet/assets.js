@@ -288,7 +288,7 @@ function check_zoom_message_visibility() {
         }
 
         if (this.getVisibility() && this.inRange) {
-            if (this.fixmystreet.asset_item_message) {
+            if (typeof this.fixmystreet.asset_item_message !== 'undefined') {
                 $p.html(this.fixmystreet.asset_item_message);
             } else {
                 $p.html('You can pick a <b class="asset-' + this.fixmystreet.asset_type + '">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
