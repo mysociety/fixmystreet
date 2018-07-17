@@ -114,14 +114,14 @@ function include_feature(f) {
     return f &&
            f.attributes &&
            f.attributes.ownername &&
-           exclude_ownernames.indexOf(f.attributes.ownername) == -1;
+           OpenLayers.Util.indexOf(exclude_ownernames, f.attributes.ownername) == -1;
 }
 
 function banes_owns_feature(f) {
     return f &&
            f.attributes &&
            f.attributes.ownername &&
-           banes_ownernames.indexOf(f.attributes.ownername) > -1 &&
+           OpenLayers.Util.indexOf(banes_ownernames, f.attributes.ownername) > -1 &&
            include_feature(f);
 }
 

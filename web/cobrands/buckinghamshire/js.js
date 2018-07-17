@@ -103,7 +103,7 @@ function bucks_owns_feature(f) {
     return f &&
            f.attributes &&
            f.attributes.feature_ty &&
-           bucks_types.indexOf(f.attributes.feature_ty) > -1;
+           OpenLayers.Util.indexOf(bucks_types, f.attributes.feature_ty) > -1;
 }
 
 function bucks_does_not_own_feature(f) {
@@ -167,7 +167,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             if (fixmystreet.assets.selectedFeature()) {
                 hide_responsibility_errors();
                 enable_report_form();
-            } else if (bucks_types.indexOf(feature.attributes.feature_ty) != -1) {
+            } else if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
                 hide_responsibility_errors();
                 enable_report_form();
             } else {

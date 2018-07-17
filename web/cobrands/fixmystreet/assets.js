@@ -284,7 +284,7 @@ function check_zoom_message_visibility() {
         }
 
     } else {
-        this.fixmystreet.asset_category.forEach( function(c) {
+        $.each(this.fixmystreet.asset_category, function(i, c) {
             var prefix = c.replace(/[^a-z]/gi, ''),
             id = "category_meta_message_" + prefix,
             $p = $('#' + id);
@@ -490,7 +490,7 @@ fixmystreet.assets = {
                 layer_options.filter = new OpenLayers.Filter.FeatureId({
                     type: OpenLayers.Filter.Function,
                     evaluate: function(f) {
-                        return options.filter_value.indexOf(f.attributes[options.filter_key]) != -1;
+                        return OpenLayers.Util.indexOf(options.filter_value, f.attributes[options.filter_key]) != -1;
                     }
                 });
                 layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
