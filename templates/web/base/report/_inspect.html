@@ -47,7 +47,7 @@
         </p>
         [% END %]
         <p>
-          <a target="_blank" href="https://www.google.com/maps/dir/Current+Location/[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
+          <a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
         </p>
         <p>
           <a href="#" class="btn btn--block btn--geolocate">[% loc('Set to my current location') %]</a>
