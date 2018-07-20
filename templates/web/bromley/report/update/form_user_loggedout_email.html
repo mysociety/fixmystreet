@@ -5,4 +5,4 @@
 [% IF field_errors.username %]
     <p class='form-error'>[% field_errors.username %]</p>
 [% END %]
-<input class="form-control" type="email" name="username" id="form_username" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
+<input class="form-control" type="email" name="username" id="form_username" value="[% update.user.email | html %]" required>

@@ -24,13 +24,13 @@
     <input class="form-control" name="username" id="form_username" type="text" value="[% c.user.email | html %]">
   [% END %]
 
-<label for="form_name">[% loc('Name') %]</label>
+<label for="form_name">[% loc('Your name') %]</label>
 [% IF field_errors.name %]
     <p class='form-error'>[% field_errors.name %]</p>
 [% END %]
 
 <input type="text" class="form-control validNameU js-form-name"
-    name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
+    name="name" id="form_name" value="[% update.name || c.user.name | html %]">
 
 [% INCLUDE 'report/_show_name_label.html' %]
 

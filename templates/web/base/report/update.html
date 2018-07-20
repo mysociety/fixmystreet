@@ -47,9 +47,8 @@
             </div>
             [% IF permissions.moderate %]
                 <div class="moderate-edit">
-                    <label for="moderation_reason">[% loc('Moderation reason:') %]</label>
-                    <input type="text" class="form-control" name="moderation_reason"
-                        placeholder="[% loc('Describe why you are moderating this') %]">
+                    <label for="moderation_reason">[% loc('Describe why you are moderating this') %]</label>
+                    <input type="text" class="form-control" name="moderation_reason">
                     <input type="submit" class="green-btn" value="[% loc('Save changes') %]">
                     <input type="button" class="btn cancel" value="[% loc('Discard changes') %]">
                 </div>

@@ -7,6 +7,7 @@
         - Show message on reports closed to updates.
         - Only display last 6 months of reports on around page by default #2098
         - Always show all reports by default on /my.
+        - Much less reliance on input placeholders, for better accessibility #2180
     - Admin improvements:
         - Mandatory defect type selection if defect raised.
         - Send login email button on user edit page #2041
