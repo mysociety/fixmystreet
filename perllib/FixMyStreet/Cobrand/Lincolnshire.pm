@@ -17,6 +17,8 @@ sub is_two_tier { 1 }
 
 sub enable_category_groups { 1 }
 
+sub report_sent_confirmation_email { 1 }
+
 sub example_places {
     return ( 'LN1 1YL', 'Orchard Street, Lincoln' );
 }

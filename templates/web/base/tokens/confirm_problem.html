@@ -6,8 +6,12 @@
 
   [% IF c.cobrand.is_council %]
     [% IF c.cobrand.owns_problem( report ) %]
+      [% TRY %]
+        [% INCLUDE 'tokens/_confirm_problem_council_id.html' %]
+      [% CATCH file %]
         <h2>Your issue is on its way to the council.</h2>
         <p>Your reference for this report is [% report.id %], please quote it in any enquiries.</p>
+      [% END %]
     [% ELSE %]
         <h2>Thank you for your report.</h2>
         <p>
