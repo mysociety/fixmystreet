@@ -71,6 +71,12 @@ fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
         login_with_email: '[% loc('Log in with email') | replace("'", "\\'") %]',
         [% END ~%]
 
+        report_a_problem_btn: {
+            default: '[% loc('Report a problem') | replace("'", "\\'") %]',
+            here: '[% loc('Report a problem here') | replace("'", "\\'") %]',
+            another: '[% loc('Report another problem here') | replace("'", "\\'") %]'
+        },
+
         offline: {
             your_reports: '[% loc('Your offline reports') | replace("'", "\\'") %]',
             update_saved: '[% loc('Your update has been saved offline for submission when back online.') | replace("'", "\\'") %]',

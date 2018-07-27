@@ -791,6 +791,16 @@ $.extend(fixmystreet.utils, {
             fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
         }
 
+        // map.getCenter() returns a position in "map units", but sometimes you
+        // want the center in GPS-style latitude/longitude coordinates (WGS84)
+        // for example, to pass as GET params to fixmystreet.com/report/new.
+        fixmystreet.map.getCenterWGS84 = function() {
+            return fixmystreet.map.getCenter().transform(
+                fixmystreet.map.getProjectionObject(),
+                new OpenLayers.Projection("EPSG:4326")
+            );
+        };
+
         if (document.getElementById('mapForm')) {
             var click = fixmystreet.maps.click_control = new OpenLayers.Control.Click();
             fixmystreet.map.addControl(click);
@@ -803,6 +813,12 @@ $.extend(fixmystreet.utils, {
         } else {
             onload();
         }
+
+        // Allow external scripts to react to pans/zooms on the map,
+        // by subscribing to $(fixmystreet).on('maps:update_view')
+        fixmystreet.map.events.register('moveend', null, function(){
+            $(fixmystreet).trigger('maps:update_view');
+        });
 
         (function() {
             var timeout;
