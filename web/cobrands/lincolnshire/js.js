@@ -92,24 +92,10 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "Safety_Barriers"
         }
     },
-    asset_category: "Roadside safety barrier",
-    asset_item: 'barrier',
+    asset_category: ["Roadside safety barrier", "Missing safety fence"],
+    asset_item: 'barrier or fence',
     filter_key: 'Type',
     filter_value: "ST: Safety Barrier",
-    stylemap: get_barrier_stylemap(),
-    max_resolution: 1.194328566789627
-}));
-
-fixmystreet.assets.add($.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Safety_Barriers"
-        }
-    },
-    asset_category: "Missing safety fence",
-    asset_item: 'fence',
-    filter_key: 'Type',
-    filter_value: "ST: Safety Fences",
     stylemap: get_barrier_stylemap(),
     max_resolution: 1.194328566789627
 }));
