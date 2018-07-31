@@ -12,6 +12,7 @@
         - Send login email button on user edit page #2041
         - Use do-not-reply address for sent report email.
         - Category group can be edited.
+        - Trim spaces from user/report search input.
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156
