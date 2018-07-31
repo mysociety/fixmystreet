@@ -29,6 +29,7 @@
         - Hide password help field along with other similar. #2185
         - Allow questionnaire link to be revisited in quick succession. #2123
         - Update Google Maps directions link.
+        - Fix inspector pin dragging. #2073.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
         - Don't generate template comment text on move between fixed states.

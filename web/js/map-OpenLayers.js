@@ -178,6 +178,10 @@ $.extend(fixmystreet.utils, {
         return lonlat;
       },
 
+      setup_inspector: function() {
+        setup_inspector_marker_drag();
+      },
+
       markers_list: function(pins, transform) {
         var markers = [];
         var size = fixmystreet.maps.marker_size();

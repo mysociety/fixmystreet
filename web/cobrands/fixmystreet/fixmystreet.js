@@ -1168,6 +1168,10 @@ fixmystreet.display = {
                 fixmystreet.maps.click_control.activate();
             }
 
+            if (fixmystreet.maps.setup_inspector) {
+                fixmystreet.maps.setup_inspector();
+            }
+
             if (typeof callback === 'function') {
                 callback();
             }
