@@ -19,7 +19,7 @@ sub map_javascript { [
 ] }
 
 sub map_tile_base {
-    '-', "//%stilma.mysociety.org/sv/%d/%d/%d.png";
+    '-', "//%stilma.mysociety.org/oml/%d/%d/%d.png";
 }
 
 sub map_tiles {
@@ -36,7 +36,7 @@ sub map_tiles {
         ];
     } else {
         my $key = FixMyStreet->config('BING_MAPS_API_KEY');
-        my $url = "g=5941";
+        my $url = "g=6570";
         $url .= "&productSet=mmOS&key=$key" if $z > 10 && !$ni;
         return [
             "//ecn.t0.tiles.virtualearth.net/tiles/r" . $self->get_quadkey($x-1, $y-1, $z) . ".png?$url",
