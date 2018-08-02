@@ -636,7 +636,7 @@ sub setup_categories_and_bodies : Private {
       = $c                      #
       ->model('DB::Contact')    #
       ->active
-      ->search( { body_id => [ keys %bodies ] }, { prefetch => 'body' } );
+      ->search( { 'me.body_id' => [ keys %bodies ] }, { prefetch => 'body' } );
     my @contacts = $c->cobrand->categories_restriction($contacts)->all;
 
     # variables to populate
