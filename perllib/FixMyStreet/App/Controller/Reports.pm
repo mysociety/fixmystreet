@@ -33,6 +33,7 @@ sub index : Path : Args(0) {
 
     # Zurich goes straight to map page, with all reports
     if ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->stash->{page} = 'reports';
         $c->forward( 'stash_report_filter_status' );
         $c->forward( 'load_and_group_problems' );
         $c->stash->{body} = { id => 0 }; # So template can fetch the list
@@ -42,7 +43,6 @@ sub index : Path : Args(0) {
         }
 
         my $pins = $c->stash->{pins};
-        $c->stash->{page} = 'reports';
         FixMyStreet::Map::display_map(
             $c,
             latitude  => @$pins ? $pins->[0]{latitude} : 0,
@@ -150,6 +150,8 @@ sub ward : Path : Args(2) {
         $c->go('index');
     }
 
+    $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
+
     $c->forward( 'ward_check', [ @wards ] )
         if @wards;
     $c->forward( 'check_canonical_url', [ $body ] );
@@ -176,7 +178,6 @@ sub ward : Path : Args(2) {
 
     my $pins = $c->stash->{pins};
 
-    $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
     my %map_params = (
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
         longitude => @$pins ? $pins->[0]{longitude} : 0,
@@ -678,7 +679,7 @@ sub stash_report_filter_status : Private {
     my ( $self, $c ) = @_;
 
     my @status = $c->get_param_list('status', 1);
-    @status = ($c->cobrand->on_map_default_status) unless @status;
+    @status = ($c->stash->{page} eq 'my' ? 'all' : $c->cobrand->on_map_default_status) unless @status;
     my %status = map { $_ => 1 } @status;
 
     my %filter_problem_states;

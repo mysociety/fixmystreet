@@ -5017,7 +5017,7 @@ msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt. "
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:6
 msgid "You have successfully confirmed your email address."
-msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt. "
+msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt und werden &uuml;ber deren Status per E-Mail informiert. "
 
 #: templates/web/base/auth/change_phone.html:15
 #, fuzzy

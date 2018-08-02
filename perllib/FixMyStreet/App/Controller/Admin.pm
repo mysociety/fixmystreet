@@ -683,6 +683,7 @@ sub reports : Path('reports') {
     return if $c->cobrand->call_hook(report_search_query => $query, $p_page, $u_page, $order);
 
     if (my $search = $c->get_param('search')) {
+        $search = $self->trim($search);
         $c->stash->{searched} = $search;
 
         my $search_n = 0;
@@ -1264,6 +1265,7 @@ sub users: Path('users') : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $search = $c->get_param('search')) {
+        $search = $self->trim($search);
         $c->stash->{searched} = $search;
 
         my $isearch = '%' . $search . '%';

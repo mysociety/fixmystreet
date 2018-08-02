@@ -1,4 +1,4 @@
-fixmystreet.maps.tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.org/sv' ];
+fixmystreet.maps.tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.org/oml' ];
 
 fixmystreet.maps.config = (function(original) {
     return function(){
@@ -61,10 +61,10 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
                 type = '&productSet=mmOS&key=' + fixmystreet.key;
             }
             urls = [
-                "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=5941" + type,
-                "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=5941" + type,
-                "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=5941" + type,
-                "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=5941" + type
+                "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type,
+                "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type,
+                "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type,
+                "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type
             ];
         }
         return urls;

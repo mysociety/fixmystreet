@@ -22,6 +22,7 @@ use FixMyStreet::Email::Sender;
 sub test_dmarc {
     my $email = shift;
     return if FixMyStreet->test_mode;
+    return 1 if $email =~ /\@swdevon.gov.uk$/;
     return Utils::Email::test_dmarc($email);
 }
 

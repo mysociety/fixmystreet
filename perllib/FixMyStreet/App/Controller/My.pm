@@ -97,6 +97,8 @@ sub planned_reorder : Private {
 sub get_problems : Private {
     my ($self, $c) = @_;
 
+    $c->stash->{page} = 'my';
+
     my $p_page = $c->get_param('p') || 1;
 
     $c->forward( '/reports/stash_report_filter_status' );
@@ -159,13 +161,12 @@ sub setup_page_data : Private {
     my @categories = $c->stash->{problems_rs}->search({
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
-        columns => [ 'category', 'extra' ],
+        columns => [ 'category' ],
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;
     $c->stash->{filter_categories} = \@categories;
 
-    $c->stash->{page} = 'my';
     my $pins = $c->stash->{pins};
     FixMyStreet::Map::display_map(
         $c,

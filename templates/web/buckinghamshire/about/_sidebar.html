@@ -1,0 +1,14 @@
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li>[% INCLUDE link h='/faq' t=loc('Frequently Asked Questions') %]</li>
+            <li>[% INCLUDE link h='/about/privacy' t=loc('Privacy and cookies') %]</li>
+        </ul>
+    </aside>
+</div>
+
+[% BLOCK link -%]
+<[% IF c.req.uri.path == h %]strong[% ELSE %]a href="[% h %]"[% END %]>
+[%- t -%]
+</[% IF c.req.uri.path == h %]strong[% ELSE %]a[% END %]>
+[%- END %]

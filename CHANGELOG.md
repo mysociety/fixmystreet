@@ -1,16 +1,19 @@
 ## Releases
 
 * Unreleased
-    - New features
-        - Cobrand hook to allow extra login conditions #2092
     - Front end improvements:
         - Simplify footer CSS. #2107
         - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
         - Keep commas in geocode lookups.
         - Show message on reports closed to updates.
         - Only display last 6 months of reports on around page by default #2098
+        - Always show all reports by default on /my.
     - Admin improvements:
+        - Mandatory defect type selection if defect raised.
+        - Send login email button on user edit page #2041
+        - Use do-not-reply address for sent report email.
         - Category group can be edited.
+        - Trim spaces from user/report search input.
     - Bugfixes:
         - Don't remove automated fields when editing contacts #2163
         - Remove small border to left of Fixed banner. #2156
@@ -22,13 +25,15 @@
         - [UK] Store body ID on council/ward alerts. #2175
         - Show all fixed issues when staff user uses map page filter #2176
         - Allow any user who can see private checkbox to use it.
-    - Admin improvements:
-        - Mandatory defect type selection if defect raised.
-        - Send login email button on user edit page #2041
+        - Prevent dupliate category listing on /my.
+        - Hide password help field along with other similar. #2185
+        - Allow questionnaire link to be revisited in quick succession. #2123
+        - Update Google Maps directions link.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
     - Development improvements:
         - Cobrand hook for presenting custom search results. #2183
+        - Cobrand hook to allow extra login conditions #2092
 
 
 * v2.3.4 (7th June 2018)
