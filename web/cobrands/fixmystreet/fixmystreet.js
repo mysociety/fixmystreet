@@ -674,6 +674,18 @@ $.extend(fixmystreet.set_up, {
     if ( fixmystreet.page === 'new' ) {
       $('.report-a-problem-btn').toggle(false);
     }
+
+    $('.report-a-problem-btn').on('click', function(e){
+      var url = $(this).attr('href');
+      if ( url.indexOf('report/new') > -1 ) {
+        try {
+          e.preventDefault();
+          fixmystreet.display.begin_report( fixmystreet.map.getCenter() );
+        } catch (error) {
+          window.location = url;
+        }
+      }
+    });
   },
 
   map_controls: function() {
