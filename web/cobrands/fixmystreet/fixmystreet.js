@@ -667,6 +667,15 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  report_a_problem_btn: function() {
+    $(fixmystreet).on('maps:update_view', fixmystreet.update_report_a_problem_btn);
+
+    // Hide button on new report page.
+    if ( fixmystreet.page === 'new' ) {
+      $('.report-a-problem-btn').toggle(false);
+    }
+  },
+
   map_controls: function() {
     //add permalink on desktop, force hide on mobile
     //add links container (if its not there)
@@ -887,6 +896,33 @@ $.extend(fixmystreet.set_up, {
 
 });
 
+fixmystreet.update_report_a_problem_btn = function() {
+    var zoom = fixmystreet.map.getZoom();
+    var center = fixmystreet.map.getCenterWGS84();
+
+    var href = '/';
+    var visible = true;
+    var text = translation_strings.report_a_problem_btn.default;
+
+    if (fixmystreet.page === 'new') {
+        visible = false;
+
+    } else if (fixmystreet.page === 'report') {
+        text = translation_strings.report_a_problem_btn.another;
+        href = '/report/new?longitude=' + center.lon + '&latitude=' + center.lat;
+
+    } else if (fixmystreet.page === 'around' && zoom > 1) {
+        text = translation_strings.report_a_problem_btn.here;
+        href = '/report/new?longitude=' + center.lon + '&latitude=' + center.lat;
+
+    } else if (fixmystreet.page === 'reports' && zoom > 12) {
+        text = translation_strings.report_a_problem_btn.here;
+        href = '/report/new?longitude=' + center.lon + '&latitude=' + center.lat;
+    }
+
+    $('.report-a-problem-btn').attr('href', href).text(text).toggle(visible);
+};
+
 fixmystreet.update_councils_text = function(data) {
     var single_body_only = $('#single_body_only').val();
     if (single_body_only) {
@@ -1080,6 +1116,8 @@ fixmystreet.display = {
     }
 
     fixmystreet.page = 'new';
+
+    fixmystreet.update_report_a_problem_btn();
   },
 
   report: function(reportPageUrl, reportId, callback) {
@@ -1148,6 +1186,8 @@ fixmystreet.display = {
             fixmystreet.run(fixmystreet.set_up.moderation);
             fixmystreet.run(fixmystreet.set_up.response_templates);
 
+            fixmystreet.update_report_a_problem_btn();
+
             window.selected_problem_id = reportId;
             var marker = fixmystreet.maps.get_marker_by_id(reportId);
             if (fixmystreet.map.panTo && ($('html').hasClass('mobile') || !marker.onScreen())) {
@@ -1209,6 +1249,8 @@ fixmystreet.display = {
         }
         $('.big-hide-pins-link').show();
         fixmystreet.set_up.map_controls();
+
+        fixmystreet.update_report_a_problem_btn();
 
         window.selected_problem_id = undefined;
 
