@@ -91,9 +91,17 @@ sub lookup_site_code_config { {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    # Lincolnshire is a two-tier council, but only want to display
-    # county-level categories on their cobrand.
-    return $rs->search( { 'body.name' => "Lincolnshire County Council" } );
+    # Lincolnshire is a two-tier council, but don't want to display
+    # all district-level categories on their cobrand - just a couple.
+    return $rs->search( { -or => [
+        'body.name' => "Lincolnshire County Council",
+
+        # District categories:
+        'me.category' => { -in => [
+            'Street nameplates',
+            'Bench/cycle rack/litter bin/planter',
+        ] },
+    ] } );
 }
 
 sub map_type { 'Lincolnshire' }
