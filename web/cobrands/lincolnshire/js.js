@@ -106,7 +106,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "LCC_Drainage-GulliesOffletsManholes"
         }
     },
-    asset_category: "Blocked drainage item",
+    asset_category: "Blocked drain",
     asset_item: 'drain'
 }));
 
@@ -116,7 +116,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "ST_All_Structures"
         }
     },
-    asset_category: "Dyke/Ditch/Culvert defect",
+    asset_category: "Damaged dyke, ditch or culvert",
     asset_item: 'culvert',
     filter_key: 'Type',
     filter_value: [
@@ -157,9 +157,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         }
     },
     asset_category: [
-        "Damaged / missing cats eye",
-        "Damaged road edge",
-        "Give way / stop line fading or missing",
+        "Damaged/missing cats eye",
+        "Damaged road edge, encroaches less than 100mm",
+        "Damaged road edge, encroaches more than 100mm",
         "Loose chippings",
         "Manhole/drain cover on road/cycleway",
         "Obstruction on road/cycleway",
