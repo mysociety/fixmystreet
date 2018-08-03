@@ -79,7 +79,17 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_category: ["Blocked drains", "Faulty street light", 'Faulty street sign', 'Floral displays', 'Grass needs cutting', 'Obstructions (skips, A boards)', 'Overhanging vegetation from private land', 'Pavement defect', 'Public Tree related issue', "Road defect"],
     non_interactive: true,
     road: true,
-    body: 'TfL'
+    body: 'Bromley Council',
+    actions: {
+        found: function(layer, feature) {
+            if (!fixmystreet.assets.selectedFeature()) {
+                $('#single_body_only').val('TfL');
+            }
+        },
+        not_found: function(layer) {
+            $('#single_body_only').val('');
+        }
+    }
 }));
 
 var prow_stylemap = new OpenLayers.StyleMap({
