@@ -199,6 +199,36 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 
 }));
 
+var llpg_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillOpacity: 0,
+        strokeColor: "#000000",
+        strokeOpacity: 0.25,
+        strokeWidth: 2,
+        pointRadius: 10,
+
+        label: "${label}",
+        labelOutlineColor: "white",
+        labelOutlineWidth: 2,
+        fontSize: '11px',
+        fontWeight: 'bold'
+    })
+});
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "LLPG"
+        }
+    },
+    // LLPG is only to be shown when fully zoomed in
+    max_resolution: 0.5971642833948135,
+    stylemap: llpg_stylemap,
+    non_interactive: true,
+    always_visible: true
+}));
+
+
 var lincs_roadworks_org_id = '1070';
 fixmystreet.roadworks.display_message = function(feature) {
     var attr = feature.attributes,
