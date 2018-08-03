@@ -645,8 +645,15 @@ ul.error {
   }
 }
 
-#report-updates-data img {
+#report-updates-data {
+  img {
     float: $right;
+  }
+
+  // Avoid double margin between opening paragraph and label.
+  label {
+    margin-top: 0;
+  }
 }
 
 #report-share {
@@ -1736,6 +1743,16 @@ label .muted {
   font-weight: normal;
 }
 
+.form-hint {
+  color: #666;
+
+  // Reduce space between labels and their form-hints
+  label + &,
+  #front-main label + & {
+    margin-top: -0.5em;
+  }
+}
+
 .description_tips {
   @include clearfix;
 
@@ -1775,8 +1792,10 @@ label .muted {
   display: inline-block;
 }
 
-#problem_form > label:first-child {
-  margin-top: 0;
+#problem_form {
+  & > label:first-child {
+    margin-top: 0;
+  }
 }
 
 .extra-category-questions {
@@ -1813,6 +1832,7 @@ label .muted {
 
   #detailed_information_length {
     float: #{$right};
+    margin-top: 0.25em; // match the label next to it
     &.error {
       color: red;
     }
@@ -1926,6 +1946,9 @@ label .muted {
     font-family: $meta-font;
     label {
       margin:0;
+    }
+    .form-hint {
+      margin-bottom: 0.5em;
     }
     div {
       display:table;

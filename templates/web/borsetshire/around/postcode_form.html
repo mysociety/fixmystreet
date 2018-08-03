@@ -17,9 +17,10 @@
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
             <label for="pc">[% question %]:</label>
+            <p class="form-hint" id="pc-hint">[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]</p>
             <div>
                 <input type="hidden" name="pc" value="[% c.cobrand.problems.first.postcode | html %]">
-                <input type="text" name="_pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" required>
+                <input type="text" name="_pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" aria-describedby="pc-hint" required>
                 <input type="submit" value="[% loc('Go') %]" id="sub">
             </div>
 

@@ -10,8 +10,9 @@
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
             <label for="pc">[% question %]:</label>
+            <p class="form-hint" id="pc-hint">[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]</p>
             <div>
-                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" required>
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint">
                 <input type="submit" value="[% loc('Go') %]" id="sub">
             </div>
 

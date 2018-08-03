@@ -1,7 +1,8 @@
 [% DEFAULT form_title = loc('Summarise the problem') %]
+[% DEFAULT form_title_placeholder = loc('e.g. ‘10 inch pothole on Example St, near post box’') %]
 <label for="form_title">[% form_title %]</label>
+<p class="form-hint" id="title-hint">[% form_title_placeholder %]</p>
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>
 [% END %]
-[% DEFAULT form_title_placeholder = loc('10 inch pothole on Example St, near post box') %]
-<input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% form_title_placeholder %]" required>
+<input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" aria-describedby="title-hint" required>
