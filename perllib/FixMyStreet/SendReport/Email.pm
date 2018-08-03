@@ -57,7 +57,7 @@ sub send {
     my $self = shift;
     my ( $row, $h ) = @_;
 
-    my $recips = $self->build_recipient_list( $row, $h );
+    my $recips = @{$self->to} ? 1 : $self->build_recipient_list( $row, $h );
 
     # on a staging server send emails to ourselves rather than the bodies
     if (FixMyStreet->staging_flag('send_reports', 0) && !FixMyStreet->test_mode) {

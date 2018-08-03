@@ -89,21 +89,18 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
-# This provides a similar functionality to open311_config, but for email.
-sub munge_sendreport_params {
-    my ($self, $row, $vars, $hdrs) = @_;
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
 
+    # Check Open311 was successful
+    return unless $row->external_id;
+
+    # For Flytipping, send an email also
     return unless $row->category eq 'Flytipping';
 
-    # Reports made via FMS.com or the app probably won't have a site code
-    # value because we don't display the adopted highways layer on those
-    # frontends. Instead we'll look up the closest asset from the WFS
-    # service at the point we're sending the report by email.
-    my $site_code = $row->get_extra_field_value('site_code') || $self->lookup_site_code($row, 5);
-    if ($site_code) {
-        my $e = join('', 'crmbusinesssupport', '@', $self->admin_user_domain);
-        push @{$hdrs->{To}}, [ $e, 'TfB' ];
-    }
+    my $e = join('', 'illegaldumpingcosts', '@', $self->admin_user_domain);
+    my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, 'TfB' ] ] );
+    $sender->send($row, $h);
 }
 
 sub map_type { 'Buckinghamshire' }
@@ -334,7 +331,7 @@ sub categories_restriction {
     my ($self, $rs) = @_;
     # Buckinghamshire is a two-tier council, but only want to display
     # county-level categories on their cobrand.
-    return $rs->search( { 'body_areas.area_id' => 2217 }, { join => { body => 'body_areas' } });
+    return $rs->search( [ { 'body_areas.area_id' => 2217 }, { category => 'Flytipping' } ], { join => { body => 'body_areas' } });
 }
 
 sub lookup_site_code {

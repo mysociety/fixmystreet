@@ -94,6 +94,8 @@ sub send {
             $self->error( "Failed to send over Open311\n" ) unless $self->error;
             $self->error( $self->error . "\n" . $open311->error );
         }
+
+        $cobrand->call_hook(open311_post_send => $row, $h);
     }
 
 
