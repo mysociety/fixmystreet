@@ -138,6 +138,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         } else if (!fixmystreet.assets.selectedFeature()) {
             $('#single_body_only').val(this.fixmystreet.body);
         }
+        $(fixmystreet).trigger('assets:check_do_not_send');
     },
 
     road_not_found: function() {
@@ -146,6 +147,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         } else {
             $('#single_body_only').val('');
         }
+        $(fixmystreet).trigger('assets:check_do_not_send');
     },
 
     CLASS_NAME: 'OpenLayers.Layer.VectorNearest'

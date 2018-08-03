@@ -967,6 +967,13 @@ foreach my $test (
         extra_fields => { single_body_only => 'Invalid council' },
         email_count => 1,
     },
+    {
+        desc => "test do_not_send means body is ignored",
+        category => 'Street lighting',
+        councils => [ 2326 ],
+        extra_fields => { do_not_send => $body_ids{2226} },
+        email_count => 1,
+    },
 ) {
     subtest $test->{desc} => sub {
 

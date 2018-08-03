@@ -131,14 +131,14 @@ highways_style.addRules([rule_owned, rule_not_owned]);
 
 function show_responsibility_error(id) {
     hide_responsibility_errors();
-    $("#js-bucks-responsibility").removeClass("hidden");
-    $("#js-bucks-responsibility .js-responsibility-message").addClass("hidden");
+    $("#js-roads-responsibility").removeClass("hidden");
+    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
     $(id).removeClass("hidden");
 }
 
 function hide_responsibility_errors() {
-    $("#js-bucks-responsibility").addClass("hidden");
-    $("#js-bucks-responsibility .js-responsibility-message").addClass("hidden");
+    $("#js-roads-responsibility").addClass("hidden");
+    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
 }
 
 function disable_report_form() {
@@ -171,9 +171,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             } else if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
                 hide_responsibility_errors();
                 enable_report_form();
-            } else {
+            } else if (fixmystreet.is_only_body(layer.fixmystreet.body)) {
                 // User has clicked a road that Bucks don't maintain.
-                show_responsibility_error("#js-not-bucks-road");
+                show_responsibility_error("#js-not-council-road");
                 disable_report_form();
             }
         },
@@ -182,10 +182,16 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             // If a feature wasn't found at the location they've clicked, it's
             // probably a field or something. Show an error to that effect,
             // unless an asset is selected.
+            if (fixmystreet.do_not_send) {
+                fixmystreet.do_not_send[layer.fixmystreet.body] = 1;
+            }
             if (fixmystreet.assets.selectedFeature()) {
+                if (fixmystreet.do_not_send) {
+                    fixmystreet.do_not_send[layer.fixmystreet.body] = 0;
+                }
                 hide_responsibility_errors();
                 enable_report_form();
-            } else {
+            } else if (fixmystreet.is_only_body(layer.fixmystreet.body)){
                 show_responsibility_error("#js-not-a-road");
                 disable_report_form();
             }

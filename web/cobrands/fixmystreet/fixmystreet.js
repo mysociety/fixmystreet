@@ -410,6 +410,7 @@ $.extend(fixmystreet.set_up, {
                 $category_meta.empty();
             }
             fixmystreet.bodies = data.bodies || [];
+            fixmystreet.do_not_send = [];
             $(fixmystreet).trigger('report_new:category_change:extras_received');
         });
 
@@ -942,6 +943,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         }
 
         fixmystreet.bodies = data.bodies || [];
+        fixmystreet.do_not_send = [];
 
         // If the category filter appears on the map and the user has selected
         // something from it, then pre-fill the category field in the report,
@@ -984,6 +986,23 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         $('#map_sidebar').scrollTop(0);
     }
 
+};
+
+fixmystreet.is_only_body = function(body) {
+    body = body + "";
+    if (!fixmystreet.bodies) {
+        return false;
+    }
+
+    if (fixmystreet.bodies.length > 1 ) {
+        return false;
+    }
+
+    if (fixmystreet.bodies[0] == body) {
+        return true;
+    }
+
+    return false;
 };
 
 fixmystreet.display = {
