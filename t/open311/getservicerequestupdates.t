@@ -32,6 +32,12 @@ my $response_template = $bodies{2482}->response_templates->create({
     auto_response => 1,
     state => "investigating"
 });
+my $response_template_fixed = $bodies{2482}->response_templates->create({
+    title => "fixed template",
+    text => "We have fixed this report.",
+    auto_response => 1,
+    state => "fixed - council"
+});
 
 my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
 <service_requests_updates>
@@ -368,6 +374,19 @@ for my $test (
         mark_open => 0,
         problem_state => 'investigating',
         end_state => 'investigating',
+    },
+    {
+        desc => 'change in fixed state does not trigger auto-response template',
+        description => '',
+        xml_description => '',
+        external_id => 638344,
+        start_state => 'fixed - user',
+        comment_status => 'FIXED',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => undef,
+        end_state => 'fixed - user',
+        comment_state => 'hidden',
     },
     {
         desc => 'unchanging state does not trigger auto-response template',
@@ -898,6 +917,7 @@ foreach my $test ( {
     }
 }
 
+$response_template_fixed->delete;
 foreach my $test ( {
         desc => 'normally blank text produces a warning',
         num_alerts => 1,
