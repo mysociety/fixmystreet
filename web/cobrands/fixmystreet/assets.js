@@ -19,6 +19,9 @@ var fixmystreet = fixmystreet || {};
 OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
     initialize: function(name, options) {
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, arguments);
+        // Do in both locations so fixmystreet.bodies is up to date. Otherwise
+        // e.g. a layer can disappear the category change after it should.
+        $(fixmystreet).on('report_new:category_change:extras_received', this.update_layer_visibility.bind(this));
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
     },
 
