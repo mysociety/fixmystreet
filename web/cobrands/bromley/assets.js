@@ -16,7 +16,7 @@ var defaults = {
     },
     format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
     asset_type: 'spot',
-    max_resolution: 2.388657133579254,
+    max_resolution: 4.777314267158508,
     min_resolution: 0.5971642833948135,
     asset_id_field: 'CENTRAL_AS',
     geometryName: 'msGeometry',

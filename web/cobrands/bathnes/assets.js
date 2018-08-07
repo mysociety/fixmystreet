@@ -23,7 +23,7 @@ fixmystreet.maps.banes_defaults = {
     asset_category: "",
     asset_item: "asset",
     asset_type: 'spot',
-    max_resolution: 2.388657133579254,
+    max_resolution: 4.777314267158508,
     min_resolution: 0.5971642833948135,
     asset_id_field: 'feature_no',
     attributes: null,
