@@ -106,4 +106,12 @@ sub categories_restriction {
 
 sub map_type { 'Lincolnshire' }
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'red' if $p->state eq 'confirmed';
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
+    return 'yellow';
+}
+
 1;
