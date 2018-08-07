@@ -201,8 +201,10 @@ sub comment_text_for_request {
 
     return $request->{description} if $request->{description};
 
-    # Response templates are only triggered if the state/external status has changed
-    my $state_changed = $state ne $old_state;
+    # Response templates are only triggered if the state/external status has changed.
+    # And treat any fixed state as fixed.
+    my $state_changed = $state ne $old_state
+        && !( $problem->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} );
     my $ext_code_changed = $ext_code ne $old_ext_code;
     if ($state_changed || $ext_code_changed) {
         my $state_params = {

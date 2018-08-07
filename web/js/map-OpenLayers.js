@@ -27,6 +27,48 @@ $.extend(fixmystreet.utils, {
         return out.join(',');
     },
 
+    // https://stackoverflow.com/questions/1293147/javascript-code-to-parse-csv-data/1293163#1293163
+    csv_to_array: function( strData, strDelimiter ) {
+        strDelimiter = (strDelimiter || ",");
+
+        var objPattern = new RegExp(
+            (
+                "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+                "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+                "([^\"\\" + strDelimiter + "\\r\\n]*))"
+            ),
+            "gi"
+            );
+
+        var arrData = [[]];
+
+        var arrMatches = objPattern.exec( strData );
+        while (arrMatches) {
+
+            var strMatchedDelimiter = arrMatches[ 1 ];
+
+            if ( strMatchedDelimiter.length &&
+                strMatchedDelimiter !== strDelimiter) {
+                arrData.push( [] );
+            }
+
+            var strMatchedValue;
+            if (arrMatches[ 2 ]) {
+                strMatchedValue = arrMatches[ 2 ].replace(
+                    new RegExp( "\"\"", "g" ),
+                    "\""
+                );
+            } else {
+                strMatchedValue = arrMatches[ 3 ];
+            }
+
+            arrData[ arrData.length - 1 ].push( strMatchedValue );
+            arrMatches = objPattern.exec( strData );
+        }
+
+        return( arrData );
+    },
+
     parse_query_string: function() {
         var qs = {};
         if (!location.search) {
@@ -500,8 +542,8 @@ $.extend(fixmystreet.utils, {
                     renderers: ['SVGBig', 'VML', 'Canvas'],
                     strategies: [ new OpenLayers.Strategy.Fixed() ],
                     protocol: new OpenLayers.Protocol.HTTP({
-                        url: "/mapit/area/" + fixmystreet.area[i] + ".kml?simplify_tolerance=0.0001",
-                        format: new OpenLayers.Format.KML()
+                        url: "/mapit/area/" + fixmystreet.area[i] + ".geojson?simplify_tolerance=0.0001",
+                        format: new OpenLayers.Format.GeoJSON()
                     })
                 });
                 fixmystreet.map.addLayer(area);

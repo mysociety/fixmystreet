@@ -32,9 +32,11 @@
         - Update Google Maps directions link.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
+        - Don't generate template comment text on move between fixed states.
     - Development improvements:
         - Cobrand hook for presenting custom search results. #2183
         - Cobrand hook to allow extra login conditions #2092
+        - Add ability for client to set bodies not to be sent to.
 
 
 * v2.3.4 (7th June 2018)

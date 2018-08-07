@@ -25,6 +25,9 @@
 [% IF include_key -%]
     data-key='[% c.config.BING_MAPS_API_KEY %]'
 [%- END -%]
+[% IF list_of_names_as_string -%]
+    data-bodies='[% list_of_names_as_string | html %]'
+[%- END -%]
 >
 </div>
 <div id="map_box" aria-hidden="true">

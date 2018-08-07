@@ -329,7 +329,7 @@ sub categories_restriction {
     my ($self, $rs) = @_;
     # Buckinghamshire is a two-tier council, but only want to display
     # county-level categories on their cobrand.
-    return $rs->search( { 'body.id' => 2217 } );
+    return $rs->search( { 'body_areas.area_id' => 2217 }, { join => { body => 'body_areas' } });
 }
 
 sub lookup_site_code_config { {

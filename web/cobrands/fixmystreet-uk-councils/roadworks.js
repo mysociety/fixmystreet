@@ -137,6 +137,7 @@ var roadworks_defaults = {
     format_class: OpenLayers.Format.RoadworksForwardPlanning,
     strategy_class: OpenLayers.Strategy.FixMyStreet,
     stylemap: stylemap,
+    body: "", // Cobrand JS should extend and override this.
     non_interactive: true,
     always_visible: true
 };
