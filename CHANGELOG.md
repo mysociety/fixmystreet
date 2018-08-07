@@ -9,6 +9,7 @@
         - Always show all reports by default on /my.
         - Much less reliance on input placeholders, for better accessibility #2180
         - “Report another problem here” button on report confirmation page #2198
+        - Button in nav bar now makes it easier to report again in the same location #2195
     - Admin improvements:
         - Mandatory defect type selection if defect raised.
         - Send login email button on user edit page #2041
