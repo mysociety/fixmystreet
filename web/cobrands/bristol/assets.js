@@ -7,7 +7,10 @@ if (!fixmystreet.maps) {
 var options = {
     wfs_url: "https://maps.bristol.gov.uk/arcgis/services/ext/FixMyStreetSupportData/MapServer/WFSServer",
     wfs_feature: "COD_ASSETS_POINT",
-    max_resolution: 0.33072982812632296,
+    max_resolution: {
+        'bristol': 0.33072982812632296,
+        'fixmystreet': 4.777314267158508
+    },
     min_resolution: 0.00001,
     asset_id_field: 'COD_ASSET_ID',
     asset_type: 'spot',
@@ -17,6 +20,7 @@ var options = {
         usrn: 'COD_USRN'
     },
     body: "Bristol City Council",
+    srsName: "EPSG:27700",
     geometryName: 'SHAPE'
 };
 

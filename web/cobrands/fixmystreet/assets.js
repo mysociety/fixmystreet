@@ -491,12 +491,17 @@ fixmystreet.assets = {
             options.asset_category = [ options.asset_category ];
         }
 
+        var max_resolution = options.max_resolution;
+        if (typeof max_resolution === 'object') {
+            max_resolution = max_resolution[fixmystreet.cobrand];
+        }
+
         var layer_options = {
             fixmystreet: options,
             strategies: [new StrategyClass()],
             protocol: protocol,
             visibility: false,
-            maxResolution: options.max_resolution,
+            maxResolution: max_resolution,
             minResolution: options.min_resolution,
             styleMap: options.stylemap || get_asset_stylemap(),
             assets: true
