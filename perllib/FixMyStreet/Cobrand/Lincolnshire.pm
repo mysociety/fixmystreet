@@ -90,4 +90,14 @@ sub categories_restriction {
 
 sub map_type { 'Lincolnshire' }
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    my $ext_status = $p->get_extra_metadata('external_status_code');
+    return 'yellow' if $p->state eq 'confirmed' && $ext_status && $ext_status eq '0135';
+    return 'red' if $p->state eq 'confirmed';
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
+    return 'yellow';
+}
+
 1;
