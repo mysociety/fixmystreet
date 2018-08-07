@@ -155,11 +155,6 @@ sub open311_config {
     $params->{extended_description} = 'oxfordshire';
 }
 
-sub open311_pre_send {
-    my ($self, $row, $open311) = @_;
-    $open311->endpoints( { requests => 'open311_service_request.cgi' } );
-}
-
 sub on_map_default_status { return 'open'; }
 
 sub contact_email {

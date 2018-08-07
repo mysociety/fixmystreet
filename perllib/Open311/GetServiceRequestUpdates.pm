@@ -44,10 +44,6 @@ sub fetch {
             $endpoints->{update} = 'update.xml';
             $endpoints->{service_request_updates} = 'update.xml';
             $o->endpoints( $endpoints );
-        } elsif ( $body->areas->{$AREA_ID_OXFORDSHIRE} ) {
-            my $endpoints = $o->endpoints;
-            $endpoints->{service_request_updates} = 'open311_service_request_update.cgi';
-            $o->endpoints( $endpoints );
         }
 
         $self->suppress_alerts( $body->suppress_alerts );

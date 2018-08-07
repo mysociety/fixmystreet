@@ -49,9 +49,6 @@ test_overrides oxfordshire =>
         'open311' => noclass(superhashof({
             %standard_open311_parameters,
             'extended_description' => 'oxfordshire',
-            'endpoints' => {
-                'requests' => 'open311_service_request.cgi'
-            },
         })),
         problem_extra => bag(
             { name => 'northing', value => 100 },
