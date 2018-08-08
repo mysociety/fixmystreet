@@ -48,9 +48,6 @@ while ( my $body = $bodies->next ) {
 
     # XXX Cobrand specific - see also list in Problem->updates_sent_to_body
     if ($site eq 'fixmystreet.com') {
-        # Oxfordshire (OCC) is special:
-        # we do *receive* service_request_updates (aka comments) for OCC, but we never *send* them, so skip this pass
-        next if $body->areas->{+COUNCIL_ID_OXFORDSHIRE};
         # Lewisham does not yet accept updates
         next if $body->areas->{+COUNCIL_ID_LEWISHAM};
     }
@@ -83,6 +80,9 @@ while ( my $body = $bodies->next ) {
             use_extended_updates => $use_extended,
     );
 
+    if ( $body->areas->{+COUNCIL_ID_OXFORDSHIRE} ) {
+            $open311_conf{use_customer_reference} = 1,
+    }
 
     if ( $body->send_extended_statuses ) {
         $open311_conf{extended_statuses} = 1;
@@ -108,6 +108,13 @@ while ( my $body = $bodies->next ) {
                 $comment->set_extra_metadata(cobrand_skipped_sending => 1);
                 $comment->update;
             }
+            next;
+        }
+
+        # Oxfordshire stores the external id of the problem as a customer reference
+        # in metadata
+        if ($body->areas->{+COUNCIL_ID_OXFORDSHIRE} &&
+            !$comment->problem->get_extra_metadata('customer_reference') ) {
             next;
         }
 
