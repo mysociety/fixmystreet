@@ -1669,10 +1669,9 @@ subtest "unresponsive body handling works" => sub {
         # Test body-level send method
         my $old_send = $contact1->body->send_method;
         $contact1->body->update( { send_method => 'Refused' } );
-        $mech->get_ok('/report/new/ajax?latitude=55.952055&longitude=-3.189579'); # Edinburgh
         my $body_id = $contact1->body->id;
-        ok $mech->content_like( qr{Edinburgh.*accept reports.*/unresponsive\?body=$body_id} );
         my $extra_details = $mech->get_ok_json('/report/new/ajax?latitude=55.952055&longitude=-3.189579');
+        like $extra_details->{top_message}, qr{Edinburgh.*accept reports.*/unresponsive\?body=$body_id};
         is $extra_details->{unresponsive}, $body_id, "unresponsive json set";
         $extra_details = $mech->get_ok_json('/report/new/category_extras?category=Street%20lighting&latitude=55.952055&longitude=-3.189579');
         is $extra_details->{unresponsive}, $body_id, "unresponsive json set";
@@ -1749,8 +1748,8 @@ subtest "unresponsive body handling works" => sub {
         # And test per-category refusing
         my $old_email = $contact3->email;
         $contact3->update( { email => 'REFUSED' } );
-        $mech->get_ok('/report/new/category_extras?category=Trees&latitude=51.896268&longitude=-2.093063');
-        ok $mech->content_like( qr/Cheltenham.*Trees.*unresponsive.*category=Trees/ );
+        $extra_details = $mech->get_ok_json('/report/new/ajax?latitude=51.896268&longitude=-2.093063');
+        like $extra_details->{by_category}{$contact3->category}{category_extra}, qr/Cheltenham.*Trees.*unresponsive.*category=Trees/s;
         $extra_details = $mech->get_ok_json('/report/new/category_extras?category=Trees&latitude=51.896268&longitude=-2.093063');
         is $extra_details->{unresponsive}, $contact3->body->id, "unresponsive json set";
 

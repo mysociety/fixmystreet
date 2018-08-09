@@ -387,34 +387,42 @@ $.extend(fixmystreet.set_up, {
     // On the new report form, does this by asking for details from the server.
     // Delegation is necessary because #form_category may be replaced during the lifetime of the page
     $("#problem_form").on("change.category", "select#form_category", function(){
-        var args = {
-            category: $(this).val(),
-            latitude: $('input[name="latitude"]').val(),
-            longitude: $('input[name="longitude"]').val()
-        };
+	// If we haven't got any reporting data (e.g. came straight to
+	// /report/new), fetch it first. That will then automatically call this
+	// function again, due to it calling change() on the category if set.
+        if (!fixmystreet.reporting_data) {
+            fixmystreet.update_pin(fixmystreet.map.getCenter(), false);
+            return;
+        }
 
-        $.getJSON('/report/new/category_extras', args, function(data) {
-            var $category_meta = $('#category_meta');
+        var category = $(this).val(),
+            data = fixmystreet.reporting_data.by_category[category],
+            $category_meta = $('#category_meta');
+
+        fixmystreet.bodies = data.bodies || [];
+        if (fixmystreet.body_overrides) {
+            fixmystreet.body_overrides.clear();
+        }
+
+        if (data.councils_text) {
             fixmystreet.update_councils_text(data);
-            if ( data.category_extra ) {
-                if ( $category_meta.length ) {
-                    $category_meta.replaceWith( data.category_extra );
-                    // Preserve any existing values
-                    $category_meta.find("[name]").each(function() {
-                        $('#category_meta').find("[name="+this.name+"]").val(this.value);
-                    });
-                } else {
-                    $('#form_category_row').after( data.category_extra );
-                }
+        } else {
+            // Use the original returned texts
+            fixmystreet.update_councils_text(fixmystreet.reporting_data);
+        }
+        if ( data.category_extra ) {
+            if ( $category_meta.length ) {
+                $category_meta.replaceWith( data.category_extra );
+                // Preserve any existing values
+                $category_meta.find("[name]").each(function() {
+                    $category_meta.find("[name="+this.name+"]").val(this.value);
+                });
             } else {
-                $category_meta.empty();
+                $('#form_category_row').after( data.category_extra );
             }
-            fixmystreet.bodies = data.bodies || [];
-            if (fixmystreet.body_overrides) {
-                fixmystreet.body_overrides.clear();
-            }
-            $(fixmystreet).trigger('report_new:category_change:extras_received');
-        });
+        } else {
+            $category_meta.empty();
+        }
 
         $(fixmystreet).trigger('report_new:category_change', [ $(this) ]);
     });
@@ -940,8 +948,15 @@ fixmystreet.update_report_a_problem_btn = function() {
     $('.report-a-problem-btn').attr('href', href).text(text).toggle(visible);
 };
 
+fixmystreet.update_public_councils_text = function(text, bodies) {
+    bodies = bodies.join('</strong> ' + translation_strings.or + ' <strong>');
+    text = text.replace(/<strong>.*<\/strong>/, '<strong>' + bodies + '</strong>');
+    $('#js-councils_text').html(text);
+};
+
 fixmystreet.update_councils_text = function(data) {
-    $('#js-councils_text').html(data.councils_text);
+    fixmystreet.update_public_councils_text(
+        data.councils_text, fixmystreet.bodies);
     $('#js-councils_text_private').html(data.councils_text_private);
     $(fixmystreet).trigger('body_overrides:change');
 };
@@ -975,6 +990,9 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         }
         $('#side-form, #site-logo').show();
         var old_category = $("select#form_category").val();
+
+        fixmystreet.reporting_data = data;
+
         fixmystreet.update_councils_text(data);
         $('#js-top-message').html(data.top_message || '');
         $('#form_category_row').html(data.category);

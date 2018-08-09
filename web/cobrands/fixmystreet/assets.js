@@ -19,9 +19,7 @@ var fixmystreet = fixmystreet || {};
 OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
     initialize: function(name, options) {
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, arguments);
-        // Do in both locations so fixmystreet.bodies is up to date. Otherwise
-        // e.g. a layer can disappear the category change after it should.
-        $(fixmystreet).on('report_new:category_change:extras_received', this.update_layer_visibility.bind(this));
+        // Update layer based upon new data from category change
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
     },
 
@@ -74,9 +72,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
         $(fixmystreet).on('maps:update_pin', this.checkFeature.bind(this));
         $(fixmystreet).on('assets:selected', this.checkFeature.bind(this));
-        // Might only be able to fill in fields once they've been returned from the server
-        $(fixmystreet).on('report_new:category_change:extras_received', this.changeCategory.bind(this));
-        // But also want to do it immediately in case it's hiding the form or something
+        // Update fields/etc from data now available from category change
         $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
     },
 
@@ -332,6 +328,13 @@ function check_zoom_message_visibility() {
 }
 
 function layer_visibilitychanged() {
+    if (this.fixmystreet.road) {
+        if (!this.getVisibility()) {
+            this.road_not_found();
+        }
+        return;
+    }
+
     check_zoom_message_visibility.call(this);
     var layers = fixmystreet.map.getLayersBy('assets', true);
     var visible = 0;
@@ -624,7 +627,8 @@ fixmystreet.assets = {
                 }
             });
         }
-        if (!options.always_visible) {
+
+        if (!options.always_visible || options.road) {
             asset_layer.events.register( 'visibilitychanged', asset_layer, layer_visibilitychanged);
         }
 
@@ -804,22 +808,25 @@ return {
 })();
 
 $(fixmystreet).on('body_overrides:change', function() {
-    var councils_text = $('#js-councils_text').html();
+    var single_body_only = $('#single_body_only').val(),
+        do_not_send = $('#do_not_send').val(),
+        bodies = fixmystreet.bodies;
 
-    var single_body_only = $('#single_body_only').val();
     if (single_body_only) {
-        councils_text = councils_text.replace(/<strong>.*<\/strong>/, '<strong>' + single_body_only + '</strong>');
+        bodies = [ single_body_only ];
     }
 
-    var do_not_send = $('#do_not_send').val();
     if (do_not_send) {
         do_not_send = fixmystreet.utils.csv_to_array(do_not_send);
-        for (var i=0; i<do_not_send.length; i++) {
-            // XXX Translations
-            councils_text = councils_text.replace(new RegExp('or <strong>' + do_not_send[i] + '</strong>'), '');
-            councils_text = councils_text.replace(new RegExp('<strong>' + do_not_send[i] + '</strong> or '), '');
-        }
+        var lookup = {};
+        $.map(do_not_send, function(val) {
+            lookup[val] = 1;
+        });
+        bodies = OpenLayers.Array.filter(bodies, function(b) {
+            return !lookup[b];
+        });
     }
 
-    $('#js-councils_text').html(councils_text);
+    fixmystreet.update_public_councils_text(
+        $('#js-councils_text').html(), bodies);
 });

@@ -11,6 +11,7 @@
         - “Report another problem here” button on report confirmation page #2198
         - Button in nav bar now makes it easier to report again in the same location #2195
         - Shrink OpenLayers library a bit. #2217
+        - Remove need for separate per-category ajax call. #1201
     - Admin improvements:
         - Mandatory defect type selection if defect raised.
         - Send login email button on user edit page #2041
