@@ -783,7 +783,8 @@ sub ajax : Private {
 
     my @pins = map {
         my $p = $_;
-        [ $p->{latitude}, $p->{longitude}, $p->{colour}, $p->{id}, $p->{title} ]
+        # lat, lon, 'colour', ID, title, type/size, draggable
+        [ $p->{latitude}, $p->{longitude}, $p->{colour}, $p->{id}, $p->{title}, '', JSON->false ]
     } @{$c->stash->{pins}};
 
     my $list_html = $c->render_fragment($template);

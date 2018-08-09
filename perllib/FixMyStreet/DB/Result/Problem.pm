@@ -1017,6 +1017,7 @@ sub pin_data {
         id => $self->id,
         title => $title,
         problem => $self,
+        draggable => $opts{draggable},
         type => $opts{type},
     }
 };

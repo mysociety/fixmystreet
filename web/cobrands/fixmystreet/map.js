@@ -5,7 +5,8 @@ var fixmystreet = fixmystreet || {};
     var map_data = document.getElementById('js-map-data'),
         map_keys = [ 'area', 'latitude', 'longitude', 'zoomToBounds', 'zoom', 'pin_prefix', 'pin_new_report_colour', 'numZoomLevels', 'zoomOffset', 'map_type', 'key', 'bodies' ],
         numeric = { zoom: 1, numZoomLevels: 1, zoomOffset: 1, id: 1 },
-        pin_keys = [ 'lat', 'lon', 'colour', 'id', 'title', 'type' ];
+        bool = { draggable: 1 },
+        pin_keys = [ 'lat', 'lon', 'colour', 'id', 'title', 'type', 'draggable' ];
 
     if (!map_data) {
         return;
@@ -38,6 +39,9 @@ var fixmystreet = fixmystreet || {};
             var val = pin.getAttribute('data-' + key);
             if (numeric[key]) {
                 val = +val;
+            }
+            if (bool[key]) {
+                val = !!val;
             }
             arr.push(val);
         });

@@ -251,7 +251,7 @@ sub generate_map_tags : Private {
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
         pins      => $problem->used_map
-            ? [ $problem->pin_data($c, 'report', type => 'big') ]
+            ? [ $problem->pin_data($c, 'report', type => 'big', draggable => 1) ]
             : [],
     );
 

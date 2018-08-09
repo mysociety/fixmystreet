@@ -834,6 +834,7 @@ sub report_edit_display : Private {
             longitude => $problem->longitude,
             colour    => $c->cobrand->pin_colour($problem, 'admin'),
             type      => 'big',
+            draggable => 1,
           } ]
         : [],
         print_report => 1,

@@ -198,13 +198,14 @@ $.extend(fixmystreet.utils, {
             }
             var id = pin[3] === undefined ? pin[3] : +pin[3];
             var marker_size = (id === window.selected_problem_id) ? selected_size : size;
+            var draggable = (id === window.selected_problem_id) ? true : (pin[6] === false ? false : true);
             var marker = new OpenLayers.Feature.Vector(loc, {
                 colour: pin[2],
                 size: pin[5] || marker_size,
                 faded: 0,
                 id: id,
                 title: pin[4] || '',
-                draggable: pin[6] === false ? false : true
+                draggable: draggable
             });
             markers.push( marker );
         }
@@ -215,10 +216,13 @@ $.extend(fixmystreet.utils, {
         var size = fixmystreet.maps.marker_size();
         var selected_size = fixmystreet.maps.selected_marker_size();
         for (var i = 0; i < fixmystreet.markers.features.length; i++) {
-            if (fixmystreet.markers.features[i].attributes.id == window.selected_problem_id) {
-                fixmystreet.markers.features[i].attributes.size = selected_size;
+            var attr = fixmystreet.markers.features[i].attributes;
+            if (attr.id == window.selected_problem_id) {
+                attr.size = selected_size;
+                attr.draggable = true;
             } else {
-                fixmystreet.markers.features[i].attributes.size = size;
+                attr.size = size;
+                attr.draggable = false;
             }
         }
         fixmystreet.markers.redraw();
@@ -277,6 +281,8 @@ $.extend(fixmystreet.utils, {
                   }
               }
           } );
+          // Allow handled feature click propagation to other click handlers
+          drag.handlers.feature.stopClick = false;
           fixmystreet.map.addControl( drag );
           drag.activate();
       },

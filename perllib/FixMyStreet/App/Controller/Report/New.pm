@@ -1430,6 +1430,7 @@ sub generate_map : Private {
             pins      => [ {
                 latitude  => $latitude,
                 longitude => $longitude,
+                draggable => 1,
                 colour    => 'green', # 'yellow',
             } ],
         );
