@@ -57,7 +57,7 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
             }
         } else {
             var type = '';
-            if (z > 10 && in_uk) {
+            if (z > 11 && in_uk) {
                 type = '&productSet=mmOS&key=' + fixmystreet.key;
             }
             urls = [

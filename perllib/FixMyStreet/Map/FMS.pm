@@ -37,7 +37,7 @@ sub map_tiles {
     } else {
         my $key = FixMyStreet->config('BING_MAPS_API_KEY');
         my $url = "g=6570";
-        $url .= "&productSet=mmOS&key=$key" if $z > 10 && !$ni;
+        $url .= "&productSet=mmOS&key=$key" if $z > 11 && !$ni;
         return [
             "//ecn.t0.tiles.virtualearth.net/tiles/r" . $self->get_quadkey($x-1, $y-1, $z) . ".png?$url",
             "//ecn.t1.tiles.virtualearth.net/tiles/r" . $self->get_quadkey($x,   $y-1, $z) . ".png?$url",
