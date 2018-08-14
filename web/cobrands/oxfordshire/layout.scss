@@ -218,8 +218,13 @@ body.mappage {
 
   .nav-menu--main {
       margin-top: 0;
-      height: 40px;
-      padding: 19px 0 27px 0;
+      padding: 0;
+      height: (10 * 16px) - 70px - 4px - 1px; // $mappage-header-height minus .nav-wrapper top, minus .nav-wrapper borders
+      @include flex-align(center);
+
+      li {
+          padding-top: 0;
+      }
   }
 
   .wrapper .table-cell {
