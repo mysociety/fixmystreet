@@ -19,6 +19,14 @@ sub enable_category_groups { 1 }
 sub send_questionnaires { 0 }
 sub report_sent_confirmation_email { 1 }
 
+sub admin_user_domain { 'lincolnshire.gov.uk' }
+
+sub base_url {
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
+    return 'https://lincolnshire.fixmystreet.com';
+}
+
 sub example_places {
     return ( 'LN1 1YL', 'Orchard Street, Lincoln' );
 }
