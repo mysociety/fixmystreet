@@ -522,7 +522,11 @@ fixmystreet.assets = {
                         return OpenLayers.Util.indexOf(options.filter_value, f.attributes[options.filter_key]) != -1;
                     }
                 });
-                layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
+            } else if (typeof options.filter_value === 'function') {
+                layer_options.filter = new OpenLayers.Filter.FeatureId({
+                    type: OpenLayers.Filter.Function,
+                    evaluate: options.filter_value
+                });
             } else {
                 layer_options.filter = new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -530,6 +534,7 @@ fixmystreet.assets = {
                     value: options.filter_value
                 });
             }
+            layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
         }
 
         var layer_class = OpenLayers.Layer.VectorAsset;
