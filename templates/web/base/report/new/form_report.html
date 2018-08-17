@@ -49,13 +49,22 @@
 [% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
 
     [% DEFAULT form_detail_label = loc('Explain what’s wrong') %]
-    [% DEFAULT form_detail_placeholder = loc('e.g. ‘This pothole has been here for two months and…’') %]
     <label for="form_detail">[% form_detail_label %]</label>
+
+[%# You can prevent a hint being printed by setting form_detail_placeholder to a Falsey value %]
+[% IF NOT form_detail_placeholder.defined %]
+    [% SET form_detail_placeholder = loc('e.g. ‘This pothole has been here for two months and…’') %]
+[% END %]
+
+[% IF form_detail_placeholder %]
     <p class="form-hint" id="detail-hint">[% form_detail_placeholder %]</p>
+[% END %]
+
 [% IF field_errors.detail %]
     <p class='form-error'>[% field_errors.detail %]</p>
 [% END %]
-    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" aria-describedby="detail-hint" required>[% report.detail | html %]</textarea>
+
+    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" [% IF form_detail_placeholder %]aria-describedby="detail-hint"[% END %] required>[% report.detail | html %]</textarea>
 
 [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
 
