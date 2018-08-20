@@ -33,6 +33,11 @@ INCLUDE '_email_top.html';
     - <a href="[% admin_url %]">Admin</a>
   </p>
   [%~ END %]
+  [%~ IF user_agent %]
+  <p style="[% secondary_p_style %]">
+    User Agent: [% user_agent | html %]
+  </p>
+  [%~ END %]
 </th>
 
 [% INCLUDE '_email_bottom.html' %]

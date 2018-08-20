@@ -39,6 +39,7 @@
         - Cobrand hook for presenting custom search results. #2183
         - Cobrand hook to allow extra login conditions #2092
         - Add ability for client to set bodies not to be sent to.
+        - Include user agent in contact form emails. #2206
 
 
 * v2.3.4 (7th June 2018)
