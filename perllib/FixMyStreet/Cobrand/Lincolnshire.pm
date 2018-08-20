@@ -21,6 +21,12 @@ sub report_sent_confirmation_email { 1 }
 
 sub admin_user_domain { 'lincolnshire.gov.uk' }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a Lincolnshire postcode, street name and area, or check an existing report number';
+}
+
+
 sub base_url {
     my $self = shift;
     return $self->next::method() if FixMyStreet->config('STAGING_SITE');
