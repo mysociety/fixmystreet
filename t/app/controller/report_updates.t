@@ -1,3 +1,14 @@
+use strict;
+use warnings;
+
+package FixMyStreet::Cobrand::NoUpdates;
+
+use parent 'FixMyStreet::Cobrand::FixMyStreet';
+
+sub updates_disallowed { 1 }
+
+package main;
+
 use FixMyStreet::TestMech;
 use Web::Scraper;
 use Path::Class;
@@ -2148,6 +2159,22 @@ subtest 'check cannot answer other user\'s creator fixed questionnaire' => sub {
     is $mech->res->code, 400, "got 400";
 
     $mech->content_contains( "I'm afraid we couldn't locate your problem in the database." )
+};
+
+subtest 'updates can be provided' => sub {
+    $mech->log_out_ok();
+    $mech->get( "/report/$report_id" );
+    $mech->content_contains("Provide an update");
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ { 'noupdates' => '.' } ],
+}, sub {
+    subtest 'test cobrand updates_disallowed' => sub {
+        $mech->log_out_ok();
+        $mech->get( "/report/$report_id" );
+        $mech->content_lacks("Provide an update");
+    };
 };
 
 done_testing();

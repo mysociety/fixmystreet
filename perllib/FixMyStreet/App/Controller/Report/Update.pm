@@ -241,6 +241,7 @@ This makes sure we only proceed to processing if we've had the form submitted
 sub check_form_submitted : Private {
     my ( $self, $c ) = @_;
     return if $c->stash->{problem}->get_extra_metadata('closed_updates');
+    return if $c->cobrand->call_hook(updates_disallowed => $c->stash->{problem});
     return $c->get_param('submit_update') || '';
 }
 
