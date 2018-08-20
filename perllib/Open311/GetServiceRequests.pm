@@ -158,7 +158,7 @@ sub create_problems {
                 {
                     user => $self->system_user,
                     external_id => $request_id,
-                    detail => $request->{description},
+                    detail => $request->{description} || $request->{service_name} . ' problem',
                     title => $request->{title} || $request->{service_name} . ' problem',
                     anonymous => 0,
                     name => $self->system_user->name,

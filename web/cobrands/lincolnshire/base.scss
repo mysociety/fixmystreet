@@ -1,0 +1,170 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+
+body,
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', 'Arial', sans-serif;
+
+}
+
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+a {
+  color: $lincs-link;
+
+  &:visited {
+    color: $lincs-link-visited;
+  }
+  
+  &:hover,
+  &:active,
+  &:focus {
+    color: $lincs-link-hover;
+  }
+}
+
+#site-header {
+  background-color: $primary;
+  border-top: 0;
+}
+
+#site-logo {
+  height: 64px;
+  width: 163px;
+  background-size: 162.5px 55.5px;
+  background-image: url(/cobrands/lincolnshire/images/site-logo.png);
+  background-image: url(/cobrands/lincolnshire/images/site-logo.svg),none;
+  
+  
+}
+
+.body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+  #site-logo {
+    @media (min-width: 48em) {
+      height: 100px;
+      width: 249px;
+      background-size: 249px 81px;
+      margin-left: 1em;
+    }
+  }
+}
+
+#report-cta {
+  border: 0;
+  background-color: #fff;
+  font-weight: bold;
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: mix($primary, #fff, 30%);
+  }
+}
+
+#front-main #postcodeForm div input#sub {
+  background-color: $lincs-pop;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  font-weight: bold;
+}
+
+#front-howto #front_stats {
+  font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+.nav-menu--main {
+  @media (min-width: 48em) {
+    margin-left: -1em;
+  }
+}
+
+.btn-primary,
+.green-btn {
+  background: none; // remove gradient bg
+  background-color: $primary;
+  border-color: $primary;
+  &:hover,
+  &:active,
+  &:focus {
+    background: none; // remove gradient bg
+    border-color: darken($primary, 10%);
+    background-color: darken($primary, 10%);
+  }
+}
+
+.form-box, 
+.alerts__cta-box {
+  background-color: $lincs-panel;
+}
+
+.description_tips .do {
+  color: $lincs-pine;
+}
+
+.description_tips .dont {
+  color: $lincs-plum;
+}
+
+input.form-error, 
+textarea.form-error {
+  border-color: $lincs-plum;
+}
+
+div.form-error, 
+p.form-error {
+  background-color: $lincs-plum;
+}
+
+body.mappage .big-green-banner {
+  background-color: $lincs-pop;
+}
+
+#front-main {
+  h2 {
+    font-family: 'Roboto', 'Arial', sans-serif;
+    font-weight: normal;
+  }
+
+  #postcodeForm div {
+    border-color: $lincs-border;
+    input#sub {
+      background-color: $lincs-link;
+    }
+  }
+}
+
+
+#front-main-container {
+  border-bottom: solid 5px $lincs-pop;
+  padding: 2em 0 3em;
+}
+
+.js-roadworks-message dd:last-child {
+  margin-bottom: 0;
+}
+
+// Certain categories have linear assets so hide the spot marker in the guidance
+#category_meta_message_Missingsafetyfence, #category_meta_message_Roadsidesafetybarrier {
+  .asset-spot:before {
+    display: none;
+  }
+}
+
+// admin
+
+.fms-admin-info {
+  background-color: $lincs-success;
+  border-color: darken($lincs-success, 10%);
+}
+
+.fms-admin-warning {
+  background-color: $lincs-error; 
+  border-color: darken($lincs-error, 10%);
+}
+
+.admin-hint {
+  background-color: $lincs-link-focus;
+}

@@ -308,7 +308,7 @@ function check_zoom_message_visibility() {
         }
 
         if (this.getVisibility() && this.inRange) {
-            if (this.fixmystreet.asset_item_message) {
+            if (typeof this.fixmystreet.asset_item_message !== 'undefined') {
                 $p.html(this.fixmystreet.asset_item_message);
             } else {
                 $p.html('You can pick a <b class="asset-' + this.fixmystreet.asset_type + '">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
@@ -522,14 +522,20 @@ fixmystreet.assets = {
                         return OpenLayers.Util.indexOf(options.filter_value, f.attributes[options.filter_key]) != -1;
                     }
                 });
-                layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
+            } else if (typeof options.filter_value === 'function') {
+                layer_options.filter = new OpenLayers.Filter.FeatureId({
+                    type: OpenLayers.Filter.Function,
+                    evaluate: options.filter_value
+                });
             } else {
                 layer_options.filter = new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO,
                     property: options.filter_key,
                     value: options.filter_value
                 });
+                layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
             }
+            layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
         }
 
         var layer_class = OpenLayers.Layer.VectorAsset;

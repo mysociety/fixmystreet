@@ -1,4 +1,4 @@
-[% INCLUDE 'header.html', title = loc('Confirmation') %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation') %]
 
 <form method="post" action="/questionnaire/submit" id="questionnaire">
 <input type="hidden" name="problem" value="[% problem_id | html %]">

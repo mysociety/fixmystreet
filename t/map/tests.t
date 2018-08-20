@@ -8,6 +8,7 @@ my $requires = {
     'Bristol' => 'bristol/assets.js',
     'Bromley' => 'bromley/assets.js',
     'Buckinghamshire' => 'buckinghamshire/assets.js',
+    'Lincolnshire' => 'lincolnshire/assets.js',
     'FMS' => 'map-fms.js',
     'Google' => 'map-google.js',
     'GoogleOL' => 'map-google-ol.js',
