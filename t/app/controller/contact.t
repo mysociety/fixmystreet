@@ -309,7 +309,7 @@ for my $test (
         is $email->header('From'), "\"$test->{fields}->{name}\" <$test->{fields}->{em}>", 'from';
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/$test->{fields}->{message}/, 'body';
-        like $body, qr/Sent by contact.cgi on \S+. IP address (?:\d{1,3}\.){3,}\d{1,3}/, 'body footer';
+        like $body, qr/Sent by contact form on \S+.\s+IP address (?:\d{1,3}\.){3,}\d{1,3}, user agent ./, 'body footer';
         my $problem_id = $test->{fields}{id};
         like $body, qr/Complaint about report $problem_id/, 'reporting a report'
             if $test->{fields}{id};

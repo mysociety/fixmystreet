@@ -262,6 +262,7 @@ sub send_email : Private {
     my $from = [ $c->stash->{em}, $c->stash->{form_name} ];
     my $params = {
         to => [ [ $recipient, _($recipient_name) ] ],
+        user_agent => $c->req->user_agent,
     };
     if (FixMyStreet::Email::test_dmarc($c->stash->{em})) {
         $params->{'Reply-To'} = [ $from ];
