@@ -22,8 +22,8 @@ sub tile_parameters {
     my $self = shift;
     my $params = {
         urls            => [
-          'http://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
-          'http://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
+          'https://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
+          'https://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
         ],
         layer_names     => [ 'LuftbildHybrid', 'Stadtplan3D' ],
         wmts_version    => '1.0.0',
