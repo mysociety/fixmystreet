@@ -42,6 +42,7 @@ sub moderate : Chained('/') : PathPart('moderate') : CaptureArgs(0) { }
 sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
     my $problem = $c->model('DB::Problem')->find($id);
+    $c->detach unless $problem;
 
     my $cobrand_base = $c->cobrand->base_url_for_report( $problem );
     my $report_uri = $cobrand_base . $problem->url;
@@ -49,9 +50,8 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
     $c->stash->{report_uri} = $report_uri;
     $c->res->redirect( $report_uri ); # this will be the final endpoint after all processing...
 
-    # ... and immediately, if the user isn't authorized
+    # ... and immediately, if the user isn't logged in
     $c->detach unless $c->user_exists;
-    $c->detach unless $c->user->can_moderate($problem);
 
     $c->forward('/auth/check_csrf_token');
 
@@ -68,6 +68,9 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
 
 sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
+
+    # Make sure user can moderate this report
+    $c->detach unless $c->user->can_moderate($c->stash->{problem});
 
     $c->forward('report_moderate_hide');
 
@@ -208,6 +211,9 @@ sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
     my $comment = $c->stash->{problem}->comments->find($id);
 
+    # Make sure user can moderate this update
+    $c->detach unless $comment && $c->user->can_moderate($comment);
+
     my $original = $comment->find_or_new_related( moderation_original_data => {
         detail => $comment->text,
         photo => $comment->photo,
@@ -261,13 +267,6 @@ sub update_moderate_hide : Private {
         $c->detach( 'update_moderate_audit', ['hide'] ); # break chain here.
     }
     return;
-}
-
-sub return_text : Private {
-    my ($self, $c, $text) = @_;
-
-    $c->res->content_type('text/plain; charset=utf-8');
-    $c->res->body( $text // '' );
 }
 
 __PACKAGE__->meta->make_immutable;
