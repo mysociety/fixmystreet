@@ -15,7 +15,7 @@
                     <label><input type="checkbox" name="update_show_name" [% update.anonymous ? '' : 'checked' %]>
                     [% loc('Show name publicly?') %]</label>
                     [% IF update.photo or original_update.photo %]
-                        <label><input type="checkbox" name="update_show_photo" [% update.photo ? 'checked' : '' %]>
+                        <label><input type="checkbox" name="update_photo" [% update.photo ? 'checked' : '' %]>
                         [% loc('Show Photo?') %]</label>
                     [% END %]
                 </div>
@@ -34,10 +34,10 @@
                     [% IF permissions.moderate %]
                     <div class="moderate-edit">
                         [% IF update.text != original.detail %]
-                        <label><input type="checkbox" name="update_revert_detail" class="revert-textarea">
+                        <label><input type="checkbox" name="update_revert_text" class="revert-textarea">
                         [% loc('Revert to original') %]</label>
                         [% END %]
-                        <textarea class="form-control" name="update_detail">[% update.text | add_links %]</textarea>
+                        <textarea class="form-control" name="update_text">[% update.text | add_links %]</textarea>
                     </div>
                     [% END %]
 

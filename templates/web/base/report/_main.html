@@ -75,7 +75,7 @@
     [% IF problem.photo or original.photo %]
         <p class="moderate-edit">
             <label>
-                <input type="checkbox" name="problem_show_photo" [% problem.photo ? 'checked' : '' %]>
+                <input type="checkbox" name="problem_photo" [% problem.photo ? 'checked' : '' %]>
                 [% loc('Show photo') %]
             </label>
         </p>

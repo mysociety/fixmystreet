@@ -72,10 +72,10 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     $c->forward('report_moderate_hide');
 
     my @types = grep $_,
-        $c->forward('report_moderate_title'),
-        $c->forward('report_moderate_detail'),
-        $c->forward('report_moderate_anon'),
-        $c->forward('report_moderate_photo');
+        $c->forward('moderate_text', [ 'title' ]),
+        $c->forward('moderate_text', [ 'detail' ]),
+        $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
+        $c->forward('moderate_boolean', [ 'photo' ]);
 
     $c->detach( 'report_moderate_audit', \@types )
 }
@@ -135,82 +135,71 @@ sub report_moderate_hide : Private {
     }
 }
 
-sub report_moderate_title : Private {
-    my ( $self, $c ) = @_;
+sub moderate_text : Private {
+    my ($self, $c, $thing) = @_;
 
-    my $problem = $c->stash->{problem} or die;
-    my $original = $c->stash->{problem_original};
+    my ($object, $original, $param);
+    my $thing_for_original_table = $thing;
+    if (my $comment = $c->stash->{comment}) {
+        $object = $comment;
+        $original = $c->stash->{comment_original};
+        $param = 'update_';
+        # Update 'text' field is stored in original table's 'detail' field
+        $thing_for_original_table = 'detail' if $thing eq 'text';
+    } else {
+        $object = $c->stash->{problem};
+        $original = $c->stash->{problem_original};
+        $param = 'problem_';
+    }
 
-    my $old_title = $problem->title;
-    my $original_title = $original->title;
+    my $old = $object->$thing;
+    my $original_thing = $original->$thing_for_original_table;
 
-    my $title = $c->get_param('problem_revert_title') ?
-        $original_title
-        : $c->get_param('problem_title');
+    my $new = $c->get_param($param . 'revert_' . $thing) ?
+        $original_thing
+        : $c->get_param($param . $thing);
 
-    if ($title ne $old_title) {
+    if ($new ne $old) {
         $original->insert unless $original->in_storage;
-        $problem->update({ title => $title });
-        return 'title';
+        $object->update({ $thing => $new });
+        return $thing_for_original_table;
     }
 
     return;
 }
 
-sub report_moderate_detail : Private {
-    my ( $self, $c ) = @_;
+sub moderate_boolean : Private {
+    my ( $self, $c, $thing, $reverse ) = @_;
 
-    my $problem = $c->stash->{problem} or die;
-    my $original = $c->stash->{problem_original};
-
-    my $old_detail = $problem->detail;
-    my $original_detail = $original->detail;
-    my $detail = $c->get_param('problem_revert_detail') ?
-        $original_detail
-        : $c->get_param('problem_detail');
-
-    if ($detail ne $old_detail) {
-        $original->insert unless $original->in_storage;
-        $problem->update({ detail => $detail });
-        return 'detail';
+    my ($object, $original, $param);
+    if (my $comment = $c->stash->{comment}) {
+        $object = $comment;
+        $original = $c->stash->{comment_original};
+        $param = 'update_';
+    } else {
+        $object = $c->stash->{problem};
+        $original = $c->stash->{problem_original};
+        $param = 'problem_';
     }
-    return;
-}
 
-sub report_moderate_anon : Private {
-    my ( $self, $c ) = @_;
+    return if $thing eq 'photo' && !$original->photo;
 
-    my $problem = $c->stash->{problem} or die;
-    my $original = $c->stash->{problem_original};
-
-    my $show_user = $c->get_param('problem_show_name') ? 1 : 0;
-    my $anonymous = $show_user ? 0 : 1;
-    my $old_anonymous = $problem->anonymous ? 1 : 0;
-
-    if ($anonymous != $old_anonymous) {
-
-        $original->insert unless $original->in_storage;
-        $problem->update({ anonymous => $anonymous });
-        return 'anonymous';
+    my $new;
+    if ($reverse) {
+        $new = $c->get_param($param . $reverse) ? 0 : 1;
+    } else {
+        $new = $c->get_param($param . $thing) ? 1 : 0;
     }
-    return;
-}
+    my $old = $object->$thing ? 1 : 0;
 
-sub report_moderate_photo : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem = $c->stash->{problem} or die;
-    my $original = $c->stash->{problem_original};
-
-    return unless $original->photo;
-
-    my $show_photo = $c->get_param('problem_show_photo') ? 1 : 0;
-    my $old_show_photo = $problem->photo ? 1 : 0;
-
-    if ($show_photo != $old_show_photo) {
+    if ($new != $old) {
         $original->insert unless $original->in_storage;
-        $problem->update({ photo => $show_photo ? $original->photo : undef });
-        return 'photo';
+        if ($thing eq 'photo') {
+            $object->update({ $thing => $new ? $original->photo : undef });
+        } else {
+            $object->update({ $thing => $new });
+        }
+        return $thing;
     }
     return;
 }
@@ -234,9 +223,9 @@ sub moderate_update : Chained('update') : PathPart('') : Args(0) {
     $c->forward('update_moderate_hide');
 
     my @types = grep $_,
-        $c->forward('update_moderate_detail'),
-        $c->forward('update_moderate_anon'),
-        $c->forward('update_moderate_photo');
+        $c->forward('moderate_text', [ 'text' ]),
+        $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
+        $c->forward('moderate_boolean', [ 'photo' ]);
 
     $c->detach( 'update_moderate_audit', \@types )
 }
@@ -272,65 +261,6 @@ sub update_moderate_hide : Private {
         $c->detach( 'update_moderate_audit', ['hide'] ); # break chain here.
     }
     return;
-}
-
-sub update_moderate_detail : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem = $c->stash->{problem} or die;
-    my $comment = $c->stash->{comment} or die;
-    my $original = $c->stash->{comment_original};
-
-    my $old_detail = $comment->text;
-    my $original_detail = $original->detail;
-    my $detail = $c->get_param('update_revert_detail') ?
-        $original_detail
-        : $c->get_param('update_detail');
-
-    if ($detail ne $old_detail) {
-        $original->insert unless $original->in_storage;
-        $comment->update({ text => $detail });
-        return 'detail';
-    }
-    return;
-}
-
-sub update_moderate_anon : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem = $c->stash->{problem} or die;
-    my $comment = $c->stash->{comment} or die;
-    my $original = $c->stash->{comment_original};
-
-    my $show_user = $c->get_param('update_show_name') ? 1 : 0;
-    my $anonymous = $show_user ? 0 : 1;
-    my $old_anonymous = $comment->anonymous ? 1 : 0;
-
-    if ($anonymous != $old_anonymous) {
-        $original->insert unless $original->in_storage;
-        $comment->update({ anonymous => $anonymous });
-        return 'anonymous';
-    }
-    return;
-}
-
-sub update_moderate_photo : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem = $c->stash->{problem} or die;
-    my $comment = $c->stash->{comment} or die;
-    my $original = $c->stash->{comment_original};
-
-    return unless $original->photo;
-
-    my $show_photo = $c->get_param('update_show_photo') ? 1 : 0;
-    my $old_show_photo = $comment->photo ? 1 : 0;
-
-    if ($show_photo != $old_show_photo) {
-        $original->insert unless $original->in_storage;
-        $comment->update({ photo => $show_photo ? $original->photo : undef });
-        return 'photo';
-    }
 }
 
 sub return_text : Private {
