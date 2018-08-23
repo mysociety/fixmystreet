@@ -1,0 +1,14 @@
+Compiling OpenLayers
+====================
+
+Use the master branch of the https://github.com/mysociety/ol2 repository (which
+is currently one commit ahead of the final OpenLayers commit to work around a
+Content-Security-Policy issue).
+
+Put a copy of the Closure Compiler JAR file in tools/closure-compiler.jar – 
+currently using the v20160713 version, a more recent version (not sure exactly
+when) does fail to compile.
+
+Then the following should work:
+    python build.py -c closure path/to/file.cfg path/to/OpenLayers.file.js
+
