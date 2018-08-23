@@ -234,7 +234,9 @@ function asset_selected(e) {
     // its own USRN which should take precedence.
     $(fixmystreet).trigger('assets:selected', [ lonlat ]);
 
-    set_fields_from_attributes(this.fixmystreet.attributes, feature);
+    if (this.fixmystreet.attributes) {
+        set_fields_from_attributes(this.fixmystreet.attributes, feature);
+    }
 
     // Hide the normal markers layer to keep things simple, but
     // move the green marker to the point of the click to stop
@@ -253,7 +255,9 @@ function asset_selected(e) {
 function asset_unselected(e) {
     fixmystreet.markers.setVisibility(true);
     selected_feature = null;
-    clear_fields_for_attributes(this.fixmystreet.attributes);
+    if (this.fixmystreet.attributes) {
+        clear_fields_for_attributes(this.fixmystreet.attributes);
+    }
 }
 
 function set_fields_from_attributes(attributes, feature) {
@@ -579,14 +583,18 @@ fixmystreet.assets = {
                 // details form fields first though.
                 asset_layer.events.register( 'beforefeatureselected', asset_layer, function(e) {
                     var attributes = this.fixmystreet.attributes;
-                    set_fields_from_attributes(attributes, e.feature);
+                    if (attributes) {
+                        set_fields_from_attributes(attributes, e.feature);
+                    }
 
                     // The next click on the map may not be on an asset - so
                     // clear the fields for this layer when the pin is next
                     // updated. If it is on an asset then the fields will be
                     // set by whatever feature was selected.
                     $(fixmystreet).one('maps:update_pin', function() {
-                        clear_fields_for_attributes(attributes);
+                        if (attributes) {
+                            clear_fields_for_attributes(attributes);
+                        }
                     });
                     return false;
                 });
