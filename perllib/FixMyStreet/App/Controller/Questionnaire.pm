@@ -65,15 +65,8 @@ sub submit : Path('submit') {
     my ( $self, $c ) = @_;
 
     if (my $token = $c->get_param('token')) {
-        if ($token eq '_test_') {
-            $c->stash->{been_fixed} = $c->get_param('been_fixed');
-            $c->stash->{new_state} = $c->get_param('new_state');
-            $c->stash->{template} = 'questionnaire/completed.html';
-            return;
-        }
         $c->forward('submit_standard');
     } elsif (my $p = $c->get_param('problem')) {
-        $c->detach('creator_fixed') if $p eq '_test_';
         $c->forward('submit_creator_fixed');
     } else {
         $c->detach( '/page_error_404_not_found' );
