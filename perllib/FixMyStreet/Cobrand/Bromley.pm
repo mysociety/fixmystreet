@@ -131,6 +131,7 @@ sub open311_config {
     my $title = $row->title;
 
     foreach (@$extra) {
+        next unless $_->{value};
         $title .= ' | ID: ' . $_->{value} if $_->{name} eq 'feature_id';
         $title .= ' | PROW ID: ' . $_->{value} if $_->{name} eq 'prow_reference';
     }
