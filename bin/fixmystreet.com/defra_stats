@@ -1,0 +1,69 @@
+#!/usr/bin/env perl
+#
+# this script generates litter stats for defra
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet;
+use FixMyStreet::DB;
+use Utils;
+use Text::CSV;
+
+# list of categories pulled from FMS Aug 2018
+my @categories = (
+    'Accumulated Litter', 'Damage Public Litter Bin', 'Dog and litter bins', 'Dog Bin',
+    'Dog Bin overflow', 'Dog bin overflowing', 'Dog fouling', 'Dog Fouling', 'Dog Mess',
+    'Dogs and Dogs Fouling', 'Dog Waste Bin', 'Dog Waste Bin on a verge or open space',
+    'Dumped cylinder', 'Dumped rubbish', 'Flytipping', 'Fly tipping', 'Fly-tipping',
+    'Fly Tipping', 'Fly-Tipping', 'Flytipping and dumped rubbish',
+    'Fly Tipping on a public right of way', 'Fly Tipping on a road, footway, verge or open space',
+    'Litter', 'Litter bin', 'Litter Bin', 'Litter Bin on a verge or open space',
+    'Litter Bin overflow', 'Litter Bin Overflowing', 'Litter in the street',
+    'Overflowing litter bin', 'Overflowing Street Litter Bin', 'Rubbish or fly tipping on the roads',
+);
+
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'file=s', "Filename to output results to", { required => 1 } ],
+    [ 'start_date=s', "Start date for stats, defaults to 6 months ago" ],
+    [ 'end_date=s', "End date for stats, defaults today" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+my $now = DateTime->now();
+my $start_date = $opt->start_date || $now->clone->add(months => -6)->strftime('%Y-%m-%d');
+my $end_date = $opt->end_date || $now->clone->strftime('%Y-%m-%d');
+
+my $fh;
+open($fh, '>', $opt->file) or die $!;
+
+my @rows;
+my $csv = Text::CSV->new({ eol => $/ });
+$csv->print( $fh, [ qw(Latitude Longitude Easting Northing Date Category) ] );
+
+my $problems = FixMyStreet::DB->resultset('Problem')->search( {
+        category => \@categories,
+        confirmed => { '>=' => $start_date, '<=' => $end_date }
+    }
+);
+
+while (my $p = $problems->next) {
+    my ( $easting, $northing ) = Utils::convert_latlon_to_en(
+        $p->latitude,
+        $p->longitude
+    );
+
+    $csv->print($fh, [ $p->latitude, $p->longitude, $easting, $northing, $p->confirmed, $p->category ] );
+}
