@@ -29,6 +29,8 @@ sub base_url {
 
 sub map_type { 'BathNES' }
 
+sub on_map_default_status { 'open' }
+
 sub example_places {
     return ( 'BA1 1JQ', "Lansdown Grove" );
 }
