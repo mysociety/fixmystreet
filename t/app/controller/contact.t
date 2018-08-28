@@ -305,7 +305,7 @@ for my $test (
 
         my $email = $mech->get_email;
 
-        is $email->header('Subject'), 'FMS message: ' .  $test->{fields}->{subject}, 'subject';
+        is $email->header('Subject'), 'FixMyStreet message: ' .  $test->{fields}->{subject}, 'subject';
         is $email->header('From'), "\"$test->{fields}->{name}\" <$test->{fields}->{em}>", 'from';
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/$test->{fields}->{message}/, 'body';

@@ -1,4 +1,4 @@
-Subject: FMS message: [% subject %]
+Subject: [% site_name %] message: [% subject %]
 
 [% message %]
 

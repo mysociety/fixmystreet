@@ -43,6 +43,7 @@
         - Add ability for client to set bodies not to be sent to.
         - Make it easier to prevent a form_detail_placeholder being printed.
         - Include user agent in contact form emails. #2206
+        - Use site name in contact email subject line.
 
 
 * v2.3.4 (7th June 2018)
