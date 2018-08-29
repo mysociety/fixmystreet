@@ -31,29 +31,6 @@ Show the summary page of all reports.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # Zurich goes straight to map page, with all reports
-    if ( $c->cobrand->moniker eq 'zurich' ) {
-        $c->stash->{page} = 'reports';
-        $c->forward( 'stash_report_filter_status' );
-        $c->forward( 'load_and_group_problems' );
-        $c->stash->{body} = { id => 0 }; # So template can fetch the list
-
-        if ($c->get_param('ajax')) {
-            $c->detach('ajax', [ 'reports/_problem-list.html' ]);
-        }
-
-        my $pins = $c->stash->{pins};
-        FixMyStreet::Map::display_map(
-            $c,
-            latitude  => @$pins ? $pins->[0]{latitude} : 0,
-            longitude => @$pins ? $pins->[0]{longitude} : 0,
-            area      => 274456,
-            pins      => $pins,
-            any_zoom  => 1,
-        );
-        return 1;
-    }
-
     if ( $c->cobrand->call_hook('report_page_data') ) {
         return 1;
     }

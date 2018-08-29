@@ -316,6 +316,31 @@ sub get_or_check_overdue {
     return $self->overdue($problem);
 }
 
+sub report_page_data {
+    my $self = shift;
+    my $c = $self->{c};
+
+    $c->stash->{page} = 'reports';
+    $c->forward( 'stash_report_filter_status' );
+    $c->forward( 'load_and_group_problems' );
+    $c->stash->{body} = { id => 0 }; # So template can fetch the list
+
+    if ($c->get_param('ajax')) {
+        $c->detach('ajax', [ 'reports/_problem-list.html' ]);
+    }
+
+    my $pins = $c->stash->{pins};
+    FixMyStreet::Map::display_map(
+        $c,
+        latitude  => @$pins ? $pins->[0]{latitude} : 0,
+        longitude => @$pins ? $pins->[0]{longitude} : 0,
+        area      => 274456,
+        pins      => $pins,
+        any_zoom  => 1,
+    );
+    return 1;
+}
+
 =head1 C<set_problem_state>
 
 If the state has changed, sets the state and calls C::Admin's C<log_edit> action.
