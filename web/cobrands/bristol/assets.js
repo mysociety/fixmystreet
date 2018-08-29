@@ -14,7 +14,7 @@ var options = {
     min_resolution: 0.00001,
     asset_id_field: 'COD_ASSET_ID',
     asset_type: 'spot',
-    propertyNames: [ 'COD_ASSET_ID', 'COD_USRN' ],
+    propertyNames: [ 'COD_ASSET_ID', 'COD_USRN', 'COD_ASSET_TYPE' ],
     attributes: {
         asset_id: 'COD_ASSET_ID',
         usrn: 'COD_USRN'

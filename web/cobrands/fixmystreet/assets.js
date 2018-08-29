@@ -522,6 +522,8 @@ fixmystreet.assets = {
             layer_options.projection = new OpenLayers.Projection(fixmystreet.wmts_config.map_projection);
         }
         if (options.filter_key) {
+            // Add this filter to the layer, so it can potentially be used
+            // in the request (though only Bristol currently does this).
             if (OpenLayers.Util.isArray(options.filter_value)) {
                 layer_options.filter = new OpenLayers.Filter.FeatureId({
                     type: OpenLayers.Filter.Function,
@@ -540,8 +542,10 @@ fixmystreet.assets = {
                     property: options.filter_key,
                     value: options.filter_value
                 });
-                layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
             }
+            // Add a strategy filter to the layer, to filter the incoming results
+            // after they are received. Bristol does not need this, but has to ask
+            // for the filter data in its response so it doesn't then disappear.
             layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
         }
 
