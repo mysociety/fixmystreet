@@ -391,13 +391,20 @@ $.extend(fixmystreet.set_up, {
 	// /report/new), fetch it first. That will then automatically call this
 	// function again, due to it calling change() on the category if set.
         if (!fixmystreet.reporting_data) {
-            fixmystreet.update_pin(fixmystreet.map.getCenter(), false);
+            if (fixmystreet.map) {
+                fixmystreet.update_pin(fixmystreet.map.getCenter(), false);
+            }
             return;
         }
 
         var category = $(this).val(),
             data = fixmystreet.reporting_data.by_category[category],
             $category_meta = $('#category_meta');
+
+        if (!data) {
+            // The Pick a category option, or something gone wrong
+            return;
+        }
 
         fixmystreet.bodies = data.bodies || [];
         if (fixmystreet.body_overrides) {
