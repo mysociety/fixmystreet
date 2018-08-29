@@ -1,0 +1,41 @@
+[% INCLUDE 'header.html' %]
+
+<h1>/_dev</h1>
+
+<p><a href="/_dev/email">Email previews</a></p>
+
+<dl>
+
+<dt>Questionnaire responses</dt>
+<dd><ul>
+<li><a href="/_dev/questionnaire_completed?been_fixed=Yes">Yes</a>
+<li><a href="/_dev/questionnaire_completed?new_state=confirmed">No</a>
+<li><a href="/_dev/questionnaire_completed?been_fixed=Unknown">Unknown</a>
+<li><a href="/_dev/questionnaire_creator_fixed">Mark fixed as part of update by reporter</a>
+</ul></dd>
+
+<dt>Confirmation pages</dt>
+<dd><ul>
+<li><a href="/_dev/confirm_problem/[% problem.id %]">Problem</a>
+<li><a href="/_dev/confirm_update/[% problem.id %]">Update</a>
+<li><a href="/_dev/confirm_alert/subscribe">Alert</a>
+<li><a href="/_dev/confirm_alert/unsubscribe">Alert unsubscribe</a>
+</ul></dd>
+
+<dt>Contact form</dt>
+<dd><ul>
+<li><a href="/_dev/contact_submit/1">Success</a>
+<li><a href="/_dev/contact_submit/0">Failure</a>
+</ul></dd>
+
+<dt>Check email pages</dt>
+<dd><ul>
+<li><a href="/_dev/auth">Auth</a>
+    <li><a href="/_dev/report_new?email_type=problem">New report</a>
+    <li><a href="/_dev/report_new?email_type=update">New update</a>
+    <li><a href="/_dev/report_new?email_type=alert">New alert</a>
+</ul></dd>
+
+</dl>
+
+[% INCLUDE 'footer.html' %]

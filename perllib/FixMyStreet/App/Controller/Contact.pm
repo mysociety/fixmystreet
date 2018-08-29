@@ -42,11 +42,6 @@ Handle contact us form submission
 sub submit : Path('submit') : Args(0) {
     my ( $self, $c ) = @_;
 
-    if (my $testing = $c->get_param('_test_')) {
-        $c->stash->{success} = $c->get_param('success');
-        return;
-    }
-
     $c->res->redirect( '/contact' ) and return unless $c->req->method eq 'POST';
 
     return

@@ -118,12 +118,6 @@ sub report_new : Path : Args(0) {
     $c->forward('redirect_or_confirm_creation');
 }
 
-sub report_new_test : Path('_test_') : Args(0) {
-    my ( $self, $c ) = @_;
-    $c->stash->{template}   = 'email_sent.html';
-    $c->stash->{email_type} = $c->get_param('email_type');
-}
-
 # This is for the new phonegap versions of the app. It looks a lot like
 # report_new but there's a few workflow differences as we only ever want
 # to sent JSON back here

@@ -26,8 +26,19 @@ Makes sure this controller is only available when run in development.
 
 sub auto : Private {
     my ($self, $c) = @_;
-    $c->detach( '/page_error_404_not_found' ) unless $c->config->{STAGING_SITE};
+    $c->detach( '/page_error_404_not_found' ) unless $c->user_exists && $c->user->is_superuser;
     return 1;
+}
+
+=item index
+
+Shows a list of links to preview HTML emails.
+
+=cut
+
+sub index : Path('/_dev') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{problem} = $c->model('DB::Problem')->first;
 }
 
 =item email_list
@@ -128,6 +139,115 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
     }
 
     $c->response->body($html);
+}
+
+=item problem_confirm_previewer
+
+Displays the confirmation page for a given problem.
+
+=back
+
+=cut
+
+sub problem_confirm_previewer : Path('/_dev/confirm_problem') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    $c->log->info('Previewing confirmation page for problem ' . $id);
+
+    my $problem = $c->model('DB::Problem')->find( { id => $id } )
+      || $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
+    $c->stash->{report} = $problem;
+
+    $c->log->info('Problem ' . $id . ' found: ' . $problem->title);
+    $c->stash->{template} = 'tokens/confirm_problem.html';
+}
+
+=item update_confirm_previewer
+
+Displays the confirmation page for an update on the given problem.
+
+=back
+
+=cut
+
+sub update_confirm_previewer : Path('/_dev/confirm_update') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    my $problem = $c->model('DB::Problem')->find( { id => $id } )
+      || $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
+    $c->stash->{problem} = $problem;
+
+    $c->stash->{template} = 'tokens/confirm_update.html';
+}
+
+=item alert_confirm_previewer
+
+Displays the confirmation page for an alert, with the supplied
+confirmation type (ie: subscribed, or unsubscribed).
+
+=back
+
+=cut
+
+sub alert_confirm_previewer : Path('/_dev/confirm_alert') : Args(1) {
+    my ( $self, $c, $confirm_type ) = @_;
+    $c->stash->{confirm_type} = $confirm_type;
+    $c->stash->{template} = 'tokens/confirm_alert.html';
+}
+
+=item contact_submit_previewer
+
+Displays the contact submission page, with success based on the
+truthyness of the supplied argument.
+
+=back
+
+=cut
+
+sub contact_submit_previewer : Path('/_dev/contact_submit') : Args(1) {
+    my ( $self, $c, $success ) = @_;
+    $c->stash->{success} = $success;
+    $c->stash->{template} = 'contact/submit.html';
+}
+
+=item questionnaire_completed_previewer
+
+Displays the questionnaire completed page, with content based on
+the supplied ?new_state and ?been_fixed query params.
+
+=back
+
+=cut
+
+sub questionnaire_completed_previewer : Path('/_dev/questionnaire_completed') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{been_fixed} = $c->get_param('been_fixed');
+    $c->stash->{new_state} = $c->get_param('new_state');
+    $c->stash->{template} = 'questionnaire/completed.html';
+}
+
+=item questionnaire_creator_fixed_previewer
+
+Displays the page a user sees after they mark their own report as fixed.
+
+=back
+
+=cut
+
+sub questionnaire_creator_fixed_previewer : Path('/_dev/questionnaire_creator_fixed') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{template} = 'questionnaire/creator_fixed.html';
+}
+
+sub auth_preview : Path('/_dev/auth') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{template} = 'auth/token.html';
+}
+
+sub report_new_preview : Path('/_dev/report_new') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{template}   = 'email_sent.html';
+    $c->stash->{email_type} = $c->get_param('email_type');
 }
 
 __PACKAGE__->meta->make_immutable;
