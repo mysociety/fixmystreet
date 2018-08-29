@@ -40,7 +40,7 @@
 
 [% INCLUDE 'report/banner.html' %]
 [% IF c.user_exists %]
-    [% DEFAULT permissions = c.user.permissions(c, problem.bodies_str) %]
+    [% DEFAULT permissions = c.user.permissions(problem) %]
 [%- END %]
 [% INCLUDE 'report/_main.html' %]
 

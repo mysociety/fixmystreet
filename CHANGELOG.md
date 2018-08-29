@@ -45,6 +45,7 @@
         - Include user agent in contact form emails. #2206
         - Use site name in contact email subject line.
         - Add /_dev endpoints for previewing confirmation/submission pages.
+        - Allow cobrand to add extra ability to moderate.
 
 
 * v2.3.4 (7th June 2018)

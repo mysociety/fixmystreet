@@ -1,3 +1,4 @@
+[% can_moderate = permissions.moderate OR c.user.can_moderate(update, staff = permissions.moderate) %]
 [% IF loop.first %]
 <section class="full-width">
     <h4 class="static-with-rule">[% loc('Updates') %]</h4>
@@ -5,7 +6,7 @@
 [% END %]
         <li class="item-list__item item-list__item--updates">
             <a name="update_[% update.id %]" class="internal-link-fixed-header"></a>
-          [% IF permissions.moderate; original_update = update.moderation_original_data %]
+          [% IF can_moderate; original_update = update.moderation_original_data %]
             <form method="post" action="/moderate/report/[% problem.id %]/update/[% update.id %]">
                 <input type="hidden" name="token" value="[% csrf_token %]">
                 <input type="button" class="btn js-moderate moderate-display" value="[% loc('Moderate this update') %]">
@@ -15,7 +16,7 @@
                     <label><input type="checkbox" name="update_show_name" [% update.anonymous ? '' : 'checked' %]>
                     [% loc('Show name publicly?') %]</label>
                     [% IF update.photo or original_update.photo %]
-                        <label><input type="checkbox" name="update_show_photo" [% update.photo ? 'checked' : '' %]>
+                        <label><input type="checkbox" name="update_photo" [% update.photo ? 'checked' : '' %]>
                         [% loc('Show Photo?') %]</label>
                     [% END %]
                 </div>
@@ -31,13 +32,13 @@
                     <div class="moderate-display">
                         [% update.text | add_links | markup(update.user) | html_para %]
                     </div>
-                    [% IF permissions.moderate %]
+                    [% IF can_moderate %]
                     <div class="moderate-edit">
                         [% IF update.text != original.detail %]
-                        <label><input type="checkbox" name="update_revert_detail" class="revert-textarea">
+                        <label><input type="checkbox" name="update_revert_text" class="revert-textarea">
                         [% loc('Revert to original') %]</label>
                         [% END %]
-                        <textarea class="form-control" name="update_detail">[% update.text | add_links %]</textarea>
+                        <textarea class="form-control" name="update_text">[% update.text | add_links %]</textarea>
                     </div>
                     [% END %]
 
@@ -45,7 +46,7 @@
                 </div>
             [% END %]
             </div>
-            [% IF permissions.moderate %]
+            [% IF can_moderate %]
                 <div class="moderate-edit">
                     <label for="moderation_reason">[% loc('Describe why you are moderating this') %]</label>
                     <input type="text" class="form-control" name="moderation_reason">

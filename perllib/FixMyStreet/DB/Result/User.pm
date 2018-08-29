@@ -330,6 +330,26 @@ sub split_name {
     return { first => $first || '', last => $last || '' };
 }
 
+sub can_moderate {
+    my ($self, $object, %perms) = @_;
+
+    my ($type, $ids);
+    if ($object->isa("FixMyStreet::DB::Result::Comment")) {
+        $type = 'update';
+        $ids = $object->problem->bodies_str_ids;
+    } else {
+        $type = 'problem';
+        $ids = $object->bodies_str_ids;
+    }
+
+    my $staff_perm = exists($perms{staff}) ? $perms{staff} : $self->has_permission_to(moderate => $ids);
+    return 1 if $staff_perm;
+
+    # See if the cobrand wants to allow it in some circumstance
+    my $cobrand = $self->result_source->schema->cobrand;
+    return $cobrand->call_hook('moderate_permission', $self, $type => $object);
+}
+
 has body_permissions => (
     is => 'ro',
     lazy => 1,
@@ -340,12 +360,15 @@ has body_permissions => (
 );
 
 sub permissions {
-    my ($self, $c, $body_id) = @_;
+    my ($self, $problem) = @_;
+    my $cobrand = $self->result_source->schema->cobrand;
 
     if ($self->is_superuser) {
-        my $perms = $c->cobrand->available_permissions;
+        my $perms = $cobrand->available_permissions;
         return { map { %$_ } values %$perms };
     }
+
+    my $body_id = $problem->bodies_str;
 
     return unless $self->belongs_to_body($body_id);
 
