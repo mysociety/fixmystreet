@@ -54,6 +54,10 @@ sub index : Path : Args(0) {
         return 1;
     }
 
+    if ( $c->cobrand->call_hook('report_page_data') ) {
+        return 1;
+    }
+
     if ( my $body = $c->cobrand->all_reports_single_body ) {
         $c->stash->{body} = $body;
         $c->detach( 'redirect_body' );
