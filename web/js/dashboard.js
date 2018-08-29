@@ -30,6 +30,9 @@ $(function(){
 
         var lasty = 0;
         $.each(chart.config.data.datasets, function(datasetIndex, dataset){
+            if (dataset.data.length == 0) {
+                return;
+            }
             var $label = $('.label[data-datasetIndex="' + datasetIndex + '"]', $parent);
             var latestPoint = chart.getDatasetMeta(datasetIndex).data[ dataset.data.length - 1 ];
             var y = latestPoint._model.y;
