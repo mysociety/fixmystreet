@@ -54,7 +54,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         // This function is called when the asset category is
         // selected, and will zoom the map in to the first level that
         // makes the asset layer visible if it's not already shown.
-        if (!this.inRange) {
+        if (!this.inRange && this.resolutions) {
             var firstVisibleResolution = this.resolutions[0];
             var zoomLevel = fixmystreet.map.getZoomForResolution(firstVisibleResolution);
             fixmystreet.map.zoomTo(zoomLevel);
