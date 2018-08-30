@@ -60,6 +60,7 @@ sub email_list : Path('/_dev/email') : Args(0) {
     my %with_update = ('update-confirm' => 1, 'other-updated' => 1);
     my %with_problem = ('alert-update' => 1, 'other-reported' => 1,
         'problem-confirm' => 1, 'problem-confirm-not-sending' => 1,
+        'confirm_report_sent' => 1,
         'problem-moderated' => 1, 'questionnaire' => 1, 'submit' => 1);
 
     my $update = $c->model('DB::Comment')->first;
