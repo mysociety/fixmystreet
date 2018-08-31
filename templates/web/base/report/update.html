@@ -1,4 +1,4 @@
-[% can_moderate = permissions.moderate OR c.user.can_moderate(update, staff = permissions.moderate) %]
+[% can_moderate = NOT update.whenanswered AND (permissions.moderate OR c.user.can_moderate(update, staff = permissions.moderate)) %]
 [% IF loop.first %]
 <section class="full-width">
     <h4 class="static-with-rule">[% loc('Updates') %]</h4>
