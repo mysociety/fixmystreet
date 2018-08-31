@@ -34,6 +34,7 @@
         - Allow questionnaire link to be revisited in quick succession. #2123
         - Update Google Maps directions link.
         - Fix inspector pin dragging. #2073.
+        - Maintain all single newlines in text output, not only the first.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
         - Don't generate template comment text on move between fixed states.

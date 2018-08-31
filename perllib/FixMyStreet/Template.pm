@@ -114,7 +114,7 @@ into <br>s too.
 sub html_paragraph : Filter('html_para') {
     my $text = shift;
     my @paras = split(/(?:\r?\n){2,}/, $text);
-    s/\r?\n/<br>\n/ for @paras;
+    s/\r?\n/<br>\n/g for @paras;
     $text = "<p>\n" . join("\n</p>\n\n<p>\n", @paras) . "</p>\n";
     return $text;
 }
