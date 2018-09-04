@@ -89,6 +89,15 @@ subtest "Test creating bad partial entries" => sub {
 
 };
 
+for my $test (
+    {
+        desc => 'Submit a correct entry',
+    },
+    {
+        desc => 'Submit a correct web entry',
+        web  => 1,
+    }
+) {
 subtest "Submit a correct entry" => sub {
     $mech->get_ok('/import');
 
@@ -101,13 +110,18 @@ subtest "Submit a correct entry" => sub {
                 subject => 'Test report',
                 detail  => 'This is a test report',
                 photo   => $sample_file,
+                web     => $test->{web},
             }
         },
         "fill in form"
     );
 
     is_deeply( $mech->import_errors, [], "got no errors" );
-    is $mech->content, 'SUCCESS', "Got success response";
+    if ( $test->{web} ) {
+        $mech->content_contains('Nearly done! Now check', "Got email confirmation page");
+    } else {
+        is $mech->content, 'SUCCESS', "Got success response";
+    }
 
     # check that we have received the email
     my $token_url = $mech->get_link_from_email;
@@ -223,6 +237,7 @@ subtest "Submit a correct entry" => sub {
 
     $mech->delete_user($user);
 };
+}
 
 subtest "Submit a correct entry (with location)" => sub {
 

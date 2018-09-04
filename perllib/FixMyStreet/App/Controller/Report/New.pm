@@ -418,6 +418,12 @@ sub report_import : Path('/import') {
 
     $c->send_email( 'partial.txt', { to => $report->user->email, } );
 
+    if ( $c->get_param('web') ) {
+        $c->res->content_type('text/html; charset=utf-8');
+        $c->stash->{template}   = 'email_sent.html';
+        $c->stash->{email_type} = 'problem';
+        return 1;
+    }
     $c->res->body('SUCCESS');
     return 1;
 }

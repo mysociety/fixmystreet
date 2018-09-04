@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Import end point can optionally return a web page #2225
     - Bugfixes:
         - Fix display of area/pins on body page when using Bing or TonerLite map.
         - Do not scan through all problems to show /_dev pages.
