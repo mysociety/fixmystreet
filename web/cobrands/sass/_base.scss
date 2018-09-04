@@ -1531,7 +1531,7 @@ html.js #map .noscript {
     display: block;
 
     // "Fade out" the map.
-    height: 100%;
+    top: 30px;
     background-color: rgba(#000, 0.3);
 
     #try_again,

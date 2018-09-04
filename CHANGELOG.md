@@ -35,6 +35,7 @@
         - Update Google Maps directions link.
         - Fix inspector pin dragging. #2073.
         - Maintain all single newlines in text output, not only the first.
+        - Make sure Home clickable with Try again overlay.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
         - Don't generate template comment text on move between fixed states.
