@@ -130,10 +130,10 @@ sub pin_hover_title {
 
 sub state_groups_inspect {
     [
-        [ _('New'), [ 'confirmed', 'investigating' ] ],
-        [ _('Scheduled'), [ 'action scheduled' ] ],
-        [ _('Fixed'), [ 'fixed - council' ] ],
-        [ _('Closed'), [ 'not responsible', 'duplicate', 'unable to fix' ] ],
+        [ 'New', [ 'confirmed', 'investigating' ] ],
+        [ 'Scheduled', [ 'action scheduled' ] ],
+        [ 'Fixed', [ 'fixed - council' ] ],
+        [ 'Closed', [ 'not responsible', 'duplicate', 'unable to fix' ] ],
     ]
 }
 
