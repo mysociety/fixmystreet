@@ -805,6 +805,8 @@ sub process_user : Private {
 
     $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
 
+    $c->forward('update_user', [ \%params ]);
+
     # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
         $c->stash->{tfa_data} = {
@@ -825,7 +827,6 @@ sub process_user : Private {
         return 1;
     }
 
-    $c->forward('update_user', [ \%params ]);
     if ($params{password_register}) {
         $c->forward('/auth/test_password', [ $params{password_register} ]);
         $report->user->password($params{password_register});

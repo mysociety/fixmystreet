@@ -1,6 +1,9 @@
 ## Releases
 
-* Unreleased
+* v2.3.5 (6th September 2018)
+    - Security:
+        - Update user object before attempting sign-in,
+          to prevent leak of user account phone number.
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:
