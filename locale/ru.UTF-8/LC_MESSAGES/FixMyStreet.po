@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-06-06 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2017\n"
+"Last-Translator: Михаил Нифантьев <nifantyev.me@gmail.com>, 2018\n"
 "Language-Team: Russian (https://www.transifex.com/mysociety/teams/12067/ru/)\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -46,9 +46,8 @@ msgid "%d to %d of %d"
 msgstr "%d по %d из %d"
 
 #: templates/web/base/admin/user_import.html:42
-#, fuzzy
 msgid "%d users already existed"
-msgstr "Этот адрес эл. почты уже находится в черном списке"
+msgstr "пользователей уже зарегистрировано"
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
@@ -2220,7 +2219,7 @@ msgstr "Добавлен новый контакт в категории"
 
 #: templates/web/base/auth/change_email.html:39
 msgid "New email address:"
-msgstr ""
+msgstr "новый адрес электронной почты"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:109
 #: templates/web/zurich/admin/report_edit.html:137
@@ -2237,17 +2236,16 @@ msgstr "Новая заметка для DM:"
 
 #: templates/web/base/auth/change_password.html:47
 msgid "New password:"
-msgstr ""
+msgstr "Новый пароль"
 
 #: templates/web/base/auth/change_phone.html:38
-#, fuzzy
 msgid "New phone number:"
-msgstr "(номер телефона отсутствует)"
+msgstr "Новый номер телефона"
 
 #: templates/web/base/admin/responsepriorities/edit.html:4
 #: templates/web/base/admin/responsepriorities/list.html:34
 msgid "New priority"
-msgstr ""
+msgstr "Новый приоритет"
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
@@ -2287,7 +2285,7 @@ msgstr "Новый шаблон"
 
 #: templates/web/base/reports/_list-filters.html:68
 msgid "Newest"
-msgstr ""
+msgstr "Самые новые"
 
 #: templates/web/base/pagination.html:10
 msgid "Next"
@@ -2311,7 +2309,7 @@ msgstr "Нет"
 
 #: templates/web/base/admin/user-form.html:80
 msgid "No area"
-msgstr ""
+msgstr "Территория не указана"
 
 #: templates/web/base/admin/user-form.html:48
 msgid "No body"
@@ -2464,7 +2462,7 @@ msgstr "Давний статус"
 
 #: templates/web/base/reports/_list-filters.html:69
 msgid "Oldest"
-msgstr ""
+msgstr "Самые старые"
 
 #: perllib/FixMyStreet/SendReport/Email.pm:89
 msgid "On behalf of %s"
@@ -2512,7 +2510,7 @@ msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:8
 msgid "Order"
-msgstr ""
+msgstr "Порядок"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1286
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:689
@@ -2530,7 +2528,7 @@ msgstr "Другое"
 
 #: templates/web/base/reports/index.html:136
 msgid "Other categories"
-msgstr ""
+msgstr "Другие категории"
 
 #: templates/web/base/reports/index.html:107
 #, fuzzy
@@ -2643,7 +2641,7 @@ msgstr "Необходимо добавить фото"
 #: templates/web/base/report/update/form_update.html:7
 #: templates/web/zurich/report/new/fill_in_details_form.html:20
 msgid "Photos"
-msgstr ""
+msgstr "Фотографии"
 
 #: templates/web/base/alert/list.html:23
 msgid "Photos of recent nearby reports"

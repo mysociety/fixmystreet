@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-06-06 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Jon Kristensen <info@jonkri.com>, 2017\n"
+"Last-Translator: Jonatan Nyberg, 2018\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
@@ -46,9 +46,8 @@ msgid "%d to %d of %d"
 msgstr "%d till %d av %d"
 
 #: templates/web/base/admin/user_import.html:42
-#, fuzzy
 msgid "%d users already existed"
-msgstr "Användaren finns redan"
+msgstr "%danvändare fanns redan"
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
@@ -162,9 +161,8 @@ msgid "(optional)"
 msgstr "(valfritt)"
 
 #: templates/web/base/report/_item.html:69
-#, fuzzy
 msgid "(sent to all)"
-msgstr "(skickat till båda)"
+msgstr "(skickad till alla)"
 
 #: templates/web/base/report/_item.html:70
 msgid "(sent to both)"
@@ -182,9 +180,8 @@ msgid "-- Pick a category --"
 msgstr "-- Välj en katagori --"
 
 #: templates/web/base/report/new/category_extras_fields.html:18
-#, fuzzy
 msgid "-- Pick an option --"
-msgstr "-- Välj en katagori --"
+msgstr "-- Välj ett alternativ --"
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
@@ -427,7 +424,7 @@ msgstr "Vi kan alternativt dölja ditt namn från <strong>samtliga av dina rappo
 
 #: templates/web/base/admin/open311-form-fields.html:165
 msgid "Always fetch all problems"
-msgstr ""
+msgstr "Hämta alltid alla problem"
 
 #: templates/web/base/questionnaire/index.html:31
 msgid "An update marked this problem as fixed."
@@ -580,7 +577,7 @@ msgstr "Förvaltning:"
 
 #: templates/web/base/admin/user_import.html:12
 msgid "CSV File"
-msgstr ""
+msgstr "CSV-fil"
 
 #: templates/web/base/admin/extra-metadata-form.html:36
 msgid "Can be used to display extra text to the user alongside the field. The default template does not show this (<code>meta.datatype_description</code>), you must add it in <code>category_extras_fields.html</code>"
@@ -911,7 +908,7 @@ msgstr "Skapad"
 
 #: templates/web/base/admin/user_import.html:20
 msgid "Created %d new users"
-msgstr ""
+msgstr "Skapade %d nya användare"
 
 #: templates/web/base/admin/list_updates.html:38
 #: templates/web/base/admin/report_edit.html:78
@@ -1130,7 +1127,7 @@ msgstr "Redigera rapporter"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:731
 msgid "Edit users' details/search for their reports"
-msgstr ""
+msgstr "Redigera användarnas detaljer/sök efter deras rapporter"
 
 #: templates/web/base/admin/report_edit.html:0
 #: templates/web/base/admin/report_edit.html:15
@@ -1781,9 +1778,8 @@ msgid "Illegal feed selection"
 msgstr "Ogiltigt RSS-flöde"
 
 #: templates/web/base/admin/user_import.html:15
-#, fuzzy
 msgid "Import users"
-msgstr "Rapportera missbruk"
+msgstr "Importera användare"
 
 #: templates/web/base/admin/flagged.html:39
 msgid "In abuse table?"
@@ -4523,9 +4519,8 @@ msgid "Unknown problem ID"
 msgstr "Okänt problemnummer"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:99
-#, fuzzy
 msgid "Unknown update ID"
-msgstr "Okänt problemnummer"
+msgstr "Okänt uppdaterings-ID"
 
 #: templates/web/base/reports/_list-filters.html:19
 msgid "Unshortlisted"
@@ -4627,9 +4622,8 @@ msgid "Updates to this problem, %s"
 msgstr "Uppdateringar för det här problemet, %s"
 
 #: templates/web/base/admin/user_import.html:64
-#, fuzzy
 msgid "Usage notes"
-msgstr "Observera:"
+msgstr "Användningsanvisningar"
 
 #: templates/web/base/admin/contact-form.html:43
 #: templates/web/base/admin/contact-form.html:44
@@ -4664,9 +4658,8 @@ msgid "User ID to attribute fetched comments to"
 msgstr "Användar-ID att attribuera hämtade kommentarer till"
 
 #: templates/web/base/admin/user_import.html:1
-#, fuzzy
 msgid "User Import"
-msgstr "%s rapport"
+msgstr "Användarimport"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1868
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1878
@@ -5159,9 +5152,8 @@ msgid "a colon-separated list of permissions to grant that user, e.g. <code>cont
 msgstr ""
 
 #: templates/web/base/report/_inspect.html:20
-#, fuzzy
 msgid "admin"
-msgstr "Administratörskontrollpanel"
+msgstr "administratör"
 
 #: templates/web/base/admin/category-checkboxes.html:7
 #: templates/web/base/admin/user-form.html:171
@@ -5257,7 +5249,7 @@ msgstr "andra områden:"
 
 #: templates/web/zurich/admin/contact-form.html:24
 msgid "show"
-msgstr ""
+msgstr "visa"
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
@@ -5469,11 +5461,11 @@ msgstr[0] "senast uppdaterad för %d dag sedan"
 msgstr[1] "senast uppdaterad för %d dagar sedan"
 
 #: templates/email/default/inactive-account.txt:8
-#, fuzzy, perl-format
+#, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] "Månad"
-msgstr[1] "Månad"
+msgstr[0] "månad"
+msgstr[1] "månader"
 
 #: templates/email/warwickshire/archive.txt:9
 #, perl-format
