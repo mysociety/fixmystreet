@@ -1,6 +1,9 @@
 ## Releases
 
 * Unreleased
+    - Security
+        - Update user object before attempting sign-in,
+          to prevent leak of user account phone number.
     - Front end improvements:
         - Simplify footer CSS. #2107
         - Keep commas in geocode lookups.
