@@ -1,19 +1,21 @@
 ## Releases
 
 * Unreleased
+
+* v2.4 (6th September 2018)
     - Front end improvements:
         - Simplify footer CSS. #2107
-        - Keep commas in geocode lookups.
-        - Show message on reports closed to updates.
+        - Keep commas in geocode lookups. #2162
+        - Show message on reports closed to updates. #2163
         - Only display last 6 months of reports on around page by default #2098
         - Always show all reports by default on /my.
         - Much less reliance on input placeholders, for better accessibility #2180
-        - “Report another problem here” button on report confirmation page #2198
+        - “Report another problem here” button on report confirmation page #2198 #393
         - Button in nav bar now makes it easier to report again in the same location #2195
         - Shrink OpenLayers library a bit. #2217
         - Remove need for separate per-category ajax call. #1201
     - Admin improvements:
-        - Mandatory defect type selection if defect raised.
+        - Mandatory defect type selection if defect raised. #2173
         - Send login email button on user edit page #2041
         - Use do-not-reply address for sent report email.
         - Category group can be edited.
@@ -28,27 +30,27 @@
         - Defect type is recorded if category change made. #2172
         - [UK] Store body ID on council/ward alerts. #2175
         - Show all fixed issues when staff user uses map page filter #2176
-        - Allow any user who can see private checkbox to use it.
-        - Prevent dupliate category listing on /my.
+        - Allow any user who can see private checkbox to use it. #2182
+        - Prevent duplicate category listing on /my.
         - Hide password help field along with other similar. #2185
         - Allow questionnaire link to be revisited in quick succession. #2123
         - Update Google Maps directions link.
         - Fix inspector pin dragging. #2073.
         - Maintain all single newlines in text output, not only the first.
         - Make sure Home clickable with Try again overlay.
+        - Check all contacts for metadata and non-public.
     - Open311 improvements:
         - CLOSED status maps to 'closed' state if extended statuses are enabled.
-        - Don't generate template comment text on move between fixed states.
+        - Don't generate template comment text on move between fixed states. #2199
     - Development improvements:
         - Cobrand hook for presenting custom search results. #2183
         - Cobrand hook to allow extra login conditions #2092
-        - Add ability for client to set bodies not to be sent to.
-        - Make it easier to prevent a form_detail_placeholder being printed.
+        - Add ability for client to set bodies not to be sent to. #2179
+        - Make it easier to prevent a form_detail_placeholder being printed. #2212
         - Include user agent in contact form emails. #2206
         - Use site name in contact email subject line.
-        - Add /_dev endpoints for previewing confirmation/submission pages.
-        - Allow cobrand to add extra ability to moderate.
-
+        - Add /_dev endpoints for previewing confirmation/submission pages. #2218
+        - Allow cobrand to add extra ability to moderate. #2216
 
 * v2.3.4 (7th June 2018)
     - Bugfixes:
