@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-06-06 14:25+0100\n"
+"POT-Creation-Date: 2018-09-06 21:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Vlejd <vhalgota@gmail.com>, 2017\n"
 "Language-Team: Croatian (https://www.transifex.com/mysociety/teams/12067/hr/)\n"
@@ -24,6 +24,7 @@ msgstr ""
 msgid " and "
 msgstr "i"
 
+#: templates/web/base/js/translation_strings.html:41
 #: templates/web/base/report/new/category_extras.html:15
 #: templates/web/base/report/new/councils_text_all.html:5
 #: templates/web/base/report/new/top_message_none.html:12
@@ -33,7 +34,7 @@ msgstr "i"
 msgid " or "
 msgstr "ili"
 
-#: templates/web/base/report/_inspect.html:163
+#: templates/web/base/report/_inspect.html:168
 msgid "%d characters maximum"
 msgstr "Najviše %dznakova"
 
@@ -139,7 +140,7 @@ msgstr "(pokriva otprilike 200,000 ljudi)"
 msgid "(fixed)"
 msgstr "(popravljeno)"
 
-#: templates/web/base/admin/extra-metadata-form.html:53
+#: templates/web/base/admin/extra-metadata-form.html:63
 msgid "(ignored if type is \"String\")"
 msgstr "(zanemaruje se ako je tip podatka \"String\")"
 
@@ -151,7 +152,7 @@ msgstr "(grafiti, ilegalno odlaganje otpada, oštećeni kolnici, klupe, lampe...
 msgid "(no longer exists)"
 msgstr "(više ne postoji)"
 
-#: templates/web/base/report/_item.html:71
+#: templates/web/base/report/_item.html:75
 msgid "(not sent to council)"
 msgstr "(nije poslano odgovornom tijelu)"
 
@@ -160,12 +161,12 @@ msgstr "(nije poslano odgovornom tijelu)"
 msgid "(optional)"
 msgstr "(nije obavezno)"
 
-#: templates/web/base/report/_item.html:69
+#: templates/web/base/report/_item.html:73
 #, fuzzy
 msgid "(sent to all)"
 msgstr "(poslano na obje adrese)"
 
-#: templates/web/base/report/_item.html:70
+#: templates/web/base/report/_item.html:74
 msgid "(sent to both)"
 msgstr "(poslano na obje adrese)"
 
@@ -174,8 +175,8 @@ msgstr "(poslano na obje adrese)"
 msgid "(we also have RSS feeds for problems within %s)"
 msgstr "(također omogućavamo pretplate na RSS izvore za probleme unutar %s)"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:252
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:688
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:251
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:701
 #: perllib/FixMyStreet/DB/Result/Problem.pm:381
 msgid "-- Pick a category --"
 msgstr "-- Izaberite kategoriju --"
@@ -188,10 +189,6 @@ msgstr "-- Izaberite kategoriju --"
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
 msgstr "-- Odaberite predložak --"
-
-#: templates/web/base/report/new/form_title.html:6
-msgid "10 inch pothole on Example St, near post box"
-msgstr "npr. rupa na na križanju Slavonske i Marohnićeve"
 
 #: templates/web/base/admin/body-form.html:50
 #: templates/web/base/admin/body-form.html:51
@@ -209,11 +206,11 @@ msgid "<h2>Reports, Statistics and Actions for</h2> <h1>%s</h1>"
 msgstr "<h2>Broj prijava, akcija i općih statistika za</h2> <h1>%s</h1>"
 
 #. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
-#: templates/web/base/reports/_list-filters.html:58
+#: templates/web/base/reports/_list-filters.html:65
 msgid "<label for=\"statuses\">Show</label> %s reports <label for=\"filter_categories\">about</label> %s"
 msgstr "<label for=\"statuses\">Prikaži</label> %s prijave <label for=\"filter_categories\">u vezi:</label>  %s"
 
-#: templates/web/base/js/translation_strings.html:84
+#: templates/web/base/js/translation_strings.html:92
 msgid "<span>%s</span> saved."
 msgstr "<span>%s</span> spremljeno."
 
@@ -247,11 +244,11 @@ msgstr "<strong>Ne</strong> prijavite se e-mailom"
 msgid "<strong>No</strong> let me sign in by email or text"
 msgstr "<strong>Ne</strong> - Želim se prijaviti u sustav putem e-maila ili SMS poruke."
 
-#: templates/web/base/report/_inspect.html:188
+#: templates/web/base/report/_inspect.html:197
 msgid "<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on."
 msgstr "<strong>Pažnja:</strong> Ovaj prijavak je poslan nadležnima na rješavanje. Naknadne izmjene neće biti automatski proslijeđene. "
 
-#: templates/web/base/report/_inspect.html:190
+#: templates/web/base/report/_inspect.html:199
 msgid "<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on."
 msgstr "<strong>Pažnja:</strong> Ovaj prijavak još nije poslan nadležnima na rješavanje. Naknadne izmjene možda neće biti automatski proslijeđene. "
 
@@ -296,7 +293,7 @@ msgstr "Dodajte e-mail adresu"
 msgid "Add extra fields"
 msgstr "Dodajte dodatna polja"
 
-#: templates/web/base/admin/extra-metadata-form.html:79
+#: templates/web/base/admin/extra-metadata-form.html:89
 msgid "Add field"
 msgstr "Dodajte polja"
 
@@ -309,7 +306,7 @@ msgstr ""
 msgid "Add new category"
 msgstr "Dodaj novu kategoriju"
 
-#: templates/web/base/admin/extra-metadata-form.html:72
+#: templates/web/base/admin/extra-metadata-form.html:82
 msgid "Add option"
 msgstr "Dodajte opciju"
 
@@ -320,9 +317,9 @@ msgstr "Dodajte telefonski broj"
 
 #: templates/web/base/report/_item.html:10
 #: templates/web/base/report/_item.html:16
-#: templates/web/base/report/_main.html:132
-#: templates/web/base/report/_main.html:15
-#: templates/web/base/report/_main.html:26
+#: templates/web/base/report/_main.html:134
+#: templates/web/base/report/_main.html:17
+#: templates/web/base/report/_main.html:28
 msgid "Add to shortlist"
 msgstr ""
 
@@ -332,16 +329,15 @@ msgstr ""
 msgid "Add user"
 msgstr "Dodajte korisnika"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:737
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:157
+#: perllib/FixMyStreet/Cobrand/Default.pm:741
 msgid "Add/edit problem categories"
 msgstr "Dodajte ili uredite kategorije problema"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:739
+#: perllib/FixMyStreet/Cobrand/Default.pm:743
 msgid "Add/edit response priorities"
 msgstr "Dodajte ili uredite prioritete za odgovor"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:738
+#: perllib/FixMyStreet/Cobrand/Default.pm:742
 msgid "Add/edit response templates"
 msgstr "Dodajte ili uredite predloške za odgovor"
 
@@ -349,11 +345,11 @@ msgstr "Dodajte ili uredite predloške za odgovor"
 msgid "Added %s"
 msgstr "Dodano %s"
 
-#: templates/web/base/report/_main.html:141
+#: templates/web/base/report/_main.html:143
 msgid "Adding this report to your shortlist will remove it from %s’s shortlist."
 msgstr ""
 
-#: templates/web/base/main_nav_items.html:47
+#: templates/web/base/main_nav_items.html:55
 msgid "Admin"
 msgstr "Administrator"
 
@@ -404,7 +400,7 @@ msgid "All languages"
 msgstr "Svi jezici"
 
 #: templates/web/base/main_nav_items.html:0
-#: templates/web/base/main_nav_items.html:27
+#: templates/web/base/main_nav_items.html:35
 #: templates/web/zurich/admin/index-dm.html:12
 #: templates/web/zurich/admin/stats/index.html:11
 #: templates/web/zurich/footer.html:20
@@ -452,13 +448,13 @@ msgstr "Anonimno:"
 msgid "Another user"
 msgstr "Drugi korisnik"
 
-#: templates/web/base/js/translation_strings.html:65
+#: templates/web/base/js/translation_strings.html:67
 msgid "Are you sure you want to cancel this upload?"
 msgstr "Jeste li sigurni da želite otkazati ovo slanje?"
 
 #: templates/web/base/admin/report_edit.html:85
 #: templates/web/base/admin/template_edit.html:91
-#: templates/web/base/js/translation_strings.html:79
+#: templates/web/base/js/translation_strings.html:87
 #: templates/web/base/report/display_tools.html:6
 msgid "Are you sure?"
 msgstr "Jeste li sigurni?"
@@ -469,7 +465,7 @@ msgstr "Jeste li sigurni?"
 msgid "Area covered"
 msgstr "Područje pokrivenosti"
 
-#: templates/web/base/admin/user-form.html:78
+#: templates/web/base/admin/user-form.html:82
 msgid "Area:"
 msgstr "Područje:"
 
@@ -495,11 +491,11 @@ msgstr "Dodijelite vanjskom tijelu:"
 msgid "Assign to subdivision:"
 msgstr "Dodijelite radnoj jedinici:"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:734
+#: perllib/FixMyStreet/Cobrand/Default.pm:738
 msgid "Assign users to areas"
 msgstr "Pridodajte korisnike određenom području:"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:184
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:185
 msgid "Assigned to %s"
 msgstr "Dodijeljeno %s"
 
@@ -511,8 +507,8 @@ msgstr "Većinom %d su zahtjevi vraćeni na query.  Vraćeni zahtjevi poredani s
 msgid "At the moment only searching for and looking at reports work."
 msgstr "Trenutačno radi samo pretraživanje i pregledavanje prijava."
 
-#: templates/web/base/admin/user-form.html:92
-#: templates/web/base/admin/user-form.html:93
+#: templates/web/base/admin/user-form.html:96
+#: templates/web/base/admin/user-form.html:97
 msgid "Authorised staff users can be associated with the categories in which they operate."
 msgstr "Autorizirani korisnici mogu biti povezani s kategorijama u kojima djeluju."
 
@@ -524,6 +520,10 @@ msgstr "Automatski odgovor"
 msgid "Auto-response:"
 msgstr "Automatski odgovor:"
 
+#: templates/web/base/admin/extra-metadata-form.html:14
+msgid "Automated"
+msgstr ""
+
 #: templates/web/base/admin/report-category.html:8
 msgid "Available categories"
 msgstr "Dostupne kategorije"
@@ -532,7 +532,7 @@ msgstr "Dostupne kategorije"
 msgid "Average time between a problem being reported and being fixed, last 100 reports."
 msgstr "Prosječno vrijeme između dojave i rješenja problema (za posljednjih 100 prijava)."
 
-#: templates/web/base/report/new/after_photo.html:6
+#: templates/web/base/report/new/after_photo.html:7
 msgid "Avoid personal information and vehicle number plates"
 msgstr "Izbjegavajte objavu osobnih informacija i registarske tablice vozila"
 
@@ -545,7 +545,7 @@ msgstr "Čeka odluku moderatora"
 msgid "Back"
 msgstr "Povratak"
 
-#: templates/web/base/report/_main.html:2
+#: templates/web/base/report/_main.html:4
 msgid "Back to all reports"
 msgstr "Povratak na sve prijave"
 
@@ -553,11 +553,9 @@ msgstr "Povratak na sve prijave"
 msgid "Ban user"
 msgstr "Zabranite korisniku pristup"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:651
-#: perllib/FixMyStreet/Cobrand/Default.pm:736
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:156
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:261
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:382
+#: perllib/FixMyStreet/Cobrand/Default.pm:655
+#: perllib/FixMyStreet/Cobrand/Default.pm:740
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:383
 #: templates/web/base/admin/bodies.html:1
 #: templates/web/base/admin/report_edit.html:56
 #: templates/web/zurich/header.html:49
@@ -573,7 +571,7 @@ msgstr "Tijela"
 msgid "Body"
 msgstr "Tijelo"
 
-#: templates/web/base/admin/user-form.html:46
+#: templates/web/base/admin/user-form.html:50
 msgid "Body:"
 msgstr "Tijelo"
 
@@ -581,7 +579,7 @@ msgstr "Tijelo"
 msgid "CSV File"
 msgstr ""
 
-#: templates/web/base/admin/extra-metadata-form.html:36
+#: templates/web/base/admin/extra-metadata-form.html:46
 msgid "Can be used to display extra text to the user alongside the field. The default template does not show this (<code>meta.datatype_description</code>), you must add it in <code>category_extras_fields.html</code>"
 msgstr "Može se koristiti da prikaže dodatni tekst korisniku uz polje. Osnovni predložak to ne prikazuje (<code>meta.datatype_description</code>). Morate to dodati u <code> category_extras_fields.html</code>."
 
@@ -593,8 +591,7 @@ msgstr "Ne možete pronaći našu e-mail adresu u svom pretincu? Provjerite svoj
 msgid "Can't see the map? <em>Skip this step</em>"
 msgstr "Ne možete vidjeti mapu? <em>Preskoči ovaj korak</em>"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:651
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:261
+#: perllib/FixMyStreet/Cobrand/Default.pm:655
 #: templates/web/base/admin/responsepriorities/list.html:8
 #: templates/web/base/admin/templates.html:7
 msgid "Categories"
@@ -609,8 +606,8 @@ msgstr "Kategorije: "
 #: templates/web/base/admin/contact-form.html:19
 #: templates/web/base/admin/stats/fix_rate.html:4
 #: templates/web/base/dashboard/index.html:100
-#: templates/web/base/report/_inspect.html:65
-#: templates/web/base/report/_item.html:93
+#: templates/web/base/report/_inspect.html:69
+#: templates/web/base/report/_item.html:97
 #: templates/web/base/report/new/category.html:14
 #: templates/web/base/report/new/category_wrapper.html:3
 #: templates/web/zurich/admin/body.html:14
@@ -626,7 +623,7 @@ msgstr "Kategorija"
 msgid "Category and State"
 msgstr "Kategorija i stanje"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1026
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1039
 msgid "Category changed from ‘%s’ to ‘%s’"
 msgstr "Kategorija promijenjena iz \"%s\" u \"%s\""
 
@@ -690,11 +687,11 @@ msgid ""
 "                  to the body too. These will appear in the drop-down menu on the report-a-problem page."
 msgstr "Odaberite ime kategorije koje ima smisla za javnost (\"rupa na cesti\", \"javna rasvjeta\" i slično), a korisno je i za nadležno tijelo koje bi trebalo riješiti problem. Ovi nazivi kategorija pojavit će se u padajućem izborniku na stranici za prijavu problema."
 
-#: templates/web/base/report/_inspect.html:120
+#: templates/web/base/report/_inspect.html:124
 msgid "Choose another"
 msgstr "Odaberite iduće"
 
-#: templates/web/base/js/translation_strings.html:78
+#: templates/web/base/js/translation_strings.html:86
 msgid "Clear offline data"
 msgstr "Izbrišite preuzete podatke (offline data)"
 
@@ -723,9 +720,8 @@ msgid "Click the link in that email to sign in."
 msgstr "Kliknite na poveznicu u e-mailu koji smo Vam poslali kako biste se prijavili u sustav."
 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:180
-#: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:136
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:157
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:160
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:158
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:161
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:71
 #: templates/web/base/admin/states/index.html:103
 #: templates/web/base/admin/states/index.html:27
@@ -764,19 +760,18 @@ msgstr "Cobrand podaci:"
 msgid "Cobrand:"
 msgstr "Cobrand:"
 
-#: templates/web/base/admin/extra-metadata-form.html:14
+#: templates/web/base/admin/extra-metadata-form.html:24
 #: templates/web/base/auth/2faform.html:18
 #: templates/web/base/auth/smsform.html:24
 msgid "Code"
 msgstr "Kod / šifra (code)"
 
-#: templates/web/base/js/translation_strings.html:56
+#: templates/web/base/js/translation_strings.html:58
 msgid "Collapse map"
 msgstr "Umanjite prikaz karte"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:646
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:257
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:396
+#: perllib/FixMyStreet/Cobrand/Default.pm:650
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:397
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
 msgstr "Konfiguracija"
@@ -839,12 +834,12 @@ msgstr ""
 msgid "Coordinates:"
 msgstr "Koordinate"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1963
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1992
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2008
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2037
 msgid "Could not find user"
 msgstr "Nepoznati korisnik"
 
-#: templates/web/base/js/translation_strings.html:42
+#: templates/web/base/js/translation_strings.html:44
 msgid "Could not look up location"
 msgstr "Nismo mogli pronaći lokaciju"
 
@@ -879,7 +874,7 @@ msgstr "Izradite"
 msgid "Create a report"
 msgstr "Kreiraj izvješće"
 
-#: templates/web/base/admin/contact-form.html:138
+#: templates/web/base/admin/contact-form.html:156
 #: templates/web/zurich/admin/contact-form.html:49
 msgid "Create category"
 msgstr "Kreiraj kategoriju"
@@ -888,18 +883,15 @@ msgstr "Kreiraj kategoriju"
 msgid "Create priority"
 msgstr "Izradite prioritet"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:720
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:149
+#: perllib/FixMyStreet/Cobrand/Default.pm:724
 msgid "Create reports/updates as anonymous user"
 msgstr "Izradite izvještaj ili ažurirajte problem kao anonimni korisnik"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:721
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:150
+#: perllib/FixMyStreet/Cobrand/Default.pm:725
 msgid "Create reports/updates as the council"
 msgstr "Izradite izvještaj ili ažurirajte problem kao tijelo javne vlasti"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:719
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:148
+#: perllib/FixMyStreet/Cobrand/Default.pm:723
 msgid "Create reports/updates on a user's behalf"
 msgstr "Izradite izvještaj ili ažurirajte problem u ime korisnika"
 
@@ -941,7 +933,7 @@ msgstr "Trenutno grupirano prema %s"
 msgid "Currently no bodies have been created."
 msgstr "Trenutno nema izrađenih profila tijela javnih vlasti."
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:845
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:846
 #: templates/web/zurich/admin/report_edit-sdm.html:105
 msgid "Customer not contactable"
 msgstr "Ne možemo kontaktirati mušteriju"
@@ -969,11 +961,11 @@ msgstr "Zadano"
 msgid "Default priority"
 msgstr "Zadani prioritet"
 
-#: templates/web/base/report/_inspect.html:89
+#: templates/web/base/report/_inspect.html:93
 msgid "Defect type"
 msgstr "Vrsta nepravilnosti"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1162
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1175
 #: templates/web/base/admin/template_edit.html:91
 #: templates/web/zurich/admin/template_edit.html:33
 msgid "Delete template"
@@ -985,12 +977,12 @@ msgstr "Izbrišite predložak"
 msgid "Deleted"
 msgstr "Izbrisano"
 
-#: templates/web/base/report/_main.html:110
-#: templates/web/base/report/update.html:52
+#: templates/web/base/report/_main.html:111
+#: templates/web/base/report/update.html:51
 msgid "Describe why you are moderating this"
 msgstr "Opišite zašto ste odlučili moderirati ovo"
 
-#: templates/web/base/admin/extra-metadata-form.html:32
+#: templates/web/base/admin/extra-metadata-form.html:42
 #: templates/web/base/admin/responsepriorities/list.html:7
 #: templates/web/zurich/admin/index-dm.html:22
 #: templates/web/zurich/admin/index-sdm.html:20
@@ -1002,7 +994,7 @@ msgstr "Opis"
 msgid "Description:"
 msgstr "Opis"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:372
+#: perllib/FixMyStreet/App/Controller/Report.pm:370
 msgid "Detailed information is limited to %d characters."
 msgstr "Detaljni opis ograničen je na %dznakova."
 
@@ -1035,7 +1027,7 @@ msgstr "Karta nije bila korištena"
 msgid "Diligency prize league table"
 msgstr "Ljestvica marljivosti"
 
-#: templates/web/base/report/_main.html:114
+#: templates/web/base/report/_main.html:116
 #: templates/web/base/report/update.html:54
 msgid "Discard changes"
 msgstr "Odbacite izmjene"
@@ -1053,7 +1045,7 @@ msgstr "Nemojte slati e-mail obavijesti o komentarima autoru prijave"
 msgid "Do you have a %s password?"
 msgstr "Imate li svoju lozinku?"
 
-#: templates/web/base/report/_inspect.html:104
+#: templates/web/base/report/_inspect.html:108
 msgid "Do you want to automatically raise a defect?"
 msgstr "Želite li automatski prijaviti nepravilnost?"
 
@@ -1069,15 +1061,15 @@ msgstr "Ne dopadaju Vam se obrasci?"
 msgid "Down one"
 msgstr "Jedan manje"
 
-#: templates/web/base/js/translation_strings.html:64
+#: templates/web/base/js/translation_strings.html:66
 msgid "Drag and drop photos here or <u>click to upload</u>"
 msgstr "Povucite i postavite fotografije ovamo ili <u>kliknite za slanje sa svog računala</u>"
 
-#: templates/web/base/report/_inspect.html:115
+#: templates/web/base/report/_inspect.html:119
 msgid "Duplicate of"
 msgstr "Duplikat s"
 
-#: templates/web/base/report/_inspect.html:125
+#: templates/web/base/report/_inspect.html:129
 msgid "Duplicates"
 msgstr "Duplikati"
 
@@ -1093,7 +1085,7 @@ msgstr ""
 "To znači da možete imati niz različitih kategorija iako imate samo jednu kontakt-adresu nadležnog tijela javne vlasti."
 
 #: templates/web/base/report/_inspect.html:32
-#: templates/web/base/report/_item.html:84
+#: templates/web/base/report/_item.html:88
 msgid "Easting/Northing:"
 msgstr ""
 
@@ -1113,29 +1105,23 @@ msgstr "Uredi"
 msgid "Edit body details"
 msgstr "Uredite podatke o tijelu javne vlasti"
 
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:154
-msgid "Edit other users' details"
-msgstr "Uredite podatke o drugim korisnicima"
-
-#: perllib/FixMyStreet/Cobrand/Default.pm:732
+#: perllib/FixMyStreet/Cobrand/Default.pm:736
 msgid "Edit other users' permissions"
 msgstr "Uredite ovlaštenja drugih korisnika"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:714
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:147
+#: perllib/FixMyStreet/Cobrand/Default.pm:718
 msgid "Edit report category"
 msgstr "Uredite kategoriju kojoj pripada prijava"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:715
+#: perllib/FixMyStreet/Cobrand/Default.pm:719
 msgid "Edit report priority"
 msgstr "Uredite razinu prioriteta ove prijave"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:713
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:146
+#: perllib/FixMyStreet/Cobrand/Default.pm:717
 msgid "Edit reports"
 msgstr "Uredite prijave"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:731
+#: perllib/FixMyStreet/Cobrand/Default.pm:735
 msgid "Edit users' details/search for their reports"
 msgstr ""
 
@@ -1196,7 +1182,7 @@ msgstr "Izrađeno automatsko obavještavanje e-mailom"
 msgid "Email alert deleted"
 msgstr "Izbrisano automatsko obavještavanje e-mailom"
 
-#: templates/web/base/admin/user-form.html:21
+#: templates/web/base/admin/user-form.html:25
 msgid "Email verified:"
 msgstr "Potvrđena e-mail adresa:"
 
@@ -1260,7 +1246,7 @@ msgstr "Zaključni datum"
 msgid "Endpoint"
 msgstr "Krajnja točka"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:80
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:81
 msgid "Enter a Z&uuml;rich street name"
 msgstr "Unesite ime ulice"
 
@@ -1279,13 +1265,6 @@ msgstr "Unesite obližnji poštanski broj ili ime ulice i kvarta"
 msgid "Enter a nearby street name and area"
 msgstr "Unesite ime obližnje ulice i kvarta"
 
-#: templates/web/base/auth/general.html:128
-#: templates/web/base/report/new/form_user_loggedout_by_email.html:33
-#: templates/web/base/report/update/form_user_loggedout_by_email.html:20
-#: templates/web/zurich/auth/general.html:58
-msgid "Enter a password"
-msgstr "Unesite lozinku"
-
 #: templates/web/base/index-steps.html:6
 msgid "Enter details of the problem"
 msgstr "Unesite detalje o problemu"
@@ -1299,8 +1278,8 @@ msgstr "Unesite detalje o problemu"
 msgid "Error"
 msgstr "Greška"
 
-#: templates/web/base/reports/_list-filters.html:40
-#: templates/web/base/reports/_list-filters.html:49
+#: templates/web/base/reports/_list-filters.html:47
+#: templates/web/base/reports/_list-filters.html:56
 msgid "Everything"
 msgstr "Sve"
 
@@ -1321,7 +1300,7 @@ msgstr "Postojeća kategorija"
 msgid "Existing users won't be modified."
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:55
+#: templates/web/base/js/translation_strings.html:57
 msgid "Expand map"
 msgstr "Proširite prikaz karte"
 
@@ -1361,19 +1340,19 @@ msgstr "Vanjsko tijelo javne vlasti"
 msgid "External team"
 msgstr "Vanjska ekipa"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:675
+#: perllib/FixMyStreet/Cobrand/Default.pm:679
 #: templates/web/base/admin/reportextrafields/edit.html:1
 #: templates/web/base/admin/reportextrafields/index.html:1
 msgid "Extra Fields"
 msgstr "Dodatna polja"
 
-#: templates/web/base/admin/contact-form.html:141
+#: templates/web/base/admin/contact-form.html:159
 #: templates/web/base/admin/report_edit.html:128
 msgid "Extra data:"
 msgstr "Dodatni podaci:"
 
-#: templates/web/base/report/_inspect.html:161
-#: templates/web/base/report/_item.html:109
+#: templates/web/base/report/_inspect.html:165
+#: templates/web/base/report/_item.html:113
 msgid "Extra details"
 msgstr "Dodatni detalji"
 
@@ -1406,7 +1385,6 @@ msgstr "Popravite ovo tako da odaberete <strong>područje pokrivenosti</strong> 
 
 #: perllib/FixMyStreet/App/Controller/Admin/States.pm:35
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:179
-#: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:135
 #: templates/web/base/admin/states/index.html:29
 #: templates/web/base/admin/stats/fix_rate.html:4
 #: templates/web/base/dashboard/index.html:114
@@ -1431,7 +1409,7 @@ msgstr "Zastavica je izbrisana"
 msgid "Flag user"
 msgstr "Označi korisnika"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:644
+#: perllib/FixMyStreet/Cobrand/Default.pm:648
 #: templates/web/base/admin/users.html:20
 msgid "Flagged"
 msgstr "Označen"
@@ -1440,7 +1418,7 @@ msgstr "Označen"
 msgid "Flagged reports and users"
 msgstr "Označene prijave i korisnici"
 
-#: templates/web/base/admin/user-form.html:108
+#: templates/web/base/admin/user-form.html:112
 msgid "Flagged users are listed on the <a href='%s'>flagged</a> page."
 msgstr "Označeni korisnici su izlistani na zasebnoj stranici."
 
@@ -1449,7 +1427,7 @@ msgid "Flagged users are not restricted in any way. This is just a list of users
 msgstr "Označeni korisnici nisu ograničeni ni na koji način. To je samo popis korisnika na koje treba obratiti pozornost."
 
 #: templates/web/base/admin/report_edit.html:149
-#: templates/web/base/admin/user-form.html:115
+#: templates/web/base/admin/user-form.html:119
 msgid "Flagged:"
 msgstr "Označen:"
 
@@ -1457,11 +1435,11 @@ msgstr "Označen:"
 msgid "Follow a ward link to view only reports within that ward."
 msgstr "Kliknite na poveznicu JLS kako biste vidjeli samo prijave unutar granica te samouprave."
 
-#: templates/web/base/report/new/after_photo.html:3
+#: templates/web/base/report/new/after_photo.html:4
 msgid "For best results include a close-up and a wide shot"
 msgstr "Bilo bi najbolje poslati fotku izdaleka te iz blizine."
 
-#: templates/web/base/admin/extra-metadata-form.html:52
+#: templates/web/base/admin/extra-metadata-form.html:62
 msgid "For each option, <strong>Key</strong> is the value which is stored in the database for that option and <strong>Name</strong> is the value displayed to the user."
 msgstr ""
 
@@ -1476,11 +1454,11 @@ msgstr "Za više informacija, proučite <a href='http://fixmystreet.org/customis
 msgid "Forgotten your password?"
 msgstr "Zaboravili ste šifru?"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:760
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:761
 msgid "Forwarded to external body"
 msgstr "Proslijeđeno vanjskom tijelu."
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:761
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:762
 msgid "Forwarded wish to external body"
 msgstr "Proslijeđeno vanjskom tijelu."
 
@@ -1524,10 +1502,11 @@ msgstr "Drago nam je čuti da je stvar riješena!"
 #: templates/web/base/admin/index.html:28
 #: templates/web/base/admin/index.html:34
 #: templates/web/base/admin/index.html:49
-#: templates/web/base/alert/index.html:35
-#: templates/web/base/around/postcode_form.html:15
-#: templates/web/base/reports/_list-filters.html:59
-#: templates/web/base/reports/_list-filters.html:74
+#: templates/web/base/alert/index.html:37
+#: templates/web/base/around/postcode_form.html:16
+#: templates/web/base/reports/_list-filters.html:66
+#: templates/web/base/reports/_list-filters.html:81
+#: templates/web/base/reports/_list-filters.html:87
 #: templates/web/base/reports/index.html:89
 #: templates/web/zurich/admin/stats/index.html:37
 msgid "Go"
@@ -1537,13 +1516,18 @@ msgstr "Idi"
 msgid "Going to send questionnaire?"
 msgstr "Pošalji upitnik?"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:733
+#: perllib/FixMyStreet/Cobrand/Default.pm:737
 msgid "Grant access to the admin"
 msgstr "Odobri pristup adminu"
 
 #: templates/web/base/admin/index.html:76
 msgid "Graph of problem creation by status over time"
 msgstr "Grafikon nastanka problema prema položaju tijekom vremena"
+
+#: templates/web/base/admin/contact-form.html:134
+#, fuzzy
+msgid "Group"
+msgstr "Grupirati prema:"
 
 #: templates/web/base/dashboard/index.html:94
 msgid "Group by %s"
@@ -1561,7 +1545,7 @@ msgstr "Je li ovaj problem popravljen?"
 msgid "Have you ever reported a problem to a council before, or is this your first time?"
 msgstr "Jeste li prije prijavljivali problem odgovornom tijelu ili je ovo prvi put?"
 
-#: templates/web/base/main_nav_items.html:40
+#: templates/web/base/main_nav_items.html:48
 #: templates/web/zurich/about/faq-de-ch.html:1
 #: templates/web/zurich/footer.html:22
 #: templates/web/zurich/nav_over_content.html:8
@@ -1588,11 +1572,16 @@ msgstr "Zdravo %s"
 msgid "Hidden"
 msgstr "Skriveno"
 
-#: templates/web/base/admin/user-form.html:197
+#: templates/web/base/admin/extra-metadata-form.html:18
+#, fuzzy
+msgid "Hidden Field"
+msgstr "Skriveno"
+
+#: templates/web/base/admin/user-form.html:202
 msgid "Hide all reports and updates"
 msgstr "Sakriti sve prijave i novosti"
 
-#: templates/web/base/report/_main.html:105
+#: templates/web/base/report/_main.html:107
 msgid "Hide entire report"
 msgstr "Sakriti cijelu prijavu"
 
@@ -1615,11 +1604,11 @@ msgstr "Sakrijte svoje ime u ovoj prijavi"
 
 #: templates/web/base/around/display_location.html:60
 #: templates/web/base/around/display_location.html:68
-#: templates/web/base/js/translation_strings.html:61
+#: templates/web/base/js/translation_strings.html:63
 msgid "Hide pins"
 msgstr "Sakrij pinove"
 
-#: templates/web/base/report/update.html:14
+#: templates/web/base/report/update.html:15
 msgid "Hide update completely?"
 msgstr "Posve sakriti ažuriranje novosti?"
 
@@ -1628,7 +1617,7 @@ msgstr "Posve sakriti ažuriranje novosti?"
 msgid "Hide your name?"
 msgstr "Sakriti Vaše ime?"
 
-#: templates/web/base/admin/extra-metadata-form.html:38
+#: templates/web/base/admin/extra-metadata-form.html:48
 msgid "Hint"
 msgstr "Savjet"
 
@@ -1648,8 +1637,8 @@ msgstr "Kako prijaviti problem:"
 msgid "How to send successful reports"
 msgstr "Kako sastaviti što uspješniju prijavu"
 
-#: templates/web/base/tokens/confirm_problem.html:36
-#: templates/web/base/tokens/confirm_problem.html:41
+#: templates/web/base/tokens/confirm_problem.html:46
+#: templates/web/base/tokens/confirm_problem.html:51
 msgid "I just reported a problem on @fixmystreet"
 msgstr "Upravo prijavih problem na @sredimo.kvart"
 
@@ -1658,7 +1647,7 @@ msgstr "Upravo prijavih problem na @sredimo.kvart"
 msgid "I just updated a problem on @fixmystreet"
 msgstr "Upravo ažurirah novosti u vezi problema na @sredimo.kvart"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:92
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:86
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr "Nažalost, ne možemo locirati Vaš problem u bazi podataka.\n"
 
@@ -1689,7 +1678,7 @@ msgstr "Ako postoji korisnik povezan s adresom koju ste unijeli, poslali smo na 
 msgid "If this priority is passed to an external service (e.g. Exor/Confirm) enter the priority code to use with that service here."
 msgstr ""
 
-#: templates/web/base/admin/extra-metadata-form.html:24
+#: templates/web/base/admin/extra-metadata-form.html:34
 msgid "If ticked the user won’t see an input field, just the ‘Description’ text."
 msgstr "Ako je ova postavka uključena, korisnik neće vidjeti polje za unos, nego samo tekst opisa."
 
@@ -1770,7 +1759,7 @@ msgid ""
 "              when they are shown on the site. Enter the ID (number) of that user."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:146
+#: perllib/FixMyStreet/App/Controller/Contact.pm:141
 msgid "Illegal ID"
 msgstr "Ilegalan ID"
 
@@ -1815,7 +1804,7 @@ msgstr "Provjerite prijavu"
 msgid "Inspection required"
 msgstr "Potrebna provjera"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:717
+#: perllib/FixMyStreet/Cobrand/Default.pm:721
 msgid "Instruct contractors to fix problems"
 msgstr "Izdajte nalog izvođačima da riješe prijavljene probleme"
 
@@ -1835,7 +1824,7 @@ msgstr "Nevažeća odgovorna_vrijednost agencije %s"
 msgid "Invalid format %s specified."
 msgstr "Naveden nevažeći %s format."
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:445
+#: perllib/FixMyStreet/App/Controller/Report.pm:439
 msgid "Invalid location. New location must be covered by the same council."
 msgstr "Neispravna lokacija. Nova lokacija treba biti unutar područja pokrivenosti tijela javne vlasti."
 
@@ -1843,7 +1832,7 @@ msgstr "Neispravna lokacija. Nova lokacija treba biti unutar područja pokriveno
 msgid "It's often quickest to <a href=\"%s\">check our FAQs</a> and see if the answer is there."
 msgstr "Obično je najbrži način provjeriti što piše u <a href=\"%s\">Često postavljenim pitanjima i odgovorima</a>."
 
-#: templates/web/base/tokens/confirm_problem.html:27
+#: templates/web/base/tokens/confirm_problem.html:31
 msgid "It’s on its way to the council right now."
 msgstr "Upravo je na putu prema tijelu javne vlasti."
 
@@ -1854,7 +1843,7 @@ msgstr "Upravo je na putu prema tijelu javne vlasti."
 msgid "Keep me signed in on this computer"
 msgstr "Ostanite prijavljeni na ovom računalu"
 
-#: templates/web/base/admin/extra-metadata-form.html:61
+#: templates/web/base/admin/extra-metadata-form.html:71
 msgid "Key"
 msgstr ""
 
@@ -1894,11 +1883,11 @@ msgid "Last&nbsp;update:"
 msgstr "Posljednje&nbsp;ažuriranje:"
 
 #: templates/web/base/report/_inspect.html:36
-#: templates/web/base/report/_item.html:89
+#: templates/web/base/report/_item.html:93
 msgid "Latitude/Longitude:"
 msgstr "Geografska širina / duljina"
 
-#: templates/web/base/reports/_list-filters.html:71
+#: templates/web/base/reports/_list-filters.html:78
 msgid "Least recently updated"
 msgstr "Najdavnije uređeno"
 
@@ -1906,7 +1895,7 @@ msgstr "Najdavnije uređeno"
 msgid "Leave this blank if all reports to this body should be sent using the same send method (e.g., \"%s\")."
 msgstr "Ostavite ovo prazno ako sve prijave ovom tijelu javne vlasti trebaju biti poslane istom metodom (npr. \"%s\")."
 
-#: templates/web/base/admin/extra-metadata-form.html:47
+#: templates/web/base/admin/extra-metadata-form.html:57
 msgid "List"
 msgstr "Popis"
 
@@ -1922,8 +1911,8 @@ msgstr "Dohvaćanje prijava iz baze..."
 msgid "Loading..."
 msgstr "Dohvaćanje..."
 
-#: templates/web/base/alert/choose.html:1
-#: templates/web/base/alert/choose.html:3 templates/web/base/alert/index.html:2
+#: templates/web/base/alert/choose.html:2
+#: templates/web/base/alert/choose.html:4 templates/web/base/alert/index.html:2
 #: templates/web/base/alert/index.html:4 templates/web/base/alert/list.html:1
 #: templates/web/base/alert/list.html:5 templates/web/base/alert/updates.html:1
 #: templates/web/base/tokens/confirm_alert.html:1
@@ -1935,8 +1924,8 @@ msgstr "Lokalni RSS izvori i e-mail upozorenja"
 msgid "Local RSS feeds and email alerts for ‘%s’"
 msgstr "Lokalni RSS izvori i e-mail upozorenja za‘%s’"
 
-#: templates/web/base/main_nav_items.html:31
-#: templates/web/base/main_nav_items.html:37
+#: templates/web/base/main_nav_items.html:39
+#: templates/web/base/main_nav_items.html:45
 msgid "Local alerts"
 msgstr "Lokalna upozorenja"
 
@@ -1956,15 +1945,15 @@ msgstr "Prijavite se Facebook računom"
 msgid "Log in with Twitter"
 msgstr "Prijavite se Twitter računom"
 
-#: templates/web/base/js/translation_strings.html:71
+#: templates/web/base/js/translation_strings.html:73
 msgid "Log in with email"
 msgstr "Prijavite se e-mail računom"
 
-#: templates/web/base/js/translation_strings.html:69
+#: templates/web/base/js/translation_strings.html:71
 msgid "Log in with email/text"
 msgstr "Prijavite se e-mailom ili SMS-om"
 
-#: templates/web/base/admin/user-form.html:195
+#: templates/web/base/admin/user-form.html:200
 msgid "Log out of all sessions"
 msgstr "Odjavite se s cijele stranice"
 
@@ -1972,23 +1961,23 @@ msgstr "Odjavite se s cijele stranice"
 msgid "Look up"
 msgstr "Potražite"
 
-#: templates/web/base/js/translation_strings.html:50
+#: templates/web/base/js/translation_strings.html:52
 msgid "MAP"
 msgstr "KARTA !!!"
 
-#: templates/web/base/admin/user-form.html:196
+#: templates/web/base/admin/user-form.html:201
 msgid "Make anonymous on all reports and updates"
 msgstr "Anonimizirajte korisnika !!! kod svih prijava i ažuriranja novosti"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:718
+#: perllib/FixMyStreet/Cobrand/Default.pm:722
 msgid "Manage shortlist"
 msgstr ""
 
-#: templates/web/base/reports/_list-filters.html:66
+#: templates/web/base/reports/_list-filters.html:73
 msgid "Manual order"
 msgstr "Ručni poredak"
 
-#: templates/web/base/js/translation_strings.html:52
+#: templates/web/base/js/translation_strings.html:54
 msgid "Map"
 msgstr "Karta"
 
@@ -1996,11 +1985,11 @@ msgstr "Karta"
 msgid "Mark as sent"
 msgstr "Označite kao poslano"
 
-#: templates/web/base/admin/user-form.html:106
+#: templates/web/base/admin/user-form.html:110
 msgid "Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>."
 msgstr "<strong>Označite</strong> korisnike na čije ponašanje želite obratiti pažnju."
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:716
+#: perllib/FixMyStreet/Cobrand/Default.pm:720
 msgid "Markup problem details"
 msgstr ""
 
@@ -2024,24 +2013,23 @@ msgstr "Nedostajuća tijela:"
 msgid "Missing jurisdiction_id"
 msgstr "Nedostaje nadležni_ID"
 
-#: templates/web/base/report/_main.html:126
+#: templates/web/base/report/_main.html:128
 msgid "Moderate"
 msgstr "Moderirajte"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:712
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:145
+#: perllib/FixMyStreet/Cobrand/Default.pm:716
 msgid "Moderate report details"
 msgstr "Moderirajte detalje prijave"
 
-#: templates/web/base/report/_main.html:126
+#: templates/web/base/report/_main.html:128
 msgid "Moderate this report"
 msgstr "Moderirajte ovu prijavu"
 
-#: templates/web/base/report/update.html:11
+#: templates/web/base/report/update.html:12
 msgid "Moderate this update"
 msgstr "Moderirajte ovo ažuriranje novosti"
 
-#: templates/web/base/report/_main.html:69
+#: templates/web/base/report/_main.html:71
 #: templates/web/base/report/_update_state.html:19
 msgid "Moderated by %s at %s"
 msgstr "Moderirao/la %s u %s"
@@ -2050,23 +2038,18 @@ msgstr "Moderirao/la %s u %s"
 msgid "Moderated by division within one working day"
 msgstr ""
 
-#: templates/web/base/report/_main.html:109
-#: templates/web/base/report/update.html:50
-msgid "Moderation reason:"
-msgstr "Razlog moderiranja:"
-
 #: templates/web/base/dashboard/index.html:102
 #: templates/web/zurich/admin/stats/index.html:9
 msgid "Month"
 msgstr "Mjesec"
 
-#: templates/web/base/reports/_list-filters.html:72
+#: templates/web/base/reports/_list-filters.html:79
 msgid "Most commented"
 msgstr "Najviše komentara"
 
 #: templates/web/base/admin/bodies.html:25
 #: templates/web/base/admin/body-form.html:24
-#: templates/web/base/admin/extra-metadata-form.html:65
+#: templates/web/base/admin/extra-metadata-form.html:75
 #: templates/web/base/admin/flagged.html:16
 #: templates/web/base/admin/flagged.html:37
 #: templates/web/base/admin/index.html:62
@@ -2080,9 +2063,7 @@ msgstr "Najviše komentara"
 #: templates/web/base/admin/user_import.html:23
 #: templates/web/base/admin/user_import.html:46
 #: templates/web/base/admin/users.html:16
-#: templates/web/base/auth/general.html:115
 #: templates/web/base/report/new/form_user_name.html:1
-#: templates/web/base/report/update/form_name.html:27
 #: templates/web/zurich/admin/body-form.html:4
 #: templates/web/zurich/auth/general.html:50
 #: templates/web/zurich/report/new/fill_in_details_form.html:59
@@ -2113,12 +2094,12 @@ msgstr "Najbliža imenovana cesta smještena pokraj oznake na karti (automatski 
 msgid "Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"
 msgstr "Najbliži poštanski broj pokraj oznake na karti (automatski generiran): %s (%sm udaljenosti)"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:566
+#: perllib/FixMyStreet/Cobrand/Default.pm:570
 #: perllib/FixMyStreet/Geocode/Address.pm:17
 msgid "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s"
 msgstr "Najbliža cesta smještena pokraj oznake na karti (automatski generirano pomoću Bing Maps): %s"
 
-#: perllib/FixMyStreet/Script/Alerts.pm:341
+#: perllib/FixMyStreet/Script/Alerts.pm:344
 msgid ""
 "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s\n"
 "\n"
@@ -2139,15 +2120,11 @@ msgstr "Skoro gotovo! Sada pogledajte svoj e-mail sandučić..."
 msgid "Nearly done! Now check your phone&hellip;"
 msgstr "Skoro gotovo! Sada pogledajte svoj telefon..."
 
-#: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:133
-msgid "New"
-msgstr "Novo"
-
-#: perllib/FixMyStreet/App/Controller/Admin.pm:237
+#: perllib/FixMyStreet/App/Controller/Admin.pm:242
 msgid "New body added"
 msgstr "Dodano novo tijelo javne vlasti"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:368
+#: perllib/FixMyStreet/App/Controller/Admin.pm:379
 msgid "New category contact added"
 msgstr "Novi kontakt dodan u kategoriju"
 
@@ -2217,7 +2194,7 @@ msgstr "Novo stanje"
 msgid "New template"
 msgstr "Novi predložak"
 
-#: templates/web/base/reports/_list-filters.html:68
+#: templates/web/base/reports/_list-filters.html:75
 msgid "Newest"
 msgstr "Najnovije"
 
@@ -2225,7 +2202,7 @@ msgstr "Najnovije"
 msgid "Next"
 msgstr "Sljedeće"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:1199
+#: perllib/FixMyStreet/Cobrand/Default.pm:1203
 #: templates/web/base/admin/category_edit.html:4
 #: templates/web/base/admin/list_updates.html:32
 #: templates/web/base/admin/list_updates.html:34
@@ -2237,15 +2214,15 @@ msgstr "Sljedeće"
 #: templates/web/base/questionnaire/creator_fixed.html:16
 #: templates/web/base/questionnaire/index.html:106
 #: templates/web/base/questionnaire/index.html:39
-#: templates/web/base/report/_inspect.html:109
+#: templates/web/base/report/_inspect.html:113
 msgid "No"
 msgstr "Ne"
 
-#: templates/web/base/admin/user-form.html:80
+#: templates/web/base/admin/user-form.html:84
 msgid "No area"
 msgstr "Bez područja"
 
-#: templates/web/base/admin/user-form.html:48
+#: templates/web/base/admin/user-form.html:52
 msgid "No body"
 msgstr "Nema tijela javne vlasti"
 
@@ -2282,7 +2259,7 @@ msgstr "Nisu zabilježeni nadzori u navedenom periodu."
 msgid "No reports to show on map, here are some nearby:"
 msgstr "Nema prijava za prikazati na karti, no evo nekih u blizini:"
 
-#: templates/web/base/js/translation_strings.html:43
+#: templates/web/base/js/translation_strings.html:45
 msgid "No result returned"
 msgstr "Nisu pronađeni traženi rezultati !!!"
 
@@ -2304,15 +2281,15 @@ msgstr "Bez podrške"
 msgid "None"
 msgstr "Nijedan"
 
-#: templates/web/base/admin/user-form.html:72
-#: templates/web/base/admin/user-form.html:73
+#: templates/web/base/admin/user-form.html:76
+#: templates/web/base/admin/user-form.html:77
 msgid ""
 "Normal (public) users should not be associated with any <strong>area</strong>.<br>\n"
 "                  Authorised staff users can be associated with the area in which they operate."
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:38
-#: templates/web/base/admin/user-form.html:39
+#: templates/web/base/admin/user-form.html:42
+#: templates/web/base/admin/user-form.html:43
 msgid ""
 "Normal (public) users should not be associated with any <strong>body</strong>.<br>\n"
 "                Authorised staff users can be associated with the body they represent.<br>\n"
@@ -2350,7 +2327,7 @@ msgstr "Napomena: <strong>%s</strong>"
 msgid "Notes from SDM to DM"
 msgstr "Bilješke od SDM-a za DM-a"
 
-#: templates/web/base/admin/extra-metadata-form.html:26
+#: templates/web/base/admin/extra-metadata-form.html:36
 msgid "Notice"
 msgstr "Bilješka"
 
@@ -2372,15 +2349,15 @@ msgstr "Broj prijavljenih problema u svakoj kategoriji, unutar posljenjih 7 dana
 msgid "Number of problems reported in each ward, in the last 7 days."
 msgstr "Broj problema u pojedinoj samoupravi, u posljednjih 7 dana"
 
-#: templates/web/base/js/translation_strings.html:49
+#: templates/web/base/js/translation_strings.html:51
 msgid "OK"
 msgstr "OK"
 
-#: templates/web/base/js/translation_strings.html:80
+#: templates/web/base/js/translation_strings.html:88
 msgid "Offline data cleared"
 msgstr "Preuzeti podaci su izbrisani"
 
-#: templates/web/base/js/translation_strings.html:77
+#: templates/web/base/js/translation_strings.html:85
 msgid "Offline update data saved"
 msgstr "Preuzeti podaci su sačuvani"
 
@@ -2388,16 +2365,16 @@ msgstr "Preuzeti podaci su sačuvani"
 msgid "Old state"
 msgstr "Staro stanje"
 
-#: templates/web/base/reports/_list-filters.html:69
+#: templates/web/base/reports/_list-filters.html:76
 msgid "Oldest"
 msgstr "Najstarije"
 
-#: perllib/FixMyStreet/SendReport/Email.pm:89
+#: perllib/FixMyStreet/SendReport/Email.pm:91
 msgid "On behalf of %s"
 msgstr "U ime %s"
 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:178
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:155
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:156
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:70
 #: templates/web/base/admin/states/index.html:102
 #: templates/web/base/admin/states/index.html:25
@@ -2428,7 +2405,7 @@ msgstr "Open311 prvotna web stranica"
 msgid "Open311 specification"
 msgstr "Open311 specifikacija"
 
-#: templates/web/base/admin/extra-metadata-form.html:53
+#: templates/web/base/admin/extra-metadata-form.html:63
 msgid "Options"
 msgstr "Postavke"
 
@@ -2440,11 +2417,11 @@ msgstr "Ili se pretplatite na RSS izvor"
 msgid "Order"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1286
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:689
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:690
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:719
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:722
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1322
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:702
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:703
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:738
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:741
 #: perllib/FixMyStreet/DB/Result/Problem.pm:600
 #: perllib/FixMyStreet/DB/Result/Problem.pm:607
 #: perllib/FixMyStreet/DB/Result/Problem.pm:622
@@ -2492,15 +2469,11 @@ msgstr "Djelomično"
 msgid "Password (optional)"
 msgstr "Lozinka (neobvezno)"
 
-#: templates/web/base/auth/general.html:83
-msgid "Password:"
-msgstr "Lozinka:"
-
-#: templates/web/base/js/translation_strings.html:58
+#: templates/web/base/js/translation_strings.html:60
 msgid "Permalink"
 msgstr "Stalna poveznica (permalink)"
 
-#: templates/web/base/admin/user-form.html:164
+#: templates/web/base/admin/user-form.html:168
 msgid "Permissions:"
 msgstr "Ovlaštenja:"
 
@@ -2524,12 +2497,12 @@ msgstr "Broj telefona"
 msgid "Phone number (optional)"
 msgstr "Telefonski broj (neobavezan)"
 
-#: templates/web/base/admin/user-form.html:25
+#: templates/web/base/admin/user-form.html:29
 msgid "Phone verified:"
 msgstr "Provjeren broj telefona:"
 
 #: templates/web/base/admin/report_edit.html:142
-#: templates/web/base/admin/user-form.html:23 templates/web/base/my/my.html:47
+#: templates/web/base/admin/user-form.html:27 templates/web/base/my/my.html:47
 #: templates/web/zurich/admin/stats/index.html:60
 msgid "Phone:"
 msgstr "Telefon:"
@@ -2603,28 +2576,28 @@ msgstr "Provjeri lozinku i pokušaj ponovno"
 msgid "Please check your email address is correct"
 msgstr "Provjerite je li vaša e-mail adresa točna"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1394
-#: perllib/FixMyStreet/DB/Result/User.pm:219
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1408
 #: perllib/FixMyStreet/DB/Result/User.pm:220
+#: perllib/FixMyStreet/DB/Result/User.pm:221
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:7
 msgid "Please check your phone number is correct"
 msgstr "Molimo da provjerite je li ispravno unesen broj telefona"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:310
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:931
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:954
+#: perllib/FixMyStreet/App/Controller/Admin.pm:315
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:947
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:982
 #: perllib/FixMyStreet/DB/Result/Problem.pm:383
 #: templates/web/base/js/translation_strings.html:13
 msgid "Please choose a category"
 msgstr "Izaberite kategoriju"
 
-#: perllib/FixMyStreet/App/Controller/Auth.pm:383
-#: perllib/FixMyStreet/App/Controller/Auth.pm:409
+#: perllib/FixMyStreet/App/Controller/Auth.pm:379
+#: perllib/FixMyStreet/App/Controller/Auth.pm:405
 msgid "Please choose a less commonly-used password"
 msgstr "Molimo Vas da odaberete neku rjeđe korištenu lozinku koju je teže \"hakirati\""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:359
+#: perllib/FixMyStreet/App/Controller/Admin.pm:370
 #: templates/web/base/admin/bodies.html:4 templates/web/base/admin/body.html:11
 #: templates/web/base/admin/template_edit.html:13
 msgid "Please correct the errors below"
@@ -2644,26 +2617,26 @@ msgstr ""
 msgid "Please do not be abusive&nbsp;&mdash; abusing your council devalues the service for all users."
 msgstr "Molimo Vas da budete pristojni; vrijeđanje službenika u tijelu javne vlasti nanosi štetu svim budućim korisnicima ovog sustava."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:311
+#: perllib/FixMyStreet/App/Controller/Admin.pm:316
 #: perllib/FixMyStreet/DB/Result/Comment.pm:128
 #: templates/web/base/js/translation_strings.html:6
 msgid "Please enter a message"
 msgstr "Unesite poruku"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1392
-#: perllib/FixMyStreet/DB/Result/User.pm:222
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1406
 #: perllib/FixMyStreet/DB/Result/User.pm:223
+#: perllib/FixMyStreet/DB/Result/User.pm:224
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:4
 msgid "Please enter a mobile number"
 msgstr "Molimo da ostavite broj telefona"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1425
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1529
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1433
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1549
 msgid "Please enter a name"
 msgstr "Molimo da unesete ime"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:490
+#: perllib/FixMyStreet/App/Controller/Admin.pm:501
 msgid "Please enter a name for this body"
 msgstr "Molimo da unesete ime ovog tijela javne vlasti"
 
@@ -2673,28 +2646,28 @@ msgstr "Molimo da unesete ime ovog tijela javne vlasti"
 msgid "Please enter a password"
 msgstr "Unesite lozinku"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:127
+#: perllib/FixMyStreet/App/Controller/Contact.pm:122
 #: perllib/FixMyStreet/DB/Result/Problem.pm:366
 #: templates/web/base/js/translation_strings.html:7
 msgid "Please enter a subject"
 msgstr "Unesite predmet (naslov)"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1422
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1520
-#: perllib/FixMyStreet/App/Controller/Admin.pm:324
-#: perllib/FixMyStreet/DB/Result/User.pm:212
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1430
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1540
+#: perllib/FixMyStreet/App/Controller/Admin.pm:329
+#: perllib/FixMyStreet/DB/Result/User.pm:213
 #: templates/web/base/js/translation_strings.html:16
 #: templates/web/base/js/translation_strings.html:20
 msgid "Please enter a valid email"
 msgstr "Unesite valjanu e-mail adresu"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:355
-#: perllib/FixMyStreet/App/Controller/Contact.pm:137
+#: perllib/FixMyStreet/App/Controller/Contact.pm:132
 msgid "Please enter a valid email address"
 msgstr "Unesite valjanu e-mail adresu"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1416
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1514
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1437
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1534
 msgid "Please enter a valid email or phone number"
 msgstr "Molimo da unesete valjanu e-mail adresu ili broj telefona"
 
@@ -2703,8 +2676,8 @@ msgstr "Molimo da unesete valjanu e-mail adresu ili broj telefona"
 msgid "Please enter some details"
 msgstr "Unesite detalje"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:126
-#: perllib/FixMyStreet/DB/Result/User.pm:210
+#: perllib/FixMyStreet/App/Controller/Contact.pm:121
+#: perllib/FixMyStreet/DB/Result/User.pm:211
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:8
 #: templates/web/base/auth/change_email.html:24
@@ -2714,23 +2687,19 @@ msgstr "Unesite detalje"
 msgid "Please enter your email"
 msgstr "Unesite svoju e-mail adresu"
 
-#: templates/web/zurich/report/new/fill_in_details_form.html:57
-msgid "Please enter your email address"
-msgstr "Unesite svoju e-mail adresu"
-
 #: templates/web/base/js/translation_strings.html:32
 msgid "Please enter your first name"
 msgstr "Unesite svoje ime"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:322
+#: perllib/FixMyStreet/Cobrand/UK.pm:327
 #: templates/web/base/js/translation_strings.html:11
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Molimo unesite svoje puno ime, odgovorno tijelo treba ovu informaciju – ako ne želite da vaše ime bude prikazano na stranici, odznačite kvadratić ispod"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:125
+#: perllib/FixMyStreet/App/Controller/Contact.pm:120
 #: perllib/FixMyStreet/DB/Result/Comment.pm:125
 #: perllib/FixMyStreet/DB/Result/Problem.pm:377
-#: perllib/FixMyStreet/DB/Result/User.pm:205
+#: perllib/FixMyStreet/DB/Result/User.pm:206
 #: templates/web/base/js/translation_strings.html:10
 msgid "Please enter your name"
 msgstr "Unesite svoje ime"
@@ -2759,10 +2728,6 @@ msgstr "Možete se <a href=\"%s\">ponovno prijaviti</a> ili se vratiti na <a hre
 msgid "Please fill in details of the problem below."
 msgstr "Popunite detalje o problemu u nastavku."
 
-#: templates/web/zurich/report/new/fill_in_details_form.html:49
-msgid "Please fill in details of the problem."
-msgstr "Popunite detalje o problemu u nastavku."
-
 #: templates/web/base/report/new/sidebar.html:7
 #: templates/web/zurich/report/new/sidebar.html:14
 msgid "Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box."
@@ -2772,11 +2737,11 @@ msgstr "Popunite detalje o problemu u nastavku i opišite lokaciju što precizni
 msgid "Please generate a two-factor code and enter it below:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:259
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:253
 msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr "Molimo navedite želite li primiti novi upitnik"
 
-#: perllib/FixMyStreet/App/Controller/Auth.pm:406
+#: perllib/FixMyStreet/App/Controller/Auth.pm:402
 #: templates/web/base/js/translation_strings.html:26
 msgid "Please make sure your password is at least %d characters long"
 msgstr "Molimo da provjerite sastoji li se Vaša lozinka od najmanje %dznakova"
@@ -2803,24 +2768,24 @@ msgstr "Molimo da imate na umu da Vaša prijava <strong>još nije objavljena</st
 msgid "Please note:"
 msgstr "Napominjemo:"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:407
+#: perllib/FixMyStreet/App/Controller/Report.pm:399
 msgid "Please provide a duplicate ID or public update for this report."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:389
+#: perllib/FixMyStreet/App/Controller/Report.pm:381
 msgid "Please provide a public update for this report."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:262
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:256
 msgid "Please provide some explanation as to why you're reopening this report"
 msgstr "Molimo navedite obrazloženje ponovnog otvaranja ove prijave"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:269
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:263
 msgid "Please provide some text as well as a photo"
 msgstr "Molimo unesite tekst i fotografiju "
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:120
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:255
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:114
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:249
 msgid "Please say whether you've ever reported a problem to your council before"
 msgstr "Jeste li do sada ikada prijavljivali problem odgovoronom tijelu"
 
@@ -2836,35 +2801,36 @@ msgstr "Izaberite izvor koji želite"
 msgid "Please select the type of alert you want"
 msgstr "Izaberite tip upozorenja koja želite primati"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:251
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:245
 msgid "Please state whether or not the problem has been fixed"
 msgstr "Navedite je li problem rješen  "
 
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:122
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:156
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:158
-#: templates/web/base/js/translation_strings.html:66
+#: templates/web/base/js/translation_strings.html:68
 msgid "Please upload an image only"
 msgstr "Molimo da pošaljete samo fotografiju"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1419
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1517
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1440
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1537
 msgid "Please verify at least one of email/phone"
 msgstr "Molimo da autorizirate barem jedan telefonski broj ili e-mail adresu"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:128
+#: perllib/FixMyStreet/App/Controller/Contact.pm:123
 msgid "Please write a message"
 msgstr "Napiši poruku"
-
-#: templates/web/base/report/update/form_update.html:36
-msgid "Please write your update here"
-msgstr "Ovdje ažurirajte"
 
 #: templates/web/base/report/update-form.html:29
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:21
 #: templates/web/base/report/update/form_user_loggedout_password.html:10
 msgid "Post"
 msgstr "Objavi"
+
+#: templates/web/base/alert/index.html:33
+#, fuzzy
+msgid "Postcode or street name and area"
+msgstr "Unesite obližnji poštanski broj ili ime ulice i kvarta"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:211
 msgid "Posted anonymously at %s"
@@ -2891,16 +2857,16 @@ msgstr "Pogoni Platforma FixMyStreet."
 msgid "Previous"
 msgstr "Prethodno"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:666
+#: perllib/FixMyStreet/Cobrand/Default.pm:670
 msgid "Priorities"
 msgstr "Prioriteti"
 
-#: templates/web/base/report/_inspect.html:140
-#: templates/web/base/report/_item.html:101
+#: templates/web/base/report/_inspect.html:144
+#: templates/web/base/report/_item.html:105
 msgid "Priority"
 msgstr "Prioritet"
 
-#: templates/web/base/main_nav_items.html:43
+#: templates/web/base/main_nav_items.html:51
 msgid "Privacy"
 msgstr "Privatnost"
 
@@ -2922,7 +2888,7 @@ msgstr "Privatno"
 msgid "Private details"
 msgstr "Privatni podaci"
 
-#: templates/web/base/maps/pin.html:13
+#: templates/web/base/maps/pin.html:14
 msgid "Problem"
 msgstr "Problem"
 
@@ -2944,7 +2910,7 @@ msgstr "Problem %s poslan odgovornom tijelu %s"
 msgid "Problem breakdown by state"
 msgstr "Analiza problema prema stanju"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1350
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1364
 msgid "Problem marked as open."
 msgstr "Problem označen kao otvoren."
 
@@ -2952,8 +2918,7 @@ msgstr "Problem označen kao otvoren."
 msgid "Problem state change based on survey results"
 msgstr "Stanje problema izmijenjeno na temelju rezultata ankete"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:711
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:144
+#: perllib/FixMyStreet/Cobrand/Default.pm:715
 #: templates/web/base/admin/flagged.html:10
 msgid "Problems"
 msgstr "Problemi"
@@ -2978,18 +2943,18 @@ msgstr "Problemi nedavno prijavljeni kao popravljeni na Popravi.to"
 msgid "Problems within %.1fkm of %s"
 msgstr "Problemi unutar radijusa %.1f km od %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:840
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:138
-#: perllib/FixMyStreet/Cobrand/UK.pm:211 perllib/FixMyStreet/Cobrand/UK.pm:253
-#: perllib/FixMyStreet/Cobrand/UK.pm:265
+#: perllib/FixMyStreet/Cobrand/Default.pm:844
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:141
+#: perllib/FixMyStreet/Cobrand/UK.pm:213 perllib/FixMyStreet/Cobrand/UK.pm:258
+#: perllib/FixMyStreet/Cobrand/UK.pm:270
 msgid "Problems within %s"
 msgstr "Problemi unutar %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:225
+#: perllib/FixMyStreet/Cobrand/UK.pm:227
 msgid "Problems within %s ward"
 msgstr "Problemi unutar %s ward"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:259 perllib/FixMyStreet/Cobrand/UK.pm:271
+#: perllib/FixMyStreet/Cobrand/UK.pm:264 perllib/FixMyStreet/Cobrand/UK.pm:276
 msgid "Problems within %s ward, %s"
 msgstr "Problemi unutar %s JLS, %s"
 
@@ -3003,7 +2968,7 @@ msgstr "Problemi unutar %s, %s"
 msgid "Property address:"
 msgstr "Adresa objekta:"
 
-#: templates/web/base/report/display.html:57
+#: templates/web/base/report/display.html:66
 #: templates/web/base/report/duplicate-no-updates.html:3
 #: templates/web/base/report/update-form.html:9
 msgid "Provide an update"
@@ -3031,7 +2996,7 @@ msgstr "Javni detalji:"
 msgid "Public response:"
 msgstr "Javni odgovor:"
 
-#: templates/web/base/report/_inspect.html:180
+#: templates/web/base/report/_inspect.html:189
 msgid "Public update:"
 msgstr "Javno ažuriranje novosti:"
 
@@ -3055,7 +3020,7 @@ msgstr " Upitnik %d odgovren za problem %d, %s za %s"
 msgid "Questionnaire %d sent for problem %d"
 msgstr "Upitnik %d poslan za problem %d"
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:211
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:205
 msgid "Questionnaire filled in by problem reporter"
 msgstr "Upitnik popunila osoba koja je prijavila problem"
 
@@ -3067,23 +3032,23 @@ msgstr "Upitnik popunila osoba koja je prijavila problem"
 msgid "RSS feed"
 msgstr "RSS izvor"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:254 perllib/FixMyStreet/Cobrand/UK.pm:266
+#: perllib/FixMyStreet/Cobrand/UK.pm:259 perllib/FixMyStreet/Cobrand/UK.pm:271
 msgid "RSS feed for %s"
 msgstr "RSS izvor za %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:260 perllib/FixMyStreet/Cobrand/UK.pm:272
+#: perllib/FixMyStreet/Cobrand/UK.pm:265 perllib/FixMyStreet/Cobrand/UK.pm:277
 msgid "RSS feed for %s ward, %s"
 msgstr "RSS izvor za %s JLS, %s"
 
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:154
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:162
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:172
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:180
-#: perllib/FixMyStreet/Cobrand/UK.pm:280 perllib/FixMyStreet/Cobrand/UK.pm:292
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:157
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:165
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:175
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:183
+#: perllib/FixMyStreet/Cobrand/UK.pm:285 perllib/FixMyStreet/Cobrand/UK.pm:297
 msgid "RSS feed of %s"
 msgstr "RSS izvor za %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:285 perllib/FixMyStreet/Cobrand/UK.pm:297
+#: perllib/FixMyStreet/Cobrand/UK.pm:290 perllib/FixMyStreet/Cobrand/UK.pm:302
 msgid "RSS feed of %s, within %s ward"
 msgstr "RSS izvor za %s, unutar %s JLS"
 
@@ -3091,13 +3056,13 @@ msgstr "RSS izvor za %s, unutar %s JLS"
 msgid "RSS feed of nearby problems"
 msgstr "RSS izvor za okolne probleme"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:841
-#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:137
-#: perllib/FixMyStreet/Cobrand/UK.pm:218
+#: perllib/FixMyStreet/Cobrand/Default.pm:845
+#: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:140
+#: perllib/FixMyStreet/Cobrand/UK.pm:220
 msgid "RSS feed of problems within %s"
 msgstr "RSS izvor za probleme unutar %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:224
+#: perllib/FixMyStreet/Cobrand/UK.pm:226
 msgid "RSS feed of problems within %s ward"
 msgstr "RSS izvor za probleme unutar %s JLS"
 
@@ -3130,11 +3095,11 @@ msgstr "Nedavni lokalni problemi, %s"
 msgid "Recently reported problems"
 msgstr "Nedavno prijavljeni problemi"
 
-#: templates/web/base/reports/_list-filters.html:70
+#: templates/web/base/reports/_list-filters.html:77
 msgid "Recently updated"
 msgstr "Nedavno dodano"
 
-#: templates/web/base/report/_inspect.html:57
+#: templates/web/base/report/_inspect.html:60
 #, fuzzy
 msgid "Reject report"
 msgstr "Ponovno pošalji prijavu"
@@ -3143,11 +3108,11 @@ msgstr "Ponovno pošalji prijavu"
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
 msgstr "Popravi.to prvenstveno služi za prijavljivanje fizičkih problema koji se mogu popraviti. Ako Vaš problem nije prikladan za prijavljivanje preko ove stranice, uvijek se možete obratiti direktno svojoj lokalnoj samoupravi preko njihove web stranice."
 
-#: templates/web/base/admin/extra-metadata-form.html:68
+#: templates/web/base/admin/extra-metadata-form.html:78
 msgid "Remove"
 msgstr "Uklonite"
 
-#: templates/web/base/admin/user-form.html:198
+#: templates/web/base/admin/user-form.html:203
 msgid "Remove account details"
 msgstr "Uklonite detalje računa"
 
@@ -3161,9 +3126,9 @@ msgstr "Ukloni oznaku"
 
 #: templates/web/base/report/_item.html:12
 #: templates/web/base/report/_item.html:9
-#: templates/web/base/report/_main.html:130
-#: templates/web/base/report/_main.html:14
-#: templates/web/base/report/_main.html:22
+#: templates/web/base/report/_main.html:132
+#: templates/web/base/report/_main.html:16
+#: templates/web/base/report/_main.html:24
 msgid "Remove from shortlist"
 msgstr ""
 
@@ -3190,20 +3155,35 @@ msgid "Report"
 msgstr "Prijava"
 
 #: templates/web/base/report/_inspect.html:17
-#: templates/web/base/report/_item.html:79
+#: templates/web/base/report/_item.html:83
 msgid "Report ID:"
 msgstr ""
 
 #: templates/web/base/header_logo.html:2
-#: templates/web/base/main_nav_items.html:1 templates/web/zurich/footer.html:18
+#: templates/web/base/js/translation_strings.html:77
+#: templates/web/base/main_nav_items.html:6
+#: templates/web/base/main_nav_items.html:8 templates/web/zurich/footer.html:18
 #: templates/web/zurich/nav_over_content.html:4
 msgid "Report a problem"
+msgstr "Prijavite problem"
+
+#: templates/web/base/js/translation_strings.html:78
+#: templates/web/base/main_nav_items.html:4
+#, fuzzy
+msgid "Report a problem here"
 msgstr "Prijavite problem"
 
 #: templates/web/base/report/display_tools.html:10
 #: templates/web/base/report/display_tools.html:9
 msgid "Report abuse"
 msgstr "Prijavite zloupotrebu"
+
+#: templates/web/base/js/translation_strings.html:79
+#: templates/web/base/main_nav_items.html:2
+#: templates/web/base/tokens/confirm_problem.html:40
+#, fuzzy
+msgid "Report another problem here"
+msgstr "Prijavite problem"
 
 #: templates/web/base/report/new/form_user_loggedin.html:17
 msgid "Report as"
@@ -3288,22 +3268,21 @@ msgstr ""
 
 #: templates/web/base/around/index.html:3
 #: templates/web/base/around/lookup_by_ref.html:3
-#: templates/web/base/js/translation_strings.html:48
+#: templates/web/base/js/translation_strings.html:50
 #: templates/web/base/report/new/fill_in_details.html:0
 #: templates/web/base/report/new/fill_in_details.html:8
 #: templates/web/zurich/report/new/fill_in_details_form.html:4
 msgid "Reporting a problem"
 msgstr "Prijavljivanje problema"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:656
-#: perllib/FixMyStreet/Cobrand/Default.pm:670
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:266
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:374
+#: perllib/FixMyStreet/Cobrand/Default.pm:660
+#: perllib/FixMyStreet/Cobrand/Default.pm:674
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:375
 #: templates/web/zurich/header.html:45
 msgid "Reports"
 msgstr "Prijave"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:329 perllib/FixMyStreet/Cobrand/UK.pm:331
+#: perllib/FixMyStreet/Cobrand/UK.pm:334 perllib/FixMyStreet/Cobrand/UK.pm:336
 msgid "Reports are limited to %s characters in length. Please shorten your report"
 msgstr "Prijave su ograničene na broj od %s znakova duljine. Molimo da skratite svoju prijavu."
 
@@ -3315,7 +3294,7 @@ msgstr "Prijave koje čekaju odobrenje"
 msgid "Reports by destination"
 msgstr "Podjela prijava s obzirom na odredište"
 
-#: templates/web/base/admin/user-form.html:124
+#: templates/web/base/admin/user-form.html:128
 msgid "Reports made by trusted users will be sent to the responsible body without being inspected first."
 msgstr "Prijave od strane pouzdanih korisnika bit će poslane odgovornim tijelima bez dodatne moderatorske provjere."
 
@@ -3327,15 +3306,15 @@ msgstr "Prijave u blizini %s su poslane različitim tijelima javne vlasti, ovisn
 msgid "Reports published"
 msgstr "Prijave objavljene"
 
-#: templates/web/base/js/translation_strings.html:81
+#: templates/web/base/js/translation_strings.html:89
 msgid "Reports saved offline."
 msgstr "Prijave sačuvane offline"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:279 perllib/FixMyStreet/Cobrand/UK.pm:291
+#: perllib/FixMyStreet/Cobrand/UK.pm:284 perllib/FixMyStreet/Cobrand/UK.pm:296
 msgid "Reports sent to %s"
 msgstr "Prijave poslane na adresu %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:286 perllib/FixMyStreet/Cobrand/UK.pm:298
+#: perllib/FixMyStreet/Cobrand/UK.pm:291 perllib/FixMyStreet/Cobrand/UK.pm:303
 msgid "Reports sent to %s, within %s ward"
 msgstr ""
 
@@ -3351,7 +3330,7 @@ msgstr "Prijave će biti automatski poslane bez potrebe za moderatorskom provjer
 msgid "Reputation threshold"
 msgstr ""
 
-#: templates/web/base/admin/extra-metadata-form.html:20
+#: templates/web/base/admin/extra-metadata-form.html:30
 msgid "Required"
 msgstr ""
 
@@ -3387,20 +3366,20 @@ msgstr ""
 msgid "Response Templates for %s"
 msgstr ""
 
-#: templates/web/base/report/update.html:38
+#: templates/web/base/report/update.html:39
 msgid "Revert to original"
 msgstr ""
 
-#: templates/web/base/report/_main.html:95
+#: templates/web/base/report/_main.html:97
 msgid "Revert to original text"
 msgstr ""
 
-#: templates/web/base/report/_main.html:46
+#: templates/web/base/report/_main.html:48
 msgid "Revert to original title"
 msgstr ""
 
 #: templates/web/base/js/translation_strings.html:34
-#: templates/web/base/js/translation_strings.html:46
+#: templates/web/base/js/translation_strings.html:48
 msgid "Right place?"
 msgstr ""
 
@@ -3412,15 +3391,15 @@ msgstr "Cestovni operater za ovu imenovanu cestu (izveden iz cestovnog referentn
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "Cestovni operater za ovu imenovanu cestu  (sa OpenStreetMap): %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2037
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2041
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2082
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2086
 #: templates/web/base/admin/report_edit.html:165
 #: templates/web/base/admin/update_edit.html:71
 #: templates/web/zurich/admin/report_edit.html:118
 msgid "Rotate Left"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2037
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2082
 #: templates/web/base/admin/report_edit.html:166
 #: templates/web/base/admin/update_edit.html:72
 #: templates/web/zurich/admin/report_edit.html:119
@@ -3431,21 +3410,21 @@ msgstr ""
 msgid "Rotating this photo will discard unsaved changes to the report."
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:53
+#: templates/web/base/js/translation_strings.html:55
 #: templates/web/base/maps/google-ol.html:2
 msgid "Satellite"
 msgstr ""
 
-#: templates/web/base/report/_inspect.html:200
+#: templates/web/base/report/_inspect.html:209
 msgid "Save + close as duplicate"
 msgstr ""
 
-#: templates/web/base/admin/contact-form.html:138
+#: templates/web/base/admin/contact-form.html:156
 #: templates/web/base/admin/reportextrafields/edit.html:64
 #: templates/web/base/admin/responsepriorities/edit.html:58
 #: templates/web/base/admin/template_edit.html:87
-#: templates/web/base/report/_inspect.html:200
-#: templates/web/base/report/_main.html:113
+#: templates/web/base/report/_inspect.html:209
+#: templates/web/base/report/_main.html:115
 #: templates/web/base/report/update.html:53
 #: templates/web/zurich/admin/contact-form.html:49
 #: templates/web/zurich/admin/template_edit.html:29
@@ -3456,17 +3435,13 @@ msgstr "Spremi promjene"
 msgid "Save new fields"
 msgstr ""
 
-#: templates/web/base/report/_inspect.html:176
+#: templates/web/base/report/_inspect.html:185
 msgid "Save with a public update"
 msgstr ""
 
 #. ("This is followed by a progress count, e.g. 3/5")
-#: templates/web/base/js/translation_strings.html:82
+#: templates/web/base/js/translation_strings.html:90
 msgid "Saving reports offline"
-msgstr ""
-
-#: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:134
-msgid "Scheduled"
 msgstr ""
 
 #: templates/web/base/admin/index.html:26
@@ -3510,8 +3485,7 @@ msgstr ""
 msgid "See our privacy policy"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:722
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:151
+#: perllib/FixMyStreet/Cobrand/Default.pm:726
 msgid "See user detail for reports created as the council"
 msgstr ""
 
@@ -3550,12 +3524,17 @@ msgstr ""
 msgid "Send extended Open311 statuses with service request updates"
 msgstr ""
 
+#: templates/web/base/admin/user-form.html:22
+#, fuzzy
+msgid "Send login email"
+msgstr "Prijavite se e-mail računom"
+
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:5
 msgid "Sending a confirmation text failed: \"%s\""
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:846
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:847
 msgid "Sent report back"
 msgstr ""
 
@@ -3566,6 +3545,10 @@ msgstr "Pošalji %s %s naknadno"
 #: templates/web/base/admin/report_edit.html:80
 msgid "Sent:"
 msgstr "Poslano:"
+
+#: templates/web/base/admin/extra-metadata-form.html:17
+msgid "Server Set"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:91
 #: templates/web/zurich/admin/stats/index.html:66
@@ -3585,10 +3568,10 @@ msgstr ""
 msgid "Share"
 msgstr "Podijeli"
 
-#: templates/web/base/main_nav_items.html:10
-#: templates/web/base/report/_main.html:132
-#: templates/web/base/report/_main.html:17
-#: templates/web/base/report/_main.html:25
+#: templates/web/base/main_nav_items.html:18
+#: templates/web/base/report/_main.html:134
+#: templates/web/base/report/_main.html:19
+#: templates/web/base/report/_main.html:27
 msgid "Shortlist"
 msgstr ""
 
@@ -3596,19 +3579,19 @@ msgstr ""
 msgid "Shortlist all visible"
 msgstr ""
 
-#: templates/web/base/report/_main.html:130
-#: templates/web/base/report/_main.html:16
-#: templates/web/base/report/_main.html:21
-#: templates/web/base/reports/_list-filters.html:18
+#: templates/web/base/report/_main.html:132
+#: templates/web/base/report/_main.html:18
+#: templates/web/base/report/_main.html:23
+#: templates/web/base/reports/_list-filters.html:24
 msgid "Shortlisted"
 msgstr ""
 
 #: templates/web/base/report/_item.html:15
-#: templates/web/base/report/_main.html:140
+#: templates/web/base/report/_main.html:142
 msgid "Shortlisted by %s"
 msgstr ""
 
-#: templates/web/base/report/update.html:19
+#: templates/web/base/report/update.html:20
 msgid "Show Photo?"
 msgstr ""
 
@@ -3620,21 +3603,30 @@ msgstr ""
 msgid "Show my name publicly"
 msgstr "Prikaži moje ime javno"
 
-#: templates/web/base/report/update.html:16
+#: templates/web/base/report/update.html:17
 msgid "Show name publicly?"
 msgstr ""
 
-#: templates/web/base/report/_main.html:79
+#: templates/web/base/pagination.html:12
+msgid "Show older"
+msgstr ""
+
+#: templates/web/base/reports/_list-filters.html:85
+#, fuzzy
+msgid "Show older reports"
+msgstr "Vaše prijave"
+
+#: templates/web/base/report/_main.html:81
 msgid "Show photo"
 msgstr ""
 
 #: templates/web/base/around/display_location.html:58
 #: templates/web/base/around/display_location.html:66
-#: templates/web/base/js/translation_strings.html:60
+#: templates/web/base/js/translation_strings.html:62
 msgid "Show pins"
 msgstr "Prikaži pinove"
 
-#: templates/web/base/report/_main.html:56
+#: templates/web/base/report/_main.html:58
 msgid "Show reporter&rsquo;s name"
 msgstr ""
 
@@ -3645,7 +3637,7 @@ msgstr "Prikaz prijava u Vašoj okolini"
 #: templates/web/base/auth/general.html:129
 #: templates/web/base/auth/general.html:3
 #: templates/web/base/auth/general.html:87
-#: templates/web/base/main_nav_items.html:6
+#: templates/web/base/main_nav_items.html:14
 #: templates/web/zurich/auth/general.html:25
 #: templates/web/zurich/auth/general.html:8
 msgid "Sign in"
@@ -3680,7 +3672,7 @@ msgid ""
 "          sent from your FixMyStreet installation."
 msgstr ""
 
-#: templates/web/base/alert/index.html:42
+#: templates/web/base/alert/index.html:44
 msgid "Some photos of recent reports"
 msgstr "Fotografije nedavnih prijava"
 
@@ -3689,22 +3681,9 @@ msgstr "Fotografije nedavnih prijava"
 msgid "Some text to localize"
 msgstr "Tekst za lakšu lokalizaciju"
 
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:117
 #: perllib/FixMyStreet/Cobrand/UK.pm:80
 msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr "Žao nam je,ne pokrivamo područje na kojem se nalazi taj problem."
-
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:131
-msgid "Sorry, that appears to be a Northern Irish postcode, which we don't cover."
-msgstr ""
-
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:123
-msgid "Sorry, that appears to be a Scottish postcode, which we don't cover."
-msgstr ""
-
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:127
-msgid "Sorry, that appears to be a Welsh postcode, which we don't cover."
-msgstr ""
 
 #: templates/web/base/auth/smsform.html:6 templates/web/base/auth/token.html:8
 msgid "Sorry, that wasn&rsquo;t a valid link"
@@ -3719,7 +3698,7 @@ msgstr ""
 msgid "Sorry, there has been an error confirming your problem."
 msgstr "Žao nam je, došlo je do greške pri potvrđivanju problema."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:242
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:243
 #: perllib/FixMyStreet/Geocode.pm:37 perllib/FixMyStreet/Geocode/Bing.pm:40
 #: perllib/FixMyStreet/Geocode/OSM.pm:52
 msgid "Sorry, we could not find that location."
@@ -3747,19 +3726,19 @@ msgid ""
 "page wasn’t found or there was a server error. Please try again later."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Root.pm:124
+#: perllib/FixMyStreet/App/Controller/Root.pm:125
 msgid "Sorry, you don't have permission to do that."
 msgstr ""
 
-#: templates/web/base/reports/_list-filters.html:63
+#: templates/web/base/reports/_list-filters.html:70
 msgid "Sort by"
 msgstr "Kriterij sortiranja"
 
-#: templates/web/base/admin/user-form.html:58
+#: templates/web/base/admin/user-form.html:62
 msgid "Staff users have permission to log in to the admin."
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:62
+#: templates/web/base/admin/user-form.html:66
 msgid "Staff:"
 msgstr ""
 
@@ -3777,15 +3756,15 @@ msgstr ""
 #: templates/web/base/admin/template_edit.html:53
 #: templates/web/base/admin/templates.html:8
 #: templates/web/base/dashboard/index.html:101
-#: templates/web/base/report/_inspect.html:99
-#: templates/web/base/report/_item.html:97
+#: templates/web/base/report/_inspect.html:103
+#: templates/web/base/report/_item.html:101
 #: templates/web/base/report/update/form_update.html:39
 #: templates/web/zurich/admin/contact-form.html:33
 msgid "State"
 msgstr "Stanje"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1180
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1181
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1193
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1194
 msgid "State and external status code cannot be used simultaneously."
 msgstr ""
 
@@ -3803,15 +3782,14 @@ msgstr ""
 msgid "State:"
 msgstr "Stanje:"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:645
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:256
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:395
+#: perllib/FixMyStreet/Cobrand/Default.pm:649
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:396
 #: templates/web/base/admin/states/index.html:1
 msgid "States"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:639
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:377
+#: perllib/FixMyStreet/Cobrand/Default.pm:643
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:378
 #: templates/web/base/admin/index.html:71
 #: templates/web/base/admin/stats/index.html:1
 #: templates/web/base/admin/stats/state.html:1
@@ -3837,11 +3815,7 @@ msgstr "I dalje otvoreno, putem upitnika %s"
 msgid "Street View"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Smidsy.pm:26
-msgid "Street, area, or landmark"
-msgstr ""
-
-#: templates/web/base/admin/extra-metadata-form.html:46
+#: templates/web/base/admin/extra-metadata-form.html:56
 msgid "String"
 msgstr ""
 
@@ -3875,7 +3849,7 @@ msgstr "Pošalji"
 #: templates/web/base/admin/report_edit.html:179
 #: templates/web/base/admin/report_edit.html:25
 #: templates/web/base/admin/update_edit.html:82
-#: templates/web/base/admin/user-form.html:191
+#: templates/web/base/admin/user-form.html:195
 #: templates/web/zurich/admin/report_edit-sdm.html:124
 #: templates/web/zurich/admin/report_edit.html:265
 #: templates/web/zurich/admin/update_edit.html:38
@@ -3908,13 +3882,12 @@ msgstr ""
 msgid "Summarise the problem"
 msgstr "Ukratko opišite svoj problem:"
 
-#: templates/web/base/admin/contact-form.html:130
+#: templates/web/base/admin/contact-form.html:148
 msgid "Summarise your changes"
 msgstr "Ukratko opišite unesene izmjene"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:637
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:250
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:373
+#: perllib/FixMyStreet/Cobrand/Default.pm:641
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:374
 #: templates/web/base/admin/bodies.html:29
 #: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
 #: templates/web/base/status/index.html:3
@@ -3935,11 +3908,11 @@ msgstr "Sažetak prijava"
 msgid "Summary statistics"
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:151
+#: templates/web/base/admin/user-form.html:155
 msgid "Superuser:"
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:147
+#: templates/web/base/admin/user-form.html:151
 msgid "Superusers have permission to perform <strong>all actions</strong> within the admin."
 msgstr "Super-korisnici imaju ovlasti da poduzimaju sve radnje u administratorskom sučelju."
 
@@ -3952,8 +3925,8 @@ msgstr "Rezultati ispitivanja"
 msgid "Template &laquo;%s&raquo;"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:662
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:384
+#: perllib/FixMyStreet/Cobrand/Default.pm:666
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:385
 #: templates/web/base/develop/email_list.html:3
 #: templates/web/zurich/header.html:62
 msgid "Templates"
@@ -3975,7 +3948,7 @@ msgstr "Tekst samo verzija"
 msgid "Text:"
 msgstr "Tekst:"
 
-#: templates/web/base/tokens/confirm_problem.html:25
+#: templates/web/base/tokens/confirm_problem.html:29
 msgid "Thank you for reporting this issue!"
 msgstr "Hvala Vam na prijavi ovog problema!"
 
@@ -4017,16 +3990,15 @@ msgstr "Lokacija se ne nalazi u Hrvatskoj. Molimo pokušajte ponovno."
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:45
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:104
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:110
 #: perllib/FixMyStreet/Cobrand/UK.pm:73
 msgid "That postcode was not recognised, sorry."
 msgstr "Žao nam je, poštanski broj nije prepoznat."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:903
+#: perllib/FixMyStreet/App/Controller/Admin.pm:916
 msgid "That problem has been marked as sent."
 msgstr "Ovaj problem ima oznaku da je poslan nadležnom tijelu na postupanje."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:896
+#: perllib/FixMyStreet/App/Controller/Admin.pm:909
 msgid "That problem will now be resent."
 msgstr "Navedeni problem će biti ponovno poslan"
 
@@ -4038,19 +4010,19 @@ msgstr "Ovaj izvještaj se ne može pregledati na %s."
 msgid "That report has been removed from FixMyStreet."
 msgstr "Navedena prijava je uklonjena s Popravi.to"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1891
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1911
 msgid "That user has been logged out."
 msgstr "Taj korisnik se odjavio iz sustava."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1898
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1918
 msgid "That user has been made anonymous on all reports and updates."
 msgstr "Osobni podaci tog korisnika su anonimizirani u svim prijavama i ažuriranjima."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1921
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1966
 msgid "That user’s personal details have been removed."
 msgstr "Osobni podaci tog korisnika su uklonjeni."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1912
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1932
 msgid "That user’s reports and updates have been hidden."
 msgstr "Prijave i ažuriranja od strane tog korisnika su označene kao sakrivene."
 
@@ -4067,6 +4039,13 @@ msgstr ""
 msgid ""
 "The <strong>endpoint</strong> is the URL of the service that FixMyStreet will connect to \n"
 "            when sending reports to this body."
+msgstr ""
+
+#: templates/web/base/admin/contact-form.html:126
+#: templates/web/base/admin/contact-form.html:127
+msgid ""
+"The <strong>group</strong> is used for the top-level category field when\n"
+"          subcategory grouping is enabled."
 msgstr ""
 
 #: templates/web/base/admin/open311-form-fields.html:27
@@ -4096,7 +4075,7 @@ msgid ""
 "          and may be displayed publically."
 msgstr ""
 
-#: templates/web/base/admin/extra-metadata-form.html:12
+#: templates/web/base/admin/extra-metadata-form.html:22
 msgid "The code used to store this field value in the database. e.g. <code>address</code> would be available as <code>problem.extra.address</code> in the templates."
 msgstr ""
 
@@ -4115,7 +4094,7 @@ msgstr ""
 msgid "The error was: %s"
 msgstr "Greška je: %s"
 
-#: templates/web/base/admin/extra-metadata-form.html:30
+#: templates/web/base/admin/extra-metadata-form.html:40
 msgid "The field name as shown to the user on the report form."
 msgstr "Naziv polja na način na koji je vidljiv korisniku u izvještajnom obrascu."
 
@@ -4173,7 +4152,7 @@ msgstr "Lozinke se ne podudaraju"
 msgid "The requested URL '%s' was not found on this server"
 msgstr "Traženi URL '%s' nije pronađen na ovom serveru"
 
-#: templates/web/base/admin/extra-metadata-form.html:42
+#: templates/web/base/admin/extra-metadata-form.html:52
 msgid "The type of input field to show to the user. <strong>Text</strong> is a simple text field, <strong>List</strong> is a drop-down selection."
 msgstr ""
 
@@ -4185,6 +4164,11 @@ msgstr ""
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
 msgstr "Korisnik nije mogao locirati problem na karti, ali možete vidjeti područje oko navedene lokacije"
 
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1957
+#, fuzzy
+msgid "The user has been sent a login email"
+msgstr "Taj korisnik se odjavio iz sustava."
+
 #: templates/web/base/admin/user-form.html:10
 #: templates/web/base/admin/user-form.html:11
 msgid ""
@@ -4192,13 +4176,13 @@ msgid ""
 "                Names are not necessarily unique."
 msgstr ""
 
-#: templates/web/base/around/on_map_list_items.html:20
+#: templates/web/base/around/_on_map_empty.html:1
 #: templates/web/base/my/_problem-list.html:8
 #: templates/web/base/reports/_problem-list.html:13
 msgid "There are no reports to show."
 msgstr "Nemamo Vaših prijava za prikaz."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1208
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1221
 msgid "There is already an auto-response template for this category/state."
 msgstr "Već postoji predložak za automatsko odgovaranje za ovu kategoriju ili stanje."
 
@@ -4206,7 +4190,7 @@ msgstr "Već postoji predložak za automatsko odgovaranje za ovu kategoriju ili 
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Došlo je do problema pri učitavanju svih prijava. Molimo pokušajte ponovno."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:150
+#: perllib/FixMyStreet/App/Controller/Contact.pm:145
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:42
 msgid "There was a problem showing this page. Please try again later."
 msgstr "Došlo je do problema pri učitavanju ove stranice. Molimo pokušajte ponovno."
@@ -4215,7 +4199,7 @@ msgstr "Došlo je do problema pri učitavanju ove stranice. Molimo pokušajte po
 msgid "There was a problem with your email/password combination. Please try again."
 msgstr "Došlo je do problema s kombinacijom Vaše e-maila i lozinke. Molimo pokušajte ponovno."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:818
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:835
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:142
 #: templates/web/base/auth/general.html:51
 #: templates/web/zurich/auth/general.html:18
@@ -4226,7 +4210,7 @@ msgstr "Pojavio se neki problem u vezi s Vašim podacima za prijavu. Ako se ne m
 msgid "There was a problem with your update. Please try again."
 msgstr "Došlo je do problema pri ažuriranju. Molimo pokušajte ponovno."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:154
+#: perllib/FixMyStreet/App/Controller/Contact.pm:149
 msgid "There were problems with your report. Please see below."
 msgstr "Došlo je do problema pri prijavi. Detalje pogledajte u nastavku."
 
@@ -4298,10 +4282,10 @@ msgstr "Kako korisnik nije kategorizirao problem, ovaj e-mail je automatski posl
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr "Kako je odabrana kategorija predviđena za više odgovornih tijela, ovaj e-mail poslan je na adrese nekoliko ureda koje prekrivaju mjesto problema. Molimo Vas da zanemarite e-mail ako problem ne ulazi u Vašu nadležnost ili nam se povratno javite kako bismo u svom sustavu mogli ispravno kategorizirati prijavu."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1028
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1045
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1091
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:968
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1057
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1074
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1120
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:996
 #: perllib/FixMyStreet/Cobrand/UK.pm:45
 msgid "This information is required"
 msgstr "Potrebna informacija"
@@ -4322,10 +4306,6 @@ msgstr ""
 msgid "This page is a quick way to create many new staff users in one go."
 msgstr ""
 
-#: templates/web/base/report/new/form_report.html:56
-msgid "This pothole has been here for two months and…"
-msgstr "Ova rupa je tu mjesecima..."
-
 #: templates/web/base/report/update/form_state_checkbox.html:14
 msgid "This problem has been fixed"
 msgstr "Problem je riješen."
@@ -4342,8 +4322,8 @@ msgstr ""
 msgid "This report is a duplicate. Please leave updates on the original report:"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:141
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:142
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:143
 #: templates/web/zurich/report/_main.html:12
 msgid "This report is awaiting moderation."
 msgstr ""
@@ -4360,6 +4340,11 @@ msgstr "Prijava je trenutno označena kao popravljena."
 msgid "This report is currently marked as open."
 msgstr "Prijava je trenutno označena kao otvorena."
 
+#: templates/web/base/report/display.html:59
+#, fuzzy
+msgid "This report is now closed to updates."
+msgstr "Prijava je trenutno označena kao otvorena."
+
 #: perllib/FixMyStreet/Script/Reports.pm:90
 msgid "This web page also contains a photo of the problem, provided by the user."
 msgstr "Stranica sadrži i fotografiju problem, dodanu od strane korisnika."
@@ -4371,13 +4356,12 @@ msgstr "Stranica sadrži i fotografiju problem, dodanu od strane korisnika."
 msgid "Time spent (in minutes):"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:638
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:251
+#: perllib/FixMyStreet/Cobrand/Default.pm:642
 #: templates/web/base/admin/timeline.html:1
 msgid "Timeline"
 msgstr "Vremenska skala"
 
-#: templates/web/base/report/new/after_photo.html:1
+#: templates/web/base/report/new/after_photo.html:2
 msgid "Tips for perfect photos"
 msgstr ""
 
@@ -4439,8 +4423,8 @@ msgstr "5 najboljih JLS"
 msgid "Total"
 msgstr "Ukupno"
 
-#: templates/web/base/report/_inspect.html:151
-#: templates/web/base/report/_item.html:105
+#: templates/web/base/report/_inspect.html:155
+#: templates/web/base/report/_item.html:109
 msgid "Traffic management required?"
 msgstr ""
 
@@ -4452,15 +4436,15 @@ msgstr ""
 msgid "Translations"
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:128
+#: templates/web/base/admin/user-form.html:132
 msgid "Trusted by bodies:"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:728
+#: perllib/FixMyStreet/Cobrand/Default.pm:732
 msgid "Trusted to make reports that don't need to be inspected"
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:136
+#: templates/web/base/admin/user-form.html:140
 msgid "Trusted:"
 msgstr ""
 
@@ -4482,13 +4466,13 @@ msgstr ""
 msgid "Two-factor authentication has been deactivated"
 msgstr ""
 
-#: templates/web/base/admin/extra-metadata-form.html:44
+#: templates/web/base/admin/extra-metadata-form.html:54
 #: templates/web/base/admin/states/index.html:10
 #: templates/web/base/admin/states/index.html:100
 msgid "Type"
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:30
+#: templates/web/base/admin/user-form.html:34
 msgid "Unban"
 msgstr ""
 
@@ -4510,24 +4494,26 @@ msgid "Unknown alert type"
 msgstr "Nepoznat tip upozorenja"
 
 #: perllib/FixMyStreet/App/Controller/Photo.pm:109
-#: perllib/FixMyStreet/App/Controller/Root.pm:141
-#: templates/web/base/js/translation_strings.html:44
+#: perllib/FixMyStreet/App/Controller/Root.pm:142
+#: templates/web/base/js/translation_strings.html:46
 msgid "Unknown error"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/My.pm:199
+#: perllib/FixMyStreet/App/Controller/Develop.pm:159
+#: perllib/FixMyStreet/App/Controller/Develop.pm:178
+#: perllib/FixMyStreet/App/Controller/My.pm:200
 #: perllib/FixMyStreet/App/Controller/Report.pm:112
 #: perllib/FixMyStreet/App/Controller/Report.pm:118
 #: perllib/FixMyStreet/App/Controller/Report.pm:121
 msgid "Unknown problem ID"
 msgstr "Nepoznat IB problema"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:99
+#: perllib/FixMyStreet/App/Controller/Contact.pm:94
 #, fuzzy
 msgid "Unknown update ID"
 msgstr "Nepoznat IB problema"
 
-#: templates/web/base/reports/_list-filters.html:19
+#: templates/web/base/reports/_list-filters.html:25
 msgid "Unshortlisted"
 msgstr ""
 
@@ -4596,18 +4582,18 @@ msgstr ""
 msgid "Updated by <strong>%s</strong> at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1344
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1458
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1659
-#: perllib/FixMyStreet/App/Controller/Admin.pm:984
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:779
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:804
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:877
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1358
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1473
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1679
+#: perllib/FixMyStreet/App/Controller/Admin.pm:997
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:780
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:805
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:878
 msgid "Updated!"
 msgstr "Ažurirano!"
 
 #: templates/web/base/admin/list_updates.html:2
-#: templates/web/base/report/update.html:3
+#: templates/web/base/report/update.html:4
 #: templates/web/zurich/report/updates.html:2
 msgid "Updates"
 msgstr "Ažuriranja"
@@ -4650,7 +4636,7 @@ msgstr ""
 msgid "Use Open311 update-sending extension"
 msgstr ""
 
-#: templates/web/base/admin/contact-form.html:125
+#: templates/web/base/admin/contact-form.html:143
 msgid "Use this field to record details that are only displayed in the admin. Input is not shown publicly, and is not sent to the body."
 msgstr ""
 
@@ -4667,31 +4653,31 @@ msgstr ""
 msgid "User Import"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1868
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1878
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1888
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1898
 msgid "User added to abuse list"
 msgstr "Korisnik je dodan na popis zloupotreba."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1436
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1541
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1451
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1561
 msgid "User already exists"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1865
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1875
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1885
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1895
 msgid "User already in abuse list"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1996
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2041
 msgid "User flag removed"
 msgstr "Korisnička oznaka uklonjena"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1967
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2012
 msgid "User flagged"
 msgstr "Korisnik označen"
 
 #: templates/web/base/admin/report_blocks.html:18
-#: templates/web/base/admin/user-form.html:30
+#: templates/web/base/admin/user-form.html:34
 #: templates/web/base/admin/users.html:32
 msgid "User in abuse table"
 msgstr ""
@@ -4705,22 +4691,20 @@ msgstr ""
 msgid "User:"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:671
-#: perllib/FixMyStreet/Cobrand/Default.pm:730
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:153
-#: perllib/FixMyStreet/Cobrand/KiitC.pm:272
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:389
+#: perllib/FixMyStreet/Cobrand/Default.pm:675
+#: perllib/FixMyStreet/Cobrand/Default.pm:734
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:390
 #: templates/web/base/admin/flagged.html:29 templates/web/zurich/header.html:54
 msgid "Users"
 msgstr "Korisnici"
 
-#: templates/web/base/admin/user-form.html:161
+#: templates/web/base/admin/user-form.html:165
 msgid "Users can perform the following actions within their assigned body or area."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:363
-#: perllib/FixMyStreet/App/Controller/Admin.pm:399
-#: perllib/FixMyStreet/App/Controller/Admin.pm:426
+#: perllib/FixMyStreet/App/Controller/Admin.pm:374
+#: perllib/FixMyStreet/App/Controller/Admin.pm:410
+#: perllib/FixMyStreet/App/Controller/Admin.pm:437
 msgid "Values updated"
 msgstr "Vrijednosti ažurirane"
 
@@ -4772,7 +4756,7 @@ msgstr ""
 msgid "Wards of this council"
 msgstr "Općine ove županije"
 
-#: templates/web/base/alert/choose.html:6
+#: templates/web/base/alert/choose.html:7
 #: templates/web/base/around/_error_multiple.html:6
 msgid "We found more than one match for that location."
 msgstr ""
@@ -4799,7 +4783,7 @@ msgstr "Shvaćamo da bi za ovaj problem moglo biti odgovorno% s, međutim, trenu
 msgid "We send it to the council on your behalf"
 msgstr "Mi ćemo problem prijaviti u Vaše ime."
 
-#: templates/web/base/alert/choose.html:12
+#: templates/web/base/alert/choose.html:13
 #: templates/web/base/around/_error_multiple.html:17
 msgid "We show up to ten matches, please try a different search if yours is not here."
 msgstr "Prikazujemo najviše deset približnih rezultata. Ako se Vaš traženi rezultat ne prikazuje, pokušajte prilagoditi svoju pretragu."
@@ -4821,10 +4805,6 @@ msgstr ""
 msgid "We’ll get back to you as soon as we can."
 msgstr ""
 
-#: templates/web/base/questionnaire/index.html:73
-msgid "What was your experience of getting the problem fixed?"
-msgstr ""
-
 #: templates/web/base/admin/category_edit.html:27
 #: templates/web/zurich/admin/body.html:18
 msgid "When edited"
@@ -4834,7 +4814,11 @@ msgstr "Prilikom ažuriranja"
 msgid "When sent"
 msgstr "Prilikom slanja"
 
-#: templates/web/base/admin/extra-metadata-form.html:18
+#: templates/web/base/admin/extra-metadata-form.html:12
+msgid "Whether the field is displayed to the user, included as a hidden field and automatically populated, or set by the server upon Open311 submission. This field is usually set automatically."
+msgstr ""
+
+#: templates/web/base/admin/extra-metadata-form.html:28
 msgid "Whether the user is required to provide a value for this field."
 msgstr ""
 
@@ -4842,11 +4826,11 @@ msgstr ""
 msgid "Which problems do you want alerts about?"
 msgstr ""
 
-#: templates/web/base/report/_inspect.html:116
+#: templates/web/base/report/_inspect.html:120
 msgid "Which report is it a duplicate of?"
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:63
+#: templates/web/base/js/translation_strings.html:65
 msgid "Whoa there Testino! Three photos are enough."
 msgstr ""
 
@@ -4879,7 +4863,7 @@ msgstr "Podsjećamo, pisanje velikim tiskanim slovima i bez interpunkcijskih zna
 msgid "Wrong location? Just click again on the map."
 msgstr "Pogrešna lokacija? Samo opet kliknite na kartu."
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:1198
+#: perllib/FixMyStreet/Cobrand/Default.pm:1202
 #: templates/web/base/admin/bodies.html:70
 #: templates/web/base/admin/category_edit.html:5
 #: templates/web/base/admin/flagged.html:47
@@ -4894,20 +4878,15 @@ msgstr "Pogrešna lokacija? Samo opet kliknite na kartu."
 #: templates/web/base/questionnaire/creator_fixed.html:14
 #: templates/web/base/questionnaire/index.html:104
 #: templates/web/base/questionnaire/index.html:37
-#: templates/web/base/report/_inspect.html:107
+#: templates/web/base/report/_inspect.html:111
 msgid "Yes"
 msgstr "Da"
-
-#: templates/web/base/report/new/form_user_loggedout_password.html:5
-#: templates/web/base/report/update/form_user_loggedout_password.html:4
-msgid "Yes I have a password"
-msgstr "Da, imam lozinku"
 
 #: templates/web/base/contact/index.html:45
 msgid "You are complaining that this problem report was unnecessarily moderated:"
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:83
+#: templates/web/base/js/translation_strings.html:91
 msgid "You are offline"
 msgstr ""
 
@@ -4919,12 +4898,16 @@ msgstr "Sljedeće izvješće o problemu prijavljujete jer je uvredljivo, sadrži
 msgid "You are reporting the following update for being abusive, containing personal information, or similar:"
 msgstr "Sljedeće ažuriranje prijavljujete jer je uvredljivo, sadrži osobne podatke ili slično:"
 
+#: templates/web/base/report/display.html:60
+msgid "You can <a href=\"%s\">make a new report in the same location</a>."
+msgstr ""
+
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:8
 msgid "You can <a href=\"%s%s\">view the problem on this site</a>."
 msgstr ""
 
-#: templates/web/base/admin/user-form.html:110
+#: templates/web/base/admin/user-form.html:114
 msgid "You can add an abusive user's email to the abuse list, which automatically hides (and never sends) reports they create."
 msgstr ""
 
@@ -4954,15 +4937,15 @@ msgstr "Možete nam pomoći u pronalaženju kontakt e-mail adresa za lokalne pro
 msgid "You can mark a body as deleted if you do not want it to be active on the site."
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:41
+#: templates/web/base/js/translation_strings.html:43
 msgid "You declined; please fill in the box above"
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:85
+#: templates/web/base/js/translation_strings.html:93
 msgid "You have <a id=\"oFN\" href=\"\"><span>%s</span> saved to submit</a>."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:38
+#: perllib/FixMyStreet/App/Controller/Questionnaire.pm:39
 msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
 msgstr "Već ste ogovorili na upitnik. Ako imate nekih pitanja, molimo da nam<a href='%s'>se javite</a>, ili<a href='%s'>pregledate problem koji vas zanima</a>.\n"
 
@@ -5039,16 +5022,14 @@ msgstr "Vaše prijave"
 #: templates/web/base/auth/generate_token.html:15
 #: templates/web/base/auth/generate_token.html:26
 #: templates/web/base/auth/generate_token.html:34
-#: templates/web/base/main_nav_items.html:4 templates/web/base/my/my.html:18
+#: templates/web/base/main_nav_items.html:12 templates/web/base/my/my.html:18
 msgid "Your account"
 msgstr "Vaš profil"
 
 #: templates/web/base/alert/updates.html:19
-#: templates/web/base/alert/updates.html:22
 #: templates/web/base/auth/general.html:44
 #: templates/web/base/contact/index.html:80
 #: templates/web/base/report/display_tools.html:46
-#: templates/web/base/report/display_tools.html:49
 #: templates/web/base/report/new/form_user_loggedout_email.html:6
 #: templates/web/base/report/update/form_user_loggedout_email.html:6
 #: templates/web/zurich/report/new/fill_in_details_form.html:53
@@ -5056,8 +5037,6 @@ msgid "Your email"
 msgstr "Vaša e-mail adresa:"
 
 #: templates/web/base/auth/change_email.html:15
-#: templates/web/zurich/auth/general.html:20
-#: templates/web/zurich/auth/general.html:48
 msgid "Your email address"
 msgstr "Vaša e-mail adresa"
 
@@ -5071,11 +5050,9 @@ msgstr ""
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
 msgstr "Vaše informacije će se koristiti isključivo u skladu s našim <a href=\"/privacy\">pravilima o privatnosti</a>"
 
-#: templates/web/base/auth/general.html:116
+#: templates/web/base/auth/general.html:115
 #: templates/web/base/contact/index.html:74
-#: templates/web/base/report/update/form_name.html:33
-#: templates/web/zurich/auth/general.html:51
-#: templates/web/zurich/report/new/fill_in_details_form.html:63
+#: templates/web/base/report/update/form_name.html:27
 msgid "Your name"
 msgstr "Ime"
 
@@ -5083,22 +5060,21 @@ msgstr "Ime"
 msgid "Your name has already been sent to %s, but we can hide it on this page:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/My.pm:271
+#: perllib/FixMyStreet/App/Controller/My.pm:272
 msgid "Your name has been hidden from all your reports and updates."
 msgstr "Vaše ime je sakriveno u svim Vašim prijavama i poslanim novostima"
 
-#: perllib/FixMyStreet/App/Controller/My.pm:267
+#: perllib/FixMyStreet/App/Controller/My.pm:268
 msgid "Your name has been hidden."
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:75
+#: templates/web/base/js/translation_strings.html:83
 msgid "Your offline reports"
 msgstr ""
 
-#: templates/web/base/auth/general.html:86
-#: templates/web/base/report/new/form_user_loggedout_password.html:10
-#: templates/web/base/report/update/form_user_loggedout_password.html:9
-#: templates/web/zurich/auth/general.html:24
+#: templates/web/base/auth/general.html:83
+#: templates/web/base/report/new/form_user_loggedout_password.html:5
+#: templates/web/base/report/update/form_user_loggedout_password.html:4
 msgid "Your password"
 msgstr "Lozinka"
 
@@ -5116,7 +5092,6 @@ msgstr ""
 
 #: templates/web/base/auth/change_phone.html:19
 #: templates/web/base/contact/index.html:87
-#: templates/web/zurich/report/new/fill_in_details_form.html:69
 msgid "Your phone number"
 msgstr "Vaš broj telefona"
 
@@ -5137,7 +5112,7 @@ msgstr ""
 msgid "Your token has been generated"
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:76
+#: templates/web/base/js/translation_strings.html:84
 msgid "Your update has been saved offline for submission when back online."
 msgstr ""
 
@@ -5164,12 +5139,12 @@ msgid "admin"
 msgstr "Administrator"
 
 #: templates/web/base/admin/category-checkboxes.html:7
-#: templates/web/base/admin/user-form.html:171
+#: templates/web/base/admin/user-form.html:175
 msgid "all"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:960
-#: perllib/FixMyStreet/App/Controller/Moderate.pm:85
+#: perllib/FixMyStreet/App/Controller/Admin.pm:973
+#: perllib/FixMyStreet/App/Controller/Moderate.pm:88
 #: perllib/FixMyStreet/DB/Result/Comment.pm:216
 #: perllib/FixMyStreet/Script/ArchiveOldEnquiries.pm:145
 msgid "an administrator"
@@ -5193,9 +5168,19 @@ msgid "didn't use map"
 msgstr "nije korištena karta"
 
 #: templates/web/base/alert/index.html:34
-#: templates/web/base/around/postcode_form.html:14
+#: templates/web/base/around/postcode_form.html:13
 msgid "e.g. ‘%s’ or ‘%s’"
 msgstr "npr. ‘%s’ ili‘%s’"
+
+#: templates/web/base/report/new/form_title.html:2
+#, fuzzy
+msgid "e.g. ‘10 inch pothole on Example St, near post box’"
+msgstr "npr. rupa na na križanju Slavonske i Marohnićeve"
+
+#: templates/web/base/report/new/form_report.html:56
+#, fuzzy
+msgid "e.g. ‘This pothole has been here for two months and…’"
+msgstr "Ova rupa je tu mjesecima..."
 
 #: templates/web/base/admin/flagged.html:51
 #: templates/web/base/admin/open311-form-fields.html:93
@@ -5207,7 +5192,7 @@ msgstr ""
 msgid "from %s different users"
 msgstr "od %s različitih korisnika"
 
-#: templates/web/base/report/_item.html:63
+#: templates/web/base/report/_item.html:67
 #: templates/web/zurich/report/_item.html:16
 msgid "last updated %s"
 msgstr ""
@@ -5216,14 +5201,14 @@ msgstr ""
 msgid "less than a minute"
 msgstr "manje od minute"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:122
+#: perllib/FixMyStreet/App/Controller/Admin.pm:123
 #: templates/web/base/admin/stats/questionnaire.html:15
 #: templates/web/base/admin/stats/questionnaire.html:16
 msgid "n/a"
 msgstr "n/a"
 
 #: templates/web/base/admin/category-checkboxes.html:8
-#: templates/web/base/admin/user-form.html:172
+#: templates/web/base/admin/user-form.html:176
 msgid "none"
 msgstr ""
 
@@ -5231,8 +5216,8 @@ msgstr ""
 msgid "not the council's responsibility"
 msgstr ""
 
-#: templates/web/base/alert/index.html:38
-#: templates/web/base/around/postcode_form.html:26
+#: templates/web/base/alert/index.html:40
+#: templates/web/base/around/postcode_form.html:27
 msgid "or locate me automatically"
 msgstr "... ili automatski pronađite moju trenutnu lokaciju"
 
@@ -5288,11 +5273,11 @@ msgstr "ovaj tip "
 msgid "today"
 msgstr "danas"
 
-#: templates/web/base/js/translation_strings.html:86
+#: templates/web/base/js/translation_strings.html:94
 msgid "update"
 msgstr ""
 
-#: templates/web/base/js/translation_strings.html:87
+#: templates/web/base/js/translation_strings.html:95
 msgid "updates"
 msgstr ""
 
@@ -5308,11 +5293,11 @@ msgstr "Korisnik je iz istog područja kao i problem - %d"
 msgid "user is problem owner"
 msgstr "korisnik je vlasnik problema"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1940
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1985
 msgid "user not in abuse list"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1938
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1983
 msgid "user removed from abuse list"
 msgstr ""
 
@@ -5457,7 +5442,7 @@ msgstr[0] "<big>%s</big> ažuriranje za prijavu"
 msgstr[1] "<big>%s</big> ažuriranja za prijavu"
 msgstr[2] "<big>%s</big> novosti u vezi prijava"
 
-#: templates/web/buckinghamshire/report/_item.html:51
+#: templates/web/base/report/_item.html:55
 #, perl-format
 msgid "Reported %d day ago"
 msgid_plural "Reported %d days ago"
@@ -5481,7 +5466,7 @@ msgstr[0] "Još uvijek nemamo podatke za odgovorno tijelo koja pokriva ovu lokac
 msgstr[1] "Još uvijek nemamo podatke za odgovorna tijela koja pokrivaju ovu lokaciju."
 msgstr[2] "Još uvijek nemamo podatke za odgovorna tijela koja pokrivaju ovu lokaciju."
 
-#: templates/web/buckinghamshire/report/_item.html:61
+#: templates/web/base/report/_item.html:65
 #, perl-format
 msgid "last updated %d day ago"
 msgid_plural "last updated %d days ago"
@@ -5504,6 +5489,33 @@ msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+
+#~ msgid "Edit other users' details"
+#~ msgstr "Uredite podatke o drugim korisnicima"
+
+#~ msgid "Enter a password"
+#~ msgstr "Unesite lozinku"
+
+#~ msgid "Moderation reason:"
+#~ msgstr "Razlog moderiranja:"
+
+#~ msgid "New"
+#~ msgstr "Novo"
+
+#~ msgid "Password:"
+#~ msgstr "Lozinka:"
+
+#~ msgid "Please enter your email address"
+#~ msgstr "Unesite svoju e-mail adresu"
+
+#~ msgid "Please fill in details of the problem."
+#~ msgstr "Popunite detalje o problemu u nastavku."
+
+#~ msgid "Please write your update here"
+#~ msgstr "Ovdje ažurirajte"
+
+#~ msgid "Yes I have a password"
+#~ msgstr "Da, imam lozinku"
 
 #~ msgid "Category: %s"
 #~ msgstr "Kategorija: %s"
