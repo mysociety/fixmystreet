@@ -184,11 +184,13 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
                 }
                 hide_responsibility_errors();
                 enable_report_form();
-            } else if (is_only_body(layer.fixmystreet.body)) {
+            } else {
                 // User has clicked a road that Bucks don't maintain.
                 fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
-                show_responsibility_error("#js-not-council-road");
-                disable_report_form();
+                if (is_only_body(layer.fixmystreet.body)) {
+                    show_responsibility_error("#js-not-council-road");
+                    disable_report_form();
+                }
             }
         },
 
