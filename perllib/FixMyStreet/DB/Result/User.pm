@@ -331,7 +331,7 @@ sub split_name {
 }
 
 sub can_moderate {
-    my ($self, $object, %perms) = @_;
+    my ($self, $object, $perms) = @_;
 
     my ($type, $ids);
     if ($object->isa("FixMyStreet::DB::Result::Comment")) {
@@ -342,7 +342,7 @@ sub can_moderate {
         $ids = $object->bodies_str_ids;
     }
 
-    my $staff_perm = exists($perms{staff}) ? $perms{staff} : $self->has_permission_to(moderate => $ids);
+    my $staff_perm = exists($perms->{staff}) ? $perms->{staff} : $self->has_permission_to(moderate => $ids);
     return 1 if $staff_perm;
 
     # See if the cobrand wants to allow it in some circumstance
