@@ -671,19 +671,26 @@ sub setup_categories_and_bodies : Private {
 
         $bodies_to_list{ $contact->body_id } = $contact->body;
 
+        my $metas = $contact->get_metadata_for_input;
+        if (@$metas) {
+            push @{$category_extras{$contact->category}}, @$metas;
+            my $all_hidden = (grep { !$c->cobrand->category_extra_hidden($_) } @$metas) ? 0 : 1;
+            if (exists($category_extras_hidden{$contact->category})) {
+                $category_extras_hidden{$contact->category} &&= $all_hidden;
+            } else {
+                $category_extras_hidden{$contact->category} = $all_hidden;
+            }
+        }
+
+        $non_public_categories{ $contact->category } = 1 if $contact->non_public;
+
         unless ( $seen{$contact->category} ) {
             push @category_options, $contact;
-
-            my $metas = $contact->get_metadata_for_input;
-            $category_extras{$contact->category} = $metas if @$metas;
-            $category_extras_hidden{$contact->category} = (grep { !$c->cobrand->category_extra_hidden($_) } @$metas) ? 0 : 1;
 
             my $body_send_method = $bodies{$contact->body_id}->send_method || '';
             $c->stash->{unresponsive}{$contact->category} = $contact->body_id
                 if !$c->stash->{unresponsive}{ALL} &&
                     ($contact->email =~ /^REFUSED$/i || $body_send_method eq 'Refused');
-
-            $non_public_categories{ $contact->category } = 1 if $contact->non_public;
         }
         $seen{$contact->category} = $contact;
     }
