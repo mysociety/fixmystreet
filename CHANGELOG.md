@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes:
+        - Fix display of area/pins on body page when using Bing or TonerLite map.
 
 * v2.4 (6th September 2018)
     - Security
