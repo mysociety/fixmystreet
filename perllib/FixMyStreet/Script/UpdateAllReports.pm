@@ -115,6 +115,21 @@ sub loop_period {
     return @out;
 }
 
+sub get_period_group {
+    my ($start, $end) = @_;
+    my ($group_by, $extra);
+    if (DateTime::Duration->compare($end - $start, DateTime::Duration->new(months => 1)) < 0) {
+        $group_by = 'day';
+    } elsif (DateTime::Duration->compare($end - $start, DateTime::Duration->new(years => 1)) < 0) {
+        $group_by = 'month';
+        $extra = 'month_abbr';
+    } else {
+        $group_by = 'year';
+    }
+
+    return ($group_by, $extra);
+}
+
 sub generate_dashboard {
     my $body = shift;
 
@@ -139,15 +154,7 @@ sub generate_dashboard {
         $min_confirmed = FixMyStreet->set_time_zone(DateTime->now)->truncate(to => 'day');
     }
 
-    my ($group_by, $extra);
-    if (DateTime::Duration->compare($end_today - $min_confirmed, DateTime::Duration->new(months => 1)) < 0) {
-        $group_by = 'day';
-    } elsif (DateTime::Duration->compare($end_today - $min_confirmed, DateTime::Duration->new(years => 1)) < 0) {
-        $group_by = 'month';
-        $extra = 'month_abbr';
-    } else {
-        $group_by = 'year';
-    }
+    my ($group_by, $extra) = get_period_group($min_confirmed, $end_today);
     my @problem_periods = loop_period($min_confirmed, $extra, $group_by);
 
     my %problems_reported_by_period = stuff_by_day_or_year(
