@@ -99,13 +99,14 @@ sub generate {
 }
 
 sub end_period {
-    my $period = shift;
-    FixMyStreet->set_time_zone(DateTime->now)->truncate(to => $period)->add($period . 's' => 1)->subtract(seconds => 1);
+    my ($period, $end) = @_;
+    $end ||= DateTime->now;
+    FixMyStreet->set_time_zone($end)->truncate(to => $period)->add($period . 's' => 1)->subtract(seconds => 1);
 }
 
 sub loop_period {
-    my ($date, $period, $extra) = @_;
-    my $end = end_period($period);
+    my ($date, $extra, $period, $end) = @_;
+    $end = end_period($period, $end);
     my @out;
     while ($date <= $end) {
         push @out, { n => $date->$period, $extra ? (d => $date->$extra) : () };
@@ -147,7 +148,7 @@ sub generate_dashboard {
     } else {
         $group_by = 'year';
     }
-    my @problem_periods = loop_period($min_confirmed, $group_by, $extra);
+    my @problem_periods = loop_period($min_confirmed, $extra, $group_by);
 
     my %problems_reported_by_period = stuff_by_day_or_year(
         $group_by, $rs,
