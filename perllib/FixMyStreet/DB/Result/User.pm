@@ -350,6 +350,17 @@ sub can_moderate {
     return $cobrand->call_hook('moderate_permission', $self, $type => $object);
 }
 
+sub can_moderate_title {
+    my ($self, $problem, $perm) = @_;
+
+    # Must have main permission, this is to potentially restrict only
+    return 0 unless $perm;
+
+    # If hook returns anything use it, otherwise default to yes
+    my $cobrand = $self->result_source->schema->cobrand;
+    return $cobrand->call_hook('moderate_permission_title', $self, $problem) // 1;
+}
+
 has body_permissions => (
     is => 'ro',
     lazy => 1,

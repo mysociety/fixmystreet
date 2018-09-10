@@ -4,6 +4,12 @@ use parent 'FixMyStreet::Cobrand::Default';
 
 sub send_moderation_notifications { 0 }
 
+package FixMyStreet::Cobrand::TestTitle;
+
+use parent 'FixMyStreet::Cobrand::Default';
+
+sub moderate_permission_title { 0 }
+
 package main;
 
 use FixMyStreet::TestMech;
@@ -206,6 +212,25 @@ subtest 'Problem moderation' => sub {
 
             # reset
             $report->update({ state => 'confirmed' });
+        }
+    };
+
+    subtest 'Try and moderate title when not allowed' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'testtitle'
+        }, sub {
+            $mech->get_ok($REPORT_URL);
+            $mech->submit_form_ok({ with_fields => {
+                problem_show_name => 1,
+                problem_photo => 1,
+                problem_detail => 'Changed detail',
+            }});
+            $mech->base_like( qr{\Q$REPORT_URL\E} );
+            $mech->content_like(qr/Moderated by Bromley Council/);
+
+            $report->discard_changes;
+            is $report->title, 'Good bad good';
+            is $report->detail, 'Changed detail';
         }
     };
 };

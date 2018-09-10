@@ -4,6 +4,8 @@
     - Bugfixes:
         - Fix display of area/pins on body page when using Bing or TonerLite map.
         - Do not scan through all problems to show /_dev pages.
+    - Development improvements:
+        - Cobrand hook for disallowing title moderation. #2228
 
 * v2.4 (6th September 2018)
     - Security

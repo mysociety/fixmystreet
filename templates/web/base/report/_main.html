@@ -1,4 +1,7 @@
-[% can_moderate = permissions.moderate OR c.user.can_moderate(problem, staff = permissions.moderate) %]
+[%
+can_moderate = permissions.moderate OR c.user.can_moderate(problem, staff = permissions.moderate)
+can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
+%]
 
 <a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
     class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
@@ -38,9 +41,8 @@
         <input type="hidden" name="token" value="[% csrf_token %]">
   [% END %]
 
+  [% IF can_moderate_title %]
     <h1 class="moderate-display">[% problem.title | html %]</h1>
-
-  [% IF can_moderate %]
     <div class="moderate-edit">
       [% IF problem.title != original.title %]
         <label>
@@ -50,6 +52,8 @@
       [% END %]
         <h1><input class="form-control" type="text" name="problem_title" value="[% problem.title | html %]" data-original-value="[% original.title | html %]"></h1>
     </div>
+  [% ELSE %]
+    <h1>[% problem.title | html %]</h1>
   [% END %]
 
     <div class="moderate-edit">

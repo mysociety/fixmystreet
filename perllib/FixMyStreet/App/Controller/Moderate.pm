@@ -75,7 +75,9 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     $c->forward('report_moderate_hide');
 
     my @types = grep $_,
-        $c->forward('moderate_text', [ 'title' ]),
+        ($c->user->can_moderate_title($c->stash->{problem}, 1)
+            ? $c->forward('moderate_text', [ 'title' ])
+            : ()),
         $c->forward('moderate_text', [ 'detail' ]),
         $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
         $c->forward('moderate_boolean', [ 'photo' ]);
