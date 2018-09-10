@@ -139,21 +139,26 @@ $(function(){
             data0 = $allReports.data('values-reports'),
             data1 = $allReports.data('values-fixed');
 
-        window.chartAllReports = new Chart($allReports, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data0,
-                    pointRadius: pointRadiusFinalDot(data0.length, 4),
-                    pointBackgroundColor: colours[1],
-                    borderColor: colours[1]
-                }, {
+        var data = [{
+              data: data0,
+              pointRadius: pointRadiusFinalDot(data0.length, 4),
+              pointBackgroundColor: colours[1],
+              borderColor: colours[1]
+        }];
+        if ( data1 ) {
+            data.push({
                     data: data1,
                     pointRadius: pointRadiusFinalDot(data1.length, 4),
                     pointBackgroundColor: colours[3],
                     borderColor: colours[3]
-                }]
+            });
+        }
+
+        window.chartAllReports = new Chart($allReports, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: data
             },
             options: {
                 animation: {
