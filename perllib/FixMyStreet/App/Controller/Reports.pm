@@ -40,14 +40,7 @@ sub index : Path : Args(0) {
         $c->detach( 'redirect_body' );
     }
 
-    if (my $body = $c->get_param('body')) {
-        $body = $c->model('DB::Body')->find( { id => $body } );
-        if ($body) {
-            $body = $c->cobrand->short_name($body);
-            $c->res->redirect("/reports/$body");
-            $c->detach;
-        }
-    }
+    $c->forward('display_body_stats');
 
     my $dashboard = $c->forward('load_dashboard_data');
 
@@ -80,6 +73,24 @@ sub index : Path : Args(0) {
 
     # Down here so that error pages aren't cached.
     $c->response->header('Cache-Control' => 'max-age=3600');
+}
+
+=head2 display_body_stats
+
+Show the stats for a body if body param is set.
+
+=cut
+
+sub display_body_stats : Private {
+    my ( $self, $c ) = @_;
+    if (my $body = $c->get_param('body')) {
+        $body = $c->model('DB::Body')->find( { id => $body } );
+        if ($body) {
+            $body = $c->cobrand->short_name($body);
+            $c->res->redirect("/reports/$body");
+            $c->detach;
+        }
+    }
 }
 
 =head2 body
