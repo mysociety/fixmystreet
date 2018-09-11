@@ -35,7 +35,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     attributes: {
         feature_id: 'FEATURE_ID'
     },
-    asset_category: ["Faulty street light"],
+    asset_category: ["Street Lighting and Road Signs"],
     asset_item: 'street light'
 }));
 
@@ -45,7 +45,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "Bins"
         }
     },
-    asset_category: ["Overflowing litter bin"],
+    asset_category: ["Parks and Greenspace", "Street Cleansing"],
     asset_item: 'park bin',
     asset_item_message: 'For our parks, pick a <b class="asset-spot">bin</b> from the map &raquo;'
 }));
@@ -56,7 +56,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "Street_Trees"
         }
     },
-    asset_category: ["Public Tree related issue"],
+    asset_category: ["Public Trees"],
     asset_item: 'tree'
 }));
 
@@ -67,6 +67,17 @@ var highways_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+var bromley_to_tfl = {
+    'Enforcement': ['Nuisance Signs', 'Obstruction to Highway', 'Overhanging Vegetation from private land', 'Unlicenced skip/materials on Highway'],
+    'Graffiti and Flyposting': ['Nuisance Signs'],
+    'Parks and Greenspace': ['Blocked Drain', 'Floral Display', 'Grass needs cutting'],
+    'Street Cleansing': ['Blocked Drain'],
+    'Road and Pavement Issues': true,
+    'Street Lighting and Road Signs': true,
+    'Public Trees': true
+};
+var tfl_asset_categories = Object.keys(bromley_to_tfl);
+
 fixmystreet.assets.add($.extend(true, {}, defaults, {
     http_options: {
         params: {
@@ -75,13 +86,20 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     stylemap: highways_stylemap,
     always_visible: true,
-    asset_category: ["Blocked drains", "Faulty street light", 'Faulty street sign', 'Floral displays', 'Grass needs cutting', 'Obstructions (skips, A boards)', 'Overhanging vegetation from private land', 'Pavement defect', 'Public Tree related issue', "Road defect"],
+
+    asset_category: tfl_asset_categories,
     non_interactive: true,
     road: true,
     body: 'Bromley Council',
     actions: {
         found: function(layer, feature) {
-            if (!fixmystreet.assets.selectedFeature()) {
+            if (fixmystreet.assets.selectedFeature()) {
+                return;
+            }
+            var category = $('select#form_category').val(),
+                subcategory = $('#form_service_sub_code').val(),
+                subcategories = bromley_to_tfl[category];
+            if (subcategories === true || (subcategory && OpenLayers.Util.indexOf(subcategories, subcategory))) {
                 fixmystreet.body_overrides.only_send('TfL');
             }
         },
