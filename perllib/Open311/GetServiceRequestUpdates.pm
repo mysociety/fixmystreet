@@ -115,6 +115,7 @@ sub update_comments {
                 my $state = $open311->map_state( $request->{status} );
                 my $old_state = $p->state;
                 my $external_status_code = $request->{external_status_code} || '';
+                my $customer_reference = $request->{customer_reference} || '';
                 my $old_external_status_code = $p->get_extra_metadata('external_status_code') || '';
                 my $comment = $self->schema->resultset('Comment')->new(
                     {
@@ -141,6 +142,12 @@ sub update_comments {
                 if ( $external_status_code ) {
                     $comment->set_extra_metadata(external_status_code => $external_status_code);
                     $p->set_extra_metadata(external_status_code => $external_status_code);
+                }
+
+                # if the customer reference to display in the report metadata is
+                # not the same as the external_id
+                if ( $customer_reference ) {
+                    $p->set_extra_metadata( customer_reference => $customer_reference );
                 }
 
                 $open311->add_media($request->{media_url}, $comment)

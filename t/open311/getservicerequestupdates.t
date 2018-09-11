@@ -521,6 +521,29 @@ subtest 'Update with media_url includes image in update' => sub {
     $problem->comments->delete;
 };
 
+subtest 'Update with customer_reference adds reference to problem' => sub {
+    my $guard = LWP::Protocol::PSGI->register(t::Mock::Static->to_psgi_app, host => 'example.com');
+
+    my $local_requests_xml = setup_xml($problem->external_id, 1, "");
+    $local_requests_xml =~ s#</service_request_id>#</service_request_id>
+        <customer_reference>REFERENCE</customer_reference>#;
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+
+    $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $problem->state('confirmed');
+    $problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
+    $update->update_comments( $o, $bodies{2482} );
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, 'comment count';
+    my $c = $problem->comments->first;
+    is $c->external_id, 638344;
+    is $problem->get_extra_metadata('customer_reference'), 'REFERENCE';
+    $problem->comments->delete;
+};
+
 subtest 'date for comment correct' => sub {
     my $local_requests_xml = setup_xml($problem->external_id, $problem->id, "");
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
