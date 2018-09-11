@@ -23,6 +23,13 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
     },
 
+    relevant: function() {
+      var category = $('select#form_category').val(),
+          layer = this.fixmystreet;
+      return OpenLayers.Util.indexOf(layer.asset_category, category) != -1 &&
+        ( !layer.body || OpenLayers.Util.indexOf(fixmystreet.bodies, layer.body) != -1 );
+    },
+
     update_layer_visibility: function() {
         if (!fixmystreet.map) {
           return;
@@ -30,8 +37,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
 
         if (!this.fixmystreet.always_visible) {
             // Show/hide the asset layer when the category is chosen
-            var category = $('#problem_form select#form_category').val();
-            if (fixmystreet.assets.check_layer_relevant(this.fixmystreet, category)) {
+            if (this.relevant()) {
                 this.setVisibility(true);
                 if (this.fixmystreet.fault_layer) {
                     this.fixmystreet.fault_layer.setVisibility(true);
@@ -83,7 +89,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         this.getNearest(lonlat);
         this.updateUSRNField();
         if (this.fixmystreet.road) {
-            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && fixmystreet.assets.check_layer_relevant( this.fixmystreet, $('select#form_category').val() ) );
+            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && this.relevant());
             if (!valid_category || !this.selected_feature) {
                 this.road_not_found();
             } else {
@@ -297,11 +303,11 @@ function check_zoom_message_visibility() {
     if (this.fixmystreet.non_interactive) {
         return;
     }
-    var category = $("#problem_form select#form_category").val(),
+    var category = $("select#form_category").val(),
         prefix = category.replace(/[^a-z]/gi, ''),
         id = "category_meta_message_" + prefix,
         $p = $('#' + id);
-    if (fixmystreet.assets.check_layer_relevant(this.fixmystreet, category)) {
+    if (this.relevant()) {
         if ($p.length === 0) {
             $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
             $p.insertAfter('#form_category_row');
@@ -320,8 +326,8 @@ function check_zoom_message_visibility() {
     } else {
         $.each(this.fixmystreet.asset_category, function(i, c) {
             var prefix = c.replace(/[^a-z]/gi, ''),
-            id = "category_meta_message_" + prefix,
-            $p = $('#' + id);
+                id = "category_meta_message_" + prefix,
+                $p = $('#' + id);
             $p.remove();
         });
     }
@@ -682,11 +688,6 @@ fixmystreet.assets = {
             fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
             fixmystreet.assets.controls[i].activate();
         }
-    },
-
-    check_layer_relevant: function(layer, category) {
-      return OpenLayers.Util.indexOf(layer.asset_category, category) != -1 &&
-        ( !layer.body || OpenLayers.Util.indexOf(fixmystreet.bodies, layer.body) != -1 );
     }
 };
 
