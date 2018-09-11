@@ -555,7 +555,7 @@ fixmystreet.assets = {
             layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
         }
 
-        var layer_class = OpenLayers.Layer.VectorAsset;
+        var layer_class = options.class || OpenLayers.Layer.VectorAsset;
         if (options.usrn || options.road) {
             layer_class = OpenLayers.Layer.VectorNearest;
         }
