@@ -6,6 +6,7 @@
 
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
+<div id="post_category_details_form">
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
     <h2 class="form-section-heading">[% loc( 'Public details' ) %]</h2>
@@ -75,3 +76,4 @@
     <input type="hidden" id="single_body_only" name="single_body_only" value="">
     <input type="hidden" id="do_not_send" name="do_not_send" value="">
     <input type="hidden" name="submit_problem" value="1">
+</div>
