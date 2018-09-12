@@ -84,10 +84,10 @@ var highways_stylemap = new OpenLayers.StyleMap({
 });
 
 var bromley_to_tfl = {
-    'Enforcement': ['Nuisance Signs', 'Obstruction to Highway', 'Overhanging Vegetation from private land', 'Unlicenced skip/materials on Highway'],
-    'Graffiti and Flyposting': ['Nuisance Signs'],
-    'Parks and Greenspace': ['Blocked Drain', 'Floral Display', 'Grass needs cutting'],
-    'Street Cleansing': ['Blocked Drain'],
+    'Enforcement': ['ENF_NUI_SIGN', 'ENF_OBS_HIGH', 'ENF_OHANG_HANG', 'ENF_UNLIC_HIGH'],
+    'Graffiti and Flyposting': ['GF_NUI_SIGN'],
+    'Parks and Greenspace': ['PG_BLOC_DRAIN', 'PG_FLO_DISP', 'PG_GRASS_CUT'],
+    'Street Cleansing': ['SC_BLOCK_DRAIN'],
     'Road and Pavement Issues': true,
     'Street Lighting and Road Signs': true,
     'Public Trees': true
@@ -116,7 +116,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     actions: {
         found: function(layer, feature) {
             var category = $('select#form_category').val(),
-                subcategory = $('#form_service_sub_code option:selected').text(),
+                subcategory = $('#form_service_sub_code').val(),
                 subcategories = bromley_to_tfl[category],
                 relevant = (subcategories === true || (subcategory && OpenLayers.Util.indexOf(subcategories, subcategory) > -1));
             if (!fixmystreet.assets.selectedFeature() && relevant) {
