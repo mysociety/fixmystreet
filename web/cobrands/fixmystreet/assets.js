@@ -23,6 +23,13 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
     },
 
+    relevant: function() {
+      var category = $('select#form_category').val(),
+          layer = this.fixmystreet;
+      return OpenLayers.Util.indexOf(layer.asset_category, category) != -1 &&
+        ( !layer.body || OpenLayers.Util.indexOf(fixmystreet.bodies, layer.body) != -1 );
+    },
+
     update_layer_visibility: function() {
         if (!fixmystreet.map) {
           return;
@@ -30,8 +37,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
 
         if (!this.fixmystreet.always_visible) {
             // Show/hide the asset layer when the category is chosen
-            var category = $('#problem_form select#form_category').val();
-            if (fixmystreet.assets.check_layer_relevant(this.fixmystreet, category)) {
+            if (this.relevant()) {
                 this.setVisibility(true);
                 if (this.fixmystreet.fault_layer) {
                     this.fixmystreet.fault_layer.setVisibility(true);
@@ -46,6 +52,34 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         } else {
             if (this.fixmystreet.body) {
                 this.setVisibility(OpenLayers.Util.indexOf(fixmystreet.bodies, this.fixmystreet.body) != -1 );
+            }
+        }
+    },
+
+    select_nearest_asset: function() {
+        // The user's green marker might be on the map the first time we show the
+        // assets, so snap it to the closest asset marker if so.
+        if (!fixmystreet.markers.getVisibility() || !(this.getVisibility() && this.inRange)) {
+            return;
+        }
+        var threshold = 50; // metres
+        var marker = fixmystreet.markers.features[0];
+        if (marker === undefined) {
+            // No marker to be found so bail out
+            return;
+        }
+        var nearest_feature = this.getNearestFeature(marker.geometry, threshold);
+        if (nearest_feature) {
+            this.get_select_control().select(nearest_feature);
+        }
+    },
+
+    get_select_control: function() {
+        var controls = fixmystreet.map.getControlsByClass('OpenLayers.Control.SelectFeature');
+        for (var i=0; i<controls.length; i++) {
+            var control = controls[i];
+            if (control.layer == this && !control.hover) {
+                return control;
             }
         }
     },
@@ -83,7 +117,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         this.getNearest(lonlat);
         this.updateUSRNField();
         if (this.fixmystreet.road) {
-            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && fixmystreet.assets.check_layer_relevant( this.fixmystreet, $('select#form_category').val() ) );
+            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && this.relevant());
             if (!valid_category || !this.selected_feature) {
                 this.road_not_found();
             } else {
@@ -215,7 +249,7 @@ function asset_selected(e) {
             { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(0, 0) },
             true, close_fault_popup);
         fixmystreet.map.addPopup(fault_popup);
-        get_select_control(this).unselect(e.feature);
+        this.get_select_control().unselect(e.feature);
         return;
     }
 
@@ -297,11 +331,11 @@ function check_zoom_message_visibility() {
     if (this.fixmystreet.non_interactive) {
         return;
     }
-    var category = $("#problem_form select#form_category").val(),
+    var category = $("select#form_category").val(),
         prefix = category.replace(/[^a-z]/gi, ''),
         id = "category_meta_message_" + prefix,
         $p = $('#' + id);
-    if (fixmystreet.assets.check_layer_relevant(this.fixmystreet, category)) {
+    if (this.relevant()) {
         if ($p.length === 0) {
             $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
             $p.insertAfter('#form_category_row');
@@ -320,8 +354,8 @@ function check_zoom_message_visibility() {
     } else {
         $.each(this.fixmystreet.asset_category, function(i, c) {
             var prefix = c.replace(/[^a-z]/gi, ''),
-            id = "category_meta_message_" + prefix,
-            $p = $('#' + id);
+                id = "category_meta_message_" + prefix,
+                $p = $('#' + id);
             $p.remove();
         });
     }
@@ -350,46 +384,18 @@ function layer_visibilitychanged() {
         fixmystreet.markers.setVisibility(true);
     }
     if (!this.fixmystreet.non_interactive) {
-        select_nearest_asset.call(this);
+        this.select_nearest_asset();
     }
 }
 
-
-function get_select_control(layer) {
-    var controls = fixmystreet.map.getControlsByClass('OpenLayers.Control.SelectFeature');
-    for (var i=0; i<controls.length; i++) {
-        var control = controls[i];
-        if (control.layer == layer && !control.hover) {
-            return control;
-        }
-    }
-}
-
-function select_nearest_asset() {
-    // The user's green marker might be on the map the first time we show the
-    // assets, so snap it to the closest asset marker if so.
-    if (!fixmystreet.markers.getVisibility() || !(this.getVisibility() && this.inRange)) {
-        return;
-    }
-    var threshold = 50; // metres
-    var marker = fixmystreet.markers.features[0];
-    if (marker === undefined) {
-        // No marker to be found so bail out
-        return;
-    }
-    var nearest_feature = this.getNearestFeature(marker.geometry, threshold);
-    if (nearest_feature) {
-        get_select_control(this).select(nearest_feature);
-    }
-}
 
 function layer_loadend() {
-    select_nearest_asset.call(this);
+    this.select_nearest_asset();
     // Preserve the selected marker when panning/zooming, if it's still on the map
     if (selected_feature !== null && !(selected_feature in this.selectedFeatures)) {
         var replacement_feature = find_matching_feature(selected_feature, this, this.fixmystreet.asset_id_field);
         if (!!replacement_feature) {
-            get_select_control(this).select(replacement_feature);
+            this.get_select_control().select(replacement_feature);
         }
     }
 }
@@ -549,7 +555,7 @@ fixmystreet.assets = {
             layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
         }
 
-        var layer_class = OpenLayers.Layer.VectorAsset;
+        var layer_class = options.class || OpenLayers.Layer.VectorAsset;
         if (options.usrn || options.road) {
             layer_class = OpenLayers.Layer.VectorNearest;
         }
@@ -682,11 +688,6 @@ fixmystreet.assets = {
             fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
             fixmystreet.assets.controls[i].activate();
         }
-    },
-
-    check_layer_relevant: function(layer, category) {
-      return OpenLayers.Util.indexOf(layer.asset_category, category) != -1 &&
-        ( !layer.body || OpenLayers.Util.indexOf(fixmystreet.bodies, layer.body) != -1 );
     }
 };
 
