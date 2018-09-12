@@ -38,7 +38,7 @@ Shows a list of links to preview HTML emails.
 
 sub index : Path('/_dev') : Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{problem} = $c->model('DB::Problem')->first;
+    $c->stash->{problem} = $c->model('DB::Problem')->search(undef, { rows => 1 } )->first;
 }
 
 =item email_list
@@ -63,8 +63,8 @@ sub email_list : Path('/_dev/email') : Args(0) {
         'confirm_report_sent' => 1,
         'problem-moderated' => 1, 'questionnaire' => 1, 'submit' => 1);
 
-    my $update = $c->model('DB::Comment')->first;
-    my $problem = $c->model('DB::Problem')->first;
+    my $update = $c->model('DB::Comment')->search(undef, { rows => 1 } )->first;
+    my $problem = $c->model('DB::Problem')->search(undef, { rows => 1 } )->first;
 
     $c->stash->{templates} = [];
     foreach (sort keys %templates) {

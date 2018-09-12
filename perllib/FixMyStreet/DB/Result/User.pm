@@ -176,8 +176,8 @@ sub phone_display {
 
 sub latest_anonymity {
     my $self = shift;
-    my $p = $self->problems->search(undef, { order_by => { -desc => 'id' } } )->first;
-    my $c = $self->comments->search(undef, { order_by => { -desc => 'id' } } )->first;
+    my $p = $self->problems->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;
+    my $c = $self->comments->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;
     my $p_created = $p ? $p->created->epoch : 0;
     my $c_created = $c ? $c->created->epoch : 0;
     my $obj = $p_created >= $c_created ? $p : $c;
