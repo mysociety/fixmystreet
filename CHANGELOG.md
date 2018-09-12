@@ -8,6 +8,7 @@
         - Do not scan through all problems to show /_dev pages.
     - Development improvements:
         - Cobrand hook for disallowing title moderation. #2228
+        - Cobrand hook for per-questionnaire sending. #2231
 
 * v2.4 (6th September 2018)
     - Security

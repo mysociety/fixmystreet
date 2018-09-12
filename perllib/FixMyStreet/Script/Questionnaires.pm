@@ -50,7 +50,10 @@ sub send_questionnaires_period {
         # Not all cobrands send questionnaires
         next unless $cobrand->send_questionnaires;
 
-        if ($row->is_from_abuser || !$row->user->email_verified) {
+        # Cobrands can also override sending per row if they wish
+        my $cobrand_send = $cobrand->call_hook('send_questionnaire', $row) // 1;
+
+        if ($row->is_from_abuser || !$row->user->email_verified || !$cobrand_send) {
             $row->update( { send_questionnaire => 0 } );
             next;
         }
