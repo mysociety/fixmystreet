@@ -56,6 +56,34 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         }
     },
 
+    select_nearest_asset: function() {
+        // The user's green marker might be on the map the first time we show the
+        // assets, so snap it to the closest asset marker if so.
+        if (!fixmystreet.markers.getVisibility() || !(this.getVisibility() && this.inRange)) {
+            return;
+        }
+        var threshold = 50; // metres
+        var marker = fixmystreet.markers.features[0];
+        if (marker === undefined) {
+            // No marker to be found so bail out
+            return;
+        }
+        var nearest_feature = this.getNearestFeature(marker.geometry, threshold);
+        if (nearest_feature) {
+            this.get_select_control().select(nearest_feature);
+        }
+    },
+
+    get_select_control: function() {
+        var controls = fixmystreet.map.getControlsByClass('OpenLayers.Control.SelectFeature');
+        for (var i=0; i<controls.length; i++) {
+            var control = controls[i];
+            if (control.layer == this && !control.hover) {
+                return control;
+            }
+        }
+    },
+
     zoom_to_assets: function() {
         // This function is called when the asset category is
         // selected, and will zoom the map in to the first level that
@@ -221,7 +249,7 @@ function asset_selected(e) {
             { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(0, 0) },
             true, close_fault_popup);
         fixmystreet.map.addPopup(fault_popup);
-        get_select_control(this).unselect(e.feature);
+        this.get_select_control().unselect(e.feature);
         return;
     }
 
@@ -356,46 +384,18 @@ function layer_visibilitychanged() {
         fixmystreet.markers.setVisibility(true);
     }
     if (!this.fixmystreet.non_interactive) {
-        select_nearest_asset.call(this);
+        this.select_nearest_asset();
     }
 }
 
-
-function get_select_control(layer) {
-    var controls = fixmystreet.map.getControlsByClass('OpenLayers.Control.SelectFeature');
-    for (var i=0; i<controls.length; i++) {
-        var control = controls[i];
-        if (control.layer == layer && !control.hover) {
-            return control;
-        }
-    }
-}
-
-function select_nearest_asset() {
-    // The user's green marker might be on the map the first time we show the
-    // assets, so snap it to the closest asset marker if so.
-    if (!fixmystreet.markers.getVisibility() || !(this.getVisibility() && this.inRange)) {
-        return;
-    }
-    var threshold = 50; // metres
-    var marker = fixmystreet.markers.features[0];
-    if (marker === undefined) {
-        // No marker to be found so bail out
-        return;
-    }
-    var nearest_feature = this.getNearestFeature(marker.geometry, threshold);
-    if (nearest_feature) {
-        get_select_control(this).select(nearest_feature);
-    }
-}
 
 function layer_loadend() {
-    select_nearest_asset.call(this);
+    this.select_nearest_asset();
     // Preserve the selected marker when panning/zooming, if it's still on the map
     if (selected_feature !== null && !(selected_feature in this.selectedFeatures)) {
         var replacement_feature = find_matching_feature(selected_feature, this, this.fixmystreet.asset_id_field);
         if (!!replacement_feature) {
-            get_select_control(this).select(replacement_feature);
+            this.get_select_control().select(replacement_feature);
         }
     }
 }
