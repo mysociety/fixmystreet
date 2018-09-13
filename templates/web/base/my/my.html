@@ -60,7 +60,13 @@ li .my-account-buttons a {
 </ul>
 
 <p class="my-account-buttons">
-  <a href="/auth/change_password">[% loc('Change password') %]</a>
+    <a href="/auth/change_password">
+  [%~ IF c.user.password ~%]
+    [% loc('Change password') %]
+  [%~ ELSE ~%]
+    [% loc('Set password') %]
+  [%~ END ~%]
+    </a>
   [% IF c.user AND (c.user.from_body OR c.user.is_superuser) %]
   <a href="/auth/generate_token">[% loc('Security') %]</a>
   [% END %]
