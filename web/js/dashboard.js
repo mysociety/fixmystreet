@@ -201,9 +201,11 @@ $(function(){
         var $table = $(this);
         var $trs = $table.find('tr');
         var $wrapper = $('<div>').addClass('responsive-bar-chart').insertBefore($table);
+        var canvasWidth = $table.attr('data-canvas-width') || 600;
+        var rowHeight = $table.attr('data-row-height') || 30;
         var $canvas = $('<canvas>').attr({
-            'width': 600,
-            'height': 30 * $trs.length
+            'width': canvasWidth,
+            'height': rowHeight * $trs.length
         }).appendTo($wrapper);
         var rowLabels = [];
         var rowValues = [];
