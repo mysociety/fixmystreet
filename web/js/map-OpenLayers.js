@@ -525,7 +525,8 @@ $.extend(fixmystreet.utils, {
                     $.extend(style.defaultStyle, { fillColor: 'black', strokeColor: 'black' });
                 }
                 var geometry = this.features[0].geometry;
-                if (geometry.CLASS_NAME == 'OpenLayers.Geometry.Collection') {
+                if (geometry.CLASS_NAME == 'OpenLayers.Geometry.Collection' ||
+                    geometry.CLASS_NAME == 'OpenLayers.Geometry.MultiPolygon') {
                     $.each(geometry.components, function(i, polygon) {
                         new_geometry.addComponents(polygon.components);
                         extent.extend(polygon.getBounds());
