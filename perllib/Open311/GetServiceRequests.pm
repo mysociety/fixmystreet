@@ -175,6 +175,7 @@ sub create_problems {
                     bodies_str => $body->id,
                     send_method_used => 'Open311',
                     category => $contact,
+                    send_questionnaire => 0,
                 }
             );
 
