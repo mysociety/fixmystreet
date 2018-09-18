@@ -1,7 +1,10 @@
 <h1>[% loc('Report your problem') %]</h1>
 
 [% IF report.used_map %]
-    <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
+    <ul class="change_location">
+        <li class="change_location__map">[% loc('Click the map or drag the pin to adjust the location') %]</li>
+        <li class="change_location__search">[% loc('Or <a href="/">search for a different location</a>') %]</li>
+    </ul>
 [% END %]
 
 [% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]

@@ -1,6 +1,7 @@
 ## Releases
 
 * Unreleased
+        - Clearer relocation options while you’re reporting a problem #2238
 
 * v2.4.1 (2nd October 2018)
     - New features:
