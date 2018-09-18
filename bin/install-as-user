@@ -25,6 +25,8 @@ misuse() {
 }
 
 [ -z "$DEVELOPMENT_INSTALL" ] && misuse DEVELOPMENT_INSTALL
+[ -z "$DOCKER" ] && misuse DOCKER
+[ -z "$INSTALL_DB" ] && misuse INSTALL_DB
 
 DB_NAME="fixmystreet"
 
@@ -92,19 +94,23 @@ then
 fi
 echo $DONE_MSG
 
-# Create the database if it doesn't exist:
-echo -n "Setting up database... "
-if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
-then
-    createdb --owner "$UNIX_USER" "$DB_NAME"
-    echo 'CREATE LANGUAGE plpgsql;' | psql -U "$UNIX_USER" "$DB_NAME" || true
+if [ $INSTALL_DB = true ]; then
+    # Create the database if it doesn't exist:
+    echo -n "Setting up database... "
+    if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
+    then
+        createdb --owner "$UNIX_USER" "$DB_NAME"
+        echo 'CREATE LANGUAGE plpgsql;' | psql -U "$UNIX_USER" "$DB_NAME" || true
+    fi
+    bin/update-schema --commit
+    echo $DONE_MSG
 fi
-bin/update-schema --commit
-echo $DONE_MSG
 
 # Generate po and mo files (these invocations taken from Kagee's script):
 echo "Creating locale .mo files"
 commonlib/bin/gettext-makemo FixMyStreet
 echo $DONE_MSG
 
-bin/update-all-reports
+if [ $INSTALL_DB = true ]; then
+    bin/update-all-reports
+fi
