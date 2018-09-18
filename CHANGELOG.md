@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Clearer relocation options while you’re reporting a problem #2238
 
 * v2.4.2 (6th November 2018)
     - New features:
