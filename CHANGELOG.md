@@ -5,6 +5,7 @@
         - Import end point can optionally return a web page #2225
         - Clicking the "Report" header links on the homepage now focusses
           the #pc search input #2237
+        - Clearer relocation options while you’re reporting a problem #2238
     - Bugfixes:
         - Fix display of area/pins on body page when using Bing or TonerLite map.
         - Do not scan through all problems to show /_dev pages.
