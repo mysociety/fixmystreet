@@ -1,0 +1,165 @@
+#!/bin/bash
+#
+# cobrand-checks: Check for template changes in a version upgrade
+
+set -e
+
+# Read in command line arguments
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    -h|--help)
+    HELP=yes
+    shift # past argument
+    ;;
+    -l|--list)
+    LIST=yes
+    shift # past argument
+    ;;
+    -d|--diff)
+    DIFF=yes
+    shift # past argument
+    ;;
+    -i|--interactive)
+    INTERACTIVE=yes
+    shift # past argument
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# Parse command line arguments or work out defaults
+
+function help {
+    cat <<END
+cobrand-checks COBRAND [OLD-REVISION] [NEW-REVISION]
+
+If OLD/NEW revisions are not specified, OLD defaults to the most recent tag
+accessible from the current checkout, and NEW defaults to either the most
+recent tag at all, or HEAD if HEAD is a descendant of the most recent tag at
+all.
+
+With no long argument, acts as if --list is given.
+
+    --list          List templates present in COBRAND that have changed in core
+                    between REVISIONs
+    --diff          Show diff of those files
+    --interactive   Step through the files one by one, showing diffs and editing
+    --help          Print usage message and exit
+END
+}
+
+if [ "$HELP" ]; then
+    help
+    exit 0
+fi
+
+COBRAND=$1
+
+if [ -z "$COBRAND" ]; then
+    echo "Please provide a cobrand"
+    echo
+    help
+    exit 1
+fi
+
+if [ -z "$LIST" -a -z "$DIFF" -a -z "$INTERACTIVE" ]; then
+    LIST=yes
+fi
+
+CURRENT_COMMIT=$(git rev-parse --verify --short --abbrev-ref HEAD)
+MOST_RECENT_CHECKED_OUT_TAG=$(git describe --abbrev=0 --tags)
+MOST_RECENT_TAG_AT_ALL=$(git describe --tags $(git rev-list --tags --max-count=1))
+
+OLD_REV=${2:-$MOST_RECENT_CHECKED_OUT_TAG}
+if [[ "$MOST_RECENT_TAG_AT_ALL" == "$MOST_RECENT_CHECKED_OUT_TAG" ]]; then
+    NEW_REV=${3:-$CURRENT_COMMIT}
+else
+    NEW_REV=${3:-$MOST_RECENT_TAG_AT_ALL}
+fi
+
+# Work out which templates are relevant
+
+CORE_TEMPLATE_CHANGES=$(git diff --name-only $OLD_REV..$NEW_REV templates/web/base | sort)
+COBRAND_TEMPLATES=$(find "templates/web/$COBRAND" -type f \! -name *.ttc | sed "s/$COBRAND/base/" | sort)
+
+CHANGED_FILES=$(comm -12 <(echo "$CORE_TEMPLATE_CHANGES") <(echo "$COBRAND_TEMPLATES"))
+
+if [ "$LIST" ]; then
+    if [ "$CHANGED_FILES" ]; then
+        echo "$CHANGED_FILES"
+    fi
+    exit 0
+fi
+
+if [ "$DIFF" ]; then
+    if [ "$CHANGED_FILES" ]; then
+        git diff --color $OLD_REV..$NEW_REV $CHANGED_FILES
+    fi
+    exit 0
+fi
+
+# --interactive from here
+
+function title {
+    printf "\033c"
+    TITLE="Comparing $OLD_REV to $NEW_REV"
+    echo $TITLE
+    printf '=%.0s' $(seq 1 ${#TITLE})
+    echo
+    echo $i
+    printf '~%.0s' $(seq 1 ${#i})
+    echo
+    echo
+}
+
+function prompt {
+    cat <<END
+
+Pick what to do:
+0) Compare base $OLD_REV..$NEW_REV
+1) Compare $OLD_REV:base to HEAD:$COBRAND
+2) Compare $NEW_REV:base to HEAD:$COBRAND
+e) Edit $j with vimdiff (:qa to exit)
+n) Next
+q) Quit
+END
+}
+
+(
+for i in $CHANGED_FILES; do
+    title
+    echo "$(git diff --color $OLD_REV..$NEW_REV $i)" # Avoid pager woes
+    j=${i/base/$COBRAND}
+    prompt
+    while true; do
+        read -n1 -s -r key
+        if [ "$key" = '0' ]; then
+            title
+            echo "$(git diff --color $OLD_REV..$NEW_REV $i)"
+            prompt
+        elif [ "$key" = '1' ]; then
+            title
+            diff -u <(git show $OLD_REV:$i) $j || true
+            prompt
+        elif [ "$key" = '2' ]; then
+            title
+            diff -u <(git show $NEW_REV:$i) $j || true
+            prompt
+        elif [ "$key" = 'e' -o "$key" = 'E' ]; then
+            vim -d <(git show $NEW_REV:$i) $j
+        elif [ "$key" = 'n' -o "$key" = 'N' ]; then
+            break;
+        elif [ "$key" = 'q' -o "$key" = 'Q' ]; then
+            exit;
+        fi
+    done
+done
+)
