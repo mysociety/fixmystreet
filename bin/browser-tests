@@ -64,6 +64,7 @@ sub run {
             # Want this to be like .com
             ALLOWED_COBRANDS => [ 'fixmystreet' ],
             MAPIT_URL => 'https://mapit.uk/',
+            BASE_URL => 'http://localhost:3001',
         });
         $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
 
