@@ -2,12 +2,12 @@ make
 g++
 jhead
 liblocale-gettext-perl
-memcached
 perl
 perlmagick
 libmath-bigint-gmp-perl
 gettext
 postgresql-server-dev-all
+postgresql-client
 gnuplot
 ttf-bitstream-vera
 libexpat1-dev
