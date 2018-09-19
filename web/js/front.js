@@ -10,6 +10,7 @@ document.getElementById('pc').focus();
         el.value = 1;
         form.insertBefore(el, form.firstChild);
     }
+
     var around_links = document.querySelectorAll('a[href*="around"]');
     for (i=0; i<around_links.length; i++) {
         var link = around_links[i];
@@ -18,8 +19,19 @@ document.getElementById('pc').focus();
 
     var lk = document.querySelector('span.report-a-problem-btn');
     if (lk && lk.addEventListener) {
-        lk.addEventListener('click', function(){
+        lk.addEventListener('click', function(e){
+            e.preventDefault();
             scrollTo(0,0);
+            document.getElementById('pc').focus();
+        });
+    }
+
+    var cta = document.getElementById('report-cta');
+    if (cta && cta.addEventListener) {
+        cta.addEventListener('click', function(e) {
+            e.preventDefault();
+            scrollTo(0,0);
+            document.getElementById('pc').focus();
         });
     }
 })();
