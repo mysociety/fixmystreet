@@ -15,7 +15,10 @@ my $db = FixMyStreet::DB->schema;
 my $user = $db->resultset('User')->find_or_create({ name => 'Bob', email => 'bob@example.com' });
 
 FixMyStreet::override_config {
-    UPLOAD_DIR => $UPLOAD_DIR,
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
 }, sub {
 
 my $image_path = path('t/app/controller/sample.jpg');

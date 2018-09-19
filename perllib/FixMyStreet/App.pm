@@ -129,10 +129,18 @@ __PACKAGE__->log->disable('debug')    #
   unless __PACKAGE__->debug;
 
 # Check upload_dir
-my $cache_dir = path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
-$cache_dir->mkpath;
-unless ( -d $cache_dir && -w $cache_dir ) {
-    warn "\x1b[31mCan't find/write to photo cache directory '$cache_dir'\x1b[0m\n";
+# TODO: Should this check be part of PhotoStorage::FileSystem?
+if (
+    FixMyStreet->config('PHOTO_STORAGE_BACKEND') eq 'FileSystem' ||
+    !defined FixMyStreet->config('PHOTO_STORAGE_BACKEND') # Backwards compatibility
+   ) {
+    my $cache_dir = FixMyStreet->config('PHOTO_STORAGE_OPTIONS')->{UPLOAD_DIR}
+                    || FixMyStreet->config('UPLOAD_DIR');
+    $cache_dir = path($cache_dir)->absolute(FixMyStreet->path_to());
+    $cache_dir->mkpath;
+    unless ( -d $cache_dir && -w $cache_dir ) {
+        warn "\x1b[31mCan't find/write to photo cache directory '$cache_dir'\x1b[0m\n";
+    }
 }
 
 =head1 NAME

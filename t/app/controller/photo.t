@@ -24,7 +24,10 @@ subtest "Check multiple upload worked" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         MAPIT_URL => 'http://mapit.uk/',
-        UPLOAD_DIR => $UPLOAD_DIR,
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
     }, sub {
 
         $mech->log_in_ok('test@example.com');
@@ -77,7 +80,10 @@ subtest "Check photo uploading URL works" => sub {
 
     # submit initial pc form
     FixMyStreet::override_config {
-        UPLOAD_DIR => $UPLOAD_DIR,
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
     }, sub {
         $mech->post( '/photo/upload',
             Content_Type => 'form-data',

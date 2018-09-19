@@ -19,6 +19,7 @@ use List::Util qw(shuffle);
 use Path::Tiny;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
+use FixMyStreet::PhotoStorage;
 use FixMyStreet::DB::Factories;
 use Getopt::Long::Descriptive;
 
@@ -111,8 +112,7 @@ foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
     }
 }
 
-my $cache_dir = path(FixMyStreet->config('UPLOAD_DIR'));
-$cache_dir->mkpath;
+FixMyStreet::PhotoStorage::backend->init()
 
 my $user = $users{'user@example.org'};
 my $num = 20;
