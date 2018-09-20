@@ -1,0 +1,229 @@
+# general.yml-example:
+# This file contains example values for the "general.yml" config file. It
+# contains various configuration parameters, in YAML syntax.
+#
+# For more information about this file, and general documentation on setting up
+# the FixMyStreet platform, please see https://fixmystreet.org/
+#
+# Specific details about this file can be found at
+# https://fixmystreet.org/customising/config/
+#
+# To start, you can copy this file to one called "general.yml" in the same
+# directory. Or have multiple config files and use a symlink to change between
+# them. Using the install script or AMI will have created a general.yml file
+# for you.
+
+# PostgreSQL database details for FixMyStreet
+FMS_DB_HOST: 'postgres.svc'
+FMS_DB_PORT: '5432'
+FMS_DB_NAME: 'fixmystreet'
+FMS_DB_USER: 'fms'
+FMS_DB_PASS: 'fms'
+
+# The base URL of the install.
+BASE_URL: 'http://localhost:9000'
+# Use the below if you're using the Catalyst development server
+#   BASE_URL: 'http://localhost:3000'
+SECURE_PROXY_SSL_HEADER: ''
+# If you're behind a proxy, set this to a two-element list containing the
+# trusted HTTP header and the required value. For example:
+#   SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]
+
+# Email domain used for emails, and contact name/email for admin use.
+EMAIL_DOMAIN: '127.0.0.1.xip.io'
+CONTACT_EMAIL: 'help@127.0.0.1.xip.io'
+CONTACT_NAME: 'FixMyStreet'
+# Address used for emails you don't expect a reply to (e.g. confirmation
+# emails); can be same as CONTACT_EMAIL above, of course, if you don't have a
+# special address.
+DO_NOT_REPLY_EMAIL: 'help@127.0.0.1.xip.io'
+
+# Whether this is a development site or not. It will mean e.g. templates/
+# CSS modified times aren't cached
+STAGING_SITE: 1
+# Developers may want a staging site to act differently from a live site.
+# Possible flags include:
+# - send_reports: Normally, a staging site will route all reports to the
+#   reporter, to guard against sending fake reports to live places. Set
+#   this to 1 if you want a staging site to route reports as normal.
+# - skip_checks: Manual testing of multiple cobrands can be made easier by
+#   skipping some checks they have in them, if this variable is set.
+# - enable_appcache: Whether the appcache should be active. NB: Only affects
+#     superuser sessions.
+STAGING_FLAGS:
+  send_reports: 0
+  skip_checks: 0
+  enable_appcache: 0
+
+# What to use as front page/alert example places placeholder
+# Defaults to High Street, Main Street
+EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
+
+# An array of languages for the site, in the following format:
+# <language code>,<pretty name>,<locale>
+LANGUAGES:
+  - 'en-gb,English,en_GB'
+
+# If you're running an installation that is being used in a different time zone
+# from the server, you can set the time zone here (standard time zone string)
+TIME_ZONE: ""
+
+# File locations for uploaded photos and cached geocoding results.
+# Absolute paths, or relative to the project's root directory
+UPLOAD_DIR: '../upload/'
+GEO_CACHE: '../cache/'
+
+# Location of MapIt, to map points to administrative areas, and what types of
+# area from it you want to use. If left blank, a default area will be used
+# everywhere (a URL needs to be given for non-web things, like sending of
+# reports, to function).
+# If using the Catalyst development server, set to
+#   MAPIT_URL: 'http://localhost:3000/fakemapit/'
+#   MAPIT_TYPES: [ 'ZZZ' ]
+# In the UK, you probably want, to cover all councils:
+#   MAPIT_URL: 'http://mapit.mysociety.org/'
+#   MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
+# But perhaps MAPIT_TYPES: [ 'WMC' ] if you want to report on a per-constituency basis?
+# If our global MapIt (using OpenStreetMap data) contains boundaries you can use:
+#   MAPIT_URL: 'http://global.mapit.mysociety.org/'
+# And then specify whichever type code have the boundaries you want:
+#   MAPIT_TYPES: [ 'O06' ]
+MAPIT_URL: ''
+MAPIT_TYPES: [ 'ZZZ' ]
+
+# If the MapIt you're using in MAPIT_URL requires an API key
+# (as https://mapit.mysociety.org/ does, for example), specify it here.
+# MAPIT_API_KEY: ''
+
+# If you are using global MapIt, you might want to restrict FixMyStreet usage
+# to only one or more areas, rather than all O04, for example. Provide MapIt
+# IDs here in a list that FixMyStreet should recognise, along with the MapIt
+# generation those IDs are in.
+#   MAPIT_ID_WHITELIST: [ 240838, 246176, 246733 ]
+#   MAPIT_GENERATION: 2
+MAPIT_ID_WHITELIST: []
+MAPIT_GENERATION: 0
+
+# If your MapIt has the concept of council wards (subareas of councils, where
+# people can sign up for alerts, but not report things), then you can give the
+# MapIt type codes for them here.
+# You can probably leave this blank, but in the UK we use something like:
+#   MAPIT_TYPES_CHILDREN: [ 'DIW', 'LBW', 'MTW', 'UTE', 'UTW', 'CED', 'COP', 'LGW' ]
+MAPIT_TYPES_CHILDREN: ''
+
+# Which service to use to look up results from e.g. front page searches.
+# Possible choices are Google, Bing, or OSM (blank will use OSM by default).
+GEOCODER: ''
+
+# If you wish to use Google Maps or Bing Maps Geocoding, get and put the
+# relevant key here.
+GOOGLE_MAPS_API_KEY: ''
+BING_MAPS_API_KEY: ''
+
+# This provdes parameters that are included in geocoding requests, to hopefully
+# return more useful results. The options vary depending which geocoder you use,
+# or you can specify all for if you change geocoder. For the default OSM, you can use:
+#   GEOCODING_DISAMBIGUATION:
+#     bounds: [ <min lat>, <min lon>, <max lat>, <max lon> ]
+#     country: <country code to restrict results to>
+#     town: <string added to geocoding requests if not already there>
+#
+# If using Bing, you can use town and bounds, plus any of:
+#     centre: "<lat>,<lon>"
+#     bing_culture: <culture code, see http://msdn.microsoft.com/en-us/library/hh441729.aspx>
+#     bing_country: <country name, only accept results that match this>
+#
+# If using Google, you can use bounds, plus:
+#     google_country: <.ccTLD to restrict results to>
+#     lang: <language for results>
+#
+GEOCODING_DISAMBIGUATION: ''
+
+# The type of map you want to use. If left blank, the default is OpenStreetMap.
+# Other options are currently pretty UK specific, including "FMS" for UK
+# FixMyStreet.
+MAP_TYPE: 'OSM'
+
+# FixMyStreet uses a templating cobrand system to provide different looks for
+# different installations. In the common case, if your templates are in the
+# templates/web/moon directory and CSS in web/cobrands/moon, you just specify:
+#   ALLOWED_COBRANDS:
+#     - moon
+# If you wish to use multiple cobrands, specify them in a list, optionally with
+# hostname-matching regular expressions if the name of the cobrand is not
+# enough. For example:
+#   ALLOWED_COBRANDS:
+#     - moon
+#     - venus
+# Any hostname with 'moon' in it will use the moon cobrand, any with 'venus'
+# the venus cobrand (any other the Default cobrand). Whereas:
+#   ALLOWED_COBRANDS:
+#     - moon: 'orbital'
+#     - venus
+# Any hostname with 'orbital' in it will use the moon cobrand.
+# This also allows development servers to map to different cobrands if needed,
+# using DNS subdomains for example.
+ALLOWED_COBRANDS:
+  - cobrand1
+  - cobrand2: 'hostname_substring2'
+  - cobrand3
+
+# This is used in e.g. "offensive report" emails to provide a link directly to
+# the admin interface. Defaults to BASE_URL with "/admin" on the end.
+ADMIN_BASE_URL: ''
+
+# How many items are returned in the GeoRSS and Open311 feeds by default
+RSS_LIMIT: '20'
+OPEN311_LIMIT: 1000
+# How many reports to show per page on the All Reports pages
+ALL_REPORTS_PER_PAGE: 100
+
+# Social networking
+FACEBOOK_APP_ID: ''
+FACEBOOK_APP_SECRET: ''
+TWITTER_KEY: ''
+TWITTER_SECRET: ''
+
+# If you wish to send email through a SMTP server elsewhere, change these
+# variables. SMTP_TYPE should be one of '', 'ssl' or 'tls'. SMTP_PORT will
+# default to 587 (tls), 465 (ssl), or 25.
+SMTP_SMARTHOST: 'localhost'
+SMTP_TYPE: ''
+SMTP_PORT: ''
+SMTP_USERNAME: ''
+SMTP_PASSWORD: ''
+
+# Gaze is a world-wide service for population density lookups. You can leave
+# this as is.
+GAZE_URL: 'https://gaze.mysociety.org/gaze'
+
+# Memcached host
+# This can be safely left out and will default to '127.0.0.1' even if not present.
+MEMCACHED_HOST: 'memcached.svc'
+
+# Should problem reports link to the council summary pages?
+AREA_LINKS_FROM_PROBLEMS: '0'
+
+# used to override the STAGING SERVER safety mechanism in send-reports
+TESTING_COUNCILS: ''
+
+# if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
+MESSAGE_MANAGER_URL: ''
+
+# If you want to use SMS login or 'report as' with just a phone number, you'll
+# need to set the site's two-digit ISO 3166 country code (e.g. GB) here.
+PHONE_COUNTRY: ''
+
+# If you enable login via SMS authentication, you'll need a twilio account
+SMS_AUTHENTICATION: 0
+TWILIO_ACCOUNT_SID: ''
+TWILIO_AUTH_TOKEN: ''
+TWILIO_FROM_PARAMETER: ''
+TWILIO_MESSAGING_SERVICE_SID: ''
+
+# If you want to hide all pages from non-logged-in users, set this to 1.
+LOGIN_REQUIRED: 0
+
+# If you want to stop new users from registering, set this to 1.
+# NB: This also disables all Facebook/Twitter logins.
+SIGNUPS_DISABLED: 0

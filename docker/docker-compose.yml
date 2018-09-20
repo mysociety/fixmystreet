@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  fixmystreet:
+    image: sagepe/fixmystreet:0.1
+    links:
+      - postgres
+      - memcached
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres
+      - memcached
+    volumes:
+      - ./general.yml.docker:/var/www/fixmystreet/fixmystreet/conf/general.yml
+    environment:
+      POSTGRES_PASSWORD: 'password'
+      FMS_DB_HOST: 'postgres.svc'
+      FMS_DB_PASS: 'fms'
+      FMS_DB_NAME: 'fixmystreet'
+      FMS_DB_USER: 'fms'
+      FMS_ROOT: '/var/www/fixmystreet/fixmystreet'
+    networks:
+      default:
+        aliases:
+          - fixmystreet.svc
+  postgres:
+    image: sagepe/postgres:9.6
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 'password'
+    networks:
+      default:
+        aliases:
+          - postgres.svc
+  memcached:
+    image: memcached:1.5.10
+    restart: always
+    networks:
+      default:
+        aliases:
+          - memcached.svc
