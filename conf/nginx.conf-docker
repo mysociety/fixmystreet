@@ -1,0 +1,56 @@
+# An example configuration for running FixMyStreet under nginx.  You
+# will also need to set up the FixMyStreet Catalyst FastCGI backend.
+# An example sysvinit script to help with this is shown given in the file
+# sysvinit-catalyst-fastcgi.example in this directory.
+#
+# See our installation help at https://fixmystreet.org/
+
+server {
+
+    listen 80 default_server;
+    root /var/www/fixmystreet/fixmystreet/web;
+    error_page 503 /down.html;
+
+    # Make sure that Javascript and CSS are compressed.  (HTML is
+    # already compressed under the default configuration of the nginx
+    # package.)
+
+    gzip on;
+    gzip_disable "msie6";
+    gzip_types application/javascript application/x-javascript text/css;
+
+    client_max_body_size 10m;
+
+    # These rewrite rules are ported from the Apache configuration in
+    # conf/httpd.conf
+
+    rewrite ^/rss/council/([0-9]+)$  /rss/reports/$1 permanent;
+    rewrite ^/report$                /reports        permanent;
+    rewrite '^/{/rss/(.*)}$'         /rss/$1         permanent;
+    rewrite '^/reports/{/rss/(.*)}$' /rss/$1         permanent;
+    rewrite ^/alerts/?$              /alert          permanent;
+
+    location /mapit {
+        proxy_pass https://mapit.mysociety.org/;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location / {
+        if (-f $document_root/down.html) {
+            return 503;
+        }
+        try_files $uri @catalyst;
+    }
+
+    location /down.html {
+        internal;
+    }
+
+    location @catalyst {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host:8000;
+        proxy_redirect off;
+        proxy_pass http://fixmystreet.svc:9000;
+    }
+}

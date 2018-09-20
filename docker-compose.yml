@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.15.3
+    depends_on:
+      - fixmystreet
+    ports:
+      - "8000:80"
+    volumes:
+      - ./conf/nginx.conf-docker:/etc/nginx/conf.d/default.conf
+    networks:
+      default:
+        aliases:
+          - nginx.svc
+  fixmystreet:
+    image: fixmystreet/fixmystreet:stable
+    tty: true
+    depends_on:
+      - postgres
+      - memcached
+    volumes:
+      - ./conf/general.yml-docker:/var/www/fixmystreet/fixmystreet/conf/general.yml
+    environment:
+      POSTGRES_PASSWORD: 'password'
+      FMS_DB_HOST: 'postgres.svc'
+      FMS_DB_PASS: 'fms'
+      FMS_DB_NAME: 'fixmystreet'
+      FMS_DB_USER: 'fms'
+      FMS_ROOT: '/var/www/fixmystreet/fixmystreet'
+      SUPERUSER_EMAIL: 'superuser@example.org'
+      SUPERUSER_PASSWORD: '5up3r53cr3t'
+    networks:
+      default:
+        aliases:
+          - fixmystreet.svc
+  postgres:
+    image: fixmystreet/postgres:9.6-en_GB
+    restart: always
+    volumes:
+      - fixmystreet-pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_PASSWORD: 'password'
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+    networks:
+      default:
+        aliases:
+          - postgres.svc
+  memcached:
+    image: memcached:1.5.10
+    restart: always
+    networks:
+      default:
+        aliases:
+          - memcached.svc
+
+volumes:
+  fixmystreet-pgdata:
