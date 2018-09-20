@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - New features:
+        - Support for storing photos in AWS S3. #2253
     - Front end improvements:
         - Import end point can optionally return a web page #2225
         - Clicking the "Report" header links on the homepage now focusses
