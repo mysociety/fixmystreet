@@ -15,6 +15,7 @@
         - Cobrand hook for disabling updates on individual problems.
         - Cobrand hook for disallowing title moderation. #2228
         - Cobrand hook for per-questionnaire sending. #2231
+        - Add option for configuring memcache server.
 
 * v2.4 (6th September 2018)
     - Security

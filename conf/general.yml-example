@@ -197,6 +197,10 @@ SMTP_PASSWORD: ''
 # this as is.
 GAZE_URL: 'https://gaze.mysociety.org/gaze'
 
+# Memcached host
+# This can be safely left out and will default to '127.0.0.1' even if not present.
+MEMCACHED_HOST: '127.0.0.1'
+
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'
 
