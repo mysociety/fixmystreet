@@ -10,6 +10,7 @@
         - Fix display of area/pins on body page when using Bing or TonerLite map.
         - Do not scan through all problems to show /_dev pages.
         - Say “Set password”, not Change, if no password set.
+        - Do not lose from_body field when edited by non-superuser admin.
     - Development improvements:
         - Cobrand hook for disabling updates on individual problems.
         - Cobrand hook for disallowing title moderation. #2228

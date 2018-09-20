@@ -1591,11 +1591,12 @@ sub user_edit : Path('user_edit') : Args(1) {
         # set from_body to the same value as their own from_body.
         if ( $c->user->is_superuser || $c->cobrand->moniker eq 'zurich' ) {
             $user->from_body( $c->get_param('body') || undef );
-        } elsif ( $c->user->has_body_permission_to('user_assign_body') &&
-                  $c->get_param('body') && $c->get_param('body') eq $c->user->from_body->id ) {
-            $user->from_body( $c->user->from_body );
-        } else {
-            $user->from_body( undef );
+        } elsif ( $c->user->has_body_permission_to('user_assign_body') ) {
+            if ($c->get_param('body') && $c->get_param('body') eq $c->user->from_body->id ) {
+                $user->from_body( $c->user->from_body );
+            } else {
+                $user->from_body( undef );
+            }
         }
 
         $c->forward('user_cobrand_extra_fields');

@@ -100,6 +100,16 @@ FixMyStreet::override_config {
         }
     }
 
+    subtest "Users can't edit users of their own council without permission" => sub {
+        $mech->get_ok("/admin/user_edit/$user2_id");
+        $mech->submit_form_ok( { with_fields => {
+            email => $user2->email,
+        } } );
+        $user2->discard_changes;
+        # Make sure we haven't lost the from_body info
+        is $user2->from_body->id, $oxfordshire->id;
+    };
+
     $oxfordshireuser->user_body_permissions->create({
         body => $oxfordshire,
         permission_type => 'user_assign_body',
