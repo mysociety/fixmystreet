@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Things to do before starting FixMyStreet in Docker
+
+# Make sure that the rest of the environment is up and running.
+sleep 5
+
+# If there's a password for the postgres user, set it up for root and see if we need
+# to create an FMS user. This is intended for use when using a deciated local postgres
+# container. If this variable doesn't exist, we're going to assume that the FMS user
+# has been created already so the stuff below will work.
+if [ -n "$POSTGRES_PASSWORD" ]; then
+  echo "${FMS_DB_HOST}:*:*:postgres:${POSTGRES_PASSWORD}" > /root/.pgpass
+  chmod 0600 /root/.pgpass
+  psql -h $FMS_DB_HOST -U postgres postgres -c "create user \"${FMS_DB_USER}\" with CREATEDB password '${FMS_DB_PASS}'" || true
+fi
+
+# Set up a .pgpass for the FMS user. Note that we're assuming the same name for
+# both the local shell account and the DB user.
+su ${FMS_DB_USER} -c "echo \"${FMS_DB_HOST}:*:*:${FMS_DB_USER}:${FMS_DB_PASS}\" > /home/${FMS_DB_USER}/.pgpass"
+chmod 0600 /home/${FMS_DB_USER}/.pgpass
+
+# If the FMS database doesn't exist, try to create it.
+if ! su $FMS_DB_USER -c "psql -h $FMS_DB_HOST -U $FMS_DB_USER -l | egrep \"^ *${FMS_DB_NAME} *\|\" > /dev/null" ; then
+    su $FMS_DB_USER -c "createdb -h $FMS_DB_HOST -U $FMS_DB_USER --owner \"$FMS_DB_USER\" \"$FMS_DB_NAME\""
+fi
+
+# Ensure the schema is up-to-date.
+su $FMS_DB_USER -c "${FMS_ROOT}/bin/update-schema --commit"
