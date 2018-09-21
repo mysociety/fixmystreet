@@ -20,6 +20,7 @@
         - Add Blackhole send method. #2246
         - Add script to list/diff template changes in core that
           might need applying to a cobrand.
+        - Move away from FastCGI in sample conf/sysvinit config.
 
 * v2.4 (6th September 2018)
     - Security
