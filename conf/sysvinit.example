@@ -5,8 +5,8 @@
 # Required-Stop:     $local_fs $network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Starts the FastCGI app server for the "FixMyStreet" site
-# Description:       The FastCGI application server for the "FixMyStreet" site
+# Short-Description: Starts the app server for the "FixMyStreet" site
+# Description:       The application server for the "FixMyStreet" site
 ### END INIT INFO
 
 # This example sysvinit script is based on the helpful example here:
@@ -17,6 +17,7 @@ SITE_HOME=/var/www/fixmystreet
 NAME=fixmystreet
 DESC="FixMyStreet app server"
 USER=fms
+PIDFILE=${SITE_HOME}/${NAME}.pid
 
 echo $DAEMON
 test -f $DAEMON || exit 0
@@ -24,30 +25,30 @@ test -f $DAEMON || exit 0
 set -e
 
 start_daemon() {
-  su -l -c "cd $SITE_HOME/fixmystreet && web/fixmystreet_app_fastcgi.cgi -d -l :9000 -n 2" $USER
+  su -l -c "cd $SITE_HOME/fixmystreet && script/server --port 9000 --env deployment --daemonize --pid $PIDFILE" $USER
 }
 
 stop_daemon() {
-  pkill -f perl-fcgi -u $USER || true
+  kill -TERM `cat $PIDFILE`
 }
 
 case "$1" in
- start)
- start_daemon
- ;;
- stop)
- stop_daemon
- ;;
- reload|restart|force-reload)
- stop_daemon
- sleep 5
- start_daemon
- ;;
- *)
- N=/etc/init.d/$NAME
- echo "Usage: $N {start|stop|reload|restart|force-reload}" >&2
- exit 1
- ;;
+  start)
+    start_daemon
+    ;;
+  stop)
+    stop_daemon
+    ;;
+  reload|restart|force-reload)
+    stop_daemon
+    sleep 5
+    start_daemon
+    ;;
+  *)
+    N=/etc/init.d/$NAME
+    echo "Usage: $N {start|stop|reload|restart|force-reload}" >&2
+    exit 1
+    ;;
 esac
 
 exit 0

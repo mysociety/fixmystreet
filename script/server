@@ -1,7 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+#
+# By default, if no arguments given, runs a server on port 3000 with
+# auto-reloading, and debug switched on. Run with FIXMYSTREET_APP_DEBUG=0 to
+# override debug, or provide arguments to override everything.
 
 set -e
 cd "$(dirname "$0")/.."
 
-export FIXMYSTREET_APP_DEBUG=${FIXMYSTREET_APP_DEBUG=1}
-bin/cron-wrapper local/bin/plackup -s Starman --listen :3000 --Reload perllib,conf
+if [ -z "$1" ]; then
+    export FIXMYSTREET_APP_DEBUG=${FIXMYSTREET_APP_DEBUG=1}
+    set -- --listen :3000 --Reload perllib,conf
+fi
+
+bin/cron-wrapper local/bin/plackup -s Starman $@
