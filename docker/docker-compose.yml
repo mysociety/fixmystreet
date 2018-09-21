@@ -1,13 +1,17 @@
 version: '3'
 
 services:
+  nginx:
+    image: dracos/fixmystreet-nginx:0.1
+    links:
+      - fixmystreet
+    ports:
+      - "8000:80"
   fixmystreet:
-    image: sagepe/fixmystreet:0.3
+    image: dracos/fixmystreet:0.1
     links:
       - postgres
       - memcached
-    ports:
-      - "9000:9000"
     depends_on:
       - postgres
       - memcached
