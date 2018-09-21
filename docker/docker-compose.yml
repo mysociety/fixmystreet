@@ -27,8 +27,11 @@ services:
   postgres:
     image: sagepe/postgres:9.6
     restart: always
+    volumes:
+      - fixmystreet-pgdata:/var/lib/postgresql/data/pgdata
     environment:
       POSTGRES_PASSWORD: 'password'
+      PGDATA: '/var/lib/postgresql/data/pgdata'
     networks:
       default:
         aliases:
@@ -40,3 +43,6 @@ services:
       default:
         aliases:
           - memcached.svc
+
+volumes:
+  fixmystreet-pgdata:
