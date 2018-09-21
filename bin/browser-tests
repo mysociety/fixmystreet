@@ -12,15 +12,24 @@ BEGIN {
 
 use Getopt::Long ':config' => qw(pass_through auto_help);
 
+my ($run_server, $run_cypress, $vagrant);
 my $config_file = 'conf/general.yml-example';
-my $run_server;
-my $run_cypress;
-my $vagrant;
+my $cobrand = 'fixmystreet';
+my $coords = '51.532851,-2.284277';
+my $area_id = 2608;
+my $name = 'Borsetshire';
+my $mapit_url = 'https://mapit.uk/';
+
 GetOptions(
     'config=s' => \$config_file,
     'server' => \$run_server,
     'cypress' => \$run_cypress,
     'vagrant' => \$vagrant,
+    'cobrand=s' => \$cobrand,
+    'coords=s' => \$coords,
+    'area_id=s' => \$area_id,
+    'name=s' => \$name,
+    'mapit_url=s' => \$mapit_url,
 );
 
 if ($vagrant) {
@@ -62,15 +71,15 @@ sub run {
         my $config_out = FixMyStreet::TestAppProve->get_config({
             config_file => $config_file,
             # Want this to be like .com
-            ALLOWED_COBRANDS => [ 'fixmystreet' ],
-            MAPIT_URL => 'https://mapit.uk/',
+            ALLOWED_COBRANDS => [ $cobrand ],
+            MAPIT_URL => $mapit_url,
             BASE_URL => 'http://localhost:3001',
         });
         $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
 
         # Set up, and load in some data
         system('bin/make_css', 'fixmystreet.com');
-        system('bin/fixmystreet.com/fixture', '--nonrandom', '--coords', '51.532851,-2.284277', '--name', 'Borsetshire', '--area-id', 2608, '--commit');
+        system('bin/fixmystreet.com/fixture', '--nonrandom', '--coords', $coords, '--name', $name, '--area-id', $area_id, '--commit');
     }
 
     my $pid;
@@ -81,7 +90,7 @@ sub run {
 
     if (($run_cypress && !$run_server) || $pid) {
         # Parent, run the test runner (then kill the child)
-        my $exit = system("cypress", $cmd, '--config', 'fixturesFolder=false,pluginsFile=false,supportFile=false,blacklistHosts=[gaze.mysociety.org,*.openstreetmap.org]', '--project', '.cypress', @ARGV);
+        my $exit = system("cypress", $cmd, '--config', 'fixturesFolder=false,pluginsFile=false,supportFile=false,blacklistHosts=[gaze.mysociety.org,*.openstreetmap.org]', '--project', '.cypress', '--env', "cobrand=$cobrand", @ARGV);
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
@@ -105,14 +114,21 @@ browser-tests - Run Cypress browser tests, set up for FixMyStreet.
 
 =head1 SYNOPSIS
 
-browser-tests [options] [cypress options]
+browser-tests [running options] [fixture options] [cypress options]
 
- Options:
+ Running options:
    --config         provide an override general.yml file
    --server         only run the test server, not cypress
    --cypress        only run cypress, not the test server
    --vagrant        run test server inside Vagrant, cypress outside
    --help           this help message
+
+ Fixture option:
+   --cobrand        Cobrand to use, default 'fixmystreet'
+   --coords         Default co-ordinates for created reports
+   --area_id        Area ID to use for created body
+   --name           Name to use for created body
+   --mapit_url      MapIt URL to use, default mock
 
 Use browser-tests instead of running cypress directly, so that a clean
 database is set up for Cypress to use, not affecting your normal dev database.
