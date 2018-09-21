@@ -20,9 +20,7 @@ RUN \
     zlib1g-dev \
     postgresql-server-dev-all
 
-
-COPY ./bin/docker.preinit /usr/local/preinit/99-fixmystreet
-RUN chmod +x /usr/local/preinit/99-fixmystreet
+RUN cp /var/www/fixmystreet/fixmystreet/bin/docker.preinit /usr/local/preinit/99-fixmystreet && chmod +x /usr/local/preinit/99-fixmystreet
 
 EXPOSE 9000
 CMD ["/usr/local/bin/boot-debian-base"]
