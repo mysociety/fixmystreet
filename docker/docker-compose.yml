@@ -2,7 +2,7 @@ version: '3'
 
 services:
   fixmystreet:
-    image: sagepe/fixmystreet:0.1
+    image: sagepe/fixmystreet:0.3
     links:
       - postgres
       - memcached

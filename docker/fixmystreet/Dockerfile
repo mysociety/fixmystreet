@@ -18,7 +18,8 @@ RUN \
     libexpat1-dev \
     libssl-dev \
     zlib1g-dev \
-    postgresql-server-dev-all
+    postgresql-server-dev-all \
+  && rm -fr /home/fms/.cpanm/*
 
 RUN cp /var/www/fixmystreet/fixmystreet/bin/docker.preinit /usr/local/preinit/99-fixmystreet && chmod +x /usr/local/preinit/99-fixmystreet
 
