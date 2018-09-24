@@ -296,4 +296,27 @@ sub hide {
     return $ret;
 }
 
+sub as_hashref {
+    my ($self, $c, $cols) = @_;
+
+    my $out = {
+        id => $self->id,
+        problem_id => $self->problem_id,
+        text => $self->text,
+        state => $self->state,
+        created => $self->created,
+    };
+
+    $out->{problem_state} = $self->problem_state_processed;
+
+    $out->{photos} = [ map { $_->{url} } @{$self->photos} ] if !$cols || $cols->{photos};
+
+    if ($self->confirmed) {
+        $out->{confirmed} = $self->confirmed if !$cols || $cols->{confirmed};
+        $out->{confirmed_pp} = $c->cobrand->prettify_dt( $self->confirmed ) if !$cols || $cols->{confirmed_pp};
+    }
+
+    return $out;
+}
+
 1;

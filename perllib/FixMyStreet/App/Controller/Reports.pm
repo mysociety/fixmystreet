@@ -461,7 +461,7 @@ sub summary : Private {
     $c->forward('/admin/fetch_contacts');
     $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
 
-    $c->forward('/dashboard/construct_rs_filter');
+    $c->forward('/dashboard/construct_rs_filter', []);
 
     if ( $c->get_param('csv') ) {
         $c->detach('export_summary_csv');

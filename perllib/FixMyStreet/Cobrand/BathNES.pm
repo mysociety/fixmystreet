@@ -206,7 +206,33 @@ sub categories_restriction {
     ] } );
 }
 
-sub dashboard_export_add_columns {
+sub dashboard_export_updates_add_columns {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $c->user->has_body_permission_to('export_extra_columns');
+
+    push @{$c->stash->{csv}->{headers}}, "Staff User";
+    push @{$c->stash->{csv}->{headers}}, "User Email";
+    push @{$c->stash->{csv}->{columns}}, "staff_user";
+    push @{$c->stash->{csv}->{columns}}, "user_email";
+
+    $c->stash->{csv}->{extra_data} = sub {
+        my $report = shift;
+
+        my $staff_user = '';
+        if ( my $contributed_by = $report->get_extra_metadata('contributed_by') ) {
+            $staff_user = $c->model('DB::User')->find({ id => $contributed_by })->email;
+        }
+
+        return {
+            user_email => $report->user->email || '',
+            staff_user => $staff_user,
+        };
+    };
+}
+
+sub dashboard_export_problems_add_columns {
     my $self = shift;
     my $c = $self->{c};
 

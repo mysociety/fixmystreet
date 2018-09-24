@@ -191,6 +191,25 @@ subtest 'extra CSV columns are present if permission granted' => sub {
     is $rows[4]->[21], '', 'User phone number is correct';
     is $rows[4]->[22], '', 'Staff User is empty if not made on behalf of another user';
     is $rows[4]->[23], '', 'Attribute Data is correct';
+
+    $mech->get_ok('/dashboard?export=1&updates=1');
+
+    open $data_handle, '<', \$mech->content;
+    $csv = Text::CSV->new( { binary => 1 } );
+    @rows = ();
+    while ( my $row = $csv->getline( $data_handle ) ) {
+        push @rows, $row;
+    }
+
+    is scalar @rows, 1, '1 (header) + 0 (updates)';
+    is scalar @{$rows[0]}, 10, '10 columns present';
+    is_deeply $rows[0],
+        [
+            'Report ID', 'Update ID', 'Date', 'Status', 'Problem state',
+            'Text', 'User Name', 'Reported As', 'Staff User',
+            'User Email',
+        ],
+        'Column headers look correct';
 };
 
 

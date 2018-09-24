@@ -112,10 +112,14 @@ sub index : Path : Args(0) {
     $c->stash->{end_date} = $c->get_param('end_date');
     $c->stash->{q_state} = $c->get_param('state') || '';
 
-    $c->forward('construct_rs_filter');
+    $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
 
     if ( $c->get_param('export') ) {
-        $c->forward('export_as_csv');
+        if ($c->get_param('updates')) {
+            $c->forward('export_as_csv_updates');
+        } else {
+            $c->forward('export_as_csv');
+        }
     } else {
         $c->forward('generate_grouped_data');
         $self->generate_summary_figures($c);
@@ -123,7 +127,7 @@ sub index : Path : Args(0) {
 }
 
 sub construct_rs_filter : Private {
-    my ($self, $c) = @_;
+    my ($self, $c, $updates) = @_;
 
     my %where;
     $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }
@@ -131,28 +135,31 @@ sub construct_rs_filter : Private {
     $where{category} = $c->stash->{category}
         if $c->stash->{category};
 
+    my $table_name = $updates ? 'problem' : 'me';
+
     my $state = $c->stash->{q_state};
     if ( FixMyStreet::DB::Result::Problem->fixed_states->{$state} ) { # Probably fixed - council
-        $where{'me.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
+        $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
     } elsif ( $state ) {
-        $where{'me.state'} = $state;
+        $where{"$table_name.state"} = $state;
     } else {
-        $where{'me.state'} = [ FixMyStreet::DB::Result::Problem->visible_states() ];
+        $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->visible_states() ];
     }
 
     my $dtf = $c->model('DB')->storage->datetime_parser;
 
     my $start_date = $dtf->parse_datetime($c->stash->{start_date});
-    $where{'me.confirmed'} = { '>=', $dtf->format_datetime($start_date) };
+    $where{"$table_name.confirmed"} = { '>=', $dtf->format_datetime($start_date) };
 
     if (my $end_date = $c->stash->{end_date}) {
         my $one_day = DateTime::Duration->new( days => 1 );
         $end_date = $dtf->parse_datetime($end_date) + $one_day;
-        $where{'me.confirmed'} = [ -and => $where{'me.confirmed'}, { '<', $dtf->format_datetime($end_date) } ];
+        $where{"$table_name.confirmed"} = [ -and => $where{"$table_name.confirmed"}, { '<', $dtf->format_datetime($end_date) } ];
     }
 
     $c->stash->{params} = \%where;
-    $c->stash->{objects_rs} = $c->cobrand->problems->to_body($c->stash->{body})->search( \%where );
+    my $rs = $updates ? $c->cobrand->updates : $c->cobrand->problems;
+    $c->stash->{objects_rs} = $rs->to_body($c->stash->{body})->search( \%where );
 }
 
 sub generate_grouped_data : Private {
@@ -275,7 +282,7 @@ sub generate_body_response_time : Private {
 }
 
 sub csv_filename {
-    my ($self, $c) = @_;
+    my ($self, $c, $updates) = @_;
     my %where = (
         category => $c->stash->{category},
         state => $c->stash->{q_state},
@@ -284,11 +291,33 @@ sub csv_filename {
     $where{body} = $c->stash->{body}->id if $c->stash->{body};
     join '-',
         $c->req->uri->host,
+        $updates ? ('updates') : (),
         map {
             my $value = $where{$_};
             (defined $value and length $value) ? ($_, $value) : ()
         } sort keys %where
 };
+
+sub export_as_csv_updates : Private {
+    my ($self, $c) = @_;
+
+    my $csv = $c->stash->{csv} = {
+        objects => $c->stash->{objects_rs}->search_rs({}, {
+            order_by => ['me.confirmed', 'me.id'],
+        }),
+        headers => [
+            'Report ID', 'Update ID', 'Date', 'Status', 'Problem state',
+            'Text', 'User Name', 'Reported As',
+        ],
+        columns => [
+            'problem_id', 'id', 'confirmed', 'state', 'problem_state',
+            'text', 'user_name_display', 'reported_as',
+        ],
+        filename => $self->csv_filename($c, 1),
+    };
+    $c->cobrand->call_hook("dashboard_export_updates_add_columns");
+    $c->forward('generate_csv');
+}
 
 sub export_as_csv : Private {
     my ($self, $c) = @_;
@@ -340,9 +369,9 @@ sub export_as_csv : Private {
             'site_used',
             'reported_as',
         ],
-        filename => $self->csv_filename($c),
+        filename => $self->csv_filename($c, 0),
     };
-    $c->cobrand->call_hook("dashboard_export_add_columns");
+    $c->cobrand->call_hook("dashboard_export_problems_add_columns");
     $c->forward('generate_csv');
 }
 
@@ -404,11 +433,17 @@ sub generate_csv : Private {
               split ',', $hashref->{areas};
         }
 
-        ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
-            $obj->local_coords;
-        $hashref->{url} = join '', $c->cobrand->base_url_for_report($obj), $obj->url;
+        if ($obj->can('local_coords')) {
+            ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
+                $obj->local_coords;
+        }
+        if ($obj->can('url')) {
+            my $base = $c->cobrand->base_url_for_report($obj->can('problem') ? $obj->problem : $obj);
+            $hashref->{url} = join '', $base, $obj->url;
+        }
 
-        $hashref->{site_used} = $obj->service || $obj->cobrand;
+        $hashref->{site_used} = $obj->can('service') ? ($obj->service || $obj->cobrand) : $obj->cobrand;
+
         $hashref->{reported_as} = $obj->get_extra_metadata('contributed_as') || '';
 
         if (my $fn = $c->stash->{csv}->{extra_data}) {
