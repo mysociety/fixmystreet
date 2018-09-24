@@ -253,24 +253,22 @@ sub meta_line {
     return $meta;
 };
 
+sub problem_state_processed {
+    my $self = shift;
+    return 'fixed - user' if $self->mark_fixed;
+    return 'confirmed' if $self->mark_open;
+    return $self->problem_state;
+}
+
 sub problem_state_display {
     my ( $self, $c ) = @_;
 
-    my $update_state = '';
-    my $cobrand = $c->cobrand->moniker;
+    my $state = $self->problem_state_processed;
+    return '' unless $state;
 
-    if ($self->mark_fixed) {
-        return FixMyStreet::DB->resultset("State")->display('fixed', 1);
-    } elsif ($self->mark_open)  {
-        return FixMyStreet::DB->resultset("State")->display('confirmed', 1);
-    } elsif ($self->problem_state) {
-        my $state = $self->problem_state;
-        my $cobrand_name = $cobrand;
-        $cobrand_name = 'bromley' if $self->problem->to_body_named('Bromley');
-        $update_state = FixMyStreet::DB->resultset("State")->display($state, 1, $cobrand_name);
-    }
-
-    return $update_state;
+    my $cobrand_name = $c->cobrand->moniker;
+    $cobrand_name = 'bromley' if $self->problem->to_body_named('Bromley');
+    return FixMyStreet::DB->resultset("State")->display($state, 1, $cobrand_name);
 }
 
 sub is_latest {

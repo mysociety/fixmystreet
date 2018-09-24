@@ -274,6 +274,22 @@ sub generate_body_response_time : Private {
     $c->stash->{body_average} = $avg ? int($avg / 60 / 60 / 24 + 0.5) : 0;
 }
 
+sub csv_filename {
+    my ($self, $c) = @_;
+    my %where = (
+        category => $c->stash->{category},
+        state => $c->stash->{q_state},
+        ward => $c->stash->{ward},
+    );
+    $where{body} = $c->stash->{body}->id if $c->stash->{body};
+    join '-',
+        $c->req->uri->host,
+        map {
+            my $value = $where{$_};
+            (defined $value and length $value) ? ($_, $value) : ()
+        } sort keys %where
+};
+
 sub export_as_csv : Private {
     my ($self, $c) = @_;
 
@@ -324,20 +340,7 @@ sub export_as_csv : Private {
             'site_used',
             'reported_as',
         ],
-        filename => do {
-            my %where = (
-                category => $c->stash->{category},
-                state    => $c->stash->{q_state},
-                ward     => $c->stash->{ward},
-            );
-            $where{body} = $c->stash->{body}->id if $c->stash->{body};
-            join '-',
-                $c->req->uri->host,
-                map {
-                    my $value = $where{$_};
-                    (defined $value and length $value) ? ($_, $value) : ()
-                } sort keys %where
-        },
+        filename => $self->csv_filename($c),
     };
     $c->cobrand->call_hook("dashboard_export_add_columns");
     $c->forward('generate_csv');
