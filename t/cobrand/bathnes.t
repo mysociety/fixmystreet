@@ -72,7 +72,7 @@ subtest 'extra CSV columns are absent if permission not granted' => sub {
     }
     is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
 
-    is scalar @{$rows[0]}, 18, '18 columns present';
+    is scalar @{$rows[0]}, 20, '20 columns present';
 
     is_deeply $rows[0],
         [
@@ -94,6 +94,8 @@ subtest 'extra CSV columns are absent if permission not granted' => sub {
             'Easting',
             'Northing',
             'Report URL',
+            'Site Used',
+            'Reported As',
         ],
         'Column headers look correct';
 };
@@ -153,42 +155,42 @@ subtest 'extra CSV columns are present if permission granted' => sub {
             'Easting',
             'Northing',
             'Report URL',
+            'Site Used',
+            'Reported As',
             'User Email',
             'User Phone',
-            'Reported As',
             'Staff User',
             'Attribute Data',
-            'Site Used',
         ],
         'Column headers look correct';
 
-    is $rows[1]->[18], 'normaluser@example.com', 'User email is correct';
-    is $rows[1]->[19], '+447123456789', 'User phone number is correct';
-    is $rows[1]->[20], '', 'Reported As is empty if not made on behalf of another user/body';
-    is $rows[1]->[21], '', 'Staff User is empty if not made on behalf of another user';
-    is $rows[1]->[22], 'width = 10cm; depth = 25cm', 'Attribute Data is correct';
-    is $rows[1]->[23], 'iOS', 'Site Used shows whether report made via app';
+    is $rows[1]->[18], 'iOS', 'Site Used shows whether report made via app';
+    is $rows[1]->[19], '', 'Reported As is empty if not made on behalf of another user/body';
+    is $rows[1]->[20], 'normaluser@example.com', 'User email is correct';
+    is $rows[1]->[21], '+447123456789', 'User phone number is correct';
+    is $rows[1]->[22], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[1]->[23], 'width = 10cm; depth = 25cm', 'Attribute Data is correct';
 
-    is $rows[2]->[18], 'counciluser@example.com', 'User email is correct';
-    is $rows[2]->[19], '', 'User phone number is correct';
-    is $rows[2]->[20], 'body', 'Reported As is correct if made on behalf of body';
-    is $rows[2]->[21], '', 'Staff User is empty if not made on behalf of another user';
-    is $rows[2]->[22], '', 'Attribute Data is correct';
-    is $rows[2]->[23], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[2]->[18], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[2]->[19], 'body', 'Reported As is correct if made on behalf of body';
+    is $rows[2]->[20], 'counciluser@example.com', 'User email is correct';
+    is $rows[2]->[21], '', 'User phone number is correct';
+    is $rows[2]->[22], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[2]->[23], '', 'Attribute Data is correct';
 
-    is $rows[3]->[18], 'normaluser@example.com', 'User email is correct';
-    is $rows[3]->[19], '+447123456789', 'User phone number is correct';
-    is $rows[3]->[20], 'another_user', 'Reported As is set if reported on behalf of another user';
-    is $rows[3]->[21], 'counciluser@example.com', 'Staff User is correct if made on behalf of another user';
-    is $rows[3]->[22], '', 'Attribute Data is correct';
-    is $rows[3]->[23], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[3]->[18], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[3]->[19], 'another_user', 'Reported As is set if reported on behalf of another user';
+    is $rows[3]->[20], 'normaluser@example.com', 'User email is correct';
+    is $rows[3]->[21], '+447123456789', 'User phone number is correct';
+    is $rows[3]->[22], 'counciluser@example.com', 'Staff User is correct if made on behalf of another user';
+    is $rows[3]->[23], '', 'Attribute Data is correct';
 
-    is $rows[4]->[18], 'counciluser@example.com', 'User email is correct';
-    is $rows[4]->[19], '', 'User phone number is correct';
-    is $rows[4]->[20], 'anonymous_user', 'Reported As is set if reported on behalf of another user';
-    is $rows[4]->[21], '', 'Staff User is empty if not made on behalf of another user';
-    is $rows[4]->[22], '', 'Attribute Data is correct';
-    is $rows[4]->[23], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[4]->[18], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[4]->[19], 'anonymous_user', 'Reported As is set if reported on behalf of another user';
+    is $rows[4]->[20], 'counciluser@example.com', 'User email is correct';
+    is $rows[4]->[21], '', 'User phone number is correct';
+    is $rows[4]->[22], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[4]->[23], '', 'Attribute Data is correct';
 };
 
 

@@ -300,6 +300,8 @@ sub export_as_csv : Private {
             'Easting',
             'Northing',
             'Report URL',
+            'Site Used',
+            'Reported As',
         ],
         columns => [
             'id',
@@ -319,6 +321,8 @@ sub export_as_csv : Private {
             'local_coords_x',
             'local_coords_y',
             'url',
+            'site_used',
+            'reported_as',
         ],
         filename => do {
             my %where = (
@@ -397,6 +401,9 @@ sub generate_csv : Private {
         ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
             $report->local_coords;
         $hashref->{url} = join '', $c->cobrand->base_url_for_report($report), $report->url;
+
+        $hashref->{site_used} = $report->service || $report->cobrand;
+        $hashref->{reported_as} = $report->get_extra_metadata('contributed_as') || '';
 
         if (my $fn = $c->stash->{csv}->{extra_data}) {
             my $extra = $fn->($report);

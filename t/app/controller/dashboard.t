@@ -154,7 +154,7 @@ FixMyStreet::override_config {
         }
         is scalar @rows, 19, '1 (header) + 18 (reports) = 19 lines';
 
-        is scalar @{$rows[0]}, 18, '18 columns present';
+        is scalar @{$rows[0]}, 20, '20 columns present';
 
         is_deeply $rows[0],
             [
@@ -176,6 +176,8 @@ FixMyStreet::override_config {
                 'Easting',
                 'Northing',
                 'Report URL',
+                'Site Used',
+                'Reported As',
             ],
             'Column headers look correct';
 
