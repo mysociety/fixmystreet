@@ -99,7 +99,9 @@ sub index : Path : Args(0) {
             $c->stash->{body_name} = join "", map { $children->{$_}->{name} } grep { $children->{$_} } $c->user->area_id;
         }
     } else {
-        my @bodies = $c->model('DB::Body')->active->translated->with_area_count->all_sorted;
+        my @bodies = $c->model('DB::Body')->search(undef, {
+            columns => [ "id", "name" ],
+        })->active->translated->with_area_count->all_sorted;
         $c->stash->{bodies} = \@bodies;
     }
 

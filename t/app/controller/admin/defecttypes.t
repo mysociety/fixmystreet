@@ -28,6 +28,20 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
 
     my $body = $mech->create_body_ok( 2237, 'Oxfordshire County Council' );
 
+    subtest 'check defect types menu available to superusers' => sub {
+        my $user = $mech->create_user_ok(
+            'superuser@example.com',
+            name => 'Test Superuser',
+            is_superuser => 1
+        );
+
+        $mech->log_in_ok( $user->email );
+        $mech->get_ok('/admin');
+        $mech->content_contains('Defect Types');
+        $mech->get_ok('/admin/defecttypes');
+        $mech->log_out_ok();
+    };
+
     my $user = $mech->create_user_ok(
         'oxford@example.com',
         name => 'Test User',

@@ -50,7 +50,7 @@
         <label for="ward">[% loc('Council:') %]</label>
         <select class="form-control" name="body" id="body"><option value=''>[% loc('All') %]</option>
             [% FOR b IN bodies %]
-                [% NEXT IF NOT b.get_column("area_count") %]
+                [% NEXT IF NOT b.area_count %]
                 <option value="[% b.id %]">[% b.name %]</option>
             [% END %]
         </select>

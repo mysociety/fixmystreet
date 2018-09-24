@@ -12,6 +12,7 @@ sub index : Path : Args(0) {
     my $user = $c->user;
 
     if ($user->is_superuser) {
+        $c->stash->{with_defect_type_count} = 1;
         $c->forward('/admin/fetch_all_bodies');
     } elsif ( $user->from_body ) {
         $c->forward('load_user_body', [ $user->from_body->id ]);
