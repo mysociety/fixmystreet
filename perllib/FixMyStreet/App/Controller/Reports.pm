@@ -477,7 +477,7 @@ sub export_summary_csv : Private {
     my ( $self, $c ) = @_;
 
     $c->stash->{csv} = {
-        problems => $c->stash->{problems_rs}->search_rs({}, {
+        objects => $c->stash->{objects_rs}->search_rs({}, {
             rows => 100,
             order_by => { '-desc' => 'me.confirmed' },
         }),
