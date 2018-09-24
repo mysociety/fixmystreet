@@ -1,0 +1,11 @@
+Subject: [% site_name %] message: [% subject %]
+
+[% message %]
+
+[% IF complaint %]
+[ [% complaint %] - [% problem_url %] - [% admin_url %] ]
+[% END %]
+
+-- 
+Sent by contact form on [% host %].
+IP address [% ip %]

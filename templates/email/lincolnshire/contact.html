@@ -1,0 +1,38 @@
+[%
+
+subject_html = subject | html;
+name = form_name | html;
+email_summary = "&ldquo;" _ subject_html _ "&rdquo; &ndash; Message from " _ name _ " on " _ host;
+email_footer = "Sent via " _ host _ ", IP " _ ip;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% contact_meta_style %]">
+  <table [% table_reset %]>
+    <tr>
+      <th style="[% contact_th_style %]">From</th>
+      <td style="[% contact_td_style %]">[% name %] &lt;<a href="mailto:[% em | html %]">[% em | html %]</a>&gt;</td>
+    </tr>
+  </table>
+</th>
+</tr>
+
+<tr>
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">[% subject | html %]</h1>
+  [% message | html | html_para | replace('<p>', '<p style="' _ p_style _ '">') %]
+  [%~ IF complaint %]
+  <p style="[% secondary_p_style %]">
+    [% complaint | html %]
+    - <a href="[% problem_url %]">Report</a>
+    - <a href="[% admin_url %]">Admin</a>
+  </p>
+  [%~ END %]
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
