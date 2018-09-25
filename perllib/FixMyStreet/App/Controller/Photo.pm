@@ -7,6 +7,7 @@ BEGIN {extends 'Catalyst::Controller'; }
 use JSON::MaybeXS;
 use File::Path;
 use File::Slurp;
+use Try::Tiny;
 use FixMyStreet::App::Model::PhotoSet;
 
 =head1 NAME
@@ -101,8 +102,13 @@ sub upload : Local {
         c => $c,
         data_items => \@items,
     });
-
-    my $fileid = $photoset->data;
+    my $fileid = try {
+        $photoset->data;
+    } catch {
+        $c->log->debug("Photo upload failed.");
+        $c->stash->{photo_error} = _("Photo upload failed.");
+        return undef;
+    };
     my $out;
     if ($c->stash->{photo_error} || !$fileid) {
         $c->res->status(500);
