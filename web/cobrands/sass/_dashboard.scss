@@ -297,6 +297,19 @@
 
     li {
         float: $left;
+        margin: 0 0.4em;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        & > * + * {
+            margin-left: 0.4em;
+        }
     }
 
     .pull-right {
@@ -305,7 +318,7 @@
 
     a, span, strong {
         display: inline-block;
-        padding: 0.4em 0.8em;
+        padding: 0.4em 0;
     }
 
     strong {
@@ -314,6 +327,8 @@
         border-bottom-color: #fff;
         border-radius: 0.3em 0.3em 0 0;
         margin-bottom: -1px;
+        padding-left: 0.8em;
+        padding-right: 0.8em;
     }
 }
 
