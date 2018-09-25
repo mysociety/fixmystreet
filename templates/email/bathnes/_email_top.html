@@ -1,0 +1,77 @@
+[%
+    # The cobrand might come to us a variety of ways
+    # Alert sets cobrand directly, questionnaire/submit have it in report, otherwise web
+    cobrand = cobrand.moniker OR report.cobrand OR c.cobrand.moniker;
+
+    IF cobrand == 'fixmystreet';
+        SET img_dir = 'fixmystreet.com';
+    ELSE;
+        SET img_dir = cobrand;
+    END -%]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+  [%~ # Styles here will be applied by everything except Gmail.com %]
+  a { [% link_style %] }
+  a:hover { [% link_hover_style %] }
+
+  body, table, td, th {
+    font-family: [% body_font_family %] !important;
+  }
+
+  @media only screen and (max-width: [% wrapper_min_width - 1 %]px) {
+    #main, .hint {
+      min-width: 0 !important;
+    }
+
+    #main table, #main tr, #main th {
+      display: block !important;
+    }
+
+    #primary_column,
+    #secondary_column {
+      width: auto !important;
+    }
+  }
+
+  @media only screen and (max-width: [% wrapper_max_width - 1 %]px) {
+    #header {
+      padding-left: 20px !important;
+    }
+  }
+
+  @media only screen and (min-width: [% wrapper_max_width %]px) {
+    .spacer-cell {
+      background-color: [% body_background_color %];
+    }
+  }
+  </style>
+</head>
+<body style="[% body_style %]">
+  <table [% wrapper_table %] style="[% wrapper_style %]">
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
+        [% email_summary %]
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+  </table>
+  <table [% wrapper_table %] style="[% wrapper_style %]">
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %] min-width: [% wrapper_min_width %]px;" id="main">
+        <table [% table_reset %]>
+          <tr>
+            <th id="header" colspan="[% email_columns %]" style="[% td_style %][% header_style %]">
+              [%~ IF file_exists("web/cobrands/${ img_dir }/images/email-logo.gif") ~%]
+                <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/email-logo.gif') %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
+              [%~ ELSE ~%]
+                <span style="[% logo_style %]">[% site_name %]</span>
+              [%~ END %]
+            </th>
+          </tr>
+          <tr>
