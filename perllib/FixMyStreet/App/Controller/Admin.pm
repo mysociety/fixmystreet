@@ -2147,10 +2147,14 @@ sub check_page_allowed : Private {
 sub fetch_all_bodies : Private {
     my ($self, $c ) = @_;
 
-    my @bodies = $c->model('DB::Body')->translated->all_sorted;
-    if ( $c->cobrand->moniker eq 'zurich' ) {
-        @bodies = $c->cobrand->admin_fetch_all_bodies( @bodies );
-    }
+    my @bodies = $c->cobrand->call_hook('admin_fetch_all_bodies') || do {
+        my $bodies = $c->model('DB::Body')->search(undef, {
+            columns => [ "id", "name", "deleted", "parent" ],
+        })->with_parent_name;
+        $bodies = $bodies->with_defect_type_count if $c->stash->{with_defect_type_count};
+        $bodies->translated->all_sorted;
+    };
+
     $c->stash->{bodies} = \@bodies;
 
     return 1;

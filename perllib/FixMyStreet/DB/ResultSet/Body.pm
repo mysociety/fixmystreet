@@ -41,7 +41,7 @@ This restricts the ResultSet to bodies that are not marked as deleted.
 
 sub active {
     my $rs = shift;
-    $rs->search({ deleted => 0 });
+    $rs->search({ 'me.deleted' => 0 });
 }
 
 =item translated
@@ -58,6 +58,22 @@ sub translated {
         '+columns' => { 'msgstr' => 'translations.msgstr' },
         join => 'translations',
         bind => [ 'name', $schema->lang, 'body' ],
+    });
+}
+
+=item with_parent_name
+
+This adds the parent name associated with each body to the ResultSet,
+in the parent_name column.
+
+=cut
+
+sub with_parent_name {
+    my $rs = shift;
+    $rs->search(undef, {
+        '+select' => [ 'parent.name' ],
+        '+as' => [ 'parent_name' ],
+        join => 'parent',
     });
 }
 
@@ -78,10 +94,45 @@ sub with_area_count {
     });
 }
 
+=item with_defect_type_count
+
+This adds the number of defect types associated with each body to the
+ResultSet, in the defect_type_count column.
+
+=cut
+
+sub with_defect_type_count {
+    my $rs = shift;
+    $rs->search(undef, {
+        '+select' => [ { count => 'defect_types.name' } ],
+        '+as' => [ 'defect_type_count' ],
+        join => 'defect_types',
+        distinct => 1,
+    });
+}
+
+=item with_children_count
+
+This adds the number of children associated with each body to the
+ResultSet, in the children_count column.
+
+=cut
+
+sub with_children_count {
+    my $rs = shift;
+    $rs->search(undef, {
+        '+select' => [ { count => 'bodies.id' } ],
+        '+as' => [ 'children_count' ],
+        join => 'bodies',
+        distinct => 1,
+    });
+}
+
 =item all_sorted
 
-This returns all results, as C<all()>, but sorted by their name column
-(which will be the translated names if present).
+This returns all results, as C<all()>, but sorted by their name (including
+the translated names, if present), and as simple hashrefs not objects, for
+performance reasons.
 
 =back
 
@@ -89,8 +140,26 @@ This returns all results, as C<all()>, but sorted by their name column
 
 sub all_sorted {
     my $rs = shift;
-    my @bodies = $rs->all;
-    @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+
+    # Use a HashRefInflator here to return simple hashrefs rather than full
+    # objects. This is quicker if you have a large number of bodies; note
+    # fetching only the columns you need provides even more of a speed up.
+    my @bodies = $rs->search(undef, {
+        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
+    })->all;
+    @bodies = sort { strcoll($a->{msgstr} || $a->{name}, $b->{msgstr} || $b->{name}) } @bodies;
+
+    foreach my $body (@bodies) {
+        $body->{parent} = { id => $body->{parent}, name => $body->{parent_name} } if $body->{parent};
+
+        # DEPRECATED: get_column('area_count') -> area_count
+        next unless defined $body->{area_count};
+        $body->{get_column} = sub {
+            my $key = shift;
+            return $body->{$key};
+        };
+    }
+
     return @bodies;
 }
 

@@ -32,12 +32,12 @@
       </tr>
   [%- FOREACH body IN bodies %]
       [%- SET id = body.id %]
-      [% NEXT IF c.cobrand.moniker == 'zurich' AND admin_type == 'dm' AND (body.parent OR body.bodies) %]
+      [% NEXT IF c.cobrand.moniker == 'zurich' AND admin_type == 'dm' AND (body.parent OR body.children_count) %]
       <tr[% IF body.deleted %] class="adminhidden"[% END %]
         [% IF NOT counts.$id OR counts.$id.deleted == counts.$id.c %] class="is-deleted"[% END %]>
           <td>
             [% IF c.cobrand.moniker == 'zurich' %]
-              [% FILTER repeat(4*body.api_key) %]&nbsp;[% END %]
+              [% FILTER repeat(4*body.indent_level) %]&nbsp;[% END %]
               [% IF admin_type == 'super' %]
                 <a href="[% c.uri_for( 'body', id ) %]">[% body.name | html %]</a>
               [% ELSE %]

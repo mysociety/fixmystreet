@@ -1063,7 +1063,7 @@ sub munge_sendreport_params {
 }
 
 sub admin_fetch_all_bodies {
-    my ( $self, @bodies ) = @_;
+    my ( $self ) = @_;
 
     sub tree_sort {
         my ( $level, $id, $sorted, $out ) = @_;
@@ -1073,26 +1073,30 @@ sub admin_fetch_all_bodies {
         if ( $level == 0 ) {
             @sorted = sort {
                 # Want Zurich itself at the top.
-                return -1 if $sorted->{$a->id};
-                return 1 if $sorted->{$b->id};
+                return -1 if $sorted->{$a->{id}};
+                return 1 if $sorted->{$b->{id}};
                 # Otherwise, by name
-                strcoll($a->name, $b->name)
+                strcoll($a->{name}, $b->{name})
             } @$array;
         } else {
-            @sorted = sort { strcoll($a->name, $b->name) } @$array;
+            @sorted = sort { strcoll($a->{name}, $b->{name}) } @$array;
         }
         foreach ( @sorted ) {
-            $_->api_key( $level ); # Misuse
+            $_->{indent_level} = $level;
             push @$out, $_;
-            if ($sorted->{$_->id}) {
-                tree_sort( $level+1, $_->id, $sorted, $out );
+            if ($sorted->{$_->{id}}) {
+                tree_sort( $level+1, $_->{id}, $sorted, $out );
             }
         }
     }
 
+    my @bodies = FixMyStreet::DB->resultset('Body')->search(undef, {
+        columns => [ "id", "name", "deleted", "parent", "endpoint" ],
+    })->translated->with_children_count->all_sorted;
+
     my %sorted;
     foreach (@bodies) {
-        my $p = $_->parent ? $_->parent->id : 0;
+        my $p = $_->{parent} || 0;
         push @{$sorted{$p}}, $_;
     }
 

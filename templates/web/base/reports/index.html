@@ -79,7 +79,7 @@
                     <option value="">[% loc('Pick your council') %]</option>
                   [% FOR b IN bodies # Not body as 'body' may be on stash %]
                     <option value="[% b.id %]">[% b.name | html ~%]
-                        [% IF NOT b.get_column("area_count") %] [% loc('(no longer exists)') %][% END ~%]
+                        [% IF NOT b.area_count %] [% loc('(no longer exists)') %][% END ~%]
                     </option>
                   [% END %]
                 </select>
