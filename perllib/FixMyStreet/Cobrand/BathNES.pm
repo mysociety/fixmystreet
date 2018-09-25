@@ -202,6 +202,7 @@ sub categories_restriction {
         'me.send_method' => undef, # Open311 categories
         'me.send_method' => '', # Open311 categories that have been edited in the admin
         'me.send_method' => 'Email::BathNES', # Street Light Fault
+        'me.send_method' => 'Blackhole', # Parks categories
     ] } );
 }
 
