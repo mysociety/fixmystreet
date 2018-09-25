@@ -29,6 +29,7 @@ my ($opt, $usage) = describe_options(
     [ 'name:s', "Name of body to use (defaults to MapIt area name)" ],
     [ 'empty', "Empty all tables of the database first" ],
     [ 'commit', "Actually commit changes to the database" ],
+    [ 'nonrandom', "Output things in a fixed manner, for testing" ],
     [ 'coords=s', "Co-ordinates to use instead of example postcode" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
@@ -115,13 +116,44 @@ foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
 FixMyStreet::PhotoStorage::backend->init();
 
 my $user = $users{'user@example.org'};
-my $num = 20;
+my $num = $opt->nonrandom ? 21 : 20;
 say "Created $num problems around '$location' in cobrand '$cobrand'";
 my $confirmed = DateTime->today->subtract(days => 1)->add(hours => 8);
+
+my @problem_data;
+if ($opt->nonrandom) {
+    my $data = FixMyStreet::DB::Factory::Problem->data;
+    my @config = (
+        { category => 'Potholes', count => 6, times => [ 1000, 2000, 3000 ] },
+        { category => 'Street lighting', count => 5, times => [ 750, 2100, 2900, 4000 ] },
+        { category => 'Graffiti', count => 5, times => [ 1501, 1500, 500 ] },
+        { category => 'Other', count => 5, times => [ 6000, 14000 ] },
+    );
+    for my $c (@config) {
+        my $category = $c->{category};
+        for (my $i = 0; $i < $c->{count}; $i++) {
+            my $time = $confirmed->clone->add(seconds => $c->{times}->[$i] || ( rand(7000) + 6000 ));
+            push @problem_data, {
+                title => $data->{titles}->{$category}->[$i],
+                detail => $data->{descriptions}->{$category}->[$i],
+                category => $category,
+                confirmed => $time,
+            };
+        }
+    }
+} else {
+    for (1..$num) {
+        $confirmed->add(seconds => rand(7000));
+        my $category = $categories->[int(rand(@$categories))];
+        push @problem_data, {
+            category => $category,
+            confirmed => $confirmed,
+        };
+    }
+}
+
 my $problems = [];
-for (1..$num) {
-    $confirmed->add(seconds => rand(7000));
-    my $category = $categories->[int(rand(@$categories))];
+for (0..$num-1) {
     push @$problems, FixMyStreet::DB::Factory::Problem->create_problem({
         body => $body,
         areas => ',' . $opt->area_id . ',',
@@ -129,9 +161,9 @@ for (1..$num) {
         postcode => $location,
         latitude => $lat,
         longitude => $lon,
-        category => $category,
         cobrand => $cobrand,
-        confirmed => $confirmed,
+        lastupdate => $problem_data[$_]->{confirmed},
+        %{$problem_data[$_]},
     });
 }
 
@@ -152,9 +184,10 @@ my @fixed_user = (
     'Bish bash bosh. Sorted. Thanks so much.',
 );
 
-my @problems = shuffle(@$problems);
+my @problems = $opt->nonrandom ? @$problems : shuffle(@$problems);
 
-for (1..3) {
+my @range = $opt->nonrandom ? (1, 7, 12) : (1..3);
+for (@range) {
     my $problem = $problems[$_];
     $confirmed->add(seconds => rand(10000));
     FixMyStreet::DB::Factory::Comment->create({
@@ -202,6 +235,7 @@ for (1..3) {
         text => $fixed_user[int(rand(@fixed_user))],
         confirmed => DateTime::Format::Pg->format_datetime($confirmed),
     });
+    $problem->update( { lastupdate => DateTime::Format::Pg->format_datetime($confirmed) } );
 }
 
 # Some 'still open' updates
@@ -214,18 +248,22 @@ my @open_user = (
 );
 
 my $updates = [];
-for (5..9) {
+@range = $opt->nonrandom ? (13, 8, 2) : (5..9);
+for my $i (@range) {
     $confirmed->add(seconds => rand(10000));
+    my @range_u = $opt->nonrandom ? (1..$i) : (1);
     push @$updates, FixMyStreet::DB::Factory::Comment->create({
-        problem => $problems[$_],
+        problem => $problems[$i],
         user => $user,
         text => $open_user[int(rand(@open_user))],
         confirmed => DateTime::Format::Pg->format_datetime($confirmed),
-    });
+    }) for (@range_u);
+    $problems[$i]->update( { lastupdate => DateTime::Format::Pg->format_datetime($confirmed) } );
 }
 
 # Some not responsible updates
-for (11..13) {
+@range = $opt->nonrandom ? (3, 9, 20) : (11..13);
+for (@range) {
     my $problem = $problems[$_];
     $confirmed->add(seconds => rand(10000));
     push @$updates, FixMyStreet::DB::Factory::Comment->create({

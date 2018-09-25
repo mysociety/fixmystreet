@@ -171,8 +171,8 @@ sub create_problem {
 
     $params->{latitude} += rand(2 * $inaccurate_km) - $inaccurate_km;
     $params->{longitude} += rand(3 * $inaccurate_km) - 1.5 * $inaccurate_km,
-    $params->{title} = $titles->[$rand];
-    $params->{detail} = $descs->[$rand];
+    $params->{title} ||= $titles->[$rand];
+    $params->{detail} ||= $descs->[$rand];
     $params->{photo_id} = $photo;
     $params->{confirmed} = DateTime::Format::Pg->format_datetime($params->{confirmed});
     return $self->create($params);
