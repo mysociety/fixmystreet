@@ -18,6 +18,8 @@
         - Cobrand hook for per-questionnaire sending. #2231
         - Add option for configuring memcache server.
         - Add Blackhole send method. #2246
+        - Add script to list/diff template changes in core that
+          might need applying to a cobrand.
 
 * v2.4 (6th September 2018)
     - Security
