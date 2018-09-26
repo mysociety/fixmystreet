@@ -73,15 +73,10 @@ need a new module for something you're developing, please get in touch as
 adding things to carton (the mechanism FixMyStreet uses to manage Perl
 dependencies) is currently not as simple as we would like.
 
-If you tried to run a script in the `bin` directory manually, it failed
-with missing Perl module errors, and you’re running a version of FixMyStreet
-older than 1.5.3, you probably need to run it using `bin/cron-wrapper`. This
-sets up the FixMyStreet environment for the scripts. For example, if you want
-to run the script `bin/send-reports`, do it like this:
-
-    bin/cron-wrapper bin/send-reports
-
-You do not need to do this from version 1.5.3.
+If you tried to run a script in the `bin` directory manually, it failed with
+missing Perl module errors, you can try running it using `bin/cron-wrapper`.
+This sets up the FixMyStreet environment for any script that doesn't do it
+itself (though all provided scripts should do).
 
 <a name="no-styling"> </a>
 

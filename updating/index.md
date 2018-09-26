@@ -54,17 +54,6 @@ to take a backup of your database first.
 script/update
 {% endhighlight %}
 
-If you are updating to a version lower than 2.1 then you will have to run
-multiple scripts to update everything:
-
-{% highlight bash %}
-git submodule update
-bin/install_perl_modules
-bin/update-schema --commit
-bin/make_css
-commonlib/bin/gettext-makemo
-{% endhighlight %}
-
 Of course, if you have made changes to the database schema yourself, this may
 not work, please feel free to [contact us](/community/) to discuss it first.
 

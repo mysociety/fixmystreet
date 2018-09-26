@@ -41,15 +41,6 @@ to take a backup of your database first.
 
     fms@ip-10-58-191-98:~/fixmystreet$ script/update
 
-If you are updating to a version lower than 2.1 then you will have to run
-multiple scripts to update everything:
-
-    fms@ip-10-58-191-98:~/fixmystreet$ git submodule update
-    fms@ip-10-58-191-98:~/fixmystreet$ bin/install_perl_modules
-    fms@ip-10-58-191-98:~/fixmystreet$ bin/update-schema --commit
-    fms@ip-10-58-191-98:~/fixmystreet$ bin/make_css
-    fms@ip-10-58-191-98:~/fixmystreet$ commonlib/bin/gettext-makemo
-
 If you have made changes to the schema yourself, this may not work,
 please feel free to [contact us](/community/) to discuss it first.
 
