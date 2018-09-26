@@ -2,7 +2,7 @@ describe('Clicking the map', function() {
     before(function(){
         cy.visit('/');
         cy.contains('Go');
-        cy.get('[name=pc]').type('BS10 5EE');
+        cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
     });
 
@@ -23,7 +23,7 @@ describe('Clicking the map', function() {
 describe('Clicking the "big green banner" on a map page', function() {
     before(function() {
         cy.visit('/');
-        cy.get('[name=pc]').type('BS10 5EE');
+        cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
         cy.get('.big-green-banner').click();
     });
