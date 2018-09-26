@@ -2,7 +2,18 @@ package FixMyStreet::PhotoStorage;
 
 use Moose;
 use Digest::SHA qw(sha1_hex);
+use Module::Load;
+use FixMyStreet;
 
+our $instance; # our, so tests can set to undef when testing different backends
+sub backend {
+    return $instance if $instance;
+    my $class = 'FixMyStreet::PhotoStorage::';
+    $class .= FixMyStreet->config('PHOTO_STORAGE_BACKEND') || 'FileSystem';
+    load $class;
+    $instance = $class->new();
+    return $instance;
+}
 
 sub detect_type {
     my ($self, $photo) = @_;

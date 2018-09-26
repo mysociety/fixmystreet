@@ -16,6 +16,22 @@ has upload_dir => (
     },
 );
 
+=head2 init
+
+Creates UPLOAD_DIR and checks it's writeable.
+
+=cut
+
+sub init {
+    my $self = shift;
+    my $cache_dir = $self->upload_dir;
+    $cache_dir->mkpath;
+    unless ( -d $cache_dir && -w $cache_dir ) {
+        warn "\x1b[31mCan't find/write to photo cache directory '$cache_dir'\x1b[0m\n";
+        return;
+    }
+    return 1;
+}
 
 =head2 get_file
 

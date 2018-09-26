@@ -16,6 +16,8 @@ use IPC::Cmd qw(can_run);
 use IPC::Open3;
 use MIME::Base64;
 
+use FixMyStreet::PhotoStorage;
+
 has c => (
     is => 'ro',
 );
@@ -65,10 +67,7 @@ has storage => (
     is => 'ro',
     lazy => 1,
     default => sub {
-        my $class = 'FixMyStreet::PhotoStorage::';
-        $class .= FixMyStreet->config('PHOTO_STORAGE_BACKEND') || 'FileSystem';
-        eval "use $class";
-        return $class->new();
+        return FixMyStreet::PhotoStorage::backend;
     }
 );
 

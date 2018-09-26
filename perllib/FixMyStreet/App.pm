@@ -10,6 +10,7 @@ use Memcached;
 use FixMyStreet::Map;
 use FixMyStreet::Email;
 use FixMyStreet::Email::Sender;
+use FixMyStreet::PhotoStorage;
 use Utils;
 
 use Path::Tiny 'path';
@@ -128,19 +129,9 @@ after 'prepare_headers' => sub {
 __PACKAGE__->log->disable('debug')    #
   unless __PACKAGE__->debug;
 
-# Check upload_dir
-# TODO: Should this check be part of PhotoStorage::FileSystem?
-if (
-    FixMyStreet->config('PHOTO_STORAGE_BACKEND') eq 'FileSystem' ||
-    !defined FixMyStreet->config('PHOTO_STORAGE_BACKEND') # Backwards compatibility
-   ) {
-    my $cache_dir = FixMyStreet->config('PHOTO_STORAGE_OPTIONS')->{UPLOAD_DIR}
-                    || FixMyStreet->config('UPLOAD_DIR');
-    $cache_dir = path($cache_dir)->absolute(FixMyStreet->path_to());
-    $cache_dir->mkpath;
-    unless ( -d $cache_dir && -w $cache_dir ) {
-        warn "\x1b[31mCan't find/write to photo cache directory '$cache_dir'\x1b[0m\n";
-    }
+# Set up photo storage
+unless ( FixMyStreet::PhotoStorage::backend->init() ) {
+    warn "\x1b[31mCan't set up photo storage backend\x1b[0m\n";
 }
 
 =head1 NAME
