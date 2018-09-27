@@ -1,9 +1,9 @@
 fixmystreet.org
 ===============
 
-The gh-pages branch is [fixmystreet.org](https://fixmystreet.org), the
-Jekyll-based static site running on GitHub Pages that is the documentation for
-setting up / running the FixMyStreet platform.
+This directory is [fixmystreet.org](https://fixmystreet.org), the Jekyll-based
+static site running on GitHub Pages that is the documentation for setting up /
+running the FixMyStreet platform.
 
 ## Installation
 
@@ -12,8 +12,8 @@ The site is built by Jekyll. We manage our Ruby gem dependencies via
 already have it. Then you need to…
 
 ```
-git clone --recursive -b gh-pages https://github.com/mysociety/fixmystreet fixmystreet-pages
-cd fixmystreet-pages
+git clone --recursive https://github.com/mysociety/fixmystreet
+cd fixmystreet/docs
 bundle install --deployment
 ```
 

@@ -112,7 +112,7 @@ you're doing is [customising your installation](/customising).
     <p>
       These are technical notes. This is in addition to the
       <a href="https://fixmystreet.org/">core documentation</a> &mdash; which you are reading now &mdash;
-      which is actually stored in the git repository in the <code>gh-pages</code> branch, and published
+      which is actually stored in the git repository in the <code>docs</code> directory, and published
       as GitHub pages.
     </p>
   </dd>
