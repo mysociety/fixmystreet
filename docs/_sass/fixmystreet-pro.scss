@@ -1,0 +1,139 @@
+@import '../theme/sass/global';
+
+/*
+ * There's a conflict here with the what the FMS docs and the FMS pro site do
+ * the mySociety standard header - the following resets a lot of this
+ */
+
+ $pro-yellow: #FED876;
+
+ .ms-header {
+     border: 0;
+ }
+
+.ms-header__logo {
+    
+    border-radius: 0;
+    background-position: 0 0;
+    background-size: 0 0 ;
+    background-repeat: no-repeat;
+    background-image: none;
+    width: auto;
+    height: auto;
+    display: block;
+    position: static;
+    right: auto;
+    top: auto;
+    background-color:  transparent;
+    background-repeat: no-repeat;
+    margin: 10px 0;
+}
+
+.site-header {
+    background-color: white;
+    padding: 0;
+    border: 0;
+}
+
+.page-wrapper--pro {
+    background-color: #fff;
+    padding-bottom: 3em;
+}
+
+h4 {
+    text-transform: none;
+}
+
+.boxout {
+    background-color: $colour_off_white;
+    padding: 0.5em 1.5em 1.5em;
+    margin-bottom: 2em;
+    font-size: 0.875em;
+    p:last-of-type {
+        margin-bottom: 0;
+    }
+}
+
+.boxout__title {
+    text-transform: none;
+    line-height: 1.25em;
+    font-size: 1.125em;
+}
+
+.print-controls {
+    margin-top: 2em;
+}
+
+.sidebar {
+    margin-top: 2em;
+    li {
+        margin-bottom: 0.5em;
+        line-height: 1.35em;
+        li:first-of-type > a {
+            margin-top: 0.5em;
+        }
+    }
+    a {
+        display: inline-block;
+    }
+}
+
+// user guide view, for printing (but these styles will be visible on screen too
+
+.user-guide-print {
+    .ms-header,
+    .mysoc-footer,
+    .site-nav,
+    .secondary-content-column,
+    a[href="#main-nav"] {
+        display: none !important;
+        visibility: hidden;
+        
+    }
+
+    .main-content-column {
+        width: 100%;
+        float: none;
+        margin: 0 auto;
+        max-width: 54em;
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    .admin-screenshot {
+        max-width: 45em;
+    }
+
+    .site-logo {
+        float: none;
+        margin: 0 auto;
+    }
+}
+
+.user-guide-cover {
+    text-align: center;
+    margin-bottom: 6em;
+}
+
+.user-guide-title {
+    font-size: 3.5em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
+    border-bottom: 3px solid $colour_borders;
+    text-align: center;
+}
+
+.user-guide-section {
+    margin-bottom: 5em;
+    padding-bottom: 3em;
+    border-bottom: 3px solid $colour_borders;
+}
+
+.admin-task {
+    h3 {
+        background-color: $pro-yellow;
+    }
+}

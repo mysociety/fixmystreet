@@ -1,3 +1,6 @@
 [submodule "commonlib"]
 	path = commonlib
 	url = git://git.mysociety.org/commonlib
+[submodule "theme"]
+	path = docs/theme
+	url = https://github.com/mysociety/mysociety-docs-theme

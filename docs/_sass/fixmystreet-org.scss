@@ -1,0 +1,392 @@
+@import 'config';
+@import '../theme/sass/global';
+@import 'owl_carousel';
+@import 'training_slideshow';
+
+.site-title {
+    height: $logo_height * 0.75;
+    width: $logo_width * 0.75;
+}
+
+// Have a larger heading on the front page on larger screens
+@media (min-width: $large-screen) {
+    body.home .site-title {
+        margin: 0.5em auto;
+        height: $logo_height;
+        width: $logo_width;
+        background-size: $logo_width $logo_height;
+    }
+    body.home .site-header {
+        padding: 3.75em 0;
+    }
+}
+
+
+.homepage-feature {
+    @include clearfix;
+    .column {
+        // This is the point at which the monitor (fixed width) won't overlap
+        // the text column
+        @media (min-width: 60em) {
+            @include grid-column--one-of-two;
+        }
+    }
+}
+
+.monitor {
+    @media (min-width: $monitor_breakpoint) {
+        width: $monitor_width;
+        height: $monitor_height;
+        background: url($monitor_path);
+    }
+    // Add margin due to image caption positioning
+    margin: 0 auto $base-spacing-unit*3;
+    // This is the point at which the monitor can fit alongside text
+    @media (min-width: 50em) {
+        float: left;
+    }
+    position: relative;
+    #owl-slide {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 412px;
+        height: 232px;
+        background: #fff;
+        @media (min-width: $monitor_breakpoint) {
+            position: absolute;
+            top: 30px;
+            left: 32px;
+        }
+        a p {
+            color: $colour_black;
+        }
+    }
+}
+
+.summary-of-features {
+    @extend .unstyled;
+    @include clearfix;
+    li {
+        @media (min-width: $medium-screen) {
+        @include grid-column--one-of-four;
+        text-align: center;
+        }
+    }
+    .circle-icon {
+        width: $circle_icon_width;
+        height: $circle_icon_height;
+        display: block;
+        margin: $base-spacing-unit auto $base-spacing-unit / 2;
+        background-position: center top;
+        background-size: $circle_icon_width $circle_icon_width;
+        background-repeat: no-repeat;
+    }
+    .icon-opensource {background-image: url($icon_opensource_path);}
+    .icon-paint {background-image: url($icon_paint_path);}
+    .icon-help {background-image: url($icon_help_path);}
+    .icon-world {background-image: url($icon_world_path);}
+    h3 {
+        font-size: 1em;
+        margin-bottom: $base-spacing-unit / 2;
+    }
+    p {
+        font-size: 1em;
+        margin: $base-spacing-unit / 4 $base-spacing-unit $base-spacing-unit;
+    }
+}
+
+
+
+.this-or-this {
+    .column {
+        text-align: center;
+        padding-bottom: $base-spacing-unit *2;
+        @include grid-column--one-of-two;
+    }
+}
+
+.action-buttons {
+    @extend .unstyled;
+    li {
+        // The point at which the links can be doubled up
+        @media (min-width: 50em) {
+            width: 50%;
+            float: left;
+        }
+        a {
+            width: 100%;
+            max-width: 9em;
+            margin: 0 auto 1em;
+            color: #fff;
+        }
+        .icon {
+            width: 30px;
+            height: 50px;
+            display: block;
+            float: left;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 20px;
+            opacity: 0.6;
+            margin-left: -10px;
+        }
+        .icon-document {background-image: url($icon_docs_path);}
+        .icon-download {background-image: url($icon_download_path);}
+        .icon-github {background-image: url($icon_github_path);}
+        .icon-email {background-image: url($icon_email_path);}
+        .icon-twitter {background-image: url($icon_twitter_path);}
+        .icon-irc {background-image: url($icon_irc_path);}
+        .icon-post {background-image: url($icon_post_path);}
+    }
+}
+
+
+.primary-nav {
+    @extend .unstyled;
+    margin: 0;
+    text-align: center;
+    li {
+        display: inline-block;
+        padding: 0 $base-spacing-unit * 2;
+        @media (min-width: $medium-screen) {
+            display: inline;
+        }
+    }
+    a {
+        display: inline-block;
+        padding: ($base-spacing-unit / 3) 0;
+        color: $colour_black;
+    }
+}
+
+.btn{
+    display:inline-block;
+    vertical-align:middle;
+    white-space:nowrap;
+    font-family:inherit;
+    font-size:100%;
+    cursor:pointer;
+    border:none;
+    margin:0;
+    padding-top:0;
+    padding-bottom:0;
+    line-height:3;
+    padding-right:1em;
+    padding-left: 1em;
+    border-radius: 3px;
+    transition-duration: 0.2s;
+    &:hover,
+    &:active {
+        text-decoration: none;
+        transition-duration: 0.2s;
+    }
+}
+
+.btn--green {
+    @extend .btn;
+    background: $colour_green;
+    &:hover {background: $colour_green_dark;}
+    &:active {
+        background: $colour_green_dark_2;
+        box-shadow: inset 0px 0px 6px darken($colour_green_dark_2, 30%);
+    }
+}
+
+.btn--blue {
+    @extend .btn;
+    background: $colour_blue;
+    &:hover {background: $colour_blue_dark;}
+    &:active {
+        background: $colour_blue_dark_2;
+        box-shadow: inset 0px 0px 6px darken($colour_blue_dark_2, 30%);
+    }
+}
+
+.bg-default { background: $colour_background;}
+
+.spacer-top {
+    margin-top: $base-spacing-unit * 1.5;
+}
+.spacer-bottom {
+    margin-bottom: $base-spacing-unit * 1.5;
+}
+
+.section-header {
+    background: $colour_black;
+    padding: $base-spacing-unit /2 0;
+    float: left;
+    width: 100%;
+    p {
+        color: $colour_light_grey;
+        font-weight: normal;
+        margin: 0;
+        display: block;
+    }
+}
+
+
+/**
+ * Owl Additions
+ */
+
+.owl-carousel {
+    // Push the caption down under the monitor
+    .owl__gap {
+        float: left;
+        padding-right: 100px;
+        // Links in with whether monitor is shown or not, above under .monitor
+        @media (min-width: $monitor_breakpoint) {
+            padding-top: 100px;
+        }
+    }
+    h3 {
+        margin-bottom: 0;
+    }
+    p {
+        margin-top: 0;
+    }
+}
+
+.owl-buttons {
+    // margin-top: 100px;
+    float: right;
+    // Move the buttons up, compensating for the caption pushing and then some
+    position: relative;
+    top: -70px;
+    @media (min-width: $monitor_breakpoint) {
+        right: -20px;
+        top: -130px;
+    }
+    @extend .unstyled;
+    .owl-next,
+    .owl-prev {
+        @extend .image-replacement;
+        display: block;
+        background-color: $colour_light_grey;
+        float: left;
+        background-position: center center;
+        background-size: $base-spacing-unit * 0.5;
+        background-repeat: no-repeat;
+        height: $base-spacing-unit * 1.5;
+        width: $base-spacing-unit * 1.5;
+        margin-right: 2px;
+        &:hover {
+            background-color: darken($colour_light_grey, 10%);
+        }
+    }
+    .owl-prev {
+        background-image: url($prev_arrow_path);
+        border-radius: 3px 0 0 3px;
+    }
+    .owl-next {
+        background-image: url($next_arrow_path);
+        border-radius: 0 3px 3px 0;
+    }
+}
+
+/* Community page */
+
+.contact-options {
+    @include clearfix;
+    .column {
+        @include grid-column--one-of-two;
+    }
+}
+
+.admin-help {
+    padding: 0.2em;
+    text-align: center;
+    color: #fff;
+    background-color: #f93;
+    -moz-border-radius: 0.333em;
+    -webkit-border-radius: 0.333em;
+    border-radius: 0.333em;
+}
+
+/* Site search */
+
+// Otherwise it's the default's c. 28px
+.site-search {
+    line-height: 15px;
+}
+
+// It expects things not to be changed from old-browser defaults
+.site-search * {
+    box-sizing: content-box;
+    border-collapse: separate;
+}
+
+// So there's no unsightly move of content down for empty gap
+.gsc-control-cse {
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* mock spreadsheets in running/promotion/ */
+table.promo-spreadsheet {
+    width: 100%;
+    table-layout: fixed;
+    font-size: 90%;
+    line-height: 1;
+    tr {
+        th { text-align: left; }
+        &.sheet-header th { background-color:#a7cf97; }
+        td {
+            width: 2%;
+            word-wrap: break-word;
+        }
+    }
+}
+/* mock document for example_press_releases */
+.mock-document {
+    border:1px solid #666;
+    padding:1em;
+    h2 {
+        border-top: none;
+        padding-top: 0em;
+        line-height: 1.2;
+    }
+    .replace-text {
+        background-color: #ddd;
+        color:#555;
+    }
+}
+.toggle-button {
+    display: none; /* show() by JavaScript */
+}
+
+.admin-task {
+    border: 1px solid #ddd;
+    padding: 0 24px 1em;
+    margin: 2.5em 0;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    h3 {
+        background-color: $colour_brand;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+        padding: 0.66em 24px;
+        margin: 0 -24px 1em;
+    }
+
+    > h4 {
+        padding: 1em 0 0;
+    }
+
+    .boxout {
+        margin-top: 1.5em;
+    }
+}
+
+.admin-task__permissions {
+    color: $colour_green_dark_2;
+    font-size: 0.875em;
+    line-height: 1.4em;
+}
+
+.admin-screenshot {
+    display: block;
+    margin: 1em auto 2em;
+    padding: 0.5em;
+    border: 3px solid $colour_borders;
+}

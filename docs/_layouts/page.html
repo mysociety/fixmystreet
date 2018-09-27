@@ -1,0 +1,119 @@
+---
+layout: default
+---
+
+<script>
+  (function() {
+    var cx = '018335012393813682733:yb97auudu-a';
+    var gcse = document.createElement('script');
+    gcse.type = 'text/javascript';
+    gcse.async = true;
+    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(gcse, s);
+  })();
+</script>
+
+<div class="page-wrapper">
+  <div class="page">
+
+      {% assign crumbs = page.url | split:"/" %}
+      <ul class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li><a href="/overview/">Documentation</a></li>
+        {% if page.layout == 'post' %}
+          <li><a href="/blog/">Blog</a></li>
+        {% else %}
+          {% for crumb in crumbs offset:1 %}
+            {% unless forloop.last %}
+              <li><a href="/{% for c in crumbs offset:1 limit:forloop.index %}{{ c }}/{% endfor %}">{{ crumb | capitalize }}</a></li>
+            {% endunless %}
+          {% endfor %}
+        {% endif %}
+      </ul>
+
+      <div class="site-search">
+        <gcse:searchresults></gcse:searchresults>
+      </div>
+
+      <div class="main-content-column">
+        <main role="main" class="main-content">
+          {{ content }}
+        </main>
+      </div>
+
+    <div class="secondary-content-column">
+      <nav class="sidebar">
+
+        <div class="site-search">
+          <gcse:searchbox></gcse:searchbox>
+        </div>
+
+        <ul>
+          <li><a href="{{ "/" | relative_url }}">Home</a></li>
+          <li><a href="{{ "/how-it-works/" | relative_url }}">How it works</a></li>
+          <li><a href="{{ "/overview/" | relative_url }}">Documentation</a></li>
+          <li><h2>Installing</h2>
+            <ul>
+              <li><a href="{{ "/install/manual-install/" | relative_url }}">Manually</a>
+              <li><a href="{{ "/install/install-script/" | relative_url }}">Install script</a></li>
+              <li><a href="{{ "/install/vagrant/" | relative_url }}">Vagrant</a></li>
+              <li><a href="{{ "/install/ami/" | relative_url }}">AMI for EC2</a></li>
+              <li><a href="{{ "/install/troubleshooting/" | relative_url }}">Troubleshooting</a></li>
+            </ul>
+          </li>
+          <li><h2>Customising</h2>
+            <ul>
+              <li><a href="{{ "/customising/" | relative_url }}">Overview</a>
+              <li><a href="{{ "/customising/checklist/" | relative_url }}">Checklist</a>
+              <li><a href="{{ "/customising/config/" | relative_url }}">Configuration</a>
+              <li><a href='{{ "/customising/language/" | relative_url }}'>Language</a></li>
+              <li><a href='{{ "/customising/login/" | relative_url }}'>Login/authentication</a></li>
+              <li><a href='{{ "/customising/fms_and_mapit/" | relative_url }}'>Assigning reports</a></li>
+              <li><a href='{{ "/customising/geocoder/" | relative_url }}'>Geocoder</a></li>
+              <li><a href="{{ "/customising/boundaries/" | relative_url }}">Admin boundaries</a>
+              <li><a href='{{ "/customising/css/" | relative_url }}'>Design (CSS)</a></li>
+              <li><a href='{{ "/customising/templates/" | relative_url }}'>Templates</a></li>
+              <li><a href='{{ "/customising/static-pages/" | relative_url }}'>Static pages</a></li>
+              <li><a href='{{ "/customising/send_reports/" | relative_url }}'>Sending reports</a></li>
+              <li><a href='{{ "/customising/integration/" | relative_url }}'>Back-end integration</a></li>
+              <li><a href='{{ "/feeding-back/" | relative_url }}'>Feeding back changes</a></li>
+            </ul>
+          </li>
+          <li><h2>Running FixMyStreet</h2>
+            <ul>
+              <li><a href="{{ "/running/" | relative_url }}">Overview</a>
+              <li><a href='{{ "/running/admin_manual/" | relative_url }}'>Admin manual</a></li>
+              <li><a href='{{ "/running/staff/" | relative_url }}'>Staff</a></li>
+              <li><a href='{{ "/running/bodies_and_contacts/" | relative_url }}'>Bodies and contacts</a></li>
+              <li><a href='{{ "/running/users/" | relative_url }}'>Users</a></li>
+              <li><a href='{{ "/running/surveys/" | relative_url }}'>Surveys</a></li>
+              <li><a href='{{ "/running/promotion/" | relative_url }}'>Promoting</a></li>
+            </ul>
+          </li>
+          <li><h2>Updating your code</h2>
+            <ul>
+              <li><a href="{{ "/updating/" | relative_url }}">Overview</a></li>
+              <li><a href="{{ "/updating/ami/" | relative_url }}">AMI</a></li>
+              <li><a href="{{ "/updating/templates/" | relative_url }}">Templates</a></li>
+            </ul>
+          </li>
+          <li><h2>Community</h2>
+            <ul>
+              <li><a href="{{ "/community/" | relative_url }}">Mailing list</a></li>
+              <li><a href="https://github.com/mysociety/fixmystreet">GitHub</a></li>
+              <li><a href="{{ "/community/" | relative_url }}">IRC</a></li>
+              <li><a href="https://twitter.com/fixmystreet">Twitter</a></li>
+            </ul>
+          </li>
+          <li><h2>Blog</h2>
+            <ul>
+              <li><a href="{{ "/blog/" | relative_url }}">Latest posts</a>
+              <li><a href="{{ "/atom.xml" | relative_url }}">Feed</a>
+            </ul>
+          </li>
+          <li><a href="{{ "/glossary/" | relative_url }}">Glossary</a></li>
+        </ul>
+      </nav>
+    </div>
+</div>

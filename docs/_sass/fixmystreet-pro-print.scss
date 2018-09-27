@@ -1,0 +1,36 @@
+// Styles specifically for the print version of the pro user guide
+
+body {
+    font-size: 12pt;
+}
+
+.boolean-icon {
+    text-indent: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    background-image: none !important;
+}
+
+.user-guide-title {
+    margin-top: 5em;
+}
+
+.user-guide-section {
+    page-break-before: always;
+    img {
+        max-width: 60% !important;
+    }
+}
+
+.admin-task {
+    page-break-inside: avoid;
+    h3 {
+        border-bottom: 1px solid #ddd;
+    }
+}
+
+.admin-screenshot {
+    margin-top: 1em;
+    margin-bottom: 2em;
+}
+

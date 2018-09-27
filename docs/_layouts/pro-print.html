@@ -1,0 +1,20 @@
+---
+layout: pro
+---
+
+<div class="user-guide-cover">
+  <h1 class="user-guide-title">FixMyStreet Pro User Guide</h1>
+  <p>Available from http://fixmystreet.com/pro/user-guide</p>
+</div>
+
+{% assign sorted_pages = (site.pages | where: "user-guide" , "true" | sort:"order" ) %}
+
+{% for page in sorted_pages %}
+
+<div class="user-guide-section">
+
+{{ page.content | markdownify }}
+
+</div>
+
+{% endfor %}
