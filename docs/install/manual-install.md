@@ -11,7 +11,7 @@ title: Installing
   but the other installation options may be easier:</p>
 
 Note that this is just one of 
-[four ways to install FixMyStreet]({{ "/install/" | relative_url }})
+[many ways to install FixMyStreet]({{ "/install/" | relative_url }})
 (the other ways are easier!).
 
 

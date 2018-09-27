@@ -129,7 +129,7 @@ to a very specific area.
   </dt>
   <dd>
     <p>
-      This is the default setup of a new FixMyStreet installation (if you used the 
+      This is the default setup of a new FixMyStreet installation (if you used e.g. the 
       <a href="{{ "/install/install-script" | relative_url }}">installation script</a> or the 
       <a href="{{ "/install/ami" | relative_url }}">AMI install</a>).
     </p>

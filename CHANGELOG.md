@@ -22,6 +22,7 @@
           might need applying to a cobrand.
         - Move away from FastCGI in sample conf/sysvinit config.
         - Customised Vagrant box available, with an override option.
+        - Add Dockerfile and example Docker Compose setup.
 
 * v2.4 (6th September 2018)
     - Security

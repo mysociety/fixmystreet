@@ -6,7 +6,7 @@ title: Installation troubleshooting
 # Installation troubleshooting
 
 <p class="lead">
-  If you've installed FixMyStreet using the 
+  If you've installed FixMyStreet using an automated method such as the 
   <a href="{{ "/install/install-script" | relative_url }}">installation script</a>
   or the 
   <a href="{{ "/install/ami" | relative_url }}">AMI</a>, you should be good to go.

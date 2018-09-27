@@ -354,9 +354,9 @@ technical information, see
       it would contain your own private config settings, such as your database
       password). Instead, there is an example file,
       <code>cong/general.yml-example</code> you can
-      copy and edit. If you install using the 
+      copy and edit. If you install using an automated method such as the 
        <a href="{{ "/install/install-script/" | relative_url }}">installation script</a>
-       or the <a href="{{ "/install/ami/" | relative_url }}">AMI</a>, this file will 
+       or <a href="{{ "/install/docker/" | relative_url }}">Docker</a>, this file will 
        automatically be created for you.
     </p>
     <div class="more-info">

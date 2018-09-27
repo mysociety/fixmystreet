@@ -11,7 +11,7 @@ title: Install script
   FixMyStreet on your server.
 </p>
 
-Note that this is just one of [four ways to install FixMyStreet]({{ "/install/" | relative_url }}).
+Note that this is just one of [many ways to install FixMyStreet]({{ "/install/" | relative_url }}).
 
 ## Warning: installation changes your setup!
 

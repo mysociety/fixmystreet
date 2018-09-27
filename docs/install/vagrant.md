@@ -12,7 +12,7 @@ We bundle an example Vagrantfile in the repository, which runs the
 <a href="{{ "/install/install-script/" | relative_url }}">install script</a> for you.
 </p>
 
-Note that this is just one of [four ways to install FixMyStreet]({{ "/install/" | relative_url }}).
+Note that this is just one of [many ways to install FixMyStreet]({{ "/install/" | relative_url }}).
 
 <div class="attention-box warning">
   Vagrant is only suitable for use as a

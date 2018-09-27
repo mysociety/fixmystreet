@@ -6,13 +6,13 @@ title: Installing
 # Installing FixMyStreet Platform
 
 <p class="lead">
-  There are several options for installing the FixMyStreet platform. Unless
-  you're confident deploying web applications, we recommend you use the
-  installation script or the AMI for Amazon EC2.
+  There are several options for installing the FixMyStreet platform,
+  including Docker, an AMI for Amazon EC2 or an installation script.
 </p>
 
-## Four ways to install
+## Ways to install
 
+* [Use Docker]({{ "/install/docker/" | relative_url }})
 * [Use an install script for Debian or Ubuntu servers]({{ "/install/install-script/" | relative_url }})
 * [Use a FixMyStreet AMI for Amazon EC2]({{ "/install/ami/" | relative_url }})
 * [Vagrant installation]({{ "/install/vagrant/" | relative_url }}), for development

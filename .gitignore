@@ -36,6 +36,7 @@ blib/
 inc/
 _Inline/
 *.pyc
+docker-compose.override.yml
 
 # International
 /fixmystreet-international

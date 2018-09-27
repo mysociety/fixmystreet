@@ -68,10 +68,7 @@ If you want to get FixMyStreet up and running, this is what you need to do:
     <h3 id="install_the_software">2. Install the software</h3>
   </dt>
   <dd>
-    <ul>
-      <li><a href="{{ "/install/install-script" | relative_url }}">on your own server</a></li>
-      <li><a href="{{ "/install/ami" | relative_url }}">on an Amazon Web Services EC2 server</a></li>
-    </ul>
+    <p>See the <a href="{{ "/install/" | relative_url }}">various ways to install</a> the software.</p>
   </dd>  
   <dt>
     <h3 id="get_the_data_for_the_areas_you_want_to_cover">3. Get the data for the areas you want to cover</h3>
