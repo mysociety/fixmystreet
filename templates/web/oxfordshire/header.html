@@ -53,6 +53,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
             </header>
 
+            [% IF c.req.uri.path == '/' %]
+            <p class="oxfordshire-preamble">
+                This weekend Fix My Street, and the Oxfordshire County Council systems that it connects to, are being upgraded. If there
+                is a pause in our response, that may be why. But your report will be looked into by one of Oxfordshire's Highways Inspectors
+                as soon as possible. Thanks for using Fix My Street
+            </p>
+            [% END %]
+
             [% pre_container_extra %]
 
             <div class="container">
