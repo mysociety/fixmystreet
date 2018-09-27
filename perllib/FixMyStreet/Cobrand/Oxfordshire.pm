@@ -234,6 +234,13 @@ sub available_permissions {
     my $perms = $self->next::method();
     $perms->{Bodies}->{defect_type_edit} = "Add/edit defect types";
 
+    delete $perms->{Problems}->{report_edit};
+    delete $perms->{Problems}->{report_edit_category};
+    delete $perms->{Problems}->{report_edit_priority};
+    delete $perms->{Problems}->{report_inspect};
+    delete $perms->{Problems}->{report_instruct};
+    delete $perms->{Problems}->{planned_reports};
+
     return $perms;
 }
 

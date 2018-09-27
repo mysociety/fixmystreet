@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use Test::MockModule;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -25,6 +26,16 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['bromley'], }, sub {
 };
 
 FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
+
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+    $cobrand->mock('available_permissions', sub {
+        my $self = shift;
+
+        my $perms = FixMyStreet::Cobrand::Default->available_permissions;
+        $perms->{Bodies}->{defect_type_edit} = "Add/edit defect types";
+
+        return $perms;
+    });
 
     my $body = $mech->create_body_ok( 2237, 'Oxfordshire County Council' );
 

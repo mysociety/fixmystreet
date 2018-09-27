@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use Test::MockModule;
 my $mech = FixMyStreet::TestMech->new;
 
 $mech->get_ok('/my/planned');
@@ -187,6 +188,13 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire' ],
     BASE_URL => 'http://oxfordshire.fixmystreet.site',
 }, sub {
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+    $cobrand->mock('available_permissions', sub {
+        my $self = shift;
+
+        return FixMyStreet::Cobrand::Default->available_permissions;
+    });
+
     subtest "can remove problems not displayed in cobrand from shortlist" => sub {
         $user->user_planned_reports->remove();
         my ($problem1) = $mech->create_problems_for_body(2, $body->id, 'New Problem');
