@@ -31,13 +31,13 @@ $(function(){
       $dl.find('dt').removeClass('revealed');
       $dl.find('dd').slideUp();
       $(this).removeClass('revealed');
-      $(this).text(replace_str(reveal_all_text['reveal'], noun));
+      $(this).text(replace_str(reveal_all_text.reveal, noun));
     } else {
       console.log("showing all");
       $dl.find('dt').addClass('revealed');
       $dl.find('dd').slideDown();
       $(this).addClass('revealed');
-      $(this).text(replace_str(reveal_all_text['hide'], noun));
+      $(this).text(replace_str(reveal_all_text.hide, noun));
     }
   });
   $('.reveal-all').trigger('click');
@@ -74,22 +74,22 @@ $(function(){
           slides = [];
           current_slide_number = 0;
           $slide = $(
-            '<div id="full-screen-slide" class="modal-slide">'
-            + '<div>'
-              + '<div class="slide-contents"></div>'
-              + '<a href="#close" title="Close" class="modal-slide-close">&times;</a>'
-            + '</div>'
-          + '</div>');
+            '<div id="full-screen-slide" class="modal-slide">' +
+              '<div>' +
+                '<div class="slide-contents"></div>' +
+                '<a href="#close" title="Close" class="modal-slide-close">&times;</a>' +
+              '</div>' +
+            '</div>');
           $('body').prepend($slide);
           $(".modal-slide-close").on("click", function(){
               end_training_slides();
           });
           var slides_title = $('.main-content h1').text();
-          var $slide_0 = $('<div class="slide-contents">'
-             + '<h2>' + slides_title + '</h2>'
-             + '<p>press &rarr; to advance</p>'
-             + '<p>press esc to exit</p>'
-          + '</div>');
+          var $slide_0 = $('<div class="slide-contents">' +
+              '<h2>' + slides_title + '</h2>' +
+              '<p>press &rarr; to advance</p>' +
+              '<p>press esc to exit</p>' +
+          '</div>');
           slides.push($slide_0);
           var last_heading = "";
           $("main.main-content").find("h2,h3").each(function($i){
@@ -139,9 +139,9 @@ $(function(){
   
   function key_down_training(key_code){
     if (key_code == key_code_arrow_right || key_code == key_code_ENTER) {
-        display_training_slide('next')
+        display_training_slide('next');
     } else if (key_code == key_code_arrow_left || key_code == key_code_B ) {
-        display_training_slide('prev')
+        display_training_slide('prev');
     } else if (key_code >= key_code_0 && key_code <= key_code_9) {
         display_training_slide(key_code - key_code_0);
     } if (key_code == key_code_ESC || key_code == key_code_SPACE) {
