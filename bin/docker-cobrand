@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+shopt -s nullglob
+
+LN_FLAGS="-s -f -v"
+cobrand="/var/www/fixmystreet/cobrand"
+FMS="/var/www/fixmystreet/fixmystreet"
+
+PATHS=(perllib/FixMyStreet/Cobrand templates/web templates/email web/cobrands conf)
+
+for path in "${PATHS[@]}"; do
+    for c in $cobrand/$path/*; do
+        ln $LN_FLAGS $c $FMS/$path
+    done
+done

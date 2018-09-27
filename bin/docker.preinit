@@ -30,8 +30,11 @@ if ! su $FMS_DB_USER -c "psql -h $FMS_DB_HOST -U $FMS_DB_USER -l | egrep \"^ *${
     su $FMS_DB_USER -c "createdb -h $FMS_DB_HOST -U $FMS_DB_USER --owner \"$FMS_DB_USER\" \"$FMS_DB_NAME\""
 fi
 
-# Ensure the schema is up-to-date.
-su $FMS_DB_USER -c "${FMS_ROOT}/bin/update-schema --commit"
+# Slot in cobrand, if one is present
+su $FMS_DB_USER -c "${FMS_ROOT}/bin/docker-cobrand"
+
+# Ensure things are up to date - schema, CSS, etc
+su $FMS_DB_USER -c "${FMS_ROOT}/script/update"
 
 # Update reports
 su $FMS_DB_USER -c "${FMS_ROOT}/bin/update-all-reports"
