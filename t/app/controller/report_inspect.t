@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use Test::MockModule;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -506,6 +507,14 @@ foreach my $test (
     FixMyStreet::override_config {
       ALLOWED_COBRANDS => $test->{cobrand},
     }, sub {
+        my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+        $cobrand->mock('available_permissions', sub {
+            my $self = shift;
+
+            my $perms = FixMyStreet::Cobrand::Default->available_permissions;
+
+            return $perms;
+        });
         subtest $test->{desc} => sub {
             $user->user_body_permissions->delete;
             $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
@@ -552,6 +561,14 @@ foreach my $test (
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'oxfordshire',
 }, sub {
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+    $cobrand->mock('available_permissions', sub {
+        my $self = shift;
+
+        my $perms = FixMyStreet::Cobrand::Default->available_permissions;
+
+        return $perms;
+    });
     subtest "test negative reputation" => sub {
         my $reputation = $report->user->get_extra_metadata("reputation") || 0;
 
@@ -701,6 +718,14 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
     BASE_URL => 'http://fixmystreet.site',
 }, sub {
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+    $cobrand->mock('available_permissions', sub {
+        my $self = shift;
+
+        my $perms = FixMyStreet::Cobrand::Default->available_permissions;
+
+        return $perms;
+    });
     subtest "test report not resent when category changes if send_method doesn't change" => sub {
         $mech->get_ok("/report/$report3_id");
         $mech->submit_form(button => 'save', with_fields => { category => 'Badgers', include_update => undef, });
