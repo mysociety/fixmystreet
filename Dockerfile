@@ -15,6 +15,7 @@ RUN /install-site.sh --docker fixmystreet fms 127.0.0.1.xip.io \
         libexpat1-dev \
         libssl-dev \
         zlib1g-dev \
+        libxml2-dev \
         postgresql-server-dev-all \
         exim4-daemon-light \
       && apt-get -y clean \
