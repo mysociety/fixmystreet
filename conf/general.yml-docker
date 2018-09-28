@@ -72,10 +72,30 @@ LANGUAGES:
 # from the server, you can set the time zone here (standard time zone string)
 TIME_ZONE: ""
 
-# File locations for uploaded photos and cached geocoding results.
-# Absolute paths, or relative to the project's root directory
-UPLOAD_DIR: '../upload/'
+# File locations for cached geocoding results.
 GEO_CACHE: '../cache/'
+
+# Photo storage options.
+# Which storage backend to use. Options are 'FileSystem' and 'S3'.
+PHOTO_STORAGE_BACKEND: 'FileSystem'
+
+# FileSystem-specific options
+PHOTO_STORAGE_OPTIONS:
+  # Where uploaded photos will be stored
+  UPLOAD_DIR: '../upload/'
+
+# If using the S3 backend, you'll need to set the following options instead:
+#PHOTO_STORAGE_OPTIONS:
+#  BUCKET: 'fixmystreet-photos'
+#  ACCESS_KEY: ''
+#  SECRET_KEY: ''
+#  PREFIX: '' # optional prefix for key names in bucket, e.g. if you
+              # have multiple FMS sites storing photos in the same bucket.
+#  CREATE_BUCKET: 0 # optional, set to 1 if the S3 bucket should be created if
+                    # it doesn't already exist. Requires the appropriate AWS
+                    # permissions.
+#  REGION: 'eu-west-1' # optional, only used if CREATE_BUCKET is set. Controls
+# which AWS region the S3 bucket will be created in.
 
 # Location of MapIt, to map points to administrative areas, and what types of
 # area from it you want to use. If left blank, a default area will be used
