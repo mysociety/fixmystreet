@@ -112,7 +112,7 @@ foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
     }
 }
 
-FixMyStreet::PhotoStorage::backend->init()
+FixMyStreet::PhotoStorage::backend->init();
 
 my $user = $users{'user@example.org'};
 my $num = 20;
