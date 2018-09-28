@@ -165,7 +165,7 @@ Some others you might want to look at, though the defaults are enough for it to 
 * [CONTACT_EMAIL]({{ "/customising/config/#contact_email" | relative_url }}) -- the email address to be used on the site for the contact us form.
 * [DO_NOT_REPLY_EMAIL]({{ "/customising/config/#do_not_reply_email" | relative_url }}) -- the email address to be used on the site for e.g. confirmation emails.
 * [STAGING_SITE]({{ "/customising/config/#staging_site" | relative_url }}) -- if this is 1 then all email (alerts and reports) will be sent to the contact email address. Use this for development sites.
-* [UPLOAD_DIR]({{ "/customising/config/#upload_dir" | relative_url }}) -- this is the location where images will be stored when they are uploaded. It should be accessible by and writeable by the FixMyStreet process.
+* [PHOTO_STORAGE_OPTIONS.UPLOAD_DIR]({{ "/customising/config/#upload_dir" | relative_url }}) -- this is the location where images will be stored when they are uploaded. It should be accessible by and writeable by the FixMyStreet process.
 * [GEO_CACHE]({{ "/customising/config/#geo_cache" | relative_url }}) -- this is the location where Geolocation data will be cached. It should be accessible by and writeable by the FixMyStreet process.
 
 If you are using Bing or Google maps you should also set one of

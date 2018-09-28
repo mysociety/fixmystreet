@@ -416,7 +416,10 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
     MAPIT_URL => 'http://mapit.zurich/',
     MAP_TYPE => 'Zurich,OSM',
-    UPLOAD_DIR => $UPLOAD_DIR,
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
 }, sub {
     # Photo publishing
     $mech->get_ok( '/admin/report_edit/' . $report->id );

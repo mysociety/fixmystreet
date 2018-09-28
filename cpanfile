@@ -79,6 +79,7 @@ requires 'Module::Pluggable';
 requires 'Moose';
 requires 'MooX::Types::MooseLike';
 requires 'namespace::autoclean';
+requires 'Net::Amazon::S3';
 requires 'Net::DNS::Resolver';
 requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.10';

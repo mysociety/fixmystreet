@@ -15,7 +15,10 @@ my $db = FixMyStreet::DB->schema;
 my $user = $db->resultset('User')->find_or_create({ name => 'Bob', email => 'bob@example.com' });
 
 FixMyStreet::override_config {
-    UPLOAD_DIR => $UPLOAD_DIR,
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
 }, sub {
 
 my $image_path = path('t/app/controller/sample.jpg');
@@ -68,5 +71,30 @@ subtest 'Photoset with 3 referenced photo' => sub {
 };
 
 };
+
+subtest 'Correct storage backends are instantiated' => sub {
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => 'FileSystem'
+    }, sub {
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new;
+        isa_ok $photoset->storage, 'FixMyStreet::PhotoStorage::FileSystem';
+    };
+
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => undef
+    }, sub {
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new;
+        isa_ok $photoset->storage, 'FixMyStreet::PhotoStorage::FileSystem';
+    };
+
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => 'S3'
+    }, sub {
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new;
+        isa_ok $photoset->storage, 'FixMyStreet::PhotoStorage::S3';
+    };
+
+};
+
 
 done_testing();

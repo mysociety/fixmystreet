@@ -877,6 +877,18 @@ DISTRIBUTIONS
       Test::Fatal 0
       Test::More 0
       perl 5.006
+  Class-MethodMaker-2.24
+    pathname: S/SC/SCHWIGON/class-methodmaker/Class-MethodMaker-2.24.tar.gz
+    provides:
+      Class::MethodMaker 2.24
+      Class::MethodMaker::Constants undef
+      Class::MethodMaker::Engine 2.24
+      Class::MethodMaker::OptExt undef
+      Class::MethodMaker::V1Compat undef
+      Generate undef
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.006
   Class-Mix-0.005
     pathname: Z/ZE/ZEFRAM/Class-Mix-0.005.tar.gz
     provides:
@@ -1595,6 +1607,30 @@ DISTRIBUTIONS
       autodie 2.00
       strict 0
       warnings 0
+  Data-Stream-Bulk-0.11
+    pathname: D/DO/DOY/Data-Stream-Bulk-0.11.tar.gz
+    provides:
+      Data::Stream::Bulk 0.11
+      Data::Stream::Bulk::Array 0.11
+      Data::Stream::Bulk::Callback 0.11
+      Data::Stream::Bulk::Cat 0.11
+      Data::Stream::Bulk::Chunked 0.11
+      Data::Stream::Bulk::DBI 0.11
+      Data::Stream::Bulk::DBIC 0.11
+      Data::Stream::Bulk::DoneFlag 0.11
+      Data::Stream::Bulk::FileHandle 0.11
+      Data::Stream::Bulk::Filter 0.11
+      Data::Stream::Bulk::Nil 0.11
+      Data::Stream::Bulk::Path::Class 0.11
+      Data::Stream::Bulk::Util 0.11
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      Moose 0.90
+      Path::Class 0
+      Sub::Exporter 0
+      Test::More 0.88
+      Test::Requires 0
+      namespace::clean 0
   Data-Visitor-0.28
     pathname: D/DO/DOY/Data-Visitor-0.28.tar.gz
     provides:
@@ -1641,6 +1677,23 @@ DISTRIBUTIONS
       utf8 0
       vars 0
       warnings 0
+  DateTime-Event-ICal-0.13
+    pathname: F/FG/FGLOCK/DateTime-Event-ICal-0.13.tar.gz
+    provides:
+      DateTime::Event::ICal 0.13
+    requirements:
+      DateTime 0
+      DateTime::Event::Recurrence 0.11
+      ExtUtils::MakeMaker 0
+  DateTime-Event-Recurrence-0.19
+    pathname: F/FG/FGLOCK/DateTime-Event-Recurrence-0.19.tar.gz
+    provides:
+      DateTime::Event::Recurrence 0.19
+      DateTime::Set::ICal 0.19
+    requirements:
+      DateTime 0.27
+      DateTime::Set 0.3600
+      ExtUtils::MakeMaker 0
   DateTime-Format-Builder-0.80
     pathname: D/DR/DROLSKY/DateTime-Format-Builder-0.80.tar.gz
     provides:
@@ -1655,9 +1708,24 @@ DISTRIBUTIONS
       Class::Factory::Util 1.6
       DateTime 0.12
       DateTime::Format::Strptime 1.04
-      Module::Build 0.36
+      Module::Build 0
       Params::Validate 0.72
       Task::Weaken 0
+  DateTime-Format-Flexible-0.31
+    pathname: T/TH/THINC/DateTime-Format-Flexible-0.31.tar.gz
+    provides:
+      DateTime::Format::Flexible 0.31
+      DateTime::Format::Flexible::lang undef
+      DateTime::Format::Flexible::lang::de undef
+      DateTime::Format::Flexible::lang::en undef
+      DateTime::Format::Flexible::lang::es undef
+    requirements:
+      DateTime 0
+      DateTime::Format::Builder 0.74
+      DateTime::TimeZone 0
+      ExtUtils::MakeMaker 0
+      List::MoreUtils 0
+      Module::Pluggable 0
   DateTime-Format-HTTP-0.40
     pathname: C/CK/CKRAS/DateTime-Format-HTTP-0.40.tar.gz
     provides:
@@ -1667,6 +1735,17 @@ DISTRIBUTIONS
       HTTP::Date 1.44
       Module::Build 0.36
       Test::More 0.47
+  DateTime-Format-ICal-0.09
+    pathname: D/DR/DROLSKY/DateTime-Format-ICal-0.09.tar.gz
+    provides:
+      DateTime::Format::ICal 0.09
+    requirements:
+      DateTime 0.17
+      DateTime::Event::ICal 0.03
+      DateTime::Set 0.1
+      DateTime::TimeZone 0.22
+      Module::Build 0
+      Params::Validate 0.59
   DateTime-Format-ISO8601-0.08
     pathname: J/JH/JHOBLITT/DateTime-Format-ISO8601-0.08.tar.gz
     provides:
@@ -1684,6 +1763,44 @@ DISTRIBUTIONS
       Module::Build 0
       Params::Validate 0.67
       Test::More 0.47
+  DateTime-Format-Natural-1.05
+    pathname: S/SC/SCHUBIGER/DateTime-Format-Natural-1.05.tar.gz
+    provides:
+      DateTime::Format::Natural 1.05
+      DateTime::Format::Natural::Calc 1.41
+      DateTime::Format::Natural::Compat 0.07
+      DateTime::Format::Natural::Duration 0.06
+      DateTime::Format::Natural::Duration::Checks 0.04
+      DateTime::Format::Natural::Expand 0.03
+      DateTime::Format::Natural::Extract 0.11
+      DateTime::Format::Natural::Formatted 0.07
+      DateTime::Format::Natural::Helpers 0.06
+      DateTime::Format::Natural::Lang::Base 1.08
+      DateTime::Format::Natural::Lang::EN 1.62
+      DateTime::Format::Natural::Rewrite 0.06
+      DateTime::Format::Natural::Test 0.10
+      DateTime::Format::Natural::Utils 0.05
+      DateTime::Format::Natural::Wrappers 0.03
+    requirements:
+      Carp 0
+      Clone 0
+      Cwd 0
+      DateTime 0
+      DateTime::TimeZone 0
+      Exporter 0
+      File::Find 0
+      File::Spec 0
+      FindBin 0
+      Getopt::Long 0
+      List::MoreUtils 0
+      Module::Util 0
+      Params::Validate 0
+      Scalar::Util 0
+      Storable 0
+      Term::ReadLine 0
+      Test::MockTime 0
+      Test::More 0
+      boolean 0
   DateTime-Format-Pg-0.16008
     pathname: D/DM/DMAKI/DateTime-Format-Pg-0.16008.tar.gz
     provides:
@@ -2191,9 +2308,21 @@ DISTRIBUTIONS
       DateTime::Locale::zu_ZA undef
     requirements:
       List::MoreUtils 0
-      Module::Build 0
+      Module::Build 0.36
       Params::Validate 0.91
       perl 5.006
+  DateTime-Set-0.3900
+    pathname: F/FG/FGLOCK/DateTime-Set-0.3900.tar.gz
+    provides:
+      DateTime::Set 0.3900
+      DateTime::Span undef
+      DateTime::SpanSet undef
+      Set::Infinite::_recurrence undef
+    requirements:
+      DateTime 0.12
+      Params::Validate 0
+      Set::Infinite 0.59
+      Test::More 0
   DateTime-TimeZone-2.18
     pathname: D/DR/DROLSKY/DateTime-TimeZone-2.18.tar.gz
     provides:
@@ -2589,6 +2718,20 @@ DISTRIBUTIONS
       perl 5.008004
       strict 0
       warnings 0
+  DateTimeX-Easy-0.089
+    pathname: R/RO/ROKR/DateTimeX-Easy-0.089.tar.gz
+    provides:
+      DateTimeX::Easy 0.089
+    requirements:
+      Date::Parse 0
+      DateTime 0
+      DateTime::Format::Flexible 0
+      DateTime::Format::ICal 0
+      DateTime::Format::Natural 0
+      ExtUtils::MakeMaker 6.31
+      Scalar::Util 0
+      Test::Most 0
+      Time::Zone 0
   Devel-Caller-2.06
     pathname: R/RC/RCLAMP/Devel-Caller-2.06.tar.gz
     provides:
@@ -2648,6 +2791,14 @@ DISTRIBUTIONS
       Digest::SHA 1
       ExtUtils::MakeMaker 0
       perl 5.004
+  Digest-MD5-File-0.08
+    pathname: D/DM/DMUEY/Digest-MD5-File-0.08.tar.gz
+    provides:
+      Digest::MD5::File 0.08
+    requirements:
+      Digest::MD5 0
+      ExtUtils::MakeMaker 0
+      LWP::UserAgent 0
   Digest-Perl-MD5-1.9
     pathname: D/DE/DELTA/Digest-Perl-MD5-1.9.tar.gz
     provides:
@@ -2932,6 +3083,16 @@ DISTRIBUTIONS
       base 0
       overload 0
       perl 5.008001
+      strict 0
+      warnings 0
+  Exporter-Lite-0.08
+    pathname: N/NE/NEILB/Exporter-Lite-0.08.tar.gz
+    provides:
+      Exporter::Lite 0.08
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 6.3
+      perl 5.006
       strict 0
       warnings 0
   Exporter-Tiny-0.042
@@ -3472,6 +3633,14 @@ DISTRIBUTIONS
       File::Temp 0
       Scalar::Util 0
       Test::More 0.88
+  IO-Interactive-1.022
+    pathname: B/BD/BDFOY/IO-Interactive-1.022.tar.gz
+    provides:
+      IO::Interactive 1.022
+    requirements:
+      ExtUtils::MakeMaker 6.64
+      File::Spec::Functions 0
+      perl 5.008
   IO-SessionData-1.03
     pathname: P/PH/PHRED/IO-SessionData-1.03.tar.gz
     provides:
@@ -3601,6 +3770,13 @@ DISTRIBUTIONS
       Mozilla::CA 20110101
       Net::HTTPS 6
       perl 5.008001
+  LWP-UserAgent-Determined-1.07
+    pathname: A/AL/ALEXMV/LWP-UserAgent-Determined-1.07.tar.gz
+    provides:
+      LWP::UserAgent::Determined 1.07
+    requirements:
+      ExtUtils::MakeMaker 0
+      LWP 0
   LWPx-Profile-0.2
     pathname: C/CR/CREIN/LWPx-Profile-0.2.tar.gz
     provides:
@@ -4074,6 +4250,14 @@ DISTRIBUTIONS
       Text::ParseWords 0
       perl 5.008001
       version 0
+  Module-Util-1.09
+    pathname: M/MA/MATTLAW/Module-Util-1.09.tar.gz
+    provides:
+      Module::Util 1.09
+    requirements:
+      Module::Build 0.40
+      Test::More 0
+      perl v5.5.3
   Moo-2.003001
     pathname: H/HA/HAARG/Moo-2.003001.tar.gz
     provides:
@@ -4391,6 +4575,22 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.31
       Moose 1.16
       Test::More 0.88
+  MooseX-StrictConstructor-0.21
+    pathname: D/DR/DROLSKY/MooseX-StrictConstructor-0.21.tar.gz
+    provides:
+      MooseX::StrictConstructor 0.21
+      MooseX::StrictConstructor::Trait::Class 0.21
+      MooseX::StrictConstructor::Trait::Method::Constructor 0.21
+    requirements:
+      B 0
+      ExtUtils::MakeMaker 0
+      Moose 0.94
+      Moose::Exporter 0
+      Moose::Role 0
+      Moose::Util::MetaRole 0
+      namespace::autoclean 0
+      strict 0
+      warnings 0
   MooseX-Traits-Pluggable-0.10
     pathname: R/RK/RKITOVER/MooseX-Traits-Pluggable-0.10.tar.gz
     provides:
@@ -4431,6 +4631,43 @@ DISTRIBUTIONS
       Test::More 0.88
       Test::Requires 0
       namespace::clean 0.19
+  MooseX-Types-DateTime-0.13
+    pathname: E/ET/ETHER/MooseX-Types-DateTime-0.13.tar.gz
+    provides:
+      MooseX::Types::DateTime 0.13
+    requirements:
+      DateTime 0.4302
+      DateTime::Duration 0.4302
+      DateTime::Locale 0.4001
+      DateTime::TimeZone 0.95
+      Module::Build::Tiny 0.034
+      Moose 0.41
+      MooseX::Types 0.30
+      MooseX::Types::Moose 0.30
+      if 0
+      namespace::clean 0.19
+      perl 5.008003
+      strict 0
+      warnings 0
+  MooseX-Types-DateTime-MoreCoercions-0.15
+    pathname: E/ET/ETHER/MooseX-Types-DateTime-MoreCoercions-0.15.tar.gz
+    provides:
+      MooseX::Types::DateTime::MoreCoercions 0.15
+    requirements:
+      DateTime 0.4302
+      DateTime::Duration 0.4302
+      DateTimeX::Easy 0.085
+      Module::Build::Tiny 0.007
+      Moose 0.41
+      MooseX::Types 0.04
+      MooseX::Types::DateTime 0.07
+      MooseX::Types::Moose 0.04
+      Time::Duration::Parse 0.06
+      if 0
+      namespace::clean 0.19
+      perl 5.006
+      strict 0
+      warnings 0
   MooseX-Types-Path-Class-0.06
     pathname: T/TH/THEPLER/MooseX-Types-Path-Class-0.06.tar.gz
     provides:
@@ -4450,6 +4687,127 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test 0
       perl 5.006
+  Net-Amazon-S3-0.85
+    pathname: L/LL/LLAP/Net-Amazon-S3-0.85.tar.gz
+    provides:
+      Net::Amazon::S3 0.85
+      Net::Amazon::S3::Bucket 0.85
+      Net::Amazon::S3::Client 0.85
+      Net::Amazon::S3::Client::Bucket 0.85
+      Net::Amazon::S3::Client::Object 0.85
+      Net::Amazon::S3::HTTPRequest 0.85
+      Net::Amazon::S3::Request 0.85
+      Net::Amazon::S3::Request::AbortMultipartUpload 0.85
+      Net::Amazon::S3::Request::Bucket 0.85
+      Net::Amazon::S3::Request::CompleteMultipartUpload 0.85
+      Net::Amazon::S3::Request::CreateBucket 0.85
+      Net::Amazon::S3::Request::DeleteBucket 0.85
+      Net::Amazon::S3::Request::DeleteMultiObject 0.85
+      Net::Amazon::S3::Request::DeleteObject 0.85
+      Net::Amazon::S3::Request::GetBucketAccessControl 0.85
+      Net::Amazon::S3::Request::GetBucketLocationConstraint 0.85
+      Net::Amazon::S3::Request::GetObject 0.85
+      Net::Amazon::S3::Request::GetObjectAccessControl 0.85
+      Net::Amazon::S3::Request::InitiateMultipartUpload 0.85
+      Net::Amazon::S3::Request::ListAllMyBuckets 0.85
+      Net::Amazon::S3::Request::ListBucket 0.85
+      Net::Amazon::S3::Request::ListParts 0.85
+      Net::Amazon::S3::Request::Object 0.85
+      Net::Amazon::S3::Request::PutObject 0.85
+      Net::Amazon::S3::Request::PutPart 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Header 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Header::Acl_short 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Header::Content_length 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Header::Content_md5 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Header::Content_type 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Header::Copy_source 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Header::Encryption 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Method 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Method::DELETE 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Method::GET 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Method::POST 0.85
+      Net::Amazon::S3::Request::Role::HTTP::Method::PUT 0.85
+      Net::Amazon::S3::Request::Role::Query::Action 0.85
+      Net::Amazon::S3::Request::Role::Query::Action::Acl 0.85
+      Net::Amazon::S3::Request::Role::Query::Action::Delete 0.85
+      Net::Amazon::S3::Request::Role::Query::Action::Location 0.85
+      Net::Amazon::S3::Request::Role::Query::Action::Uploads 0.85
+      Net::Amazon::S3::Request::Role::Query::Param 0.85
+      Net::Amazon::S3::Request::Role::Query::Param::Delimiter 0.85
+      Net::Amazon::S3::Request::Role::Query::Param::Marker 0.85
+      Net::Amazon::S3::Request::Role::Query::Param::Max_keys 0.85
+      Net::Amazon::S3::Request::Role::Query::Param::Part_number 0.85
+      Net::Amazon::S3::Request::Role::Query::Param::Prefix 0.85
+      Net::Amazon::S3::Request::Role::Query::Param::Upload_id 0.85
+      Net::Amazon::S3::Request::Service 0.85
+      Net::Amazon::S3::Request::SetBucketAccessControl 0.85
+      Net::Amazon::S3::Request::SetObjectAccessControl 0.85
+      Net::Amazon::S3::Role::Bucket 0.85
+      Net::Amazon::S3::Signature 0.85
+      Net::Amazon::S3::Signature::V2 0.85
+      Net::Amazon::S3::Signature::V4 0.85
+      Net::Amazon::S3::Signature::V4Implementation 0.19
+      Shared::Examples::Net::Amazon::S3 0.85
+      Shared::Examples::Net::Amazon::S3::ACL 0.85
+      Shared::Examples::Net::Amazon::S3::API 0.85
+      Shared::Examples::Net::Amazon::S3::Client 0.85
+      Shared::Examples::Net::Amazon::S3::Error 0.85
+      Shared::Examples::Net::Amazon::S3::Operation::Bucket::Create 0.85
+      Shared::Examples::Net::Amazon::S3::Operation::Bucket::Objects::Delete 0.85
+      Shared::Examples::Net::Amazon::S3::Operation::Bucket::Objects::List 0.85
+      Shared::Examples::Net::Amazon::S3::Operation::Service::Buckets::List 0.85
+      Shared::Examples::Net::Amazon::S3::Request 0.85
+    requirements:
+      Carp 0
+      Data::Stream::Bulk::Callback 0
+      DateTime::Format::HTTP 0
+      Digest::HMAC_SHA1 0
+      Digest::MD5 0
+      Digest::MD5::File 0
+      Digest::SHA 0
+      Exporter::Tiny 0
+      ExtUtils::MakeMaker 0
+      File::Find::Rule 0
+      File::stat 0
+      Getopt::Long 0
+      HTTP::Date 0
+      HTTP::Response 0
+      HTTP::Status 0
+      Hash::Util 0
+      IO::File 1.14
+      LWP 6.03
+      LWP::UserAgent::Determined 0
+      MIME::Base64 0
+      MIME::Types 0
+      Moose 0.85
+      Moose::Object 0
+      Moose::Role 0
+      Moose::Util 0
+      Moose::Util::TypeConstraints 0
+      MooseX::Role::Parameterized 0
+      MooseX::StrictConstructor 0.16
+      MooseX::Types::DateTime::MoreCoercions 0.07
+      Path::Class 0
+      Pod::Usage 0
+      Ref::Util 0
+      Regexp::Common 0
+      Scalar::Util 0
+      Sub::Override 0
+      Term::Encoding 0
+      Term::ProgressBar::Simple 0
+      Test::Deep 0
+      Test::More 0
+      Time::Piece 0
+      URI 0
+      URI::Escape 0
+      URI::QueryParam 0
+      XML::LibXML 0
+      XML::LibXML::XPathContext 0
+      namespace::clean 0
+      parent 0
+      sort 0
+      strict 0
+      warnings 0
   Net-DNS-0.72
     pathname: N/NL/NLNETLABS/Net-DNS-0.72.tar.gz
     provides:
@@ -4671,7 +5029,7 @@ DISTRIBUTIONS
       LWP::Protocol::https 0
       LWP::UserAgent 2.032
       Module::Build::Tiny 0.034
-      Net::HTTP 0
+      Net::HTTP >= 0, != 6.04, != 6.05
       Net::Netrc 0
       URI 1.40
       URI::Escape 0
@@ -5491,6 +5849,26 @@ DISTRIBUTIONS
       Readonly::Scalar 1.03
     requirements:
       ExtUtils::MakeMaker 0
+  Ref-Util-0.204
+    pathname: A/AR/ARC/Ref-Util-0.204.tar.gz
+    provides:
+      Ref::Util 0.204
+      Ref::Util::PP 0.204
+    requirements:
+      Exporter 5.57
+      ExtUtils::MakeMaker 0
+      Ref::Util::XS 0
+      Text::ParseWords 0
+      perl 5.006
+  Ref-Util-XS-0.117
+    pathname: X/XS/XSAWYERX/Ref-Util-XS-0.117.tar.gz
+    provides:
+      Ref::Util::XS 0.117
+    requirements:
+      Exporter 5.57
+      ExtUtils::MakeMaker 0
+      XSLoader 0
+      perl 5.006
   Regexp-Common-2013031301
     pathname: A/AB/ABIGAIL/Regexp-Common-2013031301.tar.gz
     provides:
@@ -5789,6 +6167,16 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::More 0
       perl 5.006001
+  Set-Infinite-0.65
+    pathname: F/FG/FGLOCK/Set-Infinite-0.65.tar.gz
+    provides:
+      Set::Infinite 0.65
+      Set::Infinite::Arithmetic undef
+      Set::Infinite::Basic undef
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
+      Time::Local 0
   Snowball-Norwegian-1.2
     pathname: A/AS/ASKSH/Snowball-Norwegian-1.2.tar.gz
     provides:
@@ -6208,6 +6596,53 @@ DISTRIBUTIONS
       File::Spec 0.8
       File::Temp 0.12
       Scalar::Util 0
+  Term-Encoding-0.02
+    pathname: M/MI/MIYAGAWA/Term-Encoding-0.02.tar.gz
+    provides:
+      Term::Encoding 0.02
+    requirements:
+      ExtUtils::MakeMaker 0
+  Term-ProgressBar-2.22
+    pathname: M/MA/MANWAR/Term-ProgressBar-2.22.tar.gz
+    provides:
+      Term::ProgressBar 2.22
+      Term::ProgressBar::IO 2.22
+    requirements:
+      Capture::Tiny 0.13
+      Carp 0
+      Class::MethodMaker 1.02
+      ExtUtils::MakeMaker 0
+      Fatal 0
+      File::Temp 0
+      POSIX 0
+      Term::ReadKey 2.14
+      Test::Exception 0.31
+      Test::More 0.80
+      Test::Warnings 0
+      perl 5.006
+  Term-ProgressBar-Quiet-0.31
+    pathname: L/LB/LBROCARD/Term-ProgressBar-Quiet-0.31.tar.gz
+    provides:
+      Term::ProgressBar::Quiet 0.31
+    requirements:
+      ExtUtils::MakeMaker 0
+      IO::Interactive 0
+      Term::ProgressBar 0
+      Test::MockObject 0
+      Test::More 0
+  Term-ProgressBar-Simple-0.03
+    pathname: E/EV/EVDB/Term-ProgressBar-Simple-0.03.tar.gz
+    provides:
+      Term::ProgressBar::Simple 0.03
+    requirements:
+      ExtUtils::MakeMaker 0
+      Term::ProgressBar::Quiet 0
+  TermReadKey-2.37
+    pathname: J/JS/JSTOWE/TermReadKey-2.37.tar.gz
+    provides:
+      Term::ReadKey 2.37
+    requirements:
+      ExtUtils::MakeMaker 6.58
   Test-Base-0.60
     pathname: I/IN/INGY/Test-Base-0.60.tar.gz
     provides:
@@ -6239,10 +6674,10 @@ DISTRIBUTIONS
       Test::More 0.88
       strict 0
       warnings 0
-  Test-Deep-0.110
-    pathname: R/RJ/RJBS/Test-Deep-0.110.tar.gz
+  Test-Deep-1.128
+    pathname: R/RJ/RJBS/Test-Deep-1.128.tar.gz
     provides:
-      Test::Deep 0.110
+      Test::Deep 1.128
       Test::Deep::All undef
       Test::Deep::Any undef
       Test::Deep::Array undef
@@ -6268,11 +6703,14 @@ DISTRIBUTIONS
       Test::Deep::MM undef
       Test::Deep::Methods undef
       Test::Deep::NoTest undef
+      Test::Deep::None undef
       Test::Deep::Number undef
+      Test::Deep::Obj undef
       Test::Deep::Ref undef
       Test::Deep::RefType undef
       Test::Deep::Regexp undef
       Test::Deep::RegexpMatches undef
+      Test::Deep::RegexpOnly undef
       Test::Deep::RegexpRef undef
       Test::Deep::RegexpRefOnly undef
       Test::Deep::RegexpVersion undef
@@ -6294,30 +6732,32 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       List::Util 1.09
       Scalar::Util 1.09
-      Test::More 0
-      Test::NoWarnings 0.02
-      Test::Tester 0.04
-  Test-Differences-0.61
-    pathname: O/OV/OVID/Test-Differences-0.61.tar.gz
+      Test::Builder 0
+  Test-Differences-0.64
+    pathname: D/DC/DCANTRELL/Test-Differences-0.64.tar.gz
     provides:
-      Test::Differences 0.61
+      Test::Differences 0.64
     requirements:
+      Capture::Tiny 0.24
       Data::Dumper 2.126
-      Module::Build 0.36
-      Test::More 0
+      Test::More 0.88
       Text::Diff 0.35
-  Test-Exception-0.31
-    pathname: A/AD/ADIE/Test-Exception-0.31.tar.gz
+  Test-Exception-0.43
+    pathname: E/EX/EXODIST/Test-Exception-0.43.tar.gz
     provides:
-      Test::Exception 0.31
+      Test::Exception 0.43
     requirements:
-      Module::Build 0.36
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 0
       Sub::Uplevel 0.18
       Test::Builder 0.7
       Test::Builder::Tester 1.07
       Test::Harness 2.03
-      Test::More 0.7
-      Test::Simple 0.7
+      base 0
+      perl 5.006001
+      strict 0
+      warnings 0
   Test-Fatal-0.010
     pathname: R/RJ/RJBS/Test-Fatal-0.010.tar.gz
     provides:
@@ -6333,57 +6773,58 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Test-Harness-3.32
-    pathname: L/LE/LEONT/Test-Harness-3.32.tar.gz
+  Test-Harness-3.42
+    pathname: L/LE/LEONT/Test-Harness-3.42.tar.gz
     provides:
-      App::Prove 3.32
-      App::Prove::State 3.32
-      App::Prove::State::Result 3.32
-      App::Prove::State::Result::Test 3.32
-      TAP::Base 3.32
-      TAP::Formatter::Base 3.32
-      TAP::Formatter::Color 3.32
-      TAP::Formatter::Console 3.32
-      TAP::Formatter::Console::ParallelSession 3.32
-      TAP::Formatter::Console::Session 3.32
-      TAP::Formatter::File 3.32
-      TAP::Formatter::File::Session 3.32
-      TAP::Formatter::Session 3.32
-      TAP::Harness 3.32
-      TAP::Harness::Env 3.32
-      TAP::Object 3.32
-      TAP::Parser 3.32
-      TAP::Parser::Aggregator 3.32
-      TAP::Parser::Grammar 3.32
-      TAP::Parser::Iterator 3.32
-      TAP::Parser::Iterator::Array 3.32
-      TAP::Parser::Iterator::Process 3.32
-      TAP::Parser::Iterator::Stream 3.32
-      TAP::Parser::IteratorFactory 3.32
-      TAP::Parser::Multiplexer 3.32
-      TAP::Parser::Result 3.32
-      TAP::Parser::Result::Bailout 3.32
-      TAP::Parser::Result::Comment 3.32
-      TAP::Parser::Result::Plan 3.32
-      TAP::Parser::Result::Pragma 3.32
-      TAP::Parser::Result::Test 3.32
-      TAP::Parser::Result::Unknown 3.32
-      TAP::Parser::Result::Version 3.32
-      TAP::Parser::Result::YAML 3.32
-      TAP::Parser::ResultFactory 3.32
-      TAP::Parser::Scheduler 3.32
-      TAP::Parser::Scheduler::Job 3.32
-      TAP::Parser::Scheduler::Spinner 3.32
-      TAP::Parser::Source 3.32
-      TAP::Parser::SourceHandler 3.32
-      TAP::Parser::SourceHandler::Executable 3.32
-      TAP::Parser::SourceHandler::File 3.32
-      TAP::Parser::SourceHandler::Handle 3.32
-      TAP::Parser::SourceHandler::Perl 3.32
-      TAP::Parser::SourceHandler::RawTAP 3.32
-      TAP::Parser::YAMLish::Reader 3.32
-      TAP::Parser::YAMLish::Writer 3.32
-      Test::Harness 3.32
+      App::Prove 3.42
+      App::Prove::State 3.42
+      App::Prove::State::Result 3.42
+      App::Prove::State::Result::Test 3.42
+      Harness::Hook undef
+      TAP::Base 3.42
+      TAP::Formatter::Base 3.42
+      TAP::Formatter::Color 3.42
+      TAP::Formatter::Console 3.42
+      TAP::Formatter::Console::ParallelSession 3.42
+      TAP::Formatter::Console::Session 3.42
+      TAP::Formatter::File 3.42
+      TAP::Formatter::File::Session 3.42
+      TAP::Formatter::Session 3.42
+      TAP::Harness 3.42
+      TAP::Harness::Env 3.42
+      TAP::Object 3.42
+      TAP::Parser 3.42
+      TAP::Parser::Aggregator 3.42
+      TAP::Parser::Grammar 3.42
+      TAP::Parser::Iterator 3.42
+      TAP::Parser::Iterator::Array 3.42
+      TAP::Parser::Iterator::Process 3.42
+      TAP::Parser::Iterator::Stream 3.42
+      TAP::Parser::IteratorFactory 3.42
+      TAP::Parser::Multiplexer 3.42
+      TAP::Parser::Result 3.42
+      TAP::Parser::Result::Bailout 3.42
+      TAP::Parser::Result::Comment 3.42
+      TAP::Parser::Result::Plan 3.42
+      TAP::Parser::Result::Pragma 3.42
+      TAP::Parser::Result::Test 3.42
+      TAP::Parser::Result::Unknown 3.42
+      TAP::Parser::Result::Version 3.42
+      TAP::Parser::Result::YAML 3.42
+      TAP::Parser::ResultFactory 3.42
+      TAP::Parser::Scheduler 3.42
+      TAP::Parser::Scheduler::Job 3.42
+      TAP::Parser::Scheduler::Spinner 3.42
+      TAP::Parser::Source 3.42
+      TAP::Parser::SourceHandler 3.42
+      TAP::Parser::SourceHandler::Executable 3.42
+      TAP::Parser::SourceHandler::File 3.42
+      TAP::Parser::SourceHandler::Handle 3.42
+      TAP::Parser::SourceHandler::Perl 3.42
+      TAP::Parser::SourceHandler::RawTAP 3.42
+      TAP::Parser::YAMLish::Reader 3.42
+      TAP::Parser::YAMLish::Writer 3.42
+      Test::Harness 3.42
     requirements:
       ExtUtils::MakeMaker 0
   Test-LongString-0.15
@@ -6437,6 +6878,20 @@ DISTRIBUTIONS
       Test::More 0
       Time::Local 0
       Time::Piece 1.08
+  Test-Most-0.35
+    pathname: O/OV/OVID/Test-Most-0.35.tar.gz
+    provides:
+      Test::Most 0.35
+      Test::Most::Exception 0.35
+    requirements:
+      Exception::Class 1.14
+      ExtUtils::MakeMaker 0
+      Test::Deep 0.119
+      Test::Differences 0.64
+      Test::Exception 0.43
+      Test::Harness 3.35
+      Test::More 1.302047
+      Test::Warn 0.30
   Test-NoWarnings-1.04
     pathname: A/AD/ADAMK/Test-NoWarnings-1.04.tar.gz
     provides:
@@ -6514,6 +6969,83 @@ DISTRIBUTIONS
       Test::Requires 0
       Time::HiRes 0
       perl 5.008
+  Test-Simple-1.302140
+    pathname: E/EX/EXODIST/Test-Simple-1.302140.tar.gz
+    provides:
+      Test2 1.302140
+      Test2::API 1.302140
+      Test2::API::Breakage 1.302140
+      Test2::API::Context 1.302140
+      Test2::API::Instance 1.302140
+      Test2::API::Stack 1.302140
+      Test2::Event 1.302140
+      Test2::Event::Bail 1.302140
+      Test2::Event::Diag 1.302140
+      Test2::Event::Encoding 1.302140
+      Test2::Event::Exception 1.302140
+      Test2::Event::Fail 1.302140
+      Test2::Event::Generic 1.302140
+      Test2::Event::Note 1.302140
+      Test2::Event::Ok 1.302140
+      Test2::Event::Pass 1.302140
+      Test2::Event::Plan 1.302140
+      Test2::Event::Skip 1.302140
+      Test2::Event::Subtest 1.302140
+      Test2::Event::TAP::Version 1.302140
+      Test2::Event::V2 1.302140
+      Test2::Event::Waiting 1.302140
+      Test2::EventFacet 1.302140
+      Test2::EventFacet::About 1.302140
+      Test2::EventFacet::Amnesty 1.302140
+      Test2::EventFacet::Assert 1.302140
+      Test2::EventFacet::Control 1.302140
+      Test2::EventFacet::Error 1.302140
+      Test2::EventFacet::Hub 1.302140
+      Test2::EventFacet::Info 1.302140
+      Test2::EventFacet::Meta 1.302140
+      Test2::EventFacet::Parent 1.302140
+      Test2::EventFacet::Plan 1.302140
+      Test2::EventFacet::Render 1.302140
+      Test2::EventFacet::Trace 1.302140
+      Test2::Formatter 1.302140
+      Test2::Formatter::TAP 1.302140
+      Test2::Hub 1.302140
+      Test2::Hub::Interceptor 1.302140
+      Test2::Hub::Interceptor::Terminator 1.302140
+      Test2::Hub::Subtest 1.302140
+      Test2::IPC 1.302140
+      Test2::IPC::Driver 1.302140
+      Test2::IPC::Driver::Files 1.302140
+      Test2::Tools::Tiny 1.302140
+      Test2::Util 1.302140
+      Test2::Util::ExternalMeta 1.302140
+      Test2::Util::Facets2Legacy 1.302140
+      Test2::Util::HashBase 1.302140
+      Test2::Util::Trace 1.302140
+      Test::Builder 1.302140
+      Test::Builder::Formatter 1.302140
+      Test::Builder::IO::Scalar 2.114
+      Test::Builder::Module 1.302140
+      Test::Builder::Tester 1.302140
+      Test::Builder::Tester::Color 1.302140
+      Test::Builder::Tester::Tie 1.302140
+      Test::Builder::TodoDiag 1.302140
+      Test::More 1.302140
+      Test::Simple 1.302140
+      Test::Tester 1.302140
+      Test::Tester::Capture 1.302140
+      Test::Tester::CaptureRunner 1.302140
+      Test::Tester::Delegate 1.302140
+      Test::use::ok 1.302140
+      ok 1.302140
+    requirements:
+      ExtUtils::MakeMaker 0
+      File::Spec 0
+      File::Temp 0
+      Scalar::Util 1.13
+      Storable 0
+      perl 5.006002
+      utf8 0
   Test-TCP-1.21
     pathname: T/TO/TOKUHIROM/Test-TCP-1.21.tar.gz
     provides:
@@ -6606,22 +7138,30 @@ DISTRIBUTIONS
       Test::More 0
       Test::WWW::Mechanize 0
       Try::Tiny 0
-  Test-Warn-0.24
-    pathname: C/CH/CHORNY/Test-Warn-0.24.tar.gz
+  Test-Warn-0.36
+    pathname: B/BI/BIGJ/Test-Warn-0.36.tar.gz
     provides:
-      Test::Warn 0.24
-      Test::Warn::Categorization 0.24
-      Test::Warn::DAG_Node_Tree 0.24
+      Test::Warn 0.36
     requirements:
       Carp 1.22
       ExtUtils::MakeMaker 0
-      File::Spec 0
       Sub::Uplevel 0.12
       Test::Builder 0.13
       Test::Builder::Tester 1.02
-      Test::More 0
-      Tree::DAG_Node 1.02
       perl 5.006
+  Test-Warnings-0.026
+    pathname: E/ET/ETHER/Test-Warnings-0.026.tar.gz
+    provides:
+      Test::Warnings 0.026
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      Test::Builder 0
+      parent 0
+      perl 5.006
+      strict 0
+      warnings 0
   Test-use-ok-0.11
     pathname: A/AU/AUDREYT/Test-use-ok-0.11.tar.gz
     provides:
@@ -6746,6 +7286,17 @@ DISTRIBUTIONS
       Test::More 0
       Test::use::ok 0
       Tie::RefHash 0
+  Time-Duration-Parse-0.14
+    pathname: N/NE/NEILB/Time-Duration-Parse-0.14.tar.gz
+    provides:
+      Time::Duration::Parse 0.14
+    requirements:
+      Carp 0
+      Exporter::Lite 0
+      ExtUtils::MakeMaker 0
+      perl 5.006
+      strict 0
+      warnings 0
   TimeDate-2.30
     pathname: G/GB/GBARR/TimeDate-2.30.tar.gz
     provides:
@@ -7122,6 +7673,58 @@ DISTRIBUTIONS
       Plack 0.9968
       Syntax::Keyword::Gather 1.001
       warnings::illegalproto 0.001
+  XML-LibXML-2.0132
+    pathname: S/SH/SHLOMIF/XML-LibXML-2.0132.tar.gz
+    provides:
+      XML::LibXML 2.0132
+      XML::LibXML::Attr 2.0132
+      XML::LibXML::AttributeHash 2.0132
+      XML::LibXML::Boolean 2.0132
+      XML::LibXML::CDATASection 2.0132
+      XML::LibXML::Comment 2.0132
+      XML::LibXML::Common 2.0132
+      XML::LibXML::Devel 2.0132
+      XML::LibXML::Document 2.0132
+      XML::LibXML::DocumentFragment 2.0132
+      XML::LibXML::Dtd 2.0132
+      XML::LibXML::Element 2.0132
+      XML::LibXML::ErrNo 2.0132
+      XML::LibXML::Error 2.0132
+      XML::LibXML::InputCallback 2.0132
+      XML::LibXML::Literal 2.0132
+      XML::LibXML::NamedNodeMap 2.0132
+      XML::LibXML::Namespace 2.0132
+      XML::LibXML::Node 2.0132
+      XML::LibXML::NodeList 2.0132
+      XML::LibXML::Number 2.0132
+      XML::LibXML::PI 2.0132
+      XML::LibXML::Pattern 2.0132
+      XML::LibXML::Reader 2.0132
+      XML::LibXML::RegExp 2.0132
+      XML::LibXML::RelaxNG 2.0132
+      XML::LibXML::SAX 2.0132
+      XML::LibXML::SAX::AttributeNode 2.0132
+      XML::LibXML::SAX::Builder 2.0132
+      XML::LibXML::SAX::Generator 2.0132
+      XML::LibXML::SAX::Parser 2.0132
+      XML::LibXML::Schema 2.0132
+      XML::LibXML::Text 2.0132
+      XML::LibXML::XPathContext 2.0132
+      XML::LibXML::XPathExpression 2.0132
+      XML::LibXML::_SAXParser 2.0132
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
+      XML::NamespaceSupport 1.07
+      XML::SAX 0.11
+      XML::SAX::Base 0
+      XML::SAX::Exception 0
+      base 0
+      parent 0
+      perl 5.008
+      strict 0
+      vars 0
+      warnings 0
   XML-NamespaceSupport-1.11
     pathname: P/PE/PERIGRIN/XML-NamespaceSupport-1.11.tar.gz
     provides:
@@ -7341,6 +7944,13 @@ DISTRIBUTIONS
       perl 5.008001
       strict 0
       warnings 0
+  boolean-0.46
+    pathname: I/IN/INGY/boolean-0.46.tar.gz
+    provides:
+      boolean 0.46
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.008001
   gettext-1.05
     pathname: P/PV/PVANDRY/gettext-1.05.tar.gz
     provides:

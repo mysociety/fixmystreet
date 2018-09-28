@@ -322,7 +322,10 @@ subtest 'check media url set' => sub {
     $comment->cobrand('fixmystreet');
 
     FixMyStreet::override_config {
-        UPLOAD_DIR => $UPLOAD_DIR,
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
     }, sub {
         my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
 

@@ -3,7 +3,6 @@ package FixMyStreet::App::Model::PhotoSet;
 # TODO this isn't a Cat model, rename to something else
 
 use Moose;
-use Path::Tiny 'path';
 
 my $IM = eval {
     require Image::Magick;
@@ -12,11 +11,12 @@ my $IM = eval {
 };
 
 use Scalar::Util 'openhandle', 'blessed';
-use Digest::SHA qw(sha1_hex);
 use Image::Size;
 use IPC::Cmd qw(can_run);
 use IPC::Open3;
 use MIME::Base64;
+
+use FixMyStreet::PhotoStorage;
 
 has c => (
     is => 'ro',
@@ -57,27 +57,19 @@ has data_items => ( # either a) split from db_data or b) provided by photo uploa
         my $self = shift;
         my $data = $self->db_data or return [];
 
-        return [$data] if (detect_type($data));
+        return [$data] if ($self->storage->detect_type($data));
 
         return [ split ',' => $data ];
     },
 );
 
-has upload_dir => (
+has storage => (
     is => 'ro',
     lazy => 1,
     default => sub {
-        path(FixMyStreet->config('UPLOAD_DIR'))->absolute(FixMyStreet->path_to());
-    },
+        return FixMyStreet::PhotoStorage::backend;
+    }
 );
-
-sub detect_type {
-    return 'jpeg' if $_[0] =~ /^\x{ff}\x{d8}/;
-    return 'png' if $_[0] =~ /^\x{89}\x{50}/;
-    return 'tiff' if $_[0] =~ /^II/;
-    return 'gif' if $_[0] =~ /^GIF/;
-    return '';
-}
 
 =head2 C<ids>, C<num_images>, C<get_id>, C<all_ids>
 
@@ -166,25 +158,20 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     return ();
                 }
 
-                # we have an image we can use - save it to the upload dir for storage
-                my $fileid = $self->get_fileid($photo_blob);
-                my $file = $self->get_file($fileid, $type);
-                $upload->copy_to( $file );
-                return $file->basename;
+                # we have an image we can use - save it to storage
+                return $self->storage->store_photo($photo_blob);
+            }
 
-            }
-            if (my $type = detect_type($part)) {
+            # It might be a raw file stored in the DB column...
+            if (my $type = $self->storage->detect_type($part)) {
                 my $photo_blob = $part;
-                my $fileid = $self->get_fileid($photo_blob);
-                my $file = $self->get_file($fileid, $type);
-                $file->spew_raw($photo_blob);
-                return $file->basename;
+                return $self->storage->store_photo($photo_blob);
+                # TODO: Should this update the DB record with a pointer to the
+                # newly-stored file, instead of leaving it in the DB?
             }
-            my ($fileid, $type) = split /\./, $part;
-            $type ||= 'jpeg';
-            if ($fileid && length($fileid) == 40) {
-                my $file = $self->get_file($fileid, $type);
-                $file->basename;
+
+            if (my $key = $self->storage->validate_key($part)) {
+                $key;
             } else {
                 # A bad hash, probably a bot spamming with bad data.
                 ();
@@ -194,24 +181,11 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
     },
 );
 
-sub get_fileid {
-    my ($self, $photo_blob) = @_;
-    return sha1_hex($photo_blob);
-}
-
-sub get_file {
-    my ($self, $fileid, $type) = @_;
-    my $cache_dir = $self->upload_dir;
-    return path( $cache_dir, "$fileid.$type" );
-}
-
 sub get_raw_image {
     my ($self, $index) = @_;
     my $filename = $self->get_id($index);
-    my ($fileid, $type) = split /\./, $filename;
-    my $file = $self->get_file($fileid, $type);
-    if ($file->exists) {
-        my $photo = $file->slurp_raw;
+    my ($photo, $type) = $self->storage->retrieve_photo($filename);
+    if ($photo) {
         return {
             data => $photo,
             content_type => "image/$type",

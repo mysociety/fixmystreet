@@ -74,6 +74,10 @@ subtest 'test report with multiple photos only sends one', sub {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
         MAPIT_URL => 'http://mapit.uk/',
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
     }, sub {
         $test_data = FixMyStreet::Script::Reports::send();
     };
@@ -107,6 +111,10 @@ subtest 'test sending multiple photos', sub {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'tester' ],
         MAPIT_URL => 'http://mapit.uk/',
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
     }, sub {
         $test_data = FixMyStreet::Script::Reports::send();
     };

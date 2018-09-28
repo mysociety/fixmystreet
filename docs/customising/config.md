@@ -55,9 +55,22 @@ The following are all the configuration settings that you can change in `conf/ge
 
 * <code><a href="#base_url">BASE_URL</a></code>
 * <code><a href="#secure_proxy_ssl_header">SECURE_PROXY_SSL_HEADER</a></code>
-* <code><a href="#upload_dir">UPLOAD_DIR</a></code>
 * <code><a href="#geo_cache">GEO_CACHE</a></code>
 * <code><a href="#admin_base_url">ADMIN_BASE_URL</a></code>
+
+### Photo storage
+
+* <code><a href="#photo_storage_backend">PHOTO_STORAGE_BACKEND</a></code>
+* <code><a href="#photo_storage_options">PHOTO_STORAGE_OPTIONS</a></code>
+  * For local filesystem storage:
+    * <code><a href="#upload_dir">UPLOAD_DIR</a></code>
+  * For Amazon S3 storage:
+    * <code><a href="#bucket">BUCKET</a></code>
+    * <code><a href="#access_key">ACCESS_KEY</a></code>
+    * <code><a href="#secret_key">SECRET_KEY</a></code>
+    * <code><a href="#prefix">PREFIX</a></code>
+    * <code><a href="#create_bucket">CREATE_BUCKET</a></code>
+    * <code><a href="#region">REGION</a></code>
 
 ### Emailing
 
@@ -404,18 +417,16 @@ LANGUAGES:
   </dd>
 
   <dt>
-    <a name="upload_dir"><code>UPLOAD_DIR</code></a> &amp;
     <a name="geo_cache"><code>GEO_CACHE</code></a>
   </dt>
   <dd>
-    The file locations for uploaded photos and cached geocoding results.
-    Normally you don't need to change these settings from the examples.
+    The file location for cached geocoding results.
+    Normally you don't need to change this setting from the example.
     <div class="more-info">
       <p>Example:</p>
       <ul class="examples">
         <li>
           <code>
-            UPLOAD_DIR: '../upload/'<br>
             GEO_CACHE: '../cache/'
           </code>
         </li>
@@ -1118,5 +1129,179 @@ ALLOWED_COBRANDS:
       </ul>
     </div>
   </dd>
-    
+
+  <dt>
+    <a name="photo_storage_backend"><code>PHOTO_STORAGE_BACKEND</code></a>
+  </dt>
+  <dd>
+    The storage backend to use for uploaded photos.
+    <p>
+      Possible choices are <code>FileSystem</code> or <code>S3</code>.
+      By default, FixMyStreet will use <code>FileSystem</code>.
+    </p>
+    <p>
+      The chosen backend can be configured via the
+      <code><a href="#photo_storage_options">PHOTO_STORAGE_OPTIONS</a></code>
+      setting, see below.
+    </p>
+  </dd>
+
+  <dt>
+    <a name="photo_storage_options"><code>PHOTO_STORAGE_OPTIONS</code></a>
+  </dt>
+  <dd>
+    <p>
+      Contains backend-specific configuration options for photo storage.
+    </p>
+    <p>
+      For the <code>FileSystem</code> backend, the following apply:
+    </p>
+    <ul>
+      <li><code><a href="#upload_dir">UPLOAD_DIR</a></code></li>
+    </ul>
+    <p>
+      For the <code>S3</code> backend, the following apply:
+    </p>
+    <ul>
+      <li><code><a href="#bucket">BUCKET</a></code></li>
+      <li><code><a href="#access_key">ACCESS_KEY</a></code></li>
+      <li><code><a href="#secret_key">SECRET_KEY</a></code></li>
+      <li><code><a href="#prefix">PREFIX</a></code></li>
+      <li><code><a href="#create_bucket">CREATE_BUCKET</a></code></li>
+      <li><code><a href="#region">REGION</a></code></li>
+    </ul>
+  </dd>
+
+  <dt>
+    <a name="upload_dir"><code>UPLOAD_DIR</code></a>
+  </dt>
+  <dd>
+    <p>
+      The file location for uploaded photos.
+      Normally you don't need to change this setting from the example.
+    </p>
+    <p>
+      Only applies when <code>PHOTO_STORAGE_BACKEND</code> is <code>FileSystem</code>.
+    </p>
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <pre>
+PHOTO_STORAGE_OPTIONS:
+  UPLOAD_DIR: '../upload/'
+          </pre>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="bucket"><code>BUCKET</code></a>
+  </dt>
+  <dd>
+    <p>
+      The name of the S3 bucket to store photos in.
+    </p>
+    <p>
+      <strong>Required</strong> when <code>PHOTO_STORAGE_BACKEND</code> is <code>S3</code>.
+    </p>
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <pre>
+PHOTO_STORAGE_OPTIONS:
+  BUCKET: 'fixmystreet-photos'
+          </pre>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="access_key"><code>ACCESS_KEY</code></a> &amp;
+    <a name="secret_key"><code>SECRET_KEY</code></a>
+  </dt>
+  <dd>
+    <p>
+      The AWS access & secret keys to use when connecting to S3.
+      You should use a role with minimal privileges to manage objects in a specific S3 bucket, not your root keys.
+    </p>
+    <p>
+      <strong>Required</strong> when <code>PHOTO_STORAGE_BACKEND</code> is <code>S3</code>.
+    </p>
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <pre>
+PHOTO_STORAGE_OPTIONS:
+  ACCESS_KEY: 'AKIAMYSUPERCOOLKEY'
+  SECRET_KEY: '12345/AbCdEFgHIJ98765'
+          </pre>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="prefix"><code>PREFIX</code></a>
+  </dt>
+  <dd>
+    <p>
+      An optional directory prefix to prepended to S3 filenames. Useful if, for example, you are using a bucket shared between other projects or FixMyStreet instances.
+    </p>
+    <p>
+      <strong>Optional</strong>. Only applies when <code>PHOTO_STORAGE_BACKEND</code> is <code>S3</code>.
+    </p>
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <pre>
+PHOTO_STORAGE_OPTIONS:
+  PREFIX: '/fixmystreet_photos/'
+          </pre>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="create_bucket"><code>CREATE_BUCKET</code></a>
+  </dt>
+  <dd>
+    <p>
+      Set to <code>1</code> (or <code>true</code>) if FixMyStreet should create the S3 bucket specified in <code>BUCKET</code> if it doesn't already exist.
+    </p>
+    <p>
+      <strong>Optional</strong>. Only applies when <code>PHOTO_STORAGE_BACKEND</code> is <code>S3</code>.
+    </p>
+  </dd>
+
+  <dt>
+    <a name="region"><code>REGION</code></a>
+  </dt>
+  <dd>
+    <p>
+      The AWS region to create the S3 bucket in.
+    </p>
+    <p>
+      <strong>Optional</strong>. Only applies when <code>CREATE_BUCKET</code> is enabled.
+    </p>
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <pre>
+PHOTO_STORAGE_OPTIONS:
+  CREATE_BUCKET: 1
+  REGION: 'eu-west-2'
+          </pre>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
 </dl>

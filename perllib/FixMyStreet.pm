@@ -113,12 +113,14 @@ sub override_config($&) {
     );
 
     FixMyStreet::Map::reload_allowed_maps() if $config->{MAP_TYPE};
+    $FixMyStreet::PhotoStorage::instance = undef if $config->{PHOTO_STORAGE_BACKEND};
 
     $code->();
 
     $override_guard->restore();
     mySociety::MaPit::configure() if $config->{MAPIT_URL};
     FixMyStreet::Map::reload_allowed_maps() if $config->{MAP_TYPE};
+    $FixMyStreet::PhotoStorage::instance = undef if $config->{PHOTO_STORAGE_BACKEND};
 }
 
 =head2 dbic_connect_info
