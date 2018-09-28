@@ -1,34 +1,35 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
+require 'getoptlong'
+opts = GetoptLong.new(
+  [ '--base-box', GetoptLong::OPTIONAL_ARGUMENT ]
+)
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
+baseBox='mysociety/fixmystreet'
+opts.each do |opt, arg|
+  case opt
+    when '--base-box'
+      baseBox=arg
+  end
+end
 
-  # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu/xenial64"
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network :forwarded_port, guest: 3000, host: 3000
-  # And 3001 for the Cypress test server
-  config.vm.network :forwarded_port, guest: 3001, host: 3001
-
-  config.vm.synced_folder ".", "/home/vagrant/fixmystreet", :owner => "vagrant", :group => "vagrant"
-
-  config.vm.provision :shell, :inline => <<-EOS
+$setup = <<-EOS
+    BASEBOX=$1
     # To prevent "dpkg-preconfigure: unable to re-open stdin: No such file or directory" warnings
     export DEBIAN_FRONTEND=noninteractive
     # Make sure git submodules are checked out!
     echo "Checking submodules exist/up to date"
-    apt-get -qq install -y git >/dev/null
+    if [ ! "$BASEBOX" = "mysociety/fixmystreet" ]; then
+        # Don't assume git is installed.
+        apt-get -qq install -y git >/dev/null
+    fi
     cd fixmystreet
     git submodule --quiet update --init --recursive --rebase
+    if [ "$BASEBOX" = "mysociety/fixmystreet" ]; then
+        mount -o bind /usr/share/fixmystreet/local /home/vagrant/fixmystreet/local
+        chown -R vagrant:vagrant /home/vagrant/fixmystreet/local
+    fi
     cd commonlib
     git config core.worktree "../../../commonlib"
     echo "gitdir: ../.git/modules/commonlib" > .git
@@ -56,7 +57,32 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         echo "Please see above for any errors, and do ask on our mailing list for help."
         exit 1
     fi
-  EOS
+EOS
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # All Vagrant configuration is done here. The most common configuration
+  # options are documented and commented below. For a complete reference,
+  # please see the online documentation at vagrantup.com.
+
+  # Every Vagrant virtual environment requires a box to build off of.
+  config.vm.box = "#{baseBox}"
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  config.vm.network :forwarded_port, guest: 3000, host: 3000
+  # And 3001 for the Cypress test server
+  config.vm.network :forwarded_port, guest: 3001, host: 3001
+
+  config.vm.synced_folder ".", "/home/vagrant/fixmystreet", :owner => "vagrant", :group => "vagrant"
+
+  config.vm.provision "shell" do |s|
+    s.inline = $setup
+    s.args   = "#{baseBox}"
+  end
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.

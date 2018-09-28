@@ -21,6 +21,7 @@
         - Add script to list/diff template changes in core that
           might need applying to a cobrand.
         - Move away from FastCGI in sample conf/sysvinit config.
+        - Customised Vagrant box available, with an override option.
 
 * v2.4 (6th September 2018)
     - Security
