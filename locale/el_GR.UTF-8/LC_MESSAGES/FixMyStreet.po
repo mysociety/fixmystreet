@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-09-06 21:17+0100\n"
+"POT-Creation-Date: 2018-10-01 11:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: George Kanellopoulos <gkanel@live.com>, 2018\n"
 "Language-Team: Greek (Greece) (https://www.transifex.com/mysociety/teams/12067/el_GR/)\n"
@@ -187,7 +187,7 @@ msgid "(we also have RSS feeds for problems within %s)"
 msgstr "Ροή RSS για προβλήματα στο &quot;%s&quot;"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:251
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:701
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:707
 #: perllib/FixMyStreet/DB/Result/Problem.pm:381
 msgid "-- Pick a category --"
 msgstr "-- Διάλεξε κατηγορία --"
@@ -333,9 +333,9 @@ msgstr "Προσθήκη αρ. τηλεφώνου"
 
 #: templates/web/base/report/_item.html:10
 #: templates/web/base/report/_item.html:16
-#: templates/web/base/report/_main.html:134
-#: templates/web/base/report/_main.html:17
-#: templates/web/base/report/_main.html:28
+#: templates/web/base/report/_main.html:138
+#: templates/web/base/report/_main.html:20
+#: templates/web/base/report/_main.html:31
 msgid "Add to shortlist"
 msgstr "Προσθήκη στoν κατάλογο"
 
@@ -357,11 +357,11 @@ msgstr ""
 msgid "Add/edit response templates"
 msgstr ""
 
-#: templates/web/base/my/my.html:109
+#: templates/web/base/my/my.html:115
 msgid "Added %s"
 msgstr "Προστέθηκε %s"
 
-#: templates/web/base/report/_main.html:143
+#: templates/web/base/report/_main.html:147
 msgid "Adding this report to your shortlist will remove it from %s’s shortlist."
 msgstr ""
 
@@ -562,7 +562,7 @@ msgstr "Σε αναμονή ελέγχου"
 msgid "Back"
 msgstr "Πίσω"
 
-#: templates/web/base/report/_main.html:4
+#: templates/web/base/report/_main.html:7
 msgid "Back to all reports"
 msgstr ""
 
@@ -573,7 +573,7 @@ msgstr "Επισήμανση χρήστη"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:655
 #: perllib/FixMyStreet/Cobrand/Default.pm:740
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:383
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:408
 #: templates/web/base/admin/bodies.html:1
 #: templates/web/base/admin/report_edit.html:56
 #: templates/web/zurich/header.html:49
@@ -671,7 +671,7 @@ msgstr ""
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:5
-#: templates/web/base/my/my.html:63
+#: templates/web/base/my/my.html:65
 msgid "Change password"
 msgstr "Αλλαγή κωδικού πρόσβασης"
 
@@ -792,7 +792,7 @@ msgid "Collapse map"
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:650
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:397
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:422
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
 msgstr "Ρυθμίσεις"
@@ -855,8 +855,8 @@ msgstr ""
 msgid "Coordinates:"
 msgstr "Συντεταγμένες:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2008
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2037
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2009
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2038
 msgid "Could not find user"
 msgstr "Δεν είναι δυνατή η εύρεση χρήστη"
 
@@ -957,7 +957,7 @@ msgstr ""
 msgid "Currently no bodies have been created."
 msgstr "Δεν έχουν δημιουργηθεί τομείς μέχρι στιγμής."
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:846
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:871
 #: templates/web/zurich/admin/report_edit-sdm.html:105
 msgid "Customer not contactable"
 msgstr "Δεν υπάρχει τρόπος επικοινωνίας με τον πελάτη"
@@ -1001,7 +1001,7 @@ msgstr "Διαγραφή προτύπου"
 msgid "Deleted"
 msgstr "Διαγραμμένα"
 
-#: templates/web/base/report/_main.html:111
+#: templates/web/base/report/_main.html:115
 #: templates/web/base/report/update.html:51
 msgid "Describe why you are moderating this"
 msgstr ""
@@ -1051,7 +1051,7 @@ msgstr "Δεν χρησιμοποιήθηκε ο χάρτης"
 msgid "Diligency prize league table"
 msgstr "Πίνακας βραβείων επιμέλειας"
 
-#: templates/web/base/report/_main.html:116
+#: templates/web/base/report/_main.html:120
 #: templates/web/base/report/update.html:54
 msgid "Discard changes"
 msgstr ""
@@ -1490,11 +1490,11 @@ msgstr "Για περισσότερες πληροφορίες, δες <a href='
 msgid "Forgotten your password?"
 msgstr "Ξέχασες τον κωδικό πρόσβασής σου;"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:761
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:786
 msgid "Forwarded to external body"
 msgstr "Προωθήθηκε στον εξωτερικό τομέα"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:762
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:787
 msgid "Forwarded wish to external body"
 msgstr "Η επιθυμία προωθήθηκε στον εξωτερικό τομέα"
 
@@ -1620,7 +1620,7 @@ msgstr "Κρυμμένα"
 msgid "Hide all reports and updates"
 msgstr "Επισημασμένες αναφορές και χρήστες"
 
-#: templates/web/base/report/_main.html:107
+#: templates/web/base/report/_main.html:111
 msgid "Hide entire report"
 msgstr ""
 
@@ -2059,7 +2059,7 @@ msgstr ""
 msgid "Missing jurisdiction_id"
 msgstr "Λείπει το jurisdiction_id"
 
-#: templates/web/base/report/_main.html:128
+#: templates/web/base/report/_main.html:132
 msgid "Moderate"
 msgstr ""
 
@@ -2067,7 +2067,7 @@ msgstr ""
 msgid "Moderate report details"
 msgstr ""
 
-#: templates/web/base/report/_main.html:128
+#: templates/web/base/report/_main.html:132
 msgid "Moderate this report"
 msgstr ""
 
@@ -2075,7 +2075,7 @@ msgstr ""
 msgid "Moderate this update"
 msgstr ""
 
-#: templates/web/base/report/_main.html:71
+#: templates/web/base/report/_main.html:75
 #: templates/web/base/report/_update_state.html:19
 msgid "Moderated by %s at %s"
 msgstr ""
@@ -2468,11 +2468,11 @@ msgstr ""
 msgid "Order"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1322
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:702
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:703
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:738
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:741
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1329
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:708
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:709
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:744
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:747
 #: perllib/FixMyStreet/DB/Result/Problem.pm:600
 #: perllib/FixMyStreet/DB/Result/Problem.pm:607
 #: perllib/FixMyStreet/DB/Result/Problem.pm:622
@@ -2580,13 +2580,17 @@ msgstr "Τηλέφωνο:"
 msgid "Photo"
 msgstr "Φωτογραφία"
 
-#: perllib/FixMyStreet/App/Controller/Photo.pm:186
+#: perllib/FixMyStreet/App/Controller/Photo.pm:192
 msgid "Photo is required."
 msgstr "Απαιτείται φωτογραφία."
 
 #: templates/web/zurich/admin/contact-form.html:42
 msgid "Photo required"
 msgstr "Απαιτείται φωτογραφία"
+
+#: perllib/FixMyStreet/App/Controller/Photo.pm:109
+msgid "Photo upload failed."
+msgstr ""
 
 #: templates/web/base/questionnaire/index.html:78
 #: templates/web/base/report/new/form_report.html:27
@@ -2640,8 +2644,8 @@ msgid "Please check your phone number is correct"
 msgstr "Παρακαλούμε έλεγξε αν η διεύθυνση email είναι σωστή"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:315
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:947
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:982
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:954
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:989
 #: perllib/FixMyStreet/DB/Result/Problem.pm:383
 #: templates/web/base/js/translation_strings.html:13
 msgid "Please choose a category"
@@ -2863,9 +2867,9 @@ msgstr "Παρακαλούμε επίλεξε το είδος της ειδοπ�
 msgid "Please state whether or not the problem has been fixed"
 msgstr "Παρακαλούμε δήλωσε αν το πρόβλημα έχει διορθωθεί ή όχι"
 
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:122
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:156
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:158
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:114
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:148
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: templates/web/base/js/translation_strings.html:68
 msgid "Please upload an image only"
 msgstr "Παρακαλούμε ανέβασε μία εικόνα μόνο"
@@ -3028,7 +3032,7 @@ msgstr "Προβλήματα σε ακτίνα %s, %s"
 msgid "Property address:"
 msgstr "Διεύθυνση ακινήτου:"
 
-#: templates/web/base/report/display.html:66
+#: templates/web/base/report/display.html:67
 #: templates/web/base/report/duplicate-no-updates.html:3
 #: templates/web/base/report/update-form.html:9
 msgid "Provide an update"
@@ -3188,9 +3192,9 @@ msgstr "Αφαίρεση σήμανσης"
 
 #: templates/web/base/report/_item.html:12
 #: templates/web/base/report/_item.html:9
-#: templates/web/base/report/_main.html:132
-#: templates/web/base/report/_main.html:16
-#: templates/web/base/report/_main.html:24
+#: templates/web/base/report/_main.html:136
+#: templates/web/base/report/_main.html:19
+#: templates/web/base/report/_main.html:27
 msgid "Remove from shortlist"
 msgstr ""
 
@@ -3339,7 +3343,7 @@ msgstr "Αναφορά προβλήματος"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:660
 #: perllib/FixMyStreet/Cobrand/Default.pm:674
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:375
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:400
 #: templates/web/zurich/header.html:45
 msgid "Reports"
 msgstr "Αναφορές"
@@ -3436,11 +3440,11 @@ msgstr "Πρότυπα απαντήσεων για %s"
 msgid "Revert to original"
 msgstr ""
 
-#: templates/web/base/report/_main.html:97
+#: templates/web/base/report/_main.html:101
 msgid "Revert to original text"
 msgstr ""
 
-#: templates/web/base/report/_main.html:48
+#: templates/web/base/report/_main.html:50
 msgid "Revert to original title"
 msgstr ""
 
@@ -3457,15 +3461,15 @@ msgstr "Χειριστής δρόμου για την ονομασμένη οδ�
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "Χειριστής δρόμου για την ονομασμένη οδο (από το OpenStreetMap): %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2082
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2086
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2083
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2087
 #: templates/web/base/admin/report_edit.html:165
 #: templates/web/base/admin/update_edit.html:71
 #: templates/web/zurich/admin/report_edit.html:118
 msgid "Rotate Left"
 msgstr "Περιστροφή αριστερά"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2082
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2083
 #: templates/web/base/admin/report_edit.html:166
 #: templates/web/base/admin/update_edit.html:72
 #: templates/web/zurich/admin/report_edit.html:119
@@ -3490,7 +3494,7 @@ msgstr ""
 #: templates/web/base/admin/responsepriorities/edit.html:58
 #: templates/web/base/admin/template_edit.html:87
 #: templates/web/base/report/_inspect.html:209
-#: templates/web/base/report/_main.html:115
+#: templates/web/base/report/_main.html:119
 #: templates/web/base/report/update.html:53
 #: templates/web/zurich/admin/contact-form.html:49
 #: templates/web/zurich/admin/template_edit.html:29
@@ -3542,7 +3546,7 @@ msgstr "Η αναζήτηση δε βρήκε κανένα χρήστη."
 #: templates/web/base/auth/generate_token.html:1
 #: templates/web/base/auth/generate_token.html:2
 #: templates/web/base/auth/generate_token.html:39
-#: templates/web/base/my/my.html:65
+#: templates/web/base/my/my.html:71
 msgid "Security"
 msgstr ""
 
@@ -3599,7 +3603,7 @@ msgstr ""
 msgid "Sending a confirmation text failed: \"%s\""
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:847
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:872
 msgid "Sent report back"
 msgstr "Επιστροφή αναφοράς"
 
@@ -3622,6 +3626,7 @@ msgstr "Υπηρεσία:"
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:4
+#: templates/web/base/my/my.html:67
 #, fuzzy
 msgid "Set password"
 msgstr "Αλλαγή κωδικού πρόσβασης"
@@ -3635,9 +3640,9 @@ msgid "Share"
 msgstr "Κοινοποίηση"
 
 #: templates/web/base/main_nav_items.html:18
-#: templates/web/base/report/_main.html:134
-#: templates/web/base/report/_main.html:19
-#: templates/web/base/report/_main.html:27
+#: templates/web/base/report/_main.html:138
+#: templates/web/base/report/_main.html:22
+#: templates/web/base/report/_main.html:30
 msgid "Shortlist"
 msgstr ""
 
@@ -3645,15 +3650,15 @@ msgstr ""
 msgid "Shortlist all visible"
 msgstr ""
 
-#: templates/web/base/report/_main.html:132
-#: templates/web/base/report/_main.html:18
-#: templates/web/base/report/_main.html:23
+#: templates/web/base/report/_main.html:136
+#: templates/web/base/report/_main.html:21
+#: templates/web/base/report/_main.html:26
 #: templates/web/base/reports/_list-filters.html:24
 msgid "Shortlisted"
 msgstr ""
 
 #: templates/web/base/report/_item.html:15
-#: templates/web/base/report/_main.html:142
+#: templates/web/base/report/_main.html:146
 msgid "Shortlisted by %s"
 msgstr ""
 
@@ -3683,7 +3688,7 @@ msgstr "Προβολή παλαιότερων"
 msgid "Show older reports"
 msgstr "Αναζήτηση αναφορών"
 
-#: templates/web/base/report/_main.html:81
+#: templates/web/base/report/_main.html:85
 msgid "Show photo"
 msgstr ""
 
@@ -3693,7 +3698,7 @@ msgstr ""
 msgid "Show pins"
 msgstr "Προβολή καρφιτσών"
 
-#: templates/web/base/report/_main.html:58
+#: templates/web/base/report/_main.html:62
 msgid "Show reporter&rsquo;s name"
 msgstr ""
 
@@ -3724,7 +3729,7 @@ msgstr "Κάνε επιβεβαίωση μέσω email παρακάτω, εισ�
 msgid "Sign in or create an account"
 msgstr "Σύνδεση ή δημιουργία λογαριασμού"
 
-#: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:67
+#: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:73
 #: templates/web/zurich/auth/sign_out.html:1
 msgid "Sign out"
 msgstr "Αποσύνδεση"
@@ -3785,7 +3790,7 @@ msgstr "Λυπούμαστε, δεν μπορούμε να σας συνδέσο
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr "Συγνώμη, δεν μπορέσαμε να αναλύσουμε αυτήν την τοποθεσία. Παρακαλούμε προσπάθησε ξανά."
 
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:139
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:131
 msgid "Sorry, we couldn't save your image(s), please try again."
 msgstr "Λυπούμαστε, δεν μπορέσαμε να αποθηκεύσουμε τις εικόνες σας, παρακαλούμε προσπαθήστε ξανά."
 
@@ -3854,14 +3859,14 @@ msgid "State:"
 msgstr "Κατάσταση:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:649
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:396
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:421
 #: templates/web/base/admin/states/index.html:1
 #, fuzzy
 msgid "States"
 msgstr "Κατάσταση"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:643
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:378
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:403
 #: templates/web/base/admin/index.html:71
 #: templates/web/base/admin/stats/index.html:1
 #: templates/web/base/admin/stats/state.html:1
@@ -3961,7 +3966,7 @@ msgid "Summarise your changes"
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:641
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:374
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:399
 #: templates/web/base/admin/bodies.html:29
 #: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
 #: templates/web/base/status/index.html:3
@@ -4001,7 +4006,7 @@ msgid "Template &laquo;%s&raquo;"
 msgstr "Πρότυπο &laquo;%s&raquo;"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:666
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:385
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:410
 #: templates/web/base/develop/email_list.html:3
 #: templates/web/zurich/header.html:62
 msgid "Templates"
@@ -4051,7 +4056,7 @@ msgstr "Ευχαριστούμε που ανέβασες την φωτογραφ
 msgid "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?"
 msgstr "Ευχαριστούμε, χαιρόμαστε που διορθώθηκε! Μπορούμε απλά να σε ρωτήσουμε αν έχεις αναφέρει ξανά κάποιο πρόβλημα στην υπηρεσία στο παρελθόν;"
 
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:163
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:155
 msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr "Η εικόνα δεν φαίνεται να έχει μεταφορτωθεί σωστά (%s), παρακαλούμε προσπάθησε ξανά."
 
@@ -4085,20 +4090,20 @@ msgstr "Η αναφορά δεν μπορεί να προβληθεί σε %s."
 msgid "That report has been removed from FixMyStreet."
 msgstr "Η αναφορά αφαιρέθηκε από το FixMyStreet."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1911
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1912
 #, fuzzy
 msgid "That user has been logged out."
 msgstr "Η αναφορά αφαιρέθηκε από το FixMyStreet."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1918
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1919
 msgid "That user has been made anonymous on all reports and updates."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1966
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1967
 msgid "That user’s personal details have been removed."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1932
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1933
 msgid "That user’s reports and updates have been hidden."
 msgstr ""
 
@@ -4170,7 +4175,7 @@ msgid "The diligency prize league table shows editors' activity (who's been edit
 msgstr "Ο πίνακας βραβείων επιμέλειας δείχνει τη δραστηριότητα των συντακτών (ποιος έχει συντάξει τις περισσότερες καταγραφές)."
 
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:43
-#: perllib/FixMyStreet/App/Controller/Reports.pm:84
+#: perllib/FixMyStreet/App/Controller/Reports.pm:58
 msgid "The error was: %s"
 msgstr "Το σφάλμα ήταν: %s"
 
@@ -4244,7 +4249,7 @@ msgstr ""
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
 msgstr "Ο χρήστης δεν μπορέσε να εντοπίσει το πρόβλημα στον χάρτη, αλλά για να δει την περιοχή κοντά στην τοποθεσία έγραψε"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1957
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1958
 #, fuzzy
 msgid "The user has been sent a login email"
 msgstr "Η αναφορά αφαιρέθηκε από το FixMyStreet."
@@ -4268,7 +4273,7 @@ msgstr "Δεν υπάρχουν αναφορές προς εμφάνιση."
 msgid "There is already an auto-response template for this category/state."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Reports.pm:81
+#: perllib/FixMyStreet/App/Controller/Reports.pm:55
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Υπήρξε πρόβλημα στην προβολή της σελίδας Όλες οι Αναφορές. Παρακαλούμε προσπάθησε ξανά αργότερα."
 
@@ -4281,7 +4286,7 @@ msgstr "Υπήρξε πρόβλημα στην προβολή αυτής της 
 msgid "There was a problem with your email/password combination. Please try again."
 msgstr "Υπήρξε πρόβλημα με τον συνδυασμό email/κωδικού πρόσβασης. Παρακαλούμε προσπάθησε ξανά."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:835
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:843
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:142
 #: templates/web/base/auth/general.html:51
 #: templates/web/zurich/auth/general.html:18
@@ -4289,7 +4294,7 @@ msgstr "Υπήρξε πρόβλημα με τον συνδυασμό email/κω�
 msgid "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form."
 msgstr "Υπήρξε πρόβλημα με το συνδυασμό του email/κωδικού πρόσβασής σου. Αν δεν μπορείς να θυμηθείς τον κωδικό σου, ή δεν έχεις, παρακαλούμε συμπλήρωσε τον τομέα &lsquo;σύνδεση μέσω email&rsquo; αυτής της φόρμας."
 
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:349
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:350
 msgid "There was a problem with your update. Please try again."
 msgstr "Υπήρξε πρόβλημα με την ενημέρωσή σου. Παρακαλούμε προσπάθησε ξανά."
 
@@ -4297,7 +4302,7 @@ msgstr "Υπήρξε πρόβλημα με την ενημέρωσή σου. Π�
 msgid "There were problems with your report. Please see below."
 msgstr "Υπήρξαν προβλήματα με την αναφορά σου. Παρακαλούμε δες παρακάτω."
 
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:390
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:391
 msgid "There were problems with your update. Please see below."
 msgstr "Υπήρξαν προβλήματα με την ενημέρωσή σου. Παρακαλούμε δες παρακάτω."
 
@@ -4372,10 +4377,10 @@ msgstr "Αυτό το email στάλθηκε και στις δύο υπηρεσ
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr "Αυτό το email στάλθηκε σε πολλές υπηρεσίες που είναι αρμόδιες για την τοποθεσία του προβλήματος, αφού η επιλεγμένη κατηγορία συμπεριλαμβάνεται σε κάθε μια από αυτές. Παρακαλούμε αγνόησέ το αν η υπηρεσία σου δεν είναι αρμόδια για την αντιμετώπιση του ζητήματος."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1057
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1074
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1120
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:996
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1003
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1064
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1081
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1127
 #: perllib/FixMyStreet/Cobrand/UK.pm:45
 msgid "This information is required"
 msgstr "Αυτή η πληροφορία απαιτείται"
@@ -4583,7 +4588,7 @@ msgstr "Άγνωστο"
 msgid "Unknown alert type"
 msgstr "Άγνωστο είδος ειδοποίησης"
 
-#: perllib/FixMyStreet/App/Controller/Photo.pm:109
+#: perllib/FixMyStreet/App/Controller/Photo.pm:115
 #: perllib/FixMyStreet/App/Controller/Root.pm:142
 #: templates/web/base/js/translation_strings.html:46
 msgid "Unknown error"
@@ -4676,11 +4681,11 @@ msgstr "Δημοσιεύθηκε από <strong>%s</strong> στις %s"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1358
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1473
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1679
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1680
 #: perllib/FixMyStreet/App/Controller/Admin.pm:997
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:780
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:805
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:878
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:830
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:903
 msgid "Updated!"
 msgstr "Ενημερώθηκε!"
 
@@ -4745,8 +4750,8 @@ msgstr ""
 msgid "User Import"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1888
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1898
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1889
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1899
 #, fuzzy
 msgid "User added to abuse list"
 msgstr "Το Email προστέθηκε στην μαύρη λίστα"
@@ -4756,17 +4761,17 @@ msgstr "Το Email προστέθηκε στην μαύρη λίστα"
 msgid "User already exists"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1885
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1895
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1886
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1896
 #, fuzzy
 msgid "User already in abuse list"
 msgstr "Το Email είναι ήδη στην μαύρη λίστα"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2041
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2042
 msgid "User flag removed"
 msgstr "Η επισήμανση του χρήστη αφαιρέθηκε"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2012
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2013
 msgid "User flagged"
 msgstr "Ο χρήστης επισημάνθηκε"
 
@@ -4789,7 +4794,7 @@ msgstr "Χρήστες"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:675
 #: perllib/FixMyStreet/Cobrand/Default.pm:734
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:390
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:415
 #: templates/web/base/admin/flagged.html:29 templates/web/zurich/header.html:54
 msgid "Users"
 msgstr "Χρήστες"
@@ -5102,7 +5107,7 @@ msgstr "Έχεις με επιτυχία εγγραφεί, παρακαλούμ�
 msgid "You have successfully verified your phone number."
 msgstr "Επιβεβαίωσες την διεύθυνση email σου επιτυχώς."
 
-#: templates/web/base/my/my.html:73
+#: templates/web/base/my/my.html:79
 msgid "You haven&rsquo;t created any reports yet.  <a href=\"%s\">Report a problem now.</a>"
 msgstr "Δεν έχεις υποβάλλει ακόμα κάποιες αναφορές. <a href=\"%s\">Ανάφερε κάποιο πρόβλημα τώρα.</a>"
 
@@ -5210,7 +5215,7 @@ msgstr "Ο αριθμός τηλεφώνου σου"
 msgid "Your report"
 msgstr "Η αναφορά σου"
 
-#: templates/web/base/my/my.html:70
+#: templates/web/base/my/my.html:76
 msgid "Your reports"
 msgstr "Οι αναφορές σου"
 
@@ -5228,7 +5233,7 @@ msgstr "Ο κωδικός σου έχει αλλάξει"
 msgid "Your update has been saved offline for submission when back online."
 msgstr ""
 
-#: templates/web/base/my/my.html:93
+#: templates/web/base/my/my.html:99
 msgid "Your updates"
 msgstr "Οι ενημερώσεις σου"
 
@@ -5256,7 +5261,7 @@ msgid "all"
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:973
-#: perllib/FixMyStreet/App/Controller/Moderate.pm:88
+#: perllib/FixMyStreet/App/Controller/Moderate.pm:90
 #: perllib/FixMyStreet/DB/Result/Comment.pm:216
 #: perllib/FixMyStreet/Script/ArchiveOldEnquiries.pm:145
 msgid "an administrator"
@@ -5406,12 +5411,12 @@ msgstr "ο χρήστης είναι από την ίδια υπηρεσία ό�
 msgid "user is problem owner"
 msgstr "ο χρήστης είναι ο ιδιοκτήτης του προβλήματος"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1985
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1986
 #, fuzzy
 msgid "user not in abuse list"
 msgstr "Το Email είναι ήδη στην μαύρη λίστα"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1983
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1984
 #, fuzzy
 msgid "user removed from abuse list"
 msgstr "Το Email προστέθηκε στην μαύρη λίστα"
