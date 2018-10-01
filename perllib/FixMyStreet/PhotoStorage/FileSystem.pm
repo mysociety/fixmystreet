@@ -10,8 +10,8 @@ has upload_dir => (
     is => 'ro',
     lazy => 1,
     default => sub {
-        my $dir = FixMyStreet->config('PHOTO_STORAGE_OPTIONS')->{UPLOAD_DIR} ||
-                  FixMyStreet->config('UPLOAD_DIR');
+        my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+        my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
         return path($dir)->absolute(FixMyStreet->path_to());
     },
 );
