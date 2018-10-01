@@ -1,0 +1,22 @@
+[%
+
+email_summary = "Confirm your report on " _ site_name;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Confirm your report</h1>
+  <p style="[% p_style %]">Hello [% report.name || report.email %],</p>
+  <p style="[% p_style %]">Please click on the link below, to confirm the report you have uploaded to [% site_name %] via [% report.service %], and to check or add any details:</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Check &amp; confirm report</a>
+  </p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
+
