@@ -16,6 +16,7 @@
         - Do not scan through all problems to show /_dev pages.
         - Say “Set password”, not Change, if no password set.
         - Do not lose from_body field when edited by non-superuser admin.
+        - Fix history API bug with category/state selection.
     - Development improvements:
         - Cobrand hook for disabling updates on individual problems.
         - Cobrand hook for disallowing title moderation. #2228

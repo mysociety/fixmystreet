@@ -27,6 +27,12 @@ describe('Around page filtering and push state', function() {
         cy.should('not.contain', 'Street light not working');
         cy.url().should('not.include', 'fixed');
         cy.get('#status_2').should('not.be.checked');
+        cy.go('forward');
+        cy.wait('@update-results');
+        cy.contains('1 to 6 of 6');
+        cy.contains('Street light not working');
+        cy.url().should('include', 'status=closed%2Cfixed');
+        cy.get('#status_2').should('be.checked');
     });
 
     it('allows me to filter by report category', function() {
@@ -47,6 +53,12 @@ describe('Around page filtering and push state', function() {
         cy.contains('1 to 4 of 4');
         cy.contains('Loose drain cover');
         cy.should('not.contain', 'Large pothole');
+        cy.go('back');
+        cy.go('back');
+        cy.wait('@update-results');
+        cy.url().should('include', 'filter_category=Potholes');
+        cy.contains('1 to 4 of 4');
+        cy.contains('Large pothole');
     });
 
     it('allows me to sort', function() {

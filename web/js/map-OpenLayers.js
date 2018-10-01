@@ -412,17 +412,25 @@ $.extend(fixmystreet.utils, {
     }
 
     function replace_query_parameter(qs, id, key) {
-        var value = $('#' + id).val();
-        if ( $('#' + id).prop('type') == 'checkbox' ) {
-            value = $('#' + id).prop('checked') ? '1' : '';
-        } else if (value) {
-            value = (typeof value === 'string') ? value : fixmystreet.utils.array_to_csv_line(value);
+        var value,
+            $el = $('#' + id);
+        if (!$el[0]) {
+            return;
         }
-
-        if (value) {
-            qs[key] = value;
+        if ( $el[0].type === 'checkbox' ) {
+            value = $el[0].checked ? '1' : '';
+            if (value) {
+                qs[key] = value;
+            } else {
+                delete qs[key];
+            }
         } else {
-            delete qs[key];
+            value = $el.val();
+            if (value) {
+                qs[key] = (typeof value === 'string') ? value : fixmystreet.utils.array_to_csv_line(value);
+            } else {
+                delete qs[key];
+            }
         }
         return value;
     }
