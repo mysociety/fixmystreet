@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+
+* v2.4.1 (2nd October 2018)
     - New features:
         - Support for storing photos in AWS S3. #2253
     - Front end improvements:
