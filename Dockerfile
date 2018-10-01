@@ -22,8 +22,7 @@ RUN /install-site.sh --docker fixmystreet fms 127.0.0.1.xip.io \
       && rm -fr /var/lib/apt/lists/* \
       && rm -fr /home/fms/.cpanm/*
 
-RUN cd /var/www/fixmystreet/fixmystreet \
-      && git show master:bin/docker.preinit > /usr/local/preinit/99-fixmystreet \
+RUN cp /var/www/fixmystreet/fixmystreet/bin/docker.preinit /usr/local/preinit/99-fixmystreet \
       && chmod +x /usr/local/preinit/99-fixmystreet
 
 EXPOSE 9000
