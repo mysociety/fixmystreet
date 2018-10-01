@@ -7,7 +7,6 @@
         - Import end point can optionally return a web page #2225
         - Clicking the "Report" header links on the homepage now focusses
           the #pc search input #2237
-        - Clearer relocation options while you’re reporting a problem #2238
         - Speed up fetching lists of bodies. #2248
         - Improve vertical alignment of navigation menu in Internet Explorer 9–11.
         - Mobile menu button no longer uses -9999px text-indent hack.
