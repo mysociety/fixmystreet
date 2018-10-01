@@ -30,7 +30,11 @@ start_daemon() {
 }
 
 stop_daemon() {
-  kill -TERM `cat $PIDFILE`
+  if [ -e "$PIDFILE" ]; then
+    kill -TERM `cat $PIDFILE`
+  else
+    echo "No $PIDFILE found, skipping KILL."
+  fi
 }
 
 case "$1" in
