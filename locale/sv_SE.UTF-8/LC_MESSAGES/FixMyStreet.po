@@ -520,7 +520,7 @@ msgstr "Autosvar:"
 
 #: templates/web/base/admin/extra-metadata-form.html:14
 msgid "Automated"
-msgstr ""
+msgstr "Automatiserad"
 
 #: templates/web/base/admin/report-category.html:8
 msgid "Available categories"
@@ -1354,9 +1354,8 @@ msgid "Extra details"
 msgstr "Extra uppgifter"
 
 #: templates/web/zurich/admin/contact-form.html:22
-#, fuzzy
 msgid "Extra fields:"
-msgstr "Ytterligare fält"
+msgstr "Extra fält:"
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1521,9 +1520,8 @@ msgid "Graph of problem creation by status over time"
 msgstr "Visualisering av rapporter över tid"
 
 #: templates/web/base/admin/contact-form.html:134
-#, fuzzy
 msgid "Group"
-msgstr "Gruppera efter:"
+msgstr "Grupp"
 
 #: templates/web/base/dashboard/index.html:94
 msgid "Group by %s"
@@ -1569,9 +1567,8 @@ msgid "Hidden"
 msgstr "Gömd"
 
 #: templates/web/base/admin/extra-metadata-form.html:18
-#, fuzzy
 msgid "Hidden Field"
-msgstr "Gömd"
+msgstr "Dolt fält"
 
 #: templates/web/base/admin/user-form.html:202
 msgid "Hide all reports and updates"
@@ -2825,9 +2822,8 @@ msgid "Post"
 msgstr "Skicka"
 
 #: templates/web/base/alert/index.html:33
-#, fuzzy
 msgid "Postcode or street name and area"
-msgstr "Ange ett postnummer eller gatunamn och ort"
+msgstr "Postnummer eller gatunamn och område"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:211
 msgid "Posted anonymously at %s"
