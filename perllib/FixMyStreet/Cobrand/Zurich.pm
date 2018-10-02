@@ -651,7 +651,7 @@ sub admin_report_edit {
             && $new_cat
             && $new_cat ne $problem->category
         ) {
-            my $cat = $c->model('DB::Contact')->search({ category => $c->get_param('category') } )->first;
+            my $cat = $c->model('DB::Contact')->not_deleted->search({ category => $c->get_param('category') } )->first;
             my $old_cat = $problem->category;
             $problem->category( $new_cat );
             $problem->external_body( undef );
