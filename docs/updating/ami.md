@@ -12,11 +12,17 @@ help.</p>
 (If you forked the code on GitHub and cloned it yourself, you probably want to see our
 main [update help](/updating/).)
 
-Firstly, log in to your EC2 instance as the `ubuntu` user, as you did when
+**Note:** Up to and including version 2.4 we based our AMI on Ubuntu. From version 2.4.1
+the AMI is based on Debian. This shouldn't affect the process below; the main
+difference is that in AMIs created before the release of version 2.4.1 the user
+account will be `ubuntu` while for those created since the user account will be
+`admin`, so be careful to check which applies in your case.
+
+Firstly, log in to your EC2 instance as the relevant user, as you did when
 setting up the instance. You should become the fms user and switch to the right
 directory:
 
-    ubuntu@ip-10-58-191-98:~$ sudo su - fms
+    admin@ip-10-58-191-98:~$ sudo su - fms
     fms@ip-10-58-191-98:~$ cd fixmystreet
     fms@ip-10-58-191-98:~/fixmystreet$
 
@@ -47,5 +53,4 @@ please feel free to [contact us](/community/) to discuss it first.
 Lastly, you should restart the Catalyst FastCGI server with:
 
     fms@ip-10-58-191-98:~/fixmystreet$ logout
-    ubuntu@ip-10-58-191-98:~$ sudo /etc/init.d/fixmystreet restart
-
+    admin@ip-10-58-191-98:~$ sudo service fixmystreet restart
