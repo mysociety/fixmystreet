@@ -64,12 +64,13 @@ sub run {
             # Want this to be like .com
             ALLOWED_COBRANDS => [ 'fixmystreet' ],
             MAPIT_URL => 'https://mapit.uk/',
+            BASE_URL => 'http://localhost:3001',
         });
         $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
 
         # Set up, and load in some data
         system('bin/make_css', 'fixmystreet.com');
-        system('bin/fixmystreet.com/fixture', '--coords', '51.532851,-2.284277', '--name', 'Borsetshire', '--area-id', 2608, '--commit');
+        system('bin/fixmystreet.com/fixture', '--nonrandom', '--coords', '51.532851,-2.284277', '--name', 'Borsetshire', '--area-id', 2608, '--commit');
     }
 
     my $pid;
