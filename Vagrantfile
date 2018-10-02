@@ -27,6 +27,7 @@ $setup = <<-EOS
     cd fixmystreet
     git submodule --quiet update --init --recursive --rebase
     if [ "$BASEBOX" = "mysociety/fixmystreet" ]; then
+        [ ! -e /home/vagrant/fixmystreet/local ] && mkdir /home/vagrant/fixmystreet/local
         mount -o bind /usr/share/fixmystreet/local /home/vagrant/fixmystreet/local
         chown -R vagrant:vagrant /home/vagrant/fixmystreet/local
     fi
