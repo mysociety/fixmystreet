@@ -1,0 +1,21 @@
+[Unit]
+Description=FixMyStreet Catalyst Application Server
+Documentation=https://fixmystreet.org/
+After=network.target
+
+[Service]
+Type=forking
+User=fms
+PIDFile=/var/www/fixmystreet/fixmystreet.pid
+ExecStartPre=mkdir /var/www/fixmystreet/logs
+ExecStart=/var/www/fixmystreet/fixmystreet/script/server \
+            --port 9000 \
+            --env deployment \
+            --daemonize \
+            --pid /var/www/fixmystreet/fixmystreet.pid \
+            --access-log /var/www/fixmystreet/logs/fixmystreet.access.log \
+            --error-log /var/www/fixmystreet/logs/fixmystreet.error.log
+ExecStop=kill -TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target
