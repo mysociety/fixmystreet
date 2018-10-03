@@ -399,10 +399,13 @@ sub _geocode : Private {
 sub lookup_by_ref : Private {
     my ( $self, $c, $ref ) = @_;
 
-    my $problems = $c->cobrand->problems->search([
-        id => $ref,
-        external_id => $ref
-    ]);
+    my $criteria = $c->cobrand->call_hook("lookup_by_ref", $ref) ||
+        [
+            id => $ref,
+            external_id => $ref
+        ];
+
+    my $problems = $c->cobrand->problems->search( $criteria );
 
     my $count = try {
         $problems->count;
