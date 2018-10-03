@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-09-06 21:17+0100\n"
+"POT-Creation-Date: 2018-10-01 11:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2017\n"
 "Language-Team: Chinese (https://www.transifex.com/mysociety/teams/12067/zh/)\n"
@@ -185,7 +185,7 @@ msgid "(we also have RSS feeds for problems within %s)"
 msgstr "在 %s 內之問題RSS 訂閱"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:251
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:701
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:707
 #: perllib/FixMyStreet/DB/Result/Problem.pm:381
 msgid "-- Pick a category --"
 msgstr "選擇分類"
@@ -339,9 +339,9 @@ msgstr "(沒有電話號碼)"
 
 #: templates/web/base/report/_item.html:10
 #: templates/web/base/report/_item.html:16
-#: templates/web/base/report/_main.html:134
-#: templates/web/base/report/_main.html:17
-#: templates/web/base/report/_main.html:28
+#: templates/web/base/report/_main.html:138
+#: templates/web/base/report/_main.html:20
+#: templates/web/base/report/_main.html:31
 msgid "Add to shortlist"
 msgstr ""
 
@@ -363,11 +363,11 @@ msgstr ""
 msgid "Add/edit response templates"
 msgstr ""
 
-#: templates/web/base/my/my.html:109
+#: templates/web/base/my/my.html:115
 msgid "Added %s"
 msgstr "新增 %s"
 
-#: templates/web/base/report/_main.html:143
+#: templates/web/base/report/_main.html:147
 msgid "Adding this report to your shortlist will remove it from %s’s shortlist."
 msgstr ""
 
@@ -570,7 +570,7 @@ msgstr "待核可"
 msgid "Back"
 msgstr "回上層"
 
-#: templates/web/base/report/_main.html:4
+#: templates/web/base/report/_main.html:7
 msgid "Back to all reports"
 msgstr ""
 
@@ -581,7 +581,7 @@ msgstr "標記警告用戶"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:655
 #: perllib/FixMyStreet/Cobrand/Default.pm:740
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:383
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:408
 #: templates/web/base/admin/bodies.html:1
 #: templates/web/base/admin/report_edit.html:56
 #: templates/web/zurich/header.html:49
@@ -679,7 +679,7 @@ msgstr ""
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:5
-#: templates/web/base/my/my.html:63
+#: templates/web/base/my/my.html:65
 msgid "Change password"
 msgstr "更換密碼"
 
@@ -801,7 +801,7 @@ msgid "Collapse map"
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:650
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:397
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:422
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
 msgstr "設定"
@@ -864,8 +864,8 @@ msgstr ""
 msgid "Coordinates:"
 msgstr "協同單位:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2008
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2037
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2009
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2038
 msgid "Could not find user"
 msgstr "找不到該戶用"
 
@@ -966,7 +966,7 @@ msgstr ""
 msgid "Currently no bodies have been created."
 msgstr "目前未創建內文"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:846
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:871
 #: templates/web/zurich/admin/report_edit-sdm.html:105
 msgid "Customer not contactable"
 msgstr "無法聨絡上的客戶"
@@ -1010,7 +1010,7 @@ msgstr "刪除模版"
 msgid "Deleted"
 msgstr "刪除"
 
-#: templates/web/base/report/_main.html:111
+#: templates/web/base/report/_main.html:115
 #: templates/web/base/report/update.html:51
 msgid "Describe why you are moderating this"
 msgstr ""
@@ -1060,7 +1060,7 @@ msgstr "不使用地圖"
 msgid "Diligency prize league table"
 msgstr "勤奮表現名單"
 
-#: templates/web/base/report/_main.html:116
+#: templates/web/base/report/_main.html:120
 #: templates/web/base/report/update.html:54
 msgid "Discard changes"
 msgstr ""
@@ -1496,11 +1496,11 @@ msgstr "更多資訊，請詳見<a href='https://fixmystreet.org/customising/fms
 msgid "Forgotten your password?"
 msgstr "忘記您的密碼?"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:761
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:786
 msgid "Forwarded to external body"
 msgstr "轉寄給外部機構"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:762
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:787
 msgid "Forwarded wish to external body"
 msgstr "轉寄願望給外部機構"
 
@@ -1626,7 +1626,7 @@ msgstr "隱藏"
 msgid "Hide all reports and updates"
 msgstr "標記警告申報與用戶"
 
-#: templates/web/base/report/_main.html:107
+#: templates/web/base/report/_main.html:111
 msgid "Hide entire report"
 msgstr ""
 
@@ -2079,7 +2079,7 @@ msgstr ""
 msgid "Missing jurisdiction_id"
 msgstr "遺失 jurisdiction_id"
 
-#: templates/web/base/report/_main.html:128
+#: templates/web/base/report/_main.html:132
 msgid "Moderate"
 msgstr ""
 
@@ -2087,7 +2087,7 @@ msgstr ""
 msgid "Moderate report details"
 msgstr ""
 
-#: templates/web/base/report/_main.html:128
+#: templates/web/base/report/_main.html:132
 msgid "Moderate this report"
 msgstr ""
 
@@ -2095,7 +2095,7 @@ msgstr ""
 msgid "Moderate this update"
 msgstr ""
 
-#: templates/web/base/report/_main.html:71
+#: templates/web/base/report/_main.html:75
 #: templates/web/base/report/_update_state.html:19
 msgid "Moderated by %s at %s"
 msgstr ""
@@ -2491,11 +2491,11 @@ msgstr ""
 msgid "Order"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1322
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:702
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:703
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:738
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:741
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1329
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:708
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:709
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:744
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:747
 #: perllib/FixMyStreet/DB/Result/Problem.pm:600
 #: perllib/FixMyStreet/DB/Result/Problem.pm:607
 #: perllib/FixMyStreet/DB/Result/Problem.pm:622
@@ -2603,13 +2603,17 @@ msgstr "電話"
 msgid "Photo"
 msgstr "照片"
 
-#: perllib/FixMyStreet/App/Controller/Photo.pm:186
+#: perllib/FixMyStreet/App/Controller/Photo.pm:192
 msgid "Photo is required."
 msgstr "要求提供照片"
 
 #: templates/web/zurich/admin/contact-form.html:42
 msgid "Photo required"
 msgstr "要求提供照片"
+
+#: perllib/FixMyStreet/App/Controller/Photo.pm:109
+msgid "Photo upload failed."
+msgstr ""
 
 #: templates/web/base/questionnaire/index.html:78
 #: templates/web/base/report/new/form_report.html:27
@@ -2663,8 +2667,8 @@ msgid "Please check your phone number is correct"
 msgstr "請確認您電郵地址無誤"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:315
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:947
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:982
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:954
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:989
 #: perllib/FixMyStreet/DB/Result/Problem.pm:383
 #: templates/web/base/js/translation_strings.html:13
 msgid "Please choose a category"
@@ -2886,9 +2890,9 @@ msgstr "請選擇更新通知方式"
 msgid "Please state whether or not the problem has been fixed"
 msgstr "請敍明該問題是否已解決"
 
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:122
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:156
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:158
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:114
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:148
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: templates/web/base/js/translation_strings.html:68
 msgid "Please upload an image only"
 msgstr ""
@@ -3051,7 +3055,7 @@ msgstr "在 %s, %s的問題　"
 msgid "Property address:"
 msgstr "公物地址："
 
-#: templates/web/base/report/display.html:66
+#: templates/web/base/report/display.html:67
 #: templates/web/base/report/duplicate-no-updates.html:3
 #: templates/web/base/report/update-form.html:9
 msgid "Provide an update"
@@ -3211,9 +3215,9 @@ msgstr "移除標記"
 
 #: templates/web/base/report/_item.html:12
 #: templates/web/base/report/_item.html:9
-#: templates/web/base/report/_main.html:132
-#: templates/web/base/report/_main.html:16
-#: templates/web/base/report/_main.html:24
+#: templates/web/base/report/_main.html:136
+#: templates/web/base/report/_main.html:19
+#: templates/web/base/report/_main.html:27
 msgid "Remove from shortlist"
 msgstr ""
 
@@ -3362,7 +3366,7 @@ msgstr "申報問題"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:660
 #: perllib/FixMyStreet/Cobrand/Default.pm:674
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:375
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:400
 #: templates/web/zurich/header.html:45
 msgid "Reports"
 msgstr "申報"
@@ -3459,11 +3463,11 @@ msgstr "%s的回應模版"
 msgid "Revert to original"
 msgstr ""
 
-#: templates/web/base/report/_main.html:97
+#: templates/web/base/report/_main.html:101
 msgid "Revert to original text"
 msgstr ""
 
-#: templates/web/base/report/_main.html:48
+#: templates/web/base/report/_main.html:50
 msgid "Revert to original title"
 msgstr ""
 
@@ -3480,15 +3484,15 @@ msgstr "此指定街道之道路營運者(取自道路參照碼與種類): %s"
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "此指定街道之道路營運者(來自OpenStreetMap): %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2082
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2086
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2083
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2087
 #: templates/web/base/admin/report_edit.html:165
 #: templates/web/base/admin/update_edit.html:71
 #: templates/web/zurich/admin/report_edit.html:118
 msgid "Rotate Left"
 msgstr "左轉　"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2082
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2083
 #: templates/web/base/admin/report_edit.html:166
 #: templates/web/base/admin/update_edit.html:72
 #: templates/web/zurich/admin/report_edit.html:119
@@ -3513,7 +3517,7 @@ msgstr ""
 #: templates/web/base/admin/responsepriorities/edit.html:58
 #: templates/web/base/admin/template_edit.html:87
 #: templates/web/base/report/_inspect.html:209
-#: templates/web/base/report/_main.html:115
+#: templates/web/base/report/_main.html:119
 #: templates/web/base/report/update.html:53
 #: templates/web/zurich/admin/contact-form.html:49
 #: templates/web/zurich/admin/template_edit.html:29
@@ -3565,7 +3569,7 @@ msgstr "查無此用戶"
 #: templates/web/base/auth/generate_token.html:1
 #: templates/web/base/auth/generate_token.html:2
 #: templates/web/base/auth/generate_token.html:39
-#: templates/web/base/my/my.html:65
+#: templates/web/base/my/my.html:71
 msgid "Security"
 msgstr ""
 
@@ -3622,7 +3626,7 @@ msgstr ""
 msgid "Sending a confirmation text failed: \"%s\""
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:847
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:872
 msgid "Sent report back"
 msgstr "送回申報"
 
@@ -3645,6 +3649,7 @@ msgstr "服務"
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:4
+#: templates/web/base/my/my.html:67
 #, fuzzy
 msgid "Set password"
 msgstr "更換密碼"
@@ -3658,9 +3663,9 @@ msgid "Share"
 msgstr "分享"
 
 #: templates/web/base/main_nav_items.html:18
-#: templates/web/base/report/_main.html:134
-#: templates/web/base/report/_main.html:19
-#: templates/web/base/report/_main.html:27
+#: templates/web/base/report/_main.html:138
+#: templates/web/base/report/_main.html:22
+#: templates/web/base/report/_main.html:30
 msgid "Shortlist"
 msgstr ""
 
@@ -3668,15 +3673,15 @@ msgstr ""
 msgid "Shortlist all visible"
 msgstr ""
 
-#: templates/web/base/report/_main.html:132
-#: templates/web/base/report/_main.html:18
-#: templates/web/base/report/_main.html:23
+#: templates/web/base/report/_main.html:136
+#: templates/web/base/report/_main.html:21
+#: templates/web/base/report/_main.html:26
 #: templates/web/base/reports/_list-filters.html:24
 msgid "Shortlisted"
 msgstr ""
 
 #: templates/web/base/report/_item.html:15
-#: templates/web/base/report/_main.html:142
+#: templates/web/base/report/_main.html:146
 msgid "Shortlisted by %s"
 msgstr ""
 
@@ -3706,7 +3711,7 @@ msgstr "顯示舊文"
 msgid "Show older reports"
 msgstr "搜尋申報"
 
-#: templates/web/base/report/_main.html:81
+#: templates/web/base/report/_main.html:85
 msgid "Show photo"
 msgstr ""
 
@@ -3716,7 +3721,7 @@ msgstr ""
 msgid "Show pins"
 msgstr "顯示地圖標示"
 
-#: templates/web/base/report/_main.html:58
+#: templates/web/base/report/_main.html:62
 msgid "Show reporter&rsquo;s name"
 msgstr ""
 
@@ -3746,7 +3751,7 @@ msgstr ""
 msgid "Sign in or create an account"
 msgstr "登入或新建帳戶"
 
-#: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:67
+#: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:73
 #: templates/web/zurich/auth/sign_out.html:1
 msgid "Sign out"
 msgstr "登出"
@@ -3810,7 +3815,7 @@ msgstr ""
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr "抱歉，我們無法解析此地點，請重試一次"
 
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:139
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:131
 msgid "Sorry, we couldn't save your image(s), please try again."
 msgstr "抱歉，我們無法儲存你的照片，請重試一次"
 
@@ -3879,14 +3884,14 @@ msgid "State:"
 msgstr "陳述:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:649
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:396
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:421
 #: templates/web/base/admin/states/index.html:1
 #, fuzzy
 msgid "States"
 msgstr "陳述"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:643
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:378
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:403
 #: templates/web/base/admin/index.html:71
 #: templates/web/base/admin/stats/index.html:1
 #: templates/web/base/admin/stats/state.html:1
@@ -3986,7 +3991,7 @@ msgid "Summarise your changes"
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:641
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:374
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:399
 #: templates/web/base/admin/bodies.html:29
 #: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
 #: templates/web/base/status/index.html:3
@@ -4026,7 +4031,7 @@ msgid "Template &laquo;%s&raquo;"
 msgstr "模版 &laquo;%s&raquo;"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:666
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:385
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:410
 #: templates/web/base/develop/email_list.html:3
 #: templates/web/zurich/header.html:62
 msgid "Templates"
@@ -4076,7 +4081,7 @@ msgstr "感謝上傳照片，現在需要知道問題的地點位置，請在上
 msgid "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?"
 msgstr "謝謝，很高興知道此問題己修復了。請問您過去是否曾申報過問題？ "
 
-#: perllib/FixMyStreet/App/Model/PhotoSet.pm:163
+#: perllib/FixMyStreet/App/Model/PhotoSet.pm:155
 msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
 msgstr "照片上傳似乎無法正常 (%s), 請再試一次。 "
 
@@ -4110,20 +4115,20 @@ msgstr "此申報無法在 %s上檢視　"
 msgid "That report has been removed from FixMyStreet."
 msgstr "該申報已遭FixMyStreet 移除　"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1911
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1912
 #, fuzzy
 msgid "That user has been logged out."
 msgstr "該申報已遭FixMyStreet 移除　"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1918
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1919
 msgid "That user has been made anonymous on all reports and updates."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1966
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1967
 msgid "That user’s personal details have been removed."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1932
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1933
 msgid "That user’s reports and updates have been hidden."
 msgstr ""
 
@@ -4199,7 +4204,7 @@ msgid "The diligency prize league table shows editors' activity (who's been edit
 msgstr "這個勤奮表單顯示用戶的活動(誰做了做多的修改編輯活動)"
 
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:43
-#: perllib/FixMyStreet/App/Controller/Reports.pm:84
+#: perllib/FixMyStreet/App/Controller/Reports.pm:58
 msgid "The error was: %s"
 msgstr "顯示錯誤為: %s"
 
@@ -4273,7 +4278,7 @@ msgstr ""
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
 msgstr "用戶無法在地點上標示問題，但可以看到他們輸入的地點"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1957
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1958
 #, fuzzy
 msgid "The user has been sent a login email"
 msgstr "該申報已遭FixMyStreet 移除　"
@@ -4297,7 +4302,7 @@ msgstr "沒有申報可顯示"
 msgid "There is already an auto-response template for this category/state."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Reports.pm:81
+#: perllib/FixMyStreet/App/Controller/Reports.pm:55
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "本頁現在無法願現所要求的申報資料，請稍候再試。"
 
@@ -4310,7 +4315,7 @@ msgstr "本頁出現錯誤，請再試一次"
 msgid "There was a problem with your email/password combination. Please try again."
 msgstr "您的電子郵件/密碼不符，請重試一次"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:835
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:843
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:142
 #: templates/web/base/auth/general.html:51
 #: templates/web/zurich/auth/general.html:18
@@ -4318,7 +4323,7 @@ msgstr "您的電子郵件/密碼不符，請重試一次"
 msgid "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form."
 msgstr "您的電子郵件與密碼不相符，如果您遺忘密碼或尚未註冊，請在申請表單上填入電子郵件"
 
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:349
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:350
 msgid "There was a problem with your update. Please try again."
 msgstr "您的申報有問題，請重試一次"
 
@@ -4326,7 +4331,7 @@ msgstr "您的申報有問題，請重試一次"
 msgid "There were problems with your report. Please see below."
 msgstr "您的申報有問題，請見下方說明"
 
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:390
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:391
 msgid "There were problems with your update. Please see below."
 msgstr "您的更新有問題，請見下方說明"
 
@@ -4403,10 +4408,10 @@ msgstr "當用戶沒有選擇類別時，電子郵件將送到負責該區域的
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr "電子郵件將送到負責該區域的多個地方政府，因選擇的類別提供這些對象。如果您不是負責受理機關，請略過。"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1057
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1074
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1120
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:996
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1003
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1064
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1081
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1127
 #: perllib/FixMyStreet/Cobrand/UK.pm:45
 msgid "This information is required"
 msgstr "本項資訊必填"
@@ -4614,7 +4619,7 @@ msgstr "未知的"
 msgid "Unknown alert type"
 msgstr "未知的通知類別"
 
-#: perllib/FixMyStreet/App/Controller/Photo.pm:109
+#: perllib/FixMyStreet/App/Controller/Photo.pm:115
 #: perllib/FixMyStreet/App/Controller/Root.pm:142
 #: templates/web/base/js/translation_strings.html:46
 msgid "Unknown error"
@@ -4707,11 +4712,11 @@ msgstr "由<strong>%s</strong> 在%s"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1358
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1473
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1679
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1680
 #: perllib/FixMyStreet/App/Controller/Admin.pm:997
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:780
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:805
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:878
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:830
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:903
 msgid "Updated!"
 msgstr "已更新！"
 
@@ -4776,8 +4781,8 @@ msgstr ""
 msgid "User Import"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1888
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1898
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1889
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1899
 #, fuzzy
 msgid "User added to abuse list"
 msgstr "電子郵件列入濫發名單"
@@ -4787,17 +4792,17 @@ msgstr "電子郵件列入濫發名單"
 msgid "User already exists"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1885
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1895
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1886
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1896
 #, fuzzy
 msgid "User already in abuse list"
 msgstr "電子郵件己在濫發名單"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2041
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2042
 msgid "User flag removed"
 msgstr "移除用戶的標記警告"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:2012
+#: perllib/FixMyStreet/App/Controller/Admin.pm:2013
 msgid "User flagged"
 msgstr "給用戶標記警告"
 
@@ -4820,7 +4825,7 @@ msgstr "使用者"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:675
 #: perllib/FixMyStreet/Cobrand/Default.pm:734
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:390
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:415
 #: templates/web/base/admin/flagged.html:29 templates/web/zurich/header.html:54
 msgid "Users"
 msgstr "使用者"
@@ -5133,7 +5138,7 @@ msgstr "您已成功登入，請檢查您的個人資訊是否正確:"
 msgid "You have successfully verified your phone number."
 msgstr "您已成功地確認電子郵件"
 
-#: templates/web/base/my/my.html:73
+#: templates/web/base/my/my.html:79
 msgid "You haven&rsquo;t created any reports yet.  <a href=\"%s\">Report a problem now.</a>"
 msgstr "您當未創建任何申報，<a href=\"%s\">立即提供申報</a>"
 
@@ -5241,7 +5246,7 @@ msgstr "電話號碼"
 msgid "Your report"
 msgstr ""
 
-#: templates/web/base/my/my.html:70
+#: templates/web/base/my/my.html:76
 msgid "Your reports"
 msgstr "你作的申報"
 
@@ -5259,7 +5264,7 @@ msgstr "密碼已更新"
 msgid "Your update has been saved offline for submission when back online."
 msgstr ""
 
-#: templates/web/base/my/my.html:93
+#: templates/web/base/my/my.html:99
 msgid "Your updates"
 msgstr "更新"
 
@@ -5287,7 +5292,7 @@ msgid "all"
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:973
-#: perllib/FixMyStreet/App/Controller/Moderate.pm:88
+#: perllib/FixMyStreet/App/Controller/Moderate.pm:90
 #: perllib/FixMyStreet/DB/Result/Comment.pm:216
 #: perllib/FixMyStreet/Script/ArchiveOldEnquiries.pm:145
 msgid "an administrator"
@@ -5436,12 +5441,12 @@ msgstr "用戶來同一問題的地方政府- %d"
 msgid "user is problem owner"
 msgstr "%d 天數"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1985
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1986
 #, fuzzy
 msgid "user not in abuse list"
 msgstr "電子郵件己在濫發名單"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1983
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1984
 #, fuzzy
 msgid "user removed from abuse list"
 msgstr "電子郵件列入濫發名單"
