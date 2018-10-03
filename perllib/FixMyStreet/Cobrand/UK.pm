@@ -107,6 +107,9 @@ sub short_name {
     return 'Durham+County' if $name eq 'Durham County Council';
     return 'Durham+City' if $name eq 'Durham City Council';
 
+    # special case Horncastle and the Keals as MapIt has the &
+    return 'Horncastle+&amp;+the+Keals' if $name eq 'Horncastle & the Keals';
+
     $name =~ s/ (Borough|City|District|County) Council$//;
     $name =~ s/ Council$//;
     $name =~ s/ & / and /;
