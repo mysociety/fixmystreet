@@ -94,6 +94,9 @@ sub run {
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
+        use Test::MockModule;
+        my $c = Test::MockModule->new('FixMyStreet::Cobrand::FixMyStreet');
+        $c->mock('enable_category_groups', sub { 1 });
         # Child, run the server on port 3001
         local $ENV{FIXMYSTREET_APP_DEBUG} = 0;
         require Plack::Runner;

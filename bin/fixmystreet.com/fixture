@@ -141,6 +141,15 @@ if ($opt->nonrandom) {
             };
         }
     }
+
+    for my $cat (qw/Overflowing Broken Missing/) {
+        my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create({
+            body => $body,
+            category => $cat
+        });
+        $child_cat->set_extra_metadata( group => 'Bins' );
+        $child_cat->update;
+    }
 } else {
     for (1..$num) {
         $confirmed->add(seconds => rand(7000));

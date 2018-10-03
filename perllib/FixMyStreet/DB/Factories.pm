@@ -212,7 +212,7 @@ sub key_field { 'id' }
 
 package FixMyStreet::DB::Factory::Contact;
 
-use parent "DBIx::Class::Factory";
+use parent -norequire, "FixMyStreet::DB::Factory::Base";
 
 __PACKAGE__->resultset(FixMyStreet::DB->resultset("Contact"));
 
@@ -224,14 +224,16 @@ __PACKAGE__->fields({
     category => 'Other',
     email => __PACKAGE__->callback(sub {
         my $category = shift->get('category');
-        (my $email = lc $_) =~ s/ /-/g;
-        lc $category . '@example.org';
+        (my $email = lc $category) =~ s/ /-/g;
+        $email . '@example.org';
     }),
     state => 'confirmed',
     editor => 'Factory',
     whenedited => \'current_timestamp',
     note => 'Created by factory',
 });
+
+sub key_field { 'id' }
 
 #######################
 
