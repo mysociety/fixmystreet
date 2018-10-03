@@ -6,7 +6,7 @@ title: Installing
 # Manual installation
 
 <p class="lead">
-  This page describes how to install FixMyStreet patform manually.
+  This page describes how to install the FixMyStreet platform manually.
   You can use this if you're used to setting up web applications &mdash; 
   but the other installation options may be easier:</p>
 
@@ -30,11 +30,6 @@ $ cd FixMyStreet
 $ git clone --recursive https://github.com/mysociety/fixmystreet.git
 $ cd fixmystreet
 {% endhighlight %}
-
-<div class="attention-box helpful-hint">
-If you're running an old version of git, prior to 1.6.5, you'll have to clone
-and then run <code>git submodule update --init</code> separately.
-</div>
 
 ### 2. Install prerequisite packages
 
@@ -81,37 +76,7 @@ can unlink gettext once everything is installed.
 You need Perl 5.8, ImageMagick with the perl bindings, and gettext.
 If you're expecting a lot of traffic it's recommended that you install memcached: <http://memcached.org/>
 
-### 3. Install prerequisite Perl modules
-
-FixMyStreet uses a number of CPAN modules; to install them, run:
-
-{% highlight bash %}
-$ bin/install_perl_modules
-{% endhighlight %}
-
-This should tell you what it is installing as it goes. It takes some time, so
-feel free to continue with further steps whilst it's running.
-
-<div class="attention-box helpful-hint">
-<!-- Below hopefully not needed as installed p5-locale-gettext above
-<p>Note, with MacPorts you might have to specify some compilation PATHs:</p>
-<pre><code>C_INCLUDE_PATH=/opt/local/include LIBRARY_PATH=/opt/local/lib bin/install_perl_modules</code></pre>
--->
-<p>It is possible you may need to install some source packages to allow some of
-the included modules to be built, including expat (libexpat1-dev), postgresql
-(postgresql-server-dev-8.4), or the GMP math library (libgmp3-dev).</p>
-</div>
-
-### 4. Generate CSS
-
-There is a script, `bin/make_css`, that converts our SCSS files to CSS files.
-So let's run that:
-
-{% highlight bash %}
-$ bin/make_css
-{% endhighlight %}
-
-### 5. Create a new PostgreSQL database
+### 3. Create a new PostgreSQL database
 
 The default settings assume the database is called fms and the user the same.
 You can change these if you like. Using the defaults, create a user and
@@ -134,16 +99,33 @@ $
 You should be able to connect to the database with `psql -U fms fms` -- if not,
 you will need to investigate [how to allow access to your PostgreSQL database]({{ "/install/database" | relative_url }}).
 
-#### 5b. Install database schema
+### 4. Install required dependencies, and other setup
 
-Now you can use the provided schema migration script to create the required
-tables, triggers, and initial data. Run the following:
+FixMyStreet uses a number of Perl modules from CPAN; to install them,
+and perform other set up functions, run:
 
 {% highlight bash %}
-$ bin/update-schema --commit
+$ script/setup
 {% endhighlight %}
 
-### 6. Set up config
+This should tell you what it is doing as it goes. It takes some time, so
+feel free to continue with further steps whilst it's running.
+
+<div class="attention-box helpful-hint">
+<!-- Below hopefully not needed as installed p5-locale-gettext above
+<p>Note, with MacPorts you might have to specify some compilation PATHs:</p>
+<pre><code>C_INCLUDE_PATH=/opt/local/include LIBRARY_PATH=/opt/local/lib bin/install_perl_modules</code></pre>
+-->
+<p>It is possible you may need to install some source packages to allow some of
+the included modules to be built, including expat (libexpat1-dev), postgresql
+(postgresql-server-dev-8.4), or the GMP math library (libgmp3-dev).</p>
+</div>
+
+As well as installing dependencies, this script compiles our CSS (using
+`bin/make_css`), installs the database schema (using `bin/update-schema`),
+and compiles any translation `.mo` files (using `commonlib/bin/gettext-makemo`).
+
+### 5. Set up config
 
 The settings for FixMyStreet are defined in `conf/general.yml` using the YAML
 markup language. There are some defaults in `conf/general.yml-example` which
@@ -172,19 +154,17 @@ If you are using Bing or Google maps you should also set one of
 [BING_MAPS_API_KEY]({{ "/customising/config/#bing_maps_api_key" | relative_url }}) or 
 [GOOGLE_MAPS_API_KEY]({{ "/customising/config/#google_maps_api_key" | relative_url }}).
 
-### 7. Set up some required data
+### 6. Set up some required data
 
 You need to generate the data used for the `/reports` page (this is run by the
 crontab, but to have it working from the start, we can run the script
-manually). Also, if you wish to use other languages, you will need to generate
-.mo files for them.
+manually).
 
 {% highlight bash %}
 $ bin/update-all-reports
-$ commonlib/bin/gettext-makemo FixMyStreet
 {% endhighlight %}
 
-### 8. Run
+### 7. Run
 
 The development server can now hopefully be run with:
 
@@ -192,9 +172,8 @@ The development server can now hopefully be run with:
 $ script/server
 {% endhighlight %}
 
-The server will be accessible as <http://localhost:3000/>. You can run with -r
-in order for the server to automatically restart when you update the code.
-
+The server will be accessible as <http://localhost:3000/>, and will
+automatically restart if you update the code or `general.yml`.
 
 ### Post-install: Things you might want to change
 
@@ -224,9 +203,8 @@ base for your own user crontab.
 ### Deployment
 
 For <a href="{{ "/glossary/#production" | relative_url }}" class="glossary__link">production</a>
-use of FixMyStreet, we suggest you use Apache or nginx, and
-FastCGI. It should also be possible to run it using Plack/PSGI, if that is
-preferable.
+use of FixMyStreet, we suggest you use Apache or nginx, with either FastCGI
+or Plack/PSGI.
 
 #### Apache
 
@@ -247,28 +225,16 @@ distribution's packaging system.
 #### nginx
 
 There is an example nginx configuration in `conf/nginx.conf.example`. With
-nginx, you need to run the FastCGI service separately - the
-`conf/sysvinit.example` file is an example script you could use to run it as a
-daemon. And you will need to install a FastCGI process manager:
-
-{% highlight bash %}
-$ apt-get install libfcgi-procmanager-perl
-{% endhighlight %}
+nginx, you need to run the application service separately - the
+`conf/sysvinit.example` or `conf/systemd.example` files are example scripts you
+could use to run it as a daemon.
 
 #### Check it's working
 
 At this point you should be able to restart the webserver and see your
-FixMyStreet installation at the configured URL.
-
-You can run the unit tests by running the following command in the
-`fixmystreet` directory:
-
-{% highlight bash %}
-$ bin/run-tests t
-{% endhighlight %}
-
-The `master` branch of the repository should always be passing all tests for
-our developers and on mySociety's servers.
+FixMyStreet installation at the configured URL. See our
+[testing page]({{ "/install/testing/" | relative_url }}) on running the test
+suite.
 
 ## Problems?
 
