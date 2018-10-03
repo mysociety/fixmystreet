@@ -258,6 +258,7 @@ sub map_features : Private {
     my ($self, $c, $extra) = @_;
 
     $c->stash->{page} = 'around'; # Needed by _item.html / so the map knows to make clickable pins, update on pan
+    $c->stash->{num_old_reports} = 0;
 
     $c->forward( '/reports/stash_report_filter_status' );
     $c->forward( '/reports/stash_report_sort', [ 'created-desc' ]);

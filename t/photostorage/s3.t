@@ -2,6 +2,7 @@
 use FixMyStreet::Test;
 
 use Test::MockModule;
+use Test::Warn;
 use Path::Tiny 'path';
 use Net::Amazon::S3::Client::Bucket;
 
@@ -112,7 +113,9 @@ FixMyStreet::override_config {
             $create_bucket_called = 1;
         });
 
-        ok !$s3->init(), "PhotoStorage::S3::init failed";
+        warning_like {
+            $s3->init();
+        } qr/S3 bucket 'fms-test-photos' doesn't exist and CREATE_BUCKET is not set./, 'PhotoStorage::S3::init failed';
         ok $buckets_called, "Client::buckets called";
         ok !$create_bucket_called, "Client::create_bucket not called";
     };

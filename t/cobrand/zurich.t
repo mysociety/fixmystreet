@@ -959,7 +959,6 @@ subtest "test stats" => sub {
 };
 
 subtest "test admin_log" => sub {
-    diag $report->id;
     my @entries = FixMyStreet::DB->resultset('AdminLog')->search({
         object_type => 'problem',
         object_id   => $report->id,

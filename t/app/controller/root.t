@@ -75,7 +75,6 @@ FixMyStreet::override_config {
 };
 
 subtest "check_login_disallowed cobrand hook" => sub {
-    warn '#' x 50 . "\n";
     my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Default');
     $cobrand->mock('check_login_disallowed', sub {
             my $self = shift;
