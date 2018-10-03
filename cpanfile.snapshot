@@ -3852,10 +3852,10 @@ DISTRIBUTIONS
       Try::Tiny 0
       strict 0
       warnings 0
-  Lingua-EN-Tagger-0.23
-    pathname: A/AC/ACOBURN/Lingua-EN-Tagger-0.23.tar.gz
+  Lingua-EN-Tagger-0.30
+    pathname: A/AC/ACOBURN/Lingua-EN-Tagger-0.30.tar.gz
     provides:
-      Lingua::EN::Tagger 0.23
+      Lingua::EN::Tagger 0.30
     requirements:
       ExtUtils::MakeMaker 0
       File::Spec 0.84
@@ -5463,13 +5463,12 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001
-  Params-Classify-0.013
-    pathname: Z/ZE/ZEFRAM/Params-Classify-0.013.tar.gz
+  Params-Classify-0.015
+    pathname: Z/ZE/ZEFRAM/Params-Classify-0.015.tar.gz
     provides:
-      Params::Classify 0.013
+      Params::Classify 0.015
     requirements:
       Exporter 0
-      ExtUtils::ParseXS 2.2006
       Module::Build 0
       Scalar::Util 1.01
       Test::More 0

@@ -47,6 +47,9 @@ sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp))?\.(?:jpeg|
     my ( $self, $c ) = @_;
     my ( $is_update, $id, $photo_number, $size ) = @{ $c->req->captures };
 
+    $photo_number ||= 0;
+    $size ||= '';
+
     my $item;
     if ( $is_update ) {
         ($item) = $c->model('DB::Comment')->search( {
