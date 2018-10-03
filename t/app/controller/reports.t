@@ -115,19 +115,20 @@ $mech->content_contains('5,9,10,22');
 $mech->content_contains('2,3,4,4');
 
 FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->submit_form_ok( { with_fields => { body => $body_edin_id } }, 'Submitted dropdown okay' );
-    is $mech->uri->path, '/reports/City+of+Edinburgh+Council';
+    is $mech->uri->path, '/reports/City+of+Edinburgh';
 
     subtest "test ward pages" => sub {
         $mech->get_ok('/reports/Birmingham/Bad-Ward');
-        is $mech->uri->path, '/reports/Birmingham+City+Council';
-        $mech->get_ok('/reports/Birmingham/Aston');
-        is $mech->uri->path, '/reports/Birmingham+City+Council/Aston';
-        $mech->get_ok('/reports/Birmingham/Aston|Bournville');
-        is $mech->uri->path, '/reports/Birmingham+City+Council/Aston%7CBournville';
-        $mech->content_contains('Aston, Bournville');
+        is $mech->uri->path, '/reports/Birmingham';
+        $mech->get_ok('/reports/Birmingham/Bordesley+and+Highgate');
+        is $mech->uri->path, '/reports/Birmingham/Bordesley+and+Highgate';
+        $mech->get_ok('/reports/Birmingham/Bordesley+and+Highgate|Birchfield');
+        is $mech->uri->path, '/reports/Birmingham/Bordesley+and+Highgate%7CBirchfield';
+        $mech->content_contains('Birchfield, Bordesley & Highgate');
     };
 
     $mech->get_ok('/reports/Westminster');

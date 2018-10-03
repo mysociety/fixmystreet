@@ -113,8 +113,8 @@ sub dispatch_request {
         my ($self, $area) = @_;
         if ($area eq '2514') {
             return $self->output({
-                8794 => {parent_area => 2514, id => 8794, name => "Aston", type => "MTW"},
-                8773 => {parent_area => 2514, id => 8773, name => "Bournville", type => "MTW"},
+                151907 => {parent_area => 2514, id => 151907, name => "Bordesley & Highgate", type => "MTW"},
+                151942 => {parent_area => 2514, id => 151942, name => "Birchfield", type => "MTW"},
             });
         }
         if ($area eq '2326') {

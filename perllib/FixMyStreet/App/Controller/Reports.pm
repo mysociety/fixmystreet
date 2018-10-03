@@ -392,10 +392,11 @@ sub ward_check : Private {
     my $qw = mySociety::MaPit::call('area/children', [ $parent_id ],
         type => $c->cobrand->area_types_children,
     );
-    my %names = map { $_ => 1 } @wards;
+    my %names = map { $c->cobrand->short_name({ name => $_ }) => 1 } @wards;
     my @areas;
     foreach my $area (sort { $a->{name} cmp $b->{name} } values %$qw) {
-        push @areas, $area if $names{$area->{name}};
+        my $name = $c->cobrand->short_name($area);
+        push @areas, $area if $names{$name};
     }
     if (@areas) {
         $c->stash->{ward} = $areas[0] if @areas == 1;
