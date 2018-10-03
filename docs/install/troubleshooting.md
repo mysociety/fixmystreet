@@ -6,12 +6,12 @@ title: Installation troubleshooting
 # Installation troubleshooting
 
 <p class="lead">
-  If you've installed FixMyStreet using an automated method such as the 
+  If you've installed FixMyStreet using an automated method such as the
   <a href="{{ "/install/install-script" | relative_url }}">installation script</a>
-  or the 
+  or the
   <a href="{{ "/install/ami" | relative_url }}">AMI</a>, you should be good to go.
-  However, if you've done a 
-  <a href="{{ "/install/manual-install" | relative_url }}">manual install</a>, 
+  However, if you've done a
+  <a href="{{ "/install/manual-install" | relative_url }}">manual install</a>,
   sometimes you might bump into a problem if your system is different from
   what FixMyStreet expects. These hints might help.
 </p>
@@ -31,7 +31,7 @@ title: Installation troubleshooting
 
 ### locale: must be installed
 
-By default, FixMyStreet uses the `en_GB.UTF-8` 
+By default, FixMyStreet uses the `en_GB.UTF-8`
 <a href="{{ "/glossary/#locale" | relative_url }}" class="glossary__link">locale</a>.
 If it is not installed then it may not start. You need this locale on your
 system even if you're planning on running your site in a different language.
@@ -48,7 +48,7 @@ Check to see what locales your system currently supports with:
 
 ### Template caching
 
-FixMyStreet caches compiled 
+FixMyStreet caches compiled
 <a href="{{ "/glossary/#template" | relative_url }}" class="glossary__link">templates</a>
 alongside the source files, so the `templates/web/` directory needs to be writable
 by the process that is running FixMyStreet.
@@ -101,7 +101,7 @@ There are YAML lint tools available for checking the well-formedness of YAML fil
 Remember that your config settings may include sensitive information (your database
 password, for example) so be sensible before using online validators.
 
-Simple things to be wary of: always quote strings that themselves contain a colon, 
+Simple things to be wary of: always quote strings that themselves contain a colon,
 be sure to close any open quotes, and avoid using tabs.
 
 <a name="requires-restart"> </a>
@@ -113,6 +113,4 @@ is running, you may need to restart the process for the change to take effect.
 
 For example, restart the Catalyst FastCGI server with:
 
-<pre><code>sudo /etc/init.d/fixmystreet restart
-</code></pre>
-
+    $ sudo service fixmystreet restart

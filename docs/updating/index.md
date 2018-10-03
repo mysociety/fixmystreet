@@ -70,5 +70,5 @@ Lastly, you should restart your application server, this may be restarting
 your webserver, or if it is running separately, something like:
 
 {% highlight bash %}
-sudo /etc/init.d/fixmystreet restart
+sudo service fixmystreet restart
 {% endhighlight %}
