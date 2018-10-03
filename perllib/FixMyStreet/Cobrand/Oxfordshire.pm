@@ -53,6 +53,22 @@ sub users_can_hide { return 1; }
 
 sub default_show_name { 0 }
 
+sub lookup_by_ref_regex {
+    return qr/^\s*((?:ENQ)?\d+)\s*$/;
+}
+
+sub lookup_by_ref {
+    my ($self, $ref) = @_;
+
+    if ( $ref =~ /^ENQ/ ) {
+        my $len = length($ref);
+        my $filter = "%T18:customer_reference,T$len:$ref,%";
+        return { 'extra' => { -like => $filter } };
+    }
+
+    return 0;
+}
+
 =head2 problem_response_days
 
 Returns the number of working days that are expected to elapse

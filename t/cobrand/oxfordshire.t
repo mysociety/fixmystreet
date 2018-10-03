@@ -186,6 +186,20 @@ subtest 'Reports are marked as inspected correctly' => sub {
     };
 };
 
+subtest 'can use customer reference to search for reports' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $problem = $problems[0];
+        $problem->set_extra_metadata( customer_reference => 'ENQ12456' );
+        $problem->update;
+
+        $mech->get_ok('/around?pc=ENQ12456');
+        is $mech->uri->path, '/report/' . $problem->id, 'redirects to report';
+    };
+};
+
 END {
     done_testing();
 }
