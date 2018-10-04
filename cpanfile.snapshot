@@ -5463,10 +5463,10 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001
-  Params-Classify-0.013
-    pathname: Z/ZE/ZEFRAM/Params-Classify-0.013.tar.gz
+  Params-Classify-0.015
+    pathname: Z/ZE/ZEFRAM/Params-Classify-0.015.tar.gz
     provides:
-      Params::Classify 0.013
+      Params::Classify 0.015
     requirements:
       Exporter 0
       ExtUtils::ParseXS 2.2006

@@ -35,6 +35,7 @@ requires 'Auth::GoogleAuth';
 requires 'Authen::SASL';
 requires 'Cache::Memcached';
 requires 'Carp';
+requires 'Params::Classify', '0.015'; # Blowfish needs this and earlier versions don't work on later Perls
 requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'Data::Password::Common';
 requires 'DateTime';
