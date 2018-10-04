@@ -440,7 +440,7 @@ $.extend(fixmystreet.set_up, {
     if ($category_select.length === 0) {
         return;
     }
-    var $group_select = $("<select></select>").addClass("form-control");
+    var $group_select = $("<select></select>").addClass("form-control").attr('id', 'category_group');
     var $subcategory_label = $("#form_subcategory_label");
     var $empty_option = $category_select.find("option").first();
 
@@ -996,7 +996,8 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             return;
         }
         $('#side-form, #site-logo').show();
-        var old_category = $("select#form_category").val();
+        var category_group = $('#category_group').val(),
+          old_category = $("select#form_category").val();
 
         fixmystreet.reporting_data = data;
 
@@ -1031,6 +1032,9 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             category_select.change();
         }
         fixmystreet.run(fixmystreet.set_up.category_groups);
+        if (category_group !== '-- Pick a category --' && category_select.val() == '-- Pick a category --') {
+            $('#category_group').val(category_group).change();
+        }
 
         if (data.contribute_as) {
             var $select = $('.js-contribute-as');
