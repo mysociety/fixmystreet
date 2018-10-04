@@ -14,6 +14,8 @@ requires 'aliased', '0.34';
 requires 'Net::SSLeay', '1.81';
 requires 'Module::ScanDeps', '1.24';
 requires 'CGI', '4.38';
+requires 'Lingua::EN::Tagger', '0.27';
+requires 'Params::Classify', '0.014';
 
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.80031';
