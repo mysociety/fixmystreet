@@ -2,6 +2,7 @@
 
 * Unreleased
         - Clearer relocation options while you’re reporting a problem #2238
+        - Update Params::Classify to avoid build problems on later Perls
 
 * v2.4.1 (2nd October 2018)
     - New features:
