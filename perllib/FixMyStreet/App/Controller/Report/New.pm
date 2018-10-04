@@ -258,7 +258,7 @@ sub by_category_ajax_data : Private {
     my ($self, $c, $type, $category) = @_;
 
     my $generate;
-    if (($c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1) or \
+    if (($c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1) or
             $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
         $generate = 1;
     }

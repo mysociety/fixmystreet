@@ -421,7 +421,10 @@ for my $test (
         $problem->state( $test->{start_state} );
         $problem->update;
 
-        my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            blank_updates_permitted => 1,
+        );
         $update->update_comments( $o, $bodies{2482} );
 
         is $problem->comments->count, 1, 'comment count';

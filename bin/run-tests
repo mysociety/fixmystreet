@@ -1,12 +1,16 @@
 #!/usr/bin/env perl
 use strict; use warnings;
 
+my $d;
 BEGIN {
     use File::Basename qw(dirname);
     use File::Spec;
-    my $d = dirname(File::Spec->rel2abs($0));
+    $d = dirname(File::Spec->rel2abs($0));
     require "$d/../setenv.pl";
 }
+
+# So the t::Mock:: modules can be found
+$ENV{PERL5LIB} = "$d/..:$ENV{PERL5LIB}";
 
 use FixMyStreet::TestAppProve;
 
