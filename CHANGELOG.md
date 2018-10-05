@@ -7,6 +7,8 @@
         - Clearer relocation options while you’re reporting a problem #2238
     - Bugfixes:
         - Add perl 5.26/5.28 support.
+    - Internal things:
+        - Move send-comments code to package for testing.
 
 * v2.4.1 (2nd October 2018)
     - New features:
