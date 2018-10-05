@@ -46,6 +46,15 @@ my $body = FixMyStreet::DB::Factory::Body->find_or_create({
 });
 say "Created body " . $body->name . " for MapIt area ID " . $opt->area_id . ', categories ' . join(', ', @$categories);
 
+for my $cat (qw/Overflowing Broken Missing/) {
+    my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create({
+        body => $body,
+        category => $cat
+    });
+    $child_cat->set_extra_metadata( group => 'Bins' );
+    $child_cat->update;
+}
+
 FixMyStreet::DB::Factory::ResponseTemplate->create({
     body => $body, title => 'Generic',
     text => 'Thank you for your report, we will be in touch with an update soon.' });
@@ -140,15 +149,6 @@ if ($opt->nonrandom) {
                 confirmed => $time,
             };
         }
-    }
-
-    for my $cat (qw/Overflowing Broken Missing/) {
-        my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create({
-            body => $body,
-            category => $cat
-        });
-        $child_cat->set_extra_metadata( group => 'Bins' );
-        $child_cat->update;
     }
 } else {
     for (1..$num) {
