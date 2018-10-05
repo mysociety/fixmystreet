@@ -253,24 +253,22 @@ sub meta_line {
     return $meta;
 };
 
+sub problem_state_processed {
+    my $self = shift;
+    return 'fixed - user' if $self->mark_fixed;
+    return 'confirmed' if $self->mark_open;
+    return $self->problem_state;
+}
+
 sub problem_state_display {
     my ( $self, $c ) = @_;
 
-    my $update_state = '';
-    my $cobrand = $c->cobrand->moniker;
+    my $state = $self->problem_state_processed;
+    return '' unless $state;
 
-    if ($self->mark_fixed) {
-        return FixMyStreet::DB->resultset("State")->display('fixed', 1);
-    } elsif ($self->mark_open)  {
-        return FixMyStreet::DB->resultset("State")->display('confirmed', 1);
-    } elsif ($self->problem_state) {
-        my $state = $self->problem_state;
-        my $cobrand_name = $cobrand;
-        $cobrand_name = 'bromley' if $self->problem->to_body_named('Bromley');
-        $update_state = FixMyStreet::DB->resultset("State")->display($state, 1, $cobrand_name);
-    }
-
-    return $update_state;
+    my $cobrand_name = $c->cobrand->moniker;
+    $cobrand_name = 'bromley' if $self->problem->to_body_named('Bromley');
+    return FixMyStreet::DB->resultset("State")->display($state, 1, $cobrand_name);
 }
 
 sub is_latest {
@@ -296,6 +294,29 @@ sub hide {
     $self->get_photoset->delete_cached;
     $self->update({ state => 'hidden' });
     return $ret;
+}
+
+sub as_hashref {
+    my ($self, $c, $cols) = @_;
+
+    my $out = {
+        id => $self->id,
+        problem_id => $self->problem_id,
+        text => $self->text,
+        state => $self->state,
+        created => $self->created,
+    };
+
+    $out->{problem_state} = $self->problem_state_processed;
+
+    $out->{photos} = [ map { $_->{url} } @{$self->photos} ] if !$cols || $cols->{photos};
+
+    if ($self->confirmed) {
+        $out->{confirmed} = $self->confirmed if !$cols || $cols->{confirmed};
+        $out->{confirmed_pp} = $c->cobrand->prettify_dt( $self->confirmed ) if !$cols || $cols->{confirmed_pp};
+    }
+
+    return $out;
 }
 
 1;

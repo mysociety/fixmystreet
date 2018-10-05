@@ -461,7 +461,7 @@ sub summary : Private {
     $c->forward('/admin/fetch_contacts');
     $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
 
-    $c->forward('/dashboard/construct_rs_filter');
+    $c->forward('/dashboard/construct_rs_filter', []);
 
     if ( $c->get_param('csv') ) {
         $c->detach('export_summary_csv');
@@ -477,7 +477,7 @@ sub export_summary_csv : Private {
     my ( $self, $c ) = @_;
 
     $c->stash->{csv} = {
-        problems => $c->stash->{problems_rs}->search_rs({}, {
+        objects => $c->stash->{objects_rs}->search_rs({}, {
             rows => 100,
             order_by => { '-desc' => 'me.confirmed' },
         }),

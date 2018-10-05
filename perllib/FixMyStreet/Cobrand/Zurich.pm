@@ -1205,7 +1205,7 @@ sub export_as_csv {
     try {
         $c->model('DB')->schema->storage->sql_maker->quote_char('"');
         my $csv = $c->stash->{csv} = {
-            problems => $c->model('DB::Problem')->search_rs(
+            objects => $c->model('DB::Problem')->search_rs(
                 $params,
                 {
                     join => ['admin_log_entries', 'user'],
