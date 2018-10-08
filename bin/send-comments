@@ -32,6 +32,7 @@ use constant SEND_METHOD_OPEN311    => 'Open311';
 use constant COUNCIL_ID_OXFORDSHIRE => 2237;
 use constant COUNCIL_ID_BROMLEY => 2482;
 use constant COUNCIL_ID_LEWISHAM => 2492;
+use constant COUNCIL_ID_BUCKS => 2217;
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
@@ -82,6 +83,10 @@ while ( my $body = $bodies->next ) {
 
     if ( $body->areas->{+COUNCIL_ID_OXFORDSHIRE} ) {
             $open311_conf{use_customer_reference} = 1,
+    }
+
+    if ( $body->areas->{+COUNCIL_ID_BUCKS} ) {
+            $open311_conf{mark_reopen} = 1;
     }
 
     if ( $body->send_extended_statuses ) {

@@ -34,6 +34,7 @@ has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
 has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
+has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -362,6 +363,8 @@ sub _populate_service_request_update_params {
             $status = 'NO_FURTHER_ACTION';
         } elsif ( $state eq 'internal referral' ) {
             $status = 'INTERNAL_REFERRAL';
+        } elsif ($comment->mark_open && $self->mark_reopen) {
+            $status = 'REOPEN';
         }
     } else {
         if ( !FixMyStreet::DB::Result::Problem->open_states()->{$state} ) {
