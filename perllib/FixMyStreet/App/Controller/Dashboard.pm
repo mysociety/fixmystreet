@@ -304,6 +304,7 @@ sub export_as_csv_updates : Private {
     my $csv = $c->stash->{csv} = {
         objects => $c->stash->{objects_rs}->search_rs({}, {
             order_by => ['me.confirmed', 'me.id'],
+            '+columns' => ['problem.bodies_str'],
         }),
         headers => [
             'Report ID', 'Update ID', 'Date', 'Status', 'Problem state',
