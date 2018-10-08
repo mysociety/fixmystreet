@@ -13,13 +13,7 @@ use Open311;
 
 use constant SEND_METHOD_OPEN311 => 'Open311';
 
-use constant COUNCIL_ID_OXFORDSHIRE => 2237;
-use constant COUNCIL_ID_BROMLEY => 2482;
-use constant COUNCIL_ID_LEWISHAM => 2492;
-use constant COUNCIL_ID_BUCKS => 2217;
-
 has verbose => ( is => 'ro', default => 0 );
-has site => ( is => 'ro', default => '' );
 
 sub send {
     my $self = shift;
@@ -30,12 +24,8 @@ sub send {
     } );
 
     while ( my $body = $bodies->next ) {
-        # XXX Cobrand specific - see also list in Problem->updates_sent_to_body
-        if ($self->site eq 'fixmystreet.com') {
-            # Lewisham does not yet accept updates
-            next if $body->areas->{+COUNCIL_ID_LEWISHAM};
-        }
-
+        my $cobrand = $body->get_cobrand_handler;
+        next if $cobrand && $cobrand->call_hook('open311_post_update_skip');
         $self->process_body($body);
     }
 }
@@ -43,29 +33,16 @@ sub send {
 sub open311_params {
     my ($self, $body) = @_;
 
-    my $use_extended = 0;
-    if ( $self->site eq 'fixmystreet.com' && $body->areas->{+COUNCIL_ID_BROMLEY} ) {
-        $use_extended = 1;
-    }
-
     my %open311_conf = (
         endpoint => $body->endpoint,
         jurisdiction => $body->jurisdiction,
         api_key => $body->api_key,
-        use_extended_updates => $use_extended,
+        extended_statuses => $body->send_extended_statuses,
     );
 
-    if ( $body->areas->{+COUNCIL_ID_OXFORDSHIRE} ) {
-        $open311_conf{use_customer_reference} = 1;
-    }
-
-    if ( $body->areas->{+COUNCIL_ID_BUCKS} ) {
-        $open311_conf{mark_reopen} = 1;
-    }
-
-    if ( $body->send_extended_statuses ) {
-        $open311_conf{extended_statuses} = 1;
-    }
+    my $cobrand = $body->get_cobrand_handler;
+    $cobrand->call_hook(open311_config_updates => \%open311_conf)
+        if $cobrand;
 
     return %open311_conf;
 }
@@ -74,13 +51,6 @@ sub process_body {
     my ($self, $body) = @_;
 
     my $o = Open311->new( $self->open311_params($body) );
-
-    if ( $self->site eq 'fixmystreet.com' && $body->areas->{+COUNCIL_ID_BROMLEY} ) {
-        my $endpoints = $o->endpoints;
-        $endpoints->{update} = 'update.xml';
-        $endpoints->{service_request_updates} = 'update.xml';
-        $o->endpoints( $endpoints );
-    }
 
     my $comments = FixMyStreet::DB->resultset('Comment')->search( {
             'me.whensent' => undef,
@@ -111,31 +81,16 @@ sub process_body {
             next;
         }
 
-        # Oxfordshire stores the external id of the problem as a customer reference
-        # in metadata
-        if ($body->areas->{+COUNCIL_ID_OXFORDSHIRE} &&
-            !$comment->problem->get_extra_metadata('customer_reference') ) {
-            next;
-        }
-
         next if !$self->verbose && $comment->send_fail_count && retry_timeout($comment);
 
-        $self->process_update($body, $o, $comment);
+        $self->process_update($body, $o, $comment, $cobrand);
     }
 }
 
 sub process_update {
-    my ($self, $body, $o, $comment) = @_;
+    my ($self, $body, $o, $comment, $cobrand) = @_;
 
-    if ( $self->site eq 'fixmystreet.com' && $body->areas->{+COUNCIL_ID_BROMLEY} ) {
-        my $extra = $comment->extra;
-        $extra = {} if !$extra;
-
-        unless ( $extra->{title} ) {
-            $extra->{title} = $comment->user->title;
-            $comment->extra( $extra );
-        }
-    }
+    $cobrand->call_hook(open311_pre_send => $comment, $o);
 
     my $id = $o->post_service_request_update( $comment );
 

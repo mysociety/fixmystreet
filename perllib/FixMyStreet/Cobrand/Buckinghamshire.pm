@@ -100,6 +100,11 @@ sub open311_post_send {
     $sender->send($row, $h);
 }
 
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{mark_reopen} = 1;
+}
+
 sub map_type { 'Buckinghamshire' }
 
 sub default_map_zoom { 3 }

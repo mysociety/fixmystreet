@@ -21,17 +21,21 @@ my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire', $params);
 my $lewisham = $mech->create_body_ok(2492, 'Lewisham', $params);
 
 subtest 'Check Open311 params' => sub {
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['fixmystreet', 'bromley', 'buckinghamshire', 'lewisham', 'oxfordshire'],
+  }, sub {
     my $result = {
         endpoint => 'endpoint',
         jurisdiction => 'home',
         api_key => 'KEY',
-        use_extended_updates => 0,
+        extended_statuses => undef,
     };
     my %conf = $o->open311_params($bromley);
     is_deeply \%conf, {
         %$result,
         extended_statuses => 1,
         use_extended_updates => 1,
+        endpoints => { service_request_updates => 'update.xml', update => 'update.xml' },
     }, 'Bromley params match';
     %conf = $o->open311_params($oxon);
     is_deeply \%conf, {
@@ -45,6 +49,7 @@ subtest 'Check Open311 params' => sub {
     }, 'Bucks params match';
     %conf = $o->open311_params($lewisham);
     is_deeply \%conf, $result, 'Lewisham params match';
+  };
 };
 
 my $other_user = $mech->create_user_ok('test2@example.com', title => 'MRS');

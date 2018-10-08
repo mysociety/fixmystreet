@@ -23,13 +23,7 @@ use Open311::PostServiceRequestUpdates;
 
 my ($verbose, $nomail) = CronFns::options();
 
-# Set up site, language etc.
-my $base_url = FixMyStreet->config('BASE_URL');
-my $site = '';
-$site = 'fixmystreet.com' if $base_url eq "https://www.fixmystreet.com";
-
 my $updates = Open311::PostServiceRequestUpdates->new(
-    site => $site,
     verbose => $verbose,
 );
 $updates->send;
