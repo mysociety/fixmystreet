@@ -206,6 +206,25 @@ sub categories_restriction {
     ] } );
 }
 
+# Do a manual prefetch, as easier than sorting out quoting 'user'
+sub _dashboard_user_lookup {
+    my $self = shift;
+    my $c = $self->{c};
+
+    # Fetch all the relevant user IDs, and look them up
+    my @user_ids = $c->stash->{objects_rs}->search({}, { columns => [ 'user_id' ] })->all;
+    @user_ids = map { $_->user_id } @user_ids;
+    @user_ids = $c->model('DB::User')->search(
+        [
+            { id => { -in => \@user_ids } },
+            { from_body => { '!=' => undef } },
+        ],
+        { columns => [ 'id', 'email', 'phone' ] })->all;
+
+    my %user_lookup = map { $_->id => { email => $_->email, phone => $_->phone } } @user_ids;
+    return \%user_lookup;
+}
+
 sub dashboard_export_updates_add_columns {
     my $self = shift;
     my $c = $self->{c};
@@ -217,16 +236,18 @@ sub dashboard_export_updates_add_columns {
     push @{$c->stash->{csv}->{columns}}, "staff_user";
     push @{$c->stash->{csv}->{columns}}, "user_email";
 
+    my $user_lookup = $self->_dashboard_user_lookup;
+
     $c->stash->{csv}->{extra_data} = sub {
         my $report = shift;
 
         my $staff_user = '';
         if ( my $contributed_by = $report->get_extra_metadata('contributed_by') ) {
-            $staff_user = $c->model('DB::User')->find({ id => $contributed_by })->email;
+            $staff_user = $user_lookup->{$contributed_by}{email};
         }
 
         return {
-            user_email => $report->user->email || '',
+            user_email => $user_lookup->{$report->user_id}{email} || '',
             staff_user => $staff_user,
         };
     };
@@ -254,17 +275,19 @@ sub dashboard_export_problems_add_columns {
         "attribute_data",
     ];
 
+    my $user_lookup = $self->_dashboard_user_lookup;
+
     $c->stash->{csv}->{extra_data} = sub {
         my $report = shift;
 
         my $staff_user = '';
         if ( my $contributed_by = $report->get_extra_metadata('contributed_by') ) {
-            $staff_user = $c->model('DB::User')->find({ id => $contributed_by })->email;
+            $staff_user = $user_lookup->{$contributed_by}{email};
         }
         my $attribute_data = join "; ", map { $_->{name} . " = " . $_->{value} } @{ $report->get_extra_fields };
         return {
-            user_email => $report->user->email || '',
-            user_phone => $report->user->phone || '',
+            user_email => $user_lookup->{$report->user_id}{email} || '',
+            user_phone => $user_lookup->{$report->user_id}{phone} || '',
             staff_user => $staff_user,
             attribute_data => $attribute_data,
         };
