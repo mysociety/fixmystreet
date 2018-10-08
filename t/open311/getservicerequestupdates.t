@@ -21,8 +21,15 @@ my $user = FixMyStreet::DB->resultset('User')->find_or_create(
 
 my %bodies = (
     2237 => FixMyStreet::DB->resultset("Body")->create({ name => 'Oxfordshire' }),
-    2482 => FixMyStreet::DB->resultset("Body")->create({ name=> 'Bromley', id => 2482 }),
-    2651 => FixMyStreet::DB->resultset("Body")->new({ id => 2651 }),
+    2482 => FixMyStreet::DB->resultset("Body")->create({
+        name => 'Bromley',
+        send_method => 'Open311',
+        send_comments => 1,
+        endpoint => 'endpoint',
+        comment_user_id => $user->id,
+        blank_updates_permitted => 1,
+    }),
+    2651 => FixMyStreet::DB->resultset("Body")->new({ id => 123 }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
 
@@ -141,7 +148,7 @@ my $problem = $problem_rs->new(
         lastupdate   => DateTime->now()->subtract( days => 1 ),
         anonymous    => 1,
         external_id  => time(),
-        bodies_str   => 2482,
+        bodies_str   => $bodies{2482}->id,
     }
 );
 
@@ -421,11 +428,8 @@ for my $test (
         $problem->state( $test->{start_state} );
         $problem->update;
 
-        my $update = Open311::GetServiceRequestUpdates->new(
-            system_user => $user,
-            blank_updates_permitted => 1,
-        );
-        $update->update_comments( $o, $bodies{2482} );
+        my $update = Open311::GetServiceRequestUpdates->new;
+        $update->fetch($o);
 
         is $problem->comments->count, 1, 'comment count';
         $problem->discard_changes;
@@ -580,7 +584,7 @@ my $problem2 = $problem_rs->create(
         lastupdate   => DateTime->now(),
         anonymous    => 1,
         external_id  => $problem->external_id,
-        bodies_str   => 2651,
+        bodies_str   => $bodies{2651}->id,
     }
 );
 

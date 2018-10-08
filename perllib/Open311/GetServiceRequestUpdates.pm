@@ -18,7 +18,7 @@ Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 
 sub fetch {
-    my $self = shift;
+    my ($self, $open311) = @_;
 
     my $bodies = $self->schema->resultset('Body')->search(
         {
@@ -31,25 +31,23 @@ sub fetch {
 
     while ( my $body = $bodies->next ) {
 
-        my $o = Open311->new(
-            endpoint          => $body->endpoint,
-            api_key           => $body->api_key,
-            jurisdiction      => $body->jurisdiction,
+        my %open311_conf = (
+            endpoint => $body->endpoint,
+            api_key => $body->api_key,
+            jurisdiction => $body->jurisdiction,
             extended_statuses => $body->send_extended_statuses,
         );
 
-        # custom endpoint URLs because these councils have non-standard paths
-        if ( $body->areas->{$AREA_ID_BROMLEY} ) {
-            my $endpoints = $o->endpoints;
-            $endpoints->{update} = 'update.xml';
-            $endpoints->{service_request_updates} = 'update.xml';
-            $o->endpoints( $endpoints );
-        }
+        my $cobrand = $body->get_cobrand_handler;
+        $cobrand->call_hook(open311_config_updates => \%open311_conf)
+            if $cobrand;
+
+        $open311 //= Open311->new(%open311_conf);
 
         $self->suppress_alerts( $body->suppress_alerts );
         $self->blank_updates_permitted( $body->blank_updates_permitted );
         $self->system_user( $body->comment_user );
-        $self->update_comments( $o, $body );
+        $self->update_comments( $open311, $body );
     }
 }
 
