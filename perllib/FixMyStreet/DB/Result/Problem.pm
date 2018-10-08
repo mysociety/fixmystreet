@@ -896,8 +896,9 @@ sub updates_sent_to_body {
     return unless $self->send_method_used && $self->send_method_used eq 'Open311';
 
     # Some bodies only send updates *to* FMS, they don't receive updates.
-    # NB See also the list in bin/send-comments
-    my $excluded = qr{Lewisham|Oxfordshire};
+    my $cobrand = $self->get_cobrand_logged;
+    my $handler = $cobrand->call_hook(get_body_handler_for_problem => $self);
+    return 0 if $handler && $handler->call_hook('open311_post_update_skip');
 
     my @bodies = values %{ $self->bodies };
     my @updates_sent = grep {
@@ -905,8 +906,7 @@ sub updates_sent_to_body {
         (
             $_->send_method eq 'Open311' ||
             $_->send_method eq 'Noop' # Sending might be temporarily disabled
-        ) &&
-        !($_->name =~ /$excluded/)
+        )
     } @bodies;
     return scalar @updates_sent;
 }
