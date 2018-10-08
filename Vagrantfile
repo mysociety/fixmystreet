@@ -1,6 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+# Provide for a `--base-box` option to permit overriding the box used
 require 'getoptlong'
 opts = GetoptLong.new(
   [ '--base-box', GetoptLong::OPTIONAL_ARGUMENT ]
@@ -14,23 +18,26 @@ opts.each do |opt, arg|
   end
 end
 
-$setup = <<-EOS
+# This ensures pre-built modules are available in the correct place.
+$mount_modules = <<-EOS
+  [ ! -e /home/vagrant/fixmystreet/local ] && mkdir /home/vagrant/fixmystreet/local
+  if ! mount | grep -q /home/vagrant/fixmystreet/local 2>/dev/null ; then
+    echo "Mounting pre-built perl modules from /usr/share/fixmystreet/local"
+    mount -o bind /usr/share/fixmystreet/local /home/vagrant/fixmystreet/local
+    chown -R vagrant:vagrant /home/vagrant/fixmystreet/local
+  fi
+EOS
+
+# This installs FMS from scratch, for use with non-mySociety boxes.
+$full_setup = <<-EOS
     BASEBOX=$1
     # To prevent "dpkg-preconfigure: unable to re-open stdin: No such file or directory" warnings
     export DEBIAN_FRONTEND=noninteractive
     # Make sure git submodules are checked out!
     echo "Checking submodules exist/up to date"
-    if [ ! "$BASEBOX" = "mysociety/fixmystreet" ]; then
-        # Don't assume git is installed.
-        apt-get -qq install -y git >/dev/null
-    fi
+    apt-get -qq install -y git >/dev/null
     cd fixmystreet
     git submodule --quiet update --init --recursive --rebase
-    if [ "$BASEBOX" = "mysociety/fixmystreet" ]; then
-        [ ! -e /home/vagrant/fixmystreet/local ] && mkdir /home/vagrant/fixmystreet/local
-        mount -o bind /usr/share/fixmystreet/local /home/vagrant/fixmystreet/local
-        chown -R vagrant:vagrant /home/vagrant/fixmystreet/local
-    fi
     cd commonlib
     git config core.worktree "../../../commonlib"
     echo "gitdir: ../.git/modules/commonlib" > .git
@@ -38,7 +45,26 @@ $setup = <<-EOS
     # Fetch and run install script
     wget -O install-site.sh --no-verbose https://github.com/mysociety/commonlib/raw/master/bin/install-site.sh
     sh install-site.sh --dev fixmystreet vagrant 127.0.0.1.xip.io
-    SUCCESS=$?
+    if [ $? -eq 0 ]; then
+      touch /tmp/success
+    else
+      rm -f /tmp/success 2>/dev/null
+    fi
+EOS
+
+# This just runs our update script, used on our offical box.
+$update = <<-EOS
+    chown -R vagrant:vagrant /home/vagrant/.cpanm
+    su vagrant -c '/home/vagrant/fixmystreet/script/update ; exit $?'
+    if [ $? -eq 0 ]; then
+      touch /tmp/success
+    else
+      rm -f /tmp/success 2>/dev/null
+    fi
+EOS
+
+# This will ensure that bits of config are set right.
+$configure = <<-EOS
     # Even if it failed somehow, we might as well update the port if possible
     if [ -e fixmystreet/conf/general.yml ]; then
         # We want to be on port 3000 for development
@@ -46,7 +72,7 @@ $setup = <<-EOS
     fi
     # Create a superuser for the admin
     su vagrant -c 'fixmystreet/bin/createsuperuser superuser@example.org password'
-    if [ $SUCCESS -eq 0 ]; then
+    if [ -e /tmp/success ]; then
         # All done
         echo "****************"
         echo "You can now ssh into your vagrant box: vagrant ssh"
@@ -59,9 +85,6 @@ $setup = <<-EOS
         exit 1
     fi
 EOS
-
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
@@ -80,10 +103,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder ".", "/home/vagrant/fixmystreet", :owner => "vagrant", :group => "vagrant"
 
-  config.vm.provision "shell" do |s|
-    s.inline = $setup
-    s.args   = "#{baseBox}"
+  # When using the mySociety box, just mount the local perl modules and run `script/update`
+  # For any other box, just run the full setup process.
+  if "#{baseBox}" == "mysociety/fixmystreet"
+    config.vm.provision "shell", run: "always", inline: $mount_modules
+    config.vm.provision "shell", run: "always", inline: $update
+  else
+    config.vm.provision "shell", inline: $full_setup
   end
+
+  # Run the configuration steps on all boxes.
+  config.vm.provision "shell", inline: $configure
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
