@@ -115,6 +115,26 @@ my $stz = sub {
 around created => $stz;
 around confirmed => $stz;
 
+=head2 get_cobrand_logged
+
+Get a cobrand object for the cobrand the update was made on.
+
+e.g. if an update was logged at www.fixmystreet.com, this will be a
+FixMyStreet::Cobrand::FixMyStreet object.
+
+=cut
+
+has get_cobrand_logged => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $self->cobrand );
+        return $cobrand_class->new;
+    },
+);
+
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
 sub check_for_errors {

@@ -99,8 +99,7 @@ sub process_body {
     );
 
     while ( my $comment = $comments->next ) {
-        my $cobrand = $body->get_cobrand_handler ||
-                      FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
+        my $cobrand = $body->get_cobrand_handler || $comment->get_cobrand_logged;
 
         # Some cobrands (e.g. Buckinghamshire) don't want to receive updates
         # from anyone except the original problem reporter.
