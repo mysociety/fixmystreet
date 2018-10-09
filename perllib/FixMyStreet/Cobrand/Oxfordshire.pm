@@ -179,6 +179,19 @@ sub open311_config_updates {
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
 
+    my $p = $update->problem;
+
+    # Reports that were synced with Exor stored the external id
+    # in external_id so do not have a customer_reference. We need
+    # to copy the exor id across to customer_reference in order to
+    # send them
+    if (
+        $p->id != $p->external_id &&
+        !$p->get_extra_metadata('customer_reference')
+    ) {
+        $p->set_extra_metadata( customer_reference => $p->external_id );
+        $p->update;
+    }
     # Oxfordshire stores the external id of the problem as a customer reference
     # in metadata
     return 1 if !$update->problem->get_extra_metadata('customer_reference');

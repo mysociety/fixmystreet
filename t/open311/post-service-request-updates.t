@@ -75,6 +75,9 @@ my ($p3, $c3a) = p_and_c($bucks);
 my $c3b = c($p3, $other_user);
 my ($p4, $c4) = p_and_c($lewisham);
 
+# problem sent to WDM use FMS id as external_id
+$p2->update( { external_id => $p2->id } );
+
 subtest 'Send comments' => sub {
   FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['fixmystreet', 'bromley', 'buckinghamshire', 'lewisham', 'oxfordshire'],
@@ -100,6 +103,23 @@ subtest 'Oxfordshire gets an ID' => sub {
     $o->send;
     $c2->discard_changes;
     is $c2->send_fail_count, 1, 'Oxfordshire update tried to send, failed';
+  };
+};
+
+subtest 'Oxfordshire adds customer reference' => sub {
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['fixmystreet', 'bromley', 'buckinghamshire', 'lewisham', 'oxfordshire'],
+  }, sub {
+      $p2->unset_extra_metadata('customer_reference');
+      $p2->external_id('654321');
+      $p2->update;
+      $c2->send_fail_count(0);
+      $c2->update;
+      $o->send;
+      $c2->discard_changes;
+      $p2->discard_changes;
+      is $p2->get_extra_metadata('customer_reference'), '654321', 'customer_reference set';
+      is $c2->send_fail_count, 1, 'Oxfordshire update tried to send, failed';
   };
 };
 
