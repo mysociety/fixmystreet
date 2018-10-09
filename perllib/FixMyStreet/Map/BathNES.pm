@@ -11,7 +11,9 @@ sub map_javascript { [
     '/vendor/OpenLayers.Projection.OrdnanceSurvey.js',
     '/js/map-OpenLayers.js',
     '/js/map-OpenStreetMap.js',
+    '/cobrands/fixmystreet-uk-councils/roadworks.js',
     '/cobrands/fixmystreet/assets.js',
+    '/cobrands/bathnes/js.js',
     '/cobrands/bathnes/assets.js',
 ] }
 

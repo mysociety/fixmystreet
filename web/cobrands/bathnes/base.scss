@@ -76,3 +76,18 @@ a:active, a:hover { color: $link-hover-colour; }
         color: #fff;
     }
 }
+
+.js-roadworks-message {
+  margin: 1em -1em;
+  padding: 1em;
+  background-color: #00aeef;
+  color: #fff;
+  dt {
+    float: left;
+    margin-right: 0.25em;
+  }
+
+  p:last-child {
+    font-weight: bold;
+  }
+}
