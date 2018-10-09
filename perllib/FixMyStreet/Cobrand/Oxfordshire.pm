@@ -171,6 +171,19 @@ sub open311_config {
     $params->{extended_description} = 'oxfordshire';
 }
 
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{use_customer_reference} = 1;
+}
+
+sub should_skip_sending_update {
+    my ($self, $update ) = @_;
+
+    # Oxfordshire stores the external id of the problem as a customer reference
+    # in metadata
+    return 1 if !$update->problem->get_extra_metadata('customer_reference');
+}
+
 sub on_map_default_status { return 'open'; }
 
 sub contact_email {

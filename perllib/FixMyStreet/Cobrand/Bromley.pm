@@ -165,5 +165,24 @@ sub open311_config {
     $params->{extended_description} = 0;
 }
 
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{use_extended_updates} = 1;
+    $params->{endpoints} = {
+        service_request_updates => 'update.xml',
+        update => 'update.xml'
+    };
+}
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    my $extra = $row->extra || {};
+    unless ( $extra->{title} ) {
+        $extra->{title} = $row->user->title;
+        $row->extra( $extra );
+    }
+}
+
 1;
 

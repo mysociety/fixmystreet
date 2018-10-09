@@ -129,7 +129,7 @@ subtest 'check summary counts' => sub {
 
 subtest "Check admin_base_url" => sub {
     my $rs = FixMyStreet::App->model('DB::Problem');
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($report->cobrand)->new();
+    my $cobrand = $report->get_cobrand_logged;
 
     is ($report->admin_url($cobrand),
         (sprintf 'http://www.example.org/admin/report_edit/%d', $report_id),

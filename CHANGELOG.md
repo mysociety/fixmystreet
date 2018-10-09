@@ -9,6 +9,8 @@
     - Bugfixes:
         - Add perl 5.26/5.28 support.
         - Fix subcategory issues when visiting /report/new directly #2276
+    - Internal things:
+        - Move send-comments code to package for testing.
 
 * v2.4.1 (2nd October 2018)
     - New features:

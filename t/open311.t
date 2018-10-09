@@ -415,10 +415,26 @@ foreach my $test (
         status => 'OPEN',
         extended => 'IN_PROGRESS',
     },
+    {
+        desc => 'comment that marks problem open sends OPEN if not mark_reopen',
+        state => 'confirmed',
+        status => 'OPEN',
+        extended => 'OPEN',
+        mark_open => 1,
+    },
+    {
+        desc => 'comment that marks problem open sends REOPEN if mark_reopen',
+        state => 'confirmed',
+        status => 'OPEN',
+        extended => 'REOPEN',
+        mark_open => 1,
+        mark_reopen => 1,
+    },
 ) {
     subtest $test->{desc} => sub {
         $comment->problem_state( $test->{state} );
         $comment->problem->state( $test->{state} );
+        $comment->mark_open(1) if $test->{mark_open};
 
         my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
 
@@ -426,7 +442,9 @@ foreach my $test (
         is $c->param('status'), $test->{status}, 'correct status';
 
         if ( $test->{extended} ) {
-            my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_statuses => 1 } );
+            my $params = { extended_statuses => 1 };
+            $params->{mark_reopen} = 1 if $test->{mark_reopen};
+            my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', $params );
             my $c = CGI::Simple->new( $results->{ req }->content );
             is $c->param('status'), $test->{extended}, 'correct extended status';
         }

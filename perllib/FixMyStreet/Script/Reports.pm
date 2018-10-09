@@ -44,7 +44,7 @@ sub send(;$) {
     debug_print("starting to loop through unsent problem reports...") if $debug_mode;
     while (my $row = $unsent->next) {
 
-        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+        my $cobrand = $row->get_cobrand_logged;
         FixMyStreet::DB->schema->cobrand($cobrand);
 
         if ($debug_mode) {
