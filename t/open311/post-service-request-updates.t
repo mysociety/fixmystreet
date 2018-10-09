@@ -111,6 +111,7 @@ subtest 'Oxfordshire adds customer reference' => sub {
     ALLOWED_COBRANDS => ['fixmystreet', 'bromley', 'buckinghamshire', 'lewisham', 'oxfordshire'],
   }, sub {
       $p2->unset_extra_metadata('customer_reference');
+      # now set external id to a different value as if it had been sent to Exor
       $p2->external_id('654321');
       $p2->update;
       $c2->send_fail_count(0);
