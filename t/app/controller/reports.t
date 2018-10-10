@@ -1,7 +1,7 @@
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use mySociety::MaPit;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use FixMyStreet::Script::UpdateAllReports;
 use DateTime;
 
@@ -254,7 +254,7 @@ subtest "it lists shortlisted reports" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/'
     }, sub {
-        my $body = FixMyStreet::App->model('DB::Body')->find( $body_edin_id );
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->update({ from_body => $body });
         $user->user_body_permissions->find_or_create({
@@ -304,7 +304,7 @@ subtest "it allows body users to filter by subtypes" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/'
     }, sub {
-        my $body = FixMyStreet::App->model('DB::Body')->find( $body_edin_id );
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->update({ from_body => $body });
 
@@ -363,7 +363,7 @@ subtest "it does not allow body users to filter subcategories for other bodies" 
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/'
     }, sub {
-        my $body = FixMyStreet::App->model('DB::Body')->find( $body_west_id );
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->update({ from_body => $body });
 

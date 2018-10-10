@@ -129,6 +129,7 @@ subtest "test a good report" => sub {
       'Reported by Test User at 15:47, Sat 16 April 2011',
       'correct problem meta information';
     $mech->content_contains('Test 2 Detail');
+    $mech->content_lacks('Sent to');
 
     my $update_form = $mech->form_name('updateForm');
 
@@ -140,6 +141,18 @@ subtest "test a good report" => sub {
         fixed     => undef
     );
     is $update_form->value($_), $fields{$_}, "$_ value" for keys %fields;
+};
+
+subtest "test duration string" => sub {
+    $report->update({ whensent => \'current_timestamp' });
+    $mech->get_ok("/report/$report_id");
+    $mech->content_contains('Sent to Westminster');
+    FixMyStreet::override_config {
+        AREA_LINKS_FROM_PROBLEMS => 1,
+    }, sub {
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('Sent to <a href="http://localhost/reports/Westminster+City+Council">Westminster');
+    };
 };
 
 foreach my $meta (
