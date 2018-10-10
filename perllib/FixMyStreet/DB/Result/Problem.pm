@@ -663,7 +663,7 @@ sub body {
         my @body_names = sort map {
             my $name = $_->name;
             if ($c and FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS')) {
-                '<a href="' . $_->url($c) . '">' . $name . '</a>';
+                '<a href="' . $_->url . '">' . $name . '</a>';
             } else {
                 $name;
             }

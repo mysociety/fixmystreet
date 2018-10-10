@@ -138,10 +138,17 @@ use namespace::clean;
 with 'FixMyStreet::Roles::Translatable',
      'FixMyStreet::Roles::Extra';
 
+sub _url {
+    my ( $obj, $cobrand, $args ) = @_;
+    my $uri = URI->new('/reports/' . $cobrand->short_name($obj));
+    $uri->query_form($args) if $args;
+    return $uri;
+}
+
 sub url {
     my ( $self, $c, $args ) = @_;
-    # XXX $areas_info was used here for Norway parent - needs body parents, I guess
-    return $c->uri_for( '/reports/' . $c->cobrand->short_name( $self ), $args || {} );
+    my $cobrand = $self->result_source->schema->cobrand;
+    return _url($self, $cobrand, $args);
 }
 
 __PACKAGE__->might_have(

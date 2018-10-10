@@ -149,8 +149,16 @@ sub all_sorted {
     })->all;
     @bodies = sort { strcoll($a->{msgstr} || $a->{name}, $b->{msgstr} || $b->{name}) } @bodies;
 
+    my $cobrand = $rs->result_source->schema->cobrand;
+
     foreach my $body (@bodies) {
         $body->{parent} = { id => $body->{parent}, name => $body->{parent_name} } if $body->{parent};
+
+        # DEPRECATED: url(c, query_params) -> url
+        $body->{url} = sub {
+            my ($c, $args) = @_;
+            return FixMyStreet::DB::Result::Body::_url($body, $cobrand, $args);
+        };
 
         # DEPRECATED: get_column('area_count') -> area_count
         next unless defined $body->{area_count};

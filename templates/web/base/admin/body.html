@@ -28,7 +28,7 @@
       [% END %]
     [% END %]
 <br>
-    <a href="[% c.uri_for_email(body.url(c)) %]" class="admin-offsite-link">[% loc('List all reported problems' ) %]</a> |
+    <a href="[% c.uri_for_email(body.url) %]" class="admin-offsite-link">[% loc('List all reported problems' ) %]</a> |
     <a href="[% c.uri_for( 'body', body_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
 

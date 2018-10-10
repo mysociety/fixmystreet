@@ -1,7 +1,7 @@
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use mySociety::MaPit;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use FixMyStreet::Script::UpdateAllReports;
 use DateTime;
 
@@ -95,8 +95,19 @@ $fife_problems[10]->update( {
     state => 'hidden',
 });
 
-# Run the cron script old-data (for the table no longer used by default)
-FixMyStreet::Script::UpdateAllReports::generate(1);
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+}, sub {
+    subtest 'Test the cron script old-data (for the table no longer used by default)' => sub {
+        FixMyStreet::Script::UpdateAllReports::generate(1);
+
+        # Old style page no longer exists in core, but let's just check the code works okay
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fixmystreet')->new();
+        FixMyStreet::DB->schema->cobrand($cobrand);
+        my @bodies = FixMyStreet::DB->resultset('Body')->active->translated->all_sorted;
+        is $bodies[0]->{url}->(), '/reports/Birmingham';
+    };
+};
 
 # Run the cron script that makes the data for /reports so we don't get an error.
 my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
@@ -254,7 +265,7 @@ subtest "it lists shortlisted reports" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/'
     }, sub {
-        my $body = FixMyStreet::App->model('DB::Body')->find( $body_edin_id );
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->update({ from_body => $body });
         $user->user_body_permissions->find_or_create({
@@ -304,7 +315,7 @@ subtest "it allows body users to filter by subtypes" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/'
     }, sub {
-        my $body = FixMyStreet::App->model('DB::Body')->find( $body_edin_id );
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->update({ from_body => $body });
 
@@ -363,7 +374,7 @@ subtest "it does not allow body users to filter subcategories for other bodies" 
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/'
     }, sub {
-        my $body = FixMyStreet::App->model('DB::Body')->find( $body_west_id );
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->update({ from_body => $body });
 

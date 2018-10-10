@@ -11,6 +11,7 @@
         - Fix subcategory issues when visiting /report/new directly #2276
     - Development improvements:
         - Add cobrand hook for dashboard viewing permission. #2285
+        - Have body.url work in hashref lookup. #2284
     - Internal things:
         - Move send-comments code to package for testing. #2109 #2170
 
