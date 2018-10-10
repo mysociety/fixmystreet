@@ -23,14 +23,14 @@ sub report_update : Path : Args(0) {
     $c->forward('initialize_update');
     $c->forward('load_problem');
     $c->forward('check_form_submitted')
-      or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
+      or $c->go( '/report/display', [ $c->stash->{problem}->id ], [] );
 
     $c->forward('/auth/check_csrf_token');
     $c->forward('process_update');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
     $c->forward('check_for_errors')
-      or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
+      or $c->go( '/report/display', [ $c->stash->{problem}->id ], [] );
 
     $c->forward('save_update');
     $c->forward('redirect_or_confirm_creation');

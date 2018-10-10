@@ -20,8 +20,8 @@ Show a report
 
 =head2 index
 
-Redirect to homepage unless C<id> parameter in query, in which case redirect to
-'/report/$id'.
+Redirect to homepage unless we have a homepage template,
+in which case show that.
 
 =cut
 
@@ -35,13 +35,13 @@ sub index : Path('') : Args(0) {
     }
 }
 
-=head2 report_display
+=head2 id
 
-Display a report.
+Load in ID, for use by chained pages.
 
 =cut
 
-sub display : Path('') : Args(1) {
+sub id :PathPart('report') :Chained :CaptureArgs(1) {
     my ( $self, $c, $id ) = @_;
 
     if (
@@ -49,15 +49,17 @@ sub display : Path('') : Args(1) {
         || $id =~ m{ ^(\d+) \D .* $ }x    # trailing garbage
       )
     {
-        return $c->res->redirect( $c->uri_for($1), 301 );
+        $c->res->redirect( $c->uri_for($1), 301 );
+        $c->detach;
     }
 
-    $c->forward( '_display', [ $id ] );
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
 }
 
 =head2 ajax
 
-Return JSON formatted details of a report
+Return JSON formatted details of a report.
+URL used by mobile app so remains /report/ajax/N.
 
 =cut
 
@@ -65,14 +67,20 @@ sub ajax : Path('ajax') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
     $c->stash->{ajax} = 1;
-    $c->forward( '_display', [ $id ] );
+    $c->forward('load_problem_or_display_error', [ $id ]);
+    $c->forward('display');
 }
 
-sub _display : Private {
-    my ( $self, $c, $id ) = @_;
+=head2 display
+
+Display a report.
+
+=cut
+
+sub display :PathPart('') :Chained('id') :Args(0) {
+    my ( $self, $c ) = @_;
 
     $c->forward('/auth/get_csrf_token');
-    $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
 
@@ -84,21 +92,14 @@ sub _display : Private {
     }
 }
 
-sub support : Path('support') : Args(0) {
+sub support :Chained('id') :Args(0) {
     my ( $self, $c ) = @_;
 
-    my $id = $c->get_param('id');
-
-    my $uri =
-        $id
-      ? $c->uri_for( '/report', $id )
-      : $c->uri_for('/');
-
-    if ( $id && $c->cobrand->can_support_problems && $c->user && $c->user->from_body ) {
-        $c->forward( 'load_problem_or_display_error', [ $id ] );
+    if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_body ) {
         $c->stash->{problem}->update( { interest_count => \'interest_count +1' } );
     }
-    $c->res->redirect( $uri );
+
+    $c->res->redirect($c->stash->{problem}->url);
 }
 
 sub load_problem_or_display_error : Private {
@@ -271,22 +272,18 @@ users too about this change, at which point we can delete:
 
 =cut
 
-sub delete :Local :Args(1) {
-    my ( $self, $c, $id ) = @_;
+sub delete :Chained('id') :Args(0) {
+    my ($self, $c) = @_;
 
     $c->forward('/auth/check_csrf_token');
 
-    $c->forward( 'load_problem_or_display_error', [ $id ] );
     my $p = $c->stash->{problem};
 
-    my $uri = $c->uri_for( '/report', $id );
-
-    return $c->res->redirect($uri) unless $c->user_exists;
+    return $c->res->redirect($p->url) unless $c->user_exists;
 
     my $body = $c->user->obj->from_body;
-    return $c->res->redirect($uri) unless $body;
-
-    return $c->res->redirect($uri) unless $p->bodies->{$body->id};
+    return $c->res->redirect($p->url) unless $body;
+    return $c->res->redirect($p->url) unless $p->bodies->{$body->id};
 
     $p->state('hidden');
     $p->lastupdate( \'current_timestamp' );
@@ -299,26 +296,10 @@ sub delete :Local :Args(1) {
         admin_user => $c->user->from_body->name,
         object_type => 'problem',
         action => 'state_change',
-        object_id => $id,
+        object_id => $p->id,
     } );
 
-    return $c->res->redirect($uri);
-}
-
-=head2 action_router
-
-A router for dispatching handlers for sub-actions on a particular report,
-e.g. /report/1/inspect
-
-=cut
-
-sub action_router : Path('') : Args(2) {
-    my ( $self, $c, $id, $action ) = @_;
-
-    $c->go( 'map', [ $id ] ) if $action eq 'map';
-    $c->go( 'nearby_json', [ $id ] ) if $action eq 'nearby.json';
-
-    $c->detach( '/page_error_404_not_found', [] );
+    return $c->res->redirect($p->url);
 }
 
 sub inspect : Private {
@@ -539,10 +520,8 @@ sub inspect : Private {
     }
 };
 
-sub map : Private {
-    my ( $self, $c, $id ) = @_;
-
-    $c->forward( 'load_problem_or_display_error', [ $id ] );
+sub map :Chained('id') :Args(0) {
+    my ($self, $c) = @_;
 
     my $image = $c->stash->{problem}->static_map;
     $c->res->content_type($image->{content_type});
@@ -550,10 +529,9 @@ sub map : Private {
 }
 
 
-sub nearby_json : Private {
-    my ( $self, $c, $id ) = @_;
+sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
+    my ($self, $c) = @_;
 
-    $c->forward( 'load_problem_or_display_error', [ $id ] );
     my $p = $c->stash->{problem};
     my $dist = 1;
 

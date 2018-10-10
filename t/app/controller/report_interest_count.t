@@ -109,7 +109,7 @@ FixMyStreet::override_config {
         $mech->content_contains( '1 supporter' );
 
         $mech->log_out_ok( $user->email );
-        $mech->post_ok("/report/support", { id => $report_id } );
+        $mech->post_ok("/report/$report_id/support");
 
         is $mech->uri->path, "/report/$report_id", 'add support redirects to report page';
 

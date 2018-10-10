@@ -8,8 +8,8 @@
 %]
 
     [% IF c.user AND c.user.from_body %]
-    <form action="[% c.uri_for( '/report/support' ) %]">
-        <p id="supporter"><small>[% text %] <input type="hidden" name="id" value="[% problem.id %]"><input type="submit" class="green-btn" value="Add support"></small></p>
+    <form action="/report/[% problem.id %]/support">
+        <p id="supporter"><small>[% text %] <input type="submit" class="green-btn" value="Add support"></small></p>
     </form>
     [% ELSE %]
         <p id="supporter"><small>[% text %]</small></p>

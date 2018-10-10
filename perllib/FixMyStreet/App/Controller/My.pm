@@ -210,7 +210,7 @@ sub planned_change : Path('planned/change') {
         $c->res->content_type('application/json; charset=utf-8');
         $c->res->body(encode_json({ outcome => $add ? 'add' : 'remove' }));
     } else {
-        $c->res->redirect( $c->uri_for_action('report/display', $id) );
+        $c->res->redirect( $c->uri_for_action('report/display', [ $id ]) );
     }
 }
 

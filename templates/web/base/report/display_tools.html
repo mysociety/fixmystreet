@@ -1,7 +1,7 @@
 <div class="shadow-wrap">
     <ul id="key-tools">
         [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_body( problem.bodies_str ) %]
-        <li><form method="post" action="/report/delete/[% problem.id %]" id="remove-from-site-form">
+        <li><form method="post" action="/report/[% problem.id %]/delete" id="remove-from-site-form">
             <input type="hidden" name="token" value="[% csrf_token %]">
             <button type="submit" id="key-tool-report-abuse" class="abuse" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site">[% loc('Remove from site') %]</button>
         </form></li>
