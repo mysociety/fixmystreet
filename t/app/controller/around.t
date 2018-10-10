@@ -1,3 +1,13 @@
+package FixMyStreet::Map::Tester;
+use base 'FixMyStreet::Map::FMS';
+
+use constant ZOOM_LEVELS    => 99;
+use constant MIN_ZOOM_LEVEL => 88;
+
+1;
+
+package main;
+
 use Test::MockModule;
 
 use FixMyStreet::TestMech;
@@ -276,6 +286,27 @@ subtest 'check skip_around skips around page' => sub {
         $mech->get('/around?latitude=51.754926&longitude=-1.256179');
         is $mech->res->code, 302, "around page is a redirect";
         is $mech->uri->path, '/report/new', "and redirects to /report/new";
+    };
+};
+
+subtest 'check map zoom level customisation' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        MAP_TYPE => 'OSM',
+    }, sub {
+        $mech->get('/around?latitude=51.754926&longitude=-1.256179');
+        $mech->content_contains('data-numZoomLevels=6');
+        $mech->content_contains('data-zoomOffset=13');
+    };
+
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        MAP_TYPE => 'Tester',
+    }, sub {
+        $mech->get('/around?latitude=51.754926&longitude=-1.256179');
+        $mech->content_contains('data-numZoomLevels=99');
+        $mech->content_contains('data-zoomOffset=88');
     };
 };
 

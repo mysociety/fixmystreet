@@ -69,8 +69,8 @@ sub display_map {
 sub generate_map_data {
     my ($self, $data, %params) = @_;
 
-    my $numZoomLevels = ZOOM_LEVELS;
-    my $zoomOffset = MIN_ZOOM_LEVEL;
+    my $numZoomLevels = $self->ZOOM_LEVELS;
+    my $zoomOffset = $self->MIN_ZOOM_LEVEL;
     if ($params{any_zoom}) {
         $numZoomLevels = 19;
         $zoomOffset = 0;
