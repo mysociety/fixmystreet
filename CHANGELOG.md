@@ -9,8 +9,10 @@
     - Bugfixes:
         - Add perl 5.26/5.28 support.
         - Fix subcategory issues when visiting /report/new directly #2276
+    - Development improvements:
+        - Add cobrand hook for dashboard viewing permission. #2285
     - Internal things:
-        - Move send-comments code to package for testing.
+        - Move send-comments code to package for testing. #2109 #2170
 
 * v2.4.1 (2nd October 2018)
     - New features:

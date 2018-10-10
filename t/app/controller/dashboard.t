@@ -1,4 +1,17 @@
 use Test::MockTime ':all';
+
+package FixMyStreet::Cobrand::Tester;
+use parent 'FixMyStreet::Cobrand::Default';
+# Allow access if CSV export for a body, otherwise deny
+sub dashboard_permission {
+    my $self = shift;
+    my $c = $self->{c};
+    return 0 unless $c->get_param('export');
+    return $c->get_param('body') || 0;
+}
+
+package main;
+
 use strict;
 use warnings;
 
@@ -230,6 +243,25 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         like $mech->res->header('Content-type'), qr'text/csv';
         $mech->content_contains('Report ID');
+        $mech->delete_header('Authorization');
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'tester',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'no body or export, 404' => sub {
+        $mech->get('/dashboard');
+        is $mech->status, '404', 'No parameters, 404';
+        $mech->get('/dashboard?export=1');
+        is $mech->status, '404', 'If no body, 404';
+        $mech->get("/dashboard?body=$body_id");
+        is $mech->status, '404', 'If no export, 404';
+    };
+
+    subtest 'body and export, okay' => sub {
+        $mech->get_ok("/dashboard?body=$body_id&export=1");
     };
 };
 
