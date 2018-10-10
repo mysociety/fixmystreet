@@ -9,6 +9,7 @@
     - Bugfixes:
         - Add perl 5.26/5.28 support.
         - Fix subcategory issues when visiting /report/new directly #2276
+        - Give superusers access to update staff dropdowns. #2286
     - Development improvements:
         - Add cobrand hook for dashboard viewing permission. #2285
         - Have body.url work in hashref lookup. #2284

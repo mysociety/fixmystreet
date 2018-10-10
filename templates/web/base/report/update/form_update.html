@@ -27,7 +27,7 @@
 [% END %]
 
 <label for="form_update">[% loc( 'Update' ) %]</label>
-[% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+[% IF c.user AND (c.user.is_superuser OR c.user.belongs_to_body(problem.bodies_str)) %]
   [% INCLUDE 'admin/response_templates_select.html' for='form_update' %]
 [% END %]
 [% IF field_errors.update %]
@@ -35,7 +35,7 @@
 [% END %]
 <textarea rows="7" cols="30" name="update" class="form-control" id="form_update" required>[% update.text | html %]</textarea>
 
-[% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+[% IF c.user AND (c.user.is_superuser OR c.user.belongs_to_body(problem.bodies_str)) %]
     <label for="state">[% loc( 'State' ) %]</label>
     [% INCLUDE 'report/inspect/state_groups_select.html' %]
 [% ELSE %]
