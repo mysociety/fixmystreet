@@ -9,6 +9,7 @@
     - Bugfixes:
         - Add perl 5.26/5.28 support.
         - Fix subcategory issues when visiting /report/new directly #2276
+        - Have body.url work in hashref lookup. #2284
     - Internal things:
         - Move send-comments code to package for testing.
 

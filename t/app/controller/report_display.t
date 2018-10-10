@@ -151,7 +151,7 @@ subtest "test duration string" => sub {
         AREA_LINKS_FROM_PROBLEMS => 1,
     }, sub {
         $mech->get_ok("/report/$report_id");
-        $mech->content_contains('Sent to <a href="http://localhost/reports/Westminster+City+Council">Westminster');
+        $mech->content_contains('Sent to <a href="/reports/Westminster+City+Council">Westminster');
     };
 };
 

@@ -95,8 +95,19 @@ $fife_problems[10]->update( {
     state => 'hidden',
 });
 
-# Run the cron script old-data (for the table no longer used by default)
-FixMyStreet::Script::UpdateAllReports::generate(1);
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+}, sub {
+    subtest 'Test the cron script old-data (for the table no longer used by default)' => sub {
+        FixMyStreet::Script::UpdateAllReports::generate(1);
+
+        # Old style page no longer exists in core, but let's just check the code works okay
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fixmystreet')->new();
+        FixMyStreet::DB->schema->cobrand($cobrand);
+        my @bodies = FixMyStreet::DB->resultset('Body')->active->translated->all_sorted;
+        is $bodies[0]->{url}->(), '/reports/Birmingham';
+    };
+};
 
 # Run the cron script that makes the data for /reports so we don't get an error.
 my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
