@@ -236,15 +236,12 @@ FixMyStreet::override_config {
 sub test_table {
     my ($content, @expected) = @_;
     my $res = $categories->scrape( $mech->content );
-    my $i = 0;
+    my @actual;
     foreach my $row ( @{ $res->{rows} }[1 .. 11] ) {
-        foreach my $col ( @{ $row->{cols} } ) {
-            is $col, $expected[$i++];
-        }
+        push @actual, @{$row->{cols}} if $row->{cols};
     }
+    is_deeply \@actual, \@expected;
 }
 
-END {
-    restore_time;
-    done_testing();
-}
+restore_time;
+done_testing();
