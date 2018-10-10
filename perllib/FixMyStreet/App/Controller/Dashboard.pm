@@ -54,6 +54,18 @@ Checks if we can view this page, and if not redirect to 404.
 sub check_page_allowed : Private {
     my ( $self, $c ) = @_;
 
+    # dashboard_permission can return undef (if not present, or to carry on
+    # with default behaviour), a body ID to use that body for results, or 0
+    # to refuse access entirely
+    my $cobrand_check = $c->cobrand->call_hook('dashboard_permission');
+    if (defined $cobrand_check) {
+        if ($cobrand_check) {
+            $cobrand_check = $c->model('DB::Body')->find({ id => $cobrand_check });
+        }
+        $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
+        return $cobrand_check;
+    }
+
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     $c->detach( '/page_error_404_not_found' )
@@ -94,7 +106,7 @@ sub index : Path : Args(0) {
         # See if we've had anything from the body dropdowns
         $c->stash->{category} = $c->get_param('category');
         $c->stash->{ward} = $c->get_param('ward');
-        if ($c->user->area_id) {
+        if ($c->user_exists && $c->user->area_id) {
             $c->stash->{ward} = $c->user->area_id;
             $c->stash->{body_name} = join "", map { $children->{$_}->{name} } grep { $children->{$_} } $c->user->area_id;
         }
