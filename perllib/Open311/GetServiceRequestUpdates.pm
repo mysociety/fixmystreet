@@ -42,12 +42,12 @@ sub fetch {
         $cobrand->call_hook(open311_config_updates => \%open311_conf)
             if $cobrand;
 
-        $open311 //= Open311->new(%open311_conf);
+        my $o = $open311 || Open311->new(%open311_conf);
 
         $self->suppress_alerts( $body->suppress_alerts );
         $self->blank_updates_permitted( $body->blank_updates_permitted );
         $self->system_user( $body->comment_user );
-        $self->update_comments( $open311, $body );
+        $self->update_comments( $o, $body );
     }
 }
 
