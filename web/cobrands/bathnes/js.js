@@ -37,6 +37,20 @@ fixmystreet.roadworks.display_message = function(feature) {
         $('.change_location').after($msg);
 };
 
+fixmystreet.roadworks.filter = function() {
+  var category = $('select#form_category').val(),
+      categories = ['Damage to pavement', 'Damage to road', 'Faded road markings', 'Damaged Railing, manhole, or drain cover'];
+    return OpenLayers.Util.indexOf(categories, category) != -1;
+};
+
+fixmystreet.roadworks.category_change = function() {
+    if (fixmystreet.map) {
+        fixmystreet.roadworks.show_nearby(null, fixmystreet.map.getCenter());
+    }
+};
+
+$(fixmystreet).on('report_new:category_change', fixmystreet.roadworks.category_change);
+
 var org_id = '114';
 var body = "Bath and North East Somerset Council";
 fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {
