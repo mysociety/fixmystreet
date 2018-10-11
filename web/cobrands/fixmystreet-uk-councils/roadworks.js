@@ -169,11 +169,15 @@ fixmystreet.roadworks.show_nearby = function(evt, lonlat) {
             // The click wasn't directly over a road, try and find one nearby
             feature = layer.getNearestFeature(point, 100);
         }
-        if (feature !== null) {
+        if (feature !== null && fixmystreet.roadworks.filter(feature)) {
             fixmystreet.roadworks.display_message(feature);
             return true;
         }
     }
+};
+
+fixmystreet.roadworks.filter = function() {
+    return 1;
 };
 
 fixmystreet.roadworks.display_message = function(feature) {
