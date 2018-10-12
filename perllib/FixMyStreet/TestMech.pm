@@ -88,33 +88,26 @@ sub log_in_ok {
     my $mech  = shift;
     my $username = shift;
 
+    my $sessionid = Digest->new('SHA-1')->add(time, rand, $$, {})->hexdigest;
     my $user = $mech->create_user_ok($username);
+    $user->set_extra_metadata(sessions => [ $sessionid ]);
+    $user->update;
+    my $data = {
+        '__user_realm' => 'default',
+        '__user' => {
+            'id' => $user->id,
+        },
+    };
 
-    # remember the old password and then change it to a known one
-    my $old_password = $user->password || '';
-    $user->update( { password => 'secret' } );
-
-    # log in
-    $mech->get_ok('/auth');
-    $mech->submit_form_ok(
-        { with_fields => { username => $username, password_sign_in => 'secret' } },
-        "sign in using form" );
+    FixMyStreet::DB->resultset("Session")->update_or_create({
+        id => "session:$sessionid",
+        session_data => MIME::Base64::encode(Storable::nfreeze($data)),
+        expires => time() + 86400,
+    });
+    my @hosts = ('localhost.local', 'www.example.org');
+    push @hosts, $mech->host if $mech->host;
+    $mech->cookie_jar->set_cookie(0, 'fixmystreet_app_session', $sessionid, '/', $_) for @hosts;
     $mech->logged_in_ok;
-
-    # restore the password (if there was one)
-    if ($old_password) {
-
-        # Use store_column and then make_column_dirty to bypass the filters that
-        # would hash the password, otherwise the password required ito log in
-        # would be the hash of the previous one.
-        $user->store_column("password", $old_password);
-        $user->make_column_dirty("password");
-        $user->update();
-
-        # Belt and braces, check that the password has been correctly saved.
-        die "password not correctly restored after log_in_ok"
-            if $user->password ne $old_password;
-    }
 
     return $user;
 }

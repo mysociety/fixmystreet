@@ -210,6 +210,7 @@ foreach my $test (
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->get_ok('/alert/list?pc=EH11BB');
+            ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
         };
         $mech->set_visible( [ radio => 'council:' . $body->id . ':City_of_Edinburgh' ] );
         $mech->click('alert');

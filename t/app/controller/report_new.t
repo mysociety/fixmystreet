@@ -1331,7 +1331,7 @@ for my $test (
     {
         desc =>
           'title, first and last name shown for bromley problem on cobrand',
-        host       => 'bromley.fixmystreet.com',
+        host       => 'bromley.example.org',
         postcode => 'BR1 3UH',
         first_name => 'Test',
         last_name  => 'User',
@@ -1446,7 +1446,6 @@ for my $test (
 
 subtest 'user title not reset if no user title in submission' => sub {
         $mech->log_out_ok;
-        $mech->host( 'www.fixmystreet.com' );
 
         my $user = $mech->log_in_ok( 'userwithtitle@example.com' );
 
@@ -1928,6 +1927,7 @@ foreach my $test (
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_out_ok;
+        $mech->host( 'www.fixmystreet.com' );
 
         $inspector->user_body_permissions->find_or_create({
             body => $bodies[0],
