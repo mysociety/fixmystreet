@@ -106,6 +106,8 @@ sub contact_email {
 }
 sub contact_name { 'Bromley Council (do not reply)'; }
 
+sub abuse_reports_only { 1; }
+
 sub reports_per_page { return 20; }
 
 sub tweak_all_reports_map {
