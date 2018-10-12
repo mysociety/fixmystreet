@@ -115,7 +115,8 @@ describe('Around page filtering and push state', function() {
         cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6');
         // get the second image which is the pin, first is the shadow
         cy.get('image[title="Lights out in tunnel"]:last').invoke('attr', 'xlink:href').should('contain', 'small');
-        cy.get('image[title="Lights out in tunnel"]:last').click();
+        // force to hopefully work around apparent Cypress SVG issue
+        cy.get('image[title="Lights out in tunnel"]:last').click({force: true});
         cy.wait('@show-report');
         cy.contains('Back to all reports');
         cy.get('image[title="Lights out in tunnel"]:last').invoke('attr', 'xlink:href').should('not.contain', 'small');
