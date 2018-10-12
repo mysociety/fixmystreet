@@ -1,3 +1,13 @@
+package FixMyStreet::Cobrand::AbuseOnly;
+
+use base 'FixMyStreet::Cobrand::Default';
+
+sub abuse_reports_only { 1; }
+
+1;
+
+package main;
+
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -468,6 +478,24 @@ for my $test (
         }
     };
 }
+
+subtest 'check can limit contact to abuse reports' => sub {
+    FixMyStreet::override_config {
+        'ALLOWED_COBRANDS' => [ 'abuseonly' ],
+    }, sub {
+        $mech->get( '/contact' );
+        is $mech->res->code, 404, 'cannot visit contact page';
+        $mech->get_ok( '/contact?id=' . $problem_main->id, 'can visit for abuse report' );
+
+        my $token = FixMyStreet::App->model("DB::Token")->create({
+            scope => 'moderation',
+            data => { id => $problem_main->id }
+        });
+
+        $mech->get_ok( '/contact?m=' . $token->token, 'can visit for moderation complaint' );
+
+    }
+};
 
 $problem_main->delete;
 

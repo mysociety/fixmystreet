@@ -765,6 +765,14 @@ used in emails).
 sub contact_name  { FixMyStreet->config('CONTACT_NAME') }
 sub contact_email { FixMyStreet->config('CONTACT_EMAIL') }
 
+=item abuse_reports_only
+
+Return true if only abuse reports should be allowed from the contact form.
+
+=cut
+
+sub abuse_reports_only { 0; }
+
 =item email_host
 
 Return if we are the virtual host that sends email for this cobrand

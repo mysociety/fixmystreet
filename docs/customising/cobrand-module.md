@@ -101,5 +101,10 @@ name.
     <a href="{{ "/glossary/#state" | relative_url }}" class="glossary__link">state</a>
     of the report. Return 0 to disable this feature so that surveys are never
     sent.
-    
+
+* abuse_reports_only
+
+    Limit the contact page to only accepting abuse reports for comments
+    and updates. This can be useful if you have another contact form and
+    want to prevent people using this.
 

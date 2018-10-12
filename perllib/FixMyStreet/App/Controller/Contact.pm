@@ -100,6 +100,8 @@ sub determine_contact_type : Private {
         if ( $c->get_param("reject") && $c->user->has_permission_to(report_reject => $c->stash->{problem}->bodies_str_ids) ) {
             $c->stash->{rejecting_report} = 1;
         }
+    } elsif ( $c->cobrand->abuse_reports_only ) {
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;
