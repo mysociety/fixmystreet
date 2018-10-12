@@ -75,7 +75,7 @@ subtest "Check multiple upload worked" => sub {
     };
 };
 
-subtest "Check photo uploading URL works" => sub {
+subtest "Check photo uploading URL and endpoints work" => sub {
     my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 
     # submit initial pc form
@@ -95,20 +95,18 @@ subtest "Check photo uploading URL works" => sub {
         is $mech->content, '{"id":"74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg"}';
         my $image_file = path($UPLOAD_DIR, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
         ok $image_file->exists, 'File uploaded to temp';
+
+        my $p = FixMyStreet::DB->resultset("Problem")->first;
+
+        $mech->get_ok('/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
+        $image_file = FixMyStreet->path_to('web/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
+        ok -e $image_file, 'File uploaded to temp';
+        $mech->get_ok('/photo/' . $p->id . '.jpeg');
+        $image_file = FixMyStreet->path_to('web/photo/' . $p->id . '.jpeg');
+        ok -e $image_file, 'File uploaded to temp';
+        my $res = $mech->get('/photo/0.jpeg');
+        is $res->code, 404, "got 404";
     };
-};
-
-subtest "Check photo URL endpoints work" => sub {
-    my $p = FixMyStreet::DB->resultset("Problem")->first;
-
-    $mech->get_ok('/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
-    my $image_file = FixMyStreet->path_to('web/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
-    ok -e $image_file, 'File uploaded to temp';
-    $mech->get_ok('/photo/' . $p->id . '.jpeg');
-    $image_file = FixMyStreet->path_to('web/photo/' . $p->id . '.jpeg');
-    ok -e $image_file, 'File uploaded to temp';
-    my $res = $mech->get('/photo/0.jpeg');
-    is $res->code, 404, "got 404";
 };
 
 done_testing();

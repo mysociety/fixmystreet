@@ -49,11 +49,10 @@ sub create_report {
         latitude           => '51.4129',
         longitude          => '0.007831',
         user_id            => $user2->id,
-        photo              => $mech->get_photo_data,
+        photo              => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
     });
 }
 my $report = create_report();
-my $report2 = create_report();
 
 my $REPORT_URL = '/report/' . $report->id ;
 
@@ -236,31 +235,22 @@ subtest 'Problem moderation' => sub {
 };
 
 $mech->content_lacks('Posted anonymously', 'sanity check');
+my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
 
-subtest 'Problem 2' => sub {
-    my $REPORT2_URL = '/report/' . $report2->id ;
-    $mech->get_ok($REPORT2_URL);
-    $mech->submit_form_ok({ with_fields => {
+subtest 'Edit photos' => sub {
+    $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
         %problem_prepopulated,
-        problem_title  => 'Good good',
-        problem_detail => 'Good good improved',
-    }});
-    $mech->base_like( qr{\Q$REPORT2_URL\E} );
-
-    $report2->discard_changes;
-    is $report2->title, 'Good good';
-    is $report2->detail, 'Good good improved';
-
-    $mech->submit_form_ok({ with_fields => {
+        photo1 => 'something-wrong',
+        token => $csrf,
+    });
+    $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
         %problem_prepopulated,
-        problem_revert_title  => 1,
-        problem_revert_detail => 1,
-    }});
-    $mech->base_like( qr{\Q$REPORT2_URL\E} );
-
-    $report2->discard_changes;
-    is $report2->title, 'Good bad good';
-    is $report2->detail, 'Good bad bad bad good bad';
+        photo1 => '',
+        upload_fileid => '',
+        token => $csrf,
+    });
+    $report->discard_changes;
+    is $report->photo, undef;
 };
 
 sub create_update {
@@ -268,7 +258,7 @@ sub create_update {
         user      => $user2,
         name      => 'Test User 2',
         anonymous => 'f',
-        photo     => $mech->get_photo_data,
+        photo     => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
         text      => 'update good good bad good',
         state     => 'confirmed',
         mark_fixed => 0,

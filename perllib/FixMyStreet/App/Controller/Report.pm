@@ -194,7 +194,7 @@ sub load_updates : Private {
     $c->stash->{updates} = \@combined;
 
     if ($c->sessionid) {
-        foreach (qw(alert_to_reporter anonymized)) {
+        foreach (qw(alert_to_reporter anonymized photo_error)) {
             $c->stash->{$_} = $c->flash->{$_} if $c->flash->{$_};
         }
     }
@@ -206,6 +206,9 @@ sub format_problem_for_display : Private {
     my ( $self, $c ) = @_;
 
     my $problem = $c->stash->{problem};
+
+    # upload_fileid is used by the update form on this page
+    $c->stash->{problem_upload_fileid} = $problem->get_photoset->data;
 
     ( $c->stash->{latitude}, $c->stash->{longitude} ) =
       map { Utils::truncate_coordinate($_) }

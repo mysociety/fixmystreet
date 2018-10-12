@@ -69,18 +69,39 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
 sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
 
+    my $problem = $c->stash->{problem};
+
     # Make sure user can moderate this report
-    $c->detach unless $c->user->can_moderate($c->stash->{problem});
+    $c->detach unless $c->user->can_moderate($problem);
 
     $c->forward('report_moderate_hide');
 
     my @types = grep $_,
-        ($c->user->can_moderate_title($c->stash->{problem}, 1)
+        ($c->user->can_moderate_title($problem, 1)
             ? $c->forward('moderate_text', [ 'title' ])
             : ()),
         $c->forward('moderate_text', [ 'detail' ]),
         $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
         $c->forward('moderate_boolean', [ 'photo' ]);
+
+    # Deal with possible photo changes. If a moderate form uses a standard
+    # photo upload field (with upload_fileid, label and file upload handlers),
+    # this will allow photos to be changed, not just switched on/off. You will
+    # probably want a hidden field with problem_photo=1 to skip that check.
+    my $photo_edit_form = defined $c->get_param('photo1');
+    if ($photo_edit_form) {
+        $c->forward('/photo/process_photo');
+        if ( my $photo_error = delete $c->stash->{photo_error} ) {
+            $c->flash->{photo_error} = $photo_error;
+        } else {
+            my $fileid = $c->stash->{upload_fileid};
+            if ($fileid ne $problem->photo) {
+                $problem->get_photoset->delete_cached;
+                $problem->update({ photo => $fileid || undef });
+                push @types, 'photo';
+            }
+        }
+    }
 
     $c->detach( 'report_moderate_audit', \@types )
 }
