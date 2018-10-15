@@ -10,4 +10,6 @@
     };
     default = "other_$default";
     errors.$username_error || errors.$default;
+ELSIF sign_in_error;
+    loc('There was a problem with your login information.');
 END ~%]

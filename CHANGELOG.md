@@ -3,6 +3,7 @@
 * Unreleased
     - Front end improvements:
         - Clearer relocation options while you’re reporting a problem #2238
+        - Simplify /auth sign in page. #2208
     - Admin improvements:
         - Allow moderation to potentially change category. #2320
     - Open311 improvements:

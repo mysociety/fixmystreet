@@ -54,6 +54,20 @@ sub general : Path : Args(0) {
 
 }
 
+sub create : Path('create') : Args(0) {
+    my ( $self, $c ) = @_;
+    return unless $c->req->method eq 'POST';
+    $c->detach('code_sign_in');
+}
+
+sub forgot : Path('forgot') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{forgotten} = 1;
+    $c->stash->{template} = 'auth/create.html';
+    return unless $c->req->method eq 'POST';
+    $c->detach('code_sign_in');
+}
+
 sub authenticate : Private {
     my ($self, $c, $type, $username, $password) = @_;
     return 1 if $type eq 'email' && $c->authenticate({ email => $username, email_verified => 1, password => $password });
@@ -72,7 +86,6 @@ sub sign_in : Private {
 
     $username ||= '';
     my $password = $c->get_param('password_sign_in') || '';
-    my $remember_me = $c->get_param('remember_me') || 0;
 
     # Sign out just in case
     $c->logout();
@@ -86,10 +99,6 @@ sub sign_in : Private {
             $c->user->update({ password => $password });
         }
 
-        # unless user asked to be remembered limit the session to browser
-        $c->set_session_cookie_expire(0)
-          unless $remember_me;
-
         # Regenerate CSRF token as session ID changed
         $c->forward('get_csrf_token');
 
@@ -99,7 +108,6 @@ sub sign_in : Private {
     $c->stash(
         sign_in_error => 1,
         username => $username,
-        remember_me => $remember_me,
     );
     return;
 }

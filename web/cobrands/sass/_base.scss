@@ -48,7 +48,17 @@ h1 {
   font-weight: normal;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
+
+  // Useful for extra inline text after a heading
+  small {
+    display: inline-block; // break onto its own line if not enough horizontal space
+    font-style: inherit;
+    font-family: inherit;
+    font-size: 0.5em; // back down to 1em from the 2em parent
+    line-height: 1em;
+  }
 }
+
 h1#reports_heading {
   margin-bottom: 0;
 }
@@ -172,7 +182,8 @@ select {
   width: 100%;
 }
 
-a {
+a,
+.fake-link {
   text-decoration: none;
   color: #0BA7D1;
 
@@ -185,6 +196,16 @@ a {
     text-decoration: underline;
     color: #0D7CCE;
   }
+}
+
+.fake-link {
+  display: inline-block;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 1em;
+  padding: 0;
+  margin: 0;
 }
 
 // custom type

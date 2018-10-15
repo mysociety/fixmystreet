@@ -814,6 +814,22 @@ $.extend(fixmystreet.set_up, {
   },
 
   email_login_form: function() {
+    // Password form split up
+    $('.js-sign-in-password-btn').click(function(e) {
+        if ($('.js-sign-in-password').is(':visible')) {
+        } else {
+            e.preventDefault();
+            $('.js-sign-in-password-hide').hide();
+            $('.js-sign-in-password').show().css('visibility', 'visible');
+            $('#password_sign_in').focus();
+        }
+    });
+    // This is if the password box is filled programmatically (by
+    // e.g. 1Password), show it so that it will auto-submit.
+    $('#password_sign_in').change(function() {
+        $('.js-sign-in-password').show().css('visibility', 'visible');
+    });
+
     // Log in with email button
     var email_form = $('#js-social-email-hide'),
         button = $('<button class="btn btn--social btn--social-email">'+translation_strings.login_with_email+'</button>'),
@@ -826,6 +842,7 @@ $.extend(fixmystreet.set_up, {
     form_box.append(button).insertBefore(email_form);
     if ($('.form-error').length) {
         button.click();
+        $('.js-sign-in-password-btn').click();
     }
   },
 
