@@ -1,0 +1,49 @@
+[% IF alerts.size %]
+<h3>[% loc("User's alerts") %]</h3>
+<table>
+<tr>
+    <th>[% loc('ID') %]</th>
+    <th>[% loc('Type') %]</th>
+    <th>[% loc('Confirmed') %]</th>
+    <th>[% loc('State') %]</th>
+    <th>[% loc('Details') %]</th>
+</tr>
+[% FOREACH alert IN alerts %]
+<tr>
+    <td>[% alert.id %]</td>
+    <td>[% alert.alert_type.ref %]</td>
+    <td>[% IF alert.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+    <td>[% loc('Subscribed:') %] [% alert.whensubscribed %]
+        <br>[% loc('Disabled:') %] [% alert.whendisabled %]
+    </td>
+    <td>
+    [% SWITCH alert.alert_type.ref %]
+        [% CASE 'new_updates' %]
+            [% tprintf( loc('New updates on report <a href="%s">%s</a>'), c.uri_for( '/report', alert.parameter ), alert.parameter ) %]
+        [% CASE 'local_problems' %]
+            [% tprintf( loc('New problems near <a href="%s">%s,%s</a>'), c.uri_for( '/around', { lon => alert.parameter, lat => alert.parameter2 } ), alert.parameter, alert.parameter2 ) %]
+        [% CASE 'ward_problems' %]
+            [% body = alert.parameter %]
+            [% ward = alert.parameter2 %]
+            [% IF alert_areas.$ward AND body_names.$body %]
+                [% tprintf( loc('New problems for <a href="%s">%s</a> ward in <a href="%s">%s</a>'), c.uri_for('/reports', body_names.$body, alert_areas.$ward.name), alert_areas.$ward.name, c.uri_for('/reports', body_names.$body), body_names.$body ) %]
+            [% ELSE %]
+                [% tprintf( loc('New problems for ward id %s in body id %s'), alert.parameter2, body ) %]
+            [% END %]
+        [% CASE 'council_problems' %]
+            [% body = alert.parameter %]
+            [% IF body_names.$body %]
+                [% tprintf( loc('New problems for <a href="%s">%s</a>'), c.uri_for('/reports', body_names.$body) body_names.$body ) %]
+            [% ELSE %]
+                [% tprintf( loc('New problems for %s'), body ) %]
+            [% END %]
+        [% CASE 'area_problems' %]
+            [% tprintf( loc('New problems for area id <a href="%s">%s</a>'), c.config.MAPIT_URL _ 'area/' _ alert.parameter _ '.html', alert.parameter ) %]
+        [% CASE %]
+            [% alert.parameter %] [% alert.parameter2 %]
+    [% END %]
+    </td>
+</tr>
+[% END %]
+</table>
+[% END %]

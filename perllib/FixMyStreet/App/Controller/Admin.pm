@@ -1512,6 +1512,10 @@ sub user_edit : Path('user_edit') : Args(1) {
     $c->forward('fetch_all_bodies');
     $c->forward('fetch_body_areas', [ $user->from_body ]) if $user->from_body;
 
+    unless ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->forward('user_alert_details');
+    }
+
     if ( defined $c->flash->{status_message} ) {
         $c->stash->{status_message} =
             '<p><em>' . $c->flash->{status_message} . '</em></p>';
@@ -1845,6 +1849,28 @@ sub get_user : Private {
     $user ||= '';
 
     return $user;
+}
+
+sub user_alert_details : Private {
+    my ( $self, $c ) = @_;
+
+    my @alerts = $c->stash->{user}->alerts({}, { prefetch => 'alert_type' })->all;
+    $c->stash->{alerts} = \@alerts;
+
+    my @wards;
+
+    for my $alert (@alerts) {
+        if ($alert->alert_type->ref eq 'ward_problems') {
+            push @wards, $alert->parameter2;
+        }
+    }
+
+    if (@wards) {
+        $c->stash->{alert_areas} = mySociety::MaPit::call('areas', join(',', @wards) );
+    }
+
+    my %body_names = map { $_->{id} => $_->{name} } @{ $c->stash->{bodies} };
+    $c->stash->{body_names} = \%body_names;
 }
 
 =item log_edit
