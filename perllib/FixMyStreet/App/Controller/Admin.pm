@@ -1082,6 +1082,7 @@ sub report_edit_location : Private {
         # this lookup is bad. So let's save the stash and restore it after the
         # comparison.
         my $safe_stash = { %{$c->stash} };
+        $c->stash->{fetch_all_areas} = 1;
         $c->forward('/council/load_and_check_areas', []);
         $c->forward('/report/new/setup_categories_and_bodies');
         my %allowed_bodies = map { $_ => 1 } @{$problem->bodies_str_ids};
@@ -1091,6 +1092,8 @@ sub report_edit_location : Private {
         return unless $bodies_match;
         $problem->latitude($c->stash->{latitude});
         $problem->longitude($c->stash->{longitude});
+        my $areas = $c->stash->{all_areas_mapit};
+        $problem->areas( ',' . join( ',', sort keys %$areas ) . ',' );
     }
     return 1;
 }
