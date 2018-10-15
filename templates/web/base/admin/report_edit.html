@@ -88,6 +88,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
   [% END %]
 </li>
 <li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
+<li>[% loc('Alerts:') %] [% alert_count %]</li>
 <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]
 <br><small>[% loc('Cobrand data:') %] [% cobrand_data OR '<em>' _ loc('None') _ '</em>' %]</small>

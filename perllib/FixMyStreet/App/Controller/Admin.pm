@@ -883,6 +883,8 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('categories_for_point');
 
+    $c->forward('alerts_for_report');
+
     $c->forward('check_username_for_abuse', [ $problem->user ] );
 
     $c->stash->{updates} =
@@ -1109,6 +1111,17 @@ sub categories_for_point : Private {
     shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
 
     $c->stash->{categories_hash} = { map { $_->category => 1 } @{$c->stash->{category_options}} };
+}
+
+sub alerts_for_report : Private {
+    my ($self, $c) = @_;
+
+    $c->stash->{alert_count} = $c->model('DB::Alert')->search({
+        alert_type => 'new_updates',
+        parameter => $c->stash->{report}->id,
+        confirmed => 1,
+        whendisabled => undef,
+    })->count();
 }
 
 sub templates : Path('templates') : Args(0) {

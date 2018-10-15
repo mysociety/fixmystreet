@@ -608,6 +608,32 @@ subtest "Test display of report extra data" => sub {
     $mech->content_contains('extra_field</strong>: this is extra data');
 };
 
+subtest "Test alert count display" => sub {
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Alerts: 0');
+
+    my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+        {
+            alert_type => 'new_updates',
+            parameter => $report_id,
+            user => $user,
+        }
+    );
+
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Alerts: 0', 'does not include unconfirmed reports');
+
+    $alert->update( { confirmed => 1 } );
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Alerts: 1');
+
+    $alert->update( { whendisabled => \"now()" } );
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Alerts: 0');
+
+    $alert->delete;
+};
+
 my $report2 = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
