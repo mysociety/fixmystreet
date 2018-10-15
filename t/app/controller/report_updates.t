@@ -588,7 +588,6 @@ subtest 'check non authority user cannot change set state' => sub {
 
 for my $state ( qw/unconfirmed hidden partial/ ) {
     subtest "check that update cannot set state to $state" => sub {
-        $mech->log_in_ok( $user->email );
         $user->from_body( $body->id );
         $user->update;
 
@@ -737,8 +736,6 @@ for my $test (
             $report->update;
         }
 
-        $mech->log_in_ok( $user->email );
-
         if ($test->{view_username}) {
           ok $user->user_body_permissions->create({
             body => $body,
@@ -820,7 +817,6 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
 };
 
 subtest "check first comment with no status change has no status in meta" => sub {
-    $mech->log_in_ok( $user->email );
     $user->from_body( undef );
     $user->update;
 
@@ -834,7 +830,6 @@ subtest "check first comment with no status change has no status in meta" => sub
 };
 
 subtest "check comment with no status change has not status in meta" => sub {
-        $mech->log_in_ok( $user->email );
         $user->from_body( undef );
         $user->update;
 
@@ -1077,8 +1072,6 @@ subtest $test->{desc} => sub {
             extra         => $extra,
         }
     );
-    $mech->log_in_ok( $user->email );
-
 
     ok $user->user_body_permissions->search({
       body_id => $body->id,
@@ -1143,7 +1136,6 @@ subtest $test->{desc} => sub {
             extra         => $extra,
         }
     );
-    $mech->log_in_ok( $user->email );
     $mech->get_ok("/report/$report_id");
 
     my $update_meta = $mech->extract_update_metas;
@@ -1197,7 +1189,6 @@ subtest $test->{desc} => sub {
             }
         );
     }
-    $mech->log_in_ok( $user->email );
     $mech->get_ok("/report/$report_id");
 
     my $update_meta = $mech->extract_update_metas;
