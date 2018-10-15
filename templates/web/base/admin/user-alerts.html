@@ -1,5 +1,8 @@
 [% IF alerts.size %]
 <h3>[% loc("User's alerts") %]</h3>
+<form method="POST">
+<input type="hidden" name="token" value="[% csrf_token %]" >
+<input type="hidden" name="update_alerts" value="1" >
 <table>
 <tr>
     <th>[% loc('ID') %]</th>
@@ -7,6 +10,9 @@
     <th>[% loc('Confirmed') %]</th>
     <th>[% loc('State') %]</th>
     <th>[% loc('Details') %]</th>
+    <th>[% loc('Enable') %]</th>
+    <th>[% loc('Disable') %]</th>
+    <th>[% loc('Delete') %]</th>
 </tr>
 [% FOREACH alert IN alerts %]
 <tr>
@@ -43,7 +49,12 @@
             [% alert.parameter %] [% alert.parameter2 %]
     [% END %]
     </td>
+    <td><input type="radio" name="edit_alert[[% alert.id %]]" value="enable"[% ' disabled' UNLESS alert.whendisabled %]></td>
+    <td><input type="radio" name="edit_alert[[% alert.id %]]" value="disable"[% ' disabled' IF alert.whendisabled %]></td>
+    <td><input type="radio" name="edit_alert[[% alert.id %]]" value="delete"></td>
 </tr>
 [% END %]
 </table>
+<input type="submit" value="[% loc('Update') %]">
+</form>
 [% END %]

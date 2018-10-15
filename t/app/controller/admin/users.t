@@ -515,6 +515,64 @@ subtest "Removing account from admin" => sub {
     is $user->email, 'removed-' . $user->id . '@example.org', 'Email gone'
 };
 
+subtest "can view list of user's alerts" => sub {
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->content_lacks("User's alerts", 'no list of alerts');
+
+    $mech->create_problems_for_body(1, 2514, 'Title', { user => $user });
+    my $p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->first;
+
+    my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create({
+        user_id => $user->id,
+        alert_type => 'new_updates',
+        parameter => $p->id
+    });
+
+
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->content_contains("User's alerts", 'has list of alerts');
+    $mech->content_contains($alert->id, 'lists alert');
+};
+
+subtest "can edit list of user's alerts" => sub {
+    $mech->get_ok( '/admin/user_edit/' . $user->id );
+
+    my $alert = FixMyStreet::DB->resultset('Alert')->search({
+        user_id => $user->id,
+        alert_type => 'new_updates',
+    })->first;
+
+    $mech->content_like(qr[<td>${\$alert->id}</td>\s*<td>new_updates</td>]m, 'alert on page');
+
+    $mech->submit_form_ok( {
+        with_fields => {
+            'edit_alert[' . $alert->id . ']' => 'disable'
+        }
+    }, 'disabling alert');
+
+    $alert->discard_changes;
+    ok $alert->whendisabled, 'alert disabled';
+
+    $mech->submit_form_ok( {
+        with_fields => {
+            'edit_alert[' . $alert->id . ']' => 'enable'
+        }
+    }, 'enabling alert');
+
+    $alert->discard_changes;
+    is $alert->whendisabled, undef, 'alert enabled';
+
+    $mech->submit_form_ok( {
+        with_fields => {
+            'edit_alert[' . $alert->id . ']' => 'delete',
+        }
+    }, 'deleting alert');
+
+    $mech->content_unlike(qr[<td>${\$alert->id}</td>\s*<td>new_updates</td>]m, 'alert not on page');
+
+    is $user->alerts->count, 0, 'alert deleted';
+};
+
 subtest "View timeline" => sub {
     $mech->get_ok('/admin/timeline');
 };

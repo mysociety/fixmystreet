@@ -9,6 +9,7 @@
         - Clearer relocation options while you’re reporting a problem #2238
     - Admin improvements
         - List number of alerts on report page #669
+        - viewing and managing of user alerts in admin #676
     - Bugfixes:
         - Add perl 5.26/5.28 support.
         - Fix subcategory issues when visiting /report/new directly #2276

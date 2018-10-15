@@ -1512,10 +1512,6 @@ sub user_edit : Path('user_edit') : Args(1) {
     $c->forward('fetch_all_bodies');
     $c->forward('fetch_body_areas', [ $user->from_body ]) if $user->from_body;
 
-    unless ( $c->cobrand->moniker eq 'zurich' ) {
-        $c->forward('user_alert_details');
-    }
-
     if ( defined $c->flash->{status_message} ) {
         $c->stash->{status_message} =
             '<p><em>' . $c->flash->{status_message} . '</em></p>';
@@ -1538,6 +1534,8 @@ sub user_edit : Path('user_edit') : Args(1) {
         my %args = ( email => $email );
         $args{user_id} = $id if $user->email ne $email || !$user->email_verified;
         $c->forward('send_login_email', [ \%args ]);
+    } elsif ( $c->get_param('update_alerts') ) {
+        $c->forward('update_alerts');
     } elsif ( $c->get_param('submit') ) {
 
         my $edited = 0;
@@ -1715,6 +1713,11 @@ sub user_edit : Path('user_edit') : Args(1) {
             active => $active_contacts{$_->id},
         } } @live_contacts;
         $c->stash->{contacts} = \@all_contacts;
+    }
+
+    # this goes after in case we've delete any alerts
+    unless ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->forward('user_alert_details');
     }
 
     return 1;
@@ -1943,6 +1946,25 @@ sub ban_user : Private {
         $c->stash->{username_in_abuse} = 1;
     }
     return 1;
+}
+
+sub update_alerts : Private {
+    my ($self, $c) = @_;
+
+    my $changes;
+    for my $alert ( $c->stash->{user}->alerts ) {
+        my $edit_option = $c->get_param('edit_alert[' . $alert->id . ']');
+        next unless $edit_option;
+        $changes = 1;
+        if ( $edit_option eq 'delete' ) {
+            $alert->delete;
+        } elsif ( $edit_option eq 'disable' ) {
+            $alert->disable;
+        } elsif ( $edit_option eq 'enable' ) {
+            $alert->confirm;
+        }
+    }
+    $c->flash->{status_message} = _("Updated!") if $changes;
 }
 
 sub user_logout_everywhere : Private {
