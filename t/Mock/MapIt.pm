@@ -32,6 +32,7 @@ my @PLACES = (
     [ 'GL50 2PR', 51.896268, -2.093063, 2226, 'Gloucestershire County Council', 'CTY', 2326, 'Cheltenham Borough Council', 'DIS', 4544, 'Lansdown', 'DIW', 143641, 'Lansdown and Park', 'CED' ],
     [ '?', 51.754926, -1.256179, 2237, 'Oxfordshire County Council', 'CTY', 2421, 'Oxford City Council', 'DIS' ],
     [ 'OX20 1SZ', 51.754926, -1.256179, 2237, 'Oxfordshire County Council', 'CTY', 2421, 'Oxford City Council', 'DIS' ],
+    [ 'OX16 9UP', 52.038712, -1.346397, 2237, 'Oxfordshire County Council', 'CTY', 2419, 'Cherwell District Council', 'DIS', 151767, "Banbury, Calthorpe & Easington", "DIW" ],
     [ 'BR1 3UH', 51.4021, 0.01578, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3UH', 51.402096, 0.015784, 2482, 'Bromley Council', 'LBO' ],
     [ '?', 50.78301, -0.646929 ],

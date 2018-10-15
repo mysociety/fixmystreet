@@ -32,14 +32,14 @@ FixMyStreet::DB->resultset("ContactResponsePriority")->create({
     contact => $contact3,
     response_priority => $rp2,
 });
-my $wodc = $mech->create_body_ok(2420, 'West Oxfordshire District Council');
-$mech->create_contact_ok( body_id => $wodc->id, category => 'Horses', email => 'horses@example.net' );
+my $oxfordcity = $mech->create_body_ok(2421, 'Oxford City Council');
+$mech->create_contact_ok( body_id => $oxfordcity->id, category => 'Horses', email => 'horses@example.net' );
 
 
 my ($report, $report2, $report3) = $mech->create_problems_for_body(3, $oxon->id, 'Test', {
-    category => 'Cows', cobrand => 'fixmystreet', areas => ',2237,2420',
+    category => 'Cows', cobrand => 'fixmystreet', areas => ',2237,2421,',
     whensent => \'current_timestamp',
-    latitude => 51.847693, longitude => -1.355908,
+    latitude => 51.754926, longitude => -1.256179,
 });
 my $report_id = $report->id;
 my $report2_id = $report2->id;
@@ -151,6 +151,19 @@ FixMyStreet::override_config {
         $mech->content_contains('Invalid location');
         $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 51.754926, longitude => -1.256179, include_update => undef } });
         $mech->content_lacks('Invalid location');
+    };
+
+    subtest "test areas update when location changes" => sub {
+        $report->discard_changes;
+        my ($lat, $lon, $areas) = ($report->latitude, $report->longitude, $report->areas);
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 52.038712, longitude => -1.346397, include_update => undef } });
+        $mech->content_lacks('Invalid location');
+        $report->discard_changes;
+        is $report->areas, ",151767,2237,2419,", 'Areas set correctly';
+        $mech->submit_form_ok({ button => 'save', with_fields => { latitude => $lat, longitude => $lon, include_update => undef } });
+        $report->discard_changes;
+        is $report->areas, $areas, 'Areas reset correctly';
     };
 
     subtest "test duplicate reports are shown" => sub {
@@ -761,7 +774,7 @@ FixMyStreet::override_config {
         $report->discard_changes;
         is $report->category, "Horses", "Report in correct category";
         is $report->whensent, undef, "Report marked as unsent";
-        is $report->bodies_str, $wodc->id, "Reported to WODC";
+        is $report->bodies_str, $oxfordcity->id, "Reported to Oxford City";
 
         is $mech->uri->path, "/report/$report_id", "redirected to correct page";
         is $mech->res->code, 200, "got 200 for final destination";
