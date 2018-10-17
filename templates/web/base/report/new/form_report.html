@@ -6,7 +6,7 @@
 
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
-<div id="post_category_details_form">
+<div class="js-hide-if-invalid-category">
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
     <h2 class="form-section-heading">[% loc( 'Public details' ) %]</h2>

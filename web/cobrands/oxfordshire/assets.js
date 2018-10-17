@@ -1,7 +1,6 @@
 (function(){
   function disable_form(disable) {
-    $('#post_category_details_form').toggle(!disable);
-    $('#private_form').toggle(!disable);
+    $('.js-hide-if-invalid-category').toggle(!disable);
   }
 
   function check_rights_of_way() {

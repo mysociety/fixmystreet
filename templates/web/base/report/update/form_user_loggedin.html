@@ -24,7 +24,8 @@
     <input class="form-control" name="username" id="form_username" type="text" value="[% c.user.email | html %]">
   [% END %]
 
-[% INCLUDE 'report/update/form_user_name.html' %]
+[% PROCESS 'report/form/user_name.html' object=update valid_class='validNameU' %]
+
 [% INCLUDE 'report/_show_name_label.html' %]
 
 <div class="checkbox-group">

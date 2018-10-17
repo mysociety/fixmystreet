@@ -1,15 +1,17 @@
 <div id="form_sign_in_no" class="form-box">
-  [% IF c.config.SMS_AUTHENTICATION %]
-    <h5>[% loc('<strong>No</strong> Let me confirm my report by email/text') %]</h5>
-  [% ELSE %]
-    <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
-  [% END %]
+    [% PROCESS 'report/form/user_loggedout_by_email_heading.html' %]
 
     [% INCLUDE 'report/new/extra_name.html' %]
-    [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
-    [% INCLUDE 'report/new/form_user_name.html' %]
+    [% PROCESS 'user/_anonymity.html' anonymous = object.anonymous %]
+    [% INCLUDE 'report/form/user_name.html' %]
     [% INCLUDE 'report/_show_name_label.html' %]
 
+  [% IF type == 'update' %]
+    <div class="checkbox-group">
+        <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+        <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+    </div>
+  [% ELSE %]
     [% UNLESS c.cobrand.call_hook('disable_phone_number_entry') %]
         <div id="js-hide-if-username-phone">
             <label for="form_phone">[% loc('Phone number (optional)') %]</label>
@@ -25,13 +27,24 @@
         <input class="form-control" type="text" value="[% email | html %]" name="email" id="form_email">
     </div>
     [% END %]
+  [% END %]
+
+  [% IF c.cobrand.moniker == 'fixamingata' %]
+    <div class="general-notes">
+        <p>Vi visar inte din e-postadress eller ditt telefonnummer publikt.</p>
+    </div>
+  [% END %]
 
     <label for="password_register">[% loc('Password (optional)') %]</label>
   [% IF field_errors.password_register %]
     <p class='form-error'>[% field_errors.password_register %]</p>
   [% END %]
     <div class="general-notes" id="password_register_hint">
+      [% IF c.cobrand.moniker == 'bromley' %]
+        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports.') %]</p>
+      [% ELSE %]
         <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+      [% END %]
     </div>
 
     <div class="form-txt-submit-box">

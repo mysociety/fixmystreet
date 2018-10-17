@@ -11,7 +11,7 @@
       [% IF c.user_exists %]
         [% PROCESS "report/new/form_user_loggedin.html" %]
       [% ELSE %]
-        [% PROCESS "report/new/form_user_loggedout.html" %]
+        [% PROCESS "report/form/user_loggedout.html" type='report' object=report %]
       [% END %]
         [% PROCESS 'report/new/form_report.html' %]
     </div>

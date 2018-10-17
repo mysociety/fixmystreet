@@ -45,7 +45,7 @@
 
     [% INCLUDE 'report/new/extra_name.html' %]
     [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
-    [% INCLUDE 'report/new/form_user_name.html' %]
+    [% INCLUDE 'report/form/user_name.html' object=report %]
     [% INCLUDE 'report/_show_name_label.html' %]
 
 [% IF NOT c.user.phone_verified AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]

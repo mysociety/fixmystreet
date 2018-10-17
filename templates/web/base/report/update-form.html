@@ -27,16 +27,13 @@
           [% IF c.user_exists %]
             [% PROCESS "report/update/form_user_loggedin.html" %]
           [% ELSIF oauth_need_email %]
-            [% INCLUDE 'report/update/form_user_loggedout_email.html' required = 1 %]
+            [% PROCESS 'report/form/user_loggedout_email.html' type='update' object=update required=1 %]
             <div id="form_sign_in">
-                <h3>[% loc("Now to submit your update&hellip;") %]</h3>
-                <h2>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
-                [% INCLUDE 'report/update/form_user_loggedout_by_email.html' %]
-                [% INCLUDE 'report/update/form_user_loggedout_password.html' %]
+                [% PROCESS 'report/form/user_loggedout_by_email.html' object=update type='update' valid_class='validNameU' %]
                 <input type="hidden" name="oauth_need_email" value="1">
             </div>
           [% ELSE %]
-            [% INCLUDE 'report/update/form_user_loggedout.html' %]
+            [% PROCESS "report/form/user_loggedout.html" type='update' object=update %]
           [% END %]
           [% IF login_success OR oauth_need_email %]
             [% INCLUDE 'report/update/form_update.html' %]

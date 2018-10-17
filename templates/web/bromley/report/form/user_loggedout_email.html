@@ -1,8 +1,10 @@
 <label for="form_username">[% loc('Email' ) %]
+  [% IF type == 'update' %]
     <span class="muted">([% loc('We never show your email') %])</span>
+  [% END %]
 </label>
 
 [% IF field_errors.username %]
     <p class='form-error'>[% field_errors.username %]</p>
 [% END %]
-<input class="form-control" type="email" name="username" id="form_username" value="[% update.user.email | html %]" required>
+<input class="form-control" type="email" name="username" id="form_username" value="[% object.user.email | html %]" required>
