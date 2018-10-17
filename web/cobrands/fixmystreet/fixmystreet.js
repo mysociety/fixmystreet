@@ -556,10 +556,16 @@ $.extend(fixmystreet.set_up, {
 
     if ('Dropzone' in window) {
       Dropzone.autoDiscover = false;
+    } else {
+      return;
     }
-    if ('Dropzone' in window && $('#form_photo', $context).length) {
-      var $originalLabel = $('[for="form_photo"]', $context);
-      var $originalInput = $('#form_photos', $context);
+
+    var forms = $('[for="form_photo"], .js-photo-label', $context).closest('form');
+    forms.each(function() {
+      // Internal $context is the individual form with the photo upload inside
+      var $context = $(this);
+      var $originalLabel = $('[for="form_photo"], .js-photo-label', $context);
+      var $originalInput = $('#form_photos, .js-photo-fields', $context);
       var $dropzone = $('<div>').addClass('dropzone');
 
       $originalLabel.removeAttr('for');
@@ -642,7 +648,7 @@ $.extend(fixmystreet.set_up, {
         photodrop.emit("complete", mockFile);
         photodrop.options.maxFiles -= 1;
       });
-    }
+    });
   },
 
   report_list_filters: function() {
