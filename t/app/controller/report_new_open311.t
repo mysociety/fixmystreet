@@ -78,7 +78,6 @@ my $empty_form = {
     category      => '',
     password_sign_in => '',
     password_register => '',
-    remember_me => undef,
 };
 foreach my $test (
     {

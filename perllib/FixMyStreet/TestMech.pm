@@ -537,31 +537,6 @@ sub visible_form_values {
     return \%params;
 }
 
-=head2 session_cookie_expiry
-
-    $expiry = $mech->session_cookie_expiry(  );
-
-Returns the current expiry time for the session cookie. Might be '0' which
-indicates it expires at end of browser session.
-
-=cut
-
-sub session_cookie_expiry {
-    my $mech = shift;
-
-    my $cookie_name = 'fixmystreet_app_session';
-    my $expires     = 'not found';
-
-    $mech             #
-      ->cookie_jar    #
-      ->scan( sub { $expires = $_[8] if $_[1] eq $cookie_name } );
-
-    croak "Could not find cookie '$cookie_name'"
-      if $expires && $expires eq 'not found';
-
-    return $expires || 0;
-}
-
 =head2 get_ok_json
 
     $decoded = $mech->get_ok_json( $url );
