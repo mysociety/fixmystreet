@@ -340,6 +340,22 @@ $.extend(fixmystreet.utils, {
                   $('#loading-indicator').attr('aria-hidden', true);
               }
           }
+      },
+
+      get_map_state: function() {
+          var centre = fixmystreet.map.getCenter();
+          return {
+              zoom: fixmystreet.map.getZoom(),
+              lat: centre.lat,
+              lon: centre.lon,
+          };
+      },
+
+      set_map_state: function(state) {
+          fixmystreet.map.setCenter(
+              new OpenLayers.LonLat( state.lon, state.lat ),
+              state.zoom
+          );
       }
     });
 

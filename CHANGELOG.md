@@ -16,6 +16,8 @@
         - Sort user updates in reverse date order.
         - Improve update display on admin report edit page.
         - Keep all moderation history, and show in report/update admin. #2329
+    - Bugfixes:
+        - Restore map zoom out when navigating to /around from /report. #1649
     - Open311 improvements:
         - Fix bug in contact group handling. #2323
         - Improve validation of fetched reports timestamps. #2327

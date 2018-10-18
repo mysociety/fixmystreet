@@ -935,6 +935,8 @@ $.extend(fixmystreet.set_up, {
   },
 
   ajax_history: function() {
+    var around_map_state = null;
+
     $('#map_sidebar').on('click', '.item-list--reports a', function(e) {
         if (e.metaKey || e.ctrlKey) {
             return;
@@ -953,10 +955,30 @@ $.extend(fixmystreet.set_up, {
                 fixmystreet.map.setCenter(
                     marker.geometry.getBounds().getCenterLonLat(),
                     fixmystreet.map.getNumZoomLevels() - 1 );
+                // replaceState rather than pushState so the back button returns
+                // to the zoomed-out map with all pins.
+                history.replaceState({
+                    reportId: reportId,
+                    reportPageUrl: reportPageUrl,
+                    mapState: fixmystreet.maps.get_map_state()
+                }, null);
             }
             return;
         }
 
+        if (fixmystreet.page.match(/reports|around|my/)) {
+            around_map_state = fixmystreet.maps.get_map_state();
+            // Preserve the current map state in the initial state so we can
+            // restore it if the user navigates back. This needs doing here,
+            // rather than the 'fake history' replaceState call that sets the
+            // initial state, because the map hasn't been loaded at that point.
+            if ('state' in history && history.state.initial) {
+                history.state.mapState = around_map_state;
+                // NB can't actually modify current state directly, needs a
+                // call to replaceState()
+                history.replaceState(history.state, null);
+            }
+        }
         fixmystreet.display.report(reportPageUrl, reportId, function() {
             // Since this navigation was the result of a user action,
             // we want to record the navigation as a state, so the user
@@ -964,7 +986,8 @@ $.extend(fixmystreet.set_up, {
             if ('pushState' in history) {
                 history.pushState({
                     reportId: reportId,
-                    reportPageUrl: reportPageUrl
+                    reportPageUrl: reportPageUrl,
+                    mapState: fixmystreet.maps.get_map_state()
                 }, null, reportPageUrl);
             }
         });
@@ -982,7 +1005,13 @@ $.extend(fixmystreet.set_up, {
             // we want to record the navigation as a state, so the user
             // can return to it later using their Back button.
             if ('pushState' in history) {
-                history.pushState({ initial: true }, null, reportListUrl);
+                history.pushState({
+                    initial: true,
+                    mapState: around_map_state
+                }, null, reportListUrl);
+            }
+            if (around_map_state) {
+                fixmystreet.maps.set_map_state(around_map_state);
             }
         });
     });
@@ -1467,6 +1496,10 @@ $(function() {
                     // This popstate was just here because the hash changed.
                     // (eg: mobile nav click.) We want to ignore it.
                 }
+                if ('mapState' in e.state) {
+                    fixmystreet.maps.set_map_state(e.state.mapState);
+                }
+
             });
         }, 0);
     });
