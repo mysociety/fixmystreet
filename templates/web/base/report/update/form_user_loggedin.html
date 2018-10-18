@@ -24,17 +24,12 @@
     <input class="form-control" name="username" id="form_username" type="text" value="[% c.user.email | html %]">
   [% END %]
 
-<label for="form_name">[% loc('Your name') %]</label>
-[% IF field_errors.name %]
-    <p class='form-error'>[% field_errors.name %]</p>
-[% END %]
-
-<input type="text" class="form-control validNameU js-form-name"
-    name="name" id="form_name" value="[% update.name || c.user.name | html %]">
-
+[% INCLUDE 'report/update/form_user_name.html' %]
 [% INCLUDE 'report/_show_name_label.html' %]
 
 <div class="checkbox-group">
     <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
     <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
 </div>
+
+<div class="clearfix"><input class="final-submit green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]"></div>

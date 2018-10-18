@@ -1,7 +1,15 @@
 <div id="form_sign_in_no" class="form-box">
     <h5>Confirm my report by email</h5>
 
-    [% INCLUDE 'report/update/form_name.html' %]
+    [% INCLUDE 'report/new/extra_name.html' %]
+    [% PROCESS 'user/_anonymity.html' anonymous = update.anonymous %]
+    [% INCLUDE 'report/update/form_user_name.html' %]
+    [% INCLUDE 'report/_show_name_label.html' %]
+
+    <div class="checkbox-group">
+        <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+        <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+    </div>
 
     <label for="password_register">[% loc('Password (optional)') %]</label>
   [% IF field_errors.password_register %]
