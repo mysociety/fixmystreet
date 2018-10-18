@@ -328,6 +328,21 @@ sub report_check_for_errors {
         );
     }
 
+    # can't put this in the relevant cobrand as it won't then apply on national site
+    unless ( $errors{name} ) {
+        if ( $report->to_body_named('Buckinghamshire') && length($report->name) > 50 ) {
+            $errors{name} = sprintf( _('Names are limited to %s characters in length.'), 50 );
+        } elsif ( $report->to_body_named('Rutland') && length($report->name) > 40 ) {
+            $errors{name} = sprintf( _('Names are limited to %s characters in length.'), 40 );
+        }
+    }
+
+    if ( $report->user->phone ) {
+        if ( $report->to_body_named('Lincolnshire') && length($report->user->phone) > 20 ) {
+            $errors{phone} = sprintf( _('Phone numbers are limited to %s characters in length.'), 20 );
+        }
+    }
+
     if ( $report->bodies_str && $report->detail ) {
         # Custom character limit:
         if ( $report->to_body_named('Bromley') && length($report->detail) > 1750 ) {
