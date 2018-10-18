@@ -4,10 +4,14 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
+use Moo;
+with 'FixMyStreet::Roles::ConfirmValidation';
+
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire County Council'; }
 sub council_url { return 'buckinghamshire'; }
+
 
 sub example_places {
     return ( 'HP19 7QF', "Walton Road" );

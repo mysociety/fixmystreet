@@ -10,6 +10,16 @@ sub council_name { return 'Oxfordshire County Council'; }
 sub council_url { return 'oxfordshire'; }
 sub is_two_tier { return 1; }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ( length( $report->detail ) > 1700 ) {
+        $errors->{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1700 );
+    }
+
+    return $errors;
+}
+
 sub is_council_with_case_management {
     # XXX Change this to return 1 when OCC FMSfC goes live.
     return FixMyStreet->config('STAGING_SITE');

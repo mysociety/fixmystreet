@@ -4,6 +4,9 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use Moo;
+with 'FixMyStreet::Roles::ConfirmValidation';
+
 use LWP::Simple;
 use URI;
 use Try::Tiny;

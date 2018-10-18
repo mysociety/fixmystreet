@@ -10,6 +10,16 @@ sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ( length( $report->detail ) > 1750 ) {
+        $errors->{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1750 );
+    }
+
+    return $errors;
+}
+
 sub base_url {
     my $self = shift;
     return $self->next::method() if FixMyStreet->config('STAGING_SITE');

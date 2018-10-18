@@ -9,6 +9,16 @@ sub council_area { return 'Rutland'; }
 sub council_name { return 'Rutland County Council'; }
 sub council_url { return 'rutland'; }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ( length( $report->name ) > 40 ) {
+        $errors->{name} = sprintf( _('Names are limited to %d characters in length.'), 40 );
+    }
+
+    return $errors;
+}
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 

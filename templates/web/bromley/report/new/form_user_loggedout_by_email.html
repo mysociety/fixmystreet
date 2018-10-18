@@ -9,6 +9,9 @@
     [% UNLESS c.cobrand.call_hook('disable_phone_number_entry') %]
         <div id="js-hide-if-username-phone">
             <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
+            [% IF field_errors.phone %]
+              <p class='form-error'>[% field_errors.phone %]</p>
+            [% END %]
             <input class="form-control form-focus-hidden" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
         </div>
     [% END %]

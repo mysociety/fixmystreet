@@ -9,6 +9,9 @@ use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
 
+use Moo;
+with 'FixMyStreet::Roles::ConfirmValidation';
+
 sub council_area_id { return 2232; }
 sub council_area { return 'Lincolnshire'; }
 sub council_name { return 'Lincolnshire County Council'; }

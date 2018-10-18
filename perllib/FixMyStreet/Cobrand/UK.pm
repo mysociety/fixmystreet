@@ -328,13 +328,9 @@ sub report_check_for_errors {
         );
     }
 
-    if ( $report->bodies_str && $report->detail ) {
-        # Custom character limit:
-        if ( $report->to_body_named('Bromley') && length($report->detail) > 1750 ) {
-            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1750 );
-        } elsif ( $report->to_body_named('Oxfordshire') && length($report->detail) > 1700 ) {
-            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1700 );
-        }
+    my $cobrand = $self->get_body_handler_for_problem($report);
+    if ( $cobrand->can('report_validation') ) {
+        $cobrand->report_validation( $report, \%errors );
     }
 
     return %errors;
