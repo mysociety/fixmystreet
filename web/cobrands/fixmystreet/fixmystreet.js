@@ -897,22 +897,6 @@ $.extend(fixmystreet.set_up, {
     }
   },
 
-  form_focus_triggers: function() {
-    // If all of the form-focus-triggers are empty, hide form-focus-hidden.
-    // (If the triggers aren't empty, then chances are we're being re-shown
-    // the form after a validation error, so don't hide form-focus-hidden.)
-    // Unhide form-focus-hidden when any of the triggers are focussed.
-    var form_focus_data = $('.form-focus-trigger').map(function() {
-        return $(this).val();
-    }).get().join('');
-    if (!form_focus_data) {
-        $('.form-focus-hidden').hide();
-        $('.form-focus-trigger').on('focus', function() {
-            $('.form-focus-hidden').fadeIn(500);
-        });
-    }
-  },
-
   alert_page_buttons: function() {
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
@@ -1332,7 +1316,6 @@ fixmystreet.display = {
             fixmystreet.set_up.email_login_form();
             fixmystreet.set_up.fancybox_images();
             fixmystreet.set_up.dropzone($sideReport);
-            fixmystreet.set_up.form_focus_triggers();
             fixmystreet.run(fixmystreet.set_up.moderation);
             fixmystreet.run(fixmystreet.set_up.response_templates);
 

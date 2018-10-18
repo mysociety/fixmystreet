@@ -18,7 +18,7 @@
             <p class='form-error'>[% field_errors.name %]</p>
         [% END %]
 
-        <input type="text" class="form-control form-focus-trigger validName js-form-name" value="[% report.name | html %]" name="name" id="form_name">
+        <input type="text" class="form-control validName js-form-name" value="[% report.name | html %]" name="name" id="form_name">
 
         [%# if there is nothing in the name field then set check box as default on form %]
         <div class="checkbox-group">
@@ -29,7 +29,7 @@
         <label for="form_phone">[% loc('Phone number (optional)') %]</label>
         <input type="text" class="form-control" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
 
-        <div class="general-notes form-focus-hidden">
+        <div class="general-notes">
             <p>Vi visar inte din e-postadress eller ditt telefonnummer publikt.</p>
         </div>
 
@@ -38,7 +38,7 @@
         <p class='form-error'>[% field_errors.password_register %]</p>
       [% END %]
 
-        <div class="general-notes form-focus-hidden" id="password_register_hint">
+        <div class="general-notes" id="password_register_hint">
             <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
         </div>
 
