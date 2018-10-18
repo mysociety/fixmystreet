@@ -1,3 +1,4 @@
+<!-- user_loggedout_email.html -->
 [% IF c.config.SMS_AUTHENTICATION %]
     [% SET username_label = loc('Your email or mobile') %]
     [% SET username_type = 'text' %]
@@ -16,3 +17,4 @@
        value="[% username_value | html %]"
     [% IF required %]required[% END %]
     class="form-control required">
+<!-- /user_loggedout_email.html -->

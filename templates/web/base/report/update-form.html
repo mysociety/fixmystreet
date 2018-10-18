@@ -22,21 +22,15 @@
         <input type="hidden" name="token" value="[% csrf_token %]">
         <fieldset>
           [% IF NOT login_success AND NOT oauth_need_email %]
-            [% INCLUDE 'report/update/form_update.html' %]
-          [% END %]
-          [% IF c.user_exists %]
-            [% PROCESS "report/update/form_user_loggedin.html" %]
-          [% ELSIF oauth_need_email %]
-            [% PROCESS 'report/form/user_loggedout_email.html' type='update' object=update required=1 %]
-            <div id="form_sign_in">
-                [% PROCESS 'report/form/user_loggedout_by_email.html' object=update type='update' valid_class='validNameU' %]
-                <input type="hidden" name="oauth_need_email" value="1">
+            <div class="js-new-report-user-hidden">
+                [% INCLUDE 'report/update/form_update.html' %]
             </div>
-          [% ELSE %]
-            [% PROCESS "report/form/user_loggedout.html" type='update' object=update %]
           [% END %]
+            [% PROCESS "report/update/form_user.html" %]
           [% IF login_success OR oauth_need_email %]
-            [% INCLUDE 'report/update/form_update.html' %]
+            <div class="js-new-report-user-hidden">
+                [% INCLUDE 'report/update/form_update.html' %]
+            </div>
           [% END %]
         </fieldset>
     </form>

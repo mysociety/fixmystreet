@@ -11,7 +11,9 @@ describe('Clicking the map', function() {
         cy.get('#map_box').click(200, 200);
         cy.get('[name=title]').type('Title');
         cy.get('[name=detail]').type('Detail');
+        cy.get('#js-new-report-user-show').click();
         cy.get('[name=username]').type('user@example.org');
+        cy.get('#js-new-report-show-sign-in').click();
         cy.get('[name=password_sign_in]').type('password');
         cy.get('[name=password_sign_in]').parents('form').submit();
         cy.get('#map_sidebar').should('contain', 'check and confirm your details');

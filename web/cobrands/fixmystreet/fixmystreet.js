@@ -855,20 +855,98 @@ $.extend(fixmystreet.set_up, {
         $('.js-sign-in-password').show().css('visibility', 'visible');
     });
 
-    // Log in with email button
-    var email_form = $('#js-social-email-hide'),
-        button = $('<button class="btn btn--social btn--social-email">'+translation_strings.login_with_email+'</button>'),
-        form_box = $('<div class="form-box"></div>');
-    button.click(function(e) {
+    var show = function(selector) {
+        var deferred = $.Deferred();
+        $(selector).hide().removeClass('hidden-js').slideDown(400, function(){
+            $(this).css('display', '');
+            deferred.resolveWith(this);
+        });
+        return deferred.promise();
+    };
+
+    var hide = function(selector) {
+        var deferred = $.Deferred();
+        $(selector).slideUp(400, function(){
+            $(this).addClass('hidden-js').css('display', '');
+            deferred.resolveWith(this);
+        });
+        return deferred.promise();
+    };
+
+    var focusFirstVisibleInput = function() {
+        // Ignore logged-in form here, because it should all be pre-filled already!
+        $('#form_sign_in_yes input, #form_sign_in_no input').filter(':visible').eq(0).focus();
+    };
+
+    // Display tweak
+    $('.js-new-report-sign-in-hidden.form-box, .js-new-report-sign-in-shown.form-box').removeClass('form-box');
+
+    $('#js-new-report-user-hide').click(function(e) {
         e.preventDefault();
-        email_form.fadeIn(500);
-        form_box.hide();
+        $('.js-new-report-user-shown')[0].scrollIntoView({behavior: "smooth"});
+        hide('.js-new-report-user-shown');
+        show('.js-new-report-user-hidden');
     });
-    form_box.append(button).insertBefore(email_form);
-    if ($('.form-error').length) {
-        button.click();
+    $('#js-new-report-user-show').click(function(e) {
+        e.preventDefault();
+        if (!$(this).closest('form').validate().form()) {
+            return;
+        }
+        $('.js-new-report-user-hidden')[0].scrollIntoView({behavior: "smooth"});
+        hide('.js-new-report-user-hidden');
+        show('.js-new-report-user-shown').then(function(){
+            focusFirstVisibleInput();
+        });
+    });
+
+    $('#js-new-report-show-sign-in').click(function(e) {
+        $('.js-new-report-sign-in-shown').removeClass('hidden-js');
+        $('.js-new-report-sign-in-hidden').addClass('hidden-js');
+        focusFirstVisibleInput();
+    });
+
+    $('#js-new-report-hide-sign-in').click(function(e) {
+        e.preventDefault();
+        $('.js-new-report-sign-in-shown').addClass('hidden-js');
+        $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
+        focusFirstVisibleInput();
+    });
+
+    $('#js-new-report-sign-in-forgotten').click(function() {
+        $('.js-new-report-sign-in-shown').addClass('hidden-js');
+        $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
+        $('.js-new-report-forgotten-shown').removeClass('hidden-js');
+        $('.js-new-report-forgotten-hidden').addClass('hidden-js');
+        focusFirstVisibleInput();
+    });
+
+    var err = $('.form-error');
+    if (err.length) {
         $('.js-sign-in-password-btn').click();
+        if (err.closest(".js-new-report-sign-in-shown").length) {
+            $('.js-new-report-user-shown').removeClass('hidden-js');
+            $('.js-new-report-user-hidden').addClass('hidden-js');
+            $('.js-new-report-sign-in-shown').removeClass('hidden-js');
+            $('.js-new-report-sign-in-hidden').addClass('hidden-js');
+        } else if (err.closest('.js-new-report-sign-in-hidden, .js-new-report-user-shown').length) {
+            $('.js-new-report-user-shown').removeClass('hidden-js');
+            $('.js-new-report-user-hidden').addClass('hidden-js');
+        }
     }
+  },
+
+  form_section_previews: function() {
+    $('.js-form-section-preview').each(function(){
+        var $el = $(this);
+        var $source = $( $el.attr('data-source') );
+        $source.on('change', function(){
+            var val = $source.val();
+            if ( val.length > 80 ) {
+                val = val.substring(0, 80) + '…';
+            }
+            $el.text( val );
+        });
+    });
   },
 
   reporting_hide_phone_email: function() {

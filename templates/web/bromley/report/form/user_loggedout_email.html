@@ -1,10 +1,22 @@
+[% IF c.config.SMS_AUTHENTICATION %]
+    [% SET username_label = loc('Your email or mobile') %]
+    [% SET username_type = 'text' %]
+    [% SET username_value = object.user.username %]
+[% ELSE %]
+    [% SET username_label = loc('Your email') %]
+    [% SET username_type = 'email' %]
+    [% SET username_value = object.user.email %]
+[% END %]
+
 <label for="form_username">[% loc('Email' ) %]
   [% IF type == 'update' %]
     <span class="muted">([% loc('We never show your email') %])</span>
   [% END %]
 </label>
-
 [% IF field_errors.username %]
     <p class='form-error'>[% field_errors.username %]</p>
 [% END %]
-<input class="form-control" type="email" name="username" id="form_username" value="[% object.user.email | html %]" required>
+<input type="[% username_type %]" name="username" id="form_username"
+       value="[% username_value | html %]"
+    [% IF required %]required[% END %]
+    class="form-control required">

@@ -1,3 +1,5 @@
+<!-- report/update/form_user_loggedin.html -->
+[% PROCESS 'report/form/private_details.html' %]
 [% INCLUDE 'report/new/extra_name.html' %]
 
 [% PROCESS 'user/_anonymity.html' anonymous = update.anonymous %]
@@ -34,3 +36,4 @@
 </div>
 
 <div class="clearfix"><input class="btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]"></div>
+<!-- /report/update/form_user_loggedin.html -->

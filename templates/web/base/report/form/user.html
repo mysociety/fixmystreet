@@ -1,0 +1,25 @@
+<!-- report/form/user.html -->
+<div class="js-new-report-user-hidden form-section-preview form-section-preview--next
+    [%~ ' hidden-nojs' IF c.user_exists OR NOT c.cobrand.social_auth_enabled %]">
+    <h2 class="form-section-heading form-section-heading--private hidden-nojs">
+        [% loc('Next:') %] [% loc('Tell us about you') %]
+    </h2>
+[% IF c.user_exists OR NOT c.cobrand.social_auth_enabled %]
+    <button id="js-new-report-user-show" class="btn btn--block hidden-nojs">[% loc('Continue') %]</button>
+[% ELSE %]
+  [% IF c.config.FACEBOOK_APP_ID %]
+    <button name="facebook_sign_in" id="facebook_sign_in" value="facebook_sign_in" class="btn btn--block btn--social btn--facebook">
+        <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
+        [% loc('Log in with Facebook') %]
+    </button>
+  [% END %]
+  [% IF c.config.TWITTER_KEY %]
+    <button name="twitter_sign_in" id="twitter_sign_in" value="twitter_sign_in" class="btn btn--block btn--social btn--twitter">
+        <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
+        [% loc('Log in with Twitter') %]
+    </button>
+  [% END %]
+    <button id="js-new-report-user-show" class="btn btn--block hidden-nojs">[% loc('Log in with email') %]</button>
+[% END %]
+</div>
+<!-- /report/form/user.html -->

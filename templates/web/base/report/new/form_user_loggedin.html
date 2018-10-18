@@ -1,4 +1,5 @@
-<div class="form-box" id="form-box--logged-in-name">
+<!-- report/new/form_user_loggedin.html -->
+[% PROCESS 'report/form/private_details.html' %]
 
 [% IF js %]
   <div style="display:none" id="js-contribute-as-wrapper">
@@ -68,4 +69,4 @@
 [% END %]
 
 <input class="btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
-</div>
+<!-- /report/new/form_user_loggedin.html -->

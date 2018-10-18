@@ -1,3 +1,4 @@
+<!-- user_name.html -->
 <label for="form_name">[% loc('Name') %]
 [% TRY %]
     [% INCLUDE 'report/form/after_name.html' %]
@@ -9,3 +10,4 @@
 [% END %]
 <input type="text" class="form-control [% valid_class OR 'validName' %] js-form-name [% extra_class %]"
     value="[% object.name || c.user.name | html %]" name="name" id="form_name">
+<!-- /user_name.html -->
