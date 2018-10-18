@@ -19,10 +19,12 @@
             <input class="form-control form-focus-hidden" type="text" value="[% phone | html %]" name="phone" id="form_phone">
         </div>
     [% END %]
+    [% IF c.config.SMS_AUTHENTICATION %]
     <div id="js-hide-if-username-email">
         <label class="form-focus-hidden" for="form_email">[% loc('Email address (optional)') %]</label>
         <input class="form-control form-focus-hidden" type="text" value="[% email | html %]" name="email" id="form_email">
     </div>
+    [% END %]
 
     <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
   [% IF field_errors.password_register %]
