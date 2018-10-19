@@ -19,7 +19,7 @@ describe('Around page filtering and push state', function() {
         cy.wait('@update-results');
         cy.contains('1 to 6 of 6');
         cy.contains('Street light not working');
-        cy.url().should('include', 'status=closed%2Cfixed');
+        cy.url().should('include', 'status=closed,fixed');
         cy.get('#status_2').should('be.checked');
         cy.go('back');
         cy.wait('@update-results');
@@ -31,7 +31,7 @@ describe('Around page filtering and push state', function() {
         cy.wait('@update-results');
         cy.contains('1 to 6 of 6');
         cy.contains('Street light not working');
-        cy.url().should('include', 'status=closed%2Cfixed');
+        cy.url().should('include', 'status=closed,fixed');
         cy.get('#status_2').should('be.checked');
     });
 

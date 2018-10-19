@@ -11,7 +11,7 @@
 [%- END %]
     data-latitude=[% map.latitude %]
     data-longitude=[% map.longitude %]
-[% IF map.any_zoom -%]
+[% IF map.zoomToBounds -%]
     data-zoomToBounds=1
 [%- END %]
 [% IF map.zoom -%]
