@@ -200,8 +200,8 @@ stylesheet:
     </tr>
     <tr>
         <td>
-            <code>$map_nav_bg</code><br>
-            <code>$nav_fg</code>
+            <code>$nav_background_colour</code><br>
+            <code>$nav_colour</code>
         </td>
         <td>
             Mobile width, the header's colours; large width, the navigation's

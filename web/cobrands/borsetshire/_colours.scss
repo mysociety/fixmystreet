@@ -19,9 +19,9 @@ $primary_text: #fff; // text colour wherever $primary is the background
 $base_bg: white; // background on body and .tablewrapper on desktop
 $base_fg: #000; // text color on body and .tablewrapper on desktop
 
-$map_nav_bg: $color-borsetshire-blue; // background for #site-header on mobile, and `.mappage #site-header` on desktop
-$nav_fg: #fff; // text color for `.nav-menu a` on desktop
-$nav_fg_hover: $color-borsetshire-blue; // hover text color for `.nav-menu a`
+$nav_background_colour: $color-borsetshire-blue; // background for #site-header on mobile, and `.mappage #site-header` on desktop
+$nav_colour: #fff; // text color for `.nav-menu a` on desktop
+$nav_hover_background_colour: $color-borsetshire-blue; // hover text color for `.nav-menu a`
 
 $col_big_numbers: #ccc; // text color for ol.big-numbers list item counters on homepage
 

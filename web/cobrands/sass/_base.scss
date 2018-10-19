@@ -506,8 +506,8 @@ ul.error {
   @if ($header-top-border) {
     border-top: $header-top-border;
   }
-  color: $nav_fg;
-  background-color: $map_nav_bg;
+  color: $nav_colour;
+  background-color: $nav_background_colour;
   position: relative;
 }
 
@@ -548,13 +548,13 @@ ul.error {
   font-size: 0.9em;
   line-height: 1em;
   border: 1px solid #666;
-  color: $nav_fg;
+  color: $nav_colour;
   padding: 0.4em;
   border-radius: 0.3em;
 
   &:hover, &:focus {
     text-decoration: none;
-    background-color: $nav_fg_hover;
+    background-color: $nav_hover_background_colour;
   }
 }
 

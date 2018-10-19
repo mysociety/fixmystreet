@@ -1,5 +1,15 @@
 $direction: 'left' !default;
 
+@if (variable-exists(nav_fg)) {
+    $nav_colour: $nav_fg !global;
+}
+@if (variable-exists(nav_fg_hover)) {
+    $nav_hover_background_colour: $nav_fg_hover !global;
+}
+@if (variable-exists(map_nav_bg)) {
+    $nav_background_colour: $nav_fg_hover !global;
+}
+
 // Button reset
 // Uses !important a few times to quickly reset
 // styles from a:link, a:hover, a:visited etc.

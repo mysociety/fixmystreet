@@ -52,7 +52,7 @@ a {
 
 #site-logo {
     @include svg-background-image("images/site-logo-mobile");
-    background-color: $map_nav_bg;
+    background-color: $nav_background_colour;
     background-size: 175px 38px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
