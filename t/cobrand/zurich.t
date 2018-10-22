@@ -833,6 +833,7 @@ subtest "only superuser can see 'Add body' form" => sub {
     }, sub {
         $mech->get_ok( '/admin/bodies' );
     };
+    $mech->content_contains('External Body');
     $mech->content_lacks( '<form method="post" action="bodies"' );
     $mech->log_out_ok;
 };

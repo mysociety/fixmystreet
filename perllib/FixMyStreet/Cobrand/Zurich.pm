@@ -1096,7 +1096,7 @@ sub admin_fetch_all_bodies {
 
     my %sorted;
     foreach (@bodies) {
-        my $p = $_->{parent} || 0;
+        my $p = $_->{parent} ? $_->{parent}{id} : 0;
         push @{$sorted{$p}}, $_;
     }
 
