@@ -446,7 +446,7 @@ sub generate_csv : Private {
               split ',', $hashref->{areas};
         }
 
-        if ($obj->can('local_coords')) {
+        if ($obj->can('local_coords') && $asked_for{local_coords_x}) {
             ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
                 $obj->local_coords;
         }
