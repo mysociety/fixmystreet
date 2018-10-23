@@ -1229,6 +1229,9 @@ fixmystreet.display = {
                 $sideReport.appendTo('#map_sidebar');
             }
             $('#map_sidebar').scrollTop(0);
+            if ($("html").hasClass("mobile")) {
+                $(document).scrollTop(0);
+            }
 
             var found = html.match(/<title>([\s\S]*?)<\/title>/);
             var page_title = found[1];

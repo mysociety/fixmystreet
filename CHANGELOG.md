@@ -8,6 +8,7 @@
         - Clearer relocation options while you’re reporting a problem #2238
         - Simplify /auth sign in page. #2208
         - Enforce maximum photo size server side, strip EXIF data. #2326 #2134
+        - Don't require two taps on reports list on touchscreens. #2294
     - Admin improvements:
         - Allow moderation to potentially change category. #2320
         - Add Mark/View private reports permission #2306
