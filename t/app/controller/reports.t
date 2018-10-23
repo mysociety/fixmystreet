@@ -215,6 +215,47 @@ is scalar @$problems, 4, 'only public problems are displayed';
 
 $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible');
 
+for my $permission( qw/ report_inspect report_mark_private / ) {
+    subtest "user with $permission permission can see non public reports" => sub {
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
+        my $body2 = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
+        my $user = $mech->log_in_ok( 'test@example.com' );
+        $user->user_body_permissions->delete();
+        $user->update({ from_body => $body });
+        $user->user_body_permissions->find_or_create({
+            body => $body,
+            permission_type => $permission,
+        });
+
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/reports/Westminster');
+        };
+        $problems = $mech->extract_problem_list;
+        is scalar @$problems, 5, 'only public problems are displayed';
+
+        $mech->content_contains('All reports Test 3 for ' . $body_west_id, 'non public problem is visible');
+
+        $user->user_body_permissions->delete();
+        $user->update({ from_body => $body2 });
+        $user->user_body_permissions->find_or_create({
+            body => $body2,
+            permission_type => $permission,
+        });
+
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/reports/Westminster');
+        };
+        $problems = $mech->extract_problem_list;
+        is scalar @$problems, 4, 'only public problems are displayed';
+
+        $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible');
+    };
+}
+
 # No change to numbers if report is non-public
 FixMyStreet::override_config {
     TEST_DASHBOARD_DATA => $data,

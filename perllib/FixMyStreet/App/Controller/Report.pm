@@ -85,7 +85,7 @@ sub display :PathPart('') :Chained('id') :Args(0) {
     $c->forward( 'format_problem_for_display' );
 
     my $permissions = $c->stash->{_permissions} ||= $c->forward( 'check_has_permission_to',
-        [ qw/report_inspect report_edit_category report_edit_priority/ ] );
+        [ qw/report_inspect report_edit_category report_edit_priority report_mark_private/ ] );
     if (any { $_ } values %$permissions) {
         $c->stash->{template} = 'report/inspect.html';
         $c->forward('inspect');
@@ -131,8 +131,8 @@ sub load_problem_or_display_error : Private {
         # Creator, and inspection users can see non_public reports
         $c->stash->{problem} = $problem;
         my $permissions = $c->stash->{_permissions} = $c->forward( 'check_has_permission_to',
-            [ qw/report_inspect report_edit_category report_edit_priority/ ] );
-        if ( !$c->user || ($c->user->id != $problem->user->id && !$permissions->{report_inspect}) ) {
+            [ qw/report_inspect report_edit_category report_edit_priority report_mark_private / ] );
+        if ( !$c->user || ($c->user->id != $problem->user->id && !($permissions->{report_inspect} || $permissions->{report_mark_private})) ) {
             $c->detach(
                 '/page_error_403_access_denied',
                 [ sprintf(_('That report cannot be viewed on %s.'), $c->stash->{site_name}) ]

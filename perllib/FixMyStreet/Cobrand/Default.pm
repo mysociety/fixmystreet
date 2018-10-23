@@ -717,6 +717,7 @@ sub available_permissions {
             report_edit => _("Edit reports"),
             report_edit_category => _("Edit report category"), # future use
             report_edit_priority => _("Edit report priority"), # future use
+            report_mark_private => _("View/Mark private reports"),
             report_inspect => _("Markup problem details"),
             report_instruct => _("Instruct contractors to fix problems"), # future use
             planned_reports => _("Manage shortlist"),

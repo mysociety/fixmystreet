@@ -104,7 +104,10 @@ foreach my $test (
     };
 }
 
-my @edinburgh_problems = $mech->create_problems_for_body( 5, 2651, 'Around page', {
+my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
+my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
+
+my @edinburgh_problems = $mech->create_problems_for_body( 5, $body_edin_id, 'Around page', {
     postcode  => 'EH1 1BB',
     latitude  => 55.9519637512,
     longitude => -3.17492254484,
@@ -128,7 +131,7 @@ subtest 'check non public reports are not displayed on around page' => sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
             "good location" );
     };
-    $mech->content_contains( 'Around page Test 3 for 2651',
+    $mech->content_contains( "Around page Test 3 for $body_edin_id",
         'problem to be marked non public visible' );
 
     my $private = $edinburgh_problems[2];
@@ -142,10 +145,52 @@ subtest 'check non public reports are not displayed on around page' => sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
             "good location" );
     };
-    $mech->content_lacks( 'Around page Test 3 for 2651',
+    $mech->content_lacks( "Around page Test 3 for $body_edin_id",
         'problem marked non public is not visible' );
 };
 
+for my $permission ( qw/ report_inspect report_mark_private/ ) {
+    subtest 'check non public reports are displayed on around page with $permission permission' => sub {
+        my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
+        my $body2 = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
+        my $user = $mech->log_in_ok( 'test@example.com' );
+        $user->user_body_permissions->delete();
+        $user->update({ from_body => $body });
+        $user->user_body_permissions->find_or_create({
+            body => $body,
+            permission_type => $permission,
+        });
+
+        $mech->get_ok('/');
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+                "good location" );
+        };
+        $mech->content_contains( "Around page Test 3 for $body_edin_id",
+            'problem marked non public is visible' );
+
+        $user->user_body_permissions->delete();
+        $user->update({ from_body => $body2 });
+        $user->user_body_permissions->find_or_create({
+            body => $body2,
+            permission_type => $permission,
+        });
+
+        $mech->get_ok('/');
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+                "good location" );
+        };
+        $mech->content_lacks( "Around page Test 3 for $body_edin_id",
+            'problem marked non public is not visible' );
+    };
+}
 
 my $body = $mech->create_body_ok(2237, "Oxfordshire");
 

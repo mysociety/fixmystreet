@@ -30,7 +30,8 @@ sub non_public_if_possible {
     if ($c->user_exists) {
         if ($c->user->is_superuser) {
             # See all reports, no restriction
-        } elsif ($c->user->has_body_permission_to('report_inspect')) {
+        } elsif ($c->user->has_body_permission_to('report_inspect') ||
+                 $c->user->has_body_permission_to('report_mark_private')) {
             $params->{'-or'} = [
                 non_public => 0,
                 $rs->body_query($c->user->from_body->id),

@@ -6,6 +6,7 @@
         - Simplify /auth sign in page. #2208
     - Admin improvements:
         - Allow moderation to potentially change category. #2320
+        - Add Mark/View private reports permission #2306
     - Open311 improvements:
         - Fix bug in contact group handling. #2323
 

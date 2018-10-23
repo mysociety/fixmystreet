@@ -57,12 +57,22 @@ FixMyStreet::override_config {
     subtest "test inspect page" => sub {
         $mech->get_ok("/report/$report_id");
         $mech->content_lacks('Save changes');
+        $mech->content_lacks('Private');
+        $mech->content_lacks('Priority');
+        $mech->content_lacks('Traffic management');
+        $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
+
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_mark_private' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('Private');
+        $mech->content_contains('Save changes');
         $mech->content_lacks('Priority');
         $mech->content_lacks('Traffic management');
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
 
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
         $mech->get_ok("/report/$report_id");
+        $mech->content_contains('Private');
         $mech->content_contains('Save changes');
         $mech->content_contains('Priority');
         $mech->content_lacks('Traffic management');
@@ -71,6 +81,7 @@ FixMyStreet::override_config {
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
         $mech->get_ok("/report/$report_id");
         $mech->content_contains('Save changes');
+        $mech->content_contains('Private');
         $mech->content_contains('Priority');
         $mech->content_contains('Traffic management');
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
@@ -91,7 +102,28 @@ FixMyStreet::override_config {
         $user->update({is_superuser => 0});
     };
 
+    subtest "test mark private submission" => sub {
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_mark_private' });
+
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ button => 'save', with_fields => { non_public => 1 } });
+        $report->discard_changes;
+        my $alert = FixMyStreet::App->model('DB::Alert')->find(
+            { user => $user, alert_type => 'new_updates', confirmed => 1, }
+        );
+
+        is $report->state, 'confirmed', 'report state not changed';
+        ok $report->non_public, 'report not public';
+        ok !defined( $alert ) , 'not signed up for alerts';
+
+        $report->update( { non_public => 0 } );
+    };
     subtest "test basic inspect submission" => sub {
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+
+        $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action scheduled', include_update => undef } });
         $report->discard_changes;
         my $alert = FixMyStreet::App->model('DB::Alert')->find(

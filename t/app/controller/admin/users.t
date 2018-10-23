@@ -168,6 +168,7 @@ for my $test (
 my %default_perms = (
     "permissions[moderate]" => undef,
     "permissions[planned_reports]" => undef,
+    "permissions[report_mark_private]" => undef,
     "permissions[report_edit]" => undef,
     "permissions[report_edit_category]" => undef,
     "permissions[report_edit_priority]" => undef,

@@ -556,13 +556,9 @@ sub load_and_group_problems : Private {
         state      => [ keys %$states ]
     };
 
-    my $body = $c->stash->{body}; # Might be undef
+    $c->forward('check_non_public_reports_permission', [ $where ] );
 
-    if ($c->user_exists && ($c->user->is_superuser || ($body && $c->user->has_permission_to('report_inspect', $body->id)))) {
-        # See all reports, no restriction
-    } else {
-        $where->{non_public} = 0;
-    }
+    my $body = $c->stash->{body}; # Might be undef
 
     my $filter = {
         order_by => $c->stash->{sort_order},
@@ -651,6 +647,26 @@ sub load_and_group_problems : Private {
     );
 
     return 1;
+}
+
+
+sub check_non_public_reports_permission : Private {
+    my ($self, $c, $where) = @_;
+
+    if ( $c->user_exists ) {
+        return if $c->user->is_super_user;
+
+        my $body = $c->stash->{body};
+
+        my $user_has_permission = $body && (
+            $c->user->has_permission_to('report_inspect', $body->id) ||
+            $c->user->has_permission_to('report_mark_private', $body->id)
+        );
+
+        $where->{non_public} = 0 unless $user_has_permission;
+    } else {
+        $where->{non_public} = 0;
+    }
 }
 
 sub redirect_index : Private {

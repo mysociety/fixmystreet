@@ -1919,6 +1919,50 @@ subtest "extra google analytics code displayed on email confirmation problem cre
     };
 };
 
+
+my $private_perms = $mech->create_user_ok('private_perms@example.org', name => 'private', from_body => $bodies[0]);
+subtest "report_mark_private allows users to mark reports as private" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        BASE_URL => 'https://www.fixmystreet.com',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_out_ok;
+
+        $private_perms->user_body_permissions->find_or_create({
+            body => $bodies[0],
+            permission_type => 'report_mark_private',
+        });
+
+        $mech->log_in_ok('private_perms@example.org');
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+            "submit location" );
+        $mech->follow_link_ok(
+            { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link"
+        );
+
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    title         => "Private report",
+                    detail        => 'Private report details.',
+                    photo1        => '',
+                    name          => 'Joe Bloggs',
+                    may_show_name => '1',
+                    phone         => '07903 123 456',
+                    category      => 'Trees',
+                    non_public    => 1,
+                }
+            },
+            "submit good details"
+        );
+
+        $mech->content_contains('Great work. Now spread the word', 'shown confirmation page');
+    }
+};
+
 my $inspector = $mech->create_user_ok('inspector@example.org', name => 'inspector', from_body => $bodies[0]);
 foreach my $test (
   { non_public => 0 },

@@ -57,7 +57,7 @@
     <input class="form-control" type="text" value="[% report.user.email | html %]" name="email" id="form_email">
 [% END %]
 
-[% IF c.user.has_permission_to("report_inspect", bodies.keys) %]
+[% IF c.user.has_permission_to("report_inspect", bodies.keys) OR c.user.has_permission_to("report_mark_private", bodies.keys) %]
     <div class="checkbox-group">
         <input type="checkbox" name="non_public" id="form_non_public" value="1"[% ' checked' IF report.non_public %]>
         <label class="inline" for="form_non_public">[% loc('Private') %] </label>
