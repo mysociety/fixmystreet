@@ -481,6 +481,9 @@ sub initialize_report : Private {
                 # save the token to delete at the end
                 $c->stash->{partial_token} = $token if $report;
 
+                $c->stash->{email} = $report->user->email;
+                $c->stash->{phone} = $report->user->phone_display;
+
             } else {
                 # no point keeping it if it is done.
                 $token->delete;
@@ -807,6 +810,9 @@ sub process_user : Private {
         $report->user( $user );
         $c->forward('update_user', [ \%params ]);
 
+        $c->stash->{phone} = $report->user->phone_display;
+        $c->stash->{email} = $report->user->email;
+
         if ($c->stash->{contributing_as_body} or $c->stash->{contributing_as_anonymous_user}) {
             $report->name($user->from_body->name);
             $user->name($user->from_body->name) unless $user->name;
@@ -831,6 +837,10 @@ sub process_user : Private {
     $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
 
     $c->forward('update_user', [ \%params ]);
+
+    $c->stash->{phone} = Utils::trim_text( $type eq 'phone' ? $report->user->phone_display : $params{phone} );
+    $c->stash->{email} = Utils::trim_text( $type eq 'email' ? $report->user->email : $params{email} );
+
 
     # The user is trying to sign in. We only care about username from the params.
     if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {

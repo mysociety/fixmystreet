@@ -222,6 +222,8 @@ subtest "test password errors for a user who is signing in as they report" => su
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         MAPIT_URL => 'http://mapit.uk/',
         SMS_AUTHENTICATION => 1,
+        phone_verified => 1,
+        email_verified => 1,
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
@@ -245,6 +247,8 @@ subtest "test password errors for a user who is signing in as they report" => su
     is_deeply $mech->page_errors, [
         "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
     ], "check there were errors";
+
+    $mech->content_lacks($user->email, 'email not displayed');
 };
 
 subtest "test report creation for a user who is signing in as they report" => sub {

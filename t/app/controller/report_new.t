@@ -680,6 +680,7 @@ subtest "test password errors for a user who is signing in as they report" => su
         name     => 'Joe Bloggs',
         phone    => '01234 567 890',
         password => 'secret2',
+        phone_verified => 1,
     } ), "set user details";
 
     # submit initial pc form
@@ -715,6 +716,8 @@ subtest "test password errors for a user who is signing in as they report" => su
     is_deeply $mech->page_errors, [
         "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
     ], "check there were errors";
+
+    $mech->content_lacks('1234', 'phone number not shown');
 };
 
 foreach my $test (

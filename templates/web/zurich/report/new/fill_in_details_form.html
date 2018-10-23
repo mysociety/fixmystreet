@@ -54,7 +54,7 @@
                 [% IF field_errors.username %]
                     <p class='form-error'>[% field_errors.username %]</p>
                 [% END %]
-                <input class="form-control" type="email" value="[% report.user.email | html %]" name="username" id="form_username" required>
+                <input class="form-control" type="email" value="[% email | html %]" name="username" id="form_username" required>
 
                 <label for="form_name">[% loc('Name') %] [% loc('(optional)') %]</label>
                 [% IF field_errors.name %]
@@ -66,7 +66,7 @@
                 [% IF field_errors.phone %]
                     <p class='form-error'>[% field_errors.phone %]</p>
                 [% END %]
-                <input class="form-control" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" required>
+                <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone" required>
 
                 <div class="form-txt-submit-box">
                     [%# class of submit_sign_in so name can be optional, name of submit_register so it doesn't try and sign us in %]
