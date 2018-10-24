@@ -194,7 +194,7 @@ sub load_updates : Private {
     $c->stash->{updates} = \@combined;
 
     if ($c->sessionid) {
-        foreach (qw(alert_to_reporter anonymized photo_error)) {
+        foreach (qw(alert_to_reporter anonymized moderate_errors)) {
             $c->stash->{$_} = $c->flash->{$_} if $c->flash->{$_};
         }
     }
