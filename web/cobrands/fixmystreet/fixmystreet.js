@@ -312,16 +312,12 @@ $.extend(fixmystreet.set_up, {
       });
     });
 
-    /* set correct required status depending on what we submit
-    * NB: need to add things to form_category as the JS updating
-    * of this we do after a map click removes them */
+    /* set correct required status depending on what we submit */
     $('.js-submit_sign_in').click( function(e) {
-        $('#form_category').addClass('required validCategory').removeClass('valid');
         $('.js-form-name').removeClass('required');
     } );
 
     $('.js-submit_register').click( function(e) {
-        $('#form_category').addClass('required validCategory').removeClass('valid');
         $('.js-form-name').addClass('required');
     } );
 
@@ -469,7 +465,7 @@ $.extend(fixmystreet.set_up, {
     if ($category_select.length === 0) {
         return;
     }
-    var $group_select = $("<select></select>").addClass("form-control").attr('id', 'category_group');
+    var $group_select = $("<select></select>").addClass("form-control validCategory").attr('id', 'category_group');
     var $subcategory_label = $("#form_subcategory_label");
     var $empty_option = $category_select.find("option").first();
 
@@ -509,7 +505,7 @@ $.extend(fixmystreet.set_up, {
             $opt.data("subcategory_id", subcategory_id);
             $group_select.append($opt);
 
-            var $sub_select = $("<select></select>").addClass("form-control js-subcategory");
+            var $sub_select = $("<select></select>").addClass("form-control js-subcategory validCategory");
             $sub_select.attr("id", subcategory_id);
             $sub_select.append($empty_option.clone());
             $options.each(function() {
