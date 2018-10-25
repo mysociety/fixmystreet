@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 use JSON::MaybeXS;
 use LWP::UserAgent;
+use Path::Tiny;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -33,6 +34,21 @@ has user_agent => (
         return $ua;
     }
 );
+
+# The user should have the web server proxying this,
+# but for development we can also do it on the server.
+sub tile_proxy : Path('/tilma') {
+    my ($self, $c) = @_;
+    (my $path = $c->req->uri->path_query) =~ s{^/tilma/}{};
+    my $url = "https://a.tile.openstreetmap.org/$path";
+    $self->user_agent->agent($c->req->user_agent);
+    my $png = $self->user_agent->get($url)->content;
+    $path = path("web/tilma/$path");
+    $path->parent->mkpath;
+    $path->spew_raw($png);
+    $c->res->content_type('image/png');
+    $c->response->body($png);
+}
 
 # The user should have the web server proxying this,
 # but for development we can also do it on the server.
