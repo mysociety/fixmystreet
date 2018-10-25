@@ -103,7 +103,7 @@ body.frontpage {
 
     li {
         span, a {
-            color: $nav_fg;
+            color: $nav_colour;
         }
     }
 }
@@ -176,7 +176,7 @@ body.mappage {
     }
 
     .nav-menu--main a.report-a-problem-btn {
-        color: $nav_fg;
+        color: $nav_colour;
     }
 
     .nav-menu {

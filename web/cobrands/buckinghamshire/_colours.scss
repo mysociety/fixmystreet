@@ -25,9 +25,9 @@ $primary_text: $g1;
 $base_bg: white;
 $base_fg: $g1;
 
-$map_nav_bg: #fff;
-$nav_fg: #000;
-$nav_fg_hover: #eee;
+$nav_background_colour: #fff;
+$nav_colour: #000;
+$nav_hover_background_colour: #eee;
 
 $col_click_map: $g1;
 $col_click_map_dark: darken($g1, 10%);

@@ -20,6 +20,7 @@
         - Add cobrand hook for dashboard viewing permission. #2285
         - Have body.url work in hashref lookup. #2284
         - OSM based map types can now override zoom levels #2288
+        - Clearer name for navigation colours in SCSS. #2080
     - Internal things:
         - Move send-comments code to package for testing. #2109 #2170
 
