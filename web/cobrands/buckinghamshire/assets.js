@@ -25,7 +25,7 @@ var defaults = {
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
-    body: "Buckinghamshire County Council",
+    body: "Borsetshire County Council",
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
