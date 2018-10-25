@@ -21,7 +21,7 @@ world is one area, with ID 161 and name "Everywhere".
 
 =cut
 
-my $area = { "name" => "Everywhere", "type" => "ZZZ", "id" => 161 };
+my $area = { "name" => "Everywhere", "type" => "CTY", "id" => 161 };
 
 has user_agent => (
     is => 'ro',
