@@ -85,19 +85,19 @@ for my $test (
     },
     {
         state => 'duplicate',
-        send_email => 1,
+        send_email => 0,
     },
     {
         state => 'unable to fix',
-        send_email => 1,
+        send_email => 0,
     },
     {
         state => 'not responsible',
-        send_email => 1,
+        send_email => 0,
     },
     {
         state => 'closed',
-        send_email => 1,
+        send_email => 0,
     },
 ) {
     subtest "correct questionnaire behaviour for state $test->{state}" => sub {
@@ -129,6 +129,7 @@ for my $test (
         }, sub {
             $problem->latitude($test->{latitude});
             $problem->send_questionnaire(1);
+            $problem->state('confirmed');
             $problem->update;
             $problem->questionnaires->delete;
 
