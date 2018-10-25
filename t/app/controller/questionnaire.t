@@ -40,6 +40,26 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
+# Make sure questionnaires aren't sent if the report is closed.
+foreach my $state (
+    'closed', 'duplicate', 'not responsible', 'unable to fix', 'internal referral'
+) {
+    subtest "questionnaire not sent for $state state" => sub {
+        $report->update( { send_questionnaire => 1, state => $state } );
+        $report->questionnaires->delete;
+        FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
+            site => 'fixmystreet'
+        } );
+
+        $mech->email_count_is(0);
+
+        $report->discard_changes;
+        is $report->send_questionnaire, 0;
+    }
+}
+$report->update( { send_questionnaire => 1, state => 'confirmed' } );
+$report->questionnaires->delete;
+
 # Call the questionaire sending function...
 FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
     site => 'fixmystreet'

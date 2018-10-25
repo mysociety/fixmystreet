@@ -53,7 +53,9 @@ sub send_questionnaires_period {
         # Cobrands can also override sending per row if they wish
         my $cobrand_send = $cobrand->call_hook('send_questionnaire', $row) // 1;
 
-        if ($row->is_from_abuser || !$row->user->email_verified || !$cobrand_send) {
+        if ($row->is_from_abuser || !$row->user->email_verified ||
+            !$cobrand_send || $row->is_closed
+           ) {
             $row->update( { send_questionnaire => 0 } );
             next;
         }
