@@ -19,7 +19,8 @@
             <label for="pc">[% question %]:</label>
             <p class="form-hint" id="pc-hint">[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]</p>
             <div>
-                <input type="hidden" name="pc" value="[% c.cobrand.problems.first.postcode | html %]">
+                <input type="hidden" name="latitude" value="52.45557">
+                <input type="hidden" name="longitude" value="-1.72002">
                 <input type="text" name="_pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" aria-describedby="pc-hint" required>
                 <input type="submit" value="[% loc('Go') %]" id="sub">
             </div>
