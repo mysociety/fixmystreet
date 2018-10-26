@@ -24,6 +24,9 @@
         - Clearer name for navigation colours in SCSS. #2080
     - Internal things:
         - Move send-comments code to package for testing. #2109 #2170
+    - Open311 improvements:
+        - Set contact group only if handling cobrand has groups enabled. #2312
+
 
 * v2.4.1 (2nd October 2018)
     - New features:

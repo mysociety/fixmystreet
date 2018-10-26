@@ -11,6 +11,9 @@ has schema => ( is => 'ro', lazy => 1, default => sub { FixMyStreet::DB->schema-
 has _current_body => ( is => 'rw' );
 has _current_open311 => ( is => 'rw' );
 has _current_service => ( is => 'rw' );
+has _current_body_cobrand => ( is => 'ro', lazy => 1, default => sub {
+    return shift->_current_body->get_cobrand_handler;
+} );
 
 sub process_bodies {
     my $self = shift;
@@ -160,10 +163,7 @@ sub _handle_existing_contact {
         $contact->update;
     }
 
-    if (my $group = $self->_current_service->{group}) {
-        $contact->set_extra_metadata(group => $group);
-        $contact->update;
-    }
+    $self->_set_contact_group($contact);
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
@@ -188,12 +188,6 @@ sub _create_contact {
         );
     };
 
-    if (my $group = $self->_current_service->{group}) {
-        $contact->set_extra_metadata(group => $group);
-        $contact->update;
-    }
-
-
     if ( $@ ) {
         warn "Failed to create contact for service code " . $self->_current_service->{service_code} . " for body @{[$self->_current_body->id]}: $@\n"
             if $self->verbose >= 1;
@@ -204,6 +198,8 @@ sub _create_contact {
     if ( $contact and lc($metadata) eq 'true' ) {
         $self->_add_meta_to_contact( $contact );
     }
+
+    $self->_set_contact_group($contact);
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
@@ -308,6 +304,20 @@ sub _normalize_service_name {
     $service_name =~ s/\s+$//;
 
     return $service_name;
+}
+
+sub _set_contact_group {
+    my ($self, $contact) = @_;
+
+    if ($self->_current_body_cobrand && $self->_current_body_cobrand->call_hook('enable_category_groups')) {
+        if (my $group = $self->_current_service->{group}) {
+            $contact->set_extra_metadata(group => $group);
+            $contact->update;
+        }
+    } else {
+        $contact->unset_extra_metadata('group');
+        $contact->update;
+    }
 }
 
 sub _delete_contacts_not_in_service_list {
