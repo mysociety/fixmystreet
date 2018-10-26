@@ -2445,6 +2445,14 @@ a#geolocate_link.loading, .btn--geolocate.loading {
             margin-bottom: 0;
         }
     }
+
+    .segmented-control {
+        .btn {
+            &:last-child {
+                margin-bottom: 1em;
+            }
+        }
+    }
 }
 
 .asset-spot:before {

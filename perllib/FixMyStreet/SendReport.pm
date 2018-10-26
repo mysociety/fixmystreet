@@ -6,6 +6,7 @@ use MooX::Types::MooseLike::Base qw(:all);
 use Module::Pluggable
     sub_name    => 'senders',
     search_path => __PACKAGE__,
+    except => 'FixMyStreet::SendReport::Email::SingleBodyOnly',
     require     => 1;
 
 has 'body_config' => ( is => 'rw', isa => HashRef, default => sub { {} } );

@@ -41,6 +41,7 @@ for my $body (
     { area_id => 2227, name => 'Hampshire County Council' },
     { area_id => 2333, name => 'Hart Council' },
     { area_id => 2535, name => 'Sandwell Borough Council' },
+    { area_id => 1000, name => 'Highways England' },
 ) {
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
     push @bodies, $body_obj;
@@ -97,6 +98,11 @@ my $contact10 = $mech->create_contact_ok(
     body_id => $body_ids{2326}, # Cheltenham
     category => 'Street lighting',
     email => 'streetlights-2326@example.com',
+);
+my $contact11 = $mech->create_contact_ok(
+    body_id => $body_ids{1000}, # Highways
+    category => 'Pothole',
+    email => 'pothole-1000@example.com',
 );
 
 # test that the various bit of form get filled in and errors correctly
@@ -975,6 +981,13 @@ foreach my $test (
         category => 'Street lighting',
         councils => [ 2326 ],
         extra_fields => { do_not_send => 'Gloucestershire County Council' },
+        email_count => 1,
+    },
+    {
+        desc => "test single_body_only with Highways England",
+        category => 'Street lighting',
+        councils => [ 1000 ],
+        extra_fields => { single_body_only => 'Highways England' },
         email_count => 1,
     },
 ) {

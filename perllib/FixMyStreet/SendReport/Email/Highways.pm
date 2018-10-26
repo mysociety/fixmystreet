@@ -1,11 +1,11 @@
-package FixMyStreet::SendReport::Email::TfL;
+package FixMyStreet::SendReport::Email::Highways;
 
 use Moo;
 extends 'FixMyStreet::SendReport::Email::SingleBodyOnly';
 
 has contact => (
     is => 'ro',
-    default => 'Traffic lights'
+    default => 'Pothole'
 );
 
 1;
