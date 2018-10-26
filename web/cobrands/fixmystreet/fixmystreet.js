@@ -504,6 +504,17 @@ $.extend(fixmystreet.set_up, {
             add_option(this);
         }
     });
+    // Sort elements in place, but leave the first 'pick a category' option alone
+    $group_select.find("option").slice(1).sort(function(a, b) {
+        // 'Other' should always be at the end.
+        if (a.label === 'Other') {
+            return 1;
+        }
+        if (b.label === 'Other') {
+            return -1;
+        }
+        return a.label > b.label ? 1 : -1;
+    }).appendTo($group_select);
     $group_select.change();
   },
 
