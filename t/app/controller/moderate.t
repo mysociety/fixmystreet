@@ -21,6 +21,7 @@ $mech->host('www.example.org');
 
 my $BROMLEY_ID = 2482;
 my $body = $mech->create_body_ok( $BROMLEY_ID, 'Bromley Council' );
+$mech->create_contact_ok( body => $body, category => 'Lost toys', email => 'losttoys@example.net' );
 
 my $dt = DateTime->now;
 
@@ -231,6 +232,45 @@ subtest 'Problem moderation' => sub {
             is $report->title, 'Good bad good';
             is $report->detail, 'Changed detail';
         }
+    };
+
+    subtest 'Moderate extra data' => sub {
+        $report->set_extra_metadata('moon', 'waxing full');
+        $report->update;
+        my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
+        $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
+            %problem_prepopulated,
+            'extra.weather' => 'snow',
+            'extra.moon' => 'waxing full',
+            token => $csrf,
+        });
+        $report->discard_changes;
+        is $report->get_extra_metadata('weather'), 'snow';
+    };
+
+    subtest 'Moderate location' => sub {
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+            ALLOWED_COBRANDS => 'fixmystreet',
+        }, sub {
+            my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
+            $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
+                %problem_prepopulated,
+                latitude => '53',
+                longitude => '0.01578',
+                token => $csrf,
+            });
+            $report->discard_changes;
+            is $report->latitude, 51.4129, 'No change when moved out of area';
+            $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
+                %problem_prepopulated,
+                latitude => '51.4021',
+                longitude => '0.01578',
+                token => $csrf,
+            });
+            $report->discard_changes;
+            is $report->latitude, 51.4021, 'Updated when same body';
+        };
     };
 };
 

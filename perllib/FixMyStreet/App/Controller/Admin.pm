@@ -1083,6 +1083,7 @@ sub report_edit_location : Private {
         # comparison.
         my $safe_stash = { %{$c->stash} };
         $c->stash->{fetch_all_areas} = 1;
+        $c->stash->{area_check_action} = 'admin';
         $c->forward('/council/load_and_check_areas', []);
         $c->forward('/report/new/setup_categories_and_bodies');
         my %allowed_bodies = map { $_ => 1 } @{$problem->bodies_str_ids};

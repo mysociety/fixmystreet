@@ -10,7 +10,7 @@
     - Admin improvements:
         - List number of alerts on report page #669
         - viewing and managing of user alerts in admin #676
-        - Allow moderation to potentially change photos. #2291
+        - Allow moderation to potentially change photos/extra info. #2291 #2307
     - Bugfixes:
         - Add perl 5.26/5.28 support.
         - Fix subcategory issues when visiting /report/new directly #2276
