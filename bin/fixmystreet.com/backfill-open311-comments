@@ -1,0 +1,64 @@
+#!/usr/bin/env perl
+#
+# This script utilises the Open311 extension explained at
+# https://github.com/mysociety/FixMyStreet/wiki/Open311-FMS---Proposed-differences-to-Open311
+# to fetch updates on service requests for a specified timeframe, optionally for a single body
+
+use strict;
+use warnings;
+require 5.8.0;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use DateTime;
+use DateTime::Format::W3CDTF;
+use DateTime::Format::ISO8601;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'body:s', "Name of body to use" ],
+    [ 'start_date:s', "Date of first comment to fetch" ],
+    [ 'end_date:s', "Date of last comment to fetch" ],
+    [ 'verbose', "Print out info as we go" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+use Open311::GetServiceRequestUpdates;
+
+my $start_date = DateTime::Format::W3CDTF->parse_datetime( $opt->start_date );
+my $end_date = DateTime::Format::W3CDTF->parse_datetime( $opt->end_date );
+
+die "start and end date required\n" unless $start_date and $end_date;
+
+die "start date must be before end date\n" unless $end_date > $start_date;
+
+my $current_date = $start_date->clone;
+
+while ( $current_date < $end_date ) {
+    my $current_plus_24 = $current_date->clone;
+    $current_plus_24->add( hours => 24 );
+
+    print "fetching updates from $current_date till $current_plus_24\n" if $opt->verbose;
+
+    my %params = (
+        verbose => $opt->verbose,
+        start_date => DateTime::Format::W3CDTF->format_datetime( $current_date ),
+        end_date => DateTime::Format::W3CDTF->format_datetime( $current_plus_24 )
+    );
+
+    $params{body} = $opt->body if $opt->body;
+
+    my $updates = Open311::GetServiceRequestUpdates->new( %params );
+    $updates->fetch;
+
+    $current_date = $current_plus_24;
+
+    sleep 5;
+}
