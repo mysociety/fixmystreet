@@ -9,6 +9,7 @@ use DateTime::Format::W3CDTF;
 has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => sub { undef } );
 has end_date => ( is => 'ro', default => sub { undef } );
+has body => ( is => 'ro', default => sub { undef } );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
@@ -28,6 +29,10 @@ sub fetch {
             endpoint        => { '!=', '' },
         }
     );
+
+    if ( $self->body ) {
+        $bodies = $bodies->search( { name => $self->body } );
+    }
 
     while ( my $body = $bodies->next ) {
 

@@ -725,6 +725,48 @@ subtest 'check that existing comments are not duplicated' => sub {
     is $problem->comments->count, 2, 'if comments are deleted then they are added';
 };
 
+subtest 'check that can limit fetching to a body' => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>open</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    is $problem->comments->count, 0, 'one comment before fetching updates';
+
+    $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        body => 'Oxfordshire',
+        system_user => $user,
+    );
+
+    $update->fetch( $o );
+
+    $problem->discard_changes;
+    is $problem->comments->count, 0, 'no comments after fetching updates';
+
+    $update = Open311::GetServiceRequestUpdates->new(
+        body => 'Bromley',
+        system_user => $user,
+    );
+
+    $update->fetch( $o );
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, '1 comment after fetching updates';
+};
+
 subtest 'check that external_status_code is stored correctly' => sub {
     my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
     <service_requests_updates>
