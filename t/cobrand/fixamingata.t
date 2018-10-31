@@ -106,6 +106,18 @@ subtest "Test ajax decimal points" => sub {
     };
 };
 
+subtest "check user details always shown" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixamingata' ],
+    }, sub {
+        $user2->update({ from_body => $body });
+        $mech->get_ok('/report/' . $report->id);
+        my $update_meta = $mech->extract_update_metas;
+        like $update_meta->[0], qr/Body \(Commenter\) /;
+        $user2->update({ from_body => undef });
+    };
+};
+
 END {
     ok $mech->host("www.fixmystreet.com"), "change host back";
     done_testing();

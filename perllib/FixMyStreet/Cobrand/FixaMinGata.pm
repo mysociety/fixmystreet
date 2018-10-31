@@ -181,4 +181,8 @@ sub state_groups_inspect {
     ]
 }
 
+sub always_view_body_contribute_details {
+    return 1;
+}
+
 1;
