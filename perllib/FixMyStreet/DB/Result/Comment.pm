@@ -248,7 +248,9 @@ sub meta_line {
                 $body = "$body <img src='/cobrands/greenwich/favicon.png' alt=''>";
             }
         }
-        my $can_view_contribute = $c->user_exists && $c->user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids);
+        my $cobrand_always_view_body_user = $c->cobrand->call_hook("always_view_body_contribute_details");
+        my $can_view_contribute = $cobrand_always_view_body_user ||
+            ($c->user_exists && $c->user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids));
         if ($self->text) {
             if ($can_view_contribute) {
                 $meta = sprintf( _( 'Posted by <strong>%s</strong> (%s) at %s' ), $body, $user_name, Utils::prettify_dt( $self->confirmed ) );
