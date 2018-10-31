@@ -375,8 +375,10 @@ $.extend(fixmystreet.set_up, {
             selectElement: this,
             displayMenu: 'overlay',
             required: true,
-            // showAllValues: true, // Currently undismissable on iOS
-            defaultValue: ''
+            showAllValues: true, // Currently undismissable on iOS
+            defaultValue: this.value.trim(), // to redisplay chosen value on page load
+            confirmOnBlur: false,
+            preserveNullOptions: true // so 'all areas' is visible as an option
         });
     });
   },
