@@ -166,6 +166,11 @@ citizen’s experience](/pro-manual/citizens-experience/)'. Those with the appro
 the report-making interface, labeled ‘Report As’. Select ‘the council’, ‘yourself’, ‘anonymous’ or
 ‘another user’.
 
+If a user has the ‘Default to creating reports/update as the council’
+permission then the dropdown will default to reporting as the council.
+Staff with the ’Markup problem details’ permission will also default to
+reporting as the council.
+
 </div>
 
 

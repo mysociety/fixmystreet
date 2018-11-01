@@ -177,6 +177,7 @@ my %default_perms = (
     "permissions[contribute_as_another_user]" => undef,
     "permissions[contribute_as_anonymous_user]" => undef,
     "permissions[contribute_as_body]" => undef,
+    "permissions[default_to_body]" => undef,
     "permissions[view_body_contribute_details]" => undef,
     "permissions[user_edit]" => undef,
     "permissions[user_manage_permissions]" => undef,
