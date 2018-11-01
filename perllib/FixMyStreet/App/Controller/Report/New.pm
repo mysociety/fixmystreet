@@ -202,6 +202,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my @list_of_names = map { $_->name } values %{$c->stash->{bodies}};
     my $contribute_as = {};
+    my $closest;
     if ($c->user_exists) {
         my @bodies = keys %{$c->stash->{bodies}};
         my $ca_another_user = $c->user->has_permission_to('contribute_as_another_user', \@bodies);
@@ -210,6 +211,12 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         $contribute_as->{another_user} = $ca_another_user if $ca_another_user;
         $contribute_as->{anonymous_user} = $ca_anonymous_user if $ca_anonymous_user;
         $contribute_as->{body} = $ca_body if $ca_body;
+
+        if ($c->user->has_permission_to('report_inspect', \@bodies)
+            || $c->user->has_permission_to('report_prefill', \@bodies) ) {
+            $c->forward('get_closest_address');
+            $closest = $c->stash->{closest};
+        }
     }
 
     my %by_category;
@@ -231,6 +238,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         $top_message ? (top_message => $top_message) : (),
         unresponsive => $c->stash->{unresponsive}->{ALL} || '',
         by_category => \%by_category,
+        closest => $closest,
     };
     $c->detach('send_json_response');
 }
@@ -759,6 +767,21 @@ sub setup_report_extra_fields : Private {
 
     my @extras = $c->model('DB::ReportExtraFields')->for_cobrand($c->cobrand)->for_language($c->stash->{lang_code})->all;
     $c->stash->{report_extra_fields} = \@extras;
+}
+
+sub get_closest_address : Private {
+    my ($self, $c) = @_;
+
+    my $lat = $c->get_param('latitude') || $c->get_param('lat');
+    my $lon = $c->get_param('longitude') || $c->get_param('lon');
+
+    my $closest = $c->cobrand->find_closest({ latitude => $lat, longitude => $lon });
+    my $data = {
+        road => $closest->{address}{addressLine},
+        full_address => $closest->{name},
+    };
+
+    $c->stash->{closest} = $data;
 }
 
 =head2 check_form_submitted

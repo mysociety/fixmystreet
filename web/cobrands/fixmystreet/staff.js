@@ -457,8 +457,9 @@ $(fixmystreet).on('report_new:category_change', function(evt, $this) {
     var body = $this.data('body');
 
     if (prefill_reports && role == 'inspector') {
-        var title = 'A ' + category + ' problem has been found';
-        var description = 'A ' + category + ' problem has been found by ' + body;
+        var location = fixmystreet.reporting_data.closest && fixmystreet.reporting_data.closest.road !== null ? ' near ' + fixmystreet.reporting_data.closest.road : '';
+        var title = 'A ' + category + ' problem has been found' + location;
+        var description = 'A ' + category + ' problem has been found by ' + body + location;
 
         var $title_field = $('#form_title');
         var $description_field = $('#form_detail');
