@@ -455,10 +455,9 @@ $.extend(fixmystreet.set_up, {
 $(fixmystreet).on('report_new:category_change', function(evt, $this) {
     var category = $this.val();
     var prefill_reports = $this.data('prefill');
-    var role = $this.data('role');
     var body = $this.data('body');
 
-    if (prefill_reports && role == 'inspector') {
+    if (prefill_reports) {
         var title = 'A ' + category + ' problem has been found';
         var description = 'A ' + category + ' problem has been found by ' + body;
 

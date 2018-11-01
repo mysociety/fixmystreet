@@ -720,6 +720,7 @@ sub available_permissions {
             report_mark_private => _("View/Mark private reports"),
             report_inspect => _("Markup problem details"),
             report_instruct => _("Instruct contractors to fix problems"), # future use
+            report_prefill => _("Automatically populate report subject/detail"),
             planned_reports => _("Manage shortlist"),
             contribute_as_another_user => _("Create reports/updates on a user's behalf"),
             contribute_as_anonymous_user => _("Create reports/updates as anonymous user"),

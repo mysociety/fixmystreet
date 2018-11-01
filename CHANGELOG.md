@@ -3,6 +3,7 @@
 * Unreleased
     - New features:
         - default_to_body permission to control default report as behaviour
+        - report_prefill permission to control report prefill behaviour
     - Front end improvements:
         - Clearer relocation options while you’re reporting a problem #2238
         - Simplify /auth sign in page. #2208

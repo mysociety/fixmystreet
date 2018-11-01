@@ -2048,8 +2048,31 @@ subtest "check map click ajax response for inspector" => sub {
     }, sub {
         $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
     };
-    like $extra_details->{category}, qr/data-role="inspector/, 'category has correct data-role';
+    like $extra_details->{category}, qr/data-prefill="0/, 'inspector prefill not set';
     ok !$extra_details->{contribute_as}, 'no contribute as section';
+};
+
+subtest "check map click ajax response for inspector and uk cobrand" => sub {
+    $mech->log_out_ok;
+
+    my $extra_details;
+    $inspector->user_body_permissions->find_or_create({
+        body => $bodies[4],
+        permission_type => 'planned_reports',
+    });
+    $inspector->user_body_permissions->find_or_create({
+        body => $bodies[4],
+        permission_type => 'report_inspect',
+    });
+
+    $mech->log_in_ok('inspector@example.org');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { bromley => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.402096&longitude=0.015784' );
+    };
+    like $extra_details->{category}, qr/data-prefill="0/, 'inspector prefill not set';
 };
 
 for my $test (

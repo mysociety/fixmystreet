@@ -84,9 +84,15 @@ my $perms_cs = [
     'contribute_as_body', 'contribute_as_another_user',
     'moderate', 'view_body_contribute_details',
 ];
+my $perms_cs_full = [
+    'contribute_as_body', 'contribute_as_another_user',
+    'moderate', 'view_body_contribute_details',
+    'report_prefill', 'default_to_body'
+];
 foreach (
     { name => 'Inspector Gadget', email => 'inspector@example.org', email_verified => 1, body => $body, permissions => $perms_inspector },
     { name => 'Harriet Helpful', email_verified => 1, email => 'cs@example.org', body => $body, permissions => $perms_cs },
+    { name => 'Andrew Agreeable', email_verified => 1, email => 'cs_full@example.org', body => $body, permissions => $perms_cs_full },
     { name => 'Super User', email_verified => 1, email => 'super@example.org', body => $body, permissions => [
         @$perms_cs, @$perms_inspector, 'report_edit',
         'category_edit', 'template_edit', 'responsepriority_edit',
