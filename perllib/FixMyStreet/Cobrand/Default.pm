@@ -723,6 +723,7 @@ sub available_permissions {
             contribute_as_another_user => _("Create reports/updates on a user's behalf"),
             contribute_as_anonymous_user => _("Create reports/updates as anonymous user"),
             contribute_as_body => _("Create reports/updates as the council"),
+            default_to_body => _("Default to creating reports/updates as the council"),
             view_body_contribute_details => _("See user detail for reports created as the council"),
 
             # NB this permission is special in that it can be assigned to users

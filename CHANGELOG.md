@@ -5,6 +5,7 @@
         - Dashboard now has update CSV export. #2249
         - Allow cobrands to override searching by reference #2271
         - Allow cobrands to limit contact form to abuse reports only
+        - default_to_body permission to control default report as behaviour
     - Front end improvements:
         - Clearer relocation options while you’re reporting a problem #2238
     - Admin improvements:
