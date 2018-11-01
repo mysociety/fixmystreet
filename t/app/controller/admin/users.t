@@ -173,6 +173,7 @@ my %default_perms = (
     "permissions[report_edit_priority]" => undef,
     "permissions[report_inspect]" => undef,
     "permissions[report_instruct]" => undef,
+    "permissions[report_prefill]" => undef,
     "permissions[contribute_as_another_user]" => undef,
     "permissions[contribute_as_anonymous_user]" => undef,
     "permissions[contribute_as_body]" => undef,

@@ -1992,6 +1992,61 @@ subtest "check map click ajax response for inspector" => sub {
         $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
     };
     like $extra_details->{category}, qr/data-role="inspector/, 'category has correct data-role';
+    like $extra_details->{category}, qr/data-prefill="0"/, 'inspector prefill not set';
+    ok !$extra_details->{contribute_as}, 'no contribute as section';
+};
+
+subtest "check map click ajax response for inspector on cobrand with prefill" => sub {
+    $mech->log_out_ok;
+
+    my $user = $mech->create_user_ok('bromley_inspector@example.org', name => 'test user', from_body => $bodies[4]);
+
+    my $extra_details;
+    $user->user_body_permissions->find_or_create({
+        body => $bodies[4],
+        permission_type => 'report_inspect',
+    });
+
+    $mech->log_in_ok('bromley_inspector@example.org');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { bromley => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.402096&longitude=0.015784' );
+    };
+    like $extra_details->{category}, qr/data-role="user/, 'category has correct data-role';
+    like $extra_details->{category}, qr/data-prefill="1"/, 'inspector prefill set';
+    ok !$extra_details->{contribute_as}, 'no contribute as section';
+};
+
+subtest "check map click ajax response for user with prefill permission" => sub {
+    $mech->log_out_ok;
+
+    my $extra_details;
+
+    my $user = $mech->create_user_ok("prefill_report\@example.org", name => 'test user', from_body => $bodies[0]);
+    $mech->log_in_ok("prefill_report\@example.org");
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+    };
+    like $extra_details->{category}, qr/data-prefill="0"/, 'prefill not set';
+
+    $user->user_body_permissions->find_or_create({
+        body => $bodies[0],
+        permission_type => 'report_prefill',
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+    };
+    like $extra_details->{category}, qr/data-prefill="1"/, 'prefill set';
     ok !$extra_details->{contribute_as}, 'no contribute as section';
 };
 

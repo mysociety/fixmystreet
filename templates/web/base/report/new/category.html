@@ -15,7 +15,8 @@
     </label>[% =%]
     <select class="form-control[% IF category_groups.size %] js-grouped-select[% END %]" name="category" id="form_category"
     [%~ IF c.user.from_body =%]
-      data-role="[% c.user.has_body_permission_to('planned_reports') ? 'inspector' : 'user'  %]" data-body="[% c.user.from_body.name %]" data-prefill="[% c.cobrand.prefill_report_fields_for_inspector %]"
+      [%~ prefill_report = c.cobrand.prefill_report_fields_for_inspector || c.user.has_body_permission_to('report_prefill') %]
+      data-role="[% c.user.has_body_permission_to('planned_reports') ? 'inspector' : 'user'  %]" data-body="[% c.user.from_body.name %]" data-prefill="[% prefill_report %]"
     [%~ END ~%]
     >
         [%~ IF category_groups.size ~%]
