@@ -17,6 +17,7 @@
         - Give superusers access to update staff dropdowns. #2286
         - Update report areas when moving its location. #2181
         - Don't send questionnaires for closed reports. #2310
+        - Make sure Open311 send_method always recorded/spotted. #2121
     - Development improvements:
         - Add cobrand hook for dashboard viewing permission. #2285
         - Have body.url work in hashref lookup. #2284

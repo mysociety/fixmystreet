@@ -905,7 +905,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     if ( $c->get_param('resend') ) {
         $c->forward('/auth/check_csrf_token');
 
-        $problem->whensent(undef);
+        $problem->resend;
         $problem->update();
         $c->stash->{status_message} =
           '<p><em>' . _('That problem will now be resent.') . '</em></p>';
@@ -1023,7 +1023,7 @@ sub report_edit_category : Private {
         # If the report has changed bodies (and not to a subset!) we need to resend it
         my %old_map = map { $_ => 1 } @{$problem->bodies_str_ids};
         if (grep !$old_map{$_}, @new_body_ids) {
-            $problem->whensent(undef);
+            $problem->resend;
         }
         # If the send methods of the old/new contacts differ we need to resend the report
         my @new_send_methods = uniq map {
@@ -1034,7 +1034,7 @@ sub report_edit_category : Private {
         } @contacts;
         my %old_send_methods = map { $_ => 1 } split /,/, ($problem->send_method_used || "Email");
         if (grep !$old_send_methods{$_}, @new_send_methods) {
-            $problem->whensent(undef);
+            $problem->resend;
         }
 
         $problem->bodies_str(join( ',', @new_body_ids ));

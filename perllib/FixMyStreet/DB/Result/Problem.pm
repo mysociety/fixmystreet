@@ -893,7 +893,7 @@ bodies by some mechanism. Right now that mechanism is Open311.
 
 sub updates_sent_to_body {
     my $self = shift;
-    return unless $self->send_method_used && $self->send_method_used eq 'Open311';
+    return unless $self->send_method_used && $self->send_method_used =~ /Open311/;
 
     # Some bodies only send updates *to* FMS, they don't receive updates.
     my $cobrand = $self->get_cobrand_logged;
@@ -920,6 +920,12 @@ sub add_send_method {
     } else {
         $self->send_method_used($sender);
     }
+}
+
+sub resend {
+    my $self = shift;
+    $self->whensent(undef);
+    $self->send_method_used(undef);
 }
 
 sub as_hashref {

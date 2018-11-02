@@ -60,7 +60,7 @@ sub process_body {
             'problem.whensent' => { '!=' => undef },
             'problem.external_id' => { '!=' => undef },
             'problem.bodies_str' => { -like => '%' . $body->id . '%' },
-            'problem.send_method_used' => 'Open311',
+            'problem.send_method_used' => { -like => '%Open311%' },
         },
         {
             join => 'problem',
