@@ -7,10 +7,10 @@ title: Installing
 
 <p class="lead">
   This page describes how to install the FixMyStreet platform manually.
-  You can use this if you're used to setting up web applications &mdash; 
+  You can use this if you're used to setting up web applications &mdash;
   but the other installation options may be easier:</p>
 
-Note that this is just one of 
+Note that this is just one of
 [many ways to install FixMyStreet]({{ "/install/" | relative_url }})
 (the other ways are easier!).
 
@@ -129,7 +129,9 @@ and compiles any translation `.mo` files (using `commonlib/bin/gettext-makemo`).
 
 The settings for FixMyStreet are defined in `conf/general.yml` using the YAML
 markup language. There are some defaults in `conf/general.yml-example` which
-you should copy to `conf/general.yml`:
+you should copy to `conf/general.yml`; note that if you are using the Vagrant 
+environment, a simple `conf/general.yml` file should already have been
+configured for you.
 
 {% highlight bash %}
 $ cp conf/general.yml-example conf/general.yml
@@ -151,7 +153,7 @@ Some others you might want to look at, though the defaults are enough for it to 
 * [GEO_CACHE]({{ "/customising/config/#geo_cache" | relative_url }}) -- this is the location where Geolocation data will be cached. It should be accessible by and writeable by the FixMyStreet process.
 
 If you are using Bing or Google maps you should also set one of
-[BING_MAPS_API_KEY]({{ "/customising/config/#bing_maps_api_key" | relative_url }}) or 
+[BING_MAPS_API_KEY]({{ "/customising/config/#bing_maps_api_key" | relative_url }}) or
 [GOOGLE_MAPS_API_KEY]({{ "/customising/config/#google_maps_api_key" | relative_url }}).
 
 ### 6. Set up some required data

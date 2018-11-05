@@ -3,5 +3,19 @@
 set -e
 cd "$(dirname "$0")/.."
 
-# Same as update for now
+# If we're running in Vagrant and there isn't a valid config file, set one up.
+if [ ! -f conf/general.yml ] && [ "$USER" = "vagrant" ]; then
+    echo -n "Setting up a default conf/general.yml file for Vagrant..."
+    sed -r \
+        -e "s,^( *FMS_DB_HOST:).*,\\1 ''," \
+        -e "s,^( *FMS_DB_NAME:).*,\\1 'fixmystreet'," \
+        -e "s,^( *FMS_DB_USER:).*,\\1 'vagrant'," \
+        -e "s,^( *BASE_URL:).*,\\1 'http://127.0.0.1.xip.io:3000'," \
+        -e "s,^( *EMAIL_DOMAIN:).*,\\1 '127.0.0.1.xip.io'," \
+        -e "s,^( *CONTACT_EMAIL:).*,\\1 'help@127.0.0.1.xip.io'," \
+        -e "s,^( *DO_NOT_REPLY_EMAIL:).*,\\1 'help@127.0.0.1.xip.io'," \
+        conf/general.yml-example > conf/general.yml
+fi
+
+# The rest should be the same as update for now
 script/update

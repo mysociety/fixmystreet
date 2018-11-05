@@ -22,6 +22,7 @@
         - Have body.url work in hashref lookup. #2284
         - OSM based map types can now override zoom levels #2288
         - Clearer name for navigation colours in SCSS. #2080
+        - `script/setup` now creates `conf/general.yml` for Vagrant when needed.
     - Internal things:
         - Move send-comments code to package for testing. #2109 #2170
     - Open311 improvements:
