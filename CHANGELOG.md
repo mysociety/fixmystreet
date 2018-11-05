@@ -3,6 +3,8 @@
 * Unreleased
     - Front end improvements:
         - Clearer relocation options while you’re reporting a problem #2238
+    - Admin improvements:
+        - Allow moderation to potentially change category. #2320
 
 * v2.4.2 (6th November 2018)
     - New features:

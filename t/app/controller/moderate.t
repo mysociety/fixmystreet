@@ -248,6 +248,18 @@ subtest 'Problem moderation' => sub {
         is $report->get_extra_metadata('weather'), 'snow';
     };
 
+    subtest 'Moderate category' => sub {
+        $report->update;
+        my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
+        $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
+            %problem_prepopulated,
+            'category' => 'Lost toys',
+            token => $csrf,
+        });
+        $report->discard_changes;
+        is $report->category, 'Lost toys';
+    };
+
     subtest 'Moderate location' => sub {
         FixMyStreet::override_config {
             MAPIT_URL => 'http://mapit.uk/',

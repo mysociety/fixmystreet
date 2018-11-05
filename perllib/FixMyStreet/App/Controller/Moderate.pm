@@ -84,6 +84,7 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
         $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
         $c->forward('moderate_boolean', [ 'photo' ]),
         $c->forward('moderate_location'),
+        $c->forward('moderate_category'),
         $c->forward('moderate_extra');
 
     # Deal with possible photo changes. If a moderate form uses a standard
@@ -267,6 +268,23 @@ sub moderate_location : Private {
 
     $problem->update;
     return 'location';
+}
+
+# No update left at present
+sub moderate_category : Private {
+    my ($self, $c) = @_;
+
+    return unless $c->get_param('category');
+
+    # The admin category editing needs to know all the categories etc
+    $c->forward('/admin/categories_for_point');
+
+    my $problem = $c->stash->{problem};
+    $c->forward( '/admin/report_edit_category', [ $problem, 1 ] );
+    # It might need to set_report_extras in future
+
+    $problem->update;
+    return 'category';
 }
 
 sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
