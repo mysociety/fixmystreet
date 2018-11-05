@@ -50,6 +50,11 @@ $full_setup = <<-EOS
     else
       rm -f /tmp/success 2>/dev/null
     fi
+    # Even if it failed somehow, we might as well update the port if possible
+    if [ -e fixmystreet/conf/general.yml ] && ! grep -q "^ *BASE_URL.*:3000'$" conf/general.yml; then
+      # We want to be on port 3000 for development
+      sed -i -r -e "s,^( *BASE_URL: .*)',\\1:3000'," fixmystreet/conf/general.yml
+    fi
 EOS
 
 # This just runs our update script, used on our offical box.
@@ -65,11 +70,6 @@ EOS
 
 # This will ensure that bits of config are set right.
 $configure = <<-EOS
-    # Even if it failed somehow, we might as well update the port if possible
-    if [ -e fixmystreet/conf/general.yml ]; then
-        # We want to be on port 3000 for development
-        sed -i -r -e "s,^( *BASE_URL: .*)',\\1:3000'," fixmystreet/conf/general.yml
-    fi
     # Create a superuser for the admin
     su vagrant -c 'fixmystreet/bin/createsuperuser superuser@example.org password'
     if [ -e /tmp/success ]; then
