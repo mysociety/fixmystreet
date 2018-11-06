@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+
+* v2.4.2 (6th November 2018)
     - New features:
         - Dashboard now has update CSV export. #2249
         - Allow cobrands to override searching by reference #2271
