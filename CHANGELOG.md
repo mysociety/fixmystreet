@@ -5,8 +5,6 @@
         - Dashboard now has update CSV export. #2249
         - Allow cobrands to override searching by reference #2271
         - Allow cobrands to limit contact form to abuse reports only
-    - Front end improvements:
-        - Clearer relocation options while you’re reporting a problem #2238
     - Admin improvements:
         - List number of alerts on report page #669
         - viewing and managing of user alerts in admin #676
@@ -28,7 +26,6 @@
         - Move send-comments code to package for testing. #2109 #2170
     - Open311 improvements:
         - Set contact group only if handling cobrand has groups enabled. #2312
-
 
 * v2.4.1 (2nd October 2018)
     - New features:
