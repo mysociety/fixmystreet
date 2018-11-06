@@ -24,9 +24,9 @@ for a year](http://aws.amazon.com/free/).
 ### Using our pre-built AMI
 
 The AMI we've prepared for you can be found in the **EU West (Ireland)**
-region, with the ID `ami-04bf74a231b875394` and name "FixMyStreet installation
-full 2018-10-03". You can launch an instance based on that AMI with
-[this link](https://console.aws.amazon.com/ec2/home?region=eu-west-1#launchAmi=ami-04bf74a231b875394).
+region, with the ID `ami-054a00f052ab4ae45` and name "FixMyStreet installation
+full 2018-11-06". You can launch an instance based on that AMI with
+[this link](https://console.aws.amazon.com/ec2/home?region=eu-west-1#launchAmi=ami-054a00f052ab4ae45).
  This AMI is based on the [latest tagged release](https://github.com/mysociety/fixmystreet/releases)
  and contains everything you need to get a base install up and running.
 
