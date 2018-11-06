@@ -5,10 +5,11 @@ notifications:
       - "irc.freenode.net#fixmystreet"
     use_notice: true
     skip_join: true
-  slack: mysociety:1M2CXeMwHIf8SrGoKyZrz0jO
+  slack:
+    secure: "yY05S8ecxMv5GwexGQV/9sqUwxn1j0LF8KyG0VnoMPqJXOaGmkAe60I695CC7/P0AaNC2oWfqMZcEcdXZNa8l7kWluxyRktt6cP+VDPmIKJqcsasoDPDTLlZQTNy8i+EwxzRWDUUMFjLet6lqZYEbBPeCSufmQyyjknhGiSPGsQ="
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/863c1892a6a51e5a3b3c
+      secure: "x6M1u9SFv2oQpo28wDSpURV0Rnk+jTA5VCXIjlo0ccbEV1IOp36KSJT3A2lSbf2BDlwGlKcbgtMP9dk83So2dhvPow7ogemouW+Rx1olYJgzoTR3v5cZt9pn7g6y0O1M+AkDIzabzT90oRD4//YVY5OS16ZjePcBWwp9yHEEQ7I="
 
 language: perl
 perl:
