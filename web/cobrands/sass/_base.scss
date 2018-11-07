@@ -734,7 +734,16 @@ footer {
 /*BUTTONS*/
 
 .btn {
-  @include button-reset;
+  @include button-reset();
+}
+
+// Deprecated
+// Try to use `btn btn--primary` etc instead of `btn-primary` where possible.
+.btn-primary,
+.green-btn,
+.btn-danger,
+.red-btn {
+  @include button-size();
 }
 
 .btn + .btn {
@@ -743,13 +752,15 @@ footer {
 }
 
 .btn-primary,
-.green-btn {
-  @include button-reset(#9FDE23, #7FB900, #5B9700, #fff, #9FDE23, #7FB900, #5B9700, #fff);
+.green-btn,
+.btn--primary {
+  @include button-variant(#9FDE23, #7FB900, #5B9700, #fff, #9FDE23, #7FB900, #5B9700, #fff);
 }
 
 .btn-danger,
-.red-btn {
-  @include button-reset(#FF0038, #BF002A, #80001C, #fff, #FF0038, #BF002A, #80001C, #fff);
+.red-btn,
+.btn--danger {
+  @include button-variant(#FF0038, #BF002A, #80001C, #fff, #FF0038, #BF002A, #80001C, #fff);
 }
 
 .final-submit,
@@ -759,7 +770,7 @@ input.final-submit {
 }
 
 .btn--facebook {
-    @include button-reset(#3b5998, darken(#3b5998, 10%), #3b5998, #fff, darken(#3b5998, 5%), darken(#3b5998, 10%), #3b5998, #fff);
+    @include button-variant(#3b5998, darken(#3b5998, 10%), #3b5998, #fff, darken(#3b5998, 5%), darken(#3b5998, 10%), #3b5998, #fff);
 
     img {
         margin-#{$right}: 0.5em;
@@ -770,7 +781,7 @@ input.final-submit {
 }
 
 .btn--twitter {
-    @include button-reset(#55acee, darken(#55acee, 10%), #55acee, #fff, darken(#55acee, 5%), darken(#55acee, 10%), #55acee, #fff);
+    @include button-variant(#55acee, darken(#55acee, 10%), #55acee, #fff, darken(#55acee, 5%), darken(#55acee, 10%), #55acee, #fff);
 
     img {
         margin-#{$right}: 0.5em;
@@ -850,7 +861,11 @@ input.final-submit {
 
 .btn--block {
     display: block;
-    text-align: center;
+    // Need to force 100% width if this is applied to <button> or <input> elements
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    @include box-sizing(border-box);
 }
 
 // Under the button to override its text transform and width

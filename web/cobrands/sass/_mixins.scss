@@ -10,47 +10,62 @@ $direction: 'left' !default;
     $nav_background_colour: $nav_fg_hover !global;
 }
 
-// Button reset
-// Uses !important a few times to quickly reset
-// styles from a:link, a:hover, a:visited etc.
-@mixin button-reset($bg-top: #fff, $bg-bottom: #eee, $border: #ccc, $text: inherit, $hover-bg-bottom: #e9e9e9, $hover-bg-top: #f9f9f9, $hover-border: #ccc, $hover-text: inherit){
-  display: inline-block;
-  margin: 0;
-  padding: 0.75em 1em;
-  width: auto;
-  height: auto;
-  vertical-align: top;
-  text-align: center;
+@mixin button-size() {
+    display: inline-block;
+    margin: 0;
+    padding: 0.75em 1em;
+    width: auto;
+    height: auto;
 
-  font-size: 1em;
-  line-height: 1em;
-  font-weight: bold;
-  font-family: inherit;
-  text-decoration: none !important;
-  color: $text !important;
+    vertical-align: top;
+    text-align: center;
+    font-size: 1em;
+    line-height: 1em;
+    font-weight: bold;
+    font-family: inherit;
 
-  cursor: pointer;
-  background: $bg-bottom;
-  @include linear-gradient($bg-top, $bg-bottom);
+    cursor: pointer;
+    @include border-radius(4px);
 
-  border: 1px solid $border;
-  @include border-radius(4px);
+    &,
+    &:hover,
+    &:focus {
+        // We *never* want buttons to be underlined.
+        text-decoration: none !important;
+    }
 
-  &:hover,
-  &:focus {
-    background: $hover-bg-bottom;
-    @include linear-gradient($hover-bg-top, $hover-bg-bottom);
-    text-decoration: none !important;
-    border-color: $hover-border;
-    color: $hover-text !important;
-  }
+    &:disabled {
+        cursor: default;
+    }
+}
 
-  &:disabled {
+@mixin button-variant($bg-top: #fff, $bg-bottom: #eee, $border: #ccc, $text: inherit, $hover-bg-bottom: #e9e9e9, $hover-bg-top: #f9f9f9, $hover-border: #ccc, $hover-text: inherit) {
+    color: $text !important; // !important to override more specific selectors like `a:link`
     background: $bg-bottom;
-    border-color: $border;
-    color: desaturate(darken($bg-bottom, 50%), 50%) !important;
-    cursor: default;
-  }
+    @include linear-gradient($bg-top, $bg-bottom);
+    border: 1px solid $border;
+
+    &:hover,
+    &:focus {
+        color: $hover-text !important;
+        background: $hover-bg-bottom;
+        @include linear-gradient($hover-bg-top, $hover-bg-bottom);
+        border-color: $hover-border;
+    }
+
+    &:disabled {
+        color: desaturate(darken($bg-bottom, 50%), 50%) !important;
+        background: $bg-bottom;
+        border-color: $border;
+    }
+}
+
+// Deprecated.
+// Where possible, use button-size() and button-variant() separately to avoid
+// replicating layout rules at higher specificities than required.
+@mixin button-reset($bg-top: #fff, $bg-bottom: #eee, $border: #ccc, $text: inherit, $hover-bg-bottom: #e9e9e9, $hover-bg-top: #f9f9f9, $hover-border: #ccc, $hover-text: inherit){
+  @include button-size();
+  @include button-variant($bg-top, $bg-bottom, $border, $text, $hover-bg-bottom, $hover-bg-top, $hover-border, $hover-text);
 }
 
 // list reset

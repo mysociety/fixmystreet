@@ -152,8 +152,10 @@ svg|g.site-logo__svg {
     }
 }
 
-.btn-primary {
-    @include button-reset(
+// Yellow primary buttons on FMS.com, rather than green.
+.btn-primary,
+.btn--primary {
+    @include button-variant(
         mix($primary, #fff, 50%),
         $primary,
         mix($primary, #ccc, 30%),

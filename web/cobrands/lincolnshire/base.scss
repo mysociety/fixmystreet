@@ -82,7 +82,8 @@ a {
 }
 
 .btn-primary,
-.green-btn {
+.green-btn,
+.btn--primary {
   background: none; // remove gradient bg
   background-color: $primary;
   border-color: $primary;

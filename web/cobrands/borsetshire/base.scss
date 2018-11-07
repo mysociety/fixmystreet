@@ -110,10 +110,10 @@ body.authpage {
   & > :last-child {
     margin-bottom: 0;
   }
-}
 
-.btn--borsetshire {
-  @include button-reset($text: #000, $hover-text: #000);
+  .btn {
+    @include button-variant($text: #000, $hover-text: #000);
+  }
 }
 
 @import "mysoc-header";

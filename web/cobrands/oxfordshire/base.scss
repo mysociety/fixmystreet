@@ -214,7 +214,7 @@ dd, p {
 }
 
 .btn {
-    @include button-reset(
+    @include button-variant(
         #ffffff, #ffffff, #ffffff, #000,
         #f3f3f3, #f3f3f3, #f3f3f3, #000
     );
