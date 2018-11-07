@@ -46,14 +46,16 @@ $bromley->body_areas->find_or_create({
 } );
 
 for my $test (
-    { cobrand => 'tester', groups => 0 },
-    { cobrand => 'testergroups', groups => 1 },
+    { desc => 'groups not set for new contacts', cobrand => 'tester', groups => 0, delete => 1 },
+    { desc => 'groups set for new contacts', cobrand => 'testergroups', groups => 1, delete => 1},
+    { desc => 'groups removed for existing contacts', cobrand => 'tester', groups => 0, delete => 0 },
+    { desc => 'groups added for existing contacts', cobrand => 'testergroups', groups => 1, delete => 0},
 ) {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ $test->{cobrand} ],
     }, sub {
-        subtest 'check basic functionality' => sub {
-            FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->delete();
+        subtest 'check basic functionality, ' . $test->{desc} => sub {
+            FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->delete() if $test->{delete};
 
             my $service_list = get_xml_simple_object( get_standard_xml() );
 

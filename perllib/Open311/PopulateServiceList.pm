@@ -8,12 +8,13 @@ has found_contacts => ( is => 'rw', default => sub { [] } );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is => 'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 
-has _current_body => ( is => 'rw' );
+has _current_body => ( is => 'rw', trigger => sub {
+    my ($self, $body) = @_;
+    $self->_current_body_cobrand($body->get_cobrand_handler);
+} );
+has _current_body_cobrand => ( is => 'rw' );
 has _current_open311 => ( is => 'rw' );
 has _current_service => ( is => 'rw' );
-has _current_body_cobrand => ( is => 'ro', lazy => 1, default => sub {
-    return shift->_current_body->get_cobrand_handler;
-} );
 
 sub process_bodies {
     my $self = shift;
@@ -309,14 +310,26 @@ sub _normalize_service_name {
 sub _set_contact_group {
     my ($self, $contact) = @_;
 
-    if ($self->_current_body_cobrand && $self->_current_body_cobrand->call_hook('enable_category_groups')) {
-        if (my $group = $self->_current_service->{group}) {
-            $contact->set_extra_metadata(group => $group);
-            $contact->update;
+    my $groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->call_hook('enable_category_groups');
+    my $old_group = $contact->get_extra_metadata('group') || '';
+    my $new_group = $groups_enabled ? $self->_current_service->{group} || '' : '';
+
+    if ($old_group ne $new_group) {
+        if ($new_group) {
+            $contact->set_extra_metadata(group => $new_group);
+            $contact->update({
+                editor => $0,
+                whenedited => \'current_timestamp',
+                note => 'group updated automatically by script',
+            });
+        } else {
+            $contact->unset_extra_metadata('group');
+            $contact->update({
+                editor => $0,
+                whenedited => \'current_timestamp',
+                note => 'group removed automatically by script',
+            });
         }
-    } else {
-        $contact->unset_extra_metadata('group');
-        $contact->update;
     }
 }
 
