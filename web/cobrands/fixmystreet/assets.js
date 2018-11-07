@@ -807,6 +807,9 @@ return {
     allow_send: function(body) {
         do_not_send = $.grep(do_not_send, function(a) { return a !== body; });
         update();
+    },
+    get_only_send: function() {
+      return only_send;
     }
 };
 

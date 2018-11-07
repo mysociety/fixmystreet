@@ -68,7 +68,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         },
         not_found: function(layer) {
             fixmystreet.body_overrides.location = null;
-            fixmystreet.body_overrides.remove_only_send();
+            if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
+                fixmystreet.body_overrides.remove_only_send();
+            }
             $('#highways').remove();
         }
     }
@@ -87,6 +89,7 @@ function add_highways_warning(road_name) {
         .on('click', function() {
             fixmystreet.body_overrides.location = null;
             fixmystreet.body_overrides.only_send('Highways England');
+            $(fixmystreet).trigger('report_new:highways_change');
         })
         .appendTo($radios);
     $('<label>')
@@ -104,6 +107,7 @@ function add_highways_warning(road_name) {
                 longitude: $('#fixmystreet\\.longitude').val()
             };
             fixmystreet.body_overrides.remove_only_send();
+            $(fixmystreet).trigger('report_new:highways_change');
         })
         .appendTo($radios);
     $('<label>')
@@ -113,6 +117,9 @@ function add_highways_warning(road_name) {
         .appendTo($radios);
     $radios.appendTo($warning);
     $('.change_location').after($warning);
+    fixmystreet.body_overrides.location = null;
+    fixmystreet.body_overrides.only_send('Highways England');
+    $(fixmystreet).trigger('report_new:highways_change');
 }
 
 })();
