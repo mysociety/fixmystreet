@@ -20,9 +20,7 @@ var defaults = {
     // the M6
     max_resolution: 20,
     min_resolution: 0.5971642833948135,
-    asset_id_field: 'CENTRAL_AS',
-    geometryName: 'msGeometry',
-    srsName: "EPSG:3857",
+    srsName: "EPSG:900913",
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 

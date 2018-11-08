@@ -126,3 +126,9 @@ label {
 #map #drag .square-map__tile {
   position: static;
 }
+
+// uses important because btn also uses it
+#highways .segmented-control--radio input:checked + label.btn {
+    color: $g7 !important;
+    font-weight: bold !important;
+}
