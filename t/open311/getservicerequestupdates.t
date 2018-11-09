@@ -29,7 +29,7 @@ my %bodies = (
         comment_user_id => $user->id,
         blank_updates_permitted => 1,
     }),
-    2651 => FixMyStreet::DB->resultset("Body")->new({ id => 123 }),
+    2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
 
@@ -59,7 +59,7 @@ UPDATED_DATETIME
 };
 
 
-my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
 
 # basic xml -> perl object tests
 for my $test (
@@ -147,7 +147,7 @@ my $problem = $problem_rs->new(
         created      => DateTime->now()->subtract( days => 1 ),
         lastupdate   => DateTime->now()->subtract( days => 1 ),
         anonymous    => 1,
-        external_id  => time(),
+        external_id  => int(rand(time())),
         bodies_str   => $bodies{2482}->id,
     }
 );
@@ -464,7 +464,7 @@ my $problemOx = $problem_rs->create({
     created      => DateTime->now()->subtract( days => 1 ),
     lastupdate   => DateTime->now()->subtract( days => 1 ),
     anonymous    => 1,
-    external_id  => time(),
+    external_id  => int(rand(time())),
     bodies_str   => $bodies{2237}->id,
 });
 
