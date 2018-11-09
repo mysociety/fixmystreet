@@ -7,7 +7,7 @@
 @import "../sass/mixins";
 @import "_colours";
 
-.green-btn, button.green-btn, input.green-btn {
+.green-btn {
     background: #5b7189;
     border: 1px solid #8e9eb0;
     color: #fff;
@@ -18,7 +18,7 @@
     padding: 4px 8px;
     text-transform: uppercase;
 }
-.green-btn:hover, button.green-btn:hover, input.green-btn:hover {
+.green-btn:hover {
     background: #5b7189; border: 1px solid #8e9eb0;
 }
 

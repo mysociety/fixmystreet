@@ -213,6 +213,22 @@ dd, p {
   background-color: mix(#fff, $primary, 85%);
 }
 
+// We want OCCLSS buttons to look like FMS buttons.
+.occlss-button--primary {
+    @include button-size();
+}
+
+// No border and slightly different padding for *all* types of button.
+.btn,
+#front-main #postcodeForm div input#sub,
+.green-btn,
+.btn-primary,
+.occlss-button--primary {
+    border: none;
+    padding: 0.7em 1em 0.85em 1em;
+}
+
+// Regular button style.
 .btn {
     @include button-variant(
         #ffffff, #ffffff, #ffffff, #000,
@@ -222,17 +238,15 @@ dd, p {
         inset 0 -4px 0 #f3f3f3,
         0 2px 4px 0 rgba(26, 26, 26, 0.2)
     );
-    border: none;
-    padding: 0.7em 1em 0.85em 1em;
 }
 
+// Override all the "primary" buttons across the site!
 #front-main #postcodeForm div input#sub,
 .green-btn,
-button.green-btn,
-input.green-btn,
 .btn-primary,
-.occlss-button--primary {
-    @include button-reset(
+.occlss-button--primary,
+.btn--primary {
+    @include button-variant(
         $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, #fff,
         darken(#0e73d8, 15%), darken(#0e73d8, 15%), darken(#0e73d8, 15%), #fff
     );
@@ -240,8 +254,6 @@ input.green-btn,
         inset 0 -4px 0 darken(#0e73d8, 15%),
         0 2px 4px 0 rgba(26, 26, 26, 0.2)
     );
-    border: none;
-    padding: 0.7em 1em 0.85em 1em;
 }
 
 .form-txt-submit-box input[type="submit"] {
