@@ -499,8 +499,8 @@ $.extend(fixmystreet.utils, {
             $("#problem_easting").text(bng.x.toFixed(1));
             $("#problem_latitude").text(lonlat.y.toFixed(6));
             $("#problem_longitude").text(lonlat.x.toFixed(6));
-            $("form#report_inspect_form input[name=latitude]").val(lonlat.y);
-            $("form#report_inspect_form input[name=longitude]").val(lonlat.x);
+            $("input[name=latitude]").val(lonlat.y.toFixed(6));
+            $("input[name=longitude]").val(lonlat.x.toFixed(6));
         },
         false);
     }
