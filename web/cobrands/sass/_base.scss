@@ -868,12 +868,6 @@ input.final-submit {
     @include box-sizing(border-box);
 }
 
-// Under the button to override its text transform and width
-.btn--social {
-    text-transform: none;
-    text-align: center;
-}
-
 .btn--small {
   font-size: 0.8em;
 }
