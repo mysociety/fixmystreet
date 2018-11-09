@@ -30,6 +30,7 @@ then
     # Remember that 1st argument is a file path relative to
     # the file specified in the second argument.
     ln -sf general-$1.yml conf/general.yml
+    touch conf/general.yml
 else
     echo "File conf/general-$1.yml does not exist."
 fi
