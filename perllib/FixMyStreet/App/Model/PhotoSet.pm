@@ -4,12 +4,6 @@ package FixMyStreet::App::Model::PhotoSet;
 
 use Moose;
 
-my $IM = eval {
-    require Image::Magick;
-    Image::Magick->import;
-    1;
-};
-
 use Scalar::Util 'openhandle', 'blessed';
 use Image::Size;
 use IPC::Cmd qw(can_run);
@@ -17,6 +11,7 @@ use IPC::Open3;
 use MIME::Base64;
 
 use FixMyStreet;
+use FixMyStreet::ImageMagick;
 use FixMyStreet::PhotoStorage;
 
 # Attached Catalyst app, if present, for feeding back errors during photo upload
@@ -221,14 +216,15 @@ sub get_image_data {
         return $image;
     }
 
+    my $im = FixMyStreet::ImageMagick->new(blob => $photo);
     if ( $size eq 'tn' ) {
-        $photo = _shrink( $photo, 'x100' );
+        $photo = $im->shrink('x100')->as_blob;
     } elsif ( $size eq 'fp' ) {
-        $photo = _crop( $photo );
+        $photo = $im->crop->as_blob;
     } elsif ( $size eq 'full' ) {
         # do nothing
     } else {
-        $photo = _shrink( $photo, $args{default} || '250x250' );
+        $photo = $im->shrink($args{default} || '250x250')->as_blob;
     }
 
     return {
@@ -290,7 +286,7 @@ sub rotate_image {
     return if $index > $#images;
 
     my $image = $self->get_raw_image($index);
-    $images[$index] = _rotate_image( $image->{data}, $direction );
+    $images[$index] = FixMyStreet::ImageMagick->new(blob => $image->{data})->rotate($direction)->as_blob;
 
     my $new_set = (ref $self)->new({
         data_items => \@images,
@@ -300,49 +296,6 @@ sub rotate_image {
     $self->delete_cached();
 
     return $new_set->data; # e.g. new comma-separated fileid
-}
-
-sub _rotate_image {
-    my ($photo, $direction) = @_;
-    return $photo unless $IM;
-    my $image = Image::Magick->new;
-    $image->BlobToImage($photo);
-    my $err = $image->Rotate($direction);
-    return 0 if $err;
-    my @blobs = $image->ImageToBlob();
-    undef $image;
-    return $blobs[0];
-}
-
-
-# Shrinks a picture to the specified size, but keeping in proportion.
-sub _shrink {
-    my ($photo, $size) = @_;
-    return $photo unless $IM;
-    my $image = Image::Magick->new;
-    $image->BlobToImage($photo);
-    my $err = $image->Scale(geometry => "$size>");
-    throw Error::Simple("resize failed: $err") if "$err";
-    $image->Strip();
-    my @blobs = $image->ImageToBlob();
-    undef $image;
-    return $blobs[0];
-}
-
-# Shrinks a picture to 90x60, cropping so that it is exactly that.
-sub _crop {
-    my ($photo) = @_;
-    return $photo unless $IM;
-    my $image = Image::Magick->new;
-    $image->BlobToImage($photo);
-    my $err = $image->Resize( geometry => "90x60^" );
-    throw Error::Simple("resize failed: $err") if "$err";
-    $err = $image->Extent( geometry => '90x60', gravity => 'Center' );
-    throw Error::Simple("resize failed: $err") if "$err";
-    $image->Strip();
-    my @blobs = $image->ImageToBlob();
-    undef $image;
-    return $blobs[0];
 }
 
 1;
