@@ -16,8 +16,10 @@ use IPC::Cmd qw(can_run);
 use IPC::Open3;
 use MIME::Base64;
 
+use FixMyStreet;
 use FixMyStreet::PhotoStorage;
 
+# Attached Catalyst app, if present, for feeding back errors during photo upload
 has c => (
     is => 'ro',
 );
@@ -68,6 +70,15 @@ has storage => (
     lazy => 1,
     default => sub {
         return FixMyStreet::PhotoStorage::backend;
+    }
+);
+
+has symlinkable => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+        return $cfg ? $cfg->{SYMLINK_FULL_SIZE} : 0;
     }
 );
 
@@ -184,9 +195,10 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
 sub get_raw_image {
     my ($self, $index) = @_;
     my $filename = $self->get_id($index);
-    my ($photo, $type) = $self->storage->retrieve_photo($filename);
+    my ($photo, $type, $object) = $self->storage->retrieve_photo($filename);
     if ($photo) {
         return {
+            $object ? (object => $object) : (),
             data => $photo,
             content_type => "image/$type",
             extension => $type,
@@ -203,6 +215,12 @@ sub get_image_data {
     my $photo = $image->{data};
 
     my $size = $args{size};
+
+    if ($self->symlinkable && $image->{object} && $size eq 'full') {
+        $image->{symlink} = delete $image->{object};
+        return $image;
+    }
+
     if ( $size eq 'tn' ) {
         $photo = _shrink( $photo, 'x100' );
     } elsif ( $size eq 'fp' ) {

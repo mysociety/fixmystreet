@@ -5,8 +5,7 @@ use namespace::autoclean;
 BEGIN {extends 'Catalyst::Controller'; }
 
 use JSON::MaybeXS;
-use File::Path;
-use File::Slurp;
+use Path::Tiny;
 use Try::Tiny;
 use FixMyStreet::App::Model::PhotoSet;
 
@@ -81,8 +80,10 @@ sub output : Private {
     my ( $self, $c, $photo ) = @_;
 
     # Save to file
-    File::Path::make_path( FixMyStreet->path_to( 'web', 'photo', 'c' )->stringify );
-    File::Slurp::write_file( FixMyStreet->path_to( 'web', $c->req->path )->stringify, \$photo->{data} );
+    path(FixMyStreet->path_to('web', 'photo', 'c'))->mkpath;
+    my $out = FixMyStreet->path_to('web', $c->req->path);
+    my $symlink_exists = symlink($photo->{symlink}, $out) if $photo->{symlink};
+    path($out)->spew_raw($photo->{data}) unless $symlink_exists;
 
     $c->res->content_type( $photo->{content_type} );
     $c->res->body( $photo->{data} );

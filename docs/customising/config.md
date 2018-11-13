@@ -64,6 +64,7 @@ The following are all the configuration settings that you can change in `conf/ge
 * <code><a href="#photo_storage_options">PHOTO_STORAGE_OPTIONS</a></code>
   * For local filesystem storage:
     * <code><a href="#upload_dir">UPLOAD_DIR</a></code>
+    * <code><a href="#symlink_full_size">SYMLINK_FULL_SIZE</a></code>
   * For Amazon S3 storage:
     * <code><a href="#bucket">BUCKET</a></code>
     * <code><a href="#access_key">ACCESS_KEY</a></code>
@@ -1158,6 +1159,7 @@ ALLOWED_COBRANDS:
     </p>
     <ul>
       <li><code><a href="#upload_dir">UPLOAD_DIR</a></code></li>
+      <li><code><a href="#symlink_full_size">SYMLINK_FULL_SIZE</a></code></li>
     </ul>
     <p>
       For the <code>S3</code> backend, the following apply:
@@ -1194,6 +1196,20 @@ PHOTO_STORAGE_OPTIONS:
         </li>
       </ul>
     </div>
+  </dd>
+
+  <dt>
+    <a name="upload_dir"><code>SYMLINK_FULL_SIZE</code></a>
+  </dt>
+  <dd>
+    <p>
+      Defaults to false; if this is true, then requests for full size images
+      will be symlinked from the photo cache, not copied there. You can use this
+      if static files are being served by your web server.
+    </p>
+    <p>
+      Only applies when <code>PHOTO_STORAGE_BACKEND</code> is <code>FileSystem</code>.
+    </p>
   </dd>
 
   <dt>

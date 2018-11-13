@@ -70,7 +70,8 @@ sub store_photo {
 =head2 retrieve_photo
 
 Fetches the file content of a particular photo from storage.
-Returns the binary blob and the filetype, if the photo exists in storage.
+Returns the binary blob, the filetype, and the file path, if
+the photo exists in storage.
 
 =cut
 
@@ -81,7 +82,7 @@ sub retrieve_photo {
     my $file = $self->get_file($fileid, $type);
     if ($file->exists) {
         my $photo = $file->slurp_raw;
-        return ($photo, $type);
+        return ($photo, $type, $file);
     }
 }
 

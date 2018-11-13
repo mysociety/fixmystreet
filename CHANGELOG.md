@@ -9,6 +9,8 @@
         - Add Mark/View private reports permission #2306
     - Open311 improvements:
         - Fix bug in contact group handling. #2323
+    - Development improvements:
+        - Add option to symlink full size photos.
 
 * v2.4.2 (6th November 2018)
     - New features:

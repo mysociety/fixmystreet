@@ -98,12 +98,15 @@ subtest "Check photo uploading URL and endpoints work" => sub {
 
         my $p = FixMyStreet::DB->resultset("Problem")->first;
 
-        $mech->get_ok('/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
-        $image_file = FixMyStreet->path_to('web/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
-        ok -e $image_file, 'File uploaded to temp';
-        $mech->get_ok('/photo/' . $p->id . '.jpeg');
-        $image_file = FixMyStreet->path_to('web/photo/' . $p->id . '.jpeg');
-        ok -e $image_file, 'File uploaded to temp';
+        foreach my $i (
+          '/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
+          '/photo/fulltemp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
+          '/photo/' . $p->id . '.jpeg',
+          '/photo/' . $p->id . '.full.jpeg') {
+            $mech->get_ok($i);
+            $image_file = FixMyStreet->path_to("web$i");
+            ok -e $image_file, 'File uploaded to temp';
+        }
         my $res = $mech->get('/photo/0.jpeg');
         is $res->code, 404, "got 404";
     };
