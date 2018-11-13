@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.mysociety.org:80/mapserver/highways?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Highways&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:3857">
+      		<gml:lowerCorner>-290458.39994864 6708826.7261869</gml:lowerCorner>
+      		<gml:upperCorner>-289178.07972504 6710250.3658385</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+       <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+      		<gml:lowerCorner>-290458.39994864 6708826.7261869</gml:lowerCorner>
+      		<gml:upperCorner>-289178.07972504 6710250.3658385</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-289674.87858928 6709851.5161992 -289916.13295977 6709311.679687 -289885.08041704 6709302.1250585 -289636.66007514 6709882.5687419</gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER>M6</ms:ROA_NUMBER>
+      </ms:Highways>
+    </gml:featureMember>
+</wfs:FeatureCollection>
