@@ -1009,6 +1009,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 =head2 report_edit_category
 
 Handles changing a problem's category and the complexity that comes with it.
+Returns 1 if category changed, 0 if no change.
 
 =cut
 
@@ -1053,7 +1054,9 @@ sub report_edit_category : Private {
                 anonymous => 0,
             });
         }
+        return 1;
     }
+    return 0;
 }
 
 =head2 report_edit_location
@@ -1062,7 +1065,8 @@ Handles changing a problem's location and the complexity that comes with it.
 For now, we reject the new location if the new location and old locations aren't
 covered by the same body.
 
-Returns 1 if the new position (if any) is acceptable, undef otherwise.
+Returns 2 if the new position (if any) is acceptable and changed,
+1 if acceptable and unchanged, undef otherwise.
 
 NB: This must be called before report_edit_category, as that might modify
 $problem->bodies_str.
@@ -1095,6 +1099,7 @@ sub report_edit_location : Private {
         $problem->longitude($c->stash->{longitude});
         my $areas = $c->stash->{all_areas_mapit};
         $problem->areas( ',' . join( ',', sort keys %$areas ) . ',' );
+        return 2;
     }
     return 1;
 }

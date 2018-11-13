@@ -449,7 +449,12 @@ create table moderation_original_data (
     anonymous bool not null,
 
     -- Metadata
-    created timestamp not null default current_timestamp
+    created timestamp not null default current_timestamp,
+
+    extra text,
+    category text,
+    latitude double precision,
+    longitude double precision
 );
 
 create table user_body_permissions (

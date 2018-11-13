@@ -346,7 +346,6 @@ subtest 'updates' => sub {
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $update->discard_changes;
-        $update->discard_changes;
         is $update->text, 'update good good bad good',
     };
 
@@ -369,6 +368,20 @@ subtest 'updates' => sub {
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_lacks('Posted anonymously');
+    };
+
+    subtest 'Moderate extra data' => sub {
+        $update->set_extra_metadata('moon', 'waxing full');
+        $update->update;
+        my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
+        $mech->post_ok('http://www.example.org/moderate/report/' . $report->id . '/update/' . $update->id, {
+            %update_prepopulated,
+            'extra.weather' => 'snow',
+            'extra.moon' => 'waxing full',
+            token => $csrf,
+        });
+        $update->discard_changes;
+        is $update->get_extra_metadata('weather'), 'snow';
     };
 
     subtest 'Hide photo' => sub {

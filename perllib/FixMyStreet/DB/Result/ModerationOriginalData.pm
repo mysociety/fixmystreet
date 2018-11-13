@@ -37,6 +37,14 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "extra",
+  { data_type => "text", is_nullable => 1 },
+  "category",
+  { data_type => "text", is_nullable => 1 },
+  "latitude",
+  { data_type => "double precision", is_nullable => 1 },
+  "longitude",
+  { data_type => "double precision", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("moderation_original_data_comment_id_key", ["comment_id"]);
@@ -59,8 +67,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DBtGjCJykDtLnGtkj638eA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-11-13 10:48:41
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OQAXPriTc3G2jKFPw0TqdQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

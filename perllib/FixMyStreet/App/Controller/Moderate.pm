@@ -60,6 +60,10 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
         detail => $problem->detail,
         photo => $problem->photo,
         anonymous => $problem->anonymous,
+        longitude => $problem->longitude,
+        latitude => $problem->latitude,
+        category => $problem->category,
+        extra => $problem->extra,
     });
     $c->stash->{problem} = $problem;
     $c->stash->{problem_original} = $original;
@@ -237,7 +241,15 @@ sub moderate_boolean : Private {
 sub moderate_extra : Private {
     my ($self, $c) = @_;
 
-    my $object = $c->stash->{comment} || $c->stash->{problem};
+    my ($object, $original);
+    if (my $comment = $c->stash->{comment}) {
+        $object = $comment;
+        $original = $c->stash->{comment_original};
+    } else {
+        $object = $c->stash->{problem};
+        $original = $c->stash->{problem_original};
+    }
+
     my $changed;
     my @extra = grep { /^extra\./ } keys %{$c->req->params};
     foreach (@extra) {
@@ -245,6 +257,7 @@ sub moderate_extra : Private {
         my $old = $object->get_extra_metadata($field_name) || '';
         my $new = $c->get_param($_);
         if ($new ne $old) {
+            $original->insert unless $original->in_storage;
             $object->set_extra_metadata($field_name, $new);
             $changed = 1;
         }
@@ -259,15 +272,21 @@ sub moderate_location : Private {
     my ($self, $c) = @_;
 
     my $problem = $c->stash->{problem};
-    if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
+    my $original = $c->stash->{problem_original};
+
+    my $moved = $c->forward('/admin/report_edit_location', [ $problem ]);
+    if (!$moved) {
         # New lat/lon isn't valid, show an error
         $c->flash->{moderate_errors} ||= [];
         push @{ $c->flash->{moderate_errors} }, _('Invalid location. New location must be covered by the same council.');
         return;
     }
 
-    $problem->update;
-    return 'location';
+    if ($moved == 2) {
+        $original->insert unless $original->in_storage;
+        $problem->update;
+        return 'location';
+    }
 }
 
 # No update left at present
@@ -280,11 +299,15 @@ sub moderate_category : Private {
     $c->forward('/admin/categories_for_point');
 
     my $problem = $c->stash->{problem};
-    $c->forward( '/admin/report_edit_category', [ $problem, 1 ] );
-    # It might need to set_report_extras in future
+    my $original = $c->stash->{problem_original};
 
-    $problem->update;
-    return 'category';
+    my $changed = $c->forward( '/admin/report_edit_category', [ $problem, 1 ] );
+    # It might need to set_report_extras in future
+    if ($changed) {
+        $original->insert unless $original->in_storage;
+        $problem->update;
+        return 'category';
+    }
 }
 
 sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
@@ -298,6 +321,7 @@ sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
         detail => $comment->text,
         photo => $comment->photo,
         anonymous => $comment->anonymous,
+        extra => $comment->extra,
     });
     $c->stash->{comment} = $comment;
     $c->stash->{comment_original} = $original;
@@ -311,6 +335,7 @@ sub moderate_update : Chained('update') : PathPart('') : Args(0) {
     my @types = grep $_,
         $c->forward('moderate_text', [ 'text' ]),
         $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
+        $c->forward('moderate_extra'),
         $c->forward('moderate_boolean', [ 'photo' ]);
 
     $c->detach( 'update_moderate_audit', \@types )
