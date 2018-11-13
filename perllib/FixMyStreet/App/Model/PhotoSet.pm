@@ -165,6 +165,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 }
 
                 # we have an image we can use - save it to storage
+                $photo_blob = FixMyStreet::ImageMagick->new(blob => $photo_blob)->shrink('2048x2048')->as_blob;
                 return $self->storage->store_photo($photo_blob);
             }
 
