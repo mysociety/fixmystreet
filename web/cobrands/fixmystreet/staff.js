@@ -379,6 +379,7 @@ $.extend(fixmystreet.set_up, {
               $elem.find('.js-moderate').on('click', function () {
                   $elem.find('.moderate-display').hide();
                   $elem.find('.moderate-edit').show();
+                  $('#map_sidebar').scrollTop(0);
               });
 
               $elem.find('.revert-title').change( function () {
@@ -400,6 +401,7 @@ $.extend(fixmystreet.set_up, {
               $elem.find('.cancel').click( function () {
                   $elem.find('.moderate-display').show();
                   $elem.find('.moderate-edit').hide();
+                  $('#map_sidebar').scrollTop(0);
               });
 
               $elem.find('form').submit( function () {
