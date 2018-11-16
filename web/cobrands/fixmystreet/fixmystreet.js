@@ -282,7 +282,7 @@ $.extend(fixmystreet.set_up, {
     var submitted = false;
 
     $("form.validate").each(function(){
-      $(this).validate({
+      fixmystreet.validator = $(this).validate({
         rules: validation_rules,
         messages: translation_strings,
         onkeyup: false,
@@ -431,8 +431,37 @@ $.extend(fixmystreet.set_up, {
             $category_meta.empty();
         }
 
+        // remove existing validation rules
+        validation_rules = fixmystreet.validator.settings.rules;
+        $.each(validation_rules, function(rule) {
+             var $el = $('#form_' + rule);
+             if ($el.length) {
+                 $el.rules('remove');
+             }
+        });
+        // apply new validation rules
+        fixmystreet.set_up.reapply_validation(core_validation_rules);
+        $.each(data.bodies, function(index, body) {
+            if ( body_validation_rules[body] ) {
+                var rules = body_validation_rules[body];
+                fixmystreet.set_up.reapply_validation(rules);
+            }
+        });
+
         $(fixmystreet).trigger('report_new:category_change', [ $(this) ]);
     });
+  },
+
+  reapply_validation: function(rules) {
+        if (rules === undefined) {
+            return;
+        }
+        $.each(rules, function(name, rule) {
+            var $el = $('#form_' + name);
+            if ($el.length) {
+                $el.rules('add', rule);
+            }
+        });
   },
 
   category_groups: function() {
