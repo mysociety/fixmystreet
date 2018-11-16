@@ -15,6 +15,7 @@
         - Sort user updates in reverse date order.
     - Open311 improvements:
         - Fix bug in contact group handling. #2323
+        - Improve validation of fetched reports timestamps. #2327
     - Development improvements:
         - Add option to symlink full size photos.
 

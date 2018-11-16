@@ -122,16 +122,9 @@ sub create_problems {
                 if $self->verbose;
             next;
         }
-
         my $updated = DateTime::Format::W3CDTF->format_datetime(
             $updated_time->clone->set_time_zone('UTC')
         );
-        if ($args->{start_date} && $args->{end_date} && ($updated lt $args->{start_date} || $updated gt $args->{end_date}) ) {
-            warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
-                . "$updated either less than $args->{start_date} or greater than $args->{end_date}"
-                if $self->verbose;
-            next;
-        }
 
         my $created_time = eval {
             DateTime::Format::W3CDTF->parse_datetime(
@@ -142,48 +135,60 @@ sub create_problems {
         };
         $created_time = $updated_time if $@;
 
+        # Updated time must not be before created time, check and adjust as necessary.
+        # (This has happened with some fetched reports, oddly.)
+        $updated_time = $created_time if $updated_time lt $created_time;
+
         my $problems;
         my $criteria = {
             external_id => $request_id,
         };
-        $problems = $self->schema->resultset('Problem')->to_body($body)->search( $criteria );
+
+        # Skip if this problem already exists (e.g. it may have originated from FMS and is being mirrored back!)
+        next if $self->schema->resultset('Problem')->to_body($body)->search( $criteria )->count;
+
+        if ($args->{start_date} && $args->{end_date} && ($updated lt $args->{start_date} || $updated gt $args->{end_date}) ) {
+            warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
+                . "$updated either less than $args->{start_date} or greater than $args->{end_date}"
+                if $self->verbose;
+            next;
+        }
+
 
         my @contacts = grep { $request->{service_code} eq $_->email } $contacts->all;
         my $contact = $contacts[0] ? $contacts[0]->category : 'Other';
 
         my $state = $open311->map_state($request->{status});
 
-        unless (my $p = $problems->first) {
-            my $problem = $self->schema->resultset('Problem')->new(
-                {
-                    user => $self->system_user,
-                    external_id => $request_id,
-                    detail => $request->{description} || $request->{service_name} . ' problem',
-                    title => $request->{title} || $request->{service_name} . ' problem',
-                    anonymous => 0,
-                    name => $self->system_user->name,
-                    confirmed => $created_time,
-                    created => $created_time,
-                    lastupdate => $updated_time,
-                    whensent => $created_time,
-                    state => $state,
-                    postcode => '',
-                    used_map => 1,
-                    latitude => $latitude,
-                    longitude => $longitude,
-                    areas => ',' . $body->id . ',',
-                    bodies_str => $body->id,
-                    send_method_used => 'Open311',
-                    category => $contact,
-                    send_questionnaire => 0,
-                }
-            );
+        my $problem = $self->schema->resultset('Problem')->new(
+            {
+                user => $self->system_user,
+                external_id => $request_id,
+                detail => $request->{description} || $request->{service_name} . ' problem',
+                title => $request->{title} || $request->{service_name} . ' problem',
+                anonymous => 0,
+                name => $self->system_user->name,
+                confirmed => $created_time,
+                created => $created_time,
+                lastupdate => $updated_time,
+                whensent => $created_time,
+                state => $state,
+                postcode => '',
+                used_map => 1,
+                latitude => $latitude,
+                longitude => $longitude,
+                areas => ',' . $body->id . ',',
+                bodies_str => $body->id,
+                send_method_used => 'Open311',
+                category => $contact,
+                send_questionnaire => 0,
+            }
+        );
 
-            $open311->add_media($request->{media_url}, $problem)
-                if $request->{media_url};
+        $open311->add_media($request->{media_url}, $problem)
+            if $request->{media_url};
 
-            $problem->insert();
-        }
+        $problem->insert();
     }
 
     return 1;
