@@ -1,5 +1,5 @@
 [% IF updates.size %]
-<h2>[% loc('Updates') %]</h2>
+<h2 id="updates">[% loc('Updates') %]</h2>
 
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
@@ -49,7 +49,7 @@
 </table>
 
 [% IF updates_pager %]
-[% INCLUDE 'pagination.html', admin = 1, param = 'u', pager = updates_pager %]
+[% INCLUDE 'pagination.html' admin=1 param='u' pager=updates_pager hash='updates' %]
 [% END %]
 
 [% END %]

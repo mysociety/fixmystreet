@@ -787,7 +787,7 @@ sub reports : Path('reports') {
                     -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
                     prefetch => [qw/problem/],
                     rows => 50,
-                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", 'me.created' ]
+                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", { -desc => 'me.created' } ]
                 }
             )->page( $u_page );
             $c->stash->{updates} = [ $updates->all ];
