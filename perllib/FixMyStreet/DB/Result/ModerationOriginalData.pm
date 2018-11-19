@@ -70,6 +70,11 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-11-13 10:48:41
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OQAXPriTc3G2jKFPw0TqdQ
 
+use Moo;
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+with 'FixMyStreet::Roles::Extra';
+
+__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
+__PACKAGE__->rabx_column('extra');
+
 1;

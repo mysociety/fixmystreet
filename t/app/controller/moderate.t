@@ -51,6 +51,7 @@ sub create_report {
         longitude          => '0.007831',
         user_id            => $user2->id,
         photo              => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
+        extra => { moon => 'waxing full' },
     });
 }
 my $report = create_report();
@@ -235,17 +236,18 @@ subtest 'Problem moderation' => sub {
     };
 
     subtest 'Moderate extra data' => sub {
-        $report->set_extra_metadata('moon', 'waxing full');
-        $report->update;
         my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
         $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
             %problem_prepopulated,
             'extra.weather' => 'snow',
-            'extra.moon' => 'waxing full',
+            'extra.moon' => 'waning full',
             token => $csrf,
         });
         $report->discard_changes;
         is $report->get_extra_metadata('weather'), 'snow';
+        is $report->get_extra_metadata('moon'), 'waning full';
+        is $report->moderation_original_data->get_extra_metadata('moon'), 'waxing full';
+        is $report->moderation_original_data->get_extra_metadata('weather'), undef;
     };
 
     subtest 'Moderate category' => sub {
