@@ -212,6 +212,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0064' if index_exists('moderation_original_data_problem_id_comment_id_idx');
     return '0063' if column_exists('moderation_original_data', 'extra');
     return '0062' if column_exists('users', 'created');
     return '0061' if column_exists('body', 'extra');
@@ -319,4 +320,10 @@ sub constraint_contains {
 sub function_exists {
     my $fn = shift;
     return $db->dbh->selectrow_array('select count(*) from pg_proc where proname = ?', {}, $fn);
+}
+
+# Returns true if an index exists
+sub index_exists {
+    my $idx = shift;
+    return $db->dbh->selectrow_array('select count(*) from pg_indexes where indexname = ?', {}, $idx);
 }

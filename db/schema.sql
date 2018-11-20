@@ -441,7 +441,7 @@ create table moderation_original_data (
 
     -- Problem details
     problem_id int references problem(id) ON DELETE CASCADE not null,
-    comment_id int references comment(id) ON DELETE CASCADE unique,
+    comment_id int references comment(id) ON DELETE CASCADE,
 
     title text null,
     detail text null, -- or text for comment
@@ -456,6 +456,7 @@ create table moderation_original_data (
     latitude double precision,
     longitude double precision
 );
+create index moderation_original_data_problem_id_comment_id_idx on moderation_original_data(problem_id, comment_id);
 
 create table user_body_permissions (
     id serial not null primary key,

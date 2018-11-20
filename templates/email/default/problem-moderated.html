@@ -25,8 +25,8 @@ the team at <a href="[% report_complain_uri %]">[% report_complain_uri %]</a></p
   [% end_padded_box %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = problem %]
-    <h2 style="[% h2_style %]">[% problem.moderation_original_data.title | html %]</h2>
-    <p style="[% secondary_p_style %]">[% problem.moderation_original_data.detail | html %]</p>
+    <h2 style="[% h2_style %]">[% moderated_data.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% moderated_data.detail | html %]</p>
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]

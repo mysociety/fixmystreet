@@ -177,11 +177,15 @@ __PACKAGE__->has_one(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+# This will return the oldest moderation_original_data, if any.
+# The plural can be used to return all entries.
 __PACKAGE__->might_have(
   "moderation_original_data",
   "FixMyStreet::DB::Result::ModerationOriginalData",
   { "foreign.problem_id" => "self.id" },
   { where => { 'comment_id' => undef },
+    order_by => 'id',
+    rows => 1,
     cascade_copy => 0, cascade_delete => 1 },
 );
 

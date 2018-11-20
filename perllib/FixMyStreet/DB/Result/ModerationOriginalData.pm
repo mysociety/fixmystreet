@@ -47,7 +47,6 @@ __PACKAGE__->add_columns(
   { data_type => "double precision", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("moderation_original_data_comment_id_key", ["comment_id"]);
 __PACKAGE__->belongs_to(
   "comment",
   "FixMyStreet::DB::Result::Comment",
@@ -67,8 +66,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-11-13 10:48:41
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OQAXPriTc3G2jKFPw0TqdQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-11-20 16:13:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zFOhQnS4WfVzD7qHxaAr6w
 
 use Moo;
 

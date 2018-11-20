@@ -6,7 +6,6 @@ package FixMyStreet::DB::Result::Comment;
 
 use strict;
 use warnings;
-use FixMyStreet::Template;
 
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
@@ -70,8 +69,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->might_have(
-  "moderation_original_data",
+__PACKAGE__->has_many(
+  "moderation_original_datas",
   "FixMyStreet::DB::Result::ModerationOriginalData",
   { "foreign.comment_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -90,8 +89,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZR+YNA1Jej3s+8mr52iq6Q
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-11-20 16:13:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5w/4Og9uCy54lGyyJiLzxA
 #
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
@@ -99,6 +98,7 @@ __PACKAGE__->rabx_column('extra');
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];
+use FixMyStreet::Template;
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra',
@@ -197,22 +197,17 @@ __PACKAGE__->has_many(
   }
 );
 
-# we already had the `moderation_original_data` rel above, as inferred by
-# Schema::Loader, but that doesn't know about the problem_id mapping, so we now
-# (slightly hackishly) redefine here:
-#
-# we also add cascade_delete, though this seems to be insufficient.
-#
-# TODO: should add FK on moderation_original_data field for this, to get S::L to
-# pick up without hacks.
-
+# This will return the oldest moderation_original_data, if any.
+# The plural can be used to return all entries.
 __PACKAGE__->might_have(
   "moderation_original_data",
   "FixMyStreet::DB::Result::ModerationOriginalData",
   { "foreign.comment_id" => "self.id",
     "foreign.problem_id" => "self.problem_id",
   },
-  { cascade_copy => 0, cascade_delete => 1 },
+  { order_by => 'id',
+    rows => 1,
+    cascade_copy => 0, cascade_delete => 1 },
 );
 
 =head2 meta_line

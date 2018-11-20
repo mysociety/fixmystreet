@@ -15,11 +15,11 @@ The following data has been changed:
 
 Your report had the title:
 
-[% problem.moderation_original_data.title %]
+[% moderated_data.title %]
 
 And details:
 
-[% problem.moderation_original_data.detail %]
+[% moderated_data.detail %]
 
 [% UNLESS types == 'hide' %]
 You can see the report at [% report_uri %]

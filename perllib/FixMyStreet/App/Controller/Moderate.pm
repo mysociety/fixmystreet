@@ -23,9 +23,9 @@ data to change.
   - user to be from_body
   - user to have a "moderate" record in user_body_permissions
 
-The original data of the report is stored in moderation_original_data, so
-that it can be reverted/consulted if required.  All moderation events are
-stored in admin_log.
+The original and previous data of the report is stored in
+moderation_original_data, so that it can be reverted/consulted if required.
+All moderation events are stored in admin_log.
 
 =head1 SEE ALSO
 
@@ -55,7 +55,7 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
 
     $c->forward('/auth/check_csrf_token');
 
-    my $original = $problem->find_or_new_related( moderation_original_data => {
+    $c->stash->{history} = $problem->new_related( moderation_original_data => {
         title => $problem->title,
         detail => $problem->detail,
         photo => $problem->photo,
@@ -65,8 +65,8 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
         category => $problem->category,
         extra => $problem->extra,
     });
+    $c->stash->{original} = $problem->moderation_original_data || $c->stash->{history};
     $c->stash->{problem} = $problem;
-    $c->stash->{problem_original} = $original;
     $c->stash->{moderation_reason} = $c->get_param('moderation_reason') // '';
 }
 
@@ -150,6 +150,7 @@ sub report_moderate_audit : Private {
             problem => $problem,
             report_uri => $c->stash->{report_uri},
             report_complain_uri => $c->stash->{cobrand_base} . '/contact?m=' . $token->token,
+            moderated_data => $c->stash->{history},
         });
     }
 }
@@ -172,29 +173,22 @@ sub report_moderate_hide : Private {
 sub moderate_text : Private {
     my ($self, $c, $thing) = @_;
 
-    my ($object, $original, $param);
+    my $object = $c->stash->{comment} || $c->stash->{problem};
+    my $param = $c->stash->{comment} ? 'update_' : 'problem_';
+
     my $thing_for_original_table = $thing;
-    if (my $comment = $c->stash->{comment}) {
-        $object = $comment;
-        $original = $c->stash->{comment_original};
-        $param = 'update_';
-        # Update 'text' field is stored in original table's 'detail' field
-        $thing_for_original_table = 'detail' if $thing eq 'text';
-    } else {
-        $object = $c->stash->{problem};
-        $original = $c->stash->{problem_original};
-        $param = 'problem_';
-    }
+    # Update 'text' field is stored in original table's 'detail' field
+    $thing_for_original_table = 'detail' if $c->stash->{comment} && $thing eq 'text';
 
     my $old = $object->$thing;
-    my $original_thing = $original->$thing_for_original_table;
+    my $original_thing = $c->stash->{original}->$thing_for_original_table;
 
     my $new = $c->get_param($param . 'revert_' . $thing) ?
         $original_thing
         : $c->get_param($param . $thing);
 
     if ($new ne $old) {
-        $original->insert unless $original->in_storage;
+        $c->stash->{history}->insert;
         $object->update({ $thing => $new });
         return $thing_for_original_table;
     }
@@ -205,18 +199,11 @@ sub moderate_text : Private {
 sub moderate_boolean : Private {
     my ( $self, $c, $thing, $reverse ) = @_;
 
-    my ($object, $original, $param);
-    if (my $comment = $c->stash->{comment}) {
-        $object = $comment;
-        $original = $c->stash->{comment_original};
-        $param = 'update_';
-    } else {
-        $object = $c->stash->{problem};
-        $original = $c->stash->{problem_original};
-        $param = 'problem_';
-    }
+    my $object = $c->stash->{comment} || $c->stash->{problem};
+    my $param = $c->stash->{comment} ? 'update_' : 'problem_';
+    my $original = $c->stash->{original}->photo;
 
-    return if $thing eq 'photo' && !$original->photo;
+    return if $thing eq 'photo' && !$original;
 
     my $new;
     if ($reverse) {
@@ -227,9 +214,9 @@ sub moderate_boolean : Private {
     my $old = $object->$thing ? 1 : 0;
 
     if ($new != $old) {
-        $original->insert unless $original->in_storage;
+        $c->stash->{history}->insert;
         if ($thing eq 'photo') {
-            $object->update({ $thing => $new ? $original->photo : undef });
+            $object->update({ $thing => $new ? $original : undef });
         } else {
             $object->update({ $thing => $new });
         }
@@ -241,14 +228,7 @@ sub moderate_boolean : Private {
 sub moderate_extra : Private {
     my ($self, $c) = @_;
 
-    my ($object, $original);
-    if (my $comment = $c->stash->{comment}) {
-        $object = $comment;
-        $original = $c->stash->{comment_original};
-    } else {
-        $object = $c->stash->{problem};
-        $original = $c->stash->{problem_original};
-    }
+    my $object = $c->stash->{comment} || $c->stash->{problem};
 
     my $changed;
     my @extra = grep { /^extra\./ } keys %{$c->req->params};
@@ -257,12 +237,12 @@ sub moderate_extra : Private {
         my $old = $object->get_extra_metadata($field_name) || '';
         my $new = $c->get_param($_);
         if ($new ne $old) {
-            $original->insert unless $original->in_storage;
             $object->set_extra_metadata($field_name, $new);
             $changed = 1;
         }
     }
     if ($changed) {
+        $c->stash->{history}->insert;
         $object->update;
         return 'extra';
     }
@@ -272,7 +252,6 @@ sub moderate_location : Private {
     my ($self, $c) = @_;
 
     my $problem = $c->stash->{problem};
-    my $original = $c->stash->{problem_original};
 
     my $moved = $c->forward('/admin/report_edit_location', [ $problem ]);
     if (!$moved) {
@@ -283,7 +262,7 @@ sub moderate_location : Private {
     }
 
     if ($moved == 2) {
-        $original->insert unless $original->in_storage;
+        $c->stash->{history}->insert;
         $problem->update;
         return 'location';
     }
@@ -299,12 +278,11 @@ sub moderate_category : Private {
     $c->forward('/admin/categories_for_point');
 
     my $problem = $c->stash->{problem};
-    my $original = $c->stash->{problem_original};
 
     my $changed = $c->forward( '/admin/report_edit_category', [ $problem, 1 ] );
     # It might need to set_report_extras in future
     if ($changed) {
-        $original->insert unless $original->in_storage;
+        $c->stash->{history}->insert;
         $problem->update;
         return 'category';
     }
@@ -317,14 +295,14 @@ sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
     # Make sure user can moderate this update
     $c->detach unless $comment && $c->user->can_moderate($comment);
 
-    my $original = $comment->find_or_new_related( moderation_original_data => {
+    $c->stash->{history} = $comment->new_related( moderation_original_data => {
         detail => $comment->text,
         photo => $comment->photo,
         anonymous => $comment->anonymous,
         extra => $comment->extra,
     });
     $c->stash->{comment} = $comment;
-    $c->stash->{comment_original} = $original;
+    $c->stash->{original} = $comment->moderation_original_data || $c->stash->{history};
 }
 
 sub moderate_update : Chained('update') : PathPart('') : Args(0) {
