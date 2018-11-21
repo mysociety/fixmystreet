@@ -994,30 +994,35 @@ $.extend(fixmystreet.set_up, {
     });
 
     $('#map_sidebar').on('click', '.js-back-to-report-list', function(e) {
-        if (e.metaKey || e.ctrlKey) {
-            return;
-        }
-
-        e.preventDefault();
-        var reportListUrl = $(this).attr('href');
-        fixmystreet.display.reports_list(reportListUrl, function() {
-            // Since this navigation was the result of a user action,
-            // we want to record the navigation as a state, so the user
-            // can return to it later using their Back button.
-            if ('pushState' in history) {
-                history.pushState({
-                    initial: true,
-                    mapState: around_map_state
-                }, null, reportListUrl);
-            }
-            if (around_map_state) {
-                fixmystreet.maps.set_map_state(around_map_state);
-            }
-        });
+        var report_list_url = $(this).attr('href');
+        var map_state = around_map_state;
+        var set_map_state = true;
+        fixmystreet.back_to_reports_list(e, report_list_url, map_state, set_map_state);
     });
   }
 
 });
+
+fixmystreet.back_to_reports_list = function(e, report_list_url, map_state, set_map_state) {
+    if (e.metaKey || e.ctrlKey) {
+        return;
+    }
+    e.preventDefault();
+    fixmystreet.display.reports_list(report_list_url, function() {
+        // Since this navigation was the result of a user action,
+        // we want to record the navigation as a state, so the user
+        // can return to it later using their Back button.
+        if ('pushState' in history) {
+            history.pushState({
+                initial: true,
+                mapState: map_state
+            }, null, report_list_url);
+        }
+        if (set_map_state && map_state) {
+            fixmystreet.maps.set_map_state(map_state);
+        }
+    });
+};
 
 fixmystreet.update_report_a_problem_btn = function() {
     var zoom = fixmystreet.map.getZoom();
@@ -1313,10 +1318,14 @@ fixmystreet.display = {
             // wrong (but what is shown is correct).
             $('.js-back-to-report-list').attr('href', fixmystreet.original.href);
 
-            // Problems nearby should act the same as 'Back to all reports' on around,
-            // but on /my and /reports should go to that around page.
-            if (fixmystreet.original.page == 'around') {
-                $sideReport.find('#key-tool-problems-nearby').addClass('js-back-to-report-list');
+            // Problems nearby on /my should go to the around page,
+            // otherwise show reports within the current map view.
+            if (fixmystreet.original.page === 'around' || fixmystreet.original.page === 'reports') {
+                $sideReport.find('#key-tool-problems-nearby').click(function(e) {
+                    var report_list_url = fixmystreet.original.href;
+                    var map_state = fixmystreet.maps.get_map_state();
+                    fixmystreet.back_to_reports_list(e, report_list_url, map_state);
+                });
             }
             fixmystreet.set_up.map_sidebar_key_tools();
             fixmystreet.set_up.form_validation();
