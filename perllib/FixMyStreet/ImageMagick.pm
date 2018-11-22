@@ -3,6 +3,7 @@ package FixMyStreet::ImageMagick;
 use Moo;
 
 my $IM = eval {
+    return 0 if FixMyStreet->test_mode;
     require Image::Magick;
     Image::Magick->import;
     1;
