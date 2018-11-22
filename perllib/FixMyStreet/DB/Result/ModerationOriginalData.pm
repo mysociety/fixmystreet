@@ -70,10 +70,126 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zFOhQnS4WfVzD7qHxaAr6w
 
 use Moo;
+use Text::Diff;
+use Data::Dumper;
 
 with 'FixMyStreet::Roles::Extra';
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
+
+sub compare_with {
+    my ($self, $other) = @_;
+    if ($self->comment_id) {
+        my $new_detail = $other->can('text') ? $other->text : $other->detail;
+        return {
+            detail => string_diff($self->detail, $new_detail),
+            photo => $self->compare_photo($other),
+            anonymous => $self->compare_anonymous($other),
+            extra => $self->compare_extra($other),
+        };
+    }
+    return {
+        title => string_diff($self->title, $other->title),
+        detail => string_diff($self->detail, $other->detail),
+        photo => $self->compare_photo($other),
+        anonymous => $self->compare_anonymous($other),
+        coords => $self->compare_coords($other),
+        category => string_diff($self->category, $other->category, single => 1),
+        extra => $self->compare_extra($other),
+    }
+}
+
+sub compare_anonymous {
+    my ($self, $other) = @_;
+    string_diff(
+        $self->anonymous ? _('Yes') : _('No'),
+        $other->anonymous ? _('Yes') : _('No'),
+    );
+}
+
+sub compare_coords {
+    my ($self, $other) = @_;
+    my $old = join ',', $self->latitude, $self->longitude;
+    my $new = join ',', $other->latitude, $other->longitude;
+    string_diff($old, $new, single => 1);
+}
+
+sub compare_photo {
+    my ($self, $other) = @_;
+
+    my $old = $self->photo || '';
+    my $new = $other->photo || '';
+    return '' if $old eq $new;
+
+    $old = [ split /,/, $old ];
+    $new = [ split /,/, $new ];
+
+    my $diff = Algorithm::Diff->new( $old, $new );
+    my (@added, @deleted);
+    while ( $diff->Next ) {
+        next if $diff->Same;
+        push @deleted, $diff->Items(1);
+        push @added, $diff->Items(2);
+    }
+    return (join ', ', map {
+            "<del style='background-color:#fcc'>$_</del>";
+        } @deleted) . (join ', ', map {
+            "<ins style='background-color:#cfc'>$_</ins>";
+        } @added);
+}
+
+sub compare_extra {
+    my ($self, $other) = @_;
+
+    my $old = $self->get_extra_metadata;
+    my $new = $other->get_extra_metadata;
+
+    my $both = { %$old, %$new };
+    my @all_keys = sort keys %$both;
+    my @s;
+    foreach (@all_keys) {
+        if ($old->{$_} && $new->{$_}) {
+            push @s, string_diff("$_ = $old->{$_}", "$_ = $new->{$_}");
+        } elsif ($new->{$_}) {
+            push @s, string_diff("", "$_ = $new->{$_}");
+        } else {
+            push @s, string_diff("$_ = $old->{$_}", "");
+        }
+    }
+    return join ', ', @s;
+}
+
+sub string_diff {
+    my ($old, $new, %options) = @_;
+
+    return '' if $old eq $new;
+
+    $old = FixMyStreet::Template::html_filter($old);
+    $new = FixMyStreet::Template::html_filter($new);
+
+    if ($options{single}) {
+        $old = [ $old ];
+        $new = [ $new ];
+    }
+    $old = [ split //, $old ] unless ref $old;
+    $new = [ split //, $new ] unless ref $new;
+    my $diff = Algorithm::Diff->new( $old, $new );
+    my $string;
+    while ($diff->Next) {
+        my $d = $diff->Diff;
+        if ($d & 1) {
+            my $deleted = join '', $diff->Items(1);
+            $string .= "<del style='background-color:#fcc'>$deleted</del>";
+        }
+        my $inserted = join '', $diff->Items(2);
+        if ($d & 2) {
+            $string .= "<ins style='background-color:#cfc'>$inserted</ins>";
+        } else {
+            $string .= $inserted;
+        }
+    }
+    return $string;
+}
 
 1;

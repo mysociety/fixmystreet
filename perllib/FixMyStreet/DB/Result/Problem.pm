@@ -973,6 +973,13 @@ sub latest_moderation_log_entry {
     return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => { -desc => 'id' } })->first;
 }
 
+sub moderation_history {
+    my $self = shift;
+    return $self->moderation_original_datas->search({
+        comment_id => undef,
+    }, { order_by => { -desc => 'id' } })->all;
+}
+
 __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",

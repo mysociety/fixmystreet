@@ -182,6 +182,29 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 
 </div>
 
+[% moderation_history = problem.moderation_history %]
+[% IF moderation_history %]
+<div class="full-width" style="margin-bottom:-2em; padding-bottom: 2em">
+    <h2>[% loc('Moderation history') %]</h2>
+    [% last_history = problem %]
+    <ul>
+      [% FOR history IN moderation_history %]
+        [% SET diff = history.compare_with(last_history) %]
+        <li>[% PROCESS format_time time=history.created %]:
+            [% IF diff.title %]<br>[% loc('Subject:') %] [% diff.title %][% END %]
+            [% IF diff.detail %]<br>[% loc('Details:') %] [% diff.detail %][% END %]
+            [% IF diff.photo %]<br>[% loc('Photo') %]: [% diff.photo %][% END %]
+            [% IF diff.anonymous %]<br>[% loc('Anonymous:') %] [% diff.anonymous %][% END %]
+            [% IF diff.coords %]<br>[% loc('Latitude/Longitude:') %] [% diff.coords %][% END %]
+            [% IF diff.category %]<br>[% loc('Category:') %] [% diff.category %][% END %]
+            [% IF diff.extra %]<br>[% loc('Extra data:') %] [% diff.extra %][% END %]
+        </li>
+        [% last_history = history %]
+      [% END %]
+    </ul>
+</div>
+[% END %]
+
 <div class="full-width full-width--bottom">
 [% INCLUDE 'admin/list_updates.html' %]
 </div>

@@ -81,4 +81,22 @@
 </ul>
 <input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
 
+[% moderation_history = update.moderation_history %]
+[% IF moderation_history %]
+    <h2>[% loc('Moderation history') %]</h2>
+    [% last_history = update %]
+    <ul>
+      [% FOR history IN moderation_history %]
+        [% SET diff = history.compare_with(last_history) %]
+        <li>[% PROCESS format_time time=history.created %]:
+            [% IF diff.detail %]<br>[% loc('Text:') %] [% diff.detail %][% END %]
+            [% IF diff.photo %]<br>[% loc('Photo') %]: [% diff.photo %][% END %]
+            [% IF diff.anonymous %]<br>[% loc('Anonymous:') %] [% diff.anonymous %][% END %]
+            [% IF diff.extra %]<br>[% loc('Extra data:') %] [% diff.extra %][% END %]
+        </li>
+        [% last_history = history %]
+      [% END %]
+    </ul>
+[% END %]
+
 [% INCLUDE 'admin/footer.html' %]

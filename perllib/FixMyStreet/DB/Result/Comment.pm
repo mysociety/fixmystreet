@@ -197,6 +197,13 @@ __PACKAGE__->has_many(
   }
 );
 
+sub moderation_history {
+    my $self = shift;
+    return $self->moderation_original_datas->search({
+        problem_id => $self->problem_id,
+    }, { order_by => { -desc => 'id' } })->all;
+}
+
 # This will return the oldest moderation_original_data, if any.
 # The plural can be used to return all entries.
 __PACKAGE__->might_have(

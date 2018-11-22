@@ -459,4 +459,7 @@ subtest 'And do it as a superuser' => sub {
     $mech->content_contains('Moderated by an administrator');
 };
 
+subtest 'Check moderation history in admin' => sub {
+    $mech->get_ok('/admin/report_edit/' . $report->id);
+};
 done_testing();

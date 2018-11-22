@@ -63,7 +63,7 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
         longitude => $problem->longitude,
         latitude => $problem->latitude,
         category => $problem->category,
-        extra => $problem->extra,
+        $problem->extra ? (extra => $problem->extra) : (),
     });
     $c->stash->{original} = $problem->moderation_original_data || $c->stash->{history};
     $c->stash->{problem} = $problem;
@@ -299,7 +299,7 @@ sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
         detail => $comment->text,
         photo => $comment->photo,
         anonymous => $comment->anonymous,
-        extra => $comment->extra,
+        $comment->extra ? (extra => $comment->extra) : (),
     });
     $c->stash->{comment} = $comment;
     $c->stash->{original} = $comment->moderation_original_data || $c->stash->{history};
