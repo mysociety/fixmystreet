@@ -889,7 +889,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->stash->{updates} =
       [ $c->model('DB::Comment')
-          ->search( { problem_id => $problem->id }, { order_by => 'created' } )
+          ->search( { problem_id => $problem->id }, { order_by => [ 'created', 'id' ] } )
           ->all ];
 
     if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {

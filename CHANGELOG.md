@@ -14,6 +14,7 @@
         - Add Mark/View private reports permission #2306
         - Store more original stuff on moderation.
         - Sort user updates in reverse date order.
+        - Improve update display on admin report edit page.
     - Open311 improvements:
         - Fix bug in contact group handling. #2323
         - Improve validation of fetched reports timestamps. #2327

@@ -9,24 +9,25 @@
         <th>[% loc('Council') %]</th>
         <th>[% loc('Cobrand') %]</th>
         <th>[% loc('State') %]</th>
-        <th>[% loc('Text') %]</th>
         <th>*</th>
     </tr>
 [% FOREACH update IN updates -%]
     <tr[% ' class="adminhidden"' IF update.state == 'hidden' || update.problem.state == 'hidden' %]>
-        <td>[%- IF update.state == 'confirmed' && update.problem.state != 'hidden' -%]
-        [%- cobrand_data = update.cobrand_data;
-            cobrand_data = c.data_for_generic_update IF !update.cobrand;
-            IF cobrand_data;
+        <td rowspan=2>
+          [%~ IF update.state == 'confirmed' && update.problem.state != 'hidden' -%]
+          [%- cobrand_data = update.cobrand_data;
+              cobrand_data = c.data_for_generic_update IF !update.cobrand;
+              IF cobrand_data;
                 uri = c.uri_for_email( '/report', update.problem.id, cobrand_data );
-            ELSE;
+              ELSE;
                 uri = c.uri_for_email( '/report', update.problem.id );
-            END;
-        %]
-        <a href="[% uri %]#update_[% update.id %]" class="admin-offsite-link">[% update.id %]</a>
-        [%- ELSE %]
-        [%- update.id %]
-        [%- END -%]</td> 
+              END;
+          %]
+            <a href="[% uri %]#update_[% update.id %]" class="admin-offsite-link">[% update.id %]</a>
+          [%- ELSE %]
+            [%- update.id %]
+          [%- END ~%]
+        </td>
         <td>[% PROCESS value_or_nbsp value=update.name %]
             <br>[% PROCESS value_or_nbsp value=update.user.email %]
             <br>[% loc('Anonymous') %]: [% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
@@ -38,12 +39,14 @@
             [% loc('Created:') %] [% PROCESS format_time time=update.created %]
             <br>[% loc('Confirmed:') %] [% PROCESS format_time time=update.confirmed %]
         </small></td>
-        <td>[% update.text | html %]</td> 
-        <td>
+        <td rowspan=2>
             [% IF c.user.has_permission_to('report_edit', update.problem.bodies_str_ids) %]
                 <a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a>
             [% END %]
         </td>
+    </tr>
+    <tr>
+        <td colspan=5>[% update.text | html %]</td>
     </tr>
 [% END -%]
 </table>
