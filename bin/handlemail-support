@@ -22,7 +22,6 @@ BEGIN {
 }
 
 use FixMyStreet;
-use mySociety::EmailUtil;
 use mySociety::HandleMail;
 
 my %data = mySociety::HandleMail::get_message();
@@ -33,12 +32,14 @@ forward_on();
 
 sub forward_on {
     my ($l, $d) = split /\@/, FixMyStreet->config('CONTACT_EMAIL');
-    if (mySociety::EmailUtil::EMAIL_SUCCESS
-            != mySociety::EmailUtil::send_email(
-                join("\n", @{$data{lines}}) . "\n",
-                $data{return_path},
-                join('@', join('_deli', $l, 'very'), $d)
-            )) {
+    my ($rp) = $data{return_path} =~ /^\s*<(.*)>\s*$/;
+    unless (FixMyStreet::Email::Sender->try_to_send(
+        join("\n", @{$data{lines}}) . "\n",
+        {
+            from => $rp,
+            to => join('@', join('_deli', $l, 'very'), $d)
+        }
+    )) {
         exit 75;
     }
     exit 0;
