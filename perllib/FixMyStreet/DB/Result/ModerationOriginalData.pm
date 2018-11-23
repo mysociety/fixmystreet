@@ -78,6 +78,16 @@ with 'FixMyStreet::Roles::Extra';
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
+sub admin_log {
+    my $self = shift;
+    my $rs = $self->result_source->schema->resultset("AdminLog");
+    my $log = $rs->search({
+        object_id => $self->id,
+        object_type => 'moderation',
+    })->first;
+    return $log;
+}
+
 sub compare_with {
     my ($self, $other) = @_;
     if ($self->comment_id) {

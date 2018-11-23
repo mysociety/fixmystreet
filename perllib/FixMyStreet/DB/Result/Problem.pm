@@ -210,6 +210,7 @@ my $IM = eval {
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra',
+     'FixMyStreet::Roles::Moderation',
      'FixMyStreet::Roles::Translatable',
      'FixMyStreet::Roles::PhotoSet';
 
@@ -962,24 +963,6 @@ sub as_hashref {
     return $out;
 }
 
-=head2 latest_moderation_log_entry
-
-Return most recent ModerationLog object
-
-=cut
-
-sub latest_moderation_log_entry {
-    my $self = shift;
-    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => { -desc => 'id' } })->first;
-}
-
-sub moderation_history {
-    my $self = shift;
-    return $self->moderation_original_datas->search({
-        comment_id => undef,
-    }, { order_by => { -desc => 'id' } })->all;
-}
-
 __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",
@@ -989,6 +972,11 @@ __PACKAGE__->has_many(
       where => { 'object_type' => 'problem' },
   }
 );
+
+sub moderation_filter {
+    my $self = shift;
+    { comment_id => undef };
+}
 
 sub get_time_spent {
     my $self = shift;

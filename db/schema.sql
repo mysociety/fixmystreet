@@ -427,6 +427,7 @@ create table admin_log (
       object_type = 'problem'
       or object_type = 'update'
       or object_type = 'user'
+      or object_type = 'moderation'
     ),
     object_id integer not null,
     action text not null,

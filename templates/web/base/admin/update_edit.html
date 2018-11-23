@@ -88,7 +88,9 @@
     <ul>
       [% FOR history IN moderation_history %]
         [% SET diff = history.compare_with(last_history) %]
-        <li>[% PROCESS format_time time=history.created %]:
+        [% SET log = history.admin_log %]
+        <li><i>[% tprintf(loc('Moderated by %s at %s'), log.user.name OR loc('an administrator'), prettify_dt(history.created)) %]
+            [%~ IF log.reason %]<br>“[% log.reason %]”[% END %]</i>
             [% IF diff.detail %]<br>[% loc('Text:') %] [% diff.detail %][% END %]
             [% IF diff.photo %]<br>[% loc('Photo') %]: [% diff.photo %][% END %]
             [% IF diff.anonymous %]<br>[% loc('Anonymous:') %] [% diff.anonymous %][% END %]

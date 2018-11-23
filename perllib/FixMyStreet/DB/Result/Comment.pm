@@ -102,6 +102,7 @@ use FixMyStreet::Template;
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra',
+     'FixMyStreet::Roles::Moderation',
      'FixMyStreet::Roles::PhotoSet';
 
 my $stz = sub {
@@ -176,17 +177,6 @@ sub url {
     return "/report/" . $self->problem_id . '#update_' . $self->id;
 }
 
-=head2 latest_moderation_log_entry
-
-Return most recent ModerationLog object
-
-=cut
-
-sub latest_moderation_log_entry {
-    my $self = shift;
-    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => { -desc => 'id' } })->first;
-}
-
 __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",
@@ -196,13 +186,6 @@ __PACKAGE__->has_many(
       where => { 'object_type' => 'update' },
   }
 );
-
-sub moderation_history {
-    my $self = shift;
-    return $self->moderation_original_datas->search({
-        problem_id => $self->problem_id,
-    }, { order_by => { -desc => 'id' } })->all;
-}
 
 # This will return the oldest moderation_original_data, if any.
 # The plural can be used to return all entries.
@@ -216,6 +199,11 @@ __PACKAGE__->might_have(
     rows => 1,
     cascade_copy => 0, cascade_delete => 1 },
 );
+
+sub moderation_filter {
+    my $self = shift;
+    { problem_id => $self->problem_id };
+}
 
 =head2 meta_line
 

@@ -119,23 +119,32 @@ sub moderating_user_name {
     return $user->from_body ? $user->from_body->name : _('an administrator');
 }
 
-sub report_moderate_audit : Private {
-    my ($self, $c, @types) = @_;
+sub moderate_log_entry : Private {
+    my ($self, $c, $object_type, @types) = @_;
 
     my $user = $c->user->obj;
     my $reason = $c->stash->{'moderation_reason'};
-    my $problem = $c->stash->{problem} or die;
+    my $object = $object_type eq 'update' ? $c->stash->{comment} : $c->stash->{problem};
 
     my $types_csv = join ', ' => @types;
 
+    # We attach the log to the moderation entry if present, or the object if not (hiding)
     $c->model('DB::AdminLog')->create({
         action => 'moderation',
         user => $user,
         admin_user => moderating_user_name($user),
-        object_id => $problem->id,
-        object_type => 'problem',
+        object_id => $c->stash->{history}->id || $object->id,
+        object_type => $c->stash->{history}->id ? 'moderation' : $object_type,
         reason => (sprintf '%s (%s)', $reason, $types_csv),
     });
+}
+
+sub report_moderate_audit : Private {
+    my ($self, $c, @types) = @_;
+
+    my $problem = $c->stash->{problem} or die;
+
+    $c->forward('moderate_log_entry', [ 'problem', @types ]);
 
     if ($problem->user->email_verified && $c->cobrand->send_moderation_notifications) {
         my $token = $c->model("DB::Token")->create({
@@ -143,6 +152,7 @@ sub report_moderate_audit : Private {
             data => { id => $problem->id }
         });
 
+        my $types_csv = join ', ' => @types;
         $c->send_email( 'problem-moderated.txt', {
             to => [ [ $problem->user->email, $problem->name ] ],
             types => $types_csv,
@@ -316,27 +326,7 @@ sub moderate_update : Chained('update') : PathPart('') : Args(0) {
         $c->forward('moderate_extra'),
         $c->forward('moderate_boolean', [ 'photo' ]);
 
-    $c->detach( 'update_moderate_audit', \@types )
-}
-
-sub update_moderate_audit : Private {
-    my ($self, $c, @types) = @_;
-
-    my $user = $c->user->obj;
-    my $reason = $c->stash->{'moderation_reason'};
-    my $problem = $c->stash->{problem} or die;
-    my $comment = $c->stash->{comment} or die;
-
-    my $types_csv = join ', ' => @types;
-
-    $c->model('DB::AdminLog')->create({
-        action => 'moderation',
-        user => $user,
-        admin_user => moderating_user_name($user),
-        object_id => $comment->id,
-        object_type => 'update',
-        reason => (sprintf '%s (%s)', $reason, $types_csv),
-    });
+    $c->detach('moderate_log_entry', [ 'update', @types ]);
 }
 
 sub update_moderate_hide : Private {
@@ -347,7 +337,7 @@ sub update_moderate_hide : Private {
 
     if ($c->get_param('update_hide')) {
         $comment->hide;
-        $c->detach( 'update_moderate_audit', ['hide'] ); # break chain here.
+        $c->detach('moderate_log_entry', [ 'update', 'hide' ]); # break chain here.
     }
     return;
 }
