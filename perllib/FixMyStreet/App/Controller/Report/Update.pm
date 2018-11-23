@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use Path::Class;
+use List::Util 'first';
 use Utils;
 
 =head1 NAME
@@ -99,7 +100,10 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => $c->get_param($_) }
-      ( 'username', 'name', 'password_register', 'fms_extra_title' );
+      ( 'name', 'password_register', 'fms_extra_title' );
+
+    # Update form includes two username fields: #form_username_register and #form_username_sign_in
+    $params{username} = (first { $_ } $c->get_param_list('username')) || '';
 
     # Extra block to use 'last'
     if ( $c->user_exists ) { {

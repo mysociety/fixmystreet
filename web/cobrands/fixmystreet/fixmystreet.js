@@ -322,8 +322,7 @@ $.extend(fixmystreet.set_up, {
     } );
 
     $('#facebook_sign_in, #twitter_sign_in').click(function(e){
-        $('#form_username').removeClass();
-        $('#username').removeClass();
+        $('#username, #form_username_register, #form_username_sign_in').removeClass('required');
     });
 
     $('#planned_form').submit(function(e) {
@@ -950,7 +949,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   reporting_hide_phone_email: function() {
-    $('#form_username').on('keyup change', function() {
+    $('#form_username_register').on('keyup change', function() {
         var username = $(this).val();
         if (/^[^a-z]+$/i.test(username)) {
             $('#js-hide-if-username-phone').hide();
