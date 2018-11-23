@@ -22,7 +22,6 @@ BEGIN {
 use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Email;
-use mySociety::EmailUtil;
 use mySociety::HandleMail;
 use mySociety::SystemMisc qw(print_log);
 
@@ -172,7 +171,7 @@ sub handle_non_bounce_to_null_address {
         To => $data{return_path},
         _body_ => $template,
     });
-    send_mail($mail->as_string, $data{return_path});
+    send_mail($mail, $data{return_path});
 }
 
 sub forward_on_to {
@@ -182,9 +181,10 @@ sub forward_on_to {
 }
 
 sub send_mail {
-    my ($text, $recipient) = @_;
-    if (mySociety::EmailUtil::EMAIL_SUCCESS
-            != mySociety::EmailUtil::send_email($text, '<>', $recipient)) {
+    my ($email, $recipient) = @_;
+    unless (FixMyStreet::Email::Sender->try_to_send(
+        $email, { from => '<>', to => $recipient }
+    )) {
         exit(75);
     }
 }
