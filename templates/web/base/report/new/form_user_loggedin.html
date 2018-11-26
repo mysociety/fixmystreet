@@ -56,7 +56,7 @@
     <input class="form-control" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
 [% END %]
 [% IF NOT c.user.email_verified %]
-    <label for="form_username">[% loc('Email address (optional)') %]</label>
+    <label for="form_email">[% loc('Email address (optional)') %]</label>
     <input class="form-control" type="text" value="[% report.user.email | html %]" name="email" id="form_email">
 [% END %]
 
