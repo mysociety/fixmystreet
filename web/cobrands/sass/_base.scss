@@ -893,6 +893,13 @@ input.final-submit {
   font-size: 0.8em;
 }
 
+// Most of our forms get their vertical spacing from the margin-top on labels.
+// This means the final submit button can end up uncomfortably close to the
+// bottom of the final input. Add a class of `btn--final` to fix this.
+.btn--final {
+    margin-top: 1.25em; // matches margin-top on `label`
+}
+
 .js #js-social-email-hide {
     display: none;
 }
