@@ -29,8 +29,7 @@ sub report_validation {
     }
 
     if ( length( $report->detail ) > $self->max_report_length ) {
-        $errors->{detail} = sprintf( _('Reports are limited to %s characters in
- length. Please shorten your report'), $self->max_report_length );
+        $errors->{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), $self->max_report_length );
     }
 
     return $errors;
