@@ -20,6 +20,7 @@ BEGIN {
 }
 
 use Getopt::Long;
+use Path::Tiny;
 use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Email;
@@ -170,10 +171,8 @@ sub handle_non_bounce_to_null_address {
 
     # Send an automatic response
     print_log('info', "Received non-bounce to null address, auto-replying");
-    my $template = 'reply-autoresponse';
-    my $fp = FixMyStreet->path_to("templates", "email", $cobrand, $template)->open or exit 75;
-    $template = join('', <$fp>);
-    $fp->close;
+
+    my $template = path(FixMyStreet->path_to("templates", "email", $cobrand, 'reply-autoresponse'))->slurp_utf8;
 
     # We generate this as a bounce.
     my ($rp) = $data{return_path} =~ /^\s*<(.*)>\s*$/;
