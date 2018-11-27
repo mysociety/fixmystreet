@@ -889,6 +889,13 @@ input.final-submit {
     @include box-sizing(border-box);
 }
 
+// Don't want space between block-level buttons,
+// because they don't sit beside each other anyway.
+.btn--block + .btn--block {
+    margin-#{$left}: 0;
+    margin-top: 1em;
+}
+
 .btn--small {
   font-size: 0.8em;
 }
