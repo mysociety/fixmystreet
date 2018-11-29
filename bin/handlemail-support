@@ -22,6 +22,7 @@ BEGIN {
 }
 
 use FixMyStreet;
+use FixMyStreet::Email::Sender;
 use mySociety::HandleMail;
 
 my %data = mySociety::HandleMail::get_message();
