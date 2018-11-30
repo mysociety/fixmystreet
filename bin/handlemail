@@ -121,7 +121,15 @@ sub handle_permanent_bounce {
 sub is_out_of_office {
     my (%attributes) = @_;
     return 1 if $attributes{problem} && $attributes{problem} == mySociety::HandleMail::ERR_OUT_OF_OFFICE;
-    my $subject = $data{message}->head()->get("Subject");
+    my $head = $data{message}->head();
+    return 1 if $head->get('X-Autoreply') || $head->get('X-Autorespond');
+    my $mc = $head->get('X-POST-MessageClass') || '';
+    return 1 if $mc eq '9; Autoresponder';
+    my $auto_submitted = $head->get("Auto-Submitted") || '';
+    return 1 if $auto_submitted && $auto_submitted !~ /no/;
+    my $precedence = $head->get("Precedence") || '';
+    return 1 if $precedence =~ /auto_reply/;
+    my $subject = $head->get("Subject");
     return 1 if $subject =~ /Auto(matic|mated)?[ -_]?(reply|response|responder)|Thank[ _]you[ _]for[ _](your[ _]email|contacting)|Out of (the )?Office|away from the office|This office is closed until|^Re: (Problem Report|New updates)|^Auto: |^E-Mail Response$|^Message Received:|have received your email|Acknowledgement of your email|away from my desk/i;
     return 0;
 }
@@ -177,6 +185,7 @@ sub handle_non_bounce_to_null_address {
     # We generate this as a bounce.
     my ($rp) = $data{return_path} =~ /^\s*<(.*)>\s*$/;
     my $mail = FixMyStreet::Email::construct_email({
+        'Auto-Submitted' => 'auto-replied',
         From => [ FixMyStreet->config('CONTACT_EMAIL'),
                   FixMyStreet->config('CONTACT_NAME') ],
         To => $rp,
