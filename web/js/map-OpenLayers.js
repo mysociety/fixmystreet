@@ -188,6 +188,9 @@ $.extend(fixmystreet.utils, {
         var selected_size = fixmystreet.maps.selected_marker_size();
         for (var i=0; i<pins.length; i++) {
             var pin = pins[i];
+            if (pin[1] == 0 && pin[0] == 0) {
+                continue;
+            }
             var loc = new OpenLayers.Geometry.Point(pin[1], pin[0]);
             if (transform) {
                 // The Strategy does this for us, so don't do it in that case.
