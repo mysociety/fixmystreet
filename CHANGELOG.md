@@ -9,6 +9,7 @@
         - Simplify /auth sign in page. #2208
         - Enforce maximum photo size server side, strip EXIF data. #2326 #2134
         - Don't require two taps on reports list on touchscreens. #2294
+        - Allow moderation to work without JavaScript. #2339
     - Admin improvements:
         - Allow moderation to potentially change category. #2320
         - Add Mark/View private reports permission #2306

@@ -1380,6 +1380,15 @@ input.final-submit {
   }
 }
 
+.show-moderation {
+  .moderate-edit {
+    display: block;
+  }
+  .moderate-display {
+    display: none;
+  }
+}
+
 .shortlisted-status {
   margin-top: 1em;
   padding: 1em 1em 1em 4em; // Icon is always displayed on left, even in RtL mode

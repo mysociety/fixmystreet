@@ -376,9 +376,9 @@ $.extend(fixmystreet.set_up, {
       function add_handlers (elem, word) {
           elem.each( function () {
               var $elem = $(this);
-              $elem.find('.js-moderate').on('click', function () {
-                  $elem.find('.moderate-display').hide();
-                  $elem.find('.moderate-edit').show();
+              $elem.find('.js-moderate').on('click', function(e) {
+                  e.preventDefault();
+                  $elem.toggleClass('show-moderation');
                   $('#map_sidebar').scrollTop(word === 'problem' ? 0 : $elem[0].offsetTop);
               });
 
@@ -399,8 +399,7 @@ $.extend(fixmystreet.set_up, {
               });
 
               $elem.find('.cancel').click( function () {
-                  $elem.find('.moderate-display').show();
-                  $elem.find('.moderate-edit').hide();
+                  $elem.toggleClass('show-moderation');
                   $('#map_sidebar').scrollTop(word === 'problem' ? 0 : $elem[0].offsetTop);
               });
 

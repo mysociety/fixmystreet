@@ -64,6 +64,9 @@ subtest 'Auth' => sub {
         $mech->get_ok($REPORT_URL);
         $mech->content_lacks('Moderat');
 
+        $mech->get_ok("$REPORT_URL/moderate");
+        $mech->content_lacks('Moderat');
+
         $mech->log_in_ok( $user->email );
 
         $mech->get_ok($REPORT_URL);
@@ -102,6 +105,9 @@ subtest 'Problem moderation' => sub {
 
     subtest 'Post modify title and text' => sub {
         $mech->get_ok($REPORT_URL);
+        $mech->content_lacks('show-moderation');
+        $mech->follow_link_ok({ text_regex => qr/^Moderate$/ });
+        $mech->content_contains('show-moderation');
         $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_title  => 'Good good',
@@ -335,6 +341,9 @@ subtest 'updates' => sub {
 
     subtest 'Update modify text' => sub {
         $mech->get_ok($REPORT_URL);
+        $mech->content_lacks('show-moderation');
+        $mech->follow_link_ok({ text_regex => qr/^Moderate this update$/ });
+        $mech->content_contains('show-moderation');
         $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_text => 'update good good good',
@@ -446,6 +455,9 @@ subtest 'Now stop being a staff user' => sub {
     $user->update({ from_body => undef });
     $mech->get_ok($REPORT_URL);
     $mech->content_contains('Moderated by Bromley Council');
+
+    $mech->get_ok("$REPORT_URL/moderate/" . $update->id);
+    $mech->content_lacks('Moderate this update');
 };
 
 subtest 'And do it as a superuser' => sub {

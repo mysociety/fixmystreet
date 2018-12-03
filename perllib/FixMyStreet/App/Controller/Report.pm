@@ -92,6 +92,29 @@ sub display :PathPart('') :Chained('id') :Args(0) {
     }
 }
 
+sub moderate_report :PathPart('moderate') :Chained('id') :Args(0) {
+    my ( $self, $c ) = @_;
+
+    if ($c->user_exists && $c->user->can_moderate($c->stash->{problem})) {
+        $c->stash->{show_moderation} = 'report';
+        $c->stash->{template} = 'report/display.html';
+        $c->detach('display');
+    }
+    $c->res->redirect($c->stash->{problem}->url);
+}
+
+sub moderate_update :PathPart('moderate') :Chained('id') :Args(1) {
+    my ( $self, $c, $update_id ) = @_;
+
+    my $comment = $c->stash->{problem}->comments->find($update_id);
+    if ($c->user_exists && $comment && $c->user->can_moderate($comment)) {
+        $c->stash->{show_moderation} = $update_id;
+        $c->stash->{template} = 'report/display.html';
+        $c->detach('display');
+    }
+    $c->res->redirect($c->stash->{problem}->url);
+}
+
 sub support :Chained('id') :Args(0) {
     my ( $self, $c ) = @_;
 
