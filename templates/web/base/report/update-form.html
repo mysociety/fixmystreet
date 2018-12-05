@@ -22,25 +22,15 @@
         <input type="hidden" name="token" value="[% csrf_token %]">
         <fieldset>
           [% IF NOT login_success AND NOT oauth_need_email %]
-            [% INCLUDE 'report/update/form_update.html' %]
-          [% END %]
-          [% IF c.user_exists %]
-            [% INCLUDE 'report/update/form_name.html' %]
-            <div class="clearfix"><input class="final-submit green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]"></div>
-          [% ELSIF oauth_need_email %]
-            [% INCLUDE 'report/update/form_user_loggedout_email.html' required = 1 %]
-            <div id="form_sign_in">
-                <h3>[% loc("Now to submit your update&hellip;") %]</h3>
-                <h2>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
-                [% INCLUDE 'report/update/form_user_loggedout_by_email.html' %]
-                [% INCLUDE 'report/update/form_user_loggedout_password.html' %]
-                <input type="hidden" name="oauth_need_email" value="1">
+            <div class="js-new-report-user-hidden">
+                [% INCLUDE 'report/update/form_update.html' %]
             </div>
-          [% ELSE %]
-            [% INCLUDE 'report/update/form_user_loggedout.html' %]
           [% END %]
+            [% PROCESS "report/update/form_user.html" %]
           [% IF login_success OR oauth_need_email %]
-            [% INCLUDE 'report/update/form_update.html' %]
+            <div class="js-new-report-user-hidden">
+                [% INCLUDE 'report/update/form_update.html' %]
+            </div>
           [% END %]
         </fieldset>
     </form>

@@ -1,3 +1,4 @@
+<!-- report/new/form_report.html -->
 [% INCLUDE 'report/new/form_heading.html' %]
 
 [% IF field_errors.bodies %]
@@ -6,7 +7,7 @@
 
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
-<div id="post_category_details_form">
+<div class="js-hide-if-invalid-category">
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
     <h2 class="form-section-heading">[% loc( 'Public details' ) %]</h2>
@@ -77,3 +78,4 @@
     <input type="hidden" id="do_not_send" name="do_not_send" value="">
     <input type="hidden" name="submit_problem" value="1">
 </div>
+<!-- /report/new/form_report.html -->

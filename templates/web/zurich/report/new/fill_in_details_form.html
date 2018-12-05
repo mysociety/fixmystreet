@@ -50,11 +50,11 @@
 
             [% PROCESS "report/new/category_wrapper.html" %]
 
-                <label for="form_username">[% loc('Your email') %]</label>
+                <label for="form_username_register">[% loc('Your email') %]</label>
                 [% IF field_errors.username %]
                     <p class='form-error'>[% field_errors.username %]</p>
                 [% END %]
-                <input class="form-control" type="email" value="[% email | html %]" name="username" id="form_username" required>
+                <input class="form-control" type="email" value="[% email | html %]" name="username" id="form_username_register" required>
 
                 <label for="form_name">[% loc('Name') %] [% loc('(optional)') %]</label>
                 [% IF field_errors.name %]

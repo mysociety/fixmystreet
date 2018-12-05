@@ -11,13 +11,8 @@
 
 <fieldset>
     <div id="problem_form">
-        [% PROCESS 'report/new/form_user_loggedout_email.html' required=1 %]
-
         <div id="form_sign_in">
-            <h3>[% loc("Now to submit your report&hellip;") %]</h3>
-            <h2>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
-            [% PROCESS 'report/new/form_user_loggedout_by_email.html' %]
-            [% PROCESS 'report/new/form_user_loggedout_password.html' %]
+            [% PROCESS 'report/form/user_loggedout_by_email.html' object=report type='report' email_required=1 %]
         </div>
 
         <input type="hidden" name="oauth_need_email" value="1">

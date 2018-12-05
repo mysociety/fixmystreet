@@ -5,6 +5,7 @@
         - default_to_body permission to control default report as behaviour
         - report_prefill permission to control report prefill behaviour
     - Front end improvements:
+        - Simplify new report/update sign in flow. #642
         - Clearer relocation options while you’re reporting a problem #2238
         - Simplify /auth sign in page. #2208
         - Enforce maximum photo size server side, strip EXIF data. #2326 #2134

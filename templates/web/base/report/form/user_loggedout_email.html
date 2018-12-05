@@ -1,17 +1,20 @@
+<!-- user_loggedout_email.html -->
 [% IF c.config.SMS_AUTHENTICATION %]
     [% SET username_label = loc('Your email or mobile') %]
     [% SET username_type = 'text' %]
-    [% SET username_value = update.user.username %]
+    [% SET username_value = object.user.username %]
 [% ELSE %]
     [% SET username_label = loc('Your email') %]
     [% SET username_type = 'email' %]
-    [% SET username_value = update.user.email %]
+    [% SET username_value = object.user.email %]
 [% END %]
 
-<label for="form_username">[% username_label %]</label>
+<label for="form_[% name %]">[% username_label %]</label>
 [% IF field_errors.username %]
     <p class='form-error'>[% field_errors.username %]</p>
 [% END %]
-<input type="[% username_type %]" name="username" id="form_username" value="[% username_value | html %]"
+<input type="[% username_type %]" name="username" id="form_[% name %]"
+       value="[% username_value | html %]"
     [% IF required %]required[% END %]
     class="form-control required">
+<!-- /user_loggedout_email.html -->

@@ -195,6 +195,7 @@ subtest 'can use customer reference to search for reports' => sub {
         $problem->set_extra_metadata( customer_reference => 'ENQ12456' );
         $problem->update;
 
+        $mech->log_out_ok;
         $mech->get_ok('/around?pc=ENQ12456');
         is $mech->uri->path, '/report/' . $problem->id, 'redirects to report';
     };

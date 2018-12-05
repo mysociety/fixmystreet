@@ -1,0 +1,72 @@
+<!-- user_loggedout_by_email.html -->
+<div id="form_sign_in_no" class="form-box js-new-report-sign-in-hidden">
+    [% PROCESS 'report/form/user_loggedout_by_email_heading.html' %]
+
+    [% INCLUDE 'report/new/extra_name.html' %]
+    [% PROCESS 'user/_anonymity.html' anonymous = object.anonymous %]
+    [% INCLUDE 'report/form/user_name.html' %]
+    [% INCLUDE 'report/_show_name_label.html' %]
+
+  [% IF type != 'update' %]
+    [% IF NOT c.cobrand.call_hook('disable_phone_number_entry') AND NOT c.config.SMS_AUTHENTICATION %]
+        <div id="js-hide-if-username-phone">
+            <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+            [% IF field_errors.phone %]
+              <p class='form-error'>[% field_errors.phone %]</p>
+            [% END %]
+            <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone">
+        </div>
+    [% END %]
+  [% END %]
+
+  [% IF c.cobrand.moniker == 'fixamingata' %]
+    <div class="general-notes">
+        <p>Vi visar inte din e-postadress eller ditt telefonnummer publikt.</p>
+    </div>
+  [% END %]
+
+  [% IF c.cobrand.social_auth_enabled AND NOT email_required %]
+    [% PROCESS 'report/form/user_loggedout_email.html' name='username_register' required=0 %]
+  [% ELSE %]
+    [% PROCESS 'report/form/user_loggedout_email.html' name='username_register' required=1 %]
+  [% END %]
+
+  [% IF type != 'update' AND c.config.SMS_AUTHENTICATION %]
+    [% UNLESS c.cobrand.call_hook('disable_phone_number_entry') %]
+        <div id="js-hide-if-username-phone" class="hidden-js">
+            <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+            <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone">
+        </div>
+    [% END %]
+    <div id="js-hide-if-username-email" class="hidden-js">
+        <label for="form_email">[% loc('Email address (optional)') %]</label>
+        <input class="form-control" type="text" value="[% email | html %]" name="email" id="form_email">
+    </div>
+  [% END %]
+
+  [% IF type == 'update' %]
+    <div class="checkbox-group">
+        <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+        <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+    </div>
+  [% END %]
+
+    <label class="hidden-js hidden-nojs js-new-report-forgotten-shown" for="password_register">[% loc('New password:') %]</label>
+    <label for="password_register" class="js-new-report-forgotten-hidden">[% loc('Password (optional)') %]</label>
+  [% IF field_errors.password_register %]
+    <p class='form-error'>[% field_errors.password_register %]</p>
+  [% END %]
+    <div class="general-notes js-new-report-forgotten-hidden" id="password_register_hint">
+      [% IF c.cobrand.moniker == 'bromley' %]
+        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports.') %] [% tprintf(loc('Your password should include %d or more characters.'), c.cobrand.password_minimum_length) %]</p>
+      [% ELSE %]
+        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %] [% tprintf(loc('Your password should include %d or more characters.'), c.cobrand.password_minimum_length) %]</p>
+      [% END %]
+    </div>
+
+    <input class="form-control js-password-validate" type="password" name="password_register" id="password_register" aria-describedby="password_register_hint" value="">
+
+    <input class="btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
+
+</div>
+<!-- /user_loggedout_by_email.html -->

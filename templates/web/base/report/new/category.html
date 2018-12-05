@@ -13,12 +13,12 @@
     <label for='form_category' id="form_category_label">
         [%~ loc('Category') ~%]
     </label>[% =%]
-    <select class="form-control[% IF category_groups.size %] js-grouped-select[% END %]" name="category" id="form_category"
+    <select class="validCategory form-control[% IF category_groups.size %] js-grouped-select[% END %]" name="category" id="form_category"
     [%~ IF c.user.from_body =%]
       [%~ prefill_report = ( c.cobrand.prefill_report_fields_for_inspector && inspector ) || c.user.has_body_permission_to('report_prefill') %]
       data-body="[% c.user.from_body.name %]" data-prefill="[% prefill_report %]"
     [%~ END ~%]
-    >
+    required>
         [%~ IF category_groups.size ~%]
             [%~ FOREACH group IN category_groups ~%]
                 [% IF group.name %]<optgroup label="[% group.name %]">[% END %]

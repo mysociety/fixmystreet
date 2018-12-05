@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Encode;
 use List::MoreUtils qw(uniq);
+use List::Util 'first';
 use POSIX 'strcoll';
 use HTML::Entities;
 use mySociety::MaPit;
@@ -789,7 +790,10 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => $c->get_param($_) }
-      ( 'username', 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
+      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
+
+    # Report form includes two username fields: #form_username_register and #form_username_sign_in
+    $params{username} = (first { $_ } $c->get_param_list('username')) || '';
 
     if ( $c->cobrand->allow_anonymous_reports ) {
         my $anon_details = $c->cobrand->anonymous_account;

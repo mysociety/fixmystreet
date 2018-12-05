@@ -1,0 +1,10 @@
+<!-- user_loggedout.html -->
+
+<div id="form_sign_in">
+    [% PROCESS 'report/form/private_details.html' %]
+    <h2 class="hidden-js">[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
+    [% PROCESS 'report/form/user_loggedout_password.html' %]
+    [% PROCESS 'report/form/user_loggedout_by_email.html' %]
+</div>
+
+<!-- /user_loggedout.html -->

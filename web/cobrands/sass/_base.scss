@@ -359,6 +359,27 @@ select.form-control {
     line-height: 1em * (22/16);
 }
 
+.form-section-preview {
+    // If social_auth_enabled, but no javascript, we want the "Next" preview
+    // to be visible but without any other styling. Once javascript is enabled,
+    // the "next"/"back" buttons will work, so we want the styling back.
+    html.js & {
+        background-color: #eee;
+        border-radius: 4px;
+        padding: 1em;
+
+        .form-section-heading {
+          margin: 0 0 0.5em 0;
+        }
+    }
+}
+
+// Purposefully *not* wrapped in `html.js` because the margin-top helps
+// separate the social login buttons from the .description_tips list.
+.form-section-preview--next {
+    margin-top: 1.5em;
+}
+
 // grey background, full width box
 .form-box {
   margin: 0 -1em 0.25em;
@@ -393,12 +414,6 @@ select.form-control {
       margin-#{$right}: 0.25em;
     }
   }
-}
-
-// When the user is logged in, we show a shorter form-box,
-// without a heading before it. So add some space before.
-#form-box--logged-in-name {
-  margin-top: 1.25em;
 }
 
 .change_location {
@@ -889,12 +904,22 @@ input.final-submit {
     @include box-sizing(border-box);
 }
 
+// Don't want space between block-level buttons,
+// because they don't sit beside each other anyway.
+.btn--block + .btn--block {
+    margin-#{$left}: 0;
+    margin-top: 1em;
+}
+
 .btn--small {
   font-size: 0.8em;
 }
 
-.js #js-social-email-hide {
-    display: none;
+// Most of our forms get their vertical spacing from the margin-top on labels.
+// This means the final submit button can end up uncomfortably close to the
+// bottom of the final input. Add a class of `btn--final` to fix this.
+.btn--final {
+    margin-top: 1.25em; // matches margin-top on `label`
 }
 
 .banner {

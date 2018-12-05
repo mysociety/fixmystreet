@@ -73,12 +73,10 @@ my $empty_form = {
     name          => '',
     may_show_name => '1',
     username      => '',
-    email         => '',
     phone         => '',
     category      => '',
     password_sign_in => '',
     password_register => '',
-    remember_me => undef,
 };
 foreach my $test (
     {

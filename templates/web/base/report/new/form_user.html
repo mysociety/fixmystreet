@@ -1,17 +1,24 @@
-<div id="private_form">
-<h2 class="form-section-heading form-section-heading--private">[% loc('Private details') %]</h2>
-<p class="form-section-description" id="js-councils_text_private">
-  [% IF js %]
-    [% loc('These will be sent to the council, but will never be shown online.') %]
-    (<a href="/privacy">[% loc('See our privacy policy') %]</a>.)
-  [% ELSE %]
-    [% PROCESS 'report/new/councils_text_private.html' %]
-  [% END %]
-</p>
+<!-- report/new/form_user.html -->
+<div class="js-hide-if-invalid-category">
+
+    [% PROCESS 'report/form/user.html' %]
+
+    <div class="hidden-js js-new-report-user-shown">
+        <div class="hidden-nojs form-section-preview">
+            <h2 class="form-section-heading">[% loc('About the problem') %]</h2>
+            <p>
+                <strong class="js-form-section-preview" data-source="#form_title"></strong>
+                <span class="js-form-section-preview" data-source="#form_detail"></span>
+            </p>
+            <button id="js-new-report-user-hide" class="btn btn--block">[% loc('Edit report details') %]</button>
+        </div>
 
 [% IF c.user_exists %]
   [% PROCESS "report/new/form_user_loggedin.html" %]
 [% ELSE %]
-  [% PROCESS "report/new/form_user_loggedout.html" %]
+  [% PROCESS "report/form/user_loggedout.html" type='report' object=report %]
 [% END %]
+
+    </div>
 </div>
+<!-- /report/new/form_user.html -->

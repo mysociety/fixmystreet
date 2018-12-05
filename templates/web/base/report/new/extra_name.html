@@ -6,7 +6,7 @@
 [% title = '' %]
 [% IF fms_extra_title %][% title = fms_extra_title | upper %]
 [% ELSIF c.user && c.user.title %][% title = c.user.title | upper %][% END %]
-<select class="form-control form-focus-trigger required js-form-name" id="form_fms_extra_title"
+<select class="form-control required js-form-name" id="form_fms_extra_title"
     name="fms_extra_title">
     <option></option>
     <option value="MR"[% ' selected' IF title == 'MR' %]>Mr</option>

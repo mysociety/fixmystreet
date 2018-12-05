@@ -1,4 +1,5 @@
-<div class="form-box" id="form-box--logged-in-name">
+<!-- report/new/form_user_loggedin.html -->
+[% PROCESS 'report/form/private_details.html' %]
 
 [% IF js %]
   <div style="display:none" id="js-contribute-as-wrapper">
@@ -45,7 +46,7 @@
 
     [% INCLUDE 'report/new/extra_name.html' %]
     [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
-    [% INCLUDE 'report/new/form_user_name.html' %]
+    [% INCLUDE 'report/form/user_name.html' object=report %]
     [% INCLUDE 'report/_show_name_label.html' %]
 
 [% IF NOT c.user.phone_verified AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]
@@ -56,7 +57,7 @@
     <input class="form-control" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
 [% END %]
 [% IF NOT c.user.email_verified %]
-    <label for="form_username">[% loc('Email address (optional)') %]</label>
+    <label for="form_email">[% loc('Email address (optional)') %]</label>
     <input class="form-control" type="text" value="[% report.user.email | html %]" name="email" id="form_email">
 [% END %]
 
@@ -67,7 +68,5 @@
     </div>
 [% END %]
 
-    <div class="form-txt-submit-box">
-        <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
-    </div>
-</div>
+<input class="btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
+<!-- /report/new/form_user_loggedin.html -->
