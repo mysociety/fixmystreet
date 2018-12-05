@@ -880,13 +880,13 @@ $.extend(fixmystreet.set_up, {
     // Display tweak
     $('.js-new-report-sign-in-hidden.form-box, .js-new-report-sign-in-shown.form-box').removeClass('form-box');
 
-    $('#js-new-report-user-hide').click(function(e) {
+    $('.js-new-report-user-hide').click(function(e) {
         e.preventDefault();
         $('.js-new-report-user-shown')[0].scrollIntoView({behavior: "smooth"});
         hide('.js-new-report-user-shown');
         show('.js-new-report-user-hidden');
     });
-    $('#js-new-report-user-show').click(function(e) {
+    $('.js-new-report-user-show').click(function(e) {
         e.preventDefault();
         if (!$(this).closest('form').validate().form()) {
             return;
@@ -898,20 +898,20 @@ $.extend(fixmystreet.set_up, {
         });
     });
 
-    $('#js-new-report-show-sign-in').click(function(e) {
+    $('.js-new-report-show-sign-in').click(function(e) {
         $('.js-new-report-sign-in-shown').removeClass('hidden-js');
         $('.js-new-report-sign-in-hidden').addClass('hidden-js');
         focusFirstVisibleInput();
     });
 
-    $('#js-new-report-hide-sign-in').click(function(e) {
+    $('.js-new-report-hide-sign-in').click(function(e) {
         e.preventDefault();
         $('.js-new-report-sign-in-shown').addClass('hidden-js');
         $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
         focusFirstVisibleInput();
     });
 
-    $('#js-new-report-sign-in-forgotten').click(function() {
+    $('.js-new-report-sign-in-forgotten').click(function() {
         $('.js-new-report-sign-in-shown').addClass('hidden-js');
         $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
         $('.js-new-report-forgotten-shown').removeClass('hidden-js');
