@@ -1387,6 +1387,7 @@ fixmystreet.display = {
             fixmystreet.set_up.map_sidebar_key_tools();
             fixmystreet.set_up.form_validation();
             fixmystreet.set_up.email_login_form();
+            fixmystreet.set_up.form_section_previews();
             fixmystreet.set_up.fancybox_images();
             fixmystreet.set_up.dropzone($sideReport);
             fixmystreet.run(fixmystreet.set_up.moderation);
