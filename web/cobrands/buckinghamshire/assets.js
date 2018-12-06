@@ -131,7 +131,7 @@ var labeled_defaults = $.extend(true, {}, defaults, {
 fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
     http_options: {
         params: {
-            TYPENAME: "StreetLights_Merged"
+            TYPENAME: "StreetLights_Union"
         }
     },
     asset_category: [
@@ -142,6 +142,106 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
     asset_item: 'street light'
 }));
 
+fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "IlluminatedBollards"
+        }
+    },
+    asset_category: ["Bollard light not working"],
+    asset_item: 'bollard'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Bollards"
+        }
+    },
+    asset_category: ["Bollards or railings"],
+    asset_item: 'bollard'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+    stylemap: streetlight_stylemap,
+    http_options: {
+        params: {
+            TYPENAME: "Beacons"
+        }
+    },
+    attributes: {
+        central_asset_id: 'central_as',
+    },
+    asset_category: [
+          'Belisha Beacon broken',
+        ],
+    asset_item: 'belisha beacon'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+    stylemap: streetlight_stylemap,
+    http_options: {
+        params: {
+            TYPENAME: "Beacon_Column"
+        }
+    },
+    attributes: {
+        central_asset_id: 'central_as',
+    },
+    asset_category: [
+          'Belisha Beacon broken',
+        ],
+    asset_item: 'belisha beacon'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+    stylemap: streetlight_stylemap_alt,
+    http_options: {
+        params: {
+            TYPENAME: "Crossings"
+        }
+    },
+    attributes: {
+        central_asset_id: 'central_as',
+    },
+    feature_code: 'asset_no',
+    asset_category: [
+          'Traffic lights & crossings problems with buttons, beep or lamps',
+          'Traffic lights & crossings problems with timings',
+        ],
+    asset_item: 'crossing'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Signs_Union"
+        }
+    },
+    attributes: {
+        central_asset_id: 'central_as',
+    },
+    asset_category: [
+          'Sign light not working',
+          'Sign problem',
+        ],
+    asset_item: 'sign'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Gullies"
+        }
+    },
+    attributes: {
+        central_asset_id: 'central_as',
+    },
+    asset_category: [
+        'Blocked drain'
+        ],
+    asset_item: 'drain'
+}));
 
 // The "whole street asset" layer indicates who is responsible for maintaining
 // a road via the 'feature_ty' attribute on features.
