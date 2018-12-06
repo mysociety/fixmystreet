@@ -32,7 +32,6 @@ describe('Leaving updates', function() {
         cy.get('[name=password_sign_in]:last').type('password');
         cy.get('[name=password_sign_in]:last').parents('form:first').submit();
         cy.get('#map_sidebar').should('contain', 'check and confirm your details');
-        cy.get('.js-new-report-user-show').click(); // Should not have to do this, #2340
         cy.get('[name=submit_register]').parents('form').submit();
         cy.get('body').should('contain', 'Thank you for updating this issue');
     }
