@@ -1,3 +1,4 @@
+<!-- report/update/form_user.html -->
 [% PROCESS 'report/form/user.html' %]
 
 <div class="hidden-js js-new-report-user-shown">
@@ -9,13 +10,9 @@
 
   [% IF c.user_exists %]
     [% PROCESS "report/update/form_user_loggedin.html" %]
-  [% ELSIF oauth_need_email %]
-    <div id="form_sign_in">
-        [% PROCESS 'report/form/user_loggedout_by_email.html' object=update type='update' valid_class='validNameU' email_required=1 %]
-        <input type="hidden" name="oauth_need_email" value="1">
-    </div>
   [% ELSE %]
     [% PROCESS "report/form/user_loggedout.html" type='update' object=update %]
   [% END %]
 
 </div>
+<!-- /report/update/form_user.html -->
