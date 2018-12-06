@@ -26,6 +26,8 @@
     </div>
 [% END %]
 
+[% TRY %][% PROCESS 'report/update/before_update.html' %][% CATCH file %][% END %]
+
 <label for="form_update">[% loc( 'Update' ) %]</label>
 [% IF c.user AND (c.user.is_superuser OR c.user.belongs_to_body(problem.bodies_str)) %]
   [% INCLUDE 'admin/response_templates_select.html' for='form_update' %]
