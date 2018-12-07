@@ -8,7 +8,7 @@
     </div>
 
   [% IF c.user_exists %]
-    [% PROCESS "report/update/form_user_loggedin.html" %]
+    [% PROCESS "report/update/form_user_loggedin.html" type='update' %]
   [% ELSIF oauth_need_email %]
     <div id="form_sign_in">
         [% PROCESS 'report/form/user_loggedout_by_email.html' object=update type='update' valid_class='validNameU' email_required=1 %]
