@@ -539,8 +539,11 @@ sub _process_error {
 
     my $msg = '';
     if ( ref $obj && exists $obj->{error} ) {
-        my $errors = $obj->{error};
-        $msg .= sprintf( "%s: %s\n", $_->{code}, $_->{description} ) for @{ $errors };
+        for (@{ $obj->{error} }) {
+            my $code = $_->{code} || '???';
+            my $desc = $_->{description} || 'unknown error';
+            $msg .= sprintf("%s: %s\n", $code, $desc);
+        }
     }
 
     return $msg || 'unknown error';
