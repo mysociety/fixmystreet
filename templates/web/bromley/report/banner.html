@@ -1,8 +1,11 @@
 [% USE date %]
 
 [% BLOCK banner %]
-    <div class="banner">
-        <p id="[% id %]">[% text %]</p>
+    <div class="banner banner--[% id %]">
+        <p>
+            <img src="[% c.cobrand.path_to_pin_icons _ 'pin-' _ c.cobrand.pin_colour(problem, 'report') _ '.png' %]" alt="" class="pin">
+            [% text %]
+        </p>
     </div>
 [% END %]
 

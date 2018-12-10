@@ -38,7 +38,6 @@
     [% SET shown_form = 1 %]
 [% END %]
 
-[% INCLUDE 'report/banner.html' %]
 [% IF c.user_exists %]
     [% DEFAULT permissions = c.user.permissions(problem) %]
 [%- END %]

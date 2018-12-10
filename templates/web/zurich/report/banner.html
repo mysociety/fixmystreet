@@ -1,6 +1,6 @@
 [% USE date %]
 [% problem_hashref = c.cobrand.problem_as_hashref(problem, c) %]
-<div class="banner">
-    <p id="[% problem_hashref.banner_id %]">[% problem_hashref.state_t %]</p>
+<div class="banner banner--[% problem_hashref.banner_id %]">
+    <p>[% problem_hashref.state_t %]</p>
 </div>
 

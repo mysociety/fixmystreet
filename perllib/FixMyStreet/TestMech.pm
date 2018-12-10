@@ -431,7 +431,7 @@ sub extract_problem_title {
 
     $banner = $mech->extract_problem_banner;
 
-Returns the problem title from a problem report page. Returns a hashref with id and text.
+Returns the problem title from a problem report page. Returns a hashref with class and text.
 
 =cut
 
@@ -439,8 +439,8 @@ sub extract_problem_banner {
     my $mech = shift;
 
     my $result = scraper {
-        process 'div#side > p.banner', id => '@id', text => 'TEXT';
-        process 'div.banner > p', id => '@id', text => 'TEXT';
+        process 'div.banner', class => '@class';
+        process 'div.banner > p', text => 'TEXT';
     }
     ->scrape( $mech->response );
 

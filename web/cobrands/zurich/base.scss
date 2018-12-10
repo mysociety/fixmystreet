@@ -25,29 +25,14 @@
     font-size: 85%;
 }
 
-// Simplify the banner to just be a floated box. Colours etc. still
-// inherited from the base stylesheet.
-.banner {
-    p {
-        position: static;
-        float: right;
-        font-weight: bold;
-        padding: 1em;
-        margin: 0;
-        text-transform: uppercase;
-        text-align: center;
-        &:before {
-            display: none;
-        }
-        &#closed {
-            color: #1a1a1a;
-            background: #e25436; // red
-        }
-        &#progress {
-            color: #1a1a1a;
-            background: #f3d74b; //purple
-        }
-    }
+.banner--closed {
+    border-top-color: #e25436;
+    background: mix(#e25436, #fff, 10%);
+}
+
+.banner--progress {
+    border-top-color: #f3d74b;
+    background: mix(#f3d74b, #fff, 10%);
 }
 
 #site-logo-text {

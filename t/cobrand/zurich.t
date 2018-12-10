@@ -196,7 +196,12 @@ subtest "Banners are displayed correctly" => sub {
                 $banner->{text} =~ s/ $//g;
             }
 
-            is $banner->{id}, $test->{banner_id}, 'banner id';
+            if ( $test->{banner_id} ) {
+                ok $banner->{class} =~ /banner--$test->{banner_id}/i, 'banner class';
+            } else {
+                is $banner->{class}, $test->{banner_id}, 'banner class';
+            }
+
             if ($test->{banner_text}) {
                 like_string( $banner->{text}, qr/$test->{banner_text}/i, 'banner text is ' . $test->{banner_text} );
             } else {

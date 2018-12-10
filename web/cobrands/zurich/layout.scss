@@ -183,7 +183,11 @@ body.mappage {
     }
 
     #map_sidebar {
-        padding-top: 3em; // make space for the #zurich-main-nav
+        padding-top: 1em + 2.4em; // make space for the #zurich-main-nav
+    }
+
+    .banner {
+        margin-top: -1em;
     }
 
     #zurich-main-nav {
@@ -200,24 +204,6 @@ body.twothirdswidthpage {
     .content {
         .sticky-sidebar aside {
           top: 14em; // overrides default value, due to Zurich nav at top of content
-        }
-    }
-}
-
-// Zurich base has made this a more simple construct. The top is to pull it up
-// over the content padding to be attached to the top of the content area.
-// We reduce the padding as no pin image, and change the background.
-.banner {
-    top: -1em;
-    p {
-        &#fixed {
-            padding-top: 2em;
-            background: $col_fixed_label;
-            @include linear-gradient(#769643, $col_fixed_label 4px);
-        }
-        &#closed {
-            padding-top: 2em;
-            background-image: none;
         }
     }
 }

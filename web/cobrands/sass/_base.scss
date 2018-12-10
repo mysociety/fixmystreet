@@ -8,6 +8,8 @@ $menu-image: 'menu-white' !default;
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #ccc !default;
+$col_fixed_label: #00BD08 !default;
+$col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
 
 $form-control-border-color: #aaaaaa !default;
 $header-top-border-width: 0.25em !default;
@@ -922,45 +924,6 @@ input.final-submit {
     margin-top: 1.25em; // matches margin-top on `label`
 }
 
-.banner {
-  position: relative;
-  p {
-    position: absolute;
-    top:-1.95em;
-    #{$right}: 0;
-    @include inline-block;
-    font-size:0.6875em;//11px
-    line-height:1em;
-    padding:0.5em 1em;
-    margin:0;
-    color:#1a1a1a;
-    background: #ccc;
-    text: {
-      transform:uppercase;
-      align:center;
-    }
-    &:before {
-      content: "";
-      #{$left}: -0.5em;
-      top:0;
-      position: absolute;
-      width: 0;
-      height: 0;
-      border-#{$left}: 0.5em solid transparent;
-      border-bottom: 0.5em solid #888;
-    }
-  }
-
-  #fixed {
-    color:#fff;
-    background: $col_fixed_label;
-
-    &:before {
-      border-bottom: 0.5em solid $col_fixed_label_dark;
-    }
-  }
-}
-
 /*OTHER*/
 
 .plain-list {
@@ -1351,7 +1314,7 @@ input.final-submit {
   line-height: 1.2em;
   margin-bottom: 1em;
   padding-bottom: 0.8em;
-  border-bottom: 1px solid #eee;
+  border-bottom: 0.2em solid #eee;
 
   &:link, &:visited, &:hover {
     color: #666;
@@ -1369,6 +1332,36 @@ input.final-submit {
     @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
     background-position: flip(0 0, -16px 0);
   }
+}
+
+// Banner showing report status, above report title on individual report page.
+.banner {
+  line-height: 1.2; // down from 1.5 default on `body`
+  margin: -1.2em -1em 1em -1em;
+  padding: 0.9em 1em;
+  background-color: #f6f6f6;
+  border-top: 0.2em solid #999;
+
+  p {
+    font-weight: bold;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  .pin {
+    width: 16px;
+    height: 20px;
+    margin: -10px 0;
+    margin-#{$right}: 0.3em;
+    vertical-align: 0.4em;
+  }
+}
+
+.banner--fixed {
+  border-top-color: $col_fixed_label;
+  background-color: $col_fixed_label_light;
 }
 
 .problem-header {

@@ -198,12 +198,6 @@ body.mappage {
 //    padding: 0.5em;
 //    margin: 0.9em 0.25em 0.85em;
 //  }
-
-  .banner {
-    p {
-      top: -2.1em; // a few pixels lower than default
-    }
-  }
 }
 
 // Want to cover over the blue sidebar
@@ -757,42 +751,6 @@ body.authpage {
 .ie8 {
   .big-green-banner {
     background-image: url(/cobrands/fixmystreet/images/chevron-white-#{$right}-on-green.gif);
-  }
-}
-
-.banner {
-  // state banners
-  p {
-    top:-2.25em;
-    padding:1em;
-    &:before {
-      #{$left}: -0.75em;
-      border-#{$left}: 0.75em solid transparent;
-      border-bottom: 0.75em solid #888;
-      @media (min-width: 48em) {
-        border: 0;
-        #{$left}: 0;
-      }
-    }
-  }
-
-  #fixed,
-  #closed {
-    padding-top: 48px;
-    padding-top: calc(1.5em + 32px);
-    background-image: url('/i/pin-flat-white-small.png');
-    background-size: 24px 32px;
-    background-position: 50% 1em;
-    background-repeat:no-repeat;
-    &:before {
-      border-bottom: 0.75em solid $col_fixed_label_dark;
-    }
-  }
-
-  #closed {
-    &:before {
-      border-bottom-color: #666;
-    }
   }
 }
 

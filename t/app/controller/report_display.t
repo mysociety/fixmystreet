@@ -374,7 +374,12 @@ for my $test (
             $banner->{text} =~ s/ $//g;
         }
 
-        is $banner->{id}, $test->{banner_id}, 'banner id';
+        if ( $test->{banner_id} ) {
+            ok $banner->{class} =~ /banner--$test->{banner_id}/i, 'banner class';
+        } else {
+            is $banner->{class}, $test->{banner_id}, 'banner class';
+        }
+
         if ($test->{banner_text}) {
             ok $banner->{text} =~ /$test->{banner_text}/i, 'banner text';
         } else {

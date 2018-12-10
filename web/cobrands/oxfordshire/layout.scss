@@ -246,39 +246,6 @@ body.mappage {
     padding-top: 1em;
   }
 
-  // The "Fixed" / "Unknown" tabs on Oxford report pages are "folded"
-  // round right edge of the sidebar, rather than over the top of it.
-  .banner {
-    margin: 0 -1em; // line tab up with right edge of 1em padded sidebar
-
-    // Float the tab, rather than absolute positioning, to benefit
-    // from text wrapping and stop content being hidden behind it.
-    p {
-      position: relative; // still required for :before positioning
-      top: auto;
-      right: auto;
-      float: right;
-      margin: 1em -0.75em 0.5em 1em;
-
-      // Swap "fold" triangle to bottom right corner of box, rather than top left.
-      &:before {
-        left: auto;
-        right: 0;
-        top: auto;
-        bottom: -0.75em;
-        border-left: none;
-        border-bottom: none !important; // override default id selectors
-        border-top: 0.75em solid #888;
-        border-right: 0.75em solid transparent;
-      }
-
-      &#fixed:before {
-        border-top-color: #1D4D05; // dark green
-        border-top-color: $col_fixed_label_dark;
-      }
-    }
-  }
-
   #occlss-footer,
   #pagefooter {
     display: none;

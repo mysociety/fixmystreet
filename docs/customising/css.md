@@ -229,11 +229,11 @@ stylesheet:
     <tr>
         <td>
             <code>$col_fixed_label</code><br>
-            <code>$col_fixed_label_dark</code>
+            <code>$col_fixed_label_light</code>
         </td>
         <td>
-            background of the colour of the "fixed" label that appears on
-            fixed reports, and its darker underside
+            border-top colour of the "fixed" label that appears above
+            fixed reports, and its lighter background colour
         </td>
     </tr>
     <tr>
