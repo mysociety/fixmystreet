@@ -437,7 +437,7 @@ $.extend(fixmystreet.set_up, {
         // apply new validation rules
         fixmystreet.set_up.reapply_validation(core_validation_rules);
         $.each(data.bodies, function(index, body) {
-            if ( body_validation_rules[body] ) {
+            if ( typeof body_validation_rules !== 'undefined' && body_validation_rules[body] ) {
                 var rules = body_validation_rules[body];
                 fixmystreet.set_up.reapply_validation(rules);
             }

@@ -10,6 +10,4 @@
         }
     };
 
-    body_validation_rules = {};
-
     validation_rules = core_validation_rules;
