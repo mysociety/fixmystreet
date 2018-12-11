@@ -25,4 +25,21 @@ describe('Regression tests', function() {
         cy.get('#loading-indicator').should('be.hidden');
         cy.get('#map_box image').should('be.visible');
     });
+    it('Does not escape HTML entities in the title', function() {
+        cy.server();
+        cy.route('/around\?ajax*').as('update-results');
+        cy.request({
+          method: 'POST',
+          url: '/auth?r=/',
+          form: true,
+          body: { username: 'cs@example.org', password_sign_in: 'password' }
+        });
+        cy.visit('/report/1/moderate');
+        cy.get('[name=problem_title]').clear().type('M&S "brill" says <glob>').parents('form').submit();
+        cy.title().should('contain', 'M&S "brill" says <glob>');
+        cy.contains('Problems nearby').click();
+        cy.wait('@update-results');
+        cy.get('#map_sidebar').contains('M&S').click();
+        cy.title().should('contain', 'M&S "brill" says <glob>');
+    });
 });

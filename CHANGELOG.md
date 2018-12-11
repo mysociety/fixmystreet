@@ -20,6 +20,7 @@
         - Keep all moderation history, and show in report/update admin. #2329
     - Bugfixes:
         - Restore map zoom out when navigating to /around from /report. #1649
+        - Don’t escape HTML entities in report titles pulled in by ajax. #2346
     - Open311 improvements:
         - Fix bug in contact group handling. #2323
         - Improve validation of fetched reports timestamps. #2327
