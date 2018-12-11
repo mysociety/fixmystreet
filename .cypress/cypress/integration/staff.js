@@ -17,7 +17,7 @@ describe('Staff user tests', function() {
         cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
         cy.url().should('include', '/around');
-        cy.get('#map_box').click(210, 200);
+        cy.get('#map_box').click(240, 249);
         cy.get('[name=form_as]').should('have.value', 'body');
         cy.cleanUpXHR();
     });
@@ -36,7 +36,7 @@ describe('Staff user tests', function() {
         cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
         cy.url().should('include', '/around');
-        cy.get('#map_box').click(210, 200);
+        cy.get('#map_box').click(240, 249);
         cy.wait('@report-ajax');
         cy.get('select:eq(3)').select('Graffiti');
         cy.get('[name=title]').should('have.value', 'A Graffiti problem has been found');
