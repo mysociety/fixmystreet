@@ -177,6 +177,16 @@ function show_responsibility_error(id) {
     hide_responsibility_errors();
     $("#js-roads-responsibility").removeClass("hidden");
     $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
+    $('.js-update-coordinates').attr('href', function(i, href) {
+        if (href.indexOf('?') != -1) {
+            href = href.substring(0, href.indexOf('?'));
+        }
+        href += '?' + OpenLayers.Util.getParameterString({
+            latitude: $('#fixmystreet\\.latitude').val(),
+            longitude: $('#fixmystreet\\.longitude').val()
+        });
+        return href;
+    });
     $(id).removeClass("hidden");
 }
 
@@ -242,9 +252,16 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
                 enable_report_form();
             } else {
                 // User has clicked a road that Bucks don't maintain.
+
+                var map = {
+                    "HE": '#js-not-council-road-he',
+                    "HWOA": '#js-not-council-road-other'
+                };
+
                 fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
                 if (is_only_body(layer.fixmystreet.body)) {
-                    show_responsibility_error("#js-not-council-road");
+                    var id = map[feature.attributes.feature_ty] || '#js-not-council-road';
+                    show_responsibility_error(id);
                     disable_report_form();
                 }
             }
