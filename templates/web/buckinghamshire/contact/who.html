@@ -1,0 +1,48 @@
+[% IF problem %]
+<h4>Topic:</h4>
+
+[% IF field_errors.dest %]
+<div class="form-error">[% field_errors.dest %]</div>
+[% END %]
+
+<div class="checkbox-group">
+    <input name="dest" id="dest_rules" type="radio" value="rules" class="required"[% IF dest AND dest == 'rules' %] checked[% END %]>
+    <label class="inline" for="dest_rules">This [% update ? 'update' : 'report' %] is abusive, contains personal information, or similar</label>
+</div>
+
+<div class="checkbox-group">
+    <input name="dest" id="dest_update" type="radio" value="update" class="required"[% IF dest AND dest == 'update' %] checked[% END %]>
+    <label class="inline" for="dest_update">I wish to report it has not been fixed yet</label>
+</div>
+
+<div class="checkbox-group">
+    <input name="dest" id="dest_council" type="radio" value="council" class="required"[% IF dest AND dest == 'council' %] checked[% END %]>
+    <label class="inline" for="dest_council">I wish to make a new report</label>
+</div>
+
+<div id="dest-error"[% IF NOT field_errors.not_for_us %] class="hidden"[% END %]>
+  <div class="form-error">You can only use this form to report inappropriate content</div>
+
+  <div class="form-error__box form-error--council[% IF dest != 'council' %] hidden[% END %]">
+    <p>
+    <strong>If you want to report a street problem</strong>, return to the
+    <a href="/">homepage</a> and enter your postcode. You can then make a report.
+    We'll send it to your council, and publish it on the site.
+    </p>
+    <p>
+    <strong>If your problem is not a street issue</strong>, or is <strong>not
+    suitable for publication on the site</strong>, then this isn't the
+    right place for it. You should find other contact details on the
+    <a href="https://www.buckscc.gov.uk/">council's website</a>.
+    </p>
+  </div>
+
+  <div class="form-error__box form-error--update[% IF dest != 'update' %] hidden[% END %]">
+    <p>
+    <strong>If you'd like to update a report</strong>, please leave an update
+    on the <a href="/report/[% problem.id %]">report’s page</a>, underneath the report details.
+    </p>
+  </div>
+</div>
+
+[% END %]

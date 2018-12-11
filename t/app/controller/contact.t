@@ -279,25 +279,16 @@ for my $test (
     };
 }
 
-for my $test (
-    {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-        },
-    },
-    {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-            id      => $problem_main->id,
-        },
-    },
+my %common = (
+    em => 'test@example.com',
+    name => 'A name',
+    subject => 'A subject',
+    message => 'A message',
+);
 
+for my $test (
+    { fields => \%common },
+    { fields => { %common, id => $problem_main->id } },
   )
 {
     subtest 'check email sent correctly' => sub {
@@ -336,13 +327,7 @@ for my $test (
 
 for my $test (
     {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-            dest    => undef,
-        },
+        fields => { %common, dest => undef },
         page_errors =>
           [ 'There were problems with your report. Please see below.',
             'Please enter who your message is for',
@@ -350,26 +335,14 @@ for my $test (
         ]
     },
     {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-            dest    => 'council',
-        },
+        fields => { %common, dest => 'council' },
         page_errors =>
           [ 'There were problems with your report. Please see below.',
             'You can only contact the team behind FixMyStreet using our contact form',
         ]
     },
     {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-            dest    => 'update',
-        },
+        fields => { %common, dest => 'update' },
         page_errors =>
           [ 'There were problems with your report. Please see below.',
             'You can only contact the team behind FixMyStreet using our contact form',
@@ -404,33 +377,9 @@ for my $test (
 }
 
 for my $test (
-    {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-            dest    => 'help',
-        },
-    },
-    {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-            dest    => 'feedback',
-        },
-    },
-    {
-        fields => {
-            em      => 'test@example.com',
-            name    => 'A name',
-            subject => 'A subject',
-            message => 'A message',
-            dest    => 'from_council',
-        },
-    },
+    { fields => { %common, dest => 'help' } },
+    { fields => { %common, dest => 'feedback' } },
+    { fields => { %common, dest => 'from_council' } },
   )
 {
     subtest 'check email sent correctly with dest field set to us' => sub {
@@ -448,11 +397,53 @@ for my $test (
 
 for my $test (
     {
+        fields => { %common, dest => undef },
+        page_errors =>
+          [ 'There were problems with your report. Please see below.',
+            'Please enter a topic of your message',
+            'You can only use this form to report inappropriate content', # The JS-hidden one
+        ]
+    },
+    {
+        fields => { %common, dest => 'council' },
+        page_errors =>
+          [ 'There were problems with your report. Please see below.',
+            'You can only use this form to report inappropriate content',
+        ]
+    },
+    {
+        fields => { %common, dest => 'update' },
+        page_errors =>
+          [ 'There were problems with your report. Please see below.',
+            'You can only use this form to report inappropriate content',
+        ]
+    },
+  )
+{
+    subtest 'check Bucks submit page incorrect destination handling' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ 'buckinghamshire' ],
+        }, sub {
+            $mech->get_ok( '/contact?id=' . $problem_main->id, 'can visit for abuse report' );
+            $mech->submit_form_ok( { with_fields => $test->{fields} } );
+            is_deeply $mech->page_errors, $test->{page_errors}, 'page errors';
+
+            $test->{fields}->{'extra.phone'} = '';
+            is_deeply $mech->visible_form_values, $test->{fields}, 'form values';
+
+            if ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'update' ) {
+                $mech->content_contains('please leave an update');
+            } elsif ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'council' ) {
+                $mech->content_contains('should find other contact details');
+            }
+        }
+    };
+}
+
+for my $test (
+    {
         fields => {
-            em          => 'test@example.com',
-            name        => 'A name',
-            subject     => 'A subject',
-            message     => 'A message',
+            %common,
             dest        => 'from_council',
             success_url => '/faq',
         },
@@ -460,10 +451,7 @@ for my $test (
     },
     {
         fields => {
-            em          => 'test@example.com',
-            name        => 'A name',
-            subject     => 'A subject',
-            message     => 'A message',
+            %common,
             dest        => 'from_council',
             success_url => 'http://www.example.com',
         },
