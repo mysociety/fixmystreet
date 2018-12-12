@@ -1312,8 +1312,8 @@ input.final-submit {
   display: block;
   font-size: 1em;
   line-height: 1.2em;
-  margin-bottom: 1em;
-  padding-bottom: 0.8em;
+  margin: -1em -1em 1em -1em;
+  padding: 0.9em 1em;
   border-bottom: 0.2em solid #eee;
 
   &:link, &:visited, &:hover {
