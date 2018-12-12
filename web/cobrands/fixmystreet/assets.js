@@ -574,11 +574,15 @@ fixmystreet.assets = {
             // Add this filter to the layer, so it can potentially be used
             // in the request (though only Bristol currently does this).
             if (OpenLayers.Util.isArray(options.filter_value)) {
-                layer_options.filter = new OpenLayers.Filter.FeatureId({
-                    type: OpenLayers.Filter.Function,
-                    evaluate: function(f) {
-                        return OpenLayers.Util.indexOf(options.filter_value, f.attributes[options.filter_key]) != -1;
-                    }
+                layer_options.filter = new OpenLayers.Filter.Logical({
+                    type: OpenLayers.Filter.Logical.OR,
+                    filters: $.map(options.filter_value, function(value) {
+                        return new OpenLayers.Filter.Comparison({
+                            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                            property: options.filter_key,
+                            value: value
+                        });
+                    })
                 });
             } else if (typeof options.filter_value === 'function') {
                 layer_options.filter = new OpenLayers.Filter.FeatureId({
