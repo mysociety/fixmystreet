@@ -9,7 +9,7 @@ describe('Highways England tests', function() {
         cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
         cy.url().should('include', '/around');
-        cy.get('#map_box').click(210, 200);
+        cy.get('#map_box').click(240, 249);
         cy.wait('@report-ajax');
         cy.wait('@highways-tilma');
         cy.get('#highways').should('contain', 'M6');

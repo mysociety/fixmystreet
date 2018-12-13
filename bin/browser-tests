@@ -98,6 +98,7 @@ sub run {
         my $c = Test::MockModule->new('FixMyStreet::Cobrand::FixMyStreet');
         $c->mock('enable_category_groups', sub { 1 });
         # Child, run the server on port 3001
+        FixMyStreet->test_mode(1); # So email doesn't try to send
         local $ENV{FIXMYSTREET_APP_DEBUG} = 0;
         require Plack::Runner;
         my $runner = Plack::Runner->new;

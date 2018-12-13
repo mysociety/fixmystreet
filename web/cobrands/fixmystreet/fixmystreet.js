@@ -1354,7 +1354,19 @@ fixmystreet.display = {
             }
 
             var found = html.match(/<title>([\s\S]*?)<\/title>/);
-            var page_title = found[1];
+            // Unencode HTML entities so it's suitable for document.title. We
+            // only care about the ones encoded by the template's html_filter.
+            var map = {
+                '&amp;': '&',
+                '&gt;': '>',
+                '&lt;': '<',
+                '&quot;': '"',
+                '&#39;': "'"
+            };
+            var page_title = found[1].replace(/&(amp|lt|gt|quot|#39);/g, function(m) {
+                return map[m];
+            });
+
             fixmystreet.page = 'report';
 
             $('.big-hide-pins-link').hide();
