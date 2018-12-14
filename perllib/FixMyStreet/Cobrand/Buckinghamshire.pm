@@ -109,6 +109,23 @@ sub open311_config_updates {
     $params->{mark_reopen} = 1;
 }
 
+sub filter_report_description {
+    my ($self, $description) = @_;
+
+    # this allows _ in the domain name but I figure it's unlikely to
+    # generate false positives so lets go with that for the same of
+    # a simpler regex
+    $description =~ s/\b[\w.!#$%&'*+\-\/=?^_{|}~]+\@[\w\-]+\.[^ ]+\b//g;
+    $description =~ s/ (?: \+ \d{2} \s? | \b 0 ) (?:
+        \d{2} \s? \d{4} \s? \d{4}   # 0xx( )xxxx( )xxxx
+      | \d{3} \s \d{3} \s? \d{4}    # 0xxx xxx( )xxxx
+      | \d{3} \s? \d{2} \s \d{4,5}  # 0xxx( )xx xxxx(x)
+      | \d{4} \s \d{5,6}            # 0xxxx xxxxx(x)
+    ) \b //gx;
+
+    return $description;
+}
+
 sub map_type { 'Buckinghamshire' }
 
 sub default_map_zoom { 3 }
