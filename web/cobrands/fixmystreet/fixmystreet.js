@@ -1025,11 +1025,12 @@ $.extend(fixmystreet.set_up, {
 
         if (fixmystreet.page.match(/reports|around|my/)) {
             around_map_state = fixmystreet.maps.get_map_state();
-            // Preserve the current map state in the initial state so we can
+            // Preserve the current map state in the current state so we can
             // restore it if the user navigates back. This needs doing here,
             // rather than the 'fake history' replaceState call that sets the
             // initial state, because the map hasn't been loaded at that point.
-            if ('state' in history && history.state.initial) {
+            // Also, filters might be changed before a report click.
+            if ('state' in history && !history.state.mapState) {
                 history.state.mapState = around_map_state;
                 // NB can't actually modify current state directly, needs a
                 // call to replaceState()
