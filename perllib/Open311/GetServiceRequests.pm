@@ -154,6 +154,10 @@ sub create_problems {
             next;
         }
 
+        if ( my $cobrand = $body->get_cobrand_handler ) {
+            my $filtered = $cobrand->call_hook('filter_report_description', $request->{description});
+            $request->{description} = $filtered if defined $filtered;
+        }
 
         my @contacts = grep { $request->{service_code} eq $_->email } $contacts->all;
         my $contact = $contacts[0] ? $contacts[0]->category : 'Other';
