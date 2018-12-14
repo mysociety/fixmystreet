@@ -405,6 +405,70 @@ subtest "check options passed through from body" => sub {
     ok $props->{convert_latlong}, "convert latlong set"
 };
 
+my $non_public_xml = qq[<?xml version="1.0" encoding="utf-8"?>
+<service_requests>
+<request>
+<service_request_id>123456</service_request_id>
+<status>open</status>
+<status_notes></status_notes>
+<service_name>Sidewalk and Curb Issues</service_name>
+<service_code>sidewalks</service_code>
+<description>this is a problem</description>
+<agency_responsible></agency_responsible>
+<service_notice></service_notice>
+<requested_datetime>2010-04-14T06:37:38-08:00</requested_datetime>
+<updated_datetime>2010-04-14T06:37:38-08:00</updated_datetime>
+<expected_datetime>2010-04-15T06:37:38-08:00</expected_datetime>
+<lat>51.4021</lat>
+<long>0.01578</long>
+<non_public>1</non_public>
+</request>
+</service_requests>
+];
+
+for my $test (
+  {
+      desc => 'non public is set',
+      non_public => 1,
+  },
+  {
+      desc => 'non public is not set',
+      non_public => 0,
+  },
+) {
+    subtest $test->{desc} => sub {
+        (my $xml = $non_public_xml) =~ s/non_public>1/non_public>$test->{non_public}/;
+
+        my $o = Open311->new(
+            jurisdiction => 'mysociety',
+            endpoint => 'http://example.com',
+            test_mode => 1,
+            test_get_returns => { 'requests.xml' => $xml}
+        );
+
+        my $update = Open311::GetServiceRequests->new(
+            system_user => $user,
+            start_date => $start_date,
+            end_date => $end_date
+        );
+
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $update->create_problems( $o, $body );
+        };
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 123456 }
+        )->first;
+
+        ok $p, 'problem created';
+        is $p->non_public, $test->{non_public}, "report non_public is set correctly";
+
+        $p->delete;
+    };
+}
+
 sub prepare_xml {
     my $replacements = shift;
 

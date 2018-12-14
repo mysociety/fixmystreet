@@ -160,6 +160,8 @@ sub create_problems {
 
         my $state = $open311->map_state($request->{status});
 
+        my $non_public = $request->{non_public} ? 1 : 0;
+
         my $problem = $self->schema->resultset('Problem')->new(
             {
                 user => $self->system_user,
@@ -182,6 +184,7 @@ sub create_problems {
                 send_method_used => 'Open311',
                 category => $contact,
                 send_questionnaire => 0,
+                non_public => $non_public,
             }
         );
 

@@ -26,6 +26,7 @@
     - Open311 improvements:
         - Fix bug in contact group handling. #2323
         - Improve validation of fetched reports timestamps. #2327
+        - Fetched reports can be marked non_public #2356
     - Development improvements:
         - Add option to symlink full size photos. #2326
         - default_to_body/report_prefill permissions to control default
