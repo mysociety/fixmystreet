@@ -1,13 +1,12 @@
 ## Releases
 
 * Unreleased
-    - New features:
-        - default_to_body permission to control default report as behaviour
-        - report_prefill permission to control report prefill behaviour
+
+* v2.5 (21st December 2018)
     - Front end improvements:
         - Simplify new report/update sign in flow. #642
-        - Clearer relocation options while you’re reporting a problem #2238
         - Simplify /auth sign in page. #2208
+        - Clearer relocation options while you’re reporting a problem #2238
         - Enforce maximum photo size server side, strip EXIF data. #2326 #2134
         - Don't require two taps on reports list on touchscreens. #2294
         - Allow moderation to work without JavaScript. #2339
@@ -16,7 +15,7 @@
     - Admin improvements:
         - Allow moderation to potentially change category. #2320
         - Add Mark/View private reports permission #2306
-        - Store more original stuff on moderation.
+        - Store more original stuff on moderation. #2325
         - Sort user updates in reverse date order.
         - Improve update display on admin report edit page.
         - Keep all moderation history, and show in report/update admin. #2329
@@ -28,7 +27,9 @@
         - Fix bug in contact group handling. #2323
         - Improve validation of fetched reports timestamps. #2327
     - Development improvements:
-        - Add option to symlink full size photos.
+        - Add option to symlink full size photos. #2326
+        - default_to_body/report_prefill permissions to control default
+          report as/prefill behaviour. #2316
 
 * v2.4.2 (6th November 2018)
     - New features:
