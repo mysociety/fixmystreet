@@ -44,37 +44,51 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 }));
 
 var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data').getAttribute('data-pin_prefix');
-var streetlight_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fillColor: "#FFFF00",
-        fillOpacity: 0.6,
-        strokeColor: "#000000",
-        strokeOpacity: 0.8,
-        strokeWidth: 2,
-        pointRadius: 6
-    }),
-    'select': new OpenLayers.Style({
-        externalGraphic: pin_prefix + "pin-spot.png",
-        fillColor: "#55BB00",
-        graphicWidth: 48,
-        graphicHeight: 64,
-        graphicXOffset: -24,
-        graphicYOffset: -56,
-        backgroundGraphic: pin_prefix + "pin-shadow.png",
-        backgroundWidth: 60,
-        backgroundHeight: 30,
-        backgroundXOffset: -7,
-        backgroundYOffset: -22,
-        popupYOffset: -40,
-        graphicOpacity: 1.0,
 
-        label: "${Feature_id}",
-        labelOutlineColor: "white",
-        labelOutlineWidth: 3,
-        labelYOffset: 65,
-        fontSize: '15px',
-        fontWeight: 'bold'
-    })
+var streetlight_default = {
+    fillColor: "#FFFF00",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.8,
+    strokeWidth: 2,
+    pointRadius: 6
+};
+
+var streetlight_select = {
+    externalGraphic: pin_prefix + "pin-spot.png",
+    fillColor: "#55BB00",
+    graphicWidth: 48,
+    graphicHeight: 64,
+    graphicXOffset: -24,
+    graphicYOffset: -56,
+    backgroundGraphic: pin_prefix + "pin-shadow.png",
+    backgroundWidth: 60,
+    backgroundHeight: 30,
+    backgroundXOffset: -7,
+    backgroundYOffset: -22,
+    popupYOffset: -40,
+    graphicOpacity: 1.0,
+
+    label: "${feature_id}",
+    labelOutlineColor: "white",
+    labelOutlineWidth: 3,
+    labelYOffset: 65,
+    fontSize: '15px',
+    fontWeight: 'bold'
+};
+
+var streetlight_select_alt = $.extend(true, {}, streetlight_select, {
+  label: "${asset_no}"
+});
+
+var streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': new OpenLayers.Style(streetlight_default),
+  'select': new OpenLayers.Style(streetlight_select)
+});
+
+var streetlight_stylemap_alt = new OpenLayers.StyleMap({
+  'default': new OpenLayers.Style(streetlight_default),
+  'select': new OpenLayers.Style(streetlight_select_alt)
 });
 
 var streetlight_code_to_type = {
@@ -96,9 +110,10 @@ var labeled_defaults = $.extend(true, {}, defaults, {
         central_asset_id: 'central_as',
         site_code: 'site_code'
     },
+    feature_code: 'feature_id',
     actions: {
         asset_found: function(asset, config) {
-          var id = asset.attributes.feature_id || '';
+          var id = asset.attributes[config.feature_code] || '';
           if (id !== '') {
               var code = id.replace(/[0-9]/g, '');
               var asset_name = streetlight_code_to_type[code] || config.asset_item;
