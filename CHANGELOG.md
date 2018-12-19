@@ -12,6 +12,7 @@
         - Don't require two taps on reports list on touchscreens. #2294
         - Allow moderation to work without JavaScript. #2339
         - More prominent display of "state" on report page #2350
+        - Improved report/update display on contact form. #2351
     - Admin improvements:
         - Allow moderation to potentially change category. #2320
         - Add Mark/View private reports permission #2306

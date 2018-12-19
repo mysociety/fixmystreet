@@ -52,9 +52,6 @@ sub extra_contact_validation {
     my $self = shift;
     my $c = shift;
 
-    # Don't care about dest if reporting abuse
-    return () if $c->stash->{problem};
-
     my %errors;
 
     $c->stash->{dest} = $c->get_param('dest');

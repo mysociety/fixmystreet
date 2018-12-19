@@ -1,55 +1,23 @@
-[% IF NOT problem %]
 <h4>Topic:</h4>
 
 [% IF field_errors.dest %]
 <div class="form-error">[% field_errors.dest %]</div>
-[% ELSIF field_errors.not_for_us %]
-    <div class="form-error">You can only contact the team behind FixMyStreet using our contact form</div>
-
-    [% IF dest == 'council' %]
-    <p>
-    We’re not the council: we just run this website which helps you report issues
-    to them.
-    </p>
-
-    <p>
-    <strong>If you want to report a street problem</strong>, return to the
-    FixMyStreet homepage and enter your postcode. You can then make a report.
-    We'll send it to your council, and publish it on FixMyStreet.
-    </p>
-
-    <p>
-    <strong>If your problem is not a street issue</strong>, or is <strong>not
-    suitable for publication on the site</strong>, then FixMyStreet isn't the
-    right place for it. You should find contact details on your council's own
-    website.
-    </p>
-    [% ELSIF dest == 'update' %]
-    <p>
-    FixMyStreet is great for reporting problems, but we don't fix them - your
-    council oversees that.
-    </p>
-
-    <p>
-    <strong>If you'd like to chase your report</strong>, please reply directly
-    to any response - or auto-reply - that your council sent you. Check that
-    it has your council's email address on it so that it goes to the right place.
-    </p>
-
-    <p>
-    It's a good idea to include the URL [web address] of your original FixMyStreet
-    report.
-    </p>
-
-    <p>
-    <strong>If you're not having any luck getting your community problems fixed</strong>,
-    you could try contacting your local councillor, using another useful mySociety site:
-    <a href="https://www.writetothem.com/?utm_source=fixmystreet.com&amp;utm_campaign=contact_workflow_links&amp;utm_medium=link&amp;utm_content=contact+not_fixed">WriteToThem</a>.
-    </p>
-
-    [% END %]
 [% END %]
 
+[% IF problem %]
+<div class="checkbox-group">
+    <input name="dest" id="dest_rules" type="radio" value="rules" class="required"[% IF dest AND dest == 'rules' %] checked[% END %]>
+    <label class="inline" for="dest_rules">This [% update ? 'update' : 'report' %] breaks the <a href="/about/house-rules">House Rules</a></label>
+</div>
+<div class="checkbox-group">
+    <input name="dest" id="dest_update" type="radio" value="update" class="required"[% IF dest AND dest == 'update' %] checked[% END %]>
+    <label class="inline" for="dest_update">This report has not been fixed</label>
+</div>
+<div class="checkbox-group">
+    <input name="dest" id="dest_council" type="radio" value="council" class="required"[% IF dest AND dest == 'council' %] checked[% END %]>
+    <label class="inline" for="dest_council">I want to make a new report about a street problem</label>
+</div>
+[% ELSE %]
 <div class="checkbox-group">
     <input name="dest" id="dest_help" type="radio" value="help" class="required"[% IF dest AND dest == 'help' %] checked[% END %]>
     <label class="inline" for="dest_help">I need help using the site</label>
@@ -75,3 +43,51 @@
     <label class="inline" for="dest_update">My street problem hasn't been fixed</label>
 </div>
 [% END %]
+
+<div id="dest-error"[% IF NOT field_errors.not_for_us %] class="hidden"[% END %]>
+  <div class="form-error">You can only contact the team behind FixMyStreet using our contact form</div>
+
+  <div class="form-error__box form-error--council[% IF dest != 'council' %] hidden[% END %]">
+    <p>
+    We’re not the council: we just run this website which helps you report issues
+    to them.
+    </p>
+
+    <p>
+    <strong>If you want to report a street problem</strong>, return to the
+    FixMyStreet homepage and enter your postcode. You can then make a report.
+    We'll send it to your council, and publish it on FixMyStreet.
+    </p>
+
+    <p>
+    <strong>If your problem is not a street issue</strong>, or is <strong>not
+    suitable for publication on the site</strong>, then FixMyStreet isn't the
+    right place for it. You should find contact details on your council's own
+    website.
+    </p>
+  </div>
+
+  <div class="form-error__box form-error--update[% IF dest != 'update' %] hidden[% END %]">
+    <p>
+    FixMyStreet is great for reporting problems, but we don't fix them - your
+    council oversees that.
+    </p>
+
+    <p>
+    <strong>If you'd like to chase your report</strong>, please reply directly
+    to any response - or auto-reply - that your council sent you. Check that
+    it has your council's email address on it so that it goes to the right place.
+    </p>
+
+    <p>
+    It's a good idea to include the URL [web address] of your original FixMyStreet
+    report.
+    </p>
+
+    <p>
+    <strong>If you're not having any luck getting your community problems fixed</strong>,
+    you could try contacting your local councillor, using another useful mySociety site:
+    <a href="https://www.writetothem.com/?utm_source=fixmystreet.com&amp;utm_campaign=contact_workflow_links&amp;utm_medium=link&amp;utm_content=contact+not_fixed">WriteToThem</a>.
+    </p>
+  </div>
+</div>
