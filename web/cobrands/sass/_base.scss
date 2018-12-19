@@ -510,6 +510,12 @@ textarea.form-error {
   @include border-radius(0 0.25em 0.25em 0.25em);
 }
 
+.form-error__box {
+    border: solid 2px #ff0000;
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+}
+
 ul.error {
   background:#ff0000;
   color:#fff;

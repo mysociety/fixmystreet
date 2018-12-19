@@ -346,6 +346,7 @@ for my $test (
         page_errors =>
           [ 'There were problems with your report. Please see below.',
             'Please enter who your message is for',
+            'You can only contact the team behind FixMyStreet using our contact form', # The JS-hidden one
         ]
     },
     {
@@ -391,11 +392,12 @@ for my $test (
             $test->{fields}->{'extra.phone'} = '';
             is_deeply $mech->visible_form_values, $test->{fields}, 'form values';
 
+            # Ugh, but checking div not hidden; text always shown and hidden with CSS
             if ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'update' ) {
-                $mech->content_contains( 'www.writetothem.com', 'includes link to WTT if trying to update report' );
+                $mech->content_contains('<div class="form-error__box form-error--update">');
             } elsif ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'council' ) {
-                $mech->content_lacks( 'www.writetothem.com', 'does not include link to WTT if trying to contact council' );
-                $mech->content_contains( 'should find contact details', 'mentions checking council website for contact details' );
+                # Ugh, but checking div not hidden
+                $mech->content_contains('<div class="form-error__box form-error--council">');
             }
         }
     };

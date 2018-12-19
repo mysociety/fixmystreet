@@ -1,3 +1,6 @@
+[% extra_js = [
+    version('/js/contact.js')
+] -%]
 [% INCLUDE 'header.html',
     title = loc('Contact Us')
     robots = 'noindex,nofollow'
@@ -71,6 +74,8 @@
 
         [% END %]
 
+        [% INCLUDE 'contact/who.html' %]
+
         <label for="form_name">[% loc('Your name') %]</label>
         [% IF field_errors.name %]
            <div class="form-error">[% field_errors.name %]</div>
@@ -94,8 +99,6 @@
            <div class="form-error">[% field_errors.subject %]</div>
         [% END %]
         <input type="text" class="form-control required" name="subject" id="form_subject" value="[% subject | html %]" size="30">
-
-        [% INCLUDE 'contact/who.html' %]
 
         <label for="form_message">[% loc('Message') %]</label>
         [% IF field_errors.message %]
