@@ -3,14 +3,18 @@
 # This file is distributed under the same license as the main FixMyStreet code.
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
+# Translators:
+# mySociety <transifex@mysociety.org>, 2018
+# Yaron Shahrabani <sh.yaron@gmail.com>, 2018
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-11-06 12:38+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>, 2017\n"
+"PO-Revision-Date: 2018-09-06 20:57+0000\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>, 2018\n"
 "Language-Team: Hebrew (Israel) (https://www.transifex.com/mysociety/teams/12067/he_IL/)\n"
 "Language: he_IL\n"
 "MIME-Version: 1.0\n"
@@ -53,7 +57,7 @@ msgstr ""
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
 msgid "%s - Summary reports"
-msgstr ""
+msgstr "%s - דיווחי סיכום "
 
 #. ("%s here is the site name")
 #: templates/web/base/admin/navigation.html:3
@@ -163,11 +167,11 @@ msgstr "(רשות)"
 
 #: templates/web/base/report/_item.html:73
 msgid "(sent to all)"
-msgstr ""
+msgstr "(נשלח לכולם)"
 
 #: templates/web/base/report/_item.html:74
 msgid "(sent to both)"
-msgstr ""
+msgstr "(נשלח לשניהם)"
 
 #. ("%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]")
 #: templates/web/base/alert/_list.html:36
@@ -181,9 +185,8 @@ msgid "-- Pick a category --"
 msgstr "-- נא לבחור קטגוריה --"
 
 #: templates/web/base/report/new/category_extras_fields.html:18
-#, fuzzy
 msgid "-- Pick an option --"
-msgstr "-- נא לבחור קטגוריה --"
+msgstr "-- נא לבחור באפשרות --"
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
@@ -580,7 +583,7 @@ msgstr ""
 
 #: templates/web/base/admin/user_import.html:12
 msgid "CSV File"
-msgstr ""
+msgstr "קובץ CSV"
 
 #: templates/web/base/admin/extra-metadata-form.html:46
 msgid "Can be used to display extra text to the user alongside the field. The default template does not show this (<code>meta.datatype_description</code>), you must add it in <code>category_extras_fields.html</code>"
@@ -735,9 +738,8 @@ msgid "Closed by council"
 msgstr ""
 
 #: templates/web/base/admin/report_edit.html:176
-#, fuzzy
 msgid "Closed to updates"
-msgstr "קבלת עדכונים"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:38
 msgid "Co-ordinates:"
@@ -921,9 +923,8 @@ msgid "Created:"
 msgstr ""
 
 #: templates/web/base/auth/change_password.html:40
-#, fuzzy
 msgid "Current password:"
-msgstr "ססמה חדשה:"
+msgstr ""
 
 #: templates/web/base/auth/generate_token.html:46
 msgid "Current token:"
@@ -971,9 +972,8 @@ msgid "Defect type"
 msgstr "סוג המפגע"
 
 #: templates/web/base/admin/user-alerts.html:15
-#, fuzzy
 msgid "Delete"
-msgstr "נמחק"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1192
 #: templates/web/base/admin/template_edit.html:91
@@ -1122,9 +1122,8 @@ msgid "Edit body details"
 msgstr "ערוך פרטי גוף"
 
 #: perllib/FixMyStreet/Cobrand/KiitC.pm:163
-#, fuzzy
 msgid "Edit other users' details"
-msgstr "ערוך פרטי גוף"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:736
 #: perllib/FixMyStreet/Cobrand/KiitC.pm:164
@@ -1362,14 +1361,12 @@ msgstr ""
 
 #: templates/web/base/admin/report_edit.html:107
 #: templates/web/base/admin/template_edit.html:66
-#, fuzzy
 msgid "External status code"
-msgstr "צוות חיצוני"
+msgstr ""
 
 #: templates/web/base/admin/update_edit.html:57
-#, fuzzy
 msgid "External status code:"
-msgstr "צוות חיצוני"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:102
 msgid "External team"
@@ -1392,9 +1389,8 @@ msgid "Extra details"
 msgstr "פרטים נוספים"
 
 #: templates/web/zurich/admin/contact-form.html:22
-#, fuzzy
 msgid "Extra fields:"
-msgstr "שדות נוספים"
+msgstr ""
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1559,9 +1555,8 @@ msgid "Graph of problem creation by status over time"
 msgstr ""
 
 #: templates/web/base/admin/contact-form.html:134
-#, fuzzy
 msgid "Group"
-msgstr "קיבוץ לפי:"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:94
 msgid "Group by %s"
@@ -1607,9 +1602,8 @@ msgid "Hidden"
 msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:18
-#, fuzzy
 msgid "Hidden Field"
-msgstr "הוספת שדה"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:202
 msgid "Hide all reports and updates"
@@ -1938,9 +1932,8 @@ msgid "List all reported problems"
 msgstr ""
 
 #: templates/web/base/around/on_map_list_items.html:18
-#, fuzzy
 msgid "Loading reports…"
-msgstr "עריכת דוחות"
+msgstr ""
 
 #: templates/web/base/report/new/category_wrapper.html:8
 msgid "Loading..."
@@ -2193,9 +2186,8 @@ msgid "New priority"
 msgstr "עדיפות חדשה"
 
 #: templates/web/base/admin/user-alerts.html:44
-#, fuzzy
 msgid "New problems for %s"
-msgstr "תקלות חדשות ב־FixMyStreet"
+msgstr ""
 
 #: templates/web/base/admin/user-alerts.html:42
 msgid "New problems for <a href=\"%s\">%s</a>"
@@ -2542,9 +2534,8 @@ msgid "Permissions:"
 msgstr "הרשאות:"
 
 #: templates/web/base/admin/open311-form-fields.html:61
-#, fuzzy
 msgid "Permit blank updates"
-msgstr "קבלת עדכונים"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:25
 msgid "Phone Reporter:"
@@ -3164,9 +3155,8 @@ msgid "Recently updated"
 msgstr ""
 
 #: templates/web/base/report/_inspect.html:60
-#, fuzzy
 msgid "Reject report"
-msgstr "חקירת דוח"
+msgstr ""
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
@@ -3233,9 +3223,8 @@ msgstr ""
 
 #: templates/web/base/js/translation_strings.html:78
 #: templates/web/base/main_nav_items.html:4
-#, fuzzy
 msgid "Report a problem here"
-msgstr "כיצד לדווח על תקלה"
+msgstr ""
 
 #: templates/web/base/report/display_tools.html:10
 #: templates/web/base/report/display_tools.html:9
@@ -3245,9 +3234,8 @@ msgstr ""
 #: templates/web/base/js/translation_strings.html:79
 #: templates/web/base/main_nav_items.html:2
 #: templates/web/base/tokens/confirm_problem.html:40
-#, fuzzy
 msgid "Report another problem here"
-msgstr "כיצד לדווח על תקלה"
+msgstr ""
 
 #: templates/web/base/report/new/form_user_loggedin.html:17
 msgid "Report as"
@@ -3543,12 +3531,12 @@ msgstr ""
 #: templates/web/base/auth/generate_token.html:39
 #: templates/web/base/my/my.html:71
 msgid "Security"
-msgstr ""
+msgstr "אבטחה"
 
 #: templates/web/base/report/new/councils_text_private.html:7
 #: templates/web/base/report/new/form_user.html:6
 msgid "See our privacy policy"
-msgstr ""
+msgstr "הצגת מדיניות הפרטיות שלנו"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:726
 #: perllib/FixMyStreet/Cobrand/KiitC.pm:160
@@ -3563,7 +3551,7 @@ msgstr ""
 #: templates/web/base/admin/body-form.html:78
 #: templates/web/zurich/admin/body-form.html:25
 msgid "Select an area"
-msgstr ""
+msgstr "בחירת אזור"
 
 #: templates/web/base/admin/responsepriorities/edit.html:33
 msgid "Select if this is the default priority"
@@ -3575,24 +3563,23 @@ msgstr ""
 
 #: templates/web/base/reports/_ward-list.html:8
 msgid "Select multiple wards?"
-msgstr ""
+msgstr "לבחור מספר מחלקות?"
 
 #: templates/web/base/admin/category-checkboxes.html:6
 msgid "Select:"
-msgstr ""
+msgstr "בחירה:"
 
 #: templates/web/base/contact/index.html:111
 msgid "Send"
-msgstr ""
+msgstr "שליחה"
 
 #: templates/web/base/admin/open311-form-fields.html:121
 msgid "Send extended Open311 statuses with service request updates"
 msgstr ""
 
 #: templates/web/base/admin/user-form.html:22
-#, fuzzy
 msgid "Send login email"
-msgstr "כניסה עם דוא״ל"
+msgstr ""
 
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:5
@@ -3618,22 +3605,21 @@ msgstr ""
 #: templates/web/base/admin/report_edit.html:92
 #: templates/web/zurich/admin/stats/index.html:66
 msgid "Service:"
-msgstr ""
+msgstr "שירות:"
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:4
 #: templates/web/base/my/my.html:67
-#, fuzzy
 msgid "Set password"
-msgstr "ססמה חדשה:"
+msgstr "הגדרת ססמה"
 
 #: templates/web/base/report/_inspect.html:53
 msgid "Set to my current location"
-msgstr ""
+msgstr "הגדרה למיקום הנוכחי שלי"
 
 #: templates/web/base/report/display_tools.html:17
 msgid "Share"
-msgstr ""
+msgstr "שיתוף"
 
 #: templates/web/base/main_nav_items.html:18
 #: templates/web/base/report/_main.html:138
@@ -3660,46 +3646,45 @@ msgstr ""
 
 #: templates/web/base/report/update.html:20
 msgid "Show Photo?"
-msgstr ""
+msgstr "להציג תמונה?"
 
 #: templates/web/base/questionnaire/index.html:54
 msgid "Show all updates"
-msgstr ""
+msgstr "הצגת כל העדכונים"
 
 #: templates/web/base/report/_show_name_label.html:4
 msgid "Show my name publicly"
-msgstr ""
+msgstr "הצגת השם שלי לקהל הרחב"
 
 #: templates/web/base/report/update.html:17
 msgid "Show name publicly?"
-msgstr ""
+msgstr "להציג את השם לקהל הרחב?"
 
 #: templates/web/base/pagination.html:12
 msgid "Show older"
 msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:85
-#, fuzzy
 msgid "Show older reports"
-msgstr "כל הדיווחים"
+msgstr ""
 
 #: templates/web/base/report/_main.html:85
 msgid "Show photo"
-msgstr ""
+msgstr "הצגת תמונה"
 
 #: templates/web/base/around/display_location.html:58
 #: templates/web/base/around/display_location.html:66
 #: templates/web/base/js/translation_strings.html:62
 msgid "Show pins"
-msgstr ""
+msgstr "הצגת נעצים"
 
 #: templates/web/base/report/_main.html:62
 msgid "Show reporter&rsquo;s name"
-msgstr ""
+msgstr "הצגת שם המדווח"
 
 #: templates/web/base/reports/index.html:64
 msgid "Show reports in your area"
-msgstr ""
+msgstr "הצגת דיווחים באזור שלך"
 
 #: templates/web/base/auth/general.html:129
 #: templates/web/base/auth/general.html:3
@@ -3708,7 +3693,7 @@ msgstr ""
 #: templates/web/zurich/auth/general.html:25
 #: templates/web/zurich/auth/general.html:8
 msgid "Sign in"
-msgstr ""
+msgstr "כניסה"
 
 #: templates/web/base/auth/general.html:100
 msgid "Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated."
@@ -3721,16 +3706,16 @@ msgstr ""
 #: templates/web/base/auth/general.html:1
 #: templates/web/zurich/auth/general.html:1
 msgid "Sign in or create an account"
-msgstr ""
+msgstr "כניסה או יצירת חשבון"
 
 #: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:73
 #: templates/web/zurich/auth/sign_out.html:1
 msgid "Sign out"
-msgstr ""
+msgstr "יציאה"
 
 #: templates/web/base/report/new/fill_in_details_text.html:1
 msgid "Some categories may require additional information."
-msgstr ""
+msgstr "לחלק מהקטגוריות נדרש מידע נוסף."
 
 #: templates/web/base/admin/open311-form-fields.html:40
 #: templates/web/base/admin/open311-form-fields.html:41
@@ -3741,7 +3726,7 @@ msgstr ""
 
 #: templates/web/base/alert/index.html:44
 msgid "Some photos of recent reports"
-msgstr ""
+msgstr "כל מיני תמונות של דיווחים אחרונים"
 
 #. ('Optional comment for translator')
 #: perllib/FixMyStreet/Template.pm:53
@@ -4237,9 +4222,8 @@ msgid "The user could not locate the problem on a map, but to see the area aroun
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:2023
-#, fuzzy
 msgid "The user has been sent a login email"
-msgstr "נא להקליד כתובת דוא״ל תקנית"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:10
 #: templates/web/base/admin/user-form.html:11
@@ -4542,7 +4526,7 @@ msgstr ""
 #: templates/web/base/admin/states/index.html:100
 #: templates/web/base/admin/user-alerts.html:9
 msgid "Type"
-msgstr ""
+msgstr "סוג"
 
 #: templates/web/base/admin/user-form.html:34
 msgid "Unban"
@@ -4559,17 +4543,17 @@ msgstr ""
 
 #: templates/web/base/report/banner.html:9
 msgid "Unknown"
-msgstr ""
+msgstr "לא ידוע"
 
 #: perllib/FixMyStreet/App/Controller/Rss.pm:178
 msgid "Unknown alert type"
-msgstr ""
+msgstr "סוג ההתרעה אינו מוכר"
 
 #: perllib/FixMyStreet/App/Controller/Photo.pm:118
 #: perllib/FixMyStreet/App/Controller/Root.pm:142
 #: templates/web/base/js/translation_strings.html:46
 msgid "Unknown error"
-msgstr ""
+msgstr "שגיאה לא ידועה"
 
 #: perllib/FixMyStreet/App/Controller/Develop.pm:159
 #: perllib/FixMyStreet/App/Controller/Develop.pm:178
@@ -4578,11 +4562,11 @@ msgstr ""
 #: perllib/FixMyStreet/App/Controller/Report.pm:119
 #: perllib/FixMyStreet/App/Controller/Report.pm:122
 msgid "Unknown problem ID"
-msgstr ""
+msgstr "מזהה התקלה לא ידוע"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:94
 msgid "Unknown update ID"
-msgstr ""
+msgstr "מזהה העדכון לא ידוע"
 
 #: templates/web/base/reports/_list-filters.html:25
 msgid "Unshortlisted"
@@ -4596,7 +4580,7 @@ msgstr ""
 #: templates/web/base/admin/user-alerts.html:58
 #: templates/web/base/report/update/form_update.html:29
 msgid "Update"
-msgstr ""
+msgstr "עדכון"
 
 #: templates/web/base/admin/timeline.html:33
 msgid "Update %s created for problem %d; by %s"
@@ -4877,20 +4861,20 @@ msgstr ""
 
 #: templates/web/base/dashboard/index.html:122
 msgid "Website"
-msgstr ""
+msgstr "אתר"
 
 #: templates/web/base/contact/submit.html:7
 msgid "We’ll get back to you as soon as we can."
-msgstr ""
+msgstr "נשוב אליך בהקדם האפשרי."
 
 #: templates/web/base/admin/category_edit.html:27
 #: templates/web/zurich/admin/body.html:18
 msgid "When edited"
-msgstr ""
+msgstr "מתי נערך"
 
 #: templates/web/base/admin/problem_row.html:35
 msgid "When sent"
-msgstr ""
+msgstr "מתי נשלח"
 
 #: templates/web/base/admin/extra-metadata-form.html:12
 msgid "Whether the field is displayed to the user, included as a hidden field and automatically populated, or set by the server upon Open311 submission. This field is usually set automatically."
@@ -4898,15 +4882,15 @@ msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:28
 msgid "Whether the user is required to provide a value for this field."
-msgstr ""
+msgstr "האם על המשתמש לספק ערך לשדה הזה."
 
 #: templates/web/base/alert/_list.html:9
 msgid "Which problems do you want alerts about?"
-msgstr ""
+msgstr "באילו תקלות מעניין אותך להתעדכן?"
 
 #: templates/web/base/report/_inspect.html:120
 msgid "Which report is it a duplicate of?"
-msgstr ""
+msgstr "הדיווח הזה הוא כפיל של איזה דיווח?"
 
 #: templates/web/base/js/translation_strings.html:65
 msgid "Whoa there Testino! Three photos are enough."
@@ -4914,7 +4898,7 @@ msgstr ""
 
 #: templates/web/base/tokens/confirm_alert.html:7
 msgid "Why stop there? <a href=\"/alert\">Set up more alerts</a> for free."
-msgstr ""
+msgstr "למה לעצור כאן? <a href=\"/alert\">ניתן להגדיר עוד התראות</a> בחינם."
 
 #: templates/web/base/open311/index.html:84
 msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
@@ -4922,7 +4906,7 @@ msgstr ""
 
 #: templates/web/base/dashboard/index.html:163
 msgid "Within the specified timeframe:"
-msgstr ""
+msgstr "במסגרת הזמן שצוינה:"
 
 #: templates/web/base/front/footer-marketing.html:3
 msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"https://fixmystreet.org\">available at fixmystreet.org</a>."
@@ -4938,7 +4922,7 @@ msgstr ""
 
 #: templates/web/base/report/new/fill_in_details_form.html:4
 msgid "Wrong location? Just click again on the map."
-msgstr ""
+msgstr "מיקום שגוי? עליך פשוט ללחוץ שוב על המפה."
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:1210
 #: templates/web/base/admin/bodies.html:70
@@ -4958,7 +4942,7 @@ msgstr ""
 #: templates/web/base/questionnaire/index.html:37
 #: templates/web/base/report/_inspect.html:111
 msgid "Yes"
-msgstr ""
+msgstr "כן"
 
 #: templates/web/base/contact/index.html:45
 msgid "You are complaining that this problem report was unnecessarily moderated:"
@@ -5040,42 +5024,42 @@ msgstr ""
 #: templates/web/base/auth/sign_out.html:4
 #: templates/web/zurich/auth/sign_out.html:3
 msgid "You have been signed out"
-msgstr ""
+msgstr "יצאת"
 
 #: templates/web/zurich/report/new/sidebar.html:7
 msgid "You have located the problem at the point marked with a green pin on the map. If this is not the correct location, simply click on the map again. "
-msgstr ""
+msgstr "איתרת תקלה בנקודה שמסומת בנעץ ירוק במפה. אם זה אינו המיקום הנכון, עליך פשוט ללחוץ על המפה שוב."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:142
 msgid "You have successfully added your phone number."
-msgstr ""
+msgstr "הוספת את מספר הטלפון שלך בהצלחה."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:158
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:6
 msgid "You have successfully confirmed your email address."
-msgstr ""
+msgstr "אישרת את כתובת הדוא״ל שלך בהצלחה."
 
 #: templates/web/base/auth/change_phone.html:15
 msgid "You have successfully confirmed your phone number."
-msgstr ""
+msgstr "אישרת את מספר הטלפון שלך בהצלחה."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:129
 msgid "You have successfully removed your phone number."
-msgstr ""
+msgstr "הסרת את מספר הטלפון שלך."
 
 #: templates/web/base/report/display.html:25
 #: templates/web/base/report/new/login_success_form.html:3
 msgid "You have successfully signed in; please check and confirm your details are accurate:"
-msgstr ""
+msgstr "נכנסת בהצלחה, נא לבדוק ולאשר שהפרטים שלך נכונים:"
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:164
 msgid "You have successfully verified your phone number."
-msgstr ""
+msgstr "אימתת את מספר הטלפון שלך בהצלחה."
 
 #: templates/web/base/my/my.html:79
 msgid "You haven&rsquo;t created any reports yet.  <a href=\"%s\">Report a problem now.</a>"
-msgstr ""
+msgstr "לא יצרת דיווחים עדיין. <a href=\"%s\">ניתן לדווח על תקלה כעת.</a>"
 
 #: templates/web/base/my/planned.html:21
 msgid "You haven&rsquo;t shortlisted any reports yet."
@@ -5094,7 +5078,7 @@ msgstr ""
 
 #: templates/web/base/my/my.html:0 templates/web/base/my/my.html:5
 msgid "Your Reports"
-msgstr ""
+msgstr "הדיווחים שלך"
 
 #: templates/web/base/auth/change_password.html:13
 #: templates/web/base/auth/generate_token.html:15
@@ -5102,7 +5086,7 @@ msgstr ""
 #: templates/web/base/auth/generate_token.html:34
 #: templates/web/base/main_nav_items.html:12 templates/web/base/my/my.html:18
 msgid "Your account"
-msgstr ""
+msgstr "החשבון שלך"
 
 #: templates/web/base/alert/updates.html:19
 #: templates/web/base/auth/general.html:44
@@ -5112,17 +5096,17 @@ msgstr ""
 #: templates/web/base/report/update/form_user_loggedout_email.html:6
 #: templates/web/zurich/report/new/fill_in_details_form.html:53
 msgid "Your email"
-msgstr ""
+msgstr "כתובת הדוא״ל שלך"
 
 #: templates/web/base/auth/change_email.html:15
 msgid "Your email address"
-msgstr ""
+msgstr "כתובת הדוא״ל שלך"
 
 #: templates/web/base/auth/general.html:42
 #: templates/web/base/report/new/form_user_loggedout_email.html:2
 #: templates/web/base/report/update/form_user_loggedout_email.html:2
 msgid "Your email or mobile"
-msgstr ""
+msgstr "כתובת הדוא״ל או מספר הנייד שלך"
 
 #: templates/web/base/report/updates-sidebar-notes.html:3
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
@@ -5132,7 +5116,7 @@ msgstr ""
 #: templates/web/base/contact/index.html:74
 #: templates/web/base/report/update/form_name.html:27
 msgid "Your name"
-msgstr ""
+msgstr "השם שלך"
 
 #: templates/web/base/my/anonymize.html:13
 msgid "Your name has already been sent to %s, but we can hide it on this page:"
@@ -5140,72 +5124,72 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/My.pm:272
 msgid "Your name has been hidden from all your reports and updates."
-msgstr ""
+msgstr "השם שלך מוסתר בכל הדיווחים והעדכונים שלך."
 
 #: perllib/FixMyStreet/App/Controller/My.pm:268
 msgid "Your name has been hidden."
-msgstr ""
+msgstr "השם שלך הוסתר."
 
 #: templates/web/base/js/translation_strings.html:83
 msgid "Your offline reports"
-msgstr ""
+msgstr "הדיווחים הבלתי מקוונים שלך"
 
 #: templates/web/base/auth/general.html:83
 #: templates/web/base/report/new/form_user_loggedout_password.html:5
 #: templates/web/base/report/update/form_user_loggedout_password.html:4
 msgid "Your password"
-msgstr ""
+msgstr "הססמה שלך"
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:170
 #: templates/web/base/auth/change_password.html:12
 msgid "Your password has been changed"
-msgstr ""
+msgstr "הססמה שלך הוחלפה"
 
 #: templates/web/base/auth/general.html:133
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:38
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:25
 #: templates/web/zurich/auth/general.html:63
 msgid "Your password should include %d or more characters."
-msgstr ""
+msgstr "על הססמה שלך להכיל %d תווים או יותר."
 
 #: templates/web/base/auth/change_phone.html:19
 #: templates/web/base/contact/index.html:87
 msgid "Your phone number"
-msgstr ""
+msgstr "מס׳ הטלפון שלך"
 
 #: templates/web/base/questionnaire/index.html:44
 msgid "Your report"
-msgstr ""
+msgstr "דיווח שלך"
 
 #: templates/web/base/my/my.html:76
 msgid "Your reports"
-msgstr ""
+msgstr "דיווחים שלך"
 
 #: templates/web/base/my/planned.html:0 templates/web/base/my/planned.html:18
 #: templates/web/base/my/planned.html:5
 msgid "Your shortlist"
-msgstr ""
+msgstr "הרשימה המקוצרת שלך"
 
 #: templates/web/base/auth/generate_token.html:8
 msgid "Your token has been generated"
-msgstr ""
+msgstr "האסימון שלך נוצר"
 
 #: templates/web/base/js/translation_strings.html:84
 msgid "Your update has been saved offline for submission when back online."
-msgstr ""
+msgstr "העדכון שלך נשמר באופן בלתי מקוון להגשה בעת חידוש החיבור לאינטרנט."
 
 #: templates/web/base/my/my.html:99
 msgid "Your updates"
-msgstr ""
+msgstr "העדכונים שלך"
 
 #: perllib/FixMyStreet/SMS.pm:46
 msgid "Your verification code is %s"
-msgstr ""
+msgstr "קוד האימות שלך הוא %s"
 
 #: templates/web/base/report/new/form_user_loggedin.html:19
 #: templates/web/base/report/update/form_name.html:12
 msgid "Yourself"
-msgstr ""
+msgstr "עצמך"
 
 #: templates/web/base/admin/user_import.html:72
 msgid "a colon-separated list of permissions to grant that user, e.g. <code>contribute_as_body:moderate:user_edit</code>."
@@ -5218,7 +5202,7 @@ msgstr ""
 #: templates/web/base/admin/category-checkboxes.html:7
 #: templates/web/base/admin/user-form.html:175
 msgid "all"
-msgstr ""
+msgstr "הכול"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:975
 #: perllib/FixMyStreet/App/Controller/Moderate.pm:114
@@ -5260,21 +5244,21 @@ msgstr ""
 #: templates/web/base/admin/flagged.html:51
 #: templates/web/base/admin/open311-form-fields.html:93
 msgid "edit user"
-msgstr ""
+msgstr "עריכת משתמש"
 
 #: templates/web/base/status/stats.html:20
 #: templates/web/zurich/admin/index.html:5
 msgid "from %s different users"
-msgstr ""
+msgstr "מ־%s משתמשים שונים"
 
 #: templates/web/base/report/_item.html:67
 #: templates/web/zurich/report/_item.html:16
 msgid "last updated %s"
-msgstr ""
+msgstr "עדכון אחרון: %s"
 
 #: perllib/Utils.pm:227
 msgid "less than a minute"
-msgstr ""
+msgstr "פחות מדקה"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:123
 #: templates/web/base/admin/stats/questionnaire.html:15
@@ -5313,15 +5297,15 @@ msgstr ""
 
 #: templates/web/base/admin/report_edit.html:69
 msgid "other areas:"
-msgstr ""
+msgstr "אזורים אחרים:"
 
 #: templates/web/zurich/admin/contact-form.html:24
 msgid "show"
-msgstr ""
+msgstr "הצגה"
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
-msgstr ""
+msgstr "יציאה"
 
 #: templates/web/base/admin/user_import.html:71
 msgid "the database id of the body to associate that user with, e.g. <code>2217</code> for Buckinghamshire."
@@ -5338,23 +5322,23 @@ msgstr ""
 
 #: templates/web/base/alert/_list.html:1
 msgid "this location"
-msgstr ""
+msgstr "המיקום הזה"
 
 #: perllib/FixMyStreet/Script/Reports.pm:183
 msgid "this type of local problem"
-msgstr ""
+msgstr "סוג זה של בעיה מקומית"
 
 #: perllib/Utils.pm:177
 msgid "today"
-msgstr ""
+msgstr "היום"
 
 #: templates/web/base/js/translation_strings.html:94
 msgid "update"
-msgstr ""
+msgstr "עדכון"
 
 #: templates/web/base/js/translation_strings.html:95
 msgid "updates"
-msgstr ""
+msgstr "עדכונים"
 
 #: templates/web/base/admin/report_edit.html:53
 msgid "used map"
@@ -5379,7 +5363,7 @@ msgstr ""
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:3
 msgid "ward"
-msgstr ""
+msgstr "מחלקה"
 
 #: templates/web/base/admin/bodies.html:56
 #, perl-format
@@ -5574,10 +5558,10 @@ msgstr[3] ""
 #, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "חודש"
+msgstr[1] "חודשיים"
+msgstr[2] "חודשים"
+msgstr[3] "חודשים"
 
 #: templates/email/bathnes/archive.html:25
 #, perl-format
@@ -5587,27 +5571,3 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 msgstr[3] ""
-
-#~ msgid "Enter a password"
-#~ msgstr "נא להקליד ססמה"
-
-#~ msgid "New"
-#~ msgstr "חדש"
-
-#~ msgid "Password:"
-#~ msgstr "ססמה:"
-
-#~ msgid "Category: %s"
-#~ msgstr "קטגוריה: %s"
-
-#~ msgid "In progress"
-#~ msgstr "בתהליך"
-
-#~ msgid "Planned"
-#~ msgstr "בתכנון"
-
-#~ msgid "Email: %s"
-#~ msgstr "דוא\"ל: %s"
-
-#~ msgid "Name: %s"
-#~ msgstr "שם: %s"
