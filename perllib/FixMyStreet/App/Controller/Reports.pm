@@ -654,16 +654,24 @@ sub check_non_public_reports_permission : Private {
     my ($self, $c, $where) = @_;
 
     if ( $c->user_exists ) {
-        return if $c->user->is_super_user;
+        my $user_has_permission;
 
-        my $body = $c->stash->{body};
+        if ( $c->user->is_super_user ) {
+            $user_has_permission = 1;
+        } else {
+            my $body = $c->stash->{body};
 
-        my $user_has_permission = $body && (
-            $c->user->has_permission_to('report_inspect', $body->id) ||
-            $c->user->has_permission_to('report_mark_private', $body->id)
-        );
+            $user_has_permission = $body && (
+                $c->user->has_permission_to('report_inspect', $body->id) ||
+                $c->user->has_permission_to('report_mark_private', $body->id)
+            );
+        }
 
-        $where->{non_public} = 0 unless $user_has_permission;
+        if ( $user_has_permission ) {
+            $where->{non_public} = 1 if $c->stash->{only_non_public};
+        } else {
+            $where->{non_public} = 0;
+        }
     } else {
         $where->{non_public} = 0;
     }
@@ -739,6 +747,10 @@ sub stash_report_filter_status : Private {
                 $filter_status{$state} = 1;
             }
         }
+    }
+
+    if ($status{non_public}) {
+        $c->stash->{only_non_public} = 1;
     }
 
     if (keys %filter_problem_states == 0) {

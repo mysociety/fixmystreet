@@ -28,14 +28,23 @@ sub body_query {
 sub non_public_if_possible {
     my ($rs, $params, $c) = @_;
     if ($c->user_exists) {
+        my $only_non_public = $c->stash->{only_non_public} ? 1 : 0;
         if ($c->user->is_superuser) {
             # See all reports, no restriction
+            $params->{non_public} = 1 if $only_non_public;
         } elsif ($c->user->has_body_permission_to('report_inspect') ||
                  $c->user->has_body_permission_to('report_mark_private')) {
-            $params->{'-or'} = [
-                non_public => 0,
-                $rs->body_query($c->user->from_body->id),
-            ];
+            if ($only_non_public) {
+                $params->{'-and'} = [
+                    non_public => 1,
+                    $rs->body_query($c->user->from_body->id),
+                ];
+            } else {
+                $params->{'-or'} = [
+                    non_public => 0,
+                    $rs->body_query($c->user->from_body->id),
+                ];
+            }
         } else {
             $params->{non_public} = 0;
         }

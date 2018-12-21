@@ -276,6 +276,9 @@ In such cases, staff should make a new report just as a member of the public wou
 citizen’s experience](/pro-manual/citizens-experience/)'. Those with the appropriate permissions
 will see a "Private" checkbox underneath the user details which they should select.
 
+On the reports page you can select "Private only" from the status filter
+to display only the reports that have been marked private.
+
 </div>
 
 <div class="admin-task" markdown="1" id="correct-reporter-errors">

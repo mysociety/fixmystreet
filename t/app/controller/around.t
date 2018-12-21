@@ -171,6 +171,19 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
         };
         $mech->content_contains( "Around page Test 3 for $body_edin_id",
             'problem marked non public is visible' );
+        $mech->content_contains( "Around page Test 2 for $body_edin_id",
+            'problem marked public is visible' );
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/around?pc=EH1+1BB&status=non_public');
+        };
+        $mech->content_contains( "Around page Test 3 for $body_edin_id",
+            'problem marked non public is visible' );
+        $mech->content_lacks( "Around page Test 2 for $body_edin_id",
+            'problem marked public is not visible' );
 
         $user->user_body_permissions->delete();
         $user->update({ from_body => $body2 });
@@ -189,6 +202,19 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
         };
         $mech->content_lacks( "Around page Test 3 for $body_edin_id",
             'problem marked non public is not visible' );
+        $mech->content_contains( "Around page Test 2 for $body_edin_id",
+            'problem marked public is visible' );
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/around?pc=EH1+1BB&status=non_public');
+        };
+        $mech->content_lacks( "Around page Test 3 for $body_edin_id",
+            'problem marked non public is not visible' );
+        $mech->content_lacks( "Around page Test 2 for $body_edin_id",
+            'problem marked public is visible' );
     };
 }
 

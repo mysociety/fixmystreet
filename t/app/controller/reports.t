@@ -220,8 +220,32 @@ for my $permission( qw/ report_inspect report_mark_private / ) {
         my $body = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
         my $body2 = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
+
+        # from body, no permission
         $user->user_body_permissions->delete();
         $user->update({ from_body => $body });
+
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/reports/Westminster');
+        };
+        $problems = $mech->extract_problem_list;
+        is scalar @$problems, 4, 'only public problems are displayed if no permission';
+        $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible if no permission');
+        $mech->content_lacks('<option value="non_public">Private only</option>');
+
+        # from body, no permission, limited to private in url
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/reports/Westminster?status=non_public');
+        };
+        $problems = $mech->extract_problem_list;
+        is scalar @$problems, 4, 'only public problems are displayed if no permission, despite override';
+        $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible despite override');
+
+        # from body, has permission
         $user->user_body_permissions->find_or_create({
             body => $body,
             permission_type => $permission,
@@ -233,10 +257,22 @@ for my $permission( qw/ report_inspect report_mark_private / ) {
             $mech->get_ok('/reports/Westminster');
         };
         $problems = $mech->extract_problem_list;
-        is scalar @$problems, 5, 'only public problems are displayed';
+        is scalar @$problems, 5, 'public and non-public problems are displayed if permission';
+        $mech->content_contains('All reports Test 3 for ' . $body_west_id, 'non public problem is visible if permission');
+        $mech->content_contains('<option value="non_public">Private only</option>');
 
-        $mech->content_contains('All reports Test 3 for ' . $body_west_id, 'non public problem is visible');
+        # From body, limited to private only
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/reports/Westminster?status=non_public');
+        };
+        $problems = $mech->extract_problem_list;
+        is scalar @$problems, 1, 'only non-public problems are displayed with non_public filter';
+        $mech->content_contains('All reports Test 3 for ' . $body_west_id, 'non public problem is visible with non_public filter');
+        $mech->content_lacks('All reports Test 4 for ' . $body_west_id, 'public problem is not visible with non_public filter');
 
+        # from other body, has permission
         $user->user_body_permissions->delete();
         $user->update({ from_body => $body2 });
         $user->user_body_permissions->find_or_create({
@@ -250,9 +286,19 @@ for my $permission( qw/ report_inspect report_mark_private / ) {
             $mech->get_ok('/reports/Westminster');
         };
         $problems = $mech->extract_problem_list;
-        is scalar @$problems, 4, 'only public problems are displayed';
+        is scalar @$problems, 4, 'only public problems are displayed for other body user';
+        $mech->content_contains('<option value="non_public">Private only</option>');
+        $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible for other body user');
 
-        $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible');
+        # From other body, limited to private only
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok('/reports/Westminster?status=non_public');
+        };
+        $problems = $mech->extract_problem_list;
+        is scalar @$problems, 4, 'non-public problems are not displayed for other body with override';
+        $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible for other body with override');
     };
 }
 
