@@ -186,14 +186,30 @@ sub load_updates : Private {
         { order_by => [ 'confirmed', 'id' ] }
     );
 
-    my $questionnaires = $c->model('DB::Questionnaire')->search(
+    my $questionnaires_still_open = $c->model('DB::Questionnaire')->search(
         {
             problem_id => $c->stash->{problem}->id,
             whenanswered => { '!=', undef },
-            old_state => [ -and =>
-                { -in => [ FixMyStreet::DB::Result::Problem::closed_states, FixMyStreet::DB::Result::Problem::open_states ] },
-                \'= new_state',
-            ]
+            -or => [ {
+                # Any steady state open/closed
+                old_state => [ -and =>
+                    { -in => [ FixMyStreet::DB::Result::Problem::closed_states, FixMyStreet::DB::Result::Problem::open_states ] },
+                    \'= new_state',
+                ],
+            }, {
+                # Any reopening
+                new_state => 'confirmed',
+            } ]
+        },
+        { order_by => 'whenanswered' }
+    );
+
+    my $questionnaires_fixed = $c->model('DB::Questionnaire')->search(
+        {
+            problem_id => $c->stash->{problem}->id,
+            whenanswered => { '!=', undef },
+            old_state => { -not_in => [ FixMyStreet::DB::Result::Problem::fixed_states ] },
+            new_state => { -in => [ FixMyStreet::DB::Result::Problem::fixed_states ] },
         },
         { order_by => 'whenanswered' }
     );
@@ -206,11 +222,15 @@ sub load_updates : Private {
             $questionnaires_with_updates{$qid} = $update;
         }
     }
-    while (my $q = $questionnaires->next) {
+    while (my $q = $questionnaires_still_open->next) {
         if (my $update = $questionnaires_with_updates{$q->id}) {
             $update->set_extra_metadata('open_from_questionnaire', 1);
             next;
         }
+        push @combined, [ $q->whenanswered, $q ];
+    }
+    while (my $q = $questionnaires_fixed->next) {
+        next if $questionnaires_with_updates{$q->id};
         push @combined, [ $q->whenanswered, $q ];
     }
     @combined = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @combined;

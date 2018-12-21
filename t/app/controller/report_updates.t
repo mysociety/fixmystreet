@@ -186,6 +186,20 @@ subtest "several updates shown in correct order" => sub {
             old_state => 'confirmed',
             new_state => 'fixed - user',
         },
+        { # One reopening, no associated update
+            problem_id => $report_id,
+            whensent => '2011-03-16 08:12:36',
+            whenanswered => '2011-03-16 08:12:36',
+            old_state => 'fixed - user',
+            new_state => 'confirmed',
+        },
+        { # One marking fixed, no associated update
+            problem_id => $report_id,
+            whensent => '2011-03-17 08:12:36',
+            whenanswered => '2011-03-17 08:12:36',
+            old_state => 'confirmed',
+            new_state => 'fixed - user',
+        },
     ) {
         my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
             $fields
@@ -240,13 +254,15 @@ subtest "several updates shown in correct order" => sub {
     $mech->get_ok("/report/$report_id");
 
     my $meta = $mech->extract_update_metas;
-    is scalar @$meta, 6, 'number of updates';
+    is scalar @$meta, 8, 'number of updates';
     is $meta->[0], 'Posted by Other User at 12:23, Thu 10 March 2011', 'first update';
     is $meta->[1], 'Posted by Main User at 12:23, Thu 10 March 2011 Still open, via questionnaire', 'second update';
     is $meta->[2], 'Still open, via questionnaire, 12:23, Fri 11 March 2011', 'questionnaire';
     is $meta->[3], 'Still open, via questionnaire, 12:23, Sat 12 March 2011', 'questionnaire';
     is $meta->[4], 'State changed to: Fixed', 'third update, part 1';
     is $meta->[5], 'Posted anonymously at 08:12, Tue 15 March 2011', 'third update, part 2';
+    is $meta->[6], 'Still open, via questionnaire, 08:12, Wed 16 March 2011', 'reopen questionnaire';
+    is $meta->[7], 'Questionnaire filled in by problem reporter; State changed to: Fixed, 08:12, Thu 17 March 2011', 'fix questionnaire';
     $report->questionnaires->delete;
 };
 

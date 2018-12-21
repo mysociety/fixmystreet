@@ -12,9 +12,16 @@
 [% BLOCK meta_line %]
 
     [% IF update.whenanswered %]
+      [% IF update.marks_fixed %]
+        [%# A questionnaire update that marked the report fixed %]
+        [% loc("Questionnaire filled in by problem reporter") %];
+        [% loc('State changed to:') %] [% prettify_state('fixed') %],
+        [% prettify_dt( update.whenanswered ) %]
+      [% ELSE %]
         [%# A questionnaire update, currently saying report is still open %]
         [% loc('Still open, via questionnaire') %], [% prettify_dt( update.whenanswered ) %]
-        [% RETURN %]
+      [% END %]
+      [% RETURN %]
     [% END %]
 
     [% update.meta_line(c) %]

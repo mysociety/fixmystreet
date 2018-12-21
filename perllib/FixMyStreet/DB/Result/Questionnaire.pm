@@ -57,4 +57,11 @@ my $stz = sub {
 around whensent => $stz;
 around whenanswered => $stz;
 
+sub marks_fixed {
+    my $self = shift;
+    my $new_fixed = FixMyStreet::DB::Result::Problem->fixed_states()->{$self->new_state};
+    my $old_fixed = FixMyStreet::DB::Result::Problem->fixed_states()->{$self->old_state};
+    return $new_fixed && !$old_fixed;
+}
+
 1;
