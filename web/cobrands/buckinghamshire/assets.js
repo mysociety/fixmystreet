@@ -428,4 +428,39 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     filter_value: types_to_show,
 }));
 
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "WinterRoutes"
+        }
+    },
+    asset_category: "Snow and ice problem/winter salting",
+    asset_item: "road",
+    non_interactive: true,
+    road: true,
+    actions: {
+        found: function() {
+            var $div = $("#category_meta .js-gritting-notice");
+            if ($div.length) {
+                $div.show();
+            } else {
+                var msg = "<div class='box-warning js-gritting-notice'>" +
+                            "<h1>Winter Gritting</h1>" +
+                            "<p>The road you have selected is on a regular " +
+                            "gritting route, and will be gritted according " +
+                            "to the published " +
+                            "<a href='https://www.buckscc.gov.uk/services/transport-and-roads/road-maintenance-and-repairs/winter-maintenance/'>" +
+                            "policy</a>.</p>" +
+                            "</div>";
+                $div = $(msg);
+                $div.prependTo("#category_meta");
+            }
+        },
+        not_found: function() {
+            $("#category_meta .js-gritting-notice").hide();
+        }
+    }
+}));
+
+
 })();
