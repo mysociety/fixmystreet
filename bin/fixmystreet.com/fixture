@@ -76,6 +76,15 @@ for my $cat (qw/Overflowing Broken Missing/) {
     $child_cat->update;
 }
 
+for my $cat ('Dropped Kerbs', 'Skips') {
+    my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create({
+        body => $body,
+        category => $cat
+    });
+    $child_cat->set_extra_metadata( group => 'Licensing' );
+    $child_cat->update;
+}
+
 FixMyStreet::DB::Factory::ResponseTemplate->create({
     body => $body, title => 'Generic',
     text => 'Thank you for your report, we will be in touch with an update soon.' });
