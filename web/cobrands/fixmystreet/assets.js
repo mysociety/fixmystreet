@@ -425,10 +425,20 @@ function layer_visibilitychanged() {
 function layer_loadend() {
     this.select_nearest_asset();
     // Preserve the selected marker when panning/zooming, if it's still on the map
-    if (selected_feature !== null && !(selected_feature in this.selectedFeatures)) {
-        var replacement_feature = this.find_matching_feature(selected_feature, this);
-        if (!!replacement_feature) {
-            this.get_select_control().select(replacement_feature);
+    if (selected_feature !== null) {
+        // Can't use (selected_feature in this.selectedFeatures) as it's a clone
+        var found = false;
+        for (var i=0; i < this.selectedFeatures.length; i++) {
+            if (this.assets_have_same_id(selected_feature, this.selectedFeatures[i])) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            var replacement_feature = this.find_matching_feature(selected_feature, this);
+            if (!!replacement_feature) {
+                this.get_select_control().select(replacement_feature);
+            }
         }
     }
 }
