@@ -122,6 +122,30 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         }
     },
 
+    assets_have_same_id: function(f1, f2) {
+        var asset_id_field = this.fixmystreet.asset_id_field;
+        return (f1.attributes[asset_id_field] == f2.attributes[asset_id_field]);
+    },
+
+    find_matching_feature: function(feature, layer) {
+        if (!layer) {
+            return false;
+        }
+        // When the WFS layer is reloaded the same features might be visible
+        // but they'll be different instances of the class so we can't use
+        // object identity comparisons.
+        // This function will find the best matching feature based on its
+        // attributes and distance from the original feature.
+        var threshold = 1; // metres
+        for (var i = 0; i < layer.features.length; i++) {
+            var candidate = layer.features[i];
+            var distance = candidate.geometry.distanceTo(feature.geometry);
+            if (this.assets_have_same_id(feature, candidate) && distance <= threshold) {
+                return candidate;
+            }
+        }
+    },
+
     CLASS_NAME: 'OpenLayers.Layer.VectorAsset'
 });
 
@@ -265,9 +289,12 @@ function asset_selected(e) {
     close_fault_popup();
     var lonlat = e.feature.geometry.getBounds().getCenterLonLat();
 
+    var layer = e.feature.layer;
+    var feature = e.feature;
+
     // Check if there is a known fault with the asset that's been clicked,
     // and disallow selection if so.
-    var fault_feature = find_matching_feature(e.feature, this.fixmystreet.fault_layer, this.fixmystreet.asset_id_field);
+    var fault_feature = layer.find_matching_feature(feature, this.fixmystreet.fault_layer);
     if (!!fault_feature) {
         fault_popup = new OpenLayers.Popup.FramedCloud("popup",
             e.feature.geometry.getBounds().getCenterLonLat(),
@@ -279,9 +306,6 @@ function asset_selected(e) {
         this.get_select_control().unselect(e.feature);
         return;
     }
-
-    var layer = e.feature.layer;
-    var feature = e.feature;
 
     // Keep track of selection in case layer is reloaded or hidden etc.
     selected_feature = feature.clone();
@@ -334,25 +358,6 @@ function clear_fields_for_attributes(attributes) {
     $.each(attributes, function (field_name, attribute_name) {
         $("#form_" + field_name).val("");
     });
-}
-
-function find_matching_feature(feature, layer, asset_id_field) {
-    if (!layer) {
-        return false;
-    }
-    // When the WFS layer is reloaded the same features might be visible
-    // but they'll be different instances of the class so we can't use
-    // object identity comparisons.
-    // This function will find the best matching feature based on its
-    // attributes and distance from the original feature.
-    var threshold = 1; // metres
-    for (var i = 0; i < layer.features.length; i++) {
-        var candidate = layer.features[i];
-        var distance = candidate.geometry.distanceTo(feature.geometry);
-        if (candidate.attributes[asset_id_field] == feature.attributes[asset_id_field] && distance <= threshold) {
-            return candidate;
-        }
-    }
 }
 
 function check_zoom_message_visibility() {
@@ -421,7 +426,7 @@ function layer_loadend() {
     this.select_nearest_asset();
     // Preserve the selected marker when panning/zooming, if it's still on the map
     if (selected_feature !== null && !(selected_feature in this.selectedFeatures)) {
-        var replacement_feature = find_matching_feature(selected_feature, this, this.fixmystreet.asset_id_field);
+        var replacement_feature = this.find_matching_feature(selected_feature, this);
         if (!!replacement_feature) {
             this.get_select_control().select(replacement_feature);
         }
