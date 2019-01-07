@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the main FixMyStreet code.
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"

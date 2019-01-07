@@ -5,16 +5,14 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2018
-# fixmystreetfr <fixmystreet@fixmystreet.fr>, 2018
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: 2018-09-06 20:57+0000\n"
-"Last-Translator: fixmystreetfr <fixmystreet@fixmystreet.fr>, 2018\n"
+"PO-Revision-Date: 2018-12-21 13:37+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
 "Language-Team: French (France) (https://www.transifex.com/mysociety/teams/12067/fr_FR/)\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
@@ -256,9 +254,8 @@ msgid "<strong>Yes</strong> I have a password"
 msgstr "<strong>Oui</strong>, j'ai un mot de passe :"
 
 #: templates/web/base/report/new/form_user.html:8
-#, fuzzy
 msgid "About the problem"
-msgstr "Résumer le problème"
+msgstr ""
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Activate two-factor authentication"
@@ -904,9 +901,8 @@ msgid "Create a report"
 msgstr "Créer un rapport"
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:5
-#, fuzzy
 msgid "Create an account"
-msgstr "Connectez-vous ou créez un compte"
+msgstr ""
 
 #: templates/web/base/admin/contact-form.html:156
 #: templates/web/zurich/admin/contact-form.html:49
@@ -996,9 +992,8 @@ msgid "Default priority"
 msgstr "Priorit&eacute; par d&eacute;faut"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:728
-#, fuzzy
 msgid "Default to creating reports/updates as the council"
-msgstr "Créer des rapports/mises à jour de l'administration"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:93
 msgid "Defect type"
@@ -1163,9 +1158,8 @@ msgid "Edit report category"
 msgstr "Éditer la catégorie des rapports"
 
 #: templates/web/base/report/new/form_user.html:13
-#, fuzzy
 msgid "Edit report details"
-msgstr "Modérer les détails du rapport"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:719
 msgid "Edit report priority"
@@ -1180,9 +1174,8 @@ msgid "Edit users' details/search for their reports"
 msgstr "Modifier les détails des utilisateurs/rechercher leurs rapports"
 
 #: templates/web/base/report/update/form_user.html:8
-#, fuzzy
 msgid "Edit your update"
-msgstr "Vos mises à jour"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:0
 #: templates/web/base/admin/report_edit.html:15
@@ -1242,9 +1235,8 @@ msgid "Email alert deleted"
 msgstr "Alerte E-mail supprimé"
 
 #: templates/web/base/auth/general.html:99
-#, fuzzy
 msgid "Email me a link or text me a code to sign in"
-msgstr "Cliquez sur le lien dans ce courrier &eacute;lectronique pour vous connecter."
+msgstr ""
 
 #: templates/web/base/auth/general.html:101
 msgid "Email me a link to sign in"
@@ -1533,9 +1525,8 @@ msgid "For more information, see <a href='https://fixmystreet.org/customising/fm
 msgstr "Pour plus d'information, Lire <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>comment FixMyStreet utilise Mapit</a>."
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:3
-#, fuzzy
 msgid "Forgot password"
-msgstr "Votre mot de passe"
+msgstr ""
 
 #: templates/web/base/auth/general.html:91
 #: templates/web/base/report/form/user_loggedout_password.html:24
@@ -2124,9 +2115,8 @@ msgstr "Modéré par division dans le délai d'un jour ouvrable"
 
 #: templates/web/base/admin/report_edit.html:188
 #: templates/web/base/admin/update_edit.html:86
-#, fuzzy
 msgid "Moderation history"
-msgstr "Modérer ce rapport"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:102
 #: templates/web/zurich/admin/stats/index.html:9
@@ -2170,9 +2160,8 @@ msgstr "Nom :"
 
 #: perllib/FixMyStreet/Cobrand/Rutland.pm:16
 #: perllib/FixMyStreet/Roles/ConfirmValidation.pm:24
-#, fuzzy
 msgid "Names are limited to %d characters in length."
-msgstr "Les mises à jour sont limitées à %s caractères de long. Merci de raccourcir votre texte"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:50
 msgid "Navigate to this problem"
@@ -2329,9 +2318,8 @@ msgid "Next"
 msgstr "Suivant"
 
 #: templates/web/base/report/form/user.html:5
-#, fuzzy
 msgid "Next:"
-msgstr "Suivant"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:1214
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:116
@@ -2353,9 +2341,8 @@ msgid "No"
 msgstr "Non"
 
 #: templates/web/base/report/form/user_loggedout_password.html:7
-#, fuzzy
 msgid "No account?"
-msgstr "Votre compte"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:84
 msgid "No area"
@@ -2641,9 +2628,8 @@ msgid "Phone number (optional)"
 msgstr "Téléphone (facultatif)"
 
 #: perllib/FixMyStreet/Roles/ConfirmValidation.pm:28
-#, fuzzy
 msgid "Phone numbers are limited to %s characters in length."
-msgstr "Les rapports sont limités à %s caractères de long. Merci de raccourcir votre texte"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:29
 msgid "Phone verified:"
@@ -3125,9 +3111,8 @@ msgid "Provide update as"
 msgstr "Fournir la mise à jour comme"
 
 #: templates/web/base/report/form/user_loggedout_by_email.html:61
-#, fuzzy
 msgid "Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports."
-msgstr "Un mot de passe n'est pas obligatoire, mais vous permettra de créer, mettre à jour et administrer vos rapports plus facilement."
+msgstr ""
 
 #: templates/web/base/report/form/user_loggedout_by_email.html:63
 msgid "Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
@@ -3432,9 +3417,8 @@ msgid "Reports are limited to %s characters in length. Please shorten your repor
 msgstr "Les rapports sont limités à %s caractères de long. Merci de raccourcir votre texte"
 
 #: templates/web/base/js/translation_strings.html:10
-#, fuzzy
 msgid "Reports are limited to {0} characters in length. Please shorten your report"
-msgstr "Les rapports sont limités à %s caractères de long. Merci de raccourcir votre texte"
+msgstr ""
 
 #: templates/web/zurich/admin/index-sdm.html:7
 msgid "Reports awaiting approval"
@@ -3805,9 +3789,8 @@ msgid "Sign in or create an account"
 msgstr "Connectez-vous ou créez un compte"
 
 #: templates/web/base/auth/general.html:80
-#, fuzzy
 msgid "Sign in with a password"
-msgstr "D&eacute;finir un mot de passe"
+msgstr ""
 
 #: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:73
 #: templates/web/zurich/auth/sign_out.html:1
@@ -4379,9 +4362,8 @@ msgstr "Il y a un problème avec votre combinaison email / mot de passe. Réessa
 
 #: templates/web/base/auth/_username_error.html:0
 #: templates/web/base/auth/_username_error.html:14
-#, fuzzy
 msgid "There was a problem with your login information."
-msgstr "Il y a un problème avec votre mise à jour. Réessayez s'il vous plaît."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:857
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:146
@@ -4402,14 +4384,12 @@ msgstr "Il y a un problème avec votre mise à jour. Voir s'il vous plaît plus 
 
 #: templates/web/base/report/form/private_details.html:13
 #: templates/web/base/report/new/councils_text_private.html:5
-#, fuzzy
 msgid "These details will be sent to the council, but will never be shown online without your permission."
-msgstr "Ceux-ci seront envoyés a l'administration, mais ne seront jamais affichés en ligne."
+msgstr ""
 
 #: templates/web/base/report/new/councils_text_private.html:3
-#, fuzzy
 msgid "These details will never be shown online without your permission."
-msgstr "Ceux-ci ne seront jamais affichés en ligne."
+msgstr ""
 
 #: templates/web/base/admin/open311-form-fields.html:3
 #: templates/web/base/admin/open311-form-fields.html:4
@@ -5317,9 +5297,8 @@ msgid "Your token has been generated"
 msgstr "Votre jeton a &eacute;t&eacute; g&eacute;n&eacute;r&eacute;"
 
 #: templates/web/base/report/update/form_user.html:6
-#, fuzzy
 msgid "Your update"
-msgstr "Vos mises à jour"
+msgstr ""
 
 #: templates/web/base/js/translation_strings.html:87
 msgid "Your update has been saved offline for submission when back online."
@@ -5425,14 +5404,12 @@ msgid "not the council's responsibility"
 msgstr "pas la responsabilit&eacute; de l&apos;administration"
 
 #: templates/web/base/auth/general.html:6
-#, fuzzy
 msgid "or <a href=\"%s\">create an account</a>"
-msgstr "Connectez-vous ou créez un compte"
+msgstr ""
 
 #: templates/web/base/auth/create.html:13
-#, fuzzy
 msgid "or <a href=\"%s\">sign in</a>"
-msgstr "Nouveaux problèmes pour <a href=\"%s\">%s</a>"
+msgstr ""
 
 #: templates/web/base/alert/index.html:40
 #: templates/web/base/around/postcode_form.html:27
@@ -5684,33 +5661,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "rapport"
 msgstr[1] "rapports"
-
-#~ msgid "<strong>No</strong> let me sign in by email"
-#~ msgstr "<strong>Non</strong>, laissez-moi m'authentifier par email :"
-
-#~ msgid "<strong>No</strong> let me sign in by email or text"
-#~ msgstr "<strong>Non</strong>, laissez-moi m&rsquo;authentifier par email or texte"
-
-#~ msgid "Edit other users' details"
-#~ msgstr "Modifier les détails des autres utilisateurs"
-
-#~ msgid "Enter a nearby UK postcode, street name and area, or asset name"
-#~ msgstr "Entrez un code postal britannique, le nom de la rue et de la région ou le nom du bien"
-
-#~ msgid "Keep me signed in on this computer"
-#~ msgstr "Se souvenir de moi sur cet ordinateur"
-
-#~ msgid "Now to submit your report&hellip;"
-#~ msgstr "Maintenant pour envoyer votre rapport&hellip;"
-
-#~ msgid "Now to submit your update&hellip;"
-#~ msgstr "Maintenant pour envoyer votre mise à jour&hellip;"
-
-#~ msgid "Private details"
-#~ msgstr "d&eacute;tails privés"
-
-#~ msgid "Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
-#~ msgstr "Fournir un nom et un mot de passe est optionnel, mais cela vous permettra de soumettre des problèmes, faire des mises à jour et gérer les rapports plus facilement."
-
-#~ msgid "Wrong location? Just click again on the map."
-#~ msgstr "Mauvais emplacement? Il suffit de cliquer à nouveau sur la carte."

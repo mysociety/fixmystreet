@@ -5,16 +5,14 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2018
-# jose antonio prado, 2018
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: 2018-09-06 20:57+0000\n"
-"Last-Translator: jose antonio prado, 2018\n"
+"PO-Revision-Date: 2018-12-21 13:37+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
 "Language-Team: Spanish (https://www.transifex.com/mysociety/teams/12067/es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -250,9 +248,8 @@ msgid "<strong>Yes</strong> I have a password"
 msgstr "<strong>Sí</strong>- tengo una contraseña"
 
 #: templates/web/base/report/new/form_user.html:8
-#, fuzzy
 msgid "About the problem"
-msgstr "Resuma el problema"
+msgstr ""
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Activate two-factor authentication"
@@ -897,9 +894,8 @@ msgid "Create a report"
 msgstr "Crear una notificación"
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:5
-#, fuzzy
 msgid "Create an account"
-msgstr "Iniciar sesión o crear una cuenta"
+msgstr ""
 
 #: templates/web/base/admin/contact-form.html:156
 #: templates/web/zurich/admin/contact-form.html:49
@@ -989,9 +985,8 @@ msgid "Default priority"
 msgstr "Prioridad por defecto"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:728
-#, fuzzy
 msgid "Default to creating reports/updates as the council"
-msgstr "Crear reportes/actualizaciones como el Ayuntamiento"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:93
 msgid "Defect type"
@@ -1156,9 +1151,8 @@ msgid "Edit report category"
 msgstr "Editar la categoría del reporte"
 
 #: templates/web/base/report/new/form_user.html:13
-#, fuzzy
 msgid "Edit report details"
-msgstr "Moderar detalles del reporte"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:719
 msgid "Edit report priority"
@@ -1173,9 +1167,8 @@ msgid "Edit users' details/search for their reports"
 msgstr "Editar detalles de usuarios/buscar sus reportes"
 
 #: templates/web/base/report/update/form_user.html:8
-#, fuzzy
 msgid "Edit your update"
-msgstr "Sus actualizaciones"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:0
 #: templates/web/base/admin/report_edit.html:15
@@ -1235,9 +1228,8 @@ msgid "Email alert deleted"
 msgstr "Borrada alerta de email"
 
 #: templates/web/base/auth/general.html:99
-#, fuzzy
 msgid "Email me a link or text me a code to sign in"
-msgstr "Haz clic en el enlace de ese correo electrónico para iniciar sesión."
+msgstr ""
 
 #: templates/web/base/auth/general.html:101
 msgid "Email me a link to sign in"
@@ -1527,9 +1519,8 @@ msgid "For more information, see <a href='https://fixmystreet.org/customising/fm
 msgstr "Para más información, vea <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>Cómo FixMyStreet usa Mapit</a>."
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:3
-#, fuzzy
 msgid "Forgot password"
-msgstr "Su contraseña"
+msgstr ""
 
 #: templates/web/base/auth/general.html:91
 #: templates/web/base/report/form/user_loggedout_password.html:24
@@ -2122,9 +2113,8 @@ msgstr "Moderado por el organismo durante el siguiente día laborable"
 
 #: templates/web/base/admin/report_edit.html:188
 #: templates/web/base/admin/update_edit.html:86
-#, fuzzy
 msgid "Moderation history"
-msgstr "Moderar este reporte"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:102
 #: templates/web/zurich/admin/stats/index.html:9
@@ -2168,9 +2158,8 @@ msgstr "Nombre:"
 
 #: perllib/FixMyStreet/Cobrand/Rutland.pm:16
 #: perllib/FixMyStreet/Roles/ConfirmValidation.pm:24
-#, fuzzy
 msgid "Names are limited to %d characters in length."
-msgstr "Las actualizaciones están limitadas a %s caracteres. Por favor acorte su actualización."
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:50
 msgid "Navigate to this problem"
@@ -2327,9 +2316,8 @@ msgid "Next"
 msgstr "Siguiente"
 
 #: templates/web/base/report/form/user.html:5
-#, fuzzy
 msgid "Next:"
-msgstr "Siguiente"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:1214
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:116
@@ -2351,9 +2339,8 @@ msgid "No"
 msgstr "No"
 
 #: templates/web/base/report/form/user_loggedout_password.html:7
-#, fuzzy
 msgid "No account?"
-msgstr "Su cuenta"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:84
 msgid "No area"
@@ -2637,9 +2624,8 @@ msgid "Phone number (optional)"
 msgstr "Número de teléfono (opcional)"
 
 #: perllib/FixMyStreet/Roles/ConfirmValidation.pm:28
-#, fuzzy
 msgid "Phone numbers are limited to %s characters in length."
-msgstr "Las notificaciones tienen una longitud máxima de %s. Por favor, acorte su notificación."
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:29
 msgid "Phone verified:"
@@ -3121,9 +3107,8 @@ msgid "Provide update as"
 msgstr ""
 
 #: templates/web/base/report/form/user_loggedout_by_email.html:61
-#, fuzzy
 msgid "Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports."
-msgstr "Proporcionar una contraseña es opcional, pero hacerlo le permitirá notificar y actualizar los problemas más fácilmente, así como administrar sus informes."
+msgstr ""
 
 #: templates/web/base/report/form/user_loggedout_by_email.html:63
 msgid "Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
@@ -3428,9 +3413,8 @@ msgid "Reports are limited to %s characters in length. Please shorten your repor
 msgstr "Las notificaciones tienen una longitud máxima de %s. Por favor, acorte su notificación."
 
 #: templates/web/base/js/translation_strings.html:10
-#, fuzzy
 msgid "Reports are limited to {0} characters in length. Please shorten your report"
-msgstr "Las notificaciones tienen una longitud máxima de %s. Por favor, acorte su notificación."
+msgstr ""
 
 #: templates/web/zurich/admin/index-sdm.html:7
 msgid "Reports awaiting approval"
@@ -3801,9 +3785,8 @@ msgid "Sign in or create an account"
 msgstr "Iniciar sesión o crear una cuenta"
 
 #: templates/web/base/auth/general.html:80
-#, fuzzy
 msgid "Sign in with a password"
-msgstr "Asignar contraseña"
+msgstr ""
 
 #: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:73
 #: templates/web/zurich/auth/sign_out.html:1
@@ -4374,9 +4357,8 @@ msgstr "Hubo un problema con su email/contraseña. Por favor, inténtelo de nuev
 
 #: templates/web/base/auth/_username_error.html:0
 #: templates/web/base/auth/_username_error.html:14
-#, fuzzy
 msgid "There was a problem with your login information."
-msgstr "Hubo un problema con su actualización. Por favor, inténtelo de nuevo."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:857
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:146
@@ -4397,14 +4379,12 @@ msgstr "Hubo problemas con su actualización. Por favor, vea más abajo."
 
 #: templates/web/base/report/form/private_details.html:13
 #: templates/web/base/report/new/councils_text_private.html:5
-#, fuzzy
 msgid "These details will be sent to the council, but will never be shown online without your permission."
-msgstr "Serán remitidos al ayuntamiento, pero no serán publicados en línea."
+msgstr ""
 
 #: templates/web/base/report/new/councils_text_private.html:3
-#, fuzzy
 msgid "These details will never be shown online without your permission."
-msgstr "No serán publicados en línea."
+msgstr ""
 
 #: templates/web/base/admin/open311-form-fields.html:3
 #: templates/web/base/admin/open311-form-fields.html:4
@@ -5315,9 +5295,8 @@ msgid "Your token has been generated"
 msgstr "Su token ha sido generado"
 
 #: templates/web/base/report/update/form_user.html:6
-#, fuzzy
 msgid "Your update"
-msgstr "Sus actualizaciones"
+msgstr ""
 
 #: templates/web/base/js/translation_strings.html:87
 msgid "Your update has been saved offline for submission when back online."
@@ -5423,14 +5402,12 @@ msgid "not the council's responsibility"
 msgstr "no es responsabilidad del ayuntamiento"
 
 #: templates/web/base/auth/general.html:6
-#, fuzzy
 msgid "or <a href=\"%s\">create an account</a>"
-msgstr "Iniciar sesión o crear una cuenta"
+msgstr ""
 
 #: templates/web/base/auth/create.html:13
-#, fuzzy
 msgid "or <a href=\"%s\">sign in</a>"
-msgstr "Nuevos problemas para <a href=\"%s\">%s</a>"
+msgstr ""
 
 #: templates/web/base/alert/index.html:40
 #: templates/web/base/around/postcode_form.html:27
@@ -5682,30 +5659,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] "reporte"
 msgstr[1] "reportes"
-
-#~ msgid "<strong>No</strong> let me sign in by email"
-#~ msgstr "<strong>No</strong>- permítanme registrarme por email"
-
-#~ msgid "<strong>No</strong> let me sign in by email or text"
-#~ msgstr "<strong>No</strong> quiero iniciar sesión a través de email o mensaje de texto"
-
-#~ msgid "Edit other users' details"
-#~ msgstr "Editar los detalles de otros usuarios"
-
-#~ msgid "Keep me signed in on this computer"
-#~ msgstr "Mantener mi sesión abierta en este ordenador"
-
-#~ msgid "Now to submit your report&hellip;"
-#~ msgstr "Ahora a enviar tu notificación&hellip;"
-
-#~ msgid "Now to submit your update&hellip;"
-#~ msgstr "Ahora a enviar tu notificación&hellip;"
-
-#~ msgid "Private details"
-#~ msgstr "Detalles privados"
-
-#~ msgid "Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
-#~ msgstr "Proporcionar un nombre y una contraseña es opcional, pero hacerlo le permitirá notificar y actualizar los problemas más fácilmente, así como administrar sus informes."
-
-#~ msgid "Wrong location? Just click again on the map."
-#~ msgstr "¿Ubicación incorrecta? Haga clic de nuevo en el mapa, en el lugar correcto."

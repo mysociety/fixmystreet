@@ -3,14 +3,16 @@
 # This file is distributed under the same license as the main FixMyStreet code.
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
-#, fuzzy
+# Translators:
+# mySociety <transifex@mysociety.org>, 2018
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2017\n"
+"PO-Revision-Date: 2018-12-21 13:37+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
 "Language-Team: Romanian (Romania) (https://www.transifex.com/mysociety/teams/12067/ro_RO/)\n"
 "Language: ro_RO\n"
 "MIME-Version: 1.0\n"
@@ -133,9 +135,8 @@ msgid "(closed)"
 msgstr "(închis)"
 
 #: templates/web/base/alert/_list.html:30
-#, fuzzy
 msgid "(covers roughly 200,000 people)"
-msgstr "(o distanță implicită ce acoperă în jur de 200 000 de locuitori)"
+msgstr ""
 
 #: templates/web/zurich/report/_item.html:19
 msgid "(fixed)"
@@ -163,9 +164,8 @@ msgid "(optional)"
 msgstr "(opțional)"
 
 #: templates/web/base/report/_item.html:73
-#, fuzzy
 msgid "(sent to all)"
-msgstr "(netrimis)"
+msgstr ""
 
 #: templates/web/base/report/_item.html:74
 msgid "(sent to both)"
@@ -183,9 +183,8 @@ msgid "-- Pick a category --"
 msgstr "-- Alege o categorie --"
 
 #: templates/web/base/report/new/category_extras_fields.html:18
-#, fuzzy
 msgid "-- Pick an option --"
-msgstr "-- Alege o categorie --"
+msgstr ""
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
@@ -298,9 +297,8 @@ msgid "Add new category"
 msgstr "Adaugă o categorie nouă"
 
 #: templates/web/base/admin/extra-metadata-form.html:82
-#, fuzzy
 msgid "Add option"
-msgstr "(opțional)"
+msgstr ""
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:7
@@ -553,9 +551,8 @@ msgid "Back to all reports"
 msgstr ""
 
 #: templates/web/base/admin/report_blocks.html:18
-#, fuzzy
 msgid "Ban user"
-msgstr "Adaugă utilizator"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:655
 #: perllib/FixMyStreet/Cobrand/Default.pm:743
@@ -740,9 +737,8 @@ msgid "Closed by council"
 msgstr ""
 
 #: templates/web/base/admin/report_edit.html:176
-#, fuzzy
 msgid "Closed to updates"
-msgstr "%s actualizări"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:38
 msgid "Co-ordinates:"
@@ -1153,9 +1149,8 @@ msgid "Edit users' details/search for their reports"
 msgstr ""
 
 #: templates/web/base/report/update/form_user.html:8
-#, fuzzy
 msgid "Edit your update"
-msgstr "%s actualizări"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:0
 #: templates/web/base/admin/report_edit.html:15
@@ -3704,9 +3699,8 @@ msgid "Show older"
 msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:85
-#, fuzzy
 msgid "Show older reports"
-msgstr "Rapoartele dvs."
+msgstr ""
 
 #: templates/web/base/report/_main.html:89
 msgid "Show photo"
@@ -5222,9 +5216,8 @@ msgid "Your token has been generated"
 msgstr ""
 
 #: templates/web/base/report/update/form_user.html:6
-#, fuzzy
 msgid "Your update"
-msgstr "Rapoartele dvs."
+msgstr ""
 
 #: templates/web/base/js/translation_strings.html:87
 msgid "Your update has been saved offline for submission when back online."
@@ -5326,9 +5319,8 @@ msgid "none"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:77
-#, fuzzy
 msgid "not the council's responsibility"
-msgstr "marcat ca nefiind responsabilitatea consiliului"
+msgstr ""
 
 #: templates/web/base/auth/general.html:6
 msgid "or <a href=\"%s\">create an account</a>"
@@ -5611,36 +5603,3 @@ msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
-
-#~ msgid "-- Pick a property type --"
-#~ msgstr "-- Alege un tip de proprietate --"
-
-#~ msgid "closed as a duplicate report"
-#~ msgstr "marcat ca raport duplicat"
-
-#~ msgid "marked as action scheduled"
-#~ msgstr "marcat ca acţiune planificată"
-
-#~ msgid "marked as an internal referral"
-#~ msgstr "marcat ca trimitere internă"
-
-#~ msgid "marked as closed"
-#~ msgstr "marcat ca închis"
-
-#~ msgid "marked as fixed"
-#~ msgstr "marcat ca rezolvat"
-
-#~ msgid "marked as in progress"
-#~ msgstr "marcat ca fiind în curs de desfăşurare"
-
-#~ msgid "marked as investigating"
-#~ msgstr "marcat ca fiind în curs de cercetare"
-
-#~ msgid "marked as no further action"
-#~ msgstr "marcat ca imposibil de rezolvat"
-
-#~ msgid "marked as planned"
-#~ msgstr "marcat ca planificat"
-
-#~ msgid "or"
-#~ msgstr "sau"

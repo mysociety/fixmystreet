@@ -3,14 +3,16 @@
 # This file is distributed under the same license as the main FixMyStreet code.
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
-#, fuzzy
+# Translators:
+# mySociety <transifex@mysociety.org>, 2018
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2017\n"
+"PO-Revision-Date: 2018-12-21 13:37+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
 "Language-Team: German (Germany) (https://www.transifex.com/mysociety/teams/12067/de_DE/)\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -162,9 +164,8 @@ msgid "(optional)"
 msgstr "(optional)"
 
 #: templates/web/base/report/_item.html:73
-#, fuzzy
 msgid "(sent to all)"
-msgstr "(gesendet an beide)"
+msgstr ""
 
 #: templates/web/base/report/_item.html:74
 msgid "(sent to both)"
@@ -182,9 +183,8 @@ msgid "-- Pick a category --"
 msgstr "-- W&auml;hlen Sie eine Kategorie --"
 
 #: templates/web/base/report/new/category_extras_fields.html:18
-#, fuzzy
 msgid "-- Pick an option --"
-msgstr "-- W&auml;hlen Sie eine Kategorie --"
+msgstr ""
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
@@ -245,9 +245,8 @@ msgid "<strong>Yes</strong> I have a password"
 msgstr "<strong>Ja</strong>, ich habe ein Passwort"
 
 #: templates/web/base/report/new/form_user.html:8
-#, fuzzy
 msgid "About the problem"
-msgstr "Eine Meldung erfassen"
+msgstr ""
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Activate two-factor authentication"
@@ -277,9 +276,8 @@ msgstr ""
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:7
-#, fuzzy
 msgid "Add email address"
-msgstr "Ihre eMail-Adresse"
+msgstr ""
 
 #: templates/web/base/admin/reportextrafields/index.html:24
 msgid "Add extra fields"
@@ -299,15 +297,13 @@ msgid "Add new category"
 msgstr "F&uuml;ge neue Kategorie hinzu"
 
 #: templates/web/base/admin/extra-metadata-form.html:82
-#, fuzzy
 msgid "Add option"
-msgstr "optional"
+msgstr ""
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:7
-#, fuzzy
 msgid "Add phone number"
-msgstr "(Keine Telefonnummer)"
+msgstr ""
 
 #: templates/web/base/report/_item.html:10
 #: templates/web/base/report/_item.html:16
@@ -391,9 +387,8 @@ msgid "All categories"
 msgstr "Alle Kategorien"
 
 #: templates/web/base/admin/reportextrafields/edit.html:26
-#, fuzzy
 msgid "All cobrands"
-msgstr "Alle Kategorien"
+msgstr ""
 
 #: templates/web/base/admin/reportextrafields/edit.html:47
 msgid "All languages"
@@ -435,9 +430,8 @@ msgstr "Anonym"
 
 #: templates/web/base/report/new/form_user_loggedin.html:22
 #: templates/web/base/report/update/form_user_loggedin.html:19
-#, fuzzy
 msgid "Anonymous user"
-msgstr "Anonym"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:130
 #: templates/web/base/admin/report_edit.html:199
@@ -516,9 +510,8 @@ msgid "Authorised staff users can be associated with the categories in which the
 msgstr ""
 
 #: templates/web/base/admin/templates.html:9
-#, fuzzy
 msgid "Auto Response"
-msgstr "Nicht verantwortlich"
+msgstr ""
 
 #: templates/web/base/admin/template_edit.html:80
 msgid "Auto-response:"
@@ -558,9 +551,8 @@ msgid "Back to all reports"
 msgstr ""
 
 #: templates/web/base/admin/report_blocks.html:18
-#, fuzzy
 msgid "Ban user"
-msgstr "Benutzer hinzufügen"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:655
 #: perllib/FixMyStreet/Cobrand/Default.pm:743
@@ -629,9 +621,8 @@ msgid "Category"
 msgstr "Kategorie"
 
 #: templates/web/base/dashboard/index.html:103
-#, fuzzy
 msgid "Category and State"
-msgstr "Kategorie"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1042
 msgid "Category changed from ‘%s’ to ‘%s’"
@@ -653,9 +644,8 @@ msgstr "Kategorie:"
 
 #: templates/web/base/my/my.html:41 templates/web/base/my/my.html:44
 #: templates/web/base/my/my.html:52 templates/web/base/my/my.html:57
-#, fuzzy
 msgid "Change"
-msgstr "E-Mail ändern"
+msgstr ""
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:3
@@ -670,9 +660,8 @@ msgstr "Passwort &auml;ndern"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:3
-#, fuzzy
 msgid "Change phone number"
-msgstr "(Keine Telefonnummer)"
+msgstr ""
 
 #: templates/web/base/admin/contact-form.html:80
 msgid "Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent."
@@ -748,9 +737,8 @@ msgid "Closed by council"
 msgstr ""
 
 #: templates/web/base/admin/report_edit.html:176
-#, fuzzy
 msgid "Closed to updates"
-msgstr "Aktualisierungen holen"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:38
 msgid "Co-ordinates:"
@@ -883,18 +871,16 @@ msgid "Count"
 msgstr "Anzahl"
 
 #: templates/web/base/admin/states/index.html:114
-#, fuzzy
 msgid "Create"
-msgstr "Erstellt"
+msgstr ""
 
 #: templates/web/base/email_sent.html:1
 msgid "Create a report"
 msgstr "Erfasse eine Meldung"
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:5
-#, fuzzy
 msgid "Create an account"
-msgstr "Melden Sie sich an oder erstellen Sie ein Konto"
+msgstr ""
 
 #: templates/web/base/admin/contact-form.html:156
 #: templates/web/zurich/admin/contact-form.html:49
@@ -939,14 +925,12 @@ msgid "Created:"
 msgstr "Erstellt:"
 
 #: templates/web/base/auth/change_password.html:40
-#, fuzzy
 msgid "Current password:"
-msgstr "Neues Passwort:"
+msgstr ""
 
 #: templates/web/base/auth/generate_token.html:46
-#, fuzzy
 msgid "Current token:"
-msgstr "Aktueller Status"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:92
 msgid "Currently grouped by %s"
@@ -982,9 +966,8 @@ msgid "Default"
 msgstr ""
 
 #: templates/web/base/admin/responsepriorities/edit.html:39
-#, fuzzy
 msgid "Default priority"
-msgstr "Neue Priorität"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:728
 msgid "Default to creating reports/updates as the council"
@@ -995,9 +978,8 @@ msgid "Defect type"
 msgstr ""
 
 #: templates/web/base/admin/user-alerts.html:15
-#, fuzzy
 msgid "Delete"
-msgstr "Gel&ouml;scht"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1197
 #: templates/web/base/admin/template_edit.html:91
@@ -1151,9 +1133,8 @@ msgid "Edit report category"
 msgstr ""
 
 #: templates/web/base/report/new/form_user.html:13
-#, fuzzy
 msgid "Edit report details"
-msgstr "Bitte geben Sie einiges Details an"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:719
 msgid "Edit report priority"
@@ -1168,9 +1149,8 @@ msgid "Edit users' details/search for their reports"
 msgstr ""
 
 #: templates/web/base/report/update/form_user.html:8
-#, fuzzy
 msgid "Edit your update"
-msgstr "Ihre Aktualisierungen"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:0
 #: templates/web/base/admin/report_edit.html:15
@@ -1218,9 +1198,8 @@ msgstr "E-Mail-Adresse"
 
 #: templates/web/base/report/form/user_loggedout_by_email.html:42
 #: templates/web/base/report/new/form_user_loggedin.html:60
-#, fuzzy
 msgid "Email address (optional)"
-msgstr "E-Mail-Adresse"
+msgstr ""
 
 #: templates/web/base/tokens/confirm_alert.html:6
 msgid "Email alert created"
@@ -1299,9 +1278,8 @@ msgid "Enabling this will suppress the error message that is normally emitted wh
 msgstr ""
 
 #: templates/web/base/dashboard/index.html:78
-#, fuzzy
 msgid "End Date"
-msgstr "Enddatum:"
+msgstr ""
 
 #: templates/web/base/admin/open311-form-fields.html:21
 msgid "Endpoint"
@@ -1326,9 +1304,8 @@ msgid "Enter a nearby street name and area"
 msgstr "Geben Sie eine Adresse an"
 
 #: perllib/FixMyStreet/Cobrand/Smidsy.pm:32
-#, fuzzy
 msgid "Enter a street, area, or landmark"
-msgstr "Geben Sie eine Adresse an"
+msgstr ""
 
 #: templates/web/base/index-steps.html:6
 msgid "Enter details of the problem"
@@ -1406,9 +1383,8 @@ msgstr ""
 #: perllib/FixMyStreet/Cobrand/Default.pm:679
 #: templates/web/base/admin/reportextrafields/edit.html:1
 #: templates/web/base/admin/reportextrafields/index.html:1
-#, fuzzy
 msgid "Extra Fields"
-msgstr "Zusätzliche Daten:"
+msgstr ""
 
 #: templates/web/base/admin/contact-form.html:159
 #: templates/web/base/admin/report_edit.html:129
@@ -1423,9 +1399,8 @@ msgid "Extra details"
 msgstr ""
 
 #: templates/web/zurich/admin/contact-form.html:22
-#, fuzzy
 msgid "Extra fields:"
-msgstr "Zusätzliche Daten:"
+msgstr ""
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1519,9 +1494,8 @@ msgid "For more information, see <a href='https://fixmystreet.org/customising/fm
 msgstr ""
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:3
-#, fuzzy
 msgid "Forgot password"
-msgstr "Ihr Passwort"
+msgstr ""
 
 #: templates/web/base/auth/general.html:91
 #: templates/web/base/report/form/user_loggedout_password.html:24
@@ -1600,14 +1574,12 @@ msgid "Graph of problem creation by status over time"
 msgstr ""
 
 #: templates/web/base/admin/contact-form.html:134
-#, fuzzy
 msgid "Group"
-msgstr "von %s"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:94
-#, fuzzy
 msgid "Group by %s"
-msgstr "von %s"
+msgstr ""
 
 #: templates/web/base/dashboard/index.html:99
 msgid "Group by:"
@@ -1634,9 +1606,8 @@ msgid "Help <strong>%s</strong> resolve your problem quicker, by providing some 
 msgstr ""
 
 #: templates/web/base/around/on_map_list_items.html:8
-#, fuzzy
 msgid "Here are some other nearby reports:"
-msgstr "Fotos von neuen Meldungen in der N&auml;he"
+msgstr ""
 
 #: templates/web/zurich/footer.html:11
 msgid "Hi %s"
@@ -1650,14 +1621,12 @@ msgid "Hidden"
 msgstr "Unsichtbar"
 
 #: templates/web/base/admin/extra-metadata-form.html:18
-#, fuzzy
 msgid "Hidden Field"
-msgstr "Unsichtbar"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:202
-#, fuzzy
 msgid "Hide all reports and updates"
-msgstr "Liste aller Meldungen"
+msgstr ""
 
 #: templates/web/base/report/_main.html:115
 msgid "Hide entire report"
@@ -1846,9 +1815,8 @@ msgid "Illegal feed selection"
 msgstr ""
 
 #: templates/web/base/admin/user_import.html:15
-#, fuzzy
 msgid "Import users"
-msgstr "Missbrauch melden"
+msgstr ""
 
 #: templates/web/base/admin/flagged.html:39
 msgid "In abuse table?"
@@ -1977,9 +1945,8 @@ msgid "List all reported problems"
 msgstr "Liste aller Meldungen"
 
 #: templates/web/base/around/on_map_list_items.html:18
-#, fuzzy
 msgid "Loading reports…"
-msgstr "Ihre Meldungen"
+msgstr ""
 
 #: templates/web/base/report/new/category_wrapper.html:9
 msgid "Loading..."
@@ -2023,9 +1990,8 @@ msgid "Log in with email"
 msgstr "Mit E-Mail anmelden"
 
 #: templates/web/base/js/translation_strings.html:74
-#, fuzzy
 msgid "Log in with email/text"
-msgstr "Mit E-Mail anmelden"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:200
 msgid "Log out of all sessions"
@@ -2236,9 +2202,8 @@ msgid "New password:"
 msgstr "Neues Passwort:"
 
 #: templates/web/base/auth/change_phone.html:38
-#, fuzzy
 msgid "New phone number:"
-msgstr "(Keine Telefonnummer)"
+msgstr ""
 
 #: templates/web/base/admin/responsepriorities/edit.html:4
 #: templates/web/base/admin/responsepriorities/list.html:34
@@ -2246,9 +2211,8 @@ msgid "New priority"
 msgstr "Neue Priorität"
 
 #: templates/web/base/admin/user-alerts.html:44
-#, fuzzy
 msgid "New problems for %s"
-msgstr "Neue Probleme auf FixMyStreet"
+msgstr ""
 
 #: templates/web/base/admin/user-alerts.html:42
 msgid "New problems for <a href=\"%s\">%s</a>"
@@ -2319,9 +2283,8 @@ msgid "Next"
 msgstr "Weiter"
 
 #: templates/web/base/report/form/user.html:5
-#, fuzzy
 msgid "Next:"
-msgstr "Weiter"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:1214
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:116
@@ -2343,9 +2306,8 @@ msgid "No"
 msgstr "Nein"
 
 #: templates/web/base/report/form/user_loggedout_password.html:7
-#, fuzzy
 msgid "No account?"
-msgstr "Konto bestätigen"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:84
 msgid "No area"
@@ -2525,9 +2487,8 @@ msgid "Open311 specification"
 msgstr "Open311-Spezifikation"
 
 #: templates/web/base/admin/extra-metadata-form.html:63
-#, fuzzy
 msgid "Options"
-msgstr "optional"
+msgstr ""
 
 #: templates/web/base/report/new/fill_in_details_form.html:8
 msgid "Or <a href=\"/\">search for a different location</a>"
@@ -2564,9 +2525,8 @@ msgid "Other categories"
 msgstr ""
 
 #: templates/web/base/reports/index.html:107
-#, fuzzy
 msgid "Other wards"
-msgstr "andere Gebiete:"
+msgstr ""
 
 #: templates/web/base/reports/index.html:120
 msgid "Overall average"
@@ -2605,14 +2565,12 @@ msgid "Permissions:"
 msgstr "Berechtigungen:"
 
 #: templates/web/base/admin/open311-form-fields.html:61
-#, fuzzy
 msgid "Permit blank updates"
-msgstr "Meldung aktualisieren"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:25
-#, fuzzy
 msgid "Phone Reporter:"
-msgstr "Gemeldet:"
+msgstr ""
 
 #: templates/web/base/auth/change_phone.html:36
 #: templates/web/base/report/new/form_user_loggedin.html:34
@@ -2631,9 +2589,8 @@ msgid "Phone numbers are limited to %s characters in length."
 msgstr ""
 
 #: templates/web/base/admin/user-form.html:29
-#, fuzzy
 msgid "Phone verified:"
-msgstr "Gemeldet:"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:143
 #: templates/web/base/admin/user-form.html:27 templates/web/base/my/my.html:47
@@ -2721,9 +2678,8 @@ msgstr "Bitte &uuml;berpr&uuml;fen Sie ob Ihre eMail-Adresse korrekt ist"
 #: perllib/FixMyStreet/DB/Result/User.pm:221
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:7
-#, fuzzy
 msgid "Please check your phone number is correct"
-msgstr "Bitte &uuml;berpr&uuml;fen Sie ob Ihre eMail-Adresse korrekt ist"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:315
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1003
@@ -2766,9 +2722,8 @@ msgstr "Bitte geben Sie eine Nachricht ein"
 #: perllib/FixMyStreet/DB/Result/User.pm:224
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:4
-#, fuzzy
 msgid "Please enter a mobile number"
-msgstr "Bitte geben Sie Ihre Telefonnummer ein"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1458
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1577
@@ -2807,9 +2762,8 @@ msgstr "Bitte geben Sie eine g&uuml;ltige eMail-Adresse an"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1462
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1562
-#, fuzzy
 msgid "Please enter a valid email or phone number"
-msgstr "Bitte geben Sie Ihre Telefonnummer ein"
+msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:374
 #: templates/web/base/js/translation_strings.html:9
@@ -2966,9 +2920,8 @@ msgid "Post"
 msgstr ""
 
 #: templates/web/base/alert/index.html:33
-#, fuzzy
 msgid "Postcode or street name and area"
-msgstr "Geben Sie eine Adresse an"
+msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:221
 msgid "Posted anonymously at %s"
@@ -3057,9 +3010,8 @@ msgid "Problems"
 msgstr "Meldungen"
 
 #: templates/web/base/alert/_list.html:22
-#, fuzzy
 msgid "Problems in an area"
-msgstr "Meldungen in der N&auml;he"
+msgstr ""
 
 #: templates/web/base/report/display_tools.html:22
 msgid "Problems nearby"
@@ -3074,9 +3026,8 @@ msgid "Problems recently reported fixed on FixMyStreet"
 msgstr "Meldungen, welche k&uuml;rzlich gel&ouml;st wurden"
 
 #: templates/web/base/alert/_list.html:29
-#, fuzzy
 msgid "Problems within %.1fkm of %s"
-msgstr "Meldungen innerhalb %s"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:855
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:141
@@ -3090,9 +3041,8 @@ msgid "Problems within %s ward"
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:264 perllib/FixMyStreet/Cobrand/UK.pm:276
-#, fuzzy
 msgid "Problems within %s ward, %s"
-msgstr "Meldungen innerhalb %s"
+msgstr ""
 
 #. ("First %s is the body name, second %s the site name")
 #: templates/web/base/reports/body.html:0
@@ -3235,9 +3185,8 @@ msgid "Recently updated"
 msgstr ""
 
 #: templates/web/base/report/_inspect.html:60
-#, fuzzy
 msgid "Reject report"
-msgstr "Bericht erneut senden"
+msgstr ""
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
@@ -3252,9 +3201,8 @@ msgid "Remove account details"
 msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:4
-#, fuzzy
 msgid "Remove field"
-msgstr "Von Seite entfernen"
+msgstr ""
 
 #: templates/web/base/admin/report_blocks.html:23
 msgid "Remove flag"
@@ -3305,9 +3253,8 @@ msgstr "Eine Meldung erfassen"
 
 #: templates/web/base/js/translation_strings.html:81
 #: templates/web/base/main_nav_items.html:4
-#, fuzzy
 msgid "Report a problem here"
-msgstr "Eine Meldung erfassen"
+msgstr ""
 
 #: templates/web/base/report/display_tools.html:10
 #: templates/web/base/report/display_tools.html:9
@@ -3317,9 +3264,8 @@ msgstr "Missbrauch melden"
 #: templates/web/base/js/translation_strings.html:82
 #: templates/web/base/main_nav_items.html:2
 #: templates/web/base/tokens/confirm_problem.html:40
-#, fuzzy
 msgid "Report another problem here"
-msgstr "Eine Meldung erfassen"
+msgstr ""
 
 #: templates/web/base/report/new/form_user_loggedin.html:18
 msgid "Report as"
@@ -3340,9 +3286,8 @@ msgid "Report your problem"
 msgstr ""
 
 #: templates/web/base/header_opengraph.html:4
-#, fuzzy
 msgid "Report, view, and discuss local street-related problems."
-msgstr "Melden sie M&auml;ngel an der Infrastruktur von Z&uuml;rich"
+msgstr ""
 
 #: templates/web/base/around/intro.html:1
 #: templates/web/zurich/around/intro.html:1
@@ -3434,9 +3379,8 @@ msgid "Reports awaiting approval"
 msgstr "Berichte warten auf Moderation"
 
 #: templates/web/base/alert/_list.html:54
-#, fuzzy
 msgid "Reports by destination"
-msgstr "Gemeldet von %s um %s"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:128
 msgid "Reports made by trusted users will be sent to the responsible body without being inspected first."
@@ -3455,9 +3399,8 @@ msgid "Reports saved offline."
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:284 perllib/FixMyStreet/Cobrand/UK.pm:296
-#, fuzzy
 msgid "Reports sent to %s"
-msgstr "Bericht auf %s"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:291 perllib/FixMyStreet/Cobrand/UK.pm:303
 msgid "Reports sent to %s, within %s ward"
@@ -3476,9 +3419,8 @@ msgid "Reputation threshold"
 msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:30
-#, fuzzy
 msgid "Required"
-msgstr "erforderlich"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:85
 msgid "Resend report"
@@ -3670,9 +3612,8 @@ msgid "Send extended Open311 statuses with service request updates"
 msgstr ""
 
 #: templates/web/base/admin/user-form.html:22
-#, fuzzy
 msgid "Send login email"
-msgstr "Mit E-Mail anmelden"
+msgstr ""
 
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:5
@@ -3703,9 +3644,8 @@ msgstr "Dienst:"
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:4
 #: templates/web/base/my/my.html:67
-#, fuzzy
 msgid "Set password"
-msgstr "Neues Passwort:"
+msgstr ""
 
 #: templates/web/base/report/_inspect.html:53
 msgid "Set to my current location"
@@ -3755,14 +3695,12 @@ msgid "Show name publicly?"
 msgstr "Name öffentlich anzeigen?"
 
 #: templates/web/base/pagination.html:12
-#, fuzzy
 msgid "Show older"
-msgstr "Alte anzeigen"
+msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:85
-#, fuzzy
 msgid "Show older reports"
-msgstr "Berichte suchen"
+msgstr ""
 
 #: templates/web/base/report/_main.html:89
 msgid "Show photo"
@@ -3805,9 +3743,8 @@ msgid "Sign in or create an account"
 msgstr "Melden Sie sich an oder erstellen Sie ein Konto"
 
 #: templates/web/base/auth/general.html:80
-#, fuzzy
 msgid "Sign in with a password"
-msgstr "Geben Sie ein Passwort ein"
+msgstr ""
 
 #: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:73
 #: templates/web/zurich/auth/sign_out.html:1
@@ -3896,9 +3833,8 @@ msgid "Staff:"
 msgstr ""
 
 #: templates/web/base/dashboard/index.html:74
-#, fuzzy
 msgid "Start Date"
-msgstr "Startdatum:"
+msgstr ""
 
 #: templates/web/base/admin/body.html:73
 #: templates/web/base/admin/category_edit.html:29
@@ -3925,9 +3861,8 @@ msgstr ""
 
 #: perllib/FixMyStreet/Script/Alerts.pm:102
 #: templates/web/base/report/_update_state.html:7
-#, fuzzy
 msgid "State changed to:"
-msgstr "&Auml;nderungen speichern"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:123
 #: templates/web/base/admin/update_edit.html:28
@@ -3941,9 +3876,8 @@ msgstr "Status:"
 #: perllib/FixMyStreet/Cobrand/Default.pm:649
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:423
 #: templates/web/base/admin/states/index.html:1
-#, fuzzy
 msgid "States"
-msgstr "Status"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:643
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:405
@@ -3963,9 +3897,8 @@ msgstr "Status"
 
 #: templates/web/base/report/_update_state.html:22
 #: templates/web/base/report/updates.html:16
-#, fuzzy
 msgid "Still open, via questionnaire"
-msgstr "Fragebogen absenden"
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:27
 #: templates/web/zurich/admin/report_edit.html:28
@@ -3977,9 +3910,8 @@ msgid "String"
 msgstr ""
 
 #: templates/web/base/report/new/category.html:38
-#, fuzzy
 msgid "Subcategory"
-msgstr "Unterkategorie: %s"
+msgstr ""
 
 #: templates/web/zurich/admin/index-dm.html:27
 msgid "Subdivision/Body"
@@ -4034,14 +3966,12 @@ msgid "Subscribe"
 msgstr "Abonnieren"
 
 #: templates/web/base/alert/_list.html:72
-#, fuzzy
 msgid "Subscribe by email"
-msgstr "Abonnieren"
+msgstr ""
 
 #: templates/web/base/admin/user-alerts.html:22
-#, fuzzy
 msgid "Subscribed:"
-msgstr "Abonnieren"
+msgstr ""
 
 #: templates/web/base/report/new/form_title.html:1
 msgid "Summarise the problem"
@@ -4070,9 +4000,8 @@ msgstr "Zusammenfassungsberichte"
 
 #: templates/web/base/admin/stats/index.html:7
 #: templates/web/base/dashboard/index.html:21
-#, fuzzy
 msgid "Summary statistics"
-msgstr "Zusammenfassungsberichte"
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:155
 msgid "Superuser:"
@@ -4182,9 +4111,8 @@ msgid "That report has been removed from FixMyStreet."
 msgstr "Diese Meldung wurde von Fix My Z&uuml;rich entfernt."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1986
-#, fuzzy
 msgid "That user has been logged out."
-msgstr "Diese Meldung wurde von Fix My Z&uuml;rich entfernt."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1993
 msgid "That user has been made anonymous on all reports and updates."
@@ -4335,9 +4263,8 @@ msgid "The user could not locate the problem on a map, but to see the area aroun
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:2032
-#, fuzzy
 msgid "The user has been sent a login email"
-msgstr "Diese Meldung wurde von Fix My Z&uuml;rich entfernt."
+msgstr ""
 
 #: templates/web/base/admin/user-form.html:10
 #: templates/web/base/admin/user-form.html:11
@@ -4371,9 +4298,8 @@ msgstr ""
 
 #: templates/web/base/auth/_username_error.html:0
 #: templates/web/base/auth/_username_error.html:14
-#, fuzzy
 msgid "There was a problem with your login information."
-msgstr "Es gab ein Problem mit Ihrer Aktualisierung. Bitte versuchen Sie es erneut."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:857
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:146
@@ -4514,9 +4440,8 @@ msgid "This report is currently marked as open."
 msgstr "Dieser Bericht ist aktuell als offen markiert."
 
 #: templates/web/base/report/display.html:58
-#, fuzzy
 msgid "This report is now closed to updates."
-msgstr "Dieser Bericht ist aktuell als offen markiert."
+msgstr ""
 
 #: perllib/FixMyStreet/Script/Reports.pm:90
 msgid "This web page also contains a photo of the problem, provided by the user."
@@ -4683,9 +4608,8 @@ msgid "Unknown problem ID"
 msgstr "Unbekannte Problemkennung"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:94
-#, fuzzy
 msgid "Unknown update ID"
-msgstr "Unbekannte Problemkennung"
+msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:25
 msgid "Unshortlisted"
@@ -4750,14 +4674,12 @@ msgid "Updated"
 msgstr "Aktualisiert"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:252
-#, fuzzy
 msgid "Updated by <strong>%s</strong> (%s) at %s"
-msgstr "Anmerkung: <strong>%s</strong>"
+msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:254
-#, fuzzy
 msgid "Updated by <strong>%s</strong> at %s"
-msgstr "Anmerkung: <strong>%s</strong>"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1382
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1498
@@ -4792,9 +4714,8 @@ msgid "Updates to this problem, %s"
 msgstr "Aktualisierungen für dieses Problem, %s"
 
 #: templates/web/base/admin/user_import.html:64
-#, fuzzy
 msgid "Usage notes"
-msgstr "Hinweise:"
+msgstr ""
 
 #: templates/web/base/admin/contact-form.html:43
 #: templates/web/base/admin/contact-form.html:44
@@ -4871,9 +4792,8 @@ msgstr ""
 
 #: templates/web/base/admin/report_edit.html:137
 #: templates/web/base/admin/update_edit.html:36
-#, fuzzy
 msgid "User:"
-msgstr "Benutzer"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:675
 #: perllib/FixMyStreet/Cobrand/Default.pm:737
@@ -4898,15 +4818,13 @@ msgstr ""
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:5
-#, fuzzy
 msgid "Verify email address"
-msgstr "Ihre eMail-Adresse"
+msgstr ""
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:5
-#, fuzzy
 msgid "Verify phone number"
-msgstr "Ihre Telefonnummer"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:36
 #: templates/web/base/admin/update_edit.html:18
@@ -4921,9 +4839,8 @@ msgid "View reports by ward"
 msgstr ""
 
 #: templates/web/base/reports/_ward-list.html:24
-#, fuzzy
 msgid "View wards"
-msgstr "andere Gebiete:"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:720
 msgid "View/Mark private reports"
@@ -5157,9 +5074,8 @@ msgid "You have located the problem at the point marked with a green pin on the 
 msgstr "Der gr&uml;ne Pin auf der Karte repr&auml;sentiert ihre Meldung. Falls dieser Ort nicht der Richtige ist, klicken Sie einfach nochmals am richtigen Ort auf die Karte."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:142
-#, fuzzy
 msgid "You have successfully added your phone number."
-msgstr "Sie haben Ihre E-Mail-Adresse erfolgreich bestätigt."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:158
 #: templates/web/zurich/tokens/confirm_problem.html:5
@@ -5168,14 +5084,12 @@ msgid "You have successfully confirmed your email address."
 msgstr "Sie haben Ihre E-Mail-Adresse erfolgreich bestätigt."
 
 #: templates/web/base/auth/change_phone.html:15
-#, fuzzy
 msgid "You have successfully confirmed your phone number."
-msgstr "Sie haben Ihre E-Mail-Adresse erfolgreich bestätigt."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:129
-#, fuzzy
 msgid "You have successfully removed your phone number."
-msgstr "Sie haben Ihre E-Mail-Adresse erfolgreich bestätigt."
+msgstr ""
 
 #: templates/web/base/report/display.html:25
 #: templates/web/base/report/new/login_success_form.html:3
@@ -5183,9 +5097,8 @@ msgid "You have successfully signed in; please check and confirm your details ar
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:164
-#, fuzzy
 msgid "You have successfully verified your phone number."
-msgstr "Sie haben Ihre E-Mail-Adresse erfolgreich bestätigt."
+msgstr ""
 
 #: templates/web/base/my/my.html:79
 msgid "You haven&rsquo;t created any reports yet.  <a href=\"%s\">Report a problem now.</a>"
@@ -5235,9 +5148,8 @@ msgstr "Ihre eMail-Adresse"
 #: templates/web/base/auth/create.html:35
 #: templates/web/base/auth/general.html:47
 #: templates/web/base/report/form/user_loggedout_email.html:3
-#, fuzzy
 msgid "Your email or mobile"
-msgstr "Ihre eMail-Adresse"
+msgstr ""
 
 #: templates/web/base/report/updates-sidebar-notes.html:3
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
@@ -5300,14 +5212,12 @@ msgid "Your shortlist"
 msgstr ""
 
 #: templates/web/base/auth/generate_token.html:8
-#, fuzzy
 msgid "Your token has been generated"
-msgstr "Ihr Passwort wurde ge&auml;ndert"
+msgstr ""
 
 #: templates/web/base/report/update/form_user.html:6
-#, fuzzy
 msgid "Your update"
-msgstr "Ihre Aktualisierungen"
+msgstr ""
 
 #: templates/web/base/js/translation_strings.html:87
 msgid "Your update has been saved offline for submission when back online."
@@ -5331,9 +5241,8 @@ msgid "a colon-separated list of permissions to grant that user, e.g. <code>cont
 msgstr ""
 
 #: templates/web/base/report/_inspect.html:20
-#, fuzzy
 msgid "admin"
-msgstr "Admin"
+msgstr ""
 
 #: templates/web/base/admin/category-checkboxes.html:7
 #: templates/web/base/admin/user-form.html:175
@@ -5414,9 +5323,8 @@ msgid "not the council's responsibility"
 msgstr ""
 
 #: templates/web/base/auth/general.html:6
-#, fuzzy
 msgid "or <a href=\"%s\">create an account</a>"
-msgstr "Melden Sie sich an oder erstellen Sie ein Konto"
+msgstr ""
 
 #: templates/web/base/auth/create.html:13
 msgid "or <a href=\"%s\">sign in</a>"
@@ -5504,9 +5412,8 @@ msgid "user not in abuse list"
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:2058
-#, fuzzy
 msgid "user removed from abuse list"
-msgstr "Von Seite entfernen"
+msgstr ""
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:3
@@ -5661,11 +5568,11 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: templates/email/default/inactive-account.html:18
-#, fuzzy, perl-format
+#, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] "Monat"
-msgstr[1] "Monat"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/email/bathnes/archive.html:25
 #, perl-format
@@ -5673,147 +5580,3 @@ msgid "report"
 msgid_plural "reports"
 msgstr[0] ""
 msgstr[1] ""
-
-#, fuzzy
-#~ msgid "Enter a nearby UK postcode, street name and area, or asset name"
-#~ msgstr "Geben Sie eine Adresse an"
-
-#~ msgid "Private details"
-#~ msgstr "Private Details"
-
-#, fuzzy
-#~ msgid "New"
-#~ msgstr "Neueste"
-
-#~ msgid "Password:"
-#~ msgstr "Passwort:"
-
-#~ msgid "Please enter your email address"
-#~ msgstr "Bitte geben Sie eine Ihre eMail-Adresse an"
-
-#~ msgid "Please write your update here"
-#~ msgstr "Bitte schreiben Sie hier Ihre Aktualisierung"
-
-#, fuzzy
-#~ msgid "Scheduled"
-#~ msgstr "Aktion geplant"
-
-#~ msgid "Yes I have a password"
-#~ msgstr "Ja, ich habe ein Passwort"
-
-#~ msgid "Category: %s"
-#~ msgstr "Kategorie: %s"
-
-#~ msgid "Extern"
-#~ msgstr "Extern"
-
-#~ msgid "In progress"
-#~ msgstr "In Bearbeitung"
-
-#~ msgid "Not contactable"
-#~ msgstr "Nicht kontaktierbar"
-
-#~ msgid "Planned"
-#~ msgstr "Geplant"
-
-#~ msgid "Subcategory: %s"
-#~ msgstr "Unterkategorie: %s"
-
-#~ msgid "Wish"
-#~ msgstr "Wunsch"
-
-#~ msgid "Email: %s"
-#~ msgstr "E-Mail: %s"
-
-#~ msgid "Name: %s"
-#~ msgstr "Name: %s"
-
-#~ msgid "This report was submitted anonymously"
-#~ msgstr "Dieser Bericht wurde anonym abgesendet"
-
-#~ msgid "14-30 days old"
-#~ msgstr "14-30 Tage alt"
-
-#~ msgid "7-14 days old"
-#~ msgstr "7-14 Tage alt"
-
-#~ msgid "By Date"
-#~ msgstr "Nach Datum"
-
-#~ msgid "Confirmed reports between %s and %s"
-#~ msgstr "Bestätigte Berichte zwischen %s und %s"
-
-#~ msgid "Hide old"
-#~ msgstr "Alte ausblenden"
-
-#~ msgid "Include unconfirmed reports"
-#~ msgstr "Unbestätigte Berichte miteinbeziehen"
-
-#~ msgid "Invalid end date"
-#~ msgstr "Ung&ultiges Enddatum"
-
-#~ msgid "Invalid start date"
-#~ msgstr "Ung&ultiges Startdatum"
-
-#~ msgid "Last 4 weeks"
-#~ msgstr "Letzte 4 Wochen"
-
-#~ msgid "Less than 7 days old"
-#~ msgstr "Weniger als 7 Tage alt"
-
-#~ msgid "No council"
-#~ msgstr "Kein Rat"
-
-#~ msgid "Year"
-#~ msgstr "Jahr"
-
-#~ msgid "%s ward, %s"
-#~ msgstr "%s Stadtteil, %s"
-
-#~ msgid "-- Pick a property type --"
-#~ msgstr "-- Wählen Sie eine Eigentumsart --"
-
-#~ msgid "Closed:"
-#~ msgstr "Geschlossen:"
-
-#~ msgid "Duplicate"
-#~ msgstr "Duplizieren"
-
-#~ msgid "In Progress"
-#~ msgstr "In Bearbeitung"
-
-#~ msgid "Investigating"
-#~ msgstr "Untersuchen"
-
-#~ msgid "No further action"
-#~ msgstr "Kann nicht behoben werden"
-
-#~ msgid "Please choose a property type"
-#~ msgstr "Bitte wählen Sie eine Eigentumsart"
-
-#~ msgid "Problems within the boundary of:"
-#~ msgstr "Probleme innerhalb der Grenze von:"
-
-#~ msgid "marked as action scheduled"
-#~ msgstr "als Aktion geplant markiert"
-
-#~ msgid "marked as closed"
-#~ msgstr "als geschlossen markiert"
-
-#~ msgid "marked as fixed"
-#~ msgstr "als gel&ouml;st markiert"
-
-#~ msgid "marked as in progress"
-#~ msgstr "als in Bearbeitung markiert"
-
-#~ msgid "marked as investigating"
-#~ msgstr "als untersuchend markiert"
-
-#~ msgid "marked as planned"
-#~ msgstr "als geplant markiert"
-
-#~ msgid "or"
-#~ msgstr "oder"
-
-#~ msgid "reopened"
-#~ msgstr "erneut geöffnet"

@@ -3,14 +3,16 @@
 # This file is distributed under the same license as the main FixMyStreet code.
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
-#, fuzzy
+# Translators:
+# mySociety <transifex@mysociety.org>, 2018
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Gábor Auth <auth.gabor@gmail.com>, 2018\n"
+"PO-Revision-Date: 2018-12-21 13:37+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
 "Language-Team: Hungarian (Hungary) (https://www.transifex.com/mysociety/teams/12067/hu_HU/)\n"
 "Language: hu_HU\n"
 "MIME-Version: 1.0\n"
@@ -5279,9 +5281,8 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr ""
 
 #: templates/web/base/report/new/form_title.html:2
-#, fuzzy
 msgid "e.g. ‘10 inch pothole on Example St, near post box’"
-msgstr "tenyérnyi kátyú a Kossuth utcában a postaláda mellett"
+msgstr ""
 
 #: templates/web/base/report/new/form_report.html:58
 msgid "e.g. ‘This pothole has been here for two months and…’"
