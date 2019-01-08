@@ -1,0 +1,148 @@
+@import "colours";
+@import "../sass/layout";
+
+#site-logo {
+    margin: 0; // reset the centering we introduced in the mobile view
+}
+
+#site-header {
+    padding-top: 1.25em;
+    padding-bottom: 1.25em;
+}
+
+#front-main {
+    background-color: $westminster_grey;
+    padding: 50px 0;
+
+    label {
+        font-size: 18px;
+    }
+
+    h1 {
+        font-size: 40px;
+    }
+
+    #postcodeForm {
+        overflow: visible;
+        margin: 0;
+
+        div {
+            margin: 0;
+            overflow: visible;
+
+            input#pc {
+                float: none;
+                height: auto;
+                width: 100%;
+                padding: 10px 22px;
+            }
+
+            input#sub {
+                float: none;
+                height: auto;
+                width: 0;
+                padding-top: 0;
+            }
+        }
+    }
+
+    #front-main-container {
+        padding: 0 1em;
+    }
+}
+
+#front-main a#geolocate_link {
+    color: $westminster-blue;
+}
+
+body.mappage {
+    #site-header {
+        box-sizing: border-box; // count padding as part of height, so border-bottom is visible
+        padding-top: 18px; // 1.25em minus 3px, to visually compensate for 3px border-bottom
+    }
+
+    .nav-wrapper {
+        top: -3px; // to visually compensate for 3px border-bottom on #site-header
+    }
+
+    .westminster-footer {
+        display: none;
+    }
+}
+
+.nav-menu--main {
+    li {
+        color: $westminster_navy;
+    }
+
+    a, span, a:visited {
+        padding: 0.25em 0.5em;
+        margin: 0.5em 0.25em;
+        color: inherit;
+        font-weight: bold;
+    }
+
+    a {
+        &:hover,
+        &:focus {
+            background: transparent;
+            color: inherit;
+        }
+    }
+
+    // Make it look unclickable (because it is).
+    span.report-a-problem-btn:hover {
+        color: inherit;
+        cursor: default;
+    }
+
+    // Make it not look like a button any more.
+    a.report-a-problem-btn,
+    a.report-a-problem-btn:hover {
+        color: inherit;
+        background: transparent;
+        padding: 0.25em 0.5em;
+        margin: 0.5em 0.25em;
+    }
+}
+
+.big-green-banner {
+    color: $westminster-black;
+    background: $col_click_map inline-image("../westminster/images/chevron-black-right.svg") $right center no-repeat;
+
+    .ie8 & {
+        background-image: url(/cobrands/westminster/images/chevron-black-right.png);
+    }
+}
+
+.problem-header h1 {
+    font-weight: bold;
+}
+
+.westminster-footer {
+    text-align: inherit;
+}
+
+.westminster-footer-logo {
+    a {
+        $image-width: 200px;
+        $image-height: 49px;
+        float: right;
+        margin-top: 70px;
+        width: $image-width;
+        padding-top: $image-height;
+        background-size: $image-width $image-height;
+    }
+}
+
+.westminster-site-links {
+    margin-top: 0;
+
+    li {
+        margin-bottom: 0.5em;
+    }
+}
+
+.westminster-tertiary-links {
+    text-align: center;
+}
