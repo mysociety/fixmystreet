@@ -1,0 +1,356 @@
+#!/usr/bin/env perl
+
+use warnings;
+use v5.14;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet;
+use FixMyStreet::DB::Factories;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'empty', "Empty all tables of the database first" ],
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+FixMyStreet::DB::Factories->setup($opt);
+
+# Westminster City Council https://mapit.mysociety.org/area/2504.html
+my $area_id = 2504;
+
+my $group_drainage = [
+    'Drainage or Surface water',
+];
+my $group_flyposting = [
+    'Flyposting',
+    'Stickers',
+    'Graffiti',
+];
+my $group_noise = [
+    'Aircraft',
+    'Basement construction',
+    'Birds',
+    'Building site',
+    'Burglar or fire alarms',
+    'Buskers',
+    'Car alarm',
+    'Crossrail or Tideway construction',
+    'Dogs barking or animal noise',
+    'Noise from a business',
+    'Noise from a home',
+    'Noise in the street',
+    'Underground tube trains or stations',
+];
+
+# Despite appearances, this will create a new Body every time,
+# because it uses the `key_field` of `id` (see Factories.pm) to
+# find existing bodies, and we’re not providing an `id` here.
+# I guess it makes sense, because you might want a single MapIt
+# area to be covered by multiple administrative bodies.
+my $body = FixMyStreet::DB::Factory::Body->find_or_create({
+    area_id => $area_id,
+    categories => [ @$group_drainage, @$group_flyposting, @$group_noise ],
+});
+
+say "Found/created body " . $body->name . " for MapIt area ID " . $area_id;
+
+my $yes_no_list = [
+    { 'name' => 'Yes', 'key' => 'yes' },
+    { 'name' => 'No', 'key' => 'no' },
+];
+
+for my $cat (@$group_drainage) {
+    my $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $body,
+        category => $cat
+    });
+    $child_cat->set_extra_fields(
+        {
+            description => 'Note: Please report dangerous issues by telephone on 0207 641 2000.',
+            hint => 'For example where there is a danger of causing serious harm to the public or significant damage to property, including a missing drain cover or immediate flooding to a property.',
+            code => 'danger',
+            required => 'false',
+            variable => 'false', # set 'true' to show data input
+            datatype => 'string',
+        },
+        {
+            description => 'What is the problem with the drain?',
+            code => 'drain_problem_type',
+            required => 'false',
+            variable => 'true',
+            datatype => 'singlevaluelist',
+            values => [
+                { 'name' => 'Burst water main', 'key' => 'burst' },
+                { 'name' => 'Blocked drain', 'key' => 'blocked' },
+                { 'name' => 'Flooding from a blocked drain', 'key' => 'flooded' },
+                { 'name' => 'Smelly drain', 'key' => 'smelly' },
+                { 'name' => 'Broken drain cover', 'key' => 'broken' },
+                { 'name' => 'Missing drain cover', 'key' => 'missing' },
+                { 'name' => 'Rats, flies or cockroaches', 'key' => 'vermin' },
+            ],
+        },
+        {
+            description => 'What type of customer are you?',
+            code => 'customer_type',
+            required => 'false',
+            variable => 'true',
+            datatype => 'singlevaluelist',
+            values => [
+                { 'name' => 'Member of the public', 'key' => 'public' },
+                { 'name' => 'Company', 'key' => 'company' },
+                { 'name' => 'Police', 'key' => 'police' },
+                { 'name' => 'Emergency services', 'key' => 'emergency' },
+                { 'name' => 'Council officer', 'key' => 'officer' },
+                { 'name' => 'Council contractor', 'key' => 'contractor' },
+            ],
+        },
+    );
+    $child_cat->update;
+}
+
+say "Created drainage category";
+
+for my $cat (@$group_flyposting) {
+    my $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $body,
+        category => $cat
+    });
+    $child_cat->set_extra_metadata( group => 'Graffiti or Flyposting' );
+    $child_cat->set_extra_fields(
+        {
+            description => 'Surface type',
+            code => 'surface_type',
+            required => 'false',
+            variable => 'true', # set 'false' to hide data input
+            datatype => 'singlevaluelist',
+            values => [
+                { 'name' => 'Brick', 'key' => 'brick' },
+                { 'name' => 'Concrete', 'key' => 'concrete' },
+                { 'name' => 'Glass', 'key' => 'glass' },
+                { 'name' => 'Metal', 'key' => 'metal' },
+                { 'name' => 'Plastic', 'key' => 'plastic' },
+                { 'name' => 'Stone', 'key' => 'stone' },
+                { 'name' => 'Tarmac', 'key' => 'tarmac' },
+                { 'name' => 'Other / not known', 'key' => 'other' },
+            ],
+        },
+        {
+            description => 'Size',
+            code => 'size',
+            required => 'false',
+            variable => 'true',
+            datatype => 'singlevaluelist',
+            values => [
+                { 'name' => 'less than 1m sq', 'key' => 'small' },
+                { 'name' => '1m sq to 3m sq', 'key' => 'medium' },
+                { 'name' => '3m sq +', 'key' => 'large' },
+            ],
+        },
+        {
+            description => 'Is it offensive?',
+            code => 'offensive',
+            required => 'false',
+            variable => 'true',
+            datatype => 'singlevaluelist',
+            values => $yes_no_list,
+        },
+    );
+    $child_cat->update;
+}
+
+say "Created flyposting categories";
+
+my $happening_now = {
+    description => 'Is the noise happening now?',
+    code => 'now',
+    required => 'false',
+    variable => 'true',
+    datatype => 'singlevaluelist',
+    values => $yes_no_list,
+};
+
+for my $cat (@$group_noise) {
+    my $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $body,
+        category => $cat
+    });
+    $child_cat->set_extra_metadata( group => 'Noise' );
+
+    if ( $cat eq 'Aircraft' ) {
+        $child_cat->set_extra_fields(
+            {
+                description => 'Please contact the Civil Aviation Authority, or Ministry of Defence if it’s a military aircraft.',
+                code => 'go_away',
+                required => 'false',
+                variable => 'false', # set 'true' to show data input
+                datatype => 'string',
+            },
+        );
+
+    } elsif ( $cat eq 'Basement construction') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'Note: Building work is only allowed from 8am to 6pm on weekdays, and 8am to 1pm on Saturdays. Building work that is extremely noisy, such as demolition, is not allowed in residential areas at weekends. Builders need special permission from the council to work outside these times.',
+                code => 'building_permits',
+                required => 'false',
+                variable => 'false', # set 'true' to show data input
+                datatype => 'string',
+            },
+            {
+                description => 'What is the name of the person responsible?',
+                code => 'responsible',
+                required => 'false',
+                variable => 'true',
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Birds') {
+        $child_cat->set_extra_fields(
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Building site') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'What is the name of the business making the noise?',
+                code => 'responsible',
+                required => 'false',
+                variable => 'true',
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Burglar or fire alarms') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'What is the name of the person or business making the noise?',
+                code => 'responsible',
+                required => 'false',
+                variable => 'true',
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Busking') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'Note: Busking is not licensed in Westminster, nor is it illegal. If a busker is behaving unreasonably the Council can help.',
+                code => 'danger',
+                required => 'false',
+                variable => 'false', # set 'true' to show data input
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Car alarm') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'Vehicle registration',
+                code => 'vehicle_registration',
+                required => 'false',
+                variable => 'true',
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Crossrail or Tideway construction') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'Please contact Crossrail or Tideway directly.',
+                code => 'go_away',
+                required => 'false',
+                variable => 'false', # set 'true' to show data input
+                datatype => 'string',
+            },
+        );
+
+    } elsif ( $cat eq 'Dogs barking or animal noise') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'Note: Animal cruelty should be reported to the RSPCA.',
+                code => 'rspca',
+                required => 'false',
+                variable => 'false', # set 'true' to show data input
+                datatype => 'string',
+            },
+            {
+                description => 'What is the name of the person or business making the noise?',
+                code => 'responsible',
+                required => 'false',
+                variable => 'true',
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Noise from a business') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'What is the name of the business making the noise?',
+                code => 'responsible',
+                required => 'false',
+                variable => 'true',
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Noise from a home') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'What is the name of the person responsible?',
+                code => 'responsible',
+                required => 'false',
+                variable => 'true',
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Noise in the street') {
+        $child_cat->set_extra_fields(
+            $happening_now,
+        );
+
+    } elsif ( $cat eq 'Underground tube trains or stations') {
+        $child_cat->set_extra_fields(
+            {
+                description => 'TFL are a Statutory Undertaker and you should contact them first to investigate your complaint. If they have failed to resolve your complaint please continue with this form, including your TFL reference number, and we will look into this for you further.',
+                code => 'tfl',
+                required => 'false',
+                variable => 'false', # set 'true' to show data input
+                datatype => 'string',
+            },
+            $happening_now,
+        );
+
+    }
+
+    $child_cat->update;
+}
+
+say "Created noise categories";
+
+foreach (
+    { name => 'Wizard of Oz', email_verified => 1, email => 'admin@example.org', is_superuser => 't' },
+    { name => 'Norma User', email_verified => 1, email => 'user@example.org' },
+) {
+    FixMyStreet::DB::Factory::User->find_or_create($_);
+    say "Found/created user $_->{email}";
+}
