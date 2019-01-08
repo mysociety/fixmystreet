@@ -1,0 +1,18 @@
+@import "../sass/h5bp";
+@import "colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+#site-logo {
+    background-position: 0 0;
+    background-size: 146px 20px;
+    height: 20px;
+    width: 146px;
+    @include svg-background-image('images/site-logo-mobile');
+}
+
+#site-header {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}

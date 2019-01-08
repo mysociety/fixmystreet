@@ -1,0 +1,104 @@
+@import "colours";
+@import "../sass/layout";
+
+#site-logo {
+    background-position: 0 0;
+    background-size: 233px 32px;
+    height: 32px;
+    width: 233px;
+    @include svg-background-image('images/site-logo');
+}
+
+#site-header {
+    background: $westminster_navy linear-gradient(to right, $westminster_black 15%, $westminster_navy 50%, $westminster_black 85%) 0 0 repeat;
+}
+
+#front-main {
+    padding: 0;
+    background: transparent url(images/collection-default-bg.jpg) no-repeat center center;
+    background-size: cover;
+    overflow: hidden;
+    text-align: left;
+
+    h1, #postcodeForm {
+        position: relative;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+
+        &:before, &:after {
+            content: '';
+            display: block;
+            width: 1000px;
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            left: -1000px;
+        }
+
+        &:after {
+            left: auto;
+            right: -1000px;
+        }
+    }
+
+    h1 {
+        font-size: 40px;
+        margin: 60px 0 15px;
+        padding: 30px 0;
+        color: $primary;
+    }
+
+    #postcodeForm {
+        overflow: visible;
+        margin: 17px 0 60px 0;
+        padding: 10px 0;
+
+        div {
+            margin: 0 0 0.5em 0;
+        }
+    }
+
+    .form-hint {
+        color: inherit;
+    }
+
+    #postcodeForm div input#sub {
+        background-color: $primary;
+        color: #000;
+
+        &:hover,
+        &:focus {
+            background-color: lighten($primary, 10%);
+        }
+    }
+}
+
+.nav-menu--main {
+    a, span {
+        padding: 0.25em 0.5em;
+        margin: 0.5em 0.25em;
+        border-radius: 0.25em;
+    }
+
+    a {
+        &:hover,
+        &:focus {
+            background: transparent;
+            text-decoration: underline;
+        }
+    }
+
+    a.report-a-problem-btn {
+        text-decoration: none;
+    }
+}
+
+.big-green-banner {
+    color: $westminster-black;
+    background: $col_click_map inline-image("../westminster/images/chevron-black-right.svg") $right center no-repeat;
+
+    .ie8 & {
+        background-image: url(/cobrands/westminster/images/chevron-black-right.png);
+    }
+}
