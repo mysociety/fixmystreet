@@ -7,7 +7,6 @@
 # mySociety <transifex@mysociety.org>, 2018
 # Jon Kristensen <info@jonkri.com>, 2018
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
