@@ -1,0 +1,12 @@
+[% UNLESS c.cobrand.updates_disallowed(problem) %]
+    [% IF two_column_sidebar %]
+        <button class="btn btn--provide-update js-provide-update hidden-nojs">[% loc('Provide an update') %]</button>
+        <div class="hidden-js">
+    [% END %]
+        [% INCLUDE 'report/update-form.html' %]
+    [% IF two_column_sidebar %]
+        </div>
+    [% END %]
+[% ELSE %]
+    [% TRY %][% INCLUDE 'report/_updates_disallowed_message.html' %][% CATCH file %][% END %]
+[% END %]
