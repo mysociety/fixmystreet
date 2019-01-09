@@ -97,7 +97,7 @@ sub report_new : Path : Args(0) {
     # work out the location for this report and do some checks
     # Also show map if we're just updating the filters
     return $c->forward('redirect_to_around')
-      if !$c->forward('determine_location') || $c->get_param('filter_update');
+      if !$c->forward('determine_location') || $c->get_param('pc_override') || $c->get_param('filter_update');
 
     # create a problem from the submitted details
     $c->stash->{template} = "report/new/fill_in_details.html";
@@ -1556,6 +1556,12 @@ sub redirect_to_around : Private {
     };
     foreach (qw(pc zoom)) {
         $params->{$_} = $c->get_param($_);
+    }
+
+    if (my $pc_override = $c->get_param('pc_override')) {
+        delete $params->{lat};
+        delete $params->{lon};
+        $params->{pc} = $pc_override;
     }
 
     my $csv = Text::CSV->new;

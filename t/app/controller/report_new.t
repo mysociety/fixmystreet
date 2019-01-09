@@ -24,10 +24,15 @@ subtest "test that bare requests to /report/new get redirected" => sub {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok('/report/new?pc=SW1A%201AA');
+        is $mech->uri->path, '/around', "went to /around";
+        is_deeply { $mech->uri->query_form }, { pc => 'SW1A 1AA' },
+          "pc correctly transferred";
+
+        $mech->get_ok('/report/new?pc_override=SW1A%201AA&latitude=51&longitude=-2');
+        is $mech->uri->path, '/around', "went to /around";
+        is_deeply { $mech->uri->query_form }, { pc => 'SW1A 1AA' },
+          "pc correctly transferred, lat/lon gone";
     };
-    is $mech->uri->path, '/around', "went to /around";
-    is_deeply { $mech->uri->query_form }, { pc => 'SW1A 1AA' },
-      "pc correctly transferred";
 };
 
 my %body_ids;
