@@ -82,6 +82,10 @@ for my $cat ('Dropped Kerbs', 'Skips') {
         category => $cat
     });
     $child_cat->set_extra_metadata( group => 'Licensing' );
+    $child_cat->set_extra_fields(
+        { description => 'Start date', code => 'start_date', datatype => 'string', fieldtype => 'date' },
+        { description => 'End date', code => 'end_date', datatype => 'string', fieldtype => 'date' }
+    );
     $child_cat->update;
 }
 
