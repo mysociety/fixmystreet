@@ -7,6 +7,8 @@ Your report to [% report.body %] has been logged on [% site_name %].
 [% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
 Please note that [% c.cobrand.council_name %] is not responsible for this type
 of report, so it will instead be sent to [% report.body %].
+[% ELSE %]
+[% TRY %][% INCLUDE '_council_reference.txt' problem=report %][% CATCH file %][% END %]
 [% END %]
 
 It is available to view at:
