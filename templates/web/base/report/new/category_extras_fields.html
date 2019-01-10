@@ -21,7 +21,7 @@
             [% END %]
           </select>
         [% ELSE %]
-          <input class="form-control" type="text" value="[% report_meta.$meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+          <input class="form-control" type="[% meta.fieldtype OR 'text' %]" value="[% report_meta.$meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
         [% END %]
       [% END %]
 
