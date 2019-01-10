@@ -154,7 +154,7 @@ sub _recent {
             # Need to reattach schema so that confirmed column gets reinflated.
             $probs->[0]->result_source->schema( $rs->result_source->schema ) if $probs->[0];
             # Catch any cached ones since hidden
-            $probs = [ grep { ! $_->is_hidden } @$probs ];
+            $probs = [ grep { $_->photo && ! $_->is_hidden } @$probs ];
         } else {
             $probs = [ $rs->search( $query, $attrs )->all ];
             Memcached::set($key, $probs, 3600);

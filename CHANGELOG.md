@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes
+        - Check cached reports do still have photos before being shown.
 
 * v2.5 (21st December 2018)
     - Front end improvements:
