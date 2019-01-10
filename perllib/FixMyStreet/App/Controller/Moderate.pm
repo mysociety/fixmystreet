@@ -227,6 +227,7 @@ sub moderate_boolean : Private {
         $c->stash->{history}->insert;
         if ($thing eq 'photo') {
             $object->update({ $thing => $new ? $original : undef });
+            $object->get_photoset->delete_cached;
         } else {
             $object->update({ $thing => $new });
         }
