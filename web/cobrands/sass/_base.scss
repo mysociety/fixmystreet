@@ -1843,12 +1843,11 @@ label .muted {
 }
 
 .description_tips {
-  @include clearfix;
+  display: flex;
 
   ul {
-    width: 49%;
+    flex: 1;
     margin: 0;
-    float: $left;
     font-size: 14px;
     line-height: 20px;
   }
@@ -1866,7 +1865,6 @@ label .muted {
   }
 
   .dont {
-    float: $right;
     color: #881111;
 
     li {
