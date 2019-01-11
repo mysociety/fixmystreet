@@ -263,7 +263,7 @@ sub _add_meta_to_contact_cobrand_overrides {
             required => 'false',
             variable => 'true',
             automated => 'hidden_field',
-        } if $self->_current_service->{service_code} eq 'LIGHTS';
+        } if $self->_current_service->{service_code} eq 'SLRS';
     } elsif ($self->_current_body->name eq 'Warwickshire County Council') {
         $contact->set_extra_metadata( id_field => 'external_id');
     }
