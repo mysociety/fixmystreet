@@ -1,0 +1,17 @@
+Subject: Ditt inaktiva konto på [% site_name %]
+
+Hej [% user.name %],
+
+Ditt konto på [% site_name %] har varit inaktivt i [% email_from %]
+[% nget('month', 'months', email_from) %], och vi tar automatiskt bort
+konton som har varit inaktiva i [% anonymize_from %]
+[% nget('month', 'months', anonymize_from) %]. Om du vill behålla ditt
+konto, vänligen logga in för att hålla kontot aktivt:
+
+[% url %]
+
+Tack för att du använder [% site_name %]!
+
+[% INCLUDE 'signature.txt' %]
+
+Det går inte att svara på detta mail.

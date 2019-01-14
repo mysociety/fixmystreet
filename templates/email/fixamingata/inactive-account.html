@@ -1,0 +1,26 @@
+[%
+
+email_summary = "Ditt inaktiva konto på " _ site_name;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Ditt inaktiva konto</h1>
+  <p style="[% p_style %]">
+Ditt konto på [% site_name %] har varit inaktivt i [% email_from %]
+[% nget('month', 'months', email_from) %], och vi tar automatiskt bort
+konton som har varit inaktiva i [% anonymize_from %]
+[% nget('month', 'months', anonymize_from) %]. Om du vill behålla ditt
+konto, vänligen logga in för att hålla kontot aktivt:
+</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% url %]">Besök [% site_name %]</a>
+  </p>
+  <p style="[% p_style %]">Tack för att du använder [% site_name %]!</p>
+
+[% INCLUDE '_email_bottom.html' %]
