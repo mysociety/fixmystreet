@@ -1284,10 +1284,9 @@ sub process_confirmation : Private {
     }
 
     # We have an unconfirmed problem
+    $problem->confirm;
     $problem->update(
         {
-            state      => 'confirmed',
-            confirmed  => \'current_timestamp',
             lastupdate => \'current_timestamp',
         }
     );
