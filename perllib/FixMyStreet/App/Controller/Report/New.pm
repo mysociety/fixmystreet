@@ -1454,7 +1454,7 @@ sub generate_map : Private {
                 latitude  => $latitude,
                 longitude => $longitude,
                 draggable => 1,
-                colour    => 'green', # 'yellow',
+                colour    => $c->cobrand->pin_new_report_colour,
             } ],
         );
     }
