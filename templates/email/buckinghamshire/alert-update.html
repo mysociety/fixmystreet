@@ -19,9 +19,9 @@ INCLUDE '_email_top.html';
   [% end_padded_box %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
-    <h2 style="[% h2_style %]">[% title | html %]</h2>
+    <h2 style="[% h2_style %]">[% title %]</h2>
     <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
-    [%~ INCLUDE '_council_reference.html' problem=report p_style=secondary_p_style %]
+    [% TRY %][% INCLUDE '_council_reference_alert_update.html' problem=report p_style=secondary_p_style %][% CATCH file %][% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]

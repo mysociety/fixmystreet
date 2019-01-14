@@ -13,6 +13,8 @@ If you would like to view or reply to these updates, please visit the following 
 
     [% problem_url %]
 
+[% TRY %][% INCLUDE '_council_reference_alert_update.txt' problem=report %][% CATCH file %][% END %]
+
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
 
