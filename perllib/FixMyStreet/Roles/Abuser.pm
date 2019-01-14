@@ -14,7 +14,8 @@ sub is_from_abuser {
     my $self = shift;
 
     my $email = $self->user->email;
-    my ($domain) = $email =~ m{ @ (.*) \z }x if $email;
+    my $domain;
+    ($domain) = $email =~ m{ @ (.*) \z }x if $email;
     my $phone = $self->user->phone;
 
     # search for an entry in the abuse table

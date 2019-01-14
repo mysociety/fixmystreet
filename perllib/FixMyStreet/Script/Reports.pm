@@ -140,7 +140,9 @@ sub send(;$) {
             }
             $reporters{ $sender } ||= $sender->new();
 
-            my $inspection_required = $sender_info->{contact}->get_extra_metadata('inspection_required') if $sender_info->{contact};
+            my $inspection_required = $sender_info->{contact}
+                ? $sender_info->{contact}->get_extra_metadata('inspection_required')
+                : undef;
             if ( $inspection_required ) {
                 my $reputation_threshold = $sender_info->{contact}->get_extra_metadata('reputation_threshold') || 0;
                 my $reputation_threshold_met = 0;

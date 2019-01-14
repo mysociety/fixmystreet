@@ -4,6 +4,7 @@
     - Bugfixes
         - Check cached reports do still have photos before being shown.
         - Delete cache photos upon photo moderation.
+        - Remove any use of `my $x if $foo`.
 
 * v2.5 (21st December 2018)
     - Front end improvements:

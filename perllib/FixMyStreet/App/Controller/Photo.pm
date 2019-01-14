@@ -82,7 +82,7 @@ sub output : Private {
     # Save to file
     path(FixMyStreet->path_to('web', 'photo', 'c'))->mkpath;
     my $out = FixMyStreet->path_to('web', $c->req->path);
-    my $symlink_exists = symlink($photo->{symlink}, $out) if $photo->{symlink};
+    my $symlink_exists = $photo->{symlink} ? symlink($photo->{symlink}, $out) : undef;
     path($out)->spew_raw($photo->{data}) unless $symlink_exists;
 
     $c->res->content_type( $photo->{content_type} );

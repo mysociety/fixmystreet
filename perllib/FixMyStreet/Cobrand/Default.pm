@@ -530,7 +530,7 @@ sub find_closest {
     my $problem = $data->{problem};
     my $lat = $problem ? $problem->latitude : $data->{latitude};
     my $lon = $problem ? $problem->longitude : $data->{longitude};
-    my $j = $problem->geocode if $problem;
+    my $j = $problem ? $problem->geocode : undef;
 
     if (!$j) {
         $j = FixMyStreet::Geocode::Bing::reverse( $lat, $lon,
