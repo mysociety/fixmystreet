@@ -55,7 +55,15 @@ sub dispatch_request {
         my ($self, $postcode) = @_;
         foreach (@PLACES) {
             if ($postcode eq $_->[0] || $postcode eq $_->[0] =~ s/ //gr) {
-                return $self->output({wgs84_lat => $_->[1], wgs84_lon => $_->[2], postcode => $postcode, coordsyst => 'G'});
+                my %areas;
+                for (my $i=3; $i<@$_; $i+=3) {
+                    $areas{"$_->[$i]"} = { id => $_->[$i], name => $_->[$i+1], type => $_->[$i+2] };
+                }
+                return $self->output({
+                    wgs84_lat => $_->[1], wgs84_lon => $_->[2],
+                    postcode => $postcode, coordsyst => 'G',
+                    areas => \%areas,
+                });
             }
         }
         my $response = {
