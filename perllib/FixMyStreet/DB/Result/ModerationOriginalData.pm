@@ -170,6 +170,13 @@ sub compare_extra {
     return join ', ', grep { $_ } @s;
 }
 
+sub extra_diff {
+    my ($self, $other, $key) = @_;
+    my $o = $self->get_extra_metadata($key);
+    my $n = $other->get_extra_metadata($key);
+    return string_diff($o, $n);
+}
+
 sub string_diff {
     my ($old, $new, %options) = @_;
 

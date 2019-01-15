@@ -215,6 +215,9 @@ update. Clicking this button gives you the ability to:
 
 You can also add a note to indicate the reason for the change to the report.
 
+Moderation history will be shown within the report updates, and is only visible to people with
+the moderate permission.
+
 #### Hiding reports
 
 Clicking the moderation button also gives you the option to hide an entire report or its updates.

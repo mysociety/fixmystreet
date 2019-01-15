@@ -189,17 +189,8 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
     [% last_history = problem %]
     <ul>
       [% FOR history IN moderation_history %]
-        [% SET diff = history.compare_with(last_history) %]
-        [% SET log = history.admin_log %]
-        <li><i>[% tprintf(loc('Moderated by %s at %s'), log.user.name OR loc('an administrator'), prettify_dt(history.created)) %]
-            [%~ IF log.reason %]<br>“[% log.reason %]”[% END %]</i>
-            [% IF diff.title %]<br>[% loc('Subject:') %] [% diff.title %][% END %]
-            [% IF diff.detail %]<br>[% loc('Details:') %] [% diff.detail %][% END %]
-            [% IF diff.photo %]<br>[% loc('Photo') %]: [% diff.photo %][% END %]
-            [% IF diff.anonymous %]<br>[% loc('Anonymous:') %] [% diff.anonymous %][% END %]
-            [% IF diff.coords %]<br>[% loc('Latitude/Longitude:') %] [% diff.coords %][% END %]
-            [% IF diff.category %]<br>[% loc('Category:') %] [% diff.category %][% END %]
-            [% IF diff.extra %]<br>[% loc('Extra data:') %] [% diff.extra %][% END %]
+        <li><i>[% INCLUDE 'report/update/moderation_meta.html' %]</i>
+            [% INCLUDE 'report/update/moderation_diff.html' diff=history.compare_with(last_history) %]
         </li>
         [% last_history = history %]
       [% END %]

@@ -1,11 +1,11 @@
-[% can_moderate = NOT update.whenanswered AND (permissions.moderate OR c.user.can_moderate(update, staff = permissions.moderate)) %]
+[% can_moderate = NOT update.whenanswered AND update.type != 'moderation' AND (permissions.moderate OR c.user.can_moderate(update, staff = permissions.moderate)) %]
 [% IF loop.first %]
 <section class="full-width">
     <h4 class="static-with-rule">[% loc('Updates') %]</h4>
     <ul class="item-list item-list--updates">
 [% END %]
         <li class="item-list__item item-list__item--updates
-            [%~ ' show-moderation' IF show_moderation == update.id ~%]
+            [%~ ' show-moderation' IF update.id AND show_moderation == update.id ~%]
             ">
             <a name="update_[% update.id %]" class="internal-link-fixed-header"></a>
           [% IF can_moderate; original_update = update.moderation_original_data %]
@@ -29,6 +29,8 @@
                 <div class="item-list__update-text">
                     <p class="meta-2">[% INCLUDE meta_line %]</p>
                 </div>
+            [% ELSIF update.type == 'moderation' %]
+                [% PROCESS 'report/update/moderation.html' %]
             [% ELSE %]
                 [% INCLUDE 'report/photo.html' object=update %]
                 <div class="item-list__update-text">

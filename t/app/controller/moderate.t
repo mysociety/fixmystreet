@@ -257,8 +257,12 @@ subtest 'Problem moderation' => sub {
         $report->discard_changes;
         is $report->get_extra_metadata('weather'), 'snow';
         is $report->get_extra_metadata('moon'), 'waning full';
-        is $report->moderation_original_data->get_extra_metadata('moon'), 'waxing full';
-        is $report->moderation_original_data->get_extra_metadata('weather'), undef;
+        my $mod = $report->moderation_original_data;
+        is $mod->get_extra_metadata('moon'), 'waxing full';
+        is $mod->get_extra_metadata('weather'), undef;
+
+        my $diff = $mod->extra_diff($report, 'moon');
+        is $diff, "wa<del style='background-color:#fcc'>x</del><ins style='background-color:#cfc'>n</ins>ing full", 'Correct diff';
     };
 
     subtest 'Moderate category' => sub {
@@ -327,6 +331,7 @@ sub create_update {
         text      => 'update good good bad good',
         state     => 'confirmed',
         mark_fixed => 0,
+        confirmed => $dt,
     });
 }
 my %update_prepopulated = (

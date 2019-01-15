@@ -1,0 +1,3 @@
+[% SET log = history.admin_log %]
+[%~ tprintf(loc('Moderated by %s at %s'), log.user.name OR loc('an administrator'), prettify_dt(history.created)) %]
+[%~ IF log.reason %], “[% log.reason %]”[% END %]

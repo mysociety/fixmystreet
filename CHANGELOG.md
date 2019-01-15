@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Admin improvements:
+        - Include moderation history in report updates. #2379
     - Bugfixes
         - Check cached reports do still have photos before being shown.
         - Delete cache photos upon photo moderation.
