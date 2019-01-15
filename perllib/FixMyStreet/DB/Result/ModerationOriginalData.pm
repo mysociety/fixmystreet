@@ -167,7 +167,7 @@ sub compare_extra {
             push @s, string_diff("$_ = $old->{$_}", "");
         }
     }
-    return join ', ', @s;
+    return join ', ', grep { $_ } @s;
 }
 
 sub string_diff {
