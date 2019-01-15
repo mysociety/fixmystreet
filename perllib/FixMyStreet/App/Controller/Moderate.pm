@@ -81,6 +81,7 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     $c->forward('report_moderate_hide');
 
     my @types = grep $_,
+        $c->forward('moderate_state'),
         ($c->user->can_moderate_title($problem, 1)
             ? $c->forward('moderate_text', [ 'title' ])
             : ()),
@@ -128,6 +129,9 @@ sub moderate_log_entry : Private {
 
     my $types_csv = join ', ' => @types;
 
+    my $log_reason = "($types_csv)";
+    $log_reason = "$reason $log_reason" if $reason;
+
     # We attach the log to the moderation entry if present, or the object if not (hiding)
     $c->model('DB::AdminLog')->create({
         action => 'moderation',
@@ -135,7 +139,7 @@ sub moderate_log_entry : Private {
         admin_user => moderating_user_name($user),
         object_id => $c->stash->{history}->id || $object->id,
         object_type => $c->stash->{history}->id ? 'moderation' : $object_type,
-        reason => (sprintf '%s (%s)', $reason, $types_csv),
+        reason => $log_reason,
     });
 }
 
@@ -143,6 +147,9 @@ sub report_moderate_audit : Private {
     my ($self, $c, @types) = @_;
 
     my $problem = $c->stash->{problem} or die;
+
+    return unless @types; # If nothing moderated, nothing to do
+    return if @types == 1 && $types[0] eq 'state'; # If only state changed, no log entry needed
 
     $c->forward('moderate_log_entry', [ 'problem', @types ]);
 
@@ -296,6 +303,34 @@ sub moderate_category : Private {
         $c->stash->{history}->insert;
         $problem->update;
         return 'category';
+    }
+}
+
+# Note that if a cobrand allows state moderation, then the moderation reason
+# given will be added as an update and thus be publicly available (unlike with
+# normal moderation).
+sub moderate_state : Private {
+    my ($self, $c) = @_;
+
+    my $new_state = $c->get_param('state');
+    return unless $new_state;
+
+    my $problem = $c->stash->{problem};
+    if ($problem->state ne $new_state) {
+        $problem->state($new_state);
+        $problem->update;
+        $problem->add_to_comments( {
+            text => $c->stash->{moderation_reason},
+            created => \'current_timestamp',
+            confirmed => \'current_timestamp',
+            user_id => $c->user->id,
+            name => $c->user->from_body ? $c->user->from_body->name : $c->user->name,
+            state => 'confirmed',
+            mark_fixed => 0,
+            anonymous => $c->user->from_body ? 0 : 1,
+            problem_state => $new_state,
+        } );
+        return 'state';
     }
 }
 

@@ -273,6 +273,30 @@ subtest 'Problem moderation' => sub {
         is $report->category, 'Lost toys';
     };
 
+    subtest 'Moderate state' => sub {
+        my $mods_count = $report->moderation_original_datas->count;
+        my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
+        $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
+            %problem_prepopulated,
+            state => 'confirmed',
+            token => $csrf,
+        });
+        $report->discard_changes;
+        is $report->state, 'confirmed', 'state has not changed';
+        is $report->comments->count, 0, 'same state, no update';
+        is $report->moderation_original_datas->count, $mods_count, 'No moderation entry either';
+        $mech->post_ok('http://www.example.org/moderate/report/' . $report->id, {
+            %problem_prepopulated,
+            state => 'in progress',
+            token => $csrf,
+        });
+        $report->discard_changes;
+        is $report->state, 'in progress', 'state has changed';
+        is $report->comments->count, 1, 'a new update added';
+        $report->update({ state => 'confirmed' });
+        is $report->moderation_original_datas->count, $mods_count, 'No moderation entry, only state changed';
+    };
+
     subtest 'Moderate location' => sub {
         FixMyStreet::override_config {
             MAPIT_URL => 'http://mapit.uk/',
@@ -327,6 +351,7 @@ sub create_update {
         text      => 'update good good bad good',
         state     => 'confirmed',
         mark_fixed => 0,
+        confirmed => $dt,
     });
 }
 my %update_prepopulated = (
