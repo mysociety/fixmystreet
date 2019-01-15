@@ -594,6 +594,26 @@ foreach my $test (
         changes => { },
         errors => [ 'Please enter a subject', 'Please enter some details', 'Names are limited to 40 characters in length.' ],
     },
+    {
+        msg    => 'Oxfordshire validation',
+        pc     => 'OX20 1SZ',
+        fields => {
+            title         => '',
+            detail        => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'This is a really extraordinarily long name that definitely should fail validation',
+            may_show_name => '1',
+            username      => 'bob.has.a.very.long.email@thisisalonghostname.example.com',
+            phone         => '01234 5678910 09876 54321 ext 203',
+            category      => 'Trees',
+            password_sign_in => '',
+            password_register => '',
+        },
+        changes => { },
+        errors => [ 'Please enter a subject', 'Please enter some details', 'Emails are limited to 50 characters in length.', 'Phone numbers are limited to 30 characters in length.', 'Names are limited to 70 characters in length.'],
+    },
   )
 {
     subtest "check form errors where $test->{msg}" => sub {

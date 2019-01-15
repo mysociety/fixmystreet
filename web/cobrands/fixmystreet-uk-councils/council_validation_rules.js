@@ -32,6 +32,16 @@ body_validation_rules = {
         detail: {
           required: true,
           maxlength: 1700
+        },
+        name: {
+          required: true,
+          maxlength: 70
+        },
+        phone: {
+          maxlength: 30
+        },
+        email: {
+          maxlength: 50
         }
     }
 };
