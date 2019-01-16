@@ -1,0 +1,12 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70376243-1"></script>
+<script>
+ window.dataLayer = window.dataLayer || [];
+ function gtag(){dataLayer.push(arguments);}
+ gtag('js', new Date());
+
+ gtag('config', 'UA-70376243-1');
+</script>
+[% ELSE %]
+<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
+[% END %]

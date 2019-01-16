@@ -1,0 +1,82 @@
+@font-face {
+    font-family: 'PraterSansWeb';
+    src: url("/cobrands/northamptonshire/fonts/PraterSansWeb.eot?");
+    src: url("/cobrands/northamptonshire/fonts/PraterSansWeb.eot?#iefix") format("embedded-opentype"),url("/cobrands/northamptonshire/fonts/PraterSansWeb.woff") format("woff"),url("/cobrands/northamptonshire/fonts/PraterSansComp.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+#site-logo {
+    width: 190px;
+    height: 41px;
+    padding: 11px 0;
+    background: url(/cobrands/northamptonshire/img/new-ncc-logo.png) 0 50% no-repeat;
+}
+
+#postcodeForm .form-hint {
+    color: $white;
+}
+
+a,
+.fake-link {
+  text-decoration: none;
+  color: $blue;
+
+  &:visited {
+    color: $blue;
+  }
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+    color: $blue;
+  }
+}
+
+.dz-clickable .dz-message u {
+  color: $blue;
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    border: none;
+    background: $purple;
+
+    &:hover,
+    &:active {
+        background: lighten($purple, 5%);
+    }
+}
+
+footer.northamptonshire {
+    background-color: $primary;
+    color: white;
+    box-shadow: 0 1000px 0 1000px $primary;
+    text-align: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    p {
+        margin: 30px 0 0;
+    }
+
+    ul {
+        margin: 10px 0 15px;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    a {
+        color: white;
+        padding: 0 12px;
+    }
+}
