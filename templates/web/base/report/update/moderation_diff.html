@@ -1,0 +1,9 @@
+<ul>
+    [% IF diff.title %]<li>[% loc('Subject:') %] [% diff.title %][% END %]
+    [% IF diff.detail %]<li>[% loc('Details:') %] [% diff.detail %][% END %]
+    [% IF diff.photo %]<li>[% loc('Photo') %]: [% diff.photo %][% END %]
+    [% IF diff.anonymous %]<li>[% loc('Anonymous:') %] [% diff.anonymous %][% END %]
+    [% IF diff.coords %]<li>[% loc('Latitude/Longitude:') %] [% diff.coords %][% END %]
+    [% IF diff.category %]<li>[% loc('Category:') %] [% diff.category %][% END %]
+    [% IF diff.extra %]<li>[% loc('Extra data:') %] [% diff.extra %][% END %]
+</ul>

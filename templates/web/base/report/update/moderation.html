@@ -1,0 +1,6 @@
+<div class="item-list__update-text">
+    [% INCLUDE 'report/update/moderation_diff.html' diff=update.entry.compare_with(update.last) %]
+    <p class="meta-2">
+        [% INCLUDE 'report/update/moderation_meta.html' history=update.entry %]
+    </p>
+</div>

@@ -167,7 +167,14 @@ sub compare_extra {
             push @s, string_diff("$_ = $old->{$_}", "");
         }
     }
-    return join ', ', @s;
+    return join ', ', grep { $_ } @s;
+}
+
+sub extra_diff {
+    my ($self, $other, $key) = @_;
+    my $o = $self->get_extra_metadata($key);
+    my $n = $other->get_extra_metadata($key);
+    return string_diff($o, $n);
 }
 
 sub string_diff {
