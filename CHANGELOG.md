@@ -3,10 +3,11 @@
 * Unreleased
     - Admin improvements:
         - Include moderation history in report updates. #2379
+        - Allow moderation to potentially change state. #2381
     - Bugfixes
-        - Check cached reports do still have photos before being shown.
-        - Delete cache photos upon photo moderation.
-        - Remove any use of `my $x if $foo`.
+        - Check cached reports do still have photos before being shown. #2374
+        - Delete cache photos upon photo moderation. #2374
+        - Remove any use of `my $x if $foo`. #2377
 
 * v2.5 (21st December 2018)
     - Front end improvements:
