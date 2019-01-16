@@ -1,0 +1,28 @@
+/* COLOURS */
+
+$menu-image: 'menu-white';
+
+$purple: #7F1183;
+$green: #2C8500;
+$blue: #0066cc;
+$white: #fff;
+$dark: #222;
+
+$primary: $green;
+$primary_b: $dark;
+$primary_text: $white;
+
+$base_bg: $white;
+$base_fg: $dark;
+
+$nav_background_colour: $green;
+$nav_colour: $white;
+$nav_hover_background_colour: darken($green, 10%);
+
+$col_click_map: $purple;
+
+$header-top-border: false;
+
+$heading-font: PraterSansWeb, sans-serif;
+$body-font: "Open Sans", Arial, "Helvetica Neue", Helvetica, sans-serif;
+$meta-font: $body-font;

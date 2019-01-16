@@ -1,0 +1,34 @@
+@import "_colours";
+
+@import "../sass/layout";
+
+#front-main {
+    color: $base_fg;
+    background-color: $base_bg;
+    padding: 3em 1em;
+}
+#postcodeForm .form-hint {
+    color: $dark;
+}
+
+.nav-menu--main {
+    a.report-a-problem-btn:hover {
+        background-color: $nav_hover_background_colour;
+    }
+    span {
+        color: $nav_colour;
+    }
+    span.report-a-problem-btn:hover {
+        color: $nav_colour;
+    }
+}
+
+footer.northamptonshire {
+    li {
+        display: inline-block;
+        border-left: solid 1px white;
+    }
+    li:first-child {
+        border: none;
+    }
+}
