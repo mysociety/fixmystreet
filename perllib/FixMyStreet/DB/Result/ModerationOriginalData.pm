@@ -120,6 +120,7 @@ sub compare_anonymous {
 
 sub compare_coords {
     my ($self, $other) = @_;
+    return '' unless $self->latitude && $self->longitude;
     my $old = join ',', $self->latitude, $self->longitude;
     my $new = join ',', $other->latitude, $other->longitude;
     string_diff($old, $new, single => 1);
@@ -186,6 +187,7 @@ sub string_diff {
     $new = FixMyStreet::Template::html_filter($new);
 
     if ($options{single}) {
+        return unless $old;
         $old = [ $old ];
         $new = [ $new ];
     }
