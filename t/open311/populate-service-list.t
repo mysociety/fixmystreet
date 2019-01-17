@@ -27,23 +27,27 @@ use_ok( 'Open311' );
 my $processor = Open311::PopulateServiceList->new();
 ok $processor, 'created object';
 
-my $body = FixMyStreet::DB->resultset('Body')->find_or_create( {
-    id => 1,
+my $body = FixMyStreet::DB->resultset('Body')->create({
     name => 'Body Numero Uno',
 } );
-$body->body_areas->find_or_create({
+$body->body_areas->create({
     area_id => 1
 } );
 
 my $BROMLEY = 'Bromley Council';
-my $bromley = FixMyStreet::DB->resultset('Body')->find_or_create( {
-    id => 2482,
+my $bromley = FixMyStreet::DB->resultset('Body')->create( {
     name => $BROMLEY,
 } );
-$bromley->update({ name => $BROMLEY });
-$bromley->body_areas->find_or_create({
+$bromley->body_areas->create({
     area_id => 2482
 } );
+
+my $bucks = FixMyStreet::DB->resultset('Body')->create({
+    name => 'Buckinghamshire County Council',
+});
+$bucks->body_areas->create({
+    area_id => 2217
+});
 
 for my $test (
     { desc => 'groups not set for new contacts', cobrand => 'tester', groups => 0, delete => 1 },
@@ -55,7 +59,7 @@ for my $test (
         ALLOWED_COBRANDS => [ $test->{cobrand} ],
     }, sub {
         subtest 'check basic functionality, ' . $test->{desc} => sub {
-            FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->delete() if $test->{delete};
+            FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete() if $test->{delete};
 
             my $service_list = get_xml_simple_object( get_standard_xml() );
 
@@ -63,7 +67,7 @@ for my $test (
             $processor->_current_body( $body );
             $processor->process_services( $service_list );
 
-            my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->count();
+            my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
             is $contact_count, 3, 'correct number of contacts';
 
             for my $expects (
@@ -71,7 +75,7 @@ for my $test (
                 { code => "002", group => $test->{groups} ? "street" : undef },
                 { code => "003", group => $test->{groups} ? "street" : undef },
             ) {
-                my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1, email => $expects->{code} } )->first;
+                my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, email => $expects->{code} } )->first;
                 is $contact->get_extra->{group}, $expects->{group}, "Group set correctly";
             }
         };
@@ -79,11 +83,11 @@ for my $test (
 }
 
 subtest 'check non open311 contacts marked as deleted' => sub {
-    FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->delete();
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 
     my $contact = FixMyStreet::DB->resultset('Contact')->create(
         {
-            body_id => 1,
+            body_id => $body->id,
             email =>   'contact@example.com',
             category => 'An old category',
             state => 'confirmed',
@@ -99,19 +103,19 @@ subtest 'check non open311 contacts marked as deleted' => sub {
     $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
-    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->count();
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
     is $contact_count, 4, 'correct number of contacts';
 
-    $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1, state => 'deleted' } )->count();
+    $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, state => 'deleted' } )->count();
     is $contact_count, 1, 'correct number of deleted contacts';
 };
 
 subtest 'check email changed if matching category' => sub {
-    FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->delete();
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 
     my $contact = FixMyStreet::DB->resultset('Contact')->create(
         {
-            body_id => 1,
+            body_id => $body->id,
             email =>   '009',
             category => 'Cans left out 24x7',
             state => 'confirmed',
@@ -133,16 +137,16 @@ subtest 'check email changed if matching category' => sub {
     is $contact->email, '001', 'email unchanged';
     is $contact->state, 'confirmed', 'contact still confirmed';
 
-    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->count();
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
     is $contact_count, 3, 'correct number of contacts';
 };
 
 subtest 'check category name changed if updated' => sub {
-    FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->delete();
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 
     my $contact = FixMyStreet::DB->resultset('Contact')->create(
         {
-            body_id => 1,
+            body_id => $body->id,
             email =>   '001',
             category => 'Bins left out 24x7',
             state => 'confirmed',
@@ -165,16 +169,16 @@ subtest 'check category name changed if updated' => sub {
     is $contact->category, 'Cans left out 24x7', 'category changed';
     is $contact->state, 'confirmed', 'contact still confirmed';
 
-    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->count();
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
     is $contact_count, 3, 'correct number of contacts';
 };
 
 subtest 'check conflicting contacts not changed' => sub {
-    FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->delete();
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 
     my $contact = FixMyStreet::DB->resultset('Contact')->create(
         {
-            body_id => 1,
+            body_id => $body->id,
             email =>   'existing@example.com',
             category => 'Cans left out 24x7',
             state => 'confirmed',
@@ -188,7 +192,7 @@ subtest 'check conflicting contacts not changed' => sub {
 
     my $contact2 = FixMyStreet::DB->resultset('Contact')->create(
         {
-            body_id => 1,
+            body_id => $body->id,
             email =>   '001',
             category => 'Bins left out 24x7',
             state => 'confirmed',
@@ -216,7 +220,7 @@ subtest 'check conflicting contacts not changed' => sub {
     is $contact2->category, 'Bins left out 24x7', 'second contact category unchanged';
     is $contact2->state, 'confirmed', 'second contact still confirmed';
 
-    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => 1 } )->count();
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
     is $contact_count, 4, 'correct number of contacts';
 };
 
@@ -360,7 +364,7 @@ for my $test (
 
         my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create(
             {
-                body_id => 1,
+                body_id => $body->id,
                 email =>   '100',
                 category => 'Cans left out 24x7',
                 state => 'confirmed',
@@ -433,7 +437,7 @@ subtest 'check attribute ordering' => sub {
 
     my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create(
         {
-            body_id => 1,
+            body_id => $body->id,
             email =>   '001',
             category => 'Bins left out 24x7',
             state => 'confirmed',
@@ -534,7 +538,7 @@ subtest 'check Bromley skip code' => sub {
 
     my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create(
         {
-            body_id => 1,
+            body_id => $body->id,
             email =>   '001',
             category => 'Bins left out 24x7',
             state => 'confirmed',
@@ -622,6 +626,93 @@ subtest 'check Bromley skip code' => sub {
     $contact->discard_changes;
 
     is_deeply $contact->get_extra_fields, $extra, 'all meta data saved for non bromley';
+};
+
+subtest 'check Buckinghamshire extra code' => sub {
+    my $processor = Open311::PopulateServiceList->new();
+
+    my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
+<service_definition>
+    <service_code>100</service_code>
+    <attributes>
+        <attribute>
+            <variable>true</variable>
+            <code>type</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>Type of bin</datatype_description>
+            <order>1</order>
+            <description>Type of bin</description>
+        </attribute>
+    </attributes>
+</service_definition>
+    ';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
+        body_id => $body->id,
+        email => '001',
+        category => 'Flytipping',
+        state => 'confirmed',
+        editor => $0,
+        whenedited => \'current_timestamp',
+        note => 'test contact',
+    });
+
+    my $o = Open311->new(
+        jurisdiction => 'mysociety',
+        endpoint => 'http://example.com',
+        test_mode => 1,
+        test_get_returns => { 'services/100.xml' => $meta_xml }
+    );
+
+    $processor->_current_open311( $o );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'buckinghamshire' ],
+    }, sub {
+        $processor->_current_body( $bucks );
+    };
+    $processor->_current_service( { service_code => 100, service_name => 'Flytipping' } );
+    $processor->_add_meta_to_contact( $contact );
+
+    my $extra = [ {
+        variable => 'true',
+        code => 'type',
+        datatype => 'string',
+        required => 'true',
+        datatype_description => 'Type of bin',
+        order => 1,
+        description => 'Type of bin'
+    }, {
+        variable => 'true',
+        code => 'road-placement',
+        datatype => 'singlevaluelist',
+        required => 'true',
+        order => 100,
+        description => 'Is the fly-tip located on',
+        values => [
+            { key => 'road', name => 'The road' },
+            { key => 'off-road', name => 'Off the road/on a verge' },
+        ],
+    } ];
+
+    $contact->discard_changes;
+    is_deeply $contact->get_extra_fields, $extra, 'extra Bucks field returned for flytipping';
+
+    $processor->_current_service( { service_code => 100, service_name => 'Street lights' } );
+    $processor->_add_meta_to_contact( $contact );
+
+    $extra = [ {
+        variable => 'true',
+        code => 'type',
+        datatype => 'string',
+        required => 'true',
+        datatype_description => 'Type of bin',
+        order => 1,
+        description => 'Type of bin'
+    } ];
+
+    $contact->discard_changes;
+    is_deeply $contact->get_extra_fields, $extra, 'no extra Bucks field returned otherwise';
 };
 
 sub get_standard_xml {

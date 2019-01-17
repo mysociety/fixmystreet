@@ -109,6 +109,58 @@ sub open311_config_updates {
     $params->{mark_reopen} = 1;
 }
 
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+
+    push @$meta, {
+        code => 'road-placement',
+        datatype => 'singlevaluelist',
+        description => 'Is the fly-tip located on',
+        order => 100,
+        required => 'true',
+        variable => 'true',
+        values => [
+            { key => 'road', name => 'The road' },
+            { key => 'off-road', name => 'Off the road/on a verge' },
+        ],
+    } if $service->{service_name} eq 'Flytipping';
+}
+
+sub process_open311_extras {
+    my ($self, $c, $body, $extra) = @_;
+
+    $self->flytipping_body_fix(
+        $c->stash->{report},
+        $c->get_param('road-placement'),
+        $c->stash->{field_errors},
+    );
+}
+
+sub flytipping_body_fix {
+    my ($self, $report, $road_placement, $errors) = @_;
+
+    return unless $report->category eq 'Flytipping';
+
+    if ($report->bodies_str =~ /,/) {
+        # Sent to both councils in the area
+        my @bodies = values %{$report->bodies};
+        my $county = (grep { $_->name =~ /^Buckinghamshire/ } @bodies)[0];
+        my $district = (grep { $_->name !~ /^Buckinghamshire/ } @bodies)[0];
+        # Decide which to send to based upon the answer to the extra question:
+        if ($road_placement eq 'road') {
+            $report->bodies_str($county->id);
+        } elsif ($road_placement eq 'off-road') {
+            $report->bodies_str($district->id);
+        }
+    } else {
+        # If the report is only being sent to the district, we do
+        # not care about the road question, if it is missing
+        if (!$report->to_body_named('Buckinghamshire')) {
+            delete $errors->{'road-placement'};
+        }
+    }
+}
+
 sub filter_report_description {
     my ($self, $description) = @_;
 
