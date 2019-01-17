@@ -190,7 +190,12 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
     updateUSRNField: function() {
         if (this.fixmystreet.usrn) {
             var usrn_field = this.fixmystreet.usrn.field;
-            var selected_usrn = this.selected_feature ? this.selected_feature.attributes[this.fixmystreet.usrn.attribute] : '';
+            var selected_usrn;
+            if ( this.selected_feature ) {
+                selected_usrn = this.fixmystreet.getUSRN ?
+                    this.fixmystreet.getUSRN(this.selected_feature) :
+                    this.selected_feature.attributes[this.fixmystreet.usrn.attribute];
+            }
             $("input[name=" + usrn_field + "]").val(selected_usrn);
         }
     },
@@ -521,7 +526,8 @@ fixmystreet.assets = {
                 options.format_options.geometryName = options.geometryName;
             }
             protocol_options.format = new options.format_class(options.format_options);
-            protocol = new OpenLayers.Protocol.HTTP(protocol_options);
+            var protocol_class = options.protocol_class || OpenLayers.Protocol.HTTP;
+            protocol = new protocol_class(protocol_options);
         } else {
             protocol_options = {
                 version: "1.1.0",
