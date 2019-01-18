@@ -552,7 +552,11 @@ subtest 'check Bromley skip code' => sub {
     );
 
     $processor->_current_open311( $o );
-    $processor->_current_body( $bromley );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'bromley' ],
+    }, sub {
+        $processor->_current_body( $bromley );
+    };
     $processor->_current_service( { service_code => 100 } );
 
     $processor->_add_meta_to_contact( $contact );

@@ -34,4 +34,12 @@ sub contact_name { 'Warwickshire County Council (do not reply)'; }
 
 sub send_questionnaires { 0 }
 
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+
+    $contact->set_extra_metadata( id_field => 'external_id');
+
+    @$meta = grep { $_->{code} ne 'closest_address' } @$meta;
+}
+
 1;
