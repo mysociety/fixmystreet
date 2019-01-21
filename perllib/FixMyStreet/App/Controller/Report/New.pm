@@ -1069,26 +1069,12 @@ sub set_report_extras : Private {
     my ($self, $c, $contacts, $param_prefix) = @_;
 
     $param_prefix ||= "";
-    my @extra;
-    foreach my $contact (@$contacts) {
-        my $metas = $contact->get_metadata_for_input;
-        foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
-                unless ( $c->get_param($param_prefix . $field->{code}) ) {
-                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
-                }
-            }
-            push @extra, {
-                name => $field->{code},
-                description => $field->{description},
-                value => $c->get_param($param_prefix . $field->{code}) || '',
-            };
-        }
-    }
+    my @metalist = map { [ $_->get_metadata_for_input, $param_prefix ] } @$contacts;
+    push @metalist, map { [ $_->get_extra_fields, "extra[" . $_->id . "]" ] } @{$c->stash->{report_extra_fields}};
 
-    foreach my $extra_fields (@{ $c->stash->{report_extra_fields} }) {
-        my $metas = $extra_fields->get_extra_fields;
-        $param_prefix = "extra[" . $extra_fields->id . "]";
+    my @extra;
+    foreach my $item (@metalist) {
+        my ($metas, $param_prefix) = @$item;
         foreach my $field ( @$metas ) {
             if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
                 unless ( $c->get_param($param_prefix . $field->{code}) ) {
