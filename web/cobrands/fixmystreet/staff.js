@@ -400,6 +400,7 @@ $.extend(fixmystreet.set_up, {
 
               $elem.find('.cancel').click( function () {
                   $elem.toggleClass('show-moderation');
+                  $('.js-moderation-error').hide();
                   $('#map_sidebar').scrollTop(word === 'problem' ? 0 : $elem[0].offsetTop);
               });
 

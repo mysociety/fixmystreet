@@ -45,6 +45,10 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
         <input type="hidden" name="token" value="[% csrf_token %]">
   [% END %]
 
+  [% FOR error IN moderate_errors %]
+    <p class="form-error js-moderation-error">[% error %]</p>
+  [% END %]
+
   [% IF can_moderate_title %]
     <h1 class="moderate-display">[% problem.title | html %]</h1>
     <div class="moderate-edit">
