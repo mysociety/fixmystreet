@@ -203,15 +203,13 @@ body.frontpage {
 }
 
 .next-steps {
-  @include clearfix;
   @include flex-container();
   margin-bottom: 2em; // add some space between this and the footer
 }
 
 .next-steps__step {
   font-family: $body-font;
-  float: $left;
-  width: 33%;
+  flex: 1;
   padding: 1.8em;
 
   & + .next-steps__step {
@@ -228,10 +226,6 @@ body.frontpage {
   p {
     line-height: 1.4em;
   }
-}
-
-.next-steps--two .next-steps__step {
-  width: 50%;
 }
 
 body.unresponsive-council {

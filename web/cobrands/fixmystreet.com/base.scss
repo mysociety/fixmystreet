@@ -85,7 +85,7 @@ svg|g.site-logo__svg {
     }
   }
 
-  .next-steps__step--goodies {
+  .next-steps__step--goodies & {
     min-height: 37px; // stop absolutely positioned img overlapping bottom of parent element
 
     img {
