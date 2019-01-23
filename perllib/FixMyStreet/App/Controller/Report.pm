@@ -243,6 +243,7 @@ sub load_updates : Private {
         my $last_history = $problem;
         foreach my $history (@history) {
             push @combined, [ $history->created, {
+                id => 'm' . $history->id,
                 type => 'moderation',
                 last => $last_history,
                 entry => $history,

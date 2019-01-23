@@ -139,6 +139,20 @@ subtest 'Problem moderation' => sub {
         is $history[1]->title, 'Good good', 'Correct second title';
     };
 
+    subtest 'Post modified title after edited elsewhere' => sub {
+        $mech->submit_form_ok({ with_fields => {
+            %problem_prepopulated,
+            problem_title => 'Good good',
+            form_started => 1, # January 1970!
+        }});
+        $mech->base_like( qr{\Q/moderate$REPORT_URL\E} );
+        $mech->content_contains('Good bad good'); # Displayed title
+        $mech->content_contains('Good good'); # Form edit
+
+        $report->discard_changes;
+        is $report->title, 'Good bad good', 'title unchanged';
+    };
+
     subtest 'Make anonymous' => sub {
         $mech->content_lacks('Reported anonymously');
 

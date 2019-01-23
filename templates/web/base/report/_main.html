@@ -1,4 +1,5 @@
 [%
+USE date;
 can_moderate = permissions.moderate OR c.user.can_moderate(problem, staff = permissions.moderate)
 can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
 %]
@@ -43,6 +44,7 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
     [% original = problem_original %]
     <form method="post" action="/moderate/report/[% problem.id %]">
         <input type="hidden" name="token" value="[% csrf_token %]">
+        <input type="hidden" name="form_started" value="[% date.now %]">
   [% END %]
 
   [% FOR error IN moderate_errors %]
@@ -54,11 +56,11 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
     <div class="moderate-edit">
       [% IF problem.title != original.title %]
         <label>
-            <input type="checkbox" name="problem_revert_title" class="revert-title">
+            <input type="checkbox" name="problem_revert_title" class="revert-title"[% " checked" IF c.req.params.problem_revert_title %]>
             [% loc('Revert to original title') %]
         </label>
       [% END %]
-        <h1><input class="form-control" type="text" name="problem_title" value="[% problem.title | html %]" data-original-value="[% original.title | html %]"></h1>
+        <h1><input class="form-control" type="text" name="problem_title" value="[% (c.req.params.problem_title || problem.title) | html %]" data-original-value="[% original.title | html %]"></h1>
     </div>
   [% ELSE %]
     <h1>[% problem.title | html %]</h1>
@@ -66,7 +68,7 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
 
     <div class="moderate-edit">
         <label>
-            <input type="checkbox" name="problem_show_name" [% 'checked' UNLESS problem.anonymous %]>
+            <input type="checkbox" name="problem_show_name" [% 'checked' IF !problem.anonymous OR c.req.params.problem_show_name %]>
             [% loc('Show reporter&rsquo;s name') %]
         </label>
     </div>
@@ -89,7 +91,7 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
     [% IF problem.photo or original.photo %]
         <p class="moderate-edit">
             <label>
-                <input type="checkbox" name="problem_photo" [% problem.photo ? 'checked' : '' %]>
+                <input type="checkbox" name="problem_photo" [% 'checked' IF problem.photo OR c.req.params.problem_photo %]>
                 [% loc('Show photo') %]
             </label>
         </p>
@@ -105,23 +107,23 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
     <p class="moderate-edit">
       [% IF problem.detail != original.detail %]
         <label>
-            <input type="checkbox" name="problem_revert_detail" class="revert-textarea">
+            <input type="checkbox" name="problem_revert_detail" class="revert-textarea"[% ' checked' IF c.req.params.problem_revert_detail %]>
             [% loc('Revert to original text') %]
         </label>
       [% END %]
-        <textarea class="form-control" name="problem_detail" data-original-value="[% original.detail | html %]">[% problem.detail | html %]</textarea>
+        <textarea class="form-control" name="problem_detail" data-original-value="[% original.detail | html %]">[% (c.req.params.problem_detail || problem.detail) | html %]</textarea>
     </p>
 
     <div class="moderate-edit">
         <p>
             <label>
-                <input type="checkbox" class="hide-document" name="problem_hide" [% problem.hidden ? 'checked' : '' %]>
+                <input type="checkbox" class="hide-document" name="problem_hide" [% 'checked' IF problem.hidden OR c.req.params.problem_hide %]>
                 [% loc('Hide entire report') %]
             </label>
         </p>
         <p>
             <label for="moderation_reason">[% loc('Describe why you are moderating this') %]</label>
-            <input type="text" class="form-control" name="moderation_reason">
+            <input type="text" class="form-control" name="moderation_reason" value="[% (c.req.params.moderation_reason || '') | html %]">
         </p>
         <p>
             <input type="submit" class="green-btn" value="[% loc('Save changes') %]">

@@ -7,12 +7,18 @@ Return most recent AdminLog object concerning moderation
 
 =cut
 
+sub latest_moderation {
+    my $self = shift;
+
+    return $self->moderation_original_datas->search(
+        $self->moderation_filter,
+        { order_by => { -desc => 'id' } })->first;
+}
+
 sub latest_moderation_log_entry {
     my $self = shift;
 
-    my $latest = $self->moderation_original_datas->search(
-        $self->moderation_filter,
-        { order_by => { -desc => 'id' } })->first;
+    my $latest = $self->latest_moderation;
     return unless $latest;
 
     my $rs = $self->result_source->schema->resultset("AdminLog");

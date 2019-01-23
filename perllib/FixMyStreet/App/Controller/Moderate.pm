@@ -90,6 +90,7 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     # Make sure user can moderate this report
     $c->detach unless $c->user->can_moderate($problem);
 
+    $c->forward('check_edited_elsewhere');
     $c->forward('report_moderate_hide');
 
     my @types = grep $_,
@@ -125,6 +126,24 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     }
 
     $c->detach( 'report_moderate_audit', \@types );
+}
+
+sub check_edited_elsewhere : Private {
+    my ($self, $c) = @_;
+
+    my $problem = $c->stash->{problem};
+    my $last_moderation = $problem->latest_moderation;
+    return unless $last_moderation;
+
+    my $form_started = $c->get_param('form_started') || 0;
+    if ($form_started && $form_started < $last_moderation->created->epoch) {
+        $c->stash->{moderate_errors} ||= [];
+        push @{$c->stash->{moderate_errors}},
+            _('Someone has moderated this report since you started.') . ' ' .
+            sprintf(_('Please <a href="#%s">check their changes</a> and resolve any differences.'),
+            'update_m' . $last_moderation->id);
+        $c->detach;
+    }
 }
 
 sub moderating_user_name {
