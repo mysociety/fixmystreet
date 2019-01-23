@@ -1,11 +1,8 @@
 package FixMyStreet::Script::ArchiveOldEnquiries;
 
-use strict;
+use v5.14;
 use warnings;
-require 5.8.0;
 
-use FixMyStreet;
-use FixMyStreet::App;
 use FixMyStreet::DB;
 use FixMyStreet::Cobrand;
 use FixMyStreet::Map;
@@ -17,17 +14,17 @@ my $opts = {
 };
 
 sub query {
-    return {
-        bodies_str => { 'LIKE', "%".$opts->{body}."%"},
-        -and       => [
+    my $rs = shift;
+    return $rs->to_body($opts->{body})->search({
+        -and => [
           lastupdate => { '<', $opts->{email_cutoff} },
           lastupdate => { '>', $opts->{closure_cutoff} },
         ],
-        state      => [ FixMyStreet::DB::Result::Problem->open_states() ],
-    };
+        state => [ FixMyStreet::DB::Result::Problem->open_states() ],
+    });
 }
 
-sub archive {
+sub update_options {
     my $params = shift;
     if ( $params ) {
         $opts = {
@@ -35,13 +32,19 @@ sub archive {
             %$params,
         };
     }
+}
+
+sub archive {
+    my $params = shift;
+    update_options($params);
 
     unless ( $opts->{commit} ) {
         printf "Doing a dry run; emails won't be sent and reports won't be closed.\n";
         printf "Re-run with --commit to actually archive reports.\n\n";
     }
 
-    my @user_ids = FixMyStreet::DB->resultset('Problem')->search(query(),
+    my $rs = FixMyStreet::DB->resultset('Problem');
+    my @user_ids = query($rs)->search(undef,
     {
         distinct => 1,
         columns  => ['user_id'],
@@ -55,7 +58,7 @@ sub archive {
     });
 
     my $user_count = $users->count;
-    my $problem_count = FixMyStreet::DB->resultset('Problem')->search(query(),
+    my $problem_count = query($rs)->search(undef,
     {
         columns  => ['id'],
         rows => $opts->{limit},
@@ -71,8 +74,7 @@ sub archive {
         }
     }
 
-    my $problems_to_close = FixMyStreet::DB->resultset('Problem')->search({
-        bodies_str => { 'LIKE', "%".$opts->{body}."%"},
+    my $problems_to_close = $rs->to_body($opts->{body})->search({
         lastupdate => { '<', $opts->{closure_cutoff} },
         state      => [ FixMyStreet::DB::Result::Problem->open_states() ],
     }, {
@@ -87,7 +89,8 @@ sub archive {
 sub send_email_and_close {
     my ($user) = @_;
 
-    my $problems = $user->problems->search(query(), {
+    my $problems = $user->problems;
+    $problems = query($problems)->search(undef, {
         order_by => { -desc => 'confirmed' },
     });
 
@@ -135,21 +138,26 @@ sub close_problems {
     return unless $opts->{commit};
 
     my $problems = shift;
+    my $extra = { auto_closed_by_script => 1 };
+    $extra->{is_superuser} = 1 if !$opts->{user_name};
+
     while (my $problem = $problems->next) {
         my $timestamp = \'current_timestamp';
         my $comment = $problem->add_to_comments( {
-            text => '',
+            text => $opts->{closure_text} || '',
             created => $timestamp,
             confirmed => $timestamp,
             user_id => $opts->{user},
-            name => _('an administrator'),
+            name => $opts->{user_name} || _('an administrator'),
             mark_fixed => 0,
             anonymous => 0,
             state => 'confirmed',
             problem_state => 'closed',
-            extra => { is_superuser => 1 },
+            extra => $extra,
         } );
         $problem->update({ state => 'closed', send_questionnaire => 0 });
+
+        next if $opts->{retain_alerts};
 
         # Stop any alerts being sent out about this closure.
         my @alerts = FixMyStreet::DB->resultset('Alert')->search( {

@@ -80,9 +80,30 @@ subtest 'flytipping off road sent to extra email' => sub {
     is $report->external_id, undef, 'Report has right external ID';
 };
 
-};
-
 $cobrand = FixMyStreet::Cobrand::Buckinghamshire->new();
+
+subtest 'Flytipping extra question used if necessary' => sub {
+    my $errors = { 'road-placement' => 'This field is required' };
+
+    $report->update({ bodies_str => $body->id });
+    $cobrand->flytipping_body_fix($report, 'road', $errors);
+    is $errors->{'road-placement'}, 'This field is required', 'Error stays if sent to county';
+
+    $report->update({ bodies_str => $district->id });
+    $report->discard_changes; # As e.g. ->bodies has been remembered.
+    $cobrand->flytipping_body_fix($report, 'road', $errors);
+    is $errors->{'road-placement'}, undef, 'Error removed if sent to district';
+
+    $report->update({ bodies_str => $body->id . ',' . $district->id });
+    $report->discard_changes; # As e.g. ->bodies has been remembered.
+    $cobrand->flytipping_body_fix($report, 'road', $errors);
+    is $report->bodies_str, $body->id, 'Sent to both becomes sent to county on-road';
+
+    $report->update({ bodies_str => $district->id . ',' . $body->id });
+    $report->discard_changes; # As e.g. ->bodies has been remembered.
+    $cobrand->flytipping_body_fix($report, 'off-road', $errors);
+    is $report->bodies_str, $district->id, 'Sent to both becomes sent to district off-road';
+};
 
 for my $test (
     {
@@ -151,6 +172,6 @@ for my $test (
     };
 }
 
-
+};
 
 done_testing();

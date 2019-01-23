@@ -377,6 +377,11 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         found: function(layer, feature) {
             fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
             fixmystreet.body_overrides.remove_only_send();
+
+            // Make sure Flytipping related things reset
+            $('#category_meta').show();
+            $('#form_road-placement').attr('required', '');
+
             if (fixmystreet.assets.selectedFeature()) {
                 hide_responsibility_errors();
                 enable_report_form();
@@ -414,9 +419,18 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
                 fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
                 hide_responsibility_errors();
                 enable_report_form();
-            } else if (is_only_body(layer.fixmystreet.body)){
+            } else if (is_only_body(layer.fixmystreet.body)) {
                 show_responsibility_error("#js-not-a-road");
                 disable_report_form();
+            }
+
+            // If flytipping is picked, we don't want to ask the extra question
+            var cat = $('select#form_category').val();
+            if (cat === 'Flytipping') {
+                $('#category_meta').hide();
+                $('#form_road-placement').removeAttr('required');
+            } else {
+                $('#category_meta').show();
             }
         }
     },
@@ -427,6 +441,18 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     filter_key: 'feature_ty',
     filter_value: types_to_show,
 }));
+
+// As with the road found/not_found above, we want to change the destination
+// depending upon the answer to the extra question shown when on a road
+$("#problem_form").on("change", "#form_road-placement", function() {
+    if (this.value == 'road') {
+        fixmystreet.body_overrides.allow_send(defaults.body);
+        fixmystreet.body_overrides.only_send(defaults.body);
+    } else if (this.value == 'off-road') {
+        fixmystreet.body_overrides.do_not_send(defaults.body);
+        fixmystreet.body_overrides.remove_only_send();
+    }
+});
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
     http_options: {

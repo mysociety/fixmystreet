@@ -196,5 +196,44 @@ sub open311_pre_send {
     }
 }
 
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+
+    $contact->set_extra_metadata( id_field => 'service_request_id_ext');
+
+    # Lights we want to store feature ID, PROW on all categories.
+    push @$meta, {
+        code => 'prow_reference',
+        datatype => 'string',
+        description => 'Right of way reference',
+        order => 101,
+        required => 'false',
+        variable => 'true',
+        automated => 'hidden_field',
+    };
+    push @$meta, {
+        code => 'feature_id',
+        datatype => 'string',
+        description => 'Feature ID',
+        order => 100,
+        required => 'false',
+        variable => 'true',
+        automated => 'hidden_field',
+    } if $service->{service_code} eq 'SLRS';
+
+    my @override = qw(
+        requested_datetime
+        report_url
+        title
+        last_name
+        email
+        report_title
+        public_anonymity_required
+        email_alerts_requested
+    );
+    my %ignore = map { $_ => 1 } @override;
+    @$meta = grep { !$ignore{$_->{code}} } @$meta;
+}
+
 1;
 

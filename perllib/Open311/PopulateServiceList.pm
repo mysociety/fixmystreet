@@ -233,63 +233,13 @@ sub _add_meta_to_contact {
 
     # Some Open311 endpoints, such as Bromley and Warwickshire send <metadata>
     # for attributes which we *don't* want to display to the user (e.g. as
-    # fields in "category_extras"
-    $self->_add_meta_to_contact_cobrand_overrides($contact, \@meta);
+    # fields in "category_extras"), or need additional attributes adding not
+    # returned by the server for whatever reason.
+    $self->_current_body_cobrand && $self->_current_body_cobrand->call_hook(
+        open311_contact_meta_override => $self->_current_service, $contact, \@meta);
 
     $contact->set_extra_fields(@meta);
     $contact->update;
-}
-
-sub _add_meta_to_contact_cobrand_overrides {
-    my ( $self, $contact, $meta ) = @_;
-
-    if ($self->_current_body->name eq 'Bromley Council') {
-        $contact->set_extra_metadata( id_field => 'service_request_id_ext');
-        # Lights we want to store feature ID, PROW on all categories.
-        push @$meta, {
-            code => 'prow_reference',
-            datatype => 'string',
-            description => 'Right of way reference',
-            order => 101,
-            required => 'false',
-            variable => 'true',
-            automated => 'hidden_field',
-        };
-        push @$meta, {
-            code => 'feature_id',
-            datatype => 'string',
-            description => 'Feature ID',
-            order => 100,
-            required => 'false',
-            variable => 'true',
-            automated => 'hidden_field',
-        } if $self->_current_service->{service_code} eq 'SLRS';
-    } elsif ($self->_current_body->name eq 'Warwickshire County Council') {
-        $contact->set_extra_metadata( id_field => 'external_id');
-    }
-
-    my %override = (
-        #2482
-        'Bromley Council' => [qw(
-            requested_datetime
-            report_url
-            title
-            last_name
-            email
-            report_title
-            public_anonymity_required
-            email_alerts_requested
-        ) ],
-        #2243,
-        'Warwickshire County Council' => [qw(
-            closest_address
-        ) ],
-    );
-
-    if (my $override = $override{ $self->_current_body->name }) {
-        my %ignore = map { $_ => 1 } @{ $override };
-        @$meta = grep { ! $ignore{ $_->{ code } } } @$meta;
-    }
 }
 
 sub _normalize_service_name {
