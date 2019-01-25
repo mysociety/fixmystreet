@@ -90,6 +90,17 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    return unless $row->extra;
+    my $extra = $row->get_extra_fields;
+    if (@$extra) {
+        @$extra = grep { $_->{name} ne 'road-placement' } @$extra;
+        $row->set_extra_fields(@$extra);
+    }
+}
+
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
