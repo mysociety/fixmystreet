@@ -28,6 +28,8 @@ sub contact_email {
     return join( '@', 'fmstest', 'westminster.gov.uk' );
 }
 
+sub enable_category_groups { 1 }
+
 sub send_questionnaires { 0 }
 
 1;
