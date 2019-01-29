@@ -18,6 +18,7 @@ ELSIF bodyclass.match('alertpage');
     scripts.push(
         version('/js/geolocation.js'),
     );
+ELSIF bodyclass.match('offlinepage');
 ELSE;
     scripts.push(
         version('/js/validation_rules.js'),
