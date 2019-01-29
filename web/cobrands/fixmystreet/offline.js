@@ -342,8 +342,9 @@ fixmystreet.offline = (function() {
         // try and submit and we get the Chrome offline error page
         var btn = $('#report_inspect_form input[type=submit]');
         btn.click(function() {
-            var data = $(this).serialize() + '&save=1&saved_at=' + Math.floor(+new Date() / 1000);
-            fixmystreet.offlineData.addForm(this.action, data);
+            var form = $(this).closest('form');
+            var data = form.serialize() + '&save=1&saved_at=' + Math.floor(+new Date() / 1000);
+            fixmystreet.offlineData.addForm(form.attr('action'), data);
             location.href = '/my/planned?saved=1';
             return false;
         });

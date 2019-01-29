@@ -9,6 +9,7 @@
         - Check cached reports do still have photos before being shown. #2374
         - Delete cache photos upon photo moderation. #2374
         - Remove any use of `my $x if $foo`. #2377
+        - Fix saving of inspect form data offline.
 
 * v2.5 (21st December 2018)
     - Front end improvements:
