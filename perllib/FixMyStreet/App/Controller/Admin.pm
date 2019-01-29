@@ -684,6 +684,14 @@ sub reports : Path('reports') {
 
     if (my $search = $c->get_param('search')) {
         $search = $self->trim($search);
+
+        # In case an email address, wrapped in <...>
+        if ($search =~ /^<(.*)>$/) {
+            my $possible_email = $1;
+            my $parsed = FixMyStreet::SMS->parse_username($possible_email);
+            $search = $possible_email if $parsed->{email};
+        }
+
         $c->stash->{searched} = $search;
 
         my $search_n = 0;
@@ -1289,6 +1297,7 @@ sub users: Path('users') : Args(0) {
 
     if (my $search = $c->get_param('search')) {
         $search = $self->trim($search);
+        $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
         $c->stash->{searched} = $search;
 
         my $isearch = '%' . $search . '%';
