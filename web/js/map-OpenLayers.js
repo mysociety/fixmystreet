@@ -720,9 +720,9 @@ $.extend(fixmystreet.utils, {
             );
             fixmystreet.map.addControl( fixmystreet.select_feature );
             fixmystreet.select_feature.activate();
-            fixmystreet.map.events.register( 'zoomend', null, fixmystreet.maps.markers_resize );
             fixmystreet.map.events.register( 'zoomend', null, function() {
-              fixmystreet.run(fixmystreet.maps.show_shortlist_control);
+                fixmystreet.maps.markers_resize();
+                $(fixmystreet).trigger('map:zoomend');
             });
 
             // Set up the event handlers to populate the filters and react to them changing

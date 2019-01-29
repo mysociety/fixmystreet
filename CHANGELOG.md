@@ -6,7 +6,8 @@
         - Allow moderation to potentially change state. #2381
         - Spot moderation conflicts and raise an error. #2384
         - Allow searching for <email> in admin.
-    - Bugfixes
+        - Make staff JavaScript more self-contained.
+    - Bugfixes:
         - Check cached reports do still have photos before being shown. #2374
         - Delete cache photos upon photo moderation. #2374
         - Remove any use of `my $x if $foo`. #2377

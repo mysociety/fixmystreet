@@ -1,4 +1,4 @@
-$.extend(fixmystreet.set_up, {
+fixmystreet.staff_set_up = {
   manage_duplicates: function() {
       // Deal with changes to report state by inspector/other staff, specifically
       // displaying nearby reports if it's changed to 'duplicate'.
@@ -450,6 +450,22 @@ $.extend(fixmystreet.set_up, {
     });
   }
 
+};
+
+$(function() {
+    $.each(fixmystreet.staff_set_up, function(setup_name, setup_func) {
+        setup_func();
+    });
+});
+
+$(fixmystreet).on('display:report', function() {
+    fixmystreet.staff_set_up.moderation();
+    fixmystreet.staff_set_up.response_templates();
+    if ($("#report_inspect_form").length) {
+        fixmystreet.staff_set_up.report_page_inspect();
+        fixmystreet.staff_set_up.manage_duplicates();
+        fixmystreet.staff_set_up.action_scheduled_raise_defect();
+    }
 });
 
 $(fixmystreet).on('report_new:category_change', function(evt, $this) {
@@ -528,6 +544,10 @@ $.extend(fixmystreet.maps, {
       $shortlistButton.addClass('hidden');
     }
   }
+});
+
+$(fixmystreet).on('map:zoomend', function() {
+    fixmystreet.maps.show_shortlist_control();
 });
 
 fixmystreet.utils = fixmystreet.utils || {};

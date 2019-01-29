@@ -216,14 +216,6 @@ fixmystreet.update_list_item_buttons = function($list) {
   $list.children(':last-child').find('[name="shortlist-down"]').prop('disabled', true);
 };
 
-// A tiny helper to call a function only if it exists (so we can
-// call this with staff-only functions and they won't error).
-fixmystreet.run = function(fn) {
-    if (fn) {
-        fn.call(this);
-    }
-};
-
 fixmystreet.set_up = fixmystreet.set_up || {};
 $.extend(fixmystreet.set_up, {
   basics: function() {
@@ -1186,7 +1178,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         if (category_select.val() != '-- Pick a category --') {
             category_select.change();
         }
-        fixmystreet.run(fixmystreet.set_up.category_groups);
+        fixmystreet.set_up.category_groups();
         if (category_group !== '-- Pick a category --' && category_select.val() == '-- Pick a category --') {
             $('#category_group').val(category_group).change();
         }
@@ -1343,9 +1335,6 @@ fixmystreet.display = {
             if ($twoColReport.length) {
                 $twoColReport.appendTo('#map_sidebar');
                 $('body').addClass('with-actions');
-                fixmystreet.run(fixmystreet.set_up.report_page_inspect);
-                fixmystreet.run(fixmystreet.set_up.manage_duplicates);
-                fixmystreet.run(fixmystreet.set_up.action_scheduled_raise_defect);
             } else {
                 $sideReport.appendTo('#map_sidebar');
             }
@@ -1403,8 +1392,7 @@ fixmystreet.display = {
             fixmystreet.set_up.form_section_previews();
             fixmystreet.set_up.fancybox_images();
             fixmystreet.set_up.dropzone($sideReport);
-            fixmystreet.run(fixmystreet.set_up.moderation);
-            fixmystreet.run(fixmystreet.set_up.response_templates);
+            $(fixmystreet).trigger('display:report');
 
             fixmystreet.update_report_a_problem_btn();
 
