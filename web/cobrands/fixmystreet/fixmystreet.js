@@ -1030,7 +1030,7 @@ $.extend(fixmystreet.set_up, {
             // rather than the 'fake history' replaceState call that sets the
             // initial state, because the map hasn't been loaded at that point.
             // Also, filters might be changed before a report click.
-            if ('state' in history && !history.state.mapState) {
+            if ('state' in history && history.state && !history.state.mapState) {
                 history.state.mapState = around_map_state;
                 // NB can't actually modify current state directly, needs a
                 // call to replaceState()
