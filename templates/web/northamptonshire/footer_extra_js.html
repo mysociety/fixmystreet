@@ -1,8 +1,11 @@
-[% scripts.push(
+[%
+IF bodyclass.match('mappage');
+  scripts.push(
     version('/cobrands/fixmystreet/assets.js'),
     version('/cobrands/fixmystreet-uk-councils/alloy.js'),
     version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
     version('/cobrands/northamptonshire/assets.js'),
     version('/cobrands/highways/assets.js'),
     version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
-) %]
+  );
+END %]
