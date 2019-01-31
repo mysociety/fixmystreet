@@ -1,3 +1,6 @@
+[% extra_js = [
+    version('/js/contact.js')
+] -%]
 [% INCLUDE 'header.html',
     title = loc('Contact Us')
     robots = 'noindex,nofollow'
@@ -15,6 +18,8 @@
 [% END %]
 
 <form method="post" action="/contact/submit" class="validate">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="s" value="[% s %]">
     <fieldset>
         [% INCLUDE 'errors.html' %]
 
@@ -75,6 +80,8 @@
 
         [% END %]
 
+        [% INCLUDE 'contact/who.html' %]
+
         [% IF NOT rejecting_report %]
             <label for="form_name">[% loc('Your name') %]</label>
             [% IF field_errors.name %]
@@ -107,8 +114,6 @@
         [% END %]
 
 
-        [% INCLUDE 'contact/who.html' %]
-
         [% IF rejecting_report %]
             <label for="form_message">[% loc('Rejection reason') %]</label>
         [% ELSE %]
@@ -127,6 +132,9 @@
             </div>
         [% END %]
 
+        [% IF NOT problem AND NOT update %]
+        <p>[% loc('If you are contacting us about a specific report or update please include a link to the report in the message.') %]</p>
+        [% END %]
 
 
         <input class="final-submit green-btn" type="submit" value="[% loc('Send') %]">

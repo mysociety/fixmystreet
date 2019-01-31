@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use MIME::Base64;
 use mySociety::EmailUtil;
 use FixMyStreet::Email;
 
@@ -17,7 +18,18 @@ Contact us page
 
 =head1 METHODS
 
+=head2 auto
+
+Functions to run on both GET and POST contact requests.
+
 =cut
+
+sub auto : Private {
+    my ($self, $c) = @_;
+    $c->forward('setup_request');
+    $c->forward('determine_contact_type');
+    $c->forward('/auth/get_csrf_token');
+}
 
 =head2 index
 
@@ -27,10 +39,6 @@ Display contact us page
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-
-    return
-      unless $c->forward('setup_request')
-          && $c->forward('determine_contact_type');
 }
 
 =head2 submit
@@ -44,13 +52,10 @@ sub submit : Path('submit') : Args(0) {
 
     $c->res->redirect( '/contact' ) and return unless $c->req->method eq 'POST';
 
-    return
-      unless $c->forward('setup_request')
-          && $c->forward('determine_contact_type')
-          && $c->forward('validate')
-          && $c->forward('prepare_params_for_email')
-          && $c->forward('send_email')
-          && $c->forward('redirect_on_success');
+    $c->go('index') unless $c->forward('validate');
+    $c->forward('prepare_params_for_email');
+    $c->forward('send_email');
+    $c->forward('redirect_on_success');
 }
 
 =head2 determine_contact_type
@@ -117,6 +122,10 @@ to index page if errors.
 sub validate : Private {
     my ( $self, $c ) = @_;
 
+    $c->forward('/auth/check_csrf_token');
+    my $s = $c->stash->{s} = unpack("N", decode_base64($c->get_param('s')));
+    return if !FixMyStreet->test_mode && time() < $s; # uncoverable statement
+
     my ( %field_errors, @errors );
     my %required = (
         name    => _('Please enter your name'),
@@ -154,7 +163,7 @@ sub validate : Private {
     if ( @errors or scalar keys %field_errors ) {
         $c->stash->{errors}       = \@errors;
         $c->stash->{field_errors} = \%field_errors;
-        $c->go('index');
+        return 0;
     }
 
     return 1;
@@ -229,6 +238,10 @@ sub setup_request : Private {
 
     # name is already used in the stash for the app class name
     $c->stash->{form_name} = $c->get_param('name');
+
+    my $s = encode_base64(pack("N", time() + 10), '');
+    $s =~ s/=+$//;
+    $c->stash->{s} = $s;
 
     return 1;
 }

@@ -12,6 +12,7 @@
         - Delete cache photos upon photo moderation. #2374
         - Remove any use of `my $x if $foo`. #2377
         - Fix saving of inspect form data offline.
+        - Add CSRF and time to contact form.
 
 * v2.5 (21st December 2018)
     - Front end improvements:

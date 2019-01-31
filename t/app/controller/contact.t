@@ -13,6 +13,7 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 $mech->get_ok('/contact');
+my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
 $mech->title_like(qr/Contact Us/);
 $mech->content_contains("It's often quickest to ");
 
@@ -444,6 +445,7 @@ for my $test (
     {
         fields => {
             %common,
+            token => $csrf,
             dest        => 'from_council',
             success_url => '/faq',
         },
@@ -452,6 +454,7 @@ for my $test (
     {
         fields => {
             %common,
+            token => $csrf,
             dest        => 'from_council',
             success_url => 'http://www.example.com',
         },
