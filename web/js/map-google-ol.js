@@ -23,7 +23,7 @@ fixmystreet.maps.config = function() {
     }
 
     fixmystreet.controls = [
-        new OpenLayers.Control.ArgParser(),
+        new OpenLayers.Control.ArgParserFMS(),
         new OpenLayers.Control.Navigation(),
         new OpenLayers.Control.PermalinkFMS(permalink_id),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })

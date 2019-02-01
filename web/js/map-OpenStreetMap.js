@@ -4,7 +4,7 @@ fixmystreet.maps.config = function() {
         permalink_id = 'map_permalink';
     }
     fixmystreet.controls = [
-        new OpenLayers.Control.ArgParser(),
+        new OpenLayers.Control.ArgParserFMS(),
         new OpenLayers.Control.Attribution(),
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),

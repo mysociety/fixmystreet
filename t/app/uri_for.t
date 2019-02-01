@@ -13,7 +13,6 @@ use URI;
 use_ok('FixMyStreet::App');
 
 my $fms_c = ctx_request('http://www.fixmystreet.com/');
-my $fgm_c = ctx_request('http://www.fiksgatami.no/');
 
 is(
     $fms_c->uri_for('/bar/baz') . "",
@@ -31,13 +30,6 @@ is(
     $fms_c->uri_for( '/bar/baz', 'boing', { foo => 'bar', } ) . "",
     'http://www.fixmystreet.com/bar/baz/boing?foo=bar',
     'URI with query'
-);
-
-# fiksgatami
-is(
-    $fgm_c->uri_for( '/foo', { lat => 1.23, } ) . "",
-    'http://www.fiksgatami.no/foo?lat=1.23&zoom=3',
-    'FiksGataMi url with lat not zoom'
 );
 
 done_testing();

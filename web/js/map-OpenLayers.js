@@ -831,15 +831,6 @@ $.extend(fixmystreet.utils, {
             fixmystreet.map.addLayer(layer);
         }
 
-        if (!fixmystreet.map.getCenter()) {
-            var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
-            centre.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                fixmystreet.map.getProjectionObject()
-            );
-            fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
-        }
-
         // map.getCenter() returns a position in "map units", but sometimes you
         // want the center in GPS-style latitude/longitude coordinates (WGS84)
         // for example, to pass as GET params to fixmystreet.com/report/new.
@@ -919,6 +910,23 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         this._addButton("zoom", "out");
         return this.div;
     }
+});
+
+OpenLayers.Control.ArgParserFMS = OpenLayers.Class(OpenLayers.Control.ArgParser, {
+    getParameters: function(url) {
+        var args = OpenLayers.Control.ArgParser.prototype.getParameters.apply(this, arguments);
+        // Get defaults from provided data if not in URL
+        if (!args.lat && !args.lon) {
+            args.lon = fixmystreet.longitude;
+            args.lat = fixmystreet.latitude;
+        }
+        if (args.lat && !args.zoom) {
+            args.zoom = fixmystreet.zoom || 3;
+        }
+        return args;
+    },
+
+    CLASS_NAME: "OpenLayers.Control.ArgParserFMS"
 });
 
 /* Overriding Permalink so that it can pass the correct zoom to OSM */

@@ -420,27 +420,6 @@ sub uri_with {
     return $uri;
 }
 
-=head2 uri_for
-
-    $uri = $c->uri_for( ... );
-
-Like C<uri_for> except that it passes the uri to the cobrand to be altered if
-needed.
-
-=cut
-
-sub uri_for {
-    my $c    = shift;
-    my @args = @_;
-
-    my $uri = $c->next::method(@args);
-
-    my $cobranded_uri = $c->cobrand->uri($uri);
-
-    # note that the returned uri may be a string not an object (eg cities)
-    return $cobranded_uri;
-}
-
 =head2 uri_for_email
 
     $uri = $c->uri_for_email( ... );
