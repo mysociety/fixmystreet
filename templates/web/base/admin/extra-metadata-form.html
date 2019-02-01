@@ -12,7 +12,7 @@
         <div class="admin-hint"><p>[% loc('Whether the field is displayed to the user, included as a hidden field and automatically populated, or set by the server upon Open311 submission. This field is usually set automatically.') %]</p></div>
         <label>
             [% loc('Automated') %]
-            <select name="metadata[[% loop.index %]].automated" data-field-name="automated" class="js-metadata-item-type">
+            <select name="metadata[[% loop.index %]].automated" data-field-name="automated">
                 <option value="" [% meta.automated == '' ? 'selected' : '' %]></option>
                 <option value="server_set" [% meta.automated == 'server_set' ? 'selected' : '' %]>[% loc('Server Set') %]</option>
                 <option value="hidden_field" [% meta.automated == 'hidden_field' ? 'selected' : '' %]>[% loc('Hidden Field') %]</option>
