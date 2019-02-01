@@ -306,6 +306,26 @@ sub lookup_site_code {
     return $site_code;
 }
 
+sub extra_contact_validation {
+    my $self = shift;
+    my $c = shift;
+
+    # Don't care about dest unless reporting abuse
+    return () unless $c->stash->{problem};
+
+    my %errors;
+
+    $c->stash->{dest} = $c->get_param('dest');
+
+    if (!$c->get_param('dest')) {
+        $errors{dest} = "Please enter a topic of your message";
+    } elsif ( $c->get_param('dest') eq 'council' || $c->get_param('dest') eq 'update' ) {
+        $errors{not_for_us} = 1;
+    }
+
+    return %errors;
+}
+
 
 =head2 _distance
 
