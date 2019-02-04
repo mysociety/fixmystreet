@@ -165,7 +165,7 @@ $(function(){
 
     function renumber_metadata_fields($item) {
         var item_index = $item.data("index");
-        $item.find("input[data-field-name").each(function(i) {
+        $item.find("[data-field-name]").each(function(i) {
             var $input = $(this);
             var prefix = "metadata["+item_index+"].";
             var name = prefix + $input.data("fieldName");

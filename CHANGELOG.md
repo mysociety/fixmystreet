@@ -13,6 +13,7 @@
         - Remove any use of `my $x if $foo`. #2377
         - Fix saving of inspect form data offline.
         - Add CSRF and time to contact form.
+        - Make sure admin metadata dropdown index numbers are updated too.
 
 * v2.5 (21st December 2018)
     - Front end improvements:
