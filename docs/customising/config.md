@@ -50,6 +50,7 @@ The following are all the configuration settings that you can change in `conf/ge
 * <code><a href="#open311_limit">OPEN311_LIMIT</a></code>
 * <code><a href="#all_reports_per_page">ALL_REPORTS_PER_PAGE</a></code>
 * <code><a href="#area_links_from_problems">AREA_LINKS_FROM_PROBLEMS</a></code>
+* <code><a href="#cache_timeout">CACHE_TIMEOUT</a></code>
 
 ### URLs and directories
 
@@ -1088,6 +1089,14 @@ ALLOWED_COBRANDS:
         </li>
       </ul>
     </div>
+  </dd>
+
+  <dt>
+    <a name="cache_timeout"><code>CACHE_TIMEOUT</code></a>
+  </dt>
+  <dd>
+    The time, in seconds, that the front page stats/recent list should be cached for.
+    Also used for the max-age of <code>/reports</code>. Defaults to 3600s (1 hour).
   </dd>
 
   <dt>

@@ -221,6 +221,10 @@ GAZE_URL: 'https://gaze.mysociety.org/gaze'
 # This can be safely left out and will default to '127.0.0.1' even if not present.
 MEMCACHED_HOST: '127.0.0.1'
 
+# Cache timeout - integer, optional, default 3600s (1 hour)
+# Used for cache of front page stats/recent list, and /reports max-age.
+CACHE_TIMEOUT: 3600
+
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'
 

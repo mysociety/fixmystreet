@@ -74,7 +74,8 @@ sub index : Path : Args(0) {
     }
 
     # Down here so that error pages aren't cached.
-    $c->response->header('Cache-Control' => 'max-age=3600');
+    my $max_age = FixMyStreet->config('CACHE_TIMEOUT') // 3600;
+    $c->response->header('Cache-Control' => 'max-age=' . $max_age);
 }
 
 =head2 display_body_stats

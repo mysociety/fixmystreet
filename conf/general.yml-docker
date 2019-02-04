@@ -95,7 +95,7 @@ PHOTO_STORAGE_OPTIONS:
                     # it doesn't already exist. Requires the appropriate AWS
                     # permissions.
 #  REGION: 'eu-west-1' # optional, only used if CREATE_BUCKET is set. Controls
-# which AWS region the S3 bucket will be created in.
+                       # which AWS region the S3 bucket will be created in.
 
 # Location of MapIt, to map points to administrative areas, and what types of
 # area from it you want to use. If left blank, a default area will be used
@@ -224,6 +224,10 @@ GAZE_URL: 'https://gaze.mysociety.org/gaze'
 # Memcached host
 # This can be safely left out and will default to '127.0.0.1' even if not present.
 MEMCACHED_HOST: 'memcached.svc'
+
+# Cache timeout - integer, optional, default 3600s (1 hour)
+# Used for cache of front page stats/recent list, and /reports max-age.
+CACHE_TIMEOUT: 3600
 
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'

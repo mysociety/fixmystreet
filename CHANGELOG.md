@@ -14,6 +14,8 @@
         - Fix saving of inspect form data offline.
         - Add CSRF and time to contact form.
         - Make sure admin metadata dropdown index numbers are updated too.
+    - Development improvements:
+        - Make front page cache time configurable.
 
 * v2.5 (21st December 2018)
     - Front end improvements:
