@@ -373,7 +373,7 @@ sub inspect : Private {
     my $permissions = $c->stash->{_permissions};
 
     $c->forward('/admin/categories_for_point');
-    $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
+    $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
     if ($c->cobrand->can('council_area_id')) {
         my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});

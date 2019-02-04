@@ -13,6 +13,7 @@
         - Remove any use of `my $x if $foo`. #2377
         - Fix saving of inspect form data offline.
         - Add CSRF and time to contact form.
+        - Fix issue with Open311 codes starting with ‘_’.
 
 * v2.5 (21st December 2018)
     - Front end improvements:
