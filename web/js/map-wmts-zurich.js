@@ -135,7 +135,7 @@ fixmystreet.maps.config = function() {
     // This stuff is copied from js/map-bing-ol.js
 
     fixmystreet.controls = [
-        new OpenLayers.Control.ArgParser(),
+        new OpenLayers.Control.ArgParserFMS(),
         new OpenLayers.Control.Navigation()
     ];
     if ( fixmystreet.page != 'report' || !$('html').hasClass('mobile') ) {

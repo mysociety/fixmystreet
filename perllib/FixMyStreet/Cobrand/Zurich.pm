@@ -88,8 +88,6 @@ sub example_places {
 sub languages { [ 'de-ch,Deutsch,de_CH' ] }
 sub language_override { 'de-ch' }
 
-sub default_link_zoom { 6 }
-
 sub prettify_dt {
     my $self = shift;
     my $dt = shift;

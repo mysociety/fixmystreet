@@ -23,8 +23,6 @@ sub map_type {
     'Bristol';
 }
 
-sub default_link_zoom { 6 }
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

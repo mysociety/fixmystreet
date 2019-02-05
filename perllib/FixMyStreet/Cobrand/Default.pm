@@ -397,25 +397,6 @@ Return cobrand extra data for the problem
 
 sub cobrand_data_for_generic_problem { '' }
 
-=item uri
-
-Given a URL ($_[1]), QUERY, EXTRA_DATA, return a URL with any extra params
-needed appended to it.
-
-In the default case, we need to make sure zoom is always present if lat/lon
-are, to stop OpenLayers defaulting to null/0.
-
-=cut
-
-sub uri {
-    my ( $self, $uri ) = @_;
-    $uri->query_param( zoom => $self->default_link_zoom )
-      if $uri->query_param('lat') && !$uri->query_param('zoom');
-
-    return $uri;
-}
-
-
 =item header_params
 
 Return any params to be added to responses
@@ -1002,18 +983,14 @@ sub tweak_all_reports_map {}
 
 sub can_support_problems { return 0; }
 
-=item default_map_zoom / default_link_zoom
+=item default_map_zoom
 
 default_map_zoom is used when displaying a map overriding the
 default of max-4 or max-3 depending on population density.
 
-default_link_zoom is used in links that contain a 'lat' and no
-zoom, to stop e.g. OpenLayers defaulting to null/0.
-
 =cut
 
 sub default_map_zoom { undef };
-sub default_link_zoom { 3 }
 
 sub users_can_hide { return 0; }
 

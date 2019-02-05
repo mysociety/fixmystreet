@@ -44,6 +44,7 @@ sub display_map {
         if defined $c->get_param('lat');
     $params{longitude} = Utils::truncate_coordinate($c->get_param('lon') + 0)
         if defined $c->get_param('lon');
+    $params{zoomToBounds} = $params{any_zoom} && !defined $c->get_param('zoom');
 
     my $zoom = defined $c->get_param('zoom') ? $c->get_param('zoom') + 0 : $default_zoom;
     $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;

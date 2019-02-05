@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Track map state in URL to make sharing links easier. #2242
     - Admin improvements:
         - Include moderation history in report updates. #2379
         - Allow moderation to potentially change state. #2381

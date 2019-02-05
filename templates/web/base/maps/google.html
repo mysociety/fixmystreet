@@ -14,7 +14,7 @@ $.extend(fixmystreet, {
     'area': [ [% map.area.join(',') %] ],
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
-[% IF map.any_zoom -%]
+[% IF map.zoomToBounds -%]
     'zoomToBounds': 1,
 [%- END %]
 [% IF map.zoom -%]

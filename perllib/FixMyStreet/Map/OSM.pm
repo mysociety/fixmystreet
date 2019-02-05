@@ -57,6 +57,7 @@ sub display_map {
         if defined $c->get_param('lat');
     $params{longitude} = Utils::truncate_coordinate($c->get_param('lon') + 0)
         if defined $c->get_param('lon');
+    $params{zoomToBounds} = $params{any_zoom} && !defined $c->get_param('zoom');
 
     my %data;
     $data{cobrand} = $c->cobrand;
