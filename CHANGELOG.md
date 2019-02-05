@@ -14,6 +14,7 @@
         - Fix saving of inspect form data offline.
         - Add CSRF and time to contact form.
         - Make sure admin metadata dropdown index numbers are updated too.
+        - Fix issue with Open311 codes starting with ‘_’.
     - Development improvements:
         - Make front page cache time configurable.
 

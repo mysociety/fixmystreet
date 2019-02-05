@@ -1078,7 +1078,7 @@ sub set_report_extras : Private {
         foreach my $field ( @$metas ) {
             if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
                 unless ( $c->get_param($param_prefix . $field->{code}) ) {
-                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                    $c->stash->{field_errors}->{ 'x' . $field->{code} } = _('This information is required');
                 }
             }
             push @extra, {
@@ -1093,7 +1093,7 @@ sub set_report_extras : Private {
         if ( scalar @$contacts );
 
     if ( @extra ) {
-        $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
+        $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @extra };
         $c->stash->{report}->set_extra_fields( @extra );
     }
 }
