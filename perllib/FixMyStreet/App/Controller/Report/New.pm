@@ -286,7 +286,9 @@ sub by_category_ajax_data : Private {
     # unresponsive must return empty string if okay, as that's what mobile app checks
     if ($type eq 'one' || ($type eq 'all' && $unresponsive)) {
         $body->{unresponsive} = $unresponsive;
-        if ($type eq 'all' && $unresponsive) {
+        # Check for no bodies here, because if there are any (say one
+        # unresponsive, one not), can use default display code for that.
+        if ($type eq 'all' && !@$bodies) {
             $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html', $vars);
             $body->{councils_text_private} = $c->render_fragment( 'report/new/councils_text_private.html');
         }
@@ -635,7 +637,6 @@ sub setup_categories_and_bodies : Private {
 
     my @bodies = $c->model('DB::Body')->active->for_areas(keys %$all_areas)->all;
     my %bodies = map { $_->id => $_ } @bodies;
-    my $first_body = ( values %bodies )[0];
 
     my $contacts                #
       = $c                      #
@@ -654,17 +655,18 @@ sub setup_categories_and_bodies : Private {
       ();    # categories for which the reports are not public
     $c->stash->{unresponsive} = {};
 
-    if (keys %bodies == 1 && $first_body->send_method && $first_body->send_method eq 'Refused') {
-        # If there's only one body, and it's set to refused, we can show the
+    my @refused_bodies = grep { ($_->send_method || "") eq 'Refused' } values %bodies;
+    if (@refused_bodies && @refused_bodies == values %bodies) {
+        # If all bodies are set to Refused, we can show the
         # message immediately, before they select a category.
+        my $k = 'ALL';
         if ($c->action->name eq 'category_extras_ajax' && $c->req->method eq 'POST') {
             # The mobile app doesn't currently use this, in which case make
             # sure the message is output, either below with a category, or when
             # a blank category call is made.
-            $c->stash->{unresponsive}{""} = $first_body->id;
-        } else {
-            $c->stash->{unresponsive}{ALL} = $first_body->id;
+            $k = "";
         }
+        $c->stash->{unresponsive}{$k} = { map { $_ => 1 } keys %bodies };
     }
 
     # keysort does not appear to obey locale so use strcoll (see i18n.t)
@@ -694,14 +696,12 @@ sub setup_categories_and_bodies : Private {
 
         $non_public_categories{ $contact->category } = 1 if $contact->non_public;
 
-        unless ( $seen{$contact->category} ) {
-            push @category_options, $contact;
+        my $body_send_method = $contact->body->send_method || '';
+        $c->stash->{unresponsive}{$contact->category}{$contact->body_id} = 1
+            if !$c->stash->{unresponsive}{ALL} &&
+                ($contact->email =~ /^REFUSED$/i || $body_send_method eq 'Refused');
 
-            my $body_send_method = $bodies{$contact->body_id}->send_method || '';
-            $c->stash->{unresponsive}{$contact->category} = $contact->body_id
-                if !$c->stash->{unresponsive}{ALL} &&
-                    ($contact->email =~ /^REFUSED$/i || $body_send_method eq 'Refused');
-        }
+        push @category_options, $contact unless $seen{$contact->category};
         $seen{$contact->category} = $contact;
     }
 
@@ -1052,17 +1052,17 @@ sub contacts_to_bodies : Private {
         @contacts = @contacts_filtered if scalar @contacts_filtered;
     }
 
-    if ($c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL} || !@contacts) {
-        [];
-    } else {
+    my $unresponsive = $c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL};
+    if ($unresponsive) {
+        @contacts = grep { !$unresponsive->{$_->body_id} } @contacts;
+    } elsif (@contacts) {
         if ( $c->cobrand->call_hook('singleton_bodies_str') ) {
             # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
             # relies on string comparison against bodies_str.
-            [ $contacts[0]->body ];
-        } else {
-            [ map { $_->body } @contacts ];
+            @contacts = ($contacts[0]);
         }
     }
+    [ map { $_->body } @contacts ];
 }
 
 sub set_report_extras : Private {
