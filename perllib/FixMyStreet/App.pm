@@ -237,9 +237,9 @@ sub setup_request {
     $c->stash->{map_js} = FixMyStreet::Map::map_javascript();
 
     unless ( FixMyStreet->config('MAPIT_URL') ) {
-        my $port = $c->req->uri->port;
-        $host = "$host:$port" unless $port == 80;
-        mySociety::MaPit::configure( "http://$host/fakemapit/" );
+        my $host_port = $c->req->uri->host_port;
+        my $scheme = $c->req->uri->scheme;
+        mySociety::MaPit::configure( "$scheme://$host_port/fakemapit/" );
     }
 
     $c->stash->{has_fixed_state} = FixMyStreet::DB::Result::Problem::fixed_states->{fixed};

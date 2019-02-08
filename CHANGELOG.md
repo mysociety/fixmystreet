@@ -19,6 +19,7 @@
         - Fix issue with Open311 codes starting with ‘_’.
     - Development improvements:
         - Make front page cache time configurable.
+        - Better working of /fakemapit/ under https.
 
 * v2.5 (21st December 2018)
     - Front end improvements:
