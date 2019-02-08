@@ -35,7 +35,7 @@ body_validation_rules = {
         },
         name: {
           required: true,
-          maxlength: 70
+          maxlength: 50
         },
         phone: {
           maxlength: 30
