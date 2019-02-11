@@ -1984,8 +1984,7 @@ label .muted {
   color: #666;
 
   // Reduce space between labels and their form-hints
-  label + &,
-  #front-main label + & {
+  label + & {
     margin-top: -0.5em;
   }
 }
