@@ -9,6 +9,7 @@
         - Spot moderation conflicts and raise an error. #2384
         - Allow searching for <email> in admin.
         - Make staff JavaScript more self-contained.
+        - Alow staff user to be associated with multiple areas.
     - Bugfixes:
         - Check cached reports do still have photos before being shown. #2374
         - Delete cache photos upon photo moderation. #2374

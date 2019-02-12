@@ -209,7 +209,7 @@ FixMyStreet::override_config {
                 phone_verified => undef,
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                area_ids => undef,
                 %default_perms,
             },
             changes => {
@@ -229,7 +229,7 @@ FixMyStreet::override_config {
                 phone_verified => undef,
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                area_ids => undef,
                 %default_perms,
             },
             changes => {
@@ -249,7 +249,7 @@ FixMyStreet::override_config {
                 phone_verified => undef,
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                area_ids => undef,
                 %default_perms,
             },
             changes => {
@@ -269,7 +269,7 @@ FixMyStreet::override_config {
                 phone_verified => undef,
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                area_ids => undef,
                 %default_perms,
             },
             changes => {
@@ -289,7 +289,7 @@ FixMyStreet::override_config {
                 phone_verified => undef,
                 flagged => 'on',
                 is_superuser => undef,
-                area_id => '',
+                area_ids => undef,
                 %default_perms,
             },
             changes => {
@@ -309,7 +309,7 @@ FixMyStreet::override_config {
                 phone_verified => undef,
                 flagged => undef,
                 is_superuser => undef,
-                area_id => '',
+                area_ids => undef,
                 %default_perms,
             },
             changes => {
@@ -332,7 +332,7 @@ FixMyStreet::override_config {
                 phone_verified => undef,
                 flagged => undef,
                 is_superuser => 'on',
-                area_id => '',
+                area_ids => undef,
             },
             changes => {
                 is_superuser => undef,

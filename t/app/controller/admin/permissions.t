@@ -181,6 +181,7 @@ FixMyStreet::override_config {
 
     subtest "Unsetting user from_body removes all permissions and area " => sub {
         is $user2->user_body_permissions->count, 1, 'user2 has 1 permission';
+        $user2->update({ area_ids => [123] }); # Set to check cleared
 
         $mech->get_ok("/admin/user_edit/$user2_id");
         $mech->content_contains('Moderate report details');
@@ -204,8 +205,9 @@ FixMyStreet::override_config {
             "permissions[user_assign_areas]" => undef,
         } } );
 
+        $user2->discard_changes;
         is $user2->user_body_permissions->count, 0, 'user2 has had permissions removed';
-        is $user2->area_id, undef, 'user2 has had area removed';
+        is $user2->area_ids, undef, 'user2 has had area removed';
     };
 };
 

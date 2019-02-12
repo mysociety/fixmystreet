@@ -113,7 +113,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'area user can only see their area' => sub {
-        $counciluser->update({area_id => $area_id});
+        $counciluser->update({area_ids => [ $area_id ]});
 
         $mech->get_ok("/dashboard");
         $mech->content_contains('<h1>Trowbridge</h1>');
@@ -122,7 +122,11 @@ FixMyStreet::override_config {
         $mech->get_ok("/dashboard?ward=$alt_area_id");
         $mech->content_contains('<h1>Trowbridge</h1>');
 
-        $counciluser->update({area_id => undef});
+        $counciluser->update({area_ids => [ $area_id, $alt_area_id ]});
+        $mech->get_ok("/dashboard");
+        $mech->content_contains('<h1>Bradford-on-Avon / Trowbridge</h1>');
+
+        $counciluser->update({area_ids => undef});
     };
 
     subtest 'The correct categories and totals shown by default' => sub {

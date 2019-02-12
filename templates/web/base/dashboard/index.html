@@ -24,12 +24,12 @@
 <div class="filters">
   [% IF body %]
     <input type="hidden" name="body" value="[% body.id | html %]">
-    [% IF NOT c.user.area_id %]
+    [% IF NOT c.user.area_ids.size %]
     <p>
         <label for="ward">[% loc('Ward:') %]</label>
-        <select class="form-control" name="ward" id="ward"><option value=''>[% loc('All') %]</option>
+        <select class="form-control js-multiple" multiple name="ward" id="ward">
             [% FOR w IN children.values.sort('name') %]
-                <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
+                <option value="[% w.id %]"[% ' selected' IF ward.grep(w.id).size %]>[% w.name %]</option>
             [% END %]
         </select>
     </p>
@@ -47,7 +47,7 @@
   [% ELSE %]
 
     <p>
-        <label for="ward">[% loc('Council:') %]</label>
+        <label for="body">[% loc('Council:') %]</label>
         <select class="form-control" name="body" id="body"><option value=''>[% loc('All') %]</option>
             [% FOR b IN bodies %]
                 [% NEXT IF NOT b.area_count %]
@@ -59,7 +59,7 @@
   [% END %]
 
     <p>
-        <label for="state">[% loc('Report state:') %]</label>
+        <label for="state">[% loc('Report state:') | replace(' ', '&nbsp;') %]</label>
         <select class="form-control" name="state" id="state">
             <option value=''>[% loc('All') %]</option>
           [% FOR group IN filter_states %]
