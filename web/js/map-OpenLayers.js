@@ -491,7 +491,7 @@ $.extend(fixmystreet.utils, {
         } else {
             delete qs.p;
         }
-        update_history(new_url, {
+        update_history(qs, {
             page_change: { 'page': page, 'show_old_reports': show_old_reports }
         });
     }
