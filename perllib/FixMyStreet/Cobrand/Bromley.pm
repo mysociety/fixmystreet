@@ -20,6 +20,15 @@ sub report_validation {
     return $errors;
 }
 
+# This makes sure that the subcategory Open311 attribute question is
+# also stored in the report's subcategory column. This could be done
+# in process_open311_extras, but seemed easier to keep that separate
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    $report->subcategory($report->get_extra_field_value('service_sub_code'));
+}
+
 sub base_url {
     my $self = shift;
     return $self->next::method() if FixMyStreet->config('STAGING_SITE');
