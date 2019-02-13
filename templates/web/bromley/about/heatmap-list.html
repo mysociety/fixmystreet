@@ -1,0 +1,28 @@
+<h3>Five newest reports</h3>
+[% INCLUDE column problems = five_newest %]
+
+<h3>Five most recent commented reports<br>
+<small>Not from yourself or Confirm</small>
+</h3>
+[% INCLUDE column problems = five_commented %]
+
+<h3>Ten least recently updated open reports</h3>
+[% INCLUDE column problems = ten_oldest %]
+
+[% BLOCK column %]
+<section class="full-width">
+    <ul class="item-list item-list--reports">
+        [% IF problems.size %]
+            [% FOREACH problem IN problems %]
+                [% INCLUDE 'reports/_list-entry.html' include_sentinfo = 1 include_lastupdate = 1 %]
+            [% END %]
+        [% ELSE %]
+            <li class="item-list__item item-list__item--empty">
+                <p>[% loc('There are no reports to show.') %]</p>
+            </li>
+        [% END %]
+    </ul>
+</section>
+[% END %]
+
+

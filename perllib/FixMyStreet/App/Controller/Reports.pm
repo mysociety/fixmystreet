@@ -118,7 +118,7 @@ sub ward : Path : Args(2) {
 
     $c->forward('/auth/get_csrf_token');
 
-    my @wards = split /\|/, $ward || "";
+    my @wards = $c->get_param('wards') ? $c->get_param_list('wards', 1) : split /\|/, $ward || "";
     $c->forward( 'body_check', [ $body ] );
 
     # If viewing multiple wards, rewrite the url from
@@ -154,7 +154,8 @@ sub ward : Path : Args(2) {
     $c->forward( 'load_and_group_problems' );
 
     if ($c->get_param('ajax')) {
-        $c->detach('ajax', [ 'reports/_problem-list.html' ]);
+        my $ajax_template = $c->stash->{ajax_template} || 'reports/_problem-list.html';
+        $c->detach('ajax', [ $ajax_template ]);
     }
 
     $c->stash->{rss_url} = '/rss/reports/' . $body_short;
@@ -164,14 +165,14 @@ sub ward : Path : Args(2) {
     $c->stash->{stats} = $c->cobrand->get_report_stats();
 
     my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
-        columns => [ 'category', 'extra' ],
+        columns => [ 'id', 'category', 'extra' ],
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
 
-    my $pins = $c->stash->{pins};
+    my $pins = $c->stash->{pins} || [];
 
     my %map_params = (
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
@@ -554,7 +555,7 @@ sub load_and_group_problems : Private {
 
     my $states = $c->stash->{filter_problem_states};
     my $where = {
-        state      => [ keys %$states ]
+        'me.state' => [ keys %$states ]
     };
 
     $c->forward('check_non_public_reports_permission', [ $where ] );
@@ -613,12 +614,21 @@ sub load_and_group_problems : Private {
         $where->{longitude} = { '>=', $min_lon, '<', $max_lon };
     }
 
-    $problems = $problems->search(
-        $where,
-        $filter
-    )->include_comment_counts->page( $page );
+    my $cobrand_problems = $c->cobrand->call_hook('munge_load_and_group_problems', $where, $filter);
 
-    $c->stash->{pager} = $problems->pager;
+    # JS will request the same (or more) data client side
+    return if $c->get_param('js');
+
+    if ($cobrand_problems) {
+        $problems = $cobrand_problems;
+    } else {
+        $problems = $problems->search(
+            $where,
+            $filter
+        )->include_comment_counts->page( $page );
+
+        $c->stash->{pager} = $problems->pager;
+    }
 
     my ( %problems, @pins );
     while ( my $problem = $problems->next ) {

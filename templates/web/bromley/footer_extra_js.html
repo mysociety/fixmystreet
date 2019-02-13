@@ -3,3 +3,8 @@
     version('/cobrands/bromley/a-z-nav.js'),
     version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
 ) %]
+[% IF bodyclass.match('mappage');
+    scripts.push(
+        version('/cobrands/bromley/js.js'),
+    );
+END %]
