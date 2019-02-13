@@ -228,4 +228,16 @@ subtest 'check special subcategories in admin' => sub {
     is_deeply $user->get_extra_metadata('subcategories'), [ 'BLUE' ];
 };
 
+subtest 'check heatmap page' => sub {
+    $user->update({ area_ids => [ 60705 ] });
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/about/heatmap?end_date=2018-12-31');
+        $mech->get_ok('/about/heatmap?filter_category=RED&ajax=1');
+    };
+};
+
 done_testing();

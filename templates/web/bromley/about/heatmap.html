@@ -1,0 +1,50 @@
+[%
+    map_js.push(version('/cobrands/bromley/HeatmapLayer.js'));
+    PROCESS "maps/${map.type}.html";
+    SET bodyclass = 'mappage';
+    INCLUDE 'header.html',
+        title = tprintf(loc('%s - Summary reports'), body.name)
+%]
+
+[% map_html %]
+
+</div>
+<div id="map_sidebar">
+    <div id="side">
+
+    <h1 id="reports_heading">
+        [% body.name %]
+    </h1>
+
+<div class="full-width">
+
+[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+
+<p class="report-list-filters" style='padding-top:0.25em'>
+    From <input type="date" id="start_date" name="start_date" class="form-control" value="[% start_date | html %]">
+    To <input type="date" id="end_date" name="end_date" class="form-control" value="[% end_date | html %]">
+
+<p class="report-list-filters">
+In wards <select class="form-control js-multiple" multiple id="wards" name="wards">
+  [% FOR child IN children.values.sort('name') %]
+  [% SET aid = child.id %]
+  <option value="[% child.name | html %]"[% ' selected' IF ward_hash.$aid %]>[% child.name %]</option>
+  [% END %]
+</select>
+
+</div>
+
+<p class="segmented-control segmented-control--radio">
+    <input type="radio" name="heatmap" id="heatmap_yes" value="Yes">
+    <label class="btn" for="heatmap_yes">Heatmap</label>
+    <input type="radio" name="heatmap" id="heatmap_no" value="No" checked>
+    <label class="btn" for="heatmap_no">Pin map</label>
+</p>
+
+<div id="js-reports-list">
+    [% INCLUDE 'about/heatmap-list.html' %]
+</div>
+
+    </div>
+</div>
+[% INCLUDE 'footer.html' %]
