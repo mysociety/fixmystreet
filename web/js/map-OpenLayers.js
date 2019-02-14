@@ -483,10 +483,9 @@ $.extend(fixmystreet.utils, {
         }
         var qs = fixmystreet.utils.parse_query_string();
 
-        var show_old_reports = '';
+        var show_old_reports = replace_query_parameter(qs, 'show_old_reports', 'show_old_reports');
         var page = $('.pagination:first').data('page');
         if (page > 1) {
-            show_old_reports = replace_query_parameter(qs, 'show_old_reports', 'show_old_reports');
             qs.p = page;
         } else {
             delete qs.p;
