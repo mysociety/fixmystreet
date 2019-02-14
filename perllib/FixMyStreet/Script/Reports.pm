@@ -283,7 +283,7 @@ sub send(;$) {
         } );
         while (my $row = $unsent->next) {
             my $base_url = FixMyStreet->config('BASE_URL');
-            $sending_errors .= "* " . $base_url . "/report/" . $row->id . ", failed "
+            $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* " . $base_url . "/report/" . $row->id . ", failed "
                 . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
                 . ", reason " . $row->send_fail_reason . "\n";
         }
