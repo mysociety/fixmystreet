@@ -1,0 +1,20 @@
+[%
+SET first = body_id.keys.first; # Might be more than one, but showing one will do
+SET soon = bodies.$first.name == 'Northamptonshire County Council' %]
+<div class="box-warning">
+    <h1>Important message</h1>
+    <p>
+        <span class="unresponsive-council">[% bodies.$first.name %]</span> doesn’t currently accept
+      [% IF soon %]
+        FixMyStreet reports – though it will do so soon.
+      [% ELSE %]
+      [% IF category %]
+        <span class="refused-category">[% category | html %]</span>
+      [% END %]
+        reports from third party reporting sites such as FixMyStreet.
+      [% END %]
+    </p>
+    <p>We can make your report public, but [% 'at the moment' IF soon %] we can’t send it to
+    [% IF bodies.size > 1 %] that [% ELSE %] the [% END %] council.</p>
+    <a href="https://www.fixmystreet.com/unresponsive?body=[% first %][% IF category %];category=[% category | uri %][% END %]" class="btn">[% soon ? 'Find out more' : 'What can I do instead?' %]</a>
+</div>
