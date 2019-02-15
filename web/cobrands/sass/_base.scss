@@ -1199,7 +1199,8 @@ input.final-submit {
         background-color: rgba(255, 255, 255, 0.5);
     }
 
-    .item-list--reports__item--selected {
+    .item-list--reports__item--selected,
+    .js & .item-list--reports__item--selected.expanded:hover {
         border: 0.25em solid $primary;
         background-color: #fff;
     }
@@ -1253,6 +1254,76 @@ input.final-submit {
 
   .item-list__item {
     background-color: transparent;
+  }
+}
+
+.item-list__item--expandable {
+  @include clearfix();
+  border-top: 1px solid #fff;
+  background-color: transparent;
+  margin: 0;
+  padding: 1em;
+
+  .js & {
+      cursor: pointer;
+
+      &:hover, &.hovered {
+          background-color: $itemlist_item_background_hover;
+      }
+  }
+
+  h3 {
+      margin: 0;
+  }
+
+  .img {
+      float: $right;
+      width: 90px;
+      height: auto;
+      margin: flip(0 0 0.5em 1em, 0 1em 0.5em 0);
+  }
+
+  small {
+      color: #666;
+      display: block;
+      margin-top: 0.5em;
+  }
+
+  p {
+      line-height: 1.4em;
+      margin-top: 0.5em;
+  }
+
+  &.expanded {
+      .js & {
+          cursor: default;
+
+          &:hover {
+              background-color: transparent;
+          }
+      }
+  }
+}
+
+.item-list__item--expandable__actions {
+  @include flex-container();
+
+  & > * {
+      @include flex(1); // Force equal width children
+  }
+}
+
+.item-list__item--expandable__hide-until-expanded {
+  display: none;
+
+  .expanded & {
+      display: block;
+  }
+}
+
+.item-list__item--expandable__hide-when-expanded {
+  .expanded & {
+      display: none;
   }
 }
 
