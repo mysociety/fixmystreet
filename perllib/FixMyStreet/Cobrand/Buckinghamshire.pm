@@ -140,6 +140,8 @@ sub open311_contact_meta_override {
 sub process_open311_extras {
     my ($self, $c, $body, $extra) = @_;
 
+    return unless $c->stash->{report}; # Don't care about updates
+
     $self->flytipping_body_fix(
         $c->stash->{report},
         $c->get_param('road-placement'),
