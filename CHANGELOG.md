@@ -1,6 +1,9 @@
 ## Releases
 
 * Unreleased
+    - New features:
+        - (Optional) auto-suggestion of similar nearby problems,
+          while reporting, to discourage duplicate reports. #2386
     - Front end improvements:
         - Track map state in URL to make sharing links easier. #2242
     - Admin improvements:

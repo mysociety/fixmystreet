@@ -1,0 +1,42 @@
+[% IF c.cobrand.suggest_duplicates %]
+[% extra_js.push(
+    version('/js/duplicates.js'),
+) -%]
+<div id="js-duplicate-reports" class="duplicate-report-suggestions hidden">
+    <button class="duplicate-report-suggestions__close js-hide-duplicate-suggestions">[% loc('Close') %]</button>
+    <h2 class="form-section-heading">[% loc('Already been reported?') %]</h2>
+    <div class="form-section-description">
+      [% IF c.cobrand.is_council %]
+        <p>[% loc('There are similar problems nearby that we’re already aware of, is one of them yours?') %]</p>
+      [% ELSE %]
+         <p>[% loc('We’ve already reported these nearby problems to the council. Is one of them yours?') %]</p>
+      [% END %]
+    </div>
+
+    <ul class="item-list"></ul>
+    <button class="btn btn--block js-hide-duplicate-suggestions">[% loc('Continue – report a new problem') %]</button>
+</div>
+<div class="js-template-get-updates hidden">
+    <div id="alerts" class="get-updates js-alert-list">
+        <p id="rznvy_hint">
+          [% IF c.user_exists %]
+            [% loc('Would you like us to notify you when this problem is updated or fixed?') %]
+          [% ELSE %]
+            [% loc('If you let us know your email address, we’ll notify you when this problem is updated or fixed.') %]
+          [% END %]
+        </p>
+        <input type="hidden" name="id" disabled>
+        <input type="hidden" name="token" value="[% csrf_token %]" disabled>
+        <input type="hidden" name="type" value="updates" disabled>
+      [% IF c.user_exists %]
+        <input type="submit" value="[% loc('Get updates') %]" class="btn btn--block" id="alert_email_button">
+      [% ELSE %]
+        <label for="rznvy_input">[% loc('Your email') %]</label>
+        <div class="form-txt-submit-box">
+            <input type="email" class="form-control" name="rznvy" id="rznvy_input" aria-described-by="rznvy_hint" disabled>
+            <input type="submit" value="[% loc('Get updates') %]" class="btn" id="alert_email_button">
+        </div>
+      [% END %]
+    </div>
+</div>
+[% END %]

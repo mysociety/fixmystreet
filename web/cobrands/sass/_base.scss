@@ -530,6 +530,53 @@ ul.error {
   @include border-radius(0.25em);
 }
 
+.duplicate-report-suggestions {
+    position: relative;
+
+    .item-list__item--expandable {
+      border-top: 1px solid #ddd;
+    }
+
+    .item-list {
+        margin: 0 -1em 1em -1em;
+        border-bottom: 1px solid #ddd;
+    }
+}
+
+.duplicate-report-suggestions__close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: block;
+    width: 32px;
+    height: 0;
+    padding-top: 32px;
+    overflow: hidden;
+    border: none;
+    background: transparent;
+    opacity: 0.5;
+    line-height: 2em; // Make sure line box is taller than text, so text is pushed below hidden overflow.
+
+    &:hover,
+    &:focus {
+        opacity: 0.7;
+    }
+
+    // Doing some gymnastics so we can reuse the existing .btn--close icon.
+    &:before {
+      content: "";
+      display: block;
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background-repeat: no-repeat;
+      background-size: 112px 16px;
+      @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
+      background-position: -32px 0;
+    }
+}
 
 /*** LAYOUT ***/
 
@@ -1256,16 +1303,22 @@ input.final-submit {
 
 .item-list__item--expandable {
   @include clearfix();
-  border-top: 1px solid #fff;
-  background-color: transparent;
   margin: 0;
   padding: 1em;
 
   .js & {
       cursor: pointer;
 
-      &:hover, &.hovered {
+      &:hover,
+      &.hovered {
           background-color: $itemlist_item_background_hover;
+      }
+
+      &.item-list__item--selected,
+      &.item-list__item--selected:hover,
+      &.item-list__item--selected.hovered {
+          cursor: default;
+          background-color: #fff;
       }
   }
 
@@ -1296,7 +1349,7 @@ input.final-submit {
           cursor: default;
 
           &:hover {
-              background-color: transparent;
+              background-color: $itemlist_item_background;
           }
       }
   }
@@ -1321,6 +1374,16 @@ input.final-submit {
 .item-list__item--expandable__hide-when-expanded {
   .expanded & {
       display: none;
+  }
+}
+
+.item-list__item .get-updates {
+  margin: 0 -1em -1em -1em;
+  padding: 1em;
+  background-color: $itemlist_item_background_hover;
+
+  p, label {
+    margin: 0 0 0.5em 0;
   }
 }
 

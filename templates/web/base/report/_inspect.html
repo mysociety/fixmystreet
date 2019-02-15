@@ -1,3 +1,6 @@
+[% extra_js = [
+    version('/js/duplicates.js'),
+] -%]
 [% permissions = c.user.permissions(problem) %]
 [% second_column = BLOCK -%]
   <div id="side-inspect">
@@ -120,7 +123,7 @@
             <p class="[% "hidden" IF problem.duplicate_of %]">[% loc('Which report is it a duplicate of?') %]</p>
             <ul class="item-list item-list--inspect-duplicates">
               [% IF problem.duplicate_of %]
-                [% INCLUDE 'report/_item.html' item_extra_class = 'item-list__item--selected' problem = problem.duplicate_of %]
+                [% INCLUDE 'report/_item_expandable.html' item_extra_class = 'item-list__item--selected' problem = problem.duplicate_of %]
                 <li class="item-list__item"><a class="btn" href="#" id="js-change-duplicate-report">[% loc('Choose another') %]</a></li>
               [% END %]
             </ul>
@@ -129,7 +132,7 @@
             <p><strong>[% loc('Duplicates') %]</strong></p>
             <ul class="item-list item-list--inspect-duplicates">
               [% FOR duplicate IN problem.duplicates %]
-                [% INCLUDE 'report/_item.html' problem = duplicate %]
+                [% INCLUDE 'report/_item_expandable.html' problem = duplicate %]
               [% END %]
             </ul>
           [% END %]
