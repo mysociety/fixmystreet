@@ -1647,7 +1647,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         if (!$user->from_body) {
             # Non-staff users aren't allowed any permissions or to be in an area
             $user->admin_user_body_permissions->delete;
-            $user->area_id(undef);
+            $user->area_ids(undef);
             delete $c->stash->{areas};
             delete $c->stash->{fetched_areas_body_id};
         } elsif ($c->stash->{available_permissions}) {
@@ -1667,8 +1667,8 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->from_body && $c->user->has_permission_to('user_assign_areas', $user->from_body->id) ) {
             my %valid_areas = map { $_->{id} => 1 } @{ $c->stash->{areas} };
-            my $new_area = $c->get_param('area_id');
-            $user->area_id( $valid_areas{$new_area} ? $new_area : undef );
+            my @area_ids = grep { $valid_areas{$_} } $c->get_param_list('area_ids');
+            $user->area_ids( @area_ids ? \@area_ids : undef );
         }
 
         # Handle 'trusted' flag(s)

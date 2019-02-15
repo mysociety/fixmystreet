@@ -35,7 +35,7 @@ create table users (
     title           text,
     twitter_id      bigint  unique,
     facebook_id     bigint  unique,
-    area_id         integer,
+    area_ids        integer ARRAY,
     extra           text
 );
 CREATE UNIQUE INDEX users_email_verified_unique ON users (email) WHERE email_verified;

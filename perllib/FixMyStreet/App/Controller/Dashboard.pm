@@ -105,15 +105,18 @@ sub index : Path : Args(0) {
 
         # See if we've had anything from the body dropdowns
         $c->stash->{category} = $c->get_param('category');
-        $c->stash->{ward} = $c->get_param('ward');
-        if ($c->user_exists && $c->user->area_id) {
-            $c->stash->{ward} = $c->user->area_id;
-            $c->stash->{body_name} = join "", map { $children->{$_}->{name} } grep { $children->{$_} } $c->user->area_id;
+        $c->stash->{ward} = [ $c->get_param_list('ward') ];
+        if ($c->user_exists) {
+            if (my @areas = @{$c->user->area_ids || []}) {
+                $c->stash->{ward} = $c->user->area_ids;
+                $c->stash->{body_name} = join " / ", sort map { $children->{$_}->{name} } grep { $children->{$_} } @areas;
+            }
         }
     } else {
         my @bodies = $c->model('DB::Body')->search(undef, {
             columns => [ "id", "name" ],
         })->active->translated->with_area_count->all_sorted;
+        $c->stash->{ward} = [];
         $c->stash->{bodies} = \@bodies;
     }
 
@@ -142,8 +145,8 @@ sub construct_rs_filter : Private {
     my ($self, $c, $updates) = @_;
 
     my %where;
-    $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }
-        if $c->stash->{ward};
+    $where{areas} = [ map { { 'like', "%,$_,%" } } @{$c->stash->{ward}} ]
+        if @{$c->stash->{ward}};
     $where{category} = $c->stash->{category}
         if $c->stash->{category};
 
@@ -298,7 +301,7 @@ sub csv_filename {
     my %where = (
         category => $c->stash->{category},
         state => $c->stash->{q_state},
-        ward => $c->stash->{ward},
+        ward => join(',', @{$c->stash->{ward}}),
     );
     $where{body} = $c->stash->{body}->id if $c->stash->{body};
     join '-',
@@ -475,7 +478,7 @@ sub generate_csv : Private {
 
     my $filename = $c->stash->{csv}->{filename};
     $c->res->content_type('text/csv; charset=utf-8');
-    $c->res->header('content-disposition' => "attachment; filename=${filename}.csv");
+    $c->res->header('content-disposition' => "attachment; filename=\"${filename}.csv\"");
     $c->res->body( join "", @body );
 }
 
