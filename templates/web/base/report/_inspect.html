@@ -120,7 +120,7 @@
             <p class="[% "hidden" IF problem.duplicate_of %]">[% loc('Which report is it a duplicate of?') %]</p>
             <ul class="item-list item-list--inspect-duplicates">
               [% IF problem.duplicate_of %]
-                [% INCLUDE 'report/_item.html' item_extra_class = 'item-list--reports__item--selected' problem = problem.duplicate_of %]
+                [% INCLUDE 'report/_item.html' item_extra_class = 'item-list__item--selected' problem = problem.duplicate_of %]
                 <li class="item-list__item"><a class="btn" href="#" id="js-change-duplicate-report">[% loc('Choose another') %]</a></li>
               [% END %]
             </ul>

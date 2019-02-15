@@ -1194,13 +1194,10 @@ input.final-submit {
 // that appears in Inspector form, when closing a report as a duplicate.
 .item-list--inspect-duplicates {
     border-bottom: none;
+    background-color: rgba(255, 255, 255, 0.5);
 
-    .item-list__item {
-        background-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .item-list--reports__item--selected,
-    .js & .item-list--reports__item--selected.expanded:hover {
+    .item-list__item--selected,
+    .js & .item-list__item--selected.expanded:hover {
         border: 0.25em solid $primary;
         background-color: #fff;
     }
