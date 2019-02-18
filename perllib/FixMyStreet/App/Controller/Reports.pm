@@ -626,19 +626,11 @@ sub load_and_group_problems : Private {
             add_row( $c, $problem, 0, \%problems, \@pins );
             next;
         }
-        if ( !$problem->bodies_str ) {
-            # Problem was not sent to any body, add to all possible areas XXX
-            my $a = $problem->areas; # Store, as otherwise is looked up every iteration.
-            while ($a =~ /,(\d+)(?=,)/g) {
-                add_row( $c, $problem, $1, \%problems, \@pins );
-            }
-        } else {
-            # Add to bodies it was sent to
-            my $bodies = $problem->bodies_str_ids;
-            foreach ( @$bodies ) {
-                next if $_ != $body->id;
-                add_row( $c, $problem, $_, \%problems, \@pins );
-            }
+        # Add to bodies it was sent to
+        my $bodies = $problem->bodies_str_ids;
+        foreach ( @$bodies ) {
+            next if $_ != $body->id;
+            add_row( $c, $problem, $_, \%problems, \@pins );
         }
     }
 
