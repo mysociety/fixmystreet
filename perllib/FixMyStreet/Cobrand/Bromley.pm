@@ -20,6 +20,15 @@ sub report_validation {
     return $errors;
 }
 
+# This makes sure that the subcategory Open311 attribute question is
+# also stored in the report's subcategory column. This could be done
+# in process_open311_extras, but seemed easier to keep that separate
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    $report->subcategory($report->get_extra_field_value('service_sub_code'));
+}
+
 sub base_url {
     my $self = shift;
     return $self->next::method() if FixMyStreet->config('STAGING_SITE');
@@ -233,6 +242,62 @@ sub open311_contact_meta_override {
     );
     my %ignore = map { $_ => 1 } @override;
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
+}
+
+# If any subcategories ticked in user edit admin, make sure they're saved.
+sub admin_user_edit_extra_data {
+    my $self = shift;
+    my $c = $self->{c};
+    my $user = $c->stash->{user};
+
+    return unless $c->get_param('submit') && $user && $user->from_body;
+
+    $c->stash->{body} = $user->from_body;
+    my %subcats = $self->subcategories;
+    my @subcat_ids = map { $_->{key} } map { @$_ } values %subcats;
+    my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @subcat_ids;
+    $user->set_extra_metadata('subcategories', \@new_contact_ids);
+}
+
+# Returns a hash of contact ID => list of subcategories
+# (which are stored as Open311 attribute questions)
+sub subcategories {
+    my $self = shift;
+
+    my @c = $self->body->contacts->not_deleted->all;
+    my %subcategories;
+    foreach my $contact (@c) {
+        my @fields = @{$contact->get_extra_fields};
+        my ($field) = grep { $_->{code} eq 'service_sub_code' } @fields;
+        $subcategories{$contact->id} = $field->{values} || [];
+    }
+    return %subcategories;
+}
+
+# Returns the list of categories, with Bromley subcategories added,
+# for the user edit admin interface
+sub add_admin_subcategories {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $user = $c->stash->{user};
+    my @subcategories = @{$user->get_extra_metadata('subcategories') || []};
+    my %active_contacts = map { $_ => 1 } @subcategories;
+
+    my %subcats = $self->subcategories;
+    my $contacts = $c->stash->{contacts};
+    my @new_contacts;
+    foreach (@$contacts) {
+        push @new_contacts, $_;
+        foreach (@{$subcats{$_->{id}}}) {
+            push @new_contacts, {
+                id => $_->{key},
+                category => ("&nbsp;" x 4) . $_->{name},
+                active => $active_contacts{$_->{key}},
+            };
+        }
+    }
+    return \@new_contacts;
 }
 
 1;

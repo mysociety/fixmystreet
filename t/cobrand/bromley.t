@@ -4,7 +4,7 @@ use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
 # Create test data
-my $user = $mech->create_user_ok( 'bromley@example.com' );
+my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $body = $mech->create_body_ok( 2482, 'Bromley Council');
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -16,6 +16,7 @@ $contact->set_extra_fields(
     { code => 'easting', datatype => 'number', },
     { code => 'northing', datatype => 'number', },
     { code => 'service_request_id_ext', datatype => 'number', },
+    { code => 'service_sub_code', values => [ { key => 'RED', name => 'Red' }, { key => 'BLUE', name => 'Blue' } ], },
 );
 $contact->update;
 my $tfl = $mech->create_body_ok( 2482, 'TfL');
@@ -209,6 +210,22 @@ subtest 'check geolocation overrides' => sub {
         is $res->{town}, $test->{town}, "Town matches $test->{town}";
         is $res->{string}, $test->{string}, "String matches $test->{string}";
     }
+};
+
+subtest 'check special subcategories in admin' => sub {
+    $mech->create_user_ok('superuser@example.com', is_superuser => 1);
+    $mech->log_in_ok('superuser@example.com');
+    $user->update({ from_body => $body->id });
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/admin/user_edit/' . $user->id);
+        $mech->submit_form_ok({ with_fields => { 'contacts['.$contact->id.']' => 1, 'contacts[BLUE]' => 1 } });
+    };
+    $user->discard_changes;
+    is_deeply $user->get_extra_metadata('categories'), [ $contact->id ];
+    is_deeply $user->get_extra_metadata('subcategories'), [ 'BLUE' ];
 };
 
 done_testing();
