@@ -3,7 +3,7 @@
 
 [% status_message %]
 
-<form method="post" id="user_edit" action="[% c.uri_for( 'user_import' ) %]" enctype="multipart/form-data" accept-charset="utf-8">
+<form method="post" id="user_edit" enctype="multipart/form-data" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
 
@@ -27,7 +27,7 @@
         [% FOREACH user IN new_users %]
             <tr>
                 <td>
-                    <a href="[% c.uri_for_action( 'admin/user_edit', user.id ) %]">
+                    <a href="[% c.uri_for_action( 'admin/users/edit', user.id ) %]">
                         [% user.name %]
                     </a>
                 </td>
@@ -50,7 +50,7 @@
         [% FOREACH user IN existing_users %]
             <tr>
                 <td>
-                    <a href="[% c.uri_for_action( 'admin/user_edit', user.id ) %]">
+                    <a href="[% c.uri_for_action( 'admin/users/edit', user.id ) %]">
                         [% user.name %]
                     </a>
                 </td>

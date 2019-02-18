@@ -39,12 +39,12 @@
             [% IF c.cobrand.moniker == 'zurich' %]
               [% FILTER repeat(4*body.indent_level) %]&nbsp;[% END %]
               [% IF admin_type == 'super' %]
-                <a href="[% c.uri_for( 'body', id ) %]">[% body.name | html %]</a>
+                <a href="[% c.uri_for_action( 'admin/bodies/edit', [ id ] ) %]">[% body.name | html %]</a>
               [% ELSE %]
                 [% body.name | html %]
               [% END %]
             [% ELSE %] [%# not Zurich: all bodies should be links %]
-              <a href="[% c.uri_for( 'body', id ) %]">[% body.name | html%]</a>
+              <a href="[% c.uri_for_action( 'admin/bodies/edit', [ id ] ) %]">[% body.name | html %]</a>
               [%- IF body.parent %], [% body.parent.name | html %][% END -%]
             [% END %]
           </td>
@@ -76,10 +76,10 @@
 [% IF (c.cobrand.moniker == 'zurich' AND admin_type == 'super') OR c.user.is_superuser %]
     <div class="admin-box">
       <h2>[% loc('Add body') %]</h2>
-      [% INCLUDE 'admin/body-form.html', body='' %]
+      [% INCLUDE 'admin/bodies/form.html', body='' %]
     </div>
 [% END %]
 
-[% INCLUDE 'admin/edit-league.html' %]
+[% INCLUDE 'admin/bodies/edit-league.html' %]
 
 [% INCLUDE 'admin/footer.html' %]

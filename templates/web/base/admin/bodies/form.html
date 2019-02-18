@@ -1,4 +1,4 @@
-    <form method="post" action="[% body ? c.uri_for('body', body.id) : c.uri_for('bodies') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <form method="post" action="[% body ? c.uri_for_action('admin/bodies/edit', [ body.id ]) : c.uri_for_action('admin/bodies/index') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <div class="fms-admin-info">
         [% loc(
           "Add a <strong>body</strong> for each administrative body, such as a council or department
@@ -25,7 +25,7 @@
         <input type="text" class="form-control" name="name" id="name" value="[% body.name | html %]" size="50">
     </p>
 
-    [% INCLUDE 'admin/_translations.html' %]
+    [% INCLUDE 'admin/bodies/_translations.html' %]
 
     <div class="admin-hint">
       <p>
@@ -114,7 +114,7 @@
         </select>
     </p>
 
-    [% INCLUDE 'admin/open311-form-fields.html', object = body, show_body_fields = 1 %]
+    [% INCLUDE 'admin/bodies/open311-form-fields.html', object = body, show_body_fields = 1 %]
 
     <div class="admin-hint">
       <p>

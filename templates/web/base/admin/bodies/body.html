@@ -29,7 +29,7 @@
     [% END %]
 <br>
     <a href="[% c.uri_for_email(body.url) %]" class="admin-offsite-link">[% loc('List all reported problems' ) %]</a> |
-    <a href="[% c.uri_for( 'body', body_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
+    <a href="[% c.uri_for_action( 'admin/bodies/edit', [ body_id ], { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
 
 
@@ -65,7 +65,7 @@
   </p>
 [% END %]
 
-<form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="post" action="[% c.uri_for_action('admin/bodies/edit', [ body_id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
   <table cellspacing="0" cellpadding="2" border="1" id="admin_contacts">
     <tr>
@@ -79,7 +79,7 @@
     </tr>
     [% WHILE ( cat = contacts.next ) %]
       <tr [% IF cat.state == 'deleted' %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category_display | html %]</a>
+        <td class="contact-category"><a href="[% c.uri_for_action( '/admin/bodies/edit', [ body_id ], cat.category ) %]">[% cat.category_display | html %]</a>
             <br>[% cat.email | html %]</td>
         <td>
             [% cat.state %]
@@ -130,16 +130,16 @@
   <div class="fms-admin-warning">
     [% errors.values.join('<br>') %]
   </div>
-  [% INCLUDE 'admin/contact-form.html' translations=contact_translations %]
+  [% INCLUDE 'admin/bodies/contact-form.html' translations=contact_translations %]
   [% ELSE  %]
-  [% INCLUDE 'admin/contact-form.html' translations={} %]
+  [% INCLUDE 'admin/bodies/contact-form.html' translations={} %]
   [% END %]
 </div>
 
 [% IF NOT errors and c.user.is_superuser %]
 <div class="admin-box">
   <h2>[% loc('Edit body details') %]</h2>
-  [% INCLUDE 'admin/body-form.html' %]
+  [% INCLUDE 'admin/bodies/form.html' %]
 </div>
 [% END %][%# Only show all the above if no errors with category form %]
 

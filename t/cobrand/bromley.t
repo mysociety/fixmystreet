@@ -220,7 +220,7 @@ subtest 'check special subcategories in admin' => sub {
         ALLOWED_COBRANDS => 'bromley',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $mech->get_ok('/admin/user_edit/' . $user->id);
+        $mech->get_ok('/admin/users/' . $user->id);
         $mech->submit_form_ok({ with_fields => { 'contacts['.$contact->id.']' => 1, 'contacts[BLUE]' => 1 } });
     };
     $user->discard_changes;

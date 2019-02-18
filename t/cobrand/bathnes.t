@@ -105,7 +105,7 @@ subtest "Custom CSV fields permission can be granted" => sub {
 
     is $counciluser->user_body_permissions->count, 0, 'counciluser has no permissions';
 
-    $mech->get_ok("/admin/user_edit/" . $counciluser->id);
+    $mech->get_ok("/admin/users/" . $counciluser->id);
     $mech->content_contains('Extra columns in CSV export');
 
     $mech->submit_form_ok( { with_fields => {

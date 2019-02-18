@@ -4,7 +4,7 @@
 <div class="fms-admin-info">
     [% loc("User search finds matches in users' names and email addresses.") %]
 </div>
-<form method="get" action="[% c.uri_for('users') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="get" action="[% c.uri_for_action('admin/users/index') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p><label for="search">[% loc('Search:') %]</label>
         <input class="form-control" type="text" name="search"  size="30" id="search" value="[% searched | html %]">
 </form>
@@ -24,14 +24,14 @@
 [%- FOREACH user IN users %]
     <tr>
         <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
-        <td><a href="[% c.uri_for( 'reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
+        <td><a href="[% c.uri_for_action( 'admin/reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
         <td>[% PROCESS value_or_nbsp value=user.from_body.name %]
             [% IF user.is_superuser %] * [% END %]
         </td>
       [% IF c.cobrand.moniker != 'zurich' %]
         <td>[% user.flagged == 2 ? loc('User in abuse table') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
       [% END %]
-        <td>[% IF user.id %]<a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a>[% END %]</td>
+        <td>[% IF user.id %]<a href="[% c.uri_for_action( 'admin/users/edit', user.id ) %]">[% loc('Edit') %]</a>[% END %]</td>
     </tr>
 [%- END -%]
 </table>
@@ -46,9 +46,9 @@
 
 [% IF NOT searched %]
 <h2>[% loc('Add user') %]</h2>
-[% INCLUDE 'admin/user-form.html', user = '' %]
+[% INCLUDE 'admin/users/form.html', user = '' %]
 [% ELSE %]
-<a href="[% c.uri_for( c.controller('Admin').action_for('user_add') ) %]">[% loc('Add user') %]</a>
+<a href="[% c.uri_for_action('admin/users/add') %]">[% loc('Add user') %]</a>
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]

@@ -19,7 +19,7 @@ subtest 'search abuse' => sub {
 };
 
 subtest 'remove user from abuse list from edit user page' => sub {
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->content_contains('User in abuse table');
 
     $mech->click_ok('unban');
@@ -31,7 +31,7 @@ subtest 'remove user from abuse list from edit user page' => sub {
 subtest 'remove user with phone account from abuse list from edit user page' => sub {
     my $abuse_user = $mech->create_user_ok('01234 456789');
     my $abuse = FixMyStreet::App->model('DB::Abuse')->find_or_create( { email => $abuse_user->phone } );
-    $mech->get_ok( '/admin/user_edit/' . $abuse_user->id );
+    $mech->get_ok( '/admin/users/' . $abuse_user->id );
     $mech->content_contains('User in abuse table');
     my $abuse_found = FixMyStreet::App->model('DB::Abuse')->find( { email => $abuse_user->phone } );
     ok $abuse_found, 'user in abuse table';
@@ -45,7 +45,7 @@ subtest 'remove user with phone account from abuse list from edit user page' => 
 subtest 'no option to remove user already in abuse list' => sub {
     my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $user->email } );
     $abuse->delete if $abuse;
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->content_lacks('User in abuse table');
 };
 
@@ -66,11 +66,11 @@ subtest 'user search' => sub {
 
     $mech->content_contains( $user->name);
     my $u_id = $user->id;
-    $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
+    $mech->content_like( qr{users/$u_id">Edit</a>} );
 
     $mech->get_ok('/admin/users?search=' . $user->email);
 
-    $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
+    $mech->content_like( qr{users/$u_id">Edit</a>} );
 
     $user->from_body($haringey->id);
     $user->update;
@@ -96,7 +96,7 @@ subtest 'user_edit does not show user from another council' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
-        $mech->get('/admin/user_edit/' . $user->id);
+        $mech->get('/admin/users/' . $user->id);
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
     };
@@ -345,7 +345,7 @@ FixMyStreet::override_config {
         },
     ) {
         subtest $test->{desc} => sub {
-            $mech->get_ok( '/admin/user_edit/' . $user->id );
+            $mech->get_ok( '/admin/users/' . $user->id );
 
             my $visible = $mech->visible_form_values;
             is_deeply $visible, $test->{fields}, 'expected user';
@@ -381,7 +381,7 @@ FixMyStreet::override_config {
     SMS_AUTHENTICATION => 1,
 }, sub {
     subtest "Test edit user add verified phone" => sub {
-        $mech->get_ok( '/admin/user_edit/' . $user->id );
+        $mech->get_ok( '/admin/users/' . $user->id );
         $mech->submit_form_ok( { with_fields => {
             phone => '+61491570157',
             phone_verified => 1,
@@ -393,9 +393,9 @@ FixMyStreet::override_config {
         my $existing_user = $mech->create_user_ok('existing@example.com', name => 'Existing User');
         $mech->create_problems_for_body(2, 2514, 'Title', { user => $existing_user });
         my $count = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
-        $mech->get_ok( '/admin/user_edit/' . $user->id );
+        $mech->get_ok( '/admin/users/' . $user->id );
         $mech->submit_form_ok( { with_fields => { email => 'existing@example.com' } }, 'submit email change' );
-        is $mech->uri->path, '/admin/user_edit/' . $existing_user->id, 'redirected';
+        is $mech->uri->path, '/admin/users/' . $existing_user->id, 'redirected';
         my $p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $existing_user->id })->count;
         is $p, $count + 2, 'reports merged';
     };
@@ -406,7 +406,7 @@ $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 subtest "Send login email from admin" => sub {
     $mech->email_count_is(0);
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->submit_form_ok(
         {
             button => 'send_login_email'
@@ -435,7 +435,7 @@ subtest "Send login email from admin" => sub {
 subtest "Send login email from admin for unverified email" => sub {
     $user->update( { email_verified => 0 } );
     $mech->email_count_is(0);
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->submit_form_ok(
         {
             button => 'send_login_email'
@@ -473,7 +473,7 @@ subtest "Anonymizing user from admin" => sub {
     $mech->create_problems_for_body(4, 2237, 'Title');
     my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
     my $count_u = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id })->count;
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->submit_form_ok({ button => 'anon_everywhere' });
     my $c = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id, anonymous => 1 })->count;
     is $c, $count_p;
@@ -484,7 +484,7 @@ subtest "Anonymizing user from admin" => sub {
 subtest "Hiding user's reports from admin" => sub {
     my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
     my $count_u = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id })->count;
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->submit_form_ok({ button => 'hide_everywhere' });
     my $c = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id, state => 'hidden' })->count;
     is $c, $count_p;
@@ -497,7 +497,7 @@ subtest "Logging user out" => sub {
     $mech2->log_in_ok($user->email);
     $mech2->logged_in_ok;
 
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->submit_form_ok({ button => 'logout_everywhere' }, 'Logging user out');
     $mech2->not_logged_in_ok;
 };
@@ -506,7 +506,7 @@ subtest "Removing account from admin" => sub {
     $mech->create_problems_for_body(4, 2237, 'Title');
     my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
     my $count_u = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id })->count;
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->submit_form_ok({ button => 'remove_account' }, 'Removing account');
     my $c = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id, anonymous => 1, name => '' })->count;
     is $c, $count_p, 'All reports anon/nameless';
@@ -519,7 +519,7 @@ subtest "Removing account from admin" => sub {
 };
 
 subtest "can view list of user's alerts" => sub {
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->content_lacks("User's alerts", 'no list of alerts');
 
     $mech->create_problems_for_body(1, 2514, 'Title', { user => $user });
@@ -532,13 +532,13 @@ subtest "can view list of user's alerts" => sub {
     });
 
 
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
     $mech->content_contains("User's alerts", 'has list of alerts');
     $mech->content_contains($alert->id, 'lists alert');
 };
 
 subtest "can edit list of user's alerts" => sub {
-    $mech->get_ok( '/admin/user_edit/' . $user->id );
+    $mech->get_ok( '/admin/users/' . $user->id );
 
     my $alert = FixMyStreet::DB->resultset('Alert')->search({
         user_id => $user->id,

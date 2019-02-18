@@ -20,7 +20,7 @@
         </tr>
         [% WHILE ( cat = contacts.next ) %]
             <tr[% IF cat.state == 'deleted' %] class="is-deleted"[% END %]>
-                <td><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category_display %]</a></td>
+                <td><a href="[% c.uri_for_action( 'admin/bodies/edit', [ body_id ], cat.category ) %]">[% cat.category_display %]</a></td>
                 <td>[% cat.email | html %]</td>
                 <td>[% cat.editor %]</td>
                 <td>[% cat.note | html %]</td>
@@ -39,13 +39,13 @@
     </div>
   [% END %]
 
-  [% INCLUDE 'admin/contact-form.html' %]
+  [% INCLUDE 'admin/bodies/contact-form.html' %]
 
 [% END %]
 
 [% IF NOT errors %]
     <h2>[% loc('Edit body details') %]</h2>
-    [% INCLUDE 'admin/body-form.html' %]
+    [% INCLUDE 'admin/bodies/form.html' %]
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]

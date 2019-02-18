@@ -1092,7 +1092,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'users at the top level can be edited' => sub {
         $mech->log_in_ok( $superuser->email );
-        $mech->get_ok('/admin/user_edit/' . $superuser->id );
+        $mech->get_ok('/admin/users/' . $superuser->id );
     };
 };
 
