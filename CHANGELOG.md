@@ -18,6 +18,7 @@
         - Add CSRF and time to contact form.
         - Make sure admin metadata dropdown index numbers are updated too.
         - Fix issue with Open311 codes starting with ‘_’.
+        - Add parameter to URL when “Show older” clicked.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.
