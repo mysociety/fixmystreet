@@ -1768,6 +1768,23 @@ img.pin {
   height: 10em; // eg: at the top of individual report pages
 }
 
+#map_sidebar {
+  // Chrome/Safari count padding-bottom as part of the scrollable content in
+  // an overflow:scroll element (technically in contravention of the spec),
+  // whereas Firefox/IE render the padding outside the scrollable area.
+  // In desktop mode, we need padding at the bottom of the sidebar, to stop
+  // .shadow-wrap from obscuring content at the bottom of the sidebar. So we
+  // use an :after pseudo-element instead of padding.
+  // In mobile mode, the extra space here still helps differentiate the page
+  // content on report/reporting pages, from the nav immediately below.
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=748518
+  &:after {
+    content: "";
+    display: block;
+    height: 4em;
+  }
+}
+
 // When you're in the reporting flow on mobile, we hide the site-header
 // and make the map full screen to reduce distractions. JavaScript also
 // tweaks the text content of some of the map-related elements, to make
