@@ -10,34 +10,34 @@ sub to_body {
 }
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $categories, $states, $extra_params, $report_age ) = @_;
+    my ( $rs, $c, %args ) = @_;
 
-    unless ( $states ) {
-        $states = FixMyStreet::DB::Result::Problem->visible_states();
+    unless ( $args{states} ) {
+        $args{states} = FixMyStreet::DB::Result::Problem->visible_states();
     }
 
     my $params = {
-        state => [ keys %$states ],
+        state => [ keys %{$args{states}} ],
     };
-    $params->{id} = { -not_in => $ids }
-        if $ids;
-    $params->{category} = $categories if $categories && @$categories;
+    $params->{id} = { -not_in => $args{ids} }
+        if $args{ids};
+    $params->{category} = $args{categories} if $args{categories} && @{$args{categories}};
 
-    $params->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$report_age'::interval" }
-        if $report_age;
+    $params->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$args{report_age}'::interval" }
+        if $args{report_age};
 
     FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c);
 
     $rs = $c->cobrand->problems_restriction($rs);
 
     # Add in any optional extra query parameters
-    $params = { %$params, %$extra_params } if $extra_params;
+    $params = { %$params, %{$args{extra}} } if $args{extra};
 
     my $attrs = {
         prefetch => 'problem',
-        bind => [ $mid_lat, $mid_lon, $dist ],
+        bind => [ $args{latitude}, $args{longitude}, $args{distance} ],
         order_by => [ 'distance', { -desc => 'created' } ],
-        rows => $limit,
+        rows => $args{limit},
     };
 
     my @problems = mySociety::Locale::in_gb_locale { $rs->search( $params, $attrs )->all };

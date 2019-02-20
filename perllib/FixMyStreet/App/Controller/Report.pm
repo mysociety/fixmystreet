@@ -600,16 +600,22 @@ sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{problem};
-    my $dist = 1;
+    my $params = {
+        latitude => $p->latitude,
+        longitude => $p->longitude,
+        categories => [ $p->category ],
+        ids => [ $p->id ],
+        distance => 1,
+    };
 
     # This is for the list template, this is a list on that page.
     $c->stash->{page} = 'report';
 
-    my $extra_params = $c->cobrand->call_hook('display_location_extra_params');
+    $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
+    $params->{limit} = 5;
 
-    my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, [ $p->category ], undef, $extra_params
-    );
+    my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
+
     # Want to treat these as if they were on map
     $nearby = [ map { $_->problem } @$nearby ];
     my @pins = map {
