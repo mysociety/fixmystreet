@@ -600,16 +600,28 @@ sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{problem};
-    my $params = {
+    $c->forward('_nearby_json', [ {
         latitude => $p->latitude,
         longitude => $p->longitude,
         categories => [ $p->category ],
         ids => [ $p->id ],
-        distance => 1,
-    };
+    } ]);
+}
+
+sub _nearby_json :Private {
+    my ($self, $c, $params) = @_;
 
     # This is for the list template, this is a list on that page.
     $c->stash->{page} = 'report';
+
+    # distance in metres
+    my $dist = $c->get_param('distance') || '';
+    $dist = 1000 unless $dist =~ /^\d+$/;
+    $dist = 1000 if $dist > 1000;
+    $params->{distance} = $dist / 1000;
+
+    my $pin_size = $c->get_param('pin_size') || '';
+    $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
 
     $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
     $params->{limit} = 5;
@@ -621,7 +633,7 @@ sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
     my @pins = map {
         my $p = $_->pin_data($c, 'around');
         [ $p->{latitude}, $p->{longitude}, $p->{colour},
-          $p->{id}, $p->{title}, 'small', JSON->false
+          $p->{id}, $p->{title}, $pin_size, JSON->false
         ]
     } @$nearby;
 

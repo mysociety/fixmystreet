@@ -317,6 +317,18 @@ sub ajax : Path('/ajax') {
     $c->forward('/reports/ajax', [ 'around/on_map_list_items.html' ]);
 }
 
+sub nearby : Path {
+    my ($self, $c) = @_;
+
+    my $states = FixMyStreet::DB::Result::Problem->open_states();
+    $c->forward('/report/_nearby_json', [ {
+        latitude => $c->get_param('latitude'),
+        longitude => $c->get_param('longitude'),
+        categories => [ $c->get_param('filter_category') || () ],
+        states => $states,
+    } ]);
+}
+
 sub location_closest_address : Path('/ajax/closest') {
     my ( $self, $c ) = @_;
     $c->res->content_type('application/json; charset=utf-8');
