@@ -3,6 +3,8 @@
     # Alert sets cobrand directly, questionnaire/submit have it in report, otherwise web
     cobrand = cobrand.moniker OR report.cobrand OR c.cobrand.moniker;
 
+    DEFAULT logo_file = 'email-logo.gif';
+
     IF cobrand == 'fixmystreet';
         SET img_dir = 'fixmystreet.com';
     ELSE;
@@ -61,8 +63,8 @@
         <table [% table_reset %]>
           <tr>
             <th colspan="[% email_columns %]" style="[% td_style %][% header_style %]">
-              [%~ IF file_exists("web/cobrands/${ img_dir }/images/email-logo.gif") ~%]
-                <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/email-logo.gif') %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
+                [%~ IF file_exists("web/cobrands/${ img_dir }/images/${ logo_file }") ~%]
+                <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/' _ logo_file ) %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
               [%~ ELSE ~%]
                 <span style="[% logo_style %]">[% site_name %]</span>
               [%~ END %]
