@@ -16,9 +16,8 @@
 }
 
 #site-logo {
-    width: 185px;
-    height: 38px;
-    background: transparent url('images/site-logo.png') 0 50% no-repeat;
+    height: 35px;
+    @include svg-background-image("/cobrands/fixamingata/images/site-logo");
 }
 
 #report-cta {
