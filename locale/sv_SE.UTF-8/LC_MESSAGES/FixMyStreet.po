@@ -5,20 +5,23 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2019
+# Jon Kristensen <info@jonkri.com>, 2018
+# Joe Siltberg <joe@fixamingata.se>, 2019
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2019-04-29 18:56+0100\n"
-"PO-Revision-Date: 2019-04-29 18:03+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
+"POT-Creation-Date: 2018-12-19 17:14+0000\n"
+"PO-Revision-Date: 2019-02-21 12:33+0100\n"
+"Last-Translator: Joe Siltberg <joe@fixamingata.se>, 2019\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:678
 #: perllib/FixMyStreet/DB/Result/Problem.pm:680
@@ -180,7 +183,7 @@ msgstr "(vi har också RSS-flöden för problem inom %s)"
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:710
 #: perllib/FixMyStreet/DB/Result/Problem.pm:386
 msgid "-- Pick a category --"
-msgstr "-- Välj en katagori --"
+msgstr "-- Välj en kategori --"
 
 #: templates/web/base/report/new/category_extras_fields.html:19
 msgid "-- Pick an option --"
@@ -3364,7 +3367,7 @@ msgstr "Rapporterat tidigare"
 #: perllib/FixMyStreet/DB/Result/Problem.pm:640
 #: templates/web/base/contact/index.html:62
 msgid "Reported by %s at %s"
-msgstr "Rapporterat av %s den %s"
+msgstr "Rapporterat av %s, %s"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:60
 #: templates/web/zurich/admin/report_edit.html:88
@@ -3381,7 +3384,7 @@ msgstr "Anonym rapport i kategori %s, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:637
 msgid "Reported in the %s category by %s at %s"
-msgstr "Rapporterat i kategori %s av %s den %s"
+msgstr "Rapporterat i kategori %s av %s, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:610
 msgid "Reported via %s anonymously at %s"
@@ -3389,7 +3392,7 @@ msgstr "Rapporterat av %s anonymt %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:634
 msgid "Reported via %s by %s at %s"
-msgstr "Rapporterat av %s av %s den %s"
+msgstr "Rapporterat av %s av %s, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:607
 msgid "Reported via %s in the %s category anonymously at %s"
@@ -3397,7 +3400,7 @@ msgstr "Rapporterat av %s i kategorin %s, anonymt %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:629
 msgid "Reported via %s in the %s category by %s at %s"
-msgstr "Rapporterat av %s i kategorin %s av %s den %s"
+msgstr "Rapporterat av %s i kategorin %s av %s, %s"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:38
 #: templates/web/zurich/admin/report_edit.html:57
