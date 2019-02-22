@@ -6,6 +6,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2217, 'Buckinghamshire', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms' });
+my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "FLY");
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POT");
@@ -58,6 +59,10 @@ subtest 'flytipping on road sent to extra email' => sub {
 ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
     category => 'Potholes', cobrand => 'fixmystreet',
     latitude => 51.812244, longitude => -0.827363,
+    extra => {
+        contributed_as => 'another_user',
+        contributed_by => $counciluser->id,
+    },
 });
 
 subtest 'pothole on road not sent to extra email' => sub {
@@ -171,6 +176,50 @@ for my $test (
         is $cobrand->filter_report_description($test->{in}), $test->{out}, "filtered correctly";
     };
 }
+
+subtest 'extra CSV columns are present' => sub {
+    $mech->log_in_ok( $counciluser->email );
+
+    $mech->get_ok('/dashboard?export=1');
+
+    my @rows = $mech->content_as_csv;
+    is scalar @rows, 4, '1 (header) + 3 (reports) = 4 lines';
+    is scalar @{$rows[0]}, 21, '21 columns present';
+
+    is_deeply $rows[0],
+        [
+            'Report ID', 'Title', 'Detail', 'User Name', 'Category',
+            'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
+            'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
+            'Easting', 'Northing', 'Report URL', 'Site Used',
+            'Reported As', 'Staff User',
+        ],
+        'Column headers look correct';
+
+    is $rows[1]->[20], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[2]->[20], $counciluser->email, 'Staff User is correct if made on behalf of another user';
+    is $rows[3]->[20], '', 'Staff User is empty if not made on behalf of another user';
+
+    $mech->create_comment_for_problem($report, $counciluser, 'Staff User', 'Some update text', 'f', 'confirmed', undef, {
+        extra => { contributed_as => 'body' }});
+    $mech->create_comment_for_problem($report, $counciluser, 'Other User', 'Some update text', 'f', 'confirmed', undef, {
+        extra => { contributed_as => 'another_user', contributed_by => $counciluser->id }});
+
+    $mech->get_ok('/dashboard?export=1&updates=1');
+
+    @rows = $mech->content_as_csv;
+    is scalar @rows, 3, '1 (header) + 2 (updates)';
+    is scalar @{$rows[0]}, 9, '9 columns present';
+    is_deeply $rows[0],
+        [
+            'Report ID', 'Update ID', 'Date', 'Status', 'Problem state',
+            'Text', 'User Name', 'Reported As', 'Staff User',
+        ],
+        'Column headers look correct';
+
+    is $rows[1]->[8], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[2]->[8], $counciluser->email, 'Staff User is correct if made on behalf of another user';
+};
 
 };
 
