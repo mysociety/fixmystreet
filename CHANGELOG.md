@@ -15,10 +15,11 @@
         - Delete cache photos upon photo moderation. #2374
         - Remove any use of `my $x if $foo`. #2377
         - Fix saving of inspect form data offline.
-        - Add CSRF and time to contact form.
-        - Make sure admin metadata dropdown index numbers are updated too.
-        - Fix issue with Open311 codes starting with ‘_’.
-        - Add parameter to URL when “Show older” clicked.
+        - Add CSRF and time to contact form. #2388
+        - Make sure admin metadata dropdown index numbers are updated too. #2369
+        - Fix issue with Open311 codes starting with ‘_’. #2391
+        - Add parameter to URL when “Show older” clicked. #2397
+        - Don't ask for email on alert signup if logged in. #2402
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.
