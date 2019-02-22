@@ -167,12 +167,7 @@ FixMyStreet::override_config {
             areas => ",$alt_area_id,2651,",
         });
         $mech->get_ok('/dashboard?export=1');
-        open my $data_handle, '<', \$mech->content;
-        my $csv = Text::CSV->new( { binary => 1 } );
-        my @rows;
-        while ( my $row = $csv->getline( $data_handle ) ) {
-            push @rows, $row;
-        }
+        my @rows = $mech->content_as_csv;
         is scalar @rows, 19, '1 (header) + 18 (reports) = 19 lines';
 
         is scalar @{$rows[0]}, 20, '20 columns present';
@@ -209,12 +204,7 @@ FixMyStreet::override_config {
 
     subtest 'export updates as csv' => sub {
         $mech->get_ok('/dashboard?updates=1&export=1');
-        open my $data_handle, '<', \$mech->content;
-        my $csv = Text::CSV->new( { binary => 1 } );
-        my @rows;
-        while ( my $row = $csv->getline( $data_handle ) ) {
-            push @rows, $row;
-        }
+        my @rows = $mech->content_as_csv;
         is scalar @rows, 15, '1 (header) + 14 (updates) = 15 lines';
         is scalar @{$rows[0]}, 8, '8 columns present';
 

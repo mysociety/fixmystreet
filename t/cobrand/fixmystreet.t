@@ -59,12 +59,7 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/reports/Birmingham/summary?csv=1');
-        open my $data_handle, '<', \$mech->content;
-        my $csv = Text::CSV->new( { binary => 1 } );
-        my @rows;
-        while ( my $row = $csv->getline( $data_handle ) ) {
-            push @rows, $row;
-        }
+        my @rows = $mech->content_as_csv;
         is scalar @rows, 101, '1 (header) + 100 (reports) = 101 lines';
 
         is scalar @{$rows[0]}, 10, '10 columns present';

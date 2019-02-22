@@ -64,12 +64,7 @@ subtest 'extra CSV columns are absent if permission not granted' => sub {
 
     $mech->get_ok('/dashboard?export=1');
 
-    open my $data_handle, '<', \$mech->content;
-    my $csv = Text::CSV->new( { binary => 1 } );
-    my @rows;
-    while ( my $row = $csv->getline( $data_handle ) ) {
-        push @rows, $row;
-    }
+    my @rows = $mech->content_as_csv;
     is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
 
     is scalar @{$rows[0]}, 20, '20 columns present';
@@ -125,12 +120,7 @@ subtest 'extra CSV columns are present if permission granted' => sub {
 
     $mech->get_ok('/dashboard?export=1');
 
-    open my $data_handle, '<', \$mech->content;
-    my $csv = Text::CSV->new( { binary => 1 } );
-    my @rows;
-    while ( my $row = $csv->getline( $data_handle ) ) {
-        push @rows, $row;
-    }
+    my @rows = $mech->content_as_csv;
     is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
 
     is scalar @{$rows[0]}, 24, '24 columns present';
@@ -194,13 +184,7 @@ subtest 'extra CSV columns are present if permission granted' => sub {
 
     $mech->get_ok('/dashboard?export=1&updates=1');
 
-    open $data_handle, '<', \$mech->content;
-    $csv = Text::CSV->new( { binary => 1 } );
-    @rows = ();
-    while ( my $row = $csv->getline( $data_handle ) ) {
-        push @rows, $row;
-    }
-
+    @rows = $mech->content_as_csv;
     is scalar @rows, 1, '1 (header) + 0 (updates)';
     is scalar @{$rows[0]}, 10, '10 columns present';
     is_deeply $rows[0],
