@@ -381,15 +381,15 @@ $.extend(fixmystreet.utils, {
 
     function sidebar_highlight(problem_id) {
         if (typeof problem_id !== 'undefined') {
-            var $a = $('.item-list--reports a[href$="/' + problem_id + '"]');
-            $a.parent().addClass('hovered');
+            var $li = $('[data-report-id="' + problem_id + '"]');
+            $li.addClass('hovered');
         } else {
-            $('.item-list--reports .hovered').removeClass('hovered');
+            $('.item-list .hovered').removeClass('hovered');
         }
     }
 
     function marker_click(problem_id, evt) {
-        var $a = $('.item-list--reports a[href$="/' + problem_id + '"]');
+        var $a = $('.item-list a[href$="/' + problem_id + '"]');
         if (!$a[0]) {
             return;
         }

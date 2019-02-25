@@ -27,7 +27,7 @@ $pin_prefix: '/i/' !default;
       background-image: url('#{$pin_prefix}pin-orange-small.png');
   }
 }
-.item-list--reports__item--selected {
+.item-list__item--selected {
   background: $base_bg;
 
   a, a:hover, a:focus {

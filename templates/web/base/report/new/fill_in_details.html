@@ -4,6 +4,8 @@
     SET bodyclass = '';
     SET bodyclass = 'mappage';
     SET bodyclass = bodyclass _ " with-notes" IF sidebar_html;
+    SET extra_js = [];
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html" IF report.used_map;
     INCLUDE 'header.html', title => loc('Reporting a problem');
 %]

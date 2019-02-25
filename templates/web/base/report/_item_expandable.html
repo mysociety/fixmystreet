@@ -1,0 +1,55 @@
+[%#
+  This list item contains a full photo set and description, which is hidden
+  until the `.expanded` class is added. It is useful for times when you want
+  to surface the full information about a report, without requiring the user
+  to visit the dedicated report page.
+
+  Since the photo set includes `<a>` elements of its own, we drop the usual
+  "wrapper" `<a>` and the associated `.item-list--reports__item` class, to
+  avoid anchor nesting.
+%]
+
+[% truncated_detail = BLOCK %][% problem.detail | truncate(75, '…') | html_para %][% END ~%]
+[% full_detail = BLOCK %][% problem.detail | add_links | html_para %][% END ~%]
+[% SET show_more = truncated_detail != full_detail OR problem.photo ~%]
+
+<li class="[% 'js-expandable ' IF show_more %]item-list__item item-list__item--expandable [% item_extra_class %]"
+    data-report-id="[% problem.id | html %]"
+    id="report-[% problem.id | html %]">
+
+  [% IF problem.photo %]
+    <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]" class="item-list__item--expandable__hide-when-expanded">
+        <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
+    </a>
+  [% END %]
+
+  [% TRY %]
+    [% PROCESS 'report/_item_heading.html' %]
+  [% CATCH file %]
+    <h3>
+        <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">
+            [% problem.title | html %]
+        </a>
+    </h3>
+  [% END %]
+
+    <small>[% PROCESS 'report/_item_small.html' %]</small>
+
+    <div class="item-list__item--expandable__hide-when-expanded">
+      [% truncated_detail %]
+    </div>
+
+  [% IF show_more ~%]
+    <div class="item-list__item--expandable__hide-until-expanded">
+      [% full_detail %]
+      [% INCLUDE 'report/photo.html' object=problem %]
+    </div>
+  [% END %]
+
+    <div class="item-list__item--expandable__actions">
+      [% IF show_more ~%]
+        <button class="btn btn--small js-toggle-expansion" data-more="[% loc('Read more') %]" data-less="[% loc('Read less') %]">[% loc('Read more') %]</button>
+      [% END %]
+    </div>
+
+</li>

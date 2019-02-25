@@ -268,19 +268,6 @@ body.mappage.admin {
       width: $mappage-sidebar-width--medium + $mappage-actions-width--medium;
     }
   }
-
-  // Chrome/Safari count padding-bottom as part of the scrollable content in
-  // an overflow:scroll element (technically in contravention of the spec),
-  // whereas Firefox/IE render the padding outside the scrollable area.
-  // We need padding at the bottom of the sidebar, to stop .shadow-wrap from
-  // obscuring content at the bottom of the sidebar. So we use an :after
-  // pseudo-element instead of padding.
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=748518
-  &:after {
-    content: "";
-    display: block;
-    height: 4em;
-  }
 }
 
 // This goes inside #map_sidebar, and establishes a flex container allowing

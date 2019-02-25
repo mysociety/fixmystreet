@@ -269,7 +269,7 @@ sub map_features : Private {
     # Allow the cobrand to add in any additional query parameters
     my $extra_params = $c->cobrand->call_hook('display_location_extra_params');
 
-    my ( $on_map, $nearby, $distance ) =
+    my ( $on_map, $nearby ) =
       FixMyStreet::Map::map_features(
         $c, %$extra,
         categories => [ keys %{$c->stash->{filter_category}} ],
@@ -290,7 +290,6 @@ sub map_features : Private {
     $c->stash->{pins} = \@pins;
     $c->stash->{on_map} = $on_map;
     $c->stash->{around_map} = $nearby;
-    $c->stash->{distance} = $distance;
 }
 
 =head2 ajax
@@ -316,6 +315,18 @@ sub ajax : Path('/ajax') {
 
     $c->forward('map_features', [ { bbox => $c->stash->{bbox} } ]);
     $c->forward('/reports/ajax', [ 'around/on_map_list_items.html' ]);
+}
+
+sub nearby : Path {
+    my ($self, $c) = @_;
+
+    my $states = FixMyStreet::DB::Result::Problem->open_states();
+    $c->forward('/report/_nearby_json', [ {
+        latitude => $c->get_param('latitude'),
+        longitude => $c->get_param('longitude'),
+        categories => [ $c->get_param('filter_category') || () ],
+        states => $states,
+    } ]);
 }
 
 sub location_closest_address : Path('/ajax/closest') {

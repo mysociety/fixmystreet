@@ -33,6 +33,7 @@
 
     SET bodyclass = 'mappage';
     SET rss = [ tprintf(loc('Recent local problems, %s', "%s is the site name"), site_name), rss_url ];
+    SET extra_js = [];
     INCLUDE 'header.html',
         title  => loc('Viewing a location')
         robots => 'noindex,nofollow';

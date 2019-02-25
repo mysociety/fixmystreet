@@ -530,6 +530,53 @@ ul.error {
   @include border-radius(0.25em);
 }
 
+.duplicate-report-suggestions {
+    position: relative;
+
+    .item-list__item--expandable {
+      border-top: 1px solid #ddd;
+    }
+
+    .item-list {
+        margin: 0 -1em 1em -1em;
+        border-bottom: 1px solid #ddd;
+    }
+}
+
+.duplicate-report-suggestions__close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: block;
+    width: 32px;
+    height: 0;
+    padding-top: 32px;
+    overflow: hidden;
+    border: none;
+    background: transparent;
+    opacity: 0.5;
+    line-height: 2em; // Make sure line box is taller than text, so text is pushed below hidden overflow.
+
+    &:hover,
+    &:focus {
+        opacity: 0.7;
+    }
+
+    // Doing some gymnastics so we can reuse the existing .btn--close icon.
+    &:before {
+      content: "";
+      display: block;
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background-repeat: no-repeat;
+      background-size: 112px 16px;
+      @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
+      background-position: -32px 0;
+    }
+}
 
 /*** LAYOUT ***/
 
@@ -1194,12 +1241,10 @@ input.final-submit {
 // that appears in Inspector form, when closing a report as a duplicate.
 .item-list--inspect-duplicates {
     border-bottom: none;
+    background-color: rgba(255, 255, 255, 0.5);
 
-    .item-list__item {
-        background-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .item-list--reports__item--selected {
+    .item-list__item--selected,
+    .js & .item-list__item--selected.expanded:hover {
         border: 0.25em solid $primary;
         background-color: #fff;
     }
@@ -1253,6 +1298,92 @@ input.final-submit {
 
   .item-list__item {
     background-color: transparent;
+  }
+}
+
+.item-list__item--expandable {
+  @include clearfix();
+  margin: 0;
+  padding: 1em;
+
+  .js & {
+      cursor: pointer;
+
+      &:hover,
+      &.hovered {
+          background-color: $itemlist_item_background_hover;
+      }
+
+      &.item-list__item--selected,
+      &.item-list__item--selected:hover,
+      &.item-list__item--selected.hovered {
+          cursor: default;
+          background-color: #fff;
+      }
+  }
+
+  h3 {
+      margin: 0;
+  }
+
+  .img {
+      float: $right;
+      width: 90px;
+      height: auto;
+      margin: flip(0 0 0.5em 1em, 0 1em 0.5em 0);
+  }
+
+  small {
+      color: #666;
+      display: block;
+      margin-top: 0.5em;
+  }
+
+  p {
+      line-height: 1.4em;
+      margin-top: 0.5em;
+  }
+
+  &.expanded {
+      .js & {
+          cursor: default;
+
+          &:hover {
+              background-color: $itemlist_item_background;
+          }
+      }
+  }
+}
+
+.item-list__item--expandable__actions {
+  @include flex-container();
+
+  & > * {
+      @include flex(1); // Force equal width children
+  }
+}
+
+.item-list__item--expandable__hide-until-expanded {
+  display: none;
+
+  .expanded & {
+      display: block;
+  }
+}
+
+.item-list__item--expandable__hide-when-expanded {
+  .expanded & {
+      display: none;
+  }
+}
+
+.item-list__item .get-updates {
+  margin: 0 -1em -1em -1em;
+  padding: 1em;
+  background-color: $itemlist_item_background_hover;
+
+  p, label {
+    margin: 0 0 0.5em 0;
   }
 }
 
@@ -1766,6 +1897,23 @@ img.pin {
 
 .mobile #map_box {
   height: 10em; // eg: at the top of individual report pages
+}
+
+#map_sidebar {
+  // Chrome/Safari count padding-bottom as part of the scrollable content in
+  // an overflow:scroll element (technically in contravention of the spec),
+  // whereas Firefox/IE render the padding outside the scrollable area.
+  // In desktop mode, we need padding at the bottom of the sidebar, to stop
+  // .shadow-wrap from obscuring content at the bottom of the sidebar. So we
+  // use an :after pseudo-element instead of padding.
+  // In mobile mode, the extra space here still helps differentiate the page
+  // content on report/reporting pages, from the nav immediately below.
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=748518
+  &:after {
+    content: "";
+    display: block;
+    height: 4em;
+  }
 }
 
 // When you're in the reporting flow on mobile, we hide the site-header

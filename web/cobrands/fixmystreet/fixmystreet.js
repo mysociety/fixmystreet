@@ -974,7 +974,7 @@ $.extend(fixmystreet.set_up, {
         e.preventDefault();
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
         form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
-        $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
+        $(this).closest('.js-alert-list').find('input[type=text], input[type=hidden], input[type=radio]:checked').each(function() {
             var $v = $(this);
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
         });
@@ -1049,6 +1049,32 @@ $.extend(fixmystreet.set_up, {
         var set_map_state = true;
         fixmystreet.back_to_reports_list(e, report_list_url, map_state, set_map_state);
     });
+  },
+
+  expandable_list_items: function(){
+      $(document).on('click', '.js-toggle-expansion', function(e) {
+          e.preventDefault(); // eg: prevent button from submitting parent form
+          var $toggle = $(this);
+          var $parent = $toggle.closest('.js-expandable');
+          $parent.toggleClass('expanded');
+          $toggle.text($parent.hasClass('expanded') ? $toggle.data('less') : $toggle.data('more'));
+      });
+
+      $(document).on('click', '.js-expandable', function(e) {
+          var $parent = $(this);
+          // Ignore parents that are already expanded.
+          if ( ! $parent.hasClass('expanded') ) {
+              // Ignore clicks on action buttons (clicks on the
+              // .js-toggle-expansion button will be handled by
+              // the more specific handler above).
+              if ( ! $(e.target).is('.item-list__item--expandable__actions *') ) {
+                  e.preventDefault();
+                  $parent.addClass('expanded');
+                  var $toggle = $parent.find('.js-toggle-expansion');
+                  $toggle.text($toggle.data('less'));
+              }
+          }
+      });
   }
 
 });
