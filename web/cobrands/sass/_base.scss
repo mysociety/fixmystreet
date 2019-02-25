@@ -2485,7 +2485,7 @@ a#geolocate_link.loading, .btn--geolocate.loading {
   }
 
   input:checked + label {
-    color: $primary_text;
+    color: $primary_text !important;
     background: $primary;
     border-color: darken($primary, 5%);
     background-image: none; // remove gradient
