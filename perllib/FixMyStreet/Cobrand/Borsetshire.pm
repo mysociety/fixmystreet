@@ -33,4 +33,6 @@ sub bypass_password_checks { 1 }
 
 sub enable_category_groups { 1 }
 
+sub suggest_duplicates { 1 }
+
 1;
