@@ -215,6 +215,7 @@ sub calculate_average {
         ],
         'me.id' => \"= ($substmt)",
         'me.state' => 'confirmed',
+        'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         select   => [
             { extract => "epoch from me.confirmed-problem.confirmed", -as => 'time' },
