@@ -185,4 +185,11 @@ sub always_view_body_contribute_details {
     return 1;
 }
 
+# Average responsiveness will only be calculated if a body
+# has at least this many fixed reports.
+# (Used in the Top 5 list in /reports)
+sub body_responsiveness_threshold {
+    return 5;
+}
+
 1;

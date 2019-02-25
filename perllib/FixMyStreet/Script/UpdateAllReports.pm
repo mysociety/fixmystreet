@@ -269,7 +269,7 @@ sub calculate_top_five_bodies {
 
     my $bodies = FixMyStreet::DB->resultset('Body')->search;
     while (my $body = $bodies->next) {
-        my $avg = $body->calculate_average;
+        my $avg = $body->calculate_average($cobrand_cls->call_hook("body_responsiveness_threshold"));
         push @top_five_bodies, { name => $body->name, days => int($avg / 60 / 60 / 24 + 0.5) }
             if defined $avg;
     }

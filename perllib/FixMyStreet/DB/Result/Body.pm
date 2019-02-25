@@ -204,7 +204,8 @@ sub get_cobrand_handler {
 }
 
 sub calculate_average {
-    my ($self) = @_;
+    my ($self, $threshold) = @_;
+    $threshold ||= 0;
 
     my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and (problem_state in ('fixed', 'fixed - council', 'fixed - user') or mark_fixed)";
     my $subquery = FixMyStreet::DB->resultset('Comment')->to_body($self)->search({
@@ -214,6 +215,7 @@ sub calculate_average {
         ],
         'me.id' => \"= ($substmt)",
         'me.state' => 'confirmed',
+        'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         select   => [
             { extract => "epoch from me.confirmed-problem.confirmed", -as => 'time' },
@@ -224,12 +226,15 @@ sub calculate_average {
         join => 'problem'
     })->as_subselect_rs;
 
-    my $avg = $subquery->search({
+    my $result = $subquery->search({
     }, {
-        select => [ { avg => "time" } ],
-        as => [ qw/avg/ ],
-    })->first->get_column('avg');
-    return $avg;
+        select => [ { avg => "time" }, { count => "time" } ],
+        as => [ qw/avg count/ ],
+    })->first;
+    my $avg = $result->get_column('avg');
+    my $count = $result->get_column('count');
+
+    return $count >= $threshold ? $avg : undef;
 }
 
 1;

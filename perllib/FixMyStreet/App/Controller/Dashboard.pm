@@ -292,7 +292,7 @@ sub generate_summary_figures {
 sub generate_body_response_time : Private {
     my ( $self, $c ) = @_;
 
-    my $avg = $c->stash->{body}->calculate_average;
+    my $avg = $c->stash->{body}->calculate_average($c->cobrand->call_hook("body_responsiveness_threshold"));
     $c->stash->{body_average} = $avg ? int($avg / 60 / 60 / 24 + 0.5) : 0;
 }
 
