@@ -21,7 +21,7 @@ var defaults = {
     asset_id_field: 'central_as',
     attributes: {
         central_asset_id: 'central_as',
-        site_code: 'Site_code'
+        site_code: 'site_code'
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
@@ -34,10 +34,6 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         params: {
             TYPENAME: "Grit_Bins"
         }
-    },
-    attributes: {
-        central_asset_id: 'central_as',
-        site_code: 'site_code' // different capitalisation, sigh
     },
     asset_category: ["Salt bin damaged", "Salt bin refill"],
     asset_item: 'grit bin'
@@ -106,10 +102,6 @@ var streetlight_code_to_type = {
 var labeled_defaults = $.extend(true, {}, defaults, {
     select_action: true,
     stylemap: streetlight_stylemap,
-    attributes: {
-        central_asset_id: 'central_as',
-        site_code: 'site_code'
-    },
     feature_code: 'feature_id',
     actions: {
         asset_found: function(asset, config) {
@@ -169,9 +161,6 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
             TYPENAME: "Beacons"
         }
     },
-    attributes: {
-        central_asset_id: 'central_as',
-    },
     asset_category: [
           'Belisha Beacon broken',
         ],
@@ -185,9 +174,6 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
             TYPENAME: "Beacon_Column"
         }
     },
-    attributes: {
-        central_asset_id: 'central_as',
-    },
     asset_category: [
           'Belisha Beacon broken',
         ],
@@ -200,9 +186,6 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
         params: {
             TYPENAME: "Crossings"
         }
-    },
-    attributes: {
-        central_asset_id: 'central_as',
     },
     feature_code: 'asset_no',
     asset_category: [
@@ -218,9 +201,6 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
             TYPENAME: "Signs_Union"
         }
     },
-    attributes: {
-        central_asset_id: 'central_as',
-    },
     asset_category: [
           'Sign light not working',
           'Sign problem',
@@ -233,9 +213,6 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         params: {
             TYPENAME: "Gullies"
         }
-    },
-    attributes: {
-        central_asset_id: 'central_as',
     },
     asset_category: [
         'Blocked drain'
