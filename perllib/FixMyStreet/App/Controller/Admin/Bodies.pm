@@ -24,11 +24,11 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $body_id = $c->get_param('body')) {
-        return $c->res->redirect( $c->uri_for( 'body', $body_id ) );
+        return $c->res->redirect( $c->uri_for_action('admin/bodies/edit', [ $body_id ] ) );
     }
 
     if (!$c->user->is_superuser && $c->user->from_body && $c->cobrand->moniker ne 'zurich') {
-        return $c->res->redirect( $c->uri_for( 'body', $c->user->from_body->id ) );
+        return $c->res->redirect( $c->uri_for_action('admin/bodies/edit', [ $c->user->from_body->id ] ) );
     }
 
     $c->forward( '/auth/get_csrf_token' );
