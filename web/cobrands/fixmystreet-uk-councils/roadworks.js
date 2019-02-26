@@ -131,6 +131,7 @@ var roadworks_defaults = {
             params.filterstartdate = format_date(date);
             date.setMonth(date.getMonth() + 3);
             params.filterenddate = format_date(date);
+            params.mapzoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
             return params;
         }
     },
