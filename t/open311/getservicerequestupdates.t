@@ -1037,6 +1037,60 @@ foreach my $test ( {
     }
 }
 
+subtest 'check matching on fixmystreet_id overrides service_request_id' => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>8888888888888</service_request_id>
+    <fixmystreet_id>@{[ $problem->id ]}</fixmystreet_id>
+    <status>open</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    <request_update>
+    <update_id>638354</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <fixmystreet_id>999999999</fixmystreet_id>
+    <status>open</status>
+    <description>This is a different note</description>
+    <updated_datetime>UPDATED_DATETIME2</updated_datetime>
+    </request_update>
+    <request_update>
+    <update_id>638356</update_id>
+    <service_request_id></service_request_id>
+    <fixmystreet_id>@{[ $problem->id ]}</fixmystreet_id>
+    <status>investigating</status>
+    <description>This is a last note</description>
+    <updated_datetime>UPDATED_DATETIME3</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    my $dt2 = $dt->clone->subtract( minutes => 30 );
+    my $dt3 = $dt2->clone->subtract( minutes => 30 );
+    $requests_xml =~ s/UPDATED_DATETIME3/$dt/;
+    $requests_xml =~ s/UPDATED_DATETIME2/$dt2/;
+    $requests_xml =~ s/UPDATED_DATETIME/$dt3/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+    );
+
+    $update->update_comments( $o, $bodies{2482} );
+
+    $problem->discard_changes;
+    is $problem->comments->count, 2, 'two comments after fetching updates';
+
+    my @comments = $problem->comments->search(undef, { order_by => [ 'created' ] } )->all;
+
+    is $comments[0]->external_id, 638344, "correct first comment added";
+    is $comments[1]->external_id, 638356, "correct second comment added";
+};
 done_testing();
 
 sub setup_xml {

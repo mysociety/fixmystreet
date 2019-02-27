@@ -91,7 +91,7 @@ sub update_comments {
 
         # If there's no request id then we can't work out
         # what problem it belongs to so just skip
-        next unless $request_id;
+        next unless $request_id || $request->{fixmystreet_id};
 
         my $comment_time = eval {
             DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} || "" );
@@ -101,9 +101,19 @@ sub update_comments {
         next if @args && ($updated lt $args[0] || $updated gt $args[1]);
 
         my $problem;
+        my $match_field = 'external_id';
         my $criteria = {
             external_id => $request_id,
         };
+
+        # in some cases we only have the FMS id and not the request id so use that
+        if ( $request->{fixmystreet_id} ) {
+            $criteria = {
+                id => $request->{fixmystreet_id},
+            };
+            $match_field = 'fixmystreet id';
+        }
+
         $problem = $self->schema->resultset('Problem')->to_body($body)->search( $criteria );
 
         if (my $p = $problem->first) {
@@ -198,7 +208,7 @@ sub update_comments {
         # we get lots of comments that are not related to FMS issues from Lewisham so ignore those otherwise
         # way too many warnings.
         } elsif (FixMyStreet->config('STAGING_SITE') and $body->name !~ /Lewisham/) {
-            warn "Failed to match comment to problem with external_id $request_id for " . $body->name . "\n";
+            warn "Failed to match comment to problem with $match_field $request_id for " . $body->name . "\n";
         }
     }
 
