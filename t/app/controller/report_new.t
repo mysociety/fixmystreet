@@ -612,7 +612,7 @@ foreach my $test (
             password_register => '',
         },
         changes => { },
-        errors => [ 'Please enter a subject', 'Please enter some details', 'Emails are limited to 50 characters in length.', 'Phone numbers are limited to 30 characters in length.', 'Names are limited to 50 characters in length.'],
+        errors => [ 'Please enter a subject', 'Please enter some details', 'Emails are limited to 50 characters in length.', 'Phone numbers are limited to 20 characters in length.', 'Names are limited to 50 characters in length.'],
     },
   )
 {
