@@ -1,3 +1,9 @@
+package FixMyStreet::Cobrand::OxfordshireUTA;
+use parent 'FixMyStreet::Cobrand::Oxfordshire';
+sub area_types { [ 'UTA' ] }
+
+package main;
+
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -8,6 +14,7 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
+$oxfordshireuser->user_body_permissions->create({ body => $oxfordshire, permission_type => 'category_edit' });
 
 my $dt = DateTime->new(
     year   => 2011,
@@ -136,28 +143,44 @@ subtest "Check admin_base_url" => sub {
         'get_admin_url OK');
 };
 
+subtest "Check body dropdown on admin index page" => sub {
+    FixMyStreet::override_config {
+        MAPIT_TYPES => [ 'UTA' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        ok $mech->get('/admin');
+        $mech->submit_form_ok({ with_fields => { body => $oxfordshire->id } });
+    };
+};
+
 # Finished with the superuser tests
 $mech->log_out_ok;
 
 subtest "Users without from_body can't access admin" => sub {
     $mech->log_in_ok( $user->email );
-
     ok $mech->get('/admin');
     is $mech->res->code, 403, "got 403";
-
-    $mech->log_out_ok;
 };
+
+$mech->log_in_ok( $oxfordshireuser->email );
 
 subtest "Users with from_body can access their own council's admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
-        $mech->log_in_ok( $oxfordshireuser->email );
-
         $mech->get_ok('/admin');
         $mech->content_contains( 'FixMyStreet admin:' );
+    };
+};
 
-        $mech->log_out_ok;
+
+subtest "Check admin index page redirects" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshireuta' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        ok $mech->get('/admin/bodies');
+        is $mech->uri->path, '/admin/body/' . $oxfordshire->id, 'body redirects okay';
     };
 };
 
@@ -165,12 +188,8 @@ subtest "Users with from_body can't access another council's admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'bristol' ],
     }, sub {
-        $mech->log_in_ok( $oxfordshireuser->email );
-
         ok $mech->get('/admin');
         is $mech->res->code, 403, "got 403";
-
-        $mech->log_out_ok;
     };
 };
 
@@ -178,12 +197,8 @@ subtest "Users with from_body can't access fixmystreet.com admin" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
     }, sub {
-        $mech->log_in_ok( $oxfordshireuser->email );
-
         ok $mech->get('/admin');
         is $mech->res->code, 403, "got 403";
-
-        $mech->log_out_ok;
     };
 };
 
