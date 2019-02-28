@@ -324,7 +324,7 @@ subtest "test report creation for a user who is logged in" => sub {
             {
                 title => '',
                 detail => '',
-                may_show_name => '1',
+                may_show_name => undef,
                 name => 'Joe Bloggs',
                 email => 'joe@example.net',
                 photo1 => '',

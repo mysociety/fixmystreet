@@ -1000,9 +1000,7 @@ Returns true if the show name checkbox should be ticked by default.
 
 =cut
 
-sub default_show_name {
-    1;
-}
+sub default_show_name { 0 }
 
 =item report_check_for_errors
 

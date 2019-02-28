@@ -45,8 +45,6 @@ sub problems_on_map_restriction {
     return $rs->to_body($tfl ? [ $self->body->id, $tfl->id ] : $self->body);
 }
 
-sub default_show_name { 0 }
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
