@@ -8,6 +8,7 @@ use JSON::MaybeXS;
 use DateTime;
 use DateTime::Format::ISO8601;
 use List::MoreUtils 'uniq';
+use FixMyStreet::DateRange;
 
 =head1 NAME
 
@@ -50,16 +51,19 @@ sub problems : Local {
     }
 
     # convert the dates to datetimes and trap errors
-    my $iso8601  = DateTime::Format::ISO8601->new;
-    my $start_dt = eval { $iso8601->parse_datetime($start_date); };
-    my $end_dt   = eval { $iso8601->parse_datetime($end_date); };
-    unless ( $start_dt && $end_dt ) {
+    my $range = FixMyStreet::DateRange->new(
+        start_date => $start_date,
+        end_date => $end_date,
+        parser => DateTime::Format::ISO8601->new,
+        formatter => $c->model('DB')->schema->storage->datetime_parser,
+    );
+    unless ($range->start && $range->end) {
         $c->stash->{error} = 'Invalid dates supplied';
         return;
     }
 
     # check that the dates are sane
-    if ( $start_dt > $end_dt ) {
+    if ($range->start >= $range->end) {
         $c->stash->{error} = 'Start date after end date';
         return;
     }
@@ -80,14 +84,8 @@ sub problems : Local {
         $date_col = 'lastupdate';
     }
 
-    my $dt_parser = $c->model('DB')->schema->storage->datetime_parser;
-
-    my $one_day = DateTime::Duration->new( days => 1 );
     my $query = {
-        $date_col => {
-            '>=' => $dt_parser->format_datetime($start_dt),
-            '<=' => $dt_parser->format_datetime($end_dt + $one_day),
-        },
+        $date_col => $range->sql,
         state => [ @state ],
     };
     $query->{category} = $category if $category;

@@ -7,6 +7,7 @@ use utf8;
 use DateTime::Format::W3CDTF;
 use DateTime::Format::Flexible;
 use Try::Tiny;
+use FixMyStreet::DateRange;
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -387,27 +388,17 @@ sub munge_load_and_group_problems {
     }
 
     # Date range
-    my $dtf = $c->model('DB')->storage->datetime_parser;
-    my $dtp = DateTime::Format::Flexible->new;
     my $start_default = DateTime->today(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(months => 3);
     $c->stash->{start_date} = $c->get_param('start_date') || $start_default->strftime('%Y-%m-%d');
     $c->stash->{end_date} = $c->get_param('end_date');
 
-    my $start_date = try {
-        $dtp->parse_datetime($c->stash->{start_date}, european => 1);
-    } catch {
-        $start_default;
-    };
-    $where->{'me.confirmed'} = { '>=', $dtf->format_datetime($start_date) };
-
-    my $end_date = try {
-        $dtp->parse_datetime($c->stash->{end_date}, european => 1);
-    };
-    if ($end_date) {
-        my $one_day = DateTime::Duration->new( days => 1 );
-        $end_date += $one_day;
-        $where->{'me.confirmed'} = [ -and => $where->{'me.confirmed'}, { '<', $dtf->format_datetime($end_date) } ];
-    }
+    my $range = FixMyStreet::DateRange->new(
+        start_date => $c->stash->{start_date},
+        start_default => $start_default,
+        end_date => $c->stash->{end_date},
+        formatter => $c->model('DB')->storage->datetime_parser,
+    );
+    $where->{'me.confirmed'} = $range->sql;
 
     delete $filter->{rows};
 

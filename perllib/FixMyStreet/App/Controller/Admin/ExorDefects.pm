@@ -5,6 +5,7 @@ use namespace::autoclean;
 use DateTime;
 use Try::Tiny;
 use FixMyStreet::Integrations::ExorRDI;
+use FixMyStreet::DateRange;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -43,15 +44,16 @@ sub download : Path('download') : Args(0) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
-    my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d' );
-    my $start_date = $parser-> parse_datetime ( $c->get_param('start_date') );
-    my $end_date = $parser-> parse_datetime ( $c->get_param('end_date') ) ;
-    my $one_day = DateTime::Duration->new( days => 1 );
+    my $range = FixMyStreet::DateRange->new(
+        start_date => $c->get_param('start_date'),
+        end_date => $c->get_param('end_date'),
+        parser => DateTime::Format::Strptime->new( pattern => '%Y-%m-%d' ),
+    );
 
     my $params = {
-        start_date => $start_date,
-        inspection_date => $start_date,
-        end_date => $end_date + $one_day,
+        start_date => $range->start,
+        inspection_date => $range->start,
+        end_date => $range->end,
         user => $c->get_param('user_id'),
         mark_as_processed => 0,
     };
