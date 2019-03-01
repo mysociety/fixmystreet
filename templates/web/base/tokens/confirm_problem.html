@@ -2,7 +2,7 @@
 
 <div class="confirmation-header">
 
-  <h1><a href="[% c.cobrand.base_url_for_report( report ) %][% report.url %]">[% report.title %]</a></h1>
+  <h1><a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">[% report.title %]</a></h1>
 
   [% IF c.cobrand.is_council %]
     [% IF c.cobrand.owns_problem( report ) %]
@@ -21,7 +21,7 @@
             <b>[% report.body %]</b>
         </p>
         <p>
-            You can follow this problem on <a href="[% c.cobrand.base_url_for_report( report ) %][% report.url %]">FixMyStreet.com</a>.
+            You can follow this problem on <a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">FixMyStreet.com</a>.
         </p>
      [% END %]
 

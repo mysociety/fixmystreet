@@ -192,7 +192,7 @@ subtest 'check display of TfL reports' => sub {
         $mech->follow_link_ok({ text_regex => qr/Back to all reports/i });
     };
     $mech->content_like(qr{<a title="TfL Test[^>]*www.example.org[^>]*><img[^>]*grey});
-    $mech->content_like(qr{<a title="Test Test[^>]*bromley.example.org[^>]*><img[^>]*yellow});
+    $mech->content_like(qr{<a title="Test Test[^>]*href="/[^>]*><img[^>]*yellow});
 };
 
 subtest 'check geolocation overrides' => sub {

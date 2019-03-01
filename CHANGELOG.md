@@ -23,6 +23,7 @@
         - Fix issue with Open311 codes starting with ‘_’. #2391
         - Add parameter to URL when “Show older” clicked. #2397
         - Don't ask for email on alert signup if logged in. #2402
+        - Use relative report links where possible. #1995
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.

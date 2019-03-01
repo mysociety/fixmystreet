@@ -1719,7 +1719,7 @@ subtest "test Hart" => sub {
             if ( $test->{confirm} ) {
                 is $mech->uri->path, "/report/new";
                 my $base = 'www.fixmystreet.com';
-                $base = "hart.fixmystreet.com" unless $test->{national};
+                $base = '"' unless $test->{national};
                 $mech->content_contains("$base/report/" . $report->id, "links to correct site");
             } else {
                 # receive token
@@ -1746,7 +1746,7 @@ subtest "test Hart" => sub {
                 };
 
                 my $base = 'www.fixmystreet.com';
-                $base = 'hart.fixmystreet.com' unless $test->{national};
+                $base = '"' unless $test->{national};
                 $mech->content_contains( $base . '/report/' .
                     $report->id, 'confirm page links to correct site' );
 
