@@ -22,6 +22,8 @@ sub contact_email {
     return join( '@', 'councilconnect_rejections', 'bathnes.gov.uk' );
 }
 
+sub suggest_duplicates { 1 }
+
 sub admin_user_domain { 'bathnes.gov.uk' }
 
 sub base_url {
