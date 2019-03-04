@@ -1,0 +1,38 @@
+/* COLOURS */
+
+$menu-image: 'menu-black';
+
+$mappage-header-height: 134px;
+
+// Primary
+$white: #fff;
+$purple: rgb(125, 43, 128);
+$green: rgb(139, 197, 79);
+
+// Secondary
+$orange: rgb(245,132,35);
+$red: rgb(211,17,69);
+$blue: rgb(0, 85, 150);
+$dark_green: rgb(0, 137, 82);
+$magenta: rgb(236, 0, 140);
+$cyan: rgb(0, 174, 239);
+
+$primary: $purple;
+//$primary: #dce6f2; // From bexley.gov.uk/services
+$primary_b: #222;
+$primary_text: $white;
+
+$base_bg: $white;
+$base_fg: #222;
+
+$nav_background_colour: $white;
+$nav_colour: $purple;
+$nav_hover_background_colour: darken($purple, 10%);
+
+$col_click_map: $green;
+
+$header-top-border: false;
+
+$heading-font: InfoText, Frutiger, Arial, sans-serif;
+$body-font: Frutiger, Arial, sans-serif;
+$meta-font: $body-font;
