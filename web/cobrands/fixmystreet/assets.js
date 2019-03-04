@@ -796,6 +796,34 @@ OpenLayers.Layer.Vector.prototype.getNearestFeature = function(point, threshold)
 
 
 /*
+ * Returns all features from this layer within a given distance (<threshold>
+ * metres) of the given OpenLayers.Geometry.Point.
+ * Returns an empty list if no features meeting these criteria is found.
+ */
+OpenLayers.Layer.Vector.prototype.getFeaturesWithinDistance = function(point, threshold) {
+    var features = [];
+    for (var i = 0; i < this.features.length; i++) {
+        var candidate = this.features[i];
+        if (!candidate.geometry || !candidate.geometry.distanceTo) {
+            continue;
+        }
+        var details = candidate.geometry.distanceTo(point, {details: true});
+        // The units used for details.distance aren't metres, they're
+        // whatever the map projection uses. Convert to metres in order to
+        // draw a meaningful comparison to the threshold value.
+        var p1 = new OpenLayers.Geometry.Point(details.x0, details.y0);
+        var p2 = new OpenLayers.Geometry.Point(details.x1, details.y1);
+        var line = new OpenLayers.Geometry.LineString([p1, p2]);
+        var distance_m = line.getGeodesicLength(this.map.getProjectionObject());
+        if (distance_m <= threshold) {
+            features.push(candidate);
+        }
+    }
+    return features;
+};
+
+
+/*
  * MapServer 6 (the version available on Debian Wheezy) outputs incorrect
  * GML for MultiCurve geometries - see https://github.com/mapserver/mapserver/issues/4924
  * The end result is that features with 'curveMembers' elements in their
