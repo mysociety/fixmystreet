@@ -52,7 +52,7 @@ fixmystreet.roadworks.filter = function(feature) {
 
 fixmystreet.roadworks.category_change = function() {
     if (fixmystreet.map) {
-        fixmystreet.roadworks.show_nearby(null, fixmystreet.map.getCenter());
+        fixmystreet.roadworks.show_nearby(null, fixmystreet.get_lonlat_from_dom());
     }
 };
 
