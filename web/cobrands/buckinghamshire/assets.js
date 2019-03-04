@@ -104,18 +104,18 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     stylemap: streetlight_stylemap,
     feature_code: 'feature_id',
     actions: {
-        asset_found: function(asset, config) {
-          var id = asset.attributes[config.feature_code] || '';
+        asset_found: function(asset) {
+          var id = asset.attributes[this.fixmystreet.feature_code] || '';
           if (id !== '') {
               var code = id.replace(/[0-9]/g, '');
-              var asset_name = streetlight_code_to_type[code] || config.asset_item;
+              var asset_name = streetlight_code_to_type[code] || this.fixmystreet.asset_item;
               $('.category_meta_message').html('You have selected ' + asset_name + ' <b>' + id + '</b>');
           } else {
-              $('.category_meta_message').html('You can pick a <b class="asset-spot">' + config.asset_item + '</b> from the map &raquo;');
+              $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
           }
         },
-        asset_not_found: function(config) {
-           $('.category_meta_message').html('You can pick a <b class="asset-spot">' + config.asset_item + '</b> from the map &raquo;');
+        asset_not_found: function() {
+           $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
         }
     }
 });

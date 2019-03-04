@@ -112,13 +112,13 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
 
     asset_found: function() {
         if (this.fixmystreet.actions) {
-            this.fixmystreet.actions.asset_found(fixmystreet.assets.selectedFeature(), this.fixmystreet);
+            this.fixmystreet.actions.asset_found.call(this, fixmystreet.assets.selectedFeature());
         }
     },
 
     asset_not_found: function() {
         if (this.fixmystreet.actions) {
-            this.fixmystreet.actions.asset_not_found(this.fixmystreet);
+            this.fixmystreet.actions.asset_not_found.call(this);
         }
     },
 
