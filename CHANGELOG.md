@@ -28,6 +28,7 @@
         - Add space below "map page" contents on narrow screens.
         - Use relative report links where possible. #1995
         - Improve inline checkbox spacing. #2411
+        - Prevent duplicate contact history creation with Unicode data.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.

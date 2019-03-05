@@ -59,7 +59,6 @@ sub rabx_column {
                 my $self = shift;
                 my $ser  = shift;
                 return undef unless defined $ser;
-                utf8::encode($ser) if utf8::is_utf8($ser);
                 my $h = new IO::String($ser);
                 return RABX::wire_rd($h);
             },
@@ -78,18 +77,23 @@ sub rabx_column {
     $RABX_COLUMNS{ _get_class_identifier($class) }{$col} = 1;
 }
 
+# The underlying column should always be UTF-8 encoded bytes.
+sub get_column {
+    my ($self, $col) = @_;
+    my $res = $self->next::method ($col);
+    utf8::encode($res) if $RABX_COLUMNS{_get_class_identifier($self)}{$col} && utf8::is_utf8($res);
+    return $res;
+}
 
 sub set_filtered_column {
     my ($self, $col, $val) = @_;
-
-    my $class = ref $self;
 
     # because filtered objects may be expensive to marshall for storage there
     # is a cache that attempts to detect if they have changed or not. For us
     # this cache breaks things and our marshalling is cheap, so clear it when
     # trying set a column.
     delete $self->{_filtered_column}{$col}
-        if $RABX_COLUMNS{ _get_class_identifier($class) }{$col};
+        if $RABX_COLUMNS{ _get_class_identifier($self) }{$col};
 
     return $self->next::method($col, $val);
 }
