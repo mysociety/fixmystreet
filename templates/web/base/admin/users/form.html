@@ -22,11 +22,11 @@
             <input class="btn" type="submit" name="send_login_email" value="[% loc('Send login email') %]">
         [% END %]
         </li>
-        <li><label class="inline" for="email_verified">[% loc('Email verified:') %]</label>
+        <li><label class="inline-text" for="email_verified">[% loc('Email verified:') %]</label>
         <input type="checkbox" id="email_verified" name="email_verified" value="1" [% user.email_verified ? ' checked' : '' %]>
         <li><label for="phone">[% loc('Phone:') %]</label>
         <input type='text' class="form-control" id='phone' name='phone' value='[% user.phone | html %]'></li>
-        <li><label class="inline" for="phone_verified">[% loc('Phone verified:') %]</label>
+        <li><label class="inline-text" for="phone_verified">[% loc('Phone verified:') %]</label>
         <input type="checkbox" id="phone_verified" name="phone_verified" value="1" [% user.phone_verified ? ' checked' : '' %]>
 
       [% IF username_in_abuse %]

@@ -1,4 +1,4 @@
-[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation') %]
+[% INCLUDE 'header.html', bodyclass = 'authpage', title = loc('Confirmation') %]
 
 <form method="post" action="/questionnaire/submit" id="questionnaire">
 <input type="hidden" name="problem" value="[% problem_id | html %]">
@@ -9,14 +9,14 @@
 [% loc("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?") %]
 </p>
 
-<p align="center">
-<input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
-<label class="inline" for="reported_yes">[% loc('Yes') %]</label>
-<input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
-<label class="inline" for="reported_no">[% loc('No') %]</label>
+<p class="segmented-control segmented-control--radio">
+    <input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
+    <label class="btn" for="reported_yes">[% loc('Reported before') %]</label>
+    <input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
+    <label class="btn" for="reported_no">[% loc('First time') %]</label>
 </p>
 
-<p><input type="submit" class="btn" name="submit" value="[% loc('Submit') %]"></p>
+<p><input type="submit" class="btn btn--primary" name="submit" value="[% loc('Submit') %]"></p>
 
 </form>
 

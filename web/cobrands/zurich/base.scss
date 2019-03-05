@@ -200,23 +200,8 @@ h4.static-with-rule {
     }
 }
 
-.admin {
-  label.inline {
-    padding: 0;
-  }
-
-  input[type="checkbox"] + label.inline {
-    margin-right: 0.2em;
-  }
-
-}
 table#admin_bodies tr.is-deleted {
   background-color: transparent;
-}
-
-.admin-label--inline {
-  display: inline; // rather than block
-  margin-right: 0.333em; // bit of space between this and the following input
 }
 
 .ui-spinner input {
