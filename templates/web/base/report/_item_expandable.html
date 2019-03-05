@@ -18,7 +18,7 @@
     id="report-[% problem.id | html %]">
 
   [% IF problem.photo %]
-    <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]" class="item-list__item--expandable__hide-when-expanded">
+    <a href="[% c.cobrand.relative_url_for_report( problem ) %][% problem.url %]" class="item-list__item--expandable__hide-when-expanded">
         <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     </a>
   [% END %]
@@ -27,7 +27,7 @@
     [% PROCESS 'report/_item_heading.html' %]
   [% CATCH file %]
     <h3>
-        <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">
+        <a href="[% c.cobrand.relative_url_for_report( problem ) %][% problem.url %]">
             [% problem.title | html %]
         </a>
     </h3>

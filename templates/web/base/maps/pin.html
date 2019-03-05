@@ -1,6 +1,6 @@
 [% DEFAULT pin_style = 'top:' _ (pin.py - 64) _ 'px; left:' _ (pin.px - 24) _ 'px; position: absolute;' -%]
 [% IF pin.id %]
-<a title="[% pin.title | html %]" href="[% c.cobrand.base_url_for_report( pin.problem ) %][% pin.problem.url %]">
+<a title="[% pin.title | html %]" href="[% c.cobrand.relative_url_for_report( pin.problem ) %][% pin.problem.url %]">
 [%- END -%]
 <img border="0" src="[% start %][% c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png' %]"
 [% IF js -%]

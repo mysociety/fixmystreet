@@ -204,6 +204,11 @@ sub base_url_for_report {
     }
 }
 
+sub relative_url_for_report {
+    my ( $self, $report ) = @_;
+    return $self->owns_problem($report) ? "" : FixMyStreet->config('BASE_URL');
+}
+
 sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;

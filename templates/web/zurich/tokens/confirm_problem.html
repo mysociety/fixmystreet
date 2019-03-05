@@ -6,7 +6,7 @@
     loc('You have successfully confirmed your email address.');
     tprintf(
         loc( 'You can <a href="%s%s">view the problem on this site</a>.' ),
-        c.cobrand.base_url_for_report( report ),
+        c.cobrand.relative_url_for_report( report ),
         report.url
     );
 %]
