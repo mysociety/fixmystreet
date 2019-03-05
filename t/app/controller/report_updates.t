@@ -368,7 +368,7 @@ for my $test (
         initial_values => {
             name          => '',
             username => '',
-            may_show_name => 1,
+            may_show_name => undef,
             add_alert     => 1,
             photo1 => '',
             photo2 => '',
@@ -393,7 +393,7 @@ for my $test (
         initial_values => {
             name          => '',
             username => '',
-            may_show_name => 1,
+            may_show_name => undef,
             add_alert     => 1,
             photo1 => '',
             photo2 => '',
@@ -496,7 +496,7 @@ for my $test (
         initial_values => {
             name          => '',
             username => '',
-            may_show_name => 1,
+            may_show_name => undef,
             add_alert     => 1,
             photo1 => '',
             photo2 => '',

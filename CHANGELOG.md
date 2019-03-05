@@ -6,6 +6,7 @@
           while reporting, to discourage duplicate reports. #2386
     - Front end improvements:
         - Track map state in URL to make sharing links easier. #2242
+        - Default to unchecked for show name checkbox. #347
     - Admin improvements:
         - Include moderation history in report updates. #2379
         - Allow moderation to potentially change state. #2381
@@ -23,9 +24,16 @@
         - Fix issue with Open311 codes starting with ‘_’. #2391
         - Add parameter to URL when “Show older” clicked. #2397
         - Don't ask for email on alert signup if logged in. #2402
+        - Filter out hidden reports from top 5 list. #1957
+        - Add space below "map page" contents on narrow screens.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.
+    - Backwards incompatible changes:
+        - If you wish the default for the showname checkbox to be checked,
+          add `sub default_show_name { 1 }` to your cobrand file.
+        - The admin body and user sections have been refactored – if you have
+          custom templates/code, you may need to update links to those.
 
 * v2.5 (21st December 2018)
     - Front end improvements:

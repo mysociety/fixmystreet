@@ -1,9 +1,9 @@
 [%
-    IF c.cobrand.default_show_name AND anonymous=='';
+    IF anonymous=='';
         IF c.user_exists;
             SET name_public = NOT c.user.latest_anonymity;
         ELSE;
-            SET name_public = 1;
+            SET name_public = c.cobrand.default_show_name;
         END;
     ELSE;
         SET name_public = anonymous==0;
