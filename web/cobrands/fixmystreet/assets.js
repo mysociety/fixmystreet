@@ -222,7 +222,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
     },
 
     road_found: function() {
-        if (this.fixmystreet.actions) {
+        if (this.fixmystreet.actions && this.fixmystreet.actions.found) {
             this.fixmystreet.actions.found(this, this.selected_feature);
         } else if (!fixmystreet.assets.selectedFeature()) {
             fixmystreet.body_overrides.only_send(this.fixmystreet.body);
@@ -230,7 +230,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
     },
 
     road_not_found: function() {
-        if (this.fixmystreet.actions) {
+        if (this.fixmystreet.actions && this.fixmystreet.actions.not_found) {
             this.fixmystreet.actions.not_found(this);
         } else {
             fixmystreet.body_overrides.remove_only_send();
