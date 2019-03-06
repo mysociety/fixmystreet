@@ -223,7 +223,6 @@ sub open311_config {
 
 sub open311_config_updates {
     my ($self, $params) = @_;
-    $params->{use_extended_updates} = 1;
     $params->{endpoints} = {
         service_request_updates => 'update.xml',
         update => 'update.xml'
@@ -238,6 +237,14 @@ sub open311_pre_send {
         $extra->{title} = $row->user->title;
         $row->extra( $extra );
     }
+}
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+    delete $params->{update_id};
+    $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
+    $params->{update_id_ext} = $comment->id;
+    $params->{service_request_id_ext} = $comment->problem->id;
 }
 
 sub open311_contact_meta_override {

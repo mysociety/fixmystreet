@@ -29,6 +29,7 @@ sub send {
             use_service_as_deviceid => 0,
             extended_description    => 1,
             multi_photos            => 0,
+            fixmystreet_body => $body,
         );
 
         my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
