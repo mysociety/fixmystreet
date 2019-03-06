@@ -190,10 +190,10 @@ $(function() {
     $("#problem_form").on("change.category", "select#form_category", problem_form_category_change);
 
     // Want to show duplicates when an inspector sets a report’s state to "duplicate".
-    $("#report_inspect_form").on("change.state", "select#state", inspect_form_state_change);
+    $(document).on('change.state', "#report_inspect_form select#state", inspect_form_state_change);
 
     // Also want to give inspectors a way to select a *new* duplicate report.
-    $("#js-change-duplicate-report").click(refresh_duplicate_list);
+    $(document).on('click', "#js-change-duplicate-report", refresh_duplicate_list);
 
     $('.js-hide-duplicate-suggestions').on('click', function(e){
         e.preventDefault();
