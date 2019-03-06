@@ -96,10 +96,7 @@ sub category_display {
 
 sub get_metadata_for_editing {
     my $self = shift;
-    my $id_field = $self->id_field;
     my @metadata = @{$self->get_extra_fields};
-    # First, ones we always want to ignore (hard-coded, old system)
-    @metadata = grep { $_->{code} !~ /^(easting|northing|closest_address|$id_field)$/ } @metadata;
 
     # Just in case the extra data is in an old parsed format
     foreach (@metadata) {
