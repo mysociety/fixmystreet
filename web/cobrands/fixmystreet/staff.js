@@ -383,7 +383,6 @@ $(fixmystreet).on('display:report', function() {
     fixmystreet.staff_set_up.response_templates();
     if ($("#report_inspect_form").length) {
         fixmystreet.staff_set_up.report_page_inspect();
-        fixmystreet.staff_set_up.manage_duplicates();
         fixmystreet.staff_set_up.action_scheduled_raise_defect();
     }
 });
