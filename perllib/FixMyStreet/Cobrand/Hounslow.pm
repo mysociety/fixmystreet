@@ -36,4 +36,33 @@ sub contact_email {
 
 sub send_questionnaires { 0 }
 
+sub enable_category_groups { 1 }
+
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+
+    my $e = join( '@', 'enquiries', $self->council_url . 'highways.org' );
+    my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, 'Hounslow Highways' ] ] );
+    $sender->send($row, $h);
+}
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+    push @$extra,
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail };
+
+    $row->set_extra_fields(@$extra);
+}
+
+
 1;
