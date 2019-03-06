@@ -90,7 +90,7 @@
             <label for"comment_user_id">[% loc('User ID to attribute fetched comments to') %]</label>
             <input type="text" class="form-control" name="comment_user_id" value="[% object.comment_user_id %]">
             [% IF object.comment_user_id %]
-            <a href="[% c.uri_for('user_edit', object.comment_user_id) %]">[% loc('edit user') %]</a>
+            <a href="[% c.uri_for_action('admin/users/edit', object.comment_user_id) %]">[% loc('edit user') %]</a>
             [% END %]
         </p>
 

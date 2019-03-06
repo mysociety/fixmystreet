@@ -111,7 +111,7 @@
             <p>
               [% loc("Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>.") %]
               <br>
-              [% tprintf(loc("Flagged users are listed on the <a href='%s'>flagged</a> page."), c.uri_for( 'flagged' )) %]
+              [% tprintf(loc("Flagged users are listed on the <a href='%s'>flagged</a> page."), c.uri_for_action( 'admin/flagged' )) %]
               <br>
               [% loc("You can add an abusive user's email to the abuse list, which automatically hides (and never sends) reports they create.") %]
             </p>
