@@ -10,6 +10,7 @@ my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Coun
 
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "FLY");
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POT");
+$mech->create_contact_ok(body_id => $body->id, category => 'Blocked drain', email => "DRA");
 
 my $district = $mech->create_body_ok(2257, 'Chiltern');
 $mech->create_contact_ok(body_id => $district->id, category => 'Flytipping', email => "flytipping\@chiltern");
@@ -37,6 +38,7 @@ subtest 'cobrand displays correct categories' => sub {
     my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.615559&longitude=-0.556903');
     is @{$json->{bodies}}, 2, 'Both Chiltern and Bucks returned';
     like $json->{category}, qr/Flytipping/, 'Flytipping displayed';
+    like $json->{category}, qr/Blocked drain/, 'Blocked drain displayed';
     unlike $json->{category}, qr/Graffiti/, 'Graffiti not displayed';
     $json = $mech->get_ok_json('/report/new/category_extras?latitude=51.615559&longitude=-0.556903');
     is @{$json->{bodies}}, 2, 'Still both Chiltern and Bucks returned';
@@ -83,6 +85,19 @@ subtest 'flytipping off road sent to extra email' => sub {
     is $email->header('To'), '"Chiltern" <flytipping@chiltern>';
     $report->discard_changes;
     is $report->external_id, undef, 'Report has right external ID';
+};
+
+my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Drainage problem', {
+    category => 'Blocked drain', cobrand => 'fixmystreet',
+    latitude => 51.812244, longitude => -0.827363,
+});
+
+subtest 'blocked drain sent to extra email' => sub {
+    $mech->clear_emails_ok;
+    FixMyStreet::Script::Reports::send();
+    my $email = $mech->get_email;
+    my $e = join('@', 'floodmanagement', 'buckscc.gov.uk');
+    is $email->header('To'), '"Flood Management" <' . $e . '>';
 };
 
 $cobrand = FixMyStreet::Cobrand::Buckinghamshire->new();
@@ -183,7 +198,7 @@ subtest 'extra CSV columns are present' => sub {
     $mech->get_ok('/dashboard?export=1');
 
     my @rows = $mech->content_as_csv;
-    is scalar @rows, 4, '1 (header) + 3 (reports) = 4 lines';
+    is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
     is scalar @{$rows[0]}, 21, '21 columns present';
 
     is_deeply $rows[0],
