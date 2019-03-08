@@ -386,7 +386,7 @@ sub munge_load_and_group_problems {
     }
 
     # Date range
-    my $start_default = DateTime->today(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(months => 3);
+    my $start_default = DateTime->today(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(months => 1);
     $c->stash->{start_date} = $c->get_param('start_date') || $start_default->strftime('%Y-%m-%d');
     $c->stash->{end_date} = $c->get_param('end_date');
 
