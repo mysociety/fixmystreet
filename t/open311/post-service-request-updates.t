@@ -15,8 +15,8 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
 };
-my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params, send_extended_statuses => 1 });
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', $params);
+my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params, send_extended_statuses => 1, id => 5 });
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => 55 });
 my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire', $params);
 my $lewisham = $mech->create_body_ok(2492, 'Lewisham', $params);
 

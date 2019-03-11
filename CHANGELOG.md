@@ -30,6 +30,7 @@
         - Improve inline checkbox spacing. #2411
         - Prevent duplicate contact history creation with Unicode data.
         - Show all Open311 extra fields in edit admin.
+        - Proper bodies check for sending updates.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.

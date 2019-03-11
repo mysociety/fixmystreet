@@ -52,18 +52,16 @@ sub process_body {
 
     my $o = Open311->new( $self->open311_params($body) );
 
-    my $comments = FixMyStreet::DB->resultset('Comment')->search( {
+    my $comments = FixMyStreet::DB->resultset('Comment')->to_body($body)->search( {
             'me.whensent' => undef,
             'me.external_id' => undef,
             'me.state' => 'confirmed',
             'me.confirmed' => { '!=' => undef },
             'problem.whensent' => { '!=' => undef },
             'problem.external_id' => { '!=' => undef },
-            'problem.bodies_str' => { -like => '%' . $body->id . '%' },
             'problem.send_method_used' => { -like => '%Open311%' },
         },
         {
-            join => 'problem',
             order_by => [ 'confirmed', 'id' ],
         }
     );
