@@ -267,7 +267,7 @@ subtest "Category extras includes description label for user" => sub {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $contact4->push_extra_fields({ description => 'Size?', code => 'size', required => 'true', automated => '', variable => 'true', order => '3' });
+        $contact4->push_extra_fields({ description => 'Size?', code => 'size', required => 'true', automated => '', variable => 'true', order => '3', values => undef });
         $contact4->update;
         for (
           { url => '/report/new/ajax?' },
@@ -280,6 +280,7 @@ subtest "Category extras includes description label for user" => sub {
             lacks_string($category_extra, "USRN", "Lacks 'USRN' label");
             lacks_string($category_extra, "Asset ID", "Lacks 'Asset ID' label");
             contains_string($category_extra, "Size?");
+            lacks_string($category_extra, '<option value=""');
             contains_string($category_extra, "resolve your problem quicker, by providing some extra detail", "Contains description text");
         }
     };

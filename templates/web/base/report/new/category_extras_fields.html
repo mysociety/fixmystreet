@@ -14,7 +14,7 @@
       <p class='form-error'>[% field_errors.$x_meta_name %]</p>
       [% END -%]
       [% IF meta.variable != 'false' %]
-        [% IF meta.exists('values') %]
+        [% IF meta.item('values').size %]
           <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
             <option value="">[% loc('-- Pick an option --') %]</option>
             [% FOR option IN meta.values %]
