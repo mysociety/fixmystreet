@@ -394,8 +394,7 @@ sub lookup_by_ref_regex {
 sub category_extra_hidden {
     my ($self, $meta) = @_;
     return 1 if $meta->{code} eq 'usrn' || $meta->{code} eq 'asset_id';
-    return 1 if $meta->{automated} eq 'hidden_field';
-    return 0;
+    return $self->SUPER::category_extra_hidden($meta);
 }
 
 1;
