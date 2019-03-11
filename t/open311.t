@@ -261,6 +261,21 @@ for my $test (
     };
 }
 
+subtest 'test always_send_email' => sub {
+    my $email = $user->email;
+    $user->email(undef);
+    my $extra = { url => 'http://example.com/report/1', };
+
+    my $results = make_service_req(
+        $problem, $extra, $problem->category,
+        '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>',
+        { always_send_email => 1 }
+    );
+    my $c = CGI::Simple->new( $results->{req}->content );
+
+    is $c->param('email'), 'do-not-reply@example.org', 'correct email';
+    $user->email($email);
+};
 
 my $comment = FixMyStreet::DB->resultset('Comment')->new( {
     id => 38362,

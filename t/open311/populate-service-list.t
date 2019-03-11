@@ -584,6 +584,15 @@ subtest 'check Bromley skip code' => sub {
             <order>1</order>
             <description>Type of bin</description>
         </attribute>
+        <attribute>
+            <variable>true</variable>
+            <code>easting</code>
+            <datatype>string</datatype>
+            <required>true</required>
+            <datatype_description>String</datatype_description>
+            <order>1</order>
+            <description>Easting</description>
+        </attribute>
     </attributes>
 </service_definition>
     ';
@@ -625,6 +634,15 @@ subtest 'check Bromley skip code' => sub {
             datatype_description => 'Type of bin',
             order => 1,
             description => 'Type of bin'
+    }, {
+            automated => 'server_set',
+            variable => 'true',
+            code => 'easting',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'String',
+            order => 1,
+            description => 'Easting',
     }, {
             automated => 'hidden_field',
             variable => 'true',
@@ -671,7 +689,14 @@ subtest 'check Bromley skip code' => sub {
             datatype_description => 'Type of bin',
             order => 1,
             description => 'Type of bin'
-
+        }, {
+            variable => 'true',
+            code => 'easting',
+            datatype => 'string',
+            required => 'true',
+            datatype_description => 'String',
+            order => 1,
+            description => 'Easting',
         },
     ];
 

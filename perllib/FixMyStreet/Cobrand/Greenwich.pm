@@ -66,4 +66,13 @@ sub open311_config {
     $row->set_extra_fields( @$extra );
 }
 
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+
+    my %server_set = (easting => 1, northing => 1, closest_address => 1);
+    foreach (@$meta) {
+        $_->{automated} = 'server_set' if $server_set{$_->{code}};
+    }
+}
+
 1;
