@@ -11,9 +11,8 @@
 
 [% truncated_detail = BLOCK %][% problem.detail | truncate(75, '…') | html_para %][% END ~%]
 [% full_detail = BLOCK %][% problem.detail | add_links | html_para %][% END ~%]
-[% SET show_more = truncated_detail != full_detail OR problem.photo ~%]
 
-<li class="[% 'js-expandable ' IF show_more %]item-list__item item-list__item--expandable [% item_extra_class %]"
+<li class="js-expandable item-list__item item-list__item--expandable [% item_extra_class %]"
     data-report-id="[% problem.id | html %]"
     id="report-[% problem.id | html %]">
 
@@ -33,23 +32,22 @@
     </h3>
   [% END %]
 
-    <small>[% PROCESS 'report/_item_small.html' %]</small>
-
     <div class="item-list__item--expandable__hide-when-expanded">
+      <small>[% PROCESS 'report/_item_small.html' %]</small>
       [% truncated_detail %]
     </div>
 
-  [% IF show_more ~%]
     <div class="item-list__item--expandable__hide-until-expanded">
-      [% full_detail %]
-      [% INCLUDE 'report/photo.html' object=problem %]
+        <p class="report_meta_info">
+            [% INCLUDE 'report/_report_meta_info.html' %]
+        </p>
+        [% INCLUDE 'report/_main_sent_info.html' %]
+        [% INCLUDE 'report/photo.html' object=problem %]
+        [% full_detail %]
     </div>
-  [% END %]
 
     <div class="item-list__item--expandable__actions">
-      [% IF show_more ~%]
         <button class="btn btn--small js-toggle-expansion" data-more="[% loc('Read more') %]" data-less="[% loc('Read less') %]">[% loc('Read more') %]</button>
-      [% END %]
     </div>
 
 </li>

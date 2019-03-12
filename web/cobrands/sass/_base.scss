@@ -1339,6 +1339,16 @@ input.final-submit {
       margin-top: 0.5em;
   }
 
+  // A sort of hybrid between the .problem-header meta rows,
+  // and the regular .list-item meta row.
+  .report_meta_info,
+  .council_sent_info {
+      color: #666;
+      font-family: $meta-font;
+      font-style: italic;
+      font-size: 0.8125em;
+  }
+
   p {
       line-height: 1.4em;
       margin-top: 0.5em;
