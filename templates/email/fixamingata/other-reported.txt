@@ -4,8 +4,8 @@ Hej [% report.name %],
 
 Din rapport till [% report.body %] har blivit loggad på [% site_name %].
 
-[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
-Eftersom [% c.cobrand.council_name %] inte är ansvarig för den här typen av
+[% IF cobrand.is_council && !cobrand.owns_problem( report ) %]
+Eftersom [% cobrand.council_name %] inte är ansvarig för den här typen av
 rapporter, så kommer rapporten istället att skickas till [% report.body %].
 [% END %]
 

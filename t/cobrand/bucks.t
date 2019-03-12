@@ -76,13 +76,14 @@ subtest 'pothole on road not sent to extra email' => sub {
 };
 
 ($report) = $mech->create_problems_for_body(1, $district->id, 'Off Road', {
-    category => 'Flytipping', cobrand => 'fixmystreet',
+    category => 'Flytipping', cobrand => 'buckinghamshire',
     latitude => 51.813173, longitude => -0.826741,
 });
 subtest 'flytipping off road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
-    my $email = $mech->get_email;
-    is $email->header('To'), '"Chiltern" <flytipping@chiltern>';
+    my @email = $mech->get_email;
+    is $email[0]->header('To'), '"Chiltern" <flytipping@chiltern>';
+    like $mech->get_text_body_from_email($email[1]), qr/Please note that Buckinghamshire County Council is not responsible/;
     $report->discard_changes;
     is $report->external_id, undef, 'Report has right external ID';
 };
