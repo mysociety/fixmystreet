@@ -1366,6 +1366,7 @@ input.final-submit {
 }
 
 .item-list__item--expandable__actions {
+  clear: both; // clear floated .update-img images
   @include flex-container();
 
   & > * {
