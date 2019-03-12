@@ -70,6 +70,8 @@ my $problem = FixMyStreet::DB->resultset('Problem')->new( {
     cobrand => 'fixmystreet',
 } );
 
+my $bromley = FixMyStreet::DB->resultset('Body')->new({ name => 'Bromley' });
+
 subtest 'posting service request' => sub {
     my $extra = {
         url => 'http://example.com/report/1',
@@ -277,18 +279,23 @@ subtest 'test always_send_email' => sub {
     $user->email($email);
 };
 
-my $comment = FixMyStreet::DB->resultset('Comment')->new( {
-    id => 38362,
-    user => $user,
-    problem => $problem,
-    anonymous => 0,
-    text => 'this is a comment',
-    confirmed => $dt,
-    problem_state => 'confirmed',
-    extra => { title => 'Mr', email_alerts_requested => 0 },
-} );
+sub make_comment {
+    my $cobrand = shift;
+    FixMyStreet::DB->resultset('Comment')->new( {
+        id => 38362,
+        user => $user,
+        problem => $problem,
+        anonymous => 0,
+        text => 'this is a comment',
+        confirmed => $dt,
+        problem_state => 'confirmed',
+        cobrand => $cobrand || 'default',
+        extra => { title => 'Mr', email_alerts_requested => 0 },
+    } );
+}
 
 subtest 'basic request update post parameters' => sub {
+    my $comment = make_comment();
     my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
 
     is $results->{ res }, 248, 'got update id';
@@ -307,7 +314,13 @@ subtest 'basic request update post parameters' => sub {
 };
 
 subtest 'extended request update post parameters' => sub {
-    my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { use_extended_updates => 1 } );
+    my $comment = make_comment('bromley');
+    my $results;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+    };
 
     is $results->{ res }, 248, 'got update id';
 
@@ -333,8 +346,8 @@ subtest 'check media url set' => sub {
     my $image_path = path('t/app/controller/sample.jpg');
     $image_path->copy( path( $UPLOAD_DIR, '0123456789012345678901234567890123456789.jpeg' ) );
 
+    my $comment = make_comment('fixmystreet');
     $comment->photo("0123456789012345678901234567890123456789");
-    $comment->cobrand('fixmystreet');
 
     FixMyStreet::override_config {
         PHOTO_STORAGE_BACKEND => 'FileSystem',
@@ -350,7 +363,6 @@ subtest 'check media url set' => sub {
         my $expected_path = '/c/' . $comment->id . '.0.full.jpeg';
         like $c->param('media_url'), qr/$expected_path/, 'image url included';
     };
-    $comment->photo(undef);
 };
 
 foreach my $test (
@@ -447,6 +459,7 @@ foreach my $test (
     },
 ) {
     subtest $test->{desc} => sub {
+        my $comment = make_comment();
         $comment->problem_state( $test->{state} );
         $comment->problem->state( $test->{state} );
         $comment->mark_open(1) if $test->{mark_open};
@@ -481,11 +494,17 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
+        my $comment = make_comment('bromley');
         $comment->problem_state( $test->{state} );
         $comment->problem->state( $test->{state} );
         $comment->anonymous( $test->{anon} );
 
-        my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { use_extended_updates => 1 } );
+        my $results;
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'bromley',
+        }, sub {
+            $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+        };
 
         my $c = CGI::Simple->new( $results->{ req }->content );
         is $c->param('public_anonymity_required'), $test->{anon} ? 'TRUE' : 'FALSE', 'correct anonymity';
@@ -494,17 +513,6 @@ for my $test (
 
 my $dt2 = $dt->clone;
 $dt2->add( 'minutes' => 1 );
-
-my $comment2 = FixMyStreet::DB->resultset('Comment')->new( {
-    id => 38363,
-    user => $user,
-    problem => $problem,
-    anonymous => 0,
-    text => 'this is a comment',
-    confirmed => $dt,
-    problem_state => 'confirmed',
-    extra => { title => 'Mr', email_alerts_requested => 0 },
-} );
 
 for my $test (
     {
@@ -530,6 +538,7 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
+        my $comment = make_comment();
         $comment->problem_state( $test->{state} );
         $comment->problem->state( $test->{problem_state} );
         my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
@@ -574,6 +583,7 @@ for my $test (
   )
 {
     subtest $test->{desc} => sub {
+        my $comment = make_comment();
         $comment->name( $test->{comment_name} );
         $user->name( $test->{user_name} );
         $comment->extra( $test->{ extra } );
@@ -662,6 +672,7 @@ for my $test (
 }
 
 $problem->send_fail_count(1);
+my $comment = make_comment();
 $comment->send_fail_count(1);
 
 subtest 'No request id in reponse' => sub {
@@ -827,6 +838,7 @@ sub _make_req {
 
     $open311_conf{'test_mode'} = 1;
     $open311_conf{'end_point'} = 'http://localhost/o311';
+    $open311_conf{fixmystreet_body} = $bromley;
     my $o =
       Open311->new( %open311_conf );
 

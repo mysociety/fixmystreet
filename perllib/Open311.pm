@@ -29,12 +29,12 @@ has always_send_latlong => ( is => 'ro', isa => Bool, default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => Bool, default => 0 );
 has extended_description => ( is => 'ro', isa => Str, default => 1 );
 has use_service_as_deviceid => ( is => 'ro', isa => Bool, default => 0 );
-has use_extended_updates => ( is => 'ro', isa => Bool, default => 0 );
 has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
 has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
 has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
+has fixmystreet_body => ( is => 'ro', isa => InstanceOf['FixMyStreet::DB::Result::Body'] );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -387,14 +387,10 @@ sub _populate_service_request_update_params {
 
     $params->{phone} = $comment->user->phone if $comment->user->phone;
     $params->{email} = $comment->user->email if $comment->user->email;
+    $params->{update_id} = $comment->id;
 
-    if ( $self->use_extended_updates ) {
-        $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
-        $params->{update_id_ext} = $comment->id;
-        $params->{service_request_id_ext} = $comment->problem->id;
-    } else {
-        $params->{update_id} = $comment->id;
-    }
+    my $cobrand = $self->fixmystreet_body->get_cobrand_handler || $comment->get_cobrand_logged;
+    $cobrand->call_hook(open311_munge_update_params => $params, $comment, $self->fixmystreet_body);
 
     if ( $comment->photo ) {
         my $cobrand = $comment->get_cobrand_logged;

@@ -14,7 +14,6 @@ sub test_overrides; # defined below
 use constant TEST_USER_EMAIL => 'fred@example.com';
 
 my %standard_open311_parameters = (
-    'use_extended_updates' => 0,
     'send_notpinpointed' => 0,
     'extended_description' => 1,
     'use_service_as_deviceid' => 0,

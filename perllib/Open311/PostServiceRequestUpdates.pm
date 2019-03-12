@@ -38,6 +38,7 @@ sub open311_params {
         jurisdiction => $body->jurisdiction,
         api_key => $body->api_key,
         extended_statuses => $body->send_extended_statuses,
+        fixmystreet_body => $body,
     );
 
     my $cobrand = $body->get_cobrand_handler;
