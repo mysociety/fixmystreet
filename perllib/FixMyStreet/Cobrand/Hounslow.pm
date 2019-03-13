@@ -16,6 +16,11 @@ sub base_url {
     return 'https://fms.hounslowhighways.org';
 }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return "Enter a Hounslow street name and area, or postcode";
+}
+
 sub disambiguate_location {
     my $self = shift;
     my $string = shift;
@@ -64,6 +69,14 @@ sub open311_config {
           value => $row->detail };
 
     $row->set_extra_fields(@$extra);
+}
+
+sub should_skip_sending_update {
+    my ($self, $update ) = @_;
+
+    # Hounslow don't want to receive updates into Confirm that were made by
+    # anyone except the original problem reporter.
+    return $update->user_id != $update->problem->user_id;
 }
 
 
