@@ -977,7 +977,7 @@ $.extend(fixmystreet.set_up, {
         e.preventDefault();
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
         form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
-        $(this).closest('.js-alert-list').find('input[type=text], input[type=hidden], input[type=radio]:checked').each(function() {
+        $(this).closest('.js-alert-list').find('input[type=email], input[type=text], input[type=hidden], input[type=radio]:checked').each(function() {
             var $v = $(this);
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
         });
