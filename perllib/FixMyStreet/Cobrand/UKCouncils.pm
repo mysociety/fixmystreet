@@ -270,6 +270,8 @@ sub lookup_site_code {
 
     my $response = get($uri);
 
+    return '' unless $response;
+
     my $j = JSON->new->utf8->allow_nonref;
     try {
         $j = $j->decode($response);
