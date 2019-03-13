@@ -1031,7 +1031,7 @@ sub report_check_for_errors {
     );
 }
 
-sub report_sent_confirmation_email { 0; }
+sub report_sent_confirmation_email { '' }
 
 =item never_confirm_reports
 

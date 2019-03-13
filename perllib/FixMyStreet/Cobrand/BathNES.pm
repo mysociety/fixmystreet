@@ -151,7 +151,7 @@ sub available_permissions {
     return $permissions;
 }
 
-sub report_sent_confirmation_email { 1 }
+sub report_sent_confirmation_email { 'id' }
 
 sub lookup_usrn {
     my $self = shift;

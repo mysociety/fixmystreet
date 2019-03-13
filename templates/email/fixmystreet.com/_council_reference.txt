@@ -1,0 +1,4 @@
+[% IF sent_confirm_id_ref ~%]
+The report's reference number is [% sent_confirm_id_ref %]. Please quote this
+if you need to contact the council about this report.
+[%~ END %]

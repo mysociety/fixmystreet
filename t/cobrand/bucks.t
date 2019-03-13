@@ -51,9 +51,10 @@ my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
 
 subtest 'flytipping on road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
-    my $email = $mech->get_email;
+    my @email = $mech->get_email;
     my $tfb = join('', 'illegaldumpingcosts', '@', 'buckscc.gov.uk');
-    is $email->header('To'), '"TfB" <' . $tfb . '>';
+    is $email[0]->header('To'), '"TfB" <' . $tfb . '>';
+    like $mech->get_text_body_from_email($email[1]), qr/report's reference number/;
     $report->discard_changes;
     is $report->external_id, 248, 'Report has right external ID';
 };
@@ -67,10 +68,11 @@ subtest 'flytipping on road sent to extra email' => sub {
     },
 });
 
-subtest 'pothole on road not sent to extra email' => sub {
+subtest 'pothole on road not sent to extra email, only confirm sent' => sub {
     $mech->clear_emails_ok;
     FixMyStreet::Script::Reports::send();
-    $mech->email_count_is(0);
+    $mech->email_count_is(1);
+    like $mech->get_text_body_from_email, qr/report's reference number/;
     $report->discard_changes;
     is $report->external_id, 248, 'Report has right external ID';
 };
@@ -96,9 +98,10 @@ my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Drainage problem'
 subtest 'blocked drain sent to extra email' => sub {
     $mech->clear_emails_ok;
     FixMyStreet::Script::Reports::send();
-    my $email = $mech->get_email;
+    my @email = $mech->get_email;
     my $e = join('@', 'floodmanagement', 'buckscc.gov.uk');
-    is $email->header('To'), '"Flood Management" <' . $e . '>';
+    is $email[0]->header('To'), '"Flood Management" <' . $e . '>';
+    like $mech->get_text_body_from_email($email[1]), qr/report's reference number/;
 };
 
 $cobrand = FixMyStreet::Cobrand::Buckinghamshire->new();

@@ -123,7 +123,7 @@ subtest "Body user, has permission to add report as another (existing) user with
 
     my $send_confirmation_mail_override = Sub::Override->new(
         "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
-        sub { return 1; }
+        sub { return 'external_id'; }
     );
     FixMyStreet::Script::Reports::send();
     $mech->email_count_is(2);
@@ -168,7 +168,7 @@ subtest "Body user, has permission to add report as anonymous user" => sub {
 
     my $send_confirmation_mail_override = Sub::Override->new(
         "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
-        sub { return 1; }
+        sub { return 'external_id'; }
     );
 
     FixMyStreet::Script::Reports::send();
