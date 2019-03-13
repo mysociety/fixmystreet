@@ -1,4 +1,4 @@
-$(function() {
+(function() {
 
     // Store a reference to the "duplicate" report pins so we can
     // quickly remove them when we’re finished showing duplicates.
@@ -9,13 +9,14 @@ $(function() {
     var report_id = $("#report_inspect_form .js-report-id").text() || undefined;
 
     function refresh_duplicate_list() {
-        // This function will return a jQuery Promise, so callbacks can be
-        // hooked onto it, once the ajax request as completed.
-        var dfd = $.Deferred();
+        var category = $('select[name="category"]').val();
+        if (category === '-- Pick a category --') {
+            return;
+        }
 
         var nearby_url;
         var url_params = {
-            filter_category: $('select[name="category"]').val(),
+            filter_category: category,
             latitude: $('input[name="latitude"]').val(),
             longitude: $('input[name="longitude"]').val()
         };
@@ -42,14 +43,10 @@ $(function() {
                 remove_duplicate_pins();
                 remove_duplicate_list();
             }
-            dfd.resolve();
         }).fail(function(){
             remove_duplicate_pins();
             remove_duplicate_list();
-            dfd.reject();
         });
-
-        return dfd.promise();
     }
 
     function render_duplicate_list(api_response) {
@@ -170,24 +167,9 @@ $(function() {
         refresh_duplicate_list();
     }
 
-    var category_changing = false;
-    function problem_form_category_change() {
-        // Annoyingly this event seems to fire a few times in quick succession,
-        // so set a flag to avoid multiple overlapping refreshes.
-        if (category_changing) { return; }
-        category_changing = true;
-
-        refresh_duplicate_list().always(function(){
-            // Wait an extra second until we allow another reload.
-            setTimeout(function(){
-                category_changing = false;
-            }, 1000);
-        });
-    }
-
     // Want to show potential duplicates when a regular user starts a new
     // report, or changes the category/location of a partial report.
-    $("#problem_form").on("change.category", "select#form_category", problem_form_category_change);
+    $(fixmystreet).on('report_new:category_change', refresh_duplicate_list);
 
     // Want to show duplicates when an inspector sets a report’s state to "duplicate".
     $(document).on('change.state', "#report_inspect_form select#state", inspect_form_state_change);
@@ -203,4 +185,4 @@ $(function() {
         });
     });
 
-});
+})();
