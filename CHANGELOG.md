@@ -7,6 +7,8 @@
     - Front end improvements:
         - Track map state in URL to make sharing links easier. #2242
         - Default to unchecked for show name checkbox. #347
+    - Email improvements:
+        - Header image file name can be customised
     - Admin improvements:
         - Include moderation history in report updates. #2379
         - Allow moderation to potentially change state. #2381

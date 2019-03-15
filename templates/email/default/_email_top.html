@@ -3,8 +3,6 @@
     # Alert sets cobrand directly, questionnaire/submit have it in report, otherwise web
     cobrand = cobrand.moniker OR report.cobrand OR c.cobrand.moniker;
 
-    DEFAULT logo_file = 'email-logo.gif';
-
     IF cobrand == 'fixmystreet';
         SET img_dir = 'fixmystreet.com';
     ELSE;
