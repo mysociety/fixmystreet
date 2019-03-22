@@ -2,5 +2,5 @@
   [% IF NOT problem.updates_sent_to_body %]
     [% loc( 'Please note that updates are not sent to the council.' ) %]
   [% END %]
-    [% loc( 'Your information will only be used in accordance with our <a href="/privacy">privacy policy</a>' ) %]
+    [% tprintf( loc( 'Your information will only be used in accordance with our <a href="%s">privacy policy</a>' ), c.cobrand.privacy_policy_url ) %]
 </p>

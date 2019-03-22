@@ -11,7 +11,7 @@
 <p class="form-section-description js-new-report-sign-in-hidden" id="js-councils_text_private">
   [% IF js %]
     [% loc('These details will be sent to the council, but will never be shown online without your permission.') %]
-    (<a href="/privacy">[% loc('See our privacy policy') %]</a>.)
+    (<a href="[% c.cobrand.privacy_policy_url %]">[% loc('See our privacy policy') %]</a>.)
   [% ELSE %]
     [% PROCESS 'report/new/councils_text_private.html' %]
   [% END %]

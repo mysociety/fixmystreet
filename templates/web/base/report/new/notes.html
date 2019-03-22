@@ -1,7 +1,7 @@
 <p>[% loc("Please note:") %]</p>
 
 <ul class="plain-list">
-    <li>[% loc("We will only use your personal information in accordance with our <a href=\"/privacy\">privacy policy.</a>") %]</li>
+    <li>[% tprintf( loc("We will only use your personal information in accordance with our <a href=\"%s\">privacy policy.</a>"), c.cobrand.privacy_policy_url ) %]</li>
     <li>[% loc("Please be polite, concise and to the point.") %]</li>
     <li>[% loc("Please do not be abusive&nbsp;&mdash; abusing your council devalues the service for all users.") %]</li>
     <li>[% loc("Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation.") %]</li>

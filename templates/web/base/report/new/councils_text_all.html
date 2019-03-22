@@ -5,7 +5,7 @@
 [%
     tprintf(
         loc('These will be sent to <strong>%s</strong> and also published online for others to see, in accordance with our <a href="%s">privacy policy</a>.'),
-        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' ), '/privacy'
+        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' ), c.cobrand.privacy_policy_url
     );
 %]
 

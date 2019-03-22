@@ -1,4 +1,4 @@
 <p>
     [% loc( 'Please note that updates are not sent to the council.' ) %]
-    [% loc( 'Your information will only be used in accordance with our <a href="/privacy">privacy policy</a>' ) %]
+    [% tprintf( loc( 'Your information will only be used in accordance with our <a href="%s">privacy policy</a>' ), c.cobrand.privacy_policy_url ) %]
 </p>

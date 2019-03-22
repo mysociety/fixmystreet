@@ -1246,4 +1246,12 @@ still be sent (because it wasn't disabled on the FixMyStreet cobrand).
 
 sub send_moderation_notifications { 1 }
 
+=item privacy_policy_url
+
+The URL of the privacy policy to use on the report and update submissions forms.
+
+=cut
+
+sub privacy_policy_url { '/privacy' }
+
 1;
