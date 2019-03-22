@@ -14,6 +14,7 @@ has fetch_all => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 has convert_latlong => ( is => 'rw', default => 0 );
+has historic => ( is => 'ro', default => 0 );
 
 sub fetch {
     my $self = shift;
@@ -67,6 +68,10 @@ sub create_problems {
 
         $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $start_dt );
         $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $end_dt );
+    }
+
+    if ( $self->historic ) {
+        $args->{historic} = 'true';
     }
 
     my $requests = $open311->get_service_requests( $args );

@@ -1,0 +1,45 @@
+#!/usr/bin/env perl
+#
+# This script utilises Open311 as described at
+# http://wiki.open311.org/GeoReport_v2/#get-service-requests
+# to fetch service requests.
+
+use strict;
+use warnings;
+require 5.8.0;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Open311::GetServiceRequests;
+
+my $start_date = DateTime->now()->add( months => -3 );
+my $end_date = DateTime->now()->add( months => -1 );
+
+my $reports = Open311::GetServiceRequests->new(
+    start_date => $start_date,
+    end_date => $end_date,
+    historic => 1,
+    verbose => 1
+);
+
+my $bodies = $reports->schema->resultset('Body')->search(
+    {
+        send_method     => 'Open311',
+        fetch_problems  => 1,
+        comment_user_id => { '!=', undef },
+        endpoint        => { '!=', '' },
+        name => 'Northamptonshire County Council',
+    }
+);
+
+if ( my $ncc = $bodies->first ) {
+    my $o = $reports->create_open311_object( $ncc );
+
+    $reports->system_user( $ncc->comment_user );
+    $reports->create_problems($o, $ncc);
+}
