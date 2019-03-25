@@ -378,8 +378,8 @@ $.extend(fixmystreet.set_up, {
 	// /report/new), fetch it first. That will then automatically call this
 	// function again, due to it calling change() on the category if set.
         if (!fixmystreet.reporting_data) {
-            if (fixmystreet.map) {
-                fixmystreet.update_pin(fixmystreet.map.getCenter(), false);
+            if (fixmystreet.page === 'new') {
+                fixmystreet.fetch_reporting_data();
             }
             return;
         }
@@ -1158,6 +1158,15 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         }
     }
 
+    fixmystreet.fetch_reporting_data();
+
+    if (!$('#side-form-error').is(':visible')) {
+        $('#side-form').show();
+        $('#map_sidebar').scrollTop(0);
+    }
+};
+
+fixmystreet.fetch_reporting_data = function() {
     $.getJSON('/report/new/ajax', {
         latitude: $('#fixmystreet\\.latitude').val(),
         longitude: $('#fixmystreet\\.longitude').val()
@@ -1171,7 +1180,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             $('body').removeClass('with-notes');
             return;
         }
-        $('#side-form, #site-logo').show();
+        $('#side-form').show();
         var old_category_group = $('#category_group').val(),
             old_category = $("#form_category").val(),
             filter_category = $("#filter_categories").val();
@@ -1226,12 +1235,6 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             $('#js-contribute-as-wrapper').hide();
         }
     });
-
-    if (!$('#side-form-error').is(':visible')) {
-        $('#side-form, #site-logo').show();
-        $('#map_sidebar').scrollTop(0);
-    }
-
 };
 
 fixmystreet.display = {
