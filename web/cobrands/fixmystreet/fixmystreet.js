@@ -1170,15 +1170,22 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         }
         $('#side-form, #site-logo').show();
         var category_group = $('#category_group').val(),
-          old_category = $("select#form_category").val();
+            old_category = $("#form_category").val(),
+            filter_category = $("#filter_categories").val();
 
         fixmystreet.reporting_data = data;
 
         fixmystreet.update_councils_text(data);
         $('#js-top-message').html(data.top_message || '');
+
         $('#form_category_row').html(data.category);
-        if ($("select#form_category option[value=\""+old_category+"\"]").length) {
-            $("select#form_category").val(old_category);
+        if ($("#form_category option[value=\"" + old_category + "\"]").length) {
+            $("#form_category").val(old_category);
+        } else if (filter_category !== undefined && $("#form_category option[value='" + filter_category + "']").length) {
+            // If the category filter appears on the map and the user has selected
+            // something from it, then pre-fill the category field in the report,
+            // if it's a value already present in the drop-down.
+            $("#form_category").val(filter_category);
         }
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
@@ -1190,14 +1197,6 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         fixmystreet.bodies = data.bodies || [];
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
-        }
-
-        // If the category filter appears on the map and the user has selected
-        // something from it, then pre-fill the category field in the report,
-        // if it's a value already present in the drop-down.
-        var category = $("#filter_categories").val();
-        if (category !== undefined && $("#form_category option[value='"+category+"']").length) {
-            $("#form_category").val(category);
         }
 
         var category_select = $("select#form_category");
