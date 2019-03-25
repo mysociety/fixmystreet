@@ -446,11 +446,15 @@ $.extend(fixmystreet.set_up, {
         });
   },
 
-  category_groups: function() {
-    var $category_select = $("select#form_category.js-grouped-select");
-    if ($category_select.length === 0) {
+  category_groups: function(old_group) {
+    var $category_select = $("select#form_category");
+    if (!$category_select.hasClass('js-grouped-select')) {
+        if ($category_select.val() !== '-- Pick a category --') {
+            $category_select.change();
+        }
         return;
     }
+
     var $group_select = $("<select></select>").addClass("form-control validCategory").attr('id', 'category_group');
     var $subcategory_label = $("#form_subcategory_label");
     var $empty_option = $category_select.find("option").first();
@@ -526,6 +530,10 @@ $.extend(fixmystreet.set_up, {
         }
         return a.label > b.label ? 1 : -1;
     }).appendTo($group_select);
+
+    if (old_group !== '-- Pick a category --' && $category_select.val() == '-- Pick a category --') {
+        $group_select.val(old_group);
+    }
     $group_select.change();
   },
 
@@ -1164,7 +1172,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             return;
         }
         $('#side-form, #site-logo').show();
-        var category_group = $('#category_group').val(),
+        var old_category_group = $('#category_group').val(),
             old_category = $("#form_category").val(),
             filter_category = $("#filter_categories").val();
 
@@ -1182,6 +1190,9 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             // if it's a value already present in the drop-down.
             $("#form_category").val(filter_category);
         }
+
+        fixmystreet.set_up.category_groups(old_category_group);
+
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
             var lb = $('#form_first_name').prev();
@@ -1192,15 +1203,6 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         fixmystreet.bodies = data.bodies || [];
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
-        }
-
-        var category_select = $("select#form_category");
-        if (category_select.val() != '-- Pick a category --') {
-            category_select.change();
-        }
-        fixmystreet.set_up.category_groups();
-        if (category_group !== '-- Pick a category --' && category_select.val() == '-- Pick a category --') {
-            $('#category_group').val(category_group).change();
         }
 
         if (data.contribute_as) {
