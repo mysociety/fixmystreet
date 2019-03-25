@@ -388,23 +388,18 @@ $.extend(fixmystreet.set_up, {
             data = fixmystreet.reporting_data.by_category[category],
             $category_meta = $('#category_meta');
 
-        if (!data) {
-            // The Pick a category option, or something gone wrong
-            return;
-        }
-
-        fixmystreet.bodies = data.bodies || [];
+        fixmystreet.bodies = data && data.bodies ? data.bodies : [];
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
         }
 
-        if (data.councils_text) {
+        if (data && data.councils_text) {
             fixmystreet.update_councils_text(data);
         } else {
             // Use the original returned texts
             fixmystreet.update_councils_text(fixmystreet.reporting_data);
         }
-        if ( data.category_extra ) {
+        if (data && data.category_extra) {
             if ( $category_meta.length ) {
                 $category_meta.replaceWith( data.category_extra );
                 // Preserve any existing values
@@ -428,7 +423,7 @@ $.extend(fixmystreet.set_up, {
         });
         // apply new validation rules
         fixmystreet.set_up.reapply_validation(core_validation_rules);
-        $.each(data.bodies, function(index, body) {
+        $.each(fixmystreet.bodies, function(index, body) {
             if ( typeof body_validation_rules !== 'undefined' && body_validation_rules[body] ) {
                 var rules = body_validation_rules[body];
                 fixmystreet.set_up.reapply_validation(rules);

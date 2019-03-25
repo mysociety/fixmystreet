@@ -33,6 +33,7 @@
         - Proper bodies check for sending updates.
         - Check better if extra question has values.
         - Stop filter category overriding chosen category.
+        - Allow things to reset if "Pick a category" picked.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.
