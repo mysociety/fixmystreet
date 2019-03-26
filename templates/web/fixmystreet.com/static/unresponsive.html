@@ -2,12 +2,6 @@
     title = 'Unresponsive councils: What you can do', bodyclass = 'unresponsive-council fullwidthpage'
 %]
 
-[% IF body.name == 'Northamptonshire County Council' ~%]
-    [% PROCESS static/unresponsive_northants.html %]
-    [% INCLUDE footer.html %]
-    [% RETURN %]
-[% END %]
-
 <div class="unresponsive-council__header">
   <h1>Bad news :(</h1>
   <p><strong class="unresponsive-council-name">[% body.name %]</strong> no
