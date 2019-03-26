@@ -353,7 +353,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
 $.each(layers, function(index, layer) {
     if ( layer.categories ) {
         fixmystreet.assets.add($.extend(true, {}, northants_defaults, {
-            protocol: OpenLayers.Protocol.Alloy,
+            protocol_class: OpenLayers.Protocol.Alloy,
             http_options: {
               layerid: layer.layer,
               layerVersion: layer.version,
