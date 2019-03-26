@@ -140,7 +140,10 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "ST_All_Structures"
         }
     },
-    asset_category: "Bridge",
+    asset_category: [
+        "Bridge",
+        "Bridge or Structure"
+    ],
     asset_item: 'bridge',
     filter_key: 'Type',
     filter_value: [
