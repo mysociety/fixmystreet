@@ -33,6 +33,11 @@ sub disambiguate_location {
     };
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search( [ { 'body.name' => 'Northamptonshire County Council' } ], { join => { body => 'body_areas' } });
+}
+
 sub send_questionnaires { 0 }
 
 sub on_map_default_status { 'open' }
