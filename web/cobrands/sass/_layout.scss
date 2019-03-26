@@ -200,6 +200,11 @@ body.mappage {
 //  }
 }
 
+.box-warning,
+.extra-category-questions {
+  margin: 1em ($mappage-sidebar-padding * -1);
+}
+
 // Want to cover over the blue sidebar
 body.mappage.admin {
     .full-width--top {

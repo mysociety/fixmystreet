@@ -2043,29 +2043,63 @@ label .muted {
   }
 }
 
+.box-warning,
+.extra-category-questions {
+  margin: 1em -1em;
+}
+
 .extra-category-questions {
   background-color: #eee;
   padding: 1em;
-  margin-top: 1.5em; // make room for the triangle
-  position: relative;
-
-  // An upwards pointing triangle
-  &:before {
-    content: "";
-    display: block;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 1em 1em 1em;
-    border-color: transparent transparent #eee transparent;
-    position: absolute;
-    top: -0.9em; // avoid hairline gap between triangle and parent
-    #{$left}: 1.5em;
-  }
 
   & > :first-child {
     margin-top: 0;
   }
+}
+
+.box-warning {
+    padding: 2em 2em;
+    background-color: mix(#fff, $primary, 70%);
+
+    h1 {
+        font-size: 1.4em;
+    }
+
+    p {
+        margin-bottom: 0.5em;
+    }
+
+    .btn, .btn-primary {
+        margin: 0.5em 0 1em 0;
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .segmented-control {
+        .btn {
+            &:last-child {
+                margin-bottom: 1em;
+            }
+        }
+    }
+}
+
+.asset-spot:before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #000;
+    background-color: #ffff00;
+    margin: 0 0.3em 0 0.2em;
+    border-radius: 100%;
+    vertical-align: -2px;
 }
 
 // The coloured sidebar column on .with-actions pages.
@@ -2608,52 +2642,6 @@ a#geolocate_link.loading, .btn--geolocate.loading {
   html.js #map .noscript {
     display: block;
   }
-}
-
-.box-warning {
-    margin: 1em -1em;
-    padding: 2em 2em;
-    background-color: mix(#fff, $primary, 70%);
-
-    h1 {
-        font-size: 1.4em;
-    }
-
-    p {
-        margin-bottom: 0.5em;
-    }
-
-    .btn, .btn-primary {
-        margin: 0.5em 0 1em 0;
-
-        &:first-child {
-            margin-top: 0;
-        }
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
-    .segmented-control {
-        .btn {
-            &:last-child {
-                margin-bottom: 1em;
-            }
-        }
-    }
-}
-
-.asset-spot:before {
-    content: "";
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border: 2px solid #000;
-    background-color: #ffff00;
-    margin: 0 0.3em 0 0.2em;
-    border-radius: 100%;
-    vertical-align: -2px;
 }
 
 $nicetable-cell-padding: 0.6em 1.5em !default;
