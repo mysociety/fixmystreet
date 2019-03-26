@@ -483,7 +483,7 @@ function check_rights_of_way() {
     }
 
     var $msg = $('<p id="row-message" class="box-warning">If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.</p>');
-    $('#form_category_row').after($msg);
+    $msg.insertBefore('#js-post-category-messages');
     $('.js-hide-if-invalid-category').hide();
 }
 $(fixmystreet).on('report_new:category_change', check_rights_of_way);

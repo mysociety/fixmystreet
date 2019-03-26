@@ -376,7 +376,7 @@ function check_zoom_message_visibility() {
     if (this.relevant()) {
         if ($p.length === 0) {
             $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
-            $p.insertAfter('#form_category_row');
+            $p.prependTo('#js-post-category-messages');
         }
 
         if (this.getVisibility() && this.inRange) {

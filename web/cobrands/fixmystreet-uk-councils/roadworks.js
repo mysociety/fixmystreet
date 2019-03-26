@@ -217,7 +217,7 @@ fixmystreet.roadworks.display_message = function(feature) {
             $dl.append(config.text_after);
         }
 
-        $('.change_location').after($msg);
+    $msg.prependTo('#js-post-category-messages');
 };
 
 

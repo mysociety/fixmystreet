@@ -407,7 +407,7 @@ $.extend(fixmystreet.set_up, {
                     $category_meta.find("[name="+this.name+"]").val(this.value);
                 });
             } else {
-                $('#form_category_row').after( data.category_extra );
+                $('#js-post-category-messages').prepend( data.category_extra );
             }
         } else {
             $category_meta.empty();
