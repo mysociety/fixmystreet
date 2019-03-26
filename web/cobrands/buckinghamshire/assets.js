@@ -465,5 +465,20 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     }
 }));
 
+function check_rights_of_way() {
+    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, defaults.body) > -1;
+    var relevant_cat = $('#form_category').val() == 'Rights of Way';
+
+    if (!relevant_body || !relevant_cat) {
+        $('#row-message').remove();
+        $('.js-hide-if-invalid-category').show();
+        return;
+    }
+
+    var $msg = $('<p id="row-message" class="box-warning">If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.</p>');
+    $('#form_category_row').after($msg);
+    $('.js-hide-if-invalid-category').hide();
+}
+$(fixmystreet).on('report_new:category_change', check_rights_of_way);
 
 })();
