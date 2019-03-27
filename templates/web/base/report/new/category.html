@@ -1,7 +1,15 @@
+[%
+# If only one option, pre-select that as if it were already selected. This
+# carries through to the category_extras template because this template is
+# included with PROCESS.
+IF category_options.size == 2;
+    category = category_options.1.category;
+END
+~%]
 [% IF category_options.size OR category_groups.size ~%]
     [%~ BLOCK category_option ~%]
     [% cat_op_lc = cat_op.category | lower =%]
-    <option value='[% cat_op.category | html %]'[% ' selected' IF report.category == cat_op.category || category_lc == cat_op_lc || (category_options.size == 2 AND loop.last) ~%]
+    <option value='[% cat_op.category | html %]'[% ' selected' IF report.category == cat_op.category || category_lc == cat_op_lc ~%]
     >[% IF loop.first %][% cat_op.category_display %][% ELSE %][% cat_op.category_display | html %][% END %]
     [%~ IF cat_op.get_extra_metadata('help_text') %] ([% cat_op.get_extra_metadata('help_text') %])[% END ~%]
     </option>

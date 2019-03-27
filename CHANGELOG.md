@@ -32,6 +32,10 @@
         - Show all Open311 extra fields in edit admin.
         - Proper bodies check for sending updates.
         - Check better if extra question has values.
+        - Stop filter category overriding chosen category.
+        - Allow things to reset if "Pick a category" picked.
+        - Stop category_change firing more than it should.
+        - Fix extra question display when only one category.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.

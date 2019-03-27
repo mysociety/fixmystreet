@@ -388,23 +388,18 @@ $.extend(fixmystreet.set_up, {
             data = fixmystreet.reporting_data.by_category[category],
             $category_meta = $('#category_meta');
 
-        if (!data) {
-            // The Pick a category option, or something gone wrong
-            return;
-        }
-
-        fixmystreet.bodies = data.bodies || [];
+        fixmystreet.bodies = data && data.bodies ? data.bodies : [];
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
         }
 
-        if (data.councils_text) {
+        if (data && data.councils_text) {
             fixmystreet.update_councils_text(data);
         } else {
             // Use the original returned texts
             fixmystreet.update_councils_text(fixmystreet.reporting_data);
         }
-        if ( data.category_extra ) {
+        if (data && data.category_extra) {
             if ( $category_meta.length ) {
                 $category_meta.replaceWith( data.category_extra );
                 // Preserve any existing values
@@ -428,7 +423,7 @@ $.extend(fixmystreet.set_up, {
         });
         // apply new validation rules
         fixmystreet.set_up.reapply_validation(core_validation_rules);
-        $.each(data.bodies, function(index, body) {
+        $.each(fixmystreet.bodies, function(index, body) {
             if ( typeof body_validation_rules !== 'undefined' && body_validation_rules[body] ) {
                 var rules = body_validation_rules[body];
                 fixmystreet.set_up.reapply_validation(rules);
@@ -451,11 +446,15 @@ $.extend(fixmystreet.set_up, {
         });
   },
 
-  category_groups: function() {
-    var $category_select = $("select#form_category.js-grouped-select");
-    if ($category_select.length === 0) {
+  category_groups: function(old_group) {
+    var $category_select = $("select#form_category");
+    if (!$category_select.hasClass('js-grouped-select')) {
+        if ($category_select.val() !== '-- Pick a category --') {
+            $category_select.change();
+        }
         return;
     }
+
     var $group_select = $("<select></select>").addClass("form-control validCategory").attr('id', 'category_group');
     var $subcategory_label = $("#form_subcategory_label");
     var $empty_option = $category_select.find("option").first();
@@ -531,6 +530,10 @@ $.extend(fixmystreet.set_up, {
         }
         return a.label > b.label ? 1 : -1;
     }).appendTo($group_select);
+
+    if (old_group !== '-- Pick a category --' && $category_select.val() == '-- Pick a category --') {
+        $group_select.val(old_group);
+    }
     $group_select.change();
   },
 
@@ -1169,17 +1172,27 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             return;
         }
         $('#side-form, #site-logo').show();
-        var category_group = $('#category_group').val(),
-          old_category = $("select#form_category").val();
+        var old_category_group = $('#category_group').val(),
+            old_category = $("#form_category").val(),
+            filter_category = $("#filter_categories").val();
 
         fixmystreet.reporting_data = data;
 
         fixmystreet.update_councils_text(data);
         $('#js-top-message').html(data.top_message || '');
+
         $('#form_category_row').html(data.category);
-        if ($("select#form_category option[value=\""+old_category+"\"]").length) {
-            $("select#form_category").val(old_category);
+        if ($("#form_category option[value=\"" + old_category + "\"]").length) {
+            $("#form_category").val(old_category);
+        } else if (filter_category !== undefined && $("#form_category option[value='" + filter_category + "']").length) {
+            // If the category filter appears on the map and the user has selected
+            // something from it, then pre-fill the category field in the report,
+            // if it's a value already present in the drop-down.
+            $("#form_category").val(filter_category);
         }
+
+        fixmystreet.set_up.category_groups(old_category_group);
+
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
             var lb = $('#form_first_name').prev();
@@ -1190,23 +1203,6 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         fixmystreet.bodies = data.bodies || [];
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
-        }
-
-        // If the category filter appears on the map and the user has selected
-        // something from it, then pre-fill the category field in the report,
-        // if it's a value already present in the drop-down.
-        var category = $("#filter_categories").val();
-        if (category !== undefined && $("#form_category option[value='"+category+"']").length) {
-            $("#form_category").val(category);
-        }
-
-        var category_select = $("select#form_category");
-        if (category_select.val() != '-- Pick a category --') {
-            category_select.change();
-        }
-        fixmystreet.set_up.category_groups();
-        if (category_group !== '-- Pick a category --' && category_select.val() == '-- Pick a category --') {
-            $('#category_group').val(category_group).change();
         }
 
         if (data.contribute_as) {
