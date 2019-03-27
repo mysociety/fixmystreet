@@ -468,8 +468,15 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 function check_rights_of_way() {
     var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, defaults.body) > -1;
     var relevant_cat = $('#form_category').val() == 'Rights of Way';
+    var relevant = relevant_body && relevant_cat;
+    var currently_shown = !!$('#row-message').length;
 
-    if (!relevant_body || !relevant_cat) {
+    if (relevant === currently_shown) {
+        // Either should be shown and already is, or shouldn't be shown and isn't
+        return;
+    }
+
+    if (!relevant) {
         $('#row-message').remove();
         $('.js-hide-if-invalid-category').show();
         return;

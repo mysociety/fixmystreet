@@ -1,23 +1,26 @@
 (function(){
-  function disable_form(disable) {
-    $('.js-hide-if-invalid-category').toggle(!disable);
-  }
 
-  function check_rights_of_way() {
-    if (OpenLayers.Util.indexOf(fixmystreet.bodies, 'Oxfordshire County Council') == -1) {
-        $('#occ_prow').remove();
-        disable_form(false);
+function check_rights_of_way() {
+    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, 'Oxfordshire County Council') > -1;
+    var relevant_cat = $('#form_category').val() == 'Countryside Paths / Public Rights of Way (usually not tarmac)';
+    var relevant = relevant_body && relevant_cat;
+    var currently_shown = !!$('#occ_prow').length;
+
+    if (relevant === currently_shown) {
+        // Either should be shown and already is, or shouldn't be shown and isn't
         return;
     }
 
-    if ($('#form_category').val() == 'Countryside Paths / Public Rights of Way (usually not tarmac)') {
-        $('#form_category_row').after('<p id="occ_prow" class="category-message">Please report problems with rights of way using <a href="https://publicrightsofway.oxfordshire.gov.uk/web/standardmap.aspx">this page</a>.</p>');
-        disable_form(true);
-    } else {
+    if (!relevant) {
         $('#occ_prow').remove();
-        disable_form(false);
+        $('.js-hide-if-invalid-category').show();
+        return;
     }
-  }
 
-  $(fixmystreet).on('report_new:category_change', check_rights_of_way);
+    var $msg = $('<p id="occ_prow" class="box-warning">Please report problems with rights of way using <a href="https://publicrightsofway.oxfordshire.gov.uk/web/standardmap.aspx">this page</a>.</p>');
+    $('#form_category_row').after($msg);
+    $('.js-hide-if-invalid-category').hide();
+}
+$(fixmystreet).on('report_new:category_change', check_rights_of_way);
+
 })();
