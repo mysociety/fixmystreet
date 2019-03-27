@@ -12,8 +12,8 @@ INCLUDE '_email_top.html';
   [% start_padded_box %]
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
   <p style="[% p_style %]">Your report to [% report.body %] has been logged on [% site_name %].</p>
-[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
-<p style="[% p_style %]">Please note that [% c.cobrand.council_name %] is not responsible for this type
+[% IF cobrand.is_council && !cobrand.owns_problem( report ) %]
+<p style="[% p_style %]">Please note that [% cobrand.council_name %] is not responsible for this type
 of report, so it will instead be sent to [% report.body %].</p>
 [% ELSE %]
 [% TRY %][% INCLUDE '_council_reference.html' problem=report %][% CATCH file %][% END %]

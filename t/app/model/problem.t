@@ -633,7 +633,7 @@ subtest 'check can set multiple emails as a single contact' => sub {
 subtest 'check can turn on report sent email alerts' => sub {
     my $send_confirmation_mail_override = Sub::Override->new(
         "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
-        sub { return 1; }
+        sub { return 'external_id'; }
     );
     $mech->clear_emails_ok;
 
