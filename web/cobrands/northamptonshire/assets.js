@@ -48,11 +48,6 @@ var layers = [
   "version": "64.1-"
 },
 {
-  "layer_name": "Gully",
-  "layer": 66,
-  "version": "66.9-"
-},
-{
   "layer_name": "Channel",
   "layer": 68,
   "version": "68.2-"
@@ -224,6 +219,12 @@ var layers = [
 },
   */
 {
+  "categories": [ "Blocked - flooding private property", "Blocked - flooding road/path", ],
+  "layer_name": "Gully",
+  "layer": 66,
+  "version": "66.80-"
+},
+{
   "categories": [ "Grit Bin - damaged/replacement", "Grit Bin - empty/refill" ],
   "item_name": "grit bin",
   "layer_name": "Grit Bins",
@@ -301,8 +302,8 @@ var layers = [
     "Restricted Visibility",
   ],
   "layer_name": "Tree",
-  "layer": 228,
-  "version": "228.24-"
+  "layer": 309,
+  "version": "309.1-"
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
@@ -406,7 +407,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     protocol_class: OpenLayers.Protocol.Alloy,
     http_options: {
       layerid: 230,
-      layerVersion: '230.2-',
+      layerVersion: '230.3-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': barrier_style
@@ -450,8 +451,6 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     asset_category: [
         "Loose / Raised/Sunken",
         "Broken / Missing",
-        "Blocked - flooding private property",
-        "Blocked - flooding road/path",
         "Blocked/Damaged",
         "Blocked Ditch",
         "Blocked Ditch Causing Flooding",
