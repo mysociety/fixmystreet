@@ -313,6 +313,14 @@ var layers = [
 ];
 
 var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
+  protocol_class: OpenLayers.Protocol.Alloy,
+  non_interactive: false,
+  body: "Northamptonshire County Council",
+  attributes: {
+    asset_resource_id: function() {
+      return this.fid;
+    }
+  },
   select_action: true,
   actions: {
     asset_found: function(asset) {
@@ -353,39 +361,23 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
 $.each(layers, function(index, layer) {
     if ( layer.categories ) {
         fixmystreet.assets.add($.extend(true, {}, northants_defaults, {
-            protocol_class: OpenLayers.Protocol.Alloy,
             http_options: {
               layerid: layer.layer,
               layerVersion: layer.version,
             },
-            non_interactive: false,
             asset_type: layer.asset_type || 'spot',
-            body: "Northamptonshire County Council",
             asset_category: layer.categories,
             asset_item: layer.item_name || layer.layer_name.toLowerCase(),
-            attributes: {
-              asset_resource_id: function() {
-                return this.fid;
-              }
-            }
         }));
     }
 });
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
+var northants_road_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     protocol_class: OpenLayers.Protocol.Alloy,
-    http_options: {
-      layerid: 221,
-      layerVersion: '221.4-',
-    },
     body: "Northamptonshire County Council",
     road: true,
-    asset_type: "area",
     always_visible: false,
     non_interactive: true,
-    asset_category: [
-        "Damaged Speed Humps",
-    ],
     usrn: {
         attribute: 'fid',
         field: 'asset_resource_id'
@@ -393,6 +385,17 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     getUSRN: function(feature) {
       return feature.fid;
     }
+});
+
+fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
+    http_options: {
+      layerid: 221,
+      layerVersion: '221.4-',
+    },
+    asset_type: "area",
+    asset_category: [
+        "Damaged Speed Humps",
+    ]
 }));
 
 var barrier_style = new OpenLayers.Style({
@@ -402,8 +405,7 @@ var barrier_style = new OpenLayers.Style({
     strokeWidth: 4
 });
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
-    protocol_class: OpenLayers.Protocol.Alloy,
+fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     http_options: {
       layerid: 230,
       layerVersion: '230.2-',
@@ -411,20 +413,9 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     stylemap: new OpenLayers.StyleMap({
         'default': barrier_style
     }),
-    body: "Northamptonshire County Council",
-    road: true,
-    always_visible: false,
-    non_interactive: true,
     asset_category: [
         "Pedestrian Barriers - Damaged / Missing",
-    ],
-    usrn: {
-        attribute: 'fid',
-        field: 'asset_resource_id'
-    },
-    getUSRN: function(feature) {
-      return feature.fid;
-    }
+    ]
 }));
 
 var highways_style = new OpenLayers.Style({
@@ -434,8 +425,7 @@ var highways_style = new OpenLayers.Style({
     strokeWidth: 7
 });
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
-    protocol_class: OpenLayers.Protocol.Alloy,
+fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     http_options: {
       layerid: 308,
       layerVersion: '308.8-',
@@ -443,10 +433,6 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
     }),
-    body: "Northamptonshire County Council",
-    road: true,
-    always_visible: false,
-    non_interactive: true,
     asset_category: [
         "Loose / Raised/Sunken",
         "Broken / Missing",
@@ -473,14 +459,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
         "Icy Footpath",
         "Icy Road",
         "Missed published Gritted Route",
-    ],
-    usrn: {
-        attribute: 'fid',
-        field: 'asset_resource_id'
-    },
-    getUSRN: function(feature) {
-      return feature.fid;
-    }
+    ]
 }));
 
 var prow_style = new OpenLayers.Style({
@@ -490,8 +469,7 @@ var prow_style = new OpenLayers.Style({
     strokeWidth: 7
 });
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
-    protocol_class: OpenLayers.Protocol.Alloy,
+fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     http_options: {
       layerid: 173,
       layerVersion: '173.1-',
@@ -499,21 +477,10 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     stylemap: new OpenLayers.StyleMap({
         'default': prow_style
     }),
-    body: "Northamptonshire County Council",
-    road: true,
-    always_visible: false,
-    non_interactive: true,
     asset_category: [
       "Livestock",
       "Passage-Obstructed/Overgrown"
-    ],
-    usrn: {
-        attribute: 'fid',
-        field: 'asset_resource_id'
-    },
-    getUSRN: function(feature) {
-      return feature.fid;
-    }
+    ]
 }));
 
 })();
