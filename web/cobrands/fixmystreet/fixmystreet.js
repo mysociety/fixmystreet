@@ -388,7 +388,11 @@ $.extend(fixmystreet.set_up, {
             data = fixmystreet.reporting_data.by_category[category],
             $category_meta = $('#category_meta');
 
-        fixmystreet.bodies = data && data.bodies ? data.bodies : [];
+        if (data) {
+            fixmystreet.bodies = data.bodies || [];
+        } else {
+            fixmystreet.bodies = fixmystreet.reporting_data.bodies || [];
+        }
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
         }
