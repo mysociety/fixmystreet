@@ -483,4 +483,30 @@ fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     ]
 }));
 
+// Hide form when emergency category used
+function check_emergency() {
+    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, northants_defaults.body) > -1;
+    var relevant_cat = !!$('label[for=form_emergency]').length;
+    var relevant = relevant_body && relevant_cat;
+    var currently_shown = !!$('#northants-emergency-message').length;
+    var body = $('#form_category').data('body');
+
+    if (relevant === currently_shown || body) {
+        // Either should be shown and already is, or shouldn't be shown and isn't
+        return;
+    }
+
+    if (!relevant) {
+        $('#northants-emergency-message').remove();
+        $('.js-hide-if-invalid-category').show();
+        return;
+    }
+
+    var $msg = $('<div class="box-warning" id="northants-emergency-message"></div>');
+    $msg.html($('label[for=form_emergency]').html());
+    $msg.insertBefore('#js-post-category-messages');
+    $('.js-hide-if-invalid-category').hide();
+}
+$(fixmystreet).on('report_new:category_change', check_emergency);
+
 })();
