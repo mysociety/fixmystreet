@@ -139,17 +139,18 @@ sub close_problems {
 
     my $problems = shift;
 
-    return unless $problems->count;
-
     my $extra = { auto_closed_by_script => 1 };
     $extra->{is_superuser} = 1 if !$opts->{user_name};
 
-    # need to do this again in case no reports were closed with an
-    # email in which case we won't have set the lang and domain
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->{cobrand})->new();
-    $cobrand->set_lang_and_domain($problems->first->lang, 1);
-
+    my $cobrand;
     while (my $problem = $problems->next) {
+        # need to do this in case no reports were closed with an
+        # email in which case we won't have set the lang and domain
+        if ($opts->{cobrand} && !$cobrand) {
+            $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->{cobrand})->new();
+            $cobrand->set_lang_and_domain($problem->lang, 1);
+        }
+
         my $timestamp = \'current_timestamp';
         my $comment = $problem->add_to_comments( {
             text => $opts->{closure_text} || '',
