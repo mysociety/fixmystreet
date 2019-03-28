@@ -44,6 +44,13 @@ sub on_map_default_status { 'open' }
 
 sub report_sent_confirmation_email { 'id' }
 
+sub problems_on_map_restriction {
+    my ($self, $rs) = @_;
+    # Northamptonshire don't want to show district/borough reports
+    # on the site
+    return $self->problems_restriction($rs);
+}
+
 sub contact_email {
     my $self = shift;
     return join( '@', 'highways', $self->council_url . '.gov.uk' );
