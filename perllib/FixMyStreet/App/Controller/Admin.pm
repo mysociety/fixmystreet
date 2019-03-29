@@ -549,10 +549,9 @@ sub report_edit : Path('report_edit') : Args(1) {
         if ( $problem->state ne $old_state ) {
             $c->forward( 'log_edit', [ $id, 'problem', 'state_change' ] );
 
-            my $name = _('an administrator');
+            my $name = $c->user->moderating_user_name;
             my $extra = { is_superuser => 1 };
             if ($c->user->from_body) {
-                $name = $c->user->from_body->name;
                 delete $extra->{is_superuser};
                 $extra->{is_body_user} = $c->user->from_body->id;
             }
