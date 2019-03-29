@@ -24,14 +24,6 @@ fixmystreet.roadworks.filter = function(feature) {
       ( type === 'o' && OpenLayers.Util.indexOf(valid_subtypes, sub_type) != -1 ) );
 };
 
-fixmystreet.roadworks.category_change = function() {
-    if (fixmystreet.map) {
-        fixmystreet.roadworks.show_nearby(null, fixmystreet.get_lonlat_from_dom());
-    }
-};
-
-$(fixmystreet).on('report_new:category_change', fixmystreet.roadworks.category_change);
-
 var org_id = '114';
 var body = "Bath and North East Somerset Council";
 fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {

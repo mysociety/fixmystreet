@@ -140,7 +140,22 @@ var roadworks_defaults = {
     stylemap: stylemap,
     body: "", // Cobrand JS should extend and override this.
     non_interactive: true,
-    always_visible: true
+    always_visible: true,
+    nearest_radius: 100,
+    road: true,
+    all_categories: true,
+    actions: {
+        found: function(layer, feature) {
+            $(".js-roadworks-message-" + layer.id).remove();
+            if (!fixmystreet.roadworks.filter || fixmystreet.roadworks.filter(feature)) {
+                fixmystreet.roadworks.display_message(feature);
+                return true;
+            }
+        },
+        not_found: function(layer) {
+            $(".js-roadworks-message-" + layer.id).remove();
+        }
+    }
 };
 
 fixmystreet.roadworks = {};
@@ -155,30 +170,6 @@ fixmystreet.roadworks.layer_future = $.extend(true, {}, roadworks_defaults, {
 
 // fixmystreet.map.layers[5].getNearestFeature(new OpenLayers.Geometry.Point(-0.835614, 51.816562).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:3857")), 10)
 
-fixmystreet.roadworks.show_nearby = function(evt, lonlat) {
-    $(".js-roadworks-message").remove();
-    var providers = fixmystreet.map.getLayersBy('fixmystreet', {
-        test: function(options) {
-            return options && options.format_class == OpenLayers.Format.RoadworksForwardPlanning;
-        }
-    });
-    for (var i=0; i<providers.length; i++) {
-        var layer = providers[i];
-        var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-        var feature = layer.getFeatureAtPoint(point);
-        if (feature == null) {
-            // The click wasn't directly over a road, try and find one nearby
-            feature = layer.getNearestFeature(point, 100);
-        }
-        if (feature !== null) {
-            if (!fixmystreet.roadworks.filter || fixmystreet.roadworks.filter(feature)) {
-                fixmystreet.roadworks.display_message(feature);
-                return true;
-            }
-        }
-    }
-};
-
 fixmystreet.roadworks.config = {};
 
 fixmystreet.roadworks.display_message = function(feature) {
@@ -192,7 +183,7 @@ fixmystreet.roadworks.display_message = function(feature) {
         tag_top = config.tag_top || 'p',
         colon = config.colon ? ':' : '';
 
-        var $msg = $('<div class="js-roadworks-message box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
+        var $msg = $('<div class="js-roadworks-message-' + feature.layer.id + ' box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
         var $dl = $("<dl></dl>").appendTo($msg);
         $dl.append("<dt>Dates" + colon + "</dt>");
         $dl.append($("<dd></dd>").text(start + " until " + end));
@@ -217,11 +208,8 @@ fixmystreet.roadworks.display_message = function(feature) {
             $dl.append(config.text_after);
         }
 
-        $('.change_location').after($msg);
+    $msg.prependTo('#js-post-category-messages');
 };
-
-
-$(fixmystreet).on('maps:update_pin', fixmystreet.roadworks.show_nearby);
 
 /* Stop sending a needless header so that no preflight CORS request */
 OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, sValue) {

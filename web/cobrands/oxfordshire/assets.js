@@ -18,7 +18,7 @@ function check_rights_of_way() {
     }
 
     var $msg = $('<p id="occ_prow" class="box-warning">Please report problems with rights of way using <a href="https://publicrightsofway.oxfordshire.gov.uk/web/standardmap.aspx">this page</a>.</p>');
-    $('#form_category_row').after($msg);
+    $msg.insertBefore('#js-post-category-messages');
     $('.js-hide-if-invalid-category').hide();
 }
 $(fixmystreet).on('report_new:category_change', check_rights_of_way);

@@ -17,6 +17,12 @@
 [% END %]
 </div>
 
-[%- IF category_extras OR report_extra_fields %]
+[% PROCESS "report/new/duplicate_suggestions.html" %]
+
+<div id="js-post-category-messages" class="js-hide-if-invalid-category">
+    [%# This section includes 'Pick an asset' text, roadworks info, extra category questions %]
+
+  [%- IF category_extras OR report_extra_fields %]
     [% PROCESS "report/new/category_extras.html" %]
-[%- END %]
+  [%- END %]
+</div>

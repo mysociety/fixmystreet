@@ -335,7 +335,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
               $p = $("<p id='overlapping_features_msg' class='hidden box-warning'>" +
               "There is more than one <span class='overlapping_item_name'></span> at this location. " +
               "Please describe which <span class='overlapping_item_name'></span> has the problem clearly.</p>");
-              $p.insertAfter('#form_category_row');
+              $p.prependTo('#js-post-category-messages');
           }
           $p.find(".overlapping_item_name").text(this.fixmystreet.asset_item);
           $p.removeClass('hidden');
