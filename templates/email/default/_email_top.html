@@ -63,8 +63,8 @@
         <table [% table_reset %]>
           <tr>
             <th colspan="[% email_columns %]" style="[% td_style %][% header_style %]">
-                [%~ IF file_exists("web/cobrands/${ img_dir }/${ logo_file }") ~%]
-                <img src="[% inline_image('web/cobrands/' _ img_dir _ '/' _ logo_file ) %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
+                [%~ IF file_exists("web/cobrands/${ img_dir }/images/${ logo_file }") ~%]
+                <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/' _ logo_file ) %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
               [%~ ELSE ~%]
                 <span style="[% logo_style %]">[% site_name %]</span>
               [%~ END %]
