@@ -111,12 +111,4 @@ sub send {
     return $result;
 }
 
-sub _get_district_for_contact {
-    my ( $lat, $lon ) = @_;
-    my $district =
-      mySociety::MaPit::call( 'point', "4326/$lon,$lat", type => 'DIS' );
-    ($district) = keys %$district;
-    return $district;
-}
-
 1;

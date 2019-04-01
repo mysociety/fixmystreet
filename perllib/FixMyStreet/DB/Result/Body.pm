@@ -181,9 +181,11 @@ sub first_area_children {
     return unless $body_area;
 
     my $cobrand = $self->result_source->schema->cobrand;
-    my $children = mySociety::MaPit::call('area/children', $body_area->area_id,
-        type => $cobrand->area_types_children,
-    );
+
+    my %params = ( type => $cobrand->area_types_children );
+    $params{generation} = FixMyStreet->config('MAPIT_GENERATION')
+        if FixMyStreet->config('MAPIT_GENERATION');
+    my $children = mySociety::MaPit::call('area/children', $body_area->area_id, %params);
 
     return $children;
 }

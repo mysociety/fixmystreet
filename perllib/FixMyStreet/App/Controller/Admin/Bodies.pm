@@ -187,10 +187,14 @@ sub body_form_dropdowns : Private {
     my $areas;
     my $whitelist = $c->config->{MAPIT_ID_WHITELIST};
 
+    my %params;
+    $params{generation} = $c->config->{MAPIT_GENERATION}
+        if $c->config->{MAPIT_GENERATION};
+
     if ( $whitelist && ref $whitelist eq 'ARRAY' && @$whitelist ) {
-        $areas = mySociety::MaPit::call('areas', $whitelist);
+        $areas = mySociety::MaPit::call('areas', $whitelist, %params);
     } else {
-        $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
+        $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types, %params);
     }
 
     # Some cobrands may want to add extra areas at runtime beyond those
