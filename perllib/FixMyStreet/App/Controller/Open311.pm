@@ -7,6 +7,7 @@ use namespace::autoclean;
 use JSON::MaybeXS;
 use XML::Simple;
 use DateTime::Format::W3CDTF;
+use FixMyStreet::MapIt;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -164,12 +165,7 @@ sub get_services : Private {
 
     if ($lat || $lon) {
         my $area_types = $c->cobrand->area_types;
-        my %params = ( type => $area_types );
-        $params{generation} = $c->config->{MAPIT_GENERATION}
-            if $c->config->{MAPIT_GENERATION};
-        my $all_areas = mySociety::MaPit::call('point',
-                                                  "4326/$lon,$lat",
-                                                  %params);
+        my $all_areas = FixMyStreet::MapIt::call('point', "4326/$lon,$lat", type => $area_types);
         $categories = $categories->search( {
             'body_areas.area_id' => [ keys %$all_areas ],
         }, { join => { 'body' => 'body_areas' } } );

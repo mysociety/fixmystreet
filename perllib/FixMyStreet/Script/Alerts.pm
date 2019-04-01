@@ -8,7 +8,7 @@ use IO::String;
 
 use FixMyStreet::Gaze;
 use mySociety::Locale;
-use mySociety::MaPit;
+use FixMyStreet::MapIt;
 use RABX;
 
 use FixMyStreet::Cobrand;
@@ -186,14 +186,14 @@ sub send() {
                     $data{report} = $schema->resultset('Problem')->find({ id => $row->{id} });
                 }
                 if ($ref eq 'area_problems') {
-                    my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter});
+                    my $va_info = FixMyStreet::MapIt::call('area', $row->{alert_parameter});
                     $data{area_name} = $va_info->{name};
                 } elsif ($ref eq 'council_problems' || $ref eq 'ward_problems') {
                     my $body = FixMyStreet::DB->resultset('Body')->find({ id => $row->{alert_parameter} });
                     $data{area_name} = $body->name;
                 }
                 if ($ref eq 'ward_problems') {
-                    my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter2});
+                    my $va_info = FixMyStreet::MapIt::call('area', $row->{alert_parameter2});
                     $data{ward_name} = $va_info->{name};
                 }
             }

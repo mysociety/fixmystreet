@@ -6,7 +6,7 @@ use JSON::MaybeXS;
 use List::MoreUtils qw(any);
 use Path::Tiny;
 use RABX;
-use mySociety::MaPit;
+use FixMyStreet::MapIt;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -219,12 +219,10 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
     # We're checking an area here, but this function is currently doing that.
     return if $c->cobrand->reports_body_check( $c, $area );
 
-    my %params = ( type => $c->cobrand->area_types );
-    $params{generation} = $c->config->{MAPIT_GENERATION}
-        if $c->config->{MAPIT_GENERATION};
-
     # We must now have a string to check on mapit
-    my $areas = mySociety::MaPit::call( 'areas', $area, %params );
+    my $areas = FixMyStreet::MapIt::call( 'areas', $area,
+        type => $c->cobrand->area_types,
+    );
 
     if (keys %$areas == 1) {
         ($c->stash->{area}) = values %$areas;
@@ -393,11 +391,9 @@ sub ward_check : Private {
         $parent_id = $c->stash->{area}->{id};
     }
 
-    my %params = ( type => $c->cobrand->area_types_children );
-    $params{generation} = $c->config->{MAPIT_GENERATION}
-        if $c->config->{MAPIT_GENERATION};
-
-    my $qw = mySociety::MaPit::call('area/children', [ $parent_id ], %params);
+    my $qw = FixMyStreet::MapIt::call('area/children', [ $parent_id ],
+        type => $c->cobrand->area_types_children,
+    );
     my %names = map { $c->cobrand->short_name({ name => $_ }) => 1 } @wards;
     my @areas;
     foreach my $area (sort { $a->{name} cmp $b->{name} } values %$qw) {

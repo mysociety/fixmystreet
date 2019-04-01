@@ -9,7 +9,6 @@ use List::MoreUtils qw(uniq);
 use List::Util 'first';
 use POSIX 'strcoll';
 use HTML::Entities;
-use mySociety::MaPit;
 use Path::Class;
 use Utils;
 use mySociety::EmailUtil;

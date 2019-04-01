@@ -13,7 +13,6 @@ use URI;
 use Digest::MD5 qw(md5_hex);
 
 use Carp;
-use mySociety::MaPit;
 use mySociety::PostcodeUtil;
 
 =head1 The default cobrand

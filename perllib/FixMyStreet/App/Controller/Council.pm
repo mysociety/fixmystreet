@@ -2,6 +2,8 @@ package FixMyStreet::App::Controller::Council;
 use Moose;
 use namespace::autoclean;
 
+use FixMyStreet::MapIt;
+
 BEGIN {extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -59,10 +61,6 @@ sub load_and_check_areas : Private {
 
     my $all_areas;
 
-    my %params;
-    $params{generation} = $c->config->{MAPIT_GENERATION}
-        if $c->config->{MAPIT_GENERATION};
-
     if ($prefetched_all_areas) {
         $all_areas = {
             map { $_ => { id => $_ } }
@@ -71,8 +69,7 @@ sub load_and_check_areas : Private {
     } elsif ( $c->stash->{fetch_all_areas} ) {
         my %area_types = map { $_ => 1 } @$area_types;
         $all_areas =
-          mySociety::MaPit::call( 'point',
-            "4326/$longitude,$latitude", %params );
+          FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude");
         $c->stash->{all_areas_mapit} = $all_areas;
         $all_areas = {
             map { $_ => $all_areas->{$_} }
@@ -81,9 +78,7 @@ sub load_and_check_areas : Private {
         };
     } else {
         $all_areas =
-          mySociety::MaPit::call( 'point',
-            "4326/$longitude,$latitude", %params,
-            type => $area_types );
+          FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude", type => $area_types);
     }
     if ($all_areas->{error}) {
         $c->stash->{location_error_mapit_error} = 1;

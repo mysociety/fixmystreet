@@ -3,6 +3,7 @@ package Open311::GetServiceRequests;
 use Moo;
 use Open311;
 use FixMyStreet::DB;
+use FixMyStreet::MapIt;
 use FixMyStreet::App::Model::PhotoSet;
 use DateTime::Format::W3CDTF;
 
@@ -89,18 +90,13 @@ sub create_problems {
         }
         my $request_id = $request->{service_request_id};
 
-        my %params;
-        $params{generation} = mySociety::Config::get('MAPIT_GENERATION')
-            if mySociety::Config::get('MAPIT_GENERATION');
-
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
 
         ($latitude, $longitude) = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
             if $self->convert_latlong;
 
         my $all_areas =
-          mySociety::MaPit::call( 'point',
-            "4326/$longitude,$latitude", %params );
+          FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude");
 
         # skip if it doesn't look like it's for this body
         my @areas = grep { $all_areas->{$_->area_id} } $body->body_areas;

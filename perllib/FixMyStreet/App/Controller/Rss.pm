@@ -11,7 +11,7 @@ use FixMyStreet::App::Model::PhotoSet;
 
 use FixMyStreet::Gaze;
 use mySociety::Locale;
-use mySociety::MaPit;
+use FixMyStreet::MapIt;
 use Lingua::EN::Inflect qw(ORD);
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -66,7 +66,7 @@ sub reports_in_area : LocalRegex('^area/(\d+)$') {
     my ( $self, $c ) = @_;
 
     my $id                    = $c->req->captures->[0];
-    my $area                  = mySociety::MaPit::call('area', $id);
+    my $area                  = FixMyStreet::MapIt::call('area', $id);
     $c->stash->{type}         = 'area_problems';
     $c->stash->{qs}           = '/' . $id;
     $c->stash->{db_params}    = [ $id ];

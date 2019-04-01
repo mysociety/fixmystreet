@@ -134,6 +134,7 @@ __PACKAGE__->rabx_column('extra');
 
 use Moo;
 use namespace::clean;
+use FixMyStreet::MapIt;
 
 with 'FixMyStreet::Roles::Translatable',
      'FixMyStreet::Roles::Extra';
@@ -182,10 +183,9 @@ sub first_area_children {
 
     my $cobrand = $self->result_source->schema->cobrand;
 
-    my %params = ( type => $cobrand->area_types_children );
-    $params{generation} = FixMyStreet->config('MAPIT_GENERATION')
-        if FixMyStreet->config('MAPIT_GENERATION');
-    my $children = mySociety::MaPit::call('area/children', $body_area->area_id, %params);
+    my $children = FixMyStreet::MapIt::call('area/children', $body_area->area_id,
+        type => $cobrand->area_types_children,
+    );
 
     return $children;
 }

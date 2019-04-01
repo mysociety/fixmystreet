@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strcoll);
 use mySociety::EmailUtil qw(is_valid_email_list);
+use FixMyStreet::MapIt;
 use FixMyStreet::SendReport;
 
 =head1 NAME
@@ -104,7 +105,7 @@ sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
     $c->stash->{body} = $body;
 
     if ($body->body_areas->first) {
-        my $example_postcode = mySociety::MaPit::call('area/example_postcode', $body->body_areas->first->area_id);
+        my $example_postcode = FixMyStreet::MapIt::call('area/example_postcode', $body->body_areas->first->area_id);
         if ($example_postcode && ! ref $example_postcode) {
             $c->stash->{example_pc} = $example_postcode;
         }
@@ -187,14 +188,10 @@ sub body_form_dropdowns : Private {
     my $areas;
     my $whitelist = $c->config->{MAPIT_ID_WHITELIST};
 
-    my %params;
-    $params{generation} = $c->config->{MAPIT_GENERATION}
-        if $c->config->{MAPIT_GENERATION};
-
     if ( $whitelist && ref $whitelist eq 'ARRAY' && @$whitelist ) {
-        $areas = mySociety::MaPit::call('areas', $whitelist, %params);
+        $areas = FixMyStreet::MapIt::call('areas', $whitelist);
     } else {
-        $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types, %params);
+        $areas = FixMyStreet::MapIt::call('areas', $c->cobrand->area_types);
     }
 
     # Some cobrands may want to add extra areas at runtime beyond those

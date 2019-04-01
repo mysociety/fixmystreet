@@ -8,7 +8,6 @@ use DateTime::Format::Pg;
 
 use Utils;
 use Utils::OpenStreetMap;
-use mySociety::MaPit;
 
 use FixMyStreet;
 use FixMyStreet::Cobrand;

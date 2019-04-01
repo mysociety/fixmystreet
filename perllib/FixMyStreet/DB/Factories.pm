@@ -199,7 +199,7 @@ sub create_problem {
 package FixMyStreet::DB::Factory::Body;
 
 use parent -norequire, "FixMyStreet::DB::Factory::Base";
-use mySociety::MaPit;
+use FixMyStreet::MapIt;
 
 __PACKAGE__->resultset(FixMyStreet::DB->resultset("Body"));
 
@@ -208,7 +208,7 @@ __PACKAGE__->exclude(['area_id', 'categories']);
 __PACKAGE__->fields({
     name => __PACKAGE__->callback(sub {
         my $area_id = shift->get('area_id');
-        my $area = mySociety::MaPit::call('area', $area_id);
+        my $area = FixMyStreet::MapIt::call('area', $area_id);
         $area->{name};
     }),
     body_areas => __PACKAGE__->callback(sub {

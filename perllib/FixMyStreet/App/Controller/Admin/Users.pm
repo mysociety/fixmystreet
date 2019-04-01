@@ -8,6 +8,7 @@ use POSIX qw(strcoll);
 use mySociety::EmailUtil qw(is_valid_email);
 use Text::CSV;
 
+use FixMyStreet::MapIt;
 use FixMyStreet::SMS;
 use Utils;
 
@@ -450,7 +451,7 @@ sub user_alert_details : Private {
     }
 
     if (@wards) {
-        $c->stash->{alert_areas} = mySociety::MaPit::call('areas', join(',', @wards) );
+        $c->stash->{alert_areas} = FixMyStreet::MapIt::call('areas', join(',', @wards) );
     }
 
     my %body_names = map { $_->{id} => $_->{name} } @{ $c->stash->{bodies} };
