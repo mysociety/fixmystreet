@@ -30,7 +30,6 @@ my @PLACES = (
     [ 'SL9 0NX', 51.615559, -0.556903, 2217, 'Buckinghamshire County Council', 'CTY', 2257, 'Chiltern District Council', 'DIS' ],
     [ 'SW1A 1AA', 51.501009, -0.141588, 2504, 'Westminster City Council', 'LBO' ],
     [ 'GL50 2PR', 51.896268, -2.093063, 2226, 'Gloucestershire County Council', 'CTY', 2326, 'Cheltenham Borough Council', 'DIS', 4544, 'Lansdown', 'DIW', 143641, 'Lansdown and Park', 'CED' ],
-    [ '?', 51.754926, -1.256179, 2237, 'Oxfordshire County Council', 'CTY', 2421, 'Oxford City Council', 'DIS' ],
     [ 'OX20 1SZ', 51.754926, -1.256179, 2237, 'Oxfordshire County Council', 'CTY', 2421, 'Oxford City Council', 'DIS' ],
     [ 'OX16 9UP', 52.038712, -1.346397, 2237, 'Oxfordshire County Council', 'CTY', 2419, 'Cherwell District Council', 'DIS', 151767, "Banbury, Calthorpe & Easington", "DIW" ],
     [ 'RG9 6TL', 51.561705, -0.868388, 2217, 'Buckinghamshire County Council', 'CTY'],
@@ -39,6 +38,7 @@ my @PLACES = (
     [ 'BR1 3UH', 51.4021, 0.01578, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3UH', 51.402096, 0.015784, 2482, 'Bromley Council', 'LBO' ],
     [ '?', 50.78301, -0.646929 ],
+    [ 'TA1 1QP', 51.023569, -3.099055, 2239, 'Somerset County Council', 'CTY', 2429, 'Taunton Deane Borough Council', 'DIS' ],
     [ 'GU51 4AE', 51.279456, -0.846216, 2333, 'Hart District Council', 'DIS', 2227, 'Hampshire County Council', 'CTY' ],
     [ 'WS1 4NH', 52.563074, -1.991032, 2535, 'Sandwell Borough Council', 'MTD' ],
     [ 'OX28 4DS', 51.784721, -1.494453 ],
@@ -72,13 +72,17 @@ sub dispatch_request {
         return $self->output($response);
     },
 
-    sub (GET + /point/**.*) {
-        my ($self, $point) = @_;
+    sub (GET + /point/**.* + ?*) {
+        my ($self, $point, $query) = @_;
         foreach (@PLACES) {
             if ($point eq "4326/$_->[2],$_->[1]") {
                 my %out;
                 for (my $i=3; $i<@$_; $i+=3) {
                     $out{"$_->[$i]"} = { id => $_->[$i], name => $_->[$i+1], type => $_->[$i+2] };
+                }
+                if ($query->{type}) {
+                    my %types = map { $_ => 1 } split ',', $query->{type};
+                    %out = map { $_ => $out{$_} } grep { $types{$out{$_}{type}} } keys %out;
                 }
                 return $self->output(\%out);
             }

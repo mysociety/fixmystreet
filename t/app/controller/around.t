@@ -228,6 +228,7 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
     # Regression test for filter_category in /around URL
     FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok( '/around?filter_category=Pothole&bbox=' . $bbox );
@@ -331,15 +332,17 @@ subtest 'check skip_around skips around page' => sub {
 
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
+        MAPIT_TYPES => ['CTY', 'DIS'],
     }, sub {
         $mech->get('/around?latitude=51.754926&longitude=-1.256179');
-        is $mech->res->code, 302, "around page is a redirect";
+        is $mech->res->previous->code, 302, "around page is a redirect";
         is $mech->uri->path, '/report/new', "and redirects to /report/new";
     };
 };
 
 subtest 'check map zoom level customisation' => sub {
     FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
         MAP_TYPE => 'OSM',
     }, sub {
@@ -350,6 +353,7 @@ subtest 'check map zoom level customisation' => sub {
 
 
     FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
         MAP_TYPE => 'Tester',
     }, sub {
