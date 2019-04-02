@@ -44,6 +44,8 @@ FixMyStreet::override_config {
         category => 'Abandoned and untaxed vehicles', cobrand => 'bexley',
         latitude => 51.408484, longitude => 0.074653,
     });
+    $report->set_extra_fields({ 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' });
+    $report->update;
 
     subtest 'Server-side NSGRef included' => sub {
         my $test_data = FixMyStreet::Script::Reports::send();
@@ -51,6 +53,10 @@ FixMyStreet::override_config {
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'ABAN';
         is $c->param('attribute[NSGRef]'), 'Road ID';
+
+        my $email = $mech->get_email;
+        like $email->header('To'), qr/"Bexley P1 email".*bexley/;
+        like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
     };
 
 };
