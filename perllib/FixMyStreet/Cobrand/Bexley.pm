@@ -50,4 +50,34 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+sub lookup_site_code_config {
+    # uncoverable function
+    # uncoverable statement
+    {
+        buffer => 200, # metres
+        url => "https://tilma.mysociety.org/mapserver/bexley",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "Streets",
+        property => "NSG_REF",
+        accept_feature => sub { 1 }
+    }
+}
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+
+    # Reports made via the app probably won't have a NSGRef because we don't
+    # display the road layer. Instead we'll look up the closest asset from the
+    # WFS service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('NSGRef')) {
+        if (my $ref = $self->lookup_site_code($row)) {
+            push @$extra, { name => 'NSGRef', description => 'NSG Ref', value => $ref };
+        }
+    }
+
+    $row->set_extra_fields(@$extra);
+}
+
 1;
