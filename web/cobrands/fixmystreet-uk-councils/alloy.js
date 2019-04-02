@@ -1,6 +1,17 @@
 (function(){
 
 OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    currentRequests: [],
+
+    abort: function() {
+        if (this.currentRequests.length) {
+            for (var j = 0; j < this.currentRequests.length; j++) {
+                this.currentRequests[j].priv.abort();
+            }
+            this.currentRequests = [];
+        }
+    },
+
     read: function(options) {
         OpenLayers.Protocol.prototype.read.apply(this, arguments);
         options = options || {};
@@ -9,12 +20,10 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         options = OpenLayers.Util.applyDefaults(options, this.options);
         var all_tiles = this.getTileRange_(options.scope.bounds, options.scope.layer.maxExtent, options.scope.layer.map);
         var rresp;
-        var start = new Date();
         var max = all_tiles.length;
-        options.scope.newRequest(start, max);
+        options.scope.newRequest(max);
         for (var i = 0; i < max; i++) {
             var resp = new OpenLayers.Protocol.Response({requestType: "read"});
-            resp.start = start;
             var url = this.getURL(all_tiles[i], options);
             resp.priv = OpenLayers.Request.GET({
                 url: url, //options.url,
@@ -22,6 +31,7 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
                 params: options.params,
                 headers: options.headers
             });
+            this.currentRequests.push(resp);
             rresp = resp;
         }
         return rresp;
@@ -70,18 +80,12 @@ OpenLayers.Strategy.Alloy = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
     initialize: function(name, options) {
         OpenLayers.Strategy.FixMyStreet.prototype.initialize.apply(this, arguments);
     },
-    newRequest: function(start, max) {
+    newRequest: function(max) {
       this.max = max;
-      this.requestStart = start;
       this.count = 0;
       this.layer.destroyFeatures();
     },
     merge: function(resp) {
-        // because we are issuing async requests it's possible that if someone moves the
-        // map we've triggered a new set of requests, in which case ignore the old ones.
-        if (resp.start < this.requestStart) {
-          return;
-        }
         this.count++;
         // This if/else clause lifted from OpenLayers.Strategy.BBOX
         if (resp.success()) {
