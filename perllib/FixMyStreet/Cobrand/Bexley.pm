@@ -80,4 +80,32 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub admin_user_domain { 'bexley.gov.uk' }
+
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+
+    return unless $row->category eq 'Abandoned and untaxed vehicles'
+        || $row->category eq 'Animal fouling';
+
+    my $mb = FixMyStreet->config('STAGING_SITE') ? 'digital-team' : 'P1sfromContactCentre';
+    my $e = join('@', $mb, $self->admin_user_domain);
+    my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, 'Bexley P1 email' ] ] );
+
+    if ($row->category eq 'Abandoned and untaxed vehicles') {
+        my ($burnt) = grep { $_->{name} eq 'burnt' } @{$row->get_extra_fields};
+        return unless $burnt && $burnt->{value} eq 'Yes';
+    }
+
+    $self->open311_config($row); # Populate NSGRef again if needed
+
+    my $extra_data = join "; ", map { "$_->{description}: $_->{value}" } @{$row->get_extra_fields};
+    $h->{additional_information} = $extra_data;
+
+    $sender->send($row, $h);
+}
+
 1;
