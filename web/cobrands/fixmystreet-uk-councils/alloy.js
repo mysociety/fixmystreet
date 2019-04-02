@@ -83,6 +83,7 @@ OpenLayers.Strategy.Alloy = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
     newRequest: function(max) {
       this.max = max;
       this.count = 0;
+      this.failcount = 0;
       this.layer.destroyFeatures();
     },
     merge: function(resp) {
@@ -105,7 +106,10 @@ OpenLayers.Strategy.Alloy = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
                 this.layer.addFeatures(features);
             }
         } else {
-            this.bounds = null;
+            this.failCount++;
+            if (this.failCount >= this.max) {
+                this.bounds = null;
+            }
         }
         // only fire loadend things if we've got all the tiles
         if (this.count == this.max) {
