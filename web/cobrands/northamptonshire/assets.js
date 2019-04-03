@@ -343,6 +343,7 @@ $(fixmystreet).on('report_new:highways_change', function() {
     if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
         hide_responsibility_errors();
         enable_report_form();
+        $('#ncc_streetlights').remove();
     } else {
         $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
     }
@@ -422,7 +423,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
       var emergency_state = ncc_is_emergency_category();
 
       disable_report_form();
-      if (!emergency_state.relevant || emergency_state.body) {
+      if ((!emergency_state.relevant || emergency_state.body) && this.visibility) {
           show_responsibility_error('#js-not-an-asset', this.fixmystreet.asset_item, this.fixmystreet.asset_type);
       } else {
           hide_responsibility_errors();
@@ -627,5 +628,26 @@ function check_emergency() {
     $('.js-hide-if-invalid-category').hide();
 }
 $(fixmystreet).on('report_new:category_change', check_emergency);
+
+function ncc_check_streetlights() {
+    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, northants_defaults.body) > -1;
+    var relevant_cat = $('#form_category').val() == 'Street lighting';
+    var relevant = relevant_body && relevant_cat;
+    var currently_shown = !!$('#ncc_streetlights').length;
+
+    if (relevant === currently_shown || fixmystreet.body_overrides.get_only_send() == 'Highways England') {
+        return;
+    }
+
+    if (!relevant) {
+        $('#ncc_streetlights').remove();
+        return;
+    }
+
+    var $msg = $('<p id="ncc_streetlights" class="box-warning">Street lighting in Northamptonshire is maintained by Balfour Beatty on behalf of the County Council under a Street Lighting Private Finance Initiative (PFI) contract. Please view our <b><a href="https://www3.northamptonshire.gov.uk/councilservices/northamptonshire-highways/roads-and-streets/Pages/street-lighting.aspx">Street Lighting</a></b> page to report any issues.</p>');
+    $msg.insertBefore('#js-post-category-messages');
+    disable_report_form();
+}
+$(fixmystreet).on('report_new:category_change', ncc_check_streetlights);
 
 })();
