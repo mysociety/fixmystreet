@@ -51,6 +51,7 @@ for my $body (
     { area_id => 2232, name => 'Lincolnshire County Council' },
     { area_id => 2237, name => 'Oxfordshire County Council' },
     { area_id => 2600, name => 'Rutland County Council' },
+    { area_id => 2234, name => 'Northamptonshire County Council' },
 ) {
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
     push @bodies, $body_obj;
@@ -132,6 +133,11 @@ my $contact15 = $mech->create_contact_ok(
     body_id => $body_ids{2600}, # Rutland
     category => 'Trees',
     email => 'trees-2600@example.com',
+);
+my $contact16 = $mech->create_contact_ok(
+    body_id => $body_ids{2234}, # Northamptonshire
+    category => 'Trees',
+    email => 'trees-2234@example.com',
 );
 
 # test that the various bit of form get filled in and errors correctly
@@ -614,6 +620,26 @@ foreach my $test (
         changes => { },
         errors => [ 'Please enter a subject', 'Please enter some details', 'Emails are limited to 50 characters in length.', 'Phone numbers are limited to 20 characters in length.', 'Names are limited to 50 characters in length.'],
     },
+    {
+        msg    => 'Northamptonshire validation',
+        pc     => 'NN1 1NS',
+        fields => {
+            title         => 'This is a very long title that should fail the validation as it is really much too long to pass the validation of 120 characters',
+            detail        => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'A User',
+            may_show_name => '1',
+            username      => 'user@example.org',
+            phone         => '',
+            category      => 'Trees',
+            password_sign_in => '',
+            password_register => '',
+        },
+        changes => { },
+        errors => [ 'Summaries are limited to 120 characters in length. Please shorten your summary', 'Please enter some details'],
+    },
   )
 {
     subtest "check form errors where $test->{msg}" => sub {
@@ -621,7 +647,7 @@ foreach my $test (
 
         # submit initial pc form
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire' ],
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire', 'northamptonshire' ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },

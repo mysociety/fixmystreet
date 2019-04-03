@@ -4,7 +4,10 @@ fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
 
     translation_strings = {
         update: '[% loc('Please enter a message') | replace("'", "\\'") %]',
-        title: '[% loc('Please enter a subject') | replace("'", "\\'") %]',
+        title: {
+            required: '[% loc('Please enter a subject') | replace("'", "\\'") %]',
+            maxlength: '[% loc('Summaries are limited to {0} characters in length. Please shorten your summary') | replace("'", "\\'") %]'
+        },
         detail: {
             required: '[% loc('Please enter some details') | replace("'", "\\'") %]',
             maxlength: '[% loc('Reports are limited to {0} characters in length. Please shorten your report') | replace("'", "\\'") %]',

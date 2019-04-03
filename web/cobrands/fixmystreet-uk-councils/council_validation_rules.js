@@ -43,5 +43,11 @@ body_validation_rules = {
         email: {
           maxlength: 50
         }
+    },
+    'Northamptonshire County Council': {
+        title: {
+          required: true,
+          maxlength: 120
+        }
     }
 };

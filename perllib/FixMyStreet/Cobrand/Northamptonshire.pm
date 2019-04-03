@@ -94,4 +94,12 @@ sub open311_config {
 # sending updates not part of initial phase
 sub should_skip_sending_update { 1; }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ( length( $report->title ) > 120 ) {
+        $errors->{title} = sprintf( _('Summaries are limited to %s characters in length. Please shorten your summary'), 120 );
+    }
+}
+
 1;
