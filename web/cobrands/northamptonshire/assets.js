@@ -572,7 +572,7 @@ function check_emergency() {
     var currently_shown = !!$('#northants-emergency-message').length;
     var body = $('#form_category').data('body');
 
-    if (relevant === currently_shown || body) {
+    if (relevant === currently_shown || body || fixmystreet.body_overrides.get_only_send() == 'Highways England') {
         // Either should be shown and already is, or shouldn't be shown and isn't
         return;
     }
