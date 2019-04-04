@@ -376,6 +376,10 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
   select_action: true,
   actions: {
     asset_found: function(asset) {
+      var emergency_state = ncc_is_emergency_category();
+      if (emergency_state.relevant && !emergency_state.body) {
+          return;
+      }
       hide_responsibility_errors();
       enable_report_form();
       var lonlat = asset.geometry.getBounds().getCenterLonLat();
@@ -408,8 +412,14 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     },
     asset_not_found: function() {
       $("#overlapping_features_msg").addClass('hidden');
+      var emergency_state = ncc_is_emergency_category();
+
       disable_report_form();
-      show_responsibility_error('#js-not-an-asset', this.fixmystreet.asset_item, this.fixmystreet.asset_type);
+      if (!emergency_state.relevant || emergency_state.body) {
+          show_responsibility_error('#js-not-an-asset', this.fixmystreet.asset_item, this.fixmystreet.asset_type);
+      } else {
+          hide_responsibility_errors();
+      }
     }
   }
 });
@@ -446,17 +456,27 @@ var northants_road_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaul
     },
     actions: {
         found: function(layer, feature) {
-            enable_report_form();
+            var emergency_state = ncc_is_emergency_category();
+            if (!emergency_state.relevant || emergency_state.body) {
+                enable_report_form();
+            }
             hide_responsibility_errors();
         },
         not_found: function(layer) {
             // don't show the message if clicking on a highways england road
+            var emergency_state = ncc_is_emergency_category();
             if (fixmystreet.body_overrides.get_only_send() == 'Highways England' || !layer.visibility) {
-                enable_report_form();
+                if (!emergency_state.relevant || emergency_state.body) {
+                    enable_report_form();
+                }
                 hide_responsibility_errors();
             } else {
                 disable_report_form();
-                show_responsibility_error(layer.fixmystreet.no_asset_msg_id);
+                if (!emergency_state.relevant || emergency_state.body) {
+                    show_responsibility_error(layer.fixmystreet.no_asset_msg_id);
+                } else {
+                    hide_responsibility_errors();
+                }
             }
         },
     }
@@ -564,22 +584,30 @@ fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     ]
 }));
 
-// Hide form when emergency category used
-function check_emergency() {
+function ncc_is_emergency_category() {
     var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, northants_defaults.body) > -1;
     var relevant_cat = !!$('label[for=form_emergency]').length;
     var relevant = relevant_body && relevant_cat;
     var currently_shown = !!$('#northants-emergency-message').length;
     var body = $('#form_category').data('body');
 
-    if (relevant === currently_shown || body || fixmystreet.body_overrides.get_only_send() == 'Highways England') {
+    return {relevant: relevant, currently_shown: currently_shown, body: body};
+}
+
+// Hide form when emergency category used
+function check_emergency() {
+    var state = ncc_is_emergency_category();
+
+    if (state.relevant === state.currently_shown || state.body || fixmystreet.body_overrides.get_only_send() == 'Highways England') {
         // Either should be shown and already is, or shouldn't be shown and isn't
         return;
     }
 
-    if (!relevant) {
+    if (!state.relevant) {
         $('#northants-emergency-message').remove();
-        $('.js-hide-if-invalid-category').show();
+        if ( !$('#js-roads-responsibility').is(':visible') ) {
+            $('.js-hide-if-invalid-category').show();
+        }
         return;
     }
 
