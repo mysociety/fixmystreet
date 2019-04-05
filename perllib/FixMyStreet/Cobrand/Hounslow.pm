@@ -119,6 +119,7 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
 }
 
 sub open311_munge_update_params {
@@ -139,6 +140,45 @@ sub open311_skip_report_fetch {
 
 # Make sure fetched report description isn't shown.
 sub filter_report_description { "" }
+
+sub setup_general_enquiries_stash {
+  my $self = shift;
+
+  my @bodies = $self->{c}->model('DB::Body')->active->for_areas(( $self->council_area_id ))->all;
+  my %bodies = map { $_->id => $_ } @bodies;
+  my @contacts                #
+    = $self->{c}              #
+    ->model('DB::Contact')    #
+    ->active
+    ->search(
+        {
+          'me.body_id' => [ keys %bodies ]
+        },
+        {
+          prefetch => 'body',
+          order_by => 'me.category',
+        }
+      )->all;
+  @contacts = grep {
+    my $group = $_->get_extra_metadata('group') || '';
+    $group eq 'Other' || $group eq 'General Enquiries';
+  } @contacts;
+  $self->{c}->stash->{bodies} = \%bodies;
+  $self->{c}->stash->{bodies_to_list} = \%bodies;
+  $self->{c}->stash->{contacts} = \@contacts;
+  $self->{c}->stash->{missing_details_bodies} = [];
+  $self->{c}->stash->{missing_details_body_names} = [];
+
+  $self->{c}->set_param('title', "General Enquiry");
+  # Can't use (0, 0) for lat lon so default to the rough location
+  # of Hounslow Highways HQ.
+  $self->{c}->stash->{latitude} = 51.469;
+  $self->{c}->stash->{longitude} = -0.35;
+
+  return 1;
+}
+
+sub abuse_reports_only { 1 }
 
 sub lookup_site_code_config { {
     buffer => 50, # metres

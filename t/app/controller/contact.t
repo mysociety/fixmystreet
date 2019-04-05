@@ -6,6 +6,16 @@ sub abuse_reports_only { 1; }
 
 1;
 
+package FixMyStreet::Cobrand::GeneralEnquiries;
+
+use base 'FixMyStreet::Cobrand::Default';
+
+sub abuse_reports_only { 1 }
+
+sub setup_general_enquiries_stash { 1 }
+
+1;
+
 package main;
 
 use FixMyStreet::TestMech;
@@ -480,6 +490,27 @@ subtest 'check can limit contact to abuse reports' => sub {
     }, sub {
         $mech->get( '/contact' );
         is $mech->res->code, 404, 'cannot visit contact page';
+        $mech->get_ok( '/contact?id=' . $problem_main->id, 'can visit for abuse report' );
+
+        my $token = FixMyStreet::App->model("DB::Token")->create({
+            scope => 'moderation',
+            data => { id => $problem_main->id }
+        });
+
+        $mech->get_ok( '/contact?m=' . $token->token, 'can visit for moderation complaint' );
+
+    }
+};
+
+subtest 'check redirected to correct form for general enquiries cobrand' => sub {
+    FixMyStreet::override_config {
+        'ALLOWED_COBRANDS' => [ 'generalenquiries' ],
+    }, sub {
+        $mech->get( '/contact' );
+        is $mech->res->code, 200, "got 200 for final destination";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+        is $mech->uri->path, '/contact/enquiry';
+
         $mech->get_ok( '/contact?id=' . $problem_main->id, 'can visit for abuse report' );
 
         my $token = FixMyStreet::App->model("DB::Token")->create({

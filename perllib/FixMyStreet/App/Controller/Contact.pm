@@ -26,9 +26,14 @@ Functions to run on both GET and POST contact requests.
 
 sub auto : Private {
     my ($self, $c) = @_;
+    $c->forward('/auth/get_csrf_token');
+}
+
+sub begin : Private {
+    my ($self, $c) = @_;
+    $c->forward('/begin');
     $c->forward('setup_request');
     $c->forward('determine_contact_type');
-    $c->forward('/auth/get_csrf_token');
 }
 
 =head2 index
@@ -106,7 +111,14 @@ sub determine_contact_type : Private {
             $c->stash->{rejecting_report} = 1;
         }
     } elsif ( $c->cobrand->abuse_reports_only ) {
-        $c->detach( '/page_error_404_not_found' );
+        # General enquiries replaces contact form if enabled
+        if ( $c->cobrand->can('setup_general_enquiries_stash') ) {
+            $c->res->redirect( '/contact/enquiry' );
+            $c->detach;
+            return 1;
+        } else {
+            $c->detach( '/page_error_404_not_found' );
+        }
     }
 
     return 1;
