@@ -25,8 +25,3 @@ If you're not technical, this can be a little daunting &mdash; if you haven't
 already done so, [get in touch]({{ "/community" | relative_url }}) and ask for help.
 
 Please also see the instructions for [updating your code](/updating/) once it's installed.
-
-If you're trying to set a FixMyStreet project up outside the UK, let the 
-[international team](https://www.mysociety.org/about/mysociety-around-the-world/)
-know by emailing
-<a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org</a>.

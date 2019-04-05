@@ -962,8 +962,6 @@ there.
 
 We wish you all the best with your FixMyStreet problem reporting site.
 
-If you're running an installation outside the UK please let us know by
-emailing international&#64;mysociety.org. If you have any questions, don't
-hesitate to <a href="{{ "/community/" | relative_url }}">contact us</a> and we'll get back to you as
-soon as possible with an answer.
-
+If you have any questions, don't hesitate to <a href="{{ "/community/" |
+relative_url }}">contact us</a> and we'll get back to you as soon as possible
+with an answer.
