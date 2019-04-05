@@ -48,6 +48,13 @@ fixmystreet.assets.add(options, {
 });
 
 fixmystreet.assets.add(options, {
+    asset_category: "Flooding",
+    asset_item: 'flood risk structure',
+    filter_key: 'COD_ASSET_TYPE',
+    filter_value: 'FRST'
+});
+
+fixmystreet.assets.add(options, {
     asset_category: "Street Light",
     asset_item: 'street light',
     filter_value: [ 'S070', 'S080', 'S100', 'S110', 'S120', 'S170', 'S220', 'S230' ]
