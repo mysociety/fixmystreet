@@ -817,8 +817,9 @@ sub process_user : Private {
         $c->stash->{email} = $report->user->email;
 
         if ($c->stash->{contributing_as_body} or $c->stash->{contributing_as_anonymous_user}) {
-            $report->name($user->from_body->name);
-            $user->name($user->from_body->name) unless $user->name;
+            my $name = $user->moderating_user_name;
+            $report->name($name);
+            $user->name($name) unless $user->name;
             $c->stash->{no_reporter_alert} = 1;
         }
 

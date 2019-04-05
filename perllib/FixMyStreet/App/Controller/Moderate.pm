@@ -146,11 +146,6 @@ sub check_edited_elsewhere : Private {
     }
 }
 
-sub moderating_user_name {
-    my $user = shift;
-    return $user->from_body ? $user->from_body->name : _('an administrator');
-}
-
 sub moderate_log_entry : Private {
     my ($self, $c, $object_type, @types) = @_;
 
@@ -167,7 +162,7 @@ sub moderate_log_entry : Private {
     $c->model('DB::AdminLog')->create({
         action => 'moderation',
         user => $user,
-        admin_user => moderating_user_name($user),
+        admin_user => $user->moderating_user_name,
         object_id => $c->stash->{history}->id || $object->id,
         object_type => $c->stash->{history}->id ? 'moderation' : $object_type,
         reason => $log_reason,

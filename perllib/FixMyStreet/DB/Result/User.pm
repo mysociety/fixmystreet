@@ -292,6 +292,11 @@ sub body {
     return $self->from_body->name;
 }
 
+sub moderating_user_name {
+    my $self = shift;
+    return $self->body || _('an administrator');
+}
+
 =head2 belongs_to_body
 
     $belongs_to_body = $user->belongs_to_body( $bodies );
