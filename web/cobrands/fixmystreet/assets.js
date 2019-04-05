@@ -411,7 +411,7 @@ function layer_visibilitychanged() {
     var layers = fixmystreet.map.getLayersBy('assets', true);
     var visible = 0;
     for (var i = 0; i<layers.length; i++) {
-        if (layers[i].getVisibility()) {
+        if (!layers[i].fixmystreet.always_visible && layers[i].getVisibility()) {
             visible++;
         }
     }
