@@ -138,6 +138,25 @@ sub open311_skip_report_fetch {
   return 1 if $problem->non_public;
 }
 
+sub allow_general_enquiries { 1 }
+
+sub setup_general_enquiries_stash {
+  my $self = shift;
+
+  my @bodies = $self->{c}->model('DB::Body')->active->for_areas(( $self->council_area_id ))->all;
+  my %bodies = map { $_->id => $_ } @bodies;
+  my @contacts                #
+    = $self->{c}              #
+    ->model('DB::Contact')    #
+    ->active
+    ->search( { 'me.body_id' => [ keys %bodies ] }, { prefetch => 'body' } )->all;
+  @contacts = grep { $_->get_extra_metadata('group') eq 'Other' || $_->get_extra_metadata('group') eq 'General Enquiries'} @contacts;
+  $self->{c}->stash->{bodies} = \%bodies;
+  $self->{c}->stash->{contacts} = \@contacts;
+  $self->{c}->stash->{missing_details_bodies} = [];
+  $self->{c}->stash->{missing_details_body_names} = [];
+}
+
 sub lookup_site_code_config { {
     buffer => 50, # metres
     url => "https://tilma.staging.mysociety.org/mapserver/hounslow",
