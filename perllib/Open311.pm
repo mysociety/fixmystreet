@@ -8,7 +8,7 @@ use XML::Simple;
 use LWP::Simple;
 use LWP::UserAgent;
 use DateTime::Format::W3CDTF;
-use HTTP::Request::Common qw(POST);
+use HTTP::Request::Common qw(GET POST);
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use Utils;
@@ -437,57 +437,11 @@ sub _params_to_string {
     return $string;
 }
 
-sub _get {
-    my $self   = shift;
-    my $path   = shift;
-    my $params = shift || {};
-
-    my $uri = URI->new( $self->endpoint );
-
-    $params->{ jurisdiction_id } = $self->jurisdiction
-        if $self->jurisdiction;
-    $uri->path( $uri->path . $path );
-    my $base_uri = $uri->clone;
-    $uri->query_form( $params );
-
-    my $debug_request = "GET " . $base_uri->as_string . "\n\n";
-    $debug_request .= $self->_params_to_string($params, $debug_request);
-    $self->debug_details( $self->debug_details . $debug_request );
-
-    my $content;
-    if ( $self->test_mode ) {
-        $self->success(1);
-        $content = $self->test_get_returns->{ $path };
-        $self->test_uri_used( $uri->as_string );
-    } else {
-        my $ua = LWP::UserAgent->new;
-
-        my $req = HTTP::Request->new(
-            GET => $uri->as_string
-        );
-
-        my $res = $ua->request( $req );
-
-        if ( $res->is_success ) {
-            $content = $res->decoded_content;
-            $self->success(1);
-        } else {
-            $self->success(0);
-            $self->error( sprintf(
-                "request failed: %s\n%s\n",
-                $res->status_line,
-                $uri->as_string
-            ) );
-        }
-    }
-
-    return $content;
-}
-
-sub _post {
+sub _request {
     my $self = shift;
-    my $path   = shift;
-    my $params = shift;
+    my $method = shift;
+    my $path = shift;
+    my $params = shift || {};
 
     my $uri = URI->new( $self->endpoint );
     $uri->path( $uri->path . $path );
@@ -495,22 +449,37 @@ sub _post {
     $params->{jurisdiction_id} = $self->jurisdiction
         if $self->jurisdiction;
     $params->{api_key} = ($self->api_key || '')
-        if $self->api_key;
-    my $req = POST $uri->as_string, $params;
+        if $method eq 'POST' && $self->api_key;
 
-    my $debug_request = $req->method . ' ' . $uri->as_string . "\n\n";
+    my $debug_request = $method . ' ' . $uri->as_string . "\n\n";
+
+    my $req = do {
+        if ($method eq 'GET') {
+            $uri->query_form( $params );
+            GET $uri->as_string;
+        } elsif ($method eq 'POST') {
+            POST $uri->as_string, $params;
+        }
+    };
+
     $debug_request .= $self->_params_to_string($params, $debug_request);
     $self->debug_details( $self->debug_details . $debug_request );
 
-    my $ua = LWP::UserAgent->new();
-    my $res;
-
-    if ( $self->test_mode ) {
-        $res = $self->test_get_returns->{ $path };
-        $self->test_req_used( $req );
-    } else {
-        $res = $ua->request( $req );
+    if ( $self->test_mode && $req->method eq 'GET') {
+        $self->success(1);
+        $self->test_uri_used( $uri->as_string );
+        return $self->test_get_returns->{ $path };
     }
+
+    my $res = do {
+        if ( $self->test_mode ) {
+            $self->test_req_used( $req );
+            $self->test_get_returns->{ $path };
+        } else {
+            my $ua = LWP::UserAgent->new;
+            $ua->request( $req );
+        }
+    };
 
     if ( $res->is_success ) {
         $self->success(1);
@@ -523,8 +492,18 @@ sub _post {
             $self->_process_error( $res->decoded_content ),
             $self->debug_details
         ) );
-        return 0;
+        return;
     }
+}
+
+sub _get {
+    my $self = shift;
+    return $self->_request(GET => @_);
+}
+
+sub _post {
+    my $self = shift;
+    return $self->_request(POST => @_);
 }
 
 sub _process_error {

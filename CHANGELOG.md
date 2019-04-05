@@ -42,6 +42,7 @@
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.
+        - Improve Open311 error output on failing GET requests.
     - Backwards incompatible changes:
         - If you wish the default for the showname checkbox to be checked,
           add `sub default_show_name { 1 }` to your cobrand file.
