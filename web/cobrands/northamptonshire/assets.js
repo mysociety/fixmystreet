@@ -9,10 +9,11 @@ function show_responsibility_error(id, asset_item, asset_type) {
     hide_responsibility_errors();
     $("#js-roads-responsibility").removeClass("hidden");
     $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
+    var asset_strings = $('.js-roads-asset');
     if (asset_item) {
-        $('#js-roads-asset').html('a <b class="asset-' + asset_type + '">' + asset_item + '</b>');
+        asset_strings.html('a <b class="asset-' + asset_type + '">' + asset_item + '</b>');
     } else {
-        $('#js-roads-asset').html('an item');
+        asset_strings.html(asset_strings.data('original'));
     }
     $(id).removeClass("hidden");
 }
@@ -490,7 +491,7 @@ var northants_road_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaul
             } else {
                 disable_report_form();
                 if (!emergency_state.relevant || emergency_state.body) {
-                    show_responsibility_error(layer.fixmystreet.no_asset_msg_id);
+                    show_responsibility_error(layer.fixmystreet.no_asset_msg_id, layer.fixmystreet.asset_item, layer.fixmystreet.asset_type);
                 } else {
                     hide_responsibility_errors();
                 }
@@ -505,7 +506,8 @@ fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
       layerid: 221,
       layerVersion: '221.4-',
     },
-    no_asset_msg_id: '#js-not-a-speedhump',
+    no_asset_msg_id: '#js-not-an-asset',
+    asset_item: 'speed hump',
     asset_type: "area",
     asset_category: [
         "Damaged Speed Humps",
@@ -527,7 +529,9 @@ fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     stylemap: new OpenLayers.StyleMap({
         'default': barrier_style
     }),
-    no_asset_msg_id: '#js-not-a-ped-barrier',
+    no_asset_msg_id: '#js-not-an-asset',
+    asset_item: 'pedestrian barrier',
+    asset_type: 'area',
     asset_category: [
         "Pedestrian Barriers - Damaged / Missing",
     ]
@@ -596,7 +600,8 @@ fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     stylemap: new OpenLayers.StyleMap({
         'default': prow_style
     }),
-    no_asset_msg_id: "#js-not-a-prow",
+    no_asset_msg_id: "#js-not-a-road",
+    asset_item: 'right of way',
     asset_category: [
       "Livestock",
       "Passage-Obstructed/Overgrown"
