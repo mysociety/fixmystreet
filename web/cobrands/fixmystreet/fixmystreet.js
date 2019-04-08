@@ -446,6 +446,11 @@ $.extend(fixmystreet.set_up, {
             var $el = $('#form_' + name);
             if ($el.length) {
                 $el.rules('add', rule);
+                if (rule.maxlength) {
+                  $el.attr('maxlength', rule.maxlength);
+                } else {
+                  $el.removeAttr('maxlength');
+                }
             }
         });
   },
