@@ -4,33 +4,6 @@ if (!fixmystreet.maps) {
     return;
 }
 
-/* utility functions */
-function show_responsibility_error(id, asset_item, asset_type) {
-    hide_responsibility_errors();
-    $("#js-roads-responsibility").removeClass("hidden");
-    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
-    var asset_strings = $('.js-roads-asset');
-    if (asset_item) {
-        asset_strings.html('a <b class="asset-' + asset_type + '">' + asset_item + '</b>');
-    } else {
-        asset_strings.html(asset_strings.data('original'));
-    }
-    $(id).removeClass("hidden");
-}
-
-function hide_responsibility_errors() {
-    $("#js-roads-responsibility").addClass("hidden");
-    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
-}
-
-function enable_report_form() {
-    $(".js-hide-if-invalid-category").show();
-}
-
-function disable_report_form() {
-    $(".js-hide-if-invalid-category").hide();
-}
-
 var is_live = false;
 if ( location.hostname === 'www.fixmystreet.com' || location.hostname == 'fixmystreet.northamptonshire.gov.uk' ) {
     is_live = true;
@@ -341,18 +314,6 @@ var layers = [
 },
 ];
 
-// make sure we fire the code to check if an asset is selected if
-// we change options in the Highways England message
-$(fixmystreet).on('report_new:highways_change', function() {
-    if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
-        hide_responsibility_errors();
-        enable_report_form();
-        $('#ncc_streetlights').remove();
-    } else {
-        $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
-    }
-});
-
 // This is required so that the found/not found actions are fired on category
 // select and pin move rather than just on asset select/not select.
 OpenLayers.Layer.NCCVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
@@ -384,12 +345,9 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
   select_action: true,
   actions: {
     asset_found: function(asset) {
-      var emergency_state = ncc_is_emergency_category();
-      if (emergency_state.relevant && !emergency_state.body) {
+      if (fixmystreet.message_controller.asset_found()) {
           return;
       }
-      hide_responsibility_errors();
-      enable_report_form();
       var lonlat = asset.geometry.getBounds().getCenterLonLat();
       // Features considered overlapping if within 1M of each other
       // TODO: Should zoom/marker size be considered when determining if markers overlap?
@@ -420,21 +378,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     },
     asset_not_found: function() {
       $("#overlapping_features_msg").addClass('hidden');
-      var emergency_state = ncc_is_emergency_category();
-
-      if (!layer.visibility) {
-          if (!emergency_state.relevant || emergency_state.body) {
-              enable_report_form();
-          }
-          hide_responsibility_errors();
-      } else {
-          disable_report_form();
-          if (!emergency_state.relevant || emergency_state.body) {
-              show_responsibility_error('#js-not-an-asset', this.fixmystreet.asset_item, this.fixmystreet.asset_type);
-          } else {
-              hide_responsibility_errors();
-          }
-      }
+      fixmystreet.message_controller.asset_not_found(this);
     }
   }
 });
@@ -473,30 +417,8 @@ var northants_road_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaul
       return feature.fid;
     },
     actions: {
-        found: function(layer, feature) {
-            var emergency_state = ncc_is_emergency_category();
-            if (!emergency_state.relevant || emergency_state.body) {
-                enable_report_form();
-            }
-            hide_responsibility_errors();
-        },
-        not_found: function(layer) {
-            // don't show the message if clicking on a highways england road
-            var emergency_state = ncc_is_emergency_category();
-            if (fixmystreet.body_overrides.get_only_send() == 'Highways England' || !layer.visibility) {
-                if (!emergency_state.relevant || emergency_state.body) {
-                    enable_report_form();
-                }
-                hide_responsibility_errors();
-            } else {
-                disable_report_form();
-                if (!emergency_state.relevant || emergency_state.body) {
-                    show_responsibility_error(layer.fixmystreet.no_asset_msg_id, layer.fixmystreet.asset_item, layer.fixmystreet.asset_type);
-                } else {
-                    hide_responsibility_errors();
-                }
-            }
-        },
+        found: fixmystreet.message_controller.road_found,
+        not_found: fixmystreet.message_controller.road_not_found
     }
 });
 
@@ -607,16 +529,6 @@ fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
       "Passage-Obstructed/Overgrown"
     ]
 }));
-
-function ncc_is_emergency_category() {
-    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, northants_defaults.body) > -1;
-    var relevant_cat = !!$('label[for=form_emergency]').length;
-    var relevant = relevant_body && relevant_cat;
-    var currently_shown = !!$('#northants-emergency-message').length;
-    var body = $('#form_category').data('body');
-
-    return {relevant: relevant, currently_shown: currently_shown, body: body};
-}
 
 fixmystreet.message_controller.register_category({
     body: northants_defaults.body,
