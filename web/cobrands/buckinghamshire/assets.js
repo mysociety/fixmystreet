@@ -465,27 +465,10 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     }
 }));
 
-function check_rights_of_way() {
-    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, defaults.body) > -1;
-    var relevant_cat = $('#form_category').val() == 'Rights of Way';
-    var relevant = relevant_body && relevant_cat;
-    var currently_shown = !!$('#row-message').length;
-
-    if (relevant === currently_shown) {
-        // Either should be shown and already is, or shouldn't be shown and isn't
-        return;
-    }
-
-    if (!relevant) {
-        $('#row-message').remove();
-        $('.js-hide-if-invalid-category').show();
-        return;
-    }
-
-    var $msg = $('<p id="row-message" class="box-warning">If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.</p>');
-    $msg.insertBefore('#js-post-category-messages');
-    $('.js-hide-if-invalid-category').hide();
-}
-$(fixmystreet).on('report_new:category_change', check_rights_of_way);
+fixmystreet.message_controller.register_category({
+    body: defaults.body,
+    category: 'Rights of Way',
+    message: 'If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.'
+});
 
 })();

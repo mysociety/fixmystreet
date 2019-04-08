@@ -618,49 +618,21 @@ function ncc_is_emergency_category() {
     return {relevant: relevant, currently_shown: currently_shown, body: body};
 }
 
-// Hide form when emergency category used
-function check_emergency() {
-    var state = ncc_is_emergency_category();
+fixmystreet.message_controller.register_category({
+    body: northants_defaults.body,
+    category: function() {
+        return !!$('label[for=form_emergency]').length;
+    },
+    message: function() {
+        return $('<div class="box-warning">' + $('label[for=form_emergency]').html() + '</div>');
+    },
+    staff_ignore: true
+});
 
-    if (state.relevant === state.currently_shown || state.body || fixmystreet.body_overrides.get_only_send() == 'Highways England') {
-        // Either should be shown and already is, or shouldn't be shown and isn't
-        return;
-    }
-
-    if (!state.relevant) {
-        $('#northants-emergency-message').remove();
-        if ( !$('#js-roads-responsibility').is(':visible') ) {
-            $('.js-hide-if-invalid-category').show();
-        }
-        return;
-    }
-
-    var $msg = $('<div class="box-warning" id="northants-emergency-message"></div>');
-    $msg.html($('label[for=form_emergency]').html());
-    $msg.insertBefore('#js-post-category-messages');
-    $('.js-hide-if-invalid-category').hide();
-}
-$(fixmystreet).on('report_new:category_change', check_emergency);
-
-function ncc_check_streetlights() {
-    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, northants_defaults.body) > -1;
-    var relevant_cat = $('#form_category').val() == 'Street lighting';
-    var relevant = relevant_body && relevant_cat;
-    var currently_shown = !!$('#ncc_streetlights').length;
-
-    if (relevant === currently_shown || fixmystreet.body_overrides.get_only_send() == 'Highways England') {
-        return;
-    }
-
-    if (!relevant) {
-        $('#ncc_streetlights').remove();
-        return;
-    }
-
-    var $msg = $('<p id="ncc_streetlights" class="box-warning">Street lighting in Northamptonshire is maintained by Balfour Beatty on behalf of the County Council under a Street Lighting Private Finance Initiative (PFI) contract. Please view our <b><a href="https://www3.northamptonshire.gov.uk/councilservices/northamptonshire-highways/roads-and-streets/Pages/street-lighting.aspx">Street Lighting</a></b> page to report any issues.</p>');
-    $msg.insertBefore('#js-post-category-messages');
-    disable_report_form();
-}
-$(fixmystreet).on('report_new:category_change', ncc_check_streetlights);
+fixmystreet.message_controller.register_category({
+    body: northants_defaults.body,
+    category: 'Street lighting',
+    message: 'Street lighting in Northamptonshire is maintained by Balfour Beatty on behalf of the County Council under a Street Lighting Private Finance Initiative (PFI) contract. Please view our <b><a href="https://www3.northamptonshire.gov.uk/councilservices/northamptonshire-highways/roads-and-streets/Pages/street-lighting.aspx">Street Lighting</a></b> page to report any issues.'
+});
 
 })();

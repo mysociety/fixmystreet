@@ -921,3 +921,75 @@ $(fixmystreet).on('body_overrides:change', function() {
     fixmystreet.update_public_councils_text(
         $('#js-councils_text').html(), bodies);
 });
+
+/* Handling of the form-top messaging */
+
+fixmystreet.message_controller = (function() {
+    var stopperId = 'js-category-stopper',
+        stoppers = [];
+
+    /* utility functions */
+    function enable_report_form() {
+        $(".js-hide-if-invalid-category").show();
+    }
+
+    function disable_report_form() {
+        $(".js-hide-if-invalid-category").hide();
+    }
+
+    $(fixmystreet).on('report_new:category_change', function() {
+        if (fixmystreet.body_overrides.get_only_send() == 'Highways England') {
+            // If we're sending to Highways England, this message doesn't matter
+            return;
+        }
+
+        var $id = $('#' + stopperId);
+        var body = $('#form_category').data('body');
+        var matching = $.grep(stoppers, function(stopper, i) {
+            if (stopper.staff_ignore && body) {
+                return false;
+            }
+
+            var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, stopper.body) > -1;
+            var relevant_cat;
+            if (typeof stopper.category === 'function') {
+                relevant_cat = stopper.category();
+            } else {
+                relevant_cat = $('#form_category').val() == stopper.category;
+            }
+            var relevant = relevant_body && relevant_cat;
+            return relevant;
+        });
+
+        if (!matching.length) {
+            $id.remove();
+            if ( !$('#js-roads-responsibility').is(':visible') ) {
+                enable_report_form();
+            }
+            return;
+        }
+
+        var stopper = matching[0]; // Assume only one match possible at present
+        var $msg;
+        if (typeof stopper.message === 'function') {
+            $msg = stopper.message();
+            $msg.attr('id', stopperId);
+        } else {
+            $msg = $('<p id="' + stopperId + '" class="box-warning">' + stopper.message + '</p>');
+        }
+
+        if ($id.length) {
+            $id.replaceWith($msg);
+        } else {
+            $msg.insertBefore('#js-post-category-messages');
+        }
+        disable_report_form();
+    });
+
+    return {
+        register_category: function(params) {
+            stoppers.push(params);
+        }
+    };
+
+})();
