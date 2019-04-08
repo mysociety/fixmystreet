@@ -28,7 +28,7 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     },
 
     getURL: function(coords, options) {
-        return OpenLayers.String.format(options.base, {'layerid': options.layerid, 'layerVersion': options.layerVersion, 'z': 15, 'x': coords[0], 'y': coords[1]});
+        return OpenLayers.String.format(options.base, {'layerid': options.layerid, 'environment': options.environment, 'layerVersion': options.layerVersion, 'z': 15, 'x': coords[0], 'y': coords[1]});
     },
 
     getTileRange_: function(bounds, maxExtent, map) {
@@ -117,7 +117,7 @@ OpenLayers.Strategy.Alloy = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
 
 fixmystreet.assets.alloy_defaults = {
     http_options: {
-      base: "https://alloy-api-tile01.yotta.co.uk/api/render-layer/tile/${layerid}/28/${layerVersion}-/${z}/${x}/${y}",
+      base: "https://alloy-api-tile01.yotta.co.uk/api/render-layer/tile/${layerid}/${environment}/${layerVersion}/${z}/${x}/${y}",
     },
     format_class: OpenLayers.Format.GeoJSON,
     srsName: "EPSG:3857",

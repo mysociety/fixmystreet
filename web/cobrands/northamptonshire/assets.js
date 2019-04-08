@@ -360,12 +360,19 @@ OpenLayers.Layer.NCCVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset,
     CLASS_NAME: 'OpenLayers.Layer.NCCVectorAsset'
 });
 
+var is_live = false;
+if ( location.hostname === 'www.fixmystreet.com' || location.hostname == 'fixmystreet.northamptonshire.gov.uk' ) {
+    is_live = true;
+}
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
 var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
   class: OpenLayers.Layer.NCCVectorAsset,
   protocol_class: OpenLayers.Protocol.Alloy,
+  http_options: {
+      environment: is_live ? 26 : 28
+  },
   non_interactive: false,
   body: "Northamptonshire County Council",
   attributes: {
@@ -442,6 +449,9 @@ $.each(layers, function(index, layer) {
 // an asset.
 var northants_road_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     protocol_class: OpenLayers.Protocol.Alloy,
+    http_options: {
+        environment: is_live ? 26 : 28
+    },
     body: "Northamptonshire County Council",
     road: true,
     always_visible: false,
