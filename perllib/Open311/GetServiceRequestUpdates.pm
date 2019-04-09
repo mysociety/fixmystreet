@@ -108,6 +108,11 @@ sub update_comments {
 
         # in some cases we only have the FMS id and not the request id so use that
         if ( $request->{fixmystreet_id} ) {
+            unless ( $request->{fixmystreet_id} =~ /^\d+$/ ) {
+                warn "skipping bad fixmystreet id in updates for " . $body->name . ": [" . $request->{fixmystreet_id} . "], external id is $request_id\n";
+                next;
+            }
+
             $criteria = {
                 id => $request->{fixmystreet_id},
             };

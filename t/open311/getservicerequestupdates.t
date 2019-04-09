@@ -4,6 +4,7 @@ use FixMyStreet::Test;
 use Test::Output;
 use CGI::Simple;
 use LWP::Protocol::PSGI;
+use Test::Warn;
 use t::Mock::Static;
 
 use_ok( 'Open311' );
@@ -1090,6 +1091,40 @@ subtest 'check matching on fixmystreet_id overrides service_request_id' => sub {
 
     is $comments[0]->external_id, 638344, "correct first comment added";
     is $comments[1]->external_id, 638356, "correct second comment added";
+};
+
+subtest 'check bad fixmystreet_id is handled' => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>8888888888888</service_request_id>
+    <fixmystreet_id>123456 654321</fixmystreet_id>
+    <status>open</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+    );
+
+    warning_like {
+        $update->update_comments( $o, $bodies{2482} )
+    }
+    qr/skipping bad fixmystreet id in updates for Bromley: \[123456 654321\], external id is 8888888888888/,
+    "warning emitted for bad fixmystreet id";
+
+    $problem->discard_changes;
+    is $problem->comments->count, 0, 'no comments after fetching updates';
 };
 done_testing();
 
