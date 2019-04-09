@@ -405,6 +405,8 @@ function layer_visibilitychanged() {
             this.road_not_found();
         }
         return;
+    } else if (!this.getVisibility()) {
+        this.asset_not_found();
     }
 
     check_zoom_message_visibility.call(this);
