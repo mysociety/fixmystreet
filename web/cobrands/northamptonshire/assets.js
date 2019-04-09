@@ -267,8 +267,8 @@ var layers = [
   "categories": [ "Damaged / Missing / Facing Wrong Way", "Obscured by vegetation or Dirty" ],
   "item_name": "sign",
   "layer_name": "Signs",
-  "layer": 303,
-  "version": "303.1-"
+  "layer": 60,
+  "version": "60.2113-"
 },
 {
   "categories": [ "Shelter Damaged", "Sign/Pole Damaged" ],
@@ -326,8 +326,8 @@ var layers = [
     "Restricted Visibility",
   ],
   "layer_name": "Tree",
-  "layer": 228,
-  "version": "228.24-"
+  "layer": 307,
+  "version": "307.1-"
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
@@ -515,7 +515,7 @@ var barrier_style = new OpenLayers.Style({
 fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     http_options: {
       layerid: 230,
-      layerVersion: '230.2-',
+      layerVersion: '230.3-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': barrier_style
@@ -536,8 +536,8 @@ var highways_style = new OpenLayers.Style({
 fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     protocol_class: OpenLayers.Protocol.Alloy,
     http_options: {
-      layerid: 308,
-      layerVersion: '308.8-',
+      layerid: 20,
+      layerVersion: '20.123-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
