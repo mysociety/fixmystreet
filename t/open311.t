@@ -302,14 +302,14 @@ subtest 'basic request update post parameters' => sub {
 
     my $c = CGI::Simple->new( $results->{ req }->content );
 
-    is $c->param('description'), 'this is a comment', 'email correct';
+    is $c->param('description'), 'this is a comment', 'description correct';
     is $c->param('email'), 'test@example.com', 'email correct';
     is $c->param('status'), 'OPEN', 'status correct';
     is $c->param('service_request_id'), 81, 'request id correct';
     is $c->param('updated_datetime'), DateTime::Format::W3CDTF->format_datetime($dt), 'correct date';
     is $c->param('title'), 'Mr', 'correct title';
-    is $c->param('last_name'), 'User', 'correct first name';
-    is $c->param('first_name'), 'Test', 'correct second name';
+    is $c->param('first_name'), 'Test', 'correct first name';
+    is $c->param('last_name'), 'User', 'correct second name';
     is $c->param('media_url'), undef, 'no media url';
 };
 
@@ -326,7 +326,7 @@ subtest 'extended request update post parameters' => sub {
 
     my $c = CGI::Simple->new( $results->{ req }->content );
 
-    is $c->param('description'), 'this is a comment', 'email correct';
+    is $c->param('description'), 'this is a comment', 'description correct';
     is $c->param('email'), 'test@example.com', 'email correct';
     is $c->param('status'), 'OPEN', 'status correct';
     is $c->param('service_request_id_ext'), 80, 'external request id correct';
@@ -334,9 +334,63 @@ subtest 'extended request update post parameters' => sub {
     is $c->param('public_anonymity_required'), 'FALSE', 'anon status correct';
     is $c->param('updated_datetime'), DateTime::Format::W3CDTF->format_datetime($dt), 'correct date';
     is $c->param('title'), 'Mr', 'correct title';
-    is $c->param('last_name'), 'User', 'correct first name';
-    is $c->param('first_name'), 'Test', 'correct second name';
+    is $c->param('first_name'), 'Test', 'correct first name';
+    is $c->param('last_name'), 'User', 'correct second name';
     is $c->param('email_alerts_requested'), 'FALSE', 'email alerts flag correct';
+    is $c->param('media_url'), undef, 'no media url';
+};
+
+subtest 'Hounslow update description is correct for same user' => sub {
+    my $comment = make_comment('hounslow');
+    my $results;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'hounslow',
+    }, sub {
+        $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+    };
+
+    is $results->{ res }, 248, 'got update id';
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+
+    is $c->param('description'), 'this is a comment', 'description correct';
+    is $c->param('email'), 'test@example.com', 'email correct';
+    is $c->param('status'), 'OPEN', 'status correct';
+    is $c->param('service_request_id'), 81, 'request id correct';
+    is $c->param('updated_datetime'), DateTime::Format::W3CDTF->format_datetime($dt), 'correct date';
+    is $c->param('title'), 'Mr', 'correct title';
+    is $c->param('first_name'), 'Test', 'correct first name';
+    is $c->param('last_name'), 'User', 'correct second name';
+    is $c->param('media_url'), undef, 'no media url';
+};
+
+subtest 'Hounslow update description is correct for a different user' => sub {
+    my $user2 = FixMyStreet::DB->resultset('User')->new( {
+        name => 'Another User',
+        email => 'another@example.org',
+    } );
+
+    my $comment = make_comment('hounslow');
+    $comment->user($user2);
+    my $results;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'hounslow',
+    }, sub {
+        $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+    };
+
+    is $results->{ res }, 248, 'got update id';
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+
+    is $c->param('description'), "[This comment was not left by the original problem reporter] this is a comment", 'description correct';
+    is $c->param('email'), 'another@example.org', 'email correct';
+    is $c->param('status'), 'OPEN', 'status correct';
+    is $c->param('service_request_id'), 81, 'request id correct';
+    is $c->param('updated_datetime'), DateTime::Format::W3CDTF->format_datetime($dt), 'correct date';
+    is $c->param('title'), 'Mr', 'correct title';
+    is $c->param('first_name'), 'Another', 'correct first name';
+    is $c->param('last_name'), 'User', 'correct second name';
     is $c->param('media_url'), undef, 'no media url';
 };
 

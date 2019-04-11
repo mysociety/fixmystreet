@@ -85,12 +85,14 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
-sub should_skip_sending_update {
-    my ($self, $update ) = @_;
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
 
-    # Hounslow don't want to receive updates into Confirm that were made by
-    # anyone except the original problem reporter.
-    return $update->user_id != $update->problem->user_id;
+    # Hounslow want to make it clear in Confirm when an update is left by
+    # someone who's not the original reporter.
+    unless ($comment->user eq $comment->problem->user) {
+        $params->{description} = "[This comment was not left by the original problem reporter] " . $params->{description};
+    }
 }
 
 
