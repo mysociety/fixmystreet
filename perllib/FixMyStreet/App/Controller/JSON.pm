@@ -87,6 +87,7 @@ sub problems : Local {
     my $query = {
         $date_col => $range->sql,
         state => [ @state ],
+        non_public => 0,
     };
     $query->{category} = $category if $category;
     my @problems = $c->cobrand->problems->search( $query, {
