@@ -95,6 +95,11 @@ sub open311_munge_update_params {
     }
 }
 
+sub open311_skip_report_fetch {
+  my ($self, $problem) = @_;
+
+  return 1 if $problem->non_public;
+}
 
 sub lookup_site_code_config { {
     buffer => 50, # metres

@@ -146,7 +146,8 @@ sub create_problems {
             next;
         }
 
-        if ( my $cobrand = $body->get_cobrand_handler ) {
+        my $cobrand = $body->get_cobrand_handler;
+        if ( $cobrand ) {
             my $filtered = $cobrand->call_hook('filter_report_description', $request->{description});
             $request->{description} = $filtered if defined $filtered;
         }
@@ -184,6 +185,8 @@ sub create_problems {
                 non_public => $non_public,
             }
         );
+
+        next if $cobrand && $cobrand->call_hook(open311_skip_report_fetch => $problem);
 
         $open311->add_media($request->{media_url}, $problem)
             if $request->{media_url};
