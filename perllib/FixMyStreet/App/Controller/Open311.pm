@@ -309,7 +309,8 @@ sub get_requests : Private {
     delete $states->{unconfirmed};
     delete $states->{submitted};
     my $criteria = {
-        state => [ keys %$states ]
+        state => [ keys %$states ],
+        non_public => 0,
     };
 
     my %rules = (
@@ -414,6 +415,7 @@ sub get_request : Private {
     my $criteria = {
         state => [ keys %$states ],
         id => $id,
+        non_public => 0,
     };
     $c->forward( 'output_requests', [ $criteria ] );
 }

@@ -39,6 +39,7 @@
         - Stop category_change firing more than it should.
         - Fix extra question display when only one category.
         - Fix superusers creating anonymous reports. #2435
+        - Ensure non_public reports aren't exposed at /open311 endpoint.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.
