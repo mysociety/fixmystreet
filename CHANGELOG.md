@@ -9,6 +9,9 @@
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
         - Add feature cobrand helper function.
+    - Open311 improvements:
+        - Support use of 'private' service definition <keywords> to mark
+          reports made in that category private.
 
 * v2.6 (3rd May 2019)
     - New features:
