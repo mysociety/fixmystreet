@@ -225,6 +225,107 @@ subtest 'check conflicting contacts not changed' => sub {
     is $contact_count, 4, 'correct number of contacts';
 };
 
+subtest 'check new category marked non_public' => sub {
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Cans left out 24x7</service_name>
+        <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>private</keywords>
+        <group>sanitation</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    is $contact->email, '100', 'email correct';
+    is $contact->category, 'Cans left out 24x7', 'category correct';
+    is $contact->non_public, 1, 'contact marked as non_public';
+};
+
+subtest 'check existing category marked non_public' => sub {
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    $contact->update({
+        non_public => 0
+    });
+    is $contact->non_public, 0, 'contact not marked as non_public';
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Cans left out 24x7</service_name>
+        <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>private</keywords>
+        <group>sanitation</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    $contact->discard_changes;
+    is $contact->email, '100', 'email correct';
+    is $contact->category, 'Cans left out 24x7', 'category correct';
+    is $contact->non_public, 1, 'contact changed to non_public';
+};
+
+subtest 'check existing non_public category does not get marked public' => sub {
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    is $contact->non_public, 1, 'contact marked as non_public';
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Cans left out 24x7</service_name>
+        <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords></keywords>
+        <group>sanitation</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    $contact->discard_changes;
+    is $contact->email, '100', 'email correct';
+    is $contact->category, 'Cans left out 24x7', 'category correct';
+    is $contact->non_public, 1, 'contact remains non_public';
+};
+
 for my $test (
     {
         desc => 'check meta data added to existing contact',
