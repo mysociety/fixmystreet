@@ -13,6 +13,8 @@
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private.
+        - Ensure any reports fetched in a category marked private are also
+          marked private on the site.
 
 * v2.6 (3rd May 2019)
     - New features:

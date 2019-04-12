@@ -469,6 +469,44 @@ for my $test (
     };
 }
 
+subtest "non_public contacts result in non_public reports" => sub {
+
+    $contact->update({
+        non_public => 1
+    });
+    my $o = Open311->new(
+        jurisdiction => 'mysociety',
+        endpoint => 'http://example.com',
+        test_mode => 1,
+        test_get_returns => { 'requests.xml' => prepare_xml( {} ) }
+    );
+
+    my $update = Open311::GetServiceRequests->new(
+        system_user => $user,
+        start_date => $start_date,
+        end_date => $end_date
+    );
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $update->create_problems( $o, $body );
+    };
+
+    my $p = FixMyStreet::DB->resultset('Problem')->search(
+        { external_id => 123456 }
+    )->first;
+
+    ok $p, 'problem created';
+    is $p->non_public, 1, "report non_public is set correctly";
+
+    $p->delete;
+    $contact->update({
+        non_public => 0
+    });
+
+};
+
 for my $test (
   {
       test_desc => 'filters out phone numbers',
