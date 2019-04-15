@@ -327,8 +327,6 @@ var layers = [
 {
   "categories": [
     "Fallen Tree",
-    "Restricted Visibility / Overgrown / Overhanging",
-    "Restricted Visibility",
   ],
   "layer_name": "Tree",
   "layer": is_live ? 307 : 228,
@@ -570,6 +568,8 @@ fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
         "Icy Footpath",
         "Icy Road",
         "Missed published Gritted Route",
+        "Restricted Visibility / Overgrown / Overhanging",
+        "Restricted Visibility",
     ]
 }));
 
