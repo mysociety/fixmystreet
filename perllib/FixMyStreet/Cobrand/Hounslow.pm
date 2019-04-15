@@ -83,6 +83,8 @@ sub open311_config {
     }
 
     $row->set_extra_fields(@$extra);
+
+    $params->{multi_photos} = 1;
 }
 
 sub open311_munge_update_params {
