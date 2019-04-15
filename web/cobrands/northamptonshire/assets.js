@@ -30,6 +30,11 @@ function disable_report_form() {
     $(".js-hide-if-invalid-category").hide();
 }
 
+var is_live = false;
+if ( location.hostname === 'www.fixmystreet.com' || location.hostname == 'fixmystreet.northamptonshire.gov.uk' ) {
+    is_live = true;
+}
+
 var layers = [
   /*
 {
@@ -267,8 +272,8 @@ var layers = [
   "categories": [ "Damaged / Missing / Facing Wrong Way", "Obscured by vegetation or Dirty" ],
   "item_name": "sign",
   "layer_name": "Signs",
-  "layer": 60,
-  "version": "60.2113-"
+  "layer": is_live ? 60 : 303,
+  "version": is_live ? "60.2113-" : "303.1-"
 },
 {
   "categories": [ "Shelter Damaged", "Sign/Pole Damaged" ],
@@ -326,8 +331,8 @@ var layers = [
     "Restricted Visibility",
   ],
   "layer_name": "Tree",
-  "layer": 307,
-  "version": "307.1-"
+  "layer": is_live ? 307 : 228,
+  "version": is_live ? "307.1-" : "228.24-"
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
@@ -361,10 +366,6 @@ OpenLayers.Layer.NCCVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset,
     CLASS_NAME: 'OpenLayers.Layer.NCCVectorAsset'
 });
 
-var is_live = false;
-if ( location.hostname === 'www.fixmystreet.com' || location.hostname == 'fixmystreet.northamptonshire.gov.uk' ) {
-    is_live = true;
-}
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
@@ -537,8 +538,8 @@ var highways_style = new OpenLayers.Style({
 fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     protocol_class: OpenLayers.Protocol.Alloy,
     http_options: {
-      layerid: 20,
-      layerVersion: '20.123-',
+      layerid: is_live ? 20 : 308,
+      layerVersion: is_live ? '20.123-' : '308.8-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
