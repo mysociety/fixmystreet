@@ -11,7 +11,7 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         var rresp;
         var start = new Date();
         var max = all_tiles.length;
-        $(fixmystreet).trigger('alloy:start_request', [start, max]);
+        options.scope.newRequest(start, max);
         for (var i = 0; i < max; i++) {
             var resp = new OpenLayers.Protocol.Response({requestType: "read"});
             resp.start = start;
@@ -69,9 +69,8 @@ OpenLayers.Strategy.Alloy = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
     requestStart: 0,
     initialize: function(name, options) {
         OpenLayers.Strategy.FixMyStreet.prototype.initialize.apply(this, arguments);
-        $(fixmystreet).on('alloy:start_request', this.newRequest.bind(this));
     },
-    newRequest: function(evt, start, max) {
+    newRequest: function(start, max) {
       this.max = max;
       this.requestStart = start;
       this.count = 0;
