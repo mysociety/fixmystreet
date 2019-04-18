@@ -410,7 +410,6 @@ var northants_road_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaul
     non_interactive: true,
     no_asset_msg_id: '#js-not-a-road',
     usrn: {
-        attribute: 'fid',
         field: 'asset_resource_id'
     },
     getUSRN: function(feature) {
