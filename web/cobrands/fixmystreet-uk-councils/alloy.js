@@ -18,7 +18,7 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         options.params = OpenLayers.Util.applyDefaults(
             options.params, this.options.params);
         options = OpenLayers.Util.applyDefaults(options, this.options);
-        var all_tiles = this.getTileRange_(options.scope.bounds, options.scope.layer.maxExtent, options.scope.layer.map);
+        var all_tiles = this.getTileRange(options.scope.bounds, options.scope.layer.maxExtent, options.scope.layer.map);
         var rresp;
         var max = all_tiles.length;
         options.scope.newRequest(max);
@@ -41,9 +41,9 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         return OpenLayers.String.format(options.base, {'layerid': options.layerid, 'environment': options.environment, 'layerVersion': options.layerVersion, 'z': 15, 'x': coords[0], 'y': coords[1]});
     },
 
-    getTileRange_: function(bounds, maxExtent, map) {
-        var min = this.getTileCoord_([bounds.left, bounds.top], maxExtent, map, true);
-        var max = this.getTileCoord_([bounds.right, bounds.bottom], maxExtent, map, false);
+    getTileRange: function(bounds, maxExtent, map) {
+        var min = this.getTileCoord([bounds.left, bounds.top], maxExtent, map, true);
+        var max = this.getTileCoord([bounds.right, bounds.bottom], maxExtent, map, false);
         var coords = [];
         for (var i = min[0], ii = max[0]; i <= ii; ++i) {
           for (var j = min[1], jj = max[1]; j <= jj; ++j) {
@@ -53,7 +53,7 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         return coords;
     },
 
-    getTileCoord_: function(bounds, maxExtent, map, reverse) {
+    getTileCoord: function(bounds, maxExtent, map, reverse) {
         var origin = new OpenLayers.LonLat(maxExtent.left, maxExtent.top);
         var resolution = map.getResolutionForZoom(3);
 
