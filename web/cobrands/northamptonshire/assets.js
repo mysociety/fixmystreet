@@ -421,11 +421,18 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
       $("#overlapping_features_msg").addClass('hidden');
       var emergency_state = ncc_is_emergency_category();
 
-      disable_report_form();
-      if ((!emergency_state.relevant || emergency_state.body) && this.visibility) {
-          show_responsibility_error('#js-not-an-asset', this.fixmystreet.asset_item, this.fixmystreet.asset_type);
-      } else {
+      if (!layer.visibility) {
+          if (!emergency_state.relevant || emergency_state.body) {
+              enable_report_form();
+          }
           hide_responsibility_errors();
+      } else {
+          disable_report_form();
+          if (!emergency_state.relevant || emergency_state.body) {
+              show_responsibility_error('#js-not-an-asset', this.fixmystreet.asset_item, this.fixmystreet.asset_type);
+          } else {
+              hide_responsibility_errors();
+          }
       }
     }
   }
