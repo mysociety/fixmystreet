@@ -83,7 +83,7 @@ OpenLayers.Strategy.Alloy = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
     newRequest: function(max) {
       this.max = max;
       this.count = 0;
-      this.failcount = 0;
+      this.failCount = 0;
       this.layer.destroyFeatures();
     },
     merge: function(resp) {

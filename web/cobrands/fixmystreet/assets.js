@@ -70,9 +70,9 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
             // No marker to be found so bail out
             return;
         }
-        var nearest_feature = this.getNearestFeature(marker.geometry, threshold);
-        if (nearest_feature) {
-            this.get_select_control().select(nearest_feature);
+        var features = this.getFeaturesWithinDistance(marker.geometry, threshold);
+        if (features.length) {
+            this.get_select_control().select(features[0]);
         }
     },
 
@@ -182,7 +182,8 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
         var feature = this.getFeatureAtPoint(point);
         if (feature == null) {
             // The click wasn't directly over a road, try and find one nearby
-            feature = this.getNearestFeature(point, this.fixmystreet.nearest_radius || 10);
+            var nearest = this.getFeaturesWithinDistance(point, this.fixmystreet.nearest_radius || 10);
+            feature = nearest.length ? nearest[0] : null;
         }
         this.selected_feature = feature;
     },
@@ -765,42 +766,9 @@ OpenLayers.Layer.Vector.prototype.getFeatureAtPoint = function(point) {
 
 
 /*
- * Returns this layer's feature that's closest to the given
- * OpenLayers.Geometry.Point, as long as it's within <threshold> metres.
- * Returns null if no feature meeting these criteria is found.
- */
-OpenLayers.Layer.Vector.prototype.getNearestFeature = function(point, threshold) {
-    var nearest_feature = null;
-    var nearest_distance = null;
-    for (var i = 0; i < this.features.length; i++) {
-        var candidate = this.features[i];
-        if (!candidate.geometry || !candidate.geometry.distanceTo) {
-            continue;
-        }
-        var details = candidate.geometry.distanceTo(point, {details: true});
-        if (nearest_distance === null || details.distance < nearest_distance) {
-            nearest_distance = details.distance;
-            // The units used for details.distance aren't metres, they're
-            // whatever the map projection uses. Convert to metres in order to
-            // draw a meaningful comparison to the threshold value.
-            var p1 = new OpenLayers.Geometry.Point(details.x0, details.y0);
-            var p2 = new OpenLayers.Geometry.Point(details.x1, details.y1);
-            var line = new OpenLayers.Geometry.LineString([p1, p2]);
-            var distance_m = line.getGeodesicLength(this.map.getProjectionObject());
-
-            if (distance_m <= threshold) {
-                nearest_feature = candidate;
-            }
-        }
-    }
-    return nearest_feature;
-};
-
-
-/*
  * Returns all features from this layer within a given distance (<threshold>
- * metres) of the given OpenLayers.Geometry.Point.
- * Returns an empty list if no features meeting these criteria is found.
+ * metres) of the given OpenLayers.Geometry.Point sorted by their distance
+ * from the pin.
  */
 OpenLayers.Layer.Vector.prototype.getFeaturesWithinDistance = function(point, threshold) {
     var features = [];
@@ -818,9 +786,11 @@ OpenLayers.Layer.Vector.prototype.getFeaturesWithinDistance = function(point, th
         var line = new OpenLayers.Geometry.LineString([p1, p2]);
         var distance_m = line.getGeodesicLength(this.map.getProjectionObject());
         if (distance_m <= threshold) {
+            candidate.distance = distance_m;
             features.push(candidate);
         }
     }
+    features.sort(function(a,b) { return a.distance - b.distance; });
     return features;
 };
 
