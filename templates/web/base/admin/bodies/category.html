@@ -1,4 +1,5 @@
-[% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
+[% body_name = body.name | html;
+   INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body_name) -%]
 
 [% BLOCK highlightchanged_yesno %]
 [%- output = loc('No') %]

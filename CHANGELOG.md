@@ -40,6 +40,7 @@
         - Fix extra question display when only one category.
         - Fix superusers creating anonymous reports. #2435
         - Ensure non_public reports aren't exposed at /open311 endpoint.
+        - Escape body name in admin title.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.
