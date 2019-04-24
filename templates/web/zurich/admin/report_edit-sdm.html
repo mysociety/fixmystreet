@@ -30,7 +30,7 @@
     <dd>[% problem.detail | html %]</dd>
   [% IF problem.extra.original_detail %]
     <dd>[%
-      SET safe = problem.extra.original_detail | html;
+      safe = problem.extra.original_detail | html;
       tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
     %]</dd>
   [% END %]
@@ -53,7 +53,7 @@
       [% END %]
     </dd>
     <dd>[%
-        SET safe = problem.postcode | html;
+        safe = problem.postcode | html;
         tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
     %]</dd>
 

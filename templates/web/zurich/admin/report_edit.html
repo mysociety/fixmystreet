@@ -32,7 +32,7 @@
     <dd>[% problem.detail | html %]</dd>
     [% IF problem.extra.original_detail %]
       <dd>[%
-          SET detail_safe = problem.extra.original_detail | html;
+          detail_safe = problem.extra.original_detail | html;
           tprintf( loc('originally entered: &ldquo;%s&rdquo;'), detail_safe )
       %]</dd>
     [% END %]
@@ -48,7 +48,7 @@
 
     [% IF problem.extra.original_detail %]
       <dd>[%
-          SET detail_safe = problem.extra.original_detail | html;
+          detail_safe = problem.extra.original_detail | html;
           tprintf( loc('originally entered: &ldquo;%s&rdquo;'), detail_safe )
       %]</dd>
     [% END %]
@@ -72,7 +72,7 @@
       [% END %]
     </dd>
     <dd>[%
-        SET safe = problem.postcode | html;
+        safe = problem.postcode | html;
         tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
     %]</dd>
 

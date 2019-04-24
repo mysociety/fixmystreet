@@ -47,7 +47,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 [% END %]
 
 <small>([%
-    SET postcode_safe = problem.postcode | html;
+    postcode_safe = problem.postcode | html;
     tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
 %],
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</small>
