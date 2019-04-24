@@ -41,6 +41,7 @@
         - Fix superusers creating anonymous reports. #2435
         - Ensure non_public reports aren't exposed at /open311 endpoint.
         - Escape body name in admin title.
+        - Use REQUEST_URI, not PATH_INFO, to infer path.
     - Development improvements:
         - Make front page cache time configurable.
         - Better working of /fakemapit/ under https.

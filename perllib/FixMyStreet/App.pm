@@ -36,6 +36,11 @@ our $VERSION = '0.01';
 
 __PACKAGE__->config(
 
+    # Use REQUEST_URI, not PATH_INFO, to infer path. This fixes an issue
+    # with slashes in category names in admin (as PATH_INFO can't tell
+    # the difference between / and %2F)
+    use_request_uri_for_path => 1,
+
     # get the config from the core object
     %{ FixMyStreet->config() },
 
