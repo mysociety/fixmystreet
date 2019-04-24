@@ -52,10 +52,11 @@ sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp))?\.(?:jpeg|
     my $item;
     if ( $is_update ) {
         ($item) = $c->model('DB::Comment')->search( {
-            id => $id,
-            state => 'confirmed',
-            photo => { '!=', undef },
-        } );
+            'me.id' => $id,
+            'me.state' => 'confirmed',
+            'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+            'me.photo' => { '!=', undef },
+        }, { prefetch => 'problem' });
     } else {
         ($item) = $c->cobrand->problems->search( {
             id => $id,
