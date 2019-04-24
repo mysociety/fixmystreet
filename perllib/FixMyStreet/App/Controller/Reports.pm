@@ -659,7 +659,7 @@ sub check_non_public_reports_permission : Private {
     if ( $c->user_exists ) {
         my $user_has_permission;
 
-        if ( $c->user->is_super_user ) {
+        if ( $c->user->is_superuser ) {
             $user_has_permission = 1;
         } else {
             my $body = $c->stash->{body};
