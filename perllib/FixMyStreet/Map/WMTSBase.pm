@@ -205,15 +205,15 @@ sub get_map_hash {
         numZoomLevels => $self->zoom_parameters->{zoom_levels},
         tile_size => $self->tile_parameters->{size},
         tile_dpi => $self->tile_parameters->{dpi},
-        tile_urls => encode_json $self->tile_parameters->{urls},
+        tile_urls => encode_json( $self->tile_parameters->{urls} ),
         tile_suffix => $self->tile_parameters->{suffix},
-        layer_names => encode_json $self->tile_parameters->{layer_names},
+        layer_names => encode_json( $self->tile_parameters->{layer_names} ),
         layer_style => $self->tile_parameters->{layer_style},
         matrix_set => $self->tile_parameters->{matrix_set},
         map_projection => $self->tile_parameters->{projection},
         origin_x => force_float_format($self->tile_parameters->{origin_x}),
         origin_y => force_float_format($self->tile_parameters->{origin_y}),
-        scales => encode_json \@scales,
+        scales => encode_json( \@scales ),
     };
 }
 

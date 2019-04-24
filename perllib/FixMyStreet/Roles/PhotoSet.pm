@@ -19,9 +19,8 @@ Return a PhotoSet object for all photos attached to this field
 
 sub get_photoset {
     my ($self) = @_;
-    my $class = 'FixMyStreet::App::Model::PhotoSet';
-    eval "use $class";
-    return $class->new({
+    require FixMyStreet::App::Model::PhotoSet;
+    return FixMyStreet::App::Model::PhotoSet->new({
         db_data => $self->photo,
         object => $self,
     });

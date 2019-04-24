@@ -12,7 +12,6 @@ package Utils;
 use strict;
 use DateTime;
 use Encode;
-use File::Slurp qw();
 use mySociety::GeoUtil;
 use mySociety::Locale;
 use FixMyStreet;

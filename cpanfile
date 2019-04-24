@@ -63,7 +63,6 @@ requires 'Error';
 requires 'FCGI'; # Required by e.g. Plack::Handler::FCGI
 requires 'File::Find';
 requires 'File::Path';
-requires 'File::Slurp';
 requires 'Geography::NationalGrid';
 requires 'Getopt::Long::Descriptive';
 requires 'HTML::Entities';
