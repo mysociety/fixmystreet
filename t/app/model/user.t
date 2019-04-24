@@ -1,5 +1,8 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::DB;
+use Catalyst::Test 'FixMyStreet::App';
+use HTTP::Request::Common;
+use Test::Exception;
 
 my $mech = FixMyStreet::TestMech->new();
 $mech->log_in_ok('test@example.com');
@@ -63,9 +66,16 @@ FixMyStreet::override_config {
     $mech->content_like(qr/may_show_name[^>c]*>/);
 };
 
-END {
-    done_testing();
-}
+subtest 'Check non-existent methods on user object die' => sub {
+    my $c = ctx_request(POST '/auth', { username => 'test@example.com', password_sign_in => 'secret' });
+    throws_ok(
+        sub { $c->user->is_super_user },
+        qr/Can't locate object method 'is_super_user'/,
+        'attempt to call non-existent method'
+    );
+};
+
+done_testing();
 
 sub create_update {
     my ($problem, %params) = @_;
