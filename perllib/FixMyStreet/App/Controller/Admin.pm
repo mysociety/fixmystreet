@@ -535,7 +535,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             $self->remove_photo($c, $problem, $remove_photo_param);
         }
 
-        if ($problem->state eq 'hidden') {
+        if ($problem->state eq 'hidden' || $problem->non_public) {
             $problem->get_photoset->delete_cached;
         }
 

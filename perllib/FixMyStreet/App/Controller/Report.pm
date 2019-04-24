@@ -477,6 +477,9 @@ sub inspect : Private {
         }
 
         $problem->non_public($c->get_param('non_public') ? 1 : 0);
+        if ($problem->non_public) {
+            $problem->get_photoset->delete_cached;
+        }
 
         if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
             # New lat/lon isn't valid, show an error
