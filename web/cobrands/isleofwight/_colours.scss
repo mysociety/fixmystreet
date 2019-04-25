@@ -1,0 +1,31 @@
+/* COLOURS */
+
+$menu-image: 'menu-black';
+
+$mappage-header-height: 124px;
+
+$blue: #00478c;
+$cyan: #00aeef; // + 60 25
+$orange: #fcaf17;
+$green: #75c044;
+
+//Any 20% tint of the above
+
+$primary_text: #fff;
+$primary: $cyan;
+$primary_b: #222;
+
+$base_bg: #fff;
+$base_fg: #222;
+
+$nav_background_colour: #fff;
+$nav_colour: $blue;
+$nav_hover_background_colour: $cyan;
+
+$col_click_map: $green;
+
+$header-top-border: false;
+
+$body-font: Helvetica, Arial, sans-serif;
+$heading-font: $body-font;
+$meta-font: $body-font;
