@@ -1,0 +1,14 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+/* Header */
+
+#site-logo {
+    width: 141px;
+    height: 38px;
+    padding: 1em 0;
+    background: url(/cobrands/isleofwight/images/logo.gif) 0 50% no-repeat;
+    background-size: 141px 38px;
+}
