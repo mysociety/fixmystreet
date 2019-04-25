@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "EncodedColumn",
+);
 __PACKAGE__->table("moderation_original_data");
 __PACKAGE__->add_columns(
   "id",
@@ -66,8 +70,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-11-20 16:13:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zFOhQnS4WfVzD7qHxaAr6w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jOD21ppyp9e1e/pVa/RB9g
 
 use Moo;
 use Text::Diff;

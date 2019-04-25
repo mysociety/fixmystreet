@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "EncodedColumn",
+);
 __PACKAGE__->table("token");
 __PACKAGE__->add_columns(
   "scope",
@@ -28,8 +32,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("scope", "token");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HkvzOY5STjOdXN64hxg5NA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:b+YjiisJdWRbCRrLNuMGiw
 
 use mySociety::AuthToken;
 

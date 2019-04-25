@@ -366,11 +366,8 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         }
     }
 
-    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
+    my $dt = DateTime->now()->add(days => 2);
 
-    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
-
-    my $report_time = '2011-03-01 12:00:00';
     my ($report) = $mech->create_problems_for_body(1, 1, 'Testing', {
         dt => $dt,
         user => $user1,
@@ -378,8 +375,8 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         state              => 'fixed - user',
-        lastupdate         => $dt_parser->format_datetime($dt),
-        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
+        lastupdate         => $dt,
+        whensent           => $dt->clone->add( minutes => 5 ),
         latitude           => '55.951963',
         longitude          => '-3.189944',
     });
@@ -441,60 +438,13 @@ subtest "Test alerts are not sent for no-text updates" => sub {
     my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
     my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
     my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
-    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
+    my $dt = DateTime->now()->add(days => 2);
 
-    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
-
-    my $report_time = '2011-03-01 12:00:00';
-    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
-        postcode           => 'EH1 1BB',
-        bodies_str         => '1',
-        areas              => ',11808,135007,14419,134935,2651,20728,',
-        category           => 'Street lighting',
-        title              => 'Testing',
-        detail             => 'Testing Detail',
-        used_map           => 1,
-        name               => $user1->name,
-        anonymous          => 0,
-        state              => 'fixed - user',
-        confirmed          => $dt_parser->format_datetime($dt),
-        lastupdate         => $dt_parser->format_datetime($dt),
-        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 1,
-        latitude           => '55.951963',
-        longitude          => '-3.189944',
-        user_id            => $user1->id,
-    } );
+    my ($report, $report2) = $mech->create_problems_for_body(2, 1, 'Testing', {
+        user => $user1,
+    });
     my $report_id = $report->id;
     ok $report, "created test report - $report_id";
-
-    my $report2 = FixMyStreet::App->model('DB::Problem')->create( {
-        postcode           => 'EH1 1BB',
-        bodies_str         => '1',
-        areas              => ',11808,135007,14419,134935,2651,20728,',
-        category           => 'Street lighting',
-        title              => 'Testing',
-        detail             => 'Testing Detail',
-        used_map           => 1,
-        name               => $user1->name,
-        anonymous          => 0,
-        state              => 'fixed - user',
-        confirmed          => $dt_parser->format_datetime($dt),
-        lastupdate         => $dt_parser->format_datetime($dt),
-        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 1,
-        latitude           => '55.951963',
-        longitude          => '-3.189944',
-        user_id            => $user1->id,
-    } );
     my $report2_id = $report2->id;
     ok $report2, "created test report - $report2_id";
 
@@ -534,34 +484,11 @@ subtest "Test no marked as confirmed added to alerts" => sub {
     my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
     my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
     my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
-    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
+    my $dt = DateTime->now()->add(days => 2);
 
-    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
-
-    my $report_time = '2011-03-01 12:00:00';
-    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
-        postcode           => 'EH1 1BB',
-        bodies_str         => '1',
-        areas              => ',11808,135007,14419,134935,2651,20728,',
-        category           => 'Street lighting',
-        title              => 'Testing',
-        detail             => 'Testing Detail',
-        used_map           => 1,
-        name               => $user1->name,
-        anonymous          => 0,
-        state              => 'confirmed',
-        confirmed          => $dt_parser->format_datetime($dt),
-        lastupdate         => $dt_parser->format_datetime($dt),
-        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 1,
-        latitude           => '55.951963',
-        longitude          => '-3.189944',
-        user_id            => $user1->id,
-    } );
+    my ($report) = $mech->create_problems_for_body(1, 1, 'Testing', {
+        user => $user1,
+    });
     my $report_id = $report->id;
     ok $report, "created test report - $report_id";
 
@@ -617,34 +544,11 @@ for my $test (
         my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
         my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
         my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
-        my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
+        my $dt = DateTime->now()->add(days => 2);
 
-        my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
-
-        my $report_time = '2011-03-01 12:00:00';
-        my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
-            postcode           => 'EH1 1BB',
-            bodies_str         => '1',
-            areas              => ',11808,135007,14419,134935,2651,20728,',
-            category           => 'Street lighting',
-            title              => 'Testing',
-            detail             => 'Testing Detail',
-            used_map           => 1,
-            name               => $user1->name,
-            anonymous          => 0,
-            state              => 'confirmed',
-            confirmed          => $dt_parser->format_datetime($dt),
-            lastupdate         => $dt_parser->format_datetime($dt),
-            whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
-            lang               => 'en-gb',
-            service            => '',
-            cobrand            => 'default',
-            cobrand_data       => '',
-            send_questionnaire => 1,
-            latitude           => '55.951963',
-            longitude          => '-3.189944',
-            user_id            => $user1->id,
-        } );
+        my ($report) = $mech->create_problems_for_body(1, 1, 'Testing', {
+            user => $user1,
+        });
         my $report_id = $report->id;
         ok $report, "created test report - $report_id";
 
@@ -685,34 +589,11 @@ subtest "Test signature template is used from cobrand" => sub {
     my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
     my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
 
-    my $dt = DateTime->now(time_zone => 'Europe/London')->add(days => 2);
+    my $dt = DateTime->now()->add(days => 2);
 
-    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
-
-    my $report_time = '2011-03-01 12:00:00';
-    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
-        postcode           => 'EH1 1BB',
-        bodies_str         => $body->id,
-        areas              => ',11808,135007,14419,134935,2651,20728,',
-        category           => 'Street lighting',
-        title              => 'Testing',
-        detail             => 'Testing Detail',
-        used_map           => 1,
-        name               => $user1->name,
-        anonymous          => 0,
-        state              => 'fixed - user',
-        confirmed          => $dt_parser->format_datetime($dt),
-        lastupdate         => $dt_parser->format_datetime($dt),
-        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 1,
-        latitude           => '55.951963',
-        longitude          => '-3.189944',
-        user_id            => $user1->id,
-    } );
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
+        user => $user1,
+    });
     my $report_id = $report->id;
     ok $report, "created test report - $report_id";
 
@@ -797,7 +678,7 @@ for my $test (
         my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User');
         my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User');
 
-        my $dt = DateTime->now->add( minutes => -30 );
+        my $dt = DateTime->now()->add( minutes => -30 );
         my $r_dt = $dt->clone->add( minutes => 20 );
 
         my $alert_params = $test->{alert_params};
@@ -808,32 +689,15 @@ for my $test (
         my $alert_user1 = FixMyStreet::App->model('DB::Alert')->create( $alert_params );
         ok $alert_user1, "alert created";
 
-        my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
-
-        my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
-            postcode           => 'EH1 1BB',
-            bodies_str         => $body->id,
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
             areas              => ',11808,135007,14419,134935,2651,20728,',
-            category           => 'Street lighting',
             title              => 'Alert test for non public reports',
-            detail             => 'Testing Detail',
-            used_map           => 1,
-            name               => $user2->name,
-            anonymous          => 0,
-            state              => 'confirmed',
-            confirmed          => $dt_parser->format_datetime($r_dt),
-            lastupdate         => $dt_parser->format_datetime($r_dt),
-            whensent           => $dt_parser->format_datetime($r_dt->clone->add( minutes => 5 )),
-            lang               => 'en-gb',
-            service            => '',
-            cobrand            => 'default',
-            cobrand_data       => '',
-            send_questionnaire => 1,
+            confirmed          => $r_dt, # Needed so timezone set right
             latitude           => '55.951963',
             longitude          => '-3.189944',
-            user_id            => $user2->id,
+            user               => $user2,
             non_public         => 1,
-        } );
+        });
 
         $mech->clear_emails_ok;
         FixMyStreet::override_config {
@@ -865,32 +729,10 @@ subtest 'check new updates alerts for non public reports only go to report owner
     my $dt = DateTime->now->add( minutes => -30 );
     my $r_dt = $dt->clone->add( minutes => 20 );
 
-    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
-
-    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
-        postcode           => 'EH1 1BB',
-        bodies_str         => $body->id,
-        areas              => ',11808,135007,14419,134935,2651,20728,',
-        category           => 'Street lighting',
-        title              => 'Alert test for non public reports',
-        detail             => 'Testing Detail',
-        used_map           => 1,
-        name               => $user2->name,
-        anonymous          => 0,
-        state              => 'confirmed',
-        confirmed          => $dt_parser->format_datetime($r_dt),
-        lastupdate         => $dt_parser->format_datetime($r_dt),
-        whensent           => $dt_parser->format_datetime($r_dt->clone->add( minutes => 5 )),
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 1,
-        latitude           => '55.951963',
-        longitude          => '-3.189944',
-        user_id            => $user2->id,
-        non_public         => 1,
-    } );
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
+        user => $user2,
+        non_public => 1,
+    });
 
     $mech->create_comment_for_problem($report, $user3, 'Anonymous User', 'This is some more update text', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 8 ) });
 
@@ -902,7 +744,6 @@ subtest 'check new updates alerts for non public reports only go to report owner
             whensubscribed => $dt,
     } );
     ok $alert_user1, "alert created";
-
 
     $mech->clear_emails_ok;
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
@@ -945,33 +786,11 @@ subtest 'check setting include dates in new updates cobrand option' => sub {
     my $dt = DateTime->now->add( minutes => -30 );
     my $r_dt = $dt->clone->add( minutes => 20 );
 
-    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
+        user => $user2,
+    });
 
-    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
-        postcode           => 'EH1 1BB',
-        bodies_str         => $body->id,
-        areas              => ',11808,135007,14419,134935,2651,20728,',
-        category           => 'Street lighting',
-        title              => 'Alert test for non public reports',
-        detail             => 'Testing Detail',
-        used_map           => 1,
-        name               => $user2->name,
-        anonymous          => 0,
-        state              => 'confirmed',
-        confirmed          => $dt_parser->format_datetime($r_dt),
-        lastupdate         => $dt_parser->format_datetime($r_dt),
-        whensent           => $dt_parser->format_datetime($r_dt->clone->add( minutes => 5 )),
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 1,
-        latitude           => '55.951963',
-        longitude          => '-3.189944',
-        user_id            => $user2->id,
-    } );
-
-    my $update = $mech->create_comment_for_problem($report, $user3, 'Anonymous User', 'This is some more update text', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 8 ) });
+    my $update = $mech->create_comment_for_problem($report, $user3, 'Anonymous User', 'This is some more update text', 't', 'confirmed', undef, { confirmed  => $r_dt });
 
     my $alert_user1 = FixMyStreet::App->model('DB::Alert')->create( {
             user       => $user1,
@@ -985,13 +804,6 @@ subtest 'check setting include dates in new updates cobrand option' => sub {
 
     $mech->clear_emails_ok;
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
-
-    # if we don't do this then we're applying the date inflation code and
-    # it's timezone munging to the DateTime object above and not the DateTime
-    # object that's inflated from the database value and these turn out to be
-    # different as the one above has a UTC timezone and not the floating one
-    # that those from the DB do.
-    $update->discard_changes();
 
     my $date_in_alert = Utils::prettify_dt( $update->confirmed );
     my $email = $mech->get_text_body_from_email;

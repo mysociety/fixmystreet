@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "EncodedColumn",
+);
 __PACKAGE__->table("state");
 __PACKAGE__->add_columns(
   "id",
@@ -30,8 +34,8 @@ __PACKAGE__->add_unique_constraint("state_label_key", ["label"]);
 __PACKAGE__->add_unique_constraint("state_name_key", ["name"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-08-22 15:17:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dvtAOpeYqEF9T3otHHgLqw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vG7A4UVYLsXLnhMZ0roV5Q
 
 use Moo;
 use namespace::clean;

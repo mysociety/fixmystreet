@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "EncodedColumn",
+);
 __PACKAGE__->table("comment");
 __PACKAGE__->add_columns(
   "id",
@@ -89,8 +93,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-11-20 16:13:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5w/4Og9uCy54lGyyJiLzxA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iKLyIv3adGsR90fPKUXNAg
 #
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
@@ -104,17 +108,6 @@ with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra',
      'FixMyStreet::Roles::Moderation',
      'FixMyStreet::Roles::PhotoSet';
-
-my $stz = sub {
-    my ( $orig, $self ) = ( shift, shift );
-    my $s = $self->$orig(@_);
-    return $s unless $s && UNIVERSAL::isa($s, "DateTime");
-    FixMyStreet->set_time_zone($s);
-    return $s;
-};
-
-around created => $stz;
-around confirmed => $stz;
 
 =head2 get_cobrand_logged
 

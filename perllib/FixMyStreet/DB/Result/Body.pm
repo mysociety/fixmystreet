@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "EncodedColumn",
+);
 __PACKAGE__->table("body");
 __PACKAGE__->add_columns(
   "id",
@@ -18,6 +22,12 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "body_id_seq",
   },
+  "name",
+  { data_type => "text", is_nullable => 0 },
+  "external_url",
+  { data_type => "text", is_nullable => 1 },
+  "parent",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "endpoint",
   { data_type => "text", is_nullable => 1 },
   "jurisdiction",
@@ -36,19 +46,13 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "send_extended_statuses",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "name",
-  { data_type => "text", is_nullable => 0 },
-  "parent",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "deleted",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "external_url",
-  { data_type => "text", is_nullable => 1 },
   "fetch_problems",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "blank_updates_permitted",
-  { data_type => "boolean", default_value => \"false", is_nullable => 1 },
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "convert_latlong",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "deleted",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "extra",
   { data_type => "text", is_nullable => 1 },
@@ -126,8 +130,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2018-04-05 14:29:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HV8IM2C1ErrpvXoRTZ1B1Q
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:us6PjQwLcPVI8CVdoQlnpg
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');

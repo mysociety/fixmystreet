@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "EncodedColumn",
+);
 __PACKAGE__->table("users");
 __PACKAGE__->add_columns(
   "id",
@@ -56,10 +60,10 @@ __PACKAGE__->add_columns(
   { data_type => "bigint", is_nullable => 1 },
   "facebook_id",
   { data_type => "bigint", is_nullable => 1 },
-  "area_ids",
-  { data_type => "integer[]", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "area_ids",
+  { data_type => "integer[]", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_facebook_id_key", ["facebook_id"]);
@@ -119,8 +123,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-02-12 15:14:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4NBO3A+LfZXOh4Kj/II2LQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5AiItinC1TPwJyxQDa7rsg
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.

@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "EncodedColumn",
+);
 __PACKAGE__->table("problem");
 __PACKAGE__->add_columns(
   "id",
@@ -20,14 +24,38 @@ __PACKAGE__->add_columns(
   },
   "postcode",
   { data_type => "text", is_nullable => 0 },
+  "latitude",
+  { data_type => "double precision", is_nullable => 0 },
+  "longitude",
+  { data_type => "double precision", is_nullable => 0 },
+  "bodies_str",
+  { data_type => "text", is_nullable => 1 },
+  "bodies_missing",
+  { data_type => "text", is_nullable => 1 },
+  "areas",
+  { data_type => "text", is_nullable => 0 },
+  "category",
+  { data_type => "text", default_value => "Other", is_nullable => 0 },
   "title",
   { data_type => "text", is_nullable => 0 },
   "detail",
   { data_type => "text", is_nullable => 0 },
   "photo",
   { data_type => "bytea", is_nullable => 1 },
+  "used_map",
+  { data_type => "boolean", is_nullable => 0 },
+  "user_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
+  "anonymous",
+  { data_type => "boolean", is_nullable => 0 },
+  "external_id",
+  { data_type => "text", is_nullable => 1 },
+  "external_body",
+  { data_type => "text", is_nullable => 1 },
+  "external_team",
+  { data_type => "text", is_nullable => 1 },
   "created",
   {
     data_type     => "timestamp",
@@ -35,22 +63,18 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "state",
-  { data_type => "text", is_nullable => 0 },
-  "whensent",
-  { data_type => "timestamp", is_nullable => 1 },
-  "used_map",
-  { data_type => "boolean", is_nullable => 0 },
-  "bodies_str",
-  { data_type => "text", is_nullable => 1 },
-  "anonymous",
-  { data_type => "boolean", is_nullable => 0 },
-  "category",
-  { data_type => "text", default_value => "Other", is_nullable => 0 },
   "confirmed",
   { data_type => "timestamp", is_nullable => 1 },
-  "send_questionnaire",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "state",
+  { data_type => "text", is_nullable => 0 },
+  "lang",
+  { data_type => "text", default_value => "en-gb", is_nullable => 0 },
+  "service",
+  { data_type => "text", default_value => "", is_nullable => 0 },
+  "cobrand",
+  { data_type => "text", default_value => "", is_nullable => 0 },
+  "cobrand_data",
+  { data_type => "text", default_value => "", is_nullable => 0 },
   "lastupdate",
   {
     data_type     => "timestamp",
@@ -58,34 +82,18 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "areas",
-  { data_type => "text", is_nullable => 0 },
-  "service",
-  { data_type => "text", default_value => "", is_nullable => 0 },
-  "lang",
-  { data_type => "text", default_value => "en-gb", is_nullable => 0 },
-  "cobrand",
-  { data_type => "text", default_value => "", is_nullable => 0 },
-  "cobrand_data",
-  { data_type => "text", default_value => "", is_nullable => 0 },
-  "latitude",
-  { data_type => "double precision", is_nullable => 0 },
-  "longitude",
-  { data_type => "double precision", is_nullable => 0 },
-  "external_id",
-  { data_type => "text", is_nullable => 1 },
-  "external_body",
-  { data_type => "text", is_nullable => 1 },
-  "external_team",
-  { data_type => "text", is_nullable => 1 },
-  "user_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "flagged",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "whensent",
+  { data_type => "timestamp", is_nullable => 1 },
+  "send_questionnaire",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "flagged",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "geocode",
   { data_type => "bytea", is_nullable => 1 },
+  "response_priority_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "send_fail_count",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "send_fail_reason",
@@ -104,10 +112,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 0, is_nullable => 1 },
   "subcategory",
   { data_type => "text", is_nullable => 1 },
-  "bodies_missing",
-  { data_type => "text", is_nullable => 1 },
-  "response_priority_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "defect_type_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
@@ -166,8 +170,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-02-13 15:11:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8zzWlJX7OQOdvrGxKuZUmg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bo68n1AwhO21D0hRY9Yktw
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -322,19 +326,6 @@ sub visible_states_remove {
         $hidden_states->{$state} = 1;
     }
 }
-
-my $stz = sub {
-    my ( $orig, $self ) = ( shift, shift );
-    my $s = $self->$orig(@_);
-    return $s unless $s && UNIVERSAL::isa($s, "DateTime");
-    FixMyStreet->set_time_zone($s);
-    return $s;
-};
-
-around created => $stz;
-around confirmed => $stz;
-around whensent => $stz;
-around lastupdate => $stz;
 
 around service => sub {
     my ( $orig, $self ) = ( shift, shift );
