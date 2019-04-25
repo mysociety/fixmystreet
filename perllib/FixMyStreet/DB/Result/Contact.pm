@@ -11,7 +11,7 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
   "FixMyStreet::InflateColumn::DateTime",
-  "EncodedColumn",
+  "FixMyStreet::EncodedColumn",
 );
 __PACKAGE__->table("contacts");
 __PACKAGE__->add_columns(
@@ -77,8 +77,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:53shN+K8QHeiBTDsv2sPvQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:f7XjQj4iABikbR4EZrjL3g
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');

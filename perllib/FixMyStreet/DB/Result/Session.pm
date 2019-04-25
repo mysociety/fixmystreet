@@ -11,7 +11,7 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
   "FixMyStreet::InflateColumn::DateTime",
-  "EncodedColumn",
+  "FixMyStreet::EncodedColumn",
 );
 __PACKAGE__->table("sessions");
 __PACKAGE__->add_columns(
@@ -25,8 +25,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Pywdv4Jx/uvQX6zF0UrFBA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HoYrCwULpxJVJ1m9ASMk3A
 
 use Storable;
 use MIME::Base64;

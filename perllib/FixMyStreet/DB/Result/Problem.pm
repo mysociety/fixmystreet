@@ -11,7 +11,7 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
   "FixMyStreet::InflateColumn::DateTime",
-  "EncodedColumn",
+  "FixMyStreet::EncodedColumn",
 );
 __PACKAGE__->table("problem");
 __PACKAGE__->add_columns(
@@ -170,8 +170,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bo68n1AwhO21D0hRY9Yktw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hUXle+TtlkDkxkBrVa/u+g
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(

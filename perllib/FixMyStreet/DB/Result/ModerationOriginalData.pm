@@ -11,7 +11,7 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
   "FixMyStreet::InflateColumn::DateTime",
-  "EncodedColumn",
+  "FixMyStreet::EncodedColumn",
 );
 __PACKAGE__->table("moderation_original_data");
 __PACKAGE__->add_columns(
@@ -70,8 +70,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jOD21ppyp9e1e/pVa/RB9g
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FLKiZELcfBcc9VwHU2MZYQ
 
 use Moo;
 use Text::Diff;

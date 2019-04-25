@@ -11,7 +11,7 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
   "FixMyStreet::InflateColumn::DateTime",
-  "EncodedColumn",
+  "FixMyStreet::EncodedColumn",
 );
 __PACKAGE__->table("users");
 __PACKAGE__->add_columns(
@@ -123,8 +123,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5AiItinC1TPwJyxQDa7rsg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BCCqv3JCec8psuRk/SdCJQ
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.

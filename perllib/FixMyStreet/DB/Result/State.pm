@@ -11,7 +11,7 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
   "FixMyStreet::InflateColumn::DateTime",
-  "EncodedColumn",
+  "FixMyStreet::EncodedColumn",
 );
 __PACKAGE__->table("state");
 __PACKAGE__->add_columns(
@@ -34,8 +34,8 @@ __PACKAGE__->add_unique_constraint("state_label_key", ["label"]);
 __PACKAGE__->add_unique_constraint("state_name_key", ["name"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:03:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vG7A4UVYLsXLnhMZ0roV5Q
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:f/QeR3FYL/4wIGRu3c/C/A
 
 use Moo;
 use namespace::clean;
