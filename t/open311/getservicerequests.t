@@ -76,13 +76,9 @@ my $o = Open311->new(
 );
 
 my $p1_date = $dtf->parse_datetime('2010-04-14T06:37:38-08:00')
-                ->set_time_zone(
-                    FixMyStreet->time_zone || FixMyStreet->local_time_zone
-                );
+                ->set_time_zone(FixMyStreet->local_time_zone);
 my $p2_date = $dtf->parse_datetime('2010-04-15T06:37:38-08:00')
-                ->set_time_zone(
-                    FixMyStreet->time_zone || FixMyStreet->local_time_zone
-                );
+                ->set_time_zone(FixMyStreet->local_time_zone);
 my $start_date = $p1_date->clone;
 $start_date->add( hours => -2);
 my $end_date = $p2_date->clone;
@@ -96,6 +92,7 @@ subtest 'basic parsing checks' => sub {
         end_date => $end_date
     );
     FixMyStreet::override_config {
+        TIME_ZONE => 'Asia/Tokyo',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $update->create_problems( $o, $body );

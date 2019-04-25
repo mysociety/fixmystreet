@@ -109,9 +109,7 @@ sub create_problems {
         my $updated_time = eval {
             DateTime::Format::W3CDTF->parse_datetime(
                 $request->{updated_datetime} || ""
-            )->set_time_zone(
-                FixMyStreet->time_zone || FixMyStreet->local_time_zone
-            );
+            )->set_time_zone(FixMyStreet->local_time_zone);
         };
         if ($@) {
             warn "Not creating problem $request_id for @{[$body->name]}, bad update time"
@@ -125,9 +123,7 @@ sub create_problems {
         my $created_time = eval {
             DateTime::Format::W3CDTF->parse_datetime(
                 $request->{requested_datetime} || ""
-            )->set_time_zone(
-                FixMyStreet->time_zone || FixMyStreet->local_time_zone
-            );
+            )->set_time_zone(FixMyStreet->local_time_zone);
         };
         $created_time = $updated_time if $@;
 

@@ -749,7 +749,7 @@ FixMyStreet::override_config {
         # set the timezone on this so the date comparison below doesn't fail due to mismatched
         # timezones
         my $now = DateTime->now(
-            time_zone =>  FixMyStreet->time_zone || FixMyStreet->local_time_zone
+            time_zone => FixMyStreet->local_time_zone
         )->subtract(days => 1);
         $mech->submit_form(button => 'save', form_id => 'report_inspect_form',
             fields => { include_update => 1, public_update => 'An update', saved_at => $now->epoch });
