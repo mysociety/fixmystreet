@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: 2019-02-21 12:33+0100\n"
+"PO-Revision-Date: 2019-04-25 10:44+0200\n"
 "Last-Translator: Joe Siltberg <joe@fixamingata.se>, 2019\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
 "Language: sv_SE\n"
@@ -4182,7 +4182,7 @@ msgstr "Problemet har markerats som skickat."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:488
 msgid "That problem will now be resent."
-msgstr "Rapportern kommer nu att skickas om."
+msgstr "Rapporten kommer nu att skickas om."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:161
 msgid "That report cannot be viewed on %s."
@@ -4532,7 +4532,7 @@ msgstr "Det här problemet är markerat som löst"
 
 #: perllib/FixMyStreet/Script/Alerts.pm:121
 msgid "This report is currently marked as open."
-msgstr "Den här rapportern är öppen"
+msgstr "Den här rapporten är öppen"
 
 #: templates/web/base/report/display.html:58
 msgid "This report is now closed to updates."
@@ -4983,7 +4983,7 @@ msgstr "Det här problemet kan höra till %s. Dessvärre har vi ingen kontaktinf
 
 #: templates/web/base/index-steps.html:11
 msgid "We send it to the council on your behalf"
-msgstr "Vi skickar rapportern till berörd kommun"
+msgstr "Vi skickar rapporten till berörd kommun"
 
 #: templates/web/base/alert/choose.html:13
 #: templates/web/base/around/_error_multiple.html:17
