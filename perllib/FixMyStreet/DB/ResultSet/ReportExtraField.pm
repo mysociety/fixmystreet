@@ -1,4 +1,4 @@
-package FixMyStreet::DB::ResultSet::ReportExtraFields;
+package FixMyStreet::DB::ResultSet::ReportExtraField;
 use base 'DBIx::Class::ResultSet';
 
 use strict;

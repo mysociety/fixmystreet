@@ -9,7 +9,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my @extras = $c->model('DB::ReportExtraFields')->search(
+    my @extras = $c->model('DB::ReportExtraField')->search(
         undef,
         {
             order_by => 'name'
@@ -24,9 +24,9 @@ sub edit : Path : Args(1) {
 
     my $extra;
     if ( $extra_id eq 'new' ) {
-        $extra = $c->model('DB::ReportExtraFields')->new({});
+        $extra = $c->model('DB::ReportExtraField')->new({});
     } else {
-        $extra = $c->model('DB::ReportExtraFields')->find( $extra_id )
+        $extra = $c->model('DB::ReportExtraField')->find( $extra_id )
             or $c->detach( '/page_error_404_not_found' );
     }
 
