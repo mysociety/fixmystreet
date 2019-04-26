@@ -44,5 +44,35 @@ fixmystreet.assets.add(defaults, {
     })
 });
 
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Bollards"
+        }
+    },
+    asset_type: 'spot',
+    asset_id_field: 'Unit_ID',
+    attributes: {
+        UnitID: 'Unit_ID'
+    },
+    asset_category: ["Traffic bollard"],
+    asset_item: 'bollard'
+});
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Lighting"
+        }
+    },
+    asset_type: 'spot',
+    asset_id_field: 'Unit_ID',
+    attributes: {
+        UnitID: 'Unit_ID'
+    },
+    asset_category: ["Lamp post", "Light in park or open space", "Underpass light", "Light in multi-storey car park", "Light in outside car park"],
+    asset_item: 'street light'
+});
+
 })();
 
