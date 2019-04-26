@@ -497,7 +497,7 @@ sub user_hide_everywhere : Private {
     my ( $self, $c, $user ) = @_;
     my $problems = $user->problems->search({ state => { '!=' => 'hidden' } });
     while (my $problem = $problems->next) {
-        $problem->get_photoset->delete_cached;
+        $problem->get_photoset->delete_cached(plus_updates => 1);
         $problem->update({ state => 'hidden' });
     }
     my $updates = $user->comments->search({ state => { '!=' => 'hidden' } });

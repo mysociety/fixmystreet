@@ -536,7 +536,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         if ($problem->state eq 'hidden' || $problem->non_public) {
-            $problem->get_photoset->delete_cached;
+            $problem->get_photoset->delete_cached(plus_updates => 1);
         }
 
         if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {

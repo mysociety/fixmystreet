@@ -214,7 +214,7 @@ sub report_moderate_hide : Private {
     if ($c->get_param('problem_hide')) {
 
         $problem->update({ state => 'hidden' });
-        $problem->get_photoset->delete_cached;
+        $problem->get_photoset->delete_cached(plus_updates => 1);
 
         $c->res->redirect( '/' ); # Go directly to front-page
         $c->detach( 'report_moderate_audit', ['hide'] ); # break chain here.
