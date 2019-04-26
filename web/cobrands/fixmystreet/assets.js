@@ -512,7 +512,9 @@ fixmystreet.assets = {
         return selected_feature;
     },
 
-    add: function(options) {
+    add: function(default_options, options) {
+        options = $.extend(true, {}, default_options, options);
+
         var asset_fault_layer = null;
 
         // An interactive layer for selecting an asset (e.g. street light)

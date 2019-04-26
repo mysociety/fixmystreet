@@ -29,7 +29,7 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Grit_Bins"
@@ -37,7 +37,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: ["Salt bin damaged", "Salt bin refill"],
     asset_item: 'grit bin'
-}));
+});
 
 var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data').getAttribute('data-pin_prefix');
 
@@ -120,7 +120,7 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     }
 });
 
-fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+fixmystreet.assets.add(labeled_defaults, {
     http_options: {
         params: {
             TYPENAME: "StreetLights_Union"
@@ -132,9 +132,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
         'Street light intermittent',
         'Street light not working' ],
     asset_item: 'street light'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+fixmystreet.assets.add(labeled_defaults, {
     http_options: {
         params: {
             TYPENAME: "IlluminatedBollards"
@@ -142,9 +142,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
     },
     asset_category: ["Bollard light not working"],
     asset_item: 'bollard'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+fixmystreet.assets.add(labeled_defaults, {
     http_options: {
         params: {
             TYPENAME: "Bollards"
@@ -152,9 +152,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
     },
     asset_category: ["Bollards or railings"],
     asset_item: 'bollard'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+fixmystreet.assets.add(labeled_defaults, {
     stylemap: streetlight_stylemap,
     http_options: {
         params: {
@@ -165,9 +165,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
           'Belisha Beacon broken',
         ],
     asset_item: 'belisha beacon'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+fixmystreet.assets.add(labeled_defaults, {
     stylemap: streetlight_stylemap,
     http_options: {
         params: {
@@ -178,9 +178,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
           'Belisha Beacon broken',
         ],
     asset_item: 'belisha beacon'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+fixmystreet.assets.add(labeled_defaults, {
     stylemap: streetlight_stylemap_alt,
     http_options: {
         params: {
@@ -193,9 +193,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
           'Traffic lights & crossings problems with timings',
         ],
     asset_item: 'crossing'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
+fixmystreet.assets.add(labeled_defaults, {
     http_options: {
         params: {
             TYPENAME: "Signs_Union"
@@ -206,9 +206,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
           'Sign problem',
         ],
     asset_item: 'sign'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Gullies"
@@ -218,7 +218,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         'Blocked drain'
         ],
     asset_item: 'drain'
-}));
+});
 
 // The "whole street asset" layer indicates who is responsible for maintaining
 // a road via the 'feature_ty' attribute on features.
@@ -298,7 +298,7 @@ $(fixmystreet).on('report_new:highways_change', function() {
 });
 
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Whole_Street"
@@ -357,7 +357,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     filter_key: 'feature_ty',
     filter_value: types_to_show,
-}));
+});
 
 // As with the road found/not_found above, we want to change the destination
 // depending upon the answer to the extra question shown when on a road
@@ -371,7 +371,7 @@ $("#problem_form").on("change", "#form_road-placement", function() {
     }
 });
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "WinterRoutes"
@@ -403,7 +403,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             $("#category_meta .js-gritting-notice").hide();
         }
     }
-}));
+});
 
 fixmystreet.message_controller.register_category({
     body: defaults.body,

@@ -31,7 +31,7 @@ var highways_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Highways"
@@ -72,7 +72,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             $('#highways').remove();
         }
     }
-}));
+});
 
 function add_highways_warning(road_name) {
   var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>Highways England</strong>. ' +

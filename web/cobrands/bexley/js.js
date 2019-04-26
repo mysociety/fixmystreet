@@ -23,7 +23,7 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Streets",
@@ -42,9 +42,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             stroke: false
         })
     })
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Bollards"
@@ -57,9 +57,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: ["Damaged sign, bollard etc."],
     asset_item: 'bollard'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Lighting"
@@ -72,7 +72,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: ["Lamp post", "Light in park or open space", "Zebra crossing light", "Traffic sign light", "Underpass light", "Keep left bollard", "Light in multi-storey car park", "Light in outside car park"],
     asset_item: 'street light'
-}));
+});
 
 })();
 

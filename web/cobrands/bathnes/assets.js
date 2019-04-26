@@ -33,7 +33,7 @@ fixmystreet.maps.banes_defaults = {
 };
 
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "Gritbins"
@@ -44,9 +44,9 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     attributes: {
         asset_details: 'feature_location'
     }
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "ParksOpenSpacesAssets"
@@ -91,7 +91,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
         'Seats'
     ],
     name: "Parks and Grounds"
-}));
+});
 
 
 
@@ -190,7 +190,7 @@ var lighting_stylemap = new OpenLayers.StyleMap({
 });
 
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "StreetLighting"
@@ -211,7 +211,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
                    "description: " + a.unitdescription;
         }
     }
-}));
+});
 
 
 var highways_stylemap = new OpenLayers.StyleMap({
@@ -221,7 +221,7 @@ var highways_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "AdoptedHighways"
@@ -236,7 +236,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     },
     name: "Adopted Highways",
     attribution: " © Crown Copyright. All rights reserved. 1000233344"
-}));
+});
 
 
 })();

@@ -30,26 +30,26 @@ var options = $.extend({}, common_options, {
     }
 });
 
-fixmystreet.assets.add($.extend({}, options, {
+fixmystreet.assets.add(options, {
     wfs_feature: "COD_ASSETS_AREA",
     asset_type: 'area',
     asset_category: "Bridges/Subways",
     asset_item: 'bridge/subway'
-}));
+});
 
-fixmystreet.assets.add($.extend({}, options, {
+fixmystreet.assets.add(options, {
     asset_category: "Gully/Drainage",
     asset_item: 'gully',
     filter_key: 'COD_ASSET_TYPE',
     filter_value: 'GULLY'
-}));
+});
 
-fixmystreet.assets.add($.extend({}, options, {
+fixmystreet.assets.add(options, {
     asset_category: "Grit Bins",
     asset_item: 'grit bin',
     filter_key: 'COD_ASSET_TYPE',
     filter_value: 'GRITBIN'
-}));
+});
 
 
 var lighting_options = $.extend({}, common_options, {
@@ -75,7 +75,7 @@ var lighting_options = $.extend({}, common_options, {
     filter_key: 'Unit_type_description'
 });
 
-fixmystreet.assets.add($.extend({}, lighting_options, {
+fixmystreet.assets.add(lighting_options, {
     asset_category: "Street Light",
     asset_item: 'street light',
     filter_value: [
@@ -88,32 +88,32 @@ fixmystreet.assets.add($.extend({}, lighting_options, {
         'SL: Refuge Column',
         'SL: Subway'
     ]
-}));
+});
 
-fixmystreet.assets.add($.extend({}, lighting_options, {
+fixmystreet.assets.add(lighting_options, {
     asset_category: "Zebra Crossing Light",
     asset_item: 'light',
     filter_value: 'SL: Zebra'
-}));
+});
 
-fixmystreet.assets.add($.extend({}, lighting_options, {
+fixmystreet.assets.add(lighting_options, {
     asset_category: "Iluminated Bollard",
     asset_item: 'bollard',
     filter_value: 'SL: Bollard'
-}));
+});
 
 // NB there's a typo in BCC's ‘Iluminated Bollard’ category so this repeats
 // the above (without the typo) just in case they fix it.
-fixmystreet.assets.add($.extend({}, lighting_options, {
+fixmystreet.assets.add(lighting_options, {
     asset_category: "Illuminated Bollard",
     asset_item: 'bollard',
     filter_value: 'SL: Bollard'
-}));
+});
 
-fixmystreet.assets.add($.extend({}, lighting_options, {
+fixmystreet.assets.add(lighting_options, {
     asset_category: "Illuminated Sign",
     asset_item: 'sign',
     filter_value: 'SL: Sign'
-}));
+});
 
 })();
