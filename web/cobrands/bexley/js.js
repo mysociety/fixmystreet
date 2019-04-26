@@ -44,5 +44,35 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     })
 }));
 
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Bollards"
+        }
+    },
+    asset_type: 'spot',
+    asset_id_field: 'Unit_ID',
+    attributes: {
+        UnitID: 'Unit_ID'
+    },
+    asset_category: ["Damaged sign, bollard etc."],
+    asset_item: 'bollard'
+}));
+
+fixmystreet.assets.add($.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Lighting"
+        }
+    },
+    asset_type: 'spot',
+    asset_id_field: 'Unit_ID',
+    attributes: {
+        UnitID: 'Unit_ID'
+    },
+    asset_category: ["Lamp post", "Light in park or open space", "Zebra crossing light", "Traffic sign light", "Underpass light", "Keep left bollard", "Light in multi-storey car park", "Light in outside car park"],
+    asset_item: 'street light'
+}));
+
 })();
 
