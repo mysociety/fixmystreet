@@ -37,7 +37,7 @@ OpenLayers.Layer.VectorAssetBromley = OpenLayers.Class(OpenLayers.Layer.VectorAs
     CLASS_NAME: 'OpenLayers.Layer.VectorAssetBromley'
 });
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     class: OpenLayers.Layer.VectorAssetBromley,
     http_options: {
         params: {
@@ -51,9 +51,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_category: ["Street Lighting and Road Signs"],
     subcategories: [ 'SL_LAMP', 'SL_NOT_WORK', 'SL_ON_DAY', 'SL_BLOCK_VEG' ],
     asset_item: 'street light'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     class: OpenLayers.Layer.VectorAssetBromley,
     http_options: {
         params: {
@@ -64,9 +64,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     subcategories: ['PG_OFLOW_DOG', 'SC_LIT_BIN'],
     asset_item: 'park bin',
     asset_item_message: 'For our parks, pick a <b class="asset-spot">bin</b> from the map &raquo;'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Street_Trees"
@@ -74,7 +74,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: ["Public Trees"],
     asset_item: 'tree'
-}));
+});
 
 var highways_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -100,7 +100,7 @@ $(function(){
     });
 });
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "TFL_Red_Route"
@@ -129,7 +129,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             fixmystreet.body_overrides.remove_only_send();
         }
     }
-}));
+});
 
 var prow_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -141,7 +141,7 @@ var prow_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "PROW"
@@ -160,6 +160,6 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             $('#form_prow_reference').val('');
         }
     }
-}));
+});
 
 })();
