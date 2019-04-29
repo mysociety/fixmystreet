@@ -109,5 +109,5 @@ fi
 
 # Generate po and mo files (these invocations taken from Kagee's script):
 echo "Creating locale .mo files"
-commonlib/bin/gettext-makemo FixMyStreet
+commonlib/bin/gettext-makemo FixMyStreet 2>&1
 echo $DONE_MSG

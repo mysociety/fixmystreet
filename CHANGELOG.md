@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+
+* v2.6 (3rd May 2019)
     - New features:
         - (Optional) auto-suggestion of similar nearby problems,
           while reporting, to discourage duplicate reports. #2386

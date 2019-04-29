@@ -35,11 +35,14 @@ members will see reports within these categories by default.
 
 <span class="admin-task__permissions">Permissions required: none</span>
 
-If required, you can also use the controls to the right of the screen to zoom in or out, or pan across
-the map. As you’ll see, the list of reports always reflects the area you are viewing on the map, so
-this is another way of refining your view.
+If required, you can also use the controls to the right of the screen to zoom
+in or out, or pan across the map. As you’ll see, the list of reports and URL
+(web address) always reflect the area you are viewing on the map, so this is
+another way of refining your view.
 
-Once you've found a satisfactory view, and if you are likely to want to revisit it, click on the 'Permalink' button at the bottom of the screen. This will alter the URL displayed in your browser, and allow you it as a bookmark which you may revisit, so you don't have to define the location again in the future.
+Once you've found a satisfactory view, and if you are likely to want to revisit
+it, you can bookmark or otherwise take a copy of the URL displayed in your
+browser, so you don't have to define the location again in the future.
 
 </div>
 

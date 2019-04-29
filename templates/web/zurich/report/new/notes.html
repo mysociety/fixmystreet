@@ -1,6 +1,6 @@
 <p>[% loc("Please note:") %]</p>
 
 <ul class="plain-list">
-    <li>[% loc("We will only use your personal information in accordance with our <a href=\"/privacy\">privacy policy.</a>") %]</li>
+    <li>[% tprintf( loc("We will only use your personal information in accordance with our <a href=\"%s\">privacy policy.</a>"), c.cobrand.privacy_policy_url ) %]</li>
     <li>[% loc("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website.") %]</li>
 </ul>
