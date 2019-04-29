@@ -290,7 +290,9 @@ sub council_rss_alert_options {
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
             text     => sprintf( _('Reports sent to %s, within %s ward'), $district->{name}, $d_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
-        }, {
+        }
+            if $body_dis;
+        push @reported_to_options, {
             type      => 'council',
             id        => sprintf( 'council:%s:%s', $body_cty->id, $county->{id_name} ),
             text      => sprintf( _('Reports sent to %s'), $county->{name} ),
@@ -302,7 +304,8 @@ sub council_rss_alert_options {
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
             text     => sprintf( _('Reports sent to %s, within %s ward'), $county->{name}, $c_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
-        };
+        }
+            if $body_cty;
 
     } else {
         throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_areas));
