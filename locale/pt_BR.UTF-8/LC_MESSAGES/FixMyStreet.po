@@ -5,7 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2018
-# Kennet Emerson <kennet.emerson@gmail.com>, 2018
+# Kennet Emerson <kennet.emerson@gmail.com>, 2019
 #
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
 "PO-Revision-Date: 2018-12-21 13:37+0000\n"
-"Last-Translator: Kennet Emerson <kennet.emerson@gmail.com>, 2018\n"
+"Last-Translator: Kennet Emerson <kennet.emerson@gmail.com>, 2019\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/mysociety/teams/12067/pt_BR/)\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -343,7 +343,7 @@ msgstr "Adicionar / editar modelos de resposta"
 
 #: templates/web/base/my/my.html:115
 msgid "Added %s"
-msgstr ""
+msgstr "%s Adicionado"
 
 #: templates/web/base/report/_main.html:152
 msgid "Adding this report to your shortlist will remove it from %s’s shortlist."
@@ -533,7 +533,7 @@ msgstr "Automatizado"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:723
 msgid "Automatically populate report subject/detail"
-msgstr ""
+msgstr "Preencher automaticamente o detalhe/assunto da denúncia"
 
 #: templates/web/base/admin/report-category.html:8
 msgid "Available categories"
@@ -837,7 +837,7 @@ msgstr "Contactar o time"
 
 #: templates/web/base/report/form/user.html:8
 msgid "Continue"
-msgstr ""
+msgstr "Continuar"
 
 #: templates/web/base/admin/open311-form-fields.html:151
 msgid "Convert location from Easting/Northing"
@@ -940,7 +940,7 @@ msgstr "Senha atual:"
 
 #: templates/web/base/auth/generate_token.html:46
 msgid "Current token:"
-msgstr ""
+msgstr "Código de acesso atual:"
 
 #: templates/web/base/dashboard/index.html:92
 msgid "Currently grouped by %s"
@@ -1459,11 +1459,11 @@ msgstr ""
 #: templates/web/base/admin/responsepriorities/edit.html:53
 #: templates/web/zurich/admin/body-form.html:35
 msgid "Flag as deleted"
-msgstr ""
+msgstr "Marcar como deletado"
 
 #: templates/web/base/admin/report_blocks.html:23
 msgid "Flag user"
-msgstr ""
+msgstr "Marcar usuário"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:648
 #: templates/web/base/admin/users.html:20
@@ -1485,7 +1485,7 @@ msgstr ""
 #: templates/web/base/admin/report_edit.html:150
 #: templates/web/base/admin/user-form.html:119
 msgid "Flagged:"
-msgstr ""
+msgstr "Marcado:"
 
 #: templates/web/base/reports/_ward-list.html:6
 msgid "Follow a ward link to view only reports within that ward."
@@ -1756,7 +1756,7 @@ msgstr "Se você está nos contatando sobre uma denúncia ou atualização espec
 
 #: templates/web/base/auth/generate_token.html:61
 msgid "If you generate a new token the existing token will no longer work."
-msgstr ""
+msgstr "Se você gerou um novo código de acesso, o código antigo não funcionará mais."
 
 #: templates/web/base/questionnaire/completed.html:8
 msgid "If you get some more information about the status of your problem, please come back to the site and leave an update."
@@ -1918,7 +1918,7 @@ msgstr "Últimos 7 dias"
 #: templates/web/base/admin/body.html:74
 #: templates/web/zurich/admin/body.html:16
 msgid "Last editor"
-msgstr ""
+msgstr "Último editor"
 
 #: templates/web/base/questionnaire/index.html:53
 msgid "Last update"
@@ -2502,7 +2502,7 @@ msgstr "Opções"
 
 #: templates/web/base/report/new/fill_in_details_form.html:8
 msgid "Or <a href=\"/\">search for a different location</a>"
-msgstr ""
+msgstr "Ou <a href=\"/\">buscar por uma localização diferente</a>"
 
 #: templates/web/base/report/form/private_details.html:6
 msgid "Or sign in with password to prefill this information."
@@ -2549,7 +2549,7 @@ msgstr "Dono"
 #: templates/web/base/errors/page_error_404_not_found.html:1
 #: templates/web/base/errors/page_error_404_not_found.html:4
 msgid "Page Not Found"
-msgstr ""
+msgstr "Página Não Encontrada"
 
 #: templates/web/base/admin/body-form.html:39
 #: templates/web/zurich/admin/body-form.html:14
@@ -2674,7 +2674,7 @@ msgstr ""
 #: templates/web/base/auth/change_password.html:26
 #: templates/web/base/auth/change_password.html:31
 msgid "Please check the passwords and try again"
-msgstr ""
+msgstr "Por favor, verifique a senha e tente novamente"
 
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:9
@@ -2820,7 +2820,7 @@ msgstr "Por favor, especifique seu segundo nome"
 
 #: templates/web/base/js/translation_strings.html:34
 msgid "Please enter your title"
-msgstr ""
+msgstr "Por favor, digite seu título"
 
 #: templates/web/base/auth/sign_out.html:5
 #: templates/web/zurich/auth/sign_out.html:5
@@ -2839,7 +2839,7 @@ msgstr ""
 
 #: templates/web/base/auth/2faform.html:9
 msgid "Please generate a two-factor code and enter it below:"
-msgstr ""
+msgstr "Por favor, gere um código de duas etapas e digite-o abaixo:"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:253
 msgid "Please indicate whether you'd like to receive another questionnaire"
@@ -2848,7 +2848,7 @@ msgstr "Por favor, indique se você gostaria de receber outro questionário"
 #: perllib/FixMyStreet/App/Controller/Auth.pm:410
 #: templates/web/base/js/translation_strings.html:29
 msgid "Please make sure your password is at least %d characters long"
-msgstr ""
+msgstr "Por favor,  certifique-se que sua senha tem pelo menos %d caracteres"
 
 #: templates/web/base/report/updates-sidebar-notes.html:2
 msgid "Please note that updates are not sent to the council."
@@ -2974,7 +2974,7 @@ msgstr "Privacidade"
 #: templates/web/base/about/privacy.html:1
 #: templates/web/base/about/privacy.html:2
 msgid "Privacy and cookies"
-msgstr ""
+msgstr "Cookies e Privacidade"
 
 #: templates/web/base/admin/body.html:88
 #: templates/web/base/admin/contact-form.html:75
@@ -3238,7 +3238,7 @@ msgstr "Remover foto (não pode ser desfeito!)"
 
 #: templates/web/base/auth/generate_token.html:52
 msgid "Replace token"
-msgstr ""
+msgstr "Substituir código de acesso"
 
 #: templates/web/zurich/admin/report_edit.html:240
 msgid "Reply to user:"
@@ -4306,7 +4306,7 @@ msgstr "Houve um problema ao tentar mostrar esta página. Por favor tente novame
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:364
 msgid "There was a problem with your email/password combination. Please try again."
-msgstr ""
+msgstr "Houve um problema com a combinação do seu email/senha. Por favor tente novamente."
 
 #: templates/web/base/auth/_username_error.html:0
 #: templates/web/base/auth/_username_error.html:14
@@ -4510,7 +4510,7 @@ msgstr ""
 
 #: templates/web/base/auth/generate_token.html:11
 msgid "Token:"
-msgstr ""
+msgstr "Código de acesso:"
 
 #: templates/web/base/reports/index.html:126
 msgid "Top 5 most used categories"
@@ -4660,7 +4660,7 @@ msgstr ""
 
 #: db/alert_types.pl:7
 msgid "Update by {{name}}"
-msgstr ""
+msgstr "Atualizado por {{name}}"
 
 #: templates/web/base/admin/update_edit.html:46
 #: templates/web/zurich/admin/update_edit.html:25
@@ -4727,7 +4727,7 @@ msgstr ""
 
 #: templates/web/base/admin/user_import.html:64
 msgid "Usage notes"
-msgstr ""
+msgstr "Notas de uso"
 
 #: templates/web/base/admin/contact-form.html:43
 #: templates/web/base/admin/contact-form.html:44
@@ -4792,7 +4792,7 @@ msgstr ""
 #: templates/web/base/admin/user-form.html:34
 #: templates/web/base/admin/users.html:32
 msgid "User in abuse table"
-msgstr ""
+msgstr "Usuário na tabela de abuso"
 
 #: templates/web/base/admin/users.html:5
 msgid "User search finds matches in users' names and email addresses."
@@ -4882,11 +4882,11 @@ msgstr "Encontramos mais de uma correspondência para esse local."
 
 #: templates/web/base/around/lookup_by_ref.html:6
 msgid "We found more than one match for that problem reference:"
-msgstr ""
+msgstr "Encontramos mais de uma correspondência para o problema em questão:"
 
 #: templates/web/base/auth/smsform.html:20
 msgid "We have sent a confirmation code to your phone. Please enter it below:"
-msgstr ""
+msgstr "Enviamos um código de confirmação para seu telefone. Por favor digite-o abaixo:"
 
 #: templates/web/base/auth/general.html:13
 #: templates/web/base/report/display.html:35
@@ -5229,7 +5229,7 @@ msgstr "Seu token foi gerado"
 
 #: templates/web/base/report/update/form_user.html:6
 msgid "Your update"
-msgstr ""
+msgstr "Sua atualização"
 
 #: templates/web/base/js/translation_strings.html:87
 msgid "Your update has been saved offline for submission when back online."
@@ -5313,7 +5313,7 @@ msgstr "de %s usuários diferentes"
 #: templates/web/base/report/_item.html:67
 #: templates/web/zurich/report/_item.html:16
 msgid "last updated %s"
-msgstr ""
+msgstr "última atualização %s"
 
 #: perllib/Utils.pm:227
 msgid "less than a minute"
@@ -5336,11 +5336,11 @@ msgstr ""
 
 #: templates/web/base/auth/general.html:6
 msgid "or <a href=\"%s\">create an account</a>"
-msgstr ""
+msgstr "ou <a href=\"%s\">criar uma conta</a>"
 
 #: templates/web/base/auth/create.html:13
 msgid "or <a href=\"%s\">sign in</a>"
-msgstr ""
+msgstr "ou <a href=\"%s\">entrar</a>"
 
 #: templates/web/base/alert/index.html:40
 #: templates/web/base/around/postcode_form.html:27

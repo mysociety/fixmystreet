@@ -5,6 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2018
+# Jon Harald Søby, 2019
 #
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
 "PO-Revision-Date: 2018-12-21 13:37+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
+"Last-Translator: Jon Harald Søby, 2019\n"
 "Language-Team: Norwegian Bokmål (Norway) (https://www.transifex.com/mysociety/teams/12067/nb_NO/)\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
@@ -50,7 +51,7 @@ msgstr "%d til %d av %d"
 
 #: templates/web/base/admin/user_import.html:42
 msgid "%d users already existed"
-msgstr ""
+msgstr "%d brukere fantes fra før"
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
@@ -169,7 +170,7 @@ msgstr "(valgfritt)"
 
 #: templates/web/base/report/_item.html:73
 msgid "(sent to all)"
-msgstr ""
+msgstr "(sendt til alle)"
 
 #: templates/web/base/report/_item.html:74
 msgid "(sent to both)"
@@ -188,7 +189,7 @@ msgstr "-- Velg en kategori --"
 
 #: templates/web/base/report/new/category_extras_fields.html:18
 msgid "-- Pick an option --"
-msgstr ""
+msgstr "-- Velg --"
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
@@ -250,11 +251,11 @@ msgstr "<strong>Ja</strong>, jeg har et passord"
 
 #: templates/web/base/report/new/form_user.html:8
 msgid "About the problem"
-msgstr ""
+msgstr "Om problemet"
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Activate two-factor authentication"
-msgstr ""
+msgstr "Aktiver totrinns pålogging"
 
 #: templates/web/base/my/my.html:39 templates/web/base/my/my.html:50
 msgid "Add"
@@ -302,7 +303,7 @@ msgstr "Legg til ny kategori"
 
 #: templates/web/base/admin/extra-metadata-form.html:82
 msgid "Add option"
-msgstr ""
+msgstr "Legg til valg"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:7
@@ -345,7 +346,7 @@ msgstr "Ved å legge rapporten i hurtiglisten din vil fjerne den fra hurtigliste
 
 #: templates/web/base/main_nav_items.html:55
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #: templates/web/base/auth/change_password.html:51
 msgid "Again:"
@@ -366,7 +367,7 @@ msgstr "Send meg varsel ved fremtidige oppdateringer"
 
 #: templates/web/base/admin/report_edit.html:91
 msgid "Alerts:"
-msgstr ""
+msgstr "Varsler:"
 
 #: templates/web/base/dashboard/index.html:30
 #: templates/web/base/dashboard/index.html:40
@@ -417,11 +418,11 @@ msgstr ""
 
 #: templates/web/base/my/anonymize.html:20
 msgid "Alternatively, we can hide your name on <strong>all of your reports and updates</strong> across the site:"
-msgstr ""
+msgstr "Vi kan alternativt skjule navnet ditt fra <strong>alle dine rapporteringer og oppdateringer</strong> på nettstedet:"
 
 #: templates/web/base/admin/open311-form-fields.html:165
 msgid "Always fetch all problems"
-msgstr ""
+msgstr "Hent alltid alle problemer"
 
 #: templates/web/base/questionnaire/index.html:31
 msgid "An update marked this problem as fixed."
@@ -523,7 +524,7 @@ msgstr "Auto-svar:"
 
 #: templates/web/base/admin/extra-metadata-form.html:14
 msgid "Automated"
-msgstr ""
+msgstr "Automatisk"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:723
 msgid "Automatically populate report subject/detail"
@@ -535,7 +536,7 @@ msgstr "Tilgjengelige kategorier"
 
 #: templates/web/base/reports/index.html:112
 msgid "Average time between a problem being reported and being fixed, last 100 reports."
-msgstr ""
+msgstr "Gjennomsnittlig tid fra et problem rapporteres til det er fikset, de siste 100 rapporter."
 
 #: templates/web/base/report/new/after_photo.html:7
 msgid "Avoid personal information and vehicle number plates"
@@ -582,11 +583,11 @@ msgstr "Administrasjon:"
 
 #: templates/web/base/admin/user_import.html:12
 msgid "CSV File"
-msgstr ""
+msgstr "CSV-fil"
 
 #: templates/web/base/admin/extra-metadata-form.html:46
 msgid "Can be used to display extra text to the user alongside the field. The default template does not show this (<code>meta.datatype_description</code>), you must add it in <code>category_extras_fields.html</code>"
-msgstr ""
+msgstr "Kan brukes for å vise ekstra tekst til brukeren sammen med feltet. Standardmalen viser ikke dette (<code>meta.datatype_description</code>), du må legge det til i <code>category_extras_fields.html</code>"
 
 #: templates/web/base/auth/token.html:27 templates/web/base/email_sent.html:20
 msgid "Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time."
@@ -723,11 +724,11 @@ msgstr "Klikk lenken i bekreftelses-eposten for å logge inn."
 
 #: templates/web/base/auth/token.html:20
 msgid "Click the link in that email to sign in."
-msgstr ""
+msgstr "Klikk på lenka i eposten for å logge inn."
 
 #: templates/web/base/report/new/fill_in_details_form.html:7
 msgid "Click the map or drag the pin to adjust the location"
-msgstr ""
+msgstr "Klikk i kartet eller dra markøren for å tilpasse beliggenheten"
 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:180
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:158
@@ -747,7 +748,7 @@ msgstr "(ikke rapportert til administrasjonen)"
 
 #: templates/web/base/admin/report_edit.html:176
 msgid "Closed to updates"
-msgstr ""
+msgstr "Stengt for oppdateringer"
 
 #: templates/web/base/admin/report_edit.html:38
 msgid "Co-ordinates:"
@@ -777,7 +778,7 @@ msgstr "Kode"
 
 #: templates/web/base/js/translation_strings.html:61
 msgid "Collapse map"
-msgstr ""
+msgstr "Minimer kart"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:650
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:424
@@ -836,7 +837,7 @@ msgstr "Kontakt prosjektgruppen"
 
 #: templates/web/base/report/form/user.html:8
 msgid "Continue"
-msgstr ""
+msgstr "Fortsett"
 
 #: templates/web/base/admin/open311-form-fields.html:151
 msgid "Convert location from Easting/Northing"
@@ -881,7 +882,7 @@ msgstr "Antall"
 
 #: templates/web/base/admin/states/index.html:114
 msgid "Create"
-msgstr ""
+msgstr "Opprett"
 
 #: templates/web/base/email_sent.html:1
 msgid "Create a report"
@@ -889,7 +890,7 @@ msgstr "Lag en rapport"
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:5
 msgid "Create an account"
-msgstr ""
+msgstr "Opprett konto"
 
 #: templates/web/base/admin/contact-form.html:156
 #: templates/web/zurich/admin/contact-form.html:49
@@ -924,7 +925,7 @@ msgstr "Opprettet"
 
 #: templates/web/base/admin/user_import.html:20
 msgid "Created %d new users"
-msgstr ""
+msgstr "Opprettet %d nye brukere"
 
 #: templates/web/base/admin/list_updates.html:39
 #: templates/web/base/admin/report_edit.html:78
@@ -935,11 +936,11 @@ msgstr "Opprettet:"
 
 #: templates/web/base/auth/change_password.html:40
 msgid "Current password:"
-msgstr ""
+msgstr "Gjeldende passord:"
 
 #: templates/web/base/auth/generate_token.html:46
 msgid "Current token:"
-msgstr ""
+msgstr "Gjeldende nøkkel:"
 
 #: templates/web/base/dashboard/index.html:92
 msgid "Currently grouped by %s"
@@ -964,7 +965,7 @@ msgstr "Oversikt"
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Deactivate two-factor authentication"
-msgstr ""
+msgstr "Slå av totrinns pålogging"
 
 #: templates/web/zurich/admin/stats/index.html:56
 msgid "Dealt with by subdivision within 5 working days"
@@ -972,11 +973,11 @@ msgstr "Behandlet av underavdeling innen 5 arbeidsdager"
 
 #: templates/web/base/admin/responsepriorities/list.html:9
 msgid "Default"
-msgstr ""
+msgstr "Standard"
 
 #: templates/web/base/admin/responsepriorities/edit.html:39
 msgid "Default priority"
-msgstr ""
+msgstr "Standard prioritet"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:728
 msgid "Default to creating reports/updates as the council"
@@ -988,7 +989,7 @@ msgstr ""
 
 #: templates/web/base/admin/user-alerts.html:15
 msgid "Delete"
-msgstr ""
+msgstr "Slett"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1197
 #: templates/web/base/admin/template_edit.html:91
@@ -1005,7 +1006,7 @@ msgstr "Slettet"
 #: templates/web/base/report/_main.html:119
 #: templates/web/base/report/update.html:54
 msgid "Describe why you are moderating this"
-msgstr ""
+msgstr "Beskriv hvorfor du moderer dette"
 
 #: templates/web/base/admin/extra-metadata-form.html:42
 #: templates/web/base/admin/responsepriorities/list.html:7
@@ -1021,7 +1022,7 @@ msgstr "Beskrivelse:"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:377
 msgid "Detailed information is limited to %d characters."
-msgstr ""
+msgstr "Detaljert informasjon er begrenset til %d tegn."
 
 #: templates/web/base/admin/user-alerts.html:12
 #: templates/web/base/js/translation_strings.html:42
@@ -1039,7 +1040,7 @@ msgstr "Detaljer:"
 
 #: templates/web/base/dashboard/index.html:104
 msgid "Device and Site"
-msgstr ""
+msgstr "Enhet og side"
 
 #: templates/web/base/admin/body.html:92
 msgid "Devolved"
@@ -1056,16 +1057,16 @@ msgstr "Arbeidshester"
 
 #: templates/web/base/admin/user-alerts.html:14
 msgid "Disable"
-msgstr ""
+msgstr "Slå av"
 
 #: templates/web/base/admin/user-alerts.html:23
 msgid "Disabled:"
-msgstr ""
+msgstr "Slått av:"
 
 #: templates/web/base/report/_main.html:124
 #: templates/web/base/report/update.html:57
 msgid "Discard changes"
-msgstr ""
+msgstr "Forkast endringer"
 
 #: templates/web/base/admin/open311-form-fields.html:107
 msgid "Do not send email alerts on fetched comments to problem creator"
@@ -1090,7 +1091,7 @@ msgstr "Liker ikke skjemaer?"
 
 #: templates/web/base/report/_item.html:27
 msgid "Down one"
-msgstr ""
+msgstr "Én ned"
 
 #: templates/web/base/js/translation_strings.html:69
 msgid "Drag and drop photos here or <u>click to upload</u>"
@@ -1098,11 +1099,11 @@ msgstr "Dra og slipp bilder hit eller <u>klikk for å laste opp</u>"
 
 #: templates/web/base/report/_inspect.html:119
 msgid "Duplicate of"
-msgstr ""
+msgstr "Duplikat av"
 
 #: templates/web/base/report/_inspect.html:129
 msgid "Duplicates"
-msgstr ""
+msgstr "Duplikater"
 
 #: templates/web/base/admin/body.html:116
 msgid ""
@@ -1162,7 +1163,7 @@ msgstr ""
 
 #: templates/web/base/report/update/form_user.html:8
 msgid "Edit your update"
-msgstr ""
+msgstr "Rediger oppdateringen din"
 
 #: templates/web/base/admin/report_edit.html:0
 #: templates/web/base/admin/report_edit.html:15
@@ -1211,7 +1212,7 @@ msgstr "Epostadresse"
 #: templates/web/base/report/form/user_loggedout_by_email.html:42
 #: templates/web/base/report/new/form_user_loggedin.html:60
 msgid "Email address (optional)"
-msgstr ""
+msgstr "Epostadresse (valgfritt)"
 
 #: templates/web/base/tokens/confirm_alert.html:6
 msgid "Email alert created"
@@ -1223,15 +1224,15 @@ msgstr "Epostvarsel slettet"
 
 #: templates/web/base/auth/general.html:99
 msgid "Email me a link or text me a code to sign in"
-msgstr ""
+msgstr "Send meg en lenke eller kode via epost/SMS for å logge inn"
 
 #: templates/web/base/auth/general.html:101
 msgid "Email me a link to sign in"
-msgstr ""
+msgstr "Send meg ei lenke på epost for å logge inn"
 
 #: templates/web/base/admin/user-form.html:25
 msgid "Email verified:"
-msgstr ""
+msgstr "Epost bekreftet:"
 
 #: templates/web/base/admin/report_edit.html:146
 #: templates/web/base/admin/user-form.html:19 templates/web/base/my/my.html:36
@@ -1241,7 +1242,7 @@ msgstr "E-post:"
 
 #: templates/web/base/admin/user-alerts.html:13
 msgid "Enable"
-msgstr ""
+msgstr "Slå på"
 
 #: templates/web/base/admin/open311-form-fields.html:156
 #: templates/web/base/admin/open311-form-fields.html:157
@@ -1297,7 +1298,7 @@ msgstr ""
 
 #: templates/web/base/dashboard/index.html:78
 msgid "End Date"
-msgstr ""
+msgstr "Sluttdato"
 
 #: templates/web/base/admin/open311-form-fields.html:21
 msgid "Endpoint"

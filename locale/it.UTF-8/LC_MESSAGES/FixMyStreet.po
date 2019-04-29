@@ -5,6 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2018
+# Sebastiano Pistore <SebastianoPistore.info@protonmail.ch>, 2019
 #
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
 "PO-Revision-Date: 2018-12-21 13:37+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
+"Last-Translator: Sebastiano Pistore <SebastianoPistore.info@protonmail.ch>, 2019\n"
 "Language-Team: Italian (https://www.transifex.com/mysociety/teams/12067/it/)\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -645,7 +646,7 @@ msgstr "Categoria:"
 #: templates/web/base/my/my.html:41 templates/web/base/my/my.html:44
 #: templates/web/base/my/my.html:52 templates/web/base/my/my.html:57
 msgid "Change"
-msgstr ""
+msgstr "Modifica"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:3
@@ -827,7 +828,7 @@ msgstr "Contatta il team"
 
 #: templates/web/base/report/form/user.html:8
 msgid "Continue"
-msgstr ""
+msgstr "Continua"
 
 #: templates/web/base/admin/open311-form-fields.html:151
 msgid "Convert location from Easting/Northing"
@@ -979,7 +980,7 @@ msgstr ""
 
 #: templates/web/base/admin/user-alerts.html:15
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1197
 #: templates/web/base/admin/template_edit.html:91
@@ -1229,7 +1230,7 @@ msgstr "Email:"
 
 #: templates/web/base/admin/user-alerts.html:13
 msgid "Enable"
-msgstr ""
+msgstr "Attiva"
 
 #: templates/web/base/admin/open311-form-fields.html:156
 #: templates/web/base/admin/open311-form-fields.html:157
@@ -1279,7 +1280,7 @@ msgstr ""
 
 #: templates/web/base/dashboard/index.html:78
 msgid "End Date"
-msgstr ""
+msgstr "Data di fine"
 
 #: templates/web/base/admin/open311-form-fields.html:21
 msgid "Endpoint"

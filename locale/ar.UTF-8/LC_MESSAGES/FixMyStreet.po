@@ -5,6 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2018
+# ButterflyOfFire ButterflyOfFire, 2019
 #
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
 "PO-Revision-Date: 2018-12-21 13:37+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2018\n"
+"Last-Translator: ButterflyOfFire ButterflyOfFire, 2019\n"
 "Language-Team: Arabic (https://www.transifex.com/mysociety/teams/12067/ar/)\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -255,7 +256,7 @@ msgstr "<strong>نعم</strong> لدي كلمة المرور"
 
 #: templates/web/base/report/new/form_user.html:8
 msgid "About the problem"
-msgstr ""
+msgstr "عن المشكلة"
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Activate two-factor authentication"
@@ -263,7 +264,7 @@ msgstr ""
 
 #: templates/web/base/my/my.html:39 templates/web/base/my/my.html:50
 msgid "Add"
-msgstr ""
+msgstr "إضافة"
 
 #: templates/web/base/admin/body-form.html:3
 #: templates/web/base/admin/body-form.html:4
@@ -289,7 +290,7 @@ msgstr "إضافة هيئة"
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:7
 msgid "Add email address"
-msgstr ""
+msgstr "إضافة عنوان بريد إلكتروني"
 
 #: templates/web/base/admin/reportextrafields/index.html:24
 msgid "Add extra fields"
@@ -297,7 +298,7 @@ msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:89
 msgid "Add field"
-msgstr ""
+msgstr "إضافة حقل"
 
 #: templates/web/base/admin/states/index.html:85
 msgid "Add fixed state"
@@ -310,12 +311,12 @@ msgstr "أضف تصنيفاً"
 
 #: templates/web/base/admin/extra-metadata-form.html:82
 msgid "Add option"
-msgstr ""
+msgstr "إضافة خيار"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:7
 msgid "Add phone number"
-msgstr ""
+msgstr "إضافة رقم هاتف"
 
 #: templates/web/base/report/_item.html:10
 #: templates/web/base/report/_item.html:16
@@ -353,7 +354,7 @@ msgstr "اضافة التقرير للقائمة القصيرة خاصتك سي�
 
 #: templates/web/base/main_nav_items.html:55
 msgid "Admin"
-msgstr ""
+msgstr "المدير"
 
 #: templates/web/base/auth/change_password.html:51
 msgid "Again:"
@@ -382,7 +383,7 @@ msgstr ""
 #: templates/web/base/dashboard/index.html:64
 #: templates/web/base/reports/_list-filters.html:4
 msgid "All"
-msgstr ""
+msgstr "كلها"
 
 #: templates/web/zurich/reports/index.html:14
 msgid "All Reports"
@@ -404,7 +405,7 @@ msgstr ""
 
 #: templates/web/base/admin/reportextrafields/edit.html:47
 msgid "All languages"
-msgstr ""
+msgstr "كافة اللغات"
 
 #: templates/web/base/main_nav_items.html:0
 #: templates/web/base/main_nav_items.html:35
@@ -443,7 +444,7 @@ msgstr "مجهول"
 #: templates/web/base/report/new/form_user_loggedin.html:22
 #: templates/web/base/report/update/form_user_loggedin.html:19
 msgid "Anonymous user"
-msgstr ""
+msgstr "مستخدم مجهول"
 
 #: templates/web/base/admin/report_edit.html:130
 #: templates/web/base/admin/report_edit.html:199
@@ -523,7 +524,7 @@ msgstr "مستخدمين "
 
 #: templates/web/base/admin/templates.html:9
 msgid "Auto Response"
-msgstr ""
+msgstr "إجابة تلقائية"
 
 #: templates/web/base/admin/template_edit.html:80
 msgid "Auto-response:"
@@ -657,7 +658,7 @@ msgstr "تصنيف:"
 #: templates/web/base/my/my.html:41 templates/web/base/my/my.html:44
 #: templates/web/base/my/my.html:52 templates/web/base/my/my.html:57
 msgid "Change"
-msgstr ""
+msgstr "تغيير"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:3
@@ -673,7 +674,7 @@ msgstr "تغيير كلمة المرور"
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:3
 msgid "Change phone number"
-msgstr ""
+msgstr "تغيير رقم الهاتف"
 
 #: templates/web/base/admin/contact-form.html:80
 msgid "Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent."
@@ -783,7 +784,7 @@ msgstr "علامة تجارية مشتركة:"
 #: templates/web/base/auth/2faform.html:17
 #: templates/web/base/auth/smsform.html:24
 msgid "Code"
-msgstr ""
+msgstr "الرمز"
 
 #: templates/web/base/js/translation_strings.html:61
 msgid "Collapse map"
@@ -846,7 +847,7 @@ msgstr "اتصل بفريق العمل"
 
 #: templates/web/base/report/form/user.html:8
 msgid "Continue"
-msgstr ""
+msgstr "المواصلة"
 
 #: templates/web/base/admin/open311-form-fields.html:151
 msgid "Convert location from Easting/Northing"
@@ -891,7 +892,7 @@ msgstr "العدد"
 
 #: templates/web/base/admin/states/index.html:114
 msgid "Create"
-msgstr ""
+msgstr "إنشاء"
 
 #: templates/web/base/email_sent.html:1
 msgid "Create a report"
@@ -899,7 +900,7 @@ msgstr "انشئ بلاغ"
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:5
 msgid "Create an account"
-msgstr ""
+msgstr "إنشاء حساب"
 
 #: templates/web/base/admin/contact-form.html:156
 #: templates/web/zurich/admin/contact-form.html:49
@@ -945,11 +946,11 @@ msgstr "تم الإنشاء:"
 
 #: templates/web/base/auth/change_password.html:40
 msgid "Current password:"
-msgstr ""
+msgstr "الكلمة السرية الحالية:"
 
 #: templates/web/base/auth/generate_token.html:46
 msgid "Current token:"
-msgstr ""
+msgstr "الرمز الحالي:"
 
 #: templates/web/base/dashboard/index.html:92
 msgid "Currently grouped by %s"
@@ -982,11 +983,11 @@ msgstr "تم التعامل بواسطة القسم الفرعي في غضون 5
 
 #: templates/web/base/admin/responsepriorities/list.html:9
 msgid "Default"
-msgstr ""
+msgstr "افتراضي"
 
 #: templates/web/base/admin/responsepriorities/edit.html:39
 msgid "Default priority"
-msgstr ""
+msgstr "الأهمية الافتراضية"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:728
 msgid "Default to creating reports/updates as the council"
@@ -998,7 +999,7 @@ msgstr ""
 
 #: templates/web/base/admin/user-alerts.html:15
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1197
 #: templates/web/base/admin/template_edit.html:91
@@ -1066,7 +1067,7 @@ msgstr "جدول رابطة جائزة العناية بالدقة"
 
 #: templates/web/base/admin/user-alerts.html:14
 msgid "Disable"
-msgstr ""
+msgstr "تعطيل"
 
 #: templates/web/base/admin/user-alerts.html:23
 msgid "Disabled:"
@@ -1075,7 +1076,7 @@ msgstr ""
 #: templates/web/base/report/_main.html:124
 #: templates/web/base/report/update.html:57
 msgid "Discard changes"
-msgstr ""
+msgstr "إلغاء التعديلات"
 
 #: templates/web/base/admin/open311-form-fields.html:107
 msgid "Do not send email alerts on fetched comments to problem creator"
@@ -1112,7 +1113,7 @@ msgstr ""
 
 #: templates/web/base/report/_inspect.html:129
 msgid "Duplicates"
-msgstr ""
+msgstr "المكرَّرة"
 
 #: templates/web/base/admin/body.html:116
 msgid ""
@@ -1156,7 +1157,7 @@ msgstr "عدل تصنيف التقرير"
 
 #: templates/web/base/report/new/form_user.html:13
 msgid "Edit report details"
-msgstr ""
+msgstr "تعديل تفاصيل الإبلاغ"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:719
 msgid "Edit report priority"
@@ -1221,7 +1222,7 @@ msgstr "البريد الإلكتروني"
 #: templates/web/base/report/form/user_loggedout_by_email.html:42
 #: templates/web/base/report/new/form_user_loggedin.html:60
 msgid "Email address (optional)"
-msgstr ""
+msgstr "البريد الإلكتروني (اختياري)"
 
 #: templates/web/base/tokens/confirm_alert.html:6
 msgid "Email alert created"
@@ -1237,11 +1238,11 @@ msgstr ""
 
 #: templates/web/base/auth/general.html:101
 msgid "Email me a link to sign in"
-msgstr ""
+msgstr "ارسل لي رابطا لكي أتمكن مِن تسجيل الدخول"
 
 #: templates/web/base/admin/user-form.html:25
 msgid "Email verified:"
-msgstr ""
+msgstr "البريد الإلكتروني المؤكد:"
 
 #: templates/web/base/admin/report_edit.html:146
 #: templates/web/base/admin/user-form.html:19 templates/web/base/my/my.html:36
@@ -1251,7 +1252,7 @@ msgstr "البريد الإلكتروني:"
 
 #: templates/web/base/admin/user-alerts.html:13
 msgid "Enable"
-msgstr ""
+msgstr "تنشيط"
 
 #: templates/web/base/admin/open311-form-fields.html:156
 #: templates/web/base/admin/open311-form-fields.html:157
@@ -1308,7 +1309,7 @@ msgstr ""
 
 #: templates/web/base/dashboard/index.html:78
 msgid "End Date"
-msgstr ""
+msgstr "تاريخ النهاية"
 
 #: templates/web/base/admin/open311-form-fields.html:21
 msgid "Endpoint"
@@ -1413,7 +1414,7 @@ msgstr "فريق خارجي"
 #: templates/web/base/admin/reportextrafields/edit.html:1
 #: templates/web/base/admin/reportextrafields/index.html:1
 msgid "Extra Fields"
-msgstr ""
+msgstr "حقول إضافية"
 
 #: templates/web/base/admin/contact-form.html:159
 #: templates/web/base/admin/report_edit.html:129
@@ -1429,7 +1430,7 @@ msgstr "تفاصيل إضافية"
 
 #: templates/web/zurich/admin/contact-form.html:22
 msgid "Extra fields:"
-msgstr ""
+msgstr "حقل إضافي:"
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1438,7 +1439,7 @@ msgstr "فشل في إرسال الرسالة"
 #: templates/web/base/admin/reportextrafields/edit.html:58
 #: templates/web/base/admin/reportextrafields/index.html:9
 msgid "Fields"
-msgstr ""
+msgstr "الحقول"
 
 #: templates/web/base/report/form/user_loggedout_password.html:25
 #: templates/web/base/report/form/user_loggedout_password.html:8
@@ -1524,7 +1525,7 @@ msgstr "للمزيد من المعلومات، راجع <a href='https://fixmyst
 
 #: templates/web/base/auth/create.html:1 templates/web/base/auth/create.html:3
 msgid "Forgot password"
-msgstr ""
+msgstr "نسيت كلمتك السرية"
 
 #: templates/web/base/auth/general.html:91
 #: templates/web/base/report/form/user_loggedout_password.html:24
@@ -1548,7 +1549,7 @@ msgstr "الأسئلة الشائعة"
 
 #: templates/web/base/auth/generate_token.html:52
 msgid "Generate token"
-msgstr ""
+msgstr "توليد رمز"
 
 #: templates/web/base/around/_updates.html:3
 #: templates/web/base/report/display_tools.html:14
@@ -1651,7 +1652,7 @@ msgstr "مخفي"
 
 #: templates/web/base/admin/extra-metadata-form.html:18
 msgid "Hidden Field"
-msgstr ""
+msgstr "حقل مخفي"
 
 #: templates/web/base/admin/user-form.html:202
 msgid "Hide all reports and updates"
@@ -1664,7 +1665,7 @@ msgstr ""
 #: templates/web/base/my/anonymize.html:1
 #: templates/web/base/my/anonymize.html:2
 msgid "Hide my name"
-msgstr ""
+msgstr "اخف إسمي"
 
 #: templates/web/base/my/anonymize.html:21
 msgid "Hide my name everywhere"
@@ -1691,7 +1692,7 @@ msgstr ""
 #: templates/web/base/report/_report_meta_info.html:3
 #: templates/web/base/report/_update_state.html:16
 msgid "Hide your name?"
-msgstr ""
+msgstr "هل تريد إخفاء اسمك؟"
 
 #: templates/web/base/admin/extra-metadata-form.html:48
 msgid "Hint"
@@ -1851,7 +1852,7 @@ msgstr "اختيار موجز غير صالح"
 
 #: templates/web/base/admin/user_import.html:15
 msgid "Import users"
-msgstr ""
+msgstr "إستيراد المستخدمين"
 
 #: templates/web/base/admin/flagged.html:39
 msgid "In abuse table?"
@@ -1863,7 +1864,7 @@ msgstr "إضافة إلى ذلك، يتم إرجاع السمات التالية
 
 #: templates/web/base/admin/contact-form.html:57
 msgid "Inactive"
-msgstr ""
+msgstr "غير نشط"
 
 #: templates/web/base/tokens/confirm_alert.html:11
 msgid "Inbox zero, here we come!"
@@ -1920,7 +1921,7 @@ msgstr "إنه في الطريق إلى المجلس حاليًا."
 
 #: templates/web/base/admin/extra-metadata-form.html:71
 msgid "Key"
-msgstr ""
+msgstr "المفتاح"
 
 #: templates/web/base/admin/states/index.html:9
 #: templates/web/base/admin/states/index.html:95
@@ -1930,15 +1931,15 @@ msgstr ""
 #: templates/web/base/admin/_translations.html:6
 #: templates/web/base/admin/reportextrafields/edit.html:45
 msgid "Language"
-msgstr ""
+msgstr "اللغة"
 
 #: templates/web/base/admin/reportextrafields/index.html:8
 msgid "Languages"
-msgstr ""
+msgstr "اللغات"
 
 #: templates/web/base/reports/index.html:40
 msgid "Last 7 days"
-msgstr ""
+msgstr "على مدى الأسبوع الأخير"
 
 #: templates/web/base/admin/body.html:74
 #: templates/web/zurich/admin/body.html:16
@@ -1947,7 +1948,7 @@ msgstr "آخر محرر"
 
 #: templates/web/base/questionnaire/index.html:53
 msgid "Last update"
-msgstr ""
+msgstr "آخر تحديث"
 
 #: templates/web/base/admin/report_edit.html:90
 msgid "Last update:"
@@ -1973,7 +1974,7 @@ msgstr "اترك هذا خاليًا إذا كان سيتم إرسال جميع 
 
 #: templates/web/base/admin/extra-metadata-form.html:57
 msgid "List"
-msgstr ""
+msgstr "القائمة"
 
 #: templates/web/base/admin/body.html:31
 msgid "List all reported problems"
@@ -2012,17 +2013,17 @@ msgstr "تحديد موقع المشكلة على خريطة المنطقة"
 #: templates/web/base/auth/general.html:29
 #: templates/web/base/report/form/user.html:13
 msgid "Log in with Facebook"
-msgstr ""
+msgstr "تسجيل الدخول عبر فايسبوك"
 
 #: templates/web/base/auth/general.html:37
 #: templates/web/base/report/form/user.html:19
 msgid "Log in with Twitter"
-msgstr ""
+msgstr "تسجيل الدخول عبر تويتر"
 
 #: templates/web/base/js/translation_strings.html:76
 #: templates/web/base/report/form/user.html:22
 msgid "Log in with email"
-msgstr ""
+msgstr "تسجيل الدخول عبر البريد الإلكتروني"
 
 #: templates/web/base/js/translation_strings.html:74
 msgid "Log in with email/text"
@@ -2030,11 +2031,11 @@ msgstr ""
 
 #: templates/web/base/admin/user-form.html:200
 msgid "Log out of all sessions"
-msgstr ""
+msgstr "الخروج مِن كافة الجلسات"
 
 #: templates/web/base/dashboard/index.html:82
 msgid "Look up"
-msgstr ""
+msgstr "البحث"
 
 #: templates/web/base/js/translation_strings.html:55
 msgid "MAP"
@@ -2050,7 +2051,7 @@ msgstr "ادارة القائمة القصيرة"
 
 #: templates/web/base/reports/_list-filters.html:73
 msgid "Manual order"
-msgstr ""
+msgstr "ترتيب يدوي"
 
 #: templates/web/base/js/translation_strings.html:57
 msgid "Map"
@@ -2118,7 +2119,7 @@ msgstr "تمت المعالجة بواسطة القسم خلال يوم عمل �
 #: templates/web/base/admin/report_edit.html:188
 #: templates/web/base/admin/update_edit.html:86
 msgid "Moderation history"
-msgstr ""
+msgstr "سِجلّ الإشراف"
 
 #: templates/web/base/dashboard/index.html:102
 #: templates/web/zurich/admin/stats/index.html:9
@@ -2171,7 +2172,7 @@ msgstr "انتقل الى هذه المشكلة"
 
 #: templates/web/base/report/_inspect.html:45
 msgid "Nearest calculated address:"
-msgstr ""
+msgstr "أقرب عنوان تم التعرف عليه:"
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:151
 msgid "Nearest named road to the pin placed on the map (automatically generated using OpenStreetMap): %s%s"
@@ -2194,7 +2195,7 @@ msgstr "أقرب شارع مسمى للدبوس الموضوع على الخري
 
 #: templates/web/base/auth/token.html:18
 msgid "Nearly done!"
-msgstr ""
+msgstr "لقد أنهيت تقريبا!"
 
 #: templates/web/base/auth/token.html:22 templates/web/base/email_sent.html:5
 msgid "Nearly done! Now check your email&hellip;"
@@ -2238,7 +2239,7 @@ msgstr "كلمة مرور جديدة:"
 
 #: templates/web/base/auth/change_phone.html:38
 msgid "New phone number:"
-msgstr ""
+msgstr "رقم الهاتف الجديد:"
 
 #: templates/web/base/admin/responsepriorities/edit.html:4
 #: templates/web/base/admin/responsepriorities/list.html:34
@@ -2247,7 +2248,7 @@ msgstr "أولوية جديدة"
 
 #: templates/web/base/admin/user-alerts.html:44
 msgid "New problems for %s"
-msgstr ""
+msgstr "مشاكل جديدة في %s"
 
 #: templates/web/base/admin/user-alerts.html:42
 msgid "New problems for <a href=\"%s\">%s</a>"
@@ -2319,7 +2320,7 @@ msgstr "التالي"
 
 #: templates/web/base/report/form/user.html:5
 msgid "Next:"
-msgstr ""
+msgstr "التالي:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:1214
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:116
@@ -2342,7 +2343,7 @@ msgstr "لا"
 
 #: templates/web/base/report/form/user_loggedout_password.html:7
 msgid "No account?"
-msgstr ""
+msgstr "ليس عندك حساب بعد؟"
 
 #: templates/web/base/admin/user-form.html:84
 msgid "No area"
@@ -2464,7 +2465,7 @@ msgstr "ملاحظات من رئيس المنطقة الفرعية لرئيس ا
 
 #: templates/web/base/admin/extra-metadata-form.html:36
 msgid "Notice"
-msgstr ""
+msgstr "إعلان"
 
 #: templates/web/base/reports/index.html:127
 msgid "Number of problems reported in each category, in the last 7 days."
@@ -2532,7 +2533,7 @@ msgstr "مواصفة Open311"
 
 #: templates/web/base/admin/extra-metadata-form.html:63
 msgid "Options"
-msgstr ""
+msgstr "الخيارات"
 
 #: templates/web/base/report/new/fill_in_details_form.html:8
 msgid "Or <a href=\"/\">search for a different location</a>"
@@ -2548,7 +2549,7 @@ msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:8
 msgid "Order"
-msgstr ""
+msgstr "الترتيب"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1343
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:712
@@ -2566,7 +2567,7 @@ msgstr "أخرى"
 
 #: templates/web/base/reports/index.html:136
 msgid "Other categories"
-msgstr ""
+msgstr "فئات أخرى"
 
 #: templates/web/base/reports/index.html:107
 msgid "Other wards"
@@ -2770,7 +2771,7 @@ msgstr "الرجاء إدخال رسالة"
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:4
 msgid "Please enter a mobile number"
-msgstr ""
+msgstr "يرجى إدخال رقم هاتف خلوي"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1458
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1577
@@ -3121,7 +3122,7 @@ msgstr "تقديم كلمة المرور اختياري، ولكن فعل ذلك
 
 #: templates/web/base/report/new/form_report.html:13
 msgid "Public details"
-msgstr ""
+msgstr "التفاصيل العمومية:"
 
 #: templates/web/zurich/admin/report_edit.html:242
 #: templates/web/zurich/admin/report_edit.html:269
@@ -3233,7 +3234,7 @@ msgstr "المحدثة مؤخرا"
 
 #: templates/web/base/report/_inspect.html:60
 msgid "Reject report"
-msgstr ""
+msgstr "رفض التقرير"
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
@@ -3241,15 +3242,15 @@ msgstr "تذكر أن FixMyStreet مخصص في الأساس للإبلاغ عن
 
 #: templates/web/base/admin/extra-metadata-form.html:78
 msgid "Remove"
-msgstr ""
+msgstr "إزالة"
 
 #: templates/web/base/admin/user-form.html:203
 msgid "Remove account details"
-msgstr ""
+msgstr "إزالة تفاصيل الحساب"
 
 #: templates/web/base/admin/extra-metadata-form.html:4
 msgid "Remove field"
-msgstr ""
+msgstr "إزالة الحقل"
 
 #: templates/web/base/admin/report_blocks.html:23
 msgid "Remove flag"
@@ -3275,7 +3276,7 @@ msgstr "إزالة الصورة (لا يمكن التراجع عن هذا الإ
 
 #: templates/web/base/auth/generate_token.html:52
 msgid "Replace token"
-msgstr ""
+msgstr "تبديل الرمز"
 
 #: templates/web/zurich/admin/report_edit.html:240
 msgid "Reply to user:"
@@ -3324,7 +3325,7 @@ msgstr "الإبلاغ على %s"
 
 #: templates/web/base/dashboard/index.html:62
 msgid "Report state:"
-msgstr ""
+msgstr "حالة التقرير:"
 
 #: templates/web/base/report/new/fill_in_details_form.html:1
 #: templates/web/base/report/new/login_success_form.html:1
@@ -3467,7 +3468,7 @@ msgstr "عتبة السمعة"
 
 #: templates/web/base/admin/extra-metadata-form.html:30
 msgid "Required"
-msgstr ""
+msgstr "مطلوب"
 
 #: templates/web/base/admin/report_edit.html:85
 msgid "Resend report"
@@ -3568,7 +3569,7 @@ msgstr "حفظ التغييرات"
 
 #: templates/web/base/admin/reportextrafields/edit.html:64
 msgid "Save new fields"
-msgstr ""
+msgstr "حفظ الحقول الجديدة"
 
 #: templates/web/base/report/_inspect.html:185
 msgid "Save with a public update"
@@ -3613,7 +3614,7 @@ msgstr "لم يعثر البحث عن أي مستخدمين."
 #: templates/web/base/auth/generate_token.html:39
 #: templates/web/base/my/my.html:71
 msgid "Security"
-msgstr ""
+msgstr "الأمان"
 
 #: templates/web/base/report/form/private_details.html:14
 #: templates/web/base/report/new/councils_text_private.html:7
@@ -3652,7 +3653,7 @@ msgstr "تحديد:"
 
 #: templates/web/base/contact/index.html:114
 msgid "Send"
-msgstr ""
+msgstr "إرسال"
 
 #: templates/web/base/admin/open311-form-fields.html:121
 msgid "Send extended Open311 statuses with service request updates"
@@ -3727,11 +3728,11 @@ msgstr "تم الاضافة الى القائمة القصيرة في %s"
 
 #: templates/web/base/report/update.html:23
 msgid "Show Photo?"
-msgstr ""
+msgstr "هل تريد عرض الصورة؟"
 
 #: templates/web/base/questionnaire/index.html:54
 msgid "Show all updates"
-msgstr ""
+msgstr "عرض كافة التحديثات"
 
 #: templates/web/base/report/_show_name_label.html:4
 msgid "Show my name publicly"
@@ -3743,15 +3744,15 @@ msgstr ""
 
 #: templates/web/base/pagination.html:12
 msgid "Show older"
-msgstr ""
+msgstr "عرض الأقدَم"
 
 #: templates/web/base/reports/_list-filters.html:85
 msgid "Show older reports"
-msgstr ""
+msgstr "عرض التقارير القديمة"
 
 #: templates/web/base/report/_main.html:89
 msgid "Show photo"
-msgstr ""
+msgstr "عرض الصورة"
 
 #: templates/web/base/around/display_location.html:58
 #: templates/web/base/around/display_location.html:66
@@ -3791,7 +3792,7 @@ msgstr "سجل الدخول أو أنشئ حساب جديد"
 
 #: templates/web/base/auth/general.html:80
 msgid "Sign in with a password"
-msgstr ""
+msgstr "تسجيل الدخول بكلمة سرية"
 
 #: templates/web/base/auth/sign_out.html:1 templates/web/base/my/my.html:73
 #: templates/web/zurich/auth/sign_out.html:1
@@ -3883,7 +3884,7 @@ msgstr "الموظف:"
 
 #: templates/web/base/dashboard/index.html:74
 msgid "Start Date"
-msgstr ""
+msgstr "تاريخ البداية"
 
 #: templates/web/base/admin/body.html:73
 #: templates/web/base/admin/category_edit.html:29
@@ -3960,7 +3961,7 @@ msgstr ""
 
 #: templates/web/base/report/new/category.html:38
 msgid "Subcategory"
-msgstr ""
+msgstr "الفئة الفرعية"
 
 #: templates/web/zurich/admin/index-dm.html:27
 msgid "Subdivision/Body"
@@ -4050,7 +4051,7 @@ msgstr "ملخص التقارير"
 #: templates/web/base/admin/stats/index.html:7
 #: templates/web/base/dashboard/index.html:21
 msgid "Summary statistics"
-msgstr ""
+msgstr "خلاصة الإحصائيات"
 
 #: templates/web/base/admin/user-form.html:155
 msgid "Superuser:"
@@ -4068,7 +4069,7 @@ msgstr "نتائج التصفح"
 #: templates/web/base/report/form/private_details.html:2
 #: templates/web/base/report/form/user.html:5
 msgid "Tell us about you"
-msgstr ""
+msgstr "حدثنا عنك"
 
 #: templates/web/zurich/admin/template_edit.html:7
 msgid "Template &laquo;%s&raquo;"
@@ -4569,7 +4570,7 @@ msgstr "لعرض خريطة موضح عليها الموقع الدقيق لهذ
 
 #: templates/web/base/auth/generate_token.html:11
 msgid "Token:"
-msgstr ""
+msgstr "الرمز:"
 
 #: templates/web/base/reports/index.html:126
 msgid "Top 5 most used categories"
@@ -4599,11 +4600,11 @@ msgstr "هل يتطلب إدارة المرور؟"
 
 #: templates/web/base/admin/_translations.html:7
 msgid "Translation"
-msgstr ""
+msgstr "الترجمة"
 
 #: templates/web/base/admin/_translations.html:2
 msgid "Translations"
-msgstr ""
+msgstr "الترجمات"
 
 #: templates/web/base/admin/user-form.html:132
 msgid "Trusted by bodies:"
@@ -4864,7 +4865,7 @@ msgstr ""
 #: templates/web/base/admin/report_edit.html:137
 #: templates/web/base/admin/update_edit.html:36
 msgid "User:"
-msgstr ""
+msgstr "المستخدم:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:675
 #: perllib/FixMyStreet/Cobrand/Default.pm:737
@@ -4885,17 +4886,17 @@ msgstr "تم تحديث القيم"
 
 #: templates/web/base/my/my.html:43 templates/web/base/my/my.html:55
 msgid "Verify"
-msgstr ""
+msgstr "تحقق"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:5
 msgid "Verify email address"
-msgstr ""
+msgstr "التحقق من عنوان البريد الإلكتروني"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:5
 msgid "Verify phone number"
-msgstr ""
+msgstr "التحقق من رقم الهاتف"
 
 #: templates/web/base/admin/report_edit.html:36
 #: templates/web/base/admin/update_edit.html:18
@@ -4977,7 +4978,7 @@ msgstr "نعتذر عن عدم إصلاح المشكلة. لما لا تجرب �
 
 #: templates/web/base/dashboard/index.html:122
 msgid "Website"
-msgstr ""
+msgstr "موقع الويب"
 
 #: templates/web/base/contact/submit.html:7
 msgid "We’ll get back to you as soon as we can."
@@ -5064,7 +5065,7 @@ msgstr "أنت تشتكي من أن تقرير هذه المشكلة تم تعد
 
 #: templates/web/base/js/translation_strings.html:94
 msgid "You are offline"
-msgstr ""
+msgstr "إنك غير متصل"
 
 #: templates/web/base/contact/unsuitable-text.html:2
 msgid "You are reporting the following problem report for being abusive, containing personal information, or similar:"
@@ -5149,7 +5150,7 @@ msgstr "لقد حددت موقع المشكلة في النقطة المميزة
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:142
 msgid "You have successfully added your phone number."
-msgstr ""
+msgstr "لقد قمت بإضافة رقم هاتفك بنجاح."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:158
 #: templates/web/zurich/tokens/confirm_problem.html:5
@@ -5159,11 +5160,11 @@ msgstr "لقد قمت بتأكيد عنوان البريد الإلكتروني 
 
 #: templates/web/base/auth/change_phone.html:15
 msgid "You have successfully confirmed your phone number."
-msgstr ""
+msgstr "لقد قمت بتأكيد رقم هاتفك بنجاح."
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:129
 msgid "You have successfully removed your phone number."
-msgstr ""
+msgstr "لقد قمت بإزالة رقم هاتفك بنجاح."
 
 #: templates/web/base/report/display.html:25
 #: templates/web/base/report/new/login_success_form.html:3
@@ -5172,7 +5173,7 @@ msgstr "لقد قمت بتسجيل الدخول بنجاح؛ الرجاء الت
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:164
 msgid "You have successfully verified your phone number."
-msgstr ""
+msgstr "لقد تم التحقق مِن رقم هاتفك بنجاح."
 
 #: templates/web/base/my/my.html:79
 msgid "You haven&rsquo;t created any reports yet.  <a href=\"%s\">Report a problem now.</a>"
@@ -5226,7 +5227,7 @@ msgstr "عنوان البريد الإلكتروني"
 #: templates/web/base/auth/general.html:47
 #: templates/web/base/report/form/user_loggedout_email.html:3
 msgid "Your email or mobile"
-msgstr ""
+msgstr "بريدك الإلكتروني أو رقم هاتفك الخلوي"
 
 #: templates/web/base/report/updates-sidebar-notes.html:3
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
@@ -5246,7 +5247,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/My.pm:268
 msgid "Your name has been hidden."
-msgstr ""
+msgstr "تم اخفاء اسمك"
 
 #: templates/web/base/js/translation_strings.html:86
 msgid "Your offline reports"
@@ -5294,7 +5295,7 @@ msgstr ""
 
 #: templates/web/base/report/update/form_user.html:6
 msgid "Your update"
-msgstr ""
+msgstr "تحديثك"
 
 #: templates/web/base/js/translation_strings.html:87
 msgid "Your update has been saved offline for submission when back online."
@@ -5319,7 +5320,7 @@ msgstr ""
 
 #: templates/web/base/report/_inspect.html:20
 msgid "admin"
-msgstr ""
+msgstr "مدير"
 
 #: templates/web/base/admin/category-checkboxes.html:7
 #: templates/web/base/admin/user-form.html:175
@@ -5333,7 +5334,7 @@ msgstr "الكل"
 #: templates/web/base/admin/report_edit.html:194
 #: templates/web/base/admin/update_edit.html:92
 msgid "an administrator"
-msgstr ""
+msgstr "مدير"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:262
 msgid "and a defect raised"
@@ -5401,11 +5402,11 @@ msgstr ""
 
 #: templates/web/base/auth/general.html:6
 msgid "or <a href=\"%s\">create an account</a>"
-msgstr ""
+msgstr "أو <a href=\"%s\">انشئ حسابا</a>"
 
 #: templates/web/base/auth/create.html:13
 msgid "or <a href=\"%s\">sign in</a>"
-msgstr ""
+msgstr "أو <a href=\"%s\">سجل دخولك</a>"
 
 #: templates/web/base/alert/index.html:40
 #: templates/web/base/around/postcode_form.html:27
@@ -5433,7 +5434,7 @@ msgstr "مناطق أخرى:"
 
 #: templates/web/zurich/admin/contact-form.html:24
 msgid "show"
-msgstr ""
+msgstr "عرض"
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
@@ -5454,7 +5455,7 @@ msgstr "لا يوجد دبوس مما يعني أن المستخدم لم يست
 
 #: templates/web/base/alert/_list.html:1
 msgid "this location"
-msgstr ""
+msgstr "هذا الموقع"
 
 #: perllib/FixMyStreet/Script/Reports.pm:183
 msgid "this type of local problem"
@@ -5466,11 +5467,11 @@ msgstr "اليوم"
 
 #: templates/web/base/js/translation_strings.html:97
 msgid "update"
-msgstr ""
+msgstr "تحديث"
 
 #: templates/web/base/js/translation_strings.html:98
 msgid "updates"
-msgstr ""
+msgstr "تحديثات"
 
 #: templates/web/base/admin/report_edit.html:53
 msgid "used map"
