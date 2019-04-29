@@ -51,8 +51,17 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+sub open311_get_update_munging {
+    my ($self, $comment) = @_;
+
+    # If we've received an update via Open311 that's closed
+    # or fixed the report, also close it to updates.
+    $comment->problem->set_extra_metadata(closed_updates => 1)
+        if !$comment->problem->is_open;
+}
+
 sub lookup_site_code_config {
-    # uncoverable function
+    # uncoverable subroutine
     # uncoverable statement
     {
         buffer => 200, # metres
