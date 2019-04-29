@@ -86,6 +86,8 @@ sub update_comments {
         return 0;
     }
 
+    my $cobrand = $body->get_cobrand_handler;
+
     for my $request (@$requests) {
         my $request_id = $request->{service_request_id};
 
@@ -190,6 +192,9 @@ sub update_comments {
                 # If nothing to show (no text, photo, or state change), don't show this update
                 $comment->state('hidden') unless $comment->text || $comment->photo
                     || ($comment->problem_state && $state ne $old_state);
+
+                $cobrand->call_hook(open311_get_update_munging => $comment)
+                    if $cobrand;
 
                 # As comment->created has been looked at above, its time zone has been shifted
                 # to TIME_ZONE (if set). We therefore need to set it back to local before
