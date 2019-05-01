@@ -117,6 +117,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
+  "roles",
+  "FixMyStreet::DB::Result::Role",
+  { "foreign.body_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "user_body_permissions",
   "FixMyStreet::DB::Result::UserBodyPermission",
   { "foreign.body_id" => "self.id" },
@@ -130,8 +136,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8CuxbffDaYS7TFlgff1nEg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-05-23 18:03:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9sFgYQ9qhnZNcz3kUFYuvg
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');

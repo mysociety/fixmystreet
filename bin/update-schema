@@ -212,6 +212,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0067' if table_exists('roles');
     return '0066' if column_exists('users', 'area_ids');
     return '0065' if constraint_contains('admin_log_object_type_check', 'moderation');
     return '0064' if index_exists('moderation_original_data_problem_id_comment_id_idx');

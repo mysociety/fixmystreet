@@ -27,7 +27,10 @@ my @tables_to_ignore = (
 my $exclude = '^(?:' . join( '|', @tables_to_ignore ) . ')$';
 
 make_schema_at(
-    'FixMyStreet::DB::Schema',
+    # Something funny here if you use FixMyStreet::DB::Schema, where it should be,
+    # as it tries to dump it twice and dies on reload; with this, it works, but
+    # then the changes to DB.pm need removing
+    'FixMyStreet::DB',
     {
         debug          => 0,               # switch on to be chatty
         dump_directory => './perllib',     # edit files in place

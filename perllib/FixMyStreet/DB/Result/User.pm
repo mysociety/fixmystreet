@@ -121,10 +121,16 @@ __PACKAGE__->has_many(
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "user_roles",
+  "FixMyStreet::DB::Result::UserRole",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BCCqv3JCec8psuRk/SdCJQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-05-23 18:03:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qtmzA7ywVkyQpjLh1ienNg
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.
