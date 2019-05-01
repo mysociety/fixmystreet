@@ -41,6 +41,21 @@ create table users (
 CREATE UNIQUE INDEX users_email_verified_unique ON users (email) WHERE email_verified;
 CREATE UNIQUE INDEX users_phone_verified_unique ON users (phone) WHERE phone_verified;
 
+-- roles table
+create table roles (
+    id              serial  not null primary key,
+    body_id         integer not null references body(id),
+    name            text,
+    permissions     text ARRAY
+);
+
+-- Record which role(s) each user holds
+create table user_roles (
+    id              serial  not null primary key,
+    role_id         integer not null references roles(id),
+    user_id         integer not null references users(id)
+);
+
 -- Record details of reporting bodies, including open311 configuration details
 create table body (
     id           serial primary key,
