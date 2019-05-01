@@ -56,10 +56,10 @@ __PACKAGE__->add_columns(
   { data_type => "bigint", is_nullable => 1 },
   "facebook_id",
   { data_type => "bigint", is_nullable => 1 },
-  "area_ids",
-  { data_type => "integer[]", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "area_ids",
+  { data_type => "integer[]", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_facebook_id_key", ["facebook_id"]);
@@ -117,10 +117,16 @@ __PACKAGE__->has_many(
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "user_roles",
+  "FixMyStreet::DB::Result::UserRole",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-02-12 15:14:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4NBO3A+LfZXOh4Kj/II2LQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-05-01 09:47:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rLeWRCHB6hgLcbPeODG69w
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.
