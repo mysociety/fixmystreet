@@ -34,12 +34,7 @@
         <textarea class="form-control" name="text" class="required">[% rt.text | html %]</textarea>
     </p>
 
-    <div class="admin-hint">
-      <p>
-        [% loc('If you only want this template to be an option for specific categories, pick them here. By default they will show for all categories.') %]
-      </p>
-    </div>
-    [% INCLUDE 'admin/category-checkboxes.html' %]
+    [% INCLUDE 'admin/category-checkboxes.html' hint=loc('If you only want this template to be an option for specific categories, pick them here. By default they will show for all categories.') %]
 
     [% IF errors.state %]
         <div class="form-error">[% errors.state %]</div>

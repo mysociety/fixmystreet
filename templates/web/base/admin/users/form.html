@@ -93,14 +93,7 @@
 
         [% IF contacts AND c.cobrand.moniker != 'zurich'%]
           <li class="js-user-categories">
-            <div class="admin-hint">
-              <p>
-                [% loc(
-                  "Authorised staff users can be associated with the categories in which they operate.")
-                %]
-              </p>
-            </div>
-            [% INCLUDE 'admin/category-checkboxes.html' %]
+            [% INCLUDE 'admin/category-checkboxes.html' hint=loc("Authorised staff users can be associated with the categories in which they operate.") %]
           </li>
         [% END %]
 
@@ -162,33 +155,38 @@
 
         [% IF available_permissions AND NOT user.is_superuser %]
           <li>
-            <div class="admin-hint">
-              <p>
-                [% loc("Users can perform the following actions within their assigned body or area.") %]
-              </p>
-            </div>
-            <p>[% loc('Permissions:') %]</p>
-            <ul>
-          [% FOREACH group IN available_permissions.pairs %]
-            <li>
-              [% group.key %]
-              <ul class="no-bullets">
-                <li>
-                  (<a href="#" data-select-all>[% loc('all') %]</a> /
-                  <a href="#" data-select-none>[% loc('none') %]</a>)
-                </li>
-                [% FOREACH permission IN group.value %]
+            <fieldset>
+              <legend>
+                <div class="admin-hint">
+                  <p>
+                    [% loc("Users can perform the following actions within their assigned body or area.") %]
+                  </p>
+                </div>
+                [% loc('Permissions:') %]
+              </legend>
+              <ul>
+                [% FOREACH group IN available_permissions.pairs %]
                   <li>
-                    <label class="inline">
-                      <input type="checkbox" id="perms_[% permission.key %]" name="permissions[[% permission.key %]]" [% "checked" IF NOT user.is_superuser AND user.has_body_permission_to(permission.key) %]>
-                      [% permission.value %]
-                    </label>
+                    [% group.key %]
+                    <ul class="no-bullets no-margin">
+                      <li>
+                        (<a href="#" data-select-all>[% loc('all') %]</a> /
+                        <a href="#" data-select-none>[% loc('none') %]</a>)
+                      </li>
+                      [% FOREACH permission IN group.value %]
+                        <li>
+                          <label class="inline">
+                            <input type="checkbox" id="perms_[% permission.key %]" name="permissions[[% permission.key %]]" [% "checked" IF NOT user.is_superuser AND user.has_body_permission_to(permission.key) %]>
+                            [% permission.value %]
+                          </label>
+                        </li>
+                      [% END %]
+                    </ul>
                   </li>
                 [% END %]
               </ul>
-            </li>
-          [% END %]
-            </ul>
+            </fieldset>
+          </li>
         [% END %]
       [% END %]
       [% TRY %][% INCLUDE 'admin/users/form-extra-fields.html' %][% CATCH file %][% END %]

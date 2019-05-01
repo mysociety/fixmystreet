@@ -40,12 +40,7 @@
         </label>
     </p>
 
-    <div class="admin-hint">
-      <p>
-        [% loc('If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories.') %]
-      </p>
-    </div>
-    [% INCLUDE 'admin/category-checkboxes.html' %]
+    [% INCLUDE 'admin/category-checkboxes.html' hint=loc('If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories.') %]
 
     <p>
         <label>
