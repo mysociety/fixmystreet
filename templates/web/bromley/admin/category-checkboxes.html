@@ -1,7 +1,7 @@
   <p>
     <strong>[% loc('Categories:') %]</strong>
   </p>
-  <ul>
+  <ul class="no-bullets no-margin">
     <li>
       [% loc('Select:') %]
       <a href="#" data-select-all>[% loc('all') %]</a> /
@@ -9,7 +9,7 @@
     </li>
     [% FOR contact IN c.cobrand.add_admin_subcategories # Bromley-specific function %]
       <li>
-        <label title="[% contact.email | html %]">
+        <label class="inline" title="[% contact.email | html %]">
           <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
           [% contact.category %]
         </label>

@@ -67,6 +67,9 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         list-style: none;
       }
     }
+    .no-margin {
+      margin: 0;
+    }
 }
 
 .js #admin_contacts tr.is-deleted {
