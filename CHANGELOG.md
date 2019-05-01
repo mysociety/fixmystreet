@@ -16,6 +16,7 @@
         - Allow searching for <email> in admin.
         - Make staff JavaScript more self-contained.
         - Alow staff user to be associated with multiple areas.
+        - Improvements to admin checkbox display.
     - Bugfixes:
         - Check cached reports do still have photos before being shown. #2374
         - Delete cache photos upon photo moderation. #2374

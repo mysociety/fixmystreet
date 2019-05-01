@@ -217,3 +217,26 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 .danger-zone {
     text-align: #{$right};
 }
+
+.permissions-checkboxes {
+    margin: 0;
+
+    & > li {
+        border-top: 1px solid $table_border_color;
+        list-style: none;
+        padding: 0;
+        margin: 1em 0;
+        padding-top: 1em;
+        font-weight: bold;
+
+        @media (min-width: 48em) {
+            display: grid;
+            grid-template-columns: 10em auto;
+            grid-column-gap: 1em;
+        }
+    }
+
+    ul {
+        font-weight: normal;
+    }
+}
