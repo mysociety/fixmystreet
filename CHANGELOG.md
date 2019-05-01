@@ -25,6 +25,7 @@
           marked private on the site.
         - Add new upload_files flag which sends files/photos as part of the
           POST service request.
+        - Allow description in email template with placeholder.
 
 * v2.6 (3rd May 2019)
     - New features:

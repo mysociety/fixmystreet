@@ -342,7 +342,7 @@ underway’ and ‘This issue is now closed’.
 
 From the report page, staff with the appropriate permissions may select from the ‘public update’
 dropdown. This will prefill an update with template text for one of a number of common statuses.
-The templates are created by the Administrator; see ‘[Creating response templates](#creating-and-editing-priorities)’.
+The templates are created by the Administrator; see ‘[Creating response templates](#creating-editing-response-templates)’.
 
 The text in template responses is fully editable on the report page, so staff may also choose to add
 their own comments or edit the preformatted responses to reflect the precise circumstances of the
@@ -379,7 +379,7 @@ details' must be ticked.</span>
 #### Setting a priority
 From the panel on the right hand side of a report, staff with the appropriate permissions may
 select a priority from a drop-down list. These priorities are created by Administrator-level users;
-see ‘[Setting categories and priorities](#creating-and-editing-priorities) ’.
+see ‘[Setting categories and priorities](#creating-editing-priorities) ’.
 
 </div>
 
@@ -694,8 +694,11 @@ the ‘Resolved’ status update text is automatically applied. While this funct
 time-saver, we advise using it with caution to ensure that the template text is applicable to every
 situation in which is will be automatically applied.
 
-If you have an Open311 connection, you can click ‘auto-response’ so that a template will be
-applied when the state is updated by the automated Open311 process.
+If you have an Open311 connection, you can click ‘auto-response’ so that a
+template will be applied when the state is updated by the automated Open311
+process. In this instance, if your Open311 server returns extra text as part of
+the update, you may put the placeholder `{{description}}` in the template here,
+and that placeholder will be replaced by the text from the Open311 server.
 
 
 #### Editing or deleting a template

@@ -235,13 +235,12 @@ sub comment_text_for_request {
     my ($self, $request, $problem, $state, $old_state,
         $ext_code, $old_ext_code) = @_;
 
-    return $request->{description} if $request->{description};
-
     # Response templates are only triggered if the state/external status has changed.
     # And treat any fixed state as fixed.
     my $state_changed = $state ne $old_state
         && !( $problem->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} );
     my $ext_code_changed = $ext_code ne $old_ext_code;
+    my $template;
     if ($state_changed || $ext_code_changed) {
         my $state_params = {
             'me.state' => $state
@@ -250,12 +249,22 @@ sub comment_text_for_request {
             $state_params->{'me.external_status_code'} = $ext_code;
         };
 
-        if (my $template = $problem->response_templates->search({
+        if (my $t = $problem->response_templates->search({
             auto_response => 1,
             -or => $state_params,
         })->first) {
-            return $template->text;
+            $template = $t->text;
         }
+    }
+
+    my $desc = $request->{description} || '';
+    if ($desc && (!$template || $template !~ /\{\{description}}/)) {
+        return $desc;
+    }
+
+    if ($template) {
+        $template =~ s/\{\{description}}/$desc/;
+        return $template;
     }
 
     return "" if $self->blank_updates_permitted;

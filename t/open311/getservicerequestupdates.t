@@ -144,7 +144,7 @@ sub create_problem {
         detail       => '',
         used_map     => 1,
         user_id      => 1,
-        name         => '',
+        name         => 'Test User',
         state        => 'confirmed',
         service      => '',
         cobrand      => 'default',
@@ -452,6 +452,37 @@ for my $test (
         $problem->comments->delete;
     };
 }
+
+my $response_template_vars = $bodies{2482}->response_templates->create({
+    title => "a placeholder action scheduled template",
+    text => "We are investigating this report: {{description}}",
+    auto_response => 1,
+    state => "action scheduled"
+});
+subtest 'Check template placeholders' => sub {
+    my $local_requests_xml = setup_xml($problem->external_id, $problem->id, 'ACTION_SCHEDULED', 'We will do this in the morning.');
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', extended_statuses => undef, test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+
+    $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $problem->state( 'fixed - council' );
+    $problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new;
+    $update->fetch($o);
+
+    is $problem->comments->count, 1, 'comment count';
+    $problem->discard_changes;
+
+    my $c = FixMyStreet::DB->resultset('Comment')->search( { external_id => 638344 } )->first;
+    ok $c, 'comment exists';
+    is $c->text, "We are investigating this report: We will do this in the morning.", 'text correct';
+    is $c->mark_fixed, 0, 'mark_closed correct';
+    is $c->problem_state, 'action scheduled', 'problem_state correct';
+    is $c->mark_open, 0, 'mark_open correct';
+    is $c->state, 'confirmed', 'comment state correct';
+    is $problem->state, 'action scheduled', 'correct problem state';
+    $problem->comments->delete;
+};
 
 my $problemB = create_problem($bodies{2237}->id);
 
