@@ -3,6 +3,7 @@
 * Unreleased
     - Bugfixes:
         - Prevent creation of two templates with same title.
+        - Don't include private reports when searching by ref from front page.
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
     - Open311 improvements:

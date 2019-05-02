@@ -100,6 +100,16 @@ subtest 'check lookup by reference' => sub {
     is $mech->uri->path, "/report/$id", "redirected to report page";
 };
 
+subtest 'check lookup by reference does not show non_public reports' => sub {
+    $edinburgh_problems[0]->update({
+        non_public => 1
+    });
+    my $id = $edinburgh_problems[0]->id;
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => "ref:$id" } }, 'non_public ref');
+    $mech->content_contains('Searching found no reports');
+};
+
 subtest 'check non public reports are not displayed on around page' => sub {
     $mech->get_ok('/');
     FixMyStreet::override_config {
