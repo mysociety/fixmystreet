@@ -43,4 +43,19 @@ sub disambiguate_location {
 
 # sub get_geocoder { 'OSM' }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+    push @$extra,
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail };
+
+    $row->set_extra_fields(@$extra);
+}
+
 1;
