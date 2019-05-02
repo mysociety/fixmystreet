@@ -1,0 +1,37 @@
+---
+indicator: submit
+
+elements:
+  - type: Text
+    label: Name
+    name: name
+    attributes:
+      class: form-control
+    constraints:
+      - Required
+
+  - type: Select
+    label: Body
+    name: body_id
+    attributes:
+      class: form-control
+    empty_first: true
+    empty_first_label: "-- Select body --"
+    constraints:
+      - Required
+      - Integer
+
+  - type: Select
+    label: Permissions
+    name: permissions
+    multiple: 1
+    # transformers:
+    #   - type: Callback
+    #     callback: FixMyStreet::App::Controller::Admin::Roles::string_array
+    constraints:
+      - Required
+
+  - type: Submit
+    name: submit
+    attributes:
+      class: btn

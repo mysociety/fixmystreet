@@ -159,34 +159,7 @@ DISTRIBUTIONS
       CGI::Simple::Util 1.113
     requirements:
       IO::Scalar 0
-      Module::Build 0.36
       Test::More 0
-  CPAN-Meta-2.150010
-    pathname: D/DA/DAGOLDEN/CPAN-Meta-2.150010.tar.gz
-    provides:
-      CPAN::Meta 2.150010
-      CPAN::Meta::Converter 2.150010
-      CPAN::Meta::Feature 2.150010
-      CPAN::Meta::History 2.150010
-      CPAN::Meta::Merge 2.150010
-      CPAN::Meta::Prereqs 2.150010
-      CPAN::Meta::Spec 2.150010
-      CPAN::Meta::Validator 2.150010
-      Parse::CPAN::Meta 2.150010
-    requirements:
-      CPAN::Meta::Requirements 2.121
-      CPAN::Meta::YAML 0.011
-      Carp 0
-      Encode 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.17
-      File::Spec 0.80
-      JSON::PP 2.27300
-      Scalar::Util 0
-      perl 5.008001
-      strict 0
-      version 0.88
-      warnings 0
   CPAN-Meta-Check-0.004
     pathname: L/LE/LEONT/CPAN-Meta-Check-0.004.tar.gz
     provides:
@@ -201,34 +174,6 @@ DISTRIBUTIONS
       Module::Metadata 0
       Test::Differences 0
       Test::More 0.88
-      strict 0
-      warnings 0
-  CPAN-Meta-Requirements-2.122
-    pathname: D/DA/DAGOLDEN/CPAN-Meta-Requirements-2.122.tar.gz
-    provides:
-      CPAN::Meta::Requirements 2.122
-    requirements:
-      Carp 0
-      ExtUtils::MakeMaker 6.17
-      File::Find 0
-      File::Temp 0
-      Scalar::Util 0
-      Test::More 0.88
-      strict 0
-      version 0.77
-      warnings 0
-  CPAN-Meta-YAML-0.018
-    pathname: D/DA/DAGOLDEN/CPAN-Meta-YAML-0.018.tar.gz
-    provides:
-      CPAN::Meta::YAML 0.018
-    requirements:
-      B 0
-      Carp 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.17
-      Fcntl 0
-      Scalar::Util 0
-      perl 5.008001
       strict 0
       warnings 0
   CSS-Sass-3.3.3
@@ -286,18 +231,6 @@ DISTRIBUTIONS
       IO::Handle 0
       Scalar::Util 0
       perl 5.006
-      strict 0
-      warnings 0
-  Carp-1.26
-    pathname: Z/ZE/ZEFRAM/Carp-1.26.tar.gz
-    provides:
-      Carp 1.26
-      Carp::Heavy 1.26
-    requirements:
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      IPC::Open3 1.0103
-      Test::More 0
       strict 0
       warnings 0
   Carp-Assert-0.20
@@ -373,6 +306,45 @@ DISTRIBUTIONS
       Moose 0
       Scalar::Util 0
       Test::More 0
+  Catalyst-Controller-HTML-FormFu-2.04
+    pathname: N/NI/NIGELM/Catalyst-Controller-HTML-FormFu-2.04.tar.gz
+    provides:
+      Catalyst::Controller::HTML::FormFu 2.04
+      Catalyst::Controller::HTML::FormFu::Action::Form 2.04
+      Catalyst::Controller::HTML::FormFu::Action::FormConfig 2.04
+      Catalyst::Controller::HTML::FormFu::Action::FormMethod 2.04
+      Catalyst::Controller::HTML::FormFu::Action::MultiForm 2.04
+      Catalyst::Controller::HTML::FormFu::Action::MultiFormConfig 2.04
+      Catalyst::Controller::HTML::FormFu::Action::MultiFormMethod 2.04
+      Catalyst::Controller::HTML::FormFu::ActionBase::Form 2.04
+      Catalyst::Helper::HTML::FormFu 2.04
+      HTML::FormFu::Constraint::RequestToken 2.04
+      HTML::FormFu::Element::RequestToken 2.04
+      HTML::FormFu::Plugin::RequestToken 2.04
+    requirements:
+      Carp 0
+      Catalyst::Action 0
+      Catalyst::Component::InstancePerContext 0
+      Catalyst::Controller 0
+      Catalyst::Runtime 5.71001
+      Config::Any 0
+      ExtUtils::MakeMaker 0
+      File::Spec 0
+      HTML::FormFu 2.06
+      HTML::FormFu::Constraint 0
+      HTML::FormFu::Deploy 0
+      HTML::FormFu::Element::Text 0
+      HTML::FormFu::MultiForm 1.02
+      HTML::FormFu::Plugin 0
+      HTML::FormFu::Util 0
+      Moose 0
+      MooseX::Attribute::Chained 0
+      Regexp::Assemble 0
+      Scalar::Util 0
+      Task::Weaken 0
+      namespace::autoclean 0
+      strict 0
+      warnings 0
   Catalyst-Devel-1.37
     pathname: B/BO/BOBTFISH/Catalyst-Devel-1.37.tar.gz
     provides:
@@ -432,11 +404,11 @@ DISTRIBUTIONS
     requirements:
       Carp::Clan 0
       Catalyst::Component::InstancePerContext 0
-      Catalyst::Devel 1.0
       Catalyst::Runtime 5.80005
       CatalystX::Component::Traits 0.14
       DBD::SQLite 0
       DBIx::Class 0.08114
+      DBIx::Class::Schema::Loader 0.04005
       ExtUtils::MakeMaker 6.59
       Hash::Merge 0
       List::MoreUtils 0
@@ -763,19 +735,12 @@ DISTRIBUTIONS
       Test::Exception 0.31
       Test::More 0.94
       perl 5.006
-  Class-Accessor-Lite-0.06
-    pathname: K/KA/KAZUHO/Class-Accessor-Lite-0.06.tar.gz
-    provides:
-      Class::Accessor::Lite 0.06
-    requirements:
-      ExtUtils::MakeMaker 6.42
   Class-C3-0.24
     pathname: F/FL/FLORA/Class-C3-0.24.tar.gz
     provides:
       Class::C3 0.24
     requirements:
       Algorithm::C3 0.07
-      ExtUtils::CBuilder 0.27
       ExtUtils::MakeMaker 6.59
       Scalar::Util 0
       Test::More 0.47
@@ -990,6 +955,19 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Pod::Text 2.08
       Pod::Usage 1.33
+  Crypt-CBC-2.33
+    pathname: L/LD/LDS/Crypt-CBC-2.33.tar.gz
+    provides:
+      Crypt::CBC 2.33
+    requirements:
+      Digest::MD5 2.00
+      ExtUtils::MakeMaker 0
+  Crypt-DES-2.07
+    pathname: D/DP/DPARIS/Crypt-DES-2.07.tar.gz
+    provides:
+      Crypt::DES 2.07
+    requirements:
+      ExtUtils::MakeMaker 0
   Crypt-Eksblowfish-0.009
     pathname: Z/ZE/ZEFRAM/Crypt-Eksblowfish-0.009.tar.gz
     provides:
@@ -1151,7 +1129,7 @@ DISTRIBUTIONS
       DBD::SQLite::dr 1.37
     requirements:
       DBI 1.57
-      ExtUtils::MakeMaker 6.48
+      ExtUtils::MakeMaker 0
       File::Spec 0.82
       Test::Builder 0.86
       Test::More 0.47
@@ -1413,7 +1391,7 @@ DISTRIBUTIONS
       DBIx::Class::IntrospectableM2M 0.001001
     requirements:
       DBIx::Class 0
-      ExtUtils::MakeMaker 6.72
+      ExtUtils::MakeMaker 7.34
       Test::More 0
   DBIx-Class-QueryLog-1.005001
     pathname: F/FR/FREW/DBIx-Class-QueryLog-1.005001.tar.gz
@@ -1590,7 +1568,6 @@ DISTRIBUTIONS
       Data::Page 2.02
     requirements:
       Class::Accessor::Chained::Fast 0
-      Module::Build 0.35
       Test::Exception 0
       Test::More 0
   Data-Password-Common-0.004
@@ -1733,7 +1710,6 @@ DISTRIBUTIONS
     requirements:
       DateTime 0.17
       HTTP::Date 1.44
-      Module::Build 0.36
       Test::More 0.47
   DateTime-Format-ICal-0.09
     pathname: D/DR/DROLSKY/DateTime-Format-ICal-0.09.tar.gz
@@ -1753,7 +1729,6 @@ DISTRIBUTIONS
     requirements:
       DateTime 0.18
       DateTime::Format::Builder 0.77
-      Module::Build 0.38
   DateTime-Format-Mail-0.3001
     pathname: D/DR/DROLSKY/DateTime-Format-Mail-0.3001.tar.gz
     provides:
@@ -2308,7 +2283,7 @@ DISTRIBUTIONS
       DateTime::Locale::zu_ZA undef
     requirements:
       List::MoreUtils 0
-      Module::Build 0.36
+      Module::Build 0
       Params::Validate 0.91
       perl 5.006
   DateTime-Set-0.3900
@@ -2749,14 +2724,6 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Sub::Exporter::Progressive 0.001006
       perl 5.006
-  Devel-GlobalDestruction-XS-0.01
-    pathname: R/RI/RIBASUSHI/Devel-GlobalDestruction-XS-0.01.tar.gz
-    provides:
-      Devel::GlobalDestruction::XS 0.01
-    requirements:
-      ExtUtils::CBuilder 0.27
-      ExtUtils::MakeMaker 0
-      perl 5.006
   Devel-StackTrace-2.02
     pathname: D/DR/DROLSKY/Devel-StackTrace-2.02.tar.gz
     provides:
@@ -2820,6 +2787,7 @@ DISTRIBUTIONS
       Dir::Self 0.11
     requirements:
       Carp 0
+      ExtUtils::MakeMaker 6.48
       File::Spec 0
       strict 0
   Dist-CheckConflicts-0.09
@@ -3003,39 +2971,6 @@ DISTRIBUTIONS
       Scalar::Util 0
       Test::More 0
       perl 5.006
-  Encode-2.49
-    pathname: D/DA/DANKOGAI/Encode-2.49.tar.gz
-    provides:
-      Encode 2.49
-      Encode::Alias 2.16
-      Encode::Byte 2.04
-      Encode::CJKConstants 2.02
-      Encode::CN 2.03
-      Encode::CN::HZ 2.05
-      Encode::Config 2.05
-      Encode::EBCDIC 2.02
-      Encode::Encoder 2.02
-      Encode::Encoding 2.05
-      Encode::GSM0338 2.02
-      Encode::Guess 2.05
-      Encode::Internal 2.49
-      Encode::JP 2.04
-      Encode::JP::H2Z 2.02
-      Encode::JP::JIS7 2.04
-      Encode::KR 2.03
-      Encode::KR::2022_KR 2.02
-      Encode::MIME::Header 2.13
-      Encode::MIME::Header::ISO_2022_JP 1.03
-      Encode::MIME::Name 1.01
-      Encode::Symbol 2.02
-      Encode::TW 2.03
-      Encode::UTF_EBCDIC 2.49
-      Encode::Unicode 2.07
-      Encode::Unicode::UTF7 2.06
-      Encode::utf8 2.49
-      encoding 2.6_01
-    requirements:
-      ExtUtils::MakeMaker 0
   Encode-Locale-1.03
     pathname: G/GA/GAAS/Encode-Locale-1.03.tar.gz
     provides:
@@ -3159,45 +3094,6 @@ DISTRIBUTIONS
       File::Spec 0
       strict 0
       warnings 0
-  ExtUtils-MakeMaker-6.72
-    pathname: B/BI/BINGOS/ExtUtils-MakeMaker-6.72.tar.gz
-    provides:
-      ExtUtils::Command::MM 6.72
-      ExtUtils::Liblist 6.72
-      ExtUtils::Liblist::Kid 6.72
-      ExtUtils::MM 6.72
-      ExtUtils::MM_AIX 6.72
-      ExtUtils::MM_Any 6.72
-      ExtUtils::MM_BeOS 6.72
-      ExtUtils::MM_Cygwin 6.72
-      ExtUtils::MM_DOS 6.72
-      ExtUtils::MM_Darwin 6.72
-      ExtUtils::MM_MacOS 6.72
-      ExtUtils::MM_NW5 6.72
-      ExtUtils::MM_OS2 6.72
-      ExtUtils::MM_QNX 6.72
-      ExtUtils::MM_UWIN 6.72
-      ExtUtils::MM_Unix 6.72
-      ExtUtils::MM_VMS 6.72
-      ExtUtils::MM_VOS 6.72
-      ExtUtils::MM_Win32 6.72
-      ExtUtils::MM_Win95 6.72
-      ExtUtils::MY 6.72
-      ExtUtils::MakeMaker 6.72
-      ExtUtils::MakeMaker::Config 6.72
-      ExtUtils::MakeMaker::_version 6.72
-      ExtUtils::Mkbootstrap 6.72
-      ExtUtils::Mksymlists 6.72
-      ExtUtils::testlib 6.72
-      MM 6.72
-      MY 6.72
-    requirements:
-      Data::Dumper 0
-      DirHandle 0
-      File::Basename 0
-      File::Spec 0.8
-      Pod::Man 0
-      perl 5.006
   FCGI-0.74
     pathname: F/FL/FLORA/FCGI-0.74.tar.gz
     provides:
@@ -3412,6 +3308,265 @@ DISTRIBUTIONS
       HTTP::Request::Common 6.03
       URI 1.10
       perl 5.008001
+  HTML-FormFu-2.07
+    pathname: C/CF/CFRANKS/HTML-FormFu-2.07.tar.gz
+    provides:
+      HTML::FormFu 2.07
+      HTML::FormFu::Attribute 2.07
+      HTML::FormFu::Constants 2.07
+      HTML::FormFu::Constraint 2.07
+      HTML::FormFu::Constraint::ASCII 2.07
+      HTML::FormFu::Constraint::AllOrNone 2.07
+      HTML::FormFu::Constraint::AutoSet 2.07
+      HTML::FormFu::Constraint::Bool 2.07
+      HTML::FormFu::Constraint::Callback 2.07
+      HTML::FormFu::Constraint::CallbackOnce 2.07
+      HTML::FormFu::Constraint::DateTime 2.07
+      HTML::FormFu::Constraint::DependOn 2.07
+      HTML::FormFu::Constraint::Email 2.07
+      HTML::FormFu::Constraint::Equal 2.07
+      HTML::FormFu::Constraint::File 2.07
+      HTML::FormFu::Constraint::File::MIME 2.07
+      HTML::FormFu::Constraint::File::MaxSize 2.07
+      HTML::FormFu::Constraint::File::MinSize 2.07
+      HTML::FormFu::Constraint::File::Size 2.07
+      HTML::FormFu::Constraint::Integer 2.07
+      HTML::FormFu::Constraint::JSON 2.07
+      HTML::FormFu::Constraint::Length 2.07
+      HTML::FormFu::Constraint::MaxLength 2.07
+      HTML::FormFu::Constraint::MaxRange 2.07
+      HTML::FormFu::Constraint::MinLength 2.07
+      HTML::FormFu::Constraint::MinMaxFields 2.07
+      HTML::FormFu::Constraint::MinRange 2.07
+      HTML::FormFu::Constraint::Number 2.07
+      HTML::FormFu::Constraint::Printable 2.07
+      HTML::FormFu::Constraint::Range 2.07
+      HTML::FormFu::Constraint::Regex 2.07
+      HTML::FormFu::Constraint::Repeatable::Any 2.07
+      HTML::FormFu::Constraint::Required 2.07
+      HTML::FormFu::Constraint::Set 2.07
+      HTML::FormFu::Constraint::SingleValue 2.07
+      HTML::FormFu::Constraint::Word 2.07
+      HTML::FormFu::Deflator 2.07
+      HTML::FormFu::Deflator::Callback 2.07
+      HTML::FormFu::Deflator::CompoundDateTime 2.07
+      HTML::FormFu::Deflator::CompoundSplit 2.07
+      HTML::FormFu::Deflator::FormatNumber 2.07
+      HTML::FormFu::Deflator::PathClassFile 2.07
+      HTML::FormFu::Deflator::Strftime 2.07
+      HTML::FormFu::Deploy 2.07
+      HTML::FormFu::Element 2.07
+      HTML::FormFu::Element::Blank 2.07
+      HTML::FormFu::Element::Block 2.07
+      HTML::FormFu::Element::Button 2.07
+      HTML::FormFu::Element::Checkbox 2.07
+      HTML::FormFu::Element::Checkboxgroup 2.07
+      HTML::FormFu::Element::ComboBox 2.07
+      HTML::FormFu::Element::ContentButton 2.07
+      HTML::FormFu::Element::Date 2.07
+      HTML::FormFu::Element::DateTime 2.07
+      HTML::FormFu::Element::Email 2.07
+      HTML::FormFu::Element::Fieldset 2.07
+      HTML::FormFu::Element::File 2.07
+      HTML::FormFu::Element::Hidden 2.07
+      HTML::FormFu::Element::Hr 2.07
+      HTML::FormFu::Element::Image 2.07
+      HTML::FormFu::Element::Label 2.07
+      HTML::FormFu::Element::Multi 2.07
+      HTML::FormFu::Element::Number 2.07
+      HTML::FormFu::Element::Password 2.07
+      HTML::FormFu::Element::Radio 2.07
+      HTML::FormFu::Element::Radiogroup 2.07
+      HTML::FormFu::Element::Repeatable 2.07
+      HTML::FormFu::Element::Reset 2.07
+      HTML::FormFu::Element::Select 2.07
+      HTML::FormFu::Element::SimpleTable 2.07
+      HTML::FormFu::Element::Src 2.07
+      HTML::FormFu::Element::Submit 2.07
+      HTML::FormFu::Element::Text 2.07
+      HTML::FormFu::Element::Textarea 2.07
+      HTML::FormFu::Element::URL 2.07
+      HTML::FormFu::Exception 2.07
+      HTML::FormFu::Exception::Constraint 2.07
+      HTML::FormFu::Exception::Inflator 2.07
+      HTML::FormFu::Exception::Input 2.07
+      HTML::FormFu::Exception::Transformer 2.07
+      HTML::FormFu::Exception::Validator 2.07
+      HTML::FormFu::FakeQuery 2.07
+      HTML::FormFu::Filter 2.07
+      HTML::FormFu::Filter::Callback 2.07
+      HTML::FormFu::Filter::CompoundJoin 2.07
+      HTML::FormFu::Filter::CompoundSprintf 2.07
+      HTML::FormFu::Filter::CopyValue 2.07
+      HTML::FormFu::Filter::Encode 2.07
+      HTML::FormFu::Filter::ForceListValue 2.07
+      HTML::FormFu::Filter::FormatNumber 2.07
+      HTML::FormFu::Filter::HTMLEscape 2.07
+      HTML::FormFu::Filter::HTMLScrubber 2.07
+      HTML::FormFu::Filter::LowerCase 2.07
+      HTML::FormFu::Filter::NonNumeric 2.07
+      HTML::FormFu::Filter::Regex 2.07
+      HTML::FormFu::Filter::Split 2.07
+      HTML::FormFu::Filter::TrimEdges 2.07
+      HTML::FormFu::Filter::UpperCase 2.07
+      HTML::FormFu::Filter::Whitespace 2.07
+      HTML::FormFu::I18N 2.07
+      HTML::FormFu::I18N::bg 2.07
+      HTML::FormFu::I18N::cs 2.07
+      HTML::FormFu::I18N::da 2.07
+      HTML::FormFu::I18N::de 2.07
+      HTML::FormFu::I18N::en 2.07
+      HTML::FormFu::I18N::es 2.07
+      HTML::FormFu::I18N::fr 2.07
+      HTML::FormFu::I18N::hu 2.07
+      HTML::FormFu::I18N::it 2.07
+      HTML::FormFu::I18N::ja 2.07
+      HTML::FormFu::I18N::no 2.07
+      HTML::FormFu::I18N::pt_br 2.07
+      HTML::FormFu::I18N::pt_pt 2.07
+      HTML::FormFu::I18N::ro 2.07
+      HTML::FormFu::I18N::ru 2.07
+      HTML::FormFu::I18N::tr 2.07
+      HTML::FormFu::I18N::ua 2.07
+      HTML::FormFu::I18N::zh_cn 2.07
+      HTML::FormFu::Inflator 2.07
+      HTML::FormFu::Inflator::Callback 2.07
+      HTML::FormFu::Inflator::CompoundDateTime 2.07
+      HTML::FormFu::Inflator::DateTime 2.07
+      HTML::FormFu::Literal 2.07
+      HTML::FormFu::Localize 2.07
+      HTML::FormFu::Model 2.07
+      HTML::FormFu::Model::HashRef 2.07
+      HTML::FormFu::ObjectUtil 2.07
+      HTML::FormFu::OutputProcessor 2.07
+      HTML::FormFu::OutputProcessor::Indent 2.07
+      HTML::FormFu::OutputProcessor::StripWhitespace 2.07
+      HTML::FormFu::Plugin 2.07
+      HTML::FormFu::Plugin::StashValid 2.07
+      HTML::FormFu::Preload 2.07
+      HTML::FormFu::Processor 2.07
+      HTML::FormFu::QueryType::CGI 2.07
+      HTML::FormFu::QueryType::CGI::Simple 2.07
+      HTML::FormFu::QueryType::Catalyst 2.07
+      HTML::FormFu::Role::Constraint::Others 2.07
+      HTML::FormFu::Role::ContainsElements 2.07
+      HTML::FormFu::Role::ContainsElementsSharedWithField 2.07
+      HTML::FormFu::Role::CreateChildren 2.07
+      HTML::FormFu::Role::CustomRoles 2.07
+      HTML::FormFu::Role::Element::Coercible 2.07
+      HTML::FormFu::Role::Element::Field 2.07
+      HTML::FormFu::Role::Element::FieldMethods 2.07
+      HTML::FormFu::Role::Element::Group 2.07
+      HTML::FormFu::Role::Element::Input 2.07
+      HTML::FormFu::Role::Element::Layout 2.07
+      HTML::FormFu::Role::Element::MultiElement 2.07
+      HTML::FormFu::Role::Element::NonBlock 2.07
+      HTML::FormFu::Role::Element::ProcessOptionsFromModel 2.07
+      HTML::FormFu::Role::Element::SingleValueField 2.07
+      HTML::FormFu::Role::Filter::Compound 2.07
+      HTML::FormFu::Role::FormAndBlockMethods 2.07
+      HTML::FormFu::Role::FormAndElementMethods 2.07
+      HTML::FormFu::Role::FormBlockAndFieldMethods 2.07
+      HTML::FormFu::Role::GetProcessors 2.07
+      HTML::FormFu::Role::HasParent 2.07
+      HTML::FormFu::Role::NestedHashUtils 2.07
+      HTML::FormFu::Role::Populate 2.07
+      HTML::FormFu::Role::Render 2.07
+      HTML::FormFu::Transformer 2.07
+      HTML::FormFu::Transformer::Callback 2.07
+      HTML::FormFu::Upload 2.07
+      HTML::FormFu::UploadParam 2.07
+      HTML::FormFu::Util 2.07
+      HTML::FormFu::Validator 2.07
+      HTML::FormFu::Validator::Callback 2.07
+    requirements:
+      Carp 0
+      Class::MOP::Method 0
+      Clone 0.31
+      Config::Any 0.18
+      Cwd 0
+      Data::Visitor 0.26
+      Data::Visitor::Callback 0
+      DateTime 0.54
+      DateTime::Format::Builder 0.7901
+      DateTime::Format::Natural 0
+      DateTime::Format::Strptime 1.2000
+      DateTime::Locale 0.45
+      Email::Valid 0
+      Encode 0
+      Exporter 5.57
+      ExtUtils::MakeMaker 0
+      Fatal 0
+      File::Copy 0
+      File::Find 0
+      File::ShareDir 0
+      File::ShareDir::Install 0.06
+      File::Spec 0
+      File::Temp 0
+      HTML::Scrubber 0
+      HTML::TokeParser::Simple 3.14
+      HTTP::Headers 1.64
+      Hash::Flatten 0
+      IO::File 0
+      JSON::MaybeXS 0
+      List::MoreUtils 0
+      List::Util 1.45
+      Locale::Maketext 0
+      Module::Pluggable 0
+      Moose 1.00
+      Moose::Role 0
+      Moose::Util 0
+      MooseX::Aliases 0
+      MooseX::Attribute::Chained v1.0.2
+      Number::Format 0
+      Path::Class::File 0
+      Readonly 0
+      Regexp::Common 0
+      Scalar::Util 0
+      Storable 0
+      Task::Weaken 0
+      YAML::XS 0.32
+      perl 5.010
+  HTML-FormFu-Model-DBIC-2.03
+    pathname: C/CF/CFRANKS/HTML-FormFu-Model-DBIC-2.03.tar.gz
+    provides:
+      HTML::FormFu::Constraint::DBIC::Unique 2.03
+      HTML::FormFu::Model::DBIC 2.03
+    requirements:
+      DBD::SQLite 0
+      DBIx::Class 0.08108
+      ExtUtils::MakeMaker 0
+      HTML::FormFu 2.00
+      List::MoreUtils 0
+      MooseX::Attribute::Chained v1.0.2
+      Storable 0
+      Task::Weaken 0
+      perl 5.008001
+  HTML-FormFu-MultiForm-1.03
+    pathname: N/NI/NIGELM/HTML-FormFu-MultiForm-1.03.tar.gz
+    provides:
+      HTML::FormFu::MultiForm 1.03
+    requirements:
+      Carp 0
+      Clone 0
+      Crypt::CBC 0
+      Crypt::DES 0
+      ExtUtils::MakeMaker 0
+      HTML::FormFu 0
+      HTML::FormFu::Attribute 0
+      HTML::FormFu::ObjectUtil 0
+      HTML::FormFu::QueryType::CGI 0
+      HTML::FormFu::Role::FormAndElementMethods 0
+      HTML::FormFu::Role::FormBlockAndFieldMethods 0
+      HTML::FormFu::Role::NestedHashUtils 0
+      HTML::FormFu::Role::Populate 0
+      List::MoreUtils 0
+      Moose 0
+      MooseX::Attribute::Chained 0
+      Scalar::Util 0
+      Storable 0
+      overload 0
+      strict 0
   HTML-Parser-3.69
     pathname: G/GA/GAAS/HTML-Parser-3.69.tar.gz
     provides:
@@ -3427,6 +3582,19 @@ DISTRIBUTIONS
       HTML::Tagset 3
       XSLoader 0
       perl 5.008
+  HTML-Scrubber-0.17
+    pathname: N/NI/NIGELM/HTML-Scrubber-0.17.tar.gz
+    provides:
+      HTML::Scrubber 0.17
+    requirements:
+      ExtUtils::MakeMaker 0
+      HTML::Entities 0
+      HTML::Parser 3.47
+      List::Util 0
+      Scalar::Util 0
+      perl 5.008
+      strict 0
+      warnings 0
   HTML-Selector-XPath-0.15
     pathname: C/CO/CORION/HTML-Selector-XPath-0.15.tar.gz
     provides:
@@ -3442,6 +3610,24 @@ DISTRIBUTIONS
       HTML::Tagset 3.20
     requirements:
       ExtUtils::MakeMaker 0
+  HTML-TokeParser-Simple-3.16
+    pathname: O/OV/OVID/HTML-TokeParser-Simple-3.16.tar.gz
+    provides:
+      HTML::TokeParser::Simple 3.16
+      HTML::TokeParser::Simple::Token 3.16
+      HTML::TokeParser::Simple::Token::Comment 3.16
+      HTML::TokeParser::Simple::Token::Declaration 3.15
+      HTML::TokeParser::Simple::Token::ProcessInstruction 3.16
+      HTML::TokeParser::Simple::Token::Tag 3.16
+      HTML::TokeParser::Simple::Token::Tag::End 3.16
+      HTML::TokeParser::Simple::Token::Tag::Start 3.16
+      HTML::TokeParser::Simple::Token::Text 3.16
+    requirements:
+      HTML::Parser 3.25
+      HTML::TokeParser 2.24
+      Sub::Override 0
+      Test::More 0
+      perl 5.006
   HTML-Tree-5.03
     pathname: C/CJ/CJM/HTML-Tree-5.03.tar.gz
     provides:
@@ -3604,6 +3790,14 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.42
       Socket 0
       Test::More 0
+  Hash-Flatten-1.19
+    pathname: B/BB/BBC/Hash-Flatten-1.19.tar.gz
+    provides:
+      Hash::Flatten 1.19
+    requirements:
+      ExtUtils::MakeMaker 0
+      Log::Trace 0
+      Test::Assertions 0
   Hash-Merge-0.12
     pathname: D/DM/DMUEY/Hash-Merge-0.12.tar.gz
     provides:
@@ -3662,6 +3856,7 @@ DISTRIBUTIONS
       IO::Socket::SSL::Utils 2.014
     requirements:
       ExtUtils::MakeMaker 0
+      Mozilla::CA 0
       Net::SSLeay 1.46
       Scalar::Util 0
   IO-String-1.08
@@ -3693,7 +3888,7 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       File::Spec 0.8
-      Module::Build 0.4
+      Module::Build 0.28
       Test::More 0.80
   Import-Into-1.002005
     pathname: H/HA/HAARG/Import-Into-1.002005.tar.gz
@@ -3729,16 +3924,6 @@ DISTRIBUTIONS
       JSON::PP 2.27202
       Scalar::Util 0
       perl 5.006
-  JSON-PP-2.94
-    pathname: I/IS/ISHIGAKI/JSON-PP-2.94.tar.gz
-    provides:
-      JSON::PP 2.94
-      JSON::PP::Boolean 2.94
-      JSON::PP::IncrParser 2.94
-    requirements:
-      ExtUtils::MakeMaker 0
-      Scalar::Util 1.08
-      Test::More 0
   LWP-MediaTypes-6.02
     pathname: G/GA/GAAS/LWP-MediaTypes-6.02.tar.gz
     provides:
@@ -3809,7 +3994,6 @@ DISTRIBUTIONS
     provides:
       Lingua::EN::Inflect 1.895
     requirements:
-      ExtUtils::MakeMaker 0
       Test::More 0
       version 0
   Lingua-EN-Inflect-Number-1.1
@@ -3944,6 +4128,13 @@ DISTRIBUTIONS
       IPC::Cmd 0
       XSLoader 0
       base 0
+  Log-Trace-1.070
+    pathname: B/BB/BBC/Log-Trace-1.070.tar.gz
+    provides:
+      Log::Trace 1.070
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
   MIME-Types-1.38
     pathname: M/MA/MARKOV/MIME-Types-1.38.tar.gz
     provides:
@@ -4215,6 +4406,13 @@ DISTRIBUTIONS
       Test::More 0.86
       YAML::Tiny 1.38
       perl 5.005
+  Module-Install-AuthorTests-0.002
+    pathname: R/RJ/RJBS/Module-Install-AuthorTests-0.002.tar.gz
+    provides:
+      Module::Install::AuthorTests 0.002
+    requirements:
+      ExtUtils::MakeMaker 0
+      Module::Install 0
   Module-Pluggable-4.7
     pathname: S/SI/SIMONW/Module-Pluggable-4.7.tar.gz
     provides:
@@ -4394,6 +4592,34 @@ DISTRIBUTIONS
       Test::More 0.88
       Test::Requires 0.05
       Try::Tiny 0.02
+  MooseX-Aliases-0.11
+    pathname: D/DO/DOY/MooseX-Aliases-0.11.tar.gz
+    provides:
+      MooseX::Aliases 0.11
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      Moose 2.0000
+      Moose::Exporter 0
+      Moose::Role 0
+      Moose::Util::TypeConstraints 0
+      Scalar::Util 0
+  MooseX-Attribute-Chained-1.0.3
+    pathname: T/TO/TOMHUKINS/MooseX-Attribute-Chained-1.0.3.tar.gz
+    provides:
+      Moose::Meta::Attribute::Custom::Trait::Chained v1.0.3
+      MooseX::Attribute::Chained v1.0.3
+      MooseX::Attribute::Chained::Method::Accessor v1.0.3
+      MooseX::Attribute::ChainedClone v1.0.3
+      MooseX::Attribute::ChainedClone::Method::Accessor v1.0.3
+      MooseX::ChainedAccessors v1.0.3
+      MooseX::ChainedAccessors::Accessor v1.0.3
+      MooseX::Traits::Attribute::Chained v1.0.3
+      MooseX::Traits::Attribute::ChainedClone v1.0.3
+    requirements:
+      Module::Build 0.28
+      Moose 0
+      Test::More 0.88
+      Try::Tiny 0
   MooseX-Daemonize-0.15
     pathname: M/MI/MICHAELR/MooseX-Daemonize-0.15.tar.gz
     provides:
@@ -4491,22 +4717,6 @@ DISTRIBUTIONS
       Test::More 0.88
       namespace::autoclean 0
       namespace::clean 0.10
-  MooseX-NonMoose-0.26
-    pathname: D/DO/DOY/MooseX-NonMoose-0.26.tar.gz
-    provides:
-      MooseX::NonMoose 0.26
-      MooseX::NonMoose::InsideOut 0.26
-      MooseX::NonMoose::Meta::Role::Class 0.26
-      MooseX::NonMoose::Meta::Role::Constructor 0.26
-    requirements:
-      ExtUtils::MakeMaker 6.30
-      List::MoreUtils 0
-      Module::Runtime 0
-      Moose::Exporter 0
-      Moose::Role 2.0000
-      Moose::Util 0
-      Try::Tiny 0
-      warnings 0
   MooseX-Params-Validate-0.18
     pathname: D/DR/DROLSKY/MooseX-Params-Validate-0.18.tar.gz
     provides:
@@ -4967,7 +5177,6 @@ DISTRIBUTIONS
       Digest::SHA1 2.12
       Encode 2.35
       LWP::UserAgent 1
-      Module::Build 0.36
       Test::More 0.66
       Test::Warn 0.21
       URI::Escape 3.28
@@ -5558,7 +5767,6 @@ DISTRIBUTIONS
       Parse::RecDescent::Token 1.967015
       Parse::RecDescent::UncondReject 1.967015
     requirements:
-      ExtUtils::MakeMaker 6.5702
       Test::More 0
       Text::Balanced 1.95
   Path-Class-0.31
@@ -5612,25 +5820,6 @@ DISTRIBUTIONS
       perl 5.008001
       strict 0
       warnings 0
-  PathTools-3.40
-    pathname: S/SM/SMUELLER/PathTools-3.40.tar.gz
-    provides:
-      Cwd 3.40
-      File::Spec 3.40
-      File::Spec::Cygwin 3.40
-      File::Spec::Epoc 3.40
-      File::Spec::Functions 3.40
-      File::Spec::Mac 3.40
-      File::Spec::OS2 3.40
-      File::Spec::Unix 3.40
-      File::Spec::VMS 3.40
-      File::Spec::Win32 3.40
-    requirements:
-      Carp 0
-      ExtUtils::MakeMaker 0
-      File::Basename 0
-      Scalar::Util 0
-      Test 0
   Plack-1.0018
     pathname: M/MI/MIYAGAWA/Plack-1.0018.tar.gz
     provides:
@@ -5779,7 +5968,7 @@ DISTRIBUTIONS
       DBIx::Class::QueryLog 0
       DBIx::Class::QueryLog::Analyzer 0
       Data::Dump 0
-      ExtUtils::MakeMaker 7.1002
+      ExtUtils::MakeMaker 7.34
       HTTP::Request::Common 0
       Moo 0.009005
       Plack 0
@@ -5869,6 +6058,16 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       XSLoader 0
       perl 5.006
+  Regexp-Assemble-0.38
+    pathname: R/RS/RSAVAGE/Regexp-Assemble-0.38.tgz
+    provides:
+      Regexp::Assemble 0.38
+    requirements:
+      ExtUtils::MakeMaker 0
+      constant 0
+      strict 0
+      vars 0
+      warnings 0
   Regexp-Common-2013031301
     pathname: A/AB/ABIGAIL/Regexp-Common-2013031301.tar.gz
     provides:
@@ -6137,7 +6336,6 @@ DISTRIBUTIONS
     provides:
       SUPER 1.20141117
     requirements:
-      ExtUtils::MakeMaker 0
       Scalar::Util 1.20
       Sub::Identify 0.03
       Test::Simple 0.61
@@ -6148,17 +6346,6 @@ DISTRIBUTIONS
       Safe::Isa 1.000002
     requirements:
       ExtUtils::MakeMaker 0
-  Scalar-List-Utils-1.49
-    pathname: P/PE/PEVANS/Scalar-List-Utils-1.49.tar.gz
-    provides:
-      List::Util 1.49
-      List::Util::XS 1.49
-      Scalar::Util 1.49
-      Sub::Util 1.49
-    requirements:
-      ExtUtils::MakeMaker 0
-      Test::More 0
-      perl 5.006
   Scope-Guard-0.20
     pathname: C/CH/CHOCOLATE/Scope-Guard-0.20.tar.gz
     provides:
@@ -6189,15 +6376,6 @@ DISTRIBUTIONS
       Lingua::Stem::Snowball::Se 1.2
     requirements:
       Test::More 0.42
-  Socket-2.024
-    pathname: P/PE/PEVANS/Socket-2.024.tar.gz
-    provides:
-      Socket 2.024
-    requirements:
-      ExtUtils::CBuilder 0
-      ExtUtils::Constant 0.23
-      ExtUtils::MakeMaker 0
-      perl 5.006001
   Sort-Key-1.32
     pathname: S/SA/SALVA/Sort-Key-1.32.tar.gz
     provides:
@@ -6643,6 +6821,16 @@ DISTRIBUTIONS
       Term::ReadKey 2.37
     requirements:
       ExtUtils::MakeMaker 6.58
+  Test-Assertions-1.054
+    pathname: B/BB/BBC/Test-Assertions-1.054.tar.gz
+    provides:
+      Test::Assertions 1.054
+      Test::Assertions::TestScript 1.018
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 0
+      Getopt::Long 0
+      Log::Trace 0
   Test-Base-0.60
     pathname: I/IN/INGY/Test-Base-0.60.tar.gz
     provides:
@@ -6773,60 +6961,18 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Test-Harness-3.42
-    pathname: L/LE/LEONT/Test-Harness-3.42.tar.gz
+  Test-LoadAllModules-0.022
+    pathname: K/KI/KITANO/Test-LoadAllModules-0.022.tar.gz
     provides:
-      App::Prove 3.42
-      App::Prove::State 3.42
-      App::Prove::State::Result 3.42
-      App::Prove::State::Result::Test 3.42
-      Harness::Hook undef
-      TAP::Base 3.42
-      TAP::Formatter::Base 3.42
-      TAP::Formatter::Color 3.42
-      TAP::Formatter::Console 3.42
-      TAP::Formatter::Console::ParallelSession 3.42
-      TAP::Formatter::Console::Session 3.42
-      TAP::Formatter::File 3.42
-      TAP::Formatter::File::Session 3.42
-      TAP::Formatter::Session 3.42
-      TAP::Harness 3.42
-      TAP::Harness::Env 3.42
-      TAP::Object 3.42
-      TAP::Parser 3.42
-      TAP::Parser::Aggregator 3.42
-      TAP::Parser::Grammar 3.42
-      TAP::Parser::Iterator 3.42
-      TAP::Parser::Iterator::Array 3.42
-      TAP::Parser::Iterator::Process 3.42
-      TAP::Parser::Iterator::Stream 3.42
-      TAP::Parser::IteratorFactory 3.42
-      TAP::Parser::Multiplexer 3.42
-      TAP::Parser::Result 3.42
-      TAP::Parser::Result::Bailout 3.42
-      TAP::Parser::Result::Comment 3.42
-      TAP::Parser::Result::Plan 3.42
-      TAP::Parser::Result::Pragma 3.42
-      TAP::Parser::Result::Test 3.42
-      TAP::Parser::Result::Unknown 3.42
-      TAP::Parser::Result::Version 3.42
-      TAP::Parser::Result::YAML 3.42
-      TAP::Parser::ResultFactory 3.42
-      TAP::Parser::Scheduler 3.42
-      TAP::Parser::Scheduler::Job 3.42
-      TAP::Parser::Scheduler::Spinner 3.42
-      TAP::Parser::Source 3.42
-      TAP::Parser::SourceHandler 3.42
-      TAP::Parser::SourceHandler::Executable 3.42
-      TAP::Parser::SourceHandler::File 3.42
-      TAP::Parser::SourceHandler::Handle 3.42
-      TAP::Parser::SourceHandler::Perl 3.42
-      TAP::Parser::SourceHandler::RawTAP 3.42
-      TAP::Parser::YAMLish::Reader 3.42
-      TAP::Parser::YAMLish::Writer 3.42
-      Test::Harness 3.42
+      Test::LoadAllModules 0.022
     requirements:
-      ExtUtils::MakeMaker 0
+      ExtUtils::MakeMaker 6.36
+      File::Spec 0
+      Filter::Util::Call 0
+      List::MoreUtils 0
+      Module::Install::AuthorTests 0
+      Module::Pluggable::Object 0
+      Test::More 0
   Test-LongString-0.15
     pathname: R/RG/RGARCIA/Test-LongString-0.15.tar.gz
     provides:
@@ -6892,6 +7038,13 @@ DISTRIBUTIONS
       Test::Harness 3.35
       Test::More 1.302047
       Test::Warn 0.30
+  Test-Needs-0.002005
+    pathname: H/HA/HAARG/Test-Needs-0.002005.tar.gz
+    provides:
+      Test::Needs 0.002005
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.006
   Test-NoWarnings-1.04
     pathname: A/AD/ADAMK/Test-NoWarnings-1.04.tar.gz
     provides:
@@ -6969,83 +7122,6 @@ DISTRIBUTIONS
       Test::Requires 0
       Time::HiRes 0
       perl 5.008
-  Test-Simple-1.302140
-    pathname: E/EX/EXODIST/Test-Simple-1.302140.tar.gz
-    provides:
-      Test2 1.302140
-      Test2::API 1.302140
-      Test2::API::Breakage 1.302140
-      Test2::API::Context 1.302140
-      Test2::API::Instance 1.302140
-      Test2::API::Stack 1.302140
-      Test2::Event 1.302140
-      Test2::Event::Bail 1.302140
-      Test2::Event::Diag 1.302140
-      Test2::Event::Encoding 1.302140
-      Test2::Event::Exception 1.302140
-      Test2::Event::Fail 1.302140
-      Test2::Event::Generic 1.302140
-      Test2::Event::Note 1.302140
-      Test2::Event::Ok 1.302140
-      Test2::Event::Pass 1.302140
-      Test2::Event::Plan 1.302140
-      Test2::Event::Skip 1.302140
-      Test2::Event::Subtest 1.302140
-      Test2::Event::TAP::Version 1.302140
-      Test2::Event::V2 1.302140
-      Test2::Event::Waiting 1.302140
-      Test2::EventFacet 1.302140
-      Test2::EventFacet::About 1.302140
-      Test2::EventFacet::Amnesty 1.302140
-      Test2::EventFacet::Assert 1.302140
-      Test2::EventFacet::Control 1.302140
-      Test2::EventFacet::Error 1.302140
-      Test2::EventFacet::Hub 1.302140
-      Test2::EventFacet::Info 1.302140
-      Test2::EventFacet::Meta 1.302140
-      Test2::EventFacet::Parent 1.302140
-      Test2::EventFacet::Plan 1.302140
-      Test2::EventFacet::Render 1.302140
-      Test2::EventFacet::Trace 1.302140
-      Test2::Formatter 1.302140
-      Test2::Formatter::TAP 1.302140
-      Test2::Hub 1.302140
-      Test2::Hub::Interceptor 1.302140
-      Test2::Hub::Interceptor::Terminator 1.302140
-      Test2::Hub::Subtest 1.302140
-      Test2::IPC 1.302140
-      Test2::IPC::Driver 1.302140
-      Test2::IPC::Driver::Files 1.302140
-      Test2::Tools::Tiny 1.302140
-      Test2::Util 1.302140
-      Test2::Util::ExternalMeta 1.302140
-      Test2::Util::Facets2Legacy 1.302140
-      Test2::Util::HashBase 1.302140
-      Test2::Util::Trace 1.302140
-      Test::Builder 1.302140
-      Test::Builder::Formatter 1.302140
-      Test::Builder::IO::Scalar 2.114
-      Test::Builder::Module 1.302140
-      Test::Builder::Tester 1.302140
-      Test::Builder::Tester::Color 1.302140
-      Test::Builder::Tester::Tie 1.302140
-      Test::Builder::TodoDiag 1.302140
-      Test::More 1.302140
-      Test::Simple 1.302140
-      Test::Tester 1.302140
-      Test::Tester::Capture 1.302140
-      Test::Tester::CaptureRunner 1.302140
-      Test::Tester::Delegate 1.302140
-      Test::use::ok 1.302140
-      ok 1.302140
-    requirements:
-      ExtUtils::MakeMaker 0
-      File::Spec 0
-      File::Temp 0
-      Scalar::Util 1.13
-      Storable 0
-      perl 5.006002
-      utf8 0
   Test-TCP-1.21
     pathname: T/TO/TOKUHIROM/Test-TCP-1.21.tar.gz
     provides:
@@ -7058,16 +7134,6 @@ DISTRIBUTIONS
       Test::More 0.98
       Test::SharedFork 0.19
       perl 5.00800
-  Test-Tester-0.109
-    pathname: F/FD/FDALY/Test-Tester-0.109.tar.gz
-    provides:
-      Test::Tester 0.109
-      Test::Tester::Capture undef
-      Test::Tester::CaptureRunner undef
-      Test::Tester::Delegate undef
-    requirements:
-      ExtUtils::MakeMaker 0
-      Test::Builder 0
   Test-Trap-v0.2.2
     pathname: E/EB/EBHANSSEN/Test-Trap-v0.2.2.tar.gz
     provides:
@@ -7082,7 +7148,6 @@ DISTRIBUTIONS
       Exporter 0
       File::Temp 0
       IO::Handle 0
-      Module::Build 0.36
       Test::Builder 0
       Test::More 0
       Test::Tester 0.107
@@ -7162,14 +7227,6 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Test-use-ok-0.11
-    pathname: A/AU/AUDREYT/Test-use-ok-0.11.tar.gz
-    provides:
-      Test::use::ok 0.11
-      ok 0.11
-    requirements:
-      ExtUtils::MakeMaker 6.36
-      perl 5.005
   Test-utf8-1.00
     pathname: M/MA/MARKF/Test-utf8-1.00.tar.gz
     provides:
@@ -7220,7 +7277,6 @@ DISTRIBUTIONS
     provides:
       Text::Glob 0.09
     requirements:
-      Module::Build 0.36
       Test::More 0
   Text-MicroTemplate-0.24
     pathname: K/KA/KAZUHO/Text-MicroTemplate-0.24.tar.gz
@@ -7240,6 +7296,7 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+      perl 5.008001
   Text-Unidecode-0.04
     pathname: S/SB/SBURKE/Text-Unidecode-0.04.tar.gz
     provides:
@@ -7286,6 +7343,17 @@ DISTRIBUTIONS
       Test::More 0
       Test::use::ok 0
       Tie::RefHash 0
+  Time-Duration-1.20
+    pathname: N/NE/NEILB/Time-Duration-1.20.tar.gz
+    provides:
+      Time::Duration 1.20
+    requirements:
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      constant 0
+      perl 5.006
+      strict 0
+      warnings 0
   Time-Duration-Parse-0.14
     pathname: N/NE/NEILB/Time-Duration-Parse-0.14.tar.gz
     provides:
@@ -7886,6 +7954,15 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.59
       perl 5.008001
+  YAML-LibYAML-0.77
+    pathname: T/TI/TINITA/YAML-LibYAML-0.77.tar.gz
+    provides:
+      YAML::LibYAML 0.77
+      YAML::XS 0.77
+      YAML::XS::LibYAML undef
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.008001
   YAML-Tiny-1.51
     pathname: A/AD/ADAMK/YAML-Tiny-1.51.tar.gz
     provides:
@@ -7906,30 +7983,6 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  autodie-2.20
-    pathname: P/PJ/PJF/autodie-2.20.tar.gz
-    provides:
-      Fatal 2.20
-      autodie 2.20
-      autodie::Scope::Guard 2.20
-      autodie::exception 2.20
-      autodie::exception::system 2.20
-      autodie::hints 2.20
-      autodie::skip 2.20
-    requirements:
-      B 0
-      Carp 0
-      Config 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.30
-      Fcntl 0
-      POSIX 0
-      Scalar::Util 0
-      Tie::RefHash 0
-      base 0
-      constant 0
-      if 0
-      overload 0
   bareword-filehandles-0.005
     pathname: I/IL/ILMARI/bareword-filehandles-0.005.tar.gz
     provides:
@@ -7975,50 +8028,6 @@ DISTRIBUTIONS
       XSLoader 0
       lib 0
       perl 5.008001
-  libnet-3.10
-    pathname: S/SH/SHAY/libnet-3.10.tar.gz
-    provides:
-      Net undef
-      Net::Cmd 3.10
-      Net::Config 3.10
-      Net::Domain 3.10
-      Net::FTP 3.10
-      Net::FTP::A 3.10
-      Net::FTP::E 3.10
-      Net::FTP::I 3.10
-      Net::FTP::L 3.10
-      Net::FTP::_SSL_SingleSessionCache 3.10
-      Net::FTP::dataconn 3.10
-      Net::NNTP 3.10
-      Net::NNTP::_SSL 3.10
-      Net::Netrc 3.10
-      Net::POP3 3.10
-      Net::POP3::_SSL 3.10
-      Net::SMTP 3.10
-      Net::SMTP::_SSL 3.10
-      Net::Time 3.10
-    requirements:
-      Carp 0
-      Errno 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.64
-      Fcntl 0
-      File::Basename 0
-      FileHandle 0
-      Getopt::Std 0
-      IO::File 0
-      IO::Select 0
-      IO::Socket 1.05
-      POSIX 0
-      Socket 2.016
-      Symbol 0
-      Time::Local 0
-      constant 0
-      perl 5.008001
-      strict 0
-      utf8 0
-      vars 0
-      warnings 0
   libwww-perl-6.05
     pathname: G/GA/GAAS/libwww-perl-6.05.tar.gz
     provides:

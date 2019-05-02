@@ -1,0 +1,24 @@
+[% INCLUDE 'admin/header.html' title=loc('View Roles') %]
+[% PROCESS 'admin/report_blocks.html' %]
+
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Body') %]</th>
+        <th>[% loc('Permissions') %]</th>
+        <th>[% loc('Edit') %]</th>
+    </tr>
+    [%- FOREACH role IN roles.all %]
+    <tr>
+        <td>[% role.name %]</td>
+        <td>[% role.body.name %]</td>
+        <td>[% role.permissions.size %]</td>
+        <td><a href="[% c.uri_for(c.controller.action_for('edit'), role.id) %]">edit</a></td>
+    </tr>
+    [% END %]
+</table>
+
+
+<a href="[% c.uri_for(c.controller.action_for('create')) %]">[% loc('Add role') %]</a>
+
+[% INCLUDE 'admin/footer.html' %]

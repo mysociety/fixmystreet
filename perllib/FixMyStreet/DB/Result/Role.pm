@@ -23,7 +23,7 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "text", is_nullable => 1 },
   "permissions",
-  { data_type => "text[]", is_nullable => 1 },
+  { data_type => "text[]", is_nullable => 1, is_array => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
