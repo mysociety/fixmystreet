@@ -16,6 +16,9 @@
     accept-charset="utf-8"
     class="validate">
 
+    [% IF errors.title %]
+        <div class="form-error">[% errors.title %]</div>
+    [% END %]
     <p>
         <strong>[% loc('Title:') %] </strong>
         <input type="text" name="title" class="form-control required" size="30" value="[% rt.title| html %]">

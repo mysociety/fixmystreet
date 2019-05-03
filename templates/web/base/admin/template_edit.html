@@ -13,7 +13,9 @@
         <p class="error">[% loc('Please correct the errors below') %]</p>
     [% END %]
 
-
+    [% IF errors.title %]
+        <div class="form-error">[% errors.title %]</div>
+    [% END %]
     <div class="admin-hint">
       <p>
         [% loc('This is a <strong>private</strong> name for this template so you can identify it when updating reports or editing in the admin.') %]

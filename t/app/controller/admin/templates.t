@@ -66,6 +66,30 @@ subtest "response templates can be added" => sub {
      is $oxfordshire->response_templates->count, 1, "Response template was added";
 };
 
+subtest "but not another with the same title" => sub {
+    my $fields = {
+        title => "Report acknowledgement",
+        text => "Another report acknowledgement.",
+        auto_response => undef,
+        "contacts[".$oxfordshirecontact->id."]" => 1,
+    };
+    my $list_url = "/admin/templates/" . $oxfordshire->id;
+    $mech->get_ok( "$list_url/new" );
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, "$list_url/new", 'not redirected';
+    $mech->content_contains( 'Please correct the errors below' );
+    $mech->content_contains( 'There is already a template with that title.' );
+
+    my @ts = $oxfordshire->response_templates->all;
+    is @ts, 1, "No new response template was added";
+
+    my $url = "$list_url/" . $ts[0]->id;
+    $mech->get_ok($url);
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, $list_url, 'redirected';
+    is $oxfordshire->response_templates->count, 1, "No new response template was added";
+};
+
 subtest "response templates are included on page" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
