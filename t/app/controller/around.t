@@ -366,7 +366,7 @@ subtest 'check map zoom level customisation' => sub {
 subtest 'check nearby lookup' => sub {
     my $p = FixMyStreet::DB->resultset("Problem")->search({ external_body => "Pothole-confirmed" })->first;
     $mech->get_ok('/around/nearby?latitude=51.754926&longitude=-1.256179&filter_category=Pothole');
-    $mech->content_contains('["51.754926","-1.256179","yellow",' . $p->id . ',"Around page Test 1 for ' . $body->id . '","small",false]');
+    $mech->content_contains('[51.754926,-1.256179,"yellow",' . $p->id . ',"Around page Test 1 for ' . $body->id . '","small",false]');
 };
 
 done_testing();

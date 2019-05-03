@@ -1,3 +1,4 @@
+use utf8;
 use FixMyStreet::Script::UpdateAllReports;
 
 use FixMyStreet::TestMech;
@@ -53,7 +54,7 @@ FixMyStreet::override_config {
 
     subtest 'check marketing dashboard csv' => sub {
         $mech->log_in_ok('someone@birmingham.gov.uk');
-        $mech->create_problems_for_body(105, $body->id, 'Title', {
+        $mech->create_problems_for_body(105, $body->id, 'Titlē', {
             detail => "this report\nis split across\nseveral lines",
             areas => ",2514,",
         });
@@ -80,7 +81,7 @@ FixMyStreet::override_config {
             'Column headers look correct';
 
         my $body_id = $body->id;
-        like $rows[1]->[1], qr/Title Test \d+ for $body_id/, 'problem title correct';
+        like $rows[1]->[1], qr/Titlē Test \d+ for $body_id/, 'problem title correct';
     };
 
     subtest 'check marketing dashboard contact listings' => sub {

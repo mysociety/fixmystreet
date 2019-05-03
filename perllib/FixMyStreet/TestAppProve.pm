@@ -104,6 +104,8 @@ sub run {
 
     my $config_out = $class->get_config({ config_file => $config_file, db_config_file => $db_config_file });
     local $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
+    # Don't warn over use of Regex dispatch type
+    local $ENV{CATALYST_NOWARN_DEPRECATE} = 1;
 
     my $prove = App::Prove->new;
     $prove->process_args(@ARGV);

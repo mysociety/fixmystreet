@@ -357,8 +357,9 @@ sub construct_email ($) {
         }
     }
 
-    if ($p->{_attachments_}) {
+    if (@{$p->{_attachments_}}) {
         push @$parts, map { _mime_create(%$_) } @{$p->{_attachments_}};
+        $overall_type = 'multipart/mixed';
     }
 
     my $email = Email::MIME->create(
