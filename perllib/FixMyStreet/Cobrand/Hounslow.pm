@@ -6,7 +6,7 @@ use warnings;
 
 sub council_area_id { 2483 }
 sub council_area { 'Hounslow' }
-sub council_name { 'Hounslow Borough Council' }
+sub council_name { 'Hounslow Highways' }
 sub council_url { 'hounslow' }
 sub example_places { ( 'TW3 1SN', "Depot Road" ) }
 
@@ -47,7 +47,25 @@ sub send_questionnaires { 0 }
 
 sub enable_category_groups { 1 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    # Categories covering the Hounslow area have a mixture of Open311 and Email
+    # send methods. Hounslow only want Open311 categories to be visible on their
+    # cobrand, not the email categories from FMS.com. We've set up the
+    # Email categories with a devolved send_method, so can identify Open311
+    # categories as those which have a blank send_method.
+    return $rs->search( { 'me.send_method' => undef, 'body.name' => 'Hounslow Borough Council' } );
+}
+
 sub report_sent_confirmation_email { 'external_id' }
+
+# Used to change the "Sent to" line on report pages
+sub link_to_council_cobrand { "Hounslow Highways" }
+
+# The "all reports" link will default to using council_name, which
+# in our case doesn't correspond to a body and so causes an infinite redirect.
+# Instead, force the borough council name to be used.
+sub all_reports_single_body { { name => "Hounslow Borough Council" } }
 
 sub open311_post_send {
     my ($self, $row, $h) = @_;
