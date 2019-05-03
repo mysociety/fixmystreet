@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "FixMyStreet::EncodedColumn",
+);
 __PACKAGE__->table("contact_response_templates");
 __PACKAGE__->add_columns(
   "id",
@@ -38,8 +42,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-08-24 11:29:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d6niNsxi2AsijhvJSuQeKw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PE5+8AZp77pb+tDFEwiOqg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

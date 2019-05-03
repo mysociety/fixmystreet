@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "FixMyStreet::EncodedColumn",
+);
 __PACKAGE__->table("questionnaire");
 __PACKAGE__->add_columns(
   "id",
@@ -40,22 +44,11 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oL1Hk4/bNG14CY74GA75SA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AWRb6itjsVkG5VUDRmBTIg
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];
-
-my $stz = sub {
-    my ( $orig, $self ) = ( shift, shift );
-    my $s = $self->$orig(@_);
-    return $s unless $s && UNIVERSAL::isa($s, "DateTime");
-    FixMyStreet->set_time_zone($s);
-    return $s;
-};
-
-around whensent => $stz;
-around whenanswered => $stz;
 
 sub marks_fixed {
     my $self = shift;

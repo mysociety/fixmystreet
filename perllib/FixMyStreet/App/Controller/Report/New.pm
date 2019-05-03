@@ -757,7 +757,7 @@ sub setup_report_extra_fields : Private {
 
     return unless $c->cobrand->allow_report_extra_fields;
 
-    my @extras = $c->model('DB::ReportExtraFields')->for_cobrand($c->cobrand)->for_language($c->stash->{lang_code})->all;
+    my @extras = $c->model('DB::ReportExtraField')->for_cobrand($c->cobrand)->for_language($c->stash->{lang_code})->all;
     $c->stash->{report_extra_fields} = \@extras;
 }
 

@@ -557,7 +557,11 @@ subtest 'date for comment correct' => sub {
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
     my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
-    $update->update_comments( $o, $bodies{2482} );
+    FixMyStreet::override_config {
+        TIME_ZONE => 'Australia/Sydney',
+    }, sub {
+        $update->update_comments( $o, $bodies{2482} );
+    };
 
     my $comment = $problem->comments->first;
     is $comment->created, $dt, 'created date set to date from XML';

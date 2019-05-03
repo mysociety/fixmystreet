@@ -94,7 +94,8 @@ sub update_comments {
         next unless $request_id || $request->{fixmystreet_id};
 
         my $comment_time = eval {
-            DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} || "" );
+            DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} || "" )
+                ->set_time_zone(FixMyStreet->local_time_zone);
         };
         next if $@;
         my $updated = DateTime::Format::W3CDTF->format_datetime($comment_time->clone->set_time_zone('UTC'));
@@ -190,7 +191,12 @@ sub update_comments {
                 $comment->state('hidden') unless $comment->text || $comment->photo
                     || ($comment->problem_state && $state ne $old_state);
 
-                $p->lastupdate( $comment->created );
+                # As comment->created has been looked at above, its time zone has been shifted
+                # to TIME_ZONE (if set). We therefore need to set it back to local before
+                # insertion. We also then need a clone, otherwise the setting of lastupdate
+                # will *also* reshift comment->created's time zone to TIME_ZONE.
+                my $created = $comment->created->set_time_zone(FixMyStreet->local_time_zone);
+                $p->lastupdate($created->clone);
                 $p->update;
                 $comment->insert();
 

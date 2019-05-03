@@ -534,7 +534,7 @@ sub inspect : Private {
                     # to have the FMS timezone so we need to add the timezone otherwise
                     # dates come back out the database at time +/- timezone offset.
                     $timestamp = DateTime->from_epoch(
-                        time_zone =>  FixMyStreet->time_zone || FixMyStreet->local_time_zone,
+                        time_zone => FixMyStreet->local_time_zone,
                         epoch => $saved_at
                     );
                 }

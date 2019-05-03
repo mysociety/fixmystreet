@@ -1,5 +1,5 @@
 use utf8;
-package FixMyStreet::DB::Result::ReportExtraFields;
+package FixMyStreet::DB::Result::ReportExtraField;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "FixMyStreet::EncodedColumn",
+);
 __PACKAGE__->table("report_extra_fields");
 __PACKAGE__->add_columns(
   "id",
@@ -30,8 +34,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-07-28 09:51:34
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LkfbsUInnEyXowdcCEPjUQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 15:41:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yRF676ybdkfalMwZ9V+yhw
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');

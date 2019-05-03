@@ -8,7 +8,11 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-__PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
+__PACKAGE__->load_components(
+  "FilterColumn",
+  "FixMyStreet::InflateColumn::DateTime",
+  "FixMyStreet::EncodedColumn",
+);
 __PACKAGE__->table("contacts_history");
 __PACKAGE__->add_columns(
   "contacts_history_id",
@@ -26,20 +30,20 @@ __PACKAGE__->add_columns(
   { data_type => "text", default_value => "Other", is_nullable => 0 },
   "email",
   { data_type => "text", is_nullable => 0 },
+  "state",
+  { data_type => "text", is_nullable => 0 },
   "editor",
   { data_type => "text", is_nullable => 0 },
   "whenedited",
   { data_type => "timestamp", is_nullable => 0 },
   "note",
   { data_type => "text", is_nullable => 0 },
-  "state",
-  { data_type => "text", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("contacts_history_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2017-07-08 20:45:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HTt0g29yXTM/WyHKN179FA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:es6F6L3MS8pEUDprFplnYg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
