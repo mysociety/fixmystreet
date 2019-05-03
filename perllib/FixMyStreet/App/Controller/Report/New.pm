@@ -1578,9 +1578,9 @@ sub generate_category_extra_json : Private {
     my @fields = map {
         {
             %$_,
-            required => $_->{required} eq "true" ? $true : $false,
-            variable => $_->{variable} eq "true" ? $true : $false,
-            order => int($_->{order}),
+            required => ($_->{required} || '') eq "true" ? $true : $false,
+            variable => ($_->{variable} || '') eq "true" ? $true : $false,
+            order => int($_->{order} || 0),
         }
     } @{ $c->stash->{category_extras}->{$c->stash->{category}} };
 
