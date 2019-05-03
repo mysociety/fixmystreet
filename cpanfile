@@ -63,7 +63,8 @@ requires 'Error';
 requires 'FCGI'; # Required by e.g. Plack::Handler::FCGI
 requires 'File::Find';
 requires 'File::Path';
-requires 'Geography::NationalGrid';
+requires 'Geography::NationalGrid',
+    mirror => 'https://cpan.metacpan.org/';
 requires 'Getopt::Long::Descriptive';
 requires 'HTML::Entities';
 requires 'HTTP::Request::Common';
