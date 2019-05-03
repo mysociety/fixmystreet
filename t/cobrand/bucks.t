@@ -53,7 +53,7 @@ subtest 'flytipping on road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
     my $tfb = join('', 'illegaldumpingcosts', '@', 'buckscc.gov.uk');
-    is $email[0]->header('To'), '"TfB" <' . $tfb . '>';
+    is $email[0]->header('To'), 'TfB <' . $tfb . '>';
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number/;
     $report->discard_changes;
     is $report->external_id, 248, 'Report has right external ID';
@@ -84,7 +84,7 @@ subtest 'pothole on road not sent to extra email, only confirm sent' => sub {
 subtest 'flytipping off road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
-    is $email[0]->header('To'), '"Chiltern" <flytipping@chiltern>';
+    is $email[0]->header('To'), 'Chiltern <flytipping@chiltern>';
     like $mech->get_text_body_from_email($email[1]), qr/Please note that Buckinghamshire County Council is not responsible/;
     $report->discard_changes;
     is $report->external_id, undef, 'Report has right external ID';

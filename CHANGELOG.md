@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Development improvements:
+        - Upgrade the underlying framework and a number of other packages.
 
 * v2.6 (3rd May 2019)
     - New features:

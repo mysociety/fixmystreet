@@ -13,8 +13,6 @@ sub moderate_permission_title { 0 }
 package main;
 
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
-use Data::Dumper;
 
 my $mech = FixMyStreet::TestMech->new;
 $mech->host('www.example.org');
@@ -29,7 +27,7 @@ my $user = $mech->create_user_ok('test-moderation@example.com', name => 'Test Us
 my $user2 = $mech->create_user_ok('test-moderation2@example.com', name => 'Test User 2');
 
 sub create_report {
-    FixMyStreet::App->model('DB::Problem')->create(
+    FixMyStreet::DB->resultset('Problem')->create(
     {
         postcode           => 'BR1 3SB',
         bodies_str         => $body->id,

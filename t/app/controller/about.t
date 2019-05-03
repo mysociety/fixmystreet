@@ -4,6 +4,7 @@ sub path_to_web_templates { [ FixMyStreet->path_to( 't', 'app', 'controller', 't
 
 package main;
 
+use utf8;
 use FixMyStreet::TestMech;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
