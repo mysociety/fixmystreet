@@ -11,7 +11,7 @@ var defaults = {
             SERVICE: "WFS",
             VERSION: "1.1.0",
             REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::3857"
+            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
         }
     },
     format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
@@ -24,7 +24,7 @@ var defaults = {
         site_code: 'site_code'
     },
     geometryName: 'msGeometry',
-    srsName: "EPSG:3857",
+    srsName: "EPSG:27700",
     body: "Buckinghamshire County Council",
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };

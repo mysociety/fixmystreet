@@ -135,6 +135,7 @@ var roadworks_defaults = {
             return params;
         }
     },
+    srsName: "EPSG:4326",
     format_class: OpenLayers.Format.RoadworksForwardPlanning,
     strategy_class: OpenLayers.Strategy.FixMyStreet,
     stylemap: stylemap,

@@ -2,39 +2,15 @@
 # Bristol use their own tiles on their cobrand
 
 package FixMyStreet::Map::Bristol;
-use base 'FixMyStreet::Map::WMTSBase';
+use base 'FixMyStreet::Map::UKCouncilWMTS';
 
 use strict;
 
-sub zoom_parameters {
-    my $self = shift;
-    my $params = {
-        zoom_levels    => scalar $self->scales,
-        default_zoom   => 5,
-        min_zoom_level => 0,
-        id_offset      => 0,
-    };
-    return $params;
-}
+sub default_zoom { 5; }
 
-sub tile_parameters {
-    my $self = shift;
-    my $params = {
-        urls            => [ 'https://maps.bristol.gov.uk/arcgis/rest/services/base/2015_BCC_96dpi/MapServer/WMTS/tile' ],
-        layer_names     => [ '2015_BCC_96dpi' ],
-        wmts_version    => '1.0.0',
-        layer_style     => 'default',
-        matrix_set      => 'default028mm',
-        suffix          => '.png', # appended to tile URLs
-        size            => 256, # pixels
-        dpi             => 96,
-        inches_per_unit => 39.3701, # BNG uses metres
-        projection      => 'EPSG:27700',
-        origin_x        => -5220400.0,
-        origin_y        => 4470200.0,
-    };
-    return $params;
-}
+sub urls { [ 'https://maps.bristol.gov.uk/arcgis/rest/services/base/2015_BCC_96dpi/MapServer/WMTS/tile' ] }
+
+sub layer_names { [ '2015_BCC_96dpi' ] }
 
 sub scales {
     my $self = shift;
@@ -59,26 +35,12 @@ sub copyright {
 sub map_template { 'bristol' }
 
 sub map_javascript { [
-    '/vendor/OpenLayers/OpenLayers.bristol.js',
+    '/vendor/OpenLayers/OpenLayers.wmts.js',
     '/js/map-OpenLayers.js',
     '/js/map-wmts-base.js',
     '/js/map-wmts-bristol.js',
     '/cobrands/fixmystreet/assets.js',
     '/cobrands/bristol/assets.js',
 ] }
-
-# Reproject a WGS84 lat/lon into BNG easting/northing
-sub reproject_from_latlon($$$) {
-    my ($self, $lat, $lon) = @_;
-    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon);
-    return ($x, $y);
-}
-
-# Reproject a BNG easting/northing into WGS84 lat/lon
-sub reproject_to_latlon($$$) {
-    my ($self, $x, $y) = @_;
-    my ($lat, $lon) = Utils::convert_en_to_latlon($x, $y);
-    return ($lat, $lon);
-}
 
 1;
