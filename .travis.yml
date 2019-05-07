@@ -13,13 +13,12 @@ notifications:
 
 language: perl
 perl:
-  - "5.14" # wheezy, precise
   - "5.18" # trusty
   - "5.20" # jessie
   - "5.22" # xenial
-  - "5.24" # stretch, zesty
-# Params::Classify breaks in 5.26, and Lingua::EN::Tagger needs upgrading
-#  - "5.26"
+  - "5.24" # stretch
+  - "5.26" # bionic
+  - "5.28" # buster
 
 cache:
   directories:
@@ -35,6 +34,7 @@ env:
   global:
     - "S3_BUCKET=fixmystreet-bundle-cache"
     - "CYPRESS=0"
+    - "CATALYST_NOWARN_DEPRECATE=1"
     - secure: "llgWNfR/8pH0HjYpg+xhVxuqTaLC0GGUugfuINiUap7JxzjCZ2rlryxCXA4BCM8GUHa9wlYKhrKCSx+DM3EHRE0cLei7LNxAK1JSXLj3NihFQhqnq64tjDwGCSA4l7mlqErA7DK4Dpmh+hBp5f680akITAInM92CbwQZxLDYaCU="
     - secure: "qW+WCgAF68itADxcbcq+nCnKx3vf3GX73HMfjfbkFFUsYmIR+ZaJ9yQMnGJwxIpCHTWLAeqyx4KO8N8T3GmNdKYzIMZemOzp4ED29YC31QOQeq1CwNp2hD5sq/o47d2BzXWwMYNvNXfxz1K6r2c6EMPUtu8X3B8ExZq1RzSFdXs="
 
