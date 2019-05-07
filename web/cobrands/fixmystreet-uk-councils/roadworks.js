@@ -183,7 +183,7 @@ fixmystreet.roadworks.display_message = function(feature) {
         tag_top = config.tag_top || 'p',
         colon = config.colon ? ':' : '';
 
-        var $msg = $('<div class="js-roadworks-message-' + feature.layer.id + ' box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
+        var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + feature.layer.id + ' box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
         var $dl = $("<dl></dl>").appendTo($msg);
         $dl.append("<dt>Dates" + colon + "</dt>");
         $dl.append($("<dd></dd>").text(start + " until " + end));
