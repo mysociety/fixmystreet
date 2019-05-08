@@ -113,7 +113,7 @@ sub run {
     # If no arguments, test everything
     $prove->argv(['t']) unless @{$prove->argv};
     # verbose if we have a single file
-    $prove->verbose(1) if @{$prove->argv} and -f $prove->argv->[-1];
+    $prove->verbose(1) if @{$prove->argv} and -f $prove->argv->[-1] && !$ENV{CI};
     # we always want to recurse
     $prove->recurse(1);
     # we always want to save state

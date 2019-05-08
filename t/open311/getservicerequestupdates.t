@@ -12,6 +12,7 @@ use_ok( 'Open311' );
 use_ok( 'Open311::GetServiceRequestUpdates' );
 use DateTime;
 use DateTime::Format::W3CDTF;
+use File::Temp 'tempdir';
 use FixMyStreet::DB;
 
 my $user = FixMyStreet::DB->resultset('User')->find_or_create(
@@ -508,6 +509,13 @@ for my $test (
 }
 
 subtest 'Update with media_url includes image in update' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
+  }, sub {
     my $guard = LWP::Protocol::PSGI->register(t::Mock::Static->to_psgi_app, host => 'example.com');
 
     my $local_requests_xml = setup_xml($problem->external_id, 1, "");
@@ -527,6 +535,7 @@ subtest 'Update with media_url includes image in update' => sub {
     is $c->external_id, 638344;
     is $c->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg', 'photo exists';
     $problem->comments->delete;
+  };
 };
 
 subtest 'Update with customer_reference adds reference to problem' => sub {
