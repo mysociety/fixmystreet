@@ -159,6 +159,13 @@ sub all_reports_single_body {
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
 
+    # Deal with Bexley name not starting with short name
+    if ($code =~ /bexley/i) {
+        my $body = $c->model('DB::Body')->search( { name => { -like => "%$code%" } } )->single;
+        $c->stash->{body} = $body;
+        return $body;
+    }
+
     # We want to make sure we're only on our page.
     unless ( $self->council_name =~ /^\Q$code\E/ ) {
         $c->res->redirect( 'https://www.fixmystreet.com' . $c->req->uri->path_query, 301 );

@@ -62,6 +62,7 @@ my $other_user = $mech->create_user_ok('test2@example.com', title => 'MRS');
 sub c {
     my ($p, $user) = @_;
     my $c = $mech->create_comment_for_problem($p, $user || $p->user, 'Name', 'Update text', 'f', 'confirmed', 'confirmed', { confirmed => \'current_timestamp' });
+    $c->discard_changes;
     return $c;
 }
 
@@ -95,6 +96,30 @@ subtest 'Send comments' => sub {
     is $c2->send_fail_count, 0, 'Oxfordshire update skipped entirely';
   };
 };
+
+subtest 'Check Bexley munging' => sub {
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['fixmystreet', 'bexley'],
+  }, sub {
+    my $bexley = $mech->create_body_ok(2494, 'Bexley', $params);
+    $mech->create_contact_ok(body_id => $bexley->id, category => 'Other', email => "OTHER");
+
+    my $test_res = HTTP::Response->new();
+    $test_res->code(200);
+    $test_res->message('OK');
+    $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>');
+    my $o = Open311->new(
+        fixmystreet_body => $bexley,
+        test_mode => 1,
+        test_get_returns => { 'servicerequestupdates.xml' => $test_res },
+    );
+    my ($p5, $c5) = p_and_c($bexley);
+    my $id = $o->post_service_request_update($c5);
+    is $id, 248, 'correct update ID returned';
+    like $o->test_req_used->content, qr/service_code=OTHER/, 'Service code included';
+  };
+};
+
 
 subtest 'Oxfordshire gets an ID' => sub {
   FixMyStreet::override_config {
