@@ -1,0 +1,53 @@
+/* COLOURS */
+
+$menu-image: 'menu-white';
+
+$mappage-header-height: 128px;
+
+$white: #fff;
+
+$red: #B10E1E;
+
+$royal: #2E358B;
+$fuchsia: #912B88;
+$aqua: #00A1B3;
+$spring: #5DA70E;
+
+$royal_lt: #B3B7E6;
+$fuchsia_lt: #E9AFE5;
+$aqua_lt: #00CCCC;
+$sprint_lt: #B8E26A;
+
+$text_black: #0B0C0C;
+$text_grey: #6F777B;
+
+$link: #005EA5;
+$hover: #2B8CC4;
+$visited: #4C2C92;
+$focus: #FFBF47;
+
+$grey_border: #BFC1C3;
+$grey_panel: #DEE0E2;
+$grey_highlight: #F8F8F8;
+
+$col_button: #00823B;
+$col_button_hover: #006435;
+
+$primary: $grey_highlight;
+$primary_b: $royal;
+$primary_text: $text_black;
+
+$base_bg: $white;
+$base_fg: $text_black;
+
+$nav_background_colour: $fuchsia;
+$nav_colour: $white;
+$nav_hover_background_colour: darken($fuchsia, 10%);
+
+$col_click_map: $aqua;
+
+$header-top-border: false;
+
+$heading-font: Lato, sans-serif;
+$body-font: Lato, sans-serif;
+$meta-font: $body-font;
