@@ -127,11 +127,9 @@ ol.big-numbers {
       top:-0.2em;
       color:$col_big_numbers;
       line-height:1;
-      font: {
-        family: $meta-font;
-        weight:bold;
-        size:2.5rem;
-      }
+      font-family: $meta-font;
+      font-weight: bold;
+      font-size: 2.5rem;
     }
   }
 }
@@ -1838,10 +1836,8 @@ html.js #map .noscript {
   padding:0.75em 30px;
   a {
     @include button-reset(#333, #1a1a1a, #1a1a1a, #fff, #333, #1a1a1a, #1a1a1a, #fff);
-    font: {
-      weight:normal;
-      size:0.875em;
-    }
+    font-weight: normal;
+    font-size: 0.875em;
     line-height:1;
     padding:0.5em 0.75em;
     position:absolute;
@@ -2208,11 +2204,9 @@ label .muted {
   text-align:center;
   margin: 1em;
   h2 {
-    font: {
-      style:italic;
-      family: $meta-font;
-      size:1.1875em;
-    }
+    font-style: italic;
+    font-family: $meta-font;
+    font-size: 1.1875em;
     color:#4d4d4d;
   }
   p {
@@ -2267,10 +2261,8 @@ label .muted {
     background:#1a1a1a;
     color:#C8C8C8;
     padding:0.5em;
-    font: {
-      family: $meta-font;
-      size:0.8125em;
-    }
+    font-family: $meta-font;
+    font-size: 0.8125em;
     @include border-radius(0 0 0.25em 0.25em);
     &:hover {
       text-decoration:none;
@@ -2303,10 +2295,8 @@ a#geolocate_link.loading, .btn--geolocate.loading {
     text-align:center;
     padding:1em;
     line-height:1.25em;
-    font: {
-      size:0.8125em;
-      weight:bold;
-    }
+    font-size: 0.8125em;
+    font-weight: bold;
   }
   big {
     display:block;
