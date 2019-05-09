@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes:
+        - Prevent creation of two templates with same title.
 
 * v2.6 (3rd May 2019)
     - New features:
