@@ -229,6 +229,8 @@ var bucks_types = [
     "3B", // HW: SECONDARY DISTRIBUTOR
     "4A", // HW: LINK ROAD
     "4B", // HW: LOCAL ACCESS ROAD
+    "98", // HW: METALLED PUBLIC FOOTPATH
+    "99"  // HW: METALLED PUBLIC BRIDLEWAY
 ];
 // And these are roads they don't maintain.
 var non_bucks_types = [
