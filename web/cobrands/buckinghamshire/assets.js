@@ -287,51 +287,11 @@ var rule_not_owned = new OpenLayers.Rule({
 });
 highways_style.addRules([rule_owned, rule_not_owned]);
 
-function show_responsibility_error(id) {
-    hide_responsibility_errors();
-    $("#js-roads-responsibility").removeClass("hidden");
-    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
-    $('.js-update-coordinates').attr('href', function(i, href) {
-        if (href.indexOf('?') != -1) {
-            href = href.substring(0, href.indexOf('?'));
-        }
-        href += '?' + OpenLayers.Util.getParameterString({
-            latitude: $('#fixmystreet\\.latitude').val(),
-            longitude: $('#fixmystreet\\.longitude').val()
-        });
-        return href;
-    });
-    $(id).removeClass("hidden");
-}
-
-function hide_responsibility_errors() {
-    $("#js-roads-responsibility").addClass("hidden");
-    $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
-}
-
-function disable_report_form() {
-    $("#problem_form").hide();
-}
-
-function enable_report_form() {
-    $("#problem_form").show();
-}
-
-function is_only_body(body) {
-    if (fixmystreet.bodies && fixmystreet.bodies.length == 1 && fixmystreet.bodies[0] == body) {
-        return true;
-    }
-    return false;
-}
-
 $(fixmystreet).on('report_new:highways_change', function() {
     if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
-        hide_responsibility_errors();
-        enable_report_form();
         $('#bucks_dangerous_msg').hide();
     } else {
         $('#bucks_dangerous_msg').show();
-        $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
     }
 });
 
@@ -352,54 +312,31 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     all_categories: true,
     actions: {
         found: function(layer, feature) {
-            fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
-            fixmystreet.body_overrides.remove_only_send();
+            var map = {
+                "HE": '#js-not-council-road-he',
+                "HWOA": '#js-not-council-road-other'
+            };
+            var msg_id = map[feature.attributes.feature_ty] || '#js-not-council-road';
+
+            fixmystreet.message_controller.road_found(layer, feature, function(feature) {
+                if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
+                    var cat = $('select#form_category').val();
+                    if (cat === 'Flytipping') {
+                        fixmystreet.body_overrides.only_send(layer.fixmystreet.body);
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }, msg_id);
 
             // Make sure Flytipping related things reset
             $('#category_meta').show();
             $('#form_road-placement').attr('required', '');
-
-            if (fixmystreet.assets.selectedFeature()) {
-                hide_responsibility_errors();
-                enable_report_form();
-            } else if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
-                var cat = $('select#form_category').val();
-                if (cat === 'Flytipping') {
-                    fixmystreet.body_overrides.only_send(layer.fixmystreet.body);
-                }
-                hide_responsibility_errors();
-                enable_report_form();
-            } else {
-                // User has clicked a road that Bucks don't maintain.
-
-                var map = {
-                    "HE": '#js-not-council-road-he',
-                    "HWOA": '#js-not-council-road-other'
-                };
-
-                fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
-                if (is_only_body(layer.fixmystreet.body)) {
-                    var id = map[feature.attributes.feature_ty] || '#js-not-council-road';
-                    show_responsibility_error(id);
-                    disable_report_form();
-                }
-            }
         },
 
         not_found: function(layer) {
-            // If a feature wasn't found at the location they've clicked, it's
-            // probably a field or something. Show an error to that effect,
-            // unless an asset is selected.
-            fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
-            fixmystreet.body_overrides.remove_only_send();
-            if (fixmystreet.assets.selectedFeature()) {
-                fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
-                hide_responsibility_errors();
-                enable_report_form();
-            } else if (is_only_body(layer.fixmystreet.body)) {
-                show_responsibility_error("#js-not-a-road");
-                disable_report_form();
-            }
+            fixmystreet.message_controller.road_not_found(layer);
 
             // If flytipping is picked, we don't want to ask the extra question
             var cat = $('select#form_category').val();
@@ -411,6 +348,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             }
         }
     },
+    no_asset_msg_id: '#js-not-a-road',
     usrn: {
         attribute: 'site_code',
         field: 'site_code'
@@ -465,27 +403,10 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     }
 }));
 
-function check_rights_of_way() {
-    var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, defaults.body) > -1;
-    var relevant_cat = $('#form_category').val() == 'Rights of Way';
-    var relevant = relevant_body && relevant_cat;
-    var currently_shown = !!$('#row-message').length;
-
-    if (relevant === currently_shown) {
-        // Either should be shown and already is, or shouldn't be shown and isn't
-        return;
-    }
-
-    if (!relevant) {
-        $('#row-message').remove();
-        $('.js-hide-if-invalid-category').show();
-        return;
-    }
-
-    var $msg = $('<p id="row-message" class="box-warning">If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.</p>');
-    $msg.insertBefore('#js-post-category-messages');
-    $('.js-hide-if-invalid-category').hide();
-}
-$(fixmystreet).on('report_new:category_change', check_rights_of_way);
+fixmystreet.message_controller.register_category({
+    body: defaults.body,
+    category: 'Rights of Way',
+    message: 'If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.'
+});
 
 })();

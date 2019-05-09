@@ -921,3 +921,194 @@ $(fixmystreet).on('body_overrides:change', function() {
     fixmystreet.update_public_councils_text(
         $('#js-councils_text').html(), bodies);
 });
+
+/*
+Handling of the form-top messaging: This handles categories that hide the form
+and show a message, and categories where assets must be selected or the pin
+must be on a road, taking into account Highways England roads.
+*/
+
+fixmystreet.message_controller = (function() {
+    var stopperId = 'js-category-stopper',
+        stoppers = [];
+
+    // This shows an error message because e.g. an asset isn't selected or a road hasn't been clicked
+    function show_responsibility_error(id, asset_item, asset_type) {
+        $("#js-roads-responsibility").removeClass("hidden");
+        $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
+        var asset_strings = $('.js-roads-asset');
+        if (asset_item) {
+            asset_strings.html('a <b class="asset-' + asset_type + '">' + asset_item + '</b>');
+        } else {
+            asset_strings.html(asset_strings.data('original'));
+        }
+        $('.js-update-coordinates').attr('href', function(i, href) {
+            if (href.indexOf('?') != -1) {
+                href = href.substring(0, href.indexOf('?'));
+            }
+            href += '?' + OpenLayers.Util.getParameterString({
+                latitude: $('#fixmystreet\\.latitude').val(),
+                longitude: $('#fixmystreet\\.longitude').val()
+            });
+            return href;
+        });
+        $(id).removeClass("hidden");
+    }
+
+    // This hides the asset/road not found message
+    function hide_responsibility_errors() {
+        $("#js-roads-responsibility").addClass("hidden");
+        $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
+    }
+
+    // This shows the reporting form
+    function enable_report_form() {
+        $(".js-hide-if-invalid-category").show();
+    }
+
+    // This hides the reporting form, apart from the category selection
+    function disable_report_form() {
+        $(".js-hide-if-invalid-category").hide();
+    }
+
+    // This hides the responsibility message, and (unless a
+    // stopper message is shown) reenables the report form
+    function responsibility_off() {
+        hide_responsibility_errors();
+        if (!document.getElementById(stopperId)) {
+            enable_report_form();
+        }
+    }
+
+    // This disables the report form and (unless a stopper
+    // message is shown) shows a responsibility message
+    function responsibility_on(id, asset_item, asset_type) {
+        disable_report_form();
+        hide_responsibility_errors();
+        if (!document.getElementById(stopperId)) {
+            show_responsibility_error(id, asset_item, asset_type);
+        }
+    }
+
+    function is_only_body(body) {
+        if (fixmystreet.bodies && fixmystreet.bodies.length == 1 && fixmystreet.bodies[0] == body) {
+            return true;
+        }
+        return false;
+    }
+
+    // make sure we fire the code to check if an asset is selected if
+    // we change options in the Highways England message
+    $(fixmystreet).on('report_new:highways_change', function() {
+        if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
+            $('#' + stopperId).remove(); // Get rid of any stopper message
+            responsibility_off(); // Will also reenable form
+        } else {
+            $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
+        }
+    });
+
+    $(fixmystreet).on('report_new:category_change', function() {
+        if (fixmystreet.body_overrides.get_only_send() == 'Highways England') {
+            // If we're sending to Highways England, this message doesn't matter
+            return;
+        }
+
+        var $id = $('#' + stopperId);
+        var body = $('#form_category').data('body');
+        var matching = $.grep(stoppers, function(stopper, i) {
+            if (stopper.staff_ignore && body) {
+                return false;
+            }
+
+            var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, stopper.body) > -1;
+            var relevant_cat;
+            if (typeof stopper.category === 'function') {
+                relevant_cat = stopper.category();
+            } else {
+                relevant_cat = $('#form_category').val() == stopper.category;
+            }
+            var relevant = relevant_body && relevant_cat;
+            return relevant;
+        });
+
+        if (!matching.length) {
+            $id.remove();
+            if ( !$('#js-roads-responsibility').is(':visible') ) {
+                enable_report_form();
+            }
+            return;
+        }
+
+        var stopper = matching[0]; // Assume only one match possible at present
+        var $msg;
+        if (typeof stopper.message === 'function') {
+            $msg = stopper.message();
+            $msg.attr('id', stopperId);
+        } else {
+            $msg = $('<p id="' + stopperId + '" class="box-warning">' + stopper.message + '</p>');
+        }
+
+        if ($id.length) {
+            $id.replaceWith($msg);
+        } else {
+            $msg.insertBefore('#js-post-category-messages');
+        }
+        disable_report_form();
+    });
+
+    return {
+        asset_found: function() {
+            responsibility_off();
+            return ($('#' + stopperId).length);
+        },
+
+        asset_not_found: function(layer) {
+            if (!layer.visibility) {
+                responsibility_off();
+            } else {
+                responsibility_on('#js-not-an-asset', layer.fixmystreet.asset_item, layer.fixmystreet.asset_type);
+            }
+        },
+
+        // A road was found; if some roads should still cause disabling/message,
+        // then you should pass in a criterion function to test the found feature,
+        // plus an ID of the message to be shown
+        road_found: function(layer, feature, criterion, msg_id) {
+            fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
+            fixmystreet.body_overrides.remove_only_send();
+            if (fixmystreet.assets.selectedFeature()) {
+                responsibility_off();
+            } else if (!criterion || criterion(feature)) {
+                responsibility_off();
+            } else {
+                fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
+                if (is_only_body(layer.fixmystreet.body)) {
+                    responsibility_on(msg_id);
+                }
+            }
+        },
+
+        road_not_found: function(layer) {
+            // If a feature wasn't found at the location they've clicked, it's
+            // probably a field or something. Show an error to that effect,
+            // unless an asset is selected.
+            fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
+            fixmystreet.body_overrides.remove_only_send();
+            // don't show the message if clicking on a highways england road
+            if (fixmystreet.body_overrides.get_only_send() == 'Highways England' || !layer.visibility) {
+                responsibility_off();
+            } else if (fixmystreet.assets.selectedFeature()) {
+                fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
+                responsibility_off();
+            } else if (is_only_body(layer.fixmystreet.body)) {
+                responsibility_on(layer.fixmystreet.no_asset_msg_id, layer.fixmystreet.asset_item, layer.fixmystreet.asset_type);
+            }
+        },
+
+        register_category: function(params) {
+            stoppers.push(params);
+        }
+    };
+
+})();
