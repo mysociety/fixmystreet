@@ -13,7 +13,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 ok $sample_file->exists, "sample file $sample_file exists";
 
-my $westminster = $mech->create_body_ok(2527, 'Liverpool City Council');
+my $body = $mech->create_body_ok(2527, 'Liverpool City Council');
 
 subtest "Check multiple upload worked" => sub {
     $mech->get_ok('/around');
@@ -109,6 +109,75 @@ subtest "Check photo uploading URL and endpoints work" => sub {
         }
         my $res = $mech->get('/photo/0.jpeg');
         is $res->code, 404, "got 404";
+    };
+};
+
+subtest "Check no access to update photos on hidden reports" => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title');
+    my $update = $mech->create_comment_for_problem($report, $report->user, $report->name, 'Text', $report->anonymous, 'confirmed', 'confirmed', { photo => $report->photo });
+
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
+    }, sub {
+        my $image_path = path('t/app/controller/sample.jpg');
+        $image_path->copy( path($UPLOAD_DIR, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg') );
+
+        $mech->get_ok('/photo/c/' . $update->id . '.0.jpeg');
+
+        $report->update({ state => 'hidden' });
+        $report->get_photoset->delete_cached(plus_updates => 1);
+
+        my $res = $mech->get('/photo/c/' . $update->id . '.0.jpeg');
+        is $res->code, 404, 'got 404';
+    };
+};
+
+subtest 'non_public photos only viewable by correct people' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+    path(FixMyStreet->path_to('web/photo'))->remove_tree({ keep_root => 1 });
+
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+        non_public => 1,
+    });
+
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
+    }, sub {
+        my $image_path = path('t/app/controller/sample.jpg');
+        $image_path->copy( path($UPLOAD_DIR, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg') );
+
+        $mech->log_out_ok;
+        my $i = '/photo/' . $report->id . '.0.jpeg';
+        my $res = $mech->get($i);
+        is $res->code, 404, 'got 404';
+
+        $mech->log_in_ok('test@example.com');
+        $i = '/photo/' . $report->id . '.0.jpeg';
+        $mech->get_ok($i);
+        my $image_file = FixMyStreet->path_to("web$i");
+        ok !-e $image_file, 'File not cached out';
+
+        my $user = $mech->log_in_ok('someoneelse@example.com');
+        $i = '/photo/' . $report->id . '.0.jpeg';
+        $res = $mech->get($i);
+        is $res->code, 404, 'got 404';
+
+        $user->update({ from_body => $body });
+        $user->user_body_permissions->create({ body => $body, permission_type => 'report_inspect' });
+        $i = '/photo/' . $report->id . '.0.jpeg';
+        $mech->get_ok($i);
+
+        $user->update({ from_body => undef, is_superuser => 1 });
+        $i = '/photo/' . $report->id . '.0.jpeg';
+        $mech->get_ok($i);
     };
 };
 

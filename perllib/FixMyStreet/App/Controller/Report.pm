@@ -435,7 +435,7 @@ sub inspect : Private {
                 $problem->confirmed( \'current_timestamp' );
             }
             if ( $problem->state eq 'hidden' ) {
-                $problem->get_photoset->delete_cached;
+                $problem->get_photoset->delete_cached(plus_updates => 1);
             }
             if ( $problem->state eq 'duplicate') {
                 if (my $duplicate_of = $c->get_param('duplicate_of')) {
@@ -477,6 +477,9 @@ sub inspect : Private {
         }
 
         $problem->non_public($c->get_param('non_public') ? 1 : 0);
+        if ($problem->non_public) {
+            $problem->get_photoset->delete_cached(plus_updates => 1);
+        }
 
         if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
             # New lat/lon isn't valid, show an error

@@ -235,7 +235,7 @@ sub get_image_data {
 }
 
 sub delete_cached {
-    my ($self) = @_;
+    my ($self, %params) = @_;
     my $object = $self->object or return;
     my $id = $object->id or return;
 
@@ -255,6 +255,11 @@ sub delete_cached {
         foreach my $size ("", ".fp", ".tn", ".full") {
             unlink FixMyStreet->path_to(@dirs, "$id.$i$size.$type");
         }
+    }
+
+    # Loop through all the updates as well if requested
+    if ($params{plus_updates}) {
+        $_->get_photoset->delete_cached() foreach $object->comments->all;
     }
 }
 
