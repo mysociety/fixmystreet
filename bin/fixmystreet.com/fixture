@@ -31,6 +31,7 @@ my ($opt, $usage) = describe_options(
     [ 'empty', "Empty all tables of the database first" ],
     [ 'commit', "Actually commit changes to the database" ],
     [ 'nonrandom', "Output things in a fixed manner, for testing" ],
+    [ 'test_fixtures', "Generate test specific fixtures" ],
     [ 'coords=s', "Co-ordinates to use instead of example postcode" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
@@ -88,6 +89,15 @@ for my $cat ('Dropped Kerbs', 'Skips') {
         { description => 'End date', code => 'end_date', datatype => 'string', fieldtype => 'date' }
     );
     $child_cat->update;
+}
+
+if ($opt->test_fixtures) {
+    my $ncc = FixMyStreet::DB::Factory::Body->find_or_create({
+        area_id => 2234,
+        categories => [ 'Fallen Tree' ],
+        name => 'Northamptonshire County Council',
+    });
+    say "Created body " . $ncc->name . " for MapIt area ID 2234, categories Fallen Tree";
 }
 
 FixMyStreet::DB::Factory::ResponseTemplate->create({

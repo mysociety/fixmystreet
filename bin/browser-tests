@@ -79,7 +79,7 @@ sub run {
 
         # Set up, and load in some data
         system('bin/make_css', 'fixmystreet.com');
-        system('bin/fixmystreet.com/fixture', '--nonrandom', '--coords', $coords, '--name', $name, '--area-id', $area_id, '--commit');
+        system('bin/fixmystreet.com/fixture', '--test_fixtures', '--nonrandom', '--coords', $coords, '--name', $name, '--area-id', $area_id, '--commit');
     }
 
     my $pid;
