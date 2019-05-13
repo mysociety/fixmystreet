@@ -103,8 +103,6 @@ sub problem_response_days {
     my $self = shift;
     my $p = shift;
 
-    return 'emergency' if $p->category eq 'Street lighting';
-
     # Temporary, see https://github.com/mysociety/fixmystreetforcouncils/issues/291
     return 0;
 
