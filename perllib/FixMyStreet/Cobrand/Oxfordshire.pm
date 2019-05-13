@@ -89,52 +89,6 @@ sub lookup_by_ref {
     return 0;
 }
 
-=head2 problem_response_days
-
-Returns the number of working days that are expected to elapse
-between the problem being reported and it being responded to by
-the council/body.
-If the value 'emergency' is returned, a different template block
-is triggered that has custom wording.
-
-=cut
-
-sub problem_response_days {
-    my $self = shift;
-    my $p = shift;
-
-    # Temporary, see https://github.com/mysociety/fixmystreetforcouncils/issues/291
-    return 0;
-
-    return 10 if $p->category eq 'Bridges';
-    return 10 if $p->category eq 'Carriageway Defect'; # phone if urgent
-    return 10 if $p->category eq 'Debris/Spillage';
-    return 10 if $p->category eq 'Drainage';
-    return 10 if $p->category eq 'Fences';
-    return 10 if $p->category eq 'Flyposting';
-    return 10 if $p->category eq 'Footpaths/ Rights of way (usually not tarmac)';
-    return 10 if $p->category eq 'Gully and Catchpits';
-    return 10 if $p->category eq 'Ice/Snow'; # phone if urgent
-    return 10 if $p->category eq 'Manhole';
-    return 10 if $p->category eq 'Mud and Debris'; # phone if urgent
-    return 10 if $p->category eq 'Oil Spillage';  # phone if urgent
-    return 10 if $p->category eq 'Pavements';
-    return 10 if $p->category eq 'Pothole'; # phone if urgent
-    return 10 if $p->category eq 'Property Damage';
-    return 10 if $p->category eq 'Public rights of way';
-    return 10 if $p->category eq 'Road Marking';
-    return 10 if $p->category eq 'Road traffic signs';
-    return 10 if $p->category eq 'Roads/highways';
-    return 10 if $p->category eq 'Skips and scaffolding';
-    return 10 if $p->category eq 'Traffic lights'; # phone if urgent
-    return 10 if $p->category eq 'Traffic';
-    return 10 if $p->category eq 'Trees';
-    return 10 if $p->category eq 'Utilities';
-    return 10 if $p->category eq 'Vegetation';
-
-    return 0;
-}
-
 sub reports_ordering {
     return 'created-desc';
 }
