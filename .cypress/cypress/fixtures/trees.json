@@ -1,0 +1,35 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "307.9404949",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99073,
+          6843328
+        ]
+      },
+      "properties": {
+        "layerStyleId": 1387,
+        "itemId": 9656014,
+        "sourceTypeId": 1000651,
+        "title": "CAVAT-157380",
+        "color": "#911c43"
+      },
+      "crs": {
+        "properties": {
+          "name": "EPSG:900913"
+        },
+        "type": "name"
+      }
+    }
+  ],
+  "crs": {
+    "properties": {
+      "name": "EPSG:900913"
+    },
+    "type": "name"
+  }
+}

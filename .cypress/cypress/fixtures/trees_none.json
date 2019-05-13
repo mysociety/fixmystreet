@@ -1,0 +1,11 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+  ],
+  "crs": {
+    "properties": {
+      "name": "EPSG:900913"
+    },
+    "type": "name"
+  }
+}
