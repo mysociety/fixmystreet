@@ -1,0 +1,32 @@
+[% INCLUDE 'admin/header.html' title=loc('Roles') -%]
+
+<form method="post">
+    <div class="admin-hint">
+      <p>[% loc("The role's <strong>name</strong> is used to refer to this group of permissions elsewhere in the admin.") %]</p>
+    </div>
+    [% form.field('name').render %]
+
+  [% IF form.field('body').is_active %]
+    [% form.field('body').render %]
+  [% END %]
+
+    <div class="admin-hint">
+      <p>[% loc("Users with this role can perform the following actions within their assigned body or area.") %]</p>
+    </div>
+    [% form.field('permissions').render %]
+
+    [% form.field('submit').render %]
+
+    <p>
+        <input class="btn" type="submit" name="submit" value="[% loc('Save changes') %]">
+    </p>
+  [% IF form.item.id %]
+    <p>
+        <input class="btn-danger" type="submit" name="delete_role" value="[% loc('Delete') %]" data-confirm="[% loc('Are you sure?') %]">
+    </p>
+  [% END %]
+</form>
+
+<p><a href="[% c.uri_for(c.controller.action_for('list')) %]">Return to roles list</a></p>
+
+[% INCLUDE 'admin/footer.html' %]

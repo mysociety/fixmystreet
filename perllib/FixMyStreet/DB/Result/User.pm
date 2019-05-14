@@ -149,6 +149,7 @@ use namespace::clean -except => [ 'meta' ];
 with 'FixMyStreet::Roles::Extra';
 
 __PACKAGE__->many_to_many( planned_reports => 'user_planned_reports', 'report' );
+__PACKAGE__->many_to_many( roles => 'user_roles', 'role' );
 
 sub cost {
     FixMyStreet->test_mode ? 1 : 12;

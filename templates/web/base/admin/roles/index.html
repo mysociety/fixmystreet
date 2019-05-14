@@ -1,0 +1,34 @@
+[% INCLUDE 'admin/header.html' title=loc('Roles') -%]
+
+<table>
+    <tr>
+        <th>[% loc('Role') %]</th>
+        <th>[% loc('Permissions') %]</th>
+        <th>&nbsp;</th>
+    </tr>
+[% FOREACH role IN roles -%]
+  [% IF c.user.is_superuser AND last_name != role.body.name %]
+    <tr>
+        <td colspan="3"><strong>[% role.body.name %]</strong></td>
+    </tr>
+    [% SET last_name = role.body.name %]
+  [% END %]
+    <tr>
+        <td>[% role.name %]</td>
+        <td><ul class="no-margin no-bullets">
+          [% FOR perm IN role.permissions.sort %]
+            <li>[% labels.$perm %]
+          [% END %]
+        </ul></td>
+        <td>
+          <a href="[% c.uri_for(c.controller.action_for('edit'), [role.id]) %]">Edit</a>
+        </td>
+    </tr>
+[% END -%]
+</table>
+
+<p>
+  <a href="[% c.uri_for(c.controller.action_for('create')) %]">Create</a>
+</p>
+
+[% INCLUDE 'admin/footer.html' %]
