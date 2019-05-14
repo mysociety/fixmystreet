@@ -1,36 +1,49 @@
 # setenv script
 requires 'List::MoreUtils', '0.402';
-requires 'local::lib';
+requires 'local::lib', '2.000024';
 requires 'Class::Unload';
 
 # Interesting installation issues, see end of this file
-requires 'ExtUtils::MakeMaker', '6.72'; # [1]
+requires 'ExtUtils::MakeMaker', '7.20';
+requires 'ExtUtils::ParseXS', '3.30'; # [1]
 # requires 'MooseX::NonMoose'; # [2]
 
 # Minimum versions of dependencies to upgrade for bugfixes
-requires 'Guard', '1.023';
-requires 'PadWalker', '2.2';
-requires 'aliased', '0.34';
-requires 'Net::SSLeay', '1.81';
-requires 'Module::ScanDeps', '1.24';
-requires 'CGI', '4.38';
-requires 'Lingua::EN::Tagger', '0.27';
-requires 'Params::Classify', '0.014';
+requires 'CGI', '4.43';
+requires 'Net::Server', '2.009';
+# For perl 5.20/5.22 support
+  requires 'Guard', '1.023';
+  requires 'PadWalker', '2.2';
+  requires 'aliased', '0.34';
+# For perl 5.24 support
+  requires 'Net::SSLeay', '1.85';
+# Issues to do with things already installed on Travis
+  requires 'Module::ScanDeps', '1.24';
+  requires 'Class::Load', '0.25';
+# For perl 5.26/5.28 support
+  requires 'Lingua::EN::Tagger', '0.27';
+  requires 'Params::Classify', '0.014';
+# To remove deprecated Class::MOP calls
+  requires 'Catalyst::Model::DBIC::Schema', '0.65';
+  requires 'MooseX::Role::Parameterised', '1.10';
+  requires 'CatalystX::Component::Traits', '0.19';
+  requires 'MooseX::Traits::Pluggable', '0.12';
 
 # Catalyst itself, and modules/plugins used
-requires 'Catalyst', '5.80031';
+requires 'Catalyst', '5.90124';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Authentication::Credential::MultiFactor';
 requires 'Catalyst::Authentication::Store::DBIx::Class';
 requires 'Catalyst::Devel';
+requires 'Catalyst::DispatchType::Regex', '5.90035';
 requires 'Catalyst::Model::Adaptor';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::DBIC';
-requires 'Catalyst::Plugin::SmartURI';
-requires 'Catalyst::Plugin::Static::Simple';
-requires 'Catalyst::Plugin::Unicode::Encoding';
+requires 'Catalyst::Plugin::SmartURI', '0.041';
+requires 'Catalyst::Plugin::Static::Simple', '0.36';
 requires 'Catalyst::View::TT';
+requires 'URI::SmartURI';
 
 # Modules used by FixMyStreet
 requires 'Auth::GoogleAuth';
@@ -39,15 +52,18 @@ requires 'Cache::Memcached';
 requires 'Carp';
 requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'Data::Password::Common';
-requires 'DateTime';
+requires 'DateTime', '1.51';
+requires 'DateTime::Format::Flexible';
 requires 'DateTime::Format::HTTP';
 requires 'DateTime::Format::ISO8601';
 requires 'DateTime::Format::Pg';
+requires 'DateTime::Format::Strptime';
 requires 'DateTime::Format::W3CDTF';
-requires 'DateTime::TimeZone', '2.18';
-requires 'DBD::Pg', '2.9.2';
+requires 'DateTime::TimeZone', '2.35';
+requires 'DBD::Pg', '3.8.0';
 requires 'DBI';
-requires 'DBIx::Class::EncodedColumn', '0.00013';
+requires 'DBIx::Class', '0.082841';
+requires 'DBIx::Class::EncodedColumn', '0.00015';
 requires 'DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt';
 requires 'DBIx::Class::Factory';
 requires 'DBIx::Class::FilterColumn';
@@ -56,19 +72,21 @@ requires 'DBIx::Class::ResultSet';
 requires 'DBIx::Class::Schema::Loader';
 requires 'Digest::MD5';
 requires 'Digest::SHA';
-requires 'Email::MIME';
+requires 'Email::Address', '1.912';
+requires 'Email::MIME', '1.946';
 requires 'Email::Sender';
 requires 'Email::Valid';
 requires 'Error';
 requires 'FCGI'; # Required by e.g. Plack::Handler::FCGI
 requires 'File::Find';
 requires 'File::Path';
-requires 'Geography::NationalGrid';
+requires 'Geography::NationalGrid',
+    mirror => 'https://cpan.metacpan.org/';
 requires 'Getopt::Long::Descriptive';
 requires 'HTML::Entities';
 requires 'HTTP::Request::Common';
-requires 'Image::Size';
-requires 'IO::Socket::SSL', '2.007';
+requires 'Image::Size', '3.300';
+requires 'IO::Socket::SSL', '2.066';
 requires 'IO::String';
 requires 'JSON::MaybeXS';
 requires 'Locale::gettext';
@@ -77,32 +95,35 @@ requires 'LWP::UserAgent';
 requires 'Math::Trig';
 requires 'MIME::Parser'; # HandleMail
 requires 'Module::Pluggable';
-requires 'Moose';
+requires 'Moose', '2.2011';
+requires 'Moo', '2.003004';
 requires 'MooX::Types::MooseLike';
-requires 'namespace::autoclean';
+requires 'namespace::autoclean', '0.28';
 requires 'Net::Amazon::S3';
 requires 'Net::DNS::Resolver';
 requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.11';
 requires 'Net::OAuth';
 requires 'Net::Twitter::Lite::WithAPIv1_1', '0.12008';
-requires 'Number::Phone', '3.4003';
+requires 'Number::Phone', '3.5000';
 requires 'Path::Class';
 requires 'POSIX';
 requires 'Readonly';
 requires 'Regexp::Common';
 requires 'Scalar::Util';
 requires 'Statistics::Distributions';
+requires 'Starman', '0.4014';
 requires 'Storable';
+requires 'Template', '2.29';
 requires 'Template::Plugin::Number::Format';
-requires 'Text::CSV';
+requires 'Text::CSV', '1.99';
 requires 'URI', '1.71';
 requires 'URI::Escape';
 requires 'URI::QueryParam';
 requires 'WWW::Twilio::API';
 requires 'XML::RSS';
 requires 'XML::Simple';
-requires 'YAML';
+requires 'YAML', '1.28';
 
 feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     # East Hampshire
@@ -125,11 +146,12 @@ requires 'Algorithm::Diff';
 
 # Modules used by CSS & watcher
 requires 'CSS::Sass';
-requires 'File::ChangeNotify';
+requires 'File::ChangeNotify', '0.31';
 requires 'Path::Tiny', '0.104';
 requires 'File::Find::Rule';
 
 # Modules used for development
+requires 'Plack', '1.0047';
 requires 'Plack::Middleware::Debug';
 requires 'Plack::Middleware::Debug::DBIC::QueryLog';
 requires 'Plack::Middleware::Debug::LWP';
@@ -138,7 +160,7 @@ recommends 'Linux::Inotify2' if $^O eq 'linux';
 recommends 'Mac::FSEvents' if $^O eq 'darwin';
 
 # Modules used by the test suite
-requires 'Test::PostgreSQL', '1.25';
+requires 'Test::PostgreSQL', '1.27';
 requires 'CGI::Simple';
 requires 'HTTP::Headers';
 requires 'HTTP::Response';
@@ -151,50 +173,14 @@ requires 'Test::MockTime';
 requires 'Test::More', '0.88';
 requires 'Test::Output';
 requires 'Test::Warn';
-requires 'Test::WWW::Mechanize::Catalyst';
+requires 'Test::WWW::Mechanize::Catalyst', '0.62';
 requires 'Web::Scraper';
 requires 'Web::Simple';
 
 #################################################################
-#
-# [1] Many things in cpanfile.snapshot require ExtUtils::MakeMaker 6.59, and
-# one thing (DBIx::Class::IntrospectableM2M) requires 6.72, and so the snapshot
-# contains the details for ExtUtils::MakeMaker 6.72. carton itself requires
-# ExtUtils::MakeMaker 6.64.
-#
-# I don't understand the intracacies of carton/cpanm, but from the
-# build.logs, I ascertain that DBIx::Class::Schema::Loader requires
-# DBIx::Class::IntrospectableM2M and somehow in the process sets it up so that
-# DBIx::Class::IntrospectableM2M tries to install the version of
-# ExtUtils::MakeMaker used during the DBIx::Class::Schema::Loader installation.
-#
-# It seems as if the version of ExtUtils::MakeMaker used at any point is the
-# one in local if present, then the one in local-carton if present, then the
-# system one. Let's look at a few different installation platforms:
-#
-# On Debian wheezy, ExtUtils::MakeMaker is version 6.57. The installation of
-# carton installs ExtUtils::MakeMaker 7.04 in local-carton. Running carton
-# install installs ExtUtils::MakeMaker 6.72 in local at some point before
-# DBIx::Class::Schema::Loader (due to one of the 6.59 requirements), and so
-# DBIx::Class::IntrospectableM2M uses and tries to install 6.72, which is fine.
-#
-# On Ubuntu trusty, ExtUtils::MakeMaker is version 6.66. The installation of
-# carton is satisfied already. Running carton install, nothing else upgrades
-# ExtUtils::MakeMaker (as 6.66 > 6.59), and so when we get to
-# DBIx::Class::IntrospectableM2M it uses the system 6.66 and upgrades to 6.72,
-# which is again fine.
-#
-# On Mac OS X 10.9.5, ExtUtils::MakeMaker is version 6.63. The installation of
-# carton installs ExtUtils::MakeMaker 7.04 in local-carton. Running carton
-# install, nothing else upgrades ExtUtils::MakeMaker (as 6.63 > 6.59), and when
-# we get to DBIx::Class::IntrospectableM2M it therefore uses 7.04 and can't
-# install it (as the snapshot only contains 6.72) and fails.
-#
-# Therefore, if we make sure the ExtUtils::MakeMaker from the snapshot is
-# installed early in the process, it will be available when we get to
-# DBIx::Class::IntrospectableM2M, be used and match its own condition.
-# I'm sure this isn't the correct solution, but it is a working one.
-#
+# [1] Params::Classify 0.13 installs XS, but 0.15 will only do so
+# if ParseXS >= 3.30 is installed. If we don't do that, and are
+# upgrading, it will error because both 0.13 and 0.15 get installed.
 #
 # [2] The installation of Catalyst::Model::DBIC::Schema tries to install any
 # module that it finds already present in an optional section. On a Mac, the

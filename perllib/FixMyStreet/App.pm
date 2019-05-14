@@ -21,7 +21,6 @@ use URI::QueryParam;
 
 use Catalyst (
     'Static::Simple',
-    'Unicode::Encoding',
     'Session',
     'Session::Store::DBIC',
     'Session::State::Cookie',    # FIXME - we're using our own override atm
@@ -51,8 +50,6 @@ __PACKAGE__->config(
     %{ FixMyStreet->config() },
 
     name => 'FixMyStreet::App',
-
-    encoding => 'UTF-8',
 
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,

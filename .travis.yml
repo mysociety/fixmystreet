@@ -11,15 +11,8 @@ notifications:
     urls:
       secure: "x6M1u9SFv2oQpo28wDSpURV0Rnk+jTA5VCXIjlo0ccbEV1IOp36KSJT3A2lSbf2BDlwGlKcbgtMP9dk83So2dhvPow7ogemouW+Rx1olYJgzoTR3v5cZt9pn7g6y0O1M+AkDIzabzT90oRD4//YVY5OS16ZjePcBWwp9yHEEQ7I="
 
+# Put the versions in the matrix below so that we're ordered better
 language: perl
-perl:
-  - "5.14" # wheezy, precise
-  - "5.18" # trusty
-  - "5.20" # jessie
-  - "5.22" # xenial
-  - "5.24" # stretch, zesty
-# Params::Classify breaks in 5.26, and Lingua::EN::Tagger needs upgrading
-#  - "5.26"
 
 cache:
   directories:
@@ -28,13 +21,23 @@ cache:
 
 matrix:
   include:
+  - perl: "5.24" # stretch
+  - perl: "5.26" # bionic
+    env: "COVERAGE_PART=1" # Running the tests with coverage is much slower, so split the test run in two
+  - perl: "5.26"
+    env: "COVERAGE_PART=2"
   - perl: "5.22"
-    env: "CYPRESS=1"
+    env: "CYPRESS=1" # Run headless browser tests
+  - perl: "5.22" # xenial
+  - perl: "5.18" # trusty
+  - perl: "5.20" # jessie
+  - perl: "5.28" # buster
 
 env:
   global:
     - "S3_BUCKET=fixmystreet-bundle-cache"
     - "CYPRESS=0"
+    - "COVERAGE_PART=0"
     - secure: "llgWNfR/8pH0HjYpg+xhVxuqTaLC0GGUugfuINiUap7JxzjCZ2rlryxCXA4BCM8GUHa9wlYKhrKCSx+DM3EHRE0cLei7LNxAK1JSXLj3NihFQhqnq64tjDwGCSA4l7mlqErA7DK4Dpmh+hBp5f680akITAInM92CbwQZxLDYaCU="
     - secure: "qW+WCgAF68itADxcbcq+nCnKx3vf3GX73HMfjfbkFFUsYmIR+ZaJ9yQMnGJwxIpCHTWLAeqyx4KO8N8T3GmNdKYzIMZemOzp4ED29YC31QOQeq1CwNp2hD5sq/o47d2BzXWwMYNvNXfxz1K6r2c6EMPUtu8X3B8ExZq1RzSFdXs="
 
@@ -49,14 +52,16 @@ addons:
 
 install:
   - .travis/install
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cpanm --quiet --notest Devel::Cover::Report::Codecov; fi'
+  - 'if [ "$COVERAGE_PART" != "0" ]; then cpanm --quiet --notest Devel::Cover::Report::Codecov; fi'
   - 'if [ "$CYPRESS" = "1" ]; then npm install cypress; fi'
 before_script:
   - commonlib/bin/gettext-makemo FixMyStreet
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/DBIx,perllib/Email,perllib/Template,^t"; fi'
+  - 'if [ "$COVERAGE_PART" != "0" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,^t"; fi'
 script:
-  - 'if [ "$CYPRESS" = "0" ]; then script/test --jobs 3 t; fi'
+  - 'if [ "$CYPRESS" = "0" ] && [ "$COVERAGE_PART" = "0" ]; then script/test --jobs 3 t; fi'
+  - 'if [ "$COVERAGE_PART" = "1" ]; then script/test --jobs 3 `find t/app/controller -name "*.t"`; fi'
+  - 'if [ "$COVERAGE_PART" = "2" ]; then script/test --jobs 3 `find t -name "*.t" ! -path "t/app/controller*"`; fi'
   - 'if [ "$CYPRESS" = "1" ]; then PATH=$(npm bin):$PATH bin/browser-tests run ${CYPRESS_RECORD_KEY:+--record}; fi'
 after_success:
   - .travis/after_script
-  - 'if [ "$TRAVIS_PERL_VERSION" = "5.24" ]; then cover --report codecov; fi'
+  - 'if [ "$COVERAGE_PART" != "0" ]; then cover --report codecov; fi'

@@ -154,7 +154,6 @@ sub dbic_connect_info {
 
     my $dbi_args = {
         AutoCommit     => 1,
-        pg_enable_utf8 => 1,
     };
     my $local_time_zone = local_time_zone();
     my $dbic_args = {

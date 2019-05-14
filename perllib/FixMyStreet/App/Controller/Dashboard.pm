@@ -487,9 +487,6 @@ sub generate_csv : Private {
         }
 
         $csv->print($c->response, [
-            map {
-                $_ = encode('UTF-8', $_) if $_;
-            }
             @{$hashref}{
                 @{$c->stash->{csv}->{columns}}
             },

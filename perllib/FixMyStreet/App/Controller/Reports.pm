@@ -563,7 +563,7 @@ sub load_and_group_problems : Private {
     my $body = $c->stash->{body}; # Might be undef
 
     my $filter = {
-        order_by => $c->stash->{sort_order},
+        order_by => [ $c->stash->{sort_order}, { -desc => 'me.id' } ],
         rows => $c->cobrand->reports_per_page,
     };
     if ($c->user_exists && $body) {

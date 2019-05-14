@@ -1343,7 +1343,7 @@ subtest "test report creation for a category that is non public" => sub {
     $contact1->update( { non_public => 0 } );
 };
 
-$contact2->category( "Pothol\xc3\xa9s" );
+$contact2->category( "Pothol\x{00E9}s" );
 $contact2->update;
 
 subtest "check map click ajax response" => sub {

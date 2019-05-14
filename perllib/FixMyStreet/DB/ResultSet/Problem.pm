@@ -273,7 +273,7 @@ sub categories_summary {
 sub include_comment_counts {
     my $rs = shift;
     my $order_by = $rs->{attrs}{order_by};
-    return $rs unless ref $order_by eq 'HASH' && $order_by->{-desc} eq 'comment_count';
+    return $rs unless ref $order_by eq 'ARRAY' && ref $order_by->[0] eq 'HASH' && $order_by->[0]->{-desc} eq 'comment_count';
     $rs->search({}, {
         '+select' => [ {
             "" => \'(select count(*) from comment where problem_id=me.id and state=\'confirmed\')',

@@ -1,3 +1,4 @@
+use utf8;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new();
@@ -253,7 +254,7 @@ $report->geocode(
                                 'estimatedTotal' => 1
                               }
                             ],
-          'copyright' => "Copyright \x{a9} 2011 Microsoft and its suppliers. All rights reserved. This API cannot be accessed and the content and any results may not be used, reproduced or transmitted in any manner without express written permission from Microsoft Corporation.",
+          'copyright' => "Copyright © 2011 Microsoft and its suppliers. All rights reserved. This API cannot be accessed and the content and any results may not be used, reproduced or transmitted in any manner without express written permission from Microsoft Corporation.",
           'statusCode' => 200,
           'authenticationResultCode' => 'ValidCredentials'
         }

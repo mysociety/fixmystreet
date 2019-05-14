@@ -718,7 +718,7 @@ sub encoded_content {
 
 sub content_as_csv {
     my $self = shift;
-    open my $data_handle, '<', \$self->content;
+    open my $data_handle, '<:encoding(utf-8)', \$self->encoded_content;
     my $csv = Text::CSV->new({ binary => 1 });
     my @rows;
     while (my $row = $csv->getline($data_handle)) {

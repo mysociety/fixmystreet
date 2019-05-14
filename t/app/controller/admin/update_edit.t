@@ -10,7 +10,7 @@ my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $user3 = FixMyStreet::App->model('DB::User')->create( { email => 'test3@example.com' } );
+my $user3 = FixMyStreet::DB->resultset('User')->create( { email => 'test3@example.com' } );
 
 my $dt = DateTime->new(
     year   => 2011,
@@ -21,7 +21,7 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
         bodies_str         => '2504',
@@ -52,7 +52,7 @@ $mech->log_in_ok( $superuser->email );
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
-my $update = FixMyStreet::App->model('DB::Comment')->create(
+my $update = FixMyStreet::DB->resultset('Comment')->create(
     {
         text => 'this is an update',
         user => $user,
@@ -63,7 +63,7 @@ my $update = FixMyStreet::App->model('DB::Comment')->create(
     }
 );
 
-my $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
+my $log_entries = FixMyStreet::DB->resultset('AdminLog')->search(
     {
         object_type => 'update',
         object_id   => $update->id
@@ -275,7 +275,7 @@ for my $test (
 }
 
 subtest 'editing update email creates new user if required' => sub {
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => 'test4@example.com' } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => 'test4@example.com' } );
 
     $user->delete if $user;
 
@@ -289,7 +289,7 @@ subtest 'editing update email creates new user if required' => sub {
 
     $mech->submit_form_ok( { with_fields => $fields } );
 
-    $user = FixMyStreet::App->model('DB::User')->find( { email => 'test4@example.com' } );
+    $user = FixMyStreet::DB->resultset('User')->find( { email => 'test4@example.com' } );
 
     is_deeply $mech->visible_form_values, $fields, 'submitted form values';
 
@@ -302,7 +302,7 @@ subtest 'editing update email creates new user if required' => sub {
 subtest 'adding email to abuse list from update page' => sub {
     my $email = $update->user->email;
 
-    my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    my $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $email } );
     $abuse->delete if $abuse;
 
     $mech->get_ok( '/admin/update_edit/' . $update->id );
@@ -313,7 +313,7 @@ subtest 'adding email to abuse list from update page' => sub {
     $mech->content_contains('User added to abuse list');
     $mech->content_contains('<small>User in abuse table</small>');
 
-    $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $email } );
+    $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $email } );
     ok $abuse, 'entry created in abuse table';
 
     $mech->get_ok( '/admin/update_edit/' . $update->id );

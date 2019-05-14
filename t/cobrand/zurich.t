@@ -1012,7 +1012,7 @@ subtest 'email images to external partners' => sub {
         $expected_email_content =~ s{Subject: (.*?)\r?\n}{
             my $subj = Encode::decode('MIME-Header', $1);
             $subj =~ s{REPORT_ID}{$REPORT_ID}g;
-            'Subject: ' . Email::MIME::Encode::mime_encode($subj, "utf-8") . "\n";
+            'Subject: ' . Email::MIME::Encode::mime_encode($subj, "utf-8", 9) . "\n";
         }eg;
         $expected_email_content =~ s{REPORT_ID}{$REPORT_ID}g;
         $expected_email_content =~ s{BOUNDARY}{$boundary}g;

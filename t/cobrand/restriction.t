@@ -19,7 +19,10 @@ package main;
 
 use FixMyStreet::TestMech;
 
-my $c = FixMyStreet::App->new;
+use Catalyst::Test 'FixMyStreet::App';
+
+my ($res, $c) = ctx_request('/');
+
 my $cobrand = FixMyStreet::Cobrand::Tester->new({c => $c});
 $c->stash->{cobrand} = $cobrand;
 
