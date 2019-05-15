@@ -58,8 +58,8 @@ describe('Basic categories', function() {
             expect(obj[0].value).to.equal(categories[i]);
         });
         cy.get('#subcategory_Bins').should('not.be.visible');
-        cy.get('select:eq(1)').select('Bins');
         cy.wait('@report-ajax');
+        cy.get('select:eq(1)').select('Bins');
         cy.get('#subcategory_Bins').should('be.visible');
     });
 });
