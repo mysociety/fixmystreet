@@ -80,6 +80,32 @@ $(function(){
         $("form#user_edit .js-user-categories").toggle(show_area);
     });
 
+    $('form#user_edit select#roles').change(function() {
+        var $perms = $('.permissions-checkboxes');
+        if ($(this).val()) {
+            var selected_perms = {};
+            $(this).find(':selected').each(function() {
+                $.each($(this).data('permissions'), function(i, p) {
+                    selected_perms['permissions[' + p + ']'] = 1;
+                });
+            });
+            console.log(selected_perms);
+            $perms.css('color', '#666');
+            $perms.find('a').css('color', '#666');
+            $perms.find('input').each(function() {
+                this.checked = selected_perms[this.name] || false;
+            });
+            $perms.find('input').prop('disabled', true);
+        } else {
+            $perms.css('color', '');
+            $perms.find('a').css('color', '');
+            $perms.find('input').each(function() {
+                this.checked = this.hasAttribute('checked');
+            });
+            $perms.find('input').prop('disabled', false);
+        }
+    }).change();
+
     // On category edit page, hide the reputation input if inspection isn't required
     $("form#category_edit #inspection_required").change(function() {
         var $p = $("form#category_edit #reputation_threshold").closest("p");

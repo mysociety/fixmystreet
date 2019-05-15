@@ -136,6 +136,18 @@ sub add : Local : Args(0) {
     $c->res->redirect( $c->uri_for_action( 'admin/users/edit', $user->id ) );
 }
 
+sub fetch_body_roles : Private {
+    my ($self, $c, $body ) = @_;
+
+    my $roles = $body->roles->search(undef, { order_by => 'name' });
+    unless ($roles) {
+        delete $c->stash->{roles}; # Body doesn't have any roles
+        return;
+    }
+
+    $c->stash->{roles} = [ $roles->all ];
+}
+
 sub edit : Path : Args(1) {
     my ( $self, $c, $id ) = @_;
 
@@ -157,6 +169,7 @@ sub edit : Path : Args(1) {
 
     $c->forward('/admin/fetch_all_bodies');
     $c->forward('/admin/fetch_body_areas', [ $user->from_body ]) if $user->from_body;
+    $c->forward('fetch_body_roles', [ $user->from_body ]) if $user->from_body;
     $c->cobrand->call_hook('admin_user_edit_extra_data');
 
     if ( defined $c->flash->{status_message} ) {
@@ -269,26 +282,45 @@ sub edit : Path : Args(1) {
         # If so, we need to re-fetch areas so the UI is up to date.
         if ( $user->from_body && $user->from_body->id ne $c->stash->{fetched_areas_body_id} ) {
             $c->forward('/admin/fetch_body_areas', [ $user->from_body ]);
+            $c->forward('fetch_body_roles', [ $user->from_body ]);
         }
 
         if (!$user->from_body) {
             # Non-staff users aren't allowed any permissions or to be in an area
             $user->admin_user_body_permissions->delete;
+            $user->user_roles->delete;
             $user->area_ids(undef);
             delete $c->stash->{areas};
+            delete $c->stash->{roles};
             delete $c->stash->{fetched_areas_body_id};
         } elsif ($c->stash->{available_permissions}) {
-            my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
-            my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
-            $user->admin_user_body_permissions->search({
-                body_id => $user->from_body->id,
-                permission_type => { -not_in => \@user_permissions },
-            })->delete;
-            foreach my $permission_type (@user_permissions) {
-                $user->user_body_permissions->find_or_create({
+            my %valid_roles = map { $_->id => 1 } @{$c->stash->{roles}};
+            my @role_ids = grep { $valid_roles{$_} } $c->get_param_list('roles');
+            if (@role_ids) {
+                # Roles take precedence over permissions
+                $user->admin_user_body_permissions->delete;
+                $user->user_roles->search({
+                    role_id => { -not_in => \@role_ids },
+                })->delete;
+                foreach my $role (@role_ids) {
+                    $user->user_roles->find_or_create({
+                        role_id => $role,
+                    });
+                }
+            } else {
+                $user->user_roles->delete;
+                my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
+                my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
+                $user->admin_user_body_permissions->search({
                     body_id => $user->from_body->id,
-                    permission_type => $permission_type,
-                });
+                    permission_type => { -not_in => \@user_permissions },
+                })->delete;
+                foreach my $permission_type (@user_permissions) {
+                    $user->user_body_permissions->find_or_create({
+                        body_id => $user->from_body->id,
+                        permission_type => $permission_type,
+                    });
+                }
             }
         }
 

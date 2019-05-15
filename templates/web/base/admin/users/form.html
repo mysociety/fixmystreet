@@ -155,6 +155,20 @@
 
         [% IF available_permissions AND NOT user.is_superuser %]
           <li>
+            <div class="admin-hint">
+              <p>
+                [% loc("Users can be assigned one or more roles to give them all the permissions of those roles. Selecting a role or roles will disable manual permission selection.") %]
+              </p>
+            </div>
+            <label for="roles">[% loc('Role:') %]</label>
+            <select class="form-control js-multiple" id="roles" name="roles" multiple>
+              [% FOREACH role IN roles %]
+                <option data-permissions='["[% role.permissions.join('","') | html %]"]' value="[% role.id %]"[% ' selected' IF user.in_role(role.id) %]>[% role.name | html %]</option>
+              [% END %]
+            </select>
+          </li>
+
+          <li>
             <fieldset>
               <legend>
                 <div class="admin-hint">

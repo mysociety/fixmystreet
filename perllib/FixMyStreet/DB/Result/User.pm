@@ -628,4 +628,19 @@ sub in_area {
     return $self->areas_hash->{$area};
 }
 
+has roles_hash => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my %ids = map { $_->role_id => 1 } $self->user_roles->all;
+        return \%ids;
+    },
+);
+
+sub in_role {
+    my ($self, $role) = @_;
+    return $self->roles_hash->{$role};
+}
+
 1;

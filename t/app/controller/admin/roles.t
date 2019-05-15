@@ -7,9 +7,19 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $body2 = $mech->create_body_ok(2482, 'Bromley Council');
 my $editor = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
+my $user = $mech->create_user_ok('staffuser@example.com', name => 'Other Council User', from_body => $body);
+
 $editor->user_body_permissions->create({
     body => $body,
     permission_type => 'user_edit',
+});
+$editor->user_body_permissions->create({
+    body => $body,
+    permission_type => 'user_manage_permissions',
+});
+$user->user_body_permissions->create({
+    body => $body,
+    permission_type => 'report_edit_priority',
 });
 
 FixMyStreet::DB->resultset("Role")->create({
@@ -25,6 +35,7 @@ FixMyStreet::DB->resultset("Role")->create({
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'oxfordshire',
+    MAPIT_URL => 'http://mapit.uk',
 }, sub {
 
     $mech->log_in_ok( $editor->email );
@@ -66,6 +77,24 @@ FixMyStreet::override_config {
     subtest 'delete a role' => sub {
         $mech->submit_form_ok({ button => 'delete_role' });
         $mech->content_lacks('Role A');
+    };
+
+    subtest 'assign a user to a role' => sub {
+        $mech->get_ok('/admin/users/' . $user->id);
+        $mech->content_contains('Role B');
+        $mech->content_lacks('Role Z');
+        $mech->submit_form_ok({ with_fields => {
+            roles => 'Role B',
+        }});
+        $mech->content_like(qr/<option[^>]*selected>Role B/);
+        is $user->roles->count, 1, 'in one role';
+        is $user->user_body_permissions->count, 0, 'permissions removed';
+    };
+
+    subtest 'remove user from role' => sub {
+        $mech->submit_form_ok({ with_fields => {
+            roles => undef,
+        }}, 'remove role');
     };
 
 };
