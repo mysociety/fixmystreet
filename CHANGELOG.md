@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Admin improvements:
+        - Add new roles system, to group permissions and apply to users.
     - Bugfixes:
         - Prevent creation of two templates with same title.
         - Fix bug going between report/new pages client side

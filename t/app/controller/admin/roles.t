@@ -87,16 +87,23 @@ FixMyStreet::override_config {
             roles => 'Role B',
         }});
         $mech->content_like(qr/<option[^>]*selected>Role B/);
+        $mech->content_like(qr/<input[^>]*checkbox[^>]*template_edit[^>]*checked/);
         is $user->roles->count, 1, 'in one role';
         is $user->user_body_permissions->count, 0, 'permissions removed';
     };
 
+    subtest 'check user has the permissions of the role' => sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/admin/templates');
+    };
+
     subtest 'remove user from role' => sub {
+        $mech->log_in_ok( $editor->email );
+        $mech->get_ok('/admin/users/' . $user->id);
         $mech->submit_form_ok({ with_fields => {
             roles => undef,
         }}, 'remove role');
     };
-
 };
 
 subtest 'superuser can see all bodies' => sub {

@@ -382,7 +382,18 @@ has body_permissions => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        return [ $self->user_body_permissions->all ];
+        my $perms = [];
+        foreach my $role ($self->roles->all) {
+            push @$perms, map { {
+                body_id => $role->body_id,
+                permission => $_,
+            } } @{$role->permissions};
+        }
+        push @$perms, map { {
+            body_id => $_->body_id,
+            permission => $_->permission_type,
+        } } $self->user_body_permissions->all;
+        return $perms;
     },
 );
 
@@ -399,8 +410,8 @@ sub permissions {
 
     return unless $self->belongs_to_body($body_id);
 
-    my @permissions = grep { $_->body_id == $self->from_body->id } @{$self->body_permissions};
-    return { map { $_->permission_type => 1 } @permissions };
+    my @permissions = grep { $_->{body_id} == $self->from_body->id } @{$self->body_permissions};
+    return { map { $_->{permission} => 1 } @permissions };
 }
 
 sub has_permission_to {
@@ -422,7 +433,7 @@ sub has_permission_to {
     my %body_ids = map { $_ => 1 } @$body_ids;
 
     foreach (@{$self->body_permissions}) {
-        return 1 if $_->permission_type eq $permission_type && $body_ids{$_->body_id};
+        return 1 if $_->{permission} eq $permission_type && $body_ids{$_->{body_id}};
     }
     return 0;
 }
