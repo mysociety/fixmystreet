@@ -55,7 +55,7 @@ fixmystreet.assets.add(defaults, {
     attributes: {
         UnitID: 'Unit_ID'
     },
-    asset_category: ["Damaged sign, bollard etc."],
+    asset_category: ["Keep left bollard"],
     asset_item: 'bollard'
 });
 
@@ -70,7 +70,7 @@ fixmystreet.assets.add(defaults, {
     attributes: {
         UnitID: 'Unit_ID'
     },
-    asset_category: ["Lamp post", "Light in park or open space", "Zebra crossing light", "Traffic sign light", "Underpass light", "Keep left bollard", "Light in multi-storey car park", "Light in outside car park"],
+    asset_category: ["Lamp post", "Light in park or open space", "Underpass light", "Light in multi-storey car park", "Light in outside car park"],
     asset_item: 'street light'
 });
 
