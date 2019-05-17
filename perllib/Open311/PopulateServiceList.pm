@@ -2,6 +2,7 @@ package Open311::PopulateServiceList;
 
 use Moo;
 use Open311;
+use Text::CSV;
 
 has bodies => ( is => 'ro' );
 has found_contacts => ( is => 'rw', default => sub { [] } );
@@ -263,10 +264,21 @@ sub _set_contact_group {
     my ($self, $contact) = @_;
 
     my $groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->enable_category_groups;
+    my $multi_groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->enable_multiple_category_groups;
     my $old_group = $contact->get_extra_metadata('group') || '';
     my $new_group = $groups_enabled ? $self->_current_service->{group} || '' : '';
 
-    if ($old_group ne $new_group) {
+    if ($multi_groups_enabled && $new_group =~ /,/) {
+        my $csv = Text::CSV->new;
+        if ( $csv->parse($new_group) ) {
+            $new_group = [ $csv->fields ];
+        } else {
+            warn "error parsing groups for " . $self->_current_body_cobrand->moniker . "contact " . $contact->category . ": $new_group\n";
+            $new_group = [ $new_group ];
+        }
+    }
+
+    if ($self->_groups_different($old_group, $new_group)) {
         if ($new_group) {
             $contact->set_extra_metadata(group => $new_group);
             $contact->update({
@@ -298,6 +310,21 @@ sub _set_contact_non_public {
         whenedited => \'current_timestamp',
         note => 'marked private automatically by script',
     }) if $keywords{private};
+}
+
+sub _groups_different {
+    my ($self, $old, $new) = @_;
+
+    my $diff = 1;
+    if ($old && $new) {
+        $old = [ $old ] unless ref $old eq 'ARRAY';
+        $new = [ $new ] unless ref $new eq 'ARRAY';
+        $diff = join( ',', sort(@$old) ) ne join( ',', sort(@$new) );
+    } elsif (!$old && !$new) {
+        $diff = 0;
+    }
+
+    return $diff;
 }
 
 sub _delete_contacts_not_in_service_list {
