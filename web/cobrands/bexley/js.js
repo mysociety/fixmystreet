@@ -128,5 +128,27 @@ fixmystreet.assets.add(labeled_defaults, {
     asset_item: 'street light'
 });
 
+// We need to trigger the below function on subcategory change also
+$(function(){
+    $("#problem_form").on("change.category", "#form_DALocation", function() {
+        $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
+    });
+});
+
+fixmystreet.message_controller.register_category({
+    body: defaults.body,
+    category: function() {
+        var cat = $('#form_category').val();
+        if (cat === 'Dead animal') {
+            var where = $('#form_DALocation').val();
+            if (where === 'Garden' || where === 'Other private property') {
+                return true;
+            }
+        }
+        return false;
+    },
+    message: 'Please follow the link above to pay to remove a dead animal from a private property.'
+});
+
 })();
 
