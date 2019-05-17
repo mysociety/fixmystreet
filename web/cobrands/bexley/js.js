@@ -147,7 +147,8 @@ fixmystreet.message_controller.register_category({
         }
         return false;
     },
-    message: 'Please follow the link above to pay to remove a dead animal from a private property.'
+    keep_category_extras: true,
+    message: 'Please follow the link below to pay to remove a dead animal from a private property.'
 });
 
 })();
