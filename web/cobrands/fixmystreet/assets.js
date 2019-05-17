@@ -936,11 +936,16 @@ fixmystreet.message_controller = (function() {
     // This shows the reporting form
     function enable_report_form() {
         $(".js-hide-if-invalid-category").show();
+        $(".js-hide-if-invalid-category_extras").show();
     }
 
     // This hides the reporting form, apart from the category selection
-    function disable_report_form() {
+    // And perhaps the category_extras unless asked not to
+    function disable_report_form(keep_category_extras) {
         $(".js-hide-if-invalid-category").hide();
+        if (!keep_category_extras) {
+            $(".js-hide-if-invalid-category_extras").hide();
+        }
     }
 
     // This hides the responsibility message, and (unless a
@@ -1028,7 +1033,7 @@ fixmystreet.message_controller = (function() {
         } else {
             $msg.insertBefore('#js-post-category-messages');
         }
-        disable_report_form();
+        disable_report_form(stopper.keep_category_extras);
     });
 
     return {
