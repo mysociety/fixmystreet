@@ -445,8 +445,8 @@ var barrier_style = new OpenLayers.Style({
 
 fixmystreet.assets.add($.extend(true, {}, northants_road_defaults, {
     http_options: {
-      layerid: 230,
-      layerVersion: '230.3-',
+      layerid: is_live ? 1068 : 230,
+      layerVersion: is_live ? '1068.1-' : '230.4-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': barrier_style
