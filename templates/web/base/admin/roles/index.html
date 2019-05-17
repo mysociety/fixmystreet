@@ -21,7 +21,8 @@
           [% END %]
         </ul></td>
         <td>
-          <a href="[% c.uri_for(c.controller.action_for('edit'), [role.id]) %]">Edit</a>
+            <a href="[% c.uri_for(c.controller.action_for('edit'), [role.id]) %]">[% loc('Edit') %]</a>
+            &middot; <a href="[% c.uri_for_action('admin/users/index', role = role.id) %]">[% loc('Users') %]</a>
         </td>
     </tr>
 [% END -%]

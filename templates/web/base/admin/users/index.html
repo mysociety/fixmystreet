@@ -4,9 +4,28 @@
 <div class="fms-admin-info">
     [% loc("User search finds matches in users' names and email addresses.") %]
 </div>
+
 <form method="get" action="[% c.uri_for_action('admin/users/index') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<div class="filters">
+
     <p><label for="search">[% loc('Search:') %]</label>
         <input class="form-control" type="text" name="search"  size="30" id="search" value="[% searched | html %]">
+  [% IF roles %]
+    <p><label for="role">[% loc('Role:') %]</label>
+    <select name="role" id="role" class="form-control">
+        <option value="">---</option>
+      [% FOR role IN roles %]
+          [% IF c.user.is_superuser AND last_name != role.body.name %]
+            <optgroup label="[% role.body.name %]">
+            [% SET last_name = role.body.name %]
+          [% END %]
+        <option value="[% role.id %]"[% ' selected' IF role.id == role_selected %]>[% role.name | html %]</option>
+      [% END %]
+    </select>
+  [% END %]
+    <p class="no-label"><input type="submit" value="[% loc('Go') %]" class="btn">
+
+</div>
 </form>
 
 [% IF users.size %]
@@ -36,7 +55,7 @@
 [%- END -%]
 </table>
 
-[% ELSIF searched %]
+[% ELSIF searched || role_selected %]
 
 <div class="fms-admin-warning">
     [% loc("Searching found no users.") %]

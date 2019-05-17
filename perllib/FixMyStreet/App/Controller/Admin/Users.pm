@@ -28,34 +28,50 @@ sub index :Path : Args(0) {
     my ( $self, $c ) = @_;
 
 
-    if (my $search = $c->get_param('search')) {
-        $search = $self->trim($search);
-        $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
-        $c->stash->{searched} = $search;
+    my $search = $c->get_param('search');
+    my $role = $c->get_param('role');
+    if ($search || $role) {
+        my $users = $c->cobrand->users;
+        my $isearch;
+        if ($search) {
+            $search = $self->trim($search);
+            $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
+            $c->stash->{searched} = $search;
 
-        my $isearch = '%' . $search . '%';
-        my $search_n = 0;
-        $search_n = int($search) if $search =~ /^\d+$/;
+            $isearch = '%' . $search . '%';
+            my $search_n = 0;
+            $search_n = int($search) if $search =~ /^\d+$/;
 
-        my $users = $c->cobrand->users->search(
-            {
-                -or => [
-                    email => { ilike => $isearch },
-                    phone => { ilike => $isearch },
-                    name => { ilike => $isearch },
-                    from_body => $search_n,
-                ]
-            }
-        );
+            $users = $users->search(
+                {
+                    -or => [
+                        email => { ilike => $isearch },
+                        phone => { ilike => $isearch },
+                        name => { ilike => $isearch },
+                        from_body => $search_n,
+                    ]
+                }
+            );
+        }
+        if ($role) {
+            $c->stash->{role_selected} = $role;
+            $users = $users->search({
+                role_id => $role,
+            }, {
+                join => 'user_roles',
+            });
+        }
+
         my @users = $users->all;
         $c->stash->{users} = [ @users ];
-        $c->forward('/admin/add_flags', [ { email => { ilike => $isearch } } ]);
+        if ($search) {
+            $c->forward('/admin/add_flags', [ { email => { ilike => $isearch } } ]);
+        }
 
     } else {
         $c->forward('/auth/get_csrf_token');
         $c->forward('/admin/fetch_all_bodies');
         $c->cobrand->call_hook('admin_user_edit_extra_data');
-
 
         # Admin users by default
         my $users = $c->cobrand->users->search(
@@ -65,6 +81,14 @@ sub index :Path : Args(0) {
         my @users = $users->all;
         $c->stash->{users} = \@users;
     }
+
+    my $rs;
+    if ($c->user->is_superuser) {
+        $rs = $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] });
+    } elsif ($c->user->from_body) {
+        $rs = $c->user->from_body->roles->search_rs({}, { order_by => 'name' });
+    }
+    $c->stash->{roles} = [ $rs->all ];
 
     return 1;
 }
