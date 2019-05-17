@@ -1016,10 +1016,12 @@ fixmystreet.message_controller = (function() {
         var $msg;
         if (typeof stopper.message === 'function') {
             $msg = stopper.message();
-            $msg.attr('id', stopperId);
         } else {
-            $msg = $('<p id="' + stopperId + '" class="box-warning">' + stopper.message + '</p>');
+            $msg = $('<p class="box-warning">' + stopper.message + '</p>');
         }
+        $msg.attr('id', stopperId);
+        $msg.attr('role', 'alert');
+        $msg.attr('aria-live', 'assertive');
 
         if ($id.length) {
             $id.replaceWith($msg);
