@@ -282,7 +282,7 @@ sub edit : Path : Args(1) {
             my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
             $user->admin_user_body_permissions->search({
                 body_id => $user->from_body->id,
-                permission_type => { '!=' => \@user_permissions },
+                permission_type => { -not_in => \@user_permissions },
             })->delete;
             foreach my $permission_type (@user_permissions) {
                 $user->user_body_permissions->find_or_create({
@@ -302,7 +302,7 @@ sub edit : Path : Args(1) {
         my @trusted_bodies = $c->get_param_list('trusted_bodies');
         if ( $c->user->is_superuser ) {
             $user->user_body_permissions->search({
-                body_id => { '!=' => \@trusted_bodies },
+                body_id => { -not_in => \@trusted_bodies },
                 permission_type => 'trusted',
             })->delete;
             foreach my $body_id (@trusted_bodies) {

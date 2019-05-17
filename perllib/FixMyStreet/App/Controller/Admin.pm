@@ -831,7 +831,7 @@ sub template_edit : Path('templates') : Args(2) {
 
             $template->update_or_insert;
             $template->contact_response_templates->search({
-                contact_id => { '!=' => \@new_contact_ids },
+                contact_id => { -not_in => \@new_contact_ids },
             })->delete;
             foreach my $contact_id (@new_contact_ids) {
                 $template->contact_response_templates->find_or_create({
