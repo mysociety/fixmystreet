@@ -12,6 +12,7 @@ sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire County Council'; }
 sub council_url { return 'buckinghamshire'; }
 
+sub suggest_duplicates { 1 }
 
 sub example_places {
     return ( 'HP19 7QF', "Walton Road" );
