@@ -1286,6 +1286,9 @@ fixmystreet.display = {
     }
     $('#side').hide();
     $('#map_box .big-green-banner').hide();
+    $('#side-report').remove();
+    $('.two_column_sidebar').remove();
+    $('body').removeClass('with-actions');
 
     if (fixmystreet.map.updateSize) {
         fixmystreet.map.updateSize(); // required after changing the size of the map element
@@ -1355,6 +1358,8 @@ fixmystreet.display = {
 
         if ($sideReport.length) {
             $('#side').hide(); // Hide the list of reports
+            $('#side-form').hide(); // And the form
+            $('body').removeClass('with-notes');
             $('#map_box .big-green-banner').hide();
             // Remove any existing report page content from sidebar
             $('#side-report').remove();

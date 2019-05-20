@@ -42,4 +42,16 @@ describe('Regression tests', function() {
         cy.get('#map_sidebar').contains('M&S').click();
         cy.title().should('contain', 'M&S "brill" says <glob>');
     });
+
+    it('hides the report when going from around to report to form', function() {
+        cy.server();
+        cy.route('/report/*').as('show-report');
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6');
+        // force to hopefully work around apparent Cypress SVG issue
+        cy.get('image[title="Lights out in tunnel"]:last').click({force: true});
+        cy.wait('@show-report');
+        cy.get('.report-a-problem-btn').eq(0).should('contain', 'Report another problem here').click();
+        cy.get('.content').should('not.contain', 'toddler');
+    });
+
 });

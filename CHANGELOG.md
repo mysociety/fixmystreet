@@ -3,6 +3,7 @@
 * Unreleased
     - Bugfixes:
         - Prevent creation of two templates with same title.
+        - Fix bug going between report/new pages client side
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
 
