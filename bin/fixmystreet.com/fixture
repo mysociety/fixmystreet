@@ -7,6 +7,7 @@
 use strict;
 use warnings;
 use v5.14;
+use utf8;
 
 BEGIN {
     use File::Basename qw(dirname);
