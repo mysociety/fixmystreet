@@ -1,8 +1,11 @@
 {
-  "baseUrl": "http://localhost:3001",
+  "baseUrl": "http://fixmystreet.localhost:3001",
   "projectId": "y8vvs1",
   "blacklistHosts": ["gaze.mysociety.org", "*.openstreetmap.org"],
   "env": {
      "postcode": "BS10 5EE"
+  },
+  "hosts": {
+      "*.localhost": "127.0.0.1"
   }
 }

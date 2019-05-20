@@ -14,7 +14,7 @@ use Getopt::Long ':config' => qw(pass_through auto_help);
 
 my ($run_server, $run_cypress, $vagrant);
 my $config_file = 'conf/general.yml-example';
-my $cobrand = 'fixmystreet';
+my $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes' ];
 my $coords = '51.532851,-2.284277';
 my $area_id = 2608;
 my $name = 'Borsetshire';
@@ -25,12 +25,13 @@ GetOptions(
     'server' => \$run_server,
     'cypress' => \$run_cypress,
     'vagrant' => \$vagrant,
-    'cobrand=s' => \$cobrand,
+    'cobrand=s@' => \$cobrand,
     'coords=s' => \$coords,
     'area_id=s' => \$area_id,
     'name=s' => \$name,
     'mapit_url=s' => \$mapit_url,
 );
+$cobrand = [ split(',', join(',', @$cobrand)) ];
 
 if ($vagrant) {
     # Test inception
@@ -71,14 +72,14 @@ sub run {
         my $config_out = FixMyStreet::TestAppProve->get_config({
             config_file => $config_file,
             # Want this to be like .com
-            ALLOWED_COBRANDS => [ $cobrand ],
+            ALLOWED_COBRANDS => $cobrand,
             MAPIT_URL => $mapit_url,
-            BASE_URL => 'http://localhost:3001',
+            BASE_URL => 'http://fixmystreet.localhost:3001',
         });
         $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
 
         # Set up, and load in some data
-        system('bin/make_css', 'fixmystreet.com');
+        system('bin/make_css', map { $_ eq 'fixmystreet' ? 'fixmystreet.com' : $_ } @$cobrand);
         system('bin/fixmystreet.com/fixture', '--test_fixtures', '--nonrandom', '--coords', $coords, '--name', $name, '--area-id', $area_id, '--commit');
     }
 
@@ -90,7 +91,7 @@ sub run {
 
     if (($run_cypress && !$run_server) || $pid) {
         # Parent, run the test runner (then kill the child)
-        my $exit = system("cypress", $cmd, '--config', 'pluginsFile=false,supportFile=false', '--project', '.cypress', '--env', "cobrand=$cobrand", @ARGV);
+        my $exit = system("cypress", $cmd, '--config', 'pluginsFile=false,supportFile=false,blacklistHosts=[gaze.mysociety.org,*.openstreetmap.org]', '--project', '.cypress', @ARGV);
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
@@ -128,7 +129,7 @@ browser-tests [running options] [fixture options] [cypress options]
    --help           this help message
 
  Fixture option:
-   --cobrand        Cobrand to use, default 'fixmystreet'
+   --cobrand        Cobrand(s) to use, default is fixmystreet,northamptonshire,bathnes
    --coords         Default co-ordinates for created reports
    --area_id        Area ID to use for created body
    --name           Name to use for created body
