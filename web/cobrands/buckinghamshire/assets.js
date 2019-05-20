@@ -382,6 +382,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: "Snow and ice problem/winter salting",
     asset_item: "road",
+    asset_type: "road",
     non_interactive: true,
     road: true,
     actions: {
