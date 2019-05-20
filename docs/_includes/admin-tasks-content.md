@@ -468,7 +468,7 @@ To synchronise your records once you're back online, just visit any page on FixM
 
 #### Creating a staff account
 
-<span class="admin-task__permissions">Permissions required: User must be marked as staff; ‘Edit other users’ permissions’ must be ticked.</span>
+<span class="admin-task__permissions">Permissions required: User must be marked as staff; ‘Edit users’ details’ must be ticked.</span>
 
 <img alt="From the user admin page you can administer staff accounts" src="/assets/img/pro-user-guide/user-admin-page.png" class="admin-screenshot" />
 
@@ -478,29 +478,43 @@ You’ll see a table of existing users. Below this is the ‘add user’ interfa
 
 First create the basic user account by inputting a name and email address, plus any other contact
 details desired. Once this is done and you have saved the input, you can edit the account to assign
-any permissions required.
+any roles or permissions required.
 
 You can use the same form to create a user account for a resident or a member of staff, so tick
 ‘staff user’ if you wish to create an admin account.
 
 The new staff user can then log in via the normal method.
 
-#### Assigning permissions
+#### Creating roles
+
+<span class="admin-task__permissions">Permissions required: User must be marked as staff; ‘Edit other users' permissions must be ticked.</span>
+
+Go to the ‘Roles’ tab in the admin menu.
+
+Here you can create a group of permissions, called a ‘role’. See [Staff user
+accounts](../staff-user-accounts/) for some possible examples, but you can use
+whatever makes sense to your own organisation.
+
+Once you have created a role, you can then assign a user to one or more roles
+to give that user access to all the permissions of those roles, without having
+to assign permissions individually for each user.
+
+#### Assigning roles and permissions
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff; ‘Edit other users' permissions must be ticked.</span>
 
 <img alt="You can assign permissions to users on this screen" src="/assets/img/pro-user-guide/user-admin-permissions.png" class="admin-screenshot" />
 
 Once you have created the basic staff user account, you’ll be taken to a page where you can assign
-permissions.
+roles and permissions.
 
 You can also always edit any user from the table at the top of the Users page by clicking ‘edit’.
-Check the boxes relating to the permissions you wish that user to have, and click ‘submit changes’.
+Select the roles or permissions you wish that user to have, and click ‘submit changes’.
 
 
 #### Setting categories or areas
 
-<span class="admin-task__permissions">Permissions required: User must be marked as staff; ‘Edit other users' permissions’ must be ticked.</span>
+<span class="admin-task__permissions">Permissions required: User must be marked as staff; ‘Assign users to areas’ must be ticked (for areas).</span>
 
 <img alt="You can allocate categories to individual users by checking the relevant category boxes" src="/assets/img/pro-user-guide/user-admin-categories.png" class="admin-screenshot" />
 

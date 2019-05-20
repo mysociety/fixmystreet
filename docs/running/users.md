@@ -117,12 +117,13 @@ FixMyStreet website).
 You can mark any FixMyStreet user as belonging to a body. This marks them as a
 "staff user" for that body. Staff users have extra privileges *which only apply
 to problem reports under the jurisdiction of the body to which the use
-belongs*. These permissions can be set on a per-user basis.
+belongs*. Permissions can be grouped into custom roles, and these roles and
+individual permissions can be set on a per-user basis.
 
 To set (or revoke) staff user status, choose **Users** in the admin, and enter
 the email or name. (It's also possible to access a user via the reports they
 have made). Choose the appropriate body from the **Body** dropdown. Normal
-(not staff) users have no body associated. Then you can assign permissions
+(not staff) users have no body associated. Then you can assign roles or permissions
 to that user, depending upon what they require access to.
 
 For full details of what staff accounts can do, please see the
