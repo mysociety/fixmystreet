@@ -11,20 +11,23 @@ var defaults = {
             SERVICE: "WFS",
             VERSION: "1.1.0",
             REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::3857"
+            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
         }
     },
     format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
     asset_type: 'spot',
-    max_resolution: 2.388657133579254,
-    min_resolution: 0.5971642833948135,
+    max_resolution: {
+        'hounslow': 0.5291677250021167,
+        'fixmystreet': 1.194328566789627
+    },
+    min_resolution: 0.00001,
     asset_id_field: 'CentralAssetId',
     attributes: {
         central_asset_id: 'CentralAssetId',
         asset_details: 'FeatureId'
     },
     geometryName: 'msGeometry',
-    srsName: "EPSG:3857",
+    srsName: "EPSG:27700",
     strategy_class: OpenLayers.Strategy.FixMyStreet,
     body: "Hounslow Borough Council"
 };
@@ -213,7 +216,10 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "streets"
         }
     },
-    max_resolution: 4.777314267158508,
+    max_resolution: {
+        'hounslow': 6.614596562526458,
+        'fixmystreet': 4.777314267158508
+    },
     always_visible: true,
     non_interactive: true,
     usrn: {
