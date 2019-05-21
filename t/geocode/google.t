@@ -11,12 +11,12 @@ use Catalyst::Test 'FixMyStreet::App';
 use t::Mock::GoogleGeocoder;
 
 my $c = ctx_request('/');
-my $r = FixMyStreet::Geocode::Google::string("one result", $c);
+my $r = FixMyStreet::Geocode::Google->string("one result", $c);
 ok $r->{latitude};
 ok $r->{longitude};
 
 $c->stash->{cobrand} = FixMyStreet::Cobrand::Tester->new;
-$r = FixMyStreet::Geocode::Google::string("two results", $c);
+$r = FixMyStreet::Geocode::Google->string("two results", $c);
 is scalar @{$r->{error}}, 2;
 
 done_testing;

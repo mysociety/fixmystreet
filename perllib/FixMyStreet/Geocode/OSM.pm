@@ -23,7 +23,7 @@ my $nominatimbase = "http://nominatim.openstreetmap.org/";
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
-    my ( $s, $c ) = @_;
+    my ( $cls, $s, $c ) = @_;
 
     my $params = $c->cobrand->disambiguate_location($s);
     # Allow cobrand to fixup the user input

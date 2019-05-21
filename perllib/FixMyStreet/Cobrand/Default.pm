@@ -1192,8 +1192,7 @@ Return the default geocoder from config.
 =cut
 
 sub get_geocoder {
-    my ($self, $c) = @_;
-    return $c->config->{GEOCODER};
+    FixMyStreet->config('GEOCODER');
 }
 
 
