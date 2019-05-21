@@ -35,8 +35,6 @@ sub copyright {
     return '&copy; BCC';
 }
 
-sub map_template { 'buckinghamshire' }
-
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wmts.js',
     '/vendor/OpenLayers.Projection.OrdnanceSurvey.js',

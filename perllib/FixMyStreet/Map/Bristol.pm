@@ -32,8 +32,6 @@ sub copyright {
     return '&copy; BCC';
 }
 
-sub map_template { 'bristol' }
-
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wmts.js',
     '/js/map-OpenLayers.js',
