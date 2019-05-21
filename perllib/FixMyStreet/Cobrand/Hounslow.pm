@@ -60,6 +60,8 @@ sub send_questionnaires { 0 }
 
 sub enable_category_groups { 1 }
 
+sub suggest_duplicates { 1 }
+
 sub categories_restriction {
     my ($self, $rs) = @_;
     # Categories covering the Hounslow area have a mixture of Open311 and Email
