@@ -30,6 +30,8 @@ sub contact_email {
 
 sub enable_category_groups { 1 }
 
+sub suggest_duplicates { 1 }
+
 sub send_questionnaires { 0 }
 
 1;
