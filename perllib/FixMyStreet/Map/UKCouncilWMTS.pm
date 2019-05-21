@@ -47,4 +47,6 @@ sub reproject_to_latlon($$$) {
     return ($lat, $lon);
 }
 
+sub map_template { 'wmts' }
+
 1;
