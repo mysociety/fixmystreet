@@ -21,7 +21,9 @@ sub example_places {
 }
 
 sub disambiguate_location {
+    my $self = shift;
     return {
+        %{ $self->SUPER::disambiguate_location() },
         country => 'gb',
         google_country => 'uk',
         bing_culture => 'en-GB',
