@@ -60,7 +60,7 @@ sub setup_soap {
 # versions of the site.
 
 sub string {
-    my ( $s, $c ) = @_;
+    my ( $cls, $s, $c ) = @_;
 
     setup_soap();
 

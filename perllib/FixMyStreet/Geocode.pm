@@ -13,11 +13,13 @@ use JSON::MaybeXS;
 use LWP::Simple qw($ua);
 use Path::Tiny;
 use URI::Escape;
-use FixMyStreet::Geocode::Bing;
-use FixMyStreet::Geocode::Google;
-use FixMyStreet::Geocode::OSM;
-use FixMyStreet::Geocode::Zurich;
 use Utils;
+
+use Module::Pluggable
+  sub_name    => 'geocoders',
+  search_path => __PACKAGE__,
+  require => 1,
+  except => qr/Address/;
 
 # lookup STRING CONTEXT
 # Given a user-inputted string, try and convert it into co-ordinates using either
@@ -44,14 +46,17 @@ sub lookup {
 sub string {
     my ($s, $c) = @_;
 
-    my $service = $c->cobrand->get_geocoder($c);
+    my $service = $c->cobrand->get_geocoder();
     $service = $service->{type} if ref $service;
-    $service = 'OSM' unless $service =~ /^(Bing|Google|OSM|Zurich)$/;
-    $service = 'OSM' if $service eq 'Bing' && !FixMyStreet->config('BING_MAPS_API_KEY');
-    $service = "FixMyStreet::Geocode::${service}::string";
 
-    no strict 'refs';
-    return &$service($s, $c);
+    $service = __PACKAGE__ . '::' . $service;
+    my %avail = map { $_ => 1 } __PACKAGE__->geocoders;
+
+    if (!$avail{$service} || ($service->can('setup') && !$service->setup)) {
+        $service = __PACKAGE__ . '::OSM';
+    }
+
+    return $service->string($s, $c);
 }
 
 # escape STRING CONTEXT
