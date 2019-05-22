@@ -121,3 +121,32 @@ body.mappage {
 #postcodeForm { margin-left: -1em !important; margin-right: -1em !important; }
 
 .content footer .tablewrapper { background: #fff; }
+
+#front-main {
+    a#geolocate_link {
+        background: url(images/locate-me.png) $left 0 no-repeat;
+        height: 34px;
+        padding-#{$left}: 24px;
+        margin-top: 0.25em;
+        font-size: 1em;
+        @media ($high-dpi-screen) {
+            background-image: url(images/locate-me@2.png);
+            background-size: 22px 34px;
+        }
+        &:hover {
+            text-decoration:underline;
+            background: url(images/locate-me.png) $left 0 no-repeat;
+
+            @media ($high-dpi-screen) {
+                background-image: url(images/locate-me@2.png);
+                background-size: 22px 34px;
+            }
+        }
+    }
+}
+
+.nav-menu--main {
+    a {
+	border-radius: 5px;
+    }
+}

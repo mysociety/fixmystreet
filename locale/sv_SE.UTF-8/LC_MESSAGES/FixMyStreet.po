@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: 2019-04-25 10:44+0200\n"
+"PO-Revision-Date: 2019-05-22 10:26+0200\n"
 "Last-Translator: Joe Siltberg <joe@fixamingata.se>, 2019\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
 "Language: sv_SE\n"
@@ -151,7 +151,7 @@ msgstr "(ignorerad om typen är \"Sträng\")"
 
 #: templates/web/base/around/intro.html:2
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
-msgstr "(ex.v. graffiti, skräp, trasiga gatustenar eller belysning)"
+msgstr "till exempel graffiti, skräp, trasiga gatustenar eller belysning"
 
 #: templates/web/base/reports/index.html:82
 msgid "(no longer exists)"
@@ -1322,12 +1322,12 @@ msgstr "Skriv in ett Z&uuml;rich-gatunamn"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:16
 msgid "Enter a nearby UK postcode, or street name and area"
-msgstr "Ange ett postnummer eller gatunamn och ort"
+msgstr "Ange gatunamn och ort eller ett postnummer"
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:20
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:21
 msgid "Enter a nearby postcode, or street name and area"
-msgstr "Ange ett postnummer eller gatunamn och ort"
+msgstr "Ange gatunamn och ort eller ett postnummer"
 
 #: templates/web/base/around/postcode_form.html:7
 #: templates/web/base/around/postcode_form.html:8
@@ -5376,7 +5376,7 @@ msgstr "använde inte kartan"
 #: templates/web/base/alert/index.html:34
 #: templates/web/base/around/postcode_form.html:13
 msgid "e.g. ‘%s’ or ‘%s’"
-msgstr "ex.v. '%s' eller '%s'"
+msgstr "exempelvis ‘%s’ eller ‘%s’"
 
 #: templates/web/base/report/new/form_title.html:2
 msgid "e.g. ‘10 inch pothole on Example St, near post box’"
@@ -5431,7 +5431,7 @@ msgstr "eller <a href=\"%s\">logga in</a>"
 #: templates/web/base/alert/index.html:40
 #: templates/web/base/around/postcode_form.html:27
 msgid "or locate me automatically"
-msgstr "eller <strong>hitta min position automatiskt</strong>."
+msgstr "eller <strong>hitta min position automatiskt</strong>"
 
 #: templates/web/base/admin/report_edit.html:49
 #: templates/web/base/admin/report_edit.html:51
