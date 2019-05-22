@@ -48,7 +48,7 @@ addons:
         packages:
             - gettext
             - language-pack-de
-            - language-pack-nb
+            - language-pack-sv
 
 install:
   - .travis/install

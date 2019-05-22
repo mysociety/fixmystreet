@@ -1,5 +1,4 @@
-#!/usr/bin/env perl
-
+use utf8;
 use FixMyStreet::Test;
 use URI::Split qw(uri_split);
 
@@ -220,7 +219,7 @@ my $problem3 = $problem_rs->create( {
     used_map     => 1,
     name         => '',
     state        => 'confirmed',
-    cobrand      => 'fiksgatami',
+    cobrand      => 'fixamingata',
     user         => $user,
     created      => DateTime->now()->subtract( days => 1 ),
     lastupdate   => DateTime->now()->subtract( days => 1 ),
@@ -235,7 +234,7 @@ subtest 'test translation of auto-added comment from old-style Open311 update' =
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $requests_xml } );
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'fiksgatami' ],
+        ALLOWED_COBRANDS => [ 'fixamingata' ],
     }, sub {
         ok $updates->update_reports( [ 638346 ], $o, $body ), 'Updated reports';
     };
@@ -245,7 +244,7 @@ subtest 'test translation of auto-added comment from old-style Open311 update' =
     is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638346' ], 'query string matches');
 
     is $problem3->comments->count, 1, 'added a comment';
-    is $problem3->comments->first->text, "(ikke rapportert til administrasjonen)", 'correct comment text';
+    is $problem3->comments->first->text, "Stängd av kommunen", 'correct comment text';
 };
 
 END {

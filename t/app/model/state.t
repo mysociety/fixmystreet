@@ -66,14 +66,14 @@ is_deeply [ sort FixMyStreet::DB::Result::Problem->fixed_states ],
     ['fixed', 'fixed - council', 'fixed - user'], 'fixed states okay';
 
 FixMyStreet::override_config {
-    LANGUAGES => [ 'en-gb,English,en_GB', 'nb,Norwegian,nb_NO' ],
+    LANGUAGES => [ 'en-gb,English,en_GB', 'sv,Swedish,sv_SE' ],
 }, sub {
     subtest 'translation of open works both ways (file/db)' => sub {
         # Note at this point the states have been cached
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('default')->new;
-        my $lang = $cobrand->set_lang_and_domain('nb', 1, FixMyStreet->path_to('locale')->stringify);
-        is $lang, 'nb';
-        is $rs->display('confirmed'), "Åpen";
+        my $lang = $cobrand->set_lang_and_domain('sv', 1, FixMyStreet->path_to('locale')->stringify);
+        is $lang, 'sv';
+        is $rs->display('confirmed'), "Öppen";
         $lang = $cobrand->set_lang_and_domain('en-gb', 1, FixMyStreet->path_to('locale')->stringify);
         is $lang, 'en-gb';
         is $rs->display('confirmed'), "Open Eng trans";

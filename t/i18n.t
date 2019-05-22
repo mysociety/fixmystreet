@@ -15,7 +15,7 @@ use mySociety::Locale;
 die "You need to run 'commonlib/bin/gettext-makemo --quiet FixMyStreet' "
   . "to generate the *.mo files needed."
   unless -e FixMyStreet->path_to(
-    'locale/nb_NO.UTF-8/LC_MESSAGES/FixMyStreet.mo');
+    'locale/sv_SE.UTF-8/LC_MESSAGES/FixMyStreet.mo');
 
 # Test the language negotiation works
 my $lang = mySociety::Locale::negotiate_language(
@@ -29,32 +29,32 @@ is $lang, 'es', 'Language negotiation works okay';
 
 # Example strings
 my $english = "Please enter a valid email";
-my $norwegian = "Legg til en gyldig e-post";
+my $swedish = "Skriv in en giltig epostadress";
 
 # set english as the language
 mySociety::Locale::negotiate_language(    #
-    'en-gb,English,en_GB|nb,Norwegian,nb_NO', 'en_GB'
+    'en-gb,English,en_GB|sv,Swedish,sv_SE', 'en_GB'
 );
 
 mySociety::Locale::gettext_domain( 'FixMyStreet', 1 );
 mySociety::Locale::change();
 is _($english), $english, "english to english";
 
-mySociety::Locale::change('nb');
-is _($english), $norwegian, "english to norwegian";
+mySociety::Locale::change('sv');
+is _($english), $swedish, "english to Swedish";
 
 # check that being in a deep directory does not confuse the code
 chdir FixMyStreet->path_to('t/app/controller') . '';
 mySociety::Locale::gettext_domain( 'FixMyStreet', 1,
     FixMyStreet->path_to('locale')->stringify );
-mySociety::Locale::change('nb');
-is _($english), $norwegian, "english to norwegian (deep directory)";
+mySociety::Locale::change('sv');
+is _($english), $swedish, "english to Swedish (deep directory)";
 
 # test that sorting works as expected in the right circumstances...
-my @random_sorted  = qw( Å Z Ø A );
-my @EN_sorted      = qw( A Å Ø Z );
-my @NO_sorted      = qw( A Z Ø Å );
-my @default_sorted = qw( A Z Å Ø );
+my @random_sorted  = qw( Å Z Ö A );
+my @EN_sorted      = qw( A Å Ö Z );
+my @SV_sorted      = qw( A Z Å Ö );
+my @default_sorted = qw( A Z Å Ö );
 
 SKIP: {
 
@@ -98,22 +98,20 @@ SKIP: {
 }
 
 SKIP: {
-    skip 'Will not pass on Mac', 2 if $^O eq 'darwin';
-
     mySociety::Locale::negotiate_language(    #
-        'nb-no,Norwegian,nb_NO', 'nb_NO'
+        'sv,Swedish,sv_SE', 'sv_SE'
     );
     mySociety::Locale::change();
     use locale;
 
     is_deeply( [ sort @random_sorted ],
-        \@NO_sorted, "sort correctly with use locale 'nb_NO'" );
+        \@SV_sorted, "sort correctly with use locale 'sv_SE'" );
 
     # is_deeply( [ keysort { $_ } @random_sorted ],
-    #     \@NO_sorted, "keysort correctly with use locale 'nb_NO'" );
+    #     \@SV_sorted, "keysort correctly with use locale 'sv_SE'" );
 
     is_deeply( [ sort { strcoll( $a, $b ) } @random_sorted ],
-        \@NO_sorted, "sort strcoll correctly with use locale 'nb_NO'" );
+        \@SV_sorted, "sort strcoll correctly with use locale 'sv_SE'" );
 }
 
 subtest "check that code is only called once by in_gb_locale" => sub {

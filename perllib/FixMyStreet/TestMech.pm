@@ -241,7 +241,7 @@ sub get_text_body_from_email {
         my $part = shift;
         return if $part->subparts;
         return if $part->content_type !~ m{text/plain};
-        $body = $obj ? $part : $part->body;
+        $body = $obj ? $part : $part->body_str;
         ok $body, "Found text body";
     });
     return $body;

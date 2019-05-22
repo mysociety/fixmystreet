@@ -486,7 +486,7 @@ subtest "correct i18n-ed summary for state of closed" => sub {
     $mech->clear_emails_ok;
 
     $report->update( { state => 'closed' } );
-    $alert->update( { lang => 'nb', cobrand => 'fiksgatami' } );
+    $alert->update( { lang => 'sv', cobrand => 'fixamingata' } );
 
     FixMyStreet::DB->resultset('AlertSent')->search( {
         alert_id => $alert->id,
@@ -494,14 +494,14 @@ subtest "correct i18n-ed summary for state of closed" => sub {
     } )->delete;
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'fiksgatami' ],
+        ALLOWED_COBRANDS => [ 'fixamingata' ],
     }, sub {
         FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
 
     my $body = $mech->get_text_body_from_email;
-    my $msg = 'Denne rapporten er for tiden markert som lukket';
-    like $body, qr/$msg/, 'email says problem is closed, in Norwegian';
+    my $msg = 'Den här rapporten är markerad som stängd';
+    like $body, qr/$msg/, 'email says problem is closed, in Swedish';
 };
 
 END {
