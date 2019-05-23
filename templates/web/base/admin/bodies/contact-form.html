@@ -132,7 +132,21 @@ as well.") %]
     <p>
       <label>
         [% loc('Group') %]
+        [% IF body.get_cobrand_handler.enable_multiple_category_groups %]
+            [% IF contact.extra.group %]
+                [% FOR group IN contact.extra.group %]
+                <input class="form-control" type="text" name="group" value="[% group | html %]" size="30">
+                [% END %]
+            [% ELSE %]
+                <input class="form-control" type="text" name="group" value="" size="30">
+            [% END %]
+            <input class="hidden-js js-group-item-template form-control" type="text" name="group" value="" size="30">
+            <p class="hidden-nojs">
+              <button class="btn btn--small js-group-item-add">[% loc('Add group') %]</button>
+            </p>
+        [% ELSE %]
         <input class="form-control" type="text" name="group" value="[% contact.extra.group | html %]" size="30">
+        [% END %]
       </label>
     </p>
   [% END %]

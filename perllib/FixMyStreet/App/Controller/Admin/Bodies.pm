@@ -273,8 +273,13 @@ sub update_contacts : Private {
         if ( $c->get_param('reputation_threshold') ) {
             $contact->set_extra_metadata( reputation_threshold => int($c->get_param('reputation_threshold')) );
         }
-        if ( my $group = $c->get_param('group') ) {
-            $contact->set_extra_metadata( group => $group );
+        if ( my @group = $c->get_param_list('group') ) {
+            @group = grep { $_ } @group;
+            if (scalar @group == 0) {
+                $contact->unset_extra_metadata( 'group' );
+            } else {
+                $contact->set_extra_metadata( group => \@group );
+            }
         } else {
             $contact->unset_extra_metadata( 'group' );
         }

@@ -224,7 +224,7 @@ FixMyStreet::override_config {
         } } );
 
         my $contact = $body->contacts->find({ category => 'grouped category' });
-        is $contact->get_extra_metadata('group'), 'group a', "group stored correctly";
+        is_deeply $contact->get_extra_metadata('group'), ['group a'], "group stored correctly";
     };
 
     subtest 'group can be unset' => sub {
@@ -246,5 +246,35 @@ FixMyStreet::override_config {
 
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    MAPIT_TYPES => [ 'UTA' ],
+    BASE_URL => 'http://www.example.org',
+    COBRAND_FEATURES => {
+       category_groups => { default => 1 },
+       multiple_category_groups => { default => 1 },
+    }
+}, sub {
+    subtest 'multi group editing works' => sub {
+        $mech->get_ok('/admin/body/' . $body->id);
+        $mech->content_contains( 'group</strong> is used for the top-level category' );
+
+        # have to do this as a post as adding a second group requires
+        # javascript
+        $mech->post_ok( '/admin/body/' . $body->id, {
+            posted     => 'new',
+            token      => $mech->form_id('category_edit')->value('token'),
+            category   => 'grouped category',
+            email      => 'test@example.com',
+            note       => 'test note',
+            'group'    => [ 'group a', 'group b'],
+            non_public => undef,
+            state => 'unconfirmed',
+        } );
+
+        my $contact = $body->contacts->find({ category => 'grouped category' });
+        is_deeply $contact->get_extra_metadata('group'), ['group a', 'group b'], "group stored correctly";
+    };
+};
 
 done_testing();
