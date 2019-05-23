@@ -14,8 +14,6 @@ sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
 
-sub suggest_duplicates { 1 }
-
 sub report_validation {
     my ($self, $report, $errors) = @_;
 

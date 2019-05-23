@@ -12,8 +12,6 @@ sub council_area { 'Northamptonshire' }
 sub council_name { 'Northamptonshire County Council' }
 sub council_url { 'northamptonshire' }
 
-sub suggest_duplicates { 1 }
-
 sub example_places { ( 'NN1 1NS', "Bridge Street" ) }
 
 sub enter_postcode_text { 'Enter a Northamptonshire postcode, street name and area, or check an existing report number' }
