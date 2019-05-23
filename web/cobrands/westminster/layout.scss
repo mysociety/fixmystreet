@@ -1,16 +1,19 @@
 @import "colours";
 @import "../sass/layout";
 
-#site-logo {
-    background-position: 0 0;
-    background-size: 233px 32px;
-    height: 32px;
-    width: 233px;
-    @include svg-background-image('images/site-logo');
+#site-header {
+    border-bottom: 6px solid $westminster-yellow;
 }
 
-#site-header {
-    background: $westminster_navy linear-gradient(to right, $westminster_black 15%, $westminster_navy 50%, $westminster_black 85%) 0 0 repeat;
+#site-logo {
+    background-position: 0 0;
+    background-size: 139px 35px;
+    height: 35px;
+    width: 139px;
+    background-image: url(/cobrands/westminster/images/site-logo.png);
+    @media ($high-dpi-screen) {
+        background-image: url(/cobrands/westminster/images/site-logo@2.png);  
+    }
 }
 
 #front-main {
@@ -22,7 +25,7 @@
 
     h1, #postcodeForm {
         position: relative;
-        background: rgba(0,0,0,0.6);
+        background: rgba(8,30,102,0.6);
         color: #fff;
 
         &:before, &:after {
@@ -32,7 +35,7 @@
             position: absolute;
             top: 0;
             height: 100%;
-            background: rgba(0,0,0,0.6);
+            background: rgba(8,30,102,0.6);
             left: -1000px;
         }
 
@@ -46,7 +49,8 @@
         font-size: 40px;
         margin: 60px 0 15px;
         padding: 30px 0;
-        color: $primary;
+        color: #fff;
+        font-weight: bold;
     }
 
     #postcodeForm {
@@ -72,6 +76,11 @@
             background-color: lighten($primary, 10%);
         }
     }
+}
+
+#front-howto h2,
+#front-recently h2 {
+    font-weight: bold;
 }
 
 .nav-menu--main {
@@ -101,4 +110,8 @@
     .ie8 & {
         background-image: url(/cobrands/westminster/images/chevron-black-right.png);
     }
+}
+
+.problem-header h1 {
+    font-weight: bold;
 }
