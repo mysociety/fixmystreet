@@ -127,23 +127,14 @@
         current_duplicate_markers = markers;
     }
 
-    function remove_duplicate_list(cb) {
-        var animations = [];
-
-        animations.push( $.Deferred() );
+    function remove_duplicate_list() {
         $('#js-duplicate-reports').slideUp(function(){
             $(this).addClass('hidden');
             $(this).find('ul').empty();
-            animations[0].resolve();
         });
         if ( $('#problem_form').length ) {
-            animations.push( $.Deferred() );
-            $('.js-hide-if-invalid-category').slideDown(function(){
-                animations[1].resolve();
-            });
+            $('.js-hide-if-invalid-category').slideDown();
         }
-
-        $.when.apply(this, animations).then(cb);
     }
 
     function remove_duplicate_pins() {
@@ -180,9 +171,7 @@
     $('.js-hide-duplicate-suggestions').on('click', function(e){
         e.preventDefault();
         remove_duplicate_pins();
-        remove_duplicate_list(function(){
-            $('#form_title').focus();
-        });
+        remove_duplicate_list();
     });
 
 })();
