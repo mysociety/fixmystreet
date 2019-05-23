@@ -36,7 +36,7 @@
             data: url_params,
             dataType: 'json'
         }).done(function(response) {
-            if ( response.pins.length ){
+            if (response.pins.length && take_effect()) {
                 render_duplicate_list(response);
                 render_duplicate_pins(response);
             } else {
@@ -132,7 +132,7 @@
             $(this).addClass('hidden');
             $(this).find('ul').empty();
         });
-        if ( $('#problem_form').length ) {
+        if ($('#problem_form').length && take_effect()) {
             $('.js-hide-if-invalid-category').slideDown();
         }
     }
@@ -156,6 +156,17 @@
             return;
         }
         refresh_duplicate_list();
+    }
+
+    function take_effect() {
+        // We do not want to do anything if any other message is being shown
+        if (document.getElementById('js-category-stopper')) {
+            return false;
+        }
+        if ($('.js-responsibility-message:visible').length) {
+            return false;
+        }
+        return true;
     }
 
     // Want to show potential duplicates when a regular user starts a new

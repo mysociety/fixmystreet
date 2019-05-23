@@ -972,10 +972,10 @@ fixmystreet.message_controller = (function() {
     }
 
     // This hides the responsibility message, and (unless a
-    // stopper message is shown) reenables the report form
+    // stopper message or dupes are shown) reenables the report form
     function responsibility_off() {
         hide_responsibility_errors();
-        if (!document.getElementById(stopperId)) {
+        if (!document.getElementById(stopperId) && !$('#js-duplicate-reports').is(':visible')) {
             enable_report_form();
         }
     }
@@ -1034,7 +1034,7 @@ fixmystreet.message_controller = (function() {
 
         if (!matching.length) {
             $id.remove();
-            if ( !$('#js-roads-responsibility').is(':visible') ) {
+            if ( !$('#js-roads-responsibility').is(':visible') && !$('#js-duplicate-reports').is(':visible') ) {
                 enable_report_form();
             }
             return;
