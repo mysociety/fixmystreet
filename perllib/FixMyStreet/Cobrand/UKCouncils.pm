@@ -15,6 +15,11 @@ sub is_council {
     1;
 }
 
+sub suggest_duplicates {
+    my $self = shift;
+    return $self->feature('suggest_duplicates');
+}
+
 sub path_to_web_templates {
     my $self = shift;
     return [

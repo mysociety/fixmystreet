@@ -10,8 +10,6 @@ sub council_name { return 'Oxfordshire County Council'; }
 sub council_url { return 'oxfordshire'; }
 sub is_two_tier { return 1; }
 
-sub suggest_duplicates { 1 }
-
 sub report_validation {
     my ($self, $report, $errors) = @_;
 

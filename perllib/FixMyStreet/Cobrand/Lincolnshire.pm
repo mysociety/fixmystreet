@@ -19,7 +19,6 @@ sub council_url { return 'lincolnshire'; }
 sub is_two_tier { 1 }
 
 sub enable_category_groups { 1 }
-sub suggest_duplicates { 1 }
 sub send_questionnaires { 0 }
 sub report_sent_confirmation_email { 'external_id' }
 
