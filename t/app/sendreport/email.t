@@ -69,8 +69,7 @@ foreach my $test ( {
     };
 }
 
-$body->body_areas->delete;
-$body->body_areas->create({ area_id => 2429 });
+$body->update({ name => 'Somerset West and Taunton Council' });
 
 subtest 'Test special behaviour' => sub {
     my $e = FixMyStreet::SendReport::Email->new;

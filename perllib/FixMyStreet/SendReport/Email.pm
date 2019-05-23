@@ -20,7 +20,7 @@ sub build_recipient_list {
         my ($body_email, $state, $note) = ( $contact->email, $contact->state, $contact->note );
 
         $body_email = swandt_contact($row->latitude, $row->longitude)
-            if ($body->areas->{2427} || $body->areas->{2429}) && $body_email eq 'SPECIAL';
+            if $body->name eq 'Somerset West and Taunton Council' && $body_email eq 'SPECIAL';
 
         unless ($state eq 'confirmed') {
             $all_confirmed = 0;
@@ -126,7 +126,7 @@ sub swandt_contact {
 sub _get_district_for_contact {
     my ( $lat, $lon ) = @_;
     my $district =
-      FixMyStreet::MapIt::call( 'point', "4326/$lon,$lat", type => 'DIS' );
+      FixMyStreet::MapIt::call( 'point', "4326/$lon,$lat", type => 'DIS', generation => 34 );
     ($district) = keys %$district;
     return $district;
 }
