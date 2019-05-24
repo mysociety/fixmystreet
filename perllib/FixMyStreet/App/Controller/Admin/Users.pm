@@ -27,7 +27,6 @@ Admin pages for editing users
 sub index :Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->detach('add') if $c->req->method eq 'POST'; # Add a user
 
     if (my $search = $c->get_param('search')) {
         $search = $self->trim($search);
