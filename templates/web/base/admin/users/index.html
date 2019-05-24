@@ -1,6 +1,21 @@
 [% INCLUDE 'admin/header.html' title=loc('Search Users') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
+[% BLOCK role_select %]
+<select name="[% label %]" id="[% label %]" class="form-control">
+    <option value="">---</option>
+  [% FOR role IN roles %]
+      [% IF c.user.is_superuser AND last_name != role.body.name %]
+        <optgroup label="[% role.body.name %]">
+        [% SET last_name = role.body.name %]
+      [% END %]
+    <option value="[% role.id %]"[% ' selected' IF role.id == role_selected %]>[% role.name | html %]</option>
+  [% END %]
+</select>
+[% END %]
+
+[% INCLUDE status_message %]
+
 <div class="fms-admin-info">
     [% loc("User search finds matches in users' names and email addresses.") %]
 </div>
@@ -12,16 +27,7 @@
         <input class="form-control" type="text" name="search"  size="30" id="search" value="[% searched | html %]">
   [% IF roles %]
     <p><label for="role">[% loc('Role:') %]</label>
-    <select name="role" id="role" class="form-control">
-        <option value="">---</option>
-      [% FOR role IN roles %]
-          [% IF c.user.is_superuser AND last_name != role.body.name %]
-            <optgroup label="[% role.body.name %]">
-            [% SET last_name = role.body.name %]
-          [% END %]
-        <option value="[% role.id %]"[% ' selected' IF role.id == role_selected %]>[% role.name | html %]</option>
-      [% END %]
-    </select>
+    [% INCLUDE role_select label='role' %]
   [% END %]
     <p class="no-label"><input type="submit" value="[% loc('Go') %]" class="btn">
 
@@ -30,8 +36,10 @@
 
 [% IF users.size %]
 
+<form method="post">
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
+        <th>*</th>
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
         <th>[% loc('Body') %]</th>
@@ -42,7 +50,13 @@
     </tr>
 [%- FOREACH user IN users %]
     <tr>
-        <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
+        <td align="center">[% IF user.from_body %]
+            <input type="checkbox" name="uid" value="[% user.id %]" id="uid[% user.id %]">
+            [% END %]</td>
+        <td>[% IF user.from_body %]<label class="inline" for="uid[% user.id %]">[% END %]
+            [% PROCESS value_or_nbsp value=user.name %]
+            [% IF user.from_body %]</label>[% END %]
+        </td>
         <td><a href="[% c.uri_for_action( 'admin/reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
         <td>[% PROCESS value_or_nbsp value=user.from_body.name %]
             [% IF user.is_superuser %] * [% END %]
@@ -54,6 +68,19 @@
     </tr>
 [%- END -%]
 </table>
+
+<p><label for="roles">[% loc('Assign selected to role:') %]</label>
+[% IF c.user.is_superuser %]
+[% INCLUDE role_select label='roles' %]
+[% ELSE %]
+<select class="form-control js-multiple" id="roles" name="roles" multiple>
+  [% FOREACH role IN roles %]
+    <option value="[% role.id %]">[% role.name | html %]</option>
+  [% END %]
+</select>
+[% END %]
+<p><input class="btn" type="submit" value="[% loc('Save changes') %]">
+</form>
 
 [% ELSIF searched || role_selected %]
 

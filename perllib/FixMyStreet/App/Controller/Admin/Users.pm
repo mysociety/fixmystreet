@@ -27,6 +27,23 @@ Admin pages for editing users
 sub index :Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    if ($c->req->method eq 'POST') {
+        my @uids = $c->get_param_list('uid');
+        my @role_ids = $c->get_param_list('roles');
+        my $user_rs = FixMyStreet::DB->resultset("User")->search({ id => \@uids });
+        foreach my $user ($user_rs->all) {
+            $user->admin_user_body_permissions->delete;
+            $user->user_roles->search({
+                role_id => { -not_in => \@role_ids },
+            })->delete;
+            foreach my $role (@role_ids) {
+                $user->user_roles->find_or_create({
+                    role_id => $role,
+                });
+            }
+        }
+        $c->stash->{status_message} = _('Updated!');
+    }
 
     my $search = $c->get_param('search');
     my $role = $c->get_param('role');

@@ -88,6 +88,14 @@ subtest 'user search' => sub {
     $mech->content_contains('test@example.com');
 };
 
+subtest 'user assign role' => sub {
+    $user->remove_from_roles($role);
+    is $user->roles->count, 0;
+    $mech->get_ok('/admin/users');
+    $mech->submit_form_ok({ with_fields => { uid => $user->id, roles => $role->id } });
+    is $user->roles->count, 1;
+};
+
 subtest 'search does not show user from another council' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
