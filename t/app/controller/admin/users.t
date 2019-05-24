@@ -157,6 +157,7 @@ for my $test (
     subtest $test->{desc} => sub {
         $mech->get_ok('/admin/users');
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
+        $mech->content_contains('Norman') if $test->{fields}{name};
         if ($test->{error}) {
             $mech->content_contains($_) for @{$test->{error}};
         } else {

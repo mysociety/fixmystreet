@@ -112,9 +112,7 @@ sub add : Local : Args(0) {
         $c->stash->{field_errors}->{username} = _('User already exists');
     }
 
-    return if %{$c->stash->{field_errors}};
-
-    my $user = $c->model('DB::User')->create( {
+    my $user = $c->model('DB::User')->new( {
         name => $c->get_param('name'),
         email => $email ? $email : undef,
         email_verified => $email && $email_v ? 1 : 0,
@@ -126,8 +124,11 @@ sub add : Local : Args(0) {
         is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
     } );
     $c->stash->{user} = $user;
+
+    return if %{$c->stash->{field_errors}};
+
     $c->forward('user_cobrand_extra_fields');
-    $user->update;
+    $user->insert;
 
     $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
 
