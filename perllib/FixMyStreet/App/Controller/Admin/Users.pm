@@ -160,8 +160,7 @@ sub edit : Path : Args(1) {
     $c->cobrand->call_hook('admin_user_edit_extra_data');
 
     if ( defined $c->flash->{status_message} ) {
-        $c->stash->{status_message} =
-            '<p><em>' . $c->flash->{status_message} . '</em></p>';
+        $c->stash->{status_message} = $c->flash->{status_message};
     }
 
     $c->forward('/auth/check_csrf_token') if $c->get_param('submit');

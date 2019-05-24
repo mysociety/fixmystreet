@@ -484,15 +484,14 @@ sub report_edit : Path('report_edit') : Args(1) {
 
         $problem->resend;
         $problem->update();
-        $c->stash->{status_message} =
-          '<p><em>' . _('That problem will now be resent.') . '</em></p>';
+        $c->stash->{status_message} = _('That problem will now be resent.');
 
         $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
     }
     elsif ( $c->get_param('mark_sent') ) {
         $c->forward('/auth/check_csrf_token');
         $problem->update({ whensent => \'current_timestamp' })->discard_changes;
-        $c->stash->{status_message} = '<p><em>' . _('That problem has been marked as sent.') . '</em></p>';
+        $c->stash->{status_message} = _('That problem has been marked as sent.');
         $c->forward( 'log_edit', [ $id, 'problem', 'marked sent' ] );
     }
     elsif ( $c->get_param('flaguser') ) {
@@ -571,8 +570,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
         $c->forward( 'log_edit', [ $id, 'problem', 'edit' ] );
 
-        $c->stash->{status_message} =
-          '<p><em>' . _('Updated!') . '</em></p>';
+        $c->stash->{status_message} = _('Updated!');
 
         # do this here otherwise lastupdate and confirmed times
         # do not display correctly
@@ -921,13 +919,12 @@ sub update_edit : Path('update_edit') : Args(1) {
             $self->remove_photo($c, $update, $remove_photo_param);
         }
 
-        $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
+        $c->stash->{status_message} = _('Updated!');
 
         # Must call update->hide while it's not hidden (so is_latest works)
         if ($new_state eq 'hidden') {
             my $outcome = $update->hide;
-            $c->stash->{status_message} .=
-              '<p><em>' . _('Problem marked as open.') . '</em></p>'
+            $c->stash->{status_message} .= _('Problem marked as open.')
                 if $outcome->{reopened};
         }
 

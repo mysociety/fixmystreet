@@ -1,7 +1,7 @@
 [% INCLUDE 'admin/header.html' title=loc("User Import") -%]
 [% PROCESS 'admin/report_blocks.html' %]
 
-[% status_message %]
+[% INCLUDE status_message %]
 
 <form method="post" id="user_edit" enctype="multipart/form-data" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% csrf_token %]" >
