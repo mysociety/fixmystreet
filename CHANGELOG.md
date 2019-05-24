@@ -6,6 +6,7 @@
         - Fix bug going between report/new pages client side
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
+        - Add feature cobrand helper function.
 
 * v2.6 (3rd May 2019)
     - New features:

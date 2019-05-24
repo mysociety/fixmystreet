@@ -59,6 +59,21 @@ sub path_to_email_templates {
     return $paths;
 }
 
+=item feature
+
+A helper utility to let you provide per-cobrand hooks for configuration.
+Mostly useful if running a site with multiple cobrands.
+
+=cut
+
+sub feature {
+    my ($self, $feature) = @_;
+    my $features = FixMyStreet->config('COBRAND_FEATURES');
+    return unless $features && ref $features eq 'HASH';
+    return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
+    return $features->{$feature}->{$self->moniker};
+}
+
 =item password_minimum_length
 
 Returns the minimum length a password can be set to.
