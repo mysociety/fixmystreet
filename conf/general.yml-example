@@ -188,9 +188,13 @@ ALLOWED_COBRANDS:
   - cobrand2: 'hostname_substring2'
   - cobrand3
 
-# This is used in e.g. "offensive report" emails to provide a link directly to
-# the admin interface. Defaults to BASE_URL with "/admin" on the end.
-ADMIN_BASE_URL: ''
+# If your site has many cobrands, you may want to have per-cobrand settings. To
+# do this, make a hash of feature keys, each of which is a hash of monikers, eg
+#   COBRAND_FEATURES:
+#     suggest_duplicates:
+#       buckinghamshire: 1
+#       oxfordshire: 1
+COBRAND_FEATURES: ''
 
 # How many items are returned in the GeoRSS and Open311 feeds by default
 RSS_LIMIT: '20'
