@@ -1,0 +1,125 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+div.form-error, p.form-error { // TODO Add to more, make a variable.
+    background-color: $red;
+}
+
+/* Font overrides */
+
+#front-main h2 {
+    font-style: normal;
+}
+
+/* .form-control has this already, make sure buttons etc caught too */
+input {
+    font-family: inherit;
+}
+
+/* Size */
+
+body {
+    font-size: 1.125em;
+}
+
+small {
+    font-size: 0.89em;
+}
+.meta-2 {
+    font-size: 0.89em;
+}
+#key-tools a,button {
+    font-size: 0.89em;
+}
+.btn--small {
+    font-size: 0.89em;
+}
+.mobile-map-banner {
+    font-size: 0.89em;
+}
+#front-main a#geolocate_link {
+    font-size: 0.89em;
+}
+#front_stats div {
+    font-size: 0.89em;
+}
+.description_tips ul {
+    font-size: 0.89em;
+    line-height: 1.4;
+}
+
+.report-list-filters {
+    font-size: 0.89em;
+    .form-control {
+        font-size: 1em;
+    }
+}
+.multi-select-menuitem, .multi-select-button {
+    font-size: 1em;
+}
+
+/* Colour overrides */
+
+.description_tips .do {
+    color: $col_button_hover;
+}
+.description_tips .dont {
+    color: $red;
+}
+
+a,
+.fake-link {
+  text-decoration: none;
+  color: $link;
+
+  &:visited {
+    color: $visited;
+  }
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+    color: $hover;
+  }
+
+  &:focus {
+    color: $focus;
+  }
+}
+
+.dz-clickable .dz-message u {
+  color: $link;
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    border: none;
+    background: $col_button;
+
+    &:focus,
+    &:hover,
+    &:active {
+        background: $col_button_hover;
+    }
+}
+
+ol.big-numbers > li:before {
+    color: $fuchsia_lt;
+}
+
+/* Header */
+
+#site-logo {
+    width: 150px;
+    height: 60px;
+    padding: 1em 0;
+    background: url(/cobrands/bexley/images/logo.png) 0 50% no-repeat;
+    background-size: 150px 60px;
+}
+
+#postcodeForm .form-hint {
+//    color: $white;
+}

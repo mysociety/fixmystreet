@@ -21,7 +21,7 @@ var llpg_stylemap = new OpenLayers.StyleMap({
 });
 
 
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "LLPG"
@@ -32,7 +32,7 @@ fixmystreet.assets.add($.extend(true, {}, fixmystreet.maps.banes_defaults, {
     stylemap: llpg_stylemap,
     non_interactive: true,
     always_visible: true
-}));
+});
 
 
 // Some normally-invisible layers are visible to staff, so replace their

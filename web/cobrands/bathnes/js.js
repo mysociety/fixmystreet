@@ -26,13 +26,13 @@ fixmystreet.roadworks.filter = function(feature) {
 
 var org_id = '114';
 var body = "Bath and North East Somerset Council";
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_future, {
+fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
     http_options: { params: { organisation_id: org_id } },
     body: body
-}));
-fixmystreet.assets.add($.extend(true, {}, fixmystreet.roadworks.layer_planned, {
+});
+fixmystreet.assets.add(fixmystreet.roadworks.layer_planned, {
     http_options: { params: { organisation_id: org_id } },
     body: body
-}));
+});
 
 })();

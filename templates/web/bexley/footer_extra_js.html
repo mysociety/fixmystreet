@@ -1,0 +1,13 @@
+[% scripts.push(
+    version('/cobrands/fixmystreet-uk-councils/js.js'),
+) %]
+[%~
+IF bodyclass.match('mappage');
+    scripts.push(
+        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
+        version('/cobrands/fixmystreet/assets.js'),
+        version('/cobrands/bexley/js.js'),
+        version('/cobrands/highways/assets.js'),
+    );
+END
+%]

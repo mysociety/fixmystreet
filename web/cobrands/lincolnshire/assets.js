@@ -29,7 +29,7 @@ var defaults = {
     body: "Lincolnshire County Council"
 };
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "SL_Bollards"
@@ -37,9 +37,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: "Bollards (lit)",
     asset_item: 'bollard'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "SL_Street_Light_Units"
@@ -51,9 +51,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     filter_value: [
         "SL: Bulkhead Lighting", "SL: Refuge Beacon", "SL: Street Lighting Unit"
     ]
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "SL_Street_Light_Units"
@@ -63,7 +63,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_item: 'light',
     filter_key: 'Type',
     filter_value: "SL: Subway Lighting Unit"
-}));
+});
 
 function get_barrier_stylemap() {
     return new OpenLayers.StyleMap({
@@ -86,7 +86,7 @@ function get_barrier_stylemap() {
     });
 }
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Safety_Barriers"
@@ -98,9 +98,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     filter_value: "ST: Safety Barrier",
     stylemap: get_barrier_stylemap(),
     max_resolution: 1.194328566789627
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "LCC_Drainage-GulliesOffletsManholes"
@@ -108,9 +108,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: "Blocked drain",
     asset_item: 'drain'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "ST_All_Structures"
@@ -122,9 +122,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     filter_value: [
         "ST: Culvert 1 Cell", "ST: Culvert 2+ Cells", "ST: Culvert/Pipe"
     ]
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "SL_Lit_Signs"
@@ -132,9 +132,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_category: "Sign (lit)",
     asset_item: 'street sign'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "ST_All_Structures"
@@ -151,9 +151,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         "ST: Bridge Ped/Cycle 2+ Spans", "ST: Bridge Vehicular 1 Span",
         "ST: Bridge Vehicular 2-3 Spans", "ST: Bridge Vehicular 4+ Spans"
     ]
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Carriageway"
@@ -179,9 +179,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             stroke: false
         })
     })
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "NSG"
@@ -200,7 +200,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         })
     })
 
-}));
+});
 
 var llpg_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -218,7 +218,7 @@ var llpg_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "LLPG"
@@ -229,6 +229,6 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     stylemap: llpg_stylemap,
     non_interactive: true,
     always_visible: true
-}));
+});
 
 })();

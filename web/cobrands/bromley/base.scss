@@ -26,32 +26,24 @@
 // can't understand a selector it will invalidate the whole line.
 ::-webkit-input-placeholder {
   color: #999;
-  font: {
-    style:normal;
-    size:0.9375em;
-  }
+  font-style: normal;
+  font-size: 0.9375em;
 }
 :-moz-placeholder {
   color: #999;
-  font: {
-    style:normal;
-    size:0.9375em;
-  }
+  font-style: normal;
+  font-size: 0.9375em;
 }
 :-ms-placeholder {
   color: #999;
-  font: {
-    style:normal;
-    size:0.9375em;
-  }
+  font-style: normal;
+  font-size: 0.9375em;
 }
 //this only gets used when the browser doesn't support @placeholder
 .placeholder {
   color: #999;
-  font: {
-    style:normal;
-    size:0.9375em;
-  }
+  font-style: normal;
+  font-size: 0.9375em;
 }
 
 // Reset body line height on front page

@@ -513,7 +513,9 @@ fixmystreet.assets = {
         return selected_feature;
     },
 
-    add: function(options) {
+    add: function(default_options, options) {
+        options = $.extend(true, {}, default_options, options);
+
         var asset_fault_layer = null;
 
         // An interactive layer for selecting an asset (e.g. street light)
@@ -934,11 +936,16 @@ fixmystreet.message_controller = (function() {
     // This shows the reporting form
     function enable_report_form() {
         $(".js-hide-if-invalid-category").show();
+        $(".js-hide-if-invalid-category_extras").show();
     }
 
     // This hides the reporting form, apart from the category selection
-    function disable_report_form() {
+    // And perhaps the category_extras unless asked not to
+    function disable_report_form(keep_category_extras) {
         $(".js-hide-if-invalid-category").hide();
+        if (!keep_category_extras) {
+            $(".js-hide-if-invalid-category_extras").hide();
+        }
     }
 
     // This hides the responsibility message, and (unless a
@@ -1014,17 +1021,19 @@ fixmystreet.message_controller = (function() {
         var $msg;
         if (typeof stopper.message === 'function') {
             $msg = stopper.message();
-            $msg.attr('id', stopperId);
         } else {
-            $msg = $('<p id="' + stopperId + '" class="box-warning">' + stopper.message + '</p>');
+            $msg = $('<p class="box-warning">' + stopper.message + '</p>');
         }
+        $msg.attr('id', stopperId);
+        $msg.attr('role', 'alert');
+        $msg.attr('aria-live', 'assertive');
 
         if ($id.length) {
             $id.replaceWith($msg);
         } else {
             $msg.insertBefore('#js-post-category-messages');
         }
-        disable_report_form();
+        disable_report_form(stopper.keep_category_extras);
     });
 
     return {

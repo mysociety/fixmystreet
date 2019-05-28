@@ -23,6 +23,7 @@ my $user = FixMyStreet::DB->resultset('User')->find_or_create(
 
 my %bodies = (
     2237 => FixMyStreet::DB->resultset("Body")->create({ name => 'Oxfordshire' }),
+    2494 => FixMyStreet::DB->resultset("Body")->create({ name => 'Bexley' }),
     2482 => FixMyStreet::DB->resultset("Body")->create({
         name => 'Bromley',
         send_method => 'Open311',
@@ -34,6 +35,7 @@ my %bodies = (
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
+$bodies{2494}->body_areas->create({ area_id => 2494 });
 
 my $response_template = $bodies{2482}->response_templates->create({
     title => "investigating template",
@@ -130,8 +132,10 @@ subtest 'check extended request parsed correctly' => sub {
 };
 
 my $problem_rs = FixMyStreet::DB->resultset('Problem');
-my $problem = $problem_rs->new(
-    {
+
+sub create_problem {
+    my ($body_id, $external_id) = @_;
+    my $problem = $problem_rs->create({
         postcode     => 'EH99 1SP',
         latitude     => 1,
         longitude    => 1,
@@ -149,12 +153,13 @@ my $problem = $problem_rs->new(
         created      => DateTime->now()->subtract( days => 1 ),
         lastupdate   => DateTime->now()->subtract( days => 1 ),
         anonymous    => 1,
-        external_id  => int(rand(time())),
-        bodies_str   => $bodies{2482}->id,
-    }
-);
+        external_id  => $external_id || int(rand(time())),
+        bodies_str   => $body_id,
+    });
+    return $problem;
+}
 
-$problem->insert;
+my $problem = create_problem($bodies{2482}->id);
 
 for my $test (
     {
@@ -448,27 +453,7 @@ for my $test (
     };
 }
 
-my $problemOx = $problem_rs->create({
-    postcode     => 'EH99 1SP',
-    latitude     => 1,
-    longitude    => 1,
-    areas        => 1,
-    title        => '',
-    detail       => '',
-    used_map     => 1,
-    user_id      => 1,
-    name         => '',
-    state        => 'confirmed',
-    service      => '',
-    cobrand      => 'default',
-    cobrand_data => '',
-    user         => $user,
-    created      => DateTime->now()->subtract( days => 1 ),
-    lastupdate   => DateTime->now()->subtract( days => 1 ),
-    anonymous    => 1,
-    external_id  => int(rand(time())),
-    bodies_str   => $bodies{2237}->id,
-});
+my $problemB = create_problem($bodies{2237}->id);
 
 for my $test (
     {
@@ -487,26 +472,45 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
-        my $local_requests_xml = setup_xml($problemOx->external_id, $problemOx->id, $test->{comment_status});
+        my $local_requests_xml = setup_xml($problemB->external_id, $problemB->id, $test->{comment_status});
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
-        $problemOx->lastupdate( DateTime->now()->subtract( days => 1 ) );
-        $problemOx->state( $test->{start_state} );
-        $problemOx->update;
+        $problemB->lastupdate( DateTime->now()->subtract( days => 1 ) );
+        $problemB->state( $test->{start_state} );
+        $problemB->update;
 
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
         $update->update_comments( $o, $bodies{2237} );
 
-        is $problemOx->comments->count, 1, 'comment count';
-        $problemOx->discard_changes;
+        is $problemB->comments->count, 1, 'comment count';
+        $problemB->discard_changes;
 
         my $c = FixMyStreet::DB->resultset('Comment')->search( { external_id => 638344 } )->first;
         ok $c, 'comment exists';
         is $c->problem_state, $test->{problem_state}, 'problem_state correct';
-        is $problemOx->state, $test->{end_state}, 'correct problem state';
-        $problemOx->comments->delete;
+        is $problemB->state, $test->{end_state}, 'correct problem state';
+        $problemB->comments->delete;
     };
 }
+
+subtest 'Marking report as fixed closes it for updates (Bexley)' => sub {
+    my $local_requests_xml = setup_xml($problemB->external_id, $problemB->id, 'CLOSED');
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+
+    $problemB->update( { bodies_str => $bodies{2494}->id } );
+
+    my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bexley',
+    }, sub {
+        $update->update_comments( $o, $bodies{2494} );
+    };
+
+    $problemB->discard_changes;
+    is $problemB->comments->count, 1, 'comment count';
+    is $problemB->get_extra_metadata('closed_updates'), 1;
+    $problemB->comments->delete;
+};
 
 subtest 'Update with media_url includes image in update' => sub {
   my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
@@ -578,29 +582,7 @@ subtest 'date for comment correct' => sub {
     $problem->comments->delete;
 };
 
-my $problem2 = $problem_rs->create(
-    {
-        postcode     => 'EH99 1SP',
-        latitude     => 1,
-        longitude    => 1,
-        areas        => 1,
-        title        => '',
-        detail       => '',
-        used_map     => 1,
-        user_id      => 1,
-        name         => '',
-        state        => 'confirmed',
-        service      => '',
-        cobrand      => 'default',
-        cobrand_data => '',
-        user         => $user,
-        created      => DateTime->now(),
-        lastupdate   => DateTime->now(),
-        anonymous    => 1,
-        external_id  => $problem->external_id,
-        bodies_str   => $bodies{2651}->id,
-    }
-);
+my $problem2 = create_problem($bodies{2651}->id, $problem->external_id);
 
 for my $test (
     {
