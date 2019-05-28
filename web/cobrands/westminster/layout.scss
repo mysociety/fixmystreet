@@ -1,20 +1,7 @@
 @import "colours";
 @import "../sass/layout";
 
-#site-header {
-    border-bottom: 6px solid $westminster-yellow;
-}
 
-#site-logo {
-    background-position: 0 0;
-    background-size: 139px 35px;
-    height: 35px;
-    width: 139px;
-    background-image: url(/cobrands/westminster/images/site-logo.png);
-    @media ($high-dpi-screen) {
-        background-image: url(/cobrands/westminster/images/site-logo@2.png);  
-    }
-}
 
 #front-main {
     padding: 0;
@@ -50,7 +37,6 @@
         margin: 60px 0 15px;
         padding: 30px 0;
         color: #fff;
-        font-weight: bold;
     }
 
     #postcodeForm {
@@ -78,9 +64,8 @@
     }
 }
 
-#front-howto h2,
-#front-recently h2 {
-    font-weight: bold;
+#front-main a#geolocate_link {
+    color: #fff;
 }
 
 .nav-menu--main {
@@ -95,11 +80,16 @@
         &:focus {
             background: transparent;
             text-decoration: underline;
+            color: $westminster-black;
         }
     }
 
     a.report-a-problem-btn {
         text-decoration: none;
+    }
+
+    span {
+        color: desaturate(darken($westminster-yellow, 25%), 10%);
     }
 }
 

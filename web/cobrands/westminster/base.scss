@@ -6,13 +6,49 @@
 
 #site-logo {
     background-position: 0 0;
-    background-size: 146px 20px;
-    height: 20px;
-    width: 146px;
-    @include svg-background-image('images/site-logo-mobile');
+    background-size: 139px 35px;
+    height: 35px;
+    width: 139px;
+    background-image: url(/cobrands/westminster/images/site-logo.png);
+    @media ($high-dpi-screen) {
+        background-image: url(/cobrands/westminster/images/site-logo@2.png);  
+    }
 }
 
 #site-header {
     padding-top: 1em;
     padding-bottom: 1em;
+    border-bottom: 6px solid $westminster-yellow;
+}
+
+#front-main-container {
+    h1 {
+        font-weight: bold;
+    }
+    .form-hint {
+        color: #fff;
+    }
+}
+
+#front-howto h2,
+#front-recently h2 {
+    font-weight: bold;
+}
+
+
+#front_stats,
+#front-main #postcodeForm {
+    background-color: $westminster-blue;
+    color: #fff; 
+}
+
+
+
+#report-cta {
+    border: 0;
+    background-color: $westminster-yellow;
+    &:hover,
+    &:focus {
+        color: #fff;
+    }
 }
