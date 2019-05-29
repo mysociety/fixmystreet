@@ -26,10 +26,6 @@ sub disambiguate_location {
     };
 }
 
-sub example_places {
-    return ( 'GU51 4JX', 'Primrose Drive' );
-}
-
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( { category => { '!=' => 'Graffiti on bridges/subways' } } );
@@ -42,12 +38,6 @@ sub send_questionnaires {
 sub ask_ever_reported {
     return 0;
 }
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'info', 'hart.gov.uk' );
-}
-sub contact_name { 'Hart District Council (do not reply)'; }
 
 sub default_map_zoom { 3 }
 

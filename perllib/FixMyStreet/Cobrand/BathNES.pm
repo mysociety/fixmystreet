@@ -17,26 +17,11 @@ sub council_area { return 'Bath and North East Somerset'; }
 sub council_name { return 'Bath and North East Somerset Council'; }
 sub council_url { return 'bathnes'; }
 
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'councilconnect_rejections', 'bathnes.gov.uk' );
-}
-
 sub admin_user_domain { 'bathnes.gov.uk' }
-
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fix.bathnes.gov.uk';
-}
 
 sub map_type { 'BathNES' }
 
 sub on_map_default_status { 'open' }
-
-sub example_places {
-    return ( 'BA1 1JQ', "Lansdown Grove" );
-}
 
 sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.

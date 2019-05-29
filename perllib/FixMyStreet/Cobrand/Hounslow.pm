@@ -8,15 +8,8 @@ sub council_area_id { 2483 }
 sub council_area { 'Hounslow' }
 sub council_name { 'Hounslow Highways' }
 sub council_url { 'hounslow' }
-sub example_places { ( 'TW3 1SN', "Depot Road" ) }
 
 sub map_type { 'Hounslow' }
-
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fms.hounslowhighways.org';
-}
 
 sub enter_postcode_text {
     my ($self) = @_;
@@ -51,11 +44,6 @@ sub get_geocoder {
 }
 
 sub on_map_default_status { 'open' }
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'enquiries', $self->council_url . 'highways.org' );
-}
 
 sub send_questionnaires { 0 }
 

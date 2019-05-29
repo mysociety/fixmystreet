@@ -9,16 +9,6 @@ sub council_area { return 'Bristol'; }
 sub council_name { return 'Bristol County Council'; }
 sub council_url { return 'bristol'; }
 
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fixmystreet.bristol.gov.uk';
-}
-
-sub example_places {
-    return ( 'BS1 5TR', "Broad Quay" );
-}
-
 sub map_type {
     'Bristol';
 }
@@ -48,11 +38,6 @@ sub pin_colour {
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';
     return 'yellow';
-}
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'customer.services', 'bristol.gov.uk' );
 }
 
 sub send_questionnaires {

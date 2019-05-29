@@ -110,13 +110,22 @@ sub users_restriction {
 
 sub base_url {
     my $self = shift;
-    my $base_url = FixMyStreet->config('BASE_URL');
+
+    my $base_url = $self->feature('base_url');
+    return $base_url if $base_url;
+
+    $base_url = FixMyStreet->config('BASE_URL');
     my $u = $self->council_url;
     if ( $base_url !~ /$u/ ) {
         $base_url =~ s{(https?://)(?!www\.)}{$1$u.}g;
         $base_url =~ s{(https?://)www\.}{$1$u.}g;
     }
     return $base_url;
+}
+
+sub example_places {
+    my $self = shift;
+    return $self->feature('example_places') || $self->next::method();
 }
 
 sub enter_postcode_text {
@@ -323,6 +332,16 @@ sub lookup_site_code {
     }
 
     return $site_code;
+}
+
+sub contact_name {
+    my $self = shift;
+    return $self->feature('contact_name') || $self->next::method();
+}
+
+sub contact_email {
+    my $self = shift;
+    return $self->feature('contact_email') || $self->next::method();
 }
 
 sub extra_contact_validation {

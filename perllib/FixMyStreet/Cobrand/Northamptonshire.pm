@@ -12,15 +12,7 @@ sub council_area { 'Northamptonshire' }
 sub council_name { 'Northamptonshire County Council' }
 sub council_url { 'northamptonshire' }
 
-sub example_places { ( 'NN1 1NS', "Bridge Street" ) }
-
 sub enter_postcode_text { 'Enter a Northamptonshire postcode, street name and area, or check an existing report number' }
-
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fixmystreet.northamptonshire.gov.uk';
-}
 
 sub disambiguate_location {
     my $self    = shift;
@@ -49,11 +41,6 @@ sub problems_on_map_restriction {
     # Northamptonshire don't want to show district/borough reports
     # on the site
     return $self->problems_restriction($rs);
-}
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'highways', $self->council_url . '.gov.uk' );
 }
 
 sub privacy_policy_url {

@@ -9,16 +9,6 @@ sub council_area { return 'Greenwich'; }
 sub council_name { return 'Royal Borough of Greenwich'; }
 sub council_url { return 'greenwich'; }
 
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fix.royalgreenwich.gov.uk';
-}
-
-sub example_places {
-    return ( 'SE18 6HQ', "Woolwich Road" );
-}
-
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter a Royal Greenwich postcode, or street name and area';
@@ -48,11 +38,6 @@ sub pin_colour {
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';
     return 'yellow';
-}
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'fixmystreet', 'royalgreenwich.gov.uk' );
 }
 
 sub reports_per_page { return 20; }

@@ -33,12 +33,6 @@ sub report_new_munge_before_insert {
     $report->subcategory($report->get_extra_field_value('service_sub_code'));
 }
 
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fix.bromley.gov.uk';
-}
-
 sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
@@ -87,10 +81,6 @@ sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
-sub example_places {
-    return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
-}
-
 sub map_type {
     'Bromley';
 }
@@ -120,12 +110,6 @@ sub process_open311_extras {
     my $self = shift;
     $self->SUPER::process_open311_extras( @_, [ 'first_name', 'last_name' ] );
 }
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'info', 'bromley.gov.uk' );
-}
-sub contact_name { 'Bromley Council (do not reply)'; }
 
 sub abuse_reports_only { 1; }
 

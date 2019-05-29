@@ -10,12 +10,6 @@ sub council_name { return 'Stevenage Council'; }
 sub council_url { return 'stevenage'; }
 sub is_two_tier { return 1; }
 
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'http://fixmystreet.stevenage.gov.uk';
-}
-
 sub disambiguate_location {
     my $self = shift;
     return {
@@ -27,18 +21,9 @@ sub disambiguate_location {
     };
 }
 
-sub example_places {
-    return [ 'SG1 1HN', 'Lyton Way' ];
-}
-
 sub default_map_zoom { return 3; }
 
 sub users_can_hide { return 1; }
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'csc', 'stevenage.gov.uk' );
-}
 
 1;
 
