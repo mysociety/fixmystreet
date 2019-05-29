@@ -13,6 +13,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => 
 $mech->create_contact_ok(body_id => $body->id, category => 'Blocked drain', email => "DRA");
 
 my $district = $mech->create_body_ok(2257, 'Chiltern');
+$mech->create_contact_ok(body_id => $district->id, category => 'Car Parks', email => "car\@chiltern");
 $mech->create_contact_ok(body_id => $district->id, category => 'Flytipping', email => "flytipping\@chiltern");
 $mech->create_contact_ok(body_id => $district->id, category => 'Graffiti', email => "graffiti\@chiltern");
 
@@ -37,6 +38,7 @@ subtest 'cobrand displays council name' => sub {
 subtest 'cobrand displays correct categories' => sub {
     my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.615559&longitude=-0.556903');
     is @{$json->{bodies}}, 2, 'Both Chiltern and Bucks returned';
+    like $json->{category}, qr/Car Parks/, 'Car Parks displayed';
     like $json->{category}, qr/Flytipping/, 'Flytipping displayed';
     like $json->{category}, qr/Blocked drain/, 'Blocked drain displayed';
     unlike $json->{category}, qr/Graffiti/, 'Graffiti not displayed';
