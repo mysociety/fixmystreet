@@ -130,6 +130,17 @@ fixmystreet.assets.add(labeled_defaults, {
     asset_item: 'street light'
 });
 
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Toilets"
+        }
+    },
+    asset_type: 'spot',
+    asset_category: ["Public toilets"],
+    asset_item: 'public toilet'
+});
+
 // We need to trigger the below function on subcategory change also
 $(function(){
     $("#problem_form").on("change.category", "#form_DALocation", function() {
