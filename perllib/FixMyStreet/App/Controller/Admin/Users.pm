@@ -27,36 +27,68 @@ Admin pages for editing users
 sub index :Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->detach('add') if $c->req->method eq 'POST'; # Add a user
-
-    if (my $search = $c->get_param('search')) {
-        $search = $self->trim($search);
-        $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
-        $c->stash->{searched} = $search;
-
-        my $isearch = '%' . $search . '%';
-        my $search_n = 0;
-        $search_n = int($search) if $search =~ /^\d+$/;
-
-        my $users = $c->cobrand->users->search(
-            {
-                -or => [
-                    email => { ilike => $isearch },
-                    phone => { ilike => $isearch },
-                    name => { ilike => $isearch },
-                    from_body => $search_n,
-                ]
+    if ($c->req->method eq 'POST') {
+        my @uids = $c->get_param_list('uid');
+        my @role_ids = $c->get_param_list('roles');
+        my $user_rs = FixMyStreet::DB->resultset("User")->search({ id => \@uids });
+        foreach my $user ($user_rs->all) {
+            $user->admin_user_body_permissions->delete;
+            $user->user_roles->search({
+                role_id => { -not_in => \@role_ids },
+            })->delete;
+            foreach my $role (@role_ids) {
+                $user->user_roles->find_or_create({
+                    role_id => $role,
+                });
             }
-        );
+        }
+        $c->stash->{status_message} = _('Updated!');
+    }
+
+    my $search = $c->get_param('search');
+    my $role = $c->get_param('role');
+    if ($search || $role) {
+        my $users = $c->cobrand->users;
+        my $isearch;
+        if ($search) {
+            $search = $self->trim($search);
+            $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
+            $c->stash->{searched} = $search;
+
+            $isearch = '%' . $search . '%';
+            my $search_n = 0;
+            $search_n = int($search) if $search =~ /^\d+$/;
+
+            $users = $users->search(
+                {
+                    -or => [
+                        email => { ilike => $isearch },
+                        phone => { ilike => $isearch },
+                        name => { ilike => $isearch },
+                        from_body => $search_n,
+                    ]
+                }
+            );
+        }
+        if ($role) {
+            $c->stash->{role_selected} = $role;
+            $users = $users->search({
+                role_id => $role,
+            }, {
+                join => 'user_roles',
+            });
+        }
+
         my @users = $users->all;
         $c->stash->{users} = [ @users ];
-        $c->forward('/admin/add_flags', [ { email => { ilike => $isearch } } ]);
+        if ($search) {
+            $c->forward('/admin/add_flags', [ { email => { ilike => $isearch } } ]);
+        }
 
     } else {
         $c->forward('/auth/get_csrf_token');
         $c->forward('/admin/fetch_all_bodies');
         $c->cobrand->call_hook('admin_user_edit_extra_data');
-
 
         # Admin users by default
         my $users = $c->cobrand->users->search(
@@ -66,6 +98,14 @@ sub index :Path : Args(0) {
         my @users = $users->all;
         $c->stash->{users} = \@users;
     }
+
+    my $rs;
+    if ($c->user->is_superuser) {
+        $rs = $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] });
+    } elsif ($c->user->from_body) {
+        $rs = $c->user->from_body->roles->search_rs({}, { order_by => 'name' });
+    }
+    $c->stash->{roles} = [ $rs->all ];
 
     return 1;
 }
@@ -113,9 +153,7 @@ sub add : Local : Args(0) {
         $c->stash->{field_errors}->{username} = _('User already exists');
     }
 
-    return if %{$c->stash->{field_errors}};
-
-    my $user = $c->model('DB::User')->create( {
+    my $user = $c->model('DB::User')->new( {
         name => $c->get_param('name'),
         email => $email ? $email : undef,
         email_verified => $email && $email_v ? 1 : 0,
@@ -127,13 +165,28 @@ sub add : Local : Args(0) {
         is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
     } );
     $c->stash->{user} = $user;
+
+    return if %{$c->stash->{field_errors}};
+
     $c->forward('user_cobrand_extra_fields');
-    $user->update;
+    $user->insert;
 
     $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
 
     $c->flash->{status_message} = _("Updated!");
     $c->res->redirect( $c->uri_for_action( 'admin/users/edit', $user->id ) );
+}
+
+sub fetch_body_roles : Private {
+    my ($self, $c, $body ) = @_;
+
+    my $roles = $body->roles->search(undef, { order_by => 'name' });
+    unless ($roles) {
+        delete $c->stash->{roles}; # Body doesn't have any roles
+        return;
+    }
+
+    $c->stash->{roles} = [ $roles->all ];
 }
 
 sub edit : Path : Args(1) {
@@ -157,11 +210,11 @@ sub edit : Path : Args(1) {
 
     $c->forward('/admin/fetch_all_bodies');
     $c->forward('/admin/fetch_body_areas', [ $user->from_body ]) if $user->from_body;
+    $c->forward('fetch_body_roles', [ $user->from_body ]) if $user->from_body;
     $c->cobrand->call_hook('admin_user_edit_extra_data');
 
     if ( defined $c->flash->{status_message} ) {
-        $c->stash->{status_message} =
-            '<p><em>' . $c->flash->{status_message} . '</em></p>';
+        $c->stash->{status_message} = $c->flash->{status_message};
     }
 
     $c->forward('/auth/check_csrf_token') if $c->get_param('submit');
@@ -270,26 +323,45 @@ sub edit : Path : Args(1) {
         # If so, we need to re-fetch areas so the UI is up to date.
         if ( $user->from_body && $user->from_body->id ne $c->stash->{fetched_areas_body_id} ) {
             $c->forward('/admin/fetch_body_areas', [ $user->from_body ]);
+            $c->forward('fetch_body_roles', [ $user->from_body ]);
         }
 
         if (!$user->from_body) {
             # Non-staff users aren't allowed any permissions or to be in an area
             $user->admin_user_body_permissions->delete;
+            $user->user_roles->delete;
             $user->area_ids(undef);
             delete $c->stash->{areas};
+            delete $c->stash->{roles};
             delete $c->stash->{fetched_areas_body_id};
         } elsif ($c->stash->{available_permissions}) {
-            my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
-            my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
-            $user->admin_user_body_permissions->search({
-                body_id => $user->from_body->id,
-                permission_type => { '!=' => \@user_permissions },
-            })->delete;
-            foreach my $permission_type (@user_permissions) {
-                $user->user_body_permissions->find_or_create({
+            my %valid_roles = map { $_->id => 1 } @{$c->stash->{roles}};
+            my @role_ids = grep { $valid_roles{$_} } $c->get_param_list('roles');
+            if (@role_ids) {
+                # Roles take precedence over permissions
+                $user->admin_user_body_permissions->delete;
+                $user->user_roles->search({
+                    role_id => { -not_in => \@role_ids },
+                })->delete;
+                foreach my $role (@role_ids) {
+                    $user->user_roles->find_or_create({
+                        role_id => $role,
+                    });
+                }
+            } else {
+                $user->user_roles->delete;
+                my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
+                my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
+                $user->admin_user_body_permissions->search({
                     body_id => $user->from_body->id,
-                    permission_type => $permission_type,
-                });
+                    permission_type => { -not_in => \@user_permissions },
+                })->delete;
+                foreach my $permission_type (@user_permissions) {
+                    $user->user_body_permissions->find_or_create({
+                        body_id => $user->from_body->id,
+                        permission_type => $permission_type,
+                    });
+                }
             }
         }
 
@@ -303,7 +375,7 @@ sub edit : Path : Args(1) {
         my @trusted_bodies = $c->get_param_list('trusted_bodies');
         if ( $c->user->is_superuser ) {
             $user->user_body_permissions->search({
-                body_id => { '!=' => \@trusted_bodies },
+                body_id => { -not_in => \@trusted_bodies },
                 permission_type => 'trusted',
             })->delete;
             foreach my $body_id (@trusted_bodies) {
@@ -389,9 +461,8 @@ sub import :Local {
     my $fh = $c->req->upload('csvfile')->fh;
     $csv->getline($fh); # discard the header
     while (my $row = $csv->getline($fh)) {
-        my ($name, $email, $from_body, $permissions) = @$row;
+        my ($name, $email, $from_body, $permissions, $roles) = @$row;
         $email = lc Utils::trim_text($email);
-        my @permissions = split(/:/, $permissions);
 
         my $user = FixMyStreet::DB->resultset("User")->find_or_new({ email => $email, email_verified => 1 });
         if ($user->in_storage) {
@@ -403,12 +474,24 @@ sub import :Local {
         $user->from_body($from_body || undef);
         $user->update_or_insert;
 
-        my @user_permissions = grep { $available_permissions{$_} } @permissions;
-        foreach my $permission_type (@user_permissions) {
-            $user->user_body_permissions->find_or_create({
-                body_id => $user->from_body->id,
-                permission_type => $permission_type,
-            });
+        if ($roles) {
+            my @roles = split(/:/, $roles);
+            foreach my $role (@roles) {
+                $role = FixMyStreet::DB->resultset("Role")->find({
+                    body_id => $user->from_body->id,
+                    name => $role,
+                }) or next;
+                $user->add_to_roles($role);
+            }
+        } else {
+            my @permissions = split(/:/, $permissions);
+            my @user_permissions = grep { $available_permissions{$_} } @permissions;
+            foreach my $permission_type (@user_permissions) {
+                $user->user_body_permissions->find_or_create({
+                    body_id => $user->from_body->id,
+                    permission_type => $permission_type,
+                });
+            }
         }
 
         push @{$c->stash->{new_users}}, $user;

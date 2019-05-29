@@ -1,7 +1,7 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Editing update %d'), update.id ) -%]
 [% PROCESS 'admin/report_blocks.html' %]
 
-[% status_message %]
+[% INCLUDE status_message %]
 
 <form method="post" action="[% c.uri_for( 'update_edit', update.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% csrf_token %]" >

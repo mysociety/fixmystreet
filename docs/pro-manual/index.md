@@ -48,7 +48,7 @@ been developed in consultation with UK councils.
 FixMyStreet Pro offers enhanced features to client councils, including:
 -  A FixMyStreet instance for the council website, providing the council's fault-reporting
 interface, and branded to look like the rest of the site
--  A variety of permissions which can be allocated to staff at a granular level
+-  A variety of permissions which can be allocated to staff at a granular level, and grouped into custom roles
 -  Simple channels of communication with report makers, through status updates and
 template responses
 -  The ability to moderate, edit or remove reports

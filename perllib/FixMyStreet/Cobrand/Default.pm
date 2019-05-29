@@ -647,7 +647,7 @@ sub admin_pages {
     my $pages = {
          'summary' => [_('Summary'), 0],
          'timeline' => [_('Timeline'), 5],
-         'stats'  => [_('Stats'), 8],
+         'stats'  => [_('Stats'), 8.5],
     };
 
     # There are some pages that only super users can see
@@ -680,6 +680,7 @@ sub admin_pages {
     if ( $user->has_body_permission_to('user_edit') ) {
         $pages->{reports} = [ _('Reports'), 2 ];
         $pages->{users} = [ _('Users'), 6 ];
+        $pages->{roles} = [ _('Roles'), 7 ];
         $pages->{user_edit} = [ undef, undef ];
     }
     if ( $self->allow_report_extra_fields && $user->has_body_permission_to('category_edit') ) {

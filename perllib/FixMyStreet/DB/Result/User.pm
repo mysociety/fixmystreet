@@ -121,10 +121,16 @@ __PACKAGE__->has_many(
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "user_roles",
+  "FixMyStreet::DB::Result::UserRole",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BCCqv3JCec8psuRk/SdCJQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-05-23 18:03:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qtmzA7ywVkyQpjLh1ienNg
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.
@@ -143,6 +149,7 @@ use namespace::clean -except => [ 'meta' ];
 with 'FixMyStreet::Roles::Extra';
 
 __PACKAGE__->many_to_many( planned_reports => 'user_planned_reports', 'report' );
+__PACKAGE__->many_to_many( roles => 'user_roles', 'role' );
 
 sub cost {
     FixMyStreet->test_mode ? 1 : 12;
@@ -375,7 +382,18 @@ has body_permissions => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        return [ $self->user_body_permissions->all ];
+        my $perms = [];
+        foreach my $role ($self->roles->all) {
+            push @$perms, map { {
+                body_id => $role->body_id,
+                permission => $_,
+            } } @{$role->permissions};
+        }
+        push @$perms, map { {
+            body_id => $_->body_id,
+            permission => $_->permission_type,
+        } } $self->user_body_permissions->all;
+        return $perms;
     },
 );
 
@@ -392,8 +410,8 @@ sub permissions {
 
     return unless $self->belongs_to_body($body_id);
 
-    my @permissions = grep { $_->body_id == $self->from_body->id } @{$self->body_permissions};
-    return { map { $_->permission_type => 1 } @permissions };
+    my @permissions = grep { $_->{body_id} == $self->from_body->id } @{$self->body_permissions};
+    return { map { $_->{permission} => 1 } @permissions };
 }
 
 sub has_permission_to {
@@ -415,7 +433,7 @@ sub has_permission_to {
     my %body_ids = map { $_ => 1 } @$body_ids;
 
     foreach (@{$self->body_permissions}) {
-        return 1 if $_->permission_type eq $permission_type && $body_ids{$_->body_id};
+        return 1 if $_->{permission} eq $permission_type && $body_ids{$_->{body_id}};
     }
     return 0;
 }
@@ -619,6 +637,21 @@ has areas_hash => (
 sub in_area {
     my ($self, $area) = @_;
     return $self->areas_hash->{$area};
+}
+
+has roles_hash => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my %ids = map { $_->role_id => 1 } $self->user_roles->all;
+        return \%ids;
+    },
+);
+
+sub in_role {
+    my ($self, $role) = @_;
+    return $self->roles_hash->{$role};
 }
 
 1;

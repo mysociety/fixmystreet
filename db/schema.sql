@@ -73,6 +73,22 @@ create unique index body_areas_body_id_area_id_idx on body_areas(body_id, area_i
 ALTER TABLE users ADD CONSTRAINT users_from_body_fkey
     FOREIGN KEY (from_body) REFERENCES body(id);
 
+-- roles table
+create table roles (
+    id              serial  not null primary key,
+    body_id         integer not null references body(id) ON DELETE CASCADE,
+    name            text,
+    permissions     text ARRAY,
+    unique(body_id, name)
+);
+
+-- Record which role(s) each user holds
+create table user_roles (
+    id              serial  not null primary key,
+    role_id         integer not null references roles(id) ON DELETE CASCADE,
+    user_id         integer not null references users(id) ON DELETE CASCADE
+);
+
 -- The contact for a category within a particular body
 create table contacts (
     id serial primary key,

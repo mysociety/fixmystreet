@@ -1,7 +1,7 @@
 [% INCLUDE 'admin/header.html' title=loc("User Import") -%]
 [% PROCESS 'admin/report_blocks.html' %]
 
-[% status_message %]
+[% INCLUDE status_message %]
 
 <form method="post" id="user_edit" enctype="multipart/form-data" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% csrf_token %]" >
@@ -66,10 +66,11 @@
 <p>[% loc("Existing users won't be modified.") %]</p>
 <p>
     [% loc("The uploaded CSV file must contain a header row, and records must have the following fields (in this order):") %]
-    <pre>name,email,from_body,permissions</pre>
+    <pre>name,email,from_body,permissions,roles</pre>
     <ul>
         <li><code>from_body</code>: [% loc("the database id of the body to associate that user with, e.g. <code>2217</code> for Buckinghamshire.") %]</li>
         <li><code>permissions</code>: [% loc("a colon-separated list of permissions to grant that user, e.g. <code>contribute_as_body:moderate:user_edit</code>.") %]</li>
+        <li><code>roles</code>: [% loc("a colon-separated list of roles to assign to that user.") %]</li>
     </ul>
 </p>
 

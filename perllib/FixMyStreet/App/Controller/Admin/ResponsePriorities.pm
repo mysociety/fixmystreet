@@ -71,7 +71,7 @@ sub edit : Path : Args(2) {
         my @live_contact_ids = map { $_->id } @live_contacts;
         my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @live_contact_ids;
         $priority->contact_response_priorities->search({
-            contact_id => { '!=' => \@new_contact_ids },
+            contact_id => { -not_in => \@new_contact_ids },
         })->delete;
         foreach my $contact_id (@new_contact_ids) {
             $priority->contact_response_priorities->find_or_create({

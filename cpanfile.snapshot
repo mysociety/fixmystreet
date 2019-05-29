@@ -1029,6 +1029,19 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Pod::Text 2.08
       Pod::Usage 1.33
+  Crypt-Blowfish-2.14
+    pathname: D/DP/DPARIS/Crypt-Blowfish-2.14.tar.gz
+    provides:
+      Crypt::Blowfish 2.14
+    requirements:
+      ExtUtils::MakeMaker 0
+  Crypt-CBC-2.33
+    pathname: L/LD/LDS/Crypt-CBC-2.33.tar.gz
+    provides:
+      Crypt::CBC 2.33
+    requirements:
+      Digest::MD5 2.00
+      ExtUtils::MakeMaker 0
   Crypt-Eksblowfish-0.009
     pathname: Z/ZE/ZEFRAM/Crypt-Eksblowfish-0.009.tar.gz
     provides:
@@ -1466,6 +1479,21 @@ DISTRIBUTIONS
       Moo 2
       Time::HiRes 0
       Types::Standard 0
+  DBIx-Class-ResultSet-RecursiveUpdate-0.34
+    pathname: G/GS/GSHANK/DBIx-Class-ResultSet-RecursiveUpdate-0.34.tar.gz
+    provides:
+      DBIx::Class::ResultSet::RecursiveUpdate 0.34
+      DBIx::Class::ResultSet::RecursiveUpdate::Functions 0.34
+    requirements:
+      Carp::Clan 6.04
+      DBD::SQLite 1.21
+      DBIx::Class 0.08103
+      DBIx::Class::IntrospectableM2M 0
+      DateTime 0
+      ExtUtils::MakeMaker 6.30
+      List::MoreUtils 0.22
+      Readonly 1.03
+      SQL::Translator 0.11016
   DBIx-Class-Schema-Loader-0.07035
     pathname: G/GE/GENEHACK/DBIx-Class-Schema-Loader-0.07035.tar.gz
     provides:
@@ -1579,6 +1607,19 @@ DISTRIBUTIONS
       Test::More 0.88
       Test::Warn 0.08
       perl 5.008_004
+  Data-Clone-0.004
+    pathname: G/GF/GFUJI/Data-Clone-0.004.tar.gz
+    provides:
+      Data::Clone 0.004
+    requirements:
+      Devel::PPPort 3.19
+      ExtUtils::MakeMaker 6.59
+      ExtUtils::ParseXS 3.18
+      Test::More 0.88
+      Test::Requires 0.03
+      XSLoader 0.02
+      parent 0
+      perl 5.008001
   Data-Compare-1.22
     pathname: D/DC/DCANTRELL/Data-Compare-1.22.tar.gz
     provides:
@@ -3066,6 +3107,189 @@ DISTRIBUTIONS
       HTTP::Request::Common 6.03
       URI 1.10
       perl 5.008001
+  HTML-FormHandler-0.40068
+    pathname: G/GS/GSHANK/HTML-FormHandler-0.40068.tar.gz
+    provides:
+      HTML::FormHandler 0.40068
+      HTML::FormHandler::Base 0.40068
+      HTML::FormHandler::Blocks 0.40068
+      HTML::FormHandler::BuildFields 0.40068
+      HTML::FormHandler::BuildPages 0.40068
+      HTML::FormHandler::Field 0.40068
+      HTML::FormHandler::Field::AddElement 0.40068
+      HTML::FormHandler::Field::BoolSelect 0.40068
+      HTML::FormHandler::Field::Boolean 0.40068
+      HTML::FormHandler::Field::Button 0.40068
+      HTML::FormHandler::Field::Captcha 0.40068
+      HTML::FormHandler::Field::Checkbox 0.40068
+      HTML::FormHandler::Field::Compound 0.40068
+      HTML::FormHandler::Field::Date 0.40068
+      HTML::FormHandler::Field::DateMDY 0.40068
+      HTML::FormHandler::Field::DateTime 0.40068
+      HTML::FormHandler::Field::Display 0.40068
+      HTML::FormHandler::Field::Duration 0.40068
+      HTML::FormHandler::Field::Email 0.40068
+      HTML::FormHandler::Field::File 0.40068
+      HTML::FormHandler::Field::Float 0.40068
+      HTML::FormHandler::Field::Hidden 0.40068
+      HTML::FormHandler::Field::Hour 0.40068
+      HTML::FormHandler::Field::IntRange 0.40068
+      HTML::FormHandler::Field::Integer 0.40068
+      HTML::FormHandler::Field::Minute 0.40068
+      HTML::FormHandler::Field::Money 0.40068
+      HTML::FormHandler::Field::Month 0.40068
+      HTML::FormHandler::Field::MonthDay 0.40068
+      HTML::FormHandler::Field::MonthName 0.40068
+      HTML::FormHandler::Field::Multiple 0.40068
+      HTML::FormHandler::Field::Nested 0.40068
+      HTML::FormHandler::Field::NoValue 0.40068
+      HTML::FormHandler::Field::NonEditable 0.40068
+      HTML::FormHandler::Field::Password 0.40068
+      HTML::FormHandler::Field::PasswordConf 0.40068
+      HTML::FormHandler::Field::PosInteger 0.40068
+      HTML::FormHandler::Field::PrimaryKey 0.40068
+      HTML::FormHandler::Field::Repeatable 0.40068
+      HTML::FormHandler::Field::RequestToken 0.40068
+      HTML::FormHandler::Field::Reset 0.40068
+      HTML::FormHandler::Field::Result 0.40068
+      HTML::FormHandler::Field::RmElement 0.40068
+      HTML::FormHandler::Field::Role::RequestToken 0.40068
+      HTML::FormHandler::Field::Second 0.40068
+      HTML::FormHandler::Field::Select 0.40068
+      HTML::FormHandler::Field::SelectCSV 0.40068
+      HTML::FormHandler::Field::Submit 0.40068
+      HTML::FormHandler::Field::Text 0.40068
+      HTML::FormHandler::Field::TextArea 0.40068
+      HTML::FormHandler::Field::TextCSV 0.40068
+      HTML::FormHandler::Field::Upload 0.40068
+      HTML::FormHandler::Field::Weekday 0.40068
+      HTML::FormHandler::Field::Year 0.40068
+      HTML::FormHandler::Fields 0.40068
+      HTML::FormHandler::Foo 0.40068
+      HTML::FormHandler::I18N 0.40068
+      HTML::FormHandler::I18N::ar_kw 0.40068
+      HTML::FormHandler::I18N::bg_bg 0.40068
+      HTML::FormHandler::I18N::ca_es 0.40068
+      HTML::FormHandler::I18N::cs_cz 0.40068
+      HTML::FormHandler::I18N::de_de 0.40068
+      HTML::FormHandler::I18N::en_us 0.40068
+      HTML::FormHandler::I18N::es_es 0.40068
+      HTML::FormHandler::I18N::hu_hu 0.40068
+      HTML::FormHandler::I18N::it_it 0.40068
+      HTML::FormHandler::I18N::ja_jp 0.40068
+      HTML::FormHandler::I18N::pt_br 0.40068
+      HTML::FormHandler::I18N::ru_ru 0.40068
+      HTML::FormHandler::I18N::sv_se 0.40068
+      HTML::FormHandler::I18N::tr_tr 0.40068
+      HTML::FormHandler::I18N::ua_ua 0.40068
+      HTML::FormHandler::InitResult 0.40068
+      HTML::FormHandler::Merge 0.40068
+      HTML::FormHandler::Model 0.40068
+      HTML::FormHandler::Model::Object 0.40068
+      HTML::FormHandler::Moose 0.40068
+      HTML::FormHandler::Moose::Role 0.40068
+      HTML::FormHandler::Page 0.40068
+      HTML::FormHandler::Page::Simple 0.40068
+      HTML::FormHandler::Pages 0.40068
+      HTML::FormHandler::Render::RepeatableJs 0.40068
+      HTML::FormHandler::Render::Simple 0.40068
+      HTML::FormHandler::Render::Table 0.40068
+      HTML::FormHandler::Render::Util 0.40068
+      HTML::FormHandler::Render::WithTT 0.40068
+      HTML::FormHandler::Result 0.40068
+      HTML::FormHandler::Result::Role 0.40068
+      HTML::FormHandler::Test 0.40068
+      HTML::FormHandler::TraitFor::Captcha 0.40068
+      HTML::FormHandler::TraitFor::I18N 0.40068
+      HTML::FormHandler::TraitFor::Types 0.40068
+      HTML::FormHandler::Traits 0.40068
+      HTML::FormHandler::Types 0.40068
+      HTML::FormHandler::Validate 0.40068
+      HTML::FormHandler::Widget::ApplyRole 0.40068
+      HTML::FormHandler::Widget::Block 0.40068
+      HTML::FormHandler::Widget::Block::Bootstrap 0.40068
+      HTML::FormHandler::Widget::Field::Button 0.40068
+      HTML::FormHandler::Widget::Field::ButtonTag 0.40068
+      HTML::FormHandler::Widget::Field::Captcha 0.40068
+      HTML::FormHandler::Widget::Field::Checkbox 0.40068
+      HTML::FormHandler::Widget::Field::CheckboxGroup 0.40068
+      HTML::FormHandler::Widget::Field::Compound 0.40068
+      HTML::FormHandler::Widget::Field::Hidden 0.40068
+      HTML::FormHandler::Widget::Field::HorizCheckboxGroup 0.40068
+      HTML::FormHandler::Widget::Field::NoRender 0.40068
+      HTML::FormHandler::Widget::Field::Password 0.40068
+      HTML::FormHandler::Widget::Field::RadioGroup 0.40068
+      HTML::FormHandler::Widget::Field::Repeatable 0.40068
+      HTML::FormHandler::Widget::Field::Reset 0.40068
+      HTML::FormHandler::Widget::Field::Role::HTMLAttributes 0.40068
+      HTML::FormHandler::Widget::Field::Role::SelectedOption 0.40068
+      HTML::FormHandler::Widget::Field::Select 0.40068
+      HTML::FormHandler::Widget::Field::Span 0.40068
+      HTML::FormHandler::Widget::Field::Submit 0.40068
+      HTML::FormHandler::Widget::Field::Text 0.40068
+      HTML::FormHandler::Widget::Field::Textarea 0.40068
+      HTML::FormHandler::Widget::Field::Upload 0.40068
+      HTML::FormHandler::Widget::Form::Role::HTMLAttributes 0.40068
+      HTML::FormHandler::Widget::Form::Simple 0.40068
+      HTML::FormHandler::Widget::Form::Table 0.40068
+      HTML::FormHandler::Widget::Theme::Bootstrap 0.40068
+      HTML::FormHandler::Widget::Theme::Bootstrap3 0.40068
+      HTML::FormHandler::Widget::Theme::BootstrapFormMessages 0.40068
+      HTML::FormHandler::Widget::Wrapper::Base 0.40068
+      HTML::FormHandler::Widget::Wrapper::Bootstrap 0.40068
+      HTML::FormHandler::Widget::Wrapper::Bootstrap3 0.40068
+      HTML::FormHandler::Widget::Wrapper::Fieldset 0.40068
+      HTML::FormHandler::Widget::Wrapper::None 0.40068
+      HTML::FormHandler::Widget::Wrapper::Simple 0.40068
+      HTML::FormHandler::Widget::Wrapper::SimpleInline 0.40068
+      HTML::FormHandler::Widget::Wrapper::Table 0.40068
+      HTML::FormHandler::Widget::Wrapper::TableInline 0.40068
+      HTML::FormHandler::Wizard 0.40068
+    requirements:
+      Carp 0
+      Class::Load 0.06
+      Crypt::Blowfish 0
+      Crypt::CBC 0
+      Data::Clone 0
+      DateTime 0
+      DateTime::Format::Strptime 0
+      Email::Valid 0
+      ExtUtils::MakeMaker 0
+      File::ShareDir 0
+      File::ShareDir::Install 0.06
+      File::Spec 0
+      HTML::Entities 0
+      HTML::TreeBuilder 3.23
+      JSON::MaybeXS 1.003003
+      List::Util 1.33
+      Locale::Maketext 1.09
+      MIME::Base64 0
+      Moose 2.1403
+      MooseX::Getopt 0.16
+      MooseX::Types 0.20
+      MooseX::Types::Common 0
+      MooseX::Types::LoadableClass 0.006
+      Sub::Exporter 0
+      Sub::Name 0
+      Try::Tiny 0
+      aliased 0
+      namespace::autoclean 0.09
+  HTML-FormHandler-Model-DBIC-0.29
+    pathname: G/GS/GSHANK/HTML-FormHandler-Model-DBIC-0.29.tar.gz
+    provides:
+      HTML::FormHandler::Generator::DBIC 0.04
+      HTML::FormHandler::Generator::DBIC::Cmd 0.04
+      HTML::FormHandler::Model::DBIC 0.29
+      HTML::FormHandler::Model::DBIC::TypeMap undef
+      HTML::FormHandler::TraitFor::DBICFields undef
+      HTML::FormHandler::TraitFor::Model::DBIC 0.26
+    requirements:
+      DBIx::Class 0.08250
+      DBIx::Class::ResultSet::RecursiveUpdate 0.25
+      ExtUtils::MakeMaker 6.30
+      HTML::FormHandler 0.40016
+      Moose 2.0007
+      namespace::autoclean 0.09
   HTML-Parser-3.69
     pathname: G/GA/GAAS/HTML-Parser-3.69.tar.gz
     provides:
@@ -4662,6 +4886,21 @@ DISTRIBUTIONS
       Test::More 0.88
       Test::Requires 0
       namespace::clean 0.19
+  MooseX-Types-Common-0.001014
+    pathname: E/ET/ETHER/MooseX-Types-Common-0.001014.tar.gz
+    provides:
+      MooseX::Types::Common 0.001014
+      MooseX::Types::Common::Numeric 0.001014
+      MooseX::Types::Common::String 0.001014
+    requirements:
+      Carp 0
+      Module::Build::Tiny 0.034
+      MooseX::Types 0
+      MooseX::Types::Moose 0
+      if 0
+      perl 5.008
+      strict 0
+      warnings 0
   MooseX-Types-DateTime-0.13
     pathname: E/ET/ETHER/MooseX-Types-DateTime-0.13.tar.gz
     provides:

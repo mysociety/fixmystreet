@@ -60,6 +60,7 @@ subtest 'show flagged entries' => sub {
     $user->update;
 };
 
+my $role;
 subtest 'user search' => sub {
     $mech->get_ok('/admin/users');
     $mech->get_ok('/admin/users?search=' . $user->name);
@@ -74,8 +75,25 @@ subtest 'user search' => sub {
 
     $user->from_body($haringey->id);
     $user->update;
+    $role = $user->roles->create({
+        body => $haringey,
+        name => 'Role A',
+        permissions => ['moderate', 'user_edit'],
+    });
+    $user->add_to_roles($role);
     $mech->get_ok('/admin/users?search=' . $haringey->id );
-    $mech->content_contains('Haringey');
+    $mech->content_contains('test@example.com');
+    $mech->get_ok('/admin/users?role=' . $role->id);
+    $mech->content_contains('selected>Role A');
+    $mech->content_contains('test@example.com');
+};
+
+subtest 'user assign role' => sub {
+    $user->remove_from_roles($role);
+    is $user->roles->count, 0;
+    $mech->get_ok('/admin/users');
+    $mech->submit_form_ok({ with_fields => { uid => $user->id, roles => $role->id } });
+    is $user->roles->count, 1;
 };
 
 subtest 'search does not show user from another council' => sub {
@@ -157,6 +175,7 @@ for my $test (
     subtest $test->{desc} => sub {
         $mech->get_ok('/admin/users');
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
+        $mech->content_contains('Norman') if $test->{fields}{name};
         if ($test->{error}) {
             $mech->content_contains($_) for @{$test->{error}};
         } else {
@@ -166,7 +185,7 @@ for my $test (
 }
 
 my %default_perms = (
-    "permissions[moderate]" => undef,
+    "permissions[moderate]" => 'on',
     "permissions[planned_reports]" => undef,
     "permissions[report_mark_private]" => undef,
     "permissions[report_edit]" => undef,
@@ -180,7 +199,7 @@ my %default_perms = (
     "permissions[contribute_as_body]" => undef,
     "permissions[default_to_body]" => undef,
     "permissions[view_body_contribute_details]" => undef,
-    "permissions[user_edit]" => undef,
+    "permissions[user_edit]" => 'on',
     "permissions[user_manage_permissions]" => undef,
     "permissions[user_assign_body]" => undef,
     "permissions[user_assign_areas]" => undef,
@@ -211,6 +230,7 @@ FixMyStreet::override_config {
                 is_superuser => undef,
                 area_ids => undef,
                 %default_perms,
+                roles => $role->id,
             },
             changes => {
                 name => 'Changed User',
@@ -231,6 +251,7 @@ FixMyStreet::override_config {
                 is_superuser => undef,
                 area_ids => undef,
                 %default_perms,
+                roles => $role->id,
             },
             changes => {
                 email => 'changed@example.com',
@@ -251,10 +272,14 @@ FixMyStreet::override_config {
                 is_superuser => undef,
                 area_ids => undef,
                 %default_perms,
+                roles => $role->id,
             },
             changes => {
                 body => $southend->id,
             },
+            removed => [
+                'roles',
+            ],
             log_count => 3,
             log_entries => [qw/edit edit edit/],
         },
@@ -339,6 +364,8 @@ FixMyStreet::override_config {
             },
             added => {
                 %default_perms,
+                'permissions[moderate]' => undef,
+                'permissions[user_edit]' => undef,
             },
             log_count => 5,
             log_entries => [qw/edit edit edit edit edit/],

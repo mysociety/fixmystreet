@@ -76,7 +76,7 @@ sub edit : Path : Args(2) {
         my @new_contact_ids = $c->get_param_list('categories');
         @new_contact_ids = @{ mySociety::ArrayUtils::intersection(\@live_contact_ids, \@new_contact_ids) };
         $defect_type->contact_defect_types->search({
-            contact_id => { '!=' => \@new_contact_ids },
+            contact_id => { -not_in => \@new_contact_ids },
         })->delete;
         foreach my $contact_id (@new_contact_ids) {
             $defect_type->contact_defect_types->find_or_create({
