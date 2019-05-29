@@ -5,16 +5,6 @@ use parent 'FixMyStreet::Cobrand::Default';
 
 sub council_area_id { 1 }
 
-
-package FixMyStreet::Cobrand::TesterGroups;
-
-use parent 'FixMyStreet::Cobrand::Default';
-
-sub council_area_id { 1 }
-
-sub enable_category_groups { 1 }
-
-
 package main;
 
 use FixMyStreet::Test;
@@ -51,13 +41,16 @@ $bucks->body_areas->create({
 });
 
 for my $test (
-    { desc => 'groups not set for new contacts', cobrand => 'tester', groups => 0, delete => 1 },
-    { desc => 'groups set for new contacts', cobrand => 'testergroups', groups => 1, delete => 1},
-    { desc => 'groups removed for existing contacts', cobrand => 'tester', groups => 0, delete => 0 },
-    { desc => 'groups added for existing contacts', cobrand => 'testergroups', groups => 1, delete => 0},
+    { desc => 'groups not set for new contacts', enable_groups => 0, groups => 0, delete => 1 },
+    { desc => 'groups set for new contacts', enable_groups => 1, groups => 1, delete => 1},
+    { desc => 'groups removed for existing contacts', enable_groups => 0, groups => 0, delete => 0 },
+    { desc => 'groups added for existing contacts', enable_groups => 1, groups => 1, delete => 0},
 ) {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ $test->{cobrand} ],
+        ALLOWED_COBRANDS => [ 'tester' ],
+        COBRAND_FEATURES => {
+           category_groups => { tester => $test->{enable_groups} },
+        }
     }, sub {
         subtest 'check basic functionality, ' . $test->{desc} => sub {
             FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete() if $test->{delete};

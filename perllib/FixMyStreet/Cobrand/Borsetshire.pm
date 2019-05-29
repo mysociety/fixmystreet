@@ -27,6 +27,4 @@ sub send_questionnaires {
 
 sub bypass_password_checks { 1 }
 
-sub enable_category_groups { 1 }
-
 1;

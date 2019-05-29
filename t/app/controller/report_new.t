@@ -1271,11 +1271,12 @@ subtest "Test inactive categories" => sub {
 };
 
 subtest "category groups" => sub {
-    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::FixMyStreet');
-    $cobrand->mock('enable_category_groups', sub { 1 });
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            category_groups => { fixmystreet => 1 }
+        }
     }, sub {
         $contact2->update( { extra => { group => 'Roads' } } );
         $contact9->update( { extra => { group => 'Roads' } } );

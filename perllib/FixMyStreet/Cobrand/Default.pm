@@ -1085,6 +1085,18 @@ sub show_unconfirmed_reports {
     0;
 }
 
+=item enable_category_groups
+
+Whether body category groups should be displayed on the new report form. If this is
+not enabled then any groups will be ignored and a flat list of categories displayed.
+
+=cut
+
+sub enable_category_groups {
+    my $self = shift;
+    return $self->feature('category_groups');
+}
+
 sub default_problem_state { 'unconfirmed' }
 
 sub state_groups_admin {

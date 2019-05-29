@@ -262,7 +262,7 @@ sub _normalize_service_name {
 sub _set_contact_group {
     my ($self, $contact) = @_;
 
-    my $groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->call_hook('enable_category_groups');
+    my $groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->enable_category_groups;
     my $old_group = $contact->get_extra_metadata('group') || '';
     my $new_group = $groups_enabled ? $self->_current_service->{group} || '' : '';
 

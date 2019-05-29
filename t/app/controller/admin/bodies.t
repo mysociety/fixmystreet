@@ -1,10 +1,3 @@
-package FixMyStreet::Cobrand::Tester;
-
-use parent 'FixMyStreet::Cobrand::Default';
-
-sub enable_category_groups { 1 }
-
-package main;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -210,10 +203,12 @@ subtest 'check text output' => sub {
 }; # END of override wrap
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => ['tester'],
     MAPIT_URL => 'http://mapit.uk/',
     MAPIT_TYPES => [ 'UTA' ],
     BASE_URL => 'http://www.example.org',
+    COBRAND_FEATURES => {
+        category_groups => { default => 1 },
+    }
 }, sub {
     subtest 'group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
