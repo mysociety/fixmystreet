@@ -6,15 +6,15 @@
 # Translators:
 # mySociety <transifex@mysociety.org>, 2019
 # Jon Kristensen <info@jonkri.com>, 2018
-# Joe Siltberg <joe@fixamingata.se>, 2019
+# Joe Siltberg <joe@joesiltberg.se>, 2019
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2018-12-19 17:14+0000\n"
-"PO-Revision-Date: 2019-05-22 10:26+0200\n"
-"Last-Translator: Joe Siltberg <joe@fixamingata.se>, 2019\n"
+"POT-Creation-Date: 2019-04-29 18:56+0100\n"
+"PO-Revision-Date: 2019-04-29 18:03+0000\n"
+"Last-Translator: Joe Siltberg <joe@joesiltberg.se>, 2019\n"
 "Language-Team: Swedish (Sweden) (https://www.transifex.com/mysociety/teams/12067/sv_SE/)\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
@@ -418,7 +418,7 @@ msgstr "Ärenden på årsbasis"
 
 #: templates/web/base/report/new/duplicate_suggestions.html:7
 msgid "Already been reported?"
-msgstr ""
+msgstr "Redan rapporterat?"
 
 #: templates/web/base/my/anonymize.html:20
 msgid "Alternatively, we can hide your name on <strong>all of your reports and updates</strong> across the site:"
@@ -731,7 +731,7 @@ msgstr "Klicka på kartan eller dra kartnålen för att justera platsen"
 
 #: templates/web/base/report/new/duplicate_suggestions.html:6
 msgid "Close"
-msgstr ""
+msgstr "Stäng"
 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:180
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:156
@@ -844,7 +844,7 @@ msgstr "Fortsätt"
 
 #: templates/web/base/report/new/duplicate_suggestions.html:17
 msgid "Continue – report a new problem"
-msgstr ""
+msgstr "Fortsätt - rapportera ett nytt problem"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:151
 msgid "Convert location from Easting/Northing"
@@ -1784,7 +1784,7 @@ msgstr "Om du får mer information om problemets status får du gärna komma til
 
 #: templates/web/base/report/new/duplicate_suggestions.html:25
 msgid "If you let us know your email address, we’ll notify you when this problem is updated or fixed."
-msgstr ""
+msgstr "Om du uppger din epostadress meddelar vi dig när problemet uppdateras eller fixas."
 
 #: templates/web/base/admin/responsepriorities/edit.html:45
 msgid "If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories."
@@ -2700,7 +2700,7 @@ msgstr "Placera nålen på kartan"
 
 #: perllib/FixMyStreet/App/Controller/Moderate.pm:143
 msgid "Please <a href=\"#%s\">check their changes</a> and resolve any differences."
-msgstr ""
+msgstr "Var god <a href=\"#%s\">kontrollera deras ändringar</a> och åtgärda skillnader."
 
 #: templates/web/base/report/new/notes.html:5
 msgid "Please be polite, concise and to the point."
@@ -3022,7 +3022,7 @@ msgstr "Privat"
 
 #: templates/web/base/reports/_list-filters.html:28
 msgid "Private only"
-msgstr ""
+msgstr "Endast privata"
 
 #: templates/web/base/maps/pin.html:14
 msgid "Problem"
@@ -3214,11 +3214,11 @@ msgstr "RSS-flöde för uppdateringar till denna rapport"
 
 #: templates/web/base/report/_item_expandable.html:50
 msgid "Read less"
-msgstr ""
+msgstr "Läs mindre"
 
 #: templates/web/base/report/_item_expandable.html:50
 msgid "Read more"
-msgstr ""
+msgstr "Läs mer"
 
 #: templates/web/base/alert/updates.html:14
 #: templates/web/base/report/display_tools.html:44
@@ -3837,11 +3837,11 @@ msgstr "Lite text att lokalisera"
 
 #: perllib/FixMyStreet/App/Controller/Moderate.pm:142
 msgid "Someone has moderated this report since you started."
-msgstr ""
+msgstr "Någon har modererat den här rapporten sedan du började."
 
 #: templates/web/base/js/translation_strings.html:74
 msgid "Sorry! You’ve hit the limit of images that can be attached to one report."
-msgstr ""
+msgstr "Tyvärr! Du har uppnått maximalt antal bifogade bilder för en rapport."
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:80
 msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
@@ -4049,11 +4049,11 @@ msgstr "Prenumererad:"
 
 #: perllib/FixMyStreet/Cobrand/Northamptonshire.pm:101
 msgid "Summaries are limited to %s characters in length. Please shorten your summary"
-msgstr ""
+msgstr "Sammanfattningar är begränsade till %s tecken. Vänligen korta ner din sammanfattning"
 
 #: templates/web/base/js/translation_strings.html:9
 msgid "Summaries are limited to {0} characters in length. Please shorten your summary"
-msgstr ""
+msgstr "Sammanfattningar är begränsade till {0} tecken. Vänligen korta ner din sammanfattning"
 
 #: templates/web/base/report/new/form_title.html:1
 msgid "Summarise the problem"
@@ -4365,7 +4365,7 @@ msgstr "Det finns inga rapporter att visa."
 
 #: templates/web/base/report/new/duplicate_suggestions.html:10
 msgid "There are similar problems nearby that we’re already aware of, is one of them yours?"
-msgstr ""
+msgstr "Det finns liknande problem i området, är ett av dom ditt problem?"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:819
 msgid "There is already an auto-response template for this category/state."
@@ -4490,7 +4490,7 @@ msgstr "Detta är den <strong>offentliga</strong> text som kommer att visas på 
 
 #: templates/web/base/js/translation_strings.html:48
 msgid "This is the problem"
-msgstr ""
+msgstr "Detta är problemet"
 
 #: templates/web/base/admin/users/import.html:65
 msgid "This page is a quick way to create many new staff users in one go."
@@ -4510,7 +4510,7 @@ msgstr "Detta problem är fortfarande aktuellt"
 
 #: templates/web/base/js/translation_strings.html:47
 msgid "This report"
-msgstr ""
+msgstr "Denna rapport"
 
 #: templates/web/base/report/duplicate-no-updates.html:5
 msgid "This report is a duplicate. Please leave updates on the original report:"
@@ -4993,7 +4993,7 @@ msgstr "Vi visar upp till tio träffar. Försök med en annan sökning om din in
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
 msgid "We will only use your personal information in accordance with our <a href=\"%s\">privacy policy.</a>"
-msgstr ""
+msgstr "Vi kommer endast använda dina personuppgifter i enlighet med vår <a href=\"%s\">integritetsskyddspolicy.</a>"
 
 #: templates/web/base/questionnaire/completed-open.html:2
 msgid "We&rsquo;re sorry to hear the problem’s not fixed. Why not try writing to your local representatives?"
@@ -5009,7 +5009,7 @@ msgstr "Vi återkommer så snart vi kan!"
 
 #: templates/web/base/report/new/duplicate_suggestions.html:12
 msgid "We’ve already reported these nearby problems to the council. Is one of them yours?"
-msgstr ""
+msgstr "Vi har redan rapporterat dessa problem i området. Är ett av dom ditt problem?"
 
 #: templates/web/base/admin/bodies/category.html:28
 #: templates/web/zurich/admin/bodies/body.html:18
@@ -5058,7 +5058,7 @@ msgstr "Vill du bli påmind om att kolla statusen med ett annat frågeformulär 
 
 #: templates/web/base/report/new/duplicate_suggestions.html:23
 msgid "Would you like us to notify you when this problem is updated or fixed?"
-msgstr ""
+msgstr "Vill du bli notifierad när det här problemet uppdateras eller fixas?"
 
 #: templates/web/base/report/new/notes.html:7
 msgid "Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation."
@@ -5252,7 +5252,7 @@ msgstr "Din epostadress eller ditt mobiltelefonnummer"
 
 #: templates/web/base/report/updates-sidebar-notes.html:3
 msgid "Your information will only be used in accordance with our <a href=\"%s\">privacy policy</a>"
-msgstr ""
+msgstr "Din information kommer endast användas i enlighet med vår <a href=\"%s\">integritetsskyddspolicy</a>"
 
 #: templates/web/base/contact/index.html:81
 msgid "Your name"
