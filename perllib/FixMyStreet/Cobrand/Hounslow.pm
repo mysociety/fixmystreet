@@ -33,12 +33,13 @@ sub disambiguate_location {
 
     # Some specific Hounslow roads produce lots of geocoder results
     # for the same road; this picks just one.
-    $town = "TW3 4HR" if $string =~ /lampton\s+road/i;
-    $town = "TW3 4AJ" if $string =~ /kingsley\s+road/i;
-    $town = "TW3 1YQ" if $string =~ /stanborough\s+road/i;
+    ( $string, $town ) = ( "TW3 4HR", "" ) if $string =~ /lampton\s+road/i;
+    ( $string, $town ) = ( "TW3 4AJ", "" ) if $string =~ /kingsley\s+road/i;
+    ( $string, $town ) = ( "TW3 1YQ", "" ) if $string =~ /stanborough\s+road/i;
 
     return {
         %{ $self->SUPER::disambiguate_location() },
+        string => $string,
         centre => '51.468495,-0.366134',
         town => $town,
         bounds => [ 51.420739, -0.461502, 51.502850, -0.243443 ],
