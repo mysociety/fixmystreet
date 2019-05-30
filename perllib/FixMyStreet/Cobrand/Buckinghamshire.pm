@@ -45,7 +45,7 @@ sub on_map_default_status { 'open' }
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->state eq 'not responsible';
+    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';
     return 'yellow';
