@@ -59,6 +59,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
         "General Maintenance and pruning",
         "Hedge causing obstruction",
         "Illuminated Traffic signal obstructed by vegetation",
+        "Traffic signal obstructed by vegetation",
         "Pest: Tree/Shrub",
         "Pests in trees and shrubs",
         "Sponsor a tree",
@@ -202,12 +203,9 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
         "Street light on during the day",
         "Street light wiring exposed",
         "Street lights on during the day",
-        "Subway light faulty",
         "Unauthorised sign",
         "Veg Obstructed: Street Light",
-        "Zebra crossing beacon fault",
-        "Zebra crossing/ belisha faulty",
-        "Illuminated Traffic signal obstructed by vegetation"
+        "Zebra crossing beacon fault"
     ],
     asset_item: 'light'
 }));
