@@ -1,0 +1,43 @@
+Subject: Problem Report: [% report.title %]
+
+[% multiple %]A user of
+[% site_name %] has submitted the following report
+of a local problem that they believe might require your attention.
+
+[% fuzzy %], or to provide an update on the problem,
+please visit the following link:
+
+    [% url %]
+
+[% has_photo %]----------
+
+Name: [% report.name %]
+
+Email: [% report.user.email OR 'None provided' %]
+
+Phone: [% report.user.phone OR 'None provided' %]
+
+[% IF report.external_id %]Enquiry ref: [% report.external_id %][% END %]
+
+Category: [% report.category %]
+
+Subject: [% report.title %]
+
+Details: [% report.detail %]
+
+[% additional_information %]
+
+Easting/Northing
+[%- " (IE)" IF coordsyst == "I" -%]
+: [% easting %]/[% northing %]
+
+Latitude: [% report.latitude %]
+
+Longitude: [% report.longitude %]
+
+View OpenStreetMap of this location: [% osm_url %]
+
+[% closest_address %]----------
+
+Replies to this email will go to the user who submitted the problem.
+
