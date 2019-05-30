@@ -141,7 +141,7 @@ sub open311_skip_report_fetch {
 
 sub lookup_site_code_config { {
     buffer => 50, # metres
-    url => "https://tilma.staging.mysociety.org/mapserver/hounslow",
+    url => "https://tilma.mysociety.org/mapserver/hounslow",
     srsname => "urn:ogc:def:crs:EPSG::27700",
     typename => "streets",
     property => "SITE_CODE",
