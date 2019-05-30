@@ -8,7 +8,7 @@ it('prevents clicking unless asset selected', function() {
   cy.fixture('trees.json');
   cy.fixture('trees_none.json');
   cy.route('**/render-layer/**', 'fixture:trees_none.json').as('empty-trees-layer');
-  cy.route('**/16463/10787**', 'fixture:trees.json').as('trees-layer');
+  cy.route('**/16301/10787**', 'fixture:trees.json').as('trees-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 1NS');
@@ -30,7 +30,7 @@ it('selecting an asset allows a report', function() {
   cy.fixture('trees.json');
   cy.fixture('trees_none.json');
   cy.route('**/render-layer/**', 'fixture:trees_none.json').as('empty-trees-layer');
-  cy.route('**/16463/10787**', 'fixture:trees.json').as('trees-layer');
+  cy.route('**/16301/10787**', 'fixture:trees.json').as('trees-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 2NS');
@@ -52,8 +52,8 @@ it('detects multiple assets at same location', function() {
   cy.fixture('trees.json');
   cy.fixture('trees_none.json');
   cy.route('**/render-layer/**', 'fixture:trees_none.json').as('empty-trees-layer');
-  cy.route('**/16463/10787**', 'fixture:trees.json').as('trees-layer');
-  cy.route('**/16463/10788**', 'fixture:trees.json').as('trees-layer2');
+  cy.route('**/16301/10787**', 'fixture:trees.json').as('trees-layer');
+  cy.route('**/16301/10788**', 'fixture:trees.json').as('trees-layer2');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 2NS');

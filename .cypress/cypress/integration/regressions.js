@@ -54,4 +54,21 @@ describe('Regression tests', function() {
         cy.get('.content').should('not.contain', 'toddler');
     });
 
+    it.only('has the correct send-to text at all times', function() {
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.visit('/');
+      cy.get('[name=pc]').type('NN1 1NS');
+      cy.get('[name=pc]').parents('form').submit();
+
+      cy.get('#map_box').click();
+      cy.wait('@report-ajax');
+      cy.get('[id=category_group]').select('Graffiti');
+      cy.contains(/These will be sent to Northampton Borough Council and also/);
+
+      cy.get('#map_box').click(200, 200);
+      cy.wait('@report-ajax');
+      cy.contains(/These will be sent to Northampton Borough Council and also/);
+    });
+
 });

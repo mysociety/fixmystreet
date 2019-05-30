@@ -98,6 +98,12 @@ if ($opt->test_fixtures) {
         name => 'Northamptonshire County Council',
     });
     say "Created body " . $ncc->name . " for MapIt area ID 2234, categories Fallen Tree";
+    $ncc = FixMyStreet::DB::Factory::Body->find_or_create({
+        area_id => 2397,
+        categories => [ 'Graffiti' ],
+        name => 'Northampton Borough Council',
+    });
+    say "Created body " . $ncc->name . " for MapIt area ID 2397, categories Graffiti";
 }
 
 FixMyStreet::DB::Factory::ResponseTemplate->create({
