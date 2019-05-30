@@ -12,6 +12,7 @@ use HTTP::Request::Common qw(GET POST);
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use Utils;
+use Path::Tiny 'path';
 
 has jurisdiction => ( is => 'ro', isa => Str );;
 has api_key => ( is => 'ro', isa => Str );
@@ -32,6 +33,7 @@ has use_service_as_deviceid => ( is => 'ro', isa => Bool, default => 0 );
 has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
 has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
+has upload_files => ( is => 'ro', isa => Bool, default => 0 );
 has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
 has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
 has fixmystreet_body => ( is => 'ro', isa => InstanceOf['FixMyStreet::DB::Result::Body'] );
@@ -90,8 +92,9 @@ sub send_service_request {
     my $params = $self->_populate_service_request_params(
         $problem, $extra, $service_code
     );
+    my $uploads = $self->_populate_service_request_uploads($problem);
 
-    my $response = $self->_post( $self->endpoints->{requests}, $params );
+    my $response = $self->_post( $self->endpoints->{requests}, $params, $uploads );
 
     if ( $response ) {
         my $obj = $self->_get_xml_object( $response );
@@ -189,6 +192,27 @@ sub _populate_service_request_params {
     }
 
     return $params;
+}
+
+sub _populate_service_request_uploads {
+    my $self = shift;
+    my $problem = shift;
+
+    return unless $self->upload_files && $problem->get_extra_metadata('enquiry_files');
+
+    my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+    my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
+    $dir = path($dir, "enquiry_files")->absolute(FixMyStreet->path_to());
+
+    my $files = $problem->get_extra_metadata('enquiry_files') || {};
+    my $uploads = {};
+    if ($files) {
+        for my $key (keys %$files) {
+            my $name = $files->{$key};
+            $uploads->{"file_$key"} = [ path($dir, $key)->canonpath, $name ];
+        }
+    } keys %$files;
+    return $uploads;
 }
 
 sub _generate_service_request_description {
@@ -442,6 +466,7 @@ sub _request {
     my $method = shift;
     my $path = shift;
     my $params = shift || {};
+    my $uploads = shift;
 
     my $uri = URI->new( $self->endpoint );
     $uri->path( $uri->path . $path );
@@ -458,7 +483,32 @@ sub _request {
             $uri->query_form( $params );
             GET $uri->as_string;
         } elsif ($method eq 'POST') {
-            POST $uri->as_string, $params;
+            if ($uploads) {
+                # HTTP::Request::Common needs to be constructed slightly
+                # differently if there are files to upload.
+
+                my @media_urls = ();
+                # HTTP::Request::Common treats an arrayref as a filespec,
+                # so we need to rejig the media_url parameter so it doesn't
+                # get confused...
+                # https://stackoverflow.com/questions/50705344/perl-httprequestcommon-post-file-and-array
+                if ($self->multi_photos) {
+                    my $media_urls = $params->{media_url};
+                    @media_urls = map { ( media_url => $_ ) } @$media_urls;
+                    delete $params->{media_url};
+                }
+                $params = {
+                    Content_Type => 'form-data',
+                    Content => [
+                        %$params,
+                        @media_urls,
+                        %$uploads
+                    ]
+                };
+                POST $uri->as_string, %$params;
+            } else {
+                POST $uri->as_string, $params;
+            }
         }
     };
 
