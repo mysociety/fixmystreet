@@ -189,7 +189,6 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
         }
     },
     asset_category: [
-        "Bollard Out Of Light",
         "Damage to paintwork",
         "Damage to paintwork/ column",
         "Door Missing/ open",
