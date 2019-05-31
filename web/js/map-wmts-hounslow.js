@@ -9,51 +9,53 @@ fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
     185779.43299096148);
 
 fixmystreet.maps.matrix_ids = [
-    {
-        "identifier": 0,
-        "scaleDenominator": 566965.4196450538,
-        "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
-        "tileWidth": 256,
-        "tileHeight": 256,
-        "matrixWidth": 142,
-        "matrixHeight": 106,
-    },
-    {
-        "identifier": 1,
-        "scaleDenominator": 472471.18303754483,
-        "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
-        "tileWidth": 256,
-        "tileHeight": 256,
-        "matrixWidth": 170,
-        "matrixHeight": 128,
-    },
-    {
-        "identifier": 2,
-        "scaleDenominator": 377976.9464300358,
-        "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
-        "tileWidth": 256,
-        "tileHeight": 256,
-        "matrixWidth": 213,
-        "matrixHeight": 159,
-    },
-    {
-        "identifier": 3,
-        "scaleDenominator": 283482.7098225269,
-        "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
-        "tileWidth": 256,
-        "tileHeight": 256,
-        "matrixWidth": 283,
-        "matrixHeight": 212,
-    },
-    {
-        "identifier": 4,
-        "scaleDenominator": 188988.4732150179,
-        "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
-        "tileWidth": 256,
-        "tileHeight": 256,
-        "matrixWidth": 425,
-        "matrixHeight": 318,
-    },
+    // The first 5 levels don't load and are really zoomed-out, so
+    //  they're not included here.
+    // {
+    //     "identifier": 0,
+    //     "scaleDenominator": 566965.4196450538,
+    //     "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
+    //     "tileWidth": 256,
+    //     "tileHeight": 256,
+    //     "matrixWidth": 142,
+    //     "matrixHeight": 106,
+    // },
+    // {
+    //     "identifier": 1,
+    //     "scaleDenominator": 472471.18303754483,
+    //     "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
+    //     "tileWidth": 256,
+    //     "tileHeight": 256,
+    //     "matrixWidth": 170,
+    //     "matrixHeight": 128,
+    // },
+    // {
+    //     "identifier": 2,
+    //     "scaleDenominator": 377976.9464300358,
+    //     "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
+    //     "tileWidth": 256,
+    //     "tileHeight": 256,
+    //     "matrixWidth": 213,
+    //     "matrixHeight": 159,
+    // },
+    // {
+    //     "identifier": 3,
+    //     "scaleDenominator": 283482.7098225269,
+    //     "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
+    //     "tileWidth": 256,
+    //     "tileHeight": 256,
+    //     "matrixWidth": 283,
+    //     "matrixHeight": 212,
+    // },
+    // {
+    //     "identifier": 4,
+    //     "scaleDenominator": 188988.4732150179,
+    //     "supportedCRS": "urn:ogc:def:crs:EPSG:27700",
+    //     "tileWidth": 256,
+    //     "tileHeight": 256,
+    //     "matrixWidth": 425,
+    //     "matrixHeight": 318,
+    // },
     {
         "identifier": 5,
         "scaleDenominator": 94494.23660750895,
@@ -182,7 +184,7 @@ fixmystreet.maps.config = function() {
 
 fixmystreet.maps.marker_size = function() {
     var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
-    if (zoom >= 7) {
+    if (zoom >= 8) {
         return 'normal';
     } else if (zoom >= 4) {
         return 'small';
