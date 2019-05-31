@@ -92,7 +92,7 @@ sub send_service_request {
     my $params = $self->_populate_service_request_params(
         $problem, $extra, $service_code
     );
-    my $uploads = $self->_populate_service_request_uploads($problem);
+    my $uploads = $self->_populate_service_request_uploads($problem, $params);
 
     my $response = $self->_post( $self->endpoints->{requests}, $params, $uploads );
 
@@ -197,21 +197,39 @@ sub _populate_service_request_params {
 sub _populate_service_request_uploads {
     my $self = shift;
     my $problem = shift;
+    my $params = shift;
 
-    return unless $self->upload_files && $problem->get_extra_metadata('enquiry_files');
+    return unless $self->upload_files;
 
-    my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-    my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-    $dir = path($dir, "enquiry_files")->absolute(FixMyStreet->path_to());
-
-    my $files = $problem->get_extra_metadata('enquiry_files') || {};
     my $uploads = {};
-    if ($files) {
-        for my $key (keys %$files) {
-            my $name = $files->{$key};
-            $uploads->{"file_$key"} = [ path($dir, $key)->canonpath, $name ];
+
+    if ( $problem->get_extra_metadata('enquiry_files') ) {
+        my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+        my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
+        $dir = path($dir, "enquiry_files")->absolute(FixMyStreet->path_to());
+
+        my $files = $problem->get_extra_metadata('enquiry_files') || {};
+        if ($files) {
+            for my $key (keys %$files) {
+                my $name = $files->{$key};
+                $uploads->{"file_$key"} = [ path($dir, $key)->canonpath, $name ];
+            }
+        } keys %$files;
+    }
+
+    if ( $problem->photo && $problem->non_public ) {
+        # open311-adapter won't be able to download any photos if they're on
+        # a private report, so instead of sending the media_url parameter
+        # send the actual photo content with the POST request.
+        my $i = 0;
+        my $photoset = $problem->get_photoset;
+        for ( $photoset->all_ids ) {
+            my $photo = $photoset->get_image_data( num => $i++, size => 'full' );
+            $uploads->{"photo$i"} = [ undef, $_, Content_Type => $photo->{content_type}, Content => $photo->{data} ];
         }
-    } keys %$files;
+        delete $params->{media_url};
+    }
+
     return $uploads;
 }
 
