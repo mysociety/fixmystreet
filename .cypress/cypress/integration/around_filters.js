@@ -126,4 +126,29 @@ describe('Around page filtering and push state', function() {
         cy.contains('Loose drain cover');
         cy.should('not.contain', 'Back to all reports');
     });
+
+    it('lets me show and hide the filters on narrow screens', function(){
+        // #map_filter does not exist at normal window size
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6');
+        cy.get('#map_filter').should('not.exist');
+
+        // #map_filter appears when window is narrowed _after_ pageload
+        cy.viewport(375, 667);
+        cy.get('#map_filter').should('exist');
+
+        // #map_filter exists when window is _already_ narrow at pageload
+        cy.reload();
+        cy.get('#map_filter').should('exist');
+
+        // And the filters are static (hidden) underneath the map as normal
+        cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
+
+        // The filters appear when you click the #map_filter button
+        cy.get('#map_filter').click();
+        cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'fixed');
+
+        // And disappear again when you click #map_filter a second time
+        cy.get('#map_filter').click();
+        cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
+    });
 });
