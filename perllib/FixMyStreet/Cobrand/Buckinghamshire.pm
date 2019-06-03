@@ -45,7 +45,7 @@ sub on_map_default_status { 'open' }
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->state eq 'not responsible';
+    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';
     return 'yellow';
@@ -455,9 +455,15 @@ sub get_geocoder { 'OSM' }
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    # Buckinghamshire is a two-tier council, but only want to display
+    # Buckinghamshire is a two-tier council, but mostly want to display
     # county-level categories on their cobrand.
-    return $rs->search( [ { 'body_areas.area_id' => 2217 }, { category => 'Flytipping' } ], { join => { body => 'body_areas' } });
+    return $rs->search(
+        [
+            { 'body_areas.area_id' => 2217 },
+            { category => [ 'Flytipping', 'Car Parks' ] },
+        ],
+        { join => { body => 'body_areas' } }
+    );
 }
 
 sub lookup_site_code_config { {
