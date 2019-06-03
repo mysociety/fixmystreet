@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Mobile users can now filter the pins on the `/around` map view. #2366
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users.
     - Bugfixes:
