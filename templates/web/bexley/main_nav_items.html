@@ -16,8 +16,8 @@
     END;
 
     reports_uri = '/reports';
-    IF body_name;
-       body_name = body_name | uri;
+    IF c.cobrand.council_area;
+       body_name = c.cobrand.council_area | uri;
        reports_uri = "${reports_uri}/${body_name}";
     END;
 
