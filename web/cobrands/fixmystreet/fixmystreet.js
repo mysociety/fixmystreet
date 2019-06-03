@@ -156,6 +156,7 @@ fixmystreet.mobile_reporting = {
     // Creates the "app-like" mobile reporting UI with full screen map
     // and special "OK/Cancel" buttons etc.
     $('html').addClass('map-fullscreen only-map map-reporting');
+    $('#map_filter').removeClass('hidden');
     $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
     // Do this on a timeout, so it takes precedence over the browser’s
     // remembered position, which we do not want, we want a fixed map.
@@ -170,6 +171,7 @@ fixmystreet.mobile_reporting = {
     $('html').removeClass('map-fullscreen only-map map-reporting');
     $('#map_box').css({ width: "", height: "", position: "" });
     $('#mob_sub_map_links').remove();
+    $('#map_filter').addClass('hidden');
   }
 };
 
@@ -204,6 +206,10 @@ fixmystreet.resize_to = {
     // been put into place by previous mobile UI.
     $('#report-a-problem-sidebar').show();
     $('.rap-notes-trigger').remove();
+
+    // Turn off the mobile map filters.
+    $('#mapForm').removeClass('mobile-filters-active');
+    $('#sub_map_links').css('bottom', '');
   }
 };
 
@@ -762,10 +768,14 @@ $.extend(fixmystreet.set_up, {
         if ($('#map_permalink').length === 0) {
             $('#sub_map_links').append('<a href="#" id="map_permalink">' + translation_strings.permalink + '</a>');
         }
+        if ($('#map_filter').length === 0) {
+            $('#sub_map_links').prepend('<a href="#side" id="map_filter" class="hidden">Filter</a>');
+        }
     }
 
     if ($('.mobile').length) {
         $('#map_permalink').addClass('hidden');
+        $('#map_filter').removeClass('hidden');
         // Make sure we end up with one Get updates link
         if ($('#key-tools a.js-feed').length) {
             $('#sub_map_links a.js-feed').remove();
@@ -812,6 +822,19 @@ $.extend(fixmystreet.set_up, {
       $(this).html(text).attr('class', btnClass);
 
       fixmystreet.map.updateSize();
+    });
+
+    $('#map_filter').off('click').on('click', function(e) {
+        e.preventDefault();
+        var $form = $('#mapForm');
+        var $sub_map_links = $('#sub_map_links');
+        if ( $form.is('.mobile-filters-active') ) {
+            $form.removeClass('mobile-filters-active');
+            $sub_map_links.css('bottom', '');
+        } else {
+            $form.addClass('mobile-filters-active');
+            $sub_map_links.css('bottom', $('.report-list-filters-wrapper').outerHeight() );
+        }
     });
   },
 
