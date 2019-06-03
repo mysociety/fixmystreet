@@ -17,6 +17,10 @@ body_validation_rules = {
     'Lincolnshire County Council': confirm_validation_rules,
     'Bath and North East Somerset Council': confirm_validation_rules,
     'Rutland County Council': {
+        title: {
+          required: true,
+          maxlength: 254
+        },
         name: {
           required: true,
           maxlength: 40
