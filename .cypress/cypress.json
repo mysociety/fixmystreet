@@ -1,7 +1,7 @@
 {
   "baseUrl": "http://fixmystreet.localhost:3001",
   "projectId": "y8vvs1",
-  "blacklistHosts": ["gaze.mysociety.org", "*.openstreetmap.org"],
+  "blacklistHosts": ["gaze.mysociety.org", "*.openstreetmap.org", "tilma.mysociety.org"],
   "env": {
      "postcode": "BS10 5EE"
   },
