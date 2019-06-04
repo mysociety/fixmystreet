@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.mysociety.org:80/mapserver/bucks?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Whole_Street&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:27700">
+      		<gml:lowerCorner>499000.030000 189992.860000</gml:lowerCorner>
+      		<gml:upperCorner>501833.770000 193639.230000</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+    <gml:featureMember>
+      <ms:Whole_Street gml:id="Whole_Street.HWSA7300268">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>499991.980000 191715.960000</gml:lowerCorner>
+        		<gml:upperCorner>500040.010000 191858.080000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:MultiCurve srsName="EPSG:27700">
+            <gml:curveMember>
+              <gml:LineString>
+                <gml:posList srsDimension="2">499991.980000 191715.960000 500000.000000 191720.020000 500004.960000 191721.000000 500008.960000 191721.970000 500019.990000 191724.970000 500028.010000 191729.030000 500032.990000 191733.020000 500035.030000 191734.950000 500039.020000 191743.030000 500039.990000 191746.950000 500040.000000 191749.950000 500040.010000 191755.960000 500035.180000 191772.660000 </gml:posList>
+              </gml:LineString>
+            </gml:curveMember>
+            <gml:curveMember>
+              <gml:LineString>
+                <gml:posList srsDimension="2">500035.180000 191772.660000 500025.070000 191769.020000 </gml:posList>
+              </gml:LineString>
+            </gml:curveMember>
+            <gml:curveMember>
+              <gml:LineString>
+                <gml:posList srsDimension="2">500035.180000 191772.660000 500027.000000 191800.990000 500019.980000 191819.980000 500008.590000 191849.680000 500005.380000 191858.080000 </gml:posList>
+              </gml:LineString>
+            </gml:curveMember>
+          </gml:MultiCurve>
+        </ms:msGeometry>
+        <ms:site_code>7300268</ms:site_code>
+        <ms:feature_ty>4B</ms:feature_ty>
+      </ms:Whole_Street>
+    </gml:featureMember>
+</wfs:FeatureCollection>
+
