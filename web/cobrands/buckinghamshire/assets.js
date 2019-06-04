@@ -314,6 +314,7 @@ fixmystreet.assets.add(defaults, {
     non_interactive: true,
     road: true,
     asset_item: 'road',
+    asset_type: 'road',
     all_categories: true,
     actions: {
         found: function(layer, feature) {
