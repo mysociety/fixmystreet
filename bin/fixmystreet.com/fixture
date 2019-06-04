@@ -94,7 +94,7 @@ for my $cat ('Dropped Kerbs', 'Skips') {
 if ($opt->test_fixtures) {
     my $bodies;
     foreach (
-        { area_id => 2234, categories => ['Fallen Tree'], name => 'Northamptonshire County Council' },
+        { area_id => 2234, categories => ['Fallen Tree', 'Very Urgent'], name => 'Northamptonshire County Council' },
         { area_id => 2217, categories => ['Flytipping', 'Roads'], name => 'Buckinghamshire County Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
     ) {
@@ -104,6 +104,19 @@ if ($opt->test_fixtures) {
     }
 
     my $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2234},
+        category => 'Very Urgent',
+    });
+    $child_cat->set_extra_fields({
+        code => 'emergency',
+        datatype => 'string',
+        description => 'Please call us instead, it is very urgent.',
+        order => 1,
+        variable => 'false',
+    });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2217},
         category => 'Flytipping',
     });

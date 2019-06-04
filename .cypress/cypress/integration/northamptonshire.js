@@ -70,3 +70,16 @@ it('detects multiple assets at same location', function() {
 
   cy.contains('more than one tree at this location');
 });
+
+it('shows the emergency message', function() {
+  cy.server();
+  cy.route('/report/new/ajax*').as('report-ajax');
+  cy.visit('http://northamptonshire.localhost:3001/');
+  cy.get('[name=pc]').type('NN1 2NS');
+  cy.get('[name=pc]').parents('form').submit();
+  cy.get('#map_box').click();
+  cy.wait('@report-ajax');
+  cy.get('[id=category_group]').select('Very Urgent');
+  cy.contains('Please call us instead, it is very urgent.');
+  cy.get('#form_title').should('not.be.visible');
+});
