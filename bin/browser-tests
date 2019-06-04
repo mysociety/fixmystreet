@@ -91,7 +91,7 @@ sub run {
 
     if (($run_cypress && !$run_server) || $pid) {
         # Parent, run the test runner (then kill the child)
-        my $exit = system("cypress", $cmd, '--config', 'pluginsFile=false,supportFile=false,blacklistHosts=[gaze.mysociety.org,*.openstreetmap.org]', '--project', '.cypress', @ARGV);
+        my $exit = system("cypress", $cmd, '--config', 'pluginsFile=false,supportFile=false', '--project', '.cypress', @ARGV);
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
