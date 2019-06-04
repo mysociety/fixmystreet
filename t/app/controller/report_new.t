@@ -52,6 +52,7 @@ for my $body (
     { area_id => 2237, name => 'Oxfordshire County Council' },
     { area_id => 2600, name => 'Rutland County Council' },
     { area_id => 2234, name => 'Northamptonshire County Council' },
+    { area_id => 2483, name => 'Hounslow Borough Council' },
 ) {
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
     push @bodies, $body_obj;
@@ -138,6 +139,11 @@ my $contact16 = $mech->create_contact_ok(
     body_id => $body_ids{2234}, # Northamptonshire
     category => 'Trees',
     email => 'trees-2234@example.com',
+);
+my $contact17 = $mech->create_contact_ok(
+    body_id => $body_ids{2483}, # Hounslow
+    category => 'Trees',
+    email => 'trees-2483@example.com',
 );
 
 # test that the various bit of form get filled in and errors correctly
@@ -1387,6 +1393,14 @@ subtest "check map click ajax response" => sub {
     is $extra_details->{category}, '', 'category is empty for council with no contacts';
     is_deeply $extra_details->{bodies}, [ "Sandwell Borough Council" ], 'correct bodies for council with no contacts';
     ok !$extra_details->{extra_name_info}, 'no extra name info';
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'hounslow',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.482286&longitude=-0.328163' );
+    };
+    is_deeply $extra_details->{display_names}, { 'Hounslow Borough Council' => 'Hounslow Highways' }, 'council display name mapping correct';
 };
 
 #### test uploading an image

@@ -165,6 +165,7 @@ sub _handle_existing_contact {
     }
 
     $self->_set_contact_group($contact);
+    $self->_set_contact_non_public($contact);
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
@@ -201,6 +202,7 @@ sub _create_contact {
     }
 
     $self->_set_contact_group($contact);
+    $self->_set_contact_non_public($contact);
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
@@ -281,6 +283,21 @@ sub _set_contact_group {
             });
         }
     }
+}
+
+sub _set_contact_non_public {
+    my ($self, $contact) = @_;
+
+    # We never want to make a private category unprivate.
+    return if $contact->non_public;
+
+    my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
+    $contact->update({
+        non_public => 1,
+        editor => $0,
+        whenedited => \'current_timestamp',
+        note => 'marked private automatically by script',
+    }) if $keywords{private};
 }
 
 sub _delete_contacts_not_in_service_list {

@@ -1,0 +1,38 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+#site-logo {
+    width: 115px;
+    height: 51px;
+    padding: 0.5em 0;
+    background: url(/cobrands/hounslow/images/logo.gif) 0 50% no-repeat;
+    background-size: 115px 51px;
+}
+
+#postcodeForm .form-hint {
+    color: $white;
+}
+
+#map_box #map {
+    background-color: white;
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    border: none;
+    background: $green;
+
+    &:hover,
+    &:active {
+        background: lighten($green, 5%);
+    }
+}
+
+.general-notes {
+    .box-warning {
+      font-size: 1.2em;
+    }
+}

@@ -146,7 +146,8 @@ sub create_problems {
             next;
         }
 
-        if ( my $cobrand = $body->get_cobrand_handler ) {
+        my $cobrand = $body->get_cobrand_handler;
+        if ( $cobrand ) {
             my $filtered = $cobrand->call_hook('filter_report_description', $request->{description});
             $request->{description} = $filtered if defined $filtered;
         }
@@ -157,6 +158,7 @@ sub create_problems {
         my $state = $open311->map_state($request->{status});
 
         my $non_public = $request->{non_public} ? 1 : 0;
+        $non_public ||= $contacts[0] ? $contacts[0]->non_public : 0;
 
         my $problem = $self->schema->resultset('Problem')->new(
             {
@@ -183,6 +185,8 @@ sub create_problems {
                 non_public => $non_public,
             }
         );
+
+        next if $cobrand && $cobrand->call_hook(open311_skip_report_fetch => $problem);
 
         $open311->add_media($request->{media_url}, $problem)
             if $request->{media_url};

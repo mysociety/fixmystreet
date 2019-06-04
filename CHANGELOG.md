@@ -6,9 +6,15 @@
     - Bugfixes:
         - Prevent creation of two templates with same title.
         - Fix bug going between report/new pages client side
+        - Don't include private reports when searching by ref from front page.
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
         - Add feature cobrand helper function.
+    - Open311 improvements:
+        - Support use of 'private' service definition <keywords> to mark
+          reports made in that category private.
+        - Ensure any reports fetched in a category marked private are also
+          marked private on the site.
 
 * v2.6 (3rd May 2019)
     - New features:

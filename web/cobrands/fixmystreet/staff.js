@@ -390,7 +390,8 @@ $(fixmystreet).on('display:report', function() {
 $(fixmystreet).on('report_new:category_change', function(evt, $this) {
     var category = $this.val();
     var prefill_reports = $this.data('prefill');
-    var body = $this.data('body');
+    var display_names = fixmystreet.reporting_data.display_names || {};
+    var body = display_names[ $this.data('body') ] || $this.data('body');
 
     if (prefill_reports) {
         var title = 'A ' + category + ' problem has been found';

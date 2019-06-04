@@ -34,11 +34,16 @@ OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.
         var results = null;
         var obj = null;
         if (typeof json == "string") {
-            obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
+            try {
+                obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
+            } catch (error) {
+                OpenLayers.Console.error("Bad JSON: " + error);
+                return;
+            }
         } else {
             obj = json;
         }
-        if(!obj) {
+        if(!obj || !obj.query) {
             OpenLayers.Console.error("Bad JSON: " + json);
             return;
         }

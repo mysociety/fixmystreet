@@ -1,0 +1,15 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+
+<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-136557400-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-136557400-1');
+</script>
+
+[% ELSE %]
+<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
+[% END %]

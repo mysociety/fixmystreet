@@ -1,0 +1,21 @@
+@import "_colours";
+
+@import "../sass/layout";
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 10em;
+}
+
+#site-logo {
+    width: 231px;
+    height: 102px;
+    padding: 1em 0;
+    background-size: 231px 102px;
+}
+
+// Stop visited nav links being purple when hovering over them
+.nav-menu--main {
+    a:hover {
+      color: $primary_text;
+    }
+}

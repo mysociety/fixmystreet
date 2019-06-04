@@ -201,6 +201,10 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     my $extra_titles_list = $c->cobrand->title_list($c->stash->{all_areas});
 
     my @list_of_names = map { $_->name } values %{$c->stash->{bodies}};
+    my %display_names = map {
+        my $name = $_->get_cobrand_handler ? $_->get_cobrand_handler->council_name : $_->name;
+        ( $_->name ne $name ) ? ( $_->name => $name ) : ();
+    } values %{$c->stash->{bodies}};
     my $contribute_as = {};
     if ($c->user_exists) {
         my @bodies = keys %{$c->stash->{bodies}};
@@ -227,6 +231,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         category        => $category,
         extra_name_info => $extra_name_info,
         titles_list     => $extra_titles_list,
+        %display_names ? (display_names   => \%display_names) : (),
         %$contribute_as ? (contribute_as => $contribute_as) : (),
         $top_message ? (top_message => $top_message) : (),
         unresponsive => $c->stash->{unresponsive}->{ALL} || '',
