@@ -11,7 +11,10 @@ sub auto :Private {
 
     my $user = $c->user;
     if ($user->is_superuser) {
-        $c->stash(rs => $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] }));
+        $c->stash(rs => $c->model('DB::Role')->search_rs({}, {
+            prefetch => 'body',
+            order_by => ['body.name', 'me.name']
+        }));
     } elsif ($user->from_body) {
         $c->stash(rs => $user->from_body->roles->search_rs({}, { order_by => 'name' }));
     }
@@ -36,7 +39,7 @@ sub index :Path :Args(0) {
 }
 
 sub create :Local :Args(0) {
-    my ($self, $c, $id) = @_;
+    my ($self, $c) = @_;
 
     my $role = $c->stash->{rs}->new_result({});
     return $self->form($c, $role);
@@ -60,7 +63,7 @@ sub form {
 
     if ($c->get_param('delete_role')) {
         $role->delete;
-        $c->response->redirect($c->uri_for($self->action_for('list')));
+        $c->response->redirect($c->uri_for($self->action_for('index')));
         $c->detach;
     }
 
@@ -90,7 +93,7 @@ sub form {
     $form->process(item => $role, params => $c->req->params);
     return unless $form->validated;
 
-    $c->response->redirect($c->uri_for($self->action_for('list')));
+    $c->response->redirect($c->uri_for($self->action_for('index')));
 }
 
 1;
