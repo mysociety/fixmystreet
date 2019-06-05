@@ -137,6 +137,9 @@ sub open311_skip_report_fetch {
   return 1 if $problem->non_public;
 }
 
+# Make sure fetched report description isn't shown.
+sub filter_report_description { "" }
+
 sub lookup_site_code_config { {
     buffer => 50, # metres
     url => "https://tilma.mysociety.org/mapserver/hounslow",
