@@ -1,0 +1,55 @@
+[%
+
+email_summary = "Your reports on " _ site_name;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Your reports on [% site_name %]</h1>
+  <p style="[% p_style %]">
+    Hello [% user.name %],
+  </p>
+  <p style="[% p_style %]">
+    FixMyStreet is being updated in Hounslow to
+    improve how problems get reported.
+  </p>
+  <p style="[% p_style %]">
+    As part of this process we are closing all reports
+    made before the update.
+  </p>
+  <p style="[% p_style %]">
+    We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system,
+    which we've listed below.
+  </p>
+  <p style="[% p_style %]">
+    All of your reports will have been received and reviewed by Hounslow, so if
+    your report is no longer an issue, you don't need to do anything.
+  </p>
+  <p style="[% p_style %]">
+    If you believe that the issue has not been resolved you can <a href="https://fms.hounslowhighways.org/">report it again here.</a>
+  </p>
+
+  [% FOR report IN reports %]
+  <div style="[% list_item_style %]">
+  [% IF report.photo %]
+    <a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
+      <img style="[% list_item_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="">
+    </a>
+  [% END %]
+    <h2 style="[% list_item_h2_style %]"><a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
+      [%~ report.title | html ~%]
+    </a></h2>
+    <p style="[% list_item_p_style %]">[% report.detail | html %]</p>
+    <p style="[% list_item_date_style %]">
+      Reported [% report.time_ago %] ago.
+    </p>
+  </div>
+  [% END %]
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
