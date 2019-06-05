@@ -1,3 +1,10 @@
+package FixMyStreet::Cobrand::HounslowNoName;
+use base 'FixMyStreet::Cobrand::UK';
+
+sub council_area_id { 2483 };
+
+package main;
+
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
@@ -1401,6 +1408,14 @@ subtest "check map click ajax response" => sub {
         $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.482286&longitude=-0.328163' );
     };
     is_deeply $extra_details->{display_names}, { 'Hounslow Borough Council' => 'Hounslow Highways' }, 'council display name mapping correct';
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'hounslownoname',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.482286&longitude=-0.328163' );
+    };
+    isnt defined $extra_details->{display_names}, 'no council display names if none defined';
 };
 
 #### test uploading an image
