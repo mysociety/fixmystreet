@@ -15,6 +15,8 @@
           reports made in that category private.
         - Ensure any reports fetched in a category marked private are also
           marked private on the site.
+        - Add new upload_files flag which sends files/photos as part of the
+          POST service request.
 
 * v2.6 (3rd May 2019)
     - New features:
