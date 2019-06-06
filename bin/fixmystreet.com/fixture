@@ -92,12 +92,48 @@ for my $cat ('Dropped Kerbs', 'Skips') {
 }
 
 if ($opt->test_fixtures) {
-    my $ncc = FixMyStreet::DB::Factory::Body->find_or_create({
-        area_id => 2234,
-        categories => [ 'Fallen Tree' ],
-        name => 'Northamptonshire County Council',
+    my $bodies;
+    foreach (
+        { area_id => 2234, categories => ['Fallen Tree', 'Very Urgent'], name => 'Northamptonshire County Council' },
+        { area_id => 2217, categories => ['Flytipping', 'Roads'], name => 'Buckinghamshire County Council' },
+        { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
+        { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
+    ) {
+        $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
+        my $cats = join(', ', @{$_->{categories}});
+        say "Created body $_->{name} for MapIt area ID $_->{area_id}, categories $cats";
+    }
+
+    my $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2234},
+        category => 'Very Urgent',
     });
-    say "Created body " . $ncc->name . " for MapIt area ID 2234, categories Fallen Tree";
+    $child_cat->set_extra_fields({
+        code => 'emergency',
+        datatype => 'string',
+        description => 'Please call us instead, it is very urgent.',
+        order => 1,
+        variable => 'false',
+    });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2217},
+        category => 'Flytipping',
+    });
+    $child_cat->set_extra_fields({
+        code => 'road-placement',
+        datatype => 'singlevaluelist',
+        description => 'Is the fly-tip located on',
+        order => 100,
+        required => 'true',
+        variable => 'true',
+        values => [
+            { key => 'road', name => 'The road' },
+            { key => 'off-road', name => 'Off the road/on a verge' },
+        ],
+    });
+    $child_cat->update;
 }
 
 FixMyStreet::DB::Factory::ResponseTemplate->create({

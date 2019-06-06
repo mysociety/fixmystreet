@@ -1196,6 +1196,11 @@ fixmystreet.fetch_reporting_data = function() {
 
         fixmystreet.reporting_data = data;
 
+        fixmystreet.bodies = data.bodies || [];
+        if (fixmystreet.body_overrides) {
+            fixmystreet.body_overrides.clear();
+        }
+
         fixmystreet.update_councils_text(data);
         $('#js-top-message').html(data.top_message || '');
 
@@ -1216,11 +1221,6 @@ fixmystreet.fetch_reporting_data = function() {
             var lb = $('#form_first_name').prev();
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
-        }
-
-        fixmystreet.bodies = data.bodies || [];
-        if (fixmystreet.body_overrides) {
-            fixmystreet.body_overrides.clear();
         }
 
         if (data.contribute_as) {

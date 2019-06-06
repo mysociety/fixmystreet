@@ -14,7 +14,7 @@ use Getopt::Long ':config' => qw(pass_through auto_help);
 
 my ($run_server, $run_cypress, $vagrant);
 my $config_file = 'conf/general.yml-example';
-my $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes' ];
+my $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes', 'buckinghamshire' ];
 my $coords = '51.532851,-2.284277';
 my $area_id = 2608;
 my $name = 'Borsetshire';
@@ -91,7 +91,7 @@ sub run {
 
     if (($run_cypress && !$run_server) || $pid) {
         # Parent, run the test runner (then kill the child)
-        my $exit = system("cypress", $cmd, '--config', 'pluginsFile=false,supportFile=false,blacklistHosts=[gaze.mysociety.org,*.openstreetmap.org]', '--project', '.cypress', @ARGV);
+        my $exit = system("cypress", $cmd, '--config', 'pluginsFile=false,supportFile=false', '--project', '.cypress', @ARGV);
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
@@ -129,7 +129,7 @@ browser-tests [running options] [fixture options] [cypress options]
    --help           this help message
 
  Fixture option:
-   --cobrand        Cobrand(s) to use, default is fixmystreet,northamptonshire,bathnes
+   --cobrand        Cobrand(s) to use, default is fixmystreet,northamptonshire,bathnes,buckinghamshire
    --coords         Default co-ordinates for created reports
    --area_id        Area ID to use for created body
    --name           Name to use for created body

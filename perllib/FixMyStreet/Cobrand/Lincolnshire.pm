@@ -111,8 +111,6 @@ sub categories_restriction {
     ] } );
 }
 
-sub map_type { 'Lincolnshire' }
-
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     my $ext_status = $p->get_extra_metadata('external_status_code');
