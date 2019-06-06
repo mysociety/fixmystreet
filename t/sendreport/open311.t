@@ -11,6 +11,7 @@ package main;
 
 use CGI::Simple;
 use Path::Tiny;
+use Test::Warn;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -131,6 +132,27 @@ subtest 'test sending multiple photos', sub {
         'http://www.example.org/photo/' . $photo_report->id .'.1.full.jpeg?22222222',
         'http://www.example.org/photo/' . $photo_report->id .'.2.full.jpeg?33333333'
     ], 'Multiple photos in media_url';
+};
+
+my ($bad_category_report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+    cobrand => 'fixmystreet',
+    category => 'Flytipping',
+    user => $user,
+});
+
+subtest 'test handles bad category', sub {
+    $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
+    my $test_data;
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $test_data = FixMyStreet::Script::Reports::send();
+    };
+    $bad_category_report->discard_changes;
+    ok !$bad_category_report->whensent, 'Report not marked as sent';
+    like $bad_category_report->send_fail_reason, qr/Category Flytipping does not exist for body/, 'failure message set';
 };
 
 done_testing();

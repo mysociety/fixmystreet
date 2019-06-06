@@ -12,10 +12,7 @@ sub build_recipient_list {
     my $all_confirmed = 1;
     foreach my $body ( @{ $self->bodies } ) {
 
-        my $contact = $row->result_source->schema->resultset("Contact")->not_deleted->find( {
-            body_id => $body->id,
-            category => $row->category
-        } );
+        my $contact = $self->fetch_category($body, $row) or next;
 
         my ($body_email, $state, $note) = ( $contact->email, $contact->state, $contact->note );
 

@@ -36,13 +36,9 @@ sub send {
         my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
         $cobrand->call_hook(open311_config => $row, $h, \%open311_params);
 
+        my $contact = $self->fetch_category($body, $row) or next;
+
         # Try and fill in some ones that we've been asked for, but not asked the user for
-
-        my $contact = $row->result_source->schema->resultset("Contact")->not_deleted->find( {
-            body_id => $body->id,
-            category => $row->category
-        } );
-
         my $extra = $row->get_extra_fields();
 
         my $id_field = $contact->id_field;
