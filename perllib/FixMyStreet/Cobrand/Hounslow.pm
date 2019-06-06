@@ -189,4 +189,13 @@ sub lookup_site_code_config { {
     accept_feature => sub { 1 }
 } }
 
+# Hounslow don't want any reports made before their go-live date visible on
+# their cobrand at all.
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs->to_body($self->body)->search({
+      'me.confirmed' => { '>=', '2019-05-06' }
+    });
+}
+
 1;
