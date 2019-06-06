@@ -4,98 +4,94 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use FixMyStreet::App::Form::ResponsePriority;
+
+sub auto :Private {
+    my ($self, $c) = @_;
+
+    my $user = $c->user;
+    if ($user->is_superuser) {
+        $c->stash(rs => $c->model('DB::ResponsePriority')->search_rs(undef, {
+            prefetch => 'body',
+            order_by => ['body.name', 'me.name']
+        }));
+    } elsif ($user->from_body) {
+        $c->stash(rs => $user->from_body->response_priorities->search_rs(undef, {
+            order_by => 'name'
+        }));
+    }
+}
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $user = $c->user;
-
-    if ($user->is_superuser) {
+    if (my $body_id = $c->get_param('body_id')) {
+        $c->res->redirect($c->uri_for($self->action_for('create'), [ $body_id ]));
+        $c->detach;
+    }
+    if ($c->user->is_superuser) {
         $c->forward('/admin/fetch_all_bodies');
-    } elsif ( $user->from_body ) {
-        $c->forward('load_user_body', [ $user->from_body->id ]);
-        $c->res->redirect( $c->uri_for( '', $c->stash->{body}->id ) );
-    } else {
-        $c->detach( '/page_error_404_not_found' );
     }
-}
-
-sub list : Path : Args(1) {
-    my ($self, $c, $body_id) = @_;
-
-    $c->forward('load_user_body', [ $body_id ]);
-
-    my @priorities = $c->stash->{body}->response_priorities->search(
-        undef,
-        {
-            order_by => 'name'
-        }
+    $c->stash(
+        response_priorities => [ $c->stash->{rs}->all ],
     );
-
-    $c->stash->{response_priorities} = \@priorities;
 }
 
-sub edit : Path : Args(2) {
-    my ( $self, $c, $body_id, $priority_id ) = @_;
-
-    $c->forward('load_user_body', [ $body_id ]);
-
-    my $priority;
-    if ($priority_id eq 'new') {
-        $priority = $c->stash->{body}->response_priorities->new({});
-    }
-    else {
-        $priority = $c->stash->{body}->response_priorities->find( $priority_id )
-            or $c->detach( '/page_error_404_not_found' );
-    }
-
-    $c->forward('/admin/fetch_contacts');
-    my @contacts = $priority->contacts->all;
-    my @live_contacts = $c->stash->{live_contacts}->all;
-    my %active_contacts = map { $_->id => 1 } @contacts;
-    my @all_contacts = map { {
-        id => $_->id,
-        category => $_->category,
-        active => $active_contacts{$_->id},
-    } } @live_contacts;
-    $c->stash->{contacts} = \@all_contacts;
-
-    if ($c->req->method eq 'POST') {
-        $priority->deleted( $c->get_param('deleted') ? 1 : 0 );
-        $priority->name( $c->get_param('name') );
-        $priority->description( $c->get_param('description') );
-        $priority->external_id( $c->get_param('external_id') );
-        $priority->is_default( $c->get_param('is_default') ? 1 : 0 );
-        $priority->update_or_insert;
-
-        my @live_contact_ids = map { $_->id } @live_contacts;
-        my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @live_contact_ids;
-        $priority->contact_response_priorities->search({
-            contact_id => { -not_in => \@new_contact_ids },
-        })->delete;
-        foreach my $contact_id (@new_contact_ids) {
-            $priority->contact_response_priorities->find_or_create({
-                contact_id => $contact_id,
-            });
-        }
-
-        $c->res->redirect( $c->uri_for( '', $c->stash->{body}->id ) );
-    }
-
-    $c->stash->{response_priority} = $priority;
-}
-
-sub load_user_body : Private {
+sub body :PathPart('admin/responsepriorities') :Chained :CaptureArgs(1) {
     my ($self, $c, $body_id) = @_;
 
-    my $has_permission = $c->user->has_body_permission_to('responsepriority_edit', $body_id);
-
-    unless ( $has_permission ) {
-        $c->detach( '/page_error_404_not_found' );
+    my $user = $c->user;
+    if ($user->is_superuser) {
+        $c->stash->{body} = $c->model('DB::Body')->find($body_id);
+    } elsif ($user->from_body && $user->from_body->id == $body_id) {
+        $c->stash->{body} = $user->from_body;
     }
 
-    $c->stash->{body} = $c->model('DB::Body')->find($body_id)
-        or $c->detach( '/page_error_404_not_found' );
+    $c->detach( '/page_error_404_not_found' ) unless $c->stash->{body};
+}
+
+sub create :Chained('body') :Args(0) {
+    my ($self, $c) = @_;
+
+    my $priority = $c->stash->{rs}->new_result({ body => $c->stash->{body} });
+    return $self->form($c, $priority);
+}
+
+sub item :PathPart('') :Chained('body') :CaptureArgs(1) {
+    my ($self, $c, $id) = @_;
+
+    my $obj = $c->stash->{rs}->find($id)
+        or $c->detach('/page_error_404_not_found', []);
+    $c->stash(obj => $obj);
+}
+
+sub edit :PathPart('') :Chained('item') :Args(0) {
+    my ($self, $c) = @_;
+    return $self->form($c, $c->stash->{obj});
+}
+
+sub form {
+    my ($self, $c, $priority) = @_;
+
+    # Otherwise, the form includes contacts for *all* bodies
+    $c->forward('/admin/fetch_contacts');
+    my @all_contacts = map {
+        { value => $_->id, label => $_->category }
+    } $c->stash->{live_contacts}->all;
+
+    my $opts = {
+        field_list => [
+            '+contacts' => { options => \@all_contacts },
+        ],
+        body_id => $c->stash->{body}->id,
+    };
+
+    my $form = FixMyStreet::App::Form::ResponsePriority->new(%$opts);
+    $c->stash(template => 'admin/responsepriorities/edit.html', form => $form);
+    $form->process(item => $priority, params => $c->req->params);
+    return unless $form->validated;
+
+    $c->response->redirect($c->uri_for($self->action_for('index')));
 }
 
 __PACKAGE__->meta->make_immutable;
