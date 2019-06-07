@@ -3,6 +3,18 @@ use FixMyStreet::TestMech;
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $hounslow_id = $mech->create_body_ok(2483, 'Hounslow Borough Council')->id;
+$mech->create_contact_ok(
+    body_id => $hounslow_id,
+    category => 'Potholes',
+    email => 'pothole@example.org',
+);
+
+my $tfl = $mech->create_body_ok( 2483, 'TfL');
+$mech->create_contact_ok(
+    body_id => $tfl->id,
+    category => 'Traffic lights',
+    email => 'tfl@example.org',
+);
 
 $mech->create_problems_for_body(1, $hounslow_id, 'An old problem made before Hounslow FMS launched', {
     confirmed => '2018-12-25 09:00',
@@ -38,6 +50,16 @@ subtest "it does not show old reports on Hounslow" => sub {
         $mech->content_lacks('An old problem made before Hounslow FMS launched');
         $mech->content_contains('A brand new problem made on the Hounslow site') or diag $mech->content;
         $mech->content_contains('A brand new problem made on fixmystreet.com');
+    };
+};
+
+subtest "does not show TfL traffic lights category" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'fixmystreet',
+    }, sub {
+        my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.482286&longitude=-0.328163');
+        is $json->{by_category}{"Traffic lights"}, undef;
     };
 };
 

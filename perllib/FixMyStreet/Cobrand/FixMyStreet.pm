@@ -39,6 +39,15 @@ sub restriction {
     return {};
 }
 
+sub munge_category_list {
+    my ($self, $options, $contacts, $extras) = @_;
+
+    # No TfL Traffic Lights category in Hounslow
+    my %bodies = map { $_->body->name => 1 } @$contacts;
+    return unless $bodies{'Hounslow Borough Council'};
+    @$options = grep { ($_->{category} || $_->category) !~ /^Traffic lights$/i } @$options;
+}
+
 sub title_list {
     my $self = shift;
     my $areas = shift;
