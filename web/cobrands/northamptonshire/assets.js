@@ -291,7 +291,24 @@ var layers = [
     "Signal Head Failure",
     "Request Timing Review",
     "Damaged Control box",
-    "Signal Failure/Damaged - Toucan/Pelican",
+    "Signal Failure/Damaged - Toucan/Pelican"
+  ],
+  "item_name": "signal or crossing",
+  "layer_name": "Midblock",
+  "layer": 223,
+  "version": "223.2-"
+},
+{
+  "categories": [
+    "Damaged/Exposed Wiring / Vandalised",
+    "Lamp/Bulb Failure",
+    "Signal Failure",
+    "Signal Failure all out",
+    "Signal Stuck",
+    "Signal Head Failure",
+    "Request Timing Review",
+    "Damaged Control box",
+    "Signal Failure/Damaged - Toucan/Pelican"
   ],
   "item_name": "signal or crossing",
   "layer_name": "TL Junction",
@@ -300,7 +317,7 @@ var layers = [
 },
 {
   "categories": [
-    "Fallen Tree",
+    "Fallen Tree"
   ],
   "layer_name": "Tree",
   "layer": is_live ? 307 : 228,
@@ -431,7 +448,7 @@ fixmystreet.assets.add(northants_road_defaults, {
     asset_item: 'speed hump',
     asset_type: "area",
     asset_category: [
-        "Damaged Speed Humps",
+        "Damaged Speed Humps"
     ]
 });
 
@@ -454,7 +471,7 @@ fixmystreet.assets.add(northants_road_defaults, {
     asset_item: 'pedestrian barrier',
     asset_type: 'area',
     asset_category: [
-        "Pedestrian Barriers - Damaged / Missing",
+        "Pedestrian Barriers - Damaged / Missing"
     ]
 });
 
@@ -501,7 +518,7 @@ fixmystreet.assets.add(northants_road_defaults, {
         "Icy Road",
         "Missed published Gritted Route",
         "Restricted Visibility / Overgrown / Overhanging",
-        "Restricted Visibility",
+        "Restricted Visibility"
     ]
 });
 
