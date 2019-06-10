@@ -202,9 +202,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my @list_of_names = map { $_->name } values %{$c->stash->{bodies}};
     my %display_names = map {
-        my $name = $_->get_cobrand_handler && $_->get_cobrand_handler->can('council_name')
-            ? $_->get_cobrand_handler->council_name
-            : $_->name;
+        my $name = $_->cobrand_name;
         ( $_->name ne $name ) ? ( $_->name => $name ) : ();
     } values %{$c->stash->{bodies}};
     my $contribute_as = {};

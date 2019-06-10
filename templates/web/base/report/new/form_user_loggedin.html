@@ -25,7 +25,7 @@
         <option value="another_user">[% loc('Another user') %]</option>
       [% END %]
       [% IF js || can_contribute_as_body %]
-      <option value="body" [% c.user.from_body AND ( c.user.has_body_permission_to('planned_reports') || c.user.has_body_permission_to('default_to_body') ) ? 'selected' : ''  %]>[% c.user.from_body.get_cobrand_handler ? c.user.from_body.get_cobrand_handler.council_name : c.user.from_body.name %]</option>
+      <option value="body" [% c.user.from_body AND ( c.user.has_body_permission_to('planned_reports') || c.user.has_body_permission_to('default_to_body') ) ? 'selected' : ''  %]>[% c.user.from_body.cobrand_name %]</option>
       [% END %]
     </select>
 [% END %]

@@ -215,6 +215,22 @@ sub get_cobrand_handler {
     return FixMyStreet::Cobrand->body_handler($self->areas);
 }
 
+=item
+
+If get_cobrand_handler returns a cobrand, and that cobrand
+has a council_name, use it in preference to the body name.
+
+=cut
+
+sub cobrand_name {
+    my $self = shift;
+    my $handler = $self->get_cobrand_handler;
+    if ($handler && $handler->can('council_name')) {
+        return $handler->council_name;
+    }
+    return $self->name;
+}
+
 sub calculate_average {
     my ($self, $threshold) = @_;
     $threshold ||= 0;

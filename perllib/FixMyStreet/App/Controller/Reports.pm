@@ -287,12 +287,12 @@ sub rss_ward : Path('/rss/reports') : Args(2) {
     if ($c->stash->{ward}) {
         # Problems sent to a council, restricted to a ward
         $c->stash->{type} = 'ward_problems';
-        $c->stash->{title_params} = { COUNCIL => $c->stash->{body}->name, WARD => $c->stash->{ward}{name} };
+        $c->stash->{title_params} = { COUNCIL => $c->stash->{body}->cobrand_name, WARD => $c->stash->{ward}{name} };
         $c->stash->{db_params} = [ $c->stash->{body}->id, $c->stash->{ward}->{id} ];
     } else {
         # Problems sent to a council
         $c->stash->{type} = 'council_problems';
-        $c->stash->{title_params} = { COUNCIL => $c->stash->{body}->name };
+        $c->stash->{title_params} = { COUNCIL => $c->stash->{body}->cobrand_name };
         $c->stash->{db_params} = [ $c->stash->{body}->id ];
     }
 

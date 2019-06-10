@@ -1,8 +1,9 @@
 <div class="shadow-wrap">
     <ul id="key-tools">
         <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[%
-            IF c.cobrand.moniker == 'bromley' AND thing == 'council';
-                'Get updates of reports in Bromley';
+            SET monikers = ['bromley','hounslow'];
+            IF monikers.grep(c.cobrand.moniker).size AND thing == 'council';
+                'Get updates of reports in ' _ c.cobrand.moniker.ucfirst;
             ELSIF c.cobrand.moniker == 'bromley';
                 'Get updates of reports in this ward';
             ELSIF c.cobrand.is_council;
