@@ -1,0 +1,12 @@
+[% SET can_display_external_id = problem.external_id AND c.user_exists AND c.user.belongs_to_body(problem.bodies_str) %]
+[% SET duration_clause = problem.duration_string(c) %]
+[% IF duration_clause || can_display_external_id %]
+    <p class="council_sent_info">
+    [% duration_clause %]
+    [%- IF can_display_external_id %]
+        [%- external_ref_clause = tprintf('Reference:&nbsp;%s', problem.external_id) %]
+        [%- IF duration_clause %]. [% END %]
+        <strong>[% external_ref_clause %].</strong>
+    [%- END %]
+    </p>
+[% END %]
