@@ -8,6 +8,7 @@ use XML::Simple;
 use LWP::Simple;
 use LWP::UserAgent;
 use DateTime::Format::W3CDTF;
+use Encode;
 use HTTP::Request::Common qw(GET POST);
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
@@ -495,11 +496,19 @@ sub _request {
     my $debug_request = $method . ' ' . $uri->as_string . "\n\n";
 
     my $req = do {
+        $params = {
+            map {
+                my $value = $params->{$_};
+                $_ => ref $value eq 'ARRAY'
+                        ? [ map { encode('UTF-8', $_) } @$value ]
+                        : encode('UTF-8', $value)
+            } keys %$params
+        };
         if ($method eq 'GET') {
             $uri->query_form( $params );
             GET $uri->as_string;
         } elsif ($method eq 'POST') {
-            if ($uploads) {
+            if ($uploads && %$uploads) {
                 # HTTP::Request::Common needs to be constructed slightly
                 # differently if there are files to upload.
 

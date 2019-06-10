@@ -1,6 +1,10 @@
+use utf8;
+use Encode;
 use FixMyStreet::TestMech;
 use Path::Tiny;
 use File::Temp 'tempdir';
+use FixMyStreet::Script::Reports;
+use Test::MockModule;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -8,7 +12,12 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok( 2483, 'Hounslow Borough Council' );
+my $body = $mech->create_body_ok( 2483, 'Hounslow Borough Council', {
+    send_method => 'Open311',
+    endpoint => 'endpoint',
+    api_key => 'key',
+    jurisdiction => 'hounslow',
+});
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'General Enquiry',
@@ -163,17 +172,22 @@ ok $sample_jpeg->exists, "sample image $sample_jpeg exists";
 my $sample_pdf = path(__FILE__)->parent->child("sample.pdf");
 ok $sample_pdf->exists, "sample PDF $sample_pdf exists";
 
-subtest "Check photo & file upload works" => sub {
-    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'hounslow' ],
-        MAPIT_URL => 'http://mapit.uk/',
-        PHOTO_STORAGE_BACKEND => 'FileSystem',
-        PHOTO_STORAGE_OPTIONS => {
-            UPLOAD_DIR => $UPLOAD_DIR,
-        },
-    }, sub {
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'hounslow' ],
+    STAGING_FLAGS => { send_reports => 1 },
+    MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
+}, sub {
+
+    my $pdf_hash = '90f7a64043fb458d58de1a0703a6355e2856b15e.pdf';
+    my $image_hash = '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+
+    subtest "Check photo & file upload works" => sub {
         my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
         $problems->delete_all;
 
@@ -190,7 +204,7 @@ subtest "Check photo & file upload works" => sub {
             name => 'Test User',
             username => 'testuser@example.org',
             category => 'Other',
-            detail => 'This is a general enquiry',
+            detail => encode_utf8('This is a general enquiry‽'),
             photo1         => [ $sample_jpeg, undef, Content_Type => 'image/jpeg' ],
             photo2         => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             }
@@ -199,7 +213,7 @@ subtest "Check photo & file upload works" => sub {
 
         is $problems->count, 1, 'problem created';
         my $problem = $problems->first;
-        is $problem->detail, 'This is a general enquiry', 'problem has correct detail';
+        is $problem->detail, 'This is a general enquiry‽', 'problem has correct detail';
         is $problem->non_public, 1, 'problem created non_public';
         is $problem->postcode, '';
         is $problem->used_map, 0;
@@ -207,20 +221,47 @@ subtest "Check photo & file upload works" => sub {
         is $problem->longitude, -0.35, 'Problem has correct longitude';
         ok $problem->confirmed, 'problem confirmed';
 
-        my $image_file = path($UPLOAD_DIR, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg');
+        my $image_file = path($UPLOAD_DIR, $image_hash);
         ok $image_file->exists, 'Photo uploaded to temp';
 
         my $photoset = $problem->get_photoset();
         is $photoset->num_images, 1, 'Found just 1 image';
-        is $photoset->data, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+        is $photoset->data, $image_hash;
 
-        my $pdf_file = path($UPLOAD_DIR, 'enquiry_files', '90f7a64043fb458d58de1a0703a6355e2856b15e.pdf');
+        my $pdf_file = path($UPLOAD_DIR, 'enquiry_files', $pdf_hash);
         ok $pdf_file->exists, 'PDF uploaded to temp';
 
         is_deeply $problem->get_extra_metadata('enquiry_files'), {
-            '90f7a64043fb458d58de1a0703a6355e2856b15e.pdf' => 'sample.pdf'
+            $pdf_hash => 'sample.pdf'
         }, 'enquiry file info stored OK';
-
     };
+
+    subtest 'Check Open311 sending of the above report' => sub {
+        my $module = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        $module->mock(get => sub ($) { '' });
+        my $test_data = FixMyStreet::Script::Reports::send();
+        my $req = $test_data->{test_req_used};
+        my $found = 0;
+        foreach ($req->parts) {
+            my $cd = $_->header('Content-Disposition');
+            if ($cd =~ /attribute\[description\]/) {
+                is decode_utf8($_->content), 'This is a general enquiry‽', 'Correct description';
+                $found++;
+            }
+            if ($cd =~ /sample.pdf/) {
+                is $cd, 'form-data; name="file_' . $pdf_hash . '"; filename="sample.pdf"', 'Correct PDF header';
+                is $_->header('Content-Type'), 'application/pdf', 'Correct PDF content type';
+                $found++;
+            }
+            if ($cd =~ /jpeg/) {
+                is $cd, 'form-data; name="photo1"; filename="' . $image_hash . '"', 'Correct image header';
+                is $_->header('Content-Type'), 'image/jpeg', 'Correct image content type';
+                $found++;
+            }
+        }
+        is $found, 3, 'Found all tested headers';
+    };
+
 };
+
 done_testing();
