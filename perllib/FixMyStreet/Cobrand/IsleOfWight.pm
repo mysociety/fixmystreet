@@ -19,6 +19,11 @@ sub base_url {
     return 'https://islandroads.fixmystreet.com';
 }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter an ' . $self->council_area . ' postcode, or street name and area';
+}
+
 sub on_map_default_status { 'open' }
 
 sub contact_email {
