@@ -24,6 +24,7 @@ my $user = FixMyStreet::DB->resultset('User')->find_or_create(
 my %bodies = (
     2237 => FixMyStreet::DB->resultset("Body")->create({ name => 'Oxfordshire' }),
     2494 => FixMyStreet::DB->resultset("Body")->create({ name => 'Bexley' }),
+    2636 => FixMyStreet::DB->resultset("Body")->create({ name => 'Isle of Wight' }),
     2482 => FixMyStreet::DB->resultset("Body")->create({
         name => 'Bromley',
         send_method => 'Open311',
@@ -36,6 +37,7 @@ my %bodies = (
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
 $bodies{2494}->body_areas->create({ area_id => 2494 });
+$bodies{2636}->body_areas->create({ area_id => 2636 });
 
 my $response_template = $bodies{2482}->response_templates->create({
     title => "investigating template",
@@ -529,29 +531,34 @@ for my $test (
     };
 }
 
-subtest 'Marking report as fixed closes it for updates (Bexley)' => sub {
-    my $local_requests_xml = setup_xml($problemB->external_id, $problemB->id, 'CLOSED');
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+for (
+    { id => 2494, cobrand => 'bexley' },
+    { id => 2636, cobrand => 'isleofwight' }
+) {
+    subtest "Marking report as fixed closes it for updates ($_->{cobrand})" => sub {
+        my $local_requests_xml = setup_xml($problemB->external_id, $problemB->id, 'CLOSED');
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
-    $problemB->update( { bodies_str => $bodies{2494}->id } );
+        $problemB->update( { bodies_str => $bodies{$_->{id}}->id } );
 
-    my $update = Open311::GetServiceRequestUpdates->new(
-        system_user => $user,
-        current_open311 => $o,
-        current_body => $bodies{2494},
-        current_cobrand => $bodies{2494}->get_cobrand_handler,
-    );
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bexley',
-    }, sub {
-        $update->process_body;
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $bodies{$_->{id}},
+            current_cobrand => $bodies{$_->{id}}->get_cobrand_handler,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => $_->{cobrand},
+        }, sub {
+            $update->process_body;
+        };
+
+        $problemB->discard_changes;
+        is $problemB->comments->count, 1, 'comment count';
+        is $problemB->get_extra_metadata('closed_updates'), 1;
+        $problemB->comments->delete;
     };
-
-    $problemB->discard_changes;
-    is $problemB->comments->count, 1, 'comment count';
-    is $problemB->get_extra_metadata('closed_updates'), 1;
-    $problemB->comments->delete;
-};
+}
 
 subtest 'Update with media_url includes image in update' => sub {
   my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
