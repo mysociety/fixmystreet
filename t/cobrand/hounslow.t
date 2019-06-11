@@ -9,6 +9,8 @@ $mech->create_contact_ok(
     email => 'pothole@example.org',
 );
 
+$mech->create_user_ok('staff@example.org', from_body => $hounslow_id);
+
 my $tfl = $mech->create_body_ok( 2483, 'TfL');
 $mech->create_contact_ok(
     body_id => $tfl->id,
@@ -23,7 +25,8 @@ $mech->create_problems_for_body(1, $hounslow_id, 'An old problem made before Hou
 $mech->create_problems_for_body(1, $hounslow_id, 'A brand new problem made on the Hounslow site', {
     cobrand => 'hounslow'
 });
-$mech->create_problems_for_body(1, $hounslow_id, 'A brand new problem made on fixmystreet.com', {
+my ($report) = $mech->create_problems_for_body(1, $hounslow_id, 'A brand new problem made on fixmystreet.com', {
+    external_id => 'ABC123',
     cobrand => 'fixmystreet'
 });
 
@@ -60,6 +63,18 @@ subtest "does not show TfL traffic lights category" => sub {
     }, sub {
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.482286&longitude=-0.328163');
         is $json->{by_category}{"Traffic lights"}, undef;
+    };
+};
+
+subtest "Shows external ID on report page to staff users only" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'hounslow',
+    }, sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('ABC123');
+        $mech->log_in_ok('staff@example.org');
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('ABC123');
     };
 };
 
