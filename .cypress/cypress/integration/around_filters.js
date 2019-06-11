@@ -127,3 +127,84 @@ describe('Around page filtering and push state', function() {
         cy.should('not.contain', 'Back to all reports');
     });
 });
+
+describe('Accessing around page filters on small screens', function() {
+    describe('When I search for a postcode on a small screen', function() {
+        before(function() {
+            cy.viewport(375, 667);
+            cy.visit('/');
+            cy.get('[name=pc]').type(Cypress.env('postcode'));
+            cy.get('[name=pc]').parents('form').submit();
+        });
+
+        // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
+        // Manually reset the viewport before each it() and then wait
+        // a little while for the viewport resize to take effect.
+        beforeEach(function(done) {
+            cy.viewport(375, 667);
+            setTimeout(done, 500);
+        });
+
+        it('The filters are not visible', function() {
+            // It's really hard to test whether an element is obscured behind
+            // another element.
+            // So for now we just test whether the filters are position:static
+            // (and therefore hidden behind the position:absolute #map_box).
+            cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
+        });
+
+        it('A "Filter" button is shown below the map', function() {
+            cy.get('#map_filter').should('exist');
+        });
+
+        describe('When I click the "Filter" button', function() {
+            before(function() {
+                cy.viewport(375, 667);
+                cy.get('#map_filter').click();
+            });
+
+            // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
+            // Manually reset the viewport before each it() and then wait
+            // a little while for the viewport resize to take effect.
+            beforeEach(function(done) {
+                cy.viewport(375, 667);
+                setTimeout(done, 500);
+            });
+
+            it('The filters are shown', function() {
+                cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'fixed');
+            });
+
+            describe('When I click the "Filter" button again', function() {
+                before(function() {
+                    cy.viewport(375, 667);
+                    cy.get('#map_filter').click();
+                });
+
+                // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
+                // Manually reset the viewport before each it() and then wait
+                // a little while for the viewport resize to take effect.
+                beforeEach(function(done) {
+                    cy.viewport(375, 667);
+                    setTimeout(done, 500);
+                });
+
+                it('The filters are hidden again', function() {
+                    cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
+                });
+            });
+        });
+    });
+
+    describe('When I search for a postcode on a wide screen', function() {
+        before(function() {
+            cy.visit('/');
+            cy.get('[name=pc]').type(Cypress.env('postcode'));
+            cy.get('[name=pc]').parents('form').submit();
+        });
+
+        it('The "Filter" button is not shown', function() {
+            cy.get('#map_filter').should('not.exist');
+        });
+    });
+});
