@@ -50,4 +50,13 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub open311_get_update_munging {
+    my ($self, $comment) = @_;
+
+    # If we've received an update via Open311 that's closed
+    # or fixed the report, also close it to updates.
+    $comment->problem->set_extra_metadata(closed_updates => 1)
+        if !$comment->problem->is_open;
+}
+
 1;
