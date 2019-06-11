@@ -140,6 +140,13 @@ sub find_closest {
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
 
+    # Deal with Bexley name not starting with short name
+    if ($code =~ /bexley/i) {
+        my $body = $c->model('DB::Body')->search( { name => { -like => "%$code%" } } )->single;
+        $c->stash->{body} = $body;
+        return $body;
+    }
+
     # Manual misspelling redirect
     if ($code =~ /^rhondda cynon taff$/i) {
         my $url = $c->uri_for( '/reports/Rhondda+Cynon+Taf' );
