@@ -231,6 +231,8 @@ sub meta_line {
                 $body = "$body <img src='/cobrands/greenwich/favicon.png' alt=''>";
             } elsif ($body eq 'Hounslow Borough Council') {
                 $body = 'Hounslow Highways';
+            } elsif ($body eq 'Isle of Wight Council') {
+                $body = 'Island Roads';
             }
         }
         my $cobrand_always_view_body_user = $c->cobrand->call_hook("always_view_body_contribute_details");

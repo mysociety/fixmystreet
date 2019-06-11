@@ -11,7 +11,7 @@ my ($cobrand, $coords, $area_id, $name, $mapit_url);
 
 BEGIN {
     $config_file = 'conf/general.yml-example';
-    $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes', 'buckinghamshire' ];
+    $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes', 'buckinghamshire', 'isleofwight' ];
     $coords = '51.532851,-2.284277';
     $area_id = 2608;
     $name = 'Borsetshire';
@@ -148,7 +148,7 @@ browser-tests [running options] [fixture options] [cypress options]
    --help           this help message
 
  Fixture option:
-   --cobrand        Cobrand(s) to use, default is fixmystreet,northamptonshire,bathnes,buckinghamshire
+   --cobrand        Cobrand(s) to use, default is fixmystreet,northamptonshire,bathnes,buckinghamshire,isleofwight
    --coords         Default co-ordinates for created reports
    --area_id        Area ID to use for created body
    --name           Name to use for created body

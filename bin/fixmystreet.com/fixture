@@ -98,6 +98,7 @@ if ($opt->test_fixtures) {
         { area_id => 2217, categories => ['Flytipping', 'Roads'], name => 'Buckinghamshire County Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
+        { area_id => 2636, categories => [ 'Potholes' ], name => 'Isle of Wight Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
