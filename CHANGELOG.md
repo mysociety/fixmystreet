@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Improved 403 message, especially for private reports.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users.
     - Bugfixes:

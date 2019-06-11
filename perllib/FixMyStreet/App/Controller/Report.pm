@@ -1,5 +1,6 @@
 package FixMyStreet::App::Controller::Report;
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 use JSON::MaybeXS;
@@ -156,9 +157,10 @@ sub load_problem_or_display_error : Private {
         my $permissions = $c->stash->{_permissions} = $c->forward( 'check_has_permission_to',
             [ qw/report_inspect report_edit_category report_edit_priority report_mark_private / ] );
         if ( !$c->user || ($c->user->id != $problem->user->id && !($permissions->{report_inspect} || $permissions->{report_mark_private})) ) {
+            my $url = '/auth?r=report/' . $problem->id;
             $c->detach(
                 '/page_error_403_access_denied',
-                [ sprintf(_('That report cannot be viewed on %s.'), $c->stash->{site_name}) ]
+                [ sprintf(_('Sorry, you don’t have permission to do that. If you are the problem reporter, or a member of staff, please <a href="%s">sign in</a> to view this report.'), $url) ]
             );
         }
     }
