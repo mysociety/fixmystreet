@@ -1,6 +1,8 @@
 [% SET body_name = body.name %]
 [% IF c.cobrand.moniker == 'hounslow' %]
   [% SET body_name = 'Hounslow Highways' %]
+[% ELSE IF c.cobrand.moniker == 'isleofwight' %]
+  [% SET body_name = 'Island Roads' %]
 [% END %]
 
 [% IF ward %]

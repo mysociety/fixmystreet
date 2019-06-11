@@ -6,9 +6,11 @@ use warnings;
 
 sub council_area_id { 2636 }
 sub council_area { 'Isle of Wight' }
-sub council_name { 'Isle of Wight Council' }
+sub council_name { 'Island Roads' }
 sub council_url { 'isleofwight' }
 sub example_places { ( 'PO30 5XJ', "Daish Way" ) }
+sub all_reports_single_body { { name => "Isle of Wight Council" } }
+sub link_to_council_cobrand { "Island Roads" }
 
 sub base_url {
     my $self = shift;
