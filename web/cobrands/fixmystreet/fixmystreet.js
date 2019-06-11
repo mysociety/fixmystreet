@@ -824,7 +824,7 @@ $.extend(fixmystreet.set_up, {
       fixmystreet.map.updateSize();
     });
 
-    $('#sub_map_links').on('click', '#map_filter', function(e) {
+    $('#map_filter').off('click').on('click', function(e) {
         e.preventDefault();
         var $form = $('#mapForm');
         var $sub_map_links = $('#sub_map_links');
