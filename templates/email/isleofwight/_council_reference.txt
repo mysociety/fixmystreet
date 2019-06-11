@@ -1,0 +1,2 @@
+[% IF problem.external_id %]The report's reference number is [% problem.external_id %]. Please quote this if
+you need to contact Island Roads about this report.[% END %]
