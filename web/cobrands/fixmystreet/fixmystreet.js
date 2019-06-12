@@ -116,7 +116,9 @@ function isR2L() {
       // data-* attributes into settings for the multiSelect constructor.
       return this.each(function() {
         var $select = $(this);
-        var settings = {};
+        var settings = {
+            modalHTML: '<div class="multi-select-modal">'
+        };
 
         if ( $select.data('none') ) {
             settings.noneText = $select.data('none');

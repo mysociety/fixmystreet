@@ -35,6 +35,10 @@
     }
 }
 
+.multi-select-modal {
+    display: none;
+}
+
 // Centred, modal display for sub-768px screens only.
 @media (max-width: 47.94em) {
     .multi-select-menu {
@@ -58,6 +62,20 @@
         input {
             margin-top: 0.15em;
             margin-#{$left}: -2em;
+        }
+    }
+
+    .multi-select-modal {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        background: rgba(0, 0, 0, 0.4);
+
+        .multi-select-container--open & {
+            display: block;
         }
     }
 }
