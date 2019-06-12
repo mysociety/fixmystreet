@@ -1,11 +1,55 @@
 [% INCLUDE 'admin/header.html' title=loc('Response Priorities') -%]
 
-<ul>
-    [% FOR body IN bodies %]
-        <li>
-            <a href="[% c.uri_for('',  body.id) %]">[% body.name %]</a>
-        </li>
-    [% END %]
-</ul>
+<table>
+    <thead>
+    <tr>
+        <th>  [% loc('Name') %] </th>
+        <th>  [% loc('Description') %] </th>
+        <th>  [% loc('Categories') %] </th>
+        <th>  [% loc('Default') %] </th>
+        <th>  &nbsp; </th>
+    </tr>
+    </thead>
+    <tbody>
+      [% FOR p IN response_priorities %]
+      [% IF c.user.is_superuser AND last_name != p.body.name %]
+        <tr>
+            <td colspan="5"><strong>[% p.body.name %]</strong></td>
+        </tr>
+        [% SET last_name = p.body.name %]
+      [% END %]
+        <tr [% 'class="is-deleted"' IF p.deleted %]>
+            <td>  [% p.name | html %] </td>
+            <td>  [% p.description | html %] </td>
+            <td>
+              [% UNLESS p.contacts.size %]
+                <em>[% loc('All categories') %]</em>
+              [% ELSE %]
+                [% FOR contact IN p.contacts %]
+                  [% contact.category_display %][% ',' UNLESS loop.last %]
+                [% END %]
+              [% END %]
+            </td>
+            <td> [% IF p.is_default %]X[% END %]</td>
+            <td> <a href="[% c.uri_for(c.controller.action_for('edit'), [p.body_id, p.id]) %]" class="btn">[% loc('Edit') %]</a> </td>
+        </tr>
+      [% END %]
+    </tbody>
+</table>
+
+[% IF c.user.is_superuser %]
+<h3>[% loc('Create priority') %]</h3>
+<form>
+<select name="body_id">
+  [% FOR body IN bodies %]
+    <option value="[% body.id %]">[% body.name | html %]</option>
+  [% END %]
+</select>
+<input type="submit" value="[% loc('Go') %]">
+</form>
+
+[% ELSE %]
+<a href="[% c.uri_for(c.controller.action_for('create'), [c.user.from_body.id]) %]" class="btn">[% loc('New priority') %]</a>
+[% END %]
 
 [% INCLUDE 'admin/footer.html' %]

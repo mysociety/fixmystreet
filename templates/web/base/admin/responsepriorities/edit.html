@@ -1,57 +1,46 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Response Priority for %s'), body.name) -%]
-[% rp = response_priority %]
 
-[% UNLESS rp.id %]<h3>[% loc('New priority') %]</h3>[% END %]
+[% UNLESS obj %]<h3>[% loc('New priority') %]</h3>[% END %]
 
-<form method="post"
-    action="[% c.uri_for('', body.id, rp.id || 'new' ) %]"
-    enctype="application/x-www-form-urlencoded"
-    accept-charset="utf-8"
-    class="validate">
+<form method="post" accept-charset="utf-8" class="validate">
 
-    <p>
-        <strong>[% loc('Name:') %] </strong>
-        <input type="text" name="name" class="required form-control" size="30" value="[% rp.name | html %]">
-    </p>
-    <p>
-        <strong>[% loc('Description:') %] </strong>
-        <input type="text" name="description" class="form-control" size="30" value="[% rp.description | html %]">
-    </p>
+    [% form.field('name').render %]
+    [% form.field('description').render %]
 
     <div class="admin-hint">
       <p>
         [% loc('If this priority is passed to an external service (e.g. Exor/Confirm) enter the priority code to use with that service here.') %]
       </p>
     </div>
-    <p>
-        <strong>[% loc('External ID') %]:</strong>
-        <input type="text" name="external_id" class="form-control" size="30" value="[% rp.external_id | html %]">
-    </p>
+    [% form.field('external_id').render %]
 
     <div class="admin-hint">
       <p>
         [% loc('Select if this is the default priority') %]
       </p>
     </div>
-    <p>
-        <label>
-        <input type="checkbox" name="is_default" is="is_deleted" value="1"[% ' checked' IF rp.is_default %]>
-        [% loc('Default priority') %]
-        </label>
-    </p>
+    [% form.field('is_default').render %]
 
-    [% INCLUDE 'admin/category-checkboxes.html' hint=loc('If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories.') %]
+    <fieldset>
+        <legend>
+            <div class="admin-hint">
+              <p>
+                [% loc('If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories.') %]
+              </p>
+            </div>
+            [% loc('Categories:') %]
+        </legend>
+        [%# TODO Select all/none %]
+        [% form.field('contacts').render %]
+    </fieldset>
 
-    <p>
-        <label>
-          <input type="checkbox" name="deleted" id="deleted" value="1"[% ' checked' IF rp.deleted %]>
-          [% loc('Flag as deleted') %]
-        </label>
-    </p>
+    [% form.field('deleted').render %]
+
     <p>
       <input type="hidden" name="token" value="[% csrf_token %]" >
-      <input type="submit" class="btn" name="Edit priorities" value="[% rp.id ? loc('Save changes') : loc('Create priority') %]" >
+      <input type="submit" class="btn" name="Edit priorities" value="[% obj ? loc('Save changes') : loc('Create priority') %]" >
     </p>
+
 </form>
 
 [% INCLUDE 'admin/footer.html' %]

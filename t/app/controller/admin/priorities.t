@@ -16,14 +16,14 @@ $mech->log_in_ok( $superuser->email );
 
 subtest "response priorities can be added" => sub {
     is $oxfordshire->response_priorities->count, 0, "No response priorities yet";
-    $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id . "/new" );
+    $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id . "/create" );
 
     my $fields = {
         name => "Cat 1A",
         description => "Fixed within 24 hours",
         deleted => undef,
         is_default => undef,
-        "contacts[".$oxfordshirecontact->id."]" => 1,
+        contacts => $oxfordshirecontact->id,
     };
     $mech->submit_form_ok( { with_fields => $fields } );
 
@@ -41,7 +41,7 @@ subtest "response priorities can set to default" => sub {
         description => "Fixed within 24 hours",
         deleted => undef,
         is_default => 1,
-        "contacts[".$oxfordshirecontact->id."]" => 1,
+        contacts => $oxfordshirecontact->id,
     };
     $mech->submit_form_ok( { with_fields => $fields } );
 
@@ -51,26 +51,10 @@ subtest "response priorities can set to default" => sub {
 };
 
 subtest "response priorities can be listed" => sub {
-    $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
+    $mech->get_ok( "/admin/responsepriorities" );
 
     $mech->content_contains( $oxfordshire->response_priorities->first->name );
     $mech->content_contains( $oxfordshire->response_priorities->first->description );
-};
-
-subtest "response priorities are limited by body" => sub {
-    my $bromleypriority = $bromley->response_priorities->create( {
-        deleted => 0,
-        name => "Bromley Cat 0",
-    } );
-
-     is $bromley->response_priorities->count, 1, "Response priority was added to Bromley";
-     is $oxfordshire->response_priorities->count, 1, "Response priority wasn't added to Oxfordshire";
-
-     $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
-     $mech->content_lacks( $bromleypriority->name );
-
-     $mech->get_ok( "/admin/responsepriorities/" . $bromley->id );
-     $mech->content_contains( $bromleypriority->name );
 };
 
 $mech->log_out_ok;
@@ -79,21 +63,24 @@ subtest "response priorities can't be viewed across councils" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
+        my $bromley_priority = $bromley->response_priorities->create( {
+            deleted => 0,
+            name => "Bromley Cat 0",
+        } );
+
+        is $bromley->response_priorities->count, 1, "Response priority was added to Bromley";
+        is $oxfordshire->response_priorities->count, 1, "Response priority wasn't added to Oxfordshire";
+
         $oxfordshireuser->user_body_permissions->create({
             body => $oxfordshire,
             permission_type => 'responsepriority_edit',
         });
         $mech->log_in_ok( $oxfordshireuser->email );
-        $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
+        $mech->get_ok( "/admin/responsepriorities" );
         $mech->content_contains( $oxfordshire->response_priorities->first->name );
+        $mech->content_lacks( $bromley_priority->name );
 
-
-        $mech->get( "/admin/responsepriorities/" . $bromley->id );
-        ok !$mech->res->is_success(), "want a bad response";
-        is $mech->res->code, 404, "got 404";
-
-        my $bromley_priority_id = $bromley->response_priorities->first->id;
-        $mech->get( "/admin/responsepriorities/" . $bromley->id . "/" . $bromley_priority_id );
+        $mech->get( "/admin/responsepriorities/" . $bromley->id . "/" . $bromley_priority->id );
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
     };

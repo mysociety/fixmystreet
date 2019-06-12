@@ -15,6 +15,7 @@ has_field 'body' => ( type => 'Select', empty_select => 'Select a body', require
 has_field 'permissions' => (
     type => 'Multiple',
     widget => 'CheckboxGroup',
+    ul_class => 'permissions-checkboxes',
     tags => { inline => 1, wrapper_tag => 'fieldset', },
 );
 

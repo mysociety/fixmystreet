@@ -14,7 +14,7 @@
     [% SET last_name = role.body.name %]
   [% END %]
     <tr>
-        <td>[% role.name %]</td>
+        <td>[% role.name | html %]</td>
         <td><ul class="no-margin no-bullets">
           [% FOR perm IN role.permissions.sort %]
             <li>[% labels.$perm %]
@@ -29,7 +29,7 @@
 </table>
 
 <p>
-  <a href="[% c.uri_for(c.controller.action_for('create')) %]">Create</a>
+  <a href="[% c.uri_for(c.controller.action_for('create')) %]">[% loc('Create') %]</a>
 </p>
 
 [% INCLUDE 'admin/footer.html' %]

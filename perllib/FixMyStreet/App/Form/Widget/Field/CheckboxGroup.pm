@@ -4,11 +4,13 @@ use Moose::Role;
 with 'HTML::FormHandler::Widget::Field::CheckboxGroup';
 use namespace::autoclean;
 
+has ul_class => ( is => 'ro' );
+
 sub render_element {
     my ( $self, $result ) = @_;
     $result ||= $self->result;
 
-    my $output = '<ul class="permissions-checkboxes">';
+    my $output = '<ul class="' . ($self->ul_class || '') . '">';
     foreach my $option ( @{ $self->{options} } ) {
         if ( my $label = $option->{group} ) {
             $label = $self->_localize( $label ) if $self->localize_labels;
@@ -23,7 +25,7 @@ sub render_element {
             $output .= qq{</ul>\n</li>};
         }
         else {
-            $output .= $self->render_option( $option, $result );
+            $output .= '<li>' . $self->render_option( $option, $result ) . '</li>';
         }
     }
     $output .= '</ul>';
