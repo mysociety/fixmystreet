@@ -4,26 +4,10 @@
 
         <div class="nav-wrapper">
             <div class="container">
-                <div id="main-nav" role="navigation">
-                    [% INCLUDE "main_nav.html" body_name=c.cobrand.council_area omit_wrapper=1 hide_privacy_link=1 %]
-                </div>
+                [% INCLUDE "main_nav.html" hide_privacy_link=1 %]
             </div>
         </div>
     </div> <!-- .wrapper -->
-
-    <footer class="occlss-page-footer" id="occlss-footer">
-      <div class="occlss-wrapper occlss-page-footer__wraper">
-        <div class="occlss-layout occlss-layout--gutter-s">
-          <div class="occlss-layout__col s-cms-content-footer">
-            <h4>Oxfordshire County Council</h4>
-            <p>County Hall, New Road, Oxford, OX1 1ND</p>
-            <p><a href="/privacy">Privacy and cookies</a></p>
-          </div>
-        </div>
-      </div>
-    </footer>
-
-</div> <!-- oxford-wrapper -->
 
     [% INCLUDE 'common_footer_tags.html' %]
 

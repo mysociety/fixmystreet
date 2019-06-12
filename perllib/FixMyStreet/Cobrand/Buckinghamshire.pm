@@ -1,5 +1,5 @@
 package FixMyStreet::Cobrand::Buckinghamshire;
-use parent 'FixMyStreet::Cobrand::UKCouncils';
+use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
