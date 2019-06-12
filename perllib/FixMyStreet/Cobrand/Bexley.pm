@@ -85,17 +85,34 @@ sub open311_post_send {
     # Check Open311 was successful
     return unless $row->external_id;
 
-    return unless $row->category eq 'Abandoned and untaxed vehicles'
-        || $row->category eq 'Dead animal';
-
-    my $mb = FixMyStreet->config('STAGING_SITE') ? 'digital-team' : 'P1sfromContactCentre';
-    my $e = join('@', $mb, $self->admin_user_domain);
-    my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, 'Bexley P1 email' ] ] );
-
     if ($row->category eq 'Abandoned and untaxed vehicles') {
-        my ($burnt) = grep { $_->{name} eq 'burnt' } @{$row->get_extra_fields};
-        return unless $burnt && $burnt->{value} eq 'Yes';
+        my $burnt = $row->get_extra_field_value('burnt') || '';
+        return unless $burnt eq 'Yes';
     }
+
+    my @lighting = (
+        'Lamp post',
+        'Light in multi-storey car park',
+        'Light in outside car park',
+        'Light in park or open space',
+        'Traffic bollard',
+        'Traffic sign light',
+        'Underpass light',
+        'Zebra crossing light',
+    );
+    my %lighting = map { $_ => 1 } @lighting;
+
+    my $emails = $self->feature('open311_email') || return;
+    my ($e, $n);
+    if ($row->category eq 'Abandoned and untaxed vehicles' || $row->category eq 'Dead animal') {
+        $e = $emails->{p1};
+        $n = 'Bexley P1 email';
+    } elsif ($lighting{$row->category}) {
+        $e = $emails->{lighting};
+        $n = 'FixMyStreet Bexley Street Lighting';
+    }
+    return unless $e;
+    my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, $n ] ] );
 
     $self->open311_config($row); # Populate NSGRef again if needed
 
