@@ -4,7 +4,6 @@ if (!fixmystreet.maps) {
     return;
 }
 
-
 if (fixmystreet.cobrand == 'isleofwight') {
     // We want the cobranded site to always display "Island Roads"
     // as the destination for reports in the "Public details" section.
@@ -16,5 +15,16 @@ if (fixmystreet.cobrand == 'isleofwight') {
     // being shown.
     fixmystreet.update_public_councils_text = function() {};
 }
+
+var org_id = '1062';
+var body = "Isle of Wight Council";
+fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
+    http_options: { params: { organisation_id: org_id } },
+    body: body
+});
+fixmystreet.assets.add(fixmystreet.roadworks.layer_planned, {
+    http_options: { params: { organisation_id: org_id } },
+    body: body
+});
 
 })();
