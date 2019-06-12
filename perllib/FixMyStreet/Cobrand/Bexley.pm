@@ -86,7 +86,7 @@ sub open311_post_send {
     return unless $row->external_id;
 
     return unless $row->category eq 'Abandoned and untaxed vehicles'
-        || $row->category eq 'Animal fouling';
+        || $row->category eq 'Dead animal';
 
     my $mb = FixMyStreet->config('STAGING_SITE') ? 'digital-team' : 'P1sfromContactCentre';
     my $e = join('@', $mb, $self->admin_user_domain);
