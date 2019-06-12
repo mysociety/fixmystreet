@@ -2,40 +2,50 @@
 
 use strict;
 use warnings;
-
-BEGIN {
-    use File::Basename qw(dirname);
-    use File::Spec;
-    my $d = dirname(File::Spec->rel2abs($0));
-    require "$d/../setenv.pl";
-}
+use lib '.'; # For the mock MapIt module
 
 use Getopt::Long ':config' => qw(pass_through auto_help);
 
-my ($run_server, $run_cypress, $vagrant);
-my $config_file = 'conf/general.yml-example';
-my $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes', 'buckinghamshire' ];
-my $coords = '51.532851,-2.284277';
-my $area_id = 2608;
-my $name = 'Borsetshire';
-my $mapit_url = 'https://mapit.uk/';
+my ($run_server, $run_cypress, $vagrant, $config_file);
+my ($cobrand, $coords, $area_id, $name, $mapit_url);
 
-GetOptions(
-    'config=s' => \$config_file,
-    'server' => \$run_server,
-    'cypress' => \$run_cypress,
-    'vagrant' => \$vagrant,
-    'cobrand=s@' => \$cobrand,
-    'coords=s' => \$coords,
-    'area_id=s' => \$area_id,
-    'name=s' => \$name,
-    'mapit_url=s' => \$mapit_url,
-);
-$cobrand = [ split(',', join(',', @$cobrand)) ];
+BEGIN {
+    $config_file = 'conf/general.yml-example';
+    $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes', 'buckinghamshire' ];
+    $coords = '51.532851,-2.284277';
+    $area_id = 2608;
+    $name = 'Borsetshire';
+    $mapit_url = 'https://mapit.uk/';
+
+    GetOptions(
+        'config=s' => \$config_file,
+        'server' => \$run_server,
+        'cypress' => \$run_cypress,
+        'vagrant' => \$vagrant,
+        'cobrand=s@' => \$cobrand,
+        'coords=s' => \$coords,
+        'area_id=s' => \$area_id,
+        'name=s' => \$name,
+        'mapit_url=s' => \$mapit_url,
+    );
+    $cobrand = [ split(',', join(',', @$cobrand)) ];
+
+    if (!$run_server && !$run_cypress) {
+        # If asked for neither, run both
+        $run_server = $run_cypress = 1;
+    }
+
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    if (!$vagrant && $run_server) {
+        require "$d/../setenv.pl";
+    }
+}
 
 if ($vagrant) {
     # Test inception
-    system('vagrant ssh -c "cd fixmystreet && bin/browser-tests --server 2>/dev/null" &');
+    system('vagrant ssh -- "cd fixmystreet && bin/browser-tests --server 2>/dev/null" &');
 
     require IO::Socket;
     sub check_connection {
@@ -53,13 +63,8 @@ if ($vagrant) {
     }
     print " done\n";
     system('bin/browser-tests', '--cypress', @ARGV);
-    system('vagrant', 'ssh', '-c', 'kill $(cat /tmp/cypress-server.pid)');
+    system('vagrant', 'ssh', '--', 'kill $(cat /tmp/cypress-server.pid)');
     exit;
-}
-
-if (!$run_server && !$run_cypress) {
-    # If asked for neither, run both
-    $run_server = $run_cypress = 1;
 }
 
 sub run {
@@ -95,7 +100,7 @@ sub run {
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
-        use Test::MockModule;
+        require Test::MockModule;
         my $c = Test::MockModule->new('FixMyStreet::Cobrand::FixMyStreet');
         $c->mock('enable_category_groups', sub { 1 });
         # Child, run the server on port 3001

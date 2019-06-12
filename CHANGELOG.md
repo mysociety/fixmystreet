@@ -10,6 +10,7 @@
         - Fix bug going between report/new pages client side
         - Don't include private reports when searching by ref from front page.
         - Set fixmystreet.bodies sooner client-side, for two-tier locations.
+        - Fix front-end testing script when run with Vagrant.
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
         - Add feature cobrand helper function.
