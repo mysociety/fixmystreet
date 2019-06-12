@@ -181,8 +181,9 @@ sub lookup_site_code_config { {
 # their cobrand at all.
 sub problems_restriction {
     my ($self, $rs) = @_;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
     return $rs->to_body($self->body)->search({
-      'me.confirmed' => { '>=', '2019-05-06' }
+      "$table.confirmed" => { '>=', '2019-05-06' }
     });
 }
 

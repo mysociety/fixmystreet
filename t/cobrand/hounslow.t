@@ -21,11 +21,18 @@ $mech->create_contact_ok(
 $mech->create_problems_for_body(1, $hounslow_id, 'An old problem made before Hounslow FMS launched', {
     confirmed => '2018-12-25 09:00',
     lastupdate => '2018-12-25 09:00',
+    latitude => 51.482286,
+    longitude => -0.328163,
+
 });
 $mech->create_problems_for_body(1, $hounslow_id, 'A brand new problem made on the Hounslow site', {
+    latitude => 51.482286,
+    longitude => -0.328163,
     cobrand => 'hounslow'
 });
 my ($report) = $mech->create_problems_for_body(1, $hounslow_id, 'A brand new problem made on fixmystreet.com', {
+    latitude => 51.482286,
+    longitude => -0.328163,
     external_id => 'ABC123',
     cobrand => 'fixmystreet'
 });
@@ -49,7 +56,18 @@ subtest "it does not show old reports on Hounslow" => sub {
         ALLOWED_COBRANDS => 'hounslow',
     }, sub {
         $mech->get_ok('/reports/Hounslow');
+        $mech->content_lacks('An old problem made before Hounslow FMS launched');
+        $mech->content_contains('A brand new problem made on the Hounslow site') or diag $mech->content;
+        $mech->content_contains('A brand new problem made on fixmystreet.com');
+    };
+};
 
+subtest "it shows the right things on an /around page" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'hounslow',
+    }, sub {
+        $mech->get_ok('/around?pc=TW7+5JN');
         $mech->content_lacks('An old problem made before Hounslow FMS launched');
         $mech->content_contains('A brand new problem made on the Hounslow site') or diag $mech->content;
         $mech->content_contains('A brand new problem made on fixmystreet.com');
