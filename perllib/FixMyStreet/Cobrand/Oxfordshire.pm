@@ -37,12 +37,6 @@ sub is_council_with_case_management {
     return FixMyStreet->config('STAGING_SITE');
 }
 
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fixmystreet.oxfordshire.gov.uk';
-}
-
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter an Oxfordshire postcode, or street name and area';
@@ -58,10 +52,6 @@ sub disambiguate_location {
         span   => '0.709058,0.849434',
         bounds => [ 51.459413, -1.719500, 52.168471, -0.870066 ],
     };
-}
-
-sub example_places {
-    return ( 'OX20 1SZ', 'Park St, Woodstock' );
 }
 
 # don't send questionnaires to people who used the OCC cobrand to report their problem
@@ -155,11 +145,6 @@ sub should_skip_sending_update {
 }
 
 sub on_map_default_status { return 'open'; }
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'highway.enquiries', 'oxfordshire.gov.uk' );
-}
 
 sub admin_user_domain { 'oxfordshire.gov.uk' }
 

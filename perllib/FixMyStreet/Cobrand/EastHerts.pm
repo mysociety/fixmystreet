@@ -9,20 +9,9 @@ sub council_area { return 'East Hertfordshire'; }
 sub council_name { return 'East Hertfordshire District Council'; }
 sub council_url { return 'eastherts'; }
 
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fixmystreet.eastherts.gov.uk';
-}
-
-
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter an ' . $self->council_area . ' postcode, or street name and area';
-}
-
-sub example_places {
-    return ( 'SG14 2AP', "Mangrove Road" );
 }
 
 sub disambiguate_location {
@@ -44,11 +33,6 @@ sub pin_colour {
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';
     return 'yellow';
-}
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'enquiries', 'eastherts.gov.uk' );
 }
 
 1;

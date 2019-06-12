@@ -12,16 +12,6 @@ sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire County Council'; }
 sub council_url { return 'buckinghamshire'; }
 
-sub example_places {
-    return ( 'HP19 7QF', "Walton Road" );
-}
-
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fixmystreet.buckscc.gov.uk';
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -52,11 +42,6 @@ sub pin_colour {
 }
 
 sub admin_user_domain { 'buckscc.gov.uk' }
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'fixmystreetbs', 'email.buckscc.gov.uk' );
-}
 
 sub send_questionnaires {
     return 0;

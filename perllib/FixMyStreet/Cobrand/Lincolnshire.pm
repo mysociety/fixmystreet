@@ -29,23 +29,6 @@ sub enter_postcode_text {
     return 'Enter a Lincolnshire postcode, street name and area, or check an existing report number';
 }
 
-
-sub base_url {
-    my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
-    return 'https://fixmystreet.lincolnshire.gov.uk';
-}
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'confirm_support', 'lincolnshire.gov.uk' );
-}
-
-
-sub example_places {
-    return ( 'LN1 1YL', 'Orchard Street, Lincoln' );
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

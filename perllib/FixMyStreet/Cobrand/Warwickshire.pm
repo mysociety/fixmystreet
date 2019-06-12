@@ -22,16 +22,6 @@ sub disambiguate_location {
     };
 }
 
-sub example_places {
-    return [ 'CV34 4RL', 'Stratford Rd' ];
-}
-
-sub contact_email {
-    my $self = shift;
-    return join( '@', 'fmstest', 'warwickshire.gov.uk' );
-}
-sub contact_name { 'Warwickshire County Council (do not reply)'; }
-
 sub send_questionnaires { 0 }
 
 sub open311_contact_meta_override {

@@ -12,10 +12,18 @@ $ukc->mock('lookup_site_code', sub {
     return "Road ID";
 });
 
-my $cobrand = FixMyStreet::Cobrand::Bexley->new;
-like $cobrand->contact_email, qr/bexley/;
-is $cobrand->on_map_default_status, 'open';
-is_deeply $cobrand->disambiguate_location->{bounds}, [ 51.408484, 0.074653, 51.515542, 0.2234676 ];
+FixMyStreet::override_config {
+    COBRAND_FEATURES => {
+        contact_email => {
+            bexley => 'foo@bexley',
+        }
+    },
+}, sub {
+    my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+    like $cobrand->contact_email, qr/bexley/;
+    is $cobrand->on_map_default_status, 'open';
+    is_deeply $cobrand->disambiguate_location->{bounds}, [ 51.408484, 0.074653, 51.515542, 0.2234676 ];
+};
 
 my $mech = FixMyStreet::TestMech->new;
 

@@ -35,10 +35,6 @@ sub open311_config {
     $params->{multi_photos} = 1;
 }
 
-sub example_places {
-    return ( 'LE15 6HP', 'High Street', 'Oakham' );
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
