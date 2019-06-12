@@ -33,6 +33,14 @@ sub disambiguate_location {
     };
 }
 
+sub updates_disallowed {
+    my ($self, $problem) = @_;
+
+    my $c = $self->{c};
+    return 0 if $c->user_exists && $c->user->id eq $problem->user->id;
+    return 1;
+}
+
 # sub get_geocoder { 'OSM' }
 
 sub open311_config {
