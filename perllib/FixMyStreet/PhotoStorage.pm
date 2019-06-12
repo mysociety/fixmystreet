@@ -1,5 +1,6 @@
 package FixMyStreet::PhotoStorage;
 
+use MIME::Base64;
 use Moose;
 use Digest::SHA qw(sha1_hex);
 use Module::Load;

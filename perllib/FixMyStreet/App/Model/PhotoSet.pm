@@ -8,7 +8,6 @@ use Scalar::Util 'openhandle', 'blessed';
 use Image::Size;
 use IPC::Cmd qw(can_run);
 use IPC::Open3;
-use MIME::Base64;
 
 use FixMyStreet;
 use FixMyStreet::ImageMagick;
