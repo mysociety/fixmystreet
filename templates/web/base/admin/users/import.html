@@ -65,8 +65,8 @@
 <p>[% loc('This page is a quick way to create many new staff users in one go.') %]</p>
 <p>[% loc("Existing users won't be modified.") %]</p>
 <p>
-    [% loc("The uploaded CSV file must contain a header row, and records must have the following fields (in this order):") %]
-    <pre>name,email,from_body,permissions,roles</pre>
+    [% loc("The uploaded CSV file must contain a header row, and records can have the following fields:") %]
+    <pre>name,email,from_body,permissions,roles,passwordhash</pre>
     <ul>
         <li><code>from_body</code>: [% loc("the database id of the body to associate that user with, e.g. <code>2217</code> for Buckinghamshire.") %]</li>
         <li><code>permissions</code>: [% loc("a colon-separated list of permissions to grant that user, e.g. <code>contribute_as_body:moderate:user_edit</code>.") %]</li>

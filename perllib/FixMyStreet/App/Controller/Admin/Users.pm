@@ -459,10 +459,9 @@ sub import :Local {
 
     my $csv = Text::CSV->new({ binary => 1});
     my $fh = $c->req->upload('csvfile')->fh;
-    $csv->getline($fh); # discard the header
-    while (my $row = $csv->getline($fh)) {
-        my ($name, $email, $from_body, $permissions, $roles) = @$row;
-        $email = lc Utils::trim_text($email);
+    $csv->header($fh);
+    while (my $row = $csv->getline_hr($fh)) {
+        my $email = lc Utils::trim_text($row->{email});
 
         my $user = FixMyStreet::DB->resultset("User")->find_or_new({ email => $email, email_verified => 1 });
         if ($user->in_storage) {
@@ -470,12 +469,13 @@ sub import :Local {
             next;
         }
 
-        $user->name($name);
-        $user->from_body($from_body || undef);
-        $user->update_or_insert;
+        $user->name($row->{name});
+        $user->from_body($row->{from_body} || undef);
+        $user->password($row->{passwordhash}, 1) if $row->{passwordhash};
+        $user->insert;
 
-        if ($roles) {
-            my @roles = split(/:/, $roles);
+        if ($row->{roles}) {
+            my @roles = split(/:/, $row->{roles});
             foreach my $role (@roles) {
                 $role = FixMyStreet::DB->resultset("Role")->find({
                     body_id => $user->from_body->id,
@@ -484,7 +484,7 @@ sub import :Local {
                 $user->add_to_roles($role);
             }
         } else {
-            my @permissions = split(/:/, $permissions);
+            my @permissions = split(/:/, $row->{permissions});
             my @user_permissions = grep { $available_permissions{$_} } @permissions;
             foreach my $permission_type (@user_permissions) {
                 $user->user_body_permissions->find_or_create({
