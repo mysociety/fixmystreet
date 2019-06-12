@@ -1,0 +1,8 @@
+<p>
+    Only the original reporter may leave updates.
+    [% IF NOT c.user_exists %]
+        If you made the original report please
+        <a href="/auth?r=report/[% problem.id %]">log in</a>
+        to leave an update.
+    [% END %]
+</p>
