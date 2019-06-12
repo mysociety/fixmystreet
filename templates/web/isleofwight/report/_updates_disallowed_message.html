@@ -1,0 +1,7 @@
+[% c.user.id %]::[% problem.user.id %]
+<p>
+    Only the original reporter may leave updates.
+    [% IF NOT c.user %]
+        If you made the original report please log in to leave an update.
+    [% END %]
+</p>

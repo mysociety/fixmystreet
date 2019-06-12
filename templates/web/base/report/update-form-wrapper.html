@@ -1,4 +1,4 @@
-[% UNLESS c.cobrand.updates_disallowed(problem) %]
+[% UNLESS c.cobrand.updates_disallowed(problem, c) %]
     [% IF two_column_sidebar %]
         <button class="btn btn--provide-update js-provide-update hidden-nojs">[% loc('Provide an update') %]</button>
         <div class="hidden-js">
