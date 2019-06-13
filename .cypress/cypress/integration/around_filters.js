@@ -140,9 +140,9 @@ describe('Accessing around page filters on small screens', function() {
         // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
         // Manually reset the viewport before each it() and then wait
         // a little while for the viewport resize to take effect.
-        beforeEach(function(done) {
+        beforeEach(function() {
             cy.viewport(375, 667);
-            setTimeout(done, 500);
+            cy.wait(500);
         });
 
         it('The filters are not visible', function() {
@@ -166,9 +166,9 @@ describe('Accessing around page filters on small screens', function() {
             // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
             // Manually reset the viewport before each it() and then wait
             // a little while for the viewport resize to take effect.
-            beforeEach(function(done) {
+            beforeEach(function() {
                 cy.viewport(375, 667);
-                setTimeout(done, 500);
+                cy.wait(500);
             });
 
             it('The filters are shown', function() {
@@ -184,9 +184,9 @@ describe('Accessing around page filters on small screens', function() {
                 // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
                 // Manually reset the viewport before each it() and then wait
                 // a little while for the viewport resize to take effect.
-                beforeEach(function(done) {
+                beforeEach(function() {
                     cy.viewport(375, 667);
-                    setTimeout(done, 500);
+                    cy.wait(500);
                 });
 
                 it('The filters are hidden again', function() {
