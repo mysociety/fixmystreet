@@ -22,6 +22,8 @@
         - Fix front-end testing script when run with Vagrant. #2514
         - Handle missing category when sending open311 reports #2502
         - Fix label associations with category groups. #2541
+    - Front end improvements:
+        - Set report title autocomplete to off to prevent email autocompleting
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages. #2473
         - Add feature cobrand helper function.
