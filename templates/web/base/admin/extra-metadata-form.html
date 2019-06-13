@@ -19,7 +19,7 @@
             </select>
         </label>
 
-        <div class="admin-hint"><p>[% loc('The code used to store this field value in the database. e.g. <code>address</code> would be available as <code>problem.extra.address</code> in the templates.') %]</p></div>
+        <div class="admin-hint"><p>[% loc('The code used to store this field value in the database. e.g. <code>address</code> would be available as <code>report.get_extra_field_value("address")</code> in the templates.') %]</p></div>
         <label>
             [% loc('Code') %]
             <input name="metadata[[% loop.index %]].code" data-field-name="code" type=text value="[% meta.code | html %]">
