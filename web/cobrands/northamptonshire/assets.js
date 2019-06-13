@@ -257,26 +257,28 @@ var layers = [
 },
 {
   "categories": [ "Bridge-Damaged/ Missing" ],
-  "item_name": "bridge",
+  "item_name": "bridge or right of way",
   "layer_name": "BRIDGES",
   "layer": 177,
   "version": "177.18-"
 },
 {
   "categories": [ "Gate - Damaged/ Missing" ],
+  "item_name": "gate or right of way",
   "layer_name": "GATE",
   "layer": 181,
   "version": "181.3-"
 },
 {
   "categories": [ "Stile-Damaged/Missing" ],
+  "item_name": "stile or right of way",
   "layer_name": "STILE",
   "layer": 185,
   "version": "185.3-"
 },
 {
   "categories": [ "Sign/Waymarking - Damaged/Missing" ],
-  "item_name": "waymarking",
+  "item_name": "waymarking or right of way",
   "layer_name": "WAYMARK POST",
   "layer": 187,
   "version": "187.3-"
@@ -541,8 +543,12 @@ fixmystreet.assets.add(northants_road_defaults, {
     no_asset_msg_id: "#js-not-a-road",
     asset_item: 'right of way',
     asset_category: [
+      "Bridge-Damaged/ Missing",
+      "Gate - Damaged/ Missing",
       "Livestock",
-      "Passage-Obstructed/Overgrown"
+      "Passage-Obstructed/Overgrown",
+      "Sign/Waymarking - Damaged/Missing",
+      "Stile-Damaged/Missing"
     ]
 });
 
