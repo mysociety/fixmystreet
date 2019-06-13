@@ -487,8 +487,8 @@ var highways_style = new OpenLayers.Style({
 fixmystreet.assets.add(northants_road_defaults, {
     protocol_class: OpenLayers.Protocol.Alloy,
     http_options: {
-      layerid: is_live ? 20 : 308,
-      layerVersion: is_live ? '20.123-' : '308.8-',
+      layerid: 20,
+      layerVersion: '20.143-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
