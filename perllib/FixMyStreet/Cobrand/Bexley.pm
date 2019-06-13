@@ -103,16 +103,26 @@ sub open311_post_send {
     my %lighting = map { $_ => 1 } @lighting;
 
     my $emails = $self->feature('open311_email') || return;
-    my ($e, $n);
-    if ($row->category eq 'Abandoned and untaxed vehicles' || $row->category eq 'Dead animal') {
-        $e = $emails->{p1};
-        $n = 'Bexley P1 email';
-    } elsif ($lighting{$row->category}) {
-        $e = $emails->{lighting};
-        $n = 'FixMyStreet Bexley Street Lighting';
+    my $dangerous = $row->get_extra_field_value('dangerous') || '';
+    my $reportType = $row->get_extra_field_value('reportType') || '';
+
+    my $p1_email = 0;
+    if ($row->category eq 'Parks and open spaces') {
+        $p1_email = 1 if $reportType =~ /locked in a park|Wild animal/;
+        $p1_email = 1 if $dangerous eq 'Yes' && $reportType =~ /Playgrounds|park furniture|gates are broken|Vandalism|Other/;
+    } else {
+        $p1_email = 1 if $dangerous eq 'Yes';
     }
-    return unless $e;
-    my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, $n ] ] );
+
+    my @to;
+    if ($row->category eq 'Abandoned and untaxed vehicles' || $row->category eq 'Dead animal' || $p1_email) {
+        push @to, [ $emails->{p1}, 'Bexley P1 email' ] if $emails->{p1};
+    }
+    if ($lighting{$row->category}) {
+        push @to, [ $emails->{lighting}, 'FixMyStreet Bexley Street Lighting' ] if $emails->{lighting};
+    }
+    return unless @to;
+    my $sender = FixMyStreet::SendReport::Email->new( to => \@to );
 
     $self->open311_config($row); # Populate NSGRef again if needed
 

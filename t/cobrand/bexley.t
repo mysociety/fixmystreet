@@ -31,6 +31,9 @@ my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ABAN");
 $mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "LAMP");
+$mech->create_contact_ok(body_id => $body->id, category => 'Parks and open spaces', email => "PARK");
+$mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
+$mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bexley' ],
@@ -50,40 +53,62 @@ FixMyStreet::override_config {
         $mech->content_contains('Bexley');
     };
 
-    my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
-        category => 'Abandoned and untaxed vehicles', cobrand => 'bexley',
-        latitude => 51.408484, longitude => 0.074653,
-    });
-    $report->set_extra_fields({ 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' });
-    $report->update;
+    foreach my $test (
+        { category => 'Abandoned and untaxed vehicles', email => 1, code => 'ABAN',
+            extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' } },
+        { category => 'Abandoned and untaxed vehicles', code => 'ABAN',
+            extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'No' } },
+        { category => 'Dead animal', email => 1, code => 'ANIM' },
+        { category => 'Something dangerous', email => 1, code => 'DANG',
+            extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
+        { category => 'Something dangerous', code => 'DANG',
+            extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
+        { category => 'Parks and open spaces', email => 1, code => 'PARK',
+            extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Wild animal' } },
+        { category => 'Parks and open spaces', code => 'PARK',
+            extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Maintenance' } },
+        { category => 'Parks and open spaces', code => 'PARK',
+            extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
+        { category => 'Parks and open spaces', email => 1, code => 'PARK',
+            extra => [
+                { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' },
+                { 'name' => 'reportType', description => 'Type of report', 'value' => 'Vandalism' },
+            ] },
+        { category => 'Lamp post', code => 'LAMP', email => 'thirdparty',
+            extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
+        { category => 'Lamp post', code => 'LAMP', email => 'p1.*thirdparty',
+            extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
+    ) {
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
+            category => $test->{category}, cobrand => 'bexley',
+            latitude => 51.408484, longitude => 0.074653,
+        });
+        if ($test->{extra}) {
+            $report->set_extra_fields(ref $test->{extra} eq 'ARRAY' ? @{$test->{extra}} : $test->{extra});
+            $report->update;
+        }
 
-    subtest 'Server-side NSGRef included' => sub {
-        my $test_data = FixMyStreet::Script::Reports::send();
-        my $req = $test_data->{test_req_used};
-        my $c = CGI::Simple->new($req->content);
-        is $c->param('service_code'), 'ABAN';
-        is $c->param('attribute[NSGRef]'), 'Road ID';
+        subtest 'NSGRef and correct email config' => sub {
+            my $test_data = FixMyStreet::Script::Reports::send();
+            my $req = $test_data->{test_req_used};
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), $test->{code};
+            is $c->param('attribute[NSGRef]'), 'Road ID';
 
-        my $email = $mech->get_email;
-        like $email->header('To'), qr/"Bexley P1 email".*bexley/;
-        like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
-        $mech->clear_emails_ok;
-    };
-
-    ($report) = $mech->create_problems_for_body(1, $body->id, 'Lamp', {
-        category => 'Lamp post', cobrand => 'bexley',
-        latitude => 51.408484, longitude => 0.074653,
-    });
-
-    subtest 'Correct email sent' => sub {
-        my $test_data = FixMyStreet::Script::Reports::send();
-        my $req = $test_data->{test_req_used};
-        my $c = CGI::Simple->new($req->content);
-        is $c->param('service_code'), 'LAMP';
-
-        my $email = $mech->get_email;
-        like $email->header('To'), qr/thirdparty/;
-    };
+            if (my $t = $test->{email}) {
+                my $email = $mech->get_email;
+                if ($t eq 1) {
+                    like $email->header('To'), qr/"Bexley P1 email".*bexley/;
+                } else {
+                    like $email->header('To'), qr/$t/;
+                }
+                like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
+                $mech->clear_emails_ok;
+            } else {
+                $mech->email_count_is(0);
+            }
+        };
+    }
 
 };
 
