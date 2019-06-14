@@ -126,85 +126,29 @@ describe('Around page filtering and push state', function() {
         cy.contains('Loose drain cover');
         cy.should('not.contain', 'Back to all reports');
     });
-});
 
-describe('Accessing around page filters on small screens', function() {
-    describe('When I search for a postcode on a small screen', function() {
-        before(function() {
-            cy.viewport(375, 667);
-            cy.visit('/');
-            cy.get('[name=pc]').type(Cypress.env('postcode'));
-            cy.get('[name=pc]').parents('form').submit();
-        });
+    it('lets me show and hide the filters on narrow screens', function(){
+        // #map_filter does not exist at normal window size
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6');
+        cy.get('#map_filter').should('not.exist');
 
-        // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
-        // Manually reset the viewport before each it() and then wait
-        // a little while for the viewport resize to take effect.
-        beforeEach(function() {
-            cy.viewport(375, 667);
-            cy.wait(500);
-        });
+        // #map_filter appears when window is narrowed _after_ pageload
+        cy.viewport(375, 667);
+        cy.get('#map_filter').should('exist');
 
-        it('The filters are not visible', function() {
-            // It's really hard to test whether an element is obscured behind
-            // another element.
-            // So for now we just test whether the filters are position:static
-            // (and therefore hidden behind the position:absolute #map_box).
-            cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
-        });
+        // #map_filter exists when window is _already_ narrow at pageload
+        cy.reload();
+        cy.get('#map_filter').should('exist');
 
-        it('A "Filter" button is shown below the map', function() {
-            cy.get('#map_filter').should('exist');
-        });
+        // And the filters are static (hidden) underneath the map as normal
+        cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
 
-        describe('When I click the "Filter" button', function() {
-            before(function() {
-                cy.viewport(375, 667);
-                cy.get('#map_filter').click();
-            });
+        // The filters appear when you click the #map_filter button
+        cy.get('#map_filter').click();
+        cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'fixed');
 
-            // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
-            // Manually reset the viewport before each it() and then wait
-            // a little while for the viewport resize to take effect.
-            beforeEach(function() {
-                cy.viewport(375, 667);
-                cy.wait(500);
-            });
-
-            it('The filters are shown', function() {
-                cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'fixed');
-            });
-
-            describe('When I click the "Filter" button again', function() {
-                before(function() {
-                    cy.viewport(375, 667);
-                    cy.get('#map_filter').click();
-                });
-
-                // Work around viewport bug https://github.com/cypress-io/cypress/issues/1534
-                // Manually reset the viewport before each it() and then wait
-                // a little while for the viewport resize to take effect.
-                beforeEach(function() {
-                    cy.viewport(375, 667);
-                    cy.wait(500);
-                });
-
-                it('The filters are hidden again', function() {
-                    cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
-                });
-            });
-        });
-    });
-
-    describe('When I search for a postcode on a wide screen', function() {
-        before(function() {
-            cy.visit('/');
-            cy.get('[name=pc]').type(Cypress.env('postcode'));
-            cy.get('[name=pc]').parents('form').submit();
-        });
-
-        it('The "Filter" button is not shown', function() {
-            cy.get('#map_filter').should('not.exist');
-        });
+        // And disappear again when you click #map_filter a second time
+        cy.get('#map_filter').click();
+        cy.get('.report-list-filters-wrapper').invoke('css', 'position').should('equal', 'static');
     });
 });

@@ -161,7 +161,20 @@ fixmystreet.mobile_reporting = {
     $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
 
     if ($('#map_filter').length === 0) {
-        $('#sub_map_links').prepend('<a href="#side" id="map_filter">' + translation_strings.filter + '</a>');
+        $map_filter = $('<a href="#side" id="map_filter">' + translation_strings.filter + '</a>');
+        $map_filter.on('click', function(e) {
+            e.preventDefault();
+            var $form = $('#mapForm');
+            var $sub_map_links = $('#sub_map_links');
+            if ( $form.is('.mobile-filters-active') ) {
+                $form.removeClass('mobile-filters-active');
+                $sub_map_links.css('bottom', '');
+            } else {
+                $form.addClass('mobile-filters-active');
+                $sub_map_links.css('bottom', $('.report-list-filters-wrapper').outerHeight() );
+            }
+        });
+        $('#sub_map_links').prepend($map_filter);
     }
 
     // Do this on a timeout, so it takes precedence over the browser’s
@@ -824,19 +837,6 @@ $.extend(fixmystreet.set_up, {
       $(this).html(text).attr('class', btnClass);
 
       fixmystreet.map.updateSize();
-    });
-
-    $('#map_filter').off('click').on('click', function(e) {
-        e.preventDefault();
-        var $form = $('#mapForm');
-        var $sub_map_links = $('#sub_map_links');
-        if ( $form.is('.mobile-filters-active') ) {
-            $form.removeClass('mobile-filters-active');
-            $sub_map_links.css('bottom', '');
-        } else {
-            $form.addClass('mobile-filters-active');
-            $sub_map_links.css('bottom', $('.report-list-filters-wrapper').outerHeight() );
-        }
     });
   },
 
