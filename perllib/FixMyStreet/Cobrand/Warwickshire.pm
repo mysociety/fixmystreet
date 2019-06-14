@@ -1,5 +1,5 @@
 package FixMyStreet::Cobrand::Warwickshire;
-use base 'FixMyStreet::Cobrand::UKCouncils';
+use base 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
