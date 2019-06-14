@@ -116,7 +116,9 @@ function isR2L() {
       // data-* attributes into settings for the multiSelect constructor.
       return this.each(function() {
         var $select = $(this);
-        var settings = {};
+        var settings = {
+            modalHTML: '<div class="multi-select-modal">'
+        };
 
         if ( $select.data('none') ) {
             settings.noneText = $select.data('none');
@@ -157,6 +159,24 @@ fixmystreet.mobile_reporting = {
     // and special "OK/Cancel" buttons etc.
     $('html').addClass('map-fullscreen only-map map-reporting');
     $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
+
+    if ($('#map_filter').length === 0) {
+        $map_filter = $('<a href="#side" id="map_filter">' + translation_strings.filter + '</a>');
+        $map_filter.on('click', function(e) {
+            e.preventDefault();
+            var $form = $('#mapForm');
+            var $sub_map_links = $('#sub_map_links');
+            if ( $form.is('.mobile-filters-active') ) {
+                $form.removeClass('mobile-filters-active');
+                $sub_map_links.css('bottom', '');
+            } else {
+                $form.addClass('mobile-filters-active');
+                $sub_map_links.css('bottom', $('.report-list-filters-wrapper').outerHeight() );
+            }
+        });
+        $('#sub_map_links').prepend($map_filter);
+    }
+
     // Do this on a timeout, so it takes precedence over the browser’s
     // remembered position, which we do not want, we want a fixed map.
     setTimeout(function() {
@@ -170,6 +190,11 @@ fixmystreet.mobile_reporting = {
     $('html').removeClass('map-fullscreen only-map map-reporting');
     $('#map_box').css({ width: "", height: "", position: "" });
     $('#mob_sub_map_links').remove();
+
+    // Turn off the mobile map filters.
+    $('#mapForm').removeClass('mobile-filters-active');
+    $('#sub_map_links').css('bottom', '');
+    $('#map_filter').remove();
   }
 };
 

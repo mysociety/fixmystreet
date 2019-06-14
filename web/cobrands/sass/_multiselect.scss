@@ -35,6 +35,51 @@
     }
 }
 
+.multi-select-modal {
+    display: none;
+}
+
+// Centred, modal display for sub-768px screens only.
+@media (max-width: 47.94em) {
+    .multi-select-menu {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 75% !important; // override inline "width: auto"
+        max-height: 50%;
+        min-width: 0;
+        overflow: auto; // allow scrolling
+        border: none;
+        border-radius: 0.3em;
+        box-shadow: 0 1em 3em rgba(0, 0, 0, 0.4);
+    }
+
+    .multi-select-menuitem {
+        font-size: 1em;
+        padding: flip(1em 2.5em 1em 3.5em, 1em 3.5em 1em 2.5em);
+
+        input {
+            margin-top: 0.15em;
+            margin-#{$left}: -2em;
+        }
+    }
+
+    .multi-select-modal {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        background: rgba(0, 0, 0, 0.4);
+
+        .multi-select-container--open & {
+            display: block;
+        }
+    }
+}
+
 .multi-select-presets {
     border-bottom: 1px solid #ddd;
 }

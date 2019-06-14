@@ -1673,7 +1673,7 @@ html.js #map .noscript {
     height: 12px;
     margin-#{$left}: 8px;
     vertical-align: -0.1em;
-    background-size: 96px 12px;
+    background-size: 108px 12px;
     @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
 }
 
@@ -1743,6 +1743,11 @@ html.js #map .noscript {
         @extend %sub-map-link-icon;
         background-position: -84px 0;
     }
+
+    #map_filter:after {
+        @extend %sub-map-link-icon;
+        background-position: -96px 0;
+    }
 }
 
 // Want some visual consistency between the top and bottom bars on mobile.
@@ -1751,6 +1756,11 @@ html.js #map .noscript {
     background-color: #333;
     background-color: rgba(#000, 0.7);
     color: #fff;
+}
+
+// "Selected" styling for the report-list-filter toggle when selected.
+.mobile-filters-active #map_filter {
+    background: #000;
 }
 
 // On mobile, once #mob_ok has been pressed, the new report form is shown,

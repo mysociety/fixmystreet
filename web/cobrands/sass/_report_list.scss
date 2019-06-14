@@ -1,8 +1,21 @@
+.report-list-filters-wrapper {
+  color: #666;
+
+  .mobile-filters-active & {
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000;
+    color: #fff;
+  }
+}
+
 .report-list-filters {
   padding: 1em;
   padding-bottom: 0.75em; // compensate for 0.25em border-top on .item-list__item
   margin-bottom: 0;
-  color: #666;
   font-size: 0.85em;
   line-height: 1.8em;
 
