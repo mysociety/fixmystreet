@@ -6,7 +6,7 @@ use lib '.'; # For the mock MapIt module
 
 use Getopt::Long ':config' => qw(pass_through auto_help);
 
-my ($run_server, $run_cypress, $vagrant, $config_file);
+my ($run_server, $run_cypress, $vagrant, $wsl, $node, $config_file);
 my ($cobrand, $coords, $area_id, $name, $mapit_url);
 
 BEGIN {
@@ -16,12 +16,15 @@ BEGIN {
     $area_id = 2608;
     $name = 'Borsetshire';
     $mapit_url = 'https://mapit.uk/';
+    $node = 'C:\Program Files\nodejs\node.exe';
 
     GetOptions(
         'config=s' => \$config_file,
         'server' => \$run_server,
         'cypress' => \$run_cypress,
         'vagrant' => \$vagrant,
+        'wsl=s' => \$wsl,
+        'node=s' => \$node,
         'cobrand=s@' => \$cobrand,
         'coords=s' => \$coords,
         'area_id=s' => \$area_id,
@@ -29,6 +32,11 @@ BEGIN {
         'mapit_url=s' => \$mapit_url,
     );
     $cobrand = [ split(',', join(',', @$cobrand)) ];
+
+    if ($vagrant && $wsl) {
+        print 'You cannot use both --vagrant and --wsl';
+        exit 1;
+    }
 
     if (!$run_server && !$run_cypress) {
         # If asked for neither, run both
@@ -96,7 +104,11 @@ sub run {
 
     if (($run_cypress && !$run_server) || $pid) {
         # Parent, run the test runner (then kill the child)
-        my $exit = system("cypress", $cmd, '--config', 'pluginsFile=false,supportFile=false', '--project', '.cypress', @ARGV);
+        my @cypress = ('cypress');
+        if ($wsl) {
+            @cypress = ('cmd.exe', '/c', $node, $wsl);
+        }
+        my $exit = system(@cypress, $cmd, '--config', 'pluginsFile=false,supportFile=false', '--project', '.cypress', @ARGV);
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
@@ -131,6 +143,7 @@ browser-tests [running options] [fixture options] [cypress options]
    --server         only run the test server, not cypress
    --cypress        only run cypress, not the test server
    --vagrant        run test server inside Vagrant, cypress outside
+   --wsl            provide path to cypress node script, to run test server inside WSL, cypress outside
    --help           this help message
 
  Fixture option:
@@ -149,6 +162,7 @@ server in the VM and Cypress outside of it.
  $ browser-tests run                 # run headlessly
  $ browser-tests run --record --key  # record and upload a run
  $ browser-tests --vagrant run       # run if you use Vagrant
+ $ browser-tests --wsl ..cypress run # run if you use WSL
 
 You need to have installed cypress already using npm, and it needs to be on
 your PATH.
