@@ -116,4 +116,21 @@ fixmystreet.assets.add(lighting_options, {
     filter_value: 'SL: Sign'
 });
 
+var redirects = {
+    "Abandoned vehicles": "https://www.bristol.gov.uk/streets-travel/abandoned-vehicles",
+    "Flytipping": "https://www.bristol.gov.uk/streets-travel/flytipping",
+    "Flyposting": "https://www.bristol.gov.uk/streets-travel/flyposting",
+    "Graffiti": "https://www.bristol.gov.uk/streets-travel/graffiti",
+    "Dog fouling": "https://www.bristol.gov.uk/streets-travel/dog-fouling",
+    "Street cleaning": "https://www.bristol.gov.uk/streets-travel/street-that-needs-cleaning"
+};
+
+$.each(redirects, function(name, value) {
+    fixmystreet.message_controller.register_category({
+        body: common_options.body,
+        category: name,
+        message: 'If you wish to report an issue with ' + name + ', please use <a href="' + value + '">this service</a>.'
+    });
+});
+
 })();
