@@ -185,8 +185,6 @@ sub map_type { 'Buckinghamshire' }
 
 sub default_map_zoom { 3 }
 
-sub enable_category_groups { 1 }
-
 sub _dashboard_export_add_columns {
     my $self = shift;
     my $c = $self->{c};

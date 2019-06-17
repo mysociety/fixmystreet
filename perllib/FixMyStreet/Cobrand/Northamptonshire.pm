@@ -47,8 +47,6 @@ sub privacy_policy_url {
     'https://www3.northamptonshire.gov.uk/councilservices/council-and-democracy/transparency/information-policies/privacy-notice/place/Pages/street-doctor.aspx'
 }
 
-sub enable_category_groups { 1 }
-
 sub is_two_tier { 1 }
 
 sub get_geocoder { 'OSM' }

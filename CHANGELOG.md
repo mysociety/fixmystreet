@@ -6,6 +6,8 @@
         - Mobile users can now filter the pins on the `/around` map view. #2366
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users.
+    - New features:
+        - Categories can be listed under more than one group #2475
     - Bugfixes:
         - Prevent creation of two templates with same title.
         - Fix bug going between report/new pages client side

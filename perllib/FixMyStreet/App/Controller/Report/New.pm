@@ -741,11 +741,13 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{missing_details_bodies} = \@missing_details_bodies;
     $c->stash->{missing_details_body_names} = \@missing_details_body_names;
 
-    if ( $c->cobrand->call_hook('enable_category_groups') ) {
+    if ( $c->cobrand->enable_category_groups ) {
         my %category_groups = ();
         for my $category (@category_options) {
-            my $group = $category->{group} // $category->get_extra_metadata('group') // '';
-            push @{$category_groups{$group}}, $category;
+            my $group = $category->{group} // $category->get_extra_metadata('group') // [''];
+            # this could be an array ref or a string
+            my @groups = ref $group eq 'ARRAY' ? @$group : ($group);
+            push( @{$category_groups{$_}}, $category ) for @groups;
         }
 
         my @category_groups = ();

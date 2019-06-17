@@ -88,6 +88,9 @@ sub run {
             ALLOWED_COBRANDS => $cobrand,
             MAPIT_URL => $mapit_url,
             BASE_URL => 'http://fixmystreet.localhost:3001',
+            COBRAND_FEATURES => {
+                category_groups => { map { $_ => 1 } @$cobrand },
+            }
         });
         $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
 
@@ -112,10 +115,8 @@ sub run {
         kill 'TERM', $pid if $pid;
         exit $exit >> 8;
     } else {
-        require Test::MockModule;
-        my $c = Test::MockModule->new('FixMyStreet::Cobrand::FixMyStreet');
-        $c->mock('enable_category_groups', sub { 1 });
         # Child, run the server on port 3001
+        require FixMyStreet;
         FixMyStreet->test_mode(1); # So email doesn't try to send
         local $ENV{FIXMYSTREET_APP_DEBUG} = 0;
         require Plack::Runner;

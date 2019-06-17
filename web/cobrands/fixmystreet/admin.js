@@ -165,6 +165,16 @@ $(function(){
         return true;
     });
 
+    $(".js-group-item-add").on("click", function(e) {
+        e.preventDefault();
+        var $template_item = $(".js-group-item-template");
+        var $new_item = $template_item.clone();
+        $new_item.removeClass("hidden-js js-group-item-template");
+        $new_item.insertBefore($template_item);
+        $new_item.focus();
+        return true;
+    });
+
     // Fields can be added/removed
     $(".js-metadata-item-add").on("click", function(e) {
         e.preventDefault();

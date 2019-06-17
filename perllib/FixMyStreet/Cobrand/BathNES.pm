@@ -74,8 +74,6 @@ sub pin_colour {
 
 sub send_questionnaires { 0 }
 
-sub enable_category_groups { 1 }
-
 sub default_map_zoom { 3 }
 
 sub map_js_extra {

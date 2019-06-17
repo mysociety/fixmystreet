@@ -5,20 +5,11 @@ use parent 'FixMyStreet::Cobrand::Default';
 
 sub council_area_id { 1 }
 
-
-package FixMyStreet::Cobrand::TesterGroups;
-
-use parent 'FixMyStreet::Cobrand::Default';
-
-sub council_area_id { 1 }
-
-sub enable_category_groups { 1 }
-
-
 package main;
 
 use FixMyStreet::Test;
 use FixMyStreet::DB;
+use Test::Warn;
 use utf8;
 
 use_ok( 'Open311::PopulateServiceList' );
@@ -51,13 +42,16 @@ $bucks->body_areas->create({
 });
 
 for my $test (
-    { desc => 'groups not set for new contacts', cobrand => 'tester', groups => 0, delete => 1 },
-    { desc => 'groups set for new contacts', cobrand => 'testergroups', groups => 1, delete => 1},
-    { desc => 'groups removed for existing contacts', cobrand => 'tester', groups => 0, delete => 0 },
-    { desc => 'groups added for existing contacts', cobrand => 'testergroups', groups => 1, delete => 0},
+    { desc => 'groups not set for new contacts', enable_groups => 0, groups => 0, delete => 1 },
+    { desc => 'groups set for new contacts', enable_groups => 1, groups => 1, delete => 1},
+    { desc => 'groups removed for existing contacts', enable_groups => 0, groups => 0, delete => 0 },
+    { desc => 'groups added for existing contacts', enable_groups => 1, groups => 1, delete => 0},
 ) {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ $test->{cobrand} ],
+        ALLOWED_COBRANDS => [ 'tester' ],
+        COBRAND_FEATURES => {
+           category_groups => { tester => $test->{enable_groups} },
+        }
     }, sub {
         subtest 'check basic functionality, ' . $test->{desc} => sub {
             FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete() if $test->{delete};
@@ -82,6 +76,147 @@ for my $test (
         };
     };
 }
+
+my $last_update = {};
+for my $test (
+    { desc => 'set multiple groups for contact', enable_multi => 1, groups => ['sanitation', 'street']  },
+    { desc => 'groups not edited if unchanged', enable_multi => 1, groups => ['sanitation', 'street'], unchanged => 1  },
+    { desc => 'multiple groups has to be configured', enable_multi => 0, groups => 'sanitation,street'},
+) {
+    subtest $test->{desc} => sub {
+        FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+
+        my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+        <services>
+          <service>
+            <service_code>100</service_code>
+            <service_name>Cans left out 24x7</service_name>
+            <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+            <metadata>false</metadata>
+            <type>realtime</type>
+            <keywords>lorem, ipsum, dolor</keywords>
+            <group>sanitation,street</group>
+          </service>
+          <service>
+            <service_code>002</service_code>
+            <metadata>false</metadata>
+            <type>realtime</type>
+            <keywords>lorem, ipsum, dolor</keywords>
+            <group>street</group>
+            <service_name>Construction plate shifted</service_name>
+            <description>Metal construction plate covering the street or sidewalk has been moved.</description>
+          </service>
+        </services>
+        ';
+
+        my $service_list = get_xml_simple_object($services_xml);
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ 'tester' ],
+            COBRAND_FEATURES => {
+               category_groups => { tester => 1 },
+               multiple_category_groups => { tester => $test->{enable_multi} },
+            }
+        }, sub {
+            my $processor = Open311::PopulateServiceList->new();
+            $processor->_current_body( $body );
+            $processor->process_services( $service_list );
+        };
+        my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+        is $contact_count, 2, 'correct number of contacts';
+
+        my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, email => 100 } )->first;
+        is_deeply $contact->get_extra->{group}, $test->{groups}, "Multi groups set correctly";
+        if ($test->{unchanged}) {
+            is $contact->whenedited, $last_update->{100}, "contact unchanged";
+        }
+        $last_update->{100} = $contact->whenedited;
+
+        $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, email => '002'} )->first;
+        is $contact->get_extra->{group}, 'street', "Single groups set correctly";
+        if ($test->{unchanged}) {
+            is $contact->whenedited, $last_update->{002}, "contact unchanged";
+        }
+        $last_update->{002} = $contact->whenedited;
+    };
+}
+
+subtest "set multiple groups with quoted csv" => sub {
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Cans left out 24x7</service_name>
+        <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>lorem, ipsum, dolor</keywords>
+        <group>&quot;sanitation &amp; cleaning&quot;,street</group>
+      </service>
+    </services>
+    ';
+
+    my $service_list = get_xml_simple_object($services_xml);
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tester' ],
+        COBRAND_FEATURES => {
+           category_groups => { tester => 1 },
+           multiple_category_groups => { tester => 1 },
+        }
+    }, sub {
+        my $processor = Open311::PopulateServiceList->new();
+        $processor->_current_body( $body );
+        $processor->process_services( $service_list );
+    };
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, email => 100 } )->first;
+    is_deeply $contact->get_extra->{group}, ['sanitation & cleaning','street'], "groups set correctly";
+};
+
+subtest "set multiple groups with bad csv" => sub {
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Cans left out 24x7</service_name>
+        <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>lorem, ipsum, dolor</keywords>
+        <group>"sanitation,street</group>
+      </service>
+    </services>
+    ';
+
+    my $service_list = get_xml_simple_object($services_xml);
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tester' ],
+        COBRAND_FEATURES => {
+           category_groups => { tester => 1 },
+           multiple_category_groups => { tester => 1 },
+        }
+    }, sub {
+        my $processor = Open311::PopulateServiceList->new();
+        $processor->_current_body( $body );
+        warning_like {
+            $processor->process_services( $service_list );
+        } qr/error parsing groups for testercontact Cans left out 24x7: "sanitation,street/,
+        "warning printed for bad csv";
+    };
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, email => 100 } )->first;
+    is_deeply $contact->get_extra->{group}, ['"sanitation,street'], "groups set correctly";
+};
 
 subtest 'check non open311 contacts marked as deleted' => sub {
     FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
