@@ -10,9 +10,6 @@ sub council_name { 'London Borough of Bexley' }
 sub council_url { 'bexley' }
 sub get_geocoder { 'OSM' }
 
-sub enable_category_groups { 1 }
-sub suggest_duplicates { 1 }
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
