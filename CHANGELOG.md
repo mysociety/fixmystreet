@@ -36,6 +36,7 @@
           POST service request.
         - Allow description in email template with placeholder.
         - Do not store display-only extra fields on new reports.
+        - Improve JSON output of controller.
 
 * v2.6 (3rd May 2019)
     - New features:

@@ -14,7 +14,7 @@ $mech->content_contains('<status>open</status>');
 
 $mech->get_ok('/open311/v2/requests.json?jurisdiction_id=foo&status=open&agency_responsible=2237');
 my $json = decode_json($mech->content);
-my $problems = $json->{requests}[0]{request};
+my $problems = $json->{service_requests};
 is @$problems, 2;
 like $problems->[0]{description}, qr/Around page Test/;
 
@@ -25,7 +25,7 @@ subtest "non_public reports aren't available" => sub {
     });
     $mech->get_ok('/open311/v2/requests.json?jurisdiction_id=foo');
     $json = decode_json($mech->content);
-    $problems = $json->{requests}[0]{request};
+    $problems = $json->{service_requests};
     is @$problems, 1;
     like $problems->[0]{description}, qr/Around page Test/;
     $mech->content_lacks('This report is now private');
@@ -33,7 +33,7 @@ subtest "non_public reports aren't available" => sub {
     my $problem_id = $problem1->id;
     $mech->get_ok("/open311/v2/requests/$problem_id.json?jurisdiction_id=foo");
     $json = decode_json($mech->content);
-    $problems = $json->{requests}[0]{request};
+    $problems = $json->{service_requests};
     is @$problems, 0;
 };
 
@@ -45,7 +45,7 @@ subtest "hidden reports aren't available" => sub {
     });
     $mech->get_ok('/open311/v2/requests.json?jurisdiction_id=foo');
     $json = decode_json($mech->content);
-    $problems = $json->{requests}[0]{request};
+    $problems = $json->{service_requests};
     is @$problems, 1;
     like $problems->[0]{description}, qr/Around page Test/;
     $mech->content_lacks('This report is now hidden');
@@ -53,7 +53,7 @@ subtest "hidden reports aren't available" => sub {
     my $problem_id = $problem1->id;
     $mech->get_ok("/open311/v2/requests/$problem_id.json?jurisdiction_id=foo");
     $json = decode_json($mech->content);
-    $problems = $json->{requests}[0]{request};
+    $problems = $json->{service_requests};
     is @$problems, 0;
 };
 
