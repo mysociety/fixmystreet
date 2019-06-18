@@ -292,6 +292,12 @@ DISTRIBUTIONS
       Storable 0
       String::CRC32 0
       Time::HiRes 0
+  Canary-Stability-2013
+    pathname: M/ML/MLEHMANN/Canary-Stability-2013.tar.gz
+    provides:
+      Canary::Stability 2013
+    requirements:
+      ExtUtils::MakeMaker 0
   Capture-Tiny-0.40
     pathname: D/DA/DAGOLDEN/Capture-Tiny-0.40.tar.gz
     provides:
@@ -846,6 +852,13 @@ DISTRIBUTIONS
       Class::Data::Inheritable 0.08
     requirements:
       ExtUtils::MakeMaker 0
+  Class-ErrorHandler-0.04
+    pathname: T/TO/TOKUHIROM/Class-ErrorHandler-0.04.tar.gz
+    provides:
+      Class::ErrorHandler 0.04
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.008_001
   Class-Factory-Util-1.7
     pathname: D/DR/DROLSKY/Class-Factory-Util-1.7.tar.gz
     provides:
@@ -1064,12 +1077,70 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
+  Crypt-OpenSSL-Guess-0.11
+    pathname: A/AK/AKIYM/Crypt-OpenSSL-Guess-0.11.tar.gz
+    provides:
+      Crypt::OpenSSL::Guess 0.11
+    requirements:
+      Config 0
+      Exporter 5.57
+      ExtUtils::MakeMaker 6.64
+      File::Spec 0
+      Symbol 0
+      perl 5.008001
+  Crypt-OpenSSL-RSA-0.31
+    pathname: T/TO/TODDR/Crypt-OpenSSL-RSA-0.31.tar.gz
+    provides:
+      Crypt::OpenSSL::RSA 0.31
+    requirements:
+      Crypt::OpenSSL::Random 0
+      ExtUtils::MakeMaker 0
+      Test::More 0
+      perl 5.006
+  Crypt-OpenSSL-Random-0.15
+    pathname: R/RU/RURBAN/Crypt-OpenSSL-Random-0.15.tar.gz
+    provides:
+      Crypt::OpenSSL::Random 0.15
+    requirements:
+      Crypt::OpenSSL::Guess 0.11
+      ExtUtils::MakeMaker 0
   Crypt-RC4-2.02
     pathname: S/SI/SIFUKURT/Crypt-RC4-2.02.tar.gz
     provides:
       Crypt::RC4 2.02
     requirements:
       ExtUtils::MakeMaker 0
+  Crypt-Random-Source-0.14
+    pathname: E/ET/ETHER/Crypt-Random-Source-0.14.tar.gz
+    provides:
+      Crypt::Random::Source 0.14
+      Crypt::Random::Source::Base 0.14
+      Crypt::Random::Source::Base::File 0.14
+      Crypt::Random::Source::Base::Handle 0.14
+      Crypt::Random::Source::Base::Proc 0.14
+      Crypt::Random::Source::Base::RandomDevice 0.14
+      Crypt::Random::Source::Factory 0.14
+      Crypt::Random::Source::Strong 0.14
+      Crypt::Random::Source::Strong::devrandom 0.14
+      Crypt::Random::Source::Weak 0.14
+      Crypt::Random::Source::Weak::devurandom 0.14
+    requirements:
+      Capture::Tiny 0.08
+      Carp 0
+      ExtUtils::MakeMaker 0
+      File::Spec 0
+      IO::File 1.14
+      IO::Handle 0
+      Module::Build::Tiny 0.034
+      Module::Find 0
+      Module::Runtime 0
+      Moo 1.002000
+      Sub::Exporter 0
+      Types::Standard 0
+      namespace::clean 0.11
+      perl 5.008
+      strict 0
+      warnings 0
   CryptX-0.059
     pathname: M/MI/MIK/CryptX-0.059.tar.gz
     provides:
@@ -1463,7 +1534,7 @@ DISTRIBUTIONS
       DBIx::Class::IntrospectableM2M 0.001001
     requirements:
       DBIx::Class 0
-      ExtUtils::MakeMaker 6.72
+      ExtUtils::MakeMaker 7.34
       Test::More 0
   DBIx-Class-QueryLog-1.005001
     pathname: F/FR/FREW/DBIx-Class-QueryLog-1.005001.tar.gz
@@ -2468,6 +2539,7 @@ DISTRIBUTIONS
       Dir::Self 0.11
     requirements:
       Carp 0
+      ExtUtils::MakeMaker 6.48
       File::Spec 0
       strict 0
   Dist-CheckConflicts-0.09
@@ -3674,6 +3746,34 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Scalar::Util 1.08
       Test::More 0
+  JSON-WebToken-0.10
+    pathname: X/XA/XAICRON/JSON-WebToken-0.10.tar.gz
+    provides:
+      JSON::WebToken 0.10
+      JSON::WebToken::Constants undef
+      JSON::WebToken::Crypt undef
+      JSON::WebToken::Crypt::HMAC undef
+      JSON::WebToken::Crypt::RSA undef
+      JSON::WebToken::Exception undef
+    requirements:
+      Carp 0
+      Digest::SHA 0
+      Exporter 0
+      JSON 0
+      MIME::Base64 0
+      Module::Build 0.38
+      Module::Runtime 0
+      parent 0
+      perl 5.008001
+  JSON-XS-4.02
+    pathname: M/ML/MLEHMANN/JSON-XS-4.02.tar.gz
+    provides:
+      JSON::XS 4.02
+    requirements:
+      Canary::Stability 0
+      ExtUtils::MakeMaker 6.52
+      Types::Serialiser 0
+      common::sense 0
   LWP-MediaTypes-6.02
     pathname: G/GA/GAAS/LWP-MediaTypes-6.02.tar.gz
     provides:
@@ -3978,6 +4078,15 @@ DISTRIBUTIONS
       Net::Domain 1.05
       Net::SMTP 1.03
       Test::More 0
+  Math-Random-ISAAC-1.004
+    pathname: J/JA/JAWNSY/Math-Random-ISAAC-1.004.tar.gz
+    provides:
+      Math::Random::ISAAC 1.004
+      Math::Random::ISAAC::PP 1.004
+    requirements:
+      ExtUtils::MakeMaker 6.31
+      Test::More 0.62
+      Test::NoWarnings 0.084
   Math-Random-MT-1.17
     pathname: F/FA/FANGLY/Math-Random-MT-1.17.tar.gz
     provides:
@@ -3986,6 +4095,16 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::More 0
       Test::Number::Delta 0
+  Math-Random-Secure-0.080001
+    pathname: F/FR/FREW/Math-Random-Secure-0.080001.tar.gz
+    provides:
+      Math::Random::Secure 0.080001
+      Math::Random::Secure::RNG 0.080001
+    requirements:
+      Crypt::Random::Source 0.07
+      ExtUtils::MakeMaker 0
+      Math::Random::ISAAC 1.001
+      Moo 2
   Memoize-ExpireLRU-0.55
     pathname: B/BP/BPOWERS/Memoize-ExpireLRU-0.55.tar.gz
     provides:
@@ -5643,6 +5762,128 @@ DISTRIBUTIONS
       Scalar::Util 1.48
       Test::More 0.96
       Test::utf8 0
+  OAuth-Lite2-0.11
+    pathname: R/RI/RITOU/OAuth-Lite2-0.11.tar.gz
+    provides:
+      OAuth::Lite2 0.11
+      OAuth::Lite2::Agent undef
+      OAuth::Lite2::Agent::Dump undef
+      OAuth::Lite2::Agent::PSGIMock undef
+      OAuth::Lite2::Agent::Strict undef
+      OAuth::Lite2::Client::ClientCredentials undef
+      OAuth::Lite2::Client::Error undef
+      OAuth::Lite2::Client::Error::InsecureRequest undef
+      OAuth::Lite2::Client::Error::InsecureResponse undef
+      OAuth::Lite2::Client::Error::InvalidResponse undef
+      OAuth::Lite2::Client::ExternalService undef
+      OAuth::Lite2::Client::ServerState undef
+      OAuth::Lite2::Client::StateResponseParser undef
+      OAuth::Lite2::Client::Token undef
+      OAuth::Lite2::Client::TokenResponseParser undef
+      OAuth::Lite2::Client::UsernameAndPassword undef
+      OAuth::Lite2::Client::WebServer undef
+      OAuth::Lite2::Formatter undef
+      OAuth::Lite2::Formatter::FormURLEncoded undef
+      OAuth::Lite2::Formatter::JSON undef
+      OAuth::Lite2::Formatter::Text undef
+      OAuth::Lite2::Formatter::XML undef
+      OAuth::Lite2::Formatters undef
+      OAuth::Lite2::Model::AccessToken undef
+      OAuth::Lite2::Model::AuthInfo undef
+      OAuth::Lite2::Model::ServerState undef
+      OAuth::Lite2::ParamMethod undef
+      OAuth::Lite2::ParamMethod::AuthHeader undef
+      OAuth::Lite2::ParamMethod::FormEncodedBody undef
+      OAuth::Lite2::ParamMethod::URIQueryParameter undef
+      OAuth::Lite2::ParamMethods undef
+      OAuth::Lite2::Server::Context undef
+      OAuth::Lite2::Server::DataHandler undef
+      OAuth::Lite2::Server::Endpoint::Token undef
+      OAuth::Lite2::Server::Error undef
+      OAuth::Lite2::Server::Error::AccessDenied undef
+      OAuth::Lite2::Server::Error::ExpiredToken undef
+      OAuth::Lite2::Server::Error::ExpiredTokenLegacy undef
+      OAuth::Lite2::Server::Error::InsufficientScope undef
+      OAuth::Lite2::Server::Error::InvalidClient undef
+      OAuth::Lite2::Server::Error::InvalidGrant undef
+      OAuth::Lite2::Server::Error::InvalidRequest undef
+      OAuth::Lite2::Server::Error::InvalidScope undef
+      OAuth::Lite2::Server::Error::InvalidServerState undef
+      OAuth::Lite2::Server::Error::InvalidToken undef
+      OAuth::Lite2::Server::Error::RedirectURIMismatch undef
+      OAuth::Lite2::Server::Error::ServerError undef
+      OAuth::Lite2::Server::Error::TemporarilyUnavailable undef
+      OAuth::Lite2::Server::Error::UnauthorizedClient undef
+      OAuth::Lite2::Server::Error::UnsupportedGrantType undef
+      OAuth::Lite2::Server::Error::UnsupportedResourceType undef
+      OAuth::Lite2::Server::Error::UnsupportedResponseType undef
+      OAuth::Lite2::Server::GrantHandler undef
+      OAuth::Lite2::Server::GrantHandler::AuthorizationCode undef
+      OAuth::Lite2::Server::GrantHandler::ClientCredentials undef
+      OAuth::Lite2::Server::GrantHandler::ExternalService undef
+      OAuth::Lite2::Server::GrantHandler::GroupingRefreshToken undef
+      OAuth::Lite2::Server::GrantHandler::Password undef
+      OAuth::Lite2::Server::GrantHandler::RefreshToken undef
+      OAuth::Lite2::Server::GrantHandler::ServerState undef
+      OAuth::Lite2::Server::GrantHandlers undef
+      OAuth::Lite2::Signer undef
+      OAuth::Lite2::Signer::Algorithm undef
+      OAuth::Lite2::Signer::Algorithm::HMAC_SHA1 undef
+      OAuth::Lite2::Signer::Algorithm::HMAC_SHA256 undef
+      OAuth::Lite2::Signer::Algorithms undef
+      OAuth::Lite2::Util undef
+      Plack::Middleware::Auth::OAuth2::ProtectedResource undef
+    requirements:
+      Class::Accessor::Fast 0.34
+      Class::ErrorHandler 0.01
+      Data::Dump 1.17
+      Digest::SHA 5.48
+      ExtUtils::MakeMaker 6.36
+      Hash::MultiValue 0.08
+      IO::String 1.08
+      JSON::XS 0
+      LWP::UserAgent 0
+      Module::Build::Tiny 0.035
+      Params::Validate 0.95
+      Plack 0.09942
+      Scalar::Util 1.23
+      String::Random 0.22
+      Test::More 0
+      Try::Tiny 0.06
+      URI 1.54
+      XML::LibXML 1.7
+  OIDC-Lite-0.10
+    pathname: R/RI/RITOU/OIDC-Lite-0.10.tar.gz
+    provides:
+      OIDC::Lite 0.10
+      OIDC::Lite::Client::Token undef
+      OIDC::Lite::Client::TokenResponseParser undef
+      OIDC::Lite::Client::WebServer undef
+      OIDC::Lite::Model::AuthInfo undef
+      OIDC::Lite::Model::IDToken undef
+      OIDC::Lite::Server::AuthorizationHandler undef
+      OIDC::Lite::Server::DataHandler undef
+      OIDC::Lite::Server::Endpoint::Token undef
+      OIDC::Lite::Server::GrantHandler::AuthorizationCode undef
+      OIDC::Lite::Server::GrantHandlers undef
+      OIDC::Lite::Server::Scope undef
+      OIDC::Lite::Util::JWT undef
+      Plack::Middleware::Auth::OIDC::ProtectedResource undef
+    requirements:
+      Class::Accessor::Fast 0.34
+      Crypt::OpenSSL::RSA 0
+      Data::Dump 1.17
+      ExtUtils::MakeMaker 6.62
+      JSON::WebToken 0.10
+      JSON::XS 0
+      MIME::Base64 3.11
+      Module::Build 0.38
+      OAuth::Lite2 0.10
+      Params::Validate 0.95
+      Test::Mock::LWP::Conditional 0
+      Test::MockObject 0
+      Test::More 0
+      perl 5.008001
   OLE-Storage_Lite-0.19
     pathname: J/JM/JMCNAMARA/OLE-Storage_Lite-0.19.tar.gz
     provides:
@@ -6723,6 +6964,18 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+  String-Random-0.30
+    pathname: S/SH/SHLOMIF/String-Random-0.30.tar.gz
+    provides:
+      String::Random 0.30
+    requirements:
+      Carp 0
+      Exporter 0
+      Module::Build 0.28
+      parent 0
+      perl 5.006_001
+      strict 0
+      warnings 0
   String-RewritePrefix-0.006
     pathname: R/RJ/RJBS/String-RewritePrefix-0.006.tar.gz
     provides:
@@ -7087,6 +7340,22 @@ DISTRIBUTIONS
       perl 5.006001
       strict 0
       warnings 0
+  Test-Fake-HTTPD-0.08
+    pathname: M/MA/MASAKI/Test-Fake-HTTPD-0.08.tar.gz
+    provides:
+      Test::Fake::HTTPD 0.08
+    requirements:
+      Carp 0
+      Exporter 0
+      HTTP::Daemon 0
+      HTTP::Message::PSGI 0
+      Module::Build::Tiny 0.035
+      Scalar::Util 1.14
+      Test::SharedFork 0.29
+      Test::TCP 0
+      Time::HiRes 0
+      URI 0
+      perl 5.008001
   Test-Fatal-0.010
     pathname: R/RJ/RJBS/Test-Fatal-0.010.tar.gz
     provides:
@@ -7171,6 +7440,22 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.03
       Test::More 0
+  Test-Mock-LWP-Conditional-0.04
+    pathname: M/MA/MASAKI/Test-Mock-LWP-Conditional-0.04.tar.gz
+    provides:
+      Test::Mock::LWP::Conditional 0.04
+      Test::Mock::LWP::Conditional::Stubs undef
+    requirements:
+      Class::Method::Modifiers 0
+      LWP::UserAgent 0
+      Math::Random::Secure 0
+      Module::Build::Tiny 0.035
+      Scalar::Util 1.14
+      Sub::Install 0
+      Test::Fake::HTTPD 0.03
+      Test::More 0.98
+      Test::UseAllModules 0
+      perl 5.008001
   Test-MockModule-0.11
     pathname: G/GF/GFRANKS/Test-MockModule-0.11.tar.gz
     provides:
@@ -7423,6 +7708,16 @@ DISTRIBUTIONS
       strict 0
       version 0
       warnings 0
+  Test-UseAllModules-0.17
+    pathname: I/IS/ISHIGAKI/Test-UseAllModules-0.17.tar.gz
+    provides:
+      Test::UseAllModules 0.17
+    requirements:
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      ExtUtils::Manifest 0
+      Test::Builder 0.30
+      Test::More 0.60
   Test-WWW-Mechanize-1.44
     pathname: P/PE/PETDANCE/Test-WWW-Mechanize-1.44.tar.gz
     provides:
@@ -7764,6 +8059,16 @@ DISTRIBUTIONS
       Exporter::Tiny 0.026
       ExtUtils::MakeMaker 6.17
       perl 5.006001
+  Types-Serialiser-1.0
+    pathname: M/ML/MLEHMANN/Types-Serialiser-1.0.tar.gz
+    provides:
+      JSON::PP::Boolean 1.0
+      Types::Serialiser 1.0
+      Types::Serialiser::BooleanBase 1.0
+      Types::Serialiser::Error 1.0
+    requirements:
+      ExtUtils::MakeMaker 0
+      common::sense 0
   UNIVERSAL-can-1.20140328
     pathname: C/CH/CHROMATIC/UNIVERSAL-can-1.20140328.tar.gz
     provides:
@@ -8265,6 +8570,12 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001
+  common-sense-3.74
+    pathname: M/ML/MLEHMANN/common-sense-3.74.tar.gz
+    provides:
+      common::sense 3.74
+    requirements:
+      ExtUtils::MakeMaker 0
   gettext-1.05
     pathname: P/PV/PVANDRY/gettext-1.05.tar.gz
     provides:
