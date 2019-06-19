@@ -180,6 +180,9 @@ sub email_sign_in : Private {
         name => $c->get_param('name'),
         password => $user->password,
     };
+    $token_data->{name} = $c->session->{oauth}{name}
+        if $c->get_param('oauth_need_email') && $c->session->{oauth}{name} && !$token_data->{name};
+
     $token_data->{facebook_id} = $c->session->{oauth}{facebook_id}
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
     $token_data->{twitter_id} = $c->session->{oauth}{twitter_id}

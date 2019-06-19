@@ -179,6 +179,7 @@ sub oauth_success : Private {
         } else {
             # No matching ID, store ID for use later
             $c->session->{oauth}{$type . '_id'} = $uid;
+            $c->session->{oauth}{name} = $name;
             $c->stash->{oauth_need_email} = 1;
         }
     }
