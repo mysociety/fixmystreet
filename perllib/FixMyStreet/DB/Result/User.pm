@@ -24,21 +24,29 @@ __PACKAGE__->add_columns(
   },
   "email",
   { data_type => "text", is_nullable => 1 },
-  "email_verified",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 1 },
   "phone",
   { data_type => "text", is_nullable => 1 },
-  "phone_verified",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "from_body",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "from_body",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "title",
+  { data_type => "text", is_nullable => 1 },
+  "facebook_id",
+  { data_type => "bigint", is_nullable => 1 },
+  "twitter_id",
+  { data_type => "bigint", is_nullable => 1 },
   "is_superuser",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "extra",
+  { data_type => "text", is_nullable => 1 },
+  "email_verified",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "phone_verified",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "created",
   {
@@ -54,16 +62,10 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "title",
-  { data_type => "text", is_nullable => 1 },
-  "twitter_id",
-  { data_type => "bigint", is_nullable => 1 },
-  "facebook_id",
-  { data_type => "bigint", is_nullable => 1 },
-  "extra",
-  { data_type => "text", is_nullable => 1 },
   "area_ids",
   { data_type => "integer[]", is_nullable => 1 },
+  "oidc_ids",
+  { data_type => "text[]", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_facebook_id_key", ["facebook_id"]);
@@ -129,8 +131,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-05-23 18:03:28
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qtmzA7ywVkyQpjLh1ienNg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-06-20 16:31:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ryb6giJm/7N7svg/d+2GeA
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.
@@ -142,6 +144,7 @@ __PACKAGE__->rabx_column('extra');
 
 use Moo;
 use Text::CSV;
+use List::MoreUtils 'uniq';
 use FixMyStreet::SMS;
 use mySociety::EmailUtil;
 use namespace::clean -except => [ 'meta' ];
@@ -534,6 +537,7 @@ sub anonymize_account {
         title => undef,
         twitter_id => undef,
         facebook_id => undef,
+        oidc_ids => undef,
     });
 }
 
@@ -652,6 +656,22 @@ has roles_hash => (
 sub in_role {
     my ($self, $role) = @_;
     return $self->roles_hash->{$role};
+}
+
+sub add_oidc_id {
+    my ($self, $oidc_id) = @_;
+
+    my $oidc_ids = $self->oidc_ids || [];
+    my @oidc_ids = uniq ( $oidc_id, @$oidc_ids );
+    $self->oidc_ids(\@oidc_ids);
+}
+
+sub remove_oidc_id {
+    my ($self, $oidc_id) = @_;
+
+    my $oidc_ids = $self->oidc_ids || [];
+    my @oidc_ids = grep { $_ ne $oidc_id } @$oidc_ids;
+    $self->oidc_ids(scalar @oidc_ids ? \@oidc_ids : undef);
 }
 
 1;
