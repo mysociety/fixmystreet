@@ -1155,7 +1155,7 @@ sub check_for_errors : Private {
     }
 
     # if using social login then we don't care about other errors
-    $c->stash->{is_social_user} = $c->get_param('facebook_sign_in') || $c->get_param('twitter_sign_in');
+    $c->stash->{is_social_user} = $c->get_param('social_sign_in') ? 1 : 0;
     if ( $c->stash->{is_social_user} ) {
         delete $field_errors{name};
         delete $field_errors{username};
@@ -1197,10 +1197,8 @@ sub tokenize_user : Private {
         password => $report->user->password,
         title => $report->user->title,
     };
-    $c->stash->{token_data}{facebook_id} = $c->session->{oauth}{facebook_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
-    $c->stash->{token_data}{twitter_id} = $c->session->{oauth}{twitter_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
+    $c->forward('/auth/set_oauth_token_data', [ $c->stash->{token_data} ])
+        if $c->get_param('oauth_need_email');
 }
 
 sub send_problem_confirm_email : Private {
@@ -1308,6 +1306,7 @@ sub process_confirmation : Private {
         for (qw(name title facebook_id twitter_id)) {
             $problem->user->$_( $data->{$_} ) if $data->{$_};
         }
+        $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
         $problem->user->update;
     }
     if ($problem->user->email_verified) {
@@ -1368,11 +1367,7 @@ sub save_user_and_report : Private {
         $c->stash->{detach_to} = '/report/new/oauth_callback';
         $c->stash->{detach_args} = [$token->token];
 
-        if ( $c->get_param('facebook_sign_in') ) {
-            $c->detach('/auth/social/facebook_sign_in');
-        } elsif ( $c->get_param('twitter_sign_in') ) {
-            $c->detach('/auth/social/twitter_sign_in');
-        }
+        $c->forward('/auth/social/handle_sign_in') if $c->get_param('social_sign_in');
     }
 
     # Save or update the user if appropriate

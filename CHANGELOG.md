@@ -14,6 +14,7 @@
         - Add new roles system, to group permissions and apply to users. #2483
     - New features:
         - Categories can be listed under more than one group #2475
+        - OpenID Connect login support. #2523
     - Bugfixes:
         - Prevent creation of two templates with same title. #2471
         - Fix bug going between report/new pages client side. #2484

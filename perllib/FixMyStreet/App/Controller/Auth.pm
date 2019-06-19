@@ -44,13 +44,12 @@ sub general : Path : Args(0) {
 
     # decide which action to take
     $c->detach('code_sign_in') if $clicked_sign_in_by_code || ($data_email && !$data_password);
-    if (!$data_username && !$data_password && !$data_email) {
-        $c->detach('social/facebook_sign_in') if $c->get_param('facebook_sign_in');
-        $c->detach('social/twitter_sign_in') if $c->get_param('twitter_sign_in');
+    if (!$data_username && !$data_password && !$data_email && $c->get_param('social_sign_in')) {
+        $c->forward('social/handle_sign_in');
     }
 
-       $c->forward( 'sign_in', [ $data_username ] )
-    && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
+    $c->forward( 'sign_in', [ $data_username ] )
+        && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
 
 }
 
@@ -180,13 +179,13 @@ sub email_sign_in : Private {
         name => $c->get_param('name'),
         password => $user->password,
     };
-    $token_data->{name} = $c->session->{oauth}{name}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{name} && !$token_data->{name};
 
-    $token_data->{facebook_id} = $c->session->{oauth}{facebook_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
-    $token_data->{twitter_id} = $c->session->{oauth}{twitter_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
+    if ($c->get_param('oauth_need_email')) {
+        $token_data->{name} = $c->session->{oauth}{name}
+            if $c->session->{oauth}{name} && !$token_data->{name};
+        $c->forward('set_oauth_token_data', [ $token_data ]);
+    }
+
     if ($c->stash->{current_user}) {
         $token_data->{old_user_id} = $c->stash->{current_user}->id;
         $token_data->{r} = 'auth/change_email/success';
@@ -215,6 +214,14 @@ sub get_token : Private {
 
     my $data = $token_obj->data;
     return $data;
+}
+
+sub set_oauth_token_data : Private {
+    my ( $self, $c, $token_data ) = @_;
+
+    foreach (qw/facebook_id twitter_id oidc_id/) {
+        $token_data->{$_} = $c->session->{oauth}{$_} if $c->session->{oauth}{$_};
+    }
 }
 
 =head2 token
@@ -275,6 +282,7 @@ sub process_login : Private {
     $user->password( $data->{password}, 1 ) if $data->{password};
     $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
+    $user->add_oidc_id( $data->{oidc_id} ) if $data->{oidc_id};
     $user->update_or_insert;
     $c->authenticate( { $type => $data->{$type}, $ver => 1 }, 'no_password' );
 

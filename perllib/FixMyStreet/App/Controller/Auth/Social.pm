@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Net::Facebook::Oauth2;
 use Net::Twitter::Lite::WithAPIv1_1;
+use OIDC::Lite::Client::WebServer::Azure;
 
 =head1 NAME
 
@@ -13,9 +14,25 @@ FixMyStreet::App::Controller::Auth::Social - Catalyst Controller
 
 =head1 DESCRIPTION
 
-Controller for the Facebook/Twitter authentication.
+Controller for the Facebook/Twitter/OpenID Connect authentication.
 
 =head1 METHODS
+
+=head2 handle_sign_in
+
+Forwards to the appropriate (facebook|twitter|oidc)_sign_in method
+based on the social_sign_in parameter
+
+=cut
+
+sub handle_sign_in : Private {
+    my ($self, $c) = @_;
+
+    $c->detach('facebook_sign_in') if $c->get_param('social_sign_in') eq 'facebook';
+    $c->detach('twitter_sign_in') if $c->get_param('social_sign_in') eq 'twitter';
+    $c->detach('oidc_sign_in') if $c->get_param('social_sign_in') eq 'oidc';
+
+}
 
 =head2 facebook_sign_in
 
@@ -142,6 +159,84 @@ sub twitter_callback: Path('/auth/Twitter') : Args(0) {
     $c->forward('oauth_success', [ 'twitter', $info->{id}, $info->{name} ]);
 }
 
+sub oidc : Private {
+    my ($self, $c) = @_;
+
+    my $config = $c->cobrand->feature('oidc_login');
+
+    OIDC::Lite::Client::WebServer::Azure->new(
+        id               => $config->{client_id},
+        secret           => $config->{secret},
+        authorize_uri    => $config->{auth_uri},
+        access_token_uri => $config->{token_uri},
+    );
+}
+
+sub oidc_sign_in : Private {
+    my ( $self, $c ) = @_;
+
+    $c->detach( '/page_error_403_access_denied', [] ) if FixMyStreet->config('SIGNUPS_DISABLED');
+    $c->detach( '/page_error_400_bad_request', [] ) unless $c->cobrand->feature('oidc_login');
+
+    my $oidc = $c->forward('oidc');
+    my $url = $oidc->uri_to_redirect(
+        redirect_uri => $c->uri_for('/auth/OIDC'),
+        scope        => 'openid',
+        state        => 'test',
+        extra        => {
+            response_mode => 'form_post',
+        },
+    );
+
+    my %oauth;
+    $oauth{return_url} = $c->get_param('r');
+    $oauth{detach_to} = $c->stash->{detach_to};
+    $oauth{detach_args} = $c->stash->{detach_args};
+    $c->session->{oauth} = \%oauth;
+    $c->res->redirect($url);
+}
+
+sub oidc_callback: Path('/auth/OIDC') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->detach('oauth_failure') if $c->get_param('error');
+    $c->detach('/page_error_400_bad_request', []) unless $c->get_param('code');
+
+    my $oidc = $c->forward('oidc');
+
+    my $id_token;
+    eval {
+        $id_token = $oidc->get_access_token(
+            code => $c->get_param('code'),
+        );
+    };
+    if ($@) {
+        (my $message = $@) =~ s/at [^ ]*Auth.pm.*//;
+        $c->detach('/page_error_500_internal_error', [ $message ]);
+    }
+
+    $c->detach('oauth_failure') unless $id_token;
+
+    # sanity check the token audience is us...
+    $c->detach('/page_error_500_internal_error', ['invalid id_token']) unless $id_token->payload->{aud} eq $c->cobrand->feature('oidc_login')->{client_id};
+
+    # Some claims need parsing into a friendlier format
+    # XXX check how much of this is Westminster/Azure-specific
+    my $name = join(" ", $id_token->payload->{given_name}, $id_token->payload->{family_name});
+    my $email = $id_token->payload->{email};
+    # WCC Azure provides a single email address as an array for some reason
+    my $emails = $id_token->payload->{emails};
+    if ($emails && @$emails) {
+        $email = $emails->[0];
+    }
+
+    # There's a chance that a user may have multiple OIDC logins, so build a namespaced uid to prevent collisions
+    my $uid = join(":", $c->cobrand->moniker, $c->cobrand->feature('oidc_login')->{client_id}, $id_token->payload->{sub});
+
+    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email ]);
+}
+
+
 sub oauth_failure : Private {
     my ( $self, $c ) = @_;
 
@@ -159,19 +254,39 @@ sub oauth_success : Private {
 
     my $user;
     if ($email) {
-        # Only Facebook gets here
+        # Only Facebook & OIDC get here
         # We've got an ID and an email address
+
         # Remove any existing mention of this ID
-        my $existing = $c->model('DB::User')->find( { facebook_id => $uid } );
-        $existing->update( { facebook_id => undef } ) if $existing;
-        # Get or create a user, give it this Facebook ID
+        my $existing;
+        if ($type eq 'facebook') {
+            $existing = $c->model('DB::User')->find( { $type . '_id' => $uid } );
+            $existing->update( { $type . '_id' => undef } ) if $existing;
+        } elsif ( $type eq 'oidc' ) {
+            $existing = $c->model('DB::User')->find( { oidc_ids => \[
+                '&& ?', [ oidc_ids => [ $uid ] ]
+            ] } );
+            $existing->remove_oidc_id( $uid ) if $existing;
+        }
+
+        # Get or create a user, give it this Facebook/OIDC ID
         $user = $c->model('DB::User')->find_or_new( { email => $email } );
-        $user->facebook_id($uid);
+        if ( $type eq 'facebook' ) {
+            $user->facebook_id($uid);
+        } elsif ( $type eq 'oidc' ) {
+            $user->add_oidc_id($uid);
+        }
         $user->name($name);
         $user->in_storage() ? $user->update : $user->insert;
     } else {
         # We've got an ID, but no email
-        $user = $c->model('DB::User')->find( { $type . '_id' => $uid } );
+        if ($type eq 'oidc') {
+           $user = $c->model('DB::User')->find( { oidc_ids => \[
+                '&& ?', [ oidc_ids => [ $uid ] ]
+            ] } );
+        } else {
+            $user = $c->model('DB::User')->find( { $type . '_id' => $uid } );
+        }
         if ($user) {
             # Matching ID in our database
             $user->name($name);

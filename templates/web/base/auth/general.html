@@ -24,15 +24,22 @@
 [% IF NOT oauth_need_email AND c.cobrand.social_auth_enabled %]
     [% IF c.config.FACEBOOK_APP_ID %]
       <div class="form-box">
-        <button name="facebook_sign_in" id="facebook_sign_in" value="facebook_sign_in" class="btn btn--block btn--social btn--facebook">
+        <button name="social_sign_in" id="facebook_sign_in" value="facebook" class="btn btn--block btn--social btn--facebook">
             <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
             [% loc('Log in with Facebook') %]
         </button>
       </div>
     [% END %]
+    [% IF c.cobrand.feature('oidc_login') %]
+      <div class="form-box">
+        <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
+            [% tprintf(loc('Login with %s'), c.cobrand.feature('oidc_login').display_name) %]
+        </button>
+      </div>
+    [% END %]
     [% IF c.config.TWITTER_KEY %]
       <div class="form-box">
-        <button name="twitter_sign_in" id="twitter_sign_in" value="twitter_sign_in" class="btn btn--block btn--social btn--twitter">
+        <button name="social_sign_in" id="twitter_sign_in" value="twitter" class="btn btn--block btn--social btn--twitter">
             <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
             [% loc('Log in with Twitter') %]
         </button>
