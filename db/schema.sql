@@ -35,6 +35,7 @@ create table users (
     title           text,
     twitter_id      bigint  unique,
     facebook_id     bigint  unique,
+    oidc_ids        text    ARRAY,
     area_ids        integer ARRAY,
     extra           text
 );
