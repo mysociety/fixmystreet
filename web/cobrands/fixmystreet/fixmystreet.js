@@ -338,7 +338,7 @@ $.extend(fixmystreet.set_up, {
         $('.js-form-name').addClass('required');
     } );
 
-    $('#facebook_sign_in, #twitter_sign_in').click(function(e){
+    $('#facebook_sign_in, #twitter_sign_in, #oidc_sign_in').click(function(e){
         $('#username, #form_username_register, #form_username_sign_in').removeClass('required');
     });
 

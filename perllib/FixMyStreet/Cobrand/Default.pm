@@ -1264,7 +1264,7 @@ sub allow_report_extra_fields { 0 }
 
 sub social_auth_enabled {
     my $self = shift;
-    my $key_present = FixMyStreet->config('FACEBOOK_APP_ID') or FixMyStreet->config('TWITTER_KEY');
+    my $key_present = FixMyStreet->config('FACEBOOK_APP_ID') || FixMyStreet->config('TWITTER_KEY');
     return $key_present && !$self->call_hook("social_auth_disabled");
 }
 

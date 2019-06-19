@@ -5,54 +5,97 @@ use JSON::MaybeXS;
 
 use t::Mock::Facebook;
 use t::Mock::Twitter;
+use t::Mock::OpenIDConnect;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
- 
+
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my ($report) = $mech->create_problems_for_body(1, '2345', 'Test');
-
-FixMyStreet::override_config {
-    FACEBOOK_APP_ID => 'facebook-app-id',
-    TWITTER_KEY => 'twitter-key',
-    ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-    MAPIT_URL => 'http://mapit.uk/',
-}, sub {
-
-my $fb_email = 'facebook@example.org';
-my $fb_uid = 123456789;
-
 my $resolver = Test::MockModule->new('Email::Valid');
-$resolver->mock('address', sub { 'facebook@example.org' });
 
-for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
+
+for my $test (
+    {
+    type => 'facebook',
+    config => {
+        FACEBOOK_APP_ID => 'facebook-app-id',
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    },
+    email => 'facebook@example.org',
+    uid => 123456789,
+    mock => 't::Mock::Facebook',
+    mock_hosts => ['www.facebook.com', 'graph.facebook.com'],
+    host => 'www.facebook.com',
+    error_callback => '/auth/Facebook?error_code=ERROR',
+    success_callback => '/auth/Facebook?code=response-code',
+    redirect_pattern => qr{facebook\.com.*dialog/oauth.*facebook-app-id},
+}, {
+    type => 'oidc',
+    config => {
+        ALLOWED_COBRANDS => [ { westminster => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            oidc_login => {
+                westminster => {
+                    client_id => 'example_client_id',
+                    secret => 'example_secret_key',
+                    auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                    token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                    display_name => 'MyWestminster'
+                }
+            }
+        }
+    },
+    email => 'oidc@example.org',
+    uid => "westminster:example_client_id:my_cool_user_id",
+    mock => 't::Mock::OpenIDConnect',
+    mock_hosts => ['oidc.example.org'],
+    host => 'oidc.example.org',
+    error_callback => '/auth/OIDC?error=ERROR',
+    success_callback => '/auth/OIDC?code=response-code',
+    redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
+}
+) {
+
+FixMyStreet::override_config $test->{config}, sub {
+
+$resolver->mock('address', sub { $test->{email} });
+
+for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
     for my $page ( 'my', 'report', 'update' ) {
-        subtest "test FB '$fb_state' login for page '$page'" => sub {
+        subtest "test $test->{type} '$state' login for page '$page'" => sub {
             # Lots of user changes happening here, make sure we don't confuse
             # Catalyst with a cookie session user that no longer exists
             $mech->log_out_ok;
             $mech->cookie_jar({});
-            if ($fb_state eq 'existing UID') {
-                my $user = $mech->create_user_ok($fb_email);
-                $user->update({ facebook_id => $fb_uid });
+            if ($state eq 'existing UID') {
+                my $user = $mech->create_user_ok($test->{email});
+                if ($test->{type} eq 'facebook') {
+                    $user->update({ facebook_id => $test->{uid} });
+                } elsif ($test->{type} eq 'oidc') {
+                    $user->update({ oidc_ids => [ $test->{uid} ] });
+                }
             } else {
-                $mech->delete_user($fb_email);
+                $mech->delete_user($test->{email});
             }
 
-            # Set up a mock to catch (most, see below) requests to Facebook
-            my $fb = t::Mock::Facebook->new;
-            $fb->returns_email(0) if $fb_state eq 'no email' || $fb_state eq 'existing UID';
-            LWP::Protocol::PSGI->register($fb->to_psgi_app, host => 'www.facebook.com');
-            LWP::Protocol::PSGI->register($fb->to_psgi_app, host => 'graph.facebook.com');
+            # Set up a mock to catch (most, see below) requests to the OAuth API
+            my $mock_api = $test->{mock}->new;
+            $mock_api->returns_email(0) if $state eq 'no email' || $state eq 'existing UID';
+            for my $host (@{ $test->{mock_hosts} }) {
+                LWP::Protocol::PSGI->register($mock_api->to_psgi_app, host => $host);
+            }
 
             # Due to https://metacpan.org/pod/Test::WWW::Mechanize::Catalyst#External-Redirects-and-allow_external
-            # the redirect to Facebook's OAuth page can mess up the session
-            # cookie. So let's pretend we always on www.facebook.com, which
+            # the redirect to the OAuth page can mess up the session
+            # cookie. So let's pretend we're always on the API host, which
             # sorts that out.
-            $mech->host('www.facebook.com');
+            $mech->host($test->{host});
 
             # Fetch the page with the form via which we wish to log in
             my $fields;
@@ -72,20 +115,23 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                     update => 'Test update',
                 };
             }
-            $mech->submit_form(with_fields => $fields, button => 'facebook_sign_in');
+            $mech->submit_form(with_fields => $fields, button => 'social_sign_in');
 
             # As well as the cookie issue above, caused by this external
             # redirect rewriting the host, the redirect gets handled directly
             # by Catalyst, not our mocked handler, so will be a 404. Check
             # the redirect happened instead.
-            is $mech->res->previous->code, 302, 'FB button redirected';
-            like $mech->res->previous->header('Location'), qr{facebook\.com.*dialog/oauth.*facebook-app-id}, 'FB redirect to oauth URL';
+            is $mech->res->previous->code, 302, "$test->{type} button redirected";
+            like $mech->res->previous->header('Location'), $test->{redirect_pattern}, "$test->{type} redirect to oauth URL";
 
-            # Okay, now call the callback Facebook would send us to
-            if ($fb_state eq 'refused') {
-                $mech->get_ok('/auth/Facebook?error_code=ERROR');
+            # Okay, now call the callback we'd be sent to
+            # NB: for OIDC these should be post_ok, but that doesn't work because
+            # the session cookie doesn't seem to be included (related to the
+            # cookie issue above perhaps).
+            if ($state eq 'refused') {
+                $mech->get_ok($test->{error_callback});
             } else {
-                $mech->get_ok('/auth/Facebook?code=response-code');
+                $mech->get_ok($test->{success_callback});
             }
 
             # Check we're showing the right form, regardless of what came back
@@ -95,14 +141,14 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->content_contains('/report/update');
             }
 
-            if ($fb_state eq 'refused') {
+            if ($state eq 'refused') {
                 $mech->content_contains('Sorry, we could not log you in. Please fill in the form below.');
                 $mech->not_logged_in_ok;
-            } elsif ($fb_state eq 'no email') {
+            } elsif ($state eq 'no email') {
                 $mech->content_contains('We need your email address, please give it below.');
                 # We don't have an email, so check that we can still submit it,
                 # and the ID carries through the confirmation
-                $fields->{username} = $fb_email;
+                $fields->{username} = $test->{email};
                 $fields->{name} = 'Ffion Tester' unless $page eq 'my';
                 $mech->submit_form(with_fields => $fields, $page eq 'my' ? (button => 'sign_in_by_code') : ());
                 $mech->content_contains('Nearly done! Now check your email');
@@ -111,15 +157,23 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->clear_emails_ok;
                 ok $url, "extracted confirm url '$url'";
 
-                my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $fb_email } );
+                my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
                 if ($page eq 'my') {
                     is $user, undef, 'No user yet exists';
                 } else {
-                    is $user->facebook_id, undef, 'User has no facebook ID';
+                    if ($test->{type} eq 'facebook') {
+                        is $user->facebook_id, undef, 'User has no facebook ID';
+                    } elsif ($test->{type} eq 'oidc') {
+                        is $user->oidc_ids, undef, 'User has no OIDC IDs';
+                    }
                 }
                 $mech->get_ok( $url );
-                $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $fb_email } );
-                is $user->facebook_id, $fb_uid, 'User now has correct facebook ID';
+                $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
+                if ($test->{type} eq 'facebook') {
+                    is $user->facebook_id, $test->{uid}, 'User now has correct facebook ID';
+                } elsif ($test->{type} eq 'oidc') {
+                    is_deeply $user->oidc_ids, [ $test->{uid} ], 'User now has correct OIDC IDs';
+                }
 
             } elsif ($page ne 'my') {
                 # /my auth login goes directly there, no message like this
@@ -131,6 +185,14 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
         }
     }
 }
+}
+};
+
+FixMyStreet::override_config {
+    TWITTER_KEY => 'twitter-key',
+    ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
 
 $resolver->mock('address', sub { 'twitter@example.org' });
 
@@ -180,7 +242,7 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                     update => 'Test update',
                 };
             }
-            $mech->submit_form(with_fields => $fields, button => 'twitter_sign_in');
+            $mech->submit_form(with_fields => $fields, button => 'social_sign_in');
 
             # As well as the cookie issue above, caused by this external
             # redirect rewriting the host, the redirect gets handled directly
