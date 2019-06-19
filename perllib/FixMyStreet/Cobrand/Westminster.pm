@@ -26,4 +26,10 @@ sub enter_postcode_text {
 
 sub send_questionnaires { 0 }
 
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+ }
+
 1;
