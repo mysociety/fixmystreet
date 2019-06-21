@@ -11,6 +11,7 @@ $mech->create_contact_ok(email => 'council@example.com', body_id => $bromley->id
 $mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole');
 
 my $row = FixMyStreet::DB->resultset('Problem')->new( {
+    id => 123,
     bodies_str => '1000',
     category => 'Pothole',
     cobrand => '',

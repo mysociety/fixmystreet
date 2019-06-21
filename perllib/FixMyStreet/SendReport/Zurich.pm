@@ -29,10 +29,7 @@ sub build_recipient_list {
     my $parent = $body->parent;
     if ($parent && !$parent->parent) {
         # Division, might have an individual contact email address
-        my $contact = $row->result_source->schema->resultset("Contact")->find( {
-            body_id => $body->id,
-            category => $row->category
-        } );
+        my $contact = $self->fetch_category($body, $row);
         $body_email = $contact->email if $contact && $contact->email;
     }
 

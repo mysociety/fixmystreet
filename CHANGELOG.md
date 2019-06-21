@@ -14,6 +14,7 @@
         - Don't include private reports when searching by ref from front page.
         - Set fixmystreet.bodies sooner client-side, for two-tier locations.
         - Fix front-end testing script when run with Vagrant.
+        - Handle missing category when sending open311 reports #2502
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
         - Add feature cobrand helper function.
@@ -25,6 +26,7 @@
           marked private on the site.
         - Add new upload_files flag which sends files/photos as part of the
           POST service request.
+        - Allow description in email template with placeholder.
 
 * v2.6 (3rd May 2019)
     - New features:

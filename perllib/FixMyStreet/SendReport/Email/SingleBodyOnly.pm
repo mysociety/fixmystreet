@@ -15,11 +15,7 @@ sub build_recipient_list {
     my $body = $self->bodies->[0];
 
     # We don't care what the category was, look up the relevant contact
-    my $contact = $row->result_source->schema->resultset("Contact")->not_deleted->find({
-        body_id => $body->id,
-        category => $self->contact,
-    });
-    return unless $contact;
+    my $contact = $self->fetch_category($body, $row, $self->contact) or return;
 
     @{$self->to} = map { [ $_, $body->name ] } split /,/, $contact->email;
     return 1;

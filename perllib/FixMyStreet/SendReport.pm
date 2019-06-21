@@ -60,4 +60,21 @@ sub add_body {
     $self->body_config->{ $body->id } = $config;
 }
 
+sub fetch_category {
+    my ($self, $body, $row, $category_override) = @_;
+
+    my $contact = $row->result_source->schema->resultset("Contact")->not_deleted->find( {
+        body_id => $body->id,
+        category => $category_override || $row->category,
+    } );
+
+    unless ($contact) {
+        my $error = "Category " . $row->category . " does not exist for body " . $body->id . " and report " . $row->id . "\n";
+        $self->error( "Failed to send over Open311\n" ) unless $self->error;
+        $self->error( $self->error . "\n" . $error );
+    }
+
+    return $contact;
+}
+
 1;
