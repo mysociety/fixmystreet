@@ -48,7 +48,7 @@ sub lookup_site_code_config {
     # uncoverable subroutine
     # uncoverable statement
     {
-        buffer => 200, # metres
+        buffer => 1000, # metres
         url => "https://tilma.mysociety.org/mapserver/bexley",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => "Streets",
