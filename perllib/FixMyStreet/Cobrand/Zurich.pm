@@ -524,7 +524,7 @@ sub admin {
 sub category_options {
     my $self = shift;
     my $c = $self->{c};
-    my @categories = $c->model('DB::Contact')->not_deleted->all;
+    my @categories = $c->model('DB::Contact')->not_deleted->search(undef, { order_by => 'category' })->all;
     $c->stash->{category_options} = [ map { {
         category => $_->category,
         category_display => $_->get_extra_metadata('admin_label') || $_->category,
