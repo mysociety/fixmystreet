@@ -274,8 +274,10 @@ sub by_category_ajax_data : Private {
         $category ? (list_of_names => $list_of_names) : (),
     };
 
+    my $non_public = $c->stash->{non_public_categories}->{$category};
     my $body = {
         bodies => $list_of_names,
+        $non_public ? (non_public => JSON->true) : (),
     };
 
     if ($generate) {

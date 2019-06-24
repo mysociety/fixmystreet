@@ -152,6 +152,12 @@ my $contact17 = $mech->create_contact_ok(
     category => 'Trees',
     email => 'trees-2483@example.com',
 );
+my $contact18 = $mech->create_contact_ok(
+    body_id => $body_ids{2483}, # Hounslow
+    category => 'General Enquiry',
+    email => 'general-enquiry-2483@example.com',
+    non_public => 1,
+);
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -1418,6 +1424,15 @@ subtest "check map click ajax response" => sub {
         $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.482286&longitude=-0.328163' );
     };
     isnt defined $extra_details->{display_names}, 'no council display names if none defined';
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'hounslow',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.482286&longitude=-0.328163' );
+    };
+    ok $extra_details->{by_category}->{'General Enquiry'}->{non_public}, 'non_public set correctly for private category';
+    isnt defined $extra_details->{by_category}->{Tree}->{non_public}, 'non_public omitted for public category';
 };
 
 #### test uploading an image
