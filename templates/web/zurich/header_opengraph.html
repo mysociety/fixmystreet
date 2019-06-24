@@ -1,0 +1,8 @@
+        <meta property="og:url" content="[% c.cobrand.base_url %][% c.req.uri.path %]">
+        <meta property="og:title" content="[% title || site_name | html %]">
+        <meta property="og:site_name" content="[% site_name %]">
+        [% IF c.req.uri.path == '/' %]
+        <meta name="description" property="og:description" content="Melden Sie Schäden an der Infrastruktur der Stadt Zürich wie Schlaglöcher, defekte Beleuchtung/Signalisation, Graffitis, Schädlinge oder Abfall auf öffentlichem Grund.">
+        [% END %]
+        <meta property="og:type" content="website">
+        [% INCLUDE 'header_opengraph_image.html' %]
