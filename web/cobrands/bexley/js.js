@@ -95,7 +95,7 @@ fixmystreet.assets.add(defaults, {
     },
     always_visible: true,
     non_interactive: true,
-    nearest_radius: 20,
+    nearest_radius: 100,
     usrn: {
         attribute: 'NSG_REF',
         field: 'NSGRef'

@@ -112,4 +112,22 @@ FixMyStreet::override_config {
 
 };
 
+subtest 'nearest road returns correct road' => sub {
+    my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+    my $cfg = {
+        accept_feature => sub { 1 },
+        property => 'fid',
+    };
+    my $features = [
+        { geometry => { type => 'Polygon' } },
+        { geometry => { type => 'MultiLineString',
+            coordinates => [ [ [ 545499, 174361 ], [ 545420, 174359 ], [ 545321, 174352 ] ] ] },
+          properties => { fid => '20101226' } },
+        { geometry => { type => 'LineString',
+            coordinates => [ [ 545420, 174359 ], [ 545419, 174375 ], [ 545418, 174380 ], [ 545415, 174391 ] ] },
+          properties => { fid => '20100024' } },
+    ];
+    is $cobrand->_nearest_feature($cfg, 545451, 174380, $features), '20101226';
+};
+
 done_testing();

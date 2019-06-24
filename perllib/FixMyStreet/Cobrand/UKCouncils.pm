@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Carp;
+use List::Util qw(min max);
 use URI::Escape;
 use LWP::Simple;
 use URI;
@@ -273,9 +274,16 @@ sub lookup_site_code {
     my $buffer = shift;
 
     my $cfg = $self->lookup_site_code_config;
-
-    $buffer ||= $cfg->{buffer}; # metres
+    $cfg->{buffer} = $buffer if $buffer;
     my ($x, $y) = $row->local_coords;
+
+    my $features = $self->_fetch_features($cfg, $x, $y);
+    return $self->_nearest_feature($cfg, $x, $y, $features);
+}
+
+sub _fetch_features {
+    my ($self, $cfg, $x, $y) = @_;
+    my $buffer = $cfg->{buffer};
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
     my $uri = URI->new($cfg->{url});
@@ -289,9 +297,7 @@ sub lookup_site_code {
         BBOX => "$w,$s,$e,$n"
     );
 
-    my $response = get($uri);
-
-    return '' unless $response;
+    my $response = get($uri) or return;
 
     my $j = JSON->new->utf8->allow_nonref;
     try {
@@ -299,34 +305,38 @@ sub lookup_site_code {
     } catch {
         # There was either no asset found, or an error with the WFS
         # call - in either case let's just proceed without the USRN.
-        return '';
+        return;
     };
+
+    return $j->{features};
+}
+
+sub _nearest_feature {
+    my ($self, $cfg, $x, $y, $features) = @_;
 
     # We have a list of features, and we want to find the one closest to the
     # report location.
     my $site_code = '';
     my $nearest;
 
-    for my $feature ( @{ $j->{features} } ) {
+    for my $feature ( @{$features || []} ) {
         next unless $cfg->{accept_feature}($feature);
 
         # We shouldn't receive anything aside from these two geometry types, but belt and braces.
         next unless $feature->{geometry}->{type} eq 'MultiLineString' || $feature->{geometry}->{type} eq 'LineString';
 
-        my @coordinates = @{ $feature->{geometry}->{coordinates} };
-        if ( $feature->{geometry}->{type} eq 'MultiLineString') {
-            # The coordinates are stored as a list of lists, so flatten 'em out
-            @coordinates = map { @{ $_ } } @coordinates;
+        my @linestrings = @{ $feature->{geometry}->{coordinates} };
+        if ( $feature->{geometry}->{type} eq 'LineString') {
+            @linestrings = ([ @linestrings ]);
         }
 
-        # If any of this feature's points are closer than those we've seen so
-        # far then use the site_code from this feature.
-        for my $coords ( @coordinates ) {
-            my ($fx, $fy) = @$coords;
-            my $distance = $self->_distance($x, $y, $fx, $fy);
-            if ( !defined $nearest || $distance < $nearest ) {
-                $site_code = $feature->{properties}->{$cfg->{property}};
-                $nearest = $distance;
+        foreach my $coordinates (@linestrings) {
+            for (my $i=0; $i<@$coordinates-1; $i++) {
+                my $distance = $self->_distanceToLine($x, $y, $coordinates->[$i], $coordinates->[$i+1]);
+                if ( !defined $nearest || $distance < $nearest ) {
+                    $site_code = $feature->{properties}->{$cfg->{property}};
+                    $nearest = $distance;
+                }
             }
         }
     }
@@ -365,18 +375,24 @@ sub extra_contact_validation {
 }
 
 
-=head2 _distance
+=head2 _distanceToLine
 
-Returns the cartesian distance between two coordinates.
+Returns the cartesian distance of a point from a line.
 This is not a general-purpose distance function, it's intended for use with
 fairly nearby coordinates in EPSG:27700 where a spheroid doesn't need to be
 taken into account.
 
 =cut
-sub _distance {
-    my ($self, $ax, $ay, $bx, $by) = @_;
-    return sqrt( (($ax - $bx) ** 2) + (($ay - $by) ** 2) );
-}
 
+sub _distanceToLine {
+    my ($self, $x, $y, $start, $end) = @_;
+    my $dx = $end->[0] - $start->[0];
+    my $dy = $end->[1] - $start->[1];
+    my $along = ($dx == 0 && $dy == 0) ? 0 : (($dx * ($x - $start->[0])) + ($dy * ($y - $start->[1]))) / ($dx**2 + $dy**2);
+    $along = max(0, min(1, $along));
+    my $fx = $start->[0] + $along * $dx;
+    my $fy = $start->[1] + $along * $dy;
+    return sqrt( (($x - $fx) ** 2) + (($y - $fy) ** 2) );
+}
 
 1;
