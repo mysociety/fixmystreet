@@ -525,11 +525,13 @@ sub category_options {
     my $self = shift;
     my $c = $self->{c};
     my @categories = $c->model('DB::Contact')->not_deleted->all;
-    $c->stash->{category_options} = [ map { {
+    @categories = map { {
         category => $_->category,
         category_display => $_->get_extra_metadata('admin_label') || $_->category,
         abbreviation => $_->get_extra_metadata('abbreviation'),
-    } } @categories ];
+    } } @categories;
+    @categories = sort { $a->{category_display} cmp $b->{category_display} } @categories;
+    $c->stash->{category_options} = \@categories;
 }
 
 sub admin_report_edit {
