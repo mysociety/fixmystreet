@@ -163,7 +163,7 @@ subtest "Banners are displayed correctly" => sub {
             description => 'closed report',
             state => 'external',
             banner_id => 'closed',
-            banner_text => 'Extern',
+            banner_text => 'Beantwortet',
         },
         {
             description => 'in progress report',
@@ -674,7 +674,7 @@ subtest "external report triggers email" => sub {
         $mech->get_ok( '/report/' . $report->id );
     };
     is ($report->state, 'external', 'Report was closed correctly');
-    $mech->content_contains('Extern')
+    $mech->content_contains('Beantwortet')
         or die $mech->content;
     $mech->content_contains('Third Test');
     $mech->content_contains($report->get_extra_metadata('public_response')) or die $mech->content;
@@ -711,7 +711,7 @@ subtest "external report triggers email" => sub {
                 } });
                 $mech->get_ok( '/report/' . $report->id );
             };
-        $mech->content_contains('Extern');
+        $mech->content_contains('Beantwortet');
         $mech->content_contains('Third Test');
         $mech->content_contains($report->get_extra_metadata('public_response'));
         send_reports_for_zurich();
