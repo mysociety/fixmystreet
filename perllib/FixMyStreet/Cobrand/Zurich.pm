@@ -152,7 +152,7 @@ sub problem_as_hashref {
         if ( $problem->state eq 'confirmed' ) {
             $hashref->{state} = 'open';
             $hashref->{state_t} = _('Open');
-        } elsif ( $problem->state eq 'wish' ) {
+        } elsif ( $problem->state eq 'wish' || $problem->state eq 'external' ) {
             $hashref->{state_t} = _('Closed');
         } elsif ( $problem->is_fixed ) {
             $hashref->{state} = 'closed';
