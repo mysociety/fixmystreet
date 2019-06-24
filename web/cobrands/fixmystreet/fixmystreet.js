@@ -441,6 +441,13 @@ $.extend(fixmystreet.set_up, {
         } else {
             $category_meta.empty();
         }
+        if (data && data.non_public) {
+            $(".js-hide-if-private-category").hide();
+            $(".js-hide-if-public-category").show();
+        } else {
+            $(".js-hide-if-private-category").show();
+            $(".js-hide-if-public-category").hide();
+        }
 
         // remove existing validation rules
         validation_rules = fixmystreet.validator.settings.rules;

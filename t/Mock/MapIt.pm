@@ -43,6 +43,8 @@ my @PLACES = (
     [ 'NN1 2NS', 52.238301, -0.889992, 2234, 'Northamptonshire County Council', 'CTY', 2397, 'Northampton Borough Council', 'DIS' ],
     [ '?', 52.238827, -0.894970, 2234, 'Northamptonshire County Council', 'CTY', 2397, 'Northampton Borough Council', 'DIS' ],
     [ 'TW7 5JN', 51.482286, -0.328163, 2483, 'Hounslow Borough Council', 'LBO' ],
+    [ '?', 51.48111, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
+    [ '?', 51.482045, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
     [ '?', 50.78301, -0.646929 ],
     [ 'TA1 1QP', 51.023569, -3.099055, 2239, 'Somerset County Council', 'CTY', 2429, 'Taunton Deane Borough Council', 'DIS' ],
     [ 'GU51 4AE', 51.279456, -0.846216, 2333, 'Hart District Council', 'DIS', 2227, 'Hampshire County Council', 'CTY' ],

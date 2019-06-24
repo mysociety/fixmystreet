@@ -2,12 +2,21 @@
 [% DEFAULT list_of_names = default_list %]
 
 <p>
-[%
+[% UNLESS non_public_categories.$category;
+
     tprintf(
         loc('These will be sent to <strong>%s</strong> and also published online for others to see, in accordance with our <a href="%s">privacy policy</a>.'),
         list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' ), c.cobrand.privacy_policy_url
     );
-%]
+
+ELSE;
+
+    tprintf(
+        loc('These will be sent to <strong>%s</strong> but not published online.'),
+        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+    );
+
+END %]
 
 [% TRY %][% INCLUDE 'report/new/councils_extra_text.html' %][% CATCH file %][% END %]
 </p>

@@ -262,12 +262,6 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
 sub by_category_ajax_data : Private {
     my ($self, $c, $type, $category) = @_;
 
-    my $generate;
-    if (($c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1) or
-            $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
-        $generate = 1;
-    }
-
     my $bodies = $c->forward('contacts_to_bodies', [ $category ]);
     my $list_of_names = [ map { $_->name } ($category ? @$bodies : values %{$c->stash->{bodies_to_list}}) ];
     my $vars = {
@@ -277,19 +271,21 @@ sub by_category_ajax_data : Private {
     my $non_public = $c->stash->{non_public_categories}->{$category};
     my $body = {
         bodies => $list_of_names,
-        $non_public ? (non_public => JSON->true) : (),
+        $non_public ? ( non_public => JSON->true ) : (),
     };
 
-    if ($generate) {
+    if (($c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1) or
+            $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
         $body->{category_extra} = $c->render_fragment('report/new/category_extras.html', $vars);
         $body->{category_extra_json} = $c->forward('generate_category_extra_json');
-
     }
 
     my $unresponsive = $c->stash->{unresponsive}->{$category};
     $unresponsive ||= $c->stash->{unresponsive}->{ALL} || '' if $type eq 'one';
 
     # unresponsive must return empty string if okay, as that's what mobile app checks
+    # councils_text.html must be rendered if it differs from the default output,
+    # which currently means for unresponsive and non_public categories.
     if ($type eq 'one' || ($type eq 'all' && $unresponsive)) {
         $body->{unresponsive} = $unresponsive;
         # Check for no bodies here, because if there are any (say one
@@ -298,6 +294,9 @@ sub by_category_ajax_data : Private {
             $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html', $vars);
             $body->{councils_text_private} = $c->render_fragment( 'report/new/councils_text_private.html');
         }
+    }
+    if ($non_public) {
+        $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html', $vars);
     }
 
     return $body;

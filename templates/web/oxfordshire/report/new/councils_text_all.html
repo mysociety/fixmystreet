@@ -1,5 +1,8 @@
 <p>
     All the information you provide here will be sent to the
-    <strong>relevant department</strong>. The summary and description
-    will also be made public, plus your name if you give us permission.
+    <strong>relevant department</strong>.
+    [% UNLESS non_public_categories.$category %]
+        The summary and description
+        will also be made public, plus your name if you give us permission.
+    [% END %]
 </p>

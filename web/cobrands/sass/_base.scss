@@ -2103,6 +2103,10 @@ label .muted {
     }
 }
 
+.js-hide-if-public-category {
+  display: none;
+}
+
 .asset-spot:before {
     content: "";
     display: inline-block;

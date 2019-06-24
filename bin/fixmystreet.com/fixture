@@ -98,6 +98,7 @@ if ($opt->test_fixtures) {
         { area_id => 2217, categories => ['Flytipping', 'Roads'], name => 'Buckinghamshire County Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
+        { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
@@ -134,6 +135,14 @@ if ($opt->test_fixtures) {
         ],
     });
     $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2483},
+        category => 'Other',
+    });
+    $child_cat->update({
+        non_public => 1
+    });
 }
 
 FixMyStreet::DB::Factory::ResponseTemplate->create({

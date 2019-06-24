@@ -10,7 +10,8 @@
 <div class="js-hide-if-invalid-category">
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
-    <h2 class="form-section-heading">[% loc( 'Public details' ) %]</h2>
+    <h2 class="form-section-heading js-hide-if-private-category">[% loc( 'Public details' ) %]</h2>
+    <h2 class="form-section-heading form-section-heading--private js-hide-if-public-category">[% loc( 'Report details' ) %]</h2>
     <div class="form-section-description" id="js-councils_text">
       [% IF js %]
         [% PROCESS 'report/new/councils_text_all.html' list_of_names = [ loc('the local council') ] %]

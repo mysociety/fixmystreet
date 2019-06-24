@@ -1,5 +1,8 @@
 <p>
-    These will be sent to <strong>Hounslow Highways</strong> and also published
-    online for others to see, in accordance with our
-    <a href="[% c.cobrand.privacy_policy_url %]">privacy policy</a>.
+    [% UNLESS non_public_categories.$category %]
+        These will be sent to <strong>Hounslow Highways</strong> and also published online for others to see, in accordance with our
+        <a href="[% c.cobrand.privacy_policy_url %]">privacy policy</a>.
+    [% ELSE %]
+        These will be sent to <strong>Hounslow Highways</strong> but not published online.
+    [% END %]
 </p>
