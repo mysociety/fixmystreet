@@ -141,7 +141,7 @@ sub problem_as_hashref {
         $hashref->{title} = _('This report is awaiting moderation.');
         $hashref->{banner_id} = 'closed';
     } else {
-        if ( $problem->state eq 'confirmed' || $problem->state eq 'external' ) {
+        if ( $problem->state eq 'confirmed' ) {
             $hashref->{banner_id} = 'closed';
         } elsif ( $problem->is_fixed || $problem->is_closed ) {
             $hashref->{banner_id} = 'fixed';
@@ -152,7 +152,7 @@ sub problem_as_hashref {
         if ( $problem->state eq 'confirmed' ) {
             $hashref->{state} = 'open';
             $hashref->{state_t} = _('Open');
-        } elsif ( $problem->state eq 'wish' ) {
+        } elsif ( $problem->state eq 'wish' || $problem->state eq 'external' ) {
             $hashref->{state_t} = _('Closed');
         } elsif ( $problem->is_fixed ) {
             $hashref->{state} = 'closed';
