@@ -55,26 +55,12 @@
   [% END %]
 
     <dt class="print-only">[% loc('Reported:') %] <!-- Meldedatum --></dt>
-    <dd class="screen-no-space-after">
+    <dd>
         <strong>[% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</strong>
     </dd>
-    <dt class="print-only">[% loc('Coordinates:') %] <!-- Koordinaten --></dt>
-    <dd class="screen-no-space-after print-no-space-after">
-        [% problem.local_coords.join(',') %]
-        <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
-        <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
-    </dd>
-    <dd class="screen-no-space-after print-no-space-after">
-      [% IF problem.used_map %]
-        [% loc('Used map') %]
-      [% ELSE %]
-        [% loc("Didn't use map") %]
-      [% END %]
-    </dd>
-    <dd>[%
-        safe = problem.postcode | html;
-        tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
-    %]</dd>
+
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
 
     [% SET fields = problem.get_extra_fields; IF fields.size %]
     <dd>
