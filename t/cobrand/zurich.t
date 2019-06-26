@@ -65,23 +65,16 @@ $mech->content_like( qr/zurich/i );
 
 # Set up bodies
 my $zurich = $mech->create_body_ok( 1, 'Zurich' );
-$zurich->parent( undef );
-$zurich->update;
-my $division = $mech->create_body_ok( 2, 'Division 1' );
-$division->parent( $zurich->id );
-$division->send_method( 'Zurich' );
-$division->endpoint( 'division@example.org' );
-$division->update;
-$division->body_areas->find_or_create({ area_id => 423017 });
-my $subdivision = $mech->create_body_ok( 3, 'Subdivision A' );
-$subdivision->parent( $division->id );
-$subdivision->send_method( 'Zurich' );
-$subdivision->endpoint( 'subdivision@example.org' );
-$subdivision->update;
-my $external_body = $mech->create_body_ok( 4, 'External Body' );
-$external_body->send_method( 'Zurich' );
-$external_body->endpoint( 'external_body@example.net' );
-$external_body->update;
+my $division = $mech->create_body_ok( 423017, 'Division 1', {
+    parent => $zurich->id, send_method => 'Zurich', endpoint => 'division@example.org' } );
+my $division2 = $mech->create_body_ok( 423017, 'Division 2', {
+    parent => $zurich->id, send_method => 'Zurich', endpoint => 'division2@example.org' } );
+my $subdivision = $mech->create_body_ok( 3, 'Subdivision A',
+    { parent => $division->id, send_method => 'Zurich', endpoint => 'subdivision@example.org' } );
+my $external_body = $mech->create_body_ok( 4, 'External Body',
+    { send_method => 'Zurich', endpoint => 'external_body@example.net' } );
+my $external_body2 = $mech->create_body_ok( 4, 'Another Body External',
+    { send_method => 'Zurich', endpoint => 'external_body2@example.net' } );
 
 sub get_export_rows_count {
     my $mech = shift;
@@ -759,6 +752,24 @@ subtest "link external body to category" => sub {
     $mech->content_contains('<option value="Cat1" selected>');
     $external_body->discard_changes;
     is $external_body->get_extra_metadata('category'), 'Cat1';
+};
+
+subtest "shows correct external bodies" => sub {
+    $report->discard_changes;
+    $report->state('feedback pending');
+    $report->set_extra_metadata('closure_status' => 'external');
+    $report->update;
+    $user = $mech->log_in_ok( 'dm1@example.org' );
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_like(qr/<option[^>]*>External Body<\/option>\s*<option[^>]*>Another Body External<\/option>/); # Test order
+
+    $user = $mech->log_in_ok( 'dm2@example.org' );
+    $user->update({ from_body => $division2->id });
+    $report->update({ bodies_str => $division2->id });
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('Another Body External');
+    $mech->content_lacks('External Body');
+    $report->update({ bodies_str => $division->id });
 };
 
 subtest "problems can't be assigned to deleted bodies" => sub {
