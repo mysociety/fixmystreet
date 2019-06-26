@@ -380,9 +380,13 @@ sub body_params : Private {
     );
     my %params = map { $_ => $c->get_param($_) || $defaults{$_} } keys %defaults;
     $c->forward('check_body_params', [ \%params ]);
+
     my @extras = qw/fetch_all_problems/;
+    my $cobrand_extras = $c->cobrand->call_hook('body_extra_fields');
+    push @extras, @$cobrand_extras if $cobrand_extras;
+
     %defaults = map { $_ => '' } @extras;
-    my %extras = map { $_ => $c->get_param($_) || $defaults{$_} } @extras;
+    my %extras = map { $_ => $c->get_param("extra[$_]") || $defaults{$_} } @extras;
     return { params => \%params, extras => \%extras };
 }
 

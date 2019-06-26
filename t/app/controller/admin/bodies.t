@@ -162,7 +162,7 @@ subtest 'check open311 configuring' => sub {
                 jurisdiction => 'open311',
                 send_comments => 0,
                 send_method  => 'Open311',
-                fetch_all_problems => 1,
+                'extra[fetch_all_problems]' => 1,
             }
         }
     );
@@ -181,7 +181,7 @@ subtest 'check open311 configuring' => sub {
                 jurisdiction => 'open311',
                 send_comments => 0,
                 send_method  => 'Open311',
-                fetch_all_problems => 0,
+                'extra[fetch_all_problems]' => 0,
                 can_be_devolved => 1, # for next test
             }
         }
