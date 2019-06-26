@@ -1108,11 +1108,7 @@ subtest 'check matching on fixmystreet_id overrides service_request_id' => sub {
         system_user => $user,
     );
 
-    warning_like {
-        $update->update_comments( $o, $bodies{2482} )
-    }
-    qr/Failed to match comment to problem with fixmystreet id @{[$problem->external_id]} for Bromley/,
-    "warning emitted for bad fixmystreet id";
+    $update->update_comments( $o, $bodies{2482} );
 
     $problem->discard_changes;
     is $problem->comments->count, 2, 'two comments after fetching updates';

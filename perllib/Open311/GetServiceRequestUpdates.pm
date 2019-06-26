@@ -104,7 +104,6 @@ sub update_comments {
         next if @args && ($updated lt $args[0] || $updated gt $args[1]);
 
         my $problem;
-        my $match_field = 'external_id';
         my $criteria = {
             external_id => $request_id,
         };
@@ -119,7 +118,6 @@ sub update_comments {
             $criteria = {
                 id => $request->{fixmystreet_id},
             };
-            $match_field = 'fixmystreet id';
         }
 
         $problem = $self->schema->resultset('Problem')->to_body($body)->search( $criteria );
@@ -221,10 +219,6 @@ sub update_comments {
                     }
                 }
             }
-        # we get lots of comments that are not related to FMS issues from Lewisham so ignore those otherwise
-        # way too many warnings.
-        } elsif (FixMyStreet->config('STAGING_SITE') and $body->name !~ /Lewisham/) {
-            warn "Failed to match comment to problem with $match_field $request_id for " . $body->name . "\n";
         }
     }
 
