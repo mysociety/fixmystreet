@@ -560,11 +560,29 @@ sub admin_report_edit {
 
         # Can assign to:
         my @bodies = $c->model('DB::Body')->search( [
-            { 'me.parent' => $body->parent->id }, # Other DMs on the same level
             { 'me.parent' => $body->id }, # Their subdivisions
             { 'me.parent' => undef, 'bodies.id' => undef }, # External bodies
-        ], { join => 'bodies', distinct => 1 } );
-        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+        ], { join => 'bodies', distinct => 1 } )->all;
+        @bodies = grep {
+            my $cat = $_->get_extra_metadata('category');
+            if ($cat) {
+                $cat = $c->model('DB::Contact')->not_deleted->search({ category => $cat })->first;
+            }
+            !$cat || $cat->body_id == $body->id;
+        } @bodies;
+        @bodies = sort {
+            my $a_cat = $a->get_extra_metadata('category');
+            my $b_cat = $b->get_extra_metadata('category');
+            if ($a_cat && $b_cat) {
+                strcoll($a->name, $b->name)
+            } elsif ($a_cat) {
+                -1;
+            } elsif ($b_cat) {
+                1;
+            } else {
+                strcoll($a->name, $b->name)
+            }
+        } @bodies;
         $c->stash->{bodies} = \@bodies;
 
         # Can change category to any other
