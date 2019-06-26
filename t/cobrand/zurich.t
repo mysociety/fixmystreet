@@ -745,6 +745,22 @@ subtest "phone number is not mandatory for reports from mobile apps" => sub {
     $mech->clear_emails_ok;
 };
 
+subtest "link external body to category" => sub {
+    $mech->log_in_ok( 'super@example.org' );
+    $mech->get_ok( '/admin/body/' . $zurich->id );
+    $mech->content_lacks('extra[category]');
+    $mech->get_ok( '/admin/body/' . $division->id );
+    $mech->content_lacks('extra[category]');
+    $mech->get_ok( '/admin/body/' . $subdivision->id );
+    $mech->content_lacks('extra[category]');
+    $mech->get_ok( '/admin/body/' . $external_body->id );
+    $mech->content_contains('extra[category]');
+    $mech->submit_form_ok({ with_fields => { 'extra[category]' => 'Cat1' } });
+    $mech->content_contains('<option value="Cat1" selected>');
+    $external_body->discard_changes;
+    is $external_body->get_extra_metadata('category'), 'Cat1';
+};
+
 subtest "problems can't be assigned to deleted bodies" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
     $user->from_body( $zurich->id );
