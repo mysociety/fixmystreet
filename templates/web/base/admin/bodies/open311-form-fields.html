@@ -161,7 +161,7 @@
           </p>
         </div>
         <p>
-            <input type="checkbox" id="fetch_all_problems" name="fetch_all_problems"[% ' checked' IF object.get_extra_metadata('fetch_all_problems') %]>
+            <input type="checkbox" id="fetch_all_problems" name="extra[fetch_all_problems]"[% ' checked' IF object.get_extra_metadata('fetch_all_problems') %]>
             <label for="fetch_all_problems" class="inline">[% loc('Always fetch all problems') %]</label>
         </p>
     </div>
