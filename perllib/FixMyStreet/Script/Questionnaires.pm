@@ -33,8 +33,8 @@ sub send_questionnaires_period {
     };
 
     $q_params->{'-or'} = [
-        '(select max(whensent) from questionnaire where me.id=problem_id)' => undef,
-        '(select max(whenanswered) from questionnaire where me.id=problem_id)' => { '<', \"current_timestamp - '$period'::interval" }
+        \'(select max(whensent) from questionnaire where me.id=problem_id) IS NULL',
+        \"(select max(whenanswered) from questionnaire where me.id=problem_id) < current_timestamp - '$period'::interval",
     ];
 
     my $unsent = FixMyStreet::DB->resultset('Problem')->search( $q_params, {

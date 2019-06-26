@@ -460,7 +460,7 @@ sub admin {
         my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
         $c->stash->{order} = $order;
         $c->stash->{dir} = $dir;
-        $order .= ' desc' if $dir;
+        $order = { -desc => $order } if $dir;
 
         # XXX No multiples or missing bodies
         $c->stash->{submitted} = $c->cobrand->problems->search({
@@ -494,7 +494,7 @@ sub admin {
         my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
         $c->stash->{order} = $order;
         $c->stash->{dir} = $dir;
-        $order .= ' desc' if $dir;
+        $order = { -desc => $order } if $dir;
 
         # XXX No multiples or missing bodies
         $c->stash->{reports_new} = $c->cobrand->problems->search( {
@@ -1202,100 +1202,94 @@ sub admin_stats {
 
 sub export_as_csv {
     my ($self, $c, $params) = @_;
-    try {
-        $c->model('DB')->schema->storage->sql_maker->quote_char('"');
-        my $csv = $c->stash->{csv} = {
-            objects => $c->model('DB::Problem')->search_rs(
-                $params,
-                {
-                    join => ['admin_log_entries', 'user'],
-                    distinct => 1,
-                    columns => [
-                        'id',       'created',
-                        'latitude', 'longitude',
-                        'cobrand',  'category',
-                        'state',    'user_id',
-                        'external_body',
-                        'title', 'detail',
-                        'photo',
-                        'whensent', 'lastupdate',
-                        'service',
-                        'extra',
-                        { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
-                        'name', 'user.id', 'user.email', 'user.phone', 'user.name',
-                    ]
-                }
-            ),
-            headers => [
-                'Report ID', 'Created', 'Sent to Agency', 'Last Updated',
-                'E', 'N', 'Category', 'Status', 'Closure Status',
-                'UserID', 'User email', 'User phone', 'User name',
-                'External Body', 'Time Spent', 'Title', 'Detail',
-                'Media URL', 'Interface Used', 'Council Response',
-                'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
-            ],
-            columns => [
-                'id', 'created', 'whensent',' lastupdate', 'local_coords_x',
-                'local_coords_y', 'category', 'state', 'closure_status',
-                'user_id', 'user_email', 'user_phone', 'user_name',
-                'body_name', 'sum_time_spent', 'title', 'detail',
-                'media_url', 'service', 'public_response',
-                'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
-            ],
-            extra_data => sub {
-                my $report = shift;
 
-                my $body_name = "";
-                if ( my $external_body = $report->body($c) ) {
-                    $body_name = $external_body->name || '[Unknown body]';
-                }
+    my $csv = $c->stash->{csv} = {
+        objects => $c->model('DB::Problem')->search_rs(
+            $params,
+            {
+                join => ['admin_log_entries', 'user'],
+                distinct => 1,
+                columns => [
+                    'id',       'created',
+                    'latitude', 'longitude',
+                    'cobrand',  'category',
+                    'state',    'user_id',
+                    'external_body',
+                    'title', 'detail',
+                    'photo',
+                    'whensent', 'lastupdate',
+                    'service',
+                    'extra',
+                    { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
+                    'name', 'user.id', 'user.email', 'user.phone', 'user.name',
+                ]
+            }
+        ),
+        headers => [
+            'Report ID', 'Created', 'Sent to Agency', 'Last Updated',
+            'E', 'N', 'Category', 'Status', 'Closure Status',
+            'UserID', 'User email', 'User phone', 'User name',
+            'External Body', 'Time Spent', 'Title', 'Detail',
+            'Media URL', 'Interface Used', 'Council Response',
+            'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
+        ],
+        columns => [
+            'id', 'created', 'whensent',' lastupdate', 'local_coords_x',
+            'local_coords_y', 'category', 'state', 'closure_status',
+            'user_id', 'user_email', 'user_phone', 'user_name',
+            'body_name', 'sum_time_spent', 'title', 'detail',
+            'media_url', 'service', 'public_response',
+            'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
+        ],
+        extra_data => sub {
+            my $report = shift;
 
-                my $detail = $report->detail;
-                my $public_response = $report->get_extra_metadata('public_response') || '';
-                my $metas = $report->get_extra_fields();
-                my %extras;
-                foreach my $field (@$metas) {
-                    $extras{$field->{name}} = $field->{value};
-                }
+            my $body_name = "";
+            if ( my $external_body = $report->body($c) ) {
+                $body_name = $external_body->name || '[Unknown body]';
+            }
 
-                # replace newlines with HTML <br/> element
-                $detail =~ s{\r?\n}{ <br/> }g;
-                $public_response =~ s{\r?\n}{ <br/> }g if $public_response;
+            my $detail = $report->detail;
+            my $public_response = $report->get_extra_metadata('public_response') || '';
+            my $metas = $report->get_extra_fields();
+            my %extras;
+            foreach my $field (@$metas) {
+                $extras{$field->{name}} = $field->{value};
+            }
 
-                # Assemble photo URL, if report has a photo
-                my $photo_to_display = $c->cobrand->allow_photo_display($report);
-                my $media_url = (@{$report->photos} && $photo_to_display)
-                    ? $c->cobrand->base_url . $report->photos->[$photo_to_display-1]->{url}
-                    : '';
+            # replace newlines with HTML <br/> element
+            $detail =~ s{\r?\n}{ <br/> }g;
+            $public_response =~ s{\r?\n}{ <br/> }g if $public_response;
 
-                return {
-                    whensent => $report->whensent,
-                    lastupdate => $report->lastupdate,
-                    user_id => $report->user_id,
-                    user_email => $report->user->email || '',
-                    user_phone => $report->user->phone || '',
-                    user_name => $report->name,
-                    closure_status => $report->get_extra_metadata('closure_status') || '',
-                    body_name => $body_name,
-                    sum_time_spent => $report->get_column('sum_time_spent') || 0,
-                    detail => $detail,
-                    media_url => $media_url,
-                    service => $report->service || 'Web interface',
-                    public_response => $public_response,
-                    strasse => $extras{'strasse'} || '',
-                    mast_nr => $extras{'mast_nr'} || '',
-                    haus_nr => $extras{'haus_nr'} || '',
-                    hydranten_nr => $extras{'hydranten_nr'} || ''
-                };
-            },
-            filename => 'stats',
-        };
-        $c->forward('/dashboard/generate_csv');
-    } catch {
-        die $_;
-    } finally {
-        $c->model('DB')->schema->storage->sql_maker->quote_char('');
+            # Assemble photo URL, if report has a photo
+            my $photo_to_display = $c->cobrand->allow_photo_display($report);
+            my $media_url = (@{$report->photos} && $photo_to_display)
+                ? $c->cobrand->base_url . $report->photos->[$photo_to_display-1]->{url}
+                : '';
+
+            return {
+                whensent => $report->whensent,
+                lastupdate => $report->lastupdate,
+                user_id => $report->user_id,
+                user_email => $report->user->email || '',
+                user_phone => $report->user->phone || '',
+                user_name => $report->name,
+                closure_status => $report->get_extra_metadata('closure_status') || '',
+                body_name => $body_name,
+                sum_time_spent => $report->get_column('sum_time_spent') || 0,
+                detail => $detail,
+                media_url => $media_url,
+                service => $report->service || 'Web interface',
+                public_response => $public_response,
+                strasse => $extras{'strasse'} || '',
+                mast_nr => $extras{'mast_nr'} || '',
+                haus_nr => $extras{'haus_nr'} || '',
+                hydranten_nr => $extras{'hydranten_nr'} || ''
+            };
+        },
+        filename => 'stats',
     };
+    $c->forward('/dashboard/generate_csv');
 }
 
 sub problem_confirm_email_extras {

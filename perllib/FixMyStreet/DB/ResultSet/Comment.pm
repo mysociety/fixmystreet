@@ -13,18 +13,13 @@ sub to_body {
 sub timeline {
     my ( $rs ) = @_;
 
-    my $prefetch = 
-        $rs->result_source->storage->sql_maker->quote_char ?
-        [ qw/user/ ] :
-        [];
-
     return $rs->search(
         {
             'me.state' => 'confirmed',
             'me.created' => { '>=', \"current_timestamp-'7 days'::interval" },
         },
         {
-            prefetch => $prefetch,
+            prefetch => 'user',
         }
     );
 }

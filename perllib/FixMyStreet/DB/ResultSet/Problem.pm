@@ -141,7 +141,7 @@ sub _recent {
     $query->{photo} = { '!=', undef } if $photos;
 
     my $attrs = {
-        order_by => { -desc => 'coalesce(confirmed, created)' },
+        order_by => { -desc => \'coalesce(confirmed, created)' },
         rows => $num,
     };
 
@@ -207,11 +207,6 @@ sub around_map {
 sub timeline {
     my ( $rs ) = @_;
 
-    my $prefetch =
-        $rs->result_source->storage->sql_maker->quote_char ?
-        [ qw/user/ ] :
-        [];
-
     return $rs->search(
         {
             -or => {
@@ -221,7 +216,7 @@ sub timeline {
             }
         },
         {
-            prefetch => $prefetch,
+            prefetch => 'user',
         }
     );
 }
