@@ -231,7 +231,7 @@ sub reports : Path('reports') {
         }
     }
 
-    my $order = $c->get_param('o') || 'created';
+    my $order = $c->get_param('o') || 'id';
     my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
     $c->stash->{order} = $order;
     $c->stash->{dir} = $dir;
@@ -302,7 +302,7 @@ sub reports : Path('reports') {
             {
                 prefetch => 'user',
                 rows => 50,
-                order_by => [ \"(state='hidden')", $order ]
+                order_by => $order,
             }
         )->page( $p_page );
 
@@ -345,7 +345,7 @@ sub reports : Path('reports') {
                     -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
                     prefetch => [qw/user problem/],
                     rows => 50,
-                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", { -desc => 'me.created' } ]
+                    order_by => { -desc => 'me.id' }
                 }
             )->page( $u_page );
             $c->stash->{updates} = [ $updates->all ];
