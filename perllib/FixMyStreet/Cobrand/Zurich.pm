@@ -526,7 +526,8 @@ sub category_options {
     my $c = $self->{c};
     my @categories = $c->model('DB::Contact')->not_deleted->all;
     $c->stash->{category_options} = [ map { {
-        category => $_->category, category_display => $_->category,
+        category => $_->category,
+        category_display => $_->get_extra_metadata('admin_label') || $_->category,
         abbreviation => $_->get_extra_metadata('abbreviation'),
     } } @categories ];
 }
@@ -1326,7 +1327,7 @@ sub singleton_bodies_str { 1 }
 
 sub body_extra_fields { [ 'category' ] };
 
-sub contact_extra_fields { [ 'abbreviation' ] };
+sub contact_extra_fields { [ 'abbreviation', 'admin_label' ] };
 
 sub default_problem_state { 'submitted' }
 

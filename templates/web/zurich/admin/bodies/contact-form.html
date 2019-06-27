@@ -15,6 +15,11 @@
         <input type="text" class="form-control" name="extra[abbreviation]" id="abbreviation" size="30" value="[% contact.get_extra_metadata('abbreviation') | html %]">
     </p>
 
+    <p>
+        <label for="admin_label">Admin-label</label>
+        <input type="text" class="form-control" name="extra[admin_label]" id="admin_label" size="30" value="[% contact.get_extra_metadata('admin_label') | html %]">
+    </p>
+
     <p><strong>[% loc('Email:') %] </strong>
     <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
 
@@ -29,15 +34,12 @@
     </div>
 
     <p>
-      [% IF contact.in_storage %]
         <label for="state">[% loc('State') %]</label>
         <select name="state" id="state">
           <option value="confirmed"[% ' selected' IF contact.state == 'confirmed' %]>[% loc('Confirmed') %]
+          <option value="inactive"[% ' selected' IF contact.state == 'inactive' %]>[% loc('Inactive') %]
           <option value="deleted"[% ' selected' IF contact.state == 'deleted' %]>[% loc('Deleted') %]
         </select>
-      [% ELSE %]
-        <input type="hidden" name="state" value="confirmed" id="confirmed">
-      [% END %]
         <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
         <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
     </p>
