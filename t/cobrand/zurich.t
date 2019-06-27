@@ -41,6 +41,7 @@ sub reset_report_state {
     $report->whensent(undef);
     $report->state('submitted');
     $report->created($created) if $created;
+    $report->category('Other');
     $report->update;
 }
 
@@ -247,6 +248,38 @@ subtest "changing of categories" => sub {
     $report->update({category => $original_category });
 };
 
+subtest "private categories" => sub {
+    $mech->log_in_ok( 'super@example.org' );
+    $mech->get_ok('/admin/bodies');
+    $mech->follow_link_ok({ text => 'Division 1' });
+    $mech->submit_form_ok({ with_fields => {
+        category => 'Allgemein',
+        state => 'inactive',
+        email => 'allgemein@example.org',
+        'extra[admin_label]' => 'StadtPeople',
+        'extra[abbreviation]' => 'STA',
+        note => 'New',
+    }});
+    $mech->follow_link_ok({ text => 'Allgemein' });
+    $mech->content_contains('<option value="inactive" selected>');
+    $mech->content_like(qr/admin_label.*?StadtPeople/);
+
+    $mech->get_ok( '/around?lat=47.381817&lon=8.529156' );
+    $mech->content_lacks('StadtPeople');
+    $mech->content_contains('Allgemein');
+    $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
+    $mech->content_lacks('StadtPeople');
+    $mech->content_lacks('Allgemein');
+
+    $report->update({ category => 'Allgemein' });
+    $mech->get_ok('/report/' . $report->id);
+    $mech->content_lacks('StadtPeople');
+    $mech->content_contains('Allgemein');
+
+    $mech->get_ok('/admin/report_edit/' . $report->id);
+    $mech->content_contains('<option value="Allgemein">StadtPeople (STA)</option>');
+};
+
 sub get_moderated_count {
     # my %date_params = ( );
     # my $moderated = FixMyStreet::DB->resultset('Problem')->search({
@@ -255,7 +288,7 @@ sub get_moderated_count {
 
     # use a separate mech to avoid stomping on test state
     my $mech = FixMyStreet::TestMech->new;
-    my $user = $mech->log_in_ok( 'super@example.org' );
+    $mech->log_in_ok( 'super@example.org' );
 
     $mech->get( '/admin/stats' );
     if ($mech->content =~/Innerhalb eines Arbeitstages moderiert: (\d+)/) {
@@ -272,6 +305,7 @@ subtest "report_edit" => sub {
     ok ( ! $report->get_extra_metadata('moderated_overdue'), 'Report currently unmoderated' );
     is get_moderated_count(), 0;
 
+    $mech->log_in_ok( 'dm1@example.org') ;
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
     $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
