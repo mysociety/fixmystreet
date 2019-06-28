@@ -77,10 +77,10 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
     },
 
     get_select_control: function() {
-        var controls = fixmystreet.map.getControlsByClass('OpenLayers.Control.SelectFeature');
-        for (var i=0; i<controls.length; i++) {
+        var controls = this.controls || [];
+        for (var i = 0; i < controls.length; i++) {
             var control = controls[i];
-            if (control.layer == this && !control.hover) {
+            if (!control.hover) {
                 return control;
             }
         }
@@ -410,6 +410,18 @@ function layer_visibilitychanged() {
         this.asset_not_found();
     }
 
+    var controls = this.controls || [];
+    var j;
+    if (this.getVisibility()) {
+        for (j = 0; j < controls.length; j++) {
+            controls[j].activate();
+        }
+    } else {
+        for (j = 0; j < controls.length; j++) {
+            controls[j].deactivate();
+        }
+    }
+
     check_zoom_message_visibility.call(this);
     var layers = fixmystreet.map.getLayersBy('assets', true);
     var visible = 0;
@@ -667,17 +679,19 @@ function construct_select_layer_events(asset_layer, options) {
 }
 
 // Set up handler for selecting/unselecting markers
-function construct_select_feature_control(asset_layer, options) {
+function construct_select_feature_control(asset_layers, options) {
     if (options.non_interactive) {
         return;
     }
 
-    construct_select_layer_events(asset_layer, options);
+    $.each(asset_layers, function(i, layer) {
+        construct_select_layer_events(layer, options);
+    });
 
-    return new OpenLayers.Control.SelectFeature(asset_layer);
+    return new OpenLayers.Control.SelectFeature(asset_layers);
 }
 
-function construct_hover_feature_control(asset_layer, options) {
+function construct_hover_feature_control(asset_layers, options) {
     // Even if an asset layer is marked as non-interactive it can still have
     // a hover style which we'll need to set up.
     if (options.non_interactive && !(options.stylemap && options.stylemap.styles.hover)) {
@@ -686,7 +700,7 @@ function construct_hover_feature_control(asset_layer, options) {
 
     // Set up handlers for simply hovering over an asset marker
     var hover_feature_control = new OpenLayers.Control.SelectFeature(
-        asset_layer,
+        asset_layers,
         {
             hover: true,
             highlightOnly: true,
@@ -755,7 +769,7 @@ fixmystreet.assets = {
 
         options = $.extend(true, {}, default_options, options);
         var asset_layer = this.add_layer(options);
-        this.add_controls(asset_layer, options);
+        this.add_controls([asset_layer], options);
     },
 
     add_layer: function(options) {
@@ -782,16 +796,19 @@ fixmystreet.assets = {
         return asset_layer;
     },
 
-    add_controls: function(asset_layer, options) {
-        var select_feature_control = construct_select_feature_control(asset_layer, options);
-        var hover_feature_control = construct_hover_feature_control(asset_layer, options);
+    add_controls: function(asset_layers, options) {
+        var select_feature_control = construct_select_feature_control(asset_layers, options);
+        var hover_feature_control = construct_hover_feature_control(asset_layers, options);
 
-        if (hover_feature_control) {
-            fixmystreet.assets.controls.push(hover_feature_control);
-        }
-        if (select_feature_control) {
-            fixmystreet.assets.controls.push(select_feature_control);
-        }
+        $.each(asset_layers, function(i, asset_layer) {
+            asset_layer.controls = asset_layer.controls || [];
+            if (hover_feature_control) {
+                asset_layer.controls.push(hover_feature_control);
+            }
+            if (select_feature_control) {
+                asset_layer.controls.push(select_feature_control);
+            }
+        });
     },
 
     init: function() {
@@ -821,12 +838,12 @@ fixmystreet.assets = {
 
         var pins_layer = fixmystreet.map.getLayersByName("Pins")[0];
         for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
-            init_asset_layer(fixmystreet.assets.layers[i], pins_layer);
-        }
-
-        for (i = 0; i < fixmystreet.assets.controls.length; i++) {
-            fixmystreet.map.addControl(fixmystreet.assets.controls[i]);
-            fixmystreet.assets.controls[i].activate();
+            var asset_layer = fixmystreet.assets.layers[i];
+            var controls = asset_layer.controls || [];
+            for (var j = 0; j < controls.length; j++) {
+                fixmystreet.map.addControl(controls[j]);
+            }
+            init_asset_layer(asset_layer, pins_layer);
         }
     }
 };
