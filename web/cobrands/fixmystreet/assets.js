@@ -480,6 +480,229 @@ function get_fault_stylemap() {
     });
 }
 
+function construct_protocol_options(options) {
+    var protocol_options;
+    if (options.http_options !== undefined) {
+        protocol_options = options.http_options;
+        OpenLayers.Util.applyDefaults(options, {
+            format_class: OpenLayers.Format.GML,
+            format_options: {}
+        });
+        if (options.geometryName) {
+            options.format_options.geometryName = options.geometryName;
+        }
+        protocol_options.format = new options.format_class(options.format_options);
+    } else {
+        protocol_options = {
+            version: "1.1.0",
+            url: options.wfs_url,
+            featureType: options.wfs_feature,
+            geometryName: options.geometryName
+        };
+        if (options.srsName !== undefined) {
+            protocol_options.srsName = options.srsName;
+        } else if (fixmystreet.wmts_config) {
+            protocol_options.srsName = fixmystreet.wmts_config.map_projection;
+        }
+        if (options.propertyNames) {
+            protocol_options.propertyNames = options.propertyNames;
+        }
+    }
+    return protocol_options;
+}
+
+function construct_protocol_class(options) {
+    if (options.http_options !== undefined) {
+        return options.protocol_class || OpenLayers.Protocol.HTTP;
+    } else {
+        return OpenLayers.Protocol.WFS;
+    }
+}
+
+function construct_layer_options(options, protocol) {
+    var StrategyClass = options.strategy_class || OpenLayers.Strategy.BBOX;
+
+    var max_resolution = options.max_resolution;
+    if (typeof max_resolution === 'object') {
+        max_resolution = max_resolution[fixmystreet.cobrand];
+    }
+
+    var layer_options = {
+        fixmystreet: options,
+        strategies: [new StrategyClass()],
+        protocol: protocol,
+        visibility: false,
+        maxResolution: max_resolution,
+        minResolution: options.min_resolution,
+        styleMap: options.stylemap || get_asset_stylemap(),
+        assets: true
+    };
+    if (options.attribution !== undefined) {
+        layer_options.attribution = options.attribution;
+    }
+    if (options.srsName !== undefined) {
+        layer_options.projection = new OpenLayers.Projection(options.srsName);
+    } else if (fixmystreet.wmts_config) {
+        layer_options.projection = new OpenLayers.Projection(fixmystreet.wmts_config.map_projection);
+    }
+
+    if (options.filter_key) {
+        // Add this filter to the layer, so it can potentially be used
+        // in the request (though only Bristol currently does this).
+        if (OpenLayers.Util.isArray(options.filter_value)) {
+            layer_options.filter = new OpenLayers.Filter.Logical({
+                type: OpenLayers.Filter.Logical.OR,
+                filters: $.map(options.filter_value, function(value) {
+                    return new OpenLayers.Filter.Comparison({
+                        type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                        property: options.filter_key,
+                        value: value
+                    });
+                })
+            });
+        } else if (typeof options.filter_value === 'function') {
+            layer_options.filter = new OpenLayers.Filter.FeatureId({
+                type: OpenLayers.Filter.Function,
+                evaluate: options.filter_value
+            });
+        } else {
+            layer_options.filter = new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: options.filter_key,
+                value: options.filter_value
+            });
+        }
+        // Add a strategy filter to the layer, to filter the incoming results
+        // after they are received. Bristol does not need this, but has to ask
+        // for the filter data in its response so it doesn't then disappear.
+        layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
+    }
+
+    return layer_options;
+}
+
+function construct_layer_class(options) {
+    var layer_class = options.class || OpenLayers.Layer.VectorAsset;
+    if (options.usrn || options.road) {
+        layer_class = OpenLayers.Layer.VectorNearest;
+    }
+    return layer_class;
+}
+
+function construct_fault_layer(options, protocol_options, layer_options) {
+    if (!options.wfs_fault_feature) {
+        return null;
+    }
+
+    // A non-interactive layer to display existing asset faults
+    var po = {
+        featureType: options.wfs_fault_feature
+    };
+    OpenLayers.Util.applyDefaults(po, protocol_options);
+    var fault_protocol = new OpenLayers.Protocol.WFS(po);
+    var lo = {
+        strategies: [new OpenLayers.Strategy.BBOX()],
+        protocol: fault_protocol,
+        styleMap: get_fault_stylemap(),
+        assets: true
+    };
+    OpenLayers.Util.applyDefaults(lo, layer_options);
+    asset_fault_layer = new OpenLayers.Layer.Vector("WFS", lo);
+    asset_fault_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
+    asset_fault_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
+    return asset_fault_layer;
+}
+
+function construct_asset_layer(options) {
+    // An interactive layer for selecting an asset (e.g. street light)
+    var protocol_options = construct_protocol_options(options);
+    var protocol_class = construct_protocol_class(options);
+    var protocol = new protocol_class(protocol_options);
+
+    var layer_options = construct_layer_options(options, protocol);
+    var layer_class = construct_layer_class(options);
+    var asset_layer = new layer_class(options.name || "WFS", layer_options);
+
+    var asset_fault_layer = construct_fault_layer(options, protocol_options, layer_options);
+    if (asset_fault_layer) {
+        asset_layer.fixmystreet.fault_layer = asset_fault_layer;
+    }
+
+    return asset_layer;
+}
+
+function construct_select_layer_events(asset_layer, options) {
+    asset_layer.events.register( 'featureselected', asset_layer, asset_selected);
+    asset_layer.events.register( 'featureunselected', asset_layer, asset_unselected);
+
+    // When panning/zooming the map check that this layer is still correctly shown
+    // and any selected marker is preserved
+    asset_layer.events.register( 'loadend', asset_layer, layer_loadend);
+
+    if (options.disable_pin_snapping) {
+        // The pin is snapped to the centre of a feature by the select
+        // handler. We can stop this handler from running, and the pin
+        // being snapped, by returning false from a beforefeatureselected
+        // event handler. This handler does need to make sure the
+        // attributes of the clicked feature are applied to the extra
+        // details form fields first though.
+        asset_layer.events.register( 'beforefeatureselected', asset_layer, function(e) {
+            var attributes = this.fixmystreet.attributes;
+            if (attributes) {
+                set_fields_from_attributes(attributes, e.feature);
+            }
+
+            // The next click on the map may not be on an asset - so
+            // clear the fields for this layer when the pin is next
+            // updated. If it is on an asset then the fields will be
+            // set by whatever feature was selected.
+            $(fixmystreet).one('maps:update_pin', function() {
+                if (attributes) {
+                    clear_fields_for_attributes(attributes);
+                }
+            });
+            return false;
+        });
+    }
+}
+
+// Set up handler for selecting/unselecting markers
+function construct_select_feature_control(asset_layer, options) {
+    if (options.non_interactive) {
+        return;
+    }
+
+    construct_select_layer_events(asset_layer, options);
+
+    return new OpenLayers.Control.SelectFeature(asset_layer);
+}
+
+function construct_hover_feature_control(asset_layer, options) {
+    // Even if an asset layer is marked as non-interactive it can still have
+    // a hover style which we'll need to set up.
+    if (options.non_interactive && !(options.stylemap && options.stylemap.styles.hover)) {
+        return;
+    }
+
+    // Set up handlers for simply hovering over an asset marker
+    var hover_feature_control = new OpenLayers.Control.SelectFeature(
+        asset_layer,
+        {
+            hover: true,
+            highlightOnly: true,
+            renderIntent: 'hover'
+        }
+    );
+    hover_feature_control.events.register('beforefeaturehighlighted', null, function(e) {
+        // Don't let marker go from selected->hover state,
+        // as it causes some mad flickering effect.
+        if (e.feature.renderIntent == 'select') {
+            return false;
+        }
+    });
+    return hover_feature_control;
+}
+
 // fixmystreet.pin_prefix isn't always available here, due
 // to file loading order, so get it from the DOM directly.
 var map_data = document.getElementById('js-map-data');
@@ -531,186 +754,18 @@ fixmystreet.assets = {
         }
 
         options = $.extend(true, {}, default_options, options);
+        var asset_layer = this.add_layer(options);
+        this.add_controls(asset_layer, options);
+    },
 
-        var asset_fault_layer = null;
-
-        // An interactive layer for selecting an asset (e.g. street light)
-        var protocol_options;
-        var protocol;
-        if (options.http_options !== undefined) {
-            protocol_options = options.http_options;
-            OpenLayers.Util.applyDefaults(options, {
-                format_class: OpenLayers.Format.GML,
-                format_options: {}
-            });
-            if (options.geometryName) {
-                options.format_options.geometryName = options.geometryName;
-            }
-            protocol_options.format = new options.format_class(options.format_options);
-            var protocol_class = options.protocol_class || OpenLayers.Protocol.HTTP;
-            protocol = new protocol_class(protocol_options);
-        } else {
-            protocol_options = {
-                version: "1.1.0",
-                url: options.wfs_url,
-                featureType: options.wfs_feature,
-                geometryName: options.geometryName
-            };
-            if (options.srsName !== undefined) {
-                protocol_options.srsName = options.srsName;
-            } else if (fixmystreet.wmts_config) {
-                protocol_options.srsName = fixmystreet.wmts_config.map_projection;
-            }
-            if (options.propertyNames) {
-                protocol_options.propertyNames = options.propertyNames;
-            }
-            protocol = new OpenLayers.Protocol.WFS(protocol_options);
-        }
-        var StrategyClass = options.strategy_class || OpenLayers.Strategy.BBOX;
-
+    add_layer: function(options) {
         // Upgrade `asset_category` to an array, in the case that this layer is
         // only associated with a single category.
         if (options.asset_category && !OpenLayers.Util.isArray(options.asset_category)) {
             options.asset_category = [ options.asset_category ];
         }
 
-        var max_resolution = options.max_resolution;
-        if (typeof max_resolution === 'object') {
-            max_resolution = max_resolution[fixmystreet.cobrand];
-        }
-
-        var layer_options = {
-            fixmystreet: options,
-            strategies: [new StrategyClass()],
-            protocol: protocol,
-            visibility: false,
-            maxResolution: max_resolution,
-            minResolution: options.min_resolution,
-            styleMap: options.stylemap || get_asset_stylemap(),
-            assets: true
-        };
-        if (options.attribution !== undefined) {
-            layer_options.attribution = options.attribution;
-        }
-        if (options.srsName !== undefined) {
-            layer_options.projection = new OpenLayers.Projection(options.srsName);
-        } else if (fixmystreet.wmts_config) {
-            layer_options.projection = new OpenLayers.Projection(fixmystreet.wmts_config.map_projection);
-        }
-        if (options.filter_key) {
-            // Add this filter to the layer, so it can potentially be used
-            // in the request (though only Bristol currently does this).
-            if (OpenLayers.Util.isArray(options.filter_value)) {
-                layer_options.filter = new OpenLayers.Filter.Logical({
-                    type: OpenLayers.Filter.Logical.OR,
-                    filters: $.map(options.filter_value, function(value) {
-                        return new OpenLayers.Filter.Comparison({
-                            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-                            property: options.filter_key,
-                            value: value
-                        });
-                    })
-                });
-            } else if (typeof options.filter_value === 'function') {
-                layer_options.filter = new OpenLayers.Filter.FeatureId({
-                    type: OpenLayers.Filter.Function,
-                    evaluate: options.filter_value
-                });
-            } else {
-                layer_options.filter = new OpenLayers.Filter.Comparison({
-                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
-                    property: options.filter_key,
-                    value: options.filter_value
-                });
-            }
-            // Add a strategy filter to the layer, to filter the incoming results
-            // after they are received. Bristol does not need this, but has to ask
-            // for the filter data in its response so it doesn't then disappear.
-            layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
-        }
-
-        var layer_class = options.class || OpenLayers.Layer.VectorAsset;
-        if (options.usrn || options.road) {
-            layer_class = OpenLayers.Layer.VectorNearest;
-        }
-        var asset_layer = new layer_class(options.name || "WFS", layer_options);
-
-        // A non-interactive layer to display existing asset faults
-        if (options.wfs_fault_feature) {
-            var po = {
-                featureType: options.wfs_fault_feature
-            };
-            OpenLayers.Util.applyDefaults(po, protocol_options);
-            var fault_protocol = new OpenLayers.Protocol.WFS(po);
-            var lo = {
-                strategies: [new OpenLayers.Strategy.BBOX()],
-                protocol: fault_protocol,
-                styleMap: get_fault_stylemap(),
-                assets: true
-            };
-            OpenLayers.Util.applyDefaults(lo, layer_options);
-            asset_fault_layer = new OpenLayers.Layer.Vector("WFS", lo);
-            asset_fault_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
-            asset_fault_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
-            asset_layer.fixmystreet.fault_layer = asset_fault_layer;
-        }
-
-        var hover_feature_control, select_feature_control;
-        if (!options.non_interactive) {
-            // Set up handlers for selecting/unselecting markers
-            select_feature_control = new OpenLayers.Control.SelectFeature( asset_layer );
-            asset_layer.events.register( 'featureselected', asset_layer, asset_selected);
-            asset_layer.events.register( 'featureunselected', asset_layer, asset_unselected);
-            if (options.disable_pin_snapping) {
-                // The pin is snapped to the centre of a feature by the select
-                // handler. We can stop this handler from running, and the pin
-                // being snapped, by returning false from a beforefeatureselected
-                // event handler. This handler does need to make sure the
-                // attributes of the clicked feature are applied to the extra
-                // details form fields first though.
-                asset_layer.events.register( 'beforefeatureselected', asset_layer, function(e) {
-                    var attributes = this.fixmystreet.attributes;
-                    if (attributes) {
-                        set_fields_from_attributes(attributes, e.feature);
-                    }
-
-                    // The next click on the map may not be on an asset - so
-                    // clear the fields for this layer when the pin is next
-                    // updated. If it is on an asset then the fields will be
-                    // set by whatever feature was selected.
-                    $(fixmystreet).one('maps:update_pin', function() {
-                        if (attributes) {
-                            clear_fields_for_attributes(attributes);
-                        }
-                    });
-                    return false;
-                });
-            }
-            // When panning/zooming the map check that this layer is still correctly shown
-            // and any selected marker is preserved
-            asset_layer.events.register( 'loadend', asset_layer, layer_loadend);
-        }
-
-        // Even if an asset layer is marked as non-interactive it can still have
-        // a hover style which we'll need to set up.
-        if (!options.non_interactive || (options.stylemap && options.stylemap.styles.hover)) {
-            // Set up handlers for simply hovering over an asset marker
-            hover_feature_control = new OpenLayers.Control.SelectFeature(
-                asset_layer,
-                {
-                    hover: true,
-                    highlightOnly: true,
-                    renderIntent: 'hover'
-                }
-            );
-            hover_feature_control.events.register('beforefeaturehighlighted', null, function(e) {
-                // Don't let marker go from selected->hover state,
-                // as it causes some mad flickering effect.
-                if (e.feature.renderIntent == 'select') {
-                    return false;
-                }
-            });
-        }
+        var asset_layer = construct_asset_layer(options);
 
         if (!options.always_visible || options.road) {
             asset_layer.events.register( 'visibilitychanged', asset_layer, layer_visibilitychanged);
@@ -724,6 +779,13 @@ fixmystreet.assets = {
         if (options.always_visible) {
             asset_layer.setVisibility(true);
         }
+        return asset_layer;
+    },
+
+    add_controls: function(asset_layer, options) {
+        var select_feature_control = construct_select_feature_control(asset_layer, options);
+        var hover_feature_control = construct_hover_feature_control(asset_layer, options);
+
         if (hover_feature_control) {
             fixmystreet.assets.controls.push(hover_feature_control);
         }
