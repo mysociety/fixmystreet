@@ -113,4 +113,10 @@ $(function(){
     });
 });
 
+fixmystreet.message_controller.register_category({
+    body: defaults.body,
+    category: 'Burst water main',
+    message: 'To report a burst water main, please <a href="https://www.thameswater.co.uk/help-and-advice/Report-a-problem/Report-a-problem">contact Thames Water</a>'
+});
+
 })();
