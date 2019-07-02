@@ -10,7 +10,7 @@
       [%~ report.title | html ~%]
     </a>
   </h2>
-  <p style="[% list_item_p_style %]">[% report.detail | html %]</p>
+  [% report.detail | html_para | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
   <p style="[% list_item_date_style %]">
     [% cobrand.prettify_dt( report.confirmed ) %].
     [% report.nearest %]
