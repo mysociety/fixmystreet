@@ -630,7 +630,7 @@ $.extend(fixmystreet.set_up, {
       var $context = $(this);
       var $originalLabel = $('[for="form_photo"], .js-photo-label', $context);
       var $originalInput = $('#form_photos, .js-photo-fields', $context);
-      var $dropzone = $('<div>').addClass('dropzone');
+      var $dropzone = $('<div tabindex=0>').addClass('dropzone');
 
       $originalLabel.removeAttr('for');
       $('[data-plural]', $originalLabel).text(
@@ -696,6 +696,12 @@ $.extend(fixmystreet.set_up, {
             }, 2000);
           });
         }
+      });
+
+      $dropzone.on('keydown', function(e) {
+          if (e.keyCode === 13 || e.keyCode === 32) {
+              $dropzone.click();
+          }
       });
 
       $.each($('input[name=upload_fileid]', $context).val().split(','), function(i, f) {

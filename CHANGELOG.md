@@ -5,6 +5,7 @@
         - Improved 403 message, especially for private reports.
         - Mobile users can now filter the pins on the `/around` map view. #2366
         - Maintain whitespace formatting in email report/update lists.
+        - Improve keyboard accessibility.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users.
     - New features:
