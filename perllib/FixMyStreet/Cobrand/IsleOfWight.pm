@@ -67,4 +67,12 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    if ($comment->mark_fixed) {
+        $params->{description} = "[The customer indicated that this issue had been fixed]\n\n" . $params->{description};
+    }
+}
+
 1;
