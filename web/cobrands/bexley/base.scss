@@ -71,26 +71,9 @@ small {
 
 a,
 .fake-link {
-  text-decoration: none;
-  color: $link;
-
-  &:visited {
-    color: $visited;
-  }
-
-  &:hover,
-  &:active {
-    text-decoration: underline;
-    color: $hover;
-  }
-
   &:focus {
-    color: $focus;
+    color: $link-focus-color;
   }
-}
-
-.dz-clickable .dz-message u {
-  color: $link;
 }
 
 .btn-primary,

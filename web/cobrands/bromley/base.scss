@@ -63,17 +63,15 @@ body.frontpage.fullwidthpage {
 
 // Override the links to match Bromley's
 a {
-  text-decoration:none;
-  color: $bromley_green;
   opacity: 1;
 }
+
 a:hover {
   opacity: 0.8;
-  text-decoration:underline;
 }
-a:visited,
+
 a:active {
-  color: $bromley_dark_green;
+  color: $link-visited-color;
 }
 
 // The map page header looks a bit high for some reason

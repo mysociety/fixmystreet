@@ -22,26 +22,6 @@
     color: $white;
 }
 
-a,
-.fake-link {
-  text-decoration: none;
-  color: $blue;
-
-  &:visited {
-    color: $blue;
-  }
-
-  &:hover,
-  &:active {
-    text-decoration: underline;
-    color: $blue;
-  }
-}
-
-.dz-clickable .dz-message u {
-  color: $blue;
-}
-
 .btn-primary,
 .green-btn,
 .btn--primary {
