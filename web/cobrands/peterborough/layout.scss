@@ -1,0 +1,98 @@
+@import "_colours";
+
+@import "../sass/layout";
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 10em;
+}
+
+#site-logo {
+    padding: 1em 0;
+}
+
+body.frontpage #front-main {
+    text-align: left;
+    background-color: #fff;
+    border-top: 1px solid #e9e9e9;
+    color: $primary_b;
+    padding: 2.5em 0;
+}
+
+#front-main { 
+    #postcodeForm div {
+        margin: 0;
+    }
+    h1 {
+        font-size: 3em;
+    }
+    h2 {
+        font-weight: normal;
+        font-size: 1.5em;
+    }
+    a#geolocate_link {
+        color: $link-color;
+        &:hover,
+        &:active,
+        &:focus {
+            color: $link-hover-color;
+        }
+    }
+}
+
+#postcodeForm .form-hint {
+    color: $grey;
+}
+
+#main-nav {
+    min-height: 84px;
+}
+
+body.mappage #site-header {
+    height: 84px;
+}
+
+#map_box,
+#map_sidebar {
+    top: 84px;
+}
+
+
+
+// Stop visited nav links being purple when hovering over them
+.nav-menu--main {
+    a:hover {
+      color: $primary_text;
+    }
+    span {
+        color: $primary_b;
+    }
+    a.report-a-problem-btn {
+        background-color: transparent;
+        color: $grey;
+        padding: 0.75em;
+        margin: 0;
+        border-radius: 0;
+        &:hover,
+        &:active,
+        &:focus {
+            background-color: $nav_hover_background_colour;
+            color: #fff;
+        }
+    }
+    span.report-a-problem-btn {
+        &:hover,
+        &:active,
+        &:focus {
+            color: $primary_b;
+        }
+    }
+}
+
+.pboro-footer {
+    li {
+        display: inline-block;
+    }
+    li:first-child {
+        border: none;
+    }
+}
