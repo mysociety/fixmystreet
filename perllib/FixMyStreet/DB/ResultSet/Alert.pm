@@ -7,11 +7,6 @@ use warnings;
 sub timeline_created {
     my ( $rs, $restriction ) = @_;
 
-    my $prefetch = 
-        $rs->result_source->storage->sql_maker->quote_char ?
-        [ qw/alert_type user/ ] :
-        [ qw/alert_type/ ];
-
     return $rs->search(
         {
             whensubscribed => { '>=', \"current_timestamp-'7 days'::interval" },
@@ -19,7 +14,7 @@ sub timeline_created {
             %{ $restriction },
         },
         {
-            prefetch => $prefetch,
+            prefetch => [ qw/alert_type user/ ],
         }
     );
 }

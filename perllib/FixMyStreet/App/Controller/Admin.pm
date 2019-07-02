@@ -143,47 +143,38 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 
     my %time;
 
-    try {
-        $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
-        $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
+    my $probs = $c->cobrand->problems->timeline;
 
-        my $probs = $c->cobrand->problems->timeline;
+    foreach ($probs->all) {
+        push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created, obj => $_ };
+        push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed, obj => $_ } if $_->confirmed;
+        push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent, obj => $_ } if $_->whensent;
+    }
 
-        foreach ($probs->all) {
-            push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created, obj => $_ };
-            push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed, obj => $_ } if $_->confirmed;
-            push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent, obj => $_ } if $_->whensent;
-        }
+    my $questionnaires = $c->model('DB::Questionnaire')->timeline( $c->cobrand->restriction );
 
-        my $questionnaires = $c->model('DB::Questionnaire')->timeline( $c->cobrand->restriction );
+    foreach ($questionnaires->all) {
+        push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent, obj => $_ };
+        push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered, obj => $_ } if $_->whenanswered;
+    }
 
-        foreach ($questionnaires->all) {
-            push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent, obj => $_ };
-            push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered, obj => $_ } if $_->whenanswered;
-        }
+    my $updates = $c->cobrand->updates->timeline;
 
-        my $updates = $c->cobrand->updates->timeline;
+    foreach ($updates->all) {
+        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_} ;
+    }
 
-        foreach ($updates->all) {
-            push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_} ;
-        }
+    my $alerts = $c->model('DB::Alert')->timeline_created( $c->cobrand->restriction );
 
-        my $alerts = $c->model('DB::Alert')->timeline_created( $c->cobrand->restriction );
+    foreach ($alerts->all) {
+        push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed, obj => $_ };
+    }
 
-        foreach ($alerts->all) {
-            push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed, obj => $_ };
-        }
+    $alerts = $c->model('DB::Alert')->timeline_disabled( $c->cobrand->restriction );
 
-        $alerts = $c->model('DB::Alert')->timeline_disabled( $c->cobrand->restriction );
-
-        foreach ($alerts->all) {
-            push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled, obj => $_ };
-        }
-    } catch {
-       die $_;
-    } finally {
-        $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
-    };
+    foreach ($alerts->all) {
+        push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled, obj => $_ };
+    }
 
     $c->stash->{time} = \%time;
 
@@ -240,11 +231,11 @@ sub reports : Path('reports') {
         }
     }
 
-    my $order = $c->get_param('o') || 'created';
+    my $order = $c->get_param('o') || 'id';
     my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
     $c->stash->{order} = $order;
     $c->stash->{dir} = $dir;
-    $order .= ' desc' if $dir;
+    $order = $dir ? { -desc => "me.$order" } : "me.$order";
 
     my $p_page = $c->get_param('p') || 1;
     my $u_page = $c->get_param('u') || 1;
@@ -272,26 +263,13 @@ sub reports : Path('reports') {
         my $valid_phone = $parsed->{phone};
         my $valid_email = $parsed->{email};
 
-        # when DBIC creates the join it does 'JOIN users user' in the
-        # SQL which makes PostgreSQL unhappy as user is a reserved
-        # word. So look up user ID for email separately.
-        my @user_ids = $c->model('DB::User')->search({
-            email => { ilike => $like_search },
-        }, { columns => [ 'id' ] } )->all;
-        @user_ids = map { $_->id } @user_ids;
-
-        my @user_ids_phone = $c->model('DB::User')->search({
-            phone => { ilike => $like_search },
-        }, { columns => [ 'id' ] } )->all;
-        @user_ids_phone = map { $_->id } @user_ids_phone;
-
         if ($valid_email) {
             $query->{'-or'} = [
-                'me.user_id' => { -in => \@user_ids },
+                'user.email' => { ilike => $like_search },
             ];
         } elsif ($valid_phone) {
             $query->{'-or'} = [
-                'me.user_id' => { -in => \@user_ids_phone },
+                'user.phone' => { ilike => $like_search },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query->{'-or'} = [
@@ -308,7 +286,8 @@ sub reports : Path('reports') {
         } else {
             $query->{'-or'} = [
                 'me.id' => $search_n,
-                'me.user_id' => { -in => [ @user_ids, @user_ids_phone ] },
+                'user.email' => { ilike => $like_search },
+                'user.phone' => { ilike => $like_search },
                 'me.external_id' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
                 'me.title' => { ilike => $like_search },
@@ -321,8 +300,9 @@ sub reports : Path('reports') {
         my $problems = $c->cobrand->problems->search(
             $query,
             {
+                prefetch => 'user',
                 rows => 50,
-                order_by => [ \"(state='hidden')", \$order ]
+                order_by => $order,
             }
         )->page( $p_page );
 
@@ -331,11 +311,11 @@ sub reports : Path('reports') {
 
         if ($valid_email) {
             $query = [
-                'me.user_id' => { -in => \@user_ids },
+                'user.email' => { ilike => $like_search },
             ];
         } elsif ($valid_phone) {
             $query = [
-                'me.user_id' => { -in => \@user_ids_phone },
+                'user.phone' => { ilike => $like_search },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query = [
@@ -348,7 +328,8 @@ sub reports : Path('reports') {
             $query = [
                 'me.id' => $search_n,
                 'problem.id' => $search_n,
-                'me.user_id' => { -in => [ @user_ids, @user_ids_phone ] },
+                'user.email' => { ilike => $like_search },
+                'user.phone' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
                 text => { ilike => $like_search },
                 'me.cobrand_data' => { ilike => $like_search },
@@ -362,9 +343,9 @@ sub reports : Path('reports') {
                 },
                 {
                     -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
-                    prefetch => [qw/problem/],
+                    prefetch => [qw/user problem/],
                     rows => 50,
-                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", { -desc => 'me.created' } ]
+                    order_by => { -desc => 'me.id' }
                 }
             )->page( $u_page );
             $c->stash->{updates} = [ $updates->all ];

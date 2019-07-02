@@ -36,8 +36,8 @@ sub generate {
         {
             columns => [
                 'id', 'bodies_str', 'state', 'areas', 'cobrand', 'category',
-                { duration => { extract => "epoch from current_timestamp-lastupdate" } },
-                { age      => { extract => "epoch from current_timestamp-$age_column"  } },
+                { duration => { extract => \"epoch from current_timestamp-lastupdate" } },
+                { age      => { extract => \"epoch from current_timestamp-$age_column"  } },
             ]
         }
     );

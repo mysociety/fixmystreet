@@ -246,7 +246,7 @@ sub calculate_average {
         'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
         select   => [
-            { extract => "epoch from me.confirmed-problem.confirmed", -as => 'time' },
+            { extract => \"epoch from me.confirmed-problem.confirmed", -as => 'time' },
         ],
         as => [ qw/time/ ],
         rows => 100,

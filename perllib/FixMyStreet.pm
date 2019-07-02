@@ -157,6 +157,7 @@ sub dbic_connect_info {
     };
     my $local_time_zone = local_time_zone();
     my $dbic_args = {
+        quote_names => 1,
         on_connect_do => [
             "SET TIME ZONE '" . $local_time_zone->name . "'",
         ],

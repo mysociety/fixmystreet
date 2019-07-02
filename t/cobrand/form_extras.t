@@ -84,7 +84,7 @@ FixMyStreet::override_config {
     );
     $mech->content_contains('Now check your email');
 
-    my $problem = FixMyStreet::DB->resultset('Problem')->search({}, { order_by => '-id' })->first;
+    my $problem = FixMyStreet::DB->resultset('Problem')->search({}, { order_by => { -desc => 'id' } })->first;
     is $problem->get_extra_metadata('address'), 'My address', 'Address is stored';
     is $problem->get_extra_metadata('passport'), 'P123456', 'Passport number is stored';
 };
