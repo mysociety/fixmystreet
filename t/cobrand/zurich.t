@@ -6,6 +6,7 @@ use Email::MIME;
 use File::Temp;
 use LWP::Protocol::PSGI;
 use Test::LongString;
+use Test::MockModule;
 use Path::Tiny;
 use t::Mock::MapItZurich;
 use FixMyStreet::Script::Reports;
@@ -530,7 +531,13 @@ subtest 'Test publishing of final update by DM' => sub {
     # Quick RSS check here, while we have a report
     $mech->get_ok('/rss/problems');
 
+    my $module = Test::MockModule->new('FixMyStreet::Geocode::Zurich');
+    $module->mock(admin_district => sub { 'Admin district' });
+
     $mech->get_ok( '/admin/report_edit/' . $report->id );
+
+    $mech->content_contains('Admin district');
+
     $mech->content_lacks( 'Unbest&auml;tigt' ); # Confirmed email
     $mech->submit_form_ok( { with_fields => { status_update => 'FINAL UPDATE' } } );
     $mech->form_with_fields( 'status_update' );
