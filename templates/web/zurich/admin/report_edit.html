@@ -55,9 +55,11 @@
   [% END %]
 
     <dt class="print-only">[% loc('Reported:') %] <!-- Meldedatum --></dt>
-    <dd>
+    <dd class="screen-no-space-after">
         <strong>[% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</strong>
     </dd>
+
+    <dd>[% c.cobrand.admin_district_lookup(problem) %]</dd>
 
     <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
     <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">

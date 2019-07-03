@@ -9,6 +9,8 @@ use Scalar::Util 'blessed';
 use DateTime::Format::Pg;
 use Try::Tiny;
 
+use FixMyStreet::Geocode::Zurich;
+
 use strict;
 use warnings;
 use utf8;
@@ -947,6 +949,11 @@ sub admin_report_edit {
     $self->stash_states($problem);
     return 0;
 
+}
+
+sub admin_district_lookup {
+    my ($self, $row) = @_;
+    FixMyStreet::Geocode::Zurich::admin_district($row->local_coords);
 }
 
 sub stash_states {
