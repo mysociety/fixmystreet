@@ -624,6 +624,8 @@ subtest "external report triggers email" => sub {
     $mech->content_contains($report->get_extra_metadata('public_response')) or die $mech->content;
     send_reports_for_zurich();
     $email = $mech->get_email;
+    my $envelope = $mech->get_email_envelope;
+    is $envelope->{from}, 'division@example.org', 'Correct sender envelope';
     like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
     like $email->header('To'), qr/external_body\@example.net/, 'to line looks correct';
     like $email->body, qr/External Body/, 'body has right name';
