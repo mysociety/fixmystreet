@@ -490,6 +490,7 @@ $.extend(fixmystreet.set_up, {
     }
 
     var $group_select = $("<select></select>").addClass("form-control validCategory").attr('id', 'category_group');
+    var $category_label = $("#form_category_label");
     var $subcategory_label = $("#form_subcategory_label");
     var $empty_option = $category_select.find("option").first();
 
@@ -501,7 +502,7 @@ $.extend(fixmystreet.set_up, {
             $category_select.val($(this).val()).change();
         } else {
             $("#" + subcategory_id).show().change();
-            $("#form_subcategory_label").removeClass("hidden");
+            $subcategory_label.removeClass("hidden").attr('for', subcategory_id);
         }
     });
 
@@ -546,6 +547,7 @@ $.extend(fixmystreet.set_up, {
 
     $category_select.hide();
     $group_select.insertAfter($category_select);
+    $category_label.attr('for', 'category_group');
     $category_select.find("optgroup, > option").each(function() {
         if (this.tagName.toLowerCase() === 'optgroup') {
             add_optgroup(this);
