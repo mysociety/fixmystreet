@@ -949,6 +949,11 @@ sub admin_report_edit {
 
 }
 
+sub admin_district_lookup {
+    my ($self, $row) = @_;
+    FixMyStreet::Geocode::Zurich::admin_district($row->local_coords);
+}
+
 sub stash_states {
     my ($self, $problem) = @_;
     my $c = $self->{c};
