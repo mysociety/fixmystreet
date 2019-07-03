@@ -7,6 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Net::Facebook::Oauth2;
 use Net::Twitter::Lite::WithAPIv1_1;
 use OIDC::Lite::Client::WebServer::Azure;
+use URI::Escape;
 
 =head1 NAME
 
@@ -236,6 +237,14 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # The cobrand may want to set values in the user extra field, e.g. a CRM ID
     # which is passed to Open311 with reports made by this user.
     my $extra = $c->cobrand->call_hook(oidc_user_extra => $id_token);
+
+    # The OIDC endpoint may require a specific URI to be called to log the user
+    # out when they log out of FMS.
+    if ( my $redirect_uri = $c->cobrand->feature('oidc_login')->{logout_uri} ) {
+        $redirect_uri .= "?post_logout_redirect_uri=";
+        $redirect_uri .= URI::Escape::uri_escape( $c->uri_for('/auth/sign_out') );
+        $c->session->{oauth}{logout_redirect_uri} = $redirect_uri;
+    }
 
     $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra ]);
 }
