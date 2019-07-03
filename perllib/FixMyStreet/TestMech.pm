@@ -229,6 +229,17 @@ sub get_email {
     return $emails[0];
 }
 
+sub get_email_envelope {
+    my $mech   = shift;
+    my @emails = FixMyStreet::Email::Sender->default_transport->deliveries;
+    @emails = map { $_->{envelope} } @emails;
+
+    return @emails if wantarray;
+
+    $mech->email_count_is(1) || return undef;
+    return $emails[0];
+}
+
 sub get_text_body_from_email {
     my ($mech, $email, $obj) = @_;
     unless ($email) {
