@@ -445,6 +445,12 @@ Log the user out. Tell them we've done so.
 sub sign_out : Local {
     my ( $self, $c ) = @_;
     $c->logout();
+
+    if ( $c->sessionid && $c->session->{oauth} && $c->session->{oauth}{logout_redirect_uri} ) {
+        $c->response->redirect($c->session->{oauth}{logout_redirect_uri});
+        delete $c->session->{oauth}{logout_redirect_uri};
+        $c->detach;
+    }
 }
 
 sub ajax_sign_in : Path('ajax/sign_in') {
