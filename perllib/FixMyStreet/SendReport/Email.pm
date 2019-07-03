@@ -53,6 +53,15 @@ sub send_from {
     return [ $row->user->email, $row->name ];
 }
 
+sub envelope_sender {
+    my ($self, $row) = @_;
+
+    if ($row->user->email && $row->user->email_verified) {
+        return FixMyStreet::Email::unique_verp_id('report', $row->id);
+    }
+    return FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+}
+
 sub send {
     my $self = shift;
     my ( $row, $h ) = @_;
@@ -82,12 +91,10 @@ sub send {
 
     $params->{Bcc} = $self->bcc if @{$self->bcc};
 
-    my $sender;
+    my $sender = $self->envelope_sender($row);
     if ($row->user->email && $row->user->email_verified) {
-        $sender = FixMyStreet::Email::unique_verp_id('report', $row->id);
         $params->{From} = $self->send_from( $row );
     } else {
-        $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
         my $name = sprintf(_("On behalf of %s"), @{ $self->send_from($row) }[1]);
         $params->{From} = [ $sender, $name ];
     }
