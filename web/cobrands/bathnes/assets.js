@@ -68,12 +68,7 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     ],
     asset_item: "park",
     disable_pin_snapping: true,
-    stylemap: new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fill: false,
-            stroke: false
-        })
-    }),
+    stylemap: fixmystreet.assets.stylemap_invisible,
     attributes: {
         asset_details: function() {
             var a = this.attributes;
@@ -161,34 +156,14 @@ var rule_not_owned = new OpenLayers.Rule({
 });
 lighting_default_style.addRules([rule_owned, rule_not_owned]);
 
-// XXX fixmystreet.pin_prefix isn't always available here (e.g. on /report/new),
-// so get it from the DOM directly
-var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data').getAttribute('data-pin_prefix');
-
 var lighting_stylemap = new OpenLayers.StyleMap({
     'default': lighting_default_style,
-    'select': new OpenLayers.Style({
-        externalGraphic: pin_prefix + "pin-spot.png",
-        fillColor: "#55BB00",
-        graphicWidth: 48,
-        graphicHeight: 64,
-        graphicXOffset: -24,
-        graphicYOffset: -56,
-        backgroundGraphic: pin_prefix + "pin-shadow.png",
-        backgroundWidth: 60,
-        backgroundHeight: 30,
-        backgroundXOffset: -7,
-        backgroundYOffset: -22,
-        popupYOffset: -40,
-        graphicOpacity: 1.0
-    }),
+    'select': fixmystreet.assets.style_default_select,
     'hover': new OpenLayers.Style({
         pointRadius: 8,
         cursor: 'pointer'
     })
-
 });
-
 
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
@@ -213,21 +188,13 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     }
 });
 
-
-var highways_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fill: false,
-        stroke: false
-    })
-});
-
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "AdoptedHighways"
         }
     },
-    stylemap: highways_stylemap,
+    stylemap: fixmystreet.assets.stylemap_invisible,
     non_interactive: true,
     always_visible: true,
     usrn: {

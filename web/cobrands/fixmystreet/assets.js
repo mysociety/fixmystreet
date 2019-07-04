@@ -452,34 +452,9 @@ function layer_loadend() {
 }
 
 function get_asset_stylemap() {
-    // fixmystreet.pin_prefix isn't always available here (e.g. on /report/new),
-    // so get it from the DOM directly
-    var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data').getAttribute('data-pin_prefix');
-
     return new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fillColor: "#FFFF00",
-            fillOpacity: 0.6,
-            strokeColor: "#000000",
-            strokeOpacity: 0.8,
-            strokeWidth: 2,
-            pointRadius: 6
-        }),
-        'select': new OpenLayers.Style({
-            externalGraphic: pin_prefix + "pin-spot.png",
-            fillColor: "#55BB00",
-            graphicWidth: 48,
-            graphicHeight: 64,
-            graphicXOffset: -24,
-            graphicYOffset: -56,
-            backgroundGraphic: pin_prefix + "pin-shadow.png",
-            backgroundWidth: 60,
-            backgroundHeight: 30,
-            backgroundXOffset: -7,
-            backgroundYOffset: -22,
-            popupYOffset: -40,
-            graphicOpacity: 1.0
-        }),
+        'default': fixmystreet.assets.style_default,
+        'select': fixmystreet.assets.style_default_select,
         'hover': new OpenLayers.Style({
             fillColor: "#55BB00",
             fillOpacity: 0.8,
@@ -505,9 +480,46 @@ function get_fault_stylemap() {
     });
 }
 
+// fixmystreet.pin_prefix isn't always available here, due
+// to file loading order, so get it from the DOM directly.
+var map_data = document.getElementById('js-map-data');
+var pin_prefix = fixmystreet.pin_prefix || (map_data ? map_data.getAttribute('data-pin_prefix') : '/i/');
+
 fixmystreet.assets = {
     layers: [],
     controls: [],
+
+    stylemap_invisible: new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fill: false,
+            stroke: false
+        })
+    }),
+
+    style_default: new OpenLayers.Style({
+        fillColor: "#FFFF00",
+        fillOpacity: 0.6,
+        strokeColor: "#000000",
+        strokeOpacity: 0.8,
+        strokeWidth: 2,
+        pointRadius: 6
+    }),
+
+    style_default_select: new OpenLayers.Style({
+        externalGraphic: pin_prefix + "pin-spot.png",
+        fillColor: "#55BB00",
+        graphicWidth: 48,
+        graphicHeight: 64,
+        graphicXOffset: -24,
+        graphicYOffset: -56,
+        backgroundGraphic: pin_prefix + "pin-shadow.png",
+        backgroundWidth: 60,
+        backgroundHeight: 30,
+        backgroundXOffset: -7,
+        backgroundYOffset: -22,
+        popupYOffset: -40,
+        graphicOpacity: 1.0
+    }),
 
     selectedFeature: function() {
         return selected_feature;
