@@ -526,6 +526,10 @@ fixmystreet.assets = {
     },
 
     add: function(default_options, options) {
+        if (!document.getElementById('map')) {
+            return;
+        }
+
         options = $.extend(true, {}, default_options, options);
 
         var asset_fault_layer = null;
@@ -731,6 +735,10 @@ fixmystreet.assets = {
     init: function() {
         if (fixmystreet.page != 'new' && fixmystreet.page != 'around') {
             // We only want to show asset markers when making a new report
+            return;
+        }
+
+        if (!fixmystreet.map) {
             return;
         }
 
