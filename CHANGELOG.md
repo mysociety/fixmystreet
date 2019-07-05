@@ -5,6 +5,7 @@
         - Improved 403 message, especially for private reports.
         - Mobile users can now filter the pins on the `/around` map view. #2366
         - Maintain whitespace formatting in email report/update lists.
+        - Improve keyboard accessibility.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users.
     - New features:
@@ -16,6 +17,7 @@
         - Set fixmystreet.bodies sooner client-side, for two-tier locations.
         - Fix front-end testing script when run with Vagrant.
         - Handle missing category when sending open311 reports #2502
+        - Fix label associations with category groups.
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages.
         - Add feature cobrand helper function.
