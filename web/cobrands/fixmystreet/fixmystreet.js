@@ -298,6 +298,13 @@ $.extend(fixmystreet.set_up, {
 
     var submitted = false;
 
+    var defaultMessage = jQuery.validator.prototype.defaultMessage;
+    jQuery.validator.prototype.defaultMessage = function() {
+        var message = defaultMessage.apply(this, arguments);
+        message = '<span class="visuallyhidden">' + translation_strings.error + ':</span> ' + message;
+        return message;
+    };
+
     $("form.validate").each(function(){
       fixmystreet.validator = $(this).validate({
         rules: validation_rules,
