@@ -697,7 +697,7 @@ situation in which is will be automatically applied.
 If you have an Open311 connection, you can click ‘auto-response’ so that a
 template will be applied when the state is updated by the automated Open311
 process. In this instance, if your Open311 server returns extra text as part of
-the update, you may put the placeholder `{{description}}` in the template here,
+the update, you may put the placeholder `{% raw %}{{description}}{% endraw %}` in the template here,
 and that placeholder will be replaced by the text from the Open311 server.
 
 
