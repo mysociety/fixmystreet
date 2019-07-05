@@ -932,7 +932,9 @@ $.extend(fixmystreet.set_up, {
     });
     $('.js-new-report-user-show').click(function(e) {
         e.preventDefault();
-        if (!$(this).closest('form').validate().form()) {
+        var v = $(this).closest('form').validate();
+        if (!v.form()) {
+            v.focusInvalid();
             return;
         }
         $('.js-new-report-user-hidden')[0].scrollIntoView({behavior: "smooth"});
