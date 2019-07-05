@@ -5,7 +5,7 @@
         <img style="[% list_item_photo_style %]" src="[% inline_image(update.get_first_image_fp) %]" alt="">
       </a>
     [%~ END %]
-      <p style="[% list_item_p_style %]">&ldquo;[% update.item_text | html %]&rdquo;</p>
+      [% update.item_text | html_para | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
       <p style="[% list_item_date_style %]">
         [%~ update.item_name | html IF update.item_name AND NOT update.item_anonymous -%]
         [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
