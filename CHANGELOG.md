@@ -2,39 +2,39 @@
 
 * Unreleased
     - Front end improvements:
-        - Improved 403 message, especially for private reports.
+        - Improved 403 message, especially for private reports. #2511
         - Mobile users can now filter the pins on the `/around` map view. #2366
-        - Maintain whitespace formatting in email report/update lists.
-        - Improve keyboard accessibility.
+        - Maintain whitespace formatting in email report/update lists. #2525
+        - Improve keyboard accessibility. #2542
         - Report form now indicates that details are kept private if report is
           made in a private category. #2528
         - Improve map JavaScript defensiveness.
     - Admin improvements:
-        - Add new roles system, to group permissions and apply to users.
+        - Add new roles system, to group permissions and apply to users. #2483
     - New features:
         - Categories can be listed under more than one group #2475
     - Bugfixes:
-        - Prevent creation of two templates with same title.
-        - Fix bug going between report/new pages client side
+        - Prevent creation of two templates with same title. #2471
+        - Fix bug going between report/new pages client side. #2484
         - Don't include private reports when searching by ref from front page.
-        - Set fixmystreet.bodies sooner client-side, for two-tier locations.
-        - Fix front-end testing script when run with Vagrant.
+        - Set fixmystreet.bodies sooner client-side, for two-tier locations. #2498
+        - Fix front-end testing script when run with Vagrant. #2514
         - Handle missing category when sending open311 reports #2502
-        - Fix label associations with category groups.
+        - Fix label associations with category groups. #2541
     - Development improvements:
-        - Upgrade the underlying framework and a number of other packages.
+        - Upgrade the underlying framework and a number of other packages. #2473
         - Add feature cobrand helper function.
-        - Add front-end testing support for WSL.
+        - Add front-end testing support for WSL. #2514
         - Allow cobrands to disable admin resending.
         - Sass variables for default link colour and decoration.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
-          reports made in that category private.
+          reports made in that category private. #2488
         - Ensure any reports fetched in a category marked private are also
-          marked private on the site.
+          marked private on the site. #2488
         - Add new upload_files flag which sends files/photos as part of the
-          POST service request.
-        - Allow description in email template with placeholder.
+          POST service request. #2495
+        - Allow description in email template with placeholder. #2470
         - Do not store display-only extra fields on new reports.
         - Support receiving updates from external source.
         - Improve JSON output of controller.
