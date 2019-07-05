@@ -9,6 +9,7 @@
         - Report form now indicates that details are kept private if report is
           made in a private category. #2528
         - Improve map JavaScript defensiveness.
+        - Upgrade jquery-validation plugin. #2540
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
     - New features:
