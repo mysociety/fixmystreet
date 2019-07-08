@@ -21,6 +21,8 @@ sub disambiguate_location {
     };
 }
 
+sub disable_resend { 1 }
+
 sub on_map_default_status { 'open' }
 
 sub open311_munge_update_params {

@@ -53,6 +53,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Bexley');
     };
 
+    my $report;
     foreach my $test (
         { category => 'Abandoned and untaxed vehicles', email => 1, code => 'ABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' } },
@@ -79,9 +80,9 @@ FixMyStreet::override_config {
         { category => 'Lamp post', code => 'LAMP', email => 'p1.*thirdparty',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
     ) {
-        my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
+        ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
             category => $test->{category}, cobrand => 'bexley',
-            latitude => 51.408484, longitude => 0.074653,
+            latitude => 51.408484, longitude => 0.074653, areas => '2494',
         });
         if ($test->{extra}) {
             $report->set_extra_fields(ref $test->{extra} eq 'ARRAY' ? @{$test->{extra}} : $test->{extra});
@@ -109,6 +110,14 @@ FixMyStreet::override_config {
             }
         };
     }
+
+    subtest 'resend is disabled in admin' => sub {
+        my $user = $mech->log_in_ok('super@example.org');
+        $user->update({ from_body => $body, is_superuser => 1 });
+        $mech->get_ok('/admin/report_edit/' . $report->id);
+        $mech->content_contains('View report on site');
+        $mech->content_lacks('Resend report');
+    };
 
 };
 

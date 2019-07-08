@@ -460,7 +460,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $c->detach('report_edit_display') if $done;
     }
 
-    if ( $c->get_param('resend') ) {
+    if ( $c->get_param('resend') && !$c->cobrand->call_hook('disable_resend') ) {
         $c->forward('/auth/check_csrf_token');
 
         $problem->resend;
@@ -572,13 +572,14 @@ sub report_edit_category : Private {
     my ($self, $c, $problem, $no_comment) = @_;
 
     if ((my $category = $c->get_param('category')) ne $problem->category) {
+        my $disable_resend = $c->cobrand->call_hook('disable_resend');
         my $category_old = $problem->category;
         $problem->category($category);
         my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
         my @new_body_ids = map { $_->body_id } @contacts;
         # If the report has changed bodies (and not to a subset!) we need to resend it
         my %old_map = map { $_ => 1 } @{$problem->bodies_str_ids};
-        if (grep !$old_map{$_}, @new_body_ids) {
+        if (!$disable_resend && grep !$old_map{$_}, @new_body_ids) {
             $problem->resend;
         }
         # If the send methods of the old/new contacts differ we need to resend the report
@@ -589,7 +590,7 @@ sub report_edit_category : Private {
                 : $c->cobrand->_fallback_body_sender()->{method};
         } @contacts;
         my %old_send_methods = map { $_ => 1 } split /,/, ($problem->send_method_used || "Email");
-        if (grep !$old_send_methods{$_}, @new_send_methods) {
+        if (!$disable_resend && grep !$old_send_methods{$_}, @new_send_methods) {
             $problem->resend;
         }
 

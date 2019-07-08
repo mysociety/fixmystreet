@@ -22,6 +22,7 @@
         - Upgrade the underlying framework and a number of other packages.
         - Add feature cobrand helper function.
         - Add front-end testing support for WSL.
+        - Allow cobrands to disable admin resending.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private.
