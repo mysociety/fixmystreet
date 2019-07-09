@@ -1,6 +1,8 @@
 <p>
     All the information you provide here will be sent to the
-    <strong>relevant department</strong>.
+    [% # NB this empty class attribute is so fixmystreet.update_public_councils_text
+       # doesn't clobber the text by matching on the <strong>. %]
+    <strong class="">relevant department</strong>.
     [% UNLESS non_public_categories.$category %]
         The summary and description
         will also be made public, plus your name if you give us permission.
