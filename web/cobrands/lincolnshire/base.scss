@@ -14,20 +14,6 @@ h1, h2, h3 {
   font-weight: bold;
 }
 
-a {
-  color: $lincs-link;
-
-  &:visited {
-    color: $lincs-link-visited;
-  }
-  
-  &:hover,
-  &:active,
-  &:focus {
-    color: $lincs-link-hover;
-  }
-}
-
 #site-header {
   background-color: $primary;
   border-top: 0;

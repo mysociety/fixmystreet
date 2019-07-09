@@ -4,10 +4,6 @@
 
 @import "../sass/base";
 
-a { color: $link-colour; }
-a:visited { color: $link-visited-colour; }
-a:active, a:hover { color: $link-hover-colour; }
-
 @import "pattern-lib/header";
 @import "pattern-lib/navigation";
 @import "pattern-lib/footer";

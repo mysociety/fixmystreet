@@ -23,6 +23,7 @@
         - Add feature cobrand helper function.
         - Add front-end testing support for WSL.
         - Allow cobrands to disable admin resending.
+        - Sass variables for default link colour and decoration.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private.

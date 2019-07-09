@@ -5,6 +5,12 @@ $meta-font: Helmet, Freesans, sans-serif !default;
 $heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !default;
 $menu-image: 'menu-white' !default;
 
+$link-color: #005ea5 !default;
+$link-hover-color: #2b8cc4 !default;
+$link-visited-color: $link-color !default;
+$link-text-decoration: none !default;
+$link-hover-text-decoration: underline !default;
+
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #ccc !default;
@@ -184,17 +190,17 @@ select {
 
 a,
 .fake-link {
-  text-decoration: none;
-  color: #0BA7D1;
+  text-decoration: $link-text-decoration;
+  color: $link-color;
 
   &:visited {
-    color: #0BA7D1;
+    color: $link-visited-color;
   }
 
   &:hover,
   &:active {
-    text-decoration: underline;
-    color: #0D7CCE;
+    text-decoration: $link-hover-text-decoration;
+    color: $link-hover-color;
   }
 }
 

@@ -16,17 +16,9 @@ body {
     color: #333;
 }
 
-a {
-    color: $color-oxfordshire-link-blue;
-
-    &:hover {
-        color: $color-oxfordshire-bright-yellow;
-    }
-
-    a:not([class]):focus {
-        background-color: $color-oxfordshire-bright-yellow;
-        outline: 2px solid $color-oxfordshire-bright-yellow;
-    }
+a:not([class]):focus {
+    background-color: $color-oxfordshire-bright-yellow;
+    outline: 2px solid $color-oxfordshire-bright-yellow;
 }
 
 .form-control,
@@ -126,12 +118,12 @@ a {
         padding: 0;
         background: transparent;
         font-size: inherit;
-        color: $color-oxfordshire-link-blue;
+        color: $link-color;
         margin-top: 0.5em;
 
         &:hover {
             background-color: transparent;
-            color: $color-oxfordshire-bright-yellow;
+            color: $link-hover-color;
         }
 
         &:focus {

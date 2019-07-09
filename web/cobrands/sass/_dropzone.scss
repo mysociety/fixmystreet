@@ -1,5 +1,5 @@
-$dropzone-link-color: #0BA7D1; // match default `a` styling
-$dropzone-link-color--awakened: #0D7CCE; // match default `a:hover` styling
+$dropzone-link-color: $link-color;
+$dropzone-link-color--awakened: $link-hover-color;
 $dropzone-border-color--awakened: $dropzone-link-color--awakened;
 $dropzone-border-color--full: #bf002a;
 $dropzone-background-color: #fff;

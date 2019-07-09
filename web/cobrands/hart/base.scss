@@ -4,13 +4,6 @@
 
 @import "../sass/base";
 
-a, a:visited {
-    color: #369;
-    &:hover, &:active {
-        color: #369;
-    }
-}
-
 .item-list--reports__item {
   color: #666;
   a {
