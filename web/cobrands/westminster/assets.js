@@ -23,7 +23,7 @@ var SubcatMixin = OpenLayers.Class({
     relevant: function() {
         var relevant = OpenLayers.Layer.VectorAsset.prototype.relevant.apply(this, arguments),
             subcategories = this.fixmystreet.subcategories,
-            subcategory = $('#form_type').val(),
+            subcategory = $(this.fixmystreet.subcategory_id).val(),
             relevant_sub = OpenLayers.Util.indexOf(subcategories, subcategory) > -1;
         return relevant && relevant_sub;
     },
@@ -31,6 +31,23 @@ var SubcatMixin = OpenLayers.Class({
 });
 OpenLayers.Layer.VectorAssetWestminsterSubcat = OpenLayers.Class(OpenLayers.Layer.VectorAsset, SubcatMixin, {
     CLASS_NAME: 'OpenLayers.Layer.VectorAssetWestminsterSubcat'
+});
+
+// This is required so that the found/not found actions are fired on category
+// select and pin move rather than just on asset select/not select.
+function uprn_init(name, options) {
+    OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+    $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
+    $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
+}
+OpenLayers.Layer.VectorAssetWestminsterUPRN = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+    initialize: function(name, options) { uprn_init.apply(this, arguments); },
+    CLASS_NAME: 'OpenLayers.Layer.VectorAssetWestminsterUPRN'
+});
+OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN = OpenLayers.Class(OpenLayers.Layer.VectorAsset, SubcatMixin, {
+    cls: OpenLayers.Layer.VectorAsset,
+    initialize: function(name, options) { uprn_init.apply(this, arguments); },
+    CLASS_NAME: 'OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN'
 });
 
 var url_base = 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://westminster.assets/';
@@ -111,6 +128,100 @@ fixmystreet.message_controller.register_category({
 });
 
 var layer_data = [
+    { category: [ 'Food safety/hygiene' ] },
+    { category: 'Damaged, dirty, or missing bin', subcategories: [ '1', '2' ], subcategory_id: '#form_bintype' },
+    { category: 'Noise', subcategories: [ '1', '3', '4', '7', '8', '9', '10' ] },
+    { category: 'Smoke and odours' },
+];
+
+function uprn_sort(a, b) {
+    a = a.attributes.ADDRESS;
+    b = b.attributes.ADDRESS;
+    var a_flat = a.match(/^(Flat|Unit)s? (\d+)/);
+    var b_flat = b.match(/^(Flat|Unit)s? (\d+)/);
+    if (a_flat && b_flat && a_flat[1] === b_flat[1]) {
+        return a_flat[2] - b_flat[2];
+    }
+    return a.localeCompare(b);
+}
+
+var old_uprn;
+
+function add_to_uprn_select($select, assets) {
+    assets.sort(uprn_sort);
+    $.each(assets, function(i, f) {
+        $select.append('<option value="' + f.attributes.UPRN + '">' + f.attributes.ADDRESS + '</option>');
+    });
+    if (old_uprn && $select.find('option[value=\"' + old_uprn + '\"]').length) {
+        $select.val(old_uprn);
+    }
+}
+
+function construct_uprn_select(assets) {
+    old_uprn = $('#uprn').val();
+    $("#uprn_select").remove();
+    $('.category_meta_message').html('');
+    var $div = $('<div class="extra-category-questions" id="uprn_select">');
+    if (assets.length > 1) {
+        $div.append('<label for="uprn">Please choose a property:</label>');
+        var $select = $('<select id="uprn" class="form-control" name="UPRN" required>');
+        $select.append('<option value="">---</option>');
+        add_to_uprn_select($select, assets);
+        $div.append($select);
+    } else {
+        $div.html('You have selected <b>' + assets[0].attributes.ADDRESS + '</b>');
+    }
+    $div.appendTo('#js-post-category-messages');
+}
+
+$.each(layer_data, function(i, o) {
+    var params = {
+        class: OpenLayers.Layer.VectorAssetWestminsterUPRN,
+        asset_category: o.category,
+        asset_item: 'property',
+        http_options: {
+            url: url_base + '25/query?',
+            params: {
+                where: "PROPERTYTYPE NOT IN ('Pay Phone','Street Record')",
+                outFields: 'UPRN,address'
+            }
+        },
+        max_resolution: 0.5971642833948135,
+        select_action: true,
+        attributes: {
+            'UPRN': 'UPRN'
+        },
+        actions: {
+            asset_found: function(asset) {
+                if (fixmystreet.message_controller.asset_found()) {
+                    return;
+                }
+                var lonlat = asset.geometry.getBounds().getCenterLonLat();
+                var overlap_threshold = 1; // Features considered overlapping if within 1m of each other
+                var overlapping_features = this.getFeaturesWithinDistance(
+                    new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
+                    overlap_threshold
+                );
+                construct_uprn_select(overlapping_features);
+            },
+            asset_not_found: function() {
+                $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+                $("#uprn_select").remove();
+                fixmystreet.message_controller.asset_not_found(this);
+            }
+        }
+    };
+
+    if (o.subcategories) {
+        params.class = OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN;
+        params.subcategories = o.subcategories;
+        params.subcategory_id = o.subcategory_id || '#form_type';
+    }
+
+    fixmystreet.assets.add(defaults, params);
+});
+
+layer_data = [
     { group: 'Street lights', item: 'street light', layers: [ 18, 50, 60 ] },
     { category: 'Pavement damage', layers: [ 14 ], road: true },
     { category: 'Pothole', layers: [ 11, 44 ], road: true },
@@ -141,6 +252,7 @@ $.each(layer_data, function(i, o) {
     } else if (o.subcategories) {
         params.class = OpenLayers.Layer.VectorAssetWestminsterSubcat;
         params.subcategories = o.subcategories;
+        params.subcategory_id = o.subcategory_id || '#form_type';
     }
 
     if (o.road) {
@@ -164,7 +276,7 @@ $.each(layer_data, function(i, o) {
 });
 
 $(function(){
-    $("#problem_form").on("change.category", "#form_type, #form_featuretypecode", function() {
+    $("#problem_form").on("change.category", "#form_type, #form_featuretypecode, #form_bintype", function() {
         $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
     });
 });
