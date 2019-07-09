@@ -72,6 +72,31 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
+var tfl_categories = [ 'Pavement damage', 'Pothole', 'Road pavement damage', 'Road or pavement damage' ];
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: url_base + '2/query?'
+    },
+    asset_category: tfl_categories,
+    non_interactive: true,
+    road: true,
+    nearest_radius: 25,
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    actions: {
+        found: function(layer, feature) {
+            if (!fixmystreet.assets.selectedFeature()) {
+                fixmystreet.body_overrides.only_send('TfL');
+            } else {
+                fixmystreet.body_overrides.remove_only_send();
+            }
+        },
+        not_found: function(layer) {
+            fixmystreet.body_overrides.remove_only_send();
+        }
+    }
+});
+
 var layer_data = [
     { group: 'Street lights', item: 'street light', layers: [ 18, 50, 60 ] },
     { category: 'Pavement damage', layers: [ 14 ], road: true },
