@@ -76,18 +76,9 @@ var streetlight_select = {
     fontWeight: 'bold'
 };
 
-var streetlight_select_alt = $.extend(true, {}, streetlight_select, {
-  label: "${asset_no}"
-});
-
 var streetlight_stylemap = new OpenLayers.StyleMap({
   'default': new OpenLayers.Style(streetlight_default),
   'select': new OpenLayers.Style(streetlight_select)
-});
-
-var streetlight_stylemap_alt = new OpenLayers.StyleMap({
-  'default': new OpenLayers.Style(streetlight_default),
-  'select': new OpenLayers.Style(streetlight_select_alt)
 });
 
 var streetlight_code_to_type = {
@@ -105,10 +96,9 @@ var streetlight_code_to_type = {
 var labeled_defaults = $.extend(true, {}, defaults, {
     select_action: true,
     stylemap: streetlight_stylemap,
-    feature_code: 'feature_id',
     actions: {
         asset_found: function(asset) {
-          var id = asset.attributes[this.fixmystreet.feature_code] || '';
+          var id = asset.attributes.feature_id || '';
           if (id !== '') {
               var code = id.replace(/[0-9]/g, '');
               var asset_name = streetlight_code_to_type[code] || this.fixmystreet.asset_item;
@@ -158,7 +148,6 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    stylemap: streetlight_stylemap,
     http_options: {
         params: {
             TYPENAME: "Beacons"
@@ -171,7 +160,6 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    stylemap: streetlight_stylemap,
     http_options: {
         params: {
             TYPENAME: "Beacon_Column"
@@ -184,13 +172,11 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    stylemap: streetlight_stylemap_alt,
     http_options: {
         params: {
             TYPENAME: "Crossings"
         }
     },
-    feature_code: 'asset_no',
     asset_category: [
           'Traffic lights & crossings problems with buttons, beep or lamps',
           'Traffic lights & crossings problems with timings',
