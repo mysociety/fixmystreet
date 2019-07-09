@@ -407,7 +407,8 @@ function layer_visibilitychanged() {
         }
         return;
     } else if (!this.getVisibility()) {
-        this.asset_not_found();
+        asset_unselected.call(this);
+        this.asset_not_found(); // as trigger won't call on non-visible layers
     }
 
     var controls = this.controls || [];
