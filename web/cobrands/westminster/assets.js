@@ -54,6 +54,24 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: url_base + '40/query?',
+        params: {
+            outFields: 'USRN'
+        }
+    },
+    all_categories: true,
+    always_visible: true,
+    non_interactive: true,
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    nearest_radius: 100,
+    usrn: {
+        attribute: 'USRN',
+        field: 'USRN'
+    }
+});
+
 var layer_data = [
     { group: 'Street lights', item: 'street light', layers: [ 18, 50, 60 ] },
     { category: 'Pavement damage', layers: [ 14 ], road: true },
