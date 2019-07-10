@@ -20,6 +20,7 @@ subtest 'cobrand assets includes not applied on cobrand sites', sub {
         ALLOWED_COBRANDS => [ 'bathnes' ],
         MAPIT_URL => 'http://mapit.uk/',
         MAP_TYPE => 'FMS,OSM,BathNES,Buckinghamshire',
+        STAGING_FLAGS => { skip_checks => 1 },
     }, sub {
         $mech->get_ok("/report/new?latitude=51.494885&longitude=-2.602237");
         $mech->content_lacks('buckinghamshire/assets.js');

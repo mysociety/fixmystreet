@@ -121,6 +121,9 @@
     }
 
     function render_duplicate_pins(api_response) {
+        if (!fixmystreet.markers) {
+            return;
+        }
         var markers = fixmystreet.maps.markers_list( api_response.pins, true );
         fixmystreet.markers.removeFeatures( current_duplicate_markers );
         fixmystreet.markers.addFeatures( markers );
@@ -138,6 +141,9 @@
     }
 
     function remove_duplicate_pins() {
+        if (!fixmystreet.markers) {
+            return;
+        }
         fixmystreet.markers.removeFeatures( current_duplicate_markers );
     }
 

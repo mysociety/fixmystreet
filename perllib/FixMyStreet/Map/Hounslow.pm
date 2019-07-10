@@ -55,14 +55,9 @@ sub copyright {
 
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wmts.js',
-    '/vendor/OpenLayers.Projection.OrdnanceSurvey.js',
     '/js/map-OpenLayers.js',
     '/js/map-wmts-base.js',
     '/js/map-wmts-hounslow.js',
-    '/cobrands/fixmystreet-uk-councils/roadworks.js',
-    '/cobrands/fixmystreet/assets.js',
-    '/cobrands/hounslow/js.js',
-    '/cobrands/hounslow/assets.js',
 ] }
 
 1;

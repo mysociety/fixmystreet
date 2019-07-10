@@ -23,42 +23,17 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-var streetlight_default = {
-    fillColor: "#FFFF00",
-    fillOpacity: 0.6,
-    strokeColor: "#000000",
-    strokeOpacity: 0.8,
-    strokeWidth: 2,
-    pointRadius: 6
-};
-
-var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data').getAttribute('data-pin_prefix');
-
-var streetlight_select = {
-    externalGraphic: pin_prefix + "pin-spot.png",
-    fillColor: "#55BB00",
-    graphicWidth: 48,
-    graphicHeight: 64,
-    graphicXOffset: -24,
-    graphicYOffset: -56,
-    backgroundGraphic: pin_prefix + "pin-shadow.png",
-    backgroundWidth: 60,
-    backgroundHeight: 30,
-    backgroundXOffset: -7,
-    backgroundYOffset: -22,
-    popupYOffset: -40,
-    graphicOpacity: 1.0,
-
+var streetlight_select = $.extend({
     label: "${Unit_No}",
     labelOutlineColor: "white",
     labelOutlineWidth: 3,
     labelYOffset: 65,
     fontSize: '15px',
     fontWeight: 'bold'
-};
+}, fixmystreet.assets.style_default_select.defaultStyle);
 
 var streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': new OpenLayers.Style(streetlight_default),
+  'default': fixmystreet.assets.style_default,
   'select': new OpenLayers.Style(streetlight_select)
 });
 
@@ -100,12 +75,7 @@ fixmystreet.assets.add(defaults, {
         attribute: 'NSG_REF',
         field: 'NSGRef'
     },
-    stylemap: new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fill: false,
-            stroke: false
-        })
-    })
+    stylemap: fixmystreet.assets.stylemap_invisible
 });
 
 fixmystreet.assets.add(labeled_defaults, {

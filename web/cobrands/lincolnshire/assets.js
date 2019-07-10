@@ -173,12 +173,7 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'road',
     asset_item_message: null,
     disable_pin_snapping: true,
-    stylemap: new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fill: false,
-            stroke: false
-        })
-    })
+    stylemap: fixmystreet.assets.stylemap_invisible
 });
 
 fixmystreet.assets.add(defaults, {
@@ -193,13 +188,7 @@ fixmystreet.assets.add(defaults, {
         attribute: 'Site_Code',
         field: 'site_code'
     },
-    stylemap: new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fill: false,
-            stroke: false
-        })
-    })
-
+    stylemap: fixmystreet.assets.stylemap_invisible
 });
 
 var llpg_stylemap = new OpenLayers.StyleMap({

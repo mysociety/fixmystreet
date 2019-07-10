@@ -76,13 +76,6 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'tree'
 });
 
-var highways_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fill: false,
-        stroke: false
-    })
-});
-
 var bromley_to_tfl = {
     'Enforcement': ['ENF_NUI_SIGN', 'ENF_OBS_HIGH', 'ENF_OHANG_HANG', 'ENF_UNLIC_HIGH'],
     'Graffiti and Flyposting': ['GF_NUI_SIGN'],
@@ -106,7 +99,7 @@ fixmystreet.assets.add(defaults, {
             TYPENAME: "TFL_Red_Route"
         }
     },
-    stylemap: highways_stylemap,
+    stylemap: fixmystreet.assets.stylemap_invisible,
     always_visible: true,
 
     asset_category: tfl_asset_categories,

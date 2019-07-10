@@ -24,20 +24,13 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-var highways_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fill: false,
-        stroke: false,
-    })
-});
-
 fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Highways"
         }
     },
-    stylemap: highways_stylemap,
+    stylemap: fixmystreet.assets.stylemap_invisible,
     always_visible: true,
 
     non_interactive: true,

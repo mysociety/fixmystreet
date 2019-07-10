@@ -304,6 +304,9 @@ $.extend(fixmystreet.utils, {
       // fixmystreet.select_feature).
 
       markers_highlight: function(problem_id) {
+          if (!fixmystreet.markers) {
+              return;
+          }
           for (var i = 0; i < fixmystreet.markers.features.length; i++) {
               if (typeof problem_id == 'undefined') {
                   // There is no highlighted marker, so unfade this marker
@@ -790,6 +793,10 @@ $.extend(fixmystreet.utils, {
     }
 
     $(function(){
+
+        if (!document.getElementById('map')) {
+            return;
+        }
 
         // Set specific map config - some other JS included in the
         // template should define this
