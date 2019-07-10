@@ -54,7 +54,7 @@ fixmystreet.assets.add(options, {
 
 var lighting_options = $.extend({}, common_options, {
     wfs_url: "https://maps.bristol.gov.uk/arcgis/services/ext/datagov/MapServer/WFSServer",
-    wfs_feature: "Streetlights",
+    wfs_feature: "Streetlights_and_Street_Furniture",
     asset_id_field: 'Unit_ID',
     propertyNames: [ 'USRN', 'Unit_ID', 'Unit_type_description' ],
     attributes: {
