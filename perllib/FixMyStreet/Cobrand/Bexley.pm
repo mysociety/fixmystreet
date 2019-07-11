@@ -131,4 +131,31 @@ sub open311_post_send {
     $sender->send($row, $h);
 }
 
+sub dashboard_export_problems_add_columns {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my %groups;
+    if ($c->stash->{body}) {
+        %groups = FixMyStreet::DB->resultset('Contact')->active->search({
+            body_id => $c->stash->{body}->id,
+        })->group_lookup;
+    }
+
+    splice @{$c->stash->{csv}->{headers}}, 5, 0, 'Subcategory';
+    splice @{$c->stash->{csv}->{columns}}, 5, 0, 'subcategory';
+
+    $c->stash->{csv}->{extra_data} = sub {
+        my $report = shift;
+
+        if ($groups{$report->category}) {
+            return {
+                category => $groups{$report->category},
+                subcategory => $report->category,
+            };
+        }
+        return {};
+    };
+}
+
 1;

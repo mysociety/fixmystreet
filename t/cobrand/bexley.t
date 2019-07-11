@@ -33,7 +33,9 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxe
 $mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "LAMP");
 $mech->create_contact_ok(body_id => $body->id, category => 'Parks and open spaces', email => "PARK");
 $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
-$mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
+my $category = $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
+$category->set_extra_metadata(group => 'Danger things');
+$category->update;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bexley' ],
@@ -117,6 +119,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/admin/report_edit/' . $report->id);
         $mech->content_contains('View report on site');
         $mech->content_lacks('Resend report');
+    };
+
+    subtest 'extra CSV column present' => sub {
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains(',Category,Subcategory,');
+        $mech->content_contains('"Danger things","Something dangerous"');
     };
 
 };
