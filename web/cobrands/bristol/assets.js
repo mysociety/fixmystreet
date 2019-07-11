@@ -6,7 +6,7 @@ if (!fixmystreet.maps) {
 
 // Assets are served from two different WFS feeds; one for lighting and one
 // for everything else. They have some options in common:
-var common_options = {
+var options = {
     max_resolution: {
         'bristol': 0.33072982812632296,
         'fixmystreet': 4.777314267158508
@@ -15,22 +15,20 @@ var common_options = {
     asset_type: 'spot',
     body: "Bristol City Council",
     srsName: "EPSG:27700",
-    geometryName: 'SHAPE'
-};
-
-
-var options = $.extend({}, common_options, {
+    geometryName: 'SHAPE',
     wfs_url: "https://maps.bristol.gov.uk/arcgis/services/ext/FixMyStreetSupportData/MapServer/WFSServer",
     wfs_feature: "COD_ASSETS_POINT",
     asset_id_field: 'COD_ASSET_ID',
     propertyNames: [ 'COD_ASSET_ID', 'COD_USRN', 'COD_ASSET_TYPE' ],
+    filter_key: 'COD_ASSET_TYPE',
     attributes: {
         asset_id: 'COD_ASSET_ID',
         usrn: 'COD_USRN'
     }
-});
+};
 
 fixmystreet.assets.add(options, {
+    filter_key: '',
     wfs_feature: "COD_ASSETS_AREA",
     asset_type: 'area',
     asset_category: "Bridges/Subways",
@@ -40,80 +38,39 @@ fixmystreet.assets.add(options, {
 fixmystreet.assets.add(options, {
     asset_category: "Gully/Drainage",
     asset_item: 'gully',
-    filter_key: 'COD_ASSET_TYPE',
     filter_value: 'GULLY'
 });
 
 fixmystreet.assets.add(options, {
     asset_category: "Grit Bins",
     asset_item: 'grit bin',
-    filter_key: 'COD_ASSET_TYPE',
     filter_value: 'GRITBIN'
 });
 
-
-var lighting_options = $.extend({}, common_options, {
-    wfs_url: "https://maps.bristol.gov.uk/arcgis/services/ext/datagov/MapServer/WFSServer",
-    wfs_feature: "Streetlights_and_Street_Furniture",
-    asset_id_field: 'Unit_ID',
-    propertyNames: [ 'USRN', 'Unit_ID', 'Unit_type_description' ],
-    attributes: {
-        asset_id: function() {
-            if (this.attributes && this.attributes.Unit_ID) {
-                if (this.attributes.Unit_ID.match(/^SL/)) {
-                    // Just in case they ever start prefixing it in the WFS...
-                    return this.attributes.Unit_ID;
-                } else {
-                    return "SL" + this.attributes.Unit_ID;
-                }
-            } else {
-                return "";
-            }
-        },
-        usrn: 'USRN'
-    },
-    filter_key: 'Unit_type_description'
-});
-
-fixmystreet.assets.add(lighting_options, {
+fixmystreet.assets.add(options, {
     asset_category: "Street Light",
     asset_item: 'street light',
-    filter_value: [
-        'SL: Street Light',
-        'SL: Silverspring CMS',
-        'SL: Philips CMS',
-        'SL: Feature Fld.Lgt',
-        'SL: Gas Light',
-        'SL: High Mast',
-        'SL: Refuge Column',
-        'SL: Subway'
-    ]
+    filter_value: [ 'S070', 'S080', 'S100', 'S110', 'S120', 'S170', 'S220', 'S230' ]
 });
 
-fixmystreet.assets.add(lighting_options, {
+fixmystreet.assets.add(options, {
     asset_category: "Zebra Crossing Light",
     asset_item: 'light',
-    filter_value: 'SL: Zebra'
+    filter_value: 'S260'
 });
 
-fixmystreet.assets.add(lighting_options, {
-    asset_category: "Iluminated Bollard",
+// NB there's a typo in BCC's ‘Iluminated Bollard’ category so this
+// includes the correct spelling just in case they fix it.
+fixmystreet.assets.add(options, {
+    asset_category: [ "Iluminated Bollard", "Illuminated Bollard" ],
     asset_item: 'bollard',
-    filter_value: 'SL: Bollard'
+    filter_value: 'S020'
 });
 
-// NB there's a typo in BCC's ‘Iluminated Bollard’ category so this repeats
-// the above (without the typo) just in case they fix it.
-fixmystreet.assets.add(lighting_options, {
-    asset_category: "Illuminated Bollard",
-    asset_item: 'bollard',
-    filter_value: 'SL: Bollard'
-});
-
-fixmystreet.assets.add(lighting_options, {
+fixmystreet.assets.add(options, {
     asset_category: "Illuminated Sign",
     asset_item: 'sign',
-    filter_value: 'SL: Sign'
+    filter_value: 'S180'
 });
 
 var redirects = {
@@ -127,7 +84,7 @@ var redirects = {
 
 $.each(redirects, function(name, value) {
     fixmystreet.message_controller.register_category({
-        body: common_options.body,
+        body: options.body,
         category: name,
         message: 'If you wish to report an issue with ' + name + ', please use <a href="' + value + '">this service</a>.'
     });
