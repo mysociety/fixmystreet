@@ -42,6 +42,8 @@ sub pin_colour {
 
 sub reports_per_page { return 20; }
 
+sub admin_user_domain { 'royalgreenwich.gov.uk' }
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
