@@ -34,7 +34,7 @@ sub manifest : Path("/offline/appcache.manifest") {
 
 sub appcache : Path("/offline/appcache") {
     my ($self, $c) = @_;
-    $c->detach('/page_error_404_not_found', []) if keys %{$c->req->params};
+    $c->detach('/page_error_404_not_found', []) if keys %{$c->req->params} && !$c->req->query_keywords;
     unless ($c->forward('have_appcache')) {
         $c->response->status(404);
         $c->response->body('NOT FOUND');
