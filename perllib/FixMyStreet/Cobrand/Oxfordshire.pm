@@ -128,6 +128,7 @@ sub open311_config {
     }
     $row->set_extra_fields( @$extra );
 
+    $params->{multi_photos} = 1;
     $params->{extended_description} = 'oxfordshire';
 }
 
