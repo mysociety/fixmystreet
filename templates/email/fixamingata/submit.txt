@@ -1,4 +1,4 @@
-Subject: Ny rapport: [% report.title %]
+Subject: Ny rapport: [% IF problem.extra.building %][% problem.extra.building %], [% END %][% report.title %]
 
 Till [% bodies_name %],
 
