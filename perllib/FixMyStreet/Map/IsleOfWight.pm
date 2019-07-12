@@ -49,7 +49,7 @@ sub zoom_parameters {
 }
 
 sub copyright {
-    return 'Contains Ordnance Survey data &copy; Crown copyright and database rights 2019 OS. Use of this data is subject to <a href="/about/mapterms">terms and conditions</a>.';
+    return 'Contains Ordnance Survey data &copy; Crown copyright and database rights 2019 OS 100019229. Use of this data is subject to <a href="/about/mapterms">terms and conditions</a>.';
 }
 
 
