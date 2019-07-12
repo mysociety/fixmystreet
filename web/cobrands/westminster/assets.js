@@ -97,6 +97,19 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
+fixmystreet.message_controller.register_category({
+    body: defaults.body,
+    category: function() {
+        var category = $('#form_category').val();
+        if (OpenLayers.Util.indexOf(tfl_categories, category) === -1 ||
+            fixmystreet.body_overrides.get_only_send() === 'TfL') {
+            return false;
+        }
+        return true;
+    },
+    message: 'Due to the need to consider a priority response we would ask you to call <a href="tel:+442076412000">020 7641 2000</a> with exact details of the problem.'
+});
+
 var layer_data = [
     { group: 'Street lights', item: 'street light', layers: [ 18, 50, 60 ] },
     { category: 'Pavement damage', layers: [ 14 ], road: true },
