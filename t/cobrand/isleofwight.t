@@ -2,6 +2,7 @@ use CGI::Simple;
 use DateTime;
 use FixMyStreet::TestMech;
 use Open311;
+use Open311::GetServiceRequestUpdates;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
@@ -55,6 +56,53 @@ subtest "only original reporter can comment" => sub {
         $mech->content_lacks('Only the original reporter may leave updates');
     };
 };
+
+my $system_user = $mech->create_user_ok('system_user@example.org');
+
+for my $status ( qw/ CLOSED FIXED DUPLICATE NOT_COUNCILS_RESPONSIBILITY NO_FURTHER_ACTION / ) {
+    subtest "updates which mark report as $status close it to comments" => sub {
+        my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
+        my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, '', { lastupdate => $dt });
+        $p->update({ external_id => $p->id });
+
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>UPDATE_ID</update_id>
+        <service_request_id>SERVICE_ID</service_request_id>
+        <service_request_id_ext>ID_EXTERNAL</service_request_id_ext>
+        <status>STATUS</status>
+        <description>This is a note</description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+
+        $requests_xml =~ s/STATUS/$status/;
+        $requests_xml =~ s/UPDATE_ID/@{[$p->id]}/;
+        $requests_xml =~ s/SERVICE_ID/@{[$p->id]}/;
+        $requests_xml =~ s/ID_EXTERNAL/@{[$p->id]}/;
+        $requests_xml =~ s/UPDATED_DATETIME/$update_dt/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+        my $update = Open311::GetServiceRequestUpdates->new( system_user => $system_user );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'isleofwight',
+        }, sub {
+            $update->update_comments( $o, $isleofwight );
+        };
+
+        $mech->log_in_ok('user@example.org');
+        $mech->get_ok('/report/' . $p->id);
+        $mech->content_lacks('Provide an update', "No update form on report");
+
+        $p->discard_changes;
+        is $p->get_extra_metadata('closed_updates'), 1, "report closed to updates";
+    };
+}
 
 subtest "fixing passes along the correct message" => sub {
     FixMyStreet::override_config {
