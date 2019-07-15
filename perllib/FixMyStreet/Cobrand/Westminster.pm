@@ -30,6 +30,18 @@ sub social_auth_enabled {
     my $self = shift;
 
     return $self->feature('oidc_login') ? 1 : 0;
- }
+}
+
+sub allow_anonymous_reports { 'button' }
+
+sub admin_user_domain { 'westminster.gov.uk' }
+
+sub anonymous_account {
+    my $self = shift;
+    return {
+        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
+        name => 'Anonymous user',
+    };
+}
 
 1;
