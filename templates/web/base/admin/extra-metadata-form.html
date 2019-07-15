@@ -1,7 +1,7 @@
 <ul class="js-metadata-items">
   [% FOR meta IN metas.merge([{}]) %]
     <li class="js-metadata-item [% IF loop.last %]hidden-js js-metadata-item-template[% END %]" data-index="[% loop.index %]">
-        <button class="btn btn--small js-metadata-item-remove hidden-nojs">[% loc('Remove field') %]</button>
+        <button type="button" class="btn btn--small js-metadata-item-remove hidden-nojs">[% loc('Remove field') %]</button>
 
         <div class="admin-hint"><p>[% loc('The ordering of this field on the report page. Fields are shown in ascending order according to this value.') %]</p></div>
         <label>
@@ -75,17 +75,17 @@
                             [% loc('Name') %]
                             <input class="js-metadata-option-name" name="metadata[[% outer_loop.index %]].values[[% loop.index %]].name" type="text" value="[% option.name | html %]">
                         </label>
-                        <button class="btn btn--small js-metadata-option-remove hidden-nojs">[% loc('Remove') %]</button>
+                        <button type="button" class="btn btn--small js-metadata-option-remove hidden-nojs">[% loc('Remove') %]</button>
                     </li>
                 [% END %]
                 <li class="hidden-nojs">
-                    <button class="btn btn--small js-metadata-option-add">[% loc('Add option') %]</button>
+                    <button type="button" class="btn btn--small js-metadata-option-add">[% loc('Add option') %]</button>
                 </li>
             </ul>
         </div>
     </li>
   [%- END %]
   <li class="hidden-nojs">
-      <button class="btn btn--small js-metadata-item-add">[% loc('Add field') %]</button>
+      <button type="button" class="btn btn--small js-metadata-item-add">[% loc('Add field') %]</button>
   </li>
 </ul>
