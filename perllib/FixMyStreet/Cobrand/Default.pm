@@ -1058,8 +1058,10 @@ sub never_confirm_reports { 0; }
 
 =item allow_anonymous_reports
 
-If true then can have reports that are truly anonymous - i.e with no email or
-name. You need to also put details in the anonymous_account function too.
+If true then a report submission with no user details will default to the user
+given via the anonymous_account function, and create it anonymously. If set to
+'button', then this will happen only when a report_anonymously button is
+pressed in the front end, rather than whenever a username is not provided.
 
 =cut
 
