@@ -1,4 +1,34 @@
 <!-- report/form/user.html -->
+<style>
+.form-section-preview small {
+    margin: 0.5em auto;
+    display: block;
+    text-align: center;
+    font-style: normal;
+    width: 75%;
+}
+.form-section-preview small#or {
+    margin: 1em auto;
+    width: 100%;
+}
+small#or:before, small#or:after {
+    background-color: #fff;
+    content: "";
+    display: inline-block;
+    height: 2px;
+    position: relative;
+    vertical-align: middle;
+    width: 50%;
+}
+small#or:before {
+    right: 1em;
+    margin-left: -50%;
+}
+small#or:after {
+    left: 1em;
+    margin-right: -50%;
+}
+</style>
 <div class="js-new-report-user-hidden form-section-preview form-section-preview--next
     [%~ ' hidden-nojs' IF c.user_exists OR NOT c.cobrand.social_auth_enabled %]">
     <h2 class="form-section-heading form-section-heading--private hidden-nojs">
@@ -25,6 +55,11 @@
     </button>
   [% END %]
     <button type="button" class="btn btn--block hidden-nojs js-new-report-user-show">Confirm by email</button>
+[% END %]
+[% IF type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]
+    <small id="or">[% loc('or') %]</small>
+    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">[% loc('Report anonymously') %]</button>
+    <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
 [% END %]
 </div>
 <!-- /report/form/user.html -->
