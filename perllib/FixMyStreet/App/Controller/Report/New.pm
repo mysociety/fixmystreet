@@ -802,10 +802,15 @@ sub process_user : Private {
     # Report form includes two username fields: #form_username_register and #form_username_sign_in
     $params{username} = (first { $_ } $c->get_param_list('username')) || '';
 
-    if ( $c->cobrand->allow_anonymous_reports ) {
+    if ( $c->cobrand->allow_anonymous_reports && !$c->user_exists && !$params{username} ) {
         my $anon_details = $c->cobrand->anonymous_account;
-        $params{username} ||= $anon_details->{email};
-        $params{name} ||= $anon_details->{name};
+        my $user = $c->model('DB::User')->find_or_new({ email => $anon_details->{email} });
+        $user->name($anon_details->{name});
+        $report->user($user);
+        $report->name($user->name);
+        $c->stash->{no_reporter_alert} = 1;
+        $c->stash->{contributing_as_anonymous_user} = 1;
+        return 1;
     }
 
     # The user is already signed in. Extra bare block for 'last'.
@@ -1120,12 +1125,13 @@ sub check_for_errors : Private {
     $c->stash->{field_errors} ||= {};
     my %field_errors = $c->cobrand->report_check_for_errors( $c );
 
+    my $report = $c->stash->{report};
+
     # Zurich, we don't care about title or name
     # There is no title, and name is optional
     if ( $c->cobrand->moniker eq 'zurich' ) {
         delete $field_errors{title};
         delete $field_errors{name};
-        my $report = $c->stash->{report};
         $report->title( Utils::cleanup_text( substr($report->detail, 0, 25) ) );
 
         # We only want to validate the phone number web requests (where the
@@ -1142,6 +1148,11 @@ sub check_for_errors : Private {
     # we don't care about the name field even though it's validated
     # by the user object
     if ( $c->get_param('submit_sign_in') and $field_errors{password} ) {
+        delete $field_errors{name};
+    }
+
+    # If we're making an anonymous report, we do not care about the name field
+    if ( $c->stash->{contributing_as_anonymous_user} ) {
         delete $field_errors{name};
     }
 
@@ -1170,7 +1181,6 @@ sub check_for_errors : Private {
 
     if ( $c->cobrand->allow_anonymous_reports ) {
         my $anon_details = $c->cobrand->anonymous_account;
-        my $report = $c->stash->{report};
         $report->user->email(undef) if $report->user->email eq $anon_details->{email};
         $report->name(undef) if $report->name eq $anon_details->{name};
     }
