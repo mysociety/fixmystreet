@@ -142,7 +142,7 @@ as well.") %]
             [% END %]
             <input class="hidden-js js-group-item-template form-control" type="text" name="group" value="" size="30">
             <p class="hidden-nojs">
-              <button class="btn btn--small js-group-item-add">[% loc('Add group') %]</button>
+              <button type="button" class="btn btn--small js-group-item-add">[% loc('Add group') %]</button>
             </p>
         [% ELSE %]
         <input class="form-control" type="text" name="group" value="[% contact.extra.group | html %]" size="30">
