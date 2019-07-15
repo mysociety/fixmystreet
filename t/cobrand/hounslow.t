@@ -9,7 +9,8 @@ $mech->create_contact_ok(
     email => 'pothole@example.org',
 );
 
-$mech->create_user_ok('staff@example.org', from_body => $hounslow_id);
+my $user = $mech->create_user_ok('staff@example.org', from_body => $hounslow_id);
+$user->user_body_permissions->create({ body_id => $hounslow_id, permission_type => 'user_edit' });
 
 my $tfl = $mech->create_body_ok( 2483, 'TfL');
 $mech->create_contact_ok(
@@ -93,6 +94,17 @@ subtest "Shows external ID on report page to staff users only" => sub {
         $mech->log_in_ok('staff@example.org');
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('ABC123');
+    };
+};
+
+subtest "Admin searches right domains" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'hounslow',
+    }, sub {
+        foreach ('hounslowhighways.org', 'hounslow.gov.uk') {
+            $mech->get_ok('/admin/users?search=xyz@' . $_);
+            $mech->content_contains('xyz@' . $_);
+        }
     };
 };
 
