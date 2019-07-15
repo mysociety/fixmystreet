@@ -55,14 +55,9 @@ sub copyright {
 
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wmts.js',
-    '/vendor/OpenLayers.Projection.OrdnanceSurvey.js',
     '/js/map-OpenLayers.js',
     '/js/map-wmts-base.js',
     '/js/map-wmts-isleofwight.js',
-    '/cobrands/fixmystreet-uk-councils/roadworks.js',
-    '/cobrands/fixmystreet/assets.js',
-    '/cobrands/isleofwight/js.js',
-    '/cobrands/isleofwight/assets.js',
 ] }
 
 1;
