@@ -803,7 +803,9 @@ sub process_user : Private {
     # Report form includes two username fields: #form_username_register and #form_username_sign_in
     $params{username} = (first { $_ } $c->get_param_list('username')) || '';
 
-    if ( $c->cobrand->allow_anonymous_reports && !$c->user_exists && !$params{username} ) {
+    my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
+    my $anon_fallback = $c->cobrand->allow_anonymous_reports eq '1' && !$c->user_exists && !$params{username};
+    if ($anon_button || $anon_fallback) {
         my $anon_details = $c->cobrand->anonymous_account;
         my $user = $c->model('DB::User')->find_or_new({ email => $anon_details->{email} });
         $user->name($anon_details->{name});
@@ -942,6 +944,11 @@ sub process_report : Private {
         $c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $c->stash->{bodies});
         $c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies});
         $c->stash->{contributing_as_anonymous_user} = $user->contributing_as('anonymous_user', $c, $c->stash->{bodies});
+    }
+    # This is also done in process_user, but is needed here for anonymous() just below
+    my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
+    if ($anon_button) {
+        $c->stash->{contributing_as_anonymous_user} = 1;
     }
 
     # set some simple bool values (note they get inverted)
