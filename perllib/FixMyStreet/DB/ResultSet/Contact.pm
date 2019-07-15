@@ -37,4 +37,13 @@ sub summary_count {
     );
 }
 
+sub group_lookup {
+    my $rs = shift;
+    map {
+        my $group = $_->get_extra_metadata('group') || '';
+        $group = join(',', ref $group ? @$group : $group);
+        $_->category => $group
+    } $rs->all;
+}
+
 1;
