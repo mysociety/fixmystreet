@@ -545,7 +545,6 @@ for (
             system_user => $user,
             current_open311 => $o,
             current_body => $bodies{$_->{id}},
-            current_cobrand => $bodies{$_->{id}}->get_cobrand_handler,
         );
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => $_->{cobrand},
