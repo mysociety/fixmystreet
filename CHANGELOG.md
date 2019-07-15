@@ -35,6 +35,7 @@
         - Add new upload_files flag which sends files/photos as part of the
           POST service request.
         - Allow description in email template with placeholder.
+        - Do not store display-only extra fields on new reports.
 
 * v2.6 (3rd May 2019)
     - New features:

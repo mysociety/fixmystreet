@@ -1077,7 +1077,7 @@ sub set_report_extras : Private {
     my ($self, $c, $contacts, $param_prefix) = @_;
 
     $param_prefix ||= "";
-    my @metalist = map { [ $_->get_metadata_for_input, $param_prefix ] } @$contacts;
+    my @metalist = map { [ $_->get_metadata_for_storage, $param_prefix ] } @$contacts;
     push @metalist, map { [ $_->get_extra_fields, "extra[" . $_->id . "]" ] } @{$c->stash->{report_extra_fields}};
 
     my @extra;

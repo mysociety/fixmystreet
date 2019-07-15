@@ -45,6 +45,7 @@ $mech->create_contact_ok(
     category => 'Ball lighting',
     email => '102',
     extra => { _fields => [
+        { description => 'Message', code => 'message', required => 'false', variable => 'false', order => '0' },
         { description => 'Size', code => 'size', required => 'True', automated => '' },
         { description => 'Speed', code => 'speed', required => 'True', automated => 'server_set' },
         { description => 'Colour', code => 'colour', required => 'True', automated => 'hidden_field' },

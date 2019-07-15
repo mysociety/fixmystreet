@@ -121,6 +121,16 @@ sub get_metadata_for_input {
     return \@metadata;
 }
 
+sub get_metadata_for_storage {
+    my $self = shift;
+    my $metadata = $self->get_metadata_for_input;
+
+    # Also ignore any that were only for textual display
+    my @metadata = grep { ($_->{variable} || '') ne 'false' } @$metadata;
+
+    return \@metadata;
+}
+
 sub id_field {
     my $self = shift;
     return $self->get_extra_metadata('id_field') || 'fixmystreet_id';
