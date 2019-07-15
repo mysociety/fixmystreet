@@ -27,8 +27,15 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
 
     relevant: function() {
       var category = $('select#form_category').val(),
-          layer = this.fixmystreet;
-      return OpenLayers.Util.indexOf(layer.asset_category, category) != -1 &&
+          group = $('select#category_group').val(),
+          layer = this.fixmystreet,
+          relevant;
+      if (layer.asset_group) {
+          relevant = (layer.asset_group === group);
+      } else {
+          relevant = (OpenLayers.Util.indexOf(layer.asset_category, category) != -1);
+      }
+      return relevant &&
         ( !layer.body || OpenLayers.Util.indexOf(fixmystreet.bodies, layer.body) != -1 );
     },
 
@@ -253,7 +260,7 @@ var fault_popup = null;
 function init_asset_layer(layer, pins_layer) {
     layer.update_layer_visibility();
     fixmystreet.map.addLayer(layer);
-    if (layer.fixmystreet.asset_category) {
+    if (layer.fixmystreet.asset_category || layer.fixmystreet.asset_group) {
         fixmystreet.map.events.register( 'zoomend', layer, check_zoom_message_visibility);
     }
 
@@ -370,7 +377,8 @@ function check_zoom_message_visibility() {
     if (this.fixmystreet.non_interactive) {
         return;
     }
-    var category = $("select#form_category").val(),
+    var select = this.fixmystreet.asset_group ? 'category_group' : 'form_category';
+    var category = $("select#" + select).val() || '',
         prefix = category.replace(/[^a-z]/gi, ''),
         id = "category_meta_message_" + prefix,
         $p = $('#' + id);
@@ -390,6 +398,11 @@ function check_zoom_message_visibility() {
             $p.html('Zoom in to pick a ' + this.fixmystreet.asset_item + ' from the map');
         }
 
+    } else if (this.fixmystreet.asset_group) {
+        prefix = this.fixmystreet.asset_group.replace(/[^a-z]/gi, '');
+        id = "category_meta_message_" + prefix;
+        $p = $('#' + id);
+        $p.remove();
     } else {
         $.each(this.fixmystreet.asset_category, function(i, c) {
             var prefix = c.replace(/[^a-z]/gi, ''),
