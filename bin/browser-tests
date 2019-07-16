@@ -88,6 +88,7 @@ sub run {
             ALLOWED_COBRANDS => $cobrand,
             MAPIT_URL => $mapit_url,
             BASE_URL => 'http://fixmystreet.localhost:3001',
+            STAGING_FLAGS => { skip_checks => 1 },
             COBRAND_FEATURES => {
                 category_groups => { map { $_ => 1 } @$cobrand },
             }

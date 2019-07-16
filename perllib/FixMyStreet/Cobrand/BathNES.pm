@@ -76,18 +76,6 @@ sub send_questionnaires { 0 }
 
 sub default_map_zoom { 3 }
 
-sub map_js_extra {
-    my $self = shift;
-
-    my $c = $self->{c};
-    return unless $c->user_exists;
-
-    my $banes_user = $c->user->from_body && $c->user->from_body->areas->{$self->council_area_id};
-    if ( $banes_user || $c->user->is_superuser ) {
-        return ['/cobrands/bathnes/staff.js'];
-    }
-}
-
 sub category_extra_hidden {
     my ($self, $meta) = @_;
     my $code = $meta->{code};

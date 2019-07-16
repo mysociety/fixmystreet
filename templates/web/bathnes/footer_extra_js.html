@@ -12,3 +12,11 @@ IF bodyclass.match('mappage');
     );
 END
 %]
+[%~
+SET council_area_id = c.cobrand.council_area_id;
+IF c.user_exists AND ((c.user.from_body AND c.user.from_body.areas.$council_area_id) OR c.user.is_superuser);
+    scripts.push(
+        version('/cobrands/bathnes/staff.js'),
+    );
+END
+%]
