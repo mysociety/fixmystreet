@@ -68,3 +68,33 @@ The server will now be running and you can visit it at the address
 The username and password to access the admin (at address
 `http://fixmystreet.127.0.0.1.xip.io:3000/admin/`) will have been shown at the
 end of the `vagrant up` output.
+
+## Editing a cobrand
+
+If you're working on a cobrand in an external repository, you will want that
+cobrand available inside the virtual machine as well. To do this, you will need
+to add a line to the Vagrantfile in the FixMyStreet repository, along the lines of:
+
+    config.vm.synced_folder “../your-cobrand”, “/home/vagrant/your-cobrand”, :owner => “vagrant”, :group => “vagrant”
+
+Then restart your vagrant box. Once that is done, you can set up symlinks
+inside Vagrant, linking the various components of your cobrand into the right
+places in the core repository. For example, if your filesystem has a layout
+like this:
+
+    www/
+        fixmystreet/  # The checkout of the fixmystreet repository
+        my-cobrand-repo/
+            templates/web/(cobrand)/
+            templates/email/(cobrand)/
+            perllib/FixMyStreet/Cobrand/(CoBrand.pm)
+            web/cobrands/(cobrand)/
+
+Then within the fixmystreet repository, you could run:
+
+    ln -s -f -v ../my-cobrand-repo/perllib/FixMyStreet/Cobrand/(Cobrand.pm) perllib/FixMyStreet/Cobrand/
+    ln -s -f -v ../my-cobrand-repo/templates/web/(cobrand) templates/web/
+    ln -s -f -v ../my-cobrand-repo/templates/email/(cobrand) templates/email/
+    ln -s -f -v ../my-cobrand-repo/web/cobrands/(cobrand) web/cobrands/
+
+Restart the development server and your cobrand should be accessible.

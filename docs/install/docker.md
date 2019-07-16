@@ -46,7 +46,8 @@ repository/directory that contains the following (all items optional):
         perllib/FixMyStreet/Cobrand/(CoBrand.pm)
         web/cobrands/(cobrand)/
 
-Create a docker-compose.override.yml file containing:
+Create a docker-compose.override.yml file in the root of the fixmystreet
+repository (alongside docker-compose.yml) containing:
 
     version: '3'
 
