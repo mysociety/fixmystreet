@@ -179,7 +179,11 @@ sub reports_body_check {
     }
 
     # We want to make sure we're only on our page.
-    unless ( $self->council_name =~ /^\Q$code\E/ ) {
+    my $council_name = $self->council_name;
+    if (my $override = $self->all_reports_single_body) {
+        $council_name = $override->{name};
+    }
+    unless ( $council_name =~ /^\Q$code\E/ ) {
         $c->res->redirect( 'https://www.fixmystreet.com' . $c->req->uri->path_query, 301 );
         $c->detach();
     }
