@@ -15,5 +15,7 @@ describe('When you look at the Island Roads site', function() {
     cy.wait('@report-ajax');
     cy.get('select:eq(4)').select('Potholes');
     cy.contains('sent to Island Roads');
+    cy.get('select:eq(4)').select('Private');
+    cy.contains('sent to Island Roads');
   });
 });
