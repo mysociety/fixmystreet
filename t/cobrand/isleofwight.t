@@ -29,6 +29,19 @@ my @reports = $mech->create_problems_for_body(1, $isleofwight->id, 'An Isle of w
     user => $user
 });
 
+subtest "check clicking all reports link" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'isleofwight',
+    }, sub {
+        $mech->get_ok('/');
+        $mech->follow_link_ok({ text => 'All reports' });
+    };
+
+    $mech->content_contains("An Isle of wight report", "Isle of Wight report there");
+    $mech->content_contains("Island Roads", "is still on cobrand");
+};
+
 subtest "only original reporter can comment" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
