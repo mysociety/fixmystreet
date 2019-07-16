@@ -1,0 +1,97 @@
+{
+  "query": {
+    "recordcount": 38,
+    "columnlist": "se_id,phase_id,u_se_id,longitude,latitude,gsymbol_id,tooltip,swtype,org_name_disp,promoter,source,promoter_works_ref,originator_ref,swa_org_ref,promoter_org_ref,publisher_orgref,publisher_organisation_id,promoter_organisation_id,organisation_id,lha_id,start_date,end_date,works_state,impact,works_desc,geom_type,geojson_wgs84,tm_cat",
+    "data": {
+      "se_id": [
+        114013162
+      ],
+      "phase_id": [
+        1
+      ],
+      "u_se_id": [
+        "114013162:1"
+      ],
+      "longitude": [
+        -1.29574
+      ],
+      "latitude": [
+        50.71086
+      ],
+      "gsymbol_id": [
+        "gcln01y"
+      ],
+      "tooltip": [
+        "B3401 Whitepit Lane, Newport, Isle of Wight\\n18 Jun 2019 - 23 Jul 2019\\ndelays unlikely"
+      ],
+      "swtype": [
+        "cw"
+      ],
+      "org_name_disp": [
+        "Island Roads on behalf of the Isle of Wight Council"
+      ],
+      "promoter": [
+        "Island Roads on behalf of the Isle of Wight Council"
+      ],
+      "source": [
+        "SW"
+      ],
+      "promoter_works_ref": [
+        "RF101BT0103000021728"
+      ],
+      "originator_ref": [
+        "RF101BT0103000021728"
+      ],
+      "swa_org_ref": [
+        2114
+      ],
+      "promoter_org_ref": [
+        2114
+      ],
+      "publisher_orgref": [
+        2114
+      ],
+      "publisher_organisation_id": [
+        1062
+      ],
+      "promoter_organisation_id": [
+        1062
+      ],
+      "organisation_id": [
+        1062
+      ],
+      "lha_id": [
+        62
+      ],
+      "start_date": [
+        "{ts '2019-06-18 00:00:00'}"
+      ],
+      "end_date": [
+        "{ts '2030-07-23 23:59:59'}"
+      ],
+      "works_state": [
+        4
+      ],
+      "impact": [
+        1
+      ],
+      "works_desc": [
+        "Parapet improvement NEWPORT"
+      ],
+      "geom_type": [
+        1
+      ],
+      "geojson_wgs84": [
+        "{\"type\":\"Point\",\"coordinates\":[-1.295784,50.71086]}"
+      ],
+      "tm_cat": [
+        ""
+      ]
+    }
+  },
+  "reqtoken": "",
+  "filterimpact": "1,2,3,4",
+  "filterenddate": "16/10/2019",
+  "filterstartdate": "16/07/2019",
+  "timeperiod": "cw"
+}
