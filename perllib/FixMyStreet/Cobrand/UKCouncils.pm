@@ -102,8 +102,10 @@ sub users_restriction {
         'me.id' => [ { -in => $problem_user_ids }, { -in => $update_user_ids } ],
     ];
     if ($self->can('admin_user_domain')) {
-        my $domain = $self->admin_user_domain;
-        push @$or_query, email => { ilike => "%\@$domain" };
+        my @domains = $self->admin_user_domain;
+        @domains = map { { ilike => "%\@$_" } } @domains;
+        @domains = [ @domains ] if @domains > 1;
+        push @$or_query, email => @domains;
     }
 
     return $rs->search($or_query);
