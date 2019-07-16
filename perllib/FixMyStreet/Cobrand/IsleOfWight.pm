@@ -20,6 +20,8 @@ sub on_map_default_status { 'open' }
 
 sub send_questionnaires { 0 }
 
+sub report_sent_confirmation_email { 'external_id' }
+
 sub map_type { 'OSM' }
 
 sub disambiguate_location {
