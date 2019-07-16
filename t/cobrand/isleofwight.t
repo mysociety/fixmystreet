@@ -3,6 +3,8 @@ use DateTime;
 use FixMyStreet::TestMech;
 use Open311;
 use Open311::GetServiceRequestUpdates;
+use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::Reports;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
@@ -57,6 +59,8 @@ subtest "only original reporter can comment" => sub {
     };
 };
 
+$_->delete for @reports;
+
 my $system_user = $mech->create_user_ok('system_user@example.org');
 
 for my $status ( qw/ CLOSED FIXED DUPLICATE NOT_COUNCILS_RESPONSIBILITY NO_FURTHER_ACTION / ) {
@@ -105,6 +109,8 @@ for my $status ( qw/ CLOSED FIXED DUPLICATE NOT_COUNCILS_RESPONSIBILITY NO_FURTH
 
         $p->discard_changes;
         is $p->get_extra_metadata('closed_updates'), 1, "report closed to updates";
+        $p->comments->delete;
+        $p->delete;
     };
 }
 
@@ -145,7 +151,93 @@ subtest "fixing passes along the correct message" => sub {
         is $id, 248, 'correct update ID returned';
         $cgi = CGI::Simple->new($o->test_req_used->content);
         like $cgi->param('description'), qr/^FMS-Update: \[The customer indicated that this issue had been fixed/, 'Fixed message included';
+        $p->comments->delete;
+        $p->delete;
     };
+};
+
+my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, '', { cobrand => 'isleofwight' });
+my $alert = FixMyStreet::App->model('DB::Alert')->create( {
+    parameter  => $p->id,
+    alert_type => 'new_updates',
+    user       => $user,
+    cobrand    => 'isleofwight',
+} )->confirm;
+
+subtest "sends branded alert emails" => sub {
+    $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef, { confirmed => DateTime->now->add( minutes => 5 ) });
+    $mech->clear_emails_ok;
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['isleofwight','fixmystreet'],
+    }, sub {
+        FixMyStreet::Script::Alerts::send();
+    };
+
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $mech->get_text_body_from_email($email), qr/Island Roads/, "emails are branded";
+};
+
+$p->comments->delete;
+$p->delete;
+
+subtest "sends branded confirmation emails" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+    $mech->get_ok('/around');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'isleofwight' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'PO30 5XJ', } },
+            "submit location" );
+
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo1        => '',
+                    name          => 'Joe Bloggs',
+                    username      => 'test-1@example.com',
+                    category      => 'Potholes',
+                }
+            },
+            "submit good details"
+        );
+
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $mech->get_text_body_from_email($email), qr/Island Roads/, "emails are branded";
+
+        my $url = $mech->get_link_from_email($email);
+        $mech->get_ok($url);
+        $mech->clear_emails_ok;
+    };
+};
+
+subtest "sends branded report sent emails" => sub {
+    $mech->clear_emails_ok;
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['isleofwight','fixmystreet'],
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $mech->get_text_body_from_email($email), qr/Island Roads/, "emails are branded";
 };
 
 done_testing();
