@@ -1,7 +1,9 @@
 [% PROCESS 'admin/header.html' title=loc('Summary') -%]
 [% PROCESS 'admin/report_blocks.html' %]
 
-[% INCLUDE status_message %]
+<div class="index-status">
+[% status_message %]
+</div>
 
 <h2 id="submitted">[% loc('Submitted') %]</h2>
 [% INCLUDE list, problems = submitted.all, hash = 'submitted' %]
