@@ -37,7 +37,6 @@ OpenLayers.Layer.VectorAssetWestminsterSubcat = OpenLayers.Class(OpenLayers.Laye
 // select and pin move rather than just on asset select/not select.
 function uprn_init(name, options) {
     OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
-    $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
     $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
 }
 OpenLayers.Layer.VectorAssetWestminsterUPRN = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
@@ -157,12 +156,12 @@ function add_to_uprn_select($select, assets) {
     }
 }
 
-function construct_uprn_select(assets) {
+function construct_uprn_select(assets, has_children) {
     old_uprn = $('#uprn').val();
     $("#uprn_select").remove();
     $('.category_meta_message').html('');
     var $div = $('<div class="extra-category-questions" id="uprn_select">');
-    if (assets.length > 1) {
+    if (assets.length > 1 || has_children) {
         $div.append('<label for="uprn">Please choose a property:</label>');
         var $select = $('<select id="uprn" class="form-control" name="UPRN" required>');
         $select.append('<option value="">---</option>');
@@ -182,8 +181,8 @@ $.each(layer_data, function(i, o) {
         http_options: {
             url: url_base + '25/query?',
             params: {
-                where: "PROPERTYTYPE NOT IN ('Pay Phone','Street Record')",
-                outFields: 'UPRN,address'
+                where: "PARENTUPRN='XXXX' AND PROPERTYTYPE NOT IN ('Pay Phone','Street Record')",
+                outFields: 'UPRN,Address,ParentChild'
             }
         },
         max_resolution: 0.5971642833948135,
@@ -202,7 +201,31 @@ $.each(layer_data, function(i, o) {
                     new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
                     overlap_threshold
                 );
-                construct_uprn_select(overlapping_features);
+
+                var parent_uprns = [];
+                $.each(overlapping_features, function(i, f) {
+                    if (f.attributes.PARENTCHILD === 'Parent') {
+                        parent_uprns.push("PARENTUPRN='" + f.attributes.UPRN + "'");
+                    }
+                });
+                parent_uprns = parent_uprns.join(' OR ');
+
+                if (parent_uprns) {
+                    var url = url_base + '25/query?' + OpenLayers.Util.getParameterString({
+                        inSR: 4326,
+                        f: 'geojson',
+                        outFields: 'UPRN,Address',
+                        where: parent_uprns
+                    });
+                    $.getJSON(url, function(data) {
+                        var features = [];
+                        $.each(data.features, function(i, f) {
+                            features.push({ attributes: f.properties });
+                        });
+                        add_to_uprn_select($('#uprn'), features);
+                    });
+                }
+                construct_uprn_select(overlapping_features, parent_uprns);
             },
             asset_not_found: function() {
                 $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
