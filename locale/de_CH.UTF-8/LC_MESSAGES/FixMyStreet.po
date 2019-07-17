@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2019-04-29 18:56+0100\n"
-"PO-Revision-Date: 2019-04-29 18:03+0000\n"
+"PO-Revision-Date: 2019-07-17 11:27+0200\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
 "Language-Team: German (Switzerland) (https://www.transifex.com/mysociety/teams/12067/de_CH/)\n"
 "Language: de_CH\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:678
 #: perllib/FixMyStreet/DB/Result/Problem.pm:680
@@ -254,7 +255,7 @@ msgstr ""
 
 #: templates/web/base/my/my.html:39 templates/web/base/my/my.html:50
 msgid "Add"
-msgstr ""
+msgstr "Hinzufügen"
 
 #: templates/web/base/admin/bodies/form.html:3
 #: templates/web/base/admin/bodies/form.html:4
@@ -272,7 +273,7 @@ msgstr ""
 #: templates/web/base/admin/bodies/index.html:78
 #: templates/web/zurich/admin/bodies/form.html:51
 msgid "Add body"
-msgstr "Adresse hinzuf&uuml;gen"
+msgstr "DA / Externe Adresse hinzuf&uuml;gen"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:7
@@ -281,11 +282,11 @@ msgstr ""
 
 #: templates/web/base/admin/reportextrafields/index.html:24
 msgid "Add extra fields"
-msgstr ""
+msgstr "Zusätzliche Felder hinzufügen"
 
 #: templates/web/base/admin/extra-metadata-form.html:89
 msgid "Add field"
-msgstr ""
+msgstr "Feld hinzufügen"
 
 #: templates/web/base/admin/states/index.html:85
 msgid "Add fixed state"
@@ -369,7 +370,7 @@ msgstr ""
 #: templates/web/base/dashboard/index.html:64
 #: templates/web/base/reports/_list-filters.html:4
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: templates/web/zurich/reports/index.html:14
 msgid "All Reports"
@@ -538,7 +539,7 @@ msgstr ""
 
 #: templates/web/base/report/new/after_photo.html:7
 msgid "Avoid personal information and vehicle number plates"
-msgstr "Verhindern Sie pers&ouml;nliche Informationen wie Kfz-Kennzeichen oder Personen"
+msgstr "Vermeiden Sie pers&ouml;nliche Informationen auf dem Foto wie Kfz-Kennzeichen oder Personen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:349
 #: templates/web/zurich/report/_item.html:11
@@ -648,7 +649,7 @@ msgstr "Kategorie:"
 #: templates/web/base/my/my.html:41 templates/web/base/my/my.html:44
 #: templates/web/base/my/my.html:52 templates/web/base/my/my.html:57
 msgid "Change"
-msgstr ""
+msgstr "Anpassen"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:3
@@ -1232,7 +1233,7 @@ msgstr ""
 
 #: templates/web/base/admin/users/form.html:25
 msgid "Email verified:"
-msgstr ""
+msgstr "E-Mail verifiziert:"
 
 #: templates/web/base/admin/report_edit.html:146
 #: templates/web/base/admin/users/form.html:19 templates/web/base/my/my.html:36
@@ -1393,7 +1394,7 @@ msgstr "Externes Team"
 #: templates/web/base/admin/reportextrafields/edit.html:1
 #: templates/web/base/admin/reportextrafields/index.html:1
 msgid "Extra Fields"
-msgstr ""
+msgstr "Zusätzliche Felder"
 
 #: templates/web/base/admin/bodies/contact-form.html:159
 #: templates/web/base/admin/report_edit.html:129
@@ -1409,7 +1410,7 @@ msgstr "Zus&auml;tzliche Details"
 
 #: templates/web/zurich/admin/bodies/contact-form.html:22
 msgid "Extra fields:"
-msgstr ""
+msgstr "Zusätzliche Felder:"
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1619,7 +1620,7 @@ msgstr "Helfen Sie <strong>%s</strong> Ihre Meldung zu bearbeiten indem Sie zus&
 
 #: templates/web/base/around/on_map_list_items.html:8
 msgid "Here are some other nearby reports:"
-msgstr ""
+msgstr "Hier sind weitere Meldungen in der N&auml;he:"
 
 #: templates/web/zurich/footer.html:11
 msgid "Hi %s"
@@ -2359,7 +2360,7 @@ msgstr ""
 
 #: templates/web/base/around/on_map_list_items.html:13
 msgid "No reports to show on map, here are some nearby:"
-msgstr ""
+msgstr "Keine Meldungen auf der Karte, hier sind ein paar in der N&auml;he:"
 
 #: templates/web/base/js/translation_strings.html:54
 msgid "No result returned"
@@ -2419,11 +2420,11 @@ msgstr ""
 
 #: templates/web/zurich/admin/bodies/contact-form.html:45
 msgid "Note:"
-msgstr ""
+msgstr "Notiz:"
 
 #: templates/web/base/open311/index.html:65
 msgid "Note: <strong>%s</strong>"
-msgstr ""
+msgstr "Notiz: <strong>%s</strong>"
 
 #: templates/web/zurich/admin/list_updates.html:21
 msgid "Notes from SDM to DM"
@@ -2601,7 +2602,7 @@ msgstr ""
 
 #: templates/web/base/admin/users/form.html:29
 msgid "Phone verified:"
-msgstr ""
+msgstr "Telefonnummer verifiziert:"
 
 #: templates/web/base/admin/report_edit.html:143
 #: templates/web/base/admin/users/form.html:27 templates/web/base/my/my.html:47
@@ -2784,7 +2785,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:374
 #: templates/web/base/js/translation_strings.html:12
 msgid "Please enter some details"
-msgstr "Bitte geben Sie einige Details an"
+msgstr "Bitte beschreiben Sie den Schaden"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:132
 #: perllib/FixMyStreet/DB/Result/User.pm:211
@@ -3677,7 +3678,7 @@ msgstr "Gerät"
 #: templates/web/base/auth/change_password.html:4
 #: templates/web/base/my/my.html:67
 msgid "Set password"
-msgstr ""
+msgstr "Passwort neu setzen"
 
 #: templates/web/base/report/_inspect.html:56
 msgid "Set to my current location"
@@ -4871,7 +4872,7 @@ msgstr ""
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:327
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:354
 msgid "Values updated"
-msgstr ""
+msgstr "Aktualisiert"
 
 #: templates/web/base/my/my.html:43 templates/web/base/my/my.html:55
 msgid "Verify"
@@ -4959,7 +4960,7 @@ msgstr "Die ersten zehn Treffer werden unten aufgelistet."
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
 msgid "We will only use your personal information in accordance with our <a href=\"%s\">privacy policy.</a>"
-msgstr ""
+msgstr "Ihre pers&ouml;nlichen Angaben werden nur im Zusammenhang mit der Beantwortung der Meldung verwendet."
 
 #: templates/web/base/questionnaire/completed-open.html:2
 msgid "We&rsquo;re sorry to hear the problem’s not fixed. Why not try writing to your local representatives?"
@@ -5420,7 +5421,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/bodies/contact-form.html:24
 msgid "show"
-msgstr ""
+msgstr "anzeigen"
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
