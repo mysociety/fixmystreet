@@ -121,7 +121,7 @@ sub _email_to_body {
     foreach (@data) {
         chomp;
         my ($d, $b) = split /\|/;
-        if ($d eq $domain) {
+        if ($d eq $domain || $d eq $email) {
             $body = $b;
             last;
         }
