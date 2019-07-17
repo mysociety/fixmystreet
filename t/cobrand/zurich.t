@@ -139,7 +139,7 @@ subtest "Banners are displayed correctly" => sub {
         {
             description => 'closed report',
             state => 'external',
-            banner_id => 'closed',
+            banner_id => 'fixed',
             banner_text => 'Beantwortet',
         },
         {
