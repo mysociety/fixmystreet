@@ -503,6 +503,19 @@ allowing them to report them as offensive.
 
 sub allow_update_reporting { return 0; }
 
+=item updates_disallowed
+
+Returns a boolean indicating whether updates on a particular report are allowed
+or not. Default behaviour is disallowed if "closed_updates" metadata is set.
+
+=cut
+
+sub updates_disallowed {
+    my ($self, $problem) = @_;
+    return 1 if $problem->get_extra_metadata('closed_updates');
+    return 0;
+}
+
 =item geocode_postcode
 
 Given a QUERY, return LAT/LON and/or ERROR.
