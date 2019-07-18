@@ -226,3 +226,7 @@ ol.big-numbers>li:before {
         margin: 0.2em 6px;
     }
 }
+
+.item-list__item--expandable__actions a.btn--primary {
+    display: none; // No updates
+}
