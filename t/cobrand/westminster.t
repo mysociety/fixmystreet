@@ -26,6 +26,12 @@ FixMyStreet::override_config {
         $mech->get_ok("/auth");
         $mech->content_contains("Login with MyWestminster");
     };
+
+    subtest 'Reports do not have update form' => sub {
+        my ($report) = $mech->create_problems_for_body(1, 2504, 'Title');
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('Provide an update');
+    }
 };
 
 for (

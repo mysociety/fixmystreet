@@ -43,6 +43,7 @@ for my $test (
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
         MAPIT_URL => 'http://mapit.uk/',
     },
+    update => 1,
     email => 'facebook@example.org',
     uid => 123456789,
     mock => 't::Mock::Facebook',
@@ -90,6 +91,8 @@ $resolver->mock('address', sub { $test->{email} });
 
 for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
     for my $page ( 'my', 'report', 'update' ) {
+        next if $page eq 'update' && !$test->{update};
+
         subtest "test $test->{type} '$state' login for page '$page'" => sub {
             # Lots of user changes happening here, make sure we don't confuse
             # Catalyst with a cookie session user that no longer exists

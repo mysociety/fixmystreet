@@ -30,6 +30,8 @@ sub enter_postcode_text {
 
 sub send_questionnaires { 0 }
 
+sub updates_disallowed { 1 }
+
 sub social_auth_enabled {
     my $self = shift;
 
