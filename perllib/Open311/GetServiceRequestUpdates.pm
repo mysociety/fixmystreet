@@ -181,6 +181,8 @@ sub process_update {
     if ( $external_status_code ) {
         $comment->set_extra_metadata(external_status_code => $external_status_code);
         $p->set_extra_metadata(external_status_code => $external_status_code);
+    } else {
+        $p->set_extra_metadata(external_status_code => '');
     }
 
     # if the customer reference to display in the report metadata is

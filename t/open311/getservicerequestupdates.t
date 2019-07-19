@@ -874,6 +874,36 @@ subtest 'check that external_status_code is stored correctly' => sub {
 
     is $problem->get_extra_metadata('external_status_code'), "101", "correct external status code";
 
+    $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638364</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>open</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    <external_status_code></external_status_code>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    my $dt3 = $dt->clone->add( minutes => 1 );
+    $requests_xml =~ s/UPDATED_DATETIME/$dt3/;
+
+    $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+    $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    $update->process_body;
+
+    $problem->discard_changes;
+    is $problem->get_extra_metadata('external_status_code'), '', "external status code unset";
 };
 
 subtest 'check that external_status_code triggers auto-responses' => sub {
