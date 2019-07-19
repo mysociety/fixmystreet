@@ -17,6 +17,8 @@ describe('When you look at the Island Roads site', function() {
     cy.contains('sent to Island Roads');
     cy.get('select:eq(4)').select('Private');
     cy.contains('sent to Island Roads');
+    cy.get('select:eq(4)').select('Extra');
+    cy.contains('Help Island Roads');
   });
 
   it('displays nearby roadworks', function() {
