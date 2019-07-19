@@ -203,6 +203,8 @@ foreach my $test (
         # check that we got the errors expected
         is_deeply $mech->page_errors, $test->{errors}, "check errors";
 
+        $mech->content_contains('Help <strong>Borsetshire Council</strong> resolve your problem quicker');
+
         # check that fields have changed as expected
         my $new_values = {
             %{ $test->{fields} },     # values added to form

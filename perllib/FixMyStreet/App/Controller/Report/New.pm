@@ -261,15 +261,20 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
 sub by_category_ajax_data : Private {
     my ($self, $c, $type, $category) = @_;
 
-    my $bodies = $c->forward('contacts_to_bodies', [ $category ]);
-    my $list_of_names = [ map { $_->name } ($category ? @$bodies : values %{$c->stash->{bodies_to_list}}) ];
-    my $vars = {
-        $category ? (list_of_names => $list_of_names) : (),
-    };
+    my @bodies;
+    my $bodies = [];
+    my $vars = {};
+    if ($category) {
+        $bodies = $c->forward('contacts_to_bodies', [ $category ]);
+        @bodies = @$bodies;
+        $vars->{list_of_names} = [ map { $_->cobrand_name } @bodies ];
+    } else {
+        @bodies = values %{$c->stash->{bodies_to_list}};
+    }
 
     my $non_public = $c->stash->{non_public_categories}->{$category};
     my $body = {
-        bodies => $list_of_names,
+        bodies => [ map { $_->name } @bodies ],
         $non_public ? ( non_public => JSON->true ) : (),
     };
 
