@@ -83,6 +83,7 @@ subtest "fixing passes along the correct message" => sub {
         my $id = $o->post_service_request_update($c);
         is $id, 248, 'correct update ID returned';
         my $cgi = CGI::Simple->new($o->test_req_used->content);
+        like $cgi->param('description'), qr/^FMS-Update:/, 'FMS update prefix included';
         unlike $cgi->param('description'), qr/The customer indicated that this issue had been fixed/, 'No fixed message included';
 
         $c = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Update text', 'f', 'confirmed', 'fixed - user', { confirmed => \'current_timestamp' });
@@ -91,7 +92,7 @@ subtest "fixing passes along the correct message" => sub {
         $id = $o->post_service_request_update($c);
         is $id, 248, 'correct update ID returned';
         $cgi = CGI::Simple->new($o->test_req_used->content);
-        like $cgi->param('description'), qr/^\[The customer indicated that this issue had been fixed/, 'Fixed message included';
+        like $cgi->param('description'), qr/^FMS-Update: \[The customer indicated that this issue had been fixed/, 'Fixed message included';
     };
 };
 

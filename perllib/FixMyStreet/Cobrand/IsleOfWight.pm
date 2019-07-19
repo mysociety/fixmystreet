@@ -64,6 +64,8 @@ sub open311_munge_update_params {
     if ($comment->mark_fixed) {
         $params->{description} = "[The customer indicated that this issue had been fixed]\n\n" . $params->{description};
     }
+
+    $params->{description} = "FMS-Update: " . $params->{description};
 }
 
 sub open311_get_update_munging {
