@@ -16,7 +16,7 @@ my $params = {
     jurisdiction => 'home',
 };
 my $isleofwight = $mech->create_body_ok(2636, 'Isle of Wight Council', $params);
-$mech->create_contact_ok(
+my $contact = $mech->create_contact_ok(
     body_id => $isleofwight->id,
     category => 'Potholes',
     email => 'pothole@example.org',
@@ -238,6 +238,31 @@ subtest "sends branded report sent emails" => sub {
     my $email = $mech->get_email;
     ok $email, "got an email";
     like $mech->get_text_body_from_email($email), qr/Island Roads/, "emails are branded";
+};
+
+subtest "check category extra uses correct name" => sub {
+    my @extras = ( {
+            code => 'test',
+            datatype => 'string',
+            description => 'question',
+            variable => 'true',
+            required => 'false',
+            order => 1,
+            datatype_description => 'datatype',
+        } );
+    $contact->set_extra_fields( @extras );
+    $contact->update;
+
+    my $extra_details;
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['isleofwight','fixmystreet'],
+    }, sub {
+        $extra_details = $mech->get_ok_json('/report/new/category_extras?category=Potholes&latitude=50.71086&longitude=-1.29573');
+    };
+
+    like $extra_details->{category_extra}, qr/Island Roads/, 'correct name in category extras';
 };
 
 done_testing();
