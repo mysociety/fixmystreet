@@ -262,9 +262,10 @@ sub by_category_ajax_data : Private {
     my ($self, $c, $type, $category) = @_;
 
     my $bodies = $c->forward('contacts_to_bodies', [ $category ]);
+    my $display_names = [ map { $_->cobrand_name } ($category ? @$bodies : values %{$c->stash->{bodies_to_list}}) ];
     my $list_of_names = [ map { $_->name } ($category ? @$bodies : values %{$c->stash->{bodies_to_list}}) ];
     my $vars = {
-        $category ? (list_of_names => $list_of_names) : (),
+        $category ? (list_of_names => $list_of_names, display_names => $display_names) : (),
     };
 
     my $non_public = $c->stash->{non_public_categories}->{$category};
