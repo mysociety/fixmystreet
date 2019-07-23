@@ -47,6 +47,7 @@
         - Support receiving updates from external source.
         - Improve JSON output of controller.
         - unset external_status_code if blank in update
+        - Add support for account_id parameter to POST Service Request calls.
 
 * v2.6 (3rd May 2019)
     - New features:
