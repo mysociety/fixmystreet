@@ -74,6 +74,9 @@ for my $test (
     error_callback => '/auth/OIDC?error=ERROR',
     success_callback => '/auth/OIDC?code=response-code',
     redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
+    user_extras => [
+        [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
+    ],
 }
 ) {
 
@@ -194,13 +197,33 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 } elsif ($test->{type} eq 'oidc') {
                     is_deeply $user->oidc_ids, [ $test->{uid} ], 'User now has correct OIDC IDs';
                 }
+                if ($test->{user_extras}) {
+                    for my $extra (@{ $test->{user_extras} }) {
+                        my ($k, $v) = @$extra;
+                        is $user->get_extra_metadata($k), $v, "User has correct $k extra field";
+                    }
+                }
 
             } elsif ($page ne 'my') {
                 # /my auth login goes directly there, no message like this
                 $mech->content_contains('You have successfully signed in; please check and confirm your details are accurate');
                 $mech->logged_in_ok;
+                if ($test->{user_extras}) {
+                    my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
+                    for my $extra (@{ $test->{user_extras} }) {
+                        my ($k, $v) = @$extra;
+                        is $user->get_extra_metadata($k), $v, "User has correct $k extra field";
+                    }
+                }
             } else {
                 is $mech->uri->path, '/my', 'Successfully on /my page';
+                if ($test->{user_extras}) {
+                    my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
+                    for my $extra (@{ $test->{user_extras} }) {
+                        my ($k, $v) = @$extra;
+                        is $user->get_extra_metadata($k), $v, "User has correct $k extra field";
+                    }
+                }
             }
         }
     }
