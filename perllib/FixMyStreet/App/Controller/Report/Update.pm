@@ -580,6 +580,10 @@ sub process_confirmation : Private {
             $comment->user->$_( $data->{$_} ) if $data->{$_};
         }
         $comment->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
+        $comment->user->extra({
+            %{ $comment->user->get_extra() },
+            %{ $data->{extra} }
+        }) if $data->{extra};
         $comment->user->password( $data->{password}, 1 ) if $data->{password};
         $comment->user->update;
     }

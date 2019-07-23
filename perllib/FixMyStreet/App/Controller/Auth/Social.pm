@@ -233,7 +233,11 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # There's a chance that a user may have multiple OIDC logins, so build a namespaced uid to prevent collisions
     my $uid = join(":", $c->cobrand->moniker, $c->cobrand->feature('oidc_login')->{client_id}, $id_token->payload->{sub});
 
-    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email ]);
+    # The cobrand may want to set values in the user extra field, e.g. a CRM ID
+    # which is passed to Open311 with reports made by this user.
+    my $extra = $c->cobrand->call_hook(oidc_user_extra => $id_token);
+
+    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra ]);
 }
 
 
@@ -250,7 +254,7 @@ sub oauth_failure : Private {
 }
 
 sub oauth_success : Private {
-    my ($self, $c, $type, $uid, $name, $email) = @_;
+    my ($self, $c, $type, $uid, $name, $email, $extra) = @_;
 
     my $user;
     if ($email) {
@@ -277,6 +281,12 @@ sub oauth_success : Private {
             $user->add_oidc_id($uid);
         }
         $user->name($name);
+        if ($extra) {
+            $user->extra({
+                %{ $user->get_extra() },
+                %$extra
+            });
+        }
         $user->in_storage() ? $user->update : $user->insert;
     } else {
         # We've got an ID, but no email
@@ -290,11 +300,18 @@ sub oauth_success : Private {
         if ($user) {
             # Matching ID in our database
             $user->name($name);
+            if ($extra) {
+                $user->extra({
+                    %{ $user->get_extra() },
+                    %$extra
+                });
+            }
             $user->update;
         } else {
             # No matching ID, store ID for use later
             $c->session->{oauth}{$type . '_id'} = $uid;
             $c->session->{oauth}{name} = $name;
+            $c->session->{oauth}{extra} = $extra;
             $c->stash->{oauth_need_email} = 1;
         }
     }

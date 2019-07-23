@@ -1315,6 +1315,11 @@ sub process_confirmation : Private {
             $problem->user->$_( $data->{$_} ) if $data->{$_};
         }
         $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
+        $problem->user->extra({
+            %{ $problem->user->get_extra() },
+            %{ $data->{extra} }
+        }) if $data->{extra};
+
         $problem->user->update;
     }
     if ($problem->user->email_verified) {
