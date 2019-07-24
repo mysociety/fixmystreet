@@ -27,6 +27,11 @@ sub dispatch_request {
         return [ 200, [ 'Content-Type' => 'text/html' ], [ 'OpenID Connect login page' ] ];
     },
 
+    sub (GET + /oauth2/v2.0/logout + ?*) {
+        my ($self) = @_;
+        return [ 200, [ 'Content-Type' => 'text/html' ], [ 'OpenID Connect logout page' ] ];
+    },
+
     sub (POST + /oauth2/v2.0/token + ?*) {
         my ($self) = @_;
         my $header = {
