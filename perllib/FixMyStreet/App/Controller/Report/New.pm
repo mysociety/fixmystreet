@@ -1472,10 +1472,10 @@ sub check_for_category : Private {
     my ( $self, $c ) = @_;
 
     $c->stash->{category} = $c->get_param('category') || $c->session->{prefill}->{category};
-    $c->stash->{prefill} = $c->session->{prefill} || {
-        name => $c->get_param('user_name'),
-        email => $c->get_param('user_email'),
-        phone => $c->get_param('user_phone'),
+    $c->stash->{prefill} = {
+        name => $c->session->{prefill}->{name} || $c->get_param('user_name'),
+        email => $c->session->{prefill}->{email} || $c->get_param('user_email'),
+        phone => $c->session->{prefill}->{phone} || $c->get_param('user_phone'),
     };
 
     return 1;

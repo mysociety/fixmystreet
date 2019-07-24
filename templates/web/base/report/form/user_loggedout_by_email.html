@@ -14,7 +14,7 @@
             [% IF field_errors.phone %]
               <p class='form-error'>[% field_errors.phone %]</p>
             [% END %]
-            <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone">
+            <input class="form-control" type="text" value="[% ( phone || prefill.phone ) | html %]" name="phone" id="form_phone">
         </div>
     [% END %]
   [% END %]
@@ -35,7 +35,7 @@
     [% UNLESS c.cobrand.call_hook('disable_phone_number_entry') %]
         <div id="js-hide-if-username-phone" class="hidden-js">
             <label for="form_phone">[% loc('Phone number (optional)') %]</label>
-            <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone">
+            <input class="form-control" type="text" value="[% ( phone || prefill.phone ) | html %]" name="phone" id="form_phone">
         </div>
     [% END %]
     <div id="js-hide-if-username-email" class="hidden-js">

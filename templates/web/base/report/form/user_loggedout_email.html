@@ -6,7 +6,7 @@
 [% ELSE %]
     [% SET username_label = loc('Your email') %]
     [% SET username_type = 'email' %]
-    [% SET username_value = object.user.email %]
+    [% SET username_value = ( object.user.email || prefill.email ) %]
 [% END %]
 
 <label for="form_[% name %]">[% username_label %]</label>
