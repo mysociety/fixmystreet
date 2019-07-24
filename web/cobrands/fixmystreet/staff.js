@@ -111,7 +111,7 @@ fixmystreet.staff_set_up = {
             $showNameCheckbox.prop('checked', false).prop('disabled', false);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
         } else if (val === 'another_user') {
-            $emailInput.val('').prop('disabled', false);
+            $emailInput.val($emailInput.data('prefillValue') || '').prop('disabled', false);
             if (!$phoneInput.length) {
                 // Cobrand may have disabled collection of phone numbers.
                 $emailOptionalLabel.addClass('hidden');
@@ -120,8 +120,8 @@ fixmystreet.staff_set_up = {
                 $emailOptionalLabel.removeClass('hidden');
                 $emailInput.removeClass('required');
             }
-            $nameInput.val('').prop('disabled', false);
-            $phoneInput.val('').prop('disabled', false);
+            $nameInput.val($nameInput.data('prefillValue') || '').prop('disabled', false);
+            $phoneInput.val($phoneInput.data('prefillValue') || '').prop('disabled', false);
             $showNameCheckbox.prop('checked', false).prop('disabled', true);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
         } else if (val === 'anonymous_user') {

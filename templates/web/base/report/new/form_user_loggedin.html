@@ -22,7 +22,7 @@
         <option value="anonymous_user">[% loc('Anonymous user') %]</option>
       [% END %]
       [% IF js || can_contribute_as_another_user %]
-        <option value="another_user">[% loc('Another user') %]</option>
+        <option value="another_user" [% IF prefill.name || prefill.email %]selected[% END %]>[% loc('Another user') %]</option>
       [% END %]
       [% IF js || can_contribute_as_body %]
       <option value="body" [% c.user.from_body AND ( c.user.has_body_permission_to('planned_reports') || c.user.has_body_permission_to('default_to_body') ) ? 'selected' : ''  %]>[% c.user.from_body.cobrand_name %]</option>
@@ -32,16 +32,16 @@
 
 [% IF c.user.phone_verified AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]
     <label for="form_phone">[% loc('Phone number') %]</label>
-    <input class="form-control" id="form_phone" name="phone" disabled type="text" value="[% c.user.phone_display | html %]">
+    <input class="form-control" id="form_phone" name="phone" disabled type="text" value="[% c.user.phone_display | html %]" [% IF ( can_contribute_as_another_user && prefill.phone ) %]data-prefill-value="[% prefill.phone | html %]"[% END %]>
 [% END %]
 
-[% IF c.user.email_verified %]
+[% IF c.user.email_verified || ( can_contribute_as_another_user && prefill.email ) %]
     <label for="form_username">[% loc('Email address') %]<span class="hidden"> [% loc('(optional)') %]</span></label>
     <input class="form-control" id="form_username" name="username"
     [%- IF NOT can_contribute_as_another_user -%]
     disabled
     [%- END -%]
-    type="text" value="[% c.user.email | html %]">
+    type="text" value="[% c.user.email | html %]" [% IF ( can_contribute_as_another_user && prefill.email ) %]data-prefill-value="[% prefill.email | html %]"[% END %]>
 [% END %]
 
     [% INCLUDE 'report/new/extra_name.html' %]
@@ -54,7 +54,7 @@
     [% IF field_errors.phone %]
       <p class='form-error'>[% field_errors.phone %]</p>
     [% END %]
-    <input class="form-control" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone">
+    <input class="form-control" type="text" value="[% report.user.phone_display | html %]" name="phone" id="form_phone" [% IF ( can_contribute_as_another_user && prefill.phone ) %]data-prefill-value="[% prefill.phone | html %]"[% END %]>
 [% END %]
 [% IF NOT c.user.email_verified %]
     <label for="form_email">[% loc('Email address (optional)') %]</label>
