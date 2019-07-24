@@ -586,6 +586,11 @@ sub process_confirmation : Private {
         }) if $data->{extra};
         $comment->user->password( $data->{password}, 1 ) if $data->{password};
         $comment->user->update;
+        # Make sure OIDC logout redirection happens, if applicable
+        if ($data->{logout_redirect_uri}) {
+            $c->session->{oauth} ||= ();
+            $c->session->{oauth}{logout_redirect_uri} = $data->{logout_redirect_uri};
+        }
     }
 
     if ($comment->user->email_verified) {

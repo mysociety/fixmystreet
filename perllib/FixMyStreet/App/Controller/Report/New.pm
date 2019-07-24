@@ -1321,6 +1321,12 @@ sub process_confirmation : Private {
         }) if $data->{extra};
 
         $problem->user->update;
+
+        # Make sure OIDC logout redirection happens, if applicable
+        if ($data->{logout_redirect_uri}) {
+            $c->session->{oauth} ||= ();
+            $c->session->{oauth}{logout_redirect_uri} = $data->{logout_redirect_uri};
+        }
     }
     if ($problem->user->email_verified) {
         $c->authenticate( { email => $problem->user->email, email_verified => 1 }, 'no_password' );
