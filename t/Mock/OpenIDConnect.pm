@@ -48,6 +48,7 @@ sub dispatch_request {
             family_name => "Dwyer",
             tfp => "B2C_1_default",
             extension_CrmContactId => "1c304134-ef12-c128-9212-123908123901",
+            nonce => 'MyAwesomeRandomValue',
         };
         $payload->{emails} = ['oidc@example.org'] if $self->returns_email;
         my $signature = "dummy";
