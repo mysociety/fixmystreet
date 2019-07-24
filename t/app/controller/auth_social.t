@@ -16,7 +16,8 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my ($report) = $mech->create_problems_for_body(1, '2345', 'Test');
 my $resolver = Test::MockModule->new('Email::Valid');
-
+my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
+$social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
 
 for my $test (
     {
@@ -57,7 +58,7 @@ for my $test (
     mock_hosts => ['oidc.example.org'],
     host => 'oidc.example.org',
     error_callback => '/auth/OIDC?error=ERROR',
-    success_callback => '/auth/OIDC?code=response-code',
+    success_callback => '/auth/OIDC?code=response-code&state=login',
     redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
     user_extras => [
         [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
