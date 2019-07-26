@@ -76,6 +76,18 @@ sub open311_config {
     $params->{multi_photos} = 1;
 }
 
+sub should_skip_sending_update {
+    my ($self, $comment) = @_;
+
+    my $p = $comment->problem;
+    my %body_users = map { $_->comment_user_id => 1 } values %{ $p->bodies };
+    if ( $body_users{ $p->user->id } ) {
+        return 1;
+    }
+
+    return 0;
+}
+
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
