@@ -12,7 +12,11 @@
 [% IF c.cobrand.moniker == 'fixmystreet' %]
 <h1>FixMyStreet technical support</h1>
 [% ELSE %]
-<h1>[% loc('Contact the team') %]</h1>
+    [% TRY %]
+    [% INCLUDE 'contact/_heading.html' %]
+    [% CATCH file %]
+    <h1>[% loc('Contact the team') %]</h1>
+    [% END %]
 [% END %]
 
 <form method="post" action="/contact/submit" class="validate">
