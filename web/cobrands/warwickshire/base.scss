@@ -3,3 +3,186 @@
 @import "../sass/mixins";
 
 @import "../sass/base";
+
+#site-logo {
+    padding: 0.5em 0;
+    width: (313px * 0.7);
+    height: (51px * 0.7);
+    @include svg-background-image('/cobrands/warwickshire/images/logo');
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: (313px * 0.7) (51px * 0.7);
+}
+
+#front-main {
+    text-align: $left;
+    background: $primary;
+    color: $primary_text;
+    margin: 0;
+    padding: 2em 1em;
+
+    h1 {
+        margin-top: 0;
+    }
+
+    #postcodeForm {
+        margin: 0;
+        padding: 0;
+        color: inherit;
+        background: transparent;
+
+        div {
+            display: block;
+            width: auto;
+            background: #fff;
+            border: none;
+
+            margin-top: 0.5em;
+            max-width: 24em;
+
+            @include flex-container();
+            @include flex-align(stretch);
+
+            box-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.2);
+
+            input#pc {
+                display: block;
+                margin: 0;
+                padding: 0.5em;
+                font-family: inherit;
+                color: $primary_text;
+
+                &:focus {
+                    outline: 3px solid $warwickshire-yellow;
+                }
+            }
+
+            input#sub {
+                display: block;
+                height: auto;
+                width: 40px;
+                background-color: transparent;
+                @include svg-background-image('/cobrands/warwickshire/images/search');
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+                background-size: 20px 20px;
+
+                // TODO: I'd really prefer to do padding-top/overflow:hidden
+                // here, but that doesn't work with flex children. Maybe we
+                // should just update the markup to include the image directly,
+                // or wrap the text content in an element we can hide?
+                text-indent: -9000px;
+
+                &:hover {
+                    background-color: $primary;
+                    @include svg-background-image('/cobrands/warwickshire/images/search');
+                    background-repeat: no-repeat;
+                    background-position: 50% 50%;
+                    background-size: 20px 20px;
+                }
+
+                // TODO: Because of our text-indent, this draws a
+                // gigantic yellow box off the screen!!!
+                &:focus {
+                    outline: 3px solid $warwickshire-yellow;
+                }
+            }
+        }
+    }
+
+    a#geolocate_link {
+        padding: 0;
+        background: transparent;
+        font-size: 1em;
+        color: $link-color;
+        margin-top: 0.5em;
+
+        &:hover {
+            background-color: transparent;
+            color: $link-hover-color;
+        }
+
+        &:focus {
+            outline: 3px solid $warwickshire-yellow;
+        }
+
+        &.loading,
+        &.loading:hover {
+            background: transparent url("/cobrands/warwickshire/images/spinner-f6f6f6-333333.gif") 100% 50% no-repeat;
+            padding: 0 1.5em 0 0;
+            border: none;
+        }
+    }
+
+}
+
+.box-warning {
+    background-color: mix(#fff, $warwickshire-orange, 80%);
+}
+
+.site-footer {
+    background: #000;
+    color: #fff;
+    padding: 2em 0;
+
+    a {
+        color: #fff;
+    }
+
+    li {
+        list-style: inherit;
+    }
+
+    .identity__logo {
+        display: block;
+        height: 45px;
+        max-width: 100%;
+        width: 264px;
+        @include svg-background-image('/cobrands/warwickshire/images/logo');
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        background-size: contain;
+    }
+
+    .visually-hidden {
+        border: 0;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+}
+
+.site-footer__container {
+    @include flex-container();
+    @include flex-wrap(wrap);
+}
+
+.site-footer__text {
+    font-size: 0.875em;
+    margin: 1rem 0 .75rem;
+}
+
+.site-footer__navigation {
+    .list {
+        line-height: 1.3;
+        list-style: none;
+        margin-left: 0;
+        margin-top: 0;
+        -webkit-column-gap: 2rem;
+        column-gap: 2rem;
+        -webkit-columns: 2;
+        columns: 2;
+    }
+
+    .list__item {
+        -webkit-column-break-inside: avoid;
+        break-inside: avoid-column;
+        margin: 0;
+        padding: .2rem 0 .75rem;
+        font-size: 0.875em;
+    }
+}

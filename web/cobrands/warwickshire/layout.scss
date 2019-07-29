@@ -1,2 +1,88 @@
 @import "_colours";
 @import "../sass/layout";
+
+#site-logo {
+    padding: 0.9em 0;
+    width: 313px;
+    height: 51px;
+    background-size: 313px 51px;
+}
+
+#front-main {
+    // background: transparent;
+    // color: inherit;
+    padding: 3em 0;
+
+    h1 {
+        font-size: 3em;
+        line-height: 1.3;
+        margin-bottom: 0.1em;
+    }
+
+    #front-main-container {
+        padding: 0 1em;
+        max-width: $container-max-width;
+    }
+
+    #postcodeForm {
+        margin-right: 0;
+        overflow: visible;
+
+        div {
+            width: auto;
+            max-width: 38em;
+            margin-left: 0;
+            margin-right: 0;
+            overflow: visible;
+
+            @include flex-container();
+
+            input#pc {
+                width: 100%;
+                height: auto;
+                margin: 0;
+                max-width: none;
+                padding: 0.5em;
+            }
+
+            input#sub {
+                width: 40px;
+                height: auto;
+                padding-top: 0;
+            }
+        }
+
+        label {
+            margin: 1.5em 0 0.5em 0;
+        }
+    }
+
+    a#geolocate_link {
+        color: $link-color;
+
+        &:hover {
+            color: $link-hover-color;
+        }
+
+        &:focus {
+            outline: 3px solid $warwickshire-yellow;
+        }
+    }
+}
+
+.site-footer__section {
+    @include box-sizing(border-box);
+    float: left;
+    padding: 0 1em;
+    width: 25%;
+
+    &:first-child {
+        @include flex-container();
+        @include flex-direction(column);
+        @include justify-content(space-between);
+    }
+
+    &:nth-child(2) {
+        width: 50%;
+    }
+}
