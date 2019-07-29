@@ -7,7 +7,8 @@ fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
         error: '[% loc('Error') | replace("'", "\\'") %]',
         title: {
             required: '[% loc('Please enter a subject') | replace("'", "\\'") %]',
-            maxlength: '[% loc('Summaries are limited to {0} characters in length. Please shorten your summary') | replace("'", "\\'") %]'
+            maxlength: '[% loc('Summaries are limited to {0} characters in length. Please shorten your summary') | replace("'", "\\'") %]',
+            notEmail: '[% loc('Please make sure you are not including an email address') %]'
         },
         detail: {
             required: '[% loc('Please enter some details') | replace("'", "\\'") %]',

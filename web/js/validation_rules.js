@@ -1,5 +1,5 @@
     core_validation_rules = {
-        title: { required: true },
+        title: { required: true, notEmail: true },
         detail: { required: true },
         update: { required: true },
         password_register: {

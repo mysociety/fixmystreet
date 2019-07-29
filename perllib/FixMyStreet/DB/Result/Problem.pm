@@ -362,6 +362,9 @@ sub check_for_errors {
     $errors{title} = _('Please enter a subject')
       unless $self->title =~ m/\S/;
 
+    $errors{title} = _('Please make sure you are not including an email address')
+        if mySociety::EmailUtil::is_valid_email($self->title);
+
     $errors{detail} = _('Please enter some details')
       unless $self->detail =~ m/\S/;
 

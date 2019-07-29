@@ -519,6 +519,29 @@ foreach my $test (
         errors => [ "Please enter a subject" ],
     },
     {
+        msg    => 'email in title',
+        pc     => 'SW1A 1AA',
+        fields => {
+            title         => 'user@example.com',
+            detail        => 'Test detail',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'Joe Smith',
+            may_show_name => '1',
+            username      => 'user@example.com',
+            phone         => '',
+            category      => 'Street lighting',
+            password_sign_in => '',
+            password_register => '',
+        },
+        changes => {
+            username => 'user@example.com',
+            title => 'User@example.com'
+        },
+        errors  => [ 'Please make sure you are not including an email address', ],
+    },
+    {
         msg    => 'Bromley long detail',
         pc     => 'BR1 3UH',
         fields => {
