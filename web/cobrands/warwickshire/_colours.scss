@@ -1,19 +1,23 @@
 /* COLOURS */
 
-$green: #006d3c;
-$purple: #90428C;
+$warwickshire-green: #096f48;
+$warwickshire-red: #b11030;
+$warwickshire-orange: #d43900;
+$warwickshire-blue: #0f4880;
+$warwickshire-purple: #591d77;
+$warwickshire-light-grey: #f6f6f6;
 
-$primary: $green;
+$primary: $warwickshire-green;
 $primary_b: #000000;
-$primary_text: #222222;
+$primary_text: #fff;
 
-$base_bg: #F9FFF8;
+$base_bg: #fff;
 $base_fg: #000;
 
-$nav_background_colour: #fff;
-$nav_colour: #000;
-$nav_hover_background_colour: $primary;
+$nav_background_colour: $warwickshire-green;
+$nav_colour: #fff;
+$nav_hover_background_colour: lighten($warwickshire-green, 5%);
 
-$col_click_map: $purple;
+$col_click_map: $warwickshire-purple;
 
 $header-top-border: false;
