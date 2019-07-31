@@ -91,6 +91,12 @@ subtest "prefilters /around if user has categories" => sub {
     $mech->content_contains("Cows,Potholes");
 };
 
+subtest "prefilters /around if filter_category given in URL" => sub {
+    $mech->get_ok('/?filter_category=MyUniqueTestCategory');
+    # NB can't use visible_form_values because categories field is hidden
+    $mech->content_contains("MyUniqueTestCategory");
+};
+
 END {
     done_testing();
 }
