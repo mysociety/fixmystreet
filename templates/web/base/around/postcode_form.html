@@ -20,8 +20,9 @@
                 <input type="hidden" name="partial" value="[% partial_token.token %]">
             [% END %]
 
-            [% IF c.get_param('filter_category') %]
+            [% IF c.get_param('filter_category') OR c.get_param('filter_group') %]
               <input type="hidden" name="filter_category" value="[% c.get_param('filter_category') | html %]">
+              <input type="hidden" name="filter_group" value="[% c.get_param('filter_group') | html %]">
             [% ELSIF c.user_exists AND c.user.categories.size %]
               <input type="hidden" name="filter_category" value="[% c.user.categories_string | html %]">
             [% END %]
