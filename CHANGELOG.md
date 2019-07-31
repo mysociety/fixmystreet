@@ -9,6 +9,7 @@
         - Report form now indicates that details are kept private if report is
           made in a private category. #2528
         - Improve map JavaScript defensiveness.
+        - Pass ‘filter_category’ param to front page to pre-filter map.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users.
     - New features:
