@@ -47,9 +47,10 @@
 
 [% select_category = BLOCK %]
   [% IF filter_categories.size %]
+    [% SET filter_group = c.get_param('filter_group') %]
     <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
         [% FOR cat IN filter_categories %]
-            <option value="[% cat.category | html %]"[% ' selected' IF filter_category.${cat.category} %]>
+            <option value="[% cat.category | html %]"[% ' selected' IF filter_category.${cat.category} OR ( filter_group AND ( cat.get_extra_metadata('group') == filter_group OR cat.category == filter_group ) ) %]>
                 [% cat.category_display | html %]
                 [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
             </option>

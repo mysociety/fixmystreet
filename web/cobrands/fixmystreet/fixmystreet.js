@@ -1242,7 +1242,7 @@ fixmystreet.fetch_reporting_data = function() {
             return;
         }
         $('#side-form').show();
-        var old_category_group = $('#category_group').val(),
+        var old_category_group = $('#category_group').val() || $('#filter_group').val(),
             old_category = $("#form_category").val(),
             filter_category = $("#filter_categories").val();
 
