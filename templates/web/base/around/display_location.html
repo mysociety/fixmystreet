@@ -51,6 +51,10 @@
 
     <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% latitude | html %]">
     <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
+
+    [% IF c.get_param('filter_group') %]
+        <input type="hidden" name="filter_group" id="filter_group" value="[% c.get_param('filter_group') | html %]">
+    [% END %]
 [% END %]
 
     [% map_html %]
