@@ -62,4 +62,6 @@ sub ask_ever_reported {
     return 0;
 }
 
+sub on_map_default_status { 'open' }
+
 1;
