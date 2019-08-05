@@ -18,10 +18,6 @@ sub disambiguate_location {
 
     my $town = 'Buckinghamshire';
 
-    # The geocoder returns two results for 'Aylesbury', so force the better
-    # result to be used.
-    $town = "$town, HP20 2NH" if $string =~ /[\s]*aylesbury[\s]*/i;
-
     return {
         %{ $self->SUPER::disambiguate_location() },
         town   => $town,
