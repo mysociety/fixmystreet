@@ -1,4 +1,4 @@
-[% IF c.cobrand.suggest_duplicates %]
+[% IF c.cobrand.suggest_duplicates AND NOT login_success AND NOT oauth_need_email %]
 [% extra_js.push(
     version('/js/duplicates.js'),
 ) -%]
