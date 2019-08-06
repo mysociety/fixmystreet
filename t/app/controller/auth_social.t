@@ -14,7 +14,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my ($report) = $mech->create_problems_for_body(1, '2345', 'Test');
+my ($report) = $mech->create_problems_for_body(1, '2504', 'My Test Report');
 my $resolver = Test::MockModule->new('Email::Valid');
 my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
 $social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
@@ -91,6 +91,11 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 }
             } else {
                 $mech->delete_user($test->{email});
+            }
+            if ($page eq 'my' && $state eq 'existing UID') {
+                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } )->id });
+            } else {
+                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => 'test@example.com' } )->id });
             }
 
             # Set up a mock to catch (most, see below) requests to the OAuth API
@@ -209,6 +214,11 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                         my ($k, $v) = @$extra;
                         is $user->get_extra_metadata($k), $v, "User has correct $k extra field";
                     }
+                }
+                if ($state eq 'existing UID') {
+                    my $report_id = $report->id;
+                    $mech->content_contains( $report->title );
+                    $mech->content_contains( "/report/$report_id" );
                 }
             }
 
