@@ -3,6 +3,8 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
+my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
+my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 3');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
@@ -119,6 +121,47 @@ subtest 'user_edit does not show user from another council' => sub {
         is $mech->res->code, 404, "got 404";
     };
 };
+
+$mech->log_out_ok;
+
+subtest 'user_edit redirects appropriately' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $user2->update({ from_body => $oxfordshire->id });
+        $user3->update({ from_body => $oxfordshire->id });
+        $user3->user_body_permissions->create( {
+            body => $oxfordshire,
+            permission_type => 'user_edit',
+        } );
+        $user3->user_body_permissions->create( {
+            body => $oxfordshire,
+            permission_type => 'user_assign_body',
+        } );
+        $mech->log_in_ok( $user3->email );
+
+        $mech->get_ok('/admin/users/' . $user2->id);
+        $mech->submit_form_ok( { with_fields => {
+            name => "Updated Name"
+        } } );
+        $user2->discard_changes;
+        is $user2->name, "Updated Name", "Name set correctly";
+        is $mech->uri->path, '/admin/users/' . $user2->id, 'redirected back to user form';
+
+        $mech->get_ok('/admin/users/' . $user2->id);
+        $mech->submit_form_ok( { with_fields => {
+            body => undef
+        } } );
+        $user2->discard_changes;
+        is $user2->from_body, undef, "from_body unset";
+        is $mech->uri->path, '/admin/users', 'redirected back to users list';
+
+        $mech->log_out_ok;
+    };
+};
+
+$mech->log_in_ok( $superuser->email );
 
 for my $test (
     {

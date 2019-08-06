@@ -174,7 +174,7 @@ sub add : Local : Args(0) {
     $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
 
     $c->flash->{status_message} = _("Updated!");
-    $c->res->redirect( $c->uri_for_action( 'admin/users/edit', $user->id ) );
+    $c->detach('post_edit_redirect', [ $user ]);
 }
 
 sub fetch_body_roles : Private {
@@ -415,7 +415,8 @@ sub edit : Path : Args(1) {
             $c->forward( '/admin/log_edit', [ $id, 'user', 'edit' ] );
         }
         $c->flash->{status_message} = _("Updated!");
-        return $c->res->redirect( $c->uri_for_action( 'admin/users/edit', $user->id ) );
+
+        $c->detach('post_edit_redirect', [ $user ]);
     }
 
     if ( $user->from_body ) {
@@ -440,6 +441,18 @@ sub edit : Path : Args(1) {
     }
 
     return 1;
+}
+
+sub post_edit_redirect : Private {
+    my ( $self, $c, $user ) = @_;
+
+    # User may not be visible on this cobrand, e.g. if their from_body
+    # wasn't set.
+    if ( $c->cobrand->users->find( { id => $user->id } ) ) {
+        return $c->res->redirect( $c->uri_for_action( 'admin/users/edit', $user->id ) );
+    } else {
+        return $c->res->redirect( $c->uri_for_action( 'admin/users/index' ) );
+    }
 }
 
 sub import :Local {
