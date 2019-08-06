@@ -65,6 +65,7 @@ for my $test (
                     auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
                     token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
                     logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                    password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
                     display_name => 'MyWestminster'
                 }
             }
@@ -79,6 +80,7 @@ for my $test (
     success_callback => '/auth/OIDC?code=response-code&state=login',
     redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
     logout_redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/logout},
+    password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
     user_extras => [
         [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
     ],
@@ -240,6 +242,9 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                     my $report_id = $report->id;
                     $mech->content_contains( $report->title );
                     $mech->content_contains( "/report/$report_id" );
+                }
+                if ($test->{type} eq 'oidc') {
+                    ok $mech->find_link( text => 'Change password', url_regex => $test->{password_change_pattern} );
                 }
             }
 

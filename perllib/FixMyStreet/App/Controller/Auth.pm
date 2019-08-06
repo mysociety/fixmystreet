@@ -219,7 +219,7 @@ sub get_token : Private {
 sub set_oauth_token_data : Private {
     my ( $self, $c, $token_data ) = @_;
 
-    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri/) {
+    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri change_password_uri/) {
         $token_data->{$_} = $c->session->{oauth}{$_} if $c->session->{oauth}{$_};
     }
 }
@@ -291,9 +291,11 @@ sub process_login : Private {
     $user->update_or_insert;
     $c->authenticate( { $type => $data->{$type}, $ver => 1 }, 'no_password' );
 
-    if ($data->{logout_redirect_uri}) {
-        $c->session->{oauth} ||= ();
-        $c->session->{oauth}{logout_redirect_uri} = $data->{logout_redirect_uri};
+    foreach (qw/logout_redirect_uri change_password_uri/) {
+        if ($data->{$_}) {
+            $c->session->{oauth} ||= ();
+            $c->session->{oauth}{$_} = $data->{$_};
+        }
     }
 
 

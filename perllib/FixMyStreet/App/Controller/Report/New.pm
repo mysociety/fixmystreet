@@ -1331,10 +1331,12 @@ sub process_confirmation : Private {
 
         $problem->user->update;
 
-        # Make sure OIDC logout redirection happens, if applicable
-        if ($data->{logout_redirect_uri}) {
-            $c->session->{oauth} ||= ();
-            $c->session->{oauth}{logout_redirect_uri} = $data->{logout_redirect_uri};
+        # Make sure extra oauth state is restored, if applicable
+        foreach (qw/logout_redirect_uri change_password_uri/) {
+            if ($data->{$_}) {
+                $c->session->{oauth} ||= ();
+                $c->session->{oauth}{$_} = $data->{$_};
+            }
         }
     }
     if ($problem->user->email_verified) {

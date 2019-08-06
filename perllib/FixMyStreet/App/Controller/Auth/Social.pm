@@ -207,6 +207,19 @@ sub oidc_sign_in : Private {
         $oauth{logout_redirect_uri} = $redirect_uri;
     }
 
+    # The OIDC endpoint may provide a specific URI for changing the user's password.
+    if ( my $password_change_uri = $c->cobrand->feature('oidc_login')->{password_change_uri} ) {
+        $oauth{change_password_uri} = $oidc->uri_to_redirect(
+            uri          => $password_change_uri,
+            redirect_uri => $c->uri_for('/auth/OIDC'),
+            scope        => 'openid',
+            state        => 'password_change',
+            extra        => {
+                response_mode => 'form_post',
+            },
+        );
+    }
+
     $c->session->{oauth} = \%oauth;
     $c->res->redirect($url);
 }
@@ -231,6 +244,10 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
             );
             $c->res->redirect($url);
             $c->detach;
+        } elsif ($c->user_exists && $c->get_param('state') && $c->get_param('state') eq 'password_change') {
+            $c->flash->{flash_message} = _('Password change cancelled.');
+            $c->res->redirect('/my');
+            $c->detach;
         } else {
             $c->detach('oauth_failure');
         }
@@ -248,6 +265,11 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
             $c->stash->{detach_args} = $c->session->{oauth}{detach_args};
         }
         $c->detach('oidc_sign_in', []);
+    }
+
+    # User may be coming back here after changing their password on the OIDC endpoint
+    if ($c->user_exists && $c->get_param('state') && $c->get_param('state') eq 'password_change') {
+        $c->detach('/auth/profile/change_password_success', []);
     }
 
     # The only other valid state param is 'login' at this point.
