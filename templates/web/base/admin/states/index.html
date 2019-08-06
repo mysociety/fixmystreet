@@ -45,7 +45,7 @@
         </td>
         <td style="text-align:center;vertical-align:middle" rowspan="[% rows %]">
           [% IF state.label != 'confirmed' AND state.label != 'closed' %]
-            <input class="btn btn--small" type="submit" name="delete:[% state.label %]" value="Delete">
+            <input class="btn btn--small btn-danger" type="submit" data-confirm="[% loc('Are you sure?') %]" name="delete:[% state.label %]" value="Delete">
           [% END %]
         </td>
     </tr>
