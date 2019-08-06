@@ -30,6 +30,7 @@ sub send {
             extended_description    => 1,
             multi_photos            => 0,
             upload_files            => 0,
+            always_upload_photos    => 0,
             fixmystreet_body => $body,
         );
 

@@ -35,6 +35,7 @@ has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
 has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 has upload_files => ( is => 'ro', isa => Bool, default => 0 );
+has always_upload_photos => ( is => 'ro', isa => Bool, default => 0 );
 has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
 has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
 has fixmystreet_body => ( is => 'ro', isa => InstanceOf['FixMyStreet::DB::Result::Body'] );
@@ -218,7 +219,7 @@ sub _populate_service_request_uploads {
         }
     }
 
-    if ( $problem->photo && $problem->non_public ) {
+    if ( $self->always_upload_photos || ( $problem->photo && $problem->non_public ) ) {
         # open311-adapter won't be able to download any photos if they're on
         # a private report, so instead of sending the media_url parameter
         # send the actual photo content with the POST request.
