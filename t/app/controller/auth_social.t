@@ -16,7 +16,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $body = $mech->create_body_ok(2504, 'Westminster Council');
 
-my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test');
+my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report');
 
 my $contact = $mech->create_contact_ok(
     body_id => $body->id, category => 'Damaged bin', email => 'BIN',
@@ -107,6 +107,11 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 }
             } else {
                 $mech->delete_user($test->{email});
+            }
+            if ($page eq 'my' && $state eq 'existing UID') {
+                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } )->id });
+            } else {
+                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => 'test@example.com' } )->id });
             }
 
             # Set up a mock to catch (most, see below) requests to the OAuth API
@@ -230,6 +235,11 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                         my ($k, $v) = @$extra;
                         is $user->get_extra_metadata($k), $v, "User has correct $k extra field";
                     }
+                }
+                if ($state eq 'existing UID') {
+                    my $report_id = $report->id;
+                    $mech->content_contains( $report->title );
+                    $mech->content_contains( "/report/$report_id" );
                 }
             }
 
