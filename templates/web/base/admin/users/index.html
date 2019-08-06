@@ -90,7 +90,7 @@
 
 [% END %]
 
-[% IF NOT searched %]
+[% IF NOT ( searched || role_selected )%]
 <h2>[% loc('Add user') %]</h2>
 [% INCLUDE 'admin/users/form.html', user = '' %]
 [% ELSE %]
