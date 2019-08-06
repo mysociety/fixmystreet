@@ -17,7 +17,7 @@ ok -e $sample_file, "sample file $sample_file exists";
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2245, 'Wiltshire Council');
+my $body = $mech->create_body_ok(2608, 'Borsetshire Council');
 $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Street lighting',
