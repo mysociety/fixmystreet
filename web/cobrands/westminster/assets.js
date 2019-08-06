@@ -248,7 +248,7 @@ layer_data = [
     { group: 'Street lights', item: 'street light', layers: [ 18, 50, 60 ] },
     { category: 'Pavement damage', layers: [ 14 ], road: true },
     { category: 'Pothole', layers: [ 11, 44 ], road: true },
-    { group: 'Drains', item: 'gully', layers: [ 16 ] },
+    { group: 'Drains', item: 'drain', layers: [ 16 ] },
 
     { category: 'Signs and bollards', subcategories: [ '1' ], subcategory_id: '#form_featuretypecode', item: 'bollard', layers: [ 42, 52 ] },
     { category: 'Signs and bollards', subcategories: [ 'PLFP' ], subcategory_id: '#form_featuretypecode', item: 'feeder pillar', layers: [ 56 ] },
