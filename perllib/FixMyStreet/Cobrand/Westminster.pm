@@ -4,6 +4,8 @@ use base 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use URI;
+
 sub council_area_id { return 2504; }
 sub council_area { return 'Westminster'; }
 sub council_name { return 'Westminster City Council'; }
@@ -70,6 +72,48 @@ sub open311_config {
     my $id = $row->user->get_extra_metadata('westminster_account_id');
     # Westminster require 0 as the account ID if there's no MyWestminster ID.
     $h->{account_id} = $id || '0';
+
+    my $extra = $row->get_extra_fields;
+
+    # Reports made via the app probably won't have a USRN because we don't
+    # display the road layer. Instead we'll look up the closest asset from the
+    # asset service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('USRN')) {
+        if (my $ref = $self->lookup_site_code($row)) {
+            push @$extra, { name => 'USRN', value => $ref };
+        }
+    }
+
+    $row->set_extra_fields(@$extra);
+}
+
+sub lookup_site_code_config {
+    # uncoverable subroutine
+    # uncoverable statement
+    {
+        buffer => 1000, # metres
+        proxy_url => "https://tilma.staging.mysociety.org/resource-proxy/proxy.php",
+        url => "https://westminster.assets/40/query",
+        property => "USRN",
+        accept_feature => sub { 1 }
+    }
+}
+
+sub _fetch_features_url {
+    my ($self, $cfg, $w, $s, $e, $n) = @_;
+
+    # Westminster's asset proxy has a slightly different calling style to
+    # a standard WFS server.
+    my $uri = URI->new($cfg->{url});
+    $uri->query_form(
+        inSR => "27700",
+        outSR => "27700",
+        f => "geojson",
+        outFields => $cfg->{property},
+        geometry => "$w,$s,$e,$n",
+    );
+
+    return $cfg->{proxy_url} . "?" . $uri->as_string;
 }
 
 1;

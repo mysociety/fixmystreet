@@ -288,17 +288,7 @@ sub _fetch_features {
     my $buffer = $cfg->{buffer};
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
-    my $uri = URI->new($cfg->{url});
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => $cfg->{srsname},
-        TYPENAME => $cfg->{typename},
-        VERSION => "1.1.0",
-        outputformat => "geojson",
-        BBOX => "$w,$s,$e,$n"
-    );
-
+    my $uri = $self->_fetch_features_url($cfg, $w, $s, $e,$n);
     my $response = get($uri) or return;
 
     my $j = JSON->new->utf8->allow_nonref;
@@ -312,6 +302,24 @@ sub _fetch_features {
 
     return $j->{features};
 }
+
+sub _fetch_features_url {
+    my ($self, $cfg, $w, $s, $e, $n) = @_;
+
+    my $uri = URI->new($cfg->{url});
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => $cfg->{srsname},
+        TYPENAME => $cfg->{typename},
+        VERSION => "1.1.0",
+        outputformat => "geojson",
+        BBOX => "$w,$s,$e,$n"
+    );
+
+    return $uri;
+}
+
 
 sub _nearest_feature {
     my ($self, $cfg, $x, $y, $features) = @_;
