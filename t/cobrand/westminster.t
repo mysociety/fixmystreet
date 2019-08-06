@@ -1,6 +1,15 @@
+use CGI::Simple;
+use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
+
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Westminster');
+$cobrand->mock('lookup_site_code', sub {
+    my ($self, $row, $buffer) = @_;
+    return "My USRN" if $row->latitude == 51.501009;
+});
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'westminster',
@@ -76,5 +85,28 @@ for (
         };
     };
 }
+
+FixMyStreet::DB->resultset('Problem')->delete_all;
+my $body = $mech->create_body_ok(2504, 'Westminster City Council', {
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
+$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned bike', email => "BIKE");
+my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bike', {
+    category => "Abandoned bike", cobrand => 'westminster',
+    latitude => 51.501009, longitude => -0.141588, areas => '2504',
+});
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'westminster' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+}, sub {
+    subtest 'USRN set correctly' => sub {
+        my $test_data = FixMyStreet::Script::Reports::send();
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), 'BIKE';
+        is $c->param('attribute[USRN]'), 'My USRN';
+    };
+};
 
 done_testing();
