@@ -54,7 +54,7 @@ describe('Regression tests', function() {
         cy.get('.content').should('not.contain', 'toddler');
     });
 
-    it.only('has the correct send-to text at all times', function() {
+    it('has the correct send-to text at all times', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');
       cy.visit('/');
@@ -71,4 +71,16 @@ describe('Regression tests', function() {
       cy.contains(/These will be sent to Northampton Borough Council and also/);
     });
 
+    it('hides everything when duplicate suggestions are shown', function() {
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-hide'); // Server-side setup
+      cy.visit('http://borsetshire.localhost:3001/report/1');
+      cy.contains('Report another problem here').click();
+      cy.wait('@report-ajax');
+      cy.get('[id=category_group]').select('Licensing');
+      cy.get('[id=subcategory_Licensing]').select('Skips');
+      cy.get('.extra-category-questions').should('not.be.visible');
+      cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-hide');
+    });
 });

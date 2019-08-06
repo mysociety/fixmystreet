@@ -11,7 +11,7 @@ my ($cobrand, $coords, $area_id, $name, $mapit_url);
 
 BEGIN {
     $config_file = 'conf/general.yml-example';
-    $cobrand = [ 'fixmystreet', 'northamptonshire', 'bathnes', 'buckinghamshire', 'hounslow' ];
+    $cobrand = [ 'borsetshire', 'fixmystreet', 'northamptonshire', 'bathnes', 'buckinghamshire', 'hounslow' ];
     $coords = '51.532851,-2.284277';
     $area_id = 2608;
     $name = 'Borsetshire';
@@ -91,6 +91,7 @@ sub run {
             STAGING_FLAGS => { skip_checks => 1 },
             COBRAND_FEATURES => {
                 category_groups => { map { $_ => 1 } @$cobrand },
+                suggest_duplicates => { map { $_ => 1 } @$cobrand },
             }
         });
         $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
