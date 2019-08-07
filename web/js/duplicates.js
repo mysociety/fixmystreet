@@ -8,7 +8,11 @@
     // but undefined on new report page.
     var report_id = $("#report_inspect_form .js-report-id").text() || undefined;
 
-    function refresh_duplicate_list() {
+    function refresh_duplicate_list(evt, params) {
+        if (params && params.skip_duplicates) {
+            return;
+        }
+
         var category = $('select[name="category"]').val();
         if (category === '-- Pick a category --') {
             return;
@@ -128,6 +132,14 @@
         fixmystreet.markers.removeFeatures( current_duplicate_markers );
         fixmystreet.markers.addFeatures( markers );
         current_duplicate_markers = markers;
+
+        // Hide any asset layer that might be visible and get confused with the duplicates
+        var layers = fixmystreet.map.getLayersBy('assets', true);
+        for (var i = 0; i<layers.length; i++) {
+            if (!layers[i].fixmystreet.always_visible && layers[i].getVisibility()) {
+                layers[i].setVisibility(false);
+            }
+        }
     }
 
     function remove_duplicate_list() {
@@ -145,6 +157,10 @@
             return;
         }
         fixmystreet.markers.removeFeatures( current_duplicate_markers );
+
+        // In order to reinstate a hidden assets layer, let's pretend we've
+        // just picked the category anew, but skip ourselves
+        $(fixmystreet).trigger('report_new:category_change', { skip_duplicates: true });
     }
 
     function inspect_form_state_change() {
