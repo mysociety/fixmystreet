@@ -1,0 +1,25 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Create a report') %]
+
+<div class="confirmation-header confirmation-header--inbox">
+
+    <h1>[% loc("Nearly done! Now check your email&hellip;") %]</h1>
+
+    <p>
+    [% IF email_type == 'problem' %]
+        Click the link in our confirmation email to publish this problem.
+    [% ELSIF email_type == 'update' %]
+        [% loc("Click the link in our confirmation email to publish your update.") %]
+    [% ELSIF email_type == 'alert' %]
+        [% loc("Click the link in our confirmation email to activate your alert.") %]
+    [% END %]
+    </p>
+
+    [% TRY %][% INCLUDE '_email_sent_extra.html' %][% CATCH file %][% END %]
+
+    <p>
+        [% loc("Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time.") %]
+    </p>
+
+</div>
+
+[% INCLUDE 'footer.html' %]

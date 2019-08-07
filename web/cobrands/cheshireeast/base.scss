@@ -1,0 +1,161 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+body {
+    line-height: 1.429em;
+}
+
+p {
+    margin: 0 0 10px 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 20px 0 10px 0;
+    padding: 0;
+    font-weight: normal !important;
+    font-style: normal !important;
+    color: #333;
+}
+h1 { font-size: 2.218em; line-height: 40px; margin: 16px 0 20px 0; }
+h2 { font-size: 1.869em; line-height: 35px; }
+h3 { font-size: 1.521em; line-height: 30px; }
+h4 { font-size: 1.281em; line-height: 27px; }
+h5 { font-size: 1.15em;  line-height: 25px; }
+
+ul, ol {
+    margin: 0 0 20px 25px;
+    padding: 0;
+}
+ul li {
+    list-style: disc;
+}
+li {
+    margin-bottom: 10px;
+    line-height: 20px;
+}
+
+div.form-error, p.form-error {
+    color: $white;
+    background-color: #aa272f;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+}
+
+.report_meta_info,
+.council_sent_info {
+  font-size: inherit;
+}
+
+/* Font overrides */
+
+#front-main {
+    text-align: left;
+}
+
+/* Colour overrides */
+
+a,
+.fake-link {
+    &:active, &:focus {
+        background-color: #e8ffd3;
+        outline: 3px solid #ffa100;
+    }
+}
+
+.content a[href],
+.fake-link {
+    border-bottom: 1px solid #a6a7da;
+    &:hover {
+        border-bottom: 1px solid #2e3191;
+        transition: border-color 0.5s;
+    }
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    border: none;
+    background: $col_button;
+
+    &:focus,
+    &:hover,
+    &:active {
+        background: $col_button_hover;
+    }
+}
+
+.box-warning {
+    background-color: #ecf3ec;
+}
+
+#front-main a#geolocate_link {
+    color: #2e3191;
+    background: transparent;
+    border-bottom: 1px solid #a6a7da;
+    padding: 0;
+    margin-top: 0.5em;
+    font-size: inherit;
+    &:hover {
+        background: transparent;
+        border-bottom: 1px solid #2e3191;
+        transition: border-color 0.5s;
+    }
+}
+
+/* Front page */
+#front-main {
+  #postcodeForm {
+    div {
+      input#sub {
+        background: $green;
+      }
+    }
+  }
+}
+
+/* Header/footer */
+
+#site-logo {
+    width: 148px;
+    height: 67px;
+    padding: 1em 0;
+    background: url(/cobrands/cheshireeast/images/cec-navbar-logo-white.png) 0 50% no-repeat;
+    background-size: 148px 67px;
+}
+
+#site-header {
+    border-bottom: solid 8px $gold;
+}
+
+.ce-footer {
+    padding: 20px;
+    background-color: $green;
+    border-top: solid 10px $gold;
+    ul {
+        margin: 0;
+    }
+    li {
+        list-style: none;
+        margin: 0 0 15px;
+    }
+    li:last-child {
+        margin: 0;
+    }
+    a, a:link, a:visited, a:hover, a:active, a:focus {
+        border-bottom: 1px solid #cacaca;
+        color: #fff;
+        background-color: transparent;
+        font-weight: 700;
+    }
+    a:hover, a:active, a:focus {
+        border-bottom: 1px solid #fff;
+    }
+}
+
+.nav-menu a {
+    border-bottom: 1px solid #999;
+    background-color: $white;
+    color: $link-color;
+}

@@ -1,0 +1,10 @@
+  <p id="rss_local">
+    <a href="[% rss_feed_uri %]" class="alerts-rss-link">
+      <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed of nearby problems') %]" alt="[% loc('RSS feed') %]">
+    </a>
+    <label class="label-containing-checkbox" for="[% rss_feed_id %]">
+      <input type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
+      [% tprintf( loc('Reported problems within %.1fkm of %s'), population_radius, name_of_location ) %]
+      [% loc('(covers roughly 200,000 people)') %]
+    </label>
+  </p>
