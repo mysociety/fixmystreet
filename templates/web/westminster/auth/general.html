@@ -10,7 +10,7 @@
     <p class="form-error">[% loc('We need your email address, please give it below.') %]</p>
 [% END %]
 [% IF oauth_failure %]
-    <p class="form-error">[% loc('Sorry, we could not log you in. Please fill in the form below.') %]</p>
+    <p class="form-error">[% loc('Sorry, we could not log you in.') %]</p>
 [% END %]
 
 <form action="/auth" method="post" name="general_auth" class="validate">
@@ -18,16 +18,15 @@
 
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
-[% IF NOT oauth_need_email AND c.cobrand.social_auth_enabled %]
-    [% IF c.cobrand.feature('oidc_login') %]
+[% IF NOT oauth_need_email AND c.cobrand.social_auth_enabled AND c.cobrand.feature('oidc_login') %]
+
       <div class="form-box">
         <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
-            [% tprintf(loc('Login with %s'), c.cobrand.feature('oidc_login').display_name) %]
+            [% tprintf(loc('Sign in with %s'), c.cobrand.feature('oidc_login').display_name) %]
         </button>
       </div>
-    [% END %]
-      <div id="js-social-email-hide">
-[% END %]
+
+[% ELSE %]
 
         [% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
 
@@ -54,8 +53,6 @@
           [% END %]
         </div>
 
-[% IF NOT oauth_need_email AND c.cobrand.social_auth_enabled %]
-      </div>
 [% END %]
 
     </fieldset>
