@@ -1,0 +1,22 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation');
+
+DEFAULT problem = update.problem;
+IF update;
+    SET problem_url = update.url;
+ELSE;
+    SET problem_url = problem.url;
+END;
+
+%]
+
+<div class="confirmation-header">
+
+  <h1>Thank you for updating this issue</h1>
+
+  <h2><a href="[% problem_url %]">[% problem.title %]</a></h2>
+
+  <p><a href="https://www.cheshireeast.gov.uk/">Council homepage</a></p>
+
+</div>
+
+[% INCLUDE 'footer.html' %]

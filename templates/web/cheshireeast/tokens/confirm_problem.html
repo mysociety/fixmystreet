@@ -1,0 +1,34 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation') %]
+
+<div class="confirmation-header">
+
+  <h1>Thank you for your report</h1>
+
+  <p><a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">[% report.title %]</a>
+
+  [% IF 1 OR c.cobrand.owns_problem( report ) %]
+    <p>Your reference for this report is [% report.id %], please quote it in any enquiries.</p>
+  [% ELSE %]
+    <h2>Thank you for your report.</h2>
+    <p>
+        We don&rsquo;t handle this type of problem, so have passed it on to:
+    </p>
+    <p>
+        <b>[% report.body %]</b>
+    </p>
+    <p>
+        You can follow this problem on <a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">FixMyStreet.com</a>.
+    </p>
+  [% END %]
+
+  <p class="confirmation-again">
+    <a href="/report/new?latitude=[% report.latitude %]&amp;longitude=[% report.longitude %]" class="btn btn-primary">
+      [% loc('Report another problem here') %]
+    </a>
+  </p>
+
+  <p><a href="https://www.cheshireeast.gov.uk/">Council homepage</a></p>
+
+</div>
+
+[% INCLUDE 'footer.html' %]

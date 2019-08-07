@@ -1,0 +1,84 @@
+@import "_colours";
+
+@import "../sass/layout";
+
+body {
+    background-image: linear-gradient(to bottom, $white, #f3f3f3);
+}
+footer {
+    margin-top: 0; // So no sign of above gradient at bottom above footer
+}
+
+body.frontpage .content {
+    margin: 0 -1em;
+}
+
+#front-main {
+    background-color: transparent;
+    padding: 0;
+}
+#front-main-container {
+    background-color: $white;
+    padding: 1em;
+}
+#front-main #postcodeForm div {
+    margin: 0;
+    width: 30em;
+}
+
+.ce-footer {
+    ul {
+        display: flex;
+        justify-content: space-between;
+    }
+    li {
+        margin: 0;
+    }
+}
+
+body.mappage {
+    #site-header {
+        box-sizing: border-box; // count padding as part of height, so border-bottom is visible
+    }
+
+    .ce-footer {
+        display: none;
+    }
+}
+
+/*body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 10em;
+}
+*/
+
+/*
+#site-logo {
+    width: 208px;
+    height: 80px;
+    padding: 24px 0;
+    background-position: 8px 50%;
+    background-size: 200px 80px;
+}
+*/
+
+#front_stats big {
+    color: $green;
+}
+
+/*
+.nav-menu--main {
+  span {
+    background-color: $nav_hover_background_colour;
+  }
+}
+*/
+
+/*
+.general-notes {
+    font-size: 0.89em;
+}
+
+#key-tools a,button {
+    font-size: 0.89em;
+}
+*/

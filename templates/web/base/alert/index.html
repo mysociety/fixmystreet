@@ -12,7 +12,7 @@
     <p class="form-hint" id="pc-hint">[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]</p>
     <div class="form-txt-submit-box">
       <input class="form-control" type="text" id="pc" name="pc" value="[% pc | html %]" aria-describedby="pc-hint">
-      <input class="green-btn" type="submit" value="[% loc('Go') %]">
+      [% INCLUDE 'around/_postcode_submit_button.html' attr='class="green-btn"' %]
     </div>
   </fieldset>
   <a href="/alert/list" id="geolocate_link">&hellip; [% loc('or use my location') %]</a>
