@@ -89,7 +89,7 @@ var tfl_asset_categories = Object.keys(bromley_to_tfl);
 
 $(function(){
     $("#problem_form").on("change.category", "#form_service_sub_code", function() {
-        $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
+        $(fixmystreet).trigger('report_new:category_change');
     });
 });
 

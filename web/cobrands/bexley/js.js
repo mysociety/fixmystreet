@@ -114,7 +114,7 @@ fixmystreet.assets.add(defaults, {
 // We need to trigger the below function on subcategory change also
 $(function(){
     $("#problem_form").on("change.category", "#form_DALocation", function() {
-        $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
+        $(fixmystreet).trigger('report_new:category_change');
     });
 });
 

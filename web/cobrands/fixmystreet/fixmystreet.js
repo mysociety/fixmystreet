@@ -475,7 +475,7 @@ $.extend(fixmystreet.set_up, {
             }
         });
 
-        $(fixmystreet).trigger('report_new:category_change', [ $(this) ]);
+        $(fixmystreet).trigger('report_new:category_change');
     });
   },
 
