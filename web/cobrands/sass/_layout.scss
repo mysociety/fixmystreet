@@ -11,6 +11,8 @@ $mappage-actions-width--medium: 20em;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
+$container-max-width: 60em !default;
+
 .internal-link-fixed-header {
     display: block;
     position: relative;
@@ -824,7 +826,7 @@ textarea.form-error {
   margin: 0;
   padding: 1em;
   #front-main-container {
-    max-width: 60em;
+    max-width: $container-max-width;
     margin: 0 auto;
   }
   h2 {
