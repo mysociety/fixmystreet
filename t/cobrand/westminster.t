@@ -99,6 +99,7 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'westminster' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    COBRAND_FEATURES => { anonymous_account => { westminster => 'anon' } },
 }, sub {
     subtest 'USRN set correctly' => sub {
         my $test_data = FixMyStreet::Script::Reports::send();
