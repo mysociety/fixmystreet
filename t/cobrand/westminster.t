@@ -33,7 +33,7 @@ FixMyStreet::override_config {
 
     subtest 'Login button displayed correctly' => sub {
         $mech->get_ok("/auth");
-        $mech->content_contains("Login with MyWestminster");
+        $mech->content_contains("Sign in with MyWestminster");
     };
 
     subtest 'Reports do not have update form' => sub {

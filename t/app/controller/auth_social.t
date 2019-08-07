@@ -151,7 +151,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             }
 
             if ($state eq 'refused') {
-                $mech->content_contains('Sorry, we could not log you in. Please fill in the form below.');
+                $mech->content_contains('Sorry, we could not log you in.');
                 $mech->not_logged_in_ok;
             } elsif ($state eq 'no email') {
                 $mech->content_contains('We need your email address, please give it below.');
