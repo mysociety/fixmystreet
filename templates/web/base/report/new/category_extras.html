@@ -1,4 +1,4 @@
-[% SET default_list = [] %][% FOR b IN bodies_to_list.values %][% default_list.push(b.name) %][% END %]
+[% SET default_list = [] %][% FOR b IN bodies_to_list.values %][% default_list.push(b.cobrand_name) %][% END %]
 [% DEFAULT list_of_names = default_list %]
 
 <div id="category_meta">
@@ -14,7 +14,7 @@
         <p class="form-section-description">
           [% tprintf(
             loc('Help <strong>%s</strong> resolve your problem quicker, by providing some extra detail. This extra information will not be published online.'),
-            display_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+            list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
           ); %]
         </p>
         [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$category %]
