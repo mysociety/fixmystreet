@@ -15,8 +15,9 @@
   [% END %]
   [% IF c.cobrand.feature('oidc_login') %]
     <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
-        [% tprintf(loc('Login with %s'), c.cobrand.feature('oidc_login').display_name) %]
+        [% tprintf(loc('Sign in with %s'), c.cobrand.feature('oidc_login').display_name) %]
     </button>
+    <small>Receive updates and view your reports</small>
   [% END %]
   [% IF c.config.TWITTER_KEY %]
     <button name="social_sign_in" id="twitter_sign_in" value="twitter" class="btn btn--block btn--social btn--twitter">
@@ -24,11 +25,10 @@
         [% loc('Log in with Twitter') %]
     </button>
   [% END %]
-    <button type="button" class="btn btn--block hidden-nojs js-new-report-user-show">Confirm by email</button>
 [% END %]
 [% IF type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]
     <small id="or">[% loc('or') %]</small>
-    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">[% loc('Report anonymously') %]</button>
+    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">[% loc('Submit report anonymously') %]</button>
     <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
 [% END %]
 </div>
