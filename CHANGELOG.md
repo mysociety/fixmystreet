@@ -25,6 +25,7 @@
         - Hide category extras when duplicate suggestions shown.
         - Hide duplicate suggestions when signing in during reporting.
         - Retain extra data if signing in during reporting.
+        - Have duplicate suggestion and assets coexist better.
     - Front end improvements:
         - Set report title autocomplete to off to prevent email autocompleting
     - Development improvements:

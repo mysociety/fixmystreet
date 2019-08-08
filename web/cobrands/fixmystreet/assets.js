@@ -1001,7 +1001,7 @@ fixmystreet.message_controller = (function() {
             $('#' + stopperId).remove(); // Get rid of any stopper message
             responsibility_off(); // Will also reenable form
         } else {
-            $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
+            $(fixmystreet).trigger('report_new:category_change');
         }
     });
 
