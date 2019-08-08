@@ -230,3 +230,12 @@ ol.big-numbers>li:before {
 .item-list__item--expandable__actions a.btn--primary {
     display: none; // No updates
 }
+
+
+.my-account-buttons--email {
+    display: none; // hide 'change email' link
+}
+
+.my-account-buttons a.change-password {
+    display: none;
+}

@@ -34,7 +34,7 @@ li .my-account-buttons a {
 <ul>
 <li>[% loc('Name:') %] [% c.user.name %]
 <li>[% loc('Email:') %] [% c.user.email OR '-' %]
-    <p class="my-account-buttons">
+    <p class="my-account-buttons my-account-buttons--email">
       [% IF NOT c.user.email %]
         <a href="/auth/change_email">[% loc('Add') %]</a>
       [% ELSIF c.user.email_verified %]
@@ -61,9 +61,9 @@ li .my-account-buttons a {
 
 <p class="my-account-buttons">
   [% IF c.session.oauth.change_password_uri %]
-    <a href="[% c.session.oauth.change_password_uri | html %]">[% loc('Change password') %]</a>
+    <a class="change-password" href="[% c.session.oauth.change_password_uri | html %]">[% loc('Change password') %]</a>
   [% ELSE %]
-    <a href="/auth/change_password">
+    <a class="change-password" href="/auth/change_password">
     [%~ IF c.user.password ~%]
       [% loc('Change password') %]
     [%~ ELSE ~%]
