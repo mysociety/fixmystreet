@@ -440,9 +440,10 @@ $.extend(fixmystreet.set_up, {
         if (data && data.category_extra) {
             if ( $category_meta.length ) {
                 $category_meta.replaceWith( data.category_extra );
+                var $new_category_meta = $('#category_meta');
                 // Preserve any existing values
                 $category_meta.find("[name]").each(function() {
-                    $category_meta.find("[name="+this.name+"]").val(this.value);
+                    $new_category_meta.find("[name="+this.name+"]").val(this.value);
                 });
             } else {
                 $('#js-post-category-messages').prepend( data.category_extra );

@@ -9,6 +9,7 @@ describe('Clicking the map', function() {
     it('allows me to report a new problem', function() {
         cy.url().should('include', '/around');
         cy.get('#map_box').click(200, 200);
+        cy.get('#category_group').select('Flyposting');
         cy.get('[name=title]').type('Title');
         cy.get('[name=detail]').type('Detail');
         cy.get('.js-new-report-user-show').click();

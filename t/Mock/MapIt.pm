@@ -96,8 +96,8 @@ sub dispatch_request {
             }
         }
         my $response = {
-            "63999" => {"parent_area" => 2245, "generation_high" => 25, "all_names" => {}, "id" => 63999, "codes" => {"ons" => "00HYNS", "gss" => "E05008366", "unit_id" => "44025"}, "name" => "Kington", "country" => "E", "type_name" => "Unitary Authority electoral division (UTE)", "generation_low" => 12, "country_name" => "England", "type" => "UTE"},
-            "2245" => {"parent_area" => undef, "generation_high" => 25, "all_names" => {}, "id" => 2245, "codes" => {"ons" => "00HY", "gss" => "E06000054", "unit_id" => "43925"}, "name" => "Wiltshire Council", "country" => "E", "type_name" => "Unitary Authority", "generation_low" => 11, "country_name" => "England", "type" => "UTA"}
+            "153255" => {"parent_area" => 2608, "generation_high" => 36, "all_names" => {}, "id" => 153255, "codes" => {"gss" => "E05012110", "unit_id" => "174450"}, "name" => "Chipping Sodbury & Cotswold Edge", "country" => "E", "type_name" => "Unitary Authority ward (UTW)", "generation_low" => 36, "country_name" => "England", "type" => "UTW"},
+            "2608" => {"parent_area" => undef, "generation_high" => 36, "all_names" => {}, "id" => 2608, "codes" => {"ons" => "00HD", "gss" => "E06000025", "unit_id" => "25559"}, "name" => "South Gloucestershire Council", "country" => "E", "type_name" => "Unitary Authority", "generation_low" => 1, "country_name" => "England", "type" => "UTA"}
         };
         return $self->output($response);
     },

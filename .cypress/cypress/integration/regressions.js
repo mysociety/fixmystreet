@@ -54,7 +54,7 @@ describe('Regression tests', function() {
         cy.get('.content').should('not.contain', 'toddler');
     });
 
-    it.only('has the correct send-to text at all times', function() {
+    it('has the correct send-to text at all times', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');
       cy.visit('/');
@@ -69,6 +69,61 @@ describe('Regression tests', function() {
       cy.get('#map_box').click(200, 200);
       cy.wait('@report-ajax');
       cy.contains(/These will be sent to Northampton Borough Council and also/);
+    });
+
+    it('remembers extra fields when you sign in during reporting', function() {
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6&js=1');
+      cy.get('#map_box').click();
+      cy.wait('@report-ajax');
+      cy.get('[id=category_group]').select('Licensing');
+      cy.get('[id=subcategory_Licensing]').select('Skips');
+      cy.get('[name=title]').type('Title');
+      cy.get('[name=detail]').type('Detail');
+      cy.get('[name=start_date').type('2019-01-01');
+      cy.get('.js-new-report-user-show').click();
+      cy.get('.js-new-report-show-sign-in').should('be.visible').click();
+      cy.get('#form_username_sign_in').type('user@example.org');
+      cy.get('[name=password_sign_in]').type('password');
+      cy.get('[name=password_sign_in]').parents('form').submit();
+      cy.get('#map_sidebar').should('contain', 'check and confirm your details');
+      cy.wait('@report-ajax');
+      cy.get('#form_start_date').should('have.value', '2019-01-01');
+    });
+
+    it('hides everything when duplicate suggestions are shown', function() {
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-hide'); // Server-side setup
+      cy.visit('http://borsetshire.localhost:3001/report/1');
+      cy.contains('Report another problem here').click();
+      cy.wait('@report-ajax');
+      cy.get('[id=category_group]').select('Licensing');
+      cy.get('[id=subcategory_Licensing]').select('Skips');
+      cy.get('.extra-category-questions').should('not.be.visible');
+      cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-hide');
+    });
+
+    it('does not show duplicate suggestions when signing in during reporting', function() {
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.route('/around/nearby*').as('nearby-ajax');
+      cy.visit('http://borsetshire.localhost:3001/report/1');
+      cy.contains('Report another problem here').click();
+      cy.wait('@report-ajax');
+      cy.get('[id=category_group]').select('Potholes');
+      cy.wait('@nearby-ajax');
+      cy.get('.js-hide-duplicate-suggestions:first').should('be.visible').click();
+      cy.get('[name=title]').type('Title');
+      cy.get('[name=detail]').type('Detail');
+      cy.get('.js-new-report-user-show').click();
+      cy.get('.js-new-report-show-sign-in').should('be.visible').click();
+      cy.get('#form_username_sign_in').type('user@example.org');
+      cy.get('[name=password_sign_in]').type('password');
+      cy.get('[name=password_sign_in]').parents('form').submit();
+      cy.get('#map_sidebar').should('contain', 'check and confirm your details');
+      cy.get('#js-duplicate-reports').should('not.exist');
     });
 
 });

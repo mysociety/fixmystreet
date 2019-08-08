@@ -9,7 +9,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2245, 'Wiltshire Council');
+my $body = $mech->create_body_ok(2608, 'Borsetshire Council');
 $body->update({
     endpoint => 'http://example.com/open311',
     jurisdiction => 'mySociety',

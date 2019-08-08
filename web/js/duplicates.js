@@ -64,6 +64,7 @@
         $('#js-duplicate-reports').hide().removeClass('hidden').slideDown();
         if ( $('#problem_form').length ) {
             $('.js-hide-if-invalid-category').slideUp();
+            $('.js-hide-if-invalid-category_extras').slideUp();
         }
 
         // Highlight map pin when hovering associated list item.
@@ -137,6 +138,7 @@
         });
         if ($('#problem_form').length && take_effect()) {
             $('.js-hide-if-invalid-category').slideDown();
+            $('.js-hide-if-invalid-category_extras').slideDown();
         }
     }
 
