@@ -145,4 +145,12 @@ sub _fetch_features_url {
     return $cfg->{proxy_url} . "?" . $uri->as_string;
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    # Westminster don't want TfL categories on their cobrand
+    # XXX This still shows "These will be sent to TfL or Westminster City Council"
+    # on /report/new before a category is selected...
+    return $rs->search( { 'body.name' => 'Westminster City Council' }, { join => 'body' });
+}
+
 1;

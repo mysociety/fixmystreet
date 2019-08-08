@@ -14,7 +14,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2504, 'Westminster Council');
+my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report');
 
