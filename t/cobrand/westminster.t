@@ -149,4 +149,20 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'westminster',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'No reporter alert created' => sub {
+        my $user = $mech->log_in_ok('test@example.org');
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => 'SW1A1AA' } }, "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok( { with_fields => {
+            title => 'Title', detail => 'Detail', category => 'Abandoned bike', name => 'Test Example',
+        } }, 'submitted okay' );
+        is $user->alerts->count, 0;
+    };
+};
+
 done_testing();

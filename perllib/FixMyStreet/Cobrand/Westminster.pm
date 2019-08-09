@@ -43,6 +43,8 @@ sub updates_disallowed {
     return ( $staff || $superuser ) ? 0 : 1;
  }
 
+sub suppress_reporter_alerts { 1 }
+
 sub social_auth_enabled {
     my $self = shift;
 

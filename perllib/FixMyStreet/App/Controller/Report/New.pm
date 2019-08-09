@@ -1554,6 +1554,7 @@ sub create_reporter_alert : Private {
     my ( $self, $c ) = @_;
 
     return if $c->stash->{no_reporter_alert};
+    return if $c->cobrand->call_hook('suppress_reporter_alerts');
 
     my $problem = $c->stash->{report};
     my $alert = $c->model('DB::Alert')->find_or_create( {
