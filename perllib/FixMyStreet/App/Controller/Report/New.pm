@@ -104,6 +104,7 @@ sub report_new : Path : Args(0) {
     $c->forward('setup_report_extra_fields');
     $c->forward('generate_map');
     $c->forward('check_for_category');
+    $c->forward('setup_report_extras');
 
     # deal with the user and report and check both are happy
 
@@ -1073,6 +1074,14 @@ sub contacts_to_bodies : Private {
     [ map { $_->body } @contacts ];
 }
 
+sub setup_report_extras : Private {
+    my ($self, $c) = @_;
+
+    # report_meta is used by the templates to fill in the extra field values
+    my $extra = $c->stash->{report}->get_extra_fields;
+    $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @$extra };
+}
+
 sub set_report_extras : Private {
     my ($self, $c, $contacts, $param_prefix) = @_;
 
@@ -1458,7 +1467,7 @@ sub generate_map : Private {
 sub check_for_category : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{category} = $c->get_param('category');
+    $c->stash->{category} = $c->get_param('category') || $c->stash->{report}->category;
 
     return 1;
 }
