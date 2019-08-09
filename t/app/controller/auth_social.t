@@ -13,7 +13,22 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my ($report) = $mech->create_problems_for_body(1, '2345', 'Test');
+my $body = $mech->create_body_ok(2504, 'Westminster Council');
+
+my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test');
+
+my $contact = $mech->create_contact_ok(
+    body_id => $body->id, category => 'Damaged bin', email => 'BIN',
+    extra => [
+        { code => 'bin_type', description => 'Type of bin', required => 'True' },
+        { code => 'bin_service', description => 'Service needed', required => 'False' },
+    ]
+);
+# Two options, incidentally, so that the template "Only one option, select it"
+# code doesn't kick in and make the tests pass
+my $contact2 = $mech->create_contact_ok(
+    body_id => $body->id, category => 'Whatever', email => 'WHATEVER',
+);
 
 FixMyStreet::override_config {
     FACEBOOK_APP_ID => 'facebook-app-id',
@@ -62,9 +77,13 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->get_ok('/');
                 $mech->submit_form_ok( { with_fields => { pc => 'SW1A1AA' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
-                $fields = {
+                $mech->submit_form(with_fields => {
+                    category => 'Damaged bin',
                     title => 'Test title',
                     detail => 'Test detail',
+                });
+                $fields = {
+                    bin_type => 'Salt bin',
                 };
             } else {
                 $mech->get_ok('/report/' . $report->id);
@@ -91,6 +110,7 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             # Check we're showing the right form, regardless of what came back
             if ($page eq 'report') {
                 $mech->content_contains('/report/new');
+                $mech->content_contains('Salt bin');
             } elsif ($page eq 'update') {
                 $mech->content_contains('/report/update');
             }
@@ -170,9 +190,13 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->get_ok('/');
                 $mech->submit_form_ok( { with_fields => { pc => 'SW1A1AA' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
-                $fields = {
+                $mech->submit_form(with_fields => {
+                    category => 'Damaged bin',
                     title => 'Test title',
                     detail => 'Test detail',
+                });
+                $fields = {
+                    bin_type => 'Salt bin',
                 };
             } else {
                 $mech->get_ok('/report/' . $report->id);
@@ -199,6 +223,7 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
             # Check we're showing the right form, regardless of what came back
             if ($page eq 'report') {
                 $mech->content_contains('/report/new');
+                $mech->content_contains('Salt bin');
             } elsif ($page eq 'update') {
                 $mech->content_contains('/report/update');
             }
