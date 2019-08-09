@@ -45,6 +45,8 @@ sub updates_disallowed {
 
 sub suppress_reporter_alerts { 1 }
 
+sub report_age { '3 months' }
+
 sub social_auth_enabled {
     my $self = shift;
 
