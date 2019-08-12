@@ -239,7 +239,16 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
 
     # After a password reset on the OIDC endpoint the user isn't properly logged
     # in, so redirect them to the usual OIDC login process.
-    $c->detach('oidc_sign_in', []) if $c->get_param('state') eq 'password_reset';
+    if ( $c->get_param('state') eq 'password_reset' ) {
+        # The user may have reset their password as part of the sign-in-during-report
+        # process, so preserve their report and redirect them to the right place
+        # if that happened.
+        if ( $c->session->{oauth} ) {
+            $c->stash->{detach_to} = $c->session->{oauth}{detach_to};
+            $c->stash->{detach_args} = $c->session->{oauth}{detach_args};
+        }
+        $c->detach('oidc_sign_in', []);
+    }
 
     # The only other valid state param is 'login' at this point.
     $c->detach('/page_error_400_bad_request', []) unless $c->get_param('state') eq 'login';
