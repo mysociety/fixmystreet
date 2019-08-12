@@ -11,6 +11,20 @@ $cobrand->mock('lookup_site_code', sub {
     return "My USRN" if $row->latitude == 51.501009;
 });
 
+my $body = $mech->create_body_ok(2504, 'Westminster City Council', {
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
+my $superuser = $mech->create_user_ok(
+    'superuser@example.com',
+    name => 'Test Superuser',
+    is_superuser => 1
+);
+my $staff_user = $mech->create_user_ok(
+    'westminster@example.com',
+    name => 'Test User',
+    from_body => $body
+);
+my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title');
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'westminster',
     MAPIT_URL => 'http://mapit.uk/',
@@ -37,10 +51,37 @@ FixMyStreet::override_config {
     };
 
     subtest 'Reports do not have update form' => sub {
-        my ($report) = $mech->create_problems_for_body(1, 2504, 'Title');
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks('Provide an update');
-    }
+    };
+};
+
+subtest 'Reports have an update form for superusers' => sub {
+    # Westminster cobrand disables email signin, so we have to
+    # login and *then* set the cobrand.
+    $mech->log_in_ok( $superuser->email );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'westminster',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Provide an update');
+    };
+
+    $mech->log_out_ok();
+};
+
+subtest 'Reports have an update form for staff users' => sub {
+    $mech->log_in_ok( $staff_user->email );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'westminster',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Provide an update');
+    };
+    $mech->log_out_ok();
 };
 
 for (
@@ -87,10 +128,8 @@ for (
 }
 
 FixMyStreet::DB->resultset('Problem')->delete_all;
-my $body = $mech->create_body_ok(2504, 'Westminster City Council', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned bike', email => "BIKE");
-my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bike', {
+($report) = $mech->create_problems_for_body(1, $body->id, 'Bike', {
     category => "Abandoned bike", cobrand => 'westminster',
     latitude => 51.501009, longitude => -0.141588, areas => '2504',
 });
