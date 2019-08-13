@@ -14,6 +14,7 @@ my $params = {
     api_key => 'KEY',
     endpoint => 'endpoint',
     jurisdiction => 'home',
+    can_be_devolved => 1,
 };
 my $isleofwight = $mech->create_body_ok(2636, 'Isle of Wight Council', $params);
 my $contact = $mech->create_contact_ok(
@@ -32,12 +33,19 @@ $contact->set_extra_fields( ( {
 } ) );
 $contact->update;
 
-my $user = $mech->create_user_ok('user@example.org');
+my $user = $mech->create_user_ok('user@example.org', name => 'Test User');
 my $iow_user = $mech->create_user_ok('iow_user@example.org', from_body => $isleofwight);
 $iow_user->user_body_permissions->create({
     body => $isleofwight,
     permission_type => 'moderate',
 });
+
+my $contact2 = $mech->create_contact_ok(
+    body_id => $isleofwight->id,
+    category => 'Roads',
+    email => 'roads@example.org',
+    send_method => 'Triage',
+);
 
 my @reports = $mech->create_problems_for_body(1, $isleofwight->id, 'An Isle of wight report', {
     confirmed => '2019-05-25 09:00',
@@ -336,6 +344,47 @@ subtest "check category extra uses correct name" => sub {
     };
 
     like $extra_details->{category_extra}, qr/Island Roads/, 'correct name in category extras';
+};
+
+subtest "reports are marked for triage upon submission" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+    $mech->log_in_ok($user->email);
+    $mech->get_ok('/around');
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+        ALLOWED_COBRANDS => [ 'isleofwight' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'PO30 5XJ', } },
+            "submit location" );
+
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo1        => '',
+                    category      => 'Roads',
+                }
+            },
+            "submit good details"
+        );
+
+        my $report = $user->problems->first;
+        ok $report, "Found the report";
+        is $report->state, 'confirmed', 'report confirmed';
+
+        FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+        is $report->state, 'for triage', 'report marked as for triage';
+        ok $report->whensent, 'report marked as sent';
+    };
 };
 
 done_testing();
