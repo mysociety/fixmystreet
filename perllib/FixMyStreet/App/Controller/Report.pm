@@ -86,7 +86,7 @@ sub display :PathPart('') :Chained('id') :Args(0) {
     $c->forward( 'format_problem_for_display' );
 
     my $permissions = $c->stash->{_permissions} ||= $c->forward( 'check_has_permission_to',
-        [ qw/report_inspect report_edit_category report_edit_priority report_mark_private/ ] );
+        [ qw/report_inspect report_edit_category report_edit_priority report_mark_private triage/ ] );
     if (any { $_ } values %$permissions) {
         $c->stash->{template} = 'report/inspect.html';
         $c->forward('inspect');
@@ -396,7 +396,14 @@ sub inspect : Private {
 
     $c->stash->{max_detailed_info_length} = $c->cobrand->max_detailed_info_length;
 
-    if ( $c->get_param('save') ) {
+    if ( $c->get_param('triage') ) {
+        $c->forward('/auth/check_csrf_token');
+        $c->forward('/admin/triage/update');
+        my $redirect_uri = $c->uri_for( '/admin/triage' );
+        $c->log->debug( "Redirecting to: " . $redirect_uri );
+        $c->res->redirect( $redirect_uri );
+    }
+    elsif ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
 
         my $valid = 1;

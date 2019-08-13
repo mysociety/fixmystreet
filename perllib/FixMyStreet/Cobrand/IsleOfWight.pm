@@ -47,15 +47,6 @@ sub updates_disallowed {
 
 sub get_geocoder { 'OSM' }
 
-sub open311_get_update_munging {
-    my ($self, $comment) = @_;
-
-    # If we've received an update via Open311 that's closed
-    # or fixed the report, also close it to updates.
-    $comment->problem->set_extra_metadata(closed_updates => 1)
-        if !$comment->problem->is_open;
-}
-
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
@@ -89,7 +80,51 @@ sub open311_munge_update_params {
         $params->{description} = "[The customer indicated that this issue had been fixed]\n\n" . $params->{description};
     }
 
+    if ( $comment->get_extra_metadata('triage_report') ) {
+        $params->{description} = "Triaged by " . $comment->user->name . ' (' . $comment->user->email . "). " . $params->{description};
+    }
+
     $params->{description} = "FMS-Update: " . $params->{description};
 }
 
+sub munge_category_list {
+    my ($self, $options, $contacts, $extras) = @_;
+
+    my $user = $self->{c}->user;
+    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my $b = $bodies{'Isle of Wight Council'};
+
+    if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
+        return;
+    }
+
+    @$contacts = grep { $_->send_method eq 'Triage' } @$contacts;
+    my $seen = { map { $_->category => 1 } @$contacts };
+    @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
+}
+
+sub open311_get_update_munging {
+    my ($self, $comment) = @_;
+
+    # If we've received an update via Open311 that's closed
+    # or fixed the report, also close it to updates.
+    $comment->problem->set_extra_metadata(closed_updates => 1)
+        if !$comment->problem->is_open;
+}
+
+sub admin_pages {
+    my $self = shift;
+    my $pages = $self->next::method();
+    $pages->{triage} = [ undef, undef ];
+    return $pages;
+}
+
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+    $perms->{Problems}->{triage} = "Triage reports";
+
+    return $perms;
+}
 1;

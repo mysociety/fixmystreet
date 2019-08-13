@@ -1,0 +1,56 @@
+      <div class="inspect-section">
+        <p style="float: right">
+          <label for="non_public">[% loc('Private') %]</label>
+          <input type="checkbox" id="non_public" name="non_public" value="1"[% ' checked' IF problem.non_public %]>
+        </p>
+        <p>
+          <strong>[% loc('Report ID:') %]</strong>
+          <span class="js-report-id">[% problem.id %]</span>
+          [% IF c.user_exists AND c.cobrand.admin_allow_user(c.user) AND c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
+            (<a href="[% c.uri_for_action( "admin/report_edit", problem.id ) %]">[% loc('admin') %]</a>)
+          [% END %]
+        </p>
+        [% IF permissions.report_inspect AND problem.user.phone %]
+          <p>
+            <strong>[% loc('Phone Reporter:') %]</strong>
+            <a href="tel:[% problem.user.phone | html %]">[% problem.user.phone_display | html %]</a>
+          </p>
+        [% END %]
+        <p>
+          [% SET local_coords = problem.local_coords; %]
+          [% IF local_coords %]
+              <strong>[% loc('Easting/Northing:') %]</strong>
+              <span id="problem_easting">[% local_coords.0 %]</span>,
+              <span id="problem_northing">[% local_coords.1 %]</span>
+          [% ELSE %]
+              <strong>[% loc('Latitude/Longitude:') %]</strong>
+              <span id="problem_latitude">[% problem.latitude %]</span>,
+              <span id="problem_longitude">[% problem.longitude %]</span>
+          [% END %]
+          <input type="hidden" name="longitude" value="[% problem.longitude %]">
+          <input type="hidden" name="latitude" value="[% problem.latitude %]">
+        </p>
+        [% IF problem.nearest_address() %]
+        <p>
+            <strong>[% loc('Nearest calculated address:') %]</strong>
+            [% problem.nearest_address() %]
+        </p>
+        [% END %]
+        <p>
+          <a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
+        </p>
+        [% UNLESS no_relocate %]
+        <p>
+          <a href="#" class="btn btn--block btn--geolocate">[% loc('Set to my current location') %]</a>
+        </p>
+        [% END %]
+        [% IF permissions.report_reject %]
+          [% TRY %]
+            [% INCLUDE 'report/_inspect_reject_button.html' %]
+          [% CATCH file %]
+            <p>
+              <a href="[% c.uri_for( '/contact', { id => problem.id, reject => 1 } ) %]" class="btn btn--block">[% loc('Reject report') %]</a>
+            </p>
+          [% END %]
+        [% END %]
+      </div>

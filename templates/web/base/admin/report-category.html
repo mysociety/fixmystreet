@@ -1,4 +1,7 @@
-<select class="form-control" name="category" id="category">
+[%~ IF NOT select_name %]
+    [%~ select_name = 'category' %]
+[%~ END %]
+<select class="form-control" name="[% select_name %]" id="[% select_name %]">
   [% IF NOT problem.category OR NOT categories_hash.${problem.category} %]
     <optgroup label="[% loc('Existing category') %]">
         <option selected value="[% problem.category | html %]">[% (problem.category_display OR '-') | html %]</option>

@@ -212,7 +212,6 @@ subtest "fixing passes along the correct message" => sub {
     };
 };
 
-
 subtest 'Check special Open311 request handling', sub {
     my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { category => 'Potholes', latitude => 50.7108, longitude => -1.29573 });
     $p->set_extra_fields({ name => 'urgent', value => 'no'});
@@ -235,6 +234,44 @@ subtest 'Check special Open311 request handling', sub {
     my $req = $test_data->{test_req_used};
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[urgent]'), undef, 'no urgent param sent';
+};
+
+subtest "triaging a report includes user in message" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'isleofwight',
+    }, sub {
+        my $test_res = HTTP::Response->new();
+        $test_res->code(200);
+        $test_res->message('OK');
+        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>');
+
+        my $o = Open311->new(
+            fixmystreet_body => $isleofwight,
+            test_mode => 1,
+            test_get_returns => { 'servicerequestupdates.xml' => $test_res },
+        );
+
+        my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { external_id => 1 });
+
+        my $c = FixMyStreet::App->model('DB::Comment')->create({
+            problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
+            problem_state => 'confirmed', state => 'confirmed', mark_fixed => 0,
+            confirmed => DateTime->now(),
+        });
+        $c->set_extra_metadata('triage_report', 1);
+        $c->update;
+
+        my $id = $o->post_service_request_update($c);
+        is $id, 248, 'correct update ID returned';
+        my $cgi = CGI::Simple->new($o->test_req_used->content);
+        my $name = $p->user->name . ' \(' . $p->user->email . '\)';
+        like $cgi->param('description'), qr/^FMS-Update:/, 'FMS update prefix included';
+        like $cgi->param('description'), qr/Triaged by $name/, 'Triage user details included';
+
+        $p->comments->delete;
+        $p->delete;
+    };
 };
 
 my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, '', { cobrand => 'isleofwight' });

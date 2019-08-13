@@ -1,0 +1,53 @@
+[% select_category = BLOCK %]
+  [% IF filter_categories.size %]
+    <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
+        [% FOR cat IN filter_categories %]
+            <option value="[% cat.category | html %]"[% ' selected' IF filter_category.${cat.category} %]>
+                [% cat.category_display | html %]
+                [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
+            </option>
+        [% END %]
+    </select>
+  [% ELSE %]
+    [% loc('Everything') %]
+  [% END %]
+[% END %]
+
+<div class="report-list-filters-wrapper">
+
+[% IF use_form_wrapper %]
+    <form method="get" action="">
+[% END %]
+
+        <p class="report-list-filters">
+            [% tprintf(loc('<label for="statuses">Show</label> %s reports <label for="filter_categories">about</label> %s', "The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories"), 'untriaged', select_category) %]
+            <input type="submit" name="filter_update" value="[% loc('Go') %]">
+        </p>
+
+        <p class="report-list-filters">
+            <label for="sort">[% loc('Sort by') %]</label>
+            <select class="form-control" name="sort" id="sort">
+              [% IF shortlist %]
+                <option value="shortlist"[% ' selected' IF sort_key == 'shortlist' %]>[% loc('Manual order') %]</option>
+              [% END %]
+                <option value="created-desc"[% ' selected' IF sort_key == 'created-desc' %]>[% loc('Newest') %]</option>
+                <option value="created-asc"[% ' selected' IF sort_key == 'created-asc' %]>[% loc('Oldest') %]</option>
+                <option value="updated-desc"[% ' selected' IF sort_key == 'updated-desc' %]>[% loc('Recently updated') %]</option>
+                <option value="updated-asc"[% ' selected' IF sort_key == 'updated-asc' %]>[% loc('Least recently updated') %]</option>
+                <option value="comments-desc"[% ' selected' IF sort_key == 'comments-desc' %]>[% loc('Most commented') %]</option>
+            </select>
+            <input type="submit" name="filter_update" value="[% loc('Go') %]">
+        </p>
+        [% IF page == 'around' %]
+        <p id="show_old_reports_wrapper" class="report-list-filters[% ' hidden' UNLESS num_old_reports > 0 %]">
+            <label for="show_old_reports">[% loc('Show older reports') %]</label>
+            <input type="checkbox" name="show_old_reports" id="show_old_reports" value="1"[% ' checked' IF show_old_reports %]>
+            <input type="submit" name="filter_update" value="[% loc('Go') %]">
+        </p>
+        [% END %]
+
+[% IF use_form_wrapper %]
+    </form>
+[% END %]
+
+</div>

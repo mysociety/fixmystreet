@@ -1,0 +1,42 @@
+[%
+
+email_summary = "Thanks for logging your report";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+  [% IF report.state == 'for triage' %]
+  <p style="[% p_style %]">Thank you for submitting your report to FixMyStreet, it will be submitted to Island Roads for review.</p>
+  [% ELSE %]
+  <p style="[% p_style %]">Thank you, your enquiry has been received by Island Roads and appropriate action will be taken.</p>
+
+  <p style="[% p_style %]">We don't routinely contact customers regarding their enquiries, unless we have a specific query about
+      the issue.  Any status updates for the issue can be tracked via FixMyStreet, if you contact us again about this issue,
+      please quote your 8-digit reference number.</p>
+
+  <p style="[% p_style %]">Thank you for submitting your enquiry to us via FixMyStreet.</p>
+  [% END %]
+
+[% IF cobrand.is_council && !cobrand.owns_problem( report ) %]
+<p style="[% p_style %]">Please note that [% cobrand.council_name %] is not responsible for this type
+of report, so it will instead be sent to [% report.body %].</p>
+[% ELSE %]
+[% TRY %][% INCLUDE '_council_reference.html' problem=report %][% CATCH file %][% END %]
+[% END %]
+  <p style="margin: 20px auto; text-align: center">
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.url %]">View my report</a>
+  </p>
+  [% end_padded_box %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

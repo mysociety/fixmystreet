@@ -97,16 +97,25 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     })
 }));
 
+function not_found_msg_update() {
+    $('.category_meta_message').html('Please select an item or a road/pavement/path on the map &raquo;');
+    $('.category_meta_message').removeClass('meta-highlight');
+    $("input[name=asset_details]").val('');
+}
+
 function found_item(layer, asset) {
   var id = asset.attributes.central_asset_id || '';
   if (id !== '') {
       var attrib = asset.attributes;
       var asset_name = attrib.feature_type_name + '; ' + attrib.site_name + '; ' + attrib.feature_location;
       $('.category_meta_message').html('You have selected ' + asset_name);
+      $('.category_meta_message').addClass('meta-highlight');
+      $("input[name=asset_details]").val(asset_name);
   } else {
-      $('.category_meta_message').html('Please select an item or a road/pavement/path on the map &raquo;');
+      not_found_msg_update();
   }
 }
+
 
 var point_asset_defaults = $.extend(true, {}, defaults, {
     snap_threshold: 5,
@@ -118,7 +127,7 @@ var point_asset_defaults = $.extend(true, {}, defaults, {
           found_item(this, asset);
         },
         asset_not_found: function() {
-            $('.category_meta_message').html('Please select an item or a road/pavement/path on the map &raquo;');
+          not_found_msg_update();
         }
     }
 
@@ -145,7 +154,7 @@ var line_asset_defaults = $.extend(true, {}, defaults, {
           if ( fixmystreet.assets.selectedFeature() ) {
              return;
           }
-          $('.category_meta_message').html('Please select an item or a road/pavement/path on the map &raquo;');
+          not_found_msg_update();
         }
     }
 });
