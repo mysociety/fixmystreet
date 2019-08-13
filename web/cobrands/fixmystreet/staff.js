@@ -261,19 +261,22 @@ fixmystreet.staff_set_up = {
 
     if ('geolocation' in navigator) {
         var el = document.querySelector('.btn--geolocate');
-        fixmystreet.geolocate(el, function(pos) {
-            var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
-            var bng = latlon.clone().transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
-            );
-            $("#problem_northing").text(bng.lat.toFixed(1));
-            $("#problem_easting").text(bng.lon.toFixed(1));
-            $("#problem_latitude").text(latlon.lat.toFixed(6));
-            $("#problem_longitude").text(latlon.lon.toFixed(6));
-            $inspect_form.find("input[name=latitude]").val(latlon.lat);
-            $inspect_form.find("input[name=longitude]").val(latlon.lon);
-        });
+        // triage pages may not show geolocation button
+        if (el) {
+            fixmystreet.geolocate(el, function(pos) {
+                var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
+                var bng = latlon.clone().transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
+                );
+                $("#problem_northing").text(bng.lat.toFixed(1));
+                $("#problem_easting").text(bng.lon.toFixed(1));
+                $("#problem_latitude").text(latlon.lat.toFixed(6));
+                $("#problem_longitude").text(latlon.lon.toFixed(6));
+                $inspect_form.find("input[name=latitude]").val(latlon.lat);
+                $inspect_form.find("input[name=longitude]").val(latlon.lon);
+            });
+        }
     }
 
     // Make the "Provide an update" form toggleable, hidden by default.

@@ -1,0 +1,42 @@
+[% SET body_name = body.name %]
+[% IF c.cobrand.moniker == 'hounslow' %]
+  [% SET body_name = 'Hounslow Highways' %]
+[% ELSIF c.cobrand.moniker == 'isleofwight' %]
+  [% SET body_name = 'Island Roads' %]
+[% END %]
+
+[%
+    PROCESS "report/photo-js.html";
+    PROCESS "maps/${map.type}.html";
+    SET bodyclass = 'mappage';
+    INCLUDE 'header.html',
+        title = 'Awaiting triage'
+        rss = [ tprintf(loc('Problems within %s, %s', "First %s is the body name, second %s the site name"), name, site_name), rss_url ]
+%]
+
+[% map_html %]
+
+</div>
+<div id="map_sidebar">
+    <div id="side">
+
+    <h1 id="reports_heading">
+        Awaiting triage
+    </h1>
+
+<section class="full-width">
+[% INCLUDE "admin/triage/_list-filters.html", use_form_wrapper = 1 %]
+<div class="js-pagination">
+[% INCLUDE 'pagination.html', param = 'p' %]
+</div>
+<div id="js-reports-list">
+    [% INCLUDE 'reports/_problem-list.html' %]
+</div>
+<div class="js-pagination">
+[% INCLUDE 'pagination.html', param = 'p' %]
+</div>
+</section>
+
+    </div>
+</div>
+[% INCLUDE 'footer.html' %]

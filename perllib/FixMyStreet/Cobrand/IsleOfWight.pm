@@ -80,7 +80,27 @@ sub open311_munge_update_params {
         $params->{description} = "[The customer indicated that this issue had been fixed]\n\n" . $params->{description};
     }
 
+    if ( $comment->get_extra_metadata('triage_report') ) {
+        $params->{description} = "Triaged by " . $comment->user->name . ' (' . $comment->user->email . "). " . $params->{description};
+    }
+
     $params->{description} = "FMS-Update: " . $params->{description};
+}
+
+sub munge_category_list {
+    my ($self, $options, $contacts, $extras) = @_;
+
+    my $user = $self->{c}->user;
+    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my $b = $bodies{'Isle of Wight Council'};
+
+    if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
+        return;
+    }
+
+    @$contacts = grep { $_->send_method eq 'Triage' } @$contacts;
+    my $seen = { map { $_->category => 1 } @$contacts };
+    @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
 }
 
 sub open311_get_update_munging {
@@ -92,4 +112,19 @@ sub open311_get_update_munging {
         if !$comment->problem->is_open;
 }
 
+sub admin_pages {
+    my $self = shift;
+    my $pages = $self->next::method();
+    $pages->{triage} = [ undef, undef ];
+    return $pages;
+}
+
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+    $perms->{Problems}->{triage} = "Triage reports";
+
+    return $perms;
+}
 1;

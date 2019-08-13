@@ -678,6 +678,9 @@ sub categories_for_point : Private {
     shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
 
     $c->stash->{categories_hash} = { map { $_->category => 1 } @{$c->stash->{category_options}} };
+
+    $c->forward('/admin/triage/setup_categories');
+
 }
 
 sub alerts_for_report : Private {

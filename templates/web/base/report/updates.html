@@ -6,6 +6,9 @@
   [%- END %]
   [%- NEXT %]
 [%- END %]
+[%- IF update.get_extra_metadata('triage_report') == 1 AND ( NOT c.user OR ( NOT c.user.from_body AND NOT c.user.is_superuser ) ) %]
+    [%- NEXT %]
+[%- END %]
 [% INCLUDE 'report/update.html' %]
 [% END %]
 

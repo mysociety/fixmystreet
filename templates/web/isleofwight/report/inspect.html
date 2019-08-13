@@ -1,0 +1,10 @@
+[%
+  SET bodyclass = 'mappage with-actions';
+  SET two_column_sidebar = 1;
+  IF problem.state == 'for triage';
+      PROCESS 'admin/triage/_inspect.html';
+  ELSE;
+      PROCESS 'report/_inspect.html';
+  END;
+  INCLUDE 'report/display.html'
+%]

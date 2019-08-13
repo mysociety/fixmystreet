@@ -1,0 +1,14 @@
+[% IF NOT public_update_defaulted.defined %]
+    [% public_update_defaulted = 1 %]
+[% END %]
+          <p>
+            <label class="label-containing-checkbox">
+              <input type="checkbox" name="include_update" value="1" class="js-toggle-public-update"[% ' checked' IF public_update_defaulted %]>
+              [% loc('Save with a public update') %]
+            </label>
+          </p>
+          <p>
+            <label for="public_update">[% loc('Public update:') %]</label>
+            [% INCLUDE 'admin/response_templates_select.html' for='public_update' %]
+            <textarea rows="2" name="public_update" id="public_update" class="form-control">[% public_update | html %]</textarea>
+          </p>

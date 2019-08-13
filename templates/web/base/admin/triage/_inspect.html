@@ -1,0 +1,77 @@
+[% BLOCK category_list %]
+<select class="form-control" name="[% field_name %]" id="[% field_name %]">
+  [% IF category_options.size %]
+        [%~ IF category_groups.size ~%]
+            [%~ FOREACH group IN category_groups ~%]
+                [% IF group.name %]<optgroup label="[% group.name %]">[% END %]
+                [% group_select = 0 %]
+                [% selected = 0 %]
+                [%~ FOREACH cat_op IN group.categories ~%]
+                    [% IF group_select == 0 AND problem.category == group.name %]
+                        [% selected = 1; group_select = 1 %]
+                    [% END %]
+                    <option value="[% cat_op.category | html %]"[% ' selected' IF selected OR problem.category == cat_op.category %]>[% cat_op.category_display | html %] ([% cat_op.email | html %])</option>
+                    [% selected = 0 %]
+                [%~ END ~%]
+                [% IF group.name %]</optgroup>[% END %]
+            [%~ END =%]
+        [% ELSE %]
+              [% FOREACH cat IN category_options %]
+                <option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display | html %]</option>
+              [% END %]
+      [% END %]
+  [% END %]
+</select>
+[% END %]
+
+[% permissions = c.user.permissions(problem) %]
+[% second_column = BLOCK -%]
+  <div id="side-inspect">
+
+    <h2 class="inspect-form-heading">[% loc('Inspect report') %]</h2>
+
+    [% INCLUDE 'errors.html' %]
+
+    <form name="report_inspect_form" id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id ) %]" class="validate">
+
+    [% INCLUDE 'report/inspect/information.html' no_relocate=1 %]
+
+    [% IF permissions.report_edit_category OR permissions.report_inspect OR permissions.triage %]
+      <div class="inspect-section">
+        <p>
+            <strong>Holding category:</strong> [% problem.category %]
+        </p>
+
+        <p>
+          <label for="category">CONFIRM Subject</label>
+          [% PROCESS category_list category_groups=end_groups field_name="category" categories_hash=end_categories category_options=end_options %]
+        </p>
+
+      </div>
+    [% END %]
+
+      <div class="inspect-section">
+          [%- extra_fields = problem.get_extra_fields -%]
+          [% FOR field IN extra_fields %]
+          [% NEXT IF field.name == 'urgent' %]
+          <p>
+              <label for="[% field.name %]">[% field.description %]</label>
+              <input class="form-control" name="[% field.name %]" type="text" value="[% field.value | html %]" disabled>
+          </p>
+          [% END %]
+
+        [% IF permissions.report_inspect OR permissions.triage %]
+          [% INCLUDE 'report/inspect/public_update.html' public_update_defaulted=0 %]
+        [% END %]
+
+        <p>
+          <input type="hidden" name="token" value="[% csrf_token %]" />
+          <input class="btn btn-primary" type="submit" value="[% loc('Save changes') %]" data-value-original="[% loc('Save changes') %]" data-value-duplicate="[% loc('Save + close as duplicate') %]" name="save" />
+        </p>
+      </div>
+
+      <input type="hidden" name="js" value="">
+      <input type="hidden" name="triage" value="1">
+    </form>
+  </div>
+[%- END %]
