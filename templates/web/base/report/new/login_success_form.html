@@ -13,6 +13,7 @@
       [% ELSE %]
         [% PROCESS "report/form/user_loggedout.html" type='report' object=report %]
       [% END %]
-        [% PROCESS 'report/new/form_report.html' %]
+      [% PROCESS 'report/new/form_report.html' %]
+      <input class="btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
     </div>
 </fieldset>
