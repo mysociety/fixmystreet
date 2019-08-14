@@ -606,6 +606,134 @@ for my $test (
         ',
     },
     {
+        desc => 'check protected meta data not overwritten',
+        has_meta => 1,
+        end_meta => [ {
+                variable => 'true',
+                code => 'type',
+                datatype => 'string',
+                required => 'true',
+                datatype_description => 'Bin type',
+                order => 1,
+                description => 'Bin type',
+                protected => 'true'
+
+        } ],
+        orig_meta => [ {
+                variable => 'true',
+                code => 'type',
+                datatype => 'string',
+                required => 'true',
+                datatype_description => 'Bin type',
+                order => 1,
+                description => 'Bin type',
+                protected => 'true'
+
+        } ],
+        meta_xml => '<?xml version="1.0" encoding="utf-8"?>
+    <service_definition>
+        <service_code>100</service_code>
+        <attributes>
+            <attribute>
+                <variable>true</variable>
+                <code>type</code>
+                <datatype>string</datatype>
+                <required>true</required>
+                <datatype_description>Type of bin</datatype_description>
+                <order>1</order>
+                <description>Type of bin</description>
+            </attribute>
+        </attributes>
+    </service_definition>
+        ',
+    },
+    {
+        desc => 'check protected meta data retained',
+        has_meta => 1,
+        end_meta => [
+            {
+                variable => 'true',
+                code => 'type2',
+                datatype => 'string',
+                required => 'true',
+                datatype_description => 'Type of bin',
+                order => 1,
+                description => 'Type of bin',
+
+            },
+            {
+                variable => 'true',
+                code => 'type',
+                datatype => 'string',
+                required => 'true',
+                datatype_description => 'Number of bin',
+                order => 1,
+                description => 'Number of bin',
+                protected => 'true'
+            },
+        ],
+        orig_meta => [ {
+                variable => 'true',
+                code => 'type',
+                datatype => 'string',
+                required => 'true',
+                datatype_description => 'Number of bin',
+                order => 1,
+                description => 'Number of bin',
+                protected => 'true'
+
+        } ],
+        meta_xml => '<?xml version="1.0" encoding="utf-8"?>
+    <service_definition>
+        <service_code>100</service_code>
+        <attributes>
+            <attribute>
+                <variable>true</variable>
+                <code>type2</code>
+                <datatype>string</datatype>
+                <required>true</required>
+                <datatype_description>Type of bin</datatype_description>
+                <order>1</order>
+                <description>Type of bin</description>
+            </attribute>
+        </attributes>
+    </service_definition>
+        ',
+    },
+    {
+        desc => 'check protected meta data retained on removal of all Open311 extras',
+        end_meta => [
+            {
+                variable => 'true',
+                code => 'type',
+                datatype => 'string',
+                required => 'true',
+                datatype_description => 'Number of bin',
+                order => 1,
+                description => 'Number of bin',
+                protected => 'true'
+            },
+        ],
+        orig_meta => [ {
+                variable => 'true',
+                code => 'type',
+                datatype => 'string',
+                required => 'true',
+                datatype_description => 'Number of bin',
+                order => 1,
+                description => 'Number of bin',
+                protected => 'true'
+
+        } ],
+        meta_xml => '<?xml version="1.0" encoding="utf-8"?>
+    <service_definition>
+        <service_code>100</service_code>
+        <attributes>
+        </attributes>
+    </service_definition>
+        ',
+    },
+    {
         desc => 'check empty meta data handled',
         has_meta => 1,
         orig_meta => [],

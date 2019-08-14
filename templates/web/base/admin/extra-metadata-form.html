@@ -37,6 +37,12 @@
             <input name="metadata[[% loop.index %]].notice" data-field-name="notice" type=checkbox [% meta.variable == 'false' ? 'checked' : '' %]>
         </label>
 
+        <div class="admin-hint"><p>[% loc('If ticked this extra data will not be edited or deleted by the Open311 population script.') %]</p></div>
+        <label>
+            [% loc('Protected') %]
+            <input name="metadata[[% loop.index %]].protected" data-field-name="protected" type=checkbox [% meta.protected == 'true' ? 'checked' : '' %]>
+        </label>
+
         <div class="admin-hint"><p>[% loc('The field name as shown to the user on the report form.') %]</p></div>
         <label>
             [% loc('Description') %]
