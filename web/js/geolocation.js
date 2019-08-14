@@ -34,7 +34,7 @@ fixmystreet.geolocate = function(element, success_callback) {
         fixmystreet.geolocate(link, function(pos) {
             var latitude = pos.coords.latitude.toFixed(6);
             var longitude = pos.coords.longitude.toFixed(6);
-            var coords = 'latitude=' + latitude + ';longitude=' + longitude;
+            var coords = 'lat=' + latitude + '&lon=' + longitude;
             location.href = link.href + (link.href.indexOf('?') > -1 ? ';' : '?') + coords;
         });
     } else {
