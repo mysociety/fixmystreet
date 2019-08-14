@@ -1192,6 +1192,8 @@ sub update_extra_fields : Private {
         $meta->{variable} = $notice ? 'false' : 'true';
         my $protected = $c->get_param("metadata[$i].protected") && $c->get_param("metadata[$i].protected") eq 'on';
         $meta->{protected} = $protected ? 'true' : 'false';
+        my $disable_form = $c->get_param("metadata[$i].disable_form") && $c->get_param("metadata[$i].disable_form") eq 'on';
+        $meta->{disable_form} = $disable_form ? 'true' : 'false';
         $meta->{description} = $c->get_param("metadata[$i].description");
         $meta->{datatype_description} = $c->get_param("metadata[$i].datatype_description");
         $meta->{automated} = $c->get_param("metadata[$i].automated")

@@ -43,6 +43,12 @@
             <input name="metadata[[% loop.index %]].protected" data-field-name="protected" type=checkbox [% meta.protected == 'true' ? 'checked' : '' %]>
         </label>
 
+        <div class="admin-hint"><p>[% loc('If ticked the entire report form will be disabled when this category is selected.') %]</p></div>
+        <label>
+            [% loc('Disable form') %]
+            <input name="metadata[[% loop.index %]].disable_form" data-field-name="disable_form" type=checkbox [% meta.disable_form == 'true' ? 'checked' : '' %]>
+        </label>
+
         <div class="admin-hint"><p>[% loc('The field name as shown to the user on the report form.') %]</p></div>
         <label>
             [% loc('Description') %]

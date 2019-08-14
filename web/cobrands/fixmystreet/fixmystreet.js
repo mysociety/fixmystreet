@@ -1256,6 +1256,18 @@ fixmystreet.fetch_reporting_data = function() {
         fixmystreet.update_councils_text(data);
         $('#js-top-message').html(data.top_message || '');
 
+        if (fixmystreet.message_controller) {
+            fixmystreet.message_controller.unregister_all_categories();
+            $.each(data.by_category, function(category, details) {
+                if (details.disable_form) {
+                    fixmystreet.message_controller.register_category({
+                        category: category,
+                        message: details.disable_form
+                    });
+                }
+            });
+        }
+
         $('#form_category_row').html(data.category);
         if ($("#form_category option[value=\"" + old_category + "\"]").length) {
             $("#form_category").val(old_category);

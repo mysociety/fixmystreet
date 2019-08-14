@@ -552,21 +552,6 @@ fixmystreet.assets.add(northants_road_defaults, {
     ]
 });
 
-fixmystreet.message_controller.register_category({
-    body: northants_defaults.body,
-    category: function() {
-        return !!$('label[for=form_emergency]').length;
-    },
-    message: function() {
-        return $('<div class="box-warning">' + $('label[for=form_emergency]').html() + '</div>');
-    },
-    staff_ignore: true
-});
-
-fixmystreet.message_controller.register_category({
-    body: northants_defaults.body,
-    category: 'Street lighting',
-    message: 'Street lighting in Northamptonshire is maintained by Balfour Beatty on behalf of the County Council under a Street Lighting Private Finance Initiative (PFI) contract. Please view our <b><a href="https://www3.northamptonshire.gov.uk/councilservices/northamptonshire-highways/roads-and-streets/Pages/street-lighting.aspx">Street Lighting</a></b> page to report any issues.'
-});
+fixmystreet.message_controller.add_ignored_body(northants_defaults.body);
 
 })();

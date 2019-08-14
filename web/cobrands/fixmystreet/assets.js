@@ -1015,7 +1015,8 @@ must be on a road, taking into account Highways England roads.
 
 fixmystreet.message_controller = (function() {
     var stopperId = 'js-category-stopper',
-        stoppers = [];
+        stoppers = [],
+        ignored_bodies = [];
 
     // This shows an error message because e.g. an asset isn't selected or a road hasn't been clicked
     function show_responsibility_error(id, asset_item, asset_type) {
@@ -1107,19 +1108,11 @@ fixmystreet.message_controller = (function() {
         var $id = $('#' + stopperId);
         var body = $('#form_category').data('body');
         var matching = $.grep(stoppers, function(stopper, i) {
-            if (stopper.staff_ignore && body) {
+            if (OpenLayers.Util.indexOf(ignored_bodies, body) > -1) {
                 return false;
             }
 
-            var relevant_body = OpenLayers.Util.indexOf(fixmystreet.bodies, stopper.body) > -1;
-            var relevant_cat;
-            if (typeof stopper.category === 'function') {
-                relevant_cat = stopper.category();
-            } else {
-                relevant_cat = $('#form_category').val() == stopper.category;
-            }
-            var relevant = relevant_body && relevant_cat;
-            return relevant;
+            return $('#form_category').val() == stopper.category;
         });
 
         if (!matching.length) {
@@ -1135,7 +1128,7 @@ fixmystreet.message_controller = (function() {
         if (typeof stopper.message === 'function') {
             $msg = stopper.message();
         } else {
-            $msg = $('<p class="box-warning">' + stopper.message + '</p>');
+            $msg = $('<div class="box-warning">' + stopper.message + '</div>');
         }
         $msg.attr('id', stopperId);
         $msg.attr('role', 'alert');
@@ -1200,6 +1193,14 @@ fixmystreet.message_controller = (function() {
 
         register_category: function(params) {
             stoppers.push(params);
+        },
+
+        unregister_all_categories: function() {
+            stoppers = [];
+        },
+
+        add_ignored_body: function(body) {
+            ignored_bodies.push(body);
         }
     };
 
