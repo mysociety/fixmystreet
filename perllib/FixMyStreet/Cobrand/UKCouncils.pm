@@ -273,10 +273,9 @@ see Buckinghamshire or Lincolnshire for an example.
 sub lookup_site_code {
     my $self = shift;
     my $row = shift;
-    my $buffer = shift;
+    my $field = shift;
 
-    my $cfg = $self->lookup_site_code_config;
-    $cfg->{buffer} = $buffer if $buffer;
+    my $cfg = $self->lookup_site_code_config($field);
     my ($x, $y) = $row->local_coords;
 
     my $features = $self->_fetch_features($cfg, $x, $y);
@@ -288,17 +287,7 @@ sub _fetch_features {
     my $buffer = $cfg->{buffer};
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
-    my $uri = URI->new($cfg->{url});
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => $cfg->{srsname},
-        TYPENAME => $cfg->{typename},
-        VERSION => "1.1.0",
-        outputformat => "geojson",
-        BBOX => "$w,$s,$e,$n"
-    );
-
+    my $uri = $self->_fetch_features_url($cfg, $w, $s, $e,$n);
     my $response = get($uri) or return;
 
     my $j = JSON->new->utf8->allow_nonref;
@@ -313,6 +302,24 @@ sub _fetch_features {
     return $j->{features};
 }
 
+sub _fetch_features_url {
+    my ($self, $cfg, $w, $s, $e, $n) = @_;
+
+    my $uri = URI->new($cfg->{url});
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => $cfg->{srsname},
+        TYPENAME => $cfg->{typename},
+        VERSION => "1.1.0",
+        outputformat => "geojson",
+        BBOX => "$w,$s,$e,$n"
+    );
+
+    return $uri;
+}
+
+
 sub _nearest_feature {
     my ($self, $cfg, $x, $y, $features) = @_;
 
@@ -321,15 +328,24 @@ sub _nearest_feature {
     my $site_code = '';
     my $nearest;
 
+    # We shouldn't receive anything aside from these geometry types, but belt and braces.
+    my $accept_types = $cfg->{accept_types} || {
+        LineString => 1,
+        MultiLineString => 1
+    };
+
     for my $feature ( @{$features || []} ) {
         next unless $cfg->{accept_feature}($feature);
-
-        # We shouldn't receive anything aside from these two geometry types, but belt and braces.
-        next unless $feature->{geometry}->{type} eq 'MultiLineString' || $feature->{geometry}->{type} eq 'LineString';
+        next unless $accept_types->{$feature->{geometry}->{type}};
 
         my @linestrings = @{ $feature->{geometry}->{coordinates} };
         if ( $feature->{geometry}->{type} eq 'LineString') {
             @linestrings = ([ @linestrings ]);
+        }
+        # If it is a point, upgrade it to a one-segment zero-length
+        # MultiLineString so it can be compared by the distance function.
+        if ( $feature->{geometry}->{type} eq 'Point') {
+            @linestrings = ([ [ @linestrings ], [ @linestrings ] ]);
         }
 
         foreach my $coordinates (@linestrings) {

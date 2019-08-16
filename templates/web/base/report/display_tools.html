@@ -10,7 +10,7 @@
             c.cobrand.moniker == 'fixmystreet' ? 'Unsuitable?' : loc('Report abuse')
         %]</a></li>
         [% END %]
-        [% IF NOT problem.extra.closed_updates AND c.cobrand.moniker != 'zurich' %]
+        [% IF NOT c.cobrand.updates_disallowed(problem) AND c.cobrand.moniker != 'zurich' %]
         <li><a rel="nofollow" id="key-tool-report-updates" class="feed js-feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker == 'fixmystreet' %]

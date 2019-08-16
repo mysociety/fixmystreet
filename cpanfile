@@ -107,6 +107,7 @@ requires 'Net::Facebook::Oauth2', '0.11';
 requires 'Net::OAuth';
 requires 'Net::Twitter::Lite::WithAPIv1_1', '0.12008';
 requires 'Number::Phone', '3.5000';
+requires 'OIDC::Lite';
 requires 'Path::Class';
 requires 'POSIX';
 requires 'Readonly';

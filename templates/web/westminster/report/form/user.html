@@ -1,0 +1,35 @@
+<!-- report/form/user.html -->
+<div class="js-new-report-user-hidden form-section-preview form-section-preview--next
+    [%~ ' hidden-nojs' IF c.user_exists OR NOT c.cobrand.social_auth_enabled %]">
+    <h2 class="form-section-heading form-section-heading--private hidden-nojs">
+        [% loc('Next:') %] [% loc('Tell us about you') %]
+    </h2>
+[% IF c.user_exists OR NOT c.cobrand.social_auth_enabled %]
+    <button type="button" class="btn btn--block hidden-nojs js-new-report-user-show">[% loc('Continue') %]</button>
+[% ELSE %]
+  [% IF c.config.FACEBOOK_APP_ID %]
+    <button name="social_sign_in" id="facebook_sign_in" value="facebook" class="btn btn--block btn--social btn--facebook">
+        <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
+        [% loc('Log in with Facebook') %]
+    </button>
+  [% END %]
+  [% IF c.cobrand.feature('oidc_login') %]
+    <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
+        [% tprintf(loc('Sign in with %s'), c.cobrand.feature('oidc_login').display_name) %]
+    </button>
+    <small>Receive updates and view your reports</small>
+  [% END %]
+  [% IF c.config.TWITTER_KEY %]
+    <button name="social_sign_in" id="twitter_sign_in" value="twitter" class="btn btn--block btn--social btn--twitter">
+        <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
+        [% loc('Log in with Twitter') %]
+    </button>
+  [% END %]
+[% END %]
+[% IF type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]
+    <small id="or">[% loc('or') %]</small>
+    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">[% loc('Submit report anonymously') %]</button>
+    <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
+[% END %]
+</div>
+<!-- /report/form/user.html -->

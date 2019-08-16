@@ -1,0 +1,232 @@
+@import "../sass/h5bp";
+@import "colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+body.frontpage {
+    background-color: #fff; // instead of $westminster_grey
+}
+
+#site-logo {
+    background-position: 0 0;
+    background-size: 120px 30px;
+    height: 30px;
+    width: 130px; // 10px of white space to the right, so centred logo position matches main site
+    background-image: url(/cobrands/westminster/images/wcc_logo.png);
+    margin: 0 auto; // centre logo
+}
+
+#site-header {
+    padding-top: 13px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid $westminster-yellow;
+}
+
+#nav-link {
+    right: auto;
+    left: 0.25em; // roughly match "menu" icon location on left of the main site
+}
+
+#report-cta {
+    right: 1em; // right-aligned, rather than left-aligned
+}
+
+#front-main {
+    background-color: $westminster_grey;
+    margin: 0;
+    padding: 1em;
+    text-align: inherit;
+
+    h1 {
+        font-weight: bold;
+        color: $westminster_navy;
+    }
+
+    #postcodeForm {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+
+        div {
+            display: block;
+            border: none;
+            background: transparent;
+            position: relative;
+
+            input#pc {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px 22px;
+                box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
+                background: #fff;
+            }
+
+            input#sub {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                display: block;
+                width: 0;
+                height: auto;
+                padding-left: 50px;
+                overflow: hidden;
+                background: transparent url(/cobrands/westminster/images/search-icon.png) no-repeat 50% 50%;
+                background-size: 25px 25px;
+
+                &:hover {
+                    background: transparent url(/cobrands/westminster/images/search-icon.png) no-repeat 50% 50%;
+                    background-size: 25px 25px;
+                }
+
+                &:focus {
+                    outline: 1px dotted #000;
+                }
+            }
+        }
+    }
+
+    a#geolocate_link {
+        background: transparent;
+        display: block;
+        padding: 0;
+        margin-top: 0.5em;
+        font-family: inherit;
+        font-size: 1em;
+        border-radius: 0;
+        color: $westminster_blue;
+
+        &:hover {
+            background: transparent;
+            text-decoration: underline;
+        }
+    }
+
+    .form-hint {
+        color: inherit;
+    }
+}
+
+#front-howto h2,
+#front-recently h2 {
+    font-weight: bold;
+    color: $westminster-navy;
+}
+
+ol.big-numbers>li:before {
+    color: $westminster-navy;
+}
+
+#front_stats {
+    background-color: $westminster-blue;
+    color: #fff; 
+}
+
+#report-cta {
+    border: 0;
+    background-color: $westminster-yellow;
+    &:hover,
+    &:focus {
+        color: #fff;
+    }
+}
+
+.westminster-footer {
+    background-color: $westminster_navy;
+    border-top: 3px solid $westminster-yellow;
+    padding: 1.5em 0;
+    text-align: center;
+
+    a {
+        color: #fff;
+    }
+}
+
+.westminster-footer-logo {
+    a {
+        $image-width: 200px*(130/200);
+        $image-height: 49px*(130/200);
+        display: inline-block;
+        overflow: hidden;
+        width: $image-width;
+        padding-top: $image-height;
+        height: 0;
+        background-size: $image-width $image-height;
+        background-position: center center;
+        background-repeat: no-repeat;
+        @include svg-background-image('/cobrands/westminster/images/footer-logo');
+    }
+}
+
+.westminster-site-links,
+.westminster-social-links,
+.westminster-tertiary-links {
+    list-style: none;
+    margin: 0;
+
+    li {
+        list-style: none;
+    }
+}
+
+.westminster-site-links {
+    margin-top: 1.5em;
+    font-size: 1.1em;
+
+    li {
+        margin-bottom: 1em;
+    }
+}
+
+.westminster-social-links {
+    margin: 1.5em -6px;
+
+    li {
+        display: inline-block;
+        margin: 0 6px;
+    }
+
+    a {
+        display: inline-block;
+        overflow: hidden;
+        width: 38px;
+        padding-top: 38px;
+        height: 0;
+        background-color: $westminster_grey;
+        background-size: 24px 24px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        border-radius: 38px;
+    }
+}
+
+.westminster-social-links__twitter {
+    @include svg-background-image('/cobrands/westminster/images/footer-twitter');
+}
+
+.westminster-social-links__instagram {
+    @include svg-background-image('/cobrands/westminster/images/footer-instagram');
+}
+
+.westminster-social-links__facebook {
+    @include svg-background-image('/cobrands/westminster/images/footer-facebook');
+}
+
+.westminster-tertiary-links {
+    font-size: 0.8em;
+    padding-top: 2em;
+    border-top: 1px solid $westminster_grey;
+    margin: 0 -6px;
+
+    li {
+        display: inline-block;
+        margin: 0.2em 6px;
+    }
+}
+
+.item-list__item--expandable__actions a.btn--primary {
+    display: none; // No updates
+}

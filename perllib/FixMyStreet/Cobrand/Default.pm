@@ -503,6 +503,19 @@ allowing them to report them as offensive.
 
 sub allow_update_reporting { return 0; }
 
+=item updates_disallowed
+
+Returns a boolean indicating whether updates on a particular report are allowed
+or not. Default behaviour is disallowed if "closed_updates" metadata is set.
+
+=cut
+
+sub updates_disallowed {
+    my ($self, $problem) = @_;
+    return 1 if $problem->get_extra_metadata('closed_updates');
+    return 0;
+}
+
 =item geocode_postcode
 
 Given a QUERY, return LAT/LON and/or ERROR.
@@ -1058,8 +1071,10 @@ sub never_confirm_reports { 0; }
 
 =item allow_anonymous_reports
 
-If true then can have reports that are truely anonymous - i.e with no email or name. You
-need to also put details in the anonymous_account function too.
+If true then a report submission with no user details will default to the user
+given via the anonymous_account function, and create it anonymously. If set to
+'button', then this will happen only when a report_anonymously button is
+pressed in the front end, rather than whenever a username is not provided.
 
 =cut
 
@@ -1264,7 +1279,7 @@ sub allow_report_extra_fields { 0 }
 
 sub social_auth_enabled {
     my $self = shift;
-    my $key_present = FixMyStreet->config('FACEBOOK_APP_ID') or FixMyStreet->config('TWITTER_KEY');
+    my $key_present = FixMyStreet->config('FACEBOOK_APP_ID') || FixMyStreet->config('TWITTER_KEY');
     return $key_present && !$self->call_hook("social_auth_disabled");
 }
 

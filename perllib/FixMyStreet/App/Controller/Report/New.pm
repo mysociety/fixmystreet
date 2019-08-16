@@ -803,10 +803,17 @@ sub process_user : Private {
     # Report form includes two username fields: #form_username_register and #form_username_sign_in
     $params{username} = (first { $_ } $c->get_param_list('username')) || '';
 
-    if ( $c->cobrand->allow_anonymous_reports ) {
+    my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
+    my $anon_fallback = $c->cobrand->allow_anonymous_reports eq '1' && !$c->user_exists && !$params{username};
+    if ($anon_button || $anon_fallback) {
         my $anon_details = $c->cobrand->anonymous_account;
-        $params{username} ||= $anon_details->{email};
-        $params{name} ||= $anon_details->{name};
+        my $user = $c->model('DB::User')->find_or_new({ email => $anon_details->{email} });
+        $user->name($anon_details->{name});
+        $report->user($user);
+        $report->name($user->name);
+        $c->stash->{no_reporter_alert} = 1;
+        $c->stash->{contributing_as_anonymous_user} = 1;
+        return 1;
     }
 
     # The user is already signed in. Extra bare block for 'last'.
@@ -937,6 +944,11 @@ sub process_report : Private {
         $c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $c->stash->{bodies});
         $c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies});
         $c->stash->{contributing_as_anonymous_user} = $user->contributing_as('anonymous_user', $c, $c->stash->{bodies});
+    }
+    # This is also done in process_user, but is needed here for anonymous() just below
+    my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
+    if ($anon_button) {
+        $c->stash->{contributing_as_anonymous_user} = 1;
     }
 
     # set some simple bool values (note they get inverted)
@@ -1129,12 +1141,13 @@ sub check_for_errors : Private {
     $c->stash->{field_errors} ||= {};
     my %field_errors = $c->cobrand->report_check_for_errors( $c );
 
+    my $report = $c->stash->{report};
+
     # Zurich, we don't care about title or name
     # There is no title, and name is optional
     if ( $c->cobrand->moniker eq 'zurich' ) {
         delete $field_errors{title};
         delete $field_errors{name};
-        my $report = $c->stash->{report};
         $report->title( Utils::cleanup_text( substr($report->detail, 0, 25) ) );
 
         # We only want to validate the phone number web requests (where the
@@ -1154,8 +1167,13 @@ sub check_for_errors : Private {
         delete $field_errors{name};
     }
 
+    # If we're making an anonymous report, we do not care about the name field
+    if ( $c->stash->{contributing_as_anonymous_user} ) {
+        delete $field_errors{name};
+    }
+
     # if using social login then we don't care about other errors
-    $c->stash->{is_social_user} = $c->get_param('facebook_sign_in') || $c->get_param('twitter_sign_in');
+    $c->stash->{is_social_user} = $c->get_param('social_sign_in') ? 1 : 0;
     if ( $c->stash->{is_social_user} ) {
         delete $field_errors{name};
         delete $field_errors{username};
@@ -1179,7 +1197,6 @@ sub check_for_errors : Private {
 
     if ( $c->cobrand->allow_anonymous_reports ) {
         my $anon_details = $c->cobrand->anonymous_account;
-        my $report = $c->stash->{report};
         $report->user->email(undef) if $report->user->email eq $anon_details->{email};
         $report->name(undef) if $report->name eq $anon_details->{name};
     }
@@ -1197,10 +1214,8 @@ sub tokenize_user : Private {
         password => $report->user->password,
         title => $report->user->title,
     };
-    $c->stash->{token_data}{facebook_id} = $c->session->{oauth}{facebook_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
-    $c->stash->{token_data}{twitter_id} = $c->session->{oauth}{twitter_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
+    $c->forward('/auth/set_oauth_token_data', [ $c->stash->{token_data} ])
+        if $c->get_param('oauth_need_email');
 }
 
 sub send_problem_confirm_email : Private {
@@ -1308,7 +1323,19 @@ sub process_confirmation : Private {
         for (qw(name title facebook_id twitter_id)) {
             $problem->user->$_( $data->{$_} ) if $data->{$_};
         }
+        $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
+        $problem->user->extra({
+            %{ $problem->user->get_extra() },
+            %{ $data->{extra} }
+        }) if $data->{extra};
+
         $problem->user->update;
+
+        # Make sure OIDC logout redirection happens, if applicable
+        if ($data->{logout_redirect_uri}) {
+            $c->session->{oauth} ||= ();
+            $c->session->{oauth}{logout_redirect_uri} = $data->{logout_redirect_uri};
+        }
     }
     if ($problem->user->email_verified) {
         $c->authenticate( { email => $problem->user->email, email_verified => 1 }, 'no_password' );
@@ -1368,11 +1395,7 @@ sub save_user_and_report : Private {
         $c->stash->{detach_to} = '/report/new/oauth_callback';
         $c->stash->{detach_args} = [$token->token];
 
-        if ( $c->get_param('facebook_sign_in') ) {
-            $c->detach('/auth/social/facebook_sign_in');
-        } elsif ( $c->get_param('twitter_sign_in') ) {
-            $c->detach('/auth/social/twitter_sign_in');
-        }
+        $c->forward('/auth/social/handle_sign_in') if $c->get_param('social_sign_in');
     }
 
     # Save or update the user if appropriate
@@ -1531,6 +1554,7 @@ sub create_reporter_alert : Private {
     my ( $self, $c ) = @_;
 
     return if $c->stash->{no_reporter_alert};
+    return if $c->cobrand->call_hook('suppress_reporter_alerts');
 
     my $problem = $c->stash->{report};
     my $alert = $c->model('DB::Alert')->find_or_create( {

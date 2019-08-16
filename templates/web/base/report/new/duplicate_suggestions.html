@@ -3,7 +3,7 @@
     version('/js/duplicates.js'),
 ) -%]
 <div id="js-duplicate-reports" class="duplicate-report-suggestions hidden">
-    <button class="duplicate-report-suggestions__close js-hide-duplicate-suggestions">[% loc('Close') %]</button>
+    <button type="button" class="duplicate-report-suggestions__close js-hide-duplicate-suggestions">[% loc('Close') %]</button>
     <h2 class="form-section-heading">[% loc('Already been reported?') %]</h2>
     <div class="form-section-description">
       [% IF c.cobrand.is_council %]
@@ -14,7 +14,7 @@
     </div>
 
     <ul class="item-list"></ul>
-    <button class="btn btn--block js-hide-duplicate-suggestions">[% loc('Continue – report a new problem') %]</button>
+    <button type="button" class="btn btn--block js-hide-duplicate-suggestions">[% loc('Continue – report a new problem') %]</button>
 </div>
 <div class="js-template-get-updates hidden">
     <div id="alerts" class="get-updates js-alert-list">

@@ -1,7 +1,7 @@
 <!-- report/new/form_user.html -->
 <div class="js-hide-if-invalid-category">
 
-    [% PROCESS 'report/form/user.html' %]
+    [% PROCESS 'report/form/user.html' type='report' %]
 
     <div class="hidden-js js-new-report-user-shown">
         <div class="hidden-nojs form-section-preview">
@@ -10,7 +10,7 @@
                 <strong class="js-form-section-preview" data-source="#form_title"></strong>
                 <span class="js-form-section-preview" data-source="#form_detail"></span>
             </p>
-            <button class="btn btn--block js-new-report-user-hide">[% loc('Edit report details') %]</button>
+            <button type="button" class="btn btn--block js-new-report-user-hide">[% loc('Edit report details') %]</button>
         </div>
 
 [% IF c.user_exists %]

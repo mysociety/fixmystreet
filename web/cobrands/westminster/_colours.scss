@@ -1,0 +1,38 @@
+/* COLOURS */
+
+$westminster_black: #0d0e16;
+$westminster_blue: #1e6dc7;
+$westminster_green: #137c71;
+$westminster_pink: #c8007b;
+$westminster_navy: #0b2265;
+$westminster_yellow: #fecb00;
+$westminster_grey: #f7f5f6;
+
+$primary: $westminster_yellow;
+
+$primary_b: #000000;
+$primary_text: #222222;
+
+$base_bg: $westminster_grey;
+$base_fg: #000;
+
+$nav_background_colour: #fff;
+$nav_colour: $westminster_navy;
+$nav_hover_background_colour: $westminster_blue;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: #ccc;
+
+$header-top-border: false;
+
+$menu-image: 'menu-black';
+
+$col_click_map: $westminster_yellow;
+
+$body-font: 'Open Sans', sans-serif;
+$heading-font: $body-font;
+$meta-font: $body-font;
+
+$mappage-header-height: 4.5em;
+
+$high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi';

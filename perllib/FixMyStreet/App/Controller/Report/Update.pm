@@ -244,8 +244,7 @@ This makes sure we only proceed to processing if we've had the form submitted
 
 sub check_form_submitted : Private {
     my ( $self, $c ) = @_;
-    return if $c->stash->{problem}->get_extra_metadata('closed_updates');
-    return if $c->cobrand->call_hook(updates_disallowed => $c->stash->{problem});
+    return if $c->cobrand->updates_disallowed($c->stash->{problem});
     return $c->get_param('submit_update') || '';
 }
 
@@ -366,7 +365,7 @@ sub check_for_errors : Private {
     );
 
     # if using social login then we don't care about name and email errors
-    $c->stash->{is_social_user} = $c->get_param('facebook_sign_in') || $c->get_param('twitter_sign_in');
+    $c->stash->{is_social_user} = $c->get_param('social_sign_in') ? 1 : 0;
     if ( $c->stash->{is_social_user} ) {
         delete $field_errors{name};
         delete $field_errors{username};
@@ -404,10 +403,8 @@ sub tokenize_user : Private {
         name => $update->user->name,
         password => $update->user->password,
     };
-    $c->stash->{token_data}{facebook_id} = $c->session->{oauth}{facebook_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
-    $c->stash->{token_data}{twitter_id} = $c->session->{oauth}{twitter_id}
-        if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
+    $c->forward('/auth/set_oauth_token_data', [ $c->stash->{token_data} ])
+        if $c->get_param('oauth_need_email');
 }
 
 =head2 save_update
@@ -440,11 +437,7 @@ sub save_update : Private {
         $c->stash->{detach_to} = '/report/update/oauth_callback';
         $c->stash->{detach_args} = [$token->token];
 
-        if ( $c->get_param('facebook_sign_in') ) {
-            $c->detach('/auth/social/facebook_sign_in');
-        } elsif ( $c->get_param('twitter_sign_in') ) {
-            $c->detach('/auth/social/twitter_sign_in');
-        }
+        $c->forward('/auth/social/handle_sign_in') if $c->get_param('social_sign_in');
     }
 
     if ( $c->cobrand->never_confirm_updates ) {
@@ -585,8 +578,18 @@ sub process_confirmation : Private {
         for (qw(name facebook_id twitter_id)) {
             $comment->user->$_( $data->{$_} ) if $data->{$_};
         }
+        $comment->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
+        $comment->user->extra({
+            %{ $comment->user->get_extra() },
+            %{ $data->{extra} }
+        }) if $data->{extra};
         $comment->user->password( $data->{password}, 1 ) if $data->{password};
         $comment->user->update;
+        # Make sure OIDC logout redirection happens, if applicable
+        if ($data->{logout_redirect_uri}) {
+            $c->session->{oauth} ||= ();
+            $c->session->{oauth}{logout_redirect_uri} = $data->{logout_redirect_uri};
+        }
     }
 
     if ($comment->user->email_verified) {

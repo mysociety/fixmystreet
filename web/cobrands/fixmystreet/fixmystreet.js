@@ -347,7 +347,7 @@ $.extend(fixmystreet.set_up, {
         $('.js-form-name').addClass('required');
     } );
 
-    $('#facebook_sign_in, #twitter_sign_in').click(function(e){
+    $('#facebook_sign_in, #twitter_sign_in, #oidc_sign_in').click(function(e){
         $('#username, #form_username_register, #form_username_sign_in').removeClass('required');
     });
 
@@ -1242,7 +1242,7 @@ fixmystreet.fetch_reporting_data = function() {
             return;
         }
         $('#side-form').show();
-        var old_category_group = $('#category_group').val(),
+        var old_category_group = $('#category_group').val() || $('#filter_group').val(),
             old_category = $("#form_category").val(),
             filter_category = $("#filter_categories").val();
 

@@ -379,12 +379,43 @@ select.form-control {
           margin: 0 0 0.5em 0;
         }
     }
+
+    small {
+        margin: 0.5em auto;
+        display: block;
+        text-align: center;
+        font-style: normal;
+        width: 75%;
+    }
 }
 
 // Purposefully *not* wrapped in `html.js` because the margin-top helps
 // separate the social login buttons from the .description_tips list.
 .form-section-preview--next {
     margin-top: 1.5em;
+}
+
+/* On a reporting page MyW/anon */
+small#or {
+    margin: 1em auto;
+    width: 100%;
+}
+small#or:before, small#or:after {
+    background-color: #fff;
+    content: "";
+    display: inline-block;
+    height: 2px;
+    position: relative;
+    vertical-align: middle;
+    width: 50%;
+}
+small#or:before {
+    right: 1em;
+    margin-left: -50%;
+}
+small#or:after {
+    left: 1em;
+    margin-right: -50%;
 }
 
 // grey background, full width box

@@ -263,6 +263,36 @@ for my $test (
     };
 }
 
+for my $test (
+    {
+        desc => 'account_id handled correctly when present',
+        account_id => '1c304134-ef12-c128-9212-123908123901',
+    },
+    {
+        desc => 'account_id handled correctly when 0',
+        account_id => '0'
+    },
+    {
+        desc => 'account_id handled correctly when missing',
+        account_id => undef
+    }
+) {
+    subtest $test->{desc} => sub {
+        $problem->extra( undef );
+        my $extra = {
+            url => 'http://example.com/report/1',
+            defined $test->{account_id} ? ( account_id => $test->{account_id} ) : ()
+        };
+
+        my $results = make_service_req( $problem, $extra, $problem->category,
+'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>'
+        );
+        my $c   = CGI::Simple->new( $results->{req}->content );
+
+        is $c->param( 'account_id' ), $test->{account_id}, 'correct account_id';
+    };
+}
+
 subtest 'test always_send_email' => sub {
     my $email = $user->email;
     $user->email(undef);

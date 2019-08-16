@@ -10,10 +10,12 @@
           made in a private category. #2528
         - Improve map JavaScript defensiveness.
         - Upgrade jquery-validation plugin. #2540
+        - Pass ‘filter_category’ param to front page to pre-filter map.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
     - New features:
         - Categories can be listed under more than one group #2475
+        - OpenID Connect login support. #2523
     - Bugfixes:
         - Prevent creation of two templates with same title. #2471
         - Fix bug going between report/new pages client side. #2484
@@ -46,6 +48,7 @@
         - Support receiving updates from external source.
         - Improve JSON output of controller.
         - unset external_status_code if blank in update
+        - Add support for account_id parameter to POST Service Request calls.
 
 * v2.6 (3rd May 2019)
     - New features:

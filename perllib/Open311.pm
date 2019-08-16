@@ -144,6 +144,8 @@ sub _populate_service_request_params {
     $params->{phone} = $problem->user->phone if $problem->user->phone;
     $params->{email} = $problem->user->email if $problem->user->email;
 
+    $params->{account_id} = $extra->{account_id} if defined $extra->{account_id};
+
     # Some endpoints don't follow the Open311 spec correctly and require an
     # email address for service requests.
     if ($self->always_send_email && !$params->{email}) {

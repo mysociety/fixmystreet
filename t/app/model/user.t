@@ -75,6 +75,31 @@ subtest 'Check non-existent methods on user object die' => sub {
     );
 };
 
+subtest 'OIDC ids can be manipulated correctly' => sub {
+    my $user = $problem->user;
+
+    is $user->oidc_ids, undef, 'user starts with no OIDC ids';
+
+    $user->add_oidc_id("fixmystreet:1234:5678");
+    is_deeply $user->oidc_ids, ["fixmystreet:1234:5678"], 'OIDC id added correctly';
+
+    $user->add_oidc_id("mycobrand:0123:abcd");
+    is_deeply [ sort @{$user->oidc_ids} ], ["fixmystreet:1234:5678", "mycobrand:0123:abcd"], 'Second OIDC id added correctly';
+
+    $user->add_oidc_id("mycobrand:0123:abcd");
+    is_deeply [ sort @{$user->oidc_ids} ], ["fixmystreet:1234:5678", "mycobrand:0123:abcd"], 'Adding existing OIDC id does not add duplicate';
+
+    $user->remove_oidc_id("mycobrand:0123:abcd");
+    is_deeply $user->oidc_ids, ["fixmystreet:1234:5678"], 'OIDC id can be removed OK';
+
+    $user->remove_oidc_id("mycobrand:0123:abcd");
+    is_deeply $user->oidc_ids, ["fixmystreet:1234:5678"], 'Removing non-existent OIDC id has no effect';
+
+    $user->remove_oidc_id("fixmystreet:1234:5678");
+    is $user->oidc_ids, undef, 'Removing last OIDC id results in undef';
+
+};
+
 done_testing();
 
 sub create_update {

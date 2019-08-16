@@ -1,0 +1,89 @@
+[% INCLUDE 'header.html', bodyclass='authpage', title = loc('Sign in') %]
+
+<h1>
+    [% loc('Sign in') %]
+</h1>
+
+[% TRY %][% INCLUDE 'auth/_general_top.html' %][% CATCH file %][% END %]
+
+[% IF oauth_need_email %]
+    <p class="form-error">[% loc('We need your email address, please give it below.') %]</p>
+[% END %]
+[% IF oauth_failure %]
+    <p class="form-error">[% loc('Sorry, we could not log you in.') %]</p>
+[% END %]
+
+<form action="/auth" method="post" name="general_auth" class="validate">
+    <fieldset>
+
+        <input type="hidden" name="r" value="[% c.req.params.r | html %]">
+
+[% IF NOT oauth_need_email AND c.cobrand.social_auth_enabled AND c.cobrand.feature('oidc_login') %]
+
+      <div class="form-box">
+        <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
+            [% tprintf(loc('Sign in with %s'), c.cobrand.feature('oidc_login').display_name) %]
+        </button>
+      </div>
+
+[% ELSE %]
+
+        [% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
+
+[% IF c.config.SMS_AUTHENTICATION %]
+    [% SET username_label = loc('Your email or mobile') %]
+[% ELSE %]
+    [% SET username_label = loc('Your email') %]
+[% END %]
+
+        <label class="n" for="username">[% username_label %]</label>
+      [% IF loc_username_error %]
+        <div class="form-error">[% loc_username_error %]</div>
+      [% END %]
+        <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]" autocomplete="username"
+        autofocus>
+
+        <div id="form_sign_in">
+          [% IF oauth_need_email %]
+            [% INCLUDE form_sign_in_no %]
+            <input type="hidden" name="oauth_need_email" value="1">
+          [% ELSE %]
+            [% INCLUDE form_sign_in_yes %]
+            [% INCLUDE form_sign_in_no %]
+          [% END %]
+        </div>
+
+[% END %]
+
+    </fieldset>
+</form>
+
+[% INCLUDE 'footer.html' %]
+
+[% BLOCK form_sign_in_yes %]
+    <p class="hidden-nojs js-sign-in-password-hide">
+        <input class="btn btn--primary btn--block js-sign-in-password-btn" type="submit" name="sign_in_by_password" value="[% loc('Sign in with a password') %]">
+    </p>
+    <div class="hidden-js js-sign-in-password">
+        <label for="password_sign_in">[% loc('Your password') %]</label>
+
+        <div class="form-txt-submit-box">
+            <input type="password" name="password_sign_in" class="form-control" id="password_sign_in" value="" autocomplete="current-password">
+            <input class="green-btn" type="submit" name="sign_in_by_password" value="[% loc('Sign in') %]">
+        </div>
+
+        <p>
+            <a href="/auth/forgot">[% loc('Forgotten your password?') %]</a>
+        </p>
+    </div>
+[% END %]
+
+[% BLOCK form_sign_in_no %]
+    <p><input class="fake-link" type="submit" name="sign_in_by_code" value="
+      [%~ IF c.config.SMS_AUTHENTICATION %]
+        [%~ loc('Email me a link or text me a code to sign in') %]
+      [%~ ELSE %]
+        [%~ loc('Email me a link to sign in') %]
+      [%~ END ~%]
+      "></p>
+[% END %]

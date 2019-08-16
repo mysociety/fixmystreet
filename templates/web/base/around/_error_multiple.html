@@ -10,7 +10,10 @@
           [% IF match.icon %]
             <img src="[% match.icon %]" alt="">
           [% END %]
-             <a href="/around?lat=[% match.latitude | uri %]&amp;lon=[% match.longitude | uri %][% IF c.req.params.category %]&amp;category=[% c.req.params.category | uri %][% END %]">[% match.address | html %]</a>
+             <a href="/around?lat=[% match.latitude | uri %]&amp;lon=[% match.longitude | uri ~%]
+             [%~ IF c.get_param('category') %]&amp;category=[% c.get_param('category') | uri %][% END ~%]
+             [%~ IF c.get_param('filter_category') %]&amp;filter_category=[% c.get_param('filter_category') | uri %][% END ~%]
+             [%~ IF c.get_param('filter_group') %]&amp;filter_group=[% c.get_param('filter_group') | uri %][% END %]">[% match.address | html %]</a>
         </li>
       [% END %]
     </ul>
