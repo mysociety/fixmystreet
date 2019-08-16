@@ -14,7 +14,7 @@ sub test_dmarc {
     my @answers = _send(Net::DNS::Resolver->new, "_dmarc.$domain", 'TXT');
     @answers = map { $_->txtdata } @answers;
     my $dmarc = join(' ', @answers);
-    return unless $dmarc =~ /p *= *reject/;
+    return unless $dmarc =~ /p *= *(reject|quarantine)/;
 
     return 1;
 }
