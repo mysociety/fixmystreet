@@ -19,7 +19,7 @@ $mech->create_contact_ok(body_id => $district->id, category => 'Graffiti', email
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
 $cobrand->mock('lookup_site_code', sub {
-    my ($self, $row, $buffer) = @_;
+    my ($self, $row) = @_;
     return "Road ID" if $row->latitude == 51.812244;
 });
 

@@ -273,10 +273,9 @@ see Buckinghamshire or Lincolnshire for an example.
 sub lookup_site_code {
     my $self = shift;
     my $row = shift;
-    my $buffer = shift;
+    my $field = shift;
 
-    my $cfg = $self->lookup_site_code_config;
-    $cfg->{buffer} = $buffer if $buffer;
+    my $cfg = $self->lookup_site_code_config($field);
     my ($x, $y) = $row->local_coords;
 
     my $features = $self->_fetch_features($cfg, $x, $y);

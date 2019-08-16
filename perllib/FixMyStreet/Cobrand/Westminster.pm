@@ -90,8 +90,18 @@ sub open311_config {
     # display the road layer. Instead we'll look up the closest asset from the
     # asset service at the point we're sending the report over Open311.
     if (!$row->get_extra_field_value('USRN')) {
-        if (my $ref = $self->lookup_site_code($row)) {
+        if (my $ref = $self->lookup_site_code($row, 'USRN')) {
             push @$extra, { name => 'USRN', value => $ref };
+        }
+    }
+
+    # Some categories require a UPRN to be set, so if the field is present
+    # but empty then look it up.
+    my $fields = $row->get_extra_fields;
+    my ($uprn_field) = grep { $_->{name} eq 'UPRN' } @$fields;
+    if ( $uprn_field && !$uprn_field->{value} ) {
+        if (my $ref = $self->lookup_site_code($row, 'UPRN')) {
+            push @$extra, { name => 'UPRN', value => $ref };
         }
     }
 
@@ -99,15 +109,23 @@ sub open311_config {
 }
 
 sub lookup_site_code_config {
+    my ( $self, $field ) = @_;
     # uncoverable subroutine
     # uncoverable statement
-    {
+    my $layer = $field eq 'USRN' ? '40' : '25'; # 25 is UPRN
+
+    my %cfg = (
         buffer => 1000, # metres
         proxy_url => "https://tilma.staging.mysociety.org/resource-proxy/proxy.php",
-        url => "https://westminster.assets/40/query",
-        property => "USRN",
-        accept_feature => sub { 1 }
-    }
+        url => "https://westminster.assets/$layer/query",
+        property => $field,
+        accept_feature => sub { 1 },
+
+        # UPRNs are Point geometries, so make sure they're allowed by
+        # _nearest_feature.
+        ( $field eq 'UPRN' ) ? (accept_types => { Point => 1 }) : (),
+    );
+    return \%cfg;
 }
 
 sub _fetch_features_url {
