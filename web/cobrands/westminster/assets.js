@@ -128,7 +128,7 @@ fixmystreet.message_controller.register_category({
 
 var layer_data = [
     { category: [ 'Food safety/hygiene' ] },
-    { category: 'Damaged, dirty, or missing bin', subcategories: [ '1', '2' ], subcategory_id: '#form_bintype' },
+    { category: 'Damaged, dirty, or missing bin', subcategories: [ '1', '4' ], subcategory_id: '#form_bin_type' },
     { category: 'Noise', subcategories: [ '1', '3', '4', '7', '8', '9', '10' ] },
     { category: 'Smoke and odours' },
 ];
@@ -299,7 +299,7 @@ $.each(layer_data, function(i, o) {
 });
 
 $(function(){
-    $("#problem_form").on("change.category", "#form_type, #form_featuretypecode, #form_bintype", function() {
+    $("#problem_form").on("change.category", "#form_type, #form_featuretypecode, #form_bin_type", function() {
         $(fixmystreet).trigger('report_new:category_change', [ $('#form_category') ]);
     });
 });

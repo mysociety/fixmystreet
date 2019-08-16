@@ -7,7 +7,7 @@ ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Westminster');
 $cobrand->mock('lookup_site_code', sub {
-    my ($self, $row, $buffer) = @_;
+    my ($self, $row) = @_;
     return "My USRN" if $row->latitude == 51.501009;
 });
 
@@ -164,5 +164,55 @@ FixMyStreet::override_config {
         is $user->alerts->count, 0;
     };
 };
+
+my $westminster = FixMyStreet::Cobrand::Westminster->new;
+subtest 'correct config returned for USRN/UPRN lookup' => sub {
+    my $actual = $westminster->lookup_site_code_config('USRN');
+    delete $actual->{accept_feature}; # is_deeply doesn't like code
+    is_deeply $actual, {
+        buffer => 1000,
+        proxy_url => "https://tilma.staging.mysociety.org/resource-proxy/proxy.php",
+        url => "https://westminster.assets/40/query",
+        property => 'USRN',
+    };
+    $actual = $westminster->lookup_site_code_config('UPRN');
+    delete $actual->{accept_feature}; # is_deeply doesn't like code
+    is_deeply $actual, {
+        buffer => 1000,
+        proxy_url => "https://tilma.staging.mysociety.org/resource-proxy/proxy.php",
+        url => "https://westminster.assets/25/query",
+        property => 'UPRN',
+        accept_types => {
+            Point => 1
+        },
+    };
+};
+
+subtest 'nearest UPRN returns correct point' => sub {
+    my $cfg = {
+        accept_feature => sub { 1 },
+        property => 'UPRN',
+        accept_types => {
+            Point => 1,
+        },
+    };
+    my $features = [
+        # A couple of incorrect geometry types to check they're ignored...
+        { geometry => { type => 'Polygon' } },
+        { geometry => { type => 'LineString',
+            coordinates => [ [ 527735, 181004 ], [ 527755, 181004 ] ] },
+          properties => { fid => '20100024' } },
+        # And two points which are further away than the above linestring,
+        # the second of which is the closest to our testing point.
+        { geometry => { type => 'Point',
+            coordinates => [ 527795, 181024 ] },
+          properties => { UPRN => '10012387122' } },
+        { geometry => { type => 'Point',
+            coordinates => [ 527739, 181009 ] },
+          properties => { UPRN => '10012387123' } },
+    ];
+    is $westminster->_nearest_feature($cfg, 527745, 180994, $features), '10012387123';
+};
+
 
 done_testing();
