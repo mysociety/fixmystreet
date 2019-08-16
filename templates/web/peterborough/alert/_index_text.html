@@ -1,0 +1,19 @@
+<p>
+[% site_name %] provide RSS feeds and email alerts for local
+problems, including alerts for all problems within a particular ward, or all
+problems within a certain distance of a particular location.
+</p>
+
+[% IF location_error %]
+  <div class="error">[% location_error %]</div>
+[% ELSE %]
+  [% INCLUDE 'errors.html' %]
+[% END %]
+
+<p>
+[% IF c.cobrand.is_council %]
+[% tprintf(loc('To find out what local alerts we have for you, please enter your %s postcode or street name and area:'), c.cobrand.council_area) %]
+[% ELSE %]
+[% loc('To find out what local alerts we have for you, please enter your postcode or street name and area' ) %]
+[% END %]
+</p>
