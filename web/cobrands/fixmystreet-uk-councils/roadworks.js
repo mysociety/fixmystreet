@@ -217,16 +217,4 @@ fixmystreet.roadworks.display_message = function(feature) {
     $msg.prependTo('#js-post-category-messages');
 };
 
-/* Stop sending a needless header so that no preflight CORS request */
-OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, sValue) {
-    if (sName.toLowerCase() == 'x-requested-with') {
-        return;
-    }
-    if (!this._headers) {
-        this._headers = {};
-    }
-    this._headers[sName] = sValue;
-    return this._object.setRequestHeader(sName, sValue);
-};
-
 })();
