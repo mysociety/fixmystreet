@@ -702,8 +702,9 @@ sub stash_report_filter_status : Private {
 
     my @status = $c->get_param_list('status', 1);
     @status = ($c->stash->{page} eq 'my' ? 'all' : $c->cobrand->on_map_default_status) unless @status;
-    my %status = map { $_ => 1 } @status;
+    $c->cobrand->call_hook(hook_report_filter_status => \@status);
 
+    my %status = map { $_ => 1 } @status;
     my %filter_problem_states;
     my %filter_status;
 

@@ -1380,4 +1380,11 @@ sub db_state_migration {
     }
 }
 
+sub hook_report_filter_status {
+    my ($self, $status) = @_;
+    @$status = map {
+        $_ eq 'closed' ? ('closed', 'fixed') : $_
+    } @$status;
+}
+
 1;
