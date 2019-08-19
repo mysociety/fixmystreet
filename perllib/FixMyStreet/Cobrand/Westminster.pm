@@ -118,7 +118,7 @@ sub lookup_site_code_config {
 
     my %cfg = (
         buffer => 1000, # metres
-        proxy_url => "https://tilma.staging.mysociety.org/resource-proxy/proxy.php",
+        proxy_url => "https://tilma.mysociety.org/resource-proxy/proxy.php",
         url => "https://westminster.assets/$layer/query",
         property => $field,
         accept_feature => sub { 1 },

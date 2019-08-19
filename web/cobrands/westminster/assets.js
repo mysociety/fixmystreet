@@ -49,7 +49,7 @@ OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN = OpenLayers.Class(OpenLayers.
     CLASS_NAME: 'OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN'
 });
 
-var url_base = 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://westminster.assets/';
+var url_base = 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://westminster.assets/';
 
 var defaults = {
     http_options: {

@@ -171,7 +171,7 @@ subtest 'correct config returned for USRN/UPRN lookup' => sub {
     delete $actual->{accept_feature}; # is_deeply doesn't like code
     is_deeply $actual, {
         buffer => 1000,
-        proxy_url => "https://tilma.staging.mysociety.org/resource-proxy/proxy.php",
+        proxy_url => "https://tilma.mysociety.org/resource-proxy/proxy.php",
         url => "https://westminster.assets/40/query",
         property => 'USRN',
     };
@@ -179,7 +179,7 @@ subtest 'correct config returned for USRN/UPRN lookup' => sub {
     delete $actual->{accept_feature}; # is_deeply doesn't like code
     is_deeply $actual, {
         buffer => 1000,
-        proxy_url => "https://tilma.staging.mysociety.org/resource-proxy/proxy.php",
+        proxy_url => "https://tilma.mysociety.org/resource-proxy/proxy.php",
         url => "https://westminster.assets/25/query",
         property => 'UPRN',
         accept_types => {
