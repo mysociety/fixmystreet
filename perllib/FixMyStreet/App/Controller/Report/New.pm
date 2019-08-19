@@ -949,6 +949,8 @@ sub process_report : Private {
     my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
         $c->stash->{contributing_as_anonymous_user} = 1;
+        $c->stash->{contributing_as_body} = undef;
+        $c->stash->{contributing_as_another_user} = undef;
     }
 
     # set some simple bool values (note they get inverted)

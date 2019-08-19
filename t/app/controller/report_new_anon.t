@@ -20,6 +20,17 @@ END { FixMyStreet::App->log->enable('info'); }
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2651, 'Edinburgh');
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
+$staffuser->user_body_permissions->create({
+    body => $body,
+    permission_type => 'contribute_as_body',
+});
+$staffuser->user_body_permissions->create({
+    body => $body,
+    permission_type => 'default_to_body',
+});
+
+
 my $contact1 = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Street lighting',
@@ -148,6 +159,7 @@ subtest "test report creation anonymously by button" => sub {
     is $report->bodies_str, $body->id;
     is $report->name, 'Anonymous Button';
     is $report->anonymous, 1; # Doesn't change behaviour here, but uses anon account's name always
+    is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
 
     my $alert = FixMyStreet::App->model('DB::Alert')->find( {
         user => $report->user,
@@ -157,6 +169,49 @@ subtest "test report creation anonymously by button" => sub {
     is $alert, undef, "no alert created";
 
     $mech->not_logged_in_ok;
+};
+
+subtest "test report creation anonymously by staff user" => sub {
+    FixMyStreet::DB->resultset("Problem")->delete_all;
+
+    $mech->log_in_ok( $staffuser->email );
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok(
+        {
+            button => 'report_anonymously',
+            with_fields => {
+                title => 'Test Report',
+                detail => 'Test report details.',
+                category => 'Street lighting',
+            }
+        },
+        "submit good details"
+    );
+    $mech->content_contains('Thank you');
+
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    my $report = FixMyStreet::DB->resultset("Problem")->first;
+    ok $report, "Found the report";
+
+    is $report->state, 'confirmed', "report confirmed";
+    $mech->get_ok( '/report/' . $report->id );
+
+    is $report->bodies_str, $body->id;
+    is $report->name, 'Anonymous Button';
+    is $report->anonymous, 1;
+    is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+
+    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+        user => $report->user,
+        alert_type => 'new_updates',
+        parameter => $report->id,
+    } );
+    is $alert, undef, "no alert created";
+
+    $mech->log_out_ok;
 };
 
 };
