@@ -944,16 +944,6 @@ OpenLayers.Format.GML.v3.MultiCurveFix = OpenLayers.Class(OpenLayers.Format.GML.
     CLASS_NAME: "OpenLayers.Format.GML.v3.MultiCurveFix"
 });
 
-OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, sValue) {
-    if (sName.toLowerCase() == 'x-requested-with') {
-        return;
-    }
-    if (!this._headers) {
-        this._headers = {};
-    }
-    this._headers[sName] = sValue;
-    return this._object.setRequestHeader(sName, sValue);
-};
 })();
 
 /* Handling of body override functionality */
