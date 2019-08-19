@@ -79,6 +79,9 @@ subtest "change report to non_public and check for 403 status" => sub {
     is $mech->res->code, 403, "access denied";
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
     $mech->content_contains('permission to do that. If you are the problem reporter');
+    $mech->content_lacks('Report another problem here');
+    $mech->content_lacks($report->latitude);
+    $mech->content_lacks($report->longitude);
     ok $report->update( { non_public => 0 } ), 'make report public';
 };
 
@@ -95,6 +98,9 @@ subtest "check owner of report can view non public reports" => sub {
     is $mech->res->code, 403, "access denied to user who is not report creator";
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
     $mech->content_contains('permission to do that. If you are the problem reporter');
+    $mech->content_lacks('Report another problem here');
+    $mech->content_lacks($report->latitude);
+    $mech->content_lacks($report->longitude);
     $mech->log_out_ok;
     ok $report->update( { non_public => 0 } ), 'make report public';
 };

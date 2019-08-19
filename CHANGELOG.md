@@ -28,6 +28,8 @@
         - Hide duplicate suggestions when signing in during reporting.
         - Retain extra data if signing in during reporting.
         - Have duplicate suggestion and assets coexist better.
+        - Don't include lat/lon of private reports in ‘Report another problem
+          here’ link.
     - Front end improvements:
         - Set report title autocomplete to off to prevent email autocompleting
     - Development improvements:
