@@ -1,0 +1,7 @@
+<select class="form-control js-multiple" name="status" id="statuses" multiple
+    data-all="[% loc('All') %]" data-all-options='["open","closed"]'
+    [% INCLUDE 'reports/_status_filter_options.html' %]
+>
+    <option value="open"[% ' selected' IF filter_status.open %]>[% prettify_state('confirmed') %]</option>
+    <option value="closed"[% ' selected' IF filter_status.closed %]>[% prettify_state('closed') %]</option>
+</select>
