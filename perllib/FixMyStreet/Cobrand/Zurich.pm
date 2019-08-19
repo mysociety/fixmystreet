@@ -331,6 +331,14 @@ sub report_page_data {
         $c->detach('ajax', [ 'reports/_problem-list.html' ]);
     }
 
+    my @categories = $c->model('DB::Contact')->not_deleted->search(undef, {
+        columns => [ 'category', 'extra' ],
+        order_by => [ 'category' ],
+        distinct => 1
+    })->all;
+    $c->stash->{filter_categories} = \@categories;
+    $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
+
     my $pins = $c->stash->{pins};
     FixMyStreet::Map::display_map(
         $c,
