@@ -466,7 +466,8 @@ sub ajax_sign_in : Path('ajax/sign_in') {
 
     my $return = {};
     if ( $c->forward( 'sign_in', [ $c->get_param('email') ] ) ) {
-        $return->{name} = $c->user->name;
+        $return->{name} = $c->user->name || '-'; # App currently requires something returned
+        $return->{success} = 1;
     } else {
         $return->{error} = 1;
     }
