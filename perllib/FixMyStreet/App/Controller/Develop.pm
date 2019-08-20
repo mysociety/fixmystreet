@@ -115,6 +115,21 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
         }
     } elsif ($template eq 'questionnaire') {
         $vars->{created} = 'N weeks';
+    } elsif ($template eq 'contact') {
+        $vars->{problem} = $c->model('DB::Problem')->search(undef, { rows => 1 } )->first;
+        $vars->{subject} = 'Please remove my details';
+        $vars->{message} = 'I accidentally put my phone number, address, mothers maiden name, and facebook password in my most recent report!! Please remove it!!';
+        $vars->{form_name} = $c->user->name;
+        $vars->{em} = $c->user->email;
+        $vars->{host} = $c->req->header('HOST');
+        $vars->{ip} = $c->req->address;
+        $vars->{user_agent} = $c->req->user_agent;
+        $vars->{complaint} = sprintf(
+            "Complaint about report %d",
+            $vars->{problem}->id,
+        );
+        $vars->{problem_url} = $c->cobrand->base_url() . '/report/' . $vars->{problem}->id;
+        $vars->{admin_url} = $c->cobrand->admin_base_url . '/report_edit/' . $vars->{problem}->id;
     }
 
     my $email = $c->construct_email("$template.txt", $vars);
