@@ -47,6 +47,8 @@ sub suppress_reporter_alerts { 1 }
 
 sub report_age { '3 months' }
 
+sub on_map_default_status { 'open' }
+
 sub social_auth_enabled {
     my $self = shift;
 
