@@ -1,0 +1,27 @@
+Subject: Your reports on [% site_name %]
+
+Hello [% user.name %],
+
+FixMyStreet is being updated in Westminster to improve how problems get reported.
+
+As part of this process we are closing all reports made before the update.
+
+We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system, which we've listed below.
+
+All of your reports will have been received and reviewed by Westminster, so if your report is no longer an issue, you don't need to do anything.
+
+If you believe that the issue has not been resolved you can report it again here: https://report.westminster.gov.uk/
+
+[% FOR report IN reports %]
+
+[% report.title %]
+
+Reported [% report.time_ago %] ago.
+
+View report: [% cobrand.base_url_for_report( report ) %]/report/[% report.id %]
+
+----
+
+[% END %]
+
+The FixMyStreet team and Westminster Council
