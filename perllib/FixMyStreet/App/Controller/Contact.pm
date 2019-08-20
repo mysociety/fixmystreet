@@ -197,6 +197,21 @@ sub prepare_params_for_email : Private {
     my $base_url = $c->cobrand->base_url();
     my $admin_url = $c->cobrand->admin_base_url;
 
+    my $user = $c->cobrand->users->find( { email => $c->stash->{em} } );
+    if ( $user ) {
+        $c->stash->{user_admin_url} = $admin_url . '/users/' . $user->id;
+        $c->stash->{user_reports_admin_url} = $admin_url . '/reports?search=' . $user->email;
+
+        my $user_latest_problem = $user->problems->search({
+            state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
+        }, {
+            order_by => { -desc => 'id' }
+        })->single;
+        if ( $user_latest_problem) {
+            $c->stash->{user_latest_report_admin_url} = $admin_url . '/report_edit/' . $user_latest_problem->id;
+        }
+    }
+
     if ( $c->stash->{update} ) {
 
         $c->stash->{problem_url} = $base_url . $c->stash->{update}->url;

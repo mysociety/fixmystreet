@@ -337,6 +337,70 @@ for my $test (
 }
 
 for my $test (
+    { fields => \%common }
+  )
+{
+    subtest 'check email contains user details' => sub {
+        my $user = $mech->create_user_ok(
+            $test->{fields}->{em},
+            name => $test->{fields}->{name}
+        );
+
+        my $older_unhidden_problem = FixMyStreet::App->model('DB::Problem')->create(
+            {
+                title     => 'Some problem or other',
+                detail    => 'More detail on the problem',
+                postcode  => 'EH99 1SP',
+                confirmed => '2011-05-04 10:44:28.145168',
+                anonymous => 0,
+                name      => $test->{fields}->{name},
+                state     => 'confirmed',
+                user      => $user,
+                latitude  => 0,
+                longitude => 0,
+                areas     => 0,
+                used_map  => 0,
+            }
+        );
+
+        my $newer_hidden_problem = FixMyStreet::App->model('DB::Problem')->create(
+            {
+                title     => 'A hidden problem',
+                detail    => 'Shhhh secret',
+                postcode  => 'EH99 1SP',
+                confirmed => '2012-06-05 10:44:28.145168',
+                anonymous => 0,
+                name      => $test->{fields}->{name},
+                state     => 'hidden',
+                user      => $user,
+                latitude  => 0,
+                longitude => 0,
+                areas     => 0,
+                used_map  => 0,
+            }
+        );
+
+        $mech->clear_emails_ok;
+        $mech->get_ok('/contact');
+        $mech->submit_form_ok( { with_fields => $test->{fields} } );
+
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+
+        my $user_id = $user->id;
+        my $user_email = $user->email;
+        my $older_unhidden_problem_id = $older_unhidden_problem->id;
+        my $newer_hidden_problem_id = $newer_hidden_problem->id;
+
+        like $body, qr/admin\/users\/$user_id/, 'email contains admin link to edit user';
+        like $body, qr/admin\/reports\?search=$user_email/, 'email contains admin link to show users reports';
+        like $body, qr/admin\/report_edit\/$older_unhidden_problem_id/, 'email contains admin link for users latest unhidden report';
+        unlike $body, qr/admin\/report_edit\/$newer_hidden_problem_id/, 'email does not link to hidden reports';
+
+    };
+}
+
+for my $test (
     {
         fields => { %common, dest => undef },
         page_errors =>

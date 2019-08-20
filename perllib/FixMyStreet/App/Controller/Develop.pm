@@ -130,6 +130,16 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
         );
         $vars->{problem_url} = $c->cobrand->base_url() . '/report/' . $vars->{problem}->id;
         $vars->{admin_url} = $c->cobrand->admin_base_url . '/report_edit/' . $vars->{problem}->id;
+        $vars->{user_admin_url} = $c->cobrand->admin_base_url . '/users/' . $c->user->id;
+        $vars->{user_reports_admin_url} = $c->cobrand->admin_base_url . '/reports?search=' . $c->user->email;
+        my $user_latest_problem = $c->user->problems->search({
+            state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
+        }, {
+            order_by => { -desc => 'id' }
+        })->single;
+        if ( $user_latest_problem ) {
+            $vars->{user_latest_report_admin_url} = $c->cobrand->admin_base_url . '/report_edit/' . $user_latest_problem->id;
+        }
     }
 
     my $email = $c->construct_email("$template.txt", $vars);

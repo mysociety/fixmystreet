@@ -6,6 +6,14 @@ Subject: [% site_name %] message: [% subject %]
 [ [% complaint %] - [% problem_url %] - [% admin_url %] ]
 [% END %]
 
+[%~ IF user_admin_url %]
+[ Edit user: [% user_admin_url %] ]
+[%~ IF user_latest_report_admin_url %]
+[ Edit latest report: [% user_latest_report_admin_url %] ]
+[%~ END %]
+[ Show all reports: [% user_reports_admin_url %] ]
+[%~ END %]
+
 -- 
 Sent by contact form on [% host %].
 IP address [% ip %], user agent [% user_agent %]

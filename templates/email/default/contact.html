@@ -16,7 +16,18 @@ INCLUDE '_email_top.html';
   <table [% table_reset %]>
     <tr>
       <th style="[% contact_th_style %]">From</th>
-      <td style="[% contact_td_style %]">[% name %] &lt;<a href="mailto:[% em | html %]">[% em | html %]</a>&gt;</td>
+      <td style="[% contact_td_style %]">
+        [% name %] &lt;<a href="mailto:[% em | html %]">[% em | html %]</a>&gt;
+        [%~ IF user_admin_url %]
+        <small style="[% contact_admin_links_style %]">
+          <a href="[% user_admin_url | html %]">Edit user</a> –
+        [%~ IF user_latest_report_admin_url %]
+          <a href="[% user_latest_report_admin_url | html %]">Edit latest report</a> –
+        [%~ END %]
+          <a href="[% user_reports_admin_url | html %]">Show all reports</a>
+        </small>
+        [%~ END %]
+      </td>
     </tr>
   </table>
 </th>
