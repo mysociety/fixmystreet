@@ -29,7 +29,8 @@ my @reports = $mech->create_problems_for_body(1, $isleofwight->id, 'An Isle of w
     lastupdate => '2019-05-25 09:00',
     latitude => 50.7108,
     longitude => -1.29573,
-    user => $user
+    user => $user,
+    external_id => 101202303
 });
 
 subtest "check clicking all reports link" => sub {
@@ -43,6 +44,17 @@ subtest "check clicking all reports link" => sub {
 
     $mech->content_contains("An Isle of wight report", "Isle of Wight report there");
     $mech->content_contains("Island Roads", "is still on cobrand");
+};
+
+subtest "use external id for reference number" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'isleofwight',
+    }, sub {
+        $mech->get_ok('/report/' . $reports[0]->id);
+    };
+
+    $mech->content_contains("101202303", "Display external id as reference number");
 };
 
 subtest "only original reporter can comment" => sub {
