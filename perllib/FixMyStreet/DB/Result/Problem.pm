@@ -758,7 +758,7 @@ sub defect_types {
 #     Note:   this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
     my $self = shift;
-    if ($self->external_id && $self->to_body_named('Oxfordshire|Lincolnshire')) {
+    if ($self->external_id && $self->to_body_named('Oxfordshire|Lincolnshire|Isle of Wight')) {
         return 1;
     }
     return 0;
