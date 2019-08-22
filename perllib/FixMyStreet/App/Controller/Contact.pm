@@ -202,11 +202,7 @@ sub prepare_params_for_email : Private {
         $c->stash->{user_admin_url} = $admin_url . '/users/' . $user->id;
         $c->stash->{user_reports_admin_url} = $admin_url . '/reports?search=' . $user->email;
 
-        my $user_latest_problem = $user->problems->search({
-            state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
-        }, {
-            order_by => { -desc => 'id' }
-        })->single;
+        my $user_latest_problem = $user->latest_visible_problem();
         if ( $user_latest_problem) {
             $c->stash->{user_latest_report_admin_url} = $admin_url . '/report_edit/' . $user_latest_problem->id;
         }

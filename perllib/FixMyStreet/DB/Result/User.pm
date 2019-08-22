@@ -198,6 +198,15 @@ sub latest_anonymity {
     return $obj ? $obj->anonymous : 0;
 }
 
+sub latest_visible_problem {
+    my $self = shift;
+    return $self->problems->search({
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
+    }, {
+        order_by => { -desc => 'id' }
+    })->single;
+}
+
 =head2 check_for_errors
 
     $error_hashref = $user->check_for_errors();

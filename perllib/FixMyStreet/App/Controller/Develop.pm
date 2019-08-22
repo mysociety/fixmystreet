@@ -132,11 +132,7 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
         $vars->{admin_url} = $c->cobrand->admin_base_url . '/report_edit/' . $vars->{problem}->id;
         $vars->{user_admin_url} = $c->cobrand->admin_base_url . '/users/' . $c->user->id;
         $vars->{user_reports_admin_url} = $c->cobrand->admin_base_url . '/reports?search=' . $c->user->email;
-        my $user_latest_problem = $c->user->problems->search({
-            state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
-        }, {
-            order_by => { -desc => 'id' }
-        })->single;
+        my $user_latest_problem = $c->user->latest_visible_problem();
         if ( $user_latest_problem ) {
             $vars->{user_latest_report_admin_url} = $c->cobrand->admin_base_url . '/report_edit/' . $user_latest_problem->id;
         }
