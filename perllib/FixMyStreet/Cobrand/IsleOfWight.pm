@@ -87,6 +87,7 @@ sub open311_munge_update_params {
     $params->{description} = "FMS-Update: " . $params->{description};
 }
 
+# this handles making sure the user sees the right categories on the new report page
 sub munge_category_list {
     my ($self, $options, $contacts, $extras) = @_;
 
@@ -95,12 +96,97 @@ sub munge_category_list {
     my $b = $bodies{'Isle of Wight Council'};
 
     if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
+        @$contacts = grep { !$_->send_method || $_->send_method ne 'Triage' } @$contacts;
+        my $seen = { map { $_->category => 1 } @$contacts };
+        @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
         return;
     }
 
-    @$contacts = grep { $_->send_method eq 'Triage' } @$contacts;
+    @$contacts = grep { $_->send_method && $_->send_method eq 'Triage' } @$contacts;
     my $seen = { map { $_->category => 1 } @$contacts };
     @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
+}
+
+sub munge_category_where {
+    my ($self, $where) = @_;
+
+    my $user = $self->{c}->user;
+    my $b = $self->{c}->model('DB::Body')->for_areas( $self->council_area_id )->first;
+    if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
+        $where = {
+            body_id => $where->{body_id},
+            send_method => [ { '!=' => 'Triage' }, undef ],
+        };
+        return $where;
+    }
+
+    $where->{'send_method'} = 'Triage';
+    return $where;
+}
+
+sub munge_load_and_group_problems {
+    my ($self, $where, $filter) = @_;
+
+    return unless $where->{category};
+
+    my @cat_names = $self->expand_triage_cat_list($where->{category});
+
+    $where->{category} = \@cat_names;
+    my $problems = $self->problems->search($where, $filter);
+    return $problems;
+}
+
+sub munge_filter_category {
+    my $self = shift;
+
+    my $c = $self->{c};
+    return unless $c->stash->{filter_category};
+
+    my @cat_names = $self->expand_triage_cat_list([ keys %{$c->stash->{filter_category}} ]);
+    $c->stash->{filter_category} = { map { $_ => 1 } @cat_names };
+}
+
+# this assumes that each Triage category has the same name as a group
+# and uses this to generate a list of categories that a triage category
+# could be triaged to
+sub expand_triage_cat_list {
+    my ($self, $categories) = @_;
+
+    my $b = $self->{c}->model('DB::Body')->for_areas( $self->council_area_id )->first;
+
+    my $all_cats = $self->{c}->model('DB::Contact')->not_deleted->search(
+        {
+            body_id => $b->id,
+            send_method => [{ '!=', 'Triage'}, undef]
+        }
+    );
+
+    my %group_to_category;
+    while ( my $cat = $all_cats->next ) {
+        next unless $cat->get_extra_metadata('group');
+        $group_to_category{$cat->get_extra_metadata('group')} //= [];
+        push @{ $group_to_category{$cat->get_extra_metadata('group')} }, $cat->category;
+    }
+
+    my $cats = $self->{c}->model('DB::Contact')->not_deleted->search(
+        {
+            body_id => $b->id,
+            category => $categories
+        }
+    );
+
+    my @cat_names;
+    while ( my $cat = $cats->next ) {
+        if ( $cat->send_method eq 'Triage' ) {
+            # include the category itself
+            push @cat_names, $cat->category;
+            push @cat_names, @{ $group_to_category{$cat->category} } if $group_to_category{$cat->category};
+        } else {
+            push @cat_names, $cat->category;
+        }
+    }
+
+    return @cat_names;
 }
 
 sub open311_get_update_munging {

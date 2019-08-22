@@ -47,6 +47,13 @@ my $contact2 = $mech->create_contact_ok(
     send_method => 'Triage',
 );
 
+my $admin_user = $mech->create_user_ok('admin-user@example.org', name => 'Admin User', from_body => $isleofwight);
+
+$admin_user->user_body_permissions->create({
+    body => $isleofwight,
+    permission_type => 'triage'
+});
+
 my @reports = $mech->create_problems_for_body(1, $isleofwight->id, 'An Isle of wight report', {
     confirmed => '2019-05-25 09:00',
     lastupdate => '2019-05-25 09:00',
@@ -326,7 +333,7 @@ subtest "sends branded confirmation emails" => sub {
                     photo1        => '',
                     name          => 'Joe Bloggs',
                     username      => 'test-1@example.com',
-                    category      => 'Potholes',
+                    category      => 'Roads',
                 }
             },
             "submit good details"
@@ -368,8 +375,8 @@ subtest "check category extra uses correct name" => sub {
             order => 1,
             datatype_description => 'datatype',
         } );
-    $contact->set_extra_fields( @extras );
-    $contact->update;
+    $contact2->set_extra_fields( @extras );
+    $contact2->update;
 
     my $extra_details;
 
@@ -377,7 +384,7 @@ subtest "check category extra uses correct name" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => ['isleofwight','fixmystreet'],
     }, sub {
-        $extra_details = $mech->get_ok_json('/report/new/category_extras?category=Potholes&latitude=50.71086&longitude=-1.29573');
+        $extra_details = $mech->get_ok_json('/report/new/category_extras?category=Roads&latitude=50.71086&longitude=-1.29573');
     };
 
     like $extra_details->{category_extra}, qr/Island Roads/, 'correct name in category extras';
@@ -423,5 +430,54 @@ subtest "reports are marked for triage upon submission" => sub {
         ok $report->whensent, 'report marked as sent';
     };
 };
+
+for my $cobrand ( 'fixmystreet', 'isleofwight' ) {
+    subtest "only categories for Triage are displayed on " . $cobrand => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/around');
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ $cobrand ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'PO30 5XJ', } },
+                "submit location" );
+
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
+
+            my $f = $mech->form_name('mapSkippedForm');
+            ok $f, 'found form';
+            my $cats = $f->find_input('category');
+            ok $cats, 'found category element';
+            my @values = $cats->possible_values;
+            is_deeply \@values, [ '-- Pick a category --', 'Roads' ], 'correct category list';
+        };
+    };
+
+    subtest "staff user can see non Triage categories on " . $cobrand => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($admin_user->email);
+        $mech->get_ok('/around');
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ $cobrand ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'PO30 5XJ', } },
+                "submit location" );
+
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
+
+            my $f = $mech->form_name('mapSkippedForm');
+            ok $f, 'found form';
+            my $cats = $f->find_input('category');
+            ok $cats, 'found category element';
+            my @values = $cats->possible_values;
+            is_deeply \@values, [ '-- Pick a category --', 'Potholes' ], 'correct category list';
+        };
+    };
+}
 
 done_testing();

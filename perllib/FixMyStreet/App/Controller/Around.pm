@@ -236,10 +236,15 @@ sub check_and_stash_category : Private {
     $csv->combine(@list_of_names);
     $c->{stash}->{list_of_names_as_string} = $csv->string;
 
+    my $where  = { body_id => [ keys %bodies ], };
+
+    my $cobrand_where = $c->cobrand->call_hook('munge_category_where', $where );
+    if ( $cobrand_where ) {
+       $where = $cobrand_where;
+    }
+
     my @categories = $c->model('DB::Contact')->not_deleted->search(
-        {
-            body_id => [ keys %bodies ],
-        },
+        $where,
         {
             columns => [ 'category', 'extra' ],
             order_by => [ 'category' ],
@@ -252,6 +257,7 @@ sub check_and_stash_category : Private {
     my $categories = [ $c->get_param_list('filter_category', 1) ];
     my %valid_categories = map { $_ => 1 } grep { $_ && $categories_mapped{$_} } @$categories;
     $c->stash->{filter_category} = \%valid_categories;
+    $c->cobrand->call_hook('munge_filter_category');
 }
 
 sub map_features : Private {
@@ -312,6 +318,7 @@ sub ajax : Path('/ajax') {
 
     my %valid_categories = map { $_ => 1 } $c->get_param_list('filter_category', 1);
     $c->stash->{filter_category} = \%valid_categories;
+    $c->cobrand->call_hook('munge_filter_category');
 
     $c->forward('map_features', [ { bbox => $c->stash->{bbox} } ]);
     $c->forward('/reports/ajax', [ 'around/on_map_list_items.html' ]);

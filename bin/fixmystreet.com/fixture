@@ -148,14 +148,25 @@ if ($opt->test_fixtures) {
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2636},
+        category => 'Potholes',
+    });
+    $child_cat->update({
+        send_method => 'Triage'
+    });
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2636},
         category => 'Private',
     });
     $child_cat->update({
-        non_public => 1
+        non_public => 1,
+        send_method => 'Triage'
     });
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2636},
         category => 'Extra',
+    });
+    $child_cat->update({
+        send_method => 'Triage'
     });
     $child_cat->set_extra_fields({
         code => 'extra',

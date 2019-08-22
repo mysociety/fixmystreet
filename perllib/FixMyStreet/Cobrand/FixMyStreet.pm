@@ -7,6 +7,7 @@ use warnings;
 use mySociety::Random;
 
 use constant COUNCIL_ID_BROMLEY => 2482;
+use constant COUNCIL_ID_ISLEOFWIGHT => 2636;
 
 sub on_map_default_status { return 'open'; }
 
@@ -41,9 +42,24 @@ sub munge_category_list {
     my ($self, $options, $contacts, $extras) = @_;
 
     # No TfL Traffic Lights category in Hounslow
-    my %bodies = map { $_->body->name => 1 } @$contacts;
-    return unless $bodies{'Hounslow Borough Council'};
-    @$options = grep { ($_->{category} || $_->category) !~ /^Traffic lights$/i } @$options;
+    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    if ( $bodies{'Hounslow Borough Council'} ) {
+        @$options = grep { ($_->{category} || $_->category) !~ /^Traffic lights$/i } @$options;
+    }
+
+    if ( $bodies{'Isle of Wight Council'} ) {
+        my $user = $self->{c}->user;
+        if ( $user && ( $user->is_superuser || $user->belongs_to_body( $bodies{'Isle of Wight Council'}->id ) ) ) {
+            @$contacts = grep { !$_->send_method || $_->send_method ne 'Triage' } @$contacts;
+            my $seen = { map { $_->category => 1 } @$contacts };
+            @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
+            return;
+        }
+
+        @$contacts = grep { $_->send_method && $_->send_method eq 'Triage' } @$contacts;
+        my $seen = { map { $_->category => 1 } @$contacts };
+        @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
+    }
 }
 
 sub title_list {
