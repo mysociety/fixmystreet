@@ -1460,6 +1460,9 @@ fixmystreet.display = {
                 $('html').addClass('only-map');
                 $('#mob_sub_map_links').removeClass('map_complete');
                 $('#mob_ok').text(translation_strings.ok);
+                if (fixmystreet.duplicates) {
+                    fixmystreet.duplicates.hide();
+                }
             });
         });
     }

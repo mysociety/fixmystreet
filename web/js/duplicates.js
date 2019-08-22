@@ -209,4 +209,10 @@
         remove_duplicate_list();
     });
 
+    fixmystreet.duplicates = {
+        hide: function() {
+            remove_duplicate_pins();
+            remove_duplicate_list();
+        }
+    };
 })();
