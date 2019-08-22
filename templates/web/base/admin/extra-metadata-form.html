@@ -69,7 +69,7 @@
             [% loc('Options') %]<span class="hidden-js"> [% loc('(ignored if type is "String")') %]</span>
             <ul>
                 [% outer_loop = loop %]
-                [% values = meta.values OR [] %]
+                [% SET values = meta.item('values') ? meta.values : [] %]
                 [% FOREACH option IN values.merge([{}]) %]
                 [%# the .merge() call is so there's an empty one on the end %]
                     <li class="js-metadata-option [% IF loop.last %]hidden-js js-metadata-option-template[% END %]">
