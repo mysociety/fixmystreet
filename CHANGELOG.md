@@ -14,6 +14,7 @@
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.
+        - Allow categories/Open311 questions to disable the reporting form. #2599
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523

@@ -1207,9 +1207,11 @@ sub update_extra_fields : Private {
             foreach my $j (@vindices) {
                 my $name = $c->get_param("metadata[$i].values[$j].name");
                 my $key = $c->get_param("metadata[$i].values[$j].key");
+                my $disable = $c->get_param("metadata[$i].values[$j].disable");
                 push(@{$meta->{values}}, {
                     name => $name,
                     key => $key,
+                    $disable ? (disable => 1) : (),
                 }) if $name;
             }
         }

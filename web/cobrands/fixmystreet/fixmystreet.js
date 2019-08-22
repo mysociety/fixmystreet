@@ -459,6 +459,12 @@ $.extend(fixmystreet.set_up, {
             $(".js-hide-if-public-category").hide();
         }
 
+        if (fixmystreet.message_controller && data && data.disable_form && data.disable_form.answers) {
+            $('#form_' + data.disable_form.code).on('change.category', function() {
+                $(fixmystreet).trigger('report_new:category_change');
+            });
+        }
+
         // remove existing validation rules
         validation_rules = fixmystreet.validator.settings.rules;
         $.each(validation_rules, function(rule) {
@@ -1259,11 +1265,19 @@ fixmystreet.fetch_reporting_data = function() {
         if (fixmystreet.message_controller) {
             fixmystreet.message_controller.unregister_all_categories();
             $.each(data.by_category, function(category, details) {
-                if (details.disable_form) {
+                if (!details.disable_form) {
+                    return;
+                }
+                if (details.disable_form.all) {
                     fixmystreet.message_controller.register_category({
                         category: category,
-                        message: details.disable_form
+                        message: details.disable_form.all
                     });
+                }
+                if (details.disable_form.answers) {
+                    details.disable_form.category = category;
+                    details.disable_form.keep_category_extras = true;
+                    fixmystreet.message_controller.register_category(details.disable_form);
                 }
             });
         }

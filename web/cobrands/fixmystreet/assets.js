@@ -1112,7 +1112,20 @@ fixmystreet.message_controller = (function() {
                 return false;
             }
 
-            return $('#form_category').val() == stopper.category;
+            var category = $('#form_category').val();
+            if (category != stopper.category) {
+                return false;
+            }
+
+            if (stopper.answers) {
+                var answer = $('#form_' + stopper.code).val();
+                if (OpenLayers.Util.indexOf(stopper.answers, answer) > -1) {
+                    return true;
+                }
+                return false;
+            } else {
+                return true;
+            }
         });
 
         if (!matching.length) {

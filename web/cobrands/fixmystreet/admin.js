@@ -216,6 +216,7 @@ $(function(){
             var prefix = "metadata["+item_index+"].values["+i+"]";
             $li.find(".js-metadata-option-key").attr("name", prefix+".key");
             $li.find(".js-metadata-option-name").attr("name", prefix+".name");
+            $li.find(".js-metadata-option-disable").attr("name", prefix+".disable");
         });
     }
 });

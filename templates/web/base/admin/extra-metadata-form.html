@@ -87,6 +87,10 @@
                             [% loc('Name') %]
                             <input class="js-metadata-option-name" name="metadata[[% outer_loop.index %]].values[[% loop.index %]].name" type="text" value="[% option.name | html %]">
                         </label>
+                        <label>
+                            [% loc('Disable form') %]
+                            <input class="js-metadata-option-disable" name="metadata[[% outer_loop.index %]].values[[% loop.index %]].disable" type="checkbox"[% ' checked' IF option.disable %]>
+                        </label>
                         <button type="button" class="btn btn--small js-metadata-option-remove hidden-nojs">[% loc('Remove') %]</button>
                     </li>
                 [% END %]

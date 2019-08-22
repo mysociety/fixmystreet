@@ -311,13 +311,22 @@ sub by_category_ajax_data : Private {
 sub disable_form_message : Private {
     my ( $self, $c ) = @_;
 
-    my @descriptions = map {
-        $_->{description}
-    } grep {
-        $_->{disable_form} && $_->{disable_form} eq 'true'
-    } @{ $c->stash->{category_extras}->{$c->stash->{category}} };
-
-    return join " ", @descriptions;
+    my %out;
+    foreach (@{$c->stash->{category_extras}->{$c->stash->{category}}}) {
+        if ($_->{disable_form} && $_->{disable_form} eq 'true') {
+            $out{all} .= ' ' if $out{all};
+            $out{all} .= $_->{description};
+        } elsif (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
+            foreach my $opt (@{$_->{values}}) {
+                if ($opt->{disable}) {
+                    $out{message} = $_->{datatype_description};
+                    $out{code} = $_->{code};
+                    push @{$out{answers}}, $opt->{key};
+                }
+            }
+        }
+    }
+    return \%out;
 }
 
 =head2 report_import
