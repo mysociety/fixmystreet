@@ -88,11 +88,12 @@ sub open311_post_send {
     return unless $row->external_id;
 
     # For certain categories, send an email also
+    my $emails = $self->feature('open311_email');
     my $addresses = {
-        'Flytipping' => [ join('@', 'illegaldumpingcosts', $self->admin_user_domain), "TfB" ],
-        'Blocked drain' => [ join('@', 'floodmanagement', $self->admin_user_domain), "Flood Management" ],
-        'Ditch issue' => [ join('@', 'floodmanagement', $self->admin_user_domain), "Flood Management" ],
-        'Flooded subway' => [ join('@', 'floodmanagement', $self->admin_user_domain), "Flood Management" ],
+        'Flytipping' => [ $emails->{flytipping}, "TfB" ],
+        'Blocked drain' => [ $emails->{flood}, "Flood Management" ],
+        'Ditch issue' => [ $emails->{flood}, "Flood Management" ],
+        'Flooded subway' => [ $emails->{flood}, "Flood Management" ],
     };
     my $dest = $addresses->{$row->category};
     return unless $dest;
