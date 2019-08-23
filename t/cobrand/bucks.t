@@ -27,6 +27,14 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'buckinghamshire', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    COBRAND_FEATURES => {
+        open311_email => {
+            buckinghamshire => {
+                flytipping => 'flytipping@example.org',
+                flood => 'floods@example.org',
+            }
+        }
+    }
 }, sub {
 
 subtest 'cobrand displays council name' => sub {
@@ -54,8 +62,7 @@ my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
 subtest 'flytipping on road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
-    my $tfb = join('', 'illegaldumpingcosts', '@', 'buckscc.gov.uk');
-    is $email[0]->header('To'), 'TfB <' . $tfb . '>';
+    is $email[0]->header('To'), 'TfB <flytipping@example.org>';
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number/;
     $report->discard_changes;
     is $report->external_id, 248, 'Report has right external ID';
@@ -101,8 +108,7 @@ subtest 'blocked drain sent to extra email' => sub {
     $mech->clear_emails_ok;
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
-    my $e = join('@', 'floodmanagement', 'buckscc.gov.uk');
-    is $email[0]->header('To'), '"Flood Management" <' . $e . '>';
+    is $email[0]->header('To'), '"Flood Management" <floods@example.org>';
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number/;
 };
 
