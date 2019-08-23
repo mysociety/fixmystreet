@@ -156,7 +156,7 @@ sub flytipping_body_fix {
         # If the report is only being sent to the district, we do
         # not care about the road question, if it is missing
         if (!$report->to_body_named('Buckinghamshire')) {
-            delete $errors->{'road-placement'};
+            delete $errors->{'xroad-placement'};
         }
     }
 }

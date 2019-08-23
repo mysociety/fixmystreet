@@ -28,6 +28,18 @@ describe('flytipping', function() {
     cy.wait('@report-ajax');
     cy.get('select:eq(4)').select('Flytipping');
     cy.contains('sent to Chiltern District Council and also');
+
+    cy.get('[name=title]').type('Title');
+    cy.get('[name=detail]').type('Detail');
+    cy.get('.js-new-report-user-show').click();
+    cy.get('.js-new-report-show-sign-in').should('be.visible').click();
+    cy.get('#form_username_sign_in').type('user@example.org');
+    cy.get('[name=password_sign_in]').type('password');
+    cy.get('[name=password_sign_in]').parents('form').submit();
+    cy.get('#map_sidebar').should('contain', 'check and confirm your details');
+    cy.wait('@report-ajax');
+    cy.get('#map_sidebar').parents('form').submit();
+    cy.get('body').should('contain', 'Thank you for your report');
   });
 
 });

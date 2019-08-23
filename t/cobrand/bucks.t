@@ -115,16 +115,16 @@ subtest 'blocked drain sent to extra email' => sub {
 $cobrand = FixMyStreet::Cobrand::Buckinghamshire->new();
 
 subtest 'Flytipping extra question used if necessary' => sub {
-    my $errors = { 'road-placement' => 'This field is required' };
+    my $errors = { 'xroad-placement' => 'This field is required' };
 
     $report->update({ bodies_str => $body->id });
     $cobrand->flytipping_body_fix($report, 'road', $errors);
-    is $errors->{'road-placement'}, 'This field is required', 'Error stays if sent to county';
+    is $errors->{'xroad-placement'}, 'This field is required', 'Error stays if sent to county';
 
     $report->update({ bodies_str => $district->id });
     $report->discard_changes; # As e.g. ->bodies has been remembered.
     $cobrand->flytipping_body_fix($report, 'road', $errors);
-    is $errors->{'road-placement'}, undef, 'Error removed if sent to district';
+    is $errors->{'xroad-placement'}, undef, 'Error removed if sent to district';
 
     $report->update({ bodies_str => $body->id . ',' . $district->id });
     $report->discard_changes; # As e.g. ->bodies has been remembered.
