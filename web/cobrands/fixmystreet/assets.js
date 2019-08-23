@@ -993,7 +993,7 @@ $(fixmystreet).on('body_overrides:change', function() {
     }
 
     if (do_not_send) {
-        do_not_send = fixmystreet.utils.csv_to_array(do_not_send);
+        do_not_send = fixmystreet.utils.csv_to_array(do_not_send)[0];
         var lookup = {};
         $.map(do_not_send, function(val) {
             lookup[val] = 1;
