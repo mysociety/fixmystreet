@@ -82,6 +82,8 @@ sub index : Path : Args(0) {
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         whensent => undef,
         bodies_str => { '!=', undef },
+        # Ignore very recent ones that probably just haven't been sent yet
+        confirmed => { '<', \"current_timestamp - '5 minutes'::interval" },
     } )->all;
     $c->stash->{unsent_reports} = \@unsent;
 
