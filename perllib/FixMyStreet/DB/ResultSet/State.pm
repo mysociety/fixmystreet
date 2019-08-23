@@ -76,6 +76,9 @@ sub display {
         return 'third party responsibility' if $cobrand eq 'bromley';
         return _("not the council's responsibility");
     }
+    if ($cobrand && $cobrand eq 'oxfordshire' && $label eq 'unable to fix') {
+        return 'Investigation complete';
+    }
     my ($state) = $rs->_filter(sub { $_->label eq $label });
     return $label unless $state;
     $state->name($translate_now->{$label}) if $translate_now->{$label};
