@@ -482,7 +482,7 @@ $.extend(fixmystreet.set_up, {
             }
         });
 
-        $(fixmystreet).trigger('report_new:category_change');
+        $(fixmystreet).trigger('report_new:category_change', { check_duplicates_dismissal: true });
     });
   },
 

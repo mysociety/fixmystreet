@@ -4,6 +4,11 @@
     // quickly remove them when we’re finished showing duplicates.
     var current_duplicate_markers;
 
+    // keep track of whether the suggestion UI has already been dismissed
+    // for this category
+    var dismissed = false;
+    var dismissed_category = null;
+
     // Report ID will be available on report inspect page,
     // but undefined on new report page.
     var report_id = $("#report_inspect_form .js-report-id").text() || undefined;
@@ -33,6 +38,17 @@
             nearby_url = '/around/nearby';
             url_params.distance = 250; // Only want to bother public with very nearby reports (250 metres)
             url_params.pin_size = 'normal';
+        }
+
+        if (category && params && params.check_duplicates_dismissal ) {
+            dismissed = category === dismissed_category;
+            dismissed_category = category;
+
+            if (!take_effect()) {
+                remove_duplicate_pins();
+                remove_duplicate_list();
+                return;
+            }
         }
 
         $.ajax({
@@ -190,6 +206,10 @@
         if ($('.js-responsibility-message:visible').length) {
             return false;
         }
+        // On mobile only show once per category
+        if ($('html').hasClass('mobile') && dismissed) {
+            return false;
+        }
         return true;
     }
 
@@ -205,14 +225,14 @@
 
     $('.js-hide-duplicate-suggestions').on('click', function(e){
         e.preventDefault();
-        remove_duplicate_pins();
-        remove_duplicate_list();
+        fixmystreet.duplicates.hide();
     });
 
     fixmystreet.duplicates = {
         hide: function() {
             remove_duplicate_pins();
             remove_duplicate_list();
+            dismissed = true;
         }
     };
 })();
