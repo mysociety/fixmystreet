@@ -25,7 +25,7 @@
               <input type="hidden" name="filter_category" value="[% c.user.categories.join(",") | html %]">
             [% END %]
         </form>
-        <a href="[% c.uri_for('/around') %]" id="geolocate_link">[% loc('Or locate me automatically') %]</a>
+        <a href="[% c.uri_for('/around') %]" id="geolocate_link">[% loc('Or use my location') %]</a>
 
         [% UNLESS possible_location_matches %]
             [% INCLUDE 'around/_postcode_form_post.html' %]
