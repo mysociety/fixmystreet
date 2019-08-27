@@ -45,6 +45,12 @@ sub get_geocoder {
 
 sub on_map_default_status { 'open' }
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'yellow';
+}
+
 sub send_questionnaires { 0 }
 
 sub categories_restriction {
