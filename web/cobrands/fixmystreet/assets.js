@@ -386,6 +386,11 @@ function check_zoom_message_visibility() {
     if (this.relevant()) {
         if ($p.length === 0) {
             $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
+            if ($('html').hasClass('mobile')) {
+                $p.click(function() {
+                    $("#mob_ok").trigger('click');
+                }).addClass("btn");
+            }
             $p.prependTo('#js-post-category-messages');
         }
 
