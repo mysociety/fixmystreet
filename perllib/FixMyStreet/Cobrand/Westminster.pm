@@ -32,17 +32,6 @@ sub enter_postcode_text {
 
 sub send_questionnaires { 0 }
 
-sub updates_disallowed {
-    my $self = shift;
-    my $c = $self->{c};
-
-    # Only WCC staff and superusers can leave updates
-    my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
-    my $superuser = $c->user_exists && $c->user->is_superuser;
-
-    return ( $staff || $superuser ) ? 0 : 1;
- }
-
 sub suppress_reporter_alerts { 1 }
 
 sub report_age { '3 months' }

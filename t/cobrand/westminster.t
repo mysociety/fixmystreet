@@ -29,6 +29,9 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'westminster',
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
+        updates_allowed => {
+            westminster => 'staff',
+        },
         oidc_login => {
             westminster => {
                 client_id => 'example_client_id',
@@ -64,6 +67,11 @@ subtest 'Reports have an update form for superusers' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'westminster',
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            updates_allowed => {
+                westminster => 'staff',
+            },
+        },
     }, sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('Provide an update');
@@ -77,6 +85,11 @@ subtest 'Reports have an update form for staff users' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'westminster',
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            updates_allowed => {
+                westminster => 'staff',
+            },
+        },
     }, sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('Provide an update');

@@ -372,6 +372,30 @@ sub contact_email {
     return $self->feature('contact_email') || $self->next::method();
 }
 
+# Allow cobrands to disallow updates on some things.
+# Note this only ever locks down more than the default.
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+    my $c = $self->{c};
+
+    my $cfg = $self->feature('updates_allowed') || '';
+    if ($cfg eq 'none') {
+        return 1;
+    } elsif ($cfg eq 'staff') {
+        # Only staff and superusers can leave updates
+        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
+        my $superuser = $c->user_exists && $c->user->is_superuser;
+        return 1 unless $staff || $superuser;
+    } elsif ($cfg eq 'reporter') {
+        return 1 if !$c->user_exists || $c->user->id != $problem->user->id;
+    } elsif ($cfg eq 'open') {
+        return 1 if $problem->is_fixed || $problem->is_closed;
+    }
+
+    return $self->next::method(@_);
+}
+
 sub extra_contact_validation {
     my $self = shift;
     my $c = shift;

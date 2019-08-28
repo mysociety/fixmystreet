@@ -47,4 +47,46 @@ foreach my $test (
 };
 
 
+subtest "Test update shown/not shown appropriately" => sub {
+    my $user = $mech->create_user_ok('test@example.com');
+    foreach my $cobrand ('oxfordshire', 'fixmystreet') {
+        foreach my $test (
+            # Three bools are logged out, reporter, staff user
+            { type => 'none', update => [0,0,0] },
+            { type => 'staff', update => [0,0,1] },
+            { type => 'reporter', update => [0,1,1] },
+            { type => 'open', state => 'closed', update => [0,0,0] },
+            { type => 'open', state => 'in progress', update => [1,1,1] },
+        ) {
+            FixMyStreet::override_config {
+                ALLOWED_COBRANDS => $cobrand,
+                MAPIT_URL => 'http://mapit.uk/',
+                COBRAND_FEATURES => {
+                    updates_allowed => {
+                        oxfordshire => $test->{type},
+                        fixmystreet => {
+                            Oxfordshire => $test->{type},
+                        }
+                    }
+                },
+            }, sub {
+                subtest "$cobrand, $test->{type}" => sub {
+                    $report->update({ state => $test->{state} || 'confirmed' });
+                    $mech->log_out_ok;
+                    $user->update({ from_body => undef });
+                    $mech->get_ok("/report/$report_id");
+                    $mech->contains_or_lacks($test->{update}[0], 'Provide an update');
+                    $mech->log_in_ok('test@example.com');
+                    $mech->get_ok("/report/$report_id");
+                    $mech->contains_or_lacks($test->{update}[1], 'Provide an update');
+                    $user->update({ from_body => $oxon->id });
+                    $mech->get_ok("/report/$report_id");
+                    $mech->contains_or_lacks($test->{update}[2], 'Provide an update');
+                };
+            };
+        }
+    }
+};
+
+
 done_testing();

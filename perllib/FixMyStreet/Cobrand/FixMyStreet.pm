@@ -166,4 +166,38 @@ sub about_hook {
     }
 }
 
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+    my $c = $self->{c};
+
+    # This is a hash of council name to match, and what to do
+    my $cfg = $self->feature('updates_allowed') || {};
+
+    my $type = '';
+    my $body;
+    foreach (keys %$cfg) {
+        if ($problem->to_body_named($_)) {
+            $type = $cfg->{$_};
+            $body = $_;
+            last;
+        }
+    }
+
+    if ($type eq 'none') {
+        return 1;
+    } elsif ($type eq 'staff') {
+        # Only staff and superusers can leave updates
+        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
+        my $superuser = $c->user_exists && $c->user->is_superuser;
+        return 1 unless $staff || $superuser;
+    } elsif ($type eq 'reporter') {
+        return 1 if !$c->user_exists || $c->user->id != $problem->user->id;
+    } elsif ($type eq 'open') {
+        return 1 if $problem->is_fixed || $problem->is_closed;
+    }
+
+    return $self->next::method(@_);
+}
+
 1;
