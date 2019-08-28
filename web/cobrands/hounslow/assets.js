@@ -42,40 +42,42 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     asset_item: 'bin'
 }));
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "trees"
-        }
-    },
-    asset_id_field: 'central_asset_id',
-    attributes: {
-        central_asset_id: 'central_asset_id',
-        asset_details: 'asset_Id'
-    },
-    asset_category: [
-        "Tree Danger/Obstruction",
-        "Branches overhanging",
-        "Damage By Tree",
-        "Dead/Dying/Diseased",
-        "Dying or dangerous tree",
-        "Empty tree Pit",
-        "Fallen or leaning tree",
-        "General Maintenance and pruning",
-        "Illuminated Traffic signal obstructed by vegetation",
-        "Traffic signal obstructed by vegetation",
-        "Pest: Tree/Shrub",
-        "Pests in trees and shrubs",
-        "Tree Branches Overhanging",
-        "Tree Maintenance",
-        "Tree causing damage to property",
-        "Tree obstructing street light",
-        "Trees or shrubs blocking visibility",
-        "Trees or shrubs causing obstruction of highway",
-        "Trees"
-      ],
-    asset_item: 'tree'
-}));
+// Disabled for now as the data is quite out of date and causing problems
+// sending reports.
+// fixmystreet.assets.add($.extend(true, {}, defaults, {
+//     http_options: {
+//         params: {
+//             TYPENAME: "trees"
+//         }
+//     },
+//     asset_id_field: 'central_asset_id',
+//     attributes: {
+//         central_asset_id: 'central_asset_id',
+//         asset_details: 'asset_Id'
+//     },
+//     asset_category: [
+//         "Tree Danger/Obstruction",
+//         "Branches overhanging",
+//         "Damage By Tree",
+//         "Dead/Dying/Diseased",
+//         "Dying or dangerous tree",
+//         "Empty tree Pit",
+//         "Fallen or leaning tree",
+//         "General Maintenance and pruning",
+//         "Illuminated Traffic signal obstructed by vegetation",
+//         "Traffic signal obstructed by vegetation",
+//         "Pest: Tree/Shrub",
+//         "Pests in trees and shrubs",
+//         "Tree Branches Overhanging",
+//         "Tree Maintenance",
+//         "Tree causing damage to property",
+//         "Tree obstructing street light",
+//         "Trees or shrubs blocking visibility",
+//         "Trees or shrubs causing obstruction of highway",
+//         "Trees"
+//       ],
+//     asset_item: 'tree'
+// }));
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
     http_options: {
