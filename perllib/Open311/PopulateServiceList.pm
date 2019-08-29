@@ -161,7 +161,12 @@ sub _handle_existing_contact {
     if ( $contact and lc($metadata) eq 'true' ) {
         $self->_add_meta_to_contact( $contact );
     } elsif ( $contact and $contact->extra and lc($metadata) eq 'false' ) {
-        $contact->set_extra_fields();
+        # check if there are any protected fields that we should not delete
+        my @meta = (
+            grep { $_->{protected} }
+            @{ $contact->get_extra_fields }
+        );
+        $contact->set_extra_fields(@meta);
         $contact->update;
     }
 
@@ -226,13 +231,26 @@ sub _add_meta_to_contact {
         return;
     }
 
-    # turn the data into something a bit more friendly to use
+    # check if there are any protected fields that we should not overwrite
+    my $protected = {
+        map { $_->{code} => $_ }
+        grep { $_->{protected} }
+        @{ $contact->get_extra_fields }
+    };
     my @meta =
+        map { $protected->{$_->{code}} ? delete $protected->{$_->{code}} : $_ }
+        @{ $meta_data->{attributes} };
+
+    # and then add back in any protected fields that we don't fetch
+    push @meta, values %$protected;
+
+    # turn the data into something a bit more friendly to use
+    @meta =
         # remove trailing colon as we add this when we display so we don't want 2
         map { $_->{description} =~ s/:\s*$//; $_ }
         # there is a display order and we only want to sort once
         sort { $a->{order} <=> $b->{order} }
-        @{ $meta_data->{attributes} };
+        @meta;
 
     # Some Open311 endpoints, such as Bromley and Warwickshire send <metadata>
     # for attributes which we *don't* want to display to the user (e.g. as
