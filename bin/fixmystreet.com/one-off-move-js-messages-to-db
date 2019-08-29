@@ -1,0 +1,128 @@
+#!/usr/bin/env perl
+#
+# One off script to transfer the hardcoded JS messages to the database
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+
+use Getopt::Long;
+
+my $commit;
+GetOptions(
+    'commit' => \$commit,
+);
+
+if (!$commit) {
+    say "*** DRY RUN ***";
+}
+
+my @messages = (
+    {
+        body => 'Oxfordshire County Council',
+        category => 'Countryside Paths / Public Rights of Way (usually not tarmac)',
+        message => 'Please report problems with rights of way using <a href="https://publicrightsofway.oxfordshire.gov.uk/web/standardmap.aspx">this page</a>.'
+    },
+    {
+        body => 'Buckinghamshire County Council',
+        category => 'Rights of Way',
+        message => 'If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.'
+    },
+    {
+        body => 'Northamptonshire County Council',
+        category => 'Street lighting',
+        message => 'Street lighting in Northamptonshire is maintained by Balfour Beatty on behalf of the County Council under a Street Lighting Private Finance Initiative (PFI) contract. Please view our <b><a href="https://www3.northamptonshire.gov.uk/councilservices/northamptonshire-highways/roads-and-streets/Pages/street-lighting.aspx">Street Lighting</a></b> page to report any issues.'
+    },
+);
+
+my %bristol = (
+    "Abandoned vehicles" => "https://www.bristol.gov.uk/streets-travel/abandoned-vehicles",
+    "Flytipping" => "https://www.bristol.gov.uk/streets-travel/flytipping",
+    "Flyposting" => "https://www.bristol.gov.uk/streets-travel/flyposting",
+    "Graffiti" => "https://www.bristol.gov.uk/streets-travel/graffiti",
+    "Dog fouling" => "https://www.bristol.gov.uk/streets-travel/dog-fouling",
+    "Street cleaning" => "https://www.bristol.gov.uk/streets-travel/street-that-needs-cleaning",
+);
+foreach (keys %bristol) {
+    push @messages, {
+        body => 'Bristol City Council',
+        category => $_,
+        message => "If you wish to report an issue with $_, please use <a href=\"$bristol{$_}\">this service</a>."
+    };
+}
+
+MESSAGE: foreach my $msg (@messages) {
+    my $body = FixMyStreet::DB->resultset("Body")->find({ name => $msg->{body} });
+    unless ($body) {
+        say STDERR "Could not find body $msg->{body}";
+        next;
+    }
+    my $category = FixMyStreet::DB->resultset("Contact")->find({ body_id => $body->id, category => $msg->{category} });
+    unless ($category) {
+        say STDERR "Could not find $msg->{category}, $msg->{body}";
+        next;
+    }
+    my $extra_fields = $category->get_extra_fields;
+    foreach (@$extra_fields) {
+        if ($_->{code} eq 'stopper-message') {
+            say "Stopper message already present for $msg->{category}, $msg->{body}";
+            next MESSAGE;
+        }
+    }
+    unshift @$extra_fields, {
+        code => 'stopper-message',
+        order => -1,
+        datatype => 'string',
+        required => 'true',
+        protected => 'true',
+        variable => 'false',
+        disable_form => 'true',
+        description => $msg->{message},
+        datatype_description => '',
+    };
+    $category->set_extra_fields(@$extra_fields);
+    say "Adding stopper message to $msg->{category}, $msg->{body}";
+    if ($commit) {
+        $category->update;
+    }
+}
+
+my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire County Council' });
+if ($northants) {
+    my @northants_contacts = $northants->contacts->all;
+    my $found_total = 0;
+    foreach my $category (@northants_contacts) {
+        my $extra_fields = $category->get_extra_fields;
+        my $found = 0;
+        foreach (@$extra_fields) {
+            next unless $_->{code} eq 'emergency';
+            $found_total++;
+            if (!$_->{disable_form} || $_->{disable_form} eq 'false') {
+                $_->{disable_form} = 'true';
+                $_->{protected} = 'true';
+                $found = 1;
+            }
+        }
+        if ($found) {
+            $category->set_extra_fields(@$extra_fields);
+            say "Making emergency message disable form on " . $category->category . ", Northamptonshire";
+            if ($commit) {
+                $category->update;
+            }
+        }
+    }
+    if (!$found_total) {
+        say STDERR "No emergency messages found for Northamptonshire";
+    }
+} else {
+    say STDERR "Could not find Northamptonshire";
+}

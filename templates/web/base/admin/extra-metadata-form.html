@@ -43,6 +43,12 @@
             <input name="metadata[[% loop.index %]].protected" data-field-name="protected" type=checkbox [% meta.protected == 'true' ? 'checked' : '' %]>
         </label>
 
+        <div class="admin-hint"><p>[% loc('If ticked the entire report form will be disabled when this category is selected.') %]</p></div>
+        <label>
+            [% loc('Disable form') %]
+            <input name="metadata[[% loop.index %]].disable_form" data-field-name="disable_form" type=checkbox [% meta.disable_form == 'true' ? 'checked' : '' %]>
+        </label>
+
         <div class="admin-hint"><p>[% loc('The field name as shown to the user on the report form.') %]</p></div>
         <label>
             [% loc('Description') %]
@@ -69,7 +75,7 @@
             [% loc('Options') %]<span class="hidden-js"> [% loc('(ignored if type is "String")') %]</span>
             <ul>
                 [% outer_loop = loop %]
-                [% values = meta.values OR [] %]
+                [% SET values = meta.item('values') ? meta.values : [] %]
                 [% FOREACH option IN values.merge([{}]) %]
                 [%# the .merge() call is so there's an empty one on the end %]
                     <li class="js-metadata-option [% IF loop.last %]hidden-js js-metadata-option-template[% END %]">
@@ -80,6 +86,10 @@
                         <label>
                             [% loc('Name') %]
                             <input class="js-metadata-option-name" name="metadata[[% outer_loop.index %]].values[[% loop.index %]].name" type="text" value="[% option.name | html %]">
+                        </label>
+                        <label>
+                            [% loc('Disable form') %]
+                            <input class="js-metadata-option-disable" name="metadata[[% outer_loop.index %]].values[[% loop.index %]].disable" type="checkbox"[% ' checked' IF option.disable %]>
                         </label>
                         <button type="button" class="btn btn--small js-metadata-option-remove hidden-nojs">[% loc('Remove') %]</button>
                     </li>

@@ -82,6 +82,7 @@ FixMyStreet::override_config {
             description => "this is a test description",
             datatype_description => "hint here",
             datatype => "string",
+            disable_form => "false",
         };
         $contact->discard_changes;
         is_deeply $contact->get_extra_fields, $contact_extra_fields, 'new string field was added';
@@ -93,6 +94,7 @@ FixMyStreet::override_config {
             "metadata[1].code" => "list_test",
             "metadata[1].required" => undef,
             "metadata[1].notice" => "",
+            "metadata[1].disable_form" => "on",
             "metadata[1].description" => "this field is a list",
             "metadata[1].datatype_description" => "",
             "metadata[1].datatype" => "list",
@@ -108,6 +110,7 @@ FixMyStreet::override_config {
             required => "false",
             variable => "true",
             protected => "false",
+            disable_form => "true",
             description => "this field is a list",
             datatype_description => "",
             datatype => "singlevaluelist",
@@ -145,6 +148,7 @@ FixMyStreet::override_config {
             required => 'false',
             variable => 'true',
             protected => 'false',
+            disable_form => 'false',
             code => 'POT',
             automated => 'server_set'
         } ], "automated fields not unset";
@@ -181,6 +185,7 @@ FixMyStreet::override_config {
             required => "true",
             variable => "true",
             protected => "false",
+            disable_form => "false",
             description => "this is a test description",
             datatype_description => "hint here",
             datatype => "string",
@@ -209,6 +214,7 @@ FixMyStreet::override_config {
             required => "false",
             variable => "true",
             protected => "false",
+            disable_form => "false",
             description => "this field is a list",
             datatype_description => "",
             datatype => "singlevaluelist",
@@ -239,6 +245,7 @@ FixMyStreet::override_config {
             required => "false",
             variable => "true",
             protected => "false",
+            disable_form => "false",
             description => "",
             datatype_description => "",
             datatype => "string",

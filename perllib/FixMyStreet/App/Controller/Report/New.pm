@@ -281,6 +281,11 @@ sub by_category_ajax_data : Private {
         $body->{category_extra_json} = $c->forward('generate_category_extra_json');
     }
 
+    if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
+        my $disable_form = $c->forward('disable_form_message');
+        $body->{disable_form} = $disable_form if $disable_form;
+    }
+
     my $unresponsive = $c->stash->{unresponsive}->{$category};
     $unresponsive ||= $c->stash->{unresponsive}->{ALL} || '' if $type eq 'one';
 
@@ -301,6 +306,27 @@ sub by_category_ajax_data : Private {
     }
 
     return $body;
+}
+
+sub disable_form_message : Private {
+    my ( $self, $c ) = @_;
+
+    my %out;
+    foreach (@{$c->stash->{category_extras}->{$c->stash->{category}}}) {
+        if ($_->{disable_form} && $_->{disable_form} eq 'true') {
+            $out{all} .= ' ' if $out{all};
+            $out{all} .= $_->{description};
+        } elsif (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
+            foreach my $opt (@{$_->{values}}) {
+                if ($opt->{disable}) {
+                    $out{message} = $_->{datatype_description};
+                    $out{code} = $_->{code};
+                    push @{$out{answers}}, $opt->{key};
+                }
+            }
+        }
+    }
+    return \%out;
 }
 
 =head2 report_import

@@ -115,6 +115,7 @@ if ($opt->test_fixtures) {
         description => 'Please call us instead, it is very urgent.',
         order => 1,
         variable => 'false',
+        disable_form => 'true',
     });
     $child_cat->update;
 

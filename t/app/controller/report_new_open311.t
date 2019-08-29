@@ -287,4 +287,30 @@ subtest "Category extras includes description label for user" => sub {
     };
 };
 
+subtest "Category extras includes form disabling string" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $contact4->push_extra_fields({ description => 'Please ring us!', code => 'ring', variable => 'false', order => '0', disable_form => 'true' });
+        $contact4->push_extra_fields({ datatype_description => 'Please please ring', description => 'Is it dangerous?', code => 'dangerous',
+            variable => 'true', order => '0', values => [ { name => 'Yes', key => 'yes', disable => 1 }, { name => 'No', key => 'no' } ]
+        });
+        $contact4->update;
+        for (
+          { url => '/report/new/ajax?' },
+          { url => '/report/new/category_extras?category=Pothole' },
+        ) {
+            my $json = $mech->get_ok_json($_->{url} . '&latitude=55.952055&longitude=-3.189579');
+            my $output = $json->{by_category} ? $json->{by_category}{Pothole}{disable_form} : $json->{disable_form};
+            is_deeply $output, {
+                all => 'Please ring us!',
+                message => 'Please please ring',
+                code => 'dangerous',
+                answers => [ 'yes' ],
+            };
+        }
+    };
+};
+
 done_testing();

@@ -371,10 +371,4 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
-fixmystreet.message_controller.register_category({
-    body: defaults.body,
-    category: 'Rights of Way',
-    message: 'If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.'
-});
-
 })();

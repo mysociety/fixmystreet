@@ -111,28 +111,5 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'public toilet'
 });
 
-// We need to trigger the below function on subcategory change also
-$(function(){
-    $("#problem_form").on("change.category", "#form_DALocation", function() {
-        $(fixmystreet).trigger('report_new:category_change');
-    });
-});
-
-fixmystreet.message_controller.register_category({
-    body: defaults.body,
-    category: function() {
-        var cat = $('#form_category').val();
-        if (cat === 'Dead animal') {
-            var where = $('#form_DALocation').val();
-            if (where === 'Garden' || where === 'Other private property') {
-                return true;
-            }
-        }
-        return false;
-    },
-    keep_category_extras: true,
-    message: 'Please follow the link below to pay to remove a dead animal from a private property.'
-});
-
 })();
 
