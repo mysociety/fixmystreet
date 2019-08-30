@@ -5,4 +5,4 @@
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>
 [% END %]
-<input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" aria-describedby="title-hint" required autocomplete="off">
+<input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" aria-describedby="title-hint"[% field_required %] autocomplete="off">

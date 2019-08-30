@@ -62,6 +62,12 @@ my $contact4 = $mech->create_contact_ok(
         { description => 'Asset ID', code => 'central_asset_id', required => 'true', automated => 'hidden_field', variable => 'true', order => '2' },
     ] },
 );
+# Another one to switch to in disable form test
+$mech->create_contact_ok(
+    body_id => $body2->id, # Edinburgh
+    category => 'Something Other',
+    email => '104',
+);
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -310,6 +316,47 @@ subtest "Category extras includes form disabling string" => sub {
                 answers => [ 'yes' ],
             };
         }
+
+        # Test new non-JS form disabling flow
+        $mech->get_ok('/report/new?latitude=55.952055&longitude=-3.189579');
+        $mech->content_contains('name="submit_category_part_only"');
+        $mech->submit_form_ok({ with_fields => { category => 'Pothole' } });
+        $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_contains('Please ring us!');
+        # Switch to another, okay, category
+        $mech->submit_form_ok({ with_fields => { category => 'Something Other' } });
+        $mech->content_lacks('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_lacks('Please ring us!');
+
+        # Remove the required extra field so its error checking doesn't get in the way
+        my $extra = $contact4->get_extra_fields;
+        @$extra = grep { $_->{code} ne 'size' } @$extra;
+        $contact4->set_extra_fields(@$extra);
+        $contact4->update;
+
+        # Test submission of whole form, switching back to a blocked category at the same time
+        $mech->submit_form_ok({ with_fields => {
+            category => 'Pothole', title => 'Title', detail => 'Detail',
+            username => 'testing@example.org', name => 'Testing Example',
+        } });
+        $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_contains('Please ring us!');
+
+        # Test special answer disabling of form
+        $extra = $contact4->get_extra_fields;
+        @$extra = grep { $_->{code} ne 'ring' } @$extra; # Remove that all-category one
+        $contact4->set_extra_fields(@$extra);
+        $contact4->update;
+        $mech->get_ok('/report/new?latitude=55.952055&longitude=-3.189579');
+        $mech->content_contains('name="submit_category_part_only"');
+        $mech->submit_form_ok({ with_fields => { category => 'Pothole' } });
+        $mech->content_contains('name="submit_category_part_only"');
+        $mech->submit_form_ok({ with_fields => { dangerous => 'no' } });
+        $mech->content_lacks('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_lacks('Please please ring');
+        $mech->submit_form_ok({ with_fields => { dangerous => 'yes' } });
+        $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_contains('Please please ring');
     };
 };
 

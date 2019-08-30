@@ -1,6 +1,6 @@
 [%- FOR meta IN metas %]
   [%- meta_name = meta.code -%]
-  [%- x_meta_name = 'x' _ meta.code # For report_meta and field_erros lookup, as TT hides codes starting "_" -%]
+  [%- x_meta_name = 'x' _ meta.code # For report_meta and field_errors lookup, as TT hides codes starting "_" -%]
 
   [% IF c.cobrand.category_extra_hidden(meta) AND NOT show_hidden %]
 
