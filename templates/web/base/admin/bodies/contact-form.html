@@ -145,7 +145,7 @@ as well.") %]
               <button type="button" class="btn btn--small js-group-item-add">[% loc('Add group') %]</button>
             </p>
         [% ELSE %]
-        <input class="form-control" type="text" name="group" value="[% contact.extra.group | html %]" size="30">
+            <input class="form-control" type="text" name="group" value="[% contact.extra.group.join(',') | html %]" size="30">
         [% END %]
       </label>
     </p>
