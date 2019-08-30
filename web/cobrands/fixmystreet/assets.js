@@ -1100,7 +1100,8 @@ fixmystreet.message_controller = (function() {
     });
 
     $(fixmystreet).on('report_new:category_change', function() {
-        if (fixmystreet.body_overrides.get_only_send() == 'Highways England') {
+        var only_send = fixmystreet.body_overrides.get_only_send();
+        if (only_send == 'Highways England') {
             // If we're sending to Highways England, this message doesn't matter
             return;
         }
@@ -1114,6 +1115,9 @@ fixmystreet.message_controller = (function() {
 
             var category = $('#form_category').val();
             if (category != stopper.category) {
+                return false;
+            }
+            if (only_send == 'TfL') {
                 return false;
             }
 

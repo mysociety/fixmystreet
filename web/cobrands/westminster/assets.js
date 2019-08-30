@@ -88,13 +88,11 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
-var tfl_categories = [ 'Pavement damage', 'Pothole', 'Road pavement damage', 'Road or pavement damage' ];
-
 fixmystreet.assets.add(defaults, {
     http_options: {
         url: url_base + '2/query?'
     },
-    asset_category: tfl_categories,
+    asset_category: 'Road or pavement damage',
     non_interactive: true,
     road: true,
     nearest_radius: 25,
@@ -111,19 +109,6 @@ fixmystreet.assets.add(defaults, {
             fixmystreet.body_overrides.remove_only_send();
         }
     }
-});
-
-fixmystreet.message_controller.register_category({
-    body: defaults.body,
-    category: function() {
-        var category = $('#form_category').val();
-        if (OpenLayers.Util.indexOf(tfl_categories, category) === -1 ||
-            fixmystreet.body_overrides.get_only_send() === 'TfL') {
-            return false;
-        }
-        return true;
-    },
-    message: 'Due to the need to consider a priority response we would ask you to call <a href="tel:+442076412000">020 7641 2000</a> with exact details of the problem.'
 });
 
 var layer_data = [
@@ -302,12 +287,6 @@ $(function(){
     $("#problem_form").on("change.category", "#form_type, #form_featuretypecode, #form_bin_type", function() {
         $(fixmystreet).trigger('report_new:category_change');
     });
-});
-
-fixmystreet.message_controller.register_category({
-    body: defaults.body,
-    category: 'Burst water main',
-    message: 'To report a burst water main, please <a href="https://www.thameswater.co.uk/help-and-advice/Report-a-problem/Report-a-problem">contact Thames Water</a>'
 });
 
 })();
