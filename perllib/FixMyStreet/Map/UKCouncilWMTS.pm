@@ -36,6 +36,8 @@ sub tile_parameters {
 # Reproject a WGS84 lat/lon into BNG easting/northing
 sub reproject_from_latlon($$$) {
     my ($self, $lat, $lon) = @_;
+    # do not try to reproject if we have no co-ordindates as convert breaks
+    return (0.0, 0.0) if $lat == 0 && $lon == 0;
     my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon);
     return ($x, $y);
 }

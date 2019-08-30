@@ -21,6 +21,16 @@ my $email_contact = $mech->create_contact_ok(
     send_method => 'Email'
 );
 
+subtest 'Reports page works with no reports', sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'bristol' ],
+        MAPIT_URL => 'http://mapit.uk/',
+        MAP_TYPE => 'Bristol',
+    }, sub {
+        $mech->get_ok("/reports");
+    };
+};
+
 subtest 'Only Open311 categories are shown on Bristol cobrand', sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'bristol' ],
