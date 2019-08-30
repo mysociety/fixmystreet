@@ -4,6 +4,9 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use Moo;
+with 'FixMyStreet::Roles::ConfirmValidation';
+
 sub council_area_id { 2566 }
 sub council_area { 'Peterborough' }
 sub council_name { 'Peterborough City Council' }
@@ -27,6 +30,34 @@ sub geocoder_munge_results {
     $result->{display_name} = '' unless $result->{display_name} =~ /City of Peterborough/;
     $result->{display_name} =~ s/, UK$//;
     $result->{display_name} =~ s/, City of Peterborough, East of England, England//;
+}
+
+sub admin_user_domain { "peterborough.gov.uk" }
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+    push @$extra,
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail };
+
+    # remove the emergency category which is informational only
+    @$extra = grep { $_->{name} ne 'emergency' } @$extra;
+
+    $row->set_extra_fields(@$extra);
+}
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    # Peterborough want to make it clear in Confirm when an update has come
+    # from FMS.
+    $params->{description} = "[Customer FMS update] " . $params->{description};
 }
 
 1;
