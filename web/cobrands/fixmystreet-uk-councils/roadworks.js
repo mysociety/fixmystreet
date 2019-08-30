@@ -186,33 +186,38 @@ fixmystreet.roadworks.display_message = function(feature) {
         desc = attr.works_desc.replace(/\\n/g, '\n');
 
     var config = this.config,
+        summary_heading_text = config.summary_heading_text || 'Summary',
         tag_top = config.tag_top || 'p',
         colon = config.colon ? ':' : '';
 
-        var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + feature.layer.id + ' box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
-        var $dl = $("<dl></dl>").appendTo($msg);
-        $dl.append("<dt>Dates" + colon + "</dt>");
-        $dl.append($("<dd></dd>").text(start + " until " + end));
-        $dl.append("<dt>Summary" + colon + "</dt>");
-        var $summary = $("<dd></dd>").appendTo($dl);
-        tooltip.split("\n").forEach(function(para) {
-            if (para.match(/^(\d{2}\s+\w{3}\s+(\d{2}:\d{2}\s+)?\d{4}( - )?){2}/)) {
-                // skip showing the date again
-                return;
-            }
-            if (config.skip_delays && para.match(/^delays/)) {
-                // skip showing traffic delay information
-                return;
-            }
-            $summary.append(para).append("<br />");
-        });
-        if (desc) {
-            $dl.append("<dt>Description" + colon + "</dt>");
-            $dl.append($("<dd></dd>").text(desc));
+    var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + feature.layer.id + ' box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
+    var $dl = $("<dl></dl>").appendTo($msg);
+    $dl.append("<dt>Dates" + colon + "</dt>");
+    var $dates = $("<dd></dd>").appendTo($dl);
+    $dates.text(start + " until " + end);
+    if (config.extra_dates_text) {
+        $dates.append('<br>' + config.extra_dates_text);
+    }
+    $dl.append("<dt>" + summary_heading_text + colon + "</dt>");
+    var $summary = $("<dd></dd>").appendTo($dl);
+    tooltip.split("\n").forEach(function(para) {
+        if (para.match(/^(\d{2}\s+\w{3}\s+(\d{2}:\d{2}\s+)?\d{4}( - )?){2}/)) {
+            // skip showing the date again
+            return;
         }
-        if (config.text_after) {
-            $dl.append(config.text_after);
+        if (config.skip_delays && para.match(/^delays/)) {
+            // skip showing traffic delay information
+            return;
         }
+        $summary.append(para).append("<br />");
+    });
+    if (desc) {
+        $dl.append("<dt>Description" + colon + "</dt>");
+        $dl.append($("<dd></dd>").text(desc));
+    }
+    if (config.text_after) {
+        $dl.append(config.text_after);
+    }
 
     $msg.prependTo('#js-post-category-messages');
 };
