@@ -25,11 +25,7 @@
     </div>
   [% END %]
 
-  [% IF c.cobrand.social_auth_enabled AND NOT email_required %]
-    [% PROCESS 'report/form/user_loggedout_email.html' name='username_register' required=0 %]
-  [% ELSE %]
-    [% PROCESS 'report/form/user_loggedout_email.html' name='username_register' required=1 %]
-  [% END %]
+    [% PROCESS 'report/form/user_loggedout_email.html' name='username_register' %]
 
   [% IF type != 'update' AND c.config.SMS_AUTHENTICATION %]
     [% UNLESS c.cobrand.call_hook('disable_phone_number_entry') %]
