@@ -143,6 +143,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     $c->forward('setup_categories_and_bodies');
     $c->forward('setup_report_extra_fields');
+    $c->forward('check_for_category');
     $c->forward('process_report');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
@@ -253,10 +254,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('setup_report_extra_fields');
 
     $c->forward('check_for_category');
-    my $category = $c->stash->{category} || "";
-    $category = '' if $category eq _('-- Pick a category --');
-
-    $c->stash->{json_response} = $c->forward('by_category_ajax_data', [ 'one', $category ]);
+    $c->stash->{json_response} = $c->forward('by_category_ajax_data', [ 'one', $c->stash->{category} ]);
     $c->forward('send_json_response');
 }
 
@@ -949,12 +947,12 @@ sub process_report : Private {
         'title', 'detail', 'pc',                 #
         'detail_size',
         'may_show_name',                         #
-        'category',                              #
         'subcategory',                              #
         'partial',                               #
         'service',                               #
         'non_public',
       );
+    $params{category} = $c->stash->{category};
 
     # load the report
     my $report = $c->stash->{report};
@@ -1520,9 +1518,10 @@ sub generate_map : Private {
 sub check_for_category : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{category} = $c->get_param('category') || $c->stash->{report}->category;
+    my $category = $c->get_param('category') || '';
+    $category = '' if $category eq _('Loading...') || $category eq _('-- Pick a category --');
+    $c->stash->{category} = $category || $c->stash->{report}->category || '';
 
-    return 1;
 }
 
 =head2 redirect_or_confirm_creation
