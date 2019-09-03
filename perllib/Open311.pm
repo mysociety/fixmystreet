@@ -461,7 +461,7 @@ sub split_name {
 
     return ('', '') unless $name;
 
-    my ( $first, $last ) = ( $name =~ /(\w+)(?:\.?\s+(.+))?/ );
+    my ( $first, $last ) = ( $name =~ /(\S+)(?:\.?\s+(.+))?/ );
 
     return ( $first || '', $last || '');
 }

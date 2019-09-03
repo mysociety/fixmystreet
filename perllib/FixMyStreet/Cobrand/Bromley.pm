@@ -194,7 +194,7 @@ sub open311_config {
     # make sure we have last_name attribute present in row's extra, so
     # it is passed correctly to Bromley as attribute[]
     if ( $row->cobrand ne 'bromley' ) {
-        my ( $firstname, $lastname ) = ( $row->name =~ /(\w+)\.?\s+(.+)/ );
+        my ( $firstname, $lastname ) = ( $row->name =~ /(\S+)\.?\s+(.+)/ );
         push @$extra, { name => 'last_name', value => $lastname };
     }
 
