@@ -55,6 +55,7 @@ fixmystreet.assets.add(defaults, {
             if ( !fixmystreet.assets.selectedFeature() ) {
                 fixmystreet.body_overrides.only_send('Highways England');
                 add_highways_warning(feature.attributes.ROA_NUMBER);
+                $('#category_meta').empty();
             }
         },
         not_found: function(layer) {
@@ -81,6 +82,7 @@ function add_highways_warning(road_name) {
             fixmystreet.body_overrides.location = null;
             fixmystreet.body_overrides.only_send('Highways England');
             $(fixmystreet).trigger('report_new:highways_change');
+            $('#category_meta').empty();
         })
         .appendTo($radios);
     $('<label>')
