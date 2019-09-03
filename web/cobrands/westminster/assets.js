@@ -104,9 +104,11 @@ fixmystreet.assets.add(defaults, {
             } else {
                 fixmystreet.body_overrides.remove_only_send();
             }
+            fixmystreet.message_controller.check_for_stopper();
         },
         not_found: function(layer) {
             fixmystreet.body_overrides.remove_only_send();
+            fixmystreet.message_controller.check_for_stopper();
         }
     }
 });

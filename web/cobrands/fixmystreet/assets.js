@@ -1217,6 +1217,8 @@ fixmystreet.message_controller = (function() {
             stoppers = [];
         },
 
+        check_for_stopper: check_for_stopper,
+
         add_ignored_body: function(body) {
             ignored_bodies.push(body);
         }
