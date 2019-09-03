@@ -1088,18 +1088,34 @@ fixmystreet.message_controller = (function() {
         return false;
     }
 
-    // make sure we fire the code to check if an asset is selected if
-    // we change options in the Highways England message
-    $(fixmystreet).on('report_new:highways_change', function() {
-        if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
-            $('#' + stopperId).remove(); // Get rid of any stopper message
-            responsibility_off(); // Will also reenable form
-        } else {
-            $(fixmystreet).trigger('report_new:category_change');
-        }
-    });
+    function is_matching_stopper(stopper, i) {
+        var only_send = fixmystreet.body_overrides.get_only_send();
+        var body = $('#form_category').data('body');
 
-    $(fixmystreet).on('report_new:category_change', function() {
+        if (OpenLayers.Util.indexOf(ignored_bodies, body) > -1) {
+            return false;
+        }
+
+        var category = $('#form_category').val();
+        if (category != stopper.category) {
+            return false;
+        }
+        if (only_send == 'TfL') {
+            return false;
+        }
+
+        if (stopper.answers) {
+            var answer = $('#form_' + stopper.code).val();
+            if (OpenLayers.Util.indexOf(stopper.answers, answer) > -1) {
+                return true;
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function check_for_stopper() {
         var only_send = fixmystreet.body_overrides.get_only_send();
         if (only_send == 'Highways England') {
             // If we're sending to Highways England, this message doesn't matter
@@ -1107,31 +1123,7 @@ fixmystreet.message_controller = (function() {
         }
 
         var $id = $('#' + stopperId);
-        var body = $('#form_category').data('body');
-        var matching = $.grep(stoppers, function(stopper, i) {
-            if (OpenLayers.Util.indexOf(ignored_bodies, body) > -1) {
-                return false;
-            }
-
-            var category = $('#form_category').val();
-            if (category != stopper.category) {
-                return false;
-            }
-            if (only_send == 'TfL') {
-                return false;
-            }
-
-            if (stopper.answers) {
-                var answer = $('#form_' + stopper.code).val();
-                if (OpenLayers.Util.indexOf(stopper.answers, answer) > -1) {
-                    return true;
-                }
-                return false;
-            } else {
-                return true;
-            }
-        });
-
+        var matching = $.grep(stoppers, is_matching_stopper);
         if (!matching.length) {
             $id.remove();
             if ( !$('#js-roads-responsibility').is(':visible') && !$('#js-duplicate-reports').is(':visible') ) {
@@ -1157,7 +1149,20 @@ fixmystreet.message_controller = (function() {
             $msg.insertBefore('#js-post-category-messages');
         }
         disable_report_form(stopper.keep_category_extras);
+    }
+
+    // make sure we fire the code to check if an asset is selected if
+    // we change options in the Highways England message
+    $(fixmystreet).on('report_new:highways_change', function() {
+        if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
+            $('#' + stopperId).remove(); // Get rid of any stopper message
+            responsibility_off(); // Will also reenable form
+        } else {
+            $(fixmystreet).trigger('report_new:category_change');
+        }
     });
+
+    $(fixmystreet).on('report_new:category_change', check_for_stopper);
 
     return {
         asset_found: function() {
