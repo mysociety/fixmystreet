@@ -23,6 +23,11 @@ my $contact = $mech->create_contact_ok(
 );
 
 my $user = $mech->create_user_ok('user@example.org');
+my $iow_user = $mech->create_user_ok('iow_user@example.org', from_body => $isleofwight);
+$iow_user->user_body_permissions->create({
+    body => $isleofwight,
+    permission_type => 'moderate',
+});
 
 my @reports = $mech->create_problems_for_body(1, $isleofwight->id, 'An Isle of wight report', {
     confirmed => '2019-05-25 09:00',
@@ -68,6 +73,27 @@ subtest "only original reporter can comment" => sub {
         $mech->log_in_ok('user@example.org');
         $mech->get_ok('/report/' . $reports[0]->id);
         $mech->content_lacks('Only the original reporter may leave updates');
+    };
+};
+
+subtest "check moderation label uses correct name" => sub {
+    my $REPORT_URL = '/report/' . $reports[0]->id;
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['isleofwight'],
+    }, sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok( $iow_user->email );
+        $mech->get_ok($REPORT_URL);
+        $mech->content_lacks('show-moderation');
+        $mech->follow_link_ok({ text_regex => qr/^Moderate$/ });
+        $mech->content_contains('show-moderation');
+        $mech->submit_form_ok({ with_fields => {
+            problem_title  => 'Good good',
+            problem_detail => 'Good good improved',
+        }});
+        $mech->base_like( qr{\Q$REPORT_URL\E} );
+        $mech->content_like(qr/Moderated by Island Roads/);
     };
 };
 
