@@ -6,7 +6,7 @@ use base 'FixMyStreet::Map::UKCouncilWMTS';
 
 use strict;
 
-sub default_zoom { 5; }
+sub default_zoom { 7; }
 
 sub urls { [ 'https://gis.ringway.co.uk/server/rest/services/Hosted/IOW_OS/MapServer/WMTS/tile' ] }
 

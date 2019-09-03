@@ -185,7 +185,7 @@ fixmystreet.maps.config = function() {
 
 fixmystreet.maps.marker_size = function() {
     var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
-    if (zoom >= 8) {
+    if (zoom >= 7) {
         return 'normal';
     } else if (zoom >= 4) {
         return 'small';
