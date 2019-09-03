@@ -275,8 +275,9 @@ function init_asset_layer(layer, pins_layer) {
         layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
     }
 
-    if (fixmystreet.page == 'new' && (layer.fixmystreet.usrn || layer.fixmystreet.road)) {
-        // If the user visits /report/new directly and doesn't change the pin
+    if (layer.fixmystreet.usrn || layer.fixmystreet.road) {
+        // If an asset layer only loads once a category is selected, or if the
+        // user visits /report/new directly and doesn't change the pin
         // location, then the assets:selected/maps:update_pin events are never
         // fired and USRN's checkFeature is never called. This results in a
         // report whose location was never looked up against the USRN layer,
