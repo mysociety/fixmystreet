@@ -1177,8 +1177,6 @@ fixmystreet.message_controller = (function() {
         // then you should pass in a criterion function to test the found feature,
         // plus an ID of the message to be shown
         road_found: function(layer, feature, criterion, msg_id) {
-            fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
-            fixmystreet.body_overrides.remove_only_send();
             if (fixmystreet.assets.selectedFeature()) {
                 responsibility_off();
             } else if (!criterion || criterion(feature)) {
@@ -1191,12 +1189,10 @@ fixmystreet.message_controller = (function() {
             }
         },
 
+        // If a feature wasn't found at the location they've clicked, it's
+        // probably a field or something. Show an error to that effect,
+        // unless an asset is selected.
         road_not_found: function(layer) {
-            // If a feature wasn't found at the location they've clicked, it's
-            // probably a field or something. Show an error to that effect,
-            // unless an asset is selected.
-            fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
-            fixmystreet.body_overrides.remove_only_send();
             // don't show the message if clicking on a highways england road
             if (fixmystreet.body_overrides.get_only_send() == 'Highways England' || !layer.visibility) {
                 responsibility_off();

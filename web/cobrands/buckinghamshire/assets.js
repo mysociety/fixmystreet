@@ -285,6 +285,8 @@ fixmystreet.assets.add(defaults, {
             };
             var msg_id = map[feature.attributes.feature_ty] || '#js-not-council-road';
 
+            fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
+            fixmystreet.body_overrides.remove_only_send();
             fixmystreet.message_controller.road_found(layer, feature, function(feature) {
                 if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
                     var cat = $('select#form_category').val();
@@ -303,6 +305,8 @@ fixmystreet.assets.add(defaults, {
         },
 
         not_found: function(layer) {
+            fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
+            fixmystreet.body_overrides.remove_only_send();
             fixmystreet.message_controller.road_not_found(layer);
 
             // If flytipping is picked, we don't want to ask the extra question
