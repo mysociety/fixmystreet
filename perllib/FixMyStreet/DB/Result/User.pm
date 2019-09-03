@@ -317,7 +317,11 @@ sub body {
 
 sub moderating_user_name {
     my $self = shift;
-    return $self->body || _('an administrator');
+    my $body = $self->body;
+    if ( $body && $body eq 'Isle of Wight Council' ) {
+        $body = 'Island Roads';
+    }
+    return $body || _('an administrator');
 }
 
 =head2 belongs_to_body
