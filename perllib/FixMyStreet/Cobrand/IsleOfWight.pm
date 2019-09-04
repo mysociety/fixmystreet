@@ -16,6 +16,8 @@ sub enter_postcode_text {
     return 'Enter an ' . $self->council_area . ' postcode, or street name and area';
 }
 
+sub admin_user_domain { ('islandroads.com') }
+
 sub on_map_default_status { 'open' }
 
 sub send_questionnaires { 0 }
