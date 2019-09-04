@@ -6,7 +6,7 @@ if (!fixmystreet.maps) {
 
 var defaults = {
     http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/bromley_wfs",
+        url: "https://tilma.mysociety.org/mapserver/bromley_wfs",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
