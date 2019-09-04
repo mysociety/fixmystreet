@@ -101,6 +101,7 @@ fixmystreet.assets.add(defaults, {
         found: function(layer, feature) {
             if (!fixmystreet.assets.selectedFeature()) {
                 fixmystreet.body_overrides.only_send('TfL');
+                $('#category_meta').empty();
             } else {
                 fixmystreet.body_overrides.remove_only_send();
             }
