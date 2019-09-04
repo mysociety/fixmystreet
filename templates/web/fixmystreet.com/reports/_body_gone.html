@@ -1,3 +1,4 @@
+[% RETURN IF body.name == 'Highways England' # Covers no areas but does exist %]
 <p id="unknown" class="alert">This council no longer exists.
     [% IF body.name.match('Antrim|Newtownabbey') %]
     Its area is now covered by <a href="/reports/Antrim+and+Newtownabbey">Antrim and Newtownabbey Borough Council</a>.
