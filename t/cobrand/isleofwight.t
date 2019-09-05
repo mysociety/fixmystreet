@@ -21,6 +21,16 @@ my $contact = $mech->create_contact_ok(
     category => 'Potholes',
     email => 'pothole@example.org',
 );
+$contact->set_extra_fields( ( {
+    code => 'urgent',
+    datatype => 'string',
+    description => 'question',
+    variable => 'true',
+    required => 'false',
+    order => 1,
+    datatype_description => 'datatype',
+} ) );
+$contact->update;
 
 my $user = $mech->create_user_ok('user@example.org');
 my $iow_user = $mech->create_user_ok('iow_user@example.org', from_body => $isleofwight);
@@ -192,6 +202,31 @@ subtest "fixing passes along the correct message" => sub {
         $p->comments->delete;
         $p->delete;
     };
+};
+
+
+subtest 'Check special Open311 request handling', sub {
+    my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { category => 'Potholes', latitude => 50.7108, longitude => -1.29573 });
+    $p->set_extra_fields({ name => 'urgent', value => 'no'});
+    $p->update;
+
+    my $test_data;
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => ['isleofwight' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $test_data = FixMyStreet::Script::Reports::send();
+    };
+
+    $p->discard_changes;
+    ok $p->whensent, 'Report marked as sent';
+    is $p->send_method_used, 'Open311', 'Report sent via Open311';
+    is $p->external_id, 248, 'Report has right external ID';
+
+    my $req = $test_data->{test_req_used};
+    my $c = CGI::Simple->new($req->content);
+    is $c->param('attribute[urgent]'), undef, 'no urgent param sent';
 };
 
 my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, '', { cobrand => 'isleofwight' });
