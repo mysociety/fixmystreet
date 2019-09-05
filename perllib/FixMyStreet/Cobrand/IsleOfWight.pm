@@ -56,6 +56,17 @@ sub open311_get_update_munging {
         if !$comment->problem->is_open;
 }
 
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    return unless $row->extra;
+    my $extra = $row->get_extra_fields;
+    if (@$extra) {
+        @$extra = grep { $_->{name} ne 'urgent' } @$extra;
+        $row->set_extra_fields(@$extra);
+    }
+}
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
