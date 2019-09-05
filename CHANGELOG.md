@@ -32,6 +32,7 @@
         - Have duplicate suggestion and assets coexist better.
         - Don't include lat/lon of private reports in ‘Report another problem
           here’ link.
+        - Allow contact send method to be unset always.
     - Front end improvements:
         - Set report title autocomplete to off to prevent email autocompleting
     - Development improvements:
