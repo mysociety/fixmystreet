@@ -1761,11 +1761,6 @@ html.js #map .noscript {
         background-position: -24px 0;
     }
 
-    #map_permalink:after {
-        @extend %sub-map-link-icon;
-        background-position: -48px 0;
-    }
-
     #fms_shortlist_all:after {
         @extend %sub-map-link-icon;
         background-position: -60px 0;
@@ -1902,10 +1897,6 @@ html.js #map .noscript {
 }
 .olControlAttribution img {
     vertical-align: bottom;
-}
-.olControlPermalink {
-    bottom: 3px !important;
-    #{$right}: 3px;
 }
 .olControlDragFeatureFMSOver {
     cursor: move;

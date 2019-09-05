@@ -11,6 +11,7 @@
         - Improve map JavaScript defensiveness.
         - Upgrade jquery-validation plugin. #2540
         - Pass ‘filter_category’ param to front page to pre-filter map.
+        - Remove on-map Permalink.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.

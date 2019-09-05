@@ -1,14 +1,9 @@
 fixmystreet.maps.config = function() {
-    var permalink_id;
-    if ($('#map_permalink').length) {
-        permalink_id = 'map_permalink';
-    }
-
     fixmystreet.controls = [
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParserFMS(),
         new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.PermalinkFMS(permalink_id),
+        new OpenLayers.Control.PermalinkFMS('map'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
     /* Linking back to around from report page, keeping track of map moves */

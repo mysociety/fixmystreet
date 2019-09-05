@@ -809,19 +809,14 @@ $.extend(fixmystreet.set_up, {
   },
 
   map_controls: function() {
-    //add permalink on desktop, force hide on mobile
     //add links container (if its not there)
     if (fixmystreet.cobrand != 'zurich') {
         if ($('#sub_map_links').length === 0) {
             $('<p class="sub-map-links" id="sub_map_links" />').insertAfter($('#map'));
         }
-        if ($('#map_permalink').length === 0) {
-            $('#sub_map_links').append('<a href="#" id="map_permalink">' + translation_strings.permalink + '</a>');
-        }
     }
 
     if ($('.mobile').length) {
-        $('#map_permalink').addClass('hidden');
         // Make sure we end up with one Get updates link
         if ($('#key-tools a.js-feed').length) {
             $('#sub_map_links a.js-feed').remove();
