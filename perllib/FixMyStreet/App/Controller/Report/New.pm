@@ -1025,7 +1025,16 @@ sub process_report : Private {
         my $body_string = do {
             if (my $single_body_only = $c->get_param('single_body_only')) {
                 my $body = $c->model('DB::Body')->search({ name => $single_body_only })->first;
-                $body ? $body->id : '-1';
+                if ($body) {
+                    # Drop the contacts down to those in this body
+                    # (potentially none for e.g. Highways England)
+                    # so that set_report_extras doesn't error when
+                    # there are 'missing' extra fields
+                    @contacts = grep { $_->body->id == $body->id } @contacts;
+                    $body->id;
+                } else {
+                    '-1';
+                }
             } else {
                 my $contact_options = {};
                 $contact_options->{do_not_send} = [ $c->get_param_list('do_not_send', 1) ];

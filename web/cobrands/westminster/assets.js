@@ -101,12 +101,15 @@ fixmystreet.assets.add(defaults, {
         found: function(layer, feature) {
             if (!fixmystreet.assets.selectedFeature()) {
                 fixmystreet.body_overrides.only_send('TfL');
+                $('#category_meta').empty();
             } else {
                 fixmystreet.body_overrides.remove_only_send();
             }
+            fixmystreet.message_controller.check_for_stopper();
         },
         not_found: function(layer) {
             fixmystreet.body_overrides.remove_only_send();
+            fixmystreet.message_controller.check_for_stopper();
         }
     }
 });
