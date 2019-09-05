@@ -12,7 +12,7 @@
         - Upgrade jquery-validation plugin. #2540
         - Pass ‘filter_category’ param to front page to pre-filter map.
         - Remove on-map Permalink.
-        - Darken front page step numbers.
+        - Darken front page step numbers, and improve nested heading structure.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.
