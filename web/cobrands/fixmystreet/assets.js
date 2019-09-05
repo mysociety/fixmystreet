@@ -1030,7 +1030,7 @@ fixmystreet.message_controller = (function() {
     function show_responsibility_error(id, asset_item, asset_type) {
         $("#js-roads-responsibility").removeClass("hidden");
         $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
-        var asset_strings = $('.js-roads-asset');
+        var asset_strings = $(id).find('.js-roads-asset');
         if (asset_item) {
             asset_strings.html('a <b class="asset-' + asset_type + '">' + asset_item + '</b>');
         } else {
