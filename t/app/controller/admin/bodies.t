@@ -182,6 +182,7 @@ subtest 'check open311 configuring' => sub {
                 send_comments => 0,
                 send_method  => 'Open311',
                 fetch_all_problems => 0,
+                can_be_devolved => 1, # for next test
             }
         }
     );
@@ -190,6 +191,23 @@ subtest 'check open311 configuring' => sub {
 
     $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
     ok !$conf->get_extra_metadata('fetch_all_problems'), 'fetch all problems unset';
+};
+
+subtest 'check open311 devolved editing' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        send_method => 'Email',
+        email => 'testing@example.org',
+        note => 'Updating contact to email',
+    } } );
+    $mech->content_contains('Values updated');
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        send_method => '',
+        email => 'open311-code',
+        note => 'Removing email send method',
+    } } );
+    $mech->content_contains('Values updated');
 };
 
 subtest 'check text output' => sub {

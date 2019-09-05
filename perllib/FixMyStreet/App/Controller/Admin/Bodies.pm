@@ -241,7 +241,7 @@ sub update_contacts : Private {
 
         my $email = $c->get_param('email');
         $email =~ s/\s+//g;
-        my $send_method = $c->get_param('send_method') || $contact->send_method || $contact->body->send_method || "";
+        my $send_method = $c->get_param('send_method') || $contact->body->send_method || "";
         unless ( $send_method eq 'Open311' ) {
             $errors{email} = _('Please enter a valid email') unless is_valid_email_list($email) || $email eq 'REFUSED';
         }
