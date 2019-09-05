@@ -50,34 +50,27 @@ body.frontpage {
         color: inherit;
 
         div {
-            display: block;
             border: none;
             background: transparent;
             position: relative;
+            background: #fff;
+            box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
 
             input#pc {
-                display: block;
-                width: 100%;
                 box-sizing: border-box;
                 padding: 10px 22px;
-                box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
-                background: #fff;
             }
 
             input#sub {
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                display: block;
                 width: 0;
-                height: auto;
                 padding-left: 50px;
                 overflow: hidden;
+                @include flex(0 0 auto);
                 background: transparent url(/cobrands/westminster/images/search-icon.png) no-repeat 50% 50%;
                 background-size: 25px 25px;
 
-                &:hover {
+                &:hover,
+                &:focus {
                     background: transparent url(/cobrands/westminster/images/search-icon.png) no-repeat 50% 50%;
                     background-size: 25px 25px;
                 }

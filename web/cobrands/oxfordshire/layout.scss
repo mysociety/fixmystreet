@@ -117,28 +117,16 @@ $mappage-header-height: 10em;
         overflow: visible;
 
         div {
-            display: block;
             width: auto;
             max-width: 38em;
             margin: 0.75em 0 0 0;
-            overflow: visible;
-
-            @include flex-container();
 
             input#pc {
-                display: block;
-                margin: 0 0.5em 0 0;
-                padding: 0.5em;
-                height: auto;
-                width: 100%;
                 max-width: 80%;
             }
 
             input#sub {
                 padding: 0.6em 1.5em;
-                width: auto;
-                height: auto;
-                text-transform: none;
             }
         }
     }

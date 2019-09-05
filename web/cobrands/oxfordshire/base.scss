@@ -88,28 +88,14 @@ a:not([class]):focus {
         }
 
         div {
-            display: block;
-            width: auto;
-            background: transparent;
             border: none;
 
             font-size: 1.25em;
             margin-top: 0.5em;
             max-width: 24em;
 
-            @include flex-container();
-
             input#pc {
-                display: block;
                 margin: 0 0.5em 0 0;
-                padding: 0.5em;
-            }
-
-            input#sub {
-                padding-top: 0.6em;
-                padding-bottom: 0.5em;
-                width: auto;
-                height: auto;
             }
         }
     }

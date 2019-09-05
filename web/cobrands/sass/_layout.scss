@@ -847,24 +847,8 @@ textarea.form-error {
         margin-top: -0.25em;
     }
     div {
-      display:block;
       margin:0 auto;
       width:20em;
-      overflow:hidden;
-      input#pc {
-        display:block;
-        float: $left;
-        padding:0.25em 0.5em;
-        height:2em;
-        width:17em;
-      }
-      input#sub {
-        display:block;
-        float: $right;
-        width:3em;
-        height:2.3em;
-        padding-top:0.2em;
-      }
     }
   }
   a {

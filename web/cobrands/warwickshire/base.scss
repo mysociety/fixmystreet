@@ -32,23 +32,14 @@
         background: transparent;
 
         div {
-            display: block;
-            width: auto;
             background: #fff;
             border: none;
 
             margin-top: 0.5em;
             max-width: 24em;
-
-            @include flex-container();
-            @include flex-align(stretch);
-
             box-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.2);
 
             input#pc {
-                display: block;
-                margin: 0;
-                padding: 0.5em;
                 font-family: inherit;
                 color: $primary_text;
 
@@ -73,7 +64,8 @@
                 // or wrap the text content in an element we can hide?
                 text-indent: -9000px;
 
-                &:hover {
+                &:hover,
+                &:focus {
                     background-color: $primary;
                     @include svg-background-image('/cobrands/warwickshire/images/search');
                     background-repeat: no-repeat;
@@ -81,10 +73,8 @@
                     background-size: 20px 20px;
                 }
 
-                // TODO: Because of our text-indent, this draws a
-                // gigantic yellow box off the screen!!!
                 &:focus {
-                    outline: 3px solid $warwickshire-yellow;
+                    background-color: $warwickshire-yellow;
                 }
             }
         }

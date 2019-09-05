@@ -489,20 +489,22 @@ small#or:after {
 
 .form-txt-submit-box {
   @include clearfix();
+  @include flex-container();
+  @include flex-wrap(wrap);
   input[type=password],
   input[type=tel],
   input[type=number],
   input[type=text],
   input[type=email] {
-    width: 65%;
-    float: $left;
+    width: auto;
+    max-width: none;
+    @include flex(72 0 auto);
   }
   input[type=submit] {
-    float: $right;
-    width:28%;
-    margin-#{$right}: 0.25em;
-    padding-top:0.6em;
-    padding-bottom:0.5em;
+    @include flex(28 0 auto);
+    margin: 0 0.25em 0.5em;
+    padding-top: 0.6em;
+    padding-bottom: 0.5em;
   }
 }
 
@@ -2267,31 +2269,26 @@ label .muted {
       margin-bottom: 0.5em;
     }
     div {
-      display:table;
-      width:100%;
+      @include flex-container;
+      @include flex-wrap(wrap);
+      width: 100%;
       background:#fff;
       border:1px solid $primary_b;
       input#pc {
-        display:table-cell;
-        margin:0;
-        padding:0.25em 2%;
-        width:86%;
+        @include flex(86 0 auto);
+        width: 50%;
         border:none;
         background:none;
         line-height:1.5em;
       }
       input#sub {
-        display:table-cell;
         border:none;
-        padding:0;
-        margin:0;
-        width:14%;
-        height:35px;
+        padding: 0.5em;
+        @include flex(14 0 auto);
         background:#000;
         color:#fff;
-        text-transform:uppercase;
         @include border-radius(0);
-        &:hover {
+        &:hover, &:focus {
           background:#333;
         }
       }

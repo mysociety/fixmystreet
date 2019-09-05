@@ -33,22 +33,9 @@
             max-width: 38em;
             margin-left: 0;
             margin-right: 0;
-            overflow: visible;
-
-            @include flex-container();
 
             input#pc {
-                width: 100%;
-                height: auto;
-                margin: 0;
                 max-width: none;
-                padding: 0.5em;
-            }
-
-            input#sub {
-                width: 40px;
-                height: auto;
-                padding-top: 0;
             }
         }
 
