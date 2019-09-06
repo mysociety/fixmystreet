@@ -40,4 +40,12 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    # Peterborough want to make it clear in Confirm when an update has come
+    # from FMS.
+    $params->{description} = "[Customer FMS update] " . $params->{description};
+}
+
 1;
