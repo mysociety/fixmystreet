@@ -143,6 +143,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     $c->forward('setup_categories_and_bodies');
     $c->forward('setup_report_extra_fields');
+    $c->forward('check_for_category');
     $c->forward('process_report');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
@@ -253,10 +254,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('setup_report_extra_fields');
 
     $c->forward('check_for_category');
-    my $category = $c->stash->{category} || "";
-    $category = '' if $category eq _('-- Pick a category --');
-
-    $c->stash->{json_response} = $c->forward('by_category_ajax_data', [ 'one', $category ]);
+    $c->stash->{json_response} = $c->forward('by_category_ajax_data', [ 'one', $c->stash->{category} ]);
     $c->forward('send_json_response');
 }
 
@@ -949,12 +947,12 @@ sub process_report : Private {
         'title', 'detail', 'pc',                 #
         'detail_size',
         'may_show_name',                         #
-        'category',                              #
         'subcategory',                              #
         'partial',                               #
         'service',                               #
         'non_public',
       );
+    $params{category} = $c->stash->{category};
 
     # load the report
     my $report = $c->stash->{report};
@@ -1142,7 +1140,7 @@ sub set_report_extras : Private {
     foreach my $item (@metalist) {
         my ($metas, $param_prefix) = @$item;
         foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
+            if ( lc( $field->{required} || '' ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
                 unless ( $c->get_param($param_prefix . $field->{code}) ) {
                     $c->stash->{field_errors}->{ 'x' . $field->{code} } = _('This information is required');
                 }
@@ -1529,9 +1527,56 @@ sub generate_map : Private {
 sub check_for_category : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{category} = $c->get_param('category') || $c->stash->{report}->category;
+    my $category = $c->get_param('category') || $c->stash->{report}->category || '';
+    $category = '' if $category eq _('Loading...') || $category eq _('-- Pick a category --');
+    $c->stash->{category} = $category;
 
-    return 1;
+    # Bit of a copy of set_report_extras, because we need the results here, but
+    # don't want to run all of that fn until later as it e.g. alters field
+    # errors at that point. Also, the report might already have some answers in
+    # too if e.g. gone via social login... TODO Improve this?
+    my $extra = $c->stash->{report}->get_extra_fields;
+    my %current = map { $_->{name} => $_ } @$extra;
+
+    my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
+    my @metalist = map { @{$_->get_metadata_for_storage} } @contacts;
+    my @extra;
+    foreach my $field (@metalist) {
+        push @extra, {
+            name => $field->{code},
+            description => $field->{description},
+            value => $c->get_param($field->{code}) || $current{$field->{code}}{value} || '',
+        };
+    }
+    $c->stash->{report}->set_extra_fields( @extra );
+
+    # Work out if the selected category (or category extra question answer) should lead
+    # to a message being shown not to use the form
+    if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
+        my $disable_form_messages = $c->forward('disable_form_message');
+        if ($disable_form_messages->{all}) {
+            $c->stash->{disable_form_message} = $disable_form_messages->{all};
+        } elsif (my $code = $disable_form_messages->{code}) {
+            my $answer = $c->get_param($code);
+            my $message = $disable_form_messages->{message};
+            if ($answer) {
+                foreach (@{$disable_form_messages->{answers}}) {
+                    if ($answer eq $_) {
+                        $c->stash->{disable_form_message} = $message;
+                    }
+                }
+            } else {
+                $c->stash->{have_disable_qn_to_answer} = 1;
+            }
+        }
+    }
+
+    if ($c->get_param('submit_category_part_only') || $c->stash->{disable_form_message}) {
+        # If we've clicked the first-part category button (no-JS only probably),
+        # or the category submitted will be showing a disabled form message,
+        # we only want to reshow the form
+        $c->stash->{force_form_not_submitted} = 1;
+    }
 }
 
 =head2 redirect_or_confirm_creation

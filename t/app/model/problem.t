@@ -106,15 +106,6 @@ for my $test (
         }
     },
     {
-        desc => 'bad category',
-        changed => {
-            category => '-- Pick a category --',
-        },
-        errors => {
-            category => 'Please choose a category',
-        }
-    },
-    {
         desc => 'correct category',
         changed => {
             category => 'Horse!',

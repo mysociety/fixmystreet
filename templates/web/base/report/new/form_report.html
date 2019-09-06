@@ -1,3 +1,5 @@
+[% SET form_show_category_only = NOT category || field_errors.category || disable_form_message || have_disable_qn_to_answer %]
+
 <!-- report/new/form_report.html -->
 [% INCLUDE 'report/new/form_heading.html' %]
 
@@ -7,7 +9,17 @@
 
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
-<div class="js-hide-if-invalid-category">
+
+[% IF form_show_category_only %]
+    <div class="hidden-js">
+        <input class="btn btn--primary btn--block btn--final" type="submit" name="submit_category_part_only" value="[% loc('Submit') %]">
+    </div>
+    [% SET field_required = '' %]
+[% ELSE %]
+    [% SET field_required = ' required' %]
+[% END %]
+
+<div class="js-hide-if-invalid-category[% ' hidden-nojs' IF form_show_category_only %]">
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
     <h2 class="form-section-heading js-hide-if-private-category">[% loc( 'Public details' ) %]</h2>
@@ -67,7 +79,7 @@
     <p class='form-error'>[% field_errors.detail %]</p>
 [% END %]
 
-    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" [% IF form_detail_placeholder %]aria-describedby="detail-hint"[% END %] required>[% report.detail | html %]</textarea>
+    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" [% IF form_detail_placeholder %]aria-describedby="detail-hint"[% END %][% field_required %]>[% report.detail | html %]</textarea>
 
 [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
 

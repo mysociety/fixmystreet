@@ -376,13 +376,6 @@ sub check_for_errors {
         $errors{name} = _('Please enter your name');
     }
 
-    if (   $self->category
-        && $self->category eq _('-- Pick a category --') )
-    {
-        $errors{category} = _('Please choose a category');
-        $self->category(undef);
-    }
-
     return \%errors;
 }
 
