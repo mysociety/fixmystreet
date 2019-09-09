@@ -38,6 +38,24 @@ sub restriction {
     return {};
 }
 
+sub munge_reports_categories_list {
+    my ($self, $categories) = @_;
+
+    my %bodies = map { $_->body->name => $_->body } @$categories;
+    if ( $bodies{'Isle of Wight Council'} ) {
+        my $user = $self->{c}->user;
+        my $b = $bodies{'Isle of Wight Council'};
+
+        if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
+            @$categories = grep { !$_->send_method || $_->send_method ne 'Triage' } @$categories;
+            return @$categories;
+        }
+
+        @$categories = grep { $_->send_method && $_->send_method eq 'Triage' } @$categories;
+        return @$categories;
+    }
+}
+
 sub munge_category_list {
     my ($self, $options, $contacts, $extras) = @_;
 
@@ -60,6 +78,62 @@ sub munge_category_list {
         my $seen = { map { $_->category => 1 } @$contacts };
         @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
     }
+}
+
+sub munge_load_and_group_problems {
+    my ($self, $where, $filter) = @_;
+
+    return unless $where->{category} && $self->{c}->stash->{body}->name eq 'Isle of Wight Council';
+
+    my $cat_names = $self->expand_triage_cat_list($where->{category});
+
+    $where->{category} = $cat_names;
+    my $problems = $self->problems->search($where, $filter);
+    return $problems;
+}
+
+sub expand_triage_cat_list {
+    my ($self, $categories) = @_;
+
+    my $b = $self->{c}->stash->{body};
+
+    my $all_cats = $self->{c}->model('DB::Contact')->not_deleted->search(
+        {
+            body_id => $b->id,
+            send_method => [{ '!=', 'Triage'}, undef]
+        }
+    );
+
+    my %group_to_category;
+    while ( my $cat = $all_cats->next ) {
+        next unless $cat->get_extra_metadata('group');
+        my $groups = $cat->get_extra_metadata('group');
+        $groups = ref $groups eq 'ARRAY' ? $groups : [ $groups ];
+        for my $group ( @$groups ) {
+            $group_to_category{$group} //= [];
+            push @{ $group_to_category{$group} }, $cat->category;
+        }
+    }
+
+    my $cats = $self->{c}->model('DB::Contact')->not_deleted->search(
+        {
+            body_id => $b->id,
+            category => $categories
+        }
+    );
+
+    my @cat_names;
+    while ( my $cat = $cats->next ) {
+        if ( $cat->send_method && $cat->send_method eq 'Triage' ) {
+            # include the category itself
+            push @cat_names, $cat->category;
+            push @cat_names, @{ $group_to_category{$cat->category} } if $group_to_category{$cat->category};
+        } else {
+            push @cat_names, $cat->category;
+        }
+    }
+
+    return \@cat_names;
 }
 
 sub title_list {
