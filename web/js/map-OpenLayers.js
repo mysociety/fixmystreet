@@ -673,7 +673,7 @@ $.extend(fixmystreet.utils, {
             styleMap: pin_layer_style_map
         };
         if (fixmystreet.page == 'around') {
-            fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.FixMyStreet();
+            fixmystreet.bbox_strategy = fixmystreet.map_bbox_strategy || new OpenLayers.Strategy.FixMyStreet();
             pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         }
         if (fixmystreet.page == 'reports') {
