@@ -1515,7 +1515,12 @@ fixmystreet.display = {
 
             window.selected_problem_id = reportId;
             var marker = fixmystreet.maps.get_marker_by_id(reportId);
-            if (fixmystreet.map.panTo && ($('html').hasClass('mobile') || !marker.onScreen())) {
+            var el = document.querySelector('input[name=triage]');
+            if (el) {
+                fixmystreet.map.setCenter(
+                    marker.geometry.getBounds().getCenterLonLat(),
+                    fixmystreet.map.getNumZoomLevels() - 1 );
+            } else if (fixmystreet.map.panTo && ($('html').hasClass('mobile') || !marker.onScreen())) {
                 fixmystreet.map.panTo(
                     marker.geometry.getBounds().getCenterLonLat()
                 );
@@ -1531,7 +1536,9 @@ fixmystreet.display = {
 
             if (fixmystreet.maps.setup_inspector) {
                 fixmystreet.maps.setup_inspector();
+                fixmystreet.map.updateSize();
             }
+
 
             if (typeof callback === 'function') {
                 callback();
