@@ -165,10 +165,13 @@ sub ward : Path : Args(2) {
     $c->stash->{stats} = $c->cobrand->get_report_stats();
 
     my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
-        columns => [ 'id', 'category', 'extra' ],
+        columns => [ 'id', 'category', 'extra', 'body_id', 'send_method' ],
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;
+
+    $c->cobrand->call_hook('munge_reports_category_list', \@categories);
+
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
 

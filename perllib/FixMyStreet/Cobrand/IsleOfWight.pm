@@ -88,6 +88,22 @@ sub open311_munge_update_params {
 }
 
 # this handles making sure the user sees the right categories on the new report page
+sub munge_reports_category_list {
+    my ($self, $categories) = @_;
+
+    my $user = $self->{c}->user;
+    my %bodies = map { $_->body->name => $_->body } @$categories;
+    my $b = $bodies{'Isle of Wight Council'};
+
+    if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
+        @$categories = grep { !$_->send_method || $_->send_method ne 'Triage' } @$categories;
+        return @$categories;
+    }
+
+    @$categories = grep { $_->send_method && $_->send_method eq 'Triage' } @$categories;
+    return @$categories;
+}
+
 sub munge_category_list {
     my ($self, $options, $contacts, $extras) = @_;
 
@@ -129,9 +145,9 @@ sub munge_load_and_group_problems {
 
     return unless $where->{category};
 
-    my @cat_names = $self->expand_triage_cat_list($where->{category});
+    my $cat_names = $self->expand_triage_cat_list($where->{category});
 
-    $where->{category} = \@cat_names;
+    $where->{category} = $cat_names;
     my $problems = $self->problems->search($where, $filter);
     return $problems;
 }
@@ -142,8 +158,8 @@ sub munge_filter_category {
     my $c = $self->{c};
     return unless $c->stash->{filter_category};
 
-    my @cat_names = $self->expand_triage_cat_list([ keys %{$c->stash->{filter_category}} ]);
-    $c->stash->{filter_category} = { map { $_ => 1 } @cat_names };
+    my $cat_names = $self->expand_triage_cat_list([ keys %{$c->stash->{filter_category}} ]);
+    $c->stash->{filter_category} = { map { $_ => 1 } @$cat_names };
 }
 
 # this assumes that each Triage category has the same name as a group
@@ -164,8 +180,12 @@ sub expand_triage_cat_list {
     my %group_to_category;
     while ( my $cat = $all_cats->next ) {
         next unless $cat->get_extra_metadata('group');
-        $group_to_category{$cat->get_extra_metadata('group')} //= [];
-        push @{ $group_to_category{$cat->get_extra_metadata('group')} }, $cat->category;
+        my $groups = $cat->get_extra_metadata('group');
+        $groups = ref $groups eq 'ARRAY' ? $groups : [ $groups ];
+        for my $group ( @$groups ) {
+            $group_to_category{$group} //= [];
+            push @{ $group_to_category{$group} }, $cat->category;
+        }
     }
 
     my $cats = $self->{c}->model('DB::Contact')->not_deleted->search(
@@ -186,7 +206,7 @@ sub expand_triage_cat_list {
         }
     }
 
-    return @cat_names;
+    return \@cat_names;
 }
 
 sub open311_get_update_munging {
