@@ -193,3 +193,14 @@ fixmystreet.maps.marker_size = function() {
         return 'mini';
     }
 };
+
+fixmystreet.maps.selected_marker_size = function() {
+    var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
+    if (zoom >= 7) {
+        return 'big';
+    } else if (zoom >= 4) {
+        return 'normal';
+    } else {
+        return 'small';
+    }
+};
