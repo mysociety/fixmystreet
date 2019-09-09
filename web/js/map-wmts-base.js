@@ -31,7 +31,7 @@ fixmystreet.maps.setup_wmts_base_map = function() {
 
     // Give main code a new bbox_strategy that translates between
     // lat/lon and our WMTS layer's coordinates
-    fixmystreet.bbox_strategy = new OpenLayers.Strategy.ReprojectBBOX({
+    fixmystreet.map_bbox_strategy = new OpenLayers.Strategy.ReprojectBBOX({
         ratio: 1
     });
 };
