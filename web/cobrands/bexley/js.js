@@ -62,20 +62,23 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     }
 });
 
-fixmystreet.assets.add(defaults, {
+var road_defaults = $.extend(true, {}, defaults, {
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    always_visible: true,
+    non_interactive: true
+});
+
+fixmystreet.assets.add(road_defaults, {
     http_options: {
         params: {
             TYPENAME: "Streets",
         }
     },
-    always_visible: true,
-    non_interactive: true,
     nearest_radius: 100,
     usrn: {
         attribute: 'NSG_REF',
         field: 'NSGRef'
-    },
-    stylemap: fixmystreet.assets.stylemap_invisible
+    }
 });
 
 fixmystreet.assets.add(labeled_defaults, {
@@ -109,6 +112,32 @@ fixmystreet.assets.add(defaults, {
     asset_type: 'spot',
     asset_category: ["Public toilets"],
     asset_item: 'public toilet'
+});
+
+fixmystreet.assets.add(road_defaults, {
+    http_options: {
+        url: "https://tilma.mysociety.org/mapserver/tfl",
+        params: {
+            TYPENAME: "RedRoutes"
+        }
+    },
+    road: true,
+    all_categories: true,
+    actions: {
+        found: function(layer, feature) {
+            var category = $('select#form_category').val(),
+                relevant = (category !== 'Street cleaning');
+            if (!fixmystreet.assets.selectedFeature() && relevant) {
+                fixmystreet.body_overrides.only_send('TfL');
+                $('#category_meta').empty();
+            } else {
+                fixmystreet.body_overrides.remove_only_send();
+            }
+        },
+        not_found: function(layer) {
+            fixmystreet.body_overrides.remove_only_send();
+        }
+    }
 });
 
 })();

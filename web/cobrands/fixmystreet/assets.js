@@ -867,6 +867,19 @@ $(function() {
     fixmystreet.assets.init();
 });
 
+OpenLayers.Geometry.MultiPolygon.prototype.containsPoint = function(point) {
+    var numPolygons = this.components.length;
+    var contained = false;
+    for(var i=0; i<numPolygons; ++i) {
+        polygon = this.components[i].containsPoint(point);
+        if (polygon) {
+            contained = polygon;
+            break;
+        }
+    }
+    return contained;
+};
+
 OpenLayers.Layer.Vector.prototype.getFeatureAtPoint = function(point) {
     for (var i = 0; i < this.features.length; i++) {
         var feature = this.features[i];
