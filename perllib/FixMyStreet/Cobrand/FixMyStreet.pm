@@ -200,4 +200,14 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
+sub suppress_reporter_alerts {
+    my $self = shift;
+    my $c = $self->{c};
+    my $problem = $c->stash->{report};
+    if ($problem->to_body_named('Westminster')) {
+        return 1;
+    }
+    return 0;
+}
+
 1;
