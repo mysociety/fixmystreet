@@ -31,7 +31,7 @@ misuse() {
 [ -z "$INSTALL_POSTFIX" ] && misuse INSTALL_POSTFIX
 
 add_locale cy_GB
-add_locale nb_NO
+add_locale sv_SE
 add_locale de_CH
 
 if [ $INSTALL_POSTFIX = true ]; then
