@@ -2377,11 +2377,17 @@ a#geolocate_link.loading, .btn--geolocate.loading {
     .a {
         background: #f6f6f6;
     }
-    img[width="16"] {
-        margin-top: 4px;
-        margin-#{$left}: 0.5em;
-        float: $right;
-    }
+}
+
+.alerts-rss-link {
+  position: relative;
+  z-index: 1; // stack in front of the position:relative .label-containing-checkbox
+
+  img {
+    margin-top: 4px;
+    margin-#{$left}: 0.5em;
+    float: $right;
+  }
 }
 
 .alerts__nearby-activity {
