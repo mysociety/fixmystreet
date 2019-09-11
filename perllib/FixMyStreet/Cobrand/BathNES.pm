@@ -27,6 +27,19 @@ sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
+sub contact_extra_fields { [ 'display_name' ] }
+
+sub contact_extra_fields_validation {
+    my ($self, $contact, $errors) = @_;
+    return unless $contact->get_extra_metadata('display_name');
+
+    my @contacts = $contact->body->contacts->not_deleted->search({ id => { '!=', $contact->id } });
+    my %display_names = map { $_->get_extra_metadata('display_name') => 1 } @contacts;
+    if ($display_names{$contact->get_extra_metadata('display_name')}) {
+        $errors->{display_name} = 'That display name is already in use';
+    }
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

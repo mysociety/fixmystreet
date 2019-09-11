@@ -290,7 +290,7 @@ sub update_contact : Private {
 
 
     $c->forward('/admin/update_extra_fields', [ $contact ]);
-    $c->forward('contact_cobrand_extra_fields', [ $contact ]);
+    $c->forward('contact_cobrand_extra_fields', [ $contact, \%errors ]);
 
     # Special form disabling form
     if ($c->get_param('disable')) {
@@ -434,12 +434,13 @@ sub check_body_params : Private {
 }
 
 sub contact_cobrand_extra_fields : Private {
-    my ( $self, $c, $contact ) = @_;
+    my ( $self, $c, $contact, $errors ) = @_;
 
     my $extra_fields = $c->cobrand->call_hook('contact_extra_fields');
     foreach ( @$extra_fields ) {
         $contact->set_extra_metadata( $_ => $c->get_param("extra[$_]") );
     }
+    $c->cobrand->call_hook(contact_extra_fields_validation => $contact, $errors);
 }
 
 sub fetch_translations : Private {

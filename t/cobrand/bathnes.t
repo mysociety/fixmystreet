@@ -1,5 +1,9 @@
+use Test::MockModule;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
+
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
+$cobrand->mock('area_types', sub { [ 'UTA' ] });
 
 my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council');
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
@@ -57,6 +61,20 @@ subtest 'cobrand displays council name' => sub {
     ok $mech->host("bathnes.fixmystreet.com"), "change host to bathnes";
     $mech->get_ok('/');
     $mech->content_like( qr/Bath and North East Somerset\b/ );
+};
+
+subtest 'check override contact display name' => sub {
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok("/admin/body/" . $body->id . '/Litter');
+    $mech->content_contains('<h1>Litter</h1>');
+    $mech->content_contains('extra[display_name]');
+    $mech->submit_form_ok({ with_fields => {
+        'extra[display_name]' => 'Wittering'
+    }});
+    $mech->get_ok('/reports/Bath+and+North+East+Somerset');
+    $mech->content_contains('Wittering</option>');
+    $mech->content_contains('value="Litter"');
+    $mech->content_lacks('Litter</option>');
 };
 
 subtest 'extra CSV columns are absent if permission not granted' => sub {
