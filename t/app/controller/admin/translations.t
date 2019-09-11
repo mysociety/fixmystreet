@@ -59,7 +59,7 @@ subtest 'check add category with translation' => sub {
     $mech->submit_form_ok( { with_fields => {
         category => 'Potholes',
         translation_de => 'DE potholes',
-        email => 'potholes@example.org',
+        email => 'potholes',
     } } );
 
     # check that error page includes translations

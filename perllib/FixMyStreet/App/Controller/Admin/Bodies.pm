@@ -220,7 +220,7 @@ sub update_contact : Private {
 
     my $category = $self->trim( $c->get_param('category') );
     $errors{category} = _("Please choose a category") unless $category;
-    $errors{note} = _('Please enter a message') unless $c->get_param('note');
+    $errors{note} = _('Please enter a message') unless $c->get_param('note') || FixMyStreet->config('STAGING_SITE');
 
     my $contact = $c->model('DB::Contact')->find_or_new(
         {

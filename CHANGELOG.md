@@ -47,6 +47,7 @@
         - Add front-end testing support for WSL. #2514
         - Allow cobrands to disable admin resending.
         - Sass variables for default link colour and decoration.
+        - Make contact edit note optional on staging sites.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private. #2488

@@ -143,7 +143,7 @@
     <p class="form-group" style="margin-top: 2em">
         <label for="note">[% loc('Summarise your changes') %]</label>
         <span class="form-hint" id="note-hint">[% loc("If you’ve made changes, leave a note explaining what, for other admins to see.") %]</span>
-        <input class="form-control" type="text" id="note" name="note" size="30" aria-describedby="note-hint" required>
+        <input class="form-control" type="text" id="note" name="note" size="30" aria-describedby="note-hint"[% ' required' UNLESS c.config.STAGING_SITE %]>
     </p>
 
   <p>
