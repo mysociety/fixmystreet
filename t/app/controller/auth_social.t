@@ -56,9 +56,12 @@ for my $test (
 }, {
     type => 'oidc',
     config => {
-        ALLOWED_COBRANDS => [ { westminster => '.' } ],
+        ALLOWED_COBRANDS => 'westminster',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
+            anonymous_account => {
+                westminster => 'test',
+            },
             oidc_login => {
                 westminster => {
                     client_id => 'example_client_id',
@@ -385,6 +388,4 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
 
 };
 
-END {
-    done_testing();
-}
+done_testing();

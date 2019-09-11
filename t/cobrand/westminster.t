@@ -3,6 +3,10 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Westminster');
