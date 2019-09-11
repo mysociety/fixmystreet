@@ -51,7 +51,7 @@ subtest 'check contact creation' => sub {
         non_public => 'on',
     } } );
     $mech->get_ok('/admin/body/' . $body->id . '/test/category');
-    $mech->content_contains('<h1>test/category</h1>');
+    $mech->content_contains('test/category');
 };
 
 subtest 'check contact editing' => sub {
@@ -89,6 +89,21 @@ subtest 'check contact editing' => sub {
 
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );
+};
+
+subtest 'check contact renaming' => sub {
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', { category => 'test category' });
+    $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
+    $mech->submit_form_ok( { with_fields => { category => 'private category' } } );
+    $mech->content_contains('You cannot rename');
+    $mech->submit_form_ok( { with_fields => { category => 'testing category' } } );
+    $mech->content_contains( 'testing category' );
+    $mech->get('/admin/body/' . $body->id . '/test%20category');
+    is $mech->res->code, 404;
+    $mech->get_ok('/admin/body/' . $body->id . '/testing%20category');
+    $report->discard_changes;
+    is $report->category, 'testing category';
+    $mech->submit_form_ok( { with_fields => { category => 'test category' } } );
 };
 
 subtest 'check contact updating' => sub {

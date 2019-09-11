@@ -1,11 +1,5 @@
 <form method="post" action="[% c.uri_for_action('admin/bodies/edit', [ body_id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="category_edit">
 
-  [% IF contact.in_storage %]
-    <p>
-      <h1>[% contact.category_display | html %]</h1>
-      <input type="hidden" name="category" value="[% contact.category | html %]" >
-    </p>
-  [% ELSE %]
     <div class="admin-hint">
       <p>
           [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
@@ -18,6 +12,8 @@
     <p>
       <strong>[% loc('Category') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
     </p>
+  [% IF contact.in_storage %]
+      <input type="hidden" name="current_category" value="[% current_contact.category | html %]" >
   [% END %]
 
   [% INCLUDE 'admin/bodies/_translations.html' %]

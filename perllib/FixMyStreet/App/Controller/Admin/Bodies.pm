@@ -138,7 +138,8 @@ sub category : Chained('body') : PathPart('') {
     $c->forward( '/auth/get_csrf_token' );
 
     my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
-    $c->stash->{contact} = $contact;
+    $c->detach( '/page_error_404_not_found', [] ) unless $contact;
+    $c->stash->{contact} = $c->stash->{current_contact} = $contact;
 
     $c->stash->{translation_col} = 'category';
     $c->stash->{object} = $c->stash->{contact};
@@ -218,6 +219,13 @@ sub update_contact : Private {
 
     my %errors;
 
+    my $current_category = $c->get_param('current_category') || '';
+    my $current_contact = $c->model('DB::Contact')->find({
+        body_id => $c->stash->{body_id},
+        category => $current_category,
+    });
+    $c->stash->{current_contact} = $current_contact;
+
     my $category = $self->trim( $c->get_param('category') );
     $errors{category} = _("Please choose a category") unless $category;
     $errors{note} = _('Please enter a message') unless $c->get_param('note') || FixMyStreet->config('STAGING_SITE');
@@ -228,6 +236,14 @@ sub update_contact : Private {
             category => $category,
         }
     );
+    if ($current_contact && $contact->id && $contact->id != $current_contact->id) {
+        $errors{category} = _('You cannot rename a category to an existing category');
+    } elsif ($current_contact && !$contact->id) {
+        # Changed name
+        $contact = $current_contact;
+        $c->model('DB::Problem')->to_body($c->stash->{body_id})->search({ category => $current_category })->update({ category => $category });
+        $contact->category($category);
+    }
 
     my $email = $c->get_param('email');
     $email =~ s/\s+//g;

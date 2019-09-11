@@ -20,6 +20,7 @@
         - Contact form emails now include user admin links.
         - Allow categories/Open311 questions to disable the reporting form. #2599
         - Improve category edit form. #2469
+        - Allow editing of category name. #1398
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523
