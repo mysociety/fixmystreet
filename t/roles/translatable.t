@@ -74,4 +74,11 @@ FixMyStreet::override_config {
     $mech->content_contains('Hull i veien');
 };
 
+subtest 'Check display_name override' => sub {
+    $contact->set_extra_metadata( display_name => 'Override name' );
+    $contact->update;
+    is $contact->category_display, "Override name";
+    is $problem->category_display, "Override name";
+};
+
 done_testing;

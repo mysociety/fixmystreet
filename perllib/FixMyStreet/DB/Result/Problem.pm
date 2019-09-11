@@ -404,7 +404,28 @@ sub confirm {
 
 sub category_display {
     my $self = shift;
-    $self->translate_column('category');
+    my $contact = $self->category_row;
+    return $self->category unless $contact; # Fallback; shouldn't happen, but some tests
+    return $contact->category_display;
+}
+
+=head2 category_row
+
+Returns the corresponding Contact object for this problem's category and body.
+If the report was sent to multiple bodies, only returns the first.
+
+=cut
+
+sub category_row {
+    my $self = shift;
+    my $schema = $self->result_source->schema;
+    my $body_id = $self->bodies_str_ids->[0];
+    return unless $body_id && $body_id =~ /^[0-9]+$/;
+    my $contact = $schema->resultset("Contact")->find({
+        body_id => $body_id,
+        category => $self->category,
+    });
+    return $contact;
 }
 
 sub bodies_str_ids {

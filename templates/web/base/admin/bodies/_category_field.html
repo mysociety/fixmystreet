@@ -1,0 +1,17 @@
+<div class="admin-hint">
+  <p>
+      [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
+                  to the body too. These will appear in the drop-down menu on the report-a-problem page.') %]
+      <br>
+      [% loc("If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in
+                  the menu. Make sure you use the same category name in the bodies if you want this to happen.") %]
+  </p>
+</div>
+
+<p>
+  <strong>[% loc('Category') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
+</p>
+
+[% IF contact.in_storage %]
+    <input type="hidden" name="current_category" value="[% current_contact.category | html %]" >
+[% END %]

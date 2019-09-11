@@ -31,10 +31,7 @@ sub open311_munge_update_params {
 
     $params->{service_request_id_ext} = $comment->problem->id;
 
-    my $contact = $comment->result_source->schema->resultset("Contact")->not_deleted->find({
-        body_id => $body->id,
-        category => $comment->problem->category
-    });
+    my $contact = $comment->problem->category_row;
     $params->{service_code} = $contact->email;
 }
 
