@@ -51,27 +51,7 @@ sub index : Path : Args(0) {
 
     my $posted = $c->get_param('posted') || '';
     if ( $posted eq 'body' ) {
-        $c->forward('check_for_super_user');
-        $c->forward('/auth/check_csrf_token');
-
-        my $values = $c->forward('body_params');
-        unless ( keys %{$c->stash->{body_errors}} ) {
-            my $body = $c->model('DB::Body')->create( $values->{params} );
-            if ($values->{extras}) {
-                $body->set_extra_metadata( $_ => $values->{extras}->{$_} )
-                    for keys %{$values->{extras}};
-                $body->update;
-            }
-            my @area_ids = $c->get_param_list('area_ids');
-            foreach (@area_ids) {
-                $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
-            }
-
-            $c->stash->{object} = $body;
-            $c->stash->{translation_col} = 'name';
-            $c->forward('update_translations');
-            $c->stash->{updated} = _('New body added');
-        }
+        $c->forward('update_body', [ undef, _('New body added') ]);
     }
 
     $c->forward( '/admin/fetch_all_bodies' );
@@ -220,161 +200,182 @@ sub check_for_super_user : Private {
 sub update_contacts : Private {
     my ( $self, $c ) = @_;
 
-    my $posted = $c->get_param('posted');
-    my $editor = $c->forward('/admin/get_user');
-
+    my $posted = $c->get_param('posted') || '';
     if ( $posted eq 'new' ) {
-        $c->forward('/auth/check_csrf_token');
-
-        my %errors;
-
-        my $category = $self->trim( $c->get_param('category') );
-        $errors{category} = _("Please choose a category") unless $category;
-        $errors{note} = _('Please enter a message') unless $c->get_param('note');
-
-        my $contact = $c->model('DB::Contact')->find_or_new(
-            {
-                body_id => $c->stash->{body_id},
-                category => $category,
-            }
-        );
-
-        my $email = $c->get_param('email');
-        $email =~ s/\s+//g;
-        my $send_method = $c->get_param('send_method') || $contact->body->send_method || "";
-        unless ( $send_method eq 'Open311' ) {
-            $errors{email} = _('Please enter a valid email') unless is_valid_email_list($email) || $email eq 'REFUSED';
-        }
-
-        $contact->email( $email );
-        $contact->state( $c->get_param('state') );
-        $contact->non_public( $c->get_param('non_public') ? 1 : 0 );
-        $contact->note( $c->get_param('note') );
-        $contact->whenedited( \'current_timestamp' );
-        $contact->editor( $editor );
-        $contact->endpoint( $c->get_param('endpoint') );
-        $contact->jurisdiction( $c->get_param('jurisdiction') );
-        $contact->api_key( $c->get_param('api_key') );
-        $contact->send_method( $c->get_param('send_method') );
-
-        # Set flags in extra to the appropriate values
-        if ( $c->get_param('photo_required') ) {
-            $contact->set_extra_metadata_if_undefined(  photo_required => 1 );
-        }
-        else {
-            $contact->unset_extra_metadata( 'photo_required' );
-        }
-        if ( $c->get_param('inspection_required') ) {
-            $contact->set_extra_metadata( inspection_required => 1 );
-        }
-        else {
-            $contact->unset_extra_metadata( 'inspection_required' );
-        }
-        if ( $c->get_param('reputation_threshold') ) {
-            $contact->set_extra_metadata( reputation_threshold => int($c->get_param('reputation_threshold')) );
-        }
-        if ( my @group = $c->get_param_list('group') ) {
-            @group = grep { $_ } @group;
-            if (scalar @group == 0) {
-                $contact->unset_extra_metadata( 'group' );
-            } else {
-                $contact->set_extra_metadata( group => \@group );
-            }
-        } else {
-            $contact->unset_extra_metadata( 'group' );
-        }
-
-
-        $c->forward('/admin/update_extra_fields', [ $contact ]);
-        $c->forward('contact_cobrand_extra_fields', [ $contact ]);
-
-        # Special form disabling form
-        if ($c->get_param('disable')) {
-            my $msg = $c->get_param('disable_message');
-            $errors{category} = _('Please enter a message') unless $msg;
-            my $meta = {
-                code => '_fms_disable_',
-                variable => 'false',
-                protected => 'true',
-                disable_form => 'true',
-                description => $msg,
-            };
-            $contact->update_extra_field($meta);
-        } else {
-            $contact->remove_extra_field('_fms_disable_');
-        }
-
-        if ( %errors ) {
-            $c->stash->{updated} = _('Please correct the errors below');
-            $c->stash->{contact} = $contact;
-            $c->stash->{errors} = \%errors;
-        } elsif ( $contact->in_storage ) {
-            $c->stash->{updated} = _('Values updated');
-
-            # NB: History is automatically stored by a trigger in the database
-            $contact->update;
-        } else {
-            $c->stash->{updated} = _('New category contact added');
-            $contact->insert;
-        }
-
-        unless ( %errors ) {
-            $c->stash->{translation_col} = 'category';
-            $c->stash->{object} = $contact;
-            $c->forward('update_translations');
-        }
-
+        $c->forward('update_contact');
     } elsif ( $posted eq 'update' ) {
-        $c->forward('/auth/check_csrf_token');
-
-        my @categories = $c->get_param_list('confirmed');
-
-        my $contacts = $c->model('DB::Contact')->search(
-            {
-                body_id => $c->stash->{body_id},
-                category => { -in => \@categories },
-            }
-        );
-
-        $contacts->update(
-            {
-                state => 'confirmed',
-                whenedited => \'current_timestamp',
-                note => 'Confirmed',
-                editor => $editor,
-            }
-        );
-
-        $c->stash->{updated} = _('Values updated');
+        $c->forward('confirm_contacts');
     } elsif ( $posted eq 'body' ) {
-        $c->forward('check_for_super_user');
-        $c->forward('/auth/check_csrf_token');
-
-        my $values = $c->forward( 'body_params' );
-        unless ( keys %{$c->stash->{body_errors}} ) {
-            $c->stash->{body}->update( $values->{params} );
-            if ($values->{extras}) {
-                $c->stash->{body}->set_extra_metadata( $_ => $values->{extras}->{$_} )
-                    for keys %{$values->{extras}};
-                $c->stash->{body}->update;
-            }
-            my @current = $c->stash->{body}->body_areas->all;
-            my %current = map { $_->area_id => 1 } @current;
-            my @area_ids = $c->get_param_list('area_ids');
-            foreach (@area_ids) {
-                $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
-                delete $current{$_};
-            }
-            # Remove any others
-            $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
-
-            $c->stash->{translation_col} = 'name';
-            $c->stash->{object} = $c->stash->{body};
-            $c->forward('update_translations');
-
-            $c->stash->{updated} = _('Values updated');
-        }
+        $c->forward('update_body', [ $c->stash->{body}, _('Values updated') ]);
     }
+}
+
+sub update_contact : Private {
+    my ( $self, $c ) = @_;
+
+    my $editor = $c->forward('/admin/get_user');
+    $c->forward('/auth/check_csrf_token');
+
+    my %errors;
+
+    my $category = $self->trim( $c->get_param('category') );
+    $errors{category} = _("Please choose a category") unless $category;
+    $errors{note} = _('Please enter a message') unless $c->get_param('note');
+
+    my $contact = $c->model('DB::Contact')->find_or_new(
+        {
+            body_id => $c->stash->{body_id},
+            category => $category,
+        }
+    );
+
+    my $email = $c->get_param('email');
+    $email =~ s/\s+//g;
+    my $send_method = $c->get_param('send_method') || $contact->body->send_method || "";
+    unless ( $send_method eq 'Open311' ) {
+        $errors{email} = _('Please enter a valid email') unless is_valid_email_list($email) || $email eq 'REFUSED';
+    }
+
+    $contact->email( $email );
+    $contact->state( $c->get_param('state') );
+    $contact->non_public( $c->get_param('non_public') ? 1 : 0 );
+    $contact->note( $c->get_param('note') );
+    $contact->whenedited( \'current_timestamp' );
+    $contact->editor( $editor );
+    $contact->endpoint( $c->get_param('endpoint') );
+    $contact->jurisdiction( $c->get_param('jurisdiction') );
+    $contact->api_key( $c->get_param('api_key') );
+    $contact->send_method( $c->get_param('send_method') );
+
+    # Set flags in extra to the appropriate values
+    if ( $c->get_param('photo_required') ) {
+        $contact->set_extra_metadata_if_undefined(  photo_required => 1 );
+    } else {
+        $contact->unset_extra_metadata( 'photo_required' );
+    }
+    if ( $c->get_param('inspection_required') ) {
+        $contact->set_extra_metadata( inspection_required => 1 );
+    } else {
+        $contact->unset_extra_metadata( 'inspection_required' );
+    }
+    if ( $c->get_param('reputation_threshold') ) {
+        $contact->set_extra_metadata( reputation_threshold => int($c->get_param('reputation_threshold')) );
+    }
+    if ( my @group = $c->get_param_list('group') ) {
+        @group = grep { $_ } @group;
+        if (scalar @group == 0) {
+            $contact->unset_extra_metadata( 'group' );
+        } else {
+            $contact->set_extra_metadata( group => \@group );
+        }
+    } else {
+        $contact->unset_extra_metadata( 'group' );
+    }
+
+
+    $c->forward('/admin/update_extra_fields', [ $contact ]);
+    $c->forward('contact_cobrand_extra_fields', [ $contact ]);
+
+    # Special form disabling form
+    if ($c->get_param('disable')) {
+        my $msg = $c->get_param('disable_message');
+        $errors{category} = _('Please enter a message') unless $msg;
+        my $meta = {
+            code => '_fms_disable_',
+            variable => 'false',
+            protected => 'true',
+            disable_form => 'true',
+            description => $msg,
+        };
+        $contact->update_extra_field($meta);
+    } else {
+        $contact->remove_extra_field('_fms_disable_');
+    }
+
+    if ( %errors ) {
+        $c->stash->{updated} = _('Please correct the errors below');
+        $c->stash->{contact} = $contact;
+        $c->stash->{errors} = \%errors;
+    } elsif ( $contact->in_storage ) {
+        $c->stash->{updated} = _('Values updated');
+
+        # NB: History is automatically stored by a trigger in the database
+        $contact->update;
+    } else {
+        $c->stash->{updated} = _('New category contact added');
+        $contact->insert;
+    }
+
+    unless ( %errors ) {
+        $c->stash->{translation_col} = 'category';
+        $c->stash->{object} = $contact;
+        $c->forward('update_translations');
+    }
+
+}
+
+sub confirm_contacts : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward('/auth/check_csrf_token');
+
+    my @categories = $c->get_param_list('confirmed');
+
+    my $contacts = $c->model('DB::Contact')->search(
+        {
+            body_id => $c->stash->{body_id},
+            category => { -in => \@categories },
+        }
+    );
+
+    my $editor = $c->forward('/admin/get_user');
+    $contacts->update(
+        {
+            state => 'confirmed',
+            whenedited => \'current_timestamp',
+            note => 'Confirmed',
+            editor => $editor,
+        }
+    );
+
+    $c->stash->{updated} = _('Values updated');
+}
+
+sub update_body : Private {
+    my ($self, $c, $body, $msg) = @_;
+
+    $c->forward('check_for_super_user');
+    $c->forward('/auth/check_csrf_token');
+
+    my $values = $c->forward('body_params');
+    return if %{$c->stash->{body_errors}};
+
+    if ($body) {
+        $body->update( $values->{params} );
+    } else {
+        $body = $c->model('DB::Body')->create( $values->{params} );
+    }
+
+    if ($values->{extras}) {
+        $body->set_extra_metadata( $_ => $values->{extras}->{$_} )
+            for keys %{$values->{extras}};
+        $body->update;
+    }
+    my @current = $body->body_areas->all;
+    my %current = map { $_->area_id => 1 } @current;
+    my @area_ids = $c->get_param_list('area_ids');
+    foreach (@area_ids) {
+        $c->model('DB::BodyArea')->find_or_create( { body => $body, area_id => $_ } );
+        delete $current{$_};
+    }
+    # Remove any others
+    $body->body_areas->search( { area_id => [ keys %current ] } )->delete;
+
+    $c->stash->{translation_col} = 'name';
+    $c->stash->{object} = $body;
+    $c->forward('update_translations');
+
+    $c->stash->{updated} = $msg;
 }
 
 sub body_params : Private {
