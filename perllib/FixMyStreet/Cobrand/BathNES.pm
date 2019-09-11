@@ -19,7 +19,7 @@ sub council_url { return 'bathnes'; }
 
 sub admin_user_domain { 'bathnes.gov.uk' }
 
-sub map_type { 'OSM' }
+sub map_type { 'OSM::MapTiler' }
 
 sub on_map_default_status { 'open' }
 

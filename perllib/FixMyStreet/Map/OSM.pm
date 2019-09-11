@@ -14,7 +14,7 @@ use Utils;
 use constant ZOOM_LEVELS    => 6;
 use constant MIN_ZOOM_LEVEL => 13;
 
-sub map_type { 'OpenLayers.Layer.OSM.Mapnik' }
+sub map_type { 'OpenLayers.Layer.OSM.MapTiler' }
 
 sub map_template { 'osm' }
 

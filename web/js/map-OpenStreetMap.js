@@ -114,3 +114,41 @@ OpenLayers.Layer.OSM.CycleMap = OpenLayers.Class(OpenLayers.Layer.OSM, {
 
     CLASS_NAME: "OpenLayers.Layer.OSM.CycleMap"
 });
+
+/**
+ * Class: OpenLayers.Layer.OSM.MapTiler
+ *
+ * Inherits from:
+ *  - <OpenLayers.Layer.OSM>
+ */
+OpenLayers.Layer.OSM.MapTiler = OpenLayers.Class(OpenLayers.Layer.OSM, {
+    /**
+     * Constructor: OpenLayers.Layer.OSM.MapTiler
+     *
+     * Parameters:
+     * name - {String}
+     * options - {Object} Hashtable of extra options to tag onto the layer
+     */
+    initialize: function(name, options) {
+        var url;
+        if (window.devicePixelRatio > 1) {
+            url = [
+                "https://api.maptiler.com/maps/uk-openzoomstack-road/256/${z}/${x}/${y}@2x.png?key=kCrAT2nFkB6vTrvOtf1n",
+            ];
+        } else {
+            url = [
+                "https://api.maptiler.com/maps/uk-openzoomstack-road/256/${z}/${x}/${y}.png?key=kCrAT2nFkB6vTrvOtf1n",
+            ];
+        }
+        options = OpenLayers.Util.extend({
+            /* Below line added to OSM's file in order to allow minimum zoom level */
+            maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),
+            numZoomLevels: 19,
+            buffer: 0
+        }, options);
+        var newArguments = [name, url, options];
+        OpenLayers.Layer.OSM.prototype.initialize.apply(this, newArguments);
+    },
+
+    CLASS_NAME: "OpenLayers.Layer.OSM.MapTiler"
+});
