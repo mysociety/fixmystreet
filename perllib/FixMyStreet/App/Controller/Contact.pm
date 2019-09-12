@@ -33,7 +33,6 @@ sub begin : Private {
     my ($self, $c) = @_;
     $c->forward('/begin');
     $c->forward('setup_request');
-    $c->forward('determine_contact_type');
 }
 
 =head2 index
@@ -44,6 +43,7 @@ Display contact us page
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
+    $c->forward('determine_contact_type');
 }
 
 =head2 submit
@@ -55,6 +55,7 @@ Handle contact us form submission
 sub submit : Path('submit') : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->forward('determine_contact_type');
     $c->res->redirect( '/contact' ) and return unless $c->req->method eq 'POST';
 
     $c->go('index') unless $c->forward('validate');

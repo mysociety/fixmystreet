@@ -11,7 +11,7 @@ my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Coun
 my $normaluser = $mech->create_user_ok('normaluser@example.com', name => 'Normal User');
 $normaluser->update({ phone => "+447123456789" });
 
-$mech->create_problems_for_body(1, $body->id, 'Title', {
+my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
     areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
     user => $normaluser, service => 'iOS', extra => {
         _fields => [
@@ -197,6 +197,19 @@ subtest 'extra CSV columns are present if permission granted' => sub {
 };
 
 
+};
+
+subtest 'check cobrand correctly reset on each request' => sub {
+    FixMyStreet::override_config {
+        'ALLOWED_COBRANDS' => [ 'bathnes', 'fixmystreet' ],
+    }, sub {
+        $mech->log_in_ok( $superuser->email );
+        $mech->host('www.fixmystreet.com');
+        $mech->get_ok( '/contact?id=' . $problem->id );
+        $mech->host('bathnes.fixmystreet.com');
+        $mech->get_ok( '/contact?reject=1&id=' . $problem->id );
+        $mech->content_contains('Reject report');
+    }
 };
 
 done_testing();
