@@ -4960,7 +4960,7 @@ msgstr "Die ersten zehn Treffer werden unten aufgelistet."
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
 msgid "We will only use your personal information in accordance with our <a href=\"%s\">privacy policy.</a>"
-msgstr "Ihre pers&ouml;nlichen Angaben werden nur im Zusammenhang mit der Beantwortung der Meldung verwendet."
+msgstr "Ihre pers&ouml;nlichen Angaben werden nur im Zusammenhang mit der Beantwortung der Meldung verwendet. <!-- %s -->"
 
 #: templates/web/base/questionnaire/completed-open.html:2
 msgid "We&rsquo;re sorry to hear the problem’s not fixed. Why not try writing to your local representatives?"
