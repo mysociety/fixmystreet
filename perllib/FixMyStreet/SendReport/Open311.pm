@@ -74,7 +74,7 @@ sub send {
 
         my $open311 = Open311->new( %open311_params );
 
-        $cobrand->call_hook(open311_pre_send => $row, $open311);
+        $cobrand->call_hook(open311_pre_send => $row, $open311, $h);
 
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
         if (FixMyStreet->test_mode) {
