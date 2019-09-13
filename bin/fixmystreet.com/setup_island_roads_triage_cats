@@ -1,0 +1,124 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+setup_island_roads_triage_cats - create/update triage contacts for Island Roads cobrand
+
+=head1 DESCRIPTION
+
+This script creates a set of contacts for Island Road to be used as part of their triage
+system. The contacts created all have the `Triage` send_method and so will be displayed
+to non staff users.
+
+It also adds the relevant extra fields to the contacts to enable asset details to be
+added to a report created in the category.
+
+If a contact with the same category already exists that does not have a send_method of
+`Triage` then the script will emit a warning. Any existing contacts with the `Triage`
+send_method will have their state reset to `confirmed`.
+
+=cut
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+
+my @cat_list = (
+    "Dog Fouling",
+    "Manholes",
+    "Trees & Hedges",
+    "Pavements/footpaths",
+    "Drainage",
+    "Car Parking",
+    "Street Lighting",
+    "Bus Stops",
+    "Flyposting",
+    "Potholes",
+    "Street Cleaning",
+    "Bridges & Walls",
+    "Traffic Lights",
+    "Street Furniture",
+    "Roads/Highways",
+    "Road Traffic Signs & Markings",
+    "Grass Verges & Weeds",
+    "Flytipping",
+    "Graffiti",
+    "Street Nameplates",
+    "Abandoned Vehicles"
+);
+
+use FixMyStreet::DB;
+use FixMyStreet::Cobrand::IsleOfWight;
+
+my $iow = FixMyStreet::DB->resultset("Body")->search({
+    name => "Isle of Wight Council"
+});
+
+my $cobrand = FixMyStreet::Cobrand::IsleOfWight->new;
+
+if ($iow->count != 1) {
+    die "Could not find IoW body\n";
+}
+
+$iow = $iow->first;
+
+for my $cat (@cat_list) {
+
+    my $existing = FixMyStreet::DB->resultset("Contact")->search({
+        category => $cat, body_id => $iow->id
+    })->first;
+
+    if ( $existing ) {
+        if (!$existing->send_method || $existing->send_method ne 'Triage') {
+            warn "$cat is not a Triage category\n";
+            next;
+        }
+        # make sure category is not deleted
+        $existing->state('confirmed');
+    } else {
+        $existing = FixMyStreet::DB->resultset('Contact')->create({
+            name => $cat,
+            body => $iow,
+            send_method => 'Triage',
+            state => 'confirmed',
+            editor => $0,
+            note => 'created automatically by script',
+        });
+    }
+
+    my $extra_fields = $existing->get_extra_fields;
+    my @meta = grep { $_->{code} ne 'central_asset_id' && $_->{code} ne 'site_code'} @$extra_fields;
+
+    push @meta,
+        {
+            code => 'central_asset_id',
+            datatype => 'string',
+            description => 'central asset id',
+            order => 100,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        },
+        {
+            code => 'site_code',
+            datatype => 'string',
+            description => 'site code',
+            order => 100,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        };
+
+    $cobrand->call_hook(
+        open311_contact_meta_override => {}, $existing, \@meta);
+
+    $existing->set_extra_fields(@meta);
+    $existing->update;
+}
