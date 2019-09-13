@@ -71,7 +71,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         if (!fixmystreet.markers.getVisibility() || !(this.getVisibility() && this.inRange)) {
             return;
         }
-        var threshold = 50; // metres
+        var threshold = this.fixmystreet.snap_threshold || 50; // metres
         var marker = fixmystreet.markers.features[0];
         if (marker === undefined) {
             // No marker to be found so bail out
