@@ -123,6 +123,7 @@ fixmystreet.assets.add(road_defaults, {
     },
     road: true,
     all_categories: true,
+    nearest_radius: 0.1,
     actions: {
         found: function(layer, feature) {
             var category = $('select#form_category').val(),
