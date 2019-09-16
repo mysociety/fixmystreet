@@ -73,14 +73,8 @@ sub link_to_council_cobrand { "Hounslow Highways" }
 # Instead, force the borough council name to be used.
 sub all_reports_single_body { { name => "Hounslow Borough Council" } }
 
-sub open311_pre_send {
-    my ($self, $row, $open311, $h) = @_;
-
-    return unless $row->isa("FixMyStreet::DB::Result::Problem");
-
-    # Reload the problem from the DB, as we want to save our changes to it
-    # without affecting the existing instance.
-    $row = $row->result_source->resultset->find( { id => $row->id } );
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
 
     # Stop the email being sent for each Open311 failure; only the once.
     return if $row->get_extra_metadata('hounslow_email_sent');
@@ -88,8 +82,7 @@ sub open311_pre_send {
     my $e = join( '@', 'enquiries', $self->council_url . 'highways.org' );
     my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, 'Hounslow Highways' ] ] );
     if (!$sender->send($row, $h)) {
-      $row->set_extra_metadata('hounslow_email_sent', 1);
-      $row->update;
+        $row->set_extra_metadata('hounslow_email_sent', 1);
     }
 }
 
