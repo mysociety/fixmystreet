@@ -78,17 +78,4 @@ sub send_from {
     return [ FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') ];
 }
 
-# For messages to external body, we also want the sender to be the
-# category/body, so that bounces go there.
-sub envelope_sender {
-    my ($self, $row) = @_;
-
-    if ( $row->external_body ) {
-        my $from = $self->send_from($row);
-        return $from->[0];
-    }
-
-    return $self->SUPER::envelope_sender($row);
-}
-
 1;
