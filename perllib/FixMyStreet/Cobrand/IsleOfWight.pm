@@ -45,7 +45,7 @@ sub updates_disallowed {
     return 1;
 }
 
-# sub get_geocoder { 'OSM' }
+sub get_geocoder { 'OSM' }
 
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
