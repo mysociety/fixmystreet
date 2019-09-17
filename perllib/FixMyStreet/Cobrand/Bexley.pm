@@ -8,7 +8,7 @@ sub council_area_id { 2494 }
 sub council_area { 'Bexley' }
 sub council_name { 'London Borough of Bexley' }
 sub council_url { 'bexley' }
-sub get_geocoder { 'OSM' }
+sub get_geocoder { 'Bexley' }
 sub map_type { 'Bexley' }
 
 sub disambiguate_location {

@@ -2,8 +2,10 @@ use CGI::Simple;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use Catalyst::Test 'FixMyStreet::App';
 
 use_ok 'FixMyStreet::Cobrand::Bexley';
+use_ok 'FixMyStreet::Geocode::Bexley';
 use_ok 'FixMyStreet::Map::Bexley';
 
 my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
@@ -164,6 +166,40 @@ subtest 'correct map tiles used' => sub {
             "//tilma.mysociety.org/$lyr/$zoom/123/456.png",
         ];
     }
+};
+
+my $geo = Test::MockModule->new('FixMyStreet::Geocode');
+$geo->mock('cache', sub {
+    my $typ = shift;
+    return [] if $typ eq 'osm';
+    return {
+        features => [
+            {
+                properties => { ADDRESS => 'BRAMPTON ROAD', TOWN => 'BEXLEY' },
+                geometry => { type => 'LineString', coordinates => [ [ 1, 2 ], [ 3, 4] ] },
+            },
+            {
+                properties => { ADDRESS => 'FOOTPATH TO BRAMPTON ROAD', TOWN => 'BEXLEY' },
+                geometry => { type => 'MultiLineString', coordinates => [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ] },
+            },
+        ],
+    } if $typ eq 'bexley';
+});
+
+subtest 'geocoder' => sub {
+    my $c = ctx_request('/');
+    my $results = FixMyStreet::Geocode::Bexley->string("Brampton Road", $c);
+    is_deeply $results, { error => [
+        {
+            'latitude' => '49.766844',
+            'longitude' => '-7.557122',
+            'address' => 'Brampton Road, Bexley'
+        }, {
+            'address' => 'Footpath to Brampton Road, Bexley',
+            'longitude' => '-7.557097',
+            'latitude' => '49.766863'
+        }
+    ] };
 };
 
 done_testing();

@@ -52,14 +52,15 @@ sub string {
         return { error => _('Sorry, we could not find that location.') };
     }
 
-    my ( $error, @valid_locations, $latitude, $longitude );
+    my ( $error, @valid_locations, $latitude, $longitude, $address );
     foreach (@$js) {
         $c->cobrand->call_hook(geocoder_munge_results => $_);
         ( $latitude, $longitude ) =
             map { Utils::truncate_coordinate($_) }
             ( $_->{lat}, $_->{lon} );
+        $address = $_->{display_name};
         push (@$error, {
-            address => $_->{display_name},
+            address => $address,
             icon => $_->{icon},
             latitude => $latitude,
             longitude => $longitude
@@ -67,7 +68,7 @@ sub string {
         push (@valid_locations, $_);
     }
 
-    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
+    return { latitude => $latitude, longitude => $longitude, address => $address } if scalar @valid_locations == 1;
     return { error => $error };
 }
 
