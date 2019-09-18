@@ -109,6 +109,7 @@ function found_item(layer, asset) {
 }
 
 var point_asset_defaults = $.extend(true, {}, defaults, {
+    snap_threshold: 5,
     select_action: true,
     asset_type: 'spot',
     asset_item: "item",
@@ -238,7 +239,6 @@ for (i = 0; i < line_category_list.length; i++) {
 
 // non union layers
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
-    snap_threshold: 10,
     asset_group: "Roads/Highways",
     http_options: {
         params: {
@@ -248,7 +248,6 @@ fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
 }));
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
-    snap_threshold: 10,
     asset_group: "Roads/Highways",
     http_options: {
         params: {
@@ -259,7 +258,6 @@ fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
 
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
-    snap_threshold: 10,
     asset_group: "Drainage",
     http_options: {
         params: {
@@ -269,7 +267,6 @@ fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
 }));
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
-    snap_threshold: 10,
     asset_group: "Car Parking",
     http_options: {
         params: {
@@ -291,7 +288,6 @@ fixmystreet.assets.add($.extend(true, {}, line_asset_defaults, {
 }));
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
-    snap_threshold: 10,
     asset_group: "Dog Fouling",
     http_options: {
         params: {
