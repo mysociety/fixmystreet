@@ -1031,6 +1031,7 @@ fixmystreet.message_controller = (function() {
     var stopperId = 'js-category-stopper',
         stoppers = [],
         ignored_bodies = [];
+        msg_after_bodies = [];
 
     // This shows an error message because e.g. an asset isn't selected or a road hasn't been clicked
     function show_responsibility_error(id, asset_item, asset_type) {
@@ -1129,6 +1130,14 @@ fixmystreet.message_controller = (function() {
         }
     }
 
+    function stopper_after(stopper) {
+        var body =  fixmystreet.bodies[0];
+        if (OpenLayers.Util.indexOf( msg_after_bodies, body) > -1 ) {
+            return true;
+        }
+        return false;
+    }
+
     function check_for_stopper() {
         var only_send = fixmystreet.body_overrides.get_only_send();
         if (only_send == 'Highways England') {
@@ -1160,7 +1169,11 @@ fixmystreet.message_controller = (function() {
         if ($id.length) {
             $id.replaceWith($msg);
         } else {
-            $msg.insertBefore('#js-post-category-messages');
+            if (stopper_after(stopper)) {
+                $msg.insertAfter('#js-post-category-messages');
+            } else {
+                $msg.insertBefore('#js-post-category-messages');
+            }
         }
         disable_report_form(stopper.keep_category_extras);
     }
@@ -1235,6 +1248,10 @@ fixmystreet.message_controller = (function() {
 
         add_ignored_body: function(body) {
             ignored_bodies.push(body);
+        },
+
+        add_msg_after_bodies: function(body) {
+            msg_after_bodies.push(body);
         }
     };
 
