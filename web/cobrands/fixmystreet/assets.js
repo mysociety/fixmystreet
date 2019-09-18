@@ -375,7 +375,7 @@ function clear_fields_for_attributes(attributes) {
 }
 
 function check_zoom_message_visibility() {
-    if (this.fixmystreet.non_interactive) {
+    if (this.fixmystreet.non_interactive && !this.fixmystreet.display_zoom_message) {
         return;
     }
     var select = this.fixmystreet.asset_group ? 'category_group' : 'form_category';
@@ -418,6 +418,9 @@ function layer_visibilitychanged() {
     if (this.fixmystreet.road) {
         if (!this.getVisibility()) {
             this.road_not_found();
+        }
+        if (this.fixmystreet.display_zoom_message) {
+            check_zoom_message_visibility.call(this);
         }
         return;
     } else if (!this.getVisibility()) {
