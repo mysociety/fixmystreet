@@ -76,6 +76,17 @@ sub open311_config {
     $params->{multi_photos} = 1;
 }
 
+sub open311_get_update_munging {
+    my ($self, $comment) = @_;
+
+    # If we've received an update via Open311, let us always take its state change
+    my $state = $comment->problem_state;
+    my $p = $comment->problem;
+    if ($state && $p->state ne $state && $p->is_visible) {
+        $p->state($state);
+    }
+}
+
 sub should_skip_sending_update {
     my ($self, $comment) = @_;
 
