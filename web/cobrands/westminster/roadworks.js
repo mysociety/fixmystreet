@@ -15,4 +15,18 @@ fixmystreet.assets.add(fixmystreet.roadworks.layer_planned, {
     body: body
 });
 
+// Westminster want to also display the responsible party in roadworks messages
+var original_display_message = fixmystreet.roadworks.display_message;
+fixmystreet.roadworks.display_message = function(feature) {
+    var retval = original_display_message.apply(this, arguments);
+
+    if (feature.attributes.promoter) {
+        var $dl = $(".js-roadworks-message-" + feature.layer.id + " dl");
+        $dl.append("<dt>Responsibility</dt>");
+        $dl.append($("<dd></dd>").text(feature.attributes.promoter));
+    }
+
+    return retval;
+};
+
 })();
