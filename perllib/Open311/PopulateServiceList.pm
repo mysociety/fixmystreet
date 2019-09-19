@@ -2,7 +2,6 @@ package Open311::PopulateServiceList;
 
 use Moo;
 use Open311;
-use Text::CSV;
 
 has bodies => ( is => 'ro' );
 has found_contacts => ( is => 'rw', default => sub { [] } );
@@ -282,23 +281,16 @@ sub _set_contact_group {
     my ($self, $contact) = @_;
 
     my $groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->enable_category_groups;
-    my $multi_groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->enable_multiple_category_groups;
     my $old_group = $contact->get_extra_metadata('group') || '';
     my $new_group = $groups_enabled ? $self->_current_service->{group} || '' : '';
-
-    if ($multi_groups_enabled && $new_group =~ /,/) {
-        my $csv = Text::CSV->new;
-        if ( $csv->parse($new_group) ) {
-            $new_group = [ $csv->fields ];
-        } else {
-            warn "error parsing groups for " . $self->_current_body_cobrand->moniker . "contact " . $contact->category . ": $new_group\n";
-            $new_group = [ $new_group ];
-        }
+    my $new_group_multi = $groups_enabled ? $self->_current_service->{groups} || [] : [];
+    if (@$new_group_multi) {
+        $new_group = $new_group_multi;
     }
 
     if ($self->_groups_different($old_group, $new_group)) {
         if ($new_group) {
-            $contact->set_extra_metadata(group => $new_group);
+            $contact->set_extra_metadata(group => @$new_group == 1 ? $new_group->[0] : $new_group);
             $contact->update({
                 editor => $0,
                 whenedited => \'current_timestamp',

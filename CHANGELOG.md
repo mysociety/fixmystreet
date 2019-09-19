@@ -58,6 +58,7 @@
         - unset external_status_code if blank in update
         - Add support for account_id parameter to POST Service Request calls.
         - Do not overwrite/remove protected meta data. #2598
+        - Spot multiple groups inside a <groups> element.
 
 * v2.6 (3rd May 2019)
     - New features:

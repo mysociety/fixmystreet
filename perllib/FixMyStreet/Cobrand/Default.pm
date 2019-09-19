@@ -1112,18 +1112,6 @@ sub enable_category_groups {
     return $self->feature('category_groups');
 }
 
-=item enable_multiple_category_groups
-
-Whether a category can be included in multiple groups. Required enable_category_groups
-to alse be true.
-
-=cut
-
-sub enable_multiple_category_groups {
-    my $self = shift;
-    return $self->enable_category_groups && $self->feature('multiple_category_groups');
-}
-
 sub default_problem_state { 'unconfirmed' }
 
 sub state_groups_admin {

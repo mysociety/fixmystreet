@@ -614,6 +614,7 @@ sub _get_xml_object {
         service_requests => 'request',
         errors => 'error',
         service_request_updates => 'request_update',
+        groups => 'group',
     };
     my $simple = XML::Simple->new(
         ForceArray => [ values %$group_tags ],
