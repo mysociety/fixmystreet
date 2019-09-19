@@ -771,6 +771,8 @@ sub setup_categories_and_bodies : Private {
         my %category_groups = ();
         for my $category (@category_options) {
             my $group = $category->{group} // $category->get_extra_metadata('group') // [''];
+            # multiple groups from open311 can contain " which upsets the html so strip them
+            $group =~ s/^"|"$//g;
             # this could be an array ref or a string
             my @groups = ref $group eq 'ARRAY' ? @$group : ($group);
             push( @{$category_groups{$_}}, $category ) for @groups;
