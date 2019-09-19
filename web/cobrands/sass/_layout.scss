@@ -11,6 +11,8 @@ $mappage-actions-width--medium: 20em;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
+$container-max-width: 60em !default;
+
 .internal-link-fixed-header {
     display: block;
     position: relative;
@@ -824,7 +826,7 @@ textarea.form-error {
   margin: 0;
   padding: 1em;
   #front-main-container {
-    max-width: 60em;
+    max-width: $container-max-width;
     margin: 0 auto;
   }
   h2 {
@@ -845,24 +847,8 @@ textarea.form-error {
         margin-top: -0.25em;
     }
     div {
-      display:block;
       margin:0 auto;
       width:20em;
-      overflow:hidden;
-      input#pc {
-        display:block;
-        float: $left;
-        padding:0.25em 0.5em;
-        height:2em;
-        width:17em;
-      }
-      input#sub {
-        display:block;
-        float: $right;
-        width:3em;
-        height:2.3em;
-        padding-top:0.2em;
-      }
     }
   }
   a {

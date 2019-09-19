@@ -140,7 +140,6 @@ body.fullwidthpage {
                     color: #777;
                     font-size: 0.9em;
                     height: 2.6em;
-                    width: 20em;
                     &:focus {
                         outline: 0;
                     }
@@ -148,7 +147,6 @@ body.fullwidthpage {
                 input#sub {
                     font-size: 1.1em;
                     height: 2.4em;
-                    width: 3.5em;
                     font-family: $body-font;
                     font-weight: bold;
                 }

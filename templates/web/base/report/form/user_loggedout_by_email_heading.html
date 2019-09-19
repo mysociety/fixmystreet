@@ -1,13 +1,13 @@
 [% IF c.config.SMS_AUTHENTICATION %]
   [% IF type == 'update' %]
-    <h5 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my update by email/text') %]</h5>
+    <h3 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my update by email/text') %]</h3>
   [% ELSE %]
-    <h5 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my report by email/text') %]</h5>
+    <h3 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my report by email/text') %]</h3>
   [% END %]
 [% ELSE %]
   [% IF type == 'update' %]
-    <h5 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my update by email') %]</h5>
+    <h3 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my update by email') %]</h3>
   [% ELSE %]
-    <h5 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
+    <h3 class="hidden-js">[% loc('<strong>No</strong> Let me confirm my report by email') %]</h3>
   [% END %]
 [% END %]

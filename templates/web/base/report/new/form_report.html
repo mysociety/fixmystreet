@@ -1,7 +1,7 @@
 [% SET form_show_category_only = NOT category || field_errors.category || disable_form_message || have_disable_qn_to_answer %]
 
 <!-- report/new/form_report.html -->
-[% INCLUDE 'report/new/form_heading.html' %]
+[% INCLUDE 'report/new/form_after_heading.html' %]
 
 [% IF field_errors.bodies %]
     <p class='form-error'>[% field_errors.bodies %]</p>
