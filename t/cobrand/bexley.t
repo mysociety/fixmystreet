@@ -2,8 +2,11 @@ use CGI::Simple;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use Catalyst::Test 'FixMyStreet::App';
 
 use_ok 'FixMyStreet::Cobrand::Bexley';
+use_ok 'FixMyStreet::Geocode::Bexley';
+use_ok 'FixMyStreet::Map::Bexley';
 
 my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
 $ukc->mock('lookup_site_code', sub {
@@ -40,6 +43,7 @@ $category->update;
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bexley' ],
     MAPIT_URL => 'http://mapit.uk/',
+    MAP_TYPE => 'Bexley',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => { open311_email => { bexley => { p1 => 'p1@bexley', lighting => 'thirdparty@notbexley.example.com' } } },
 }, sub {
@@ -145,6 +149,57 @@ subtest 'nearest road returns correct road' => sub {
           properties => { fid => '20100024' } },
     ];
     is $cobrand->_nearest_feature($cfg, 545451, 174380, $features), '20101226';
+};
+
+subtest 'correct map tiles used' => sub {
+    my %test = (
+        16 => [ '-', 'oml' ],
+        20 => [ '.', 'bexley' ]
+    );
+    foreach my $zoom (qw(16 20)) {
+        my $tiles = FixMyStreet::Map::Bexley->map_tiles(x_tile => 123, y_tile => 456, zoom_act => $zoom);
+        my ($sep, $lyr) = @{$test{$zoom}};
+        is_deeply $tiles, [
+            "//a${sep}tilma.mysociety.org/$lyr/$zoom/122/455.png",
+            "//b${sep}tilma.mysociety.org/$lyr/$zoom/123/455.png",
+            "//c${sep}tilma.mysociety.org/$lyr/$zoom/122/456.png",
+            "//tilma.mysociety.org/$lyr/$zoom/123/456.png",
+        ];
+    }
+};
+
+my $geo = Test::MockModule->new('FixMyStreet::Geocode');
+$geo->mock('cache', sub {
+    my $typ = shift;
+    return [] if $typ eq 'osm';
+    return {
+        features => [
+            {
+                properties => { ADDRESS => 'BRAMPTON ROAD', TOWN => 'BEXLEY' },
+                geometry => { type => 'LineString', coordinates => [ [ 1, 2 ], [ 3, 4] ] },
+            },
+            {
+                properties => { ADDRESS => 'FOOTPATH TO BRAMPTON ROAD', TOWN => 'BEXLEY' },
+                geometry => { type => 'MultiLineString', coordinates => [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ] },
+            },
+        ],
+    } if $typ eq 'bexley';
+});
+
+subtest 'geocoder' => sub {
+    my $c = ctx_request('/');
+    my $results = FixMyStreet::Geocode::Bexley->string("Brampton Road", $c);
+    is_deeply $results, { error => [
+        {
+            'latitude' => '49.766844',
+            'longitude' => '-7.557122',
+            'address' => 'Brampton Road, Bexley'
+        }, {
+            'address' => 'Footpath to Brampton Road, Bexley',
+            'longitude' => '-7.557097',
+            'latitude' => '49.766863'
+        }
+    ] };
 };
 
 done_testing();
