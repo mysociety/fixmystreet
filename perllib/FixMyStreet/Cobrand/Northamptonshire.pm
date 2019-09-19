@@ -36,6 +36,25 @@ sub on_map_default_status { 'open' }
 
 sub report_sent_confirmation_email { 'id' }
 
+has body_obj => (
+    is => 'lazy',
+    default => sub {
+        FixMyStreet::DB->resultset('Body')->find({ name => 'Northamptonshire County Council' });
+    },
+);
+
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+
+    # Only open reports
+    return 1 if $problem->is_fixed || $problem->is_closed;
+    # Not on reports made by the body user
+    return 1 if $problem->user_id == $self->body_obj->comment_user_id;
+
+    return $self->next::method(@_);
+}
+
 sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     # Northamptonshire don't want to show district/borough reports

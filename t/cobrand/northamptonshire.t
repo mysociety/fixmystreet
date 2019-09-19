@@ -3,6 +3,8 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use Open311::PostServiceRequestUpdates;
 
+use_ok 'FixMyStreet::Cobrand::Northamptonshire';
+
 my $mech = FixMyStreet::TestMech->new;
 
 use open ':std', ':encoding(UTF-8)'; 
@@ -92,6 +94,15 @@ subtest 'check updates sent for non defects' => sub {
 
     $comment->discard_changes;
     is $comment->send_fail_count, 1, "comment sending attempted";
+};
+
+subtest 'check updates disallowed correctly' => sub {
+    my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new;
+    is $cobrand->updates_disallowed($report), 0;
+    $report->update({ state => 'closed' });
+    is $cobrand->updates_disallowed($report), 1;
+    $report->update({ state => 'confirmed', user => $counciluser });
+    is $cobrand->updates_disallowed($report), 1;
 };
 
 done_testing();
