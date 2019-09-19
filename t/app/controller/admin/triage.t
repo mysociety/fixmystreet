@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Alerts;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -76,6 +77,16 @@ FixMyStreet::override_config {
         my $report_url = '/report/' . $report->id;
         $mech->get_ok($report_url);
 
+        my $alert = FixMyStreet::App->model('DB::Alert')->create(
+            {
+                user       => $user2,
+                alert_type => 'new_updates',
+                parameter  => $report->id,
+                parameter2 => '',
+                confirmed => 1,
+            }
+        );
+
         $mech->content_contains('Traffic lights');
 
         $mech->submit_form_ok( {
@@ -106,6 +117,10 @@ FixMyStreet::override_config {
         $mech->log_out_ok;
         $mech->get_ok($report_url);
         $mech->content_lacks('Report triaged from Potholes to Traffic lights');
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Alerts::send();
+        $mech->email_count_is(0);
     };
 };
 
