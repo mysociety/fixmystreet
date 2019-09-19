@@ -96,13 +96,30 @@ subtest 'check updates sent for non defects' => sub {
     is $comment->send_fail_count, 1, "comment sending attempted";
 };
 
+my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new;
+
 subtest 'check updates disallowed correctly' => sub {
-    my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new;
     is $cobrand->updates_disallowed($report), 0;
     $report->update({ state => 'closed' });
     is $cobrand->updates_disallowed($report), 1;
     $report->update({ state => 'confirmed', user => $counciluser });
     is $cobrand->updates_disallowed($report), 1;
+};
+
+subtest 'check pin colour / reference shown' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'northamptonshire',
+        #MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        is $cobrand->pin_colour($report, 'around'), 'blue';
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('ref:&nbsp;' . $report->id);
+        $report->update({ user => $user });
+        is $cobrand->pin_colour($report, 'around'), 'yellow';
+        is $cobrand->pin_colour($report, 'my'), 'red';
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('ref:&nbsp;' . $report->id);
+    };
 };
 
 done_testing();

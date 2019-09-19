@@ -55,6 +55,17 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
+sub is_defect {
+    my ($self, $p) = @_;
+    return $p->user_id == $self->body_obj->comment_user_id;
+}
+
+sub pin_colour {
+    my ($self, $p, $context) = @_;
+    return 'blue' if $self->is_defect($p);
+    return $self->SUPER::pin_colour($p, $context);
+}
+
 sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     # Northamptonshire don't want to show district/borough reports

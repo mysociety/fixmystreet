@@ -1,7 +1,7 @@
 [% SET duration_clause = problem.duration_string(c) %]
 [% IF duration_clause || problem.whensent %]
     <p class="council_sent_info">
-    [%- IF problem.whensent %]
+    [%- IF problem.whensent AND NOT c.cobrand.is_defect(problem) %]
         [%- external_ref_clause = tprintf(loc('ref:&nbsp;%s'), problem.id) %]
     [%- END -%]
     [% duration_clause %]
