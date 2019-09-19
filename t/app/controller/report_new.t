@@ -963,7 +963,7 @@ foreach my $test (
                     title         => 'Test Report',
                     detail        => 'Test report details.',
                     photo1        => '',
-                    username      => $test_email,
+                    username      => $user->email,
                     password_sign_in => 'secret2',
                     category      => 'Street lighting',
                 }
@@ -1347,7 +1347,7 @@ subtest "test report creation for a category that is non public" => sub {
                     title         => 'Test Report',
                     detail        => 'Test report details.',
                     photo1        => '',
-                    username      => 'test-2@example.com',
+                    username      => $user->email,
                     name          => 'Joe Bloggs',
                     category      => 'Street lighting',
                 }
@@ -1801,7 +1801,7 @@ subtest "test Hart" => sub {
 
             # check that the user has been created/ not changed
             $user =
-              FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+              FixMyStreet::App->model('DB::User')->find( { email => $user ? $user->email : $test_email } );
             ok $user, "user found";
 
             # find the report

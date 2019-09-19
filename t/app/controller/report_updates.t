@@ -1247,6 +1247,7 @@ for my $test (
     subtest $test->{desc} => sub {
         # Set things up
         my $user = $mech->create_user_ok( $test->{form_values}->{username} );
+        $test->{form_values}{username} = $user->email;
         my $pw = 'secret2';
         $user->update( { name => 'Mr Reg', password => $pw } );
         $report->comments->delete;
@@ -1303,7 +1304,7 @@ subtest 'submit an update for a registered user, creating update by email' => su
     $mech->submit_form_ok( {
         with_fields => {
             submit_update => 1,
-            username => 'registered@example.com',
+            username => $user->email,
             update        => 'Update from a user',
             add_alert     => undef,
             name          => 'New Name',
@@ -1338,7 +1339,7 @@ subtest 'submit an update for a registered user, creating update by email' => su
 
     ok $update, 'found update in database';
     is $update->state, 'unconfirmed', 'update unconfirmed';
-    is $update->user->email, 'registered@example.com', 'update email';
+    is $update->user->email, $user->email, 'update email';
     is $update->text, 'Update from a user', 'update text';
 
     $mech->get_ok( $url );
@@ -1505,7 +1506,7 @@ for my $test (
 
         $mech->clear_emails_ok();
 
-        $mech->log_in_ok( $test->{email} );
+        my $user = $mech->log_in_ok( $test->{email} );
         $mech->get_ok("/report/$report_id");
 
         my $values = $mech->visible_form_values( 'updateForm' );
@@ -1548,7 +1549,7 @@ for my $test (
         };
 
         is $update->text, $results->{update}, 'update text';
-        is $update->user->email, $test->{email}, 'update user';
+        is $update->user->email, $user->email, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
@@ -1678,7 +1679,7 @@ foreach my $test (
 
         $mech->clear_emails_ok();
 
-        $mech->log_in_ok( $test->{email} );
+        my $user = $mech->log_in_ok( $test->{email} );
         $mech->get_ok("/report/$report_id");
 
         my $values = $mech->visible_form_values('updateForm');
@@ -1708,7 +1709,7 @@ foreach my $test (
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
-        is $update->user->email, $test->{email}, 'update user';
+        is $update->user->email, $user->email, 'update user';
         is $update->state, 'confirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
@@ -1752,7 +1753,7 @@ for my $test (
         fields => {
             submit_update => 1,
             name          => 'Test User',
-            username => 'test@example.com',
+            username => $report->user->email,
             may_show_name => 1,
             update        => 'update from owner',
             add_alert     => undef,
@@ -1774,7 +1775,7 @@ for my $test (
             submit_update => 1,
             name          => 'Test User',
             may_show_name => 1,
-            username => 'test@example.com',
+            username => $report->user->email,
             update        => 'update from owner',
             add_alert     => undef,
             fixed         => 1,

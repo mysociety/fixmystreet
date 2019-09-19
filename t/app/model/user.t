@@ -67,7 +67,7 @@ FixMyStreet::override_config {
 };
 
 subtest 'Check non-existent methods on user object die' => sub {
-    my $c = ctx_request(POST '/auth', { username => 'test@example.com', password_sign_in => 'secret' });
+    my $c = ctx_request(POST '/auth', { username => $problem->user->email, password_sign_in => 'secret' });
     throws_ok(
         sub { $c->user->is_super_user },
         qr/Can't locate object method 'is_super_user'/,

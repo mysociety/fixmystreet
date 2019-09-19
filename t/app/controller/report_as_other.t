@@ -106,7 +106,7 @@ subtest "Body user, has permission to add report as another (existing) user with
     FixMyStreet::Script::Reports::send();
     $mech->clear_emails_ok;
 
-    $mech->create_user_ok('existing@example.net', name => 'Existing User');
+    my $existing = $mech->create_user_ok('existing@example.net', name => 'Existing User');
     my $report = add_report(
         'contribute_as_another_user',
         form_as => 'another_user',
@@ -114,11 +114,11 @@ subtest "Body user, has permission to add report as another (existing) user with
         detail => 'Test report details.',
         category => 'Potholes',
         name => 'Existing Yooser',
-        username => 'existing@example.net',
+        username => $existing->email,
     );
     is $report->name, 'Existing Yooser', 'report name is given name';
     is $report->user->name, 'Existing User', 'user name remains same';
-    is $report->user->email, 'existing@example.net', 'user email correct';
+    is $report->user->email, $existing->email, 'user email correct';
     isnt $report->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
     push @users, $report->user;
@@ -244,16 +244,17 @@ subtest "Body user, has permission to add update as another user with landline p
 };
 
 subtest "Body user, has permission to add update as another (existing) user with email" => sub {
+    my $existing = $mech->create_user_ok('existing@example.net', name => 'Existing User');
     my $update = add_update(
         'contribute_as_another_user',
         form_as => 'another_user',
         update => 'Test Update',
         name => 'Existing Yooser',
-        username => 'existing@example.net',
+        username => $existing->email,
     );
     is $update->name, 'Existing Yooser', 'update name is given name';
     is $update->user->name, 'Existing User', 'user name remains same';
-    is $update->user->email, 'existing@example.net', 'user email correct';
+    is $update->user->email, $existing->email, 'user email correct';
     isnt $update->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your update has been logged/;
 };

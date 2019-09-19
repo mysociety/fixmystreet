@@ -55,7 +55,7 @@ sub dispatch_request {
             extension_CrmContactId => "1c304134-ef12-c128-9212-123908123901",
             nonce => 'MyAwesomeRandomValue',
         };
-        $payload->{emails} = ['oidc@example.org'] if $self->returns_email;
+        $payload->{emails} = ['pkg-tappcontrollerauth_social.t-oidc@example.org'] if $self->returns_email;
         my $signature = "dummy";
         my $id_token = join(".", (
             encode_base64($self->json->encode($header), ''),

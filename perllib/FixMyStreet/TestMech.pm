@@ -56,6 +56,26 @@ sub logged_in_ok {
         "logged in" );
 }
 
+=head2 uniquify_email
+
+Given an email address, will add the caller to it so that it can be unique per
+file. You can pass a caller file in yourself if e.g. you're another function in
+this file.
+
+=cut
+
+sub uniquify_email {
+    my ($self, $email, $file) = @_;
+
+    $file = (caller)[1] unless $file;
+    (my $pkg = $file) =~ s{/}{}g;
+
+    if ($email =~ /@/ && $email !~ /^pkg-/) {
+        $email = "pkg-$pkg-$email";
+    }
+    return $email;
+}
+
 =head2 create_user_ok
 
     $user = $mech->create_user_ok( $email );
@@ -68,8 +88,9 @@ sub create_user_ok {
     my $self = shift;
     my ( $username, %extra ) = @_;
 
+    $username = $self->uniquify_email($username, (caller)[1]);
     my $params = { %extra };
-    $username =~ /@/ ? $params->{email} = $username : $params->{phone} = $username;
+    $username =~ /@/ ? ($params->{email} = $username) : ($params->{phone} = $username);
     my $user = FixMyStreet::DB->resultset('User')->find_or_create($params);
     ok $user, "found/created user for $username";
 
@@ -88,6 +109,7 @@ sub log_in_ok {
     my $mech  = shift;
     my $username = shift;
 
+    $username = $mech->uniquify_email($username, (caller)[1]);
     my $user = $mech->create_user_ok($username);
 
     # remember the old password and then change it to a known one
@@ -663,8 +685,9 @@ sub create_problems_for_body {
 
     my $dt = $params->{dt} || DateTime->now();
 
+    my $email = $mech->uniquify_email('test@example.com', (caller)[1]);
     my $user = $params->{user} ||
-      FixMyStreet::DB->resultset('User')->find_or_create( { email => 'test@example.com', name => 'Test User' } );
+      FixMyStreet::DB->resultset('User')->find_or_create( { email => $email, name => 'Test User' } );
 
     delete $params->{user};
     delete $params->{dt};

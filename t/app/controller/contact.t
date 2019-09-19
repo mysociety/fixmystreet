@@ -382,6 +382,7 @@ for my $test (
 
         $mech->clear_emails_ok;
         $mech->get_ok('/contact');
+        $test->{fields}{em} = $user->email;
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
 
         my $email = $mech->get_email;
