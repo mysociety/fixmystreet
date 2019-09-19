@@ -123,16 +123,13 @@ sub munge_category_list {
     @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
 }
 
-sub munge_category_where {
+sub munge_around_category_where {
     my ($self, $where) = @_;
 
     my $user = $self->{c}->user;
     my $b = $self->{c}->model('DB::Body')->for_areas( $self->council_area_id )->first;
     if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
-        $where = {
-            body_id => $where->{body_id},
-            send_method => [ { '!=' => 'Triage' }, undef ],
-        };
+        $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
         return $where;
     }
 
@@ -152,7 +149,7 @@ sub munge_load_and_group_problems {
     return $problems;
 }
 
-sub munge_filter_category {
+sub munge_around_filter_category_list {
     my $self = shift;
 
     my $c = $self->{c};
