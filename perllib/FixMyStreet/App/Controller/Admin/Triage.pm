@@ -131,7 +131,7 @@ sub update : Private {
         $extra->{new_category} = $new_category;
 
         my $timestamp = \'current_timestamp';
-        $problem->add_to_comments( {
+        my $comment = $problem->add_to_comments( {
             text => "Report triaged from $current_category to $new_category",
             created => $timestamp,
             confirmed => $timestamp,
@@ -143,6 +143,19 @@ sub update : Private {
             problem_state => $problem->state,
             extra => $extra
         } );
+
+        my @alerts = FixMyStreet::DB->resultset('Alert')->search( {
+            alert_type => 'new_updates',
+            parameter  => $problem->id,
+            confirmed  => 1,
+        } );
+
+        for my $alert (@alerts) {
+            my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create( {
+                alert_id  => $alert->id,
+                parameter => $comment->id,
+            } );
+        }
     }
 }
 
