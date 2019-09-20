@@ -107,6 +107,15 @@ for my $cat (@cat_list) {
             automated => 'hidden_field',
         },
         {
+            code => 'asset_details',
+            datatype => 'string',
+            description => 'asset details',
+            order => 100,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        },
+        {
             code => 'site_code',
             datatype => 'string',
             description => 'site code',
