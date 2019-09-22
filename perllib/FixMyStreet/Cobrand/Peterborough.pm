@@ -49,8 +49,30 @@ sub open311_config {
     # remove the emergency category which is informational only
     @$extra = grep { $_->{name} ne 'emergency' } @$extra;
 
+    # Reports made via FMS.com or the app probably won't have a site code
+    # value because we don't display the adopted highways layer on those
+    # frontends. Instead we'll look up the closest asset from the WFS
+    # service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('site_code')) {
+        if (my $site_code = $self->lookup_site_code($row)) {
+            push @$extra,
+                { name => 'site_code',
+                value => $site_code };
+        }
+    }
+
     $row->set_extra_fields(@$extra);
 }
+
+sub lookup_site_code_config { {
+    buffer => 50, # metres
+    url => "https://tilma.mysociety.org/mapserver/peterborough",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
+    typename => "highways",
+    property => "Usrn",
+    accept_feature => sub { 1 },
+    accept_types => { Polygon => 1 },
+} }
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
