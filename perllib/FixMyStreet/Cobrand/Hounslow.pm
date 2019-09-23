@@ -4,6 +4,9 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use Moo;
+with 'FixMyStreet::Roles::ConfirmValidation';
+
 sub council_area_id { 2483 }
 sub council_area { 'Hounslow' }
 sub council_name { 'Hounslow Highways' }
