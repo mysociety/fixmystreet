@@ -220,7 +220,8 @@ subtest "fixing passes along the correct message" => sub {
 };
 
 subtest 'Check special Open311 request handling', sub {
-    my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { category => 'Potholes', latitude => 50.7108, longitude => -1.29573 });
+    $mech->clear_emails_ok;
+    my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { category => 'Potholes', latitude => 50.7108, longitude => -1.29573, cobrand => 'isleofwight' });
     $p->set_extra_fields({ name => 'urgent', value => 'no'});
     $p->update;
 
@@ -241,6 +242,12 @@ subtest 'Check special Open311 request handling', sub {
     my $req = $test_data->{test_req_used};
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[urgent]'), undef, 'no urgent param sent';
+
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $mech->get_text_body_from_email($email),
+        qr/your enquiry has been received by Island Roads/, "correct report send email text";
 };
 
 subtest "triaging a report includes user in message" => sub {
@@ -424,10 +431,17 @@ subtest "reports are marked for triage upon submission" => sub {
         ok $report, "Found the report";
         is $report->state, 'confirmed', 'report confirmed';
 
+        $mech->clear_emails_ok;
+
         FixMyStreet::Script::Reports::send();
         $report->discard_changes;
         is $report->state, 'for triage', 'report marked as for triage';
         ok $report->whensent, 'report marked as sent';
+
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        like $mech->get_text_body_from_email($email),
+            qr/submitted to Island Roads for review/, 'correct text for email sent for Triage';
     };
 };
 
