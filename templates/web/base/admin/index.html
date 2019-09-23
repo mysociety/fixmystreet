@@ -39,19 +39,21 @@ and to receive notices of updates.
 </form>
 
 [% IF c.user.is_superuser %]
-  <form method="get" action="[% c.uri_for('bodies') %]">
-  <label for="search_body">[% loc('Edit body details') %]</label>
-  <select class="form-control" id="search_body" name="body">
-  [% FOREACH body IN bodies %]
-    [%- SET id = body.id %]
-      <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
-          [% body.name | html %]
-          [%- IF body.parent %], [% body.parent.name | html %][% END -%]
-      </option>
-  [% END %]
-  </select>
-  <input type="submit" class="btn" value="[% loc('Go') %]">
-  </form>
+<form method="get" action="[% c.uri_for('bodies') %]">
+    <label for="search_body">[% loc('Edit body details') %]</label>
+    <div class="form-txt-submit-box">
+        <select class="form-control" id="search_body" name="body">
+          [% FOREACH body IN bodies %]
+            [%- SET id = body.id %]
+            <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
+            [% body.name | html %]
+            [%- IF body.parent %], [% body.parent.name | html %][% END -%]
+            </option>
+          [% END %]
+        </select>
+        <input type="submit" class="btn" value="[% loc('Go') %]">
+    </div>
+</form>
 [% END %]
 
 </div>
