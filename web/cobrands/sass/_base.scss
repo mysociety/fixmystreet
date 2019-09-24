@@ -495,7 +495,8 @@ small#or:after {
   input[type=tel],
   input[type=number],
   input[type=text],
-  input[type=email] {
+  input[type=email],
+  select {
     width: auto;
     max-width: none;
     @include flex(72 0 auto);

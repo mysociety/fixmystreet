@@ -20,34 +20,40 @@ and to receive notices of updates.
   </p>
 [% END %]
 
-<div class="admin-index-search form-txt-submit-box clearfix">
+<div class="admin-index-search clearfix">
 
 <form method="get" action="[% c.uri_for('reports') %]" accept-charset="utf-8">
-    <p><label for="search_reports">[% loc('Search Reports') %]</label>
+    <label for="search_reports">[% loc('Search Reports') %]</label>
+    <div class="form-txt-submit-box">
         <input type="text" class="form-control" name="search"  size="30" id="search_reports" value="[% searched | html %]">
         <input type="submit" class="btn" value="[% loc('Go') %]">
+    </div>
 </form>
 
 <form method="get" action="[% c.uri_for('users') %]" accept-charset="utf-8">
-    <p><label for="search_users">[% loc('Search Users') %]</label>
+    <label for="search_users">[% loc('Search Users') %]</label>
+    <div class="form-txt-submit-box">
         <input type="text" class="form-control" name="search"  size="30" id="search_users" value="[% searched | html %]">
         <input type="submit" class="btn" value="[% loc('Go') %]">
+    </div>
 </form>
 
 [% IF c.user.is_superuser %]
-  <form method="get" action="[% c.uri_for('bodies') %]">
-  <label for="search_body">[% loc('Edit body details') %]</label>
-  <select class="form-control" id="search_body" name="body">
-  [% FOREACH body IN bodies %]
-    [%- SET id = body.id %]
-      <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
-          [% body.name | html %]
-          [%- IF body.parent %], [% body.parent.name | html %][% END -%]
-      </option>
-  [% END %]
-  </select>
-  <input type="submit" class="btn" value="[% loc('Go') %]">
-  </form>
+<form method="get" action="[% c.uri_for('bodies') %]">
+    <label for="search_body">[% loc('Edit body details') %]</label>
+    <div class="form-txt-submit-box">
+        <select class="form-control" id="search_body" name="body">
+          [% FOREACH body IN bodies %]
+            [%- SET id = body.id %]
+            <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
+            [% body.name | html %]
+            [%- IF body.parent %], [% body.parent.name | html %][% END -%]
+            </option>
+          [% END %]
+        </select>
+        <input type="submit" class="btn" value="[% loc('Go') %]">
+    </div>
+</form>
 [% END %]
 
 </div>
