@@ -104,7 +104,7 @@ sub munge_reports_category_list {
     return @$categories;
 }
 
-sub munge_category_list {
+sub munge_report_new_category_list {
     my ($self, $options, $contacts, $extras) = @_;
 
     my $user = $self->{c}->user;
