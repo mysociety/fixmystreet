@@ -70,7 +70,7 @@ sub munge_reports_categories_list {
     }
 }
 
-sub munge_category_list {
+sub munge_report_new_category_list {
     my ($self, $options, $contacts, $extras) = @_;
 
     # No TfL Traffic Lights category in Hounslow

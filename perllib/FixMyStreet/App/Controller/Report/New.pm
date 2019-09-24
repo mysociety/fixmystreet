@@ -748,7 +748,7 @@ sub setup_categories_and_bodies : Private {
         push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }
 
-    $c->cobrand->call_hook(munge_category_list => \@category_options, \@contacts, \%category_extras);
+    $c->cobrand->call_hook(munge_report_new_category_list => \@category_options, \@contacts, \%category_extras);
 
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
