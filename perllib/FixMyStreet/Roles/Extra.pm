@@ -135,6 +135,56 @@ sub push_extra_fields {
     $self->extra({ %$extra, $META_FIELD => [ @$existing, @fields ] });
 }
 
+=head2 update_extra_field
+
+    $problem->update_extra_field( { ... } );
+
+Given an extra field, will replace one with the same code in the
+existing list of fields, or add to the end if not present.
+
+=cut
+
+sub update_extra_field {
+    my ($self, $field) = @_;
+
+    # Can operate on list that uses code (Contact) or name (Problem),
+    # but make sure we have one of them
+    my $attr;
+    $attr = 'code' if $field->{code};
+    $attr = 'name' if $field->{name};
+    die unless $attr;
+
+    my $existing = $self->get_extra_fields;
+    my $found;
+    foreach (@$existing) {
+        if ($_->{$attr} eq $field->{$attr}) {
+            $_ = $field;
+            $found = 1;
+        }
+    }
+    if (!$found) {
+        push @$existing, $field;
+    }
+
+    $self->set_extra_fields(@$existing);
+}
+
+=head2 remove_extra_field
+
+    $problem->remove_extra_field( $code );
+
+Given an extra field code, will remove it from the list of fields.
+
+=cut
+
+sub remove_extra_field {
+    my ($self, $code) = @_;
+
+    my @fields = @{ $self->get_extra_fields() };
+    @fields = grep { ($_->{code} || $_->{name}) ne $code } @fields;
+    $self->set_extra_fields(@fields);
+}
+
 =head1 HELPER METHODS
 
 For internal use mostly.
