@@ -67,6 +67,16 @@
     </p>
 
     <p class="form-check">
+        <input type="checkbox" name="disable" value="1" id="disable" data-toggle-visibility="#js-disable-form-message-box" [% ' checked' IF contact.disable_form_field %]>
+        <label for="disable">[% loc('Disable form when this category is selected') %]</label>
+    </p>
+
+    <p class="form-group form-group--indented [% 'hidden-js' IF NOT contact.disable_form_field %]" id="js-disable-form-message-box">
+        <label for="disabled-message">[% loc('Message to show when form is disabled (HTML permitted)') %]</label>
+        <textarea id="disabled-message" name="disable_message" class="form-control">[% contact.disable_form_field.description %]</textarea>
+    </p>
+
+    <p class="form-check">
         <input type="checkbox" name="inspection_required" value="1" id="inspection_required" data-toggle-visibility="#js-inspection-reputation-box" [% 'checked' IF contact.get_extra_metadata('inspection_required') %]>
         <label for="inspection_required">[% loc('Reports in this category must be inspected before being sent') %]</label>
     </p>

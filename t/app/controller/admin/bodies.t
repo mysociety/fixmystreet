@@ -217,6 +217,24 @@ subtest 'check text output' => sub {
     $mech->content_lacks('<body');
 };
 
+subtest 'disable form message editing' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        disable => 1,
+        disable_message => 'Please ring us!',
+        note => 'Adding emergency message',
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is_deeply $contact->get_extra_fields, [{
+        description => 'Please ring us!',
+        code => '_fms_disable_',
+        protected => 'true',
+        variable => 'false',
+        disable_form => 'true',
+    }], 'right message added';
+};
+
 
 }; # END of override wrap
 
