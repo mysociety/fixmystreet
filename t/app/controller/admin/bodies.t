@@ -230,7 +230,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
-        $mech->content_contains( 'group</strong> is used for the top-level category' );
+        $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
             category   => 'grouped category',
@@ -247,7 +247,7 @@ FixMyStreet::override_config {
 
     subtest 'group can be unset' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
-        $mech->content_contains( 'group</strong> is used for the top-level category' );
+        $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
             category   => 'grouped category',
@@ -270,12 +270,11 @@ FixMyStreet::override_config {
     BASE_URL => 'http://www.example.org',
     COBRAND_FEATURES => {
        category_groups => { default => 1 },
-       multiple_category_groups => { default => 1 },
     }
 }, sub {
     subtest 'multi group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
-        $mech->content_contains( 'group</strong> is used for the top-level category' );
+        $mech->content_contains('Parent categories');
 
         # have to do this as a post as adding a second group requires
         # javascript

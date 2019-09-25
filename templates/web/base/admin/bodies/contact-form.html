@@ -22,81 +22,64 @@
 
   [% INCLUDE 'admin/bodies/_translations.html' %]
 
-  <div class="admin-hint">
-    <p>
-        [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent. 
-        Other categories for this body may have the same email address.") %]
+    <label for="destination">[% loc('Destination') %]</label>
+    <p class="form-hint" id="destination-hint">
+      [% IF body.can_be_devolved %]
+        [% loc('An email address or service ID (Open311 or similar).') %]
+      [% ELSIF body.send_method == 'Open311' %]
+        [% loc('A service ID (Open311 or similar).') %]
+      [% ELSIF body.send_method.match('Email') OR NOT body.send_method %]
+        [% loc('An email address.') %]
+      [% ELSE %]
+        [% loc('An email address or service ID (Open311 or similar).') %]
+      [% END %]
     </p>
-    [% IF (body.send_method AND body.send_method.match('Email')) OR body.can_be_devolved  %]
-      <p>
-          [% loc("If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here.") %]
-      </p>
-    [% END %]
-  </div>
+    <input type="text" class="form-control" id="destination" aria-describedby="destination-hint" name="email" size="30" value="[% contact.email | html %]" required>
 
-  <p>
-    <strong>[% loc('Email address') %] </strong><input type="text" class="form-control" name="email" size="30" value="[% contact.email | html %]" required>
-  </p>
+    <fieldset>
+        <legend>[% loc('State') %]</legend>
+        <div class="form-check form-check--inline">
+            <input type="radio" name="state" id="state-unconfirmed" aria-describedby="state-unconfirmed-hint" value="unconfirmed"[% ' checked' IF contact.state == 'unconfirmed' %]>
+            <label for="state-unconfirmed">[% loc('Unconfirmed') %]</label>
+            <p class="form-hint" id="state-unconfirmed-hint">[% loc('You are not sure of the origin or validity of the contact.') %]</p>
+        </div>
+        <div class="form-check form-check--inline">
+            <input type="radio" name="state" id="state-confirmed" aria-describedby="state-confirmed-hint" value="confirmed"[% ' checked' IF contact.state == 'confirmed' || contact.state == "" %]>
+            <label for="state-confirmed">[% loc('Confirmed') %]</label>
+            <p class="form-hint" id="state-confirmed-hint">[% loc('The contact has been confirmed as correct.') %]</p>
+        </div>
+        <div class="form-check form-check--inline">
+            <input type="radio" name="state" id="state-inactive" aria-describedby="state-inactive-hint" value="inactive"[% ' checked' IF contact.state == 'inactive' %]>
+            <label for="state-inactive">[% loc('Inactive') %]</label>
+            <p class="form-hint" id="state-inactive-hint">[% loc('Prevent new reports from using this category, but keep it available in map filters.') %]</p>
+        </div>
+        <div class="form-check form-check--inline">
+            <input type="radio" name="state" id="state-deleted" aria-describedby="state-deleted-hint" value="deleted"[% ' checked' IF contact.state == 'deleted' %]>
+            <label for="state-deleted">[% loc('Deleted') %]</label>
+            <p class="form-hint" id="state-deleted-hint">[% loc('Prevent new reports from using this category, <em>and</em> also remove it from map filters.') %]</p>
+        </div>
+    </fieldset>
 
-  <div class="admin-hint">
-    <p>
-        [%
-loc("Use <strong>confirmed</strong> to indicate that this contact has been
-confirmed as correct. If you are not sure of the origin or validity of the
-contact, use <strong>unconfirmed</strong>. <strong>inactive</strong> will
-remove the category from use when reporting problems, but keep it available in
-map filters, and <strong>deleted</strong> will remove the category from there
-as well.") %]
+    <p class="form-check">
+        <input type="checkbox" name="non_public" value="1" id="non_public" [% ' checked' IF contact.non_public %]>
+        <label for="non_public">[% loc('Hide reports made in this category') %]</label>
+        <span class='form-hint'>[% loc('Use this for issues that you want to allow users to report, but for which there is no public interest in displaying the report, like requesting an extra rubbish bin at a specific address.') %]</span>
     </p>
-  </div>
-  <p>
-    <label for="state">[% loc('State') %]</label>
-    <select name="state" id="state">
-      <option value="unconfirmed"[% ' selected' IF contact.state == 'unconfirmed' %]>[% loc('Unconfirmed') %]
-      <option value="confirmed"[% ' selected' IF contact.state == 'confirmed' || contact.state == "" %]>[% loc('Confirmed') %]
-      <option value="inactive"[% ' selected' IF contact.state == 'inactive' %]>[% loc('Inactive') %]
-      <option value="deleted"[% ' selected' IF contact.state == 'deleted' %]>[% loc('Deleted') %]
-    </select>
-  </p>
 
-  <div class="admin-hint">
-    <p>
-        [% loc("Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.
-                <br>
-                Normally, categories are not private.
-                <br>
-                This is suitable for issues that you want to allow users to report to the body, but for which there is no public
-                interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin
-                at a specific address.") %]
+    <p class="form-check">
+        <input type="checkbox" name="inspection_required" value="1" id="inspection_required" data-toggle-visibility="#js-inspection-reputation-box" [% 'checked' IF contact.get_extra_metadata('inspection_required') %]>
+        <label for="inspection_required">[% loc('Reports in this category must be inspected before being sent') %]</label>
     </p>
-  </div>
-  <p>
-    <input type="checkbox" name="non_public" value="1" id="non_public" [% ' checked' IF contact.non_public %]>
-    <label for="non_public" class="inline">[% loc('Private') %]</label>
-  </p>
 
-  <div class="admin-hint">
-    <p>
-      [% loc("Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent.") %]
+    <p class="form-group form-group--indented [% 'hidden-js' IF NOT contact.get_extra_metadata('inspection_required') %]" id="js-inspection-reputation-box">
+        <label for="reputation_threshold">[% loc('Reputation threshold') %]</label>
+        <span class="form-hint" id="reputation_threshold_hint">
+            [% loc("Reports will automatically be sent without needing to be inspected if the user's <strong>reputation</strong> is at or above this value. Set to <strong>0</strong> if all reports must be inspected regardless.") %]
+        </span>
+        <input type="text" class="form-control" name="reputation_threshold" id="reputation_threshold"
+            value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30"
+            aria-describedby="reputation_threshold_hint">
     </p>
-  </div>
-  <p>
-    <input type="checkbox" name="inspection_required" value="1" id="inspection_required" [% 'checked' IF contact.get_extra_metadata('inspection_required') %]>
-    <label for="inspection_required" class="inline">[% loc('Inspection required') %]</label>
-  </p>
-
-  <div class="admin-hint [% 'hidden' UNLESS contact.get_extra_metadata('inspection_required') %]">
-    <p>
-      [% loc("Reports will automatically be sent without needing to be inspected if the user's <strong>reputation</strong> is at or above this value. Set to <strong>0</strong> if all reports must be inspected regardless.") %]
-    </p>
-  </div>
-  <p [% 'class=hidden' UNLESS contact.get_extra_metadata('inspection_required') %]>
-    <label>
-      [% loc('Reputation threshold') %]
-      <input type="text" class="form-control" name="reputation_threshold" id="reputation_threshold"
-        value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30">
-    </label>
-  </p>
 
   [% IF body.can_be_devolved %]
     <div class="admin-hint">
@@ -121,17 +104,9 @@ as well.") %]
   [% END %]
 
   [% IF c.cobrand.enable_category_groups %]
-    <div class="admin-hint">
-      <p>
-        [% loc(
-          "The <strong>group</strong> is used for the top-level category field when
-          subcategory grouping is enabled."
-        ) %]
-      </p>
-    </div>
     <p>
       <label>
-        [% loc('Group') %]
+        [% loc('Parent categories') %]
         [% IF contact.extra.group %]
             [% FOR group IN contact.extra.group %]
             <input class="form-control" type="text" name="group" value="[% group | html %]" size="30">
@@ -141,24 +116,25 @@ as well.") %]
         [% END %]
         <input class="hidden-js js-group-item-template form-control" type="text" name="group" value="" size="30">
         <p class="hidden-nojs">
-          <button type="button" class="btn btn--small js-group-item-add">[% loc('Add group') %]</button>
+          <button type="button" class="btn btn--small js-group-item-add">[% loc('Add another parent category') %]</button>
         </p>
       </label>
     </p>
   [% END %]
 
+    <h2>[% loc('Extra data:') %] </h2>
+    <dl>
+      [% FOR pair IN contact.get_extra_metadata %]
+        <dt>[% pair.key %]</dt> <dd>[% pair.value OR '<em>-</em>' %]</dd>
+      [% END %]
+    </dl>
+    [% INCLUDE 'admin/extra-metadata-form.html' metas=(contact.get_metadata_for_editing OR []) %]
 
-  <div class="admin-hint">
-    <p>
-      [% loc("Use this field to record details that are only displayed in the admin. Input is not shown publicly, and is not sent to the body.") %]
+    <p class="form-group">
+        <label for="note">[% loc('Summarise your changes') %]</label>
+        <span class="form-hint" id="note-hint">[% loc("If you’ve made changes, leave a note explaining what, for other admins to see.") %]</span>
+        <input class="form-control" type="text" id="note" name="note" size="30" aria-describedby="note-hint" required>
     </p>
-  </div>
-  <p>
-    <label>
-      [% loc('Summarise your changes') %]
-      <input class="form-control" type="text" name="note" size="30" required>
-    </label>
-  </p>
 
   <p>
     <input type="hidden" name="posted" value="new" >
@@ -166,11 +142,5 @@ as well.") %]
     <input type="submit" class="btn" name="Create category" value="[% contact.in_storage ? loc('Save changes') : loc('Create category') %]" >
   </p>
 
-    <h2>[% loc('Extra data:') %] </h2>
-    <dl>
-      [% FOR pair IN contact.get_extra_metadata %]
-        <dt>[% pair.key %]</dt> <dd>[% pair.value %]</dd>
-      [% END %]
-    </dl>
-    [% INCLUDE 'admin/extra-metadata-form.html' metas=(contact.get_metadata_for_editing OR []) %]
+
 </form>

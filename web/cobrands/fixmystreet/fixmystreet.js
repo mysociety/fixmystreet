@@ -991,6 +991,18 @@ $.extend(fixmystreet.set_up, {
     }
   },
 
+  toggle_visibility: function() {
+      $('input[type="checkbox"][data-toggle-visibility]').each(function(){
+          var input = this;
+          var $target = $( $(this).attr('data-toggle-visibility') );
+          var update = function() {
+              $target.toggleClass('hidden-js', ! input.checked );
+          };
+          $(input).on('change', update);
+          update();
+      });
+  },
+
   form_section_previews: function() {
     $('.js-form-section-preview').each(function(){
         var $el = $(this);
