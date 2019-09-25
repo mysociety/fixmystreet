@@ -1,0 +1,177 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+one-off-status-update
+
+=head1 SUMMARY
+
+one-off-status-update [--commit] path/to/file.csv
+
+=head1 DESCRIPTION
+
+This is a one off script to update the status of NCC reports affected
+by a bug in the NCC update process. It relies on a csv file containing
+a mapping of report id to Alloy status and uses this to update the
+FixMyStreet status.
+
+It takes a single command line argument which is the path to the csv
+file containing the reports to update, along with details of the current
+alloy state which it uses to determine what state to update them too.
+
+Only reports that match the state in the `fms_state` column of the csv
+file will be updated. Similarly, if it cannot determine what state to
+update the report to it will skip that report.
+
+Any update made will set the appropriate response template.
+
+It will not update the database unless the `--commit` flag is used.
+
+=head1 EXPECTED CSV HEADERS
+
+RESOURCE_ID,INSPECTION_NUMBER,Street_Doctor_No,fms_state,Reason_for_Closure,Enquiry_TASK_STATUS,Enquiry_Type,Summary,Reported_DateTime,Response_to_Customer,DEFECT_REPORTED_DATE,DEFECT_STATUS_NO,DEFECT_STATUS,DEFECT_NUMBER,REMEDIED_DATE,TEAM_DESCRIPTION,User_Name,Category,Stage,Stage_Description,blank,blank2
+
+
+Of these the following are used:
+
+=over
+
+=item * Street_Doctor_No - FixMyStreet id
+
+=item * fms_state - expected state on FixMyStreet
+
+=item * Enquiry_TASK_STATUS - Alloy status
+
+=item * Reason_for_Closure - Alloy reason for closure
+
+=item * Response_to_Customer - Alloy text to add to update on FixMyStreet
+
+=item * DEFECT_STATUS - used to check if there is extra status on the defect
+
+=back
+
+=cut
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use Text::CSV;
+
+use Getopt::Long;
+
+my ($commit, $verbose);
+GetOptions(
+    'commit' => \$commit,
+    'verbose' => \$verbose,
+);
+
+if (!$commit) {
+    say "*** DRY RUN ***";
+}
+
+my %alloy_to_fms_map = (
+    'No Action Necessary' => 'unable to fix',
+    'Outside NCC Control' => 'not responsible',
+    'Highways to Monitor. No Action' => 'unable to fix',
+    'Work Instructed' => 'in progess',
+);
+
+my $file = shift;
+
+my $csv = Text::CSV->new;
+open my $fh, "<:encoding(utf-8)", $file or die "Failed to open $file: $!\n";
+my @cols = @{$csv->getline($fh)};
+$csv->column_names (@cols);
+
+my ($checked, $updated) = (0,0);
+my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire County Council' });
+if ($northants) {
+    my $comment_user = $northants->comment_user;
+    while (my $report = $csv->getline_hr( $fh ) ) {
+        $checked++;
+        my $id = $report->{Street_Doctor_No};
+        next unless $id;
+        my $p = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+        unless ($p) {
+            warn "Could not find matching report with id $id\n";
+            next;
+        }
+
+        unless ($p->state eq $report->{fms_state}) {
+            warn sprintf("Report $id has state %s, %s expected\n", $p->state, $report->{fms_state});
+            next;
+        }
+
+        my $new_state = get_state( $report );
+
+        unless ( $new_state ) {
+            warn "skipping $id as can't determine new state\n" if $verbose;
+            next;
+        }
+
+        my $text = $report->{Response_to_Customer};
+        if (!$text) {
+            if (my $t = $p->response_templates->search({
+                auto_response => 1,
+                'me.state' => $new_state
+            })->first) {
+                $text = $t->text;
+            }
+        }
+
+        if ($commit) {
+            warn "updating $id to $new_state\n" if $verbose;
+            $updated++;
+            $p->update({
+                state => $new_state,
+                last_update => \'current_timestamp',
+            });
+
+            my $comment = FixMyStreet::DB->resultset('Comment')->new({
+                problem => $p,
+                user => $comment_user,
+                name => $comment_user->name,
+                text => $text,
+                problem_state => $new_state,
+                external_id => -1,
+                mark_fixed => 0,
+                mark_open => 0,
+                anonymous => 0,
+                confirmed => \'current_timestamp',
+                created => \'current_timestamp',
+                state => 'confirmed',
+            });
+            $comment->set_extra_metadata(one_off_script_update => 1);
+            $comment->insert;
+        }
+    }
+} else {
+    say STDERR "Could not find Northamptonshire";
+}
+
+say "$checked reports looked at, $updated updated";
+
+sub get_state {
+    my $report = shift;
+
+    if ( !$report->{Reason_for_Closure} && !$report->{DEFECT_STATUS} && $report->{Enquiry_TASK_STATUS} eq 'Completed') {
+        return "in progress";
+    }
+
+    my $fms_state = $alloy_to_fms_map{$report->{Reason_for_Closure}};
+
+    if ( $report->{DEFECT_STATUS} ) {
+        say STDERR $report->{Street_Doctor_No} . " has a defect status of " . $report->{DEFECT_STATUS};
+    }
+
+    return $fms_state;
+}
