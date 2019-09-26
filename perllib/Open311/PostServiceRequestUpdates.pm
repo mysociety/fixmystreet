@@ -14,6 +14,7 @@ use Open311;
 use constant SEND_METHOD_OPEN311 => 'Open311';
 
 has verbose => ( is => 'ro', default => 0 );
+has current_open311 => ( is => 'rw' );
 
 sub send {
     my $self = shift;
@@ -26,6 +27,7 @@ sub send {
     while ( my $body = $bodies->next ) {
         my $cobrand = $body->get_cobrand_handler;
         next if $cobrand && $cobrand->call_hook('open311_post_update_skip');
+        $self->current_open311(Open311->new($self->open311_params($body)));
         $self->process_body($body);
     }
 }
@@ -50,8 +52,6 @@ sub open311_params {
 
 sub process_body {
     my ($self, $body) = @_;
-
-    my $o = Open311->new( $self->open311_params($body) );
 
     my $comments = FixMyStreet::DB->resultset('Comment')->to_body($body)->search( {
             'me.whensent' => undef,
@@ -82,12 +82,14 @@ sub process_body {
 
         next if !$self->verbose && $comment->send_fail_count && retry_timeout($comment);
 
-        $self->process_update($body, $o, $comment, $cobrand);
+        $self->process_update($body, $comment, $cobrand);
     }
 }
 
 sub process_update {
-    my ($self, $body, $o, $comment, $cobrand) = @_;
+    my ($self, $body, $comment, $cobrand) = @_;
+
+    my $o = $self->current_open311;
 
     $cobrand->call_hook(open311_pre_send => $comment, $o);
 

@@ -141,7 +141,8 @@ sub update : Private {
             anonymous => 0,
             state => 'confirmed',
             problem_state => $problem->state,
-            extra => $extra
+            extra => $extra,
+            whensent => \'current_timestamp',
         } );
 
         my @alerts = FixMyStreet::DB->resultset('Alert')->search( {

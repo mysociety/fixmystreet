@@ -4,6 +4,7 @@ use FixMyStreet::TestMech;
 use Open311;
 use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
+use Open311::PostServiceRequestUpdates;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 
@@ -297,15 +298,15 @@ subtest 'Check special Open311 request handling', sub {
         qr/your enquiry has been received by Island Roads/, "correct report send email text";
 };
 
-subtest "triaging a report includes user in message" => sub {
+subtest "comment recording triage details is not sent" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'isleofwight',
+        ALLOWED_COBRANDS => [ 'isleofwight' ],
     }, sub {
         my $test_res = HTTP::Response->new();
         $test_res->code(200);
         $test_res->message('OK');
-        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>');
+        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates></service_request_updates>');
 
         my $o = Open311->new(
             fixmystreet_body => $isleofwight,
@@ -313,22 +314,44 @@ subtest "triaging a report includes user in message" => sub {
             test_get_returns => { 'servicerequestupdates.xml' => $test_res },
         );
 
-        my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { external_id => 1 });
+        my ($p) = $mech->create_problems_for_body(
+            1, $isleofwight->id, 'Title',
+            {
+                category => 'Roads',
+                areas => 2636,
+                latitude => 50.71086,
+                longitude => -1.29573,
+                whensent => DateTime->now->add( minutes => -5 ),
+                send_method_used => 'Triage',
+                state => 'for triage',
+                external_id => 1,
+            });
 
-        my $c = FixMyStreet::App->model('DB::Comment')->create({
-            problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
-            problem_state => 'confirmed', state => 'confirmed', mark_fixed => 0,
-            confirmed => DateTime->now(),
+        $mech->log_out_ok;
+        $mech->log_in_ok($admin_user->email);
+        my $report_url = '/report/' . $p->id;
+        $mech->get_ok($report_url);
+        $mech->submit_form_ok( {
+                with_fields => {
+                    category => 'Potholes',
+                    include_update => 0,
+                }
+            },
+            'triage form submitted'
+        );
+
+        ok $p->comments->first, 'comment created for problem';
+
+        $p->update({
+            send_method_used => 'Open311',
+            whensent => DateTime->now->add( minutes => -5 ),
         });
-        $c->set_extra_metadata('triage_report', 1);
-        $c->update;
 
-        my $id = $o->post_service_request_update($c);
-        is $id, 248, 'correct update ID returned';
-        my $cgi = CGI::Simple->new($o->test_req_used->content);
-        my $name = $p->user->name . ' \(' . $p->user->email . '\)';
-        like $cgi->param('description'), qr/^FMS-Update:/, 'FMS update prefix included';
-        like $cgi->param('description'), qr/Triaged by $name/, 'Triage user details included';
+        my $updates = Open311::PostServiceRequestUpdates->new(
+            current_open311 => $o,
+        );
+        my $id = $updates->process_body($isleofwight);
+        ok !$o->test_req_used, 'no open311 update sent';
 
         $p->comments->delete;
         $p->delete;
