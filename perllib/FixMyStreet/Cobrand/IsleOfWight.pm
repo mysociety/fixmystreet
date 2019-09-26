@@ -73,6 +73,9 @@ sub open311_config {
     $row->set_extra_fields(@$extra);
 }
 
+# Make sure fetched report description isn't shown.
+sub filter_report_description { "" }
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
