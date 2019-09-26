@@ -40,8 +40,6 @@ my ($report) = $mech->create_problems_for_body(
     }
 );
 
-warn $report->bodies_str;
-
 FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     ALLOWED_COBRANDS => [ 'isleofwight' ],
@@ -110,6 +108,7 @@ FixMyStreet::override_config {
         is $extra->{triage_report}, 1, 'comment indicates it is for triage in extra';
         is $extra->{holding_category}, 'Potholes', 'comment extra has previous category';
         is $extra->{new_category}, 'Traffic lights', 'comment extra has new category';
+        ok $comment->whensent, 'comment is marked as sent';
 
         $mech->get_ok($report_url);
         $mech->content_contains('Report triaged from Potholes to Traffic lights');
