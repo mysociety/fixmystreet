@@ -13,10 +13,6 @@ $editor->user_body_permissions->create({
     body => $body,
     permission_type => 'user_edit',
 });
-$editor->user_body_permissions->create({
-    body => $body,
-    permission_type => 'user_manage_permissions',
-});
 $user->user_body_permissions->create({
     body => $body,
     permission_type => 'report_edit_priority',
@@ -39,6 +35,16 @@ FixMyStreet::override_config {
 }, sub {
 
     $mech->log_in_ok( $editor->email );
+
+    subtest 'role index page' => sub {
+        $mech->get("/admin/roles");
+        is $mech->res->code, 404;
+    };
+
+    $editor->user_body_permissions->create({
+        body => $body,
+        permission_type => 'user_manage_permissions',
+    });
 
     subtest 'role index page' => sub {
         $mech->get_ok("/admin/roles");

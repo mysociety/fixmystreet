@@ -693,8 +693,10 @@ sub admin_pages {
     if ( $user->has_body_permission_to('user_edit') ) {
         $pages->{reports} = [ _('Reports'), 2 ];
         $pages->{users} = [ _('Users'), 6 ];
-        $pages->{roles} = [ _('Roles'), 7 ];
         $pages->{user_edit} = [ undef, undef ];
+    }
+    if ($user->has_body_permission_to('user_manage_permissions')) {
+        $pages->{roles} = [ _('Roles'), 7 ];
     }
     if ( $self->allow_report_extra_fields && $user->has_body_permission_to('category_edit') ) {
         $pages->{reportextrafields} = [ _('Extra Fields'), 10 ];
