@@ -2,6 +2,7 @@ use CGI::Simple;
 use DateTime;
 use FixMyStreet::TestMech;
 use Open311;
+use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
@@ -34,7 +35,7 @@ $contact->set_extra_fields( ( {
 $contact->update;
 
 my $user = $mech->create_user_ok('user@example.org', name => 'Test User');
-my $iow_user = $mech->create_user_ok('iow_user@example.org', from_body => $isleofwight);
+my $iow_user = $mech->create_user_ok('iow_user@example.org', name => 'IoW User', from_body => $isleofwight);
 $iow_user->user_body_permissions->create({
     body => $isleofwight,
     permission_type => 'moderate',
@@ -176,6 +177,52 @@ for my $status ( qw/ CLOSED FIXED DUPLICATE NOT_COUNCILS_RESPONSIBILITY NO_FURTH
         $p->delete;
     };
 }
+
+subtest "fetched requests do not use the description text" => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests>
+    <request>
+    <service_request_id>638344</service_request_id>
+    <status>open</status>
+    <status_notes>This is a note.</status_notes>
+    <service_name>Potholes</service_name>
+    <service_code>potholes\@example.org</service_code>
+    <description>This the description of a pothole problem</description>
+    <agency_responsible></agency_responsible>
+    <service_notice></service_notice>
+    <requested_datetime>DATETIME</requested_datetime>
+    <updated_datetime>DATETIME</updated_datetime>
+    <expected_datetime>DATETIME</expected_datetime>
+    <lat>50.71086</lat>
+    <long>-1.29573</long>
+    </request>
+    </service_requests>
+    };
+
+    my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
+    $requests_xml =~ s/DATETIME/$dt/gm;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $requests_xml } );
+
+    my $update = Open311::GetServiceRequests->new(
+        system_user => $iow_user,
+    );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'isleofwight',
+    }, sub {
+        $update->create_problems( $o, $isleofwight );
+    };
+
+    my $p = FixMyStreet::DB->resultset('Problem')->search(
+                { external_id => 638344 }
+            )->first;
+
+    ok $p, 'Found problem';
+    is $p->title, 'Potholes problem', 'correct problem title';
+    is $p->detail, 'Potholes problem', 'correct problem description';
+    $p->delete;
+};
 
 subtest "fixing passes along the correct message" => sub {
     FixMyStreet::override_config {
