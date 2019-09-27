@@ -1187,37 +1187,44 @@ sub update_extra_fields : Private {
         my $meta = {};
         $meta->{code} = $c->get_param("metadata[$i].code");
         next unless $meta->{code};
-        $meta->{order} = int $c->get_param("metadata[$i].order");
-        $meta->{datatype} = $c->get_param("metadata[$i].datatype");
-        my $required = $c->get_param("metadata[$i].required") && $c->get_param("metadata[$i].required") eq 'on';
-        $meta->{required} = $required ? 'true' : 'false';
-        my $notice = $c->get_param("metadata[$i].notice") && $c->get_param("metadata[$i].notice") eq 'on';
-        $meta->{variable} = $notice ? 'false' : 'true';
-        my $protected = $c->get_param("metadata[$i].protected") && $c->get_param("metadata[$i].protected") eq 'on';
-        $meta->{protected} = $protected ? 'true' : 'false';
-        my $disable_form = $c->get_param("metadata[$i].disable_form") && $c->get_param("metadata[$i].disable_form") eq 'on';
-        $meta->{disable_form} = $disable_form ? 'true' : 'false';
-        $meta->{description} = $c->get_param("metadata[$i].description");
-        $meta->{datatype_description} = $c->get_param("metadata[$i].datatype_description");
-        $meta->{automated} = $c->get_param("metadata[$i].automated")
-            if $c->get_param("metadata[$i].automated");
 
-        if ( $meta->{datatype} eq "singlevaluelist" ) {
-            $meta->{values} = [];
-            my $re = qr{^metadata\[$i\]\.values\[\d+\]\.key};
-            my @vindices = grep { /$re/ } keys %{ $c->req->params };
-            @vindices = sort map { /values\[(\d+)\]/ } @vindices;
-            foreach my $j (@vindices) {
-                my $name = $c->get_param("metadata[$i].values[$j].name");
-                my $key = $c->get_param("metadata[$i].values[$j].key");
-                my $disable = $c->get_param("metadata[$i].values[$j].disable");
-                push(@{$meta->{values}}, {
-                    name => $name,
-                    key => $key,
-                    $disable ? (disable => 1) : (),
-                }) if $name;
+        $meta->{order} = int $c->get_param("metadata[$i].order");
+        $meta->{protected} = $c->get_param("metadata[$i].protected") ? 'true' : 'false';
+
+        my $behaviour = $c->get_param("metadata[$i].behaviour") || 'question';
+        if ($behaviour eq 'question') {
+            $meta->{required} = $c->get_param("metadata[$i].required") ? 'true' : 'false';
+            $meta->{variable} = 'true';
+            $meta->{description} = $c->get_param("metadata[$i].description");
+            $meta->{datatype} = $c->get_param("metadata[$i].datatype");
+
+            if ( $meta->{datatype} eq "singlevaluelist" ) {
+                $meta->{values} = [];
+                my $re = qr{^metadata\[$i\]\.values\[\d+\]\.key};
+                my @vindices = grep { /$re/ } keys %{ $c->req->params };
+                @vindices = sort map { /values\[(\d+)\]/ } @vindices;
+                foreach my $j (@vindices) {
+                    my $name = $c->get_param("metadata[$i].values[$j].name");
+                    my $key = $c->get_param("metadata[$i].values[$j].key");
+                    my $disable = $c->get_param("metadata[$i].values[$j].disable");
+                    my $disable_message = $c->get_param("metadata[$i].values[$j].disable_message");
+                    push(@{$meta->{values}}, {
+                        name => $name,
+                        key => $key,
+                        $disable ? (disable => 1, disable_message => $disable_message) : (),
+                    }) if $name;
+                }
             }
+        } elsif ($behaviour eq 'notice') {
+            $meta->{variable} = 'false';
+            $meta->{description} = $c->get_param("metadata[$i].description");
+            $meta->{disable_form} = $c->get_param("metadata[$i].disable_form") ? 'true' : 'false';
+        } elsif ($behaviour eq 'hidden') {
+            $meta->{automated} = 'hidden_field';
+        } elsif ($behaviour eq 'server') {
+            $meta->{automated} = 'server_set';
         }
+
         push @extra_fields, $meta;
     }
     @extra_fields = sort { $a->{order} <=> $b->{order} } @extra_fields;

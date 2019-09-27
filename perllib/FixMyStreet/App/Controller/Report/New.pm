@@ -322,7 +322,7 @@ sub disable_form_message : Private {
         } elsif (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
             foreach my $opt (@{$_->{values}}) {
                 if ($opt->{disable}) {
-                    $out{message} = $_->{datatype_description};
+                    $out{message} = $opt->{disable_message} || $_->{datatype_description};
                     $out{code} = $_->{code};
                     push @{$out{answers}}, $opt->{key};
                 }

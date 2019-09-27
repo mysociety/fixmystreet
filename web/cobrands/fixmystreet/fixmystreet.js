@@ -992,14 +992,48 @@ $.extend(fixmystreet.set_up, {
   },
 
   toggle_visibility: function() {
-      $('input[type="checkbox"][data-toggle-visibility]').each(function(){
-          var input = this;
-          var $target = $( $(this).attr('data-toggle-visibility') );
-          var update = function() {
-              $target.toggleClass('hidden-js', ! input.checked );
+      $('[data-toggle-visibility]').each(function(){
+        var $target = $( $(this).attr('data-toggle-visibility') );
+          if ( $(this).is(':checkbox') ){
+              var input = this;
+              var update = function() {
+                  $target.toggleClass('hidden-js', ! input.checked );
+              };
+              $(this).off('change.togglevisibility').on('change.togglevisibility', update);
+              update();
+          } else {
+              $(this).off('click.togglevisibility').on('click.togglevisibility', function(){
+                  $target.toggleClass('hidden-js');
+              });
+          }
+      });
+
+      $('input[type="radio"][data-show], input[type="radio"][data-hide]').each(function(){
+          var update = function(){
+              if ( this.checked ) {
+                  var $showTarget = $( $(this).attr('data-show') );
+                  var $hideTarget = $( $(this).attr('data-hide') );
+                  $showTarget.removeClass('hidden-js');
+                  $hideTarget.addClass('hidden-js');
+              }
           };
-          $(input).on('change', update);
-          update();
+          // off/on to make sure event handler is only bound once.
+          $(this).off('change.togglevisibility').on('change.togglevisibility', update);
+          update.call(this); // pass DOM element as `this`
+      });
+
+      $('option[data-show], option[data-hide]').each(function(){
+          var $select = $(this).parent();
+          var update = function(){
+              var $option = $(this).find('option:selected');
+              var $showTarget = $( $option.attr('data-show') );
+              var $hideTarget = $( $option.attr('data-hide') );
+              $showTarget.removeClass('hidden-js');
+              $hideTarget.addClass('hidden-js');
+          };
+          // off/on to make sure event handler is only bound once.
+          $select.off('change.togglevisibility').on('change.togglevisibility', update);
+          update.call($select[0]); // pass DOM element as `this`
       });
   },
 
