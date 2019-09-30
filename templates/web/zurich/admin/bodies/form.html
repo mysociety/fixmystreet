@@ -20,6 +20,18 @@
         </select>
     </p>
 
+  [% IF body AND NOT body.parent AND NOT body.bodies %]
+    <p>
+        <label for="category">[% loc('Category') %]</label>
+        <select class="form-control" name="extra[category]" id="category">
+            <option value="">[% loc('-- Pick a category --') %]</option>
+            [% FOR cat IN c.cobrand.category_options %]
+            <option value="[% cat.category %]"[% ' selected' IF cat.category == body.get_extra_metadata('category') %]>[% cat.category_display | html %]</option>
+            [% END %]
+        </select>
+    </p>
+  [% END %]
+
     <p>
         <label for="area_ids">[% loc('Area covered') %]</label>
         <select class="form-control js-multiple" name="area_ids" id="area_ids" multiple data-none="-- [% loc('Select an area') %] --">

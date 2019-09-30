@@ -58,23 +58,11 @@
     <dd class="screen-no-space-after">
         <strong>[% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</strong>
     </dd>
-    <dt class="print-only">[% loc('Coordinates:') %] <!-- Koordinaten --></dt>
-    <dd class="screen-no-space-after print-no-space-after">
-        [% problem.local_coords.join(',') %]
-        <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
-        <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
-    </dd>
-    <dd class="screen-no-space-after print-no-space-after">
-      [% IF problem.used_map %]
-        [% loc('Used map') %]
-      [% ELSE %]
-        [% loc("Didn't use map") %]
-      [% END %]
-    </dd>
-    <dd>[%
-        safe = problem.postcode | html;
-        tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
-    %]</dd>
+
+    <dd>[% c.cobrand.admin_district_lookup(problem) %]</dd>
+
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
 
     [% SET fields = problem.get_extra_fields; IF fields.size %]
     <dd>
@@ -129,7 +117,7 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
-[% INCLUDE status_message %]
+[% status_message %]
 
 <dl [% IF status_message %]class="with-message"[% END %]>
 
@@ -280,6 +268,7 @@
           [% ELSE %]
             [% loc('Message to competent body:') %]
           [% END %]
+        [% problem.body(c).endpoint %]
     </h2>
     <div class="admin-external-message">
         [% problem.extra.external_message | html_para %]

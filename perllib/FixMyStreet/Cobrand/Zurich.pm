@@ -9,6 +9,8 @@ use Scalar::Util 'blessed';
 use DateTime::Format::Pg;
 use Try::Tiny;
 
+use FixMyStreet::Geocode::Zurich;
+
 use strict;
 use warnings;
 use utf8;
@@ -141,7 +143,7 @@ sub problem_as_hashref {
         $hashref->{title} = _('This report is awaiting moderation.');
         $hashref->{banner_id} = 'closed';
     } else {
-        if ( $problem->state eq 'confirmed' || $problem->state eq 'external' ) {
+        if ( $problem->state eq 'confirmed' ) {
             $hashref->{banner_id} = 'closed';
         } elsif ( $problem->is_fixed || $problem->is_closed ) {
             $hashref->{banner_id} = 'fixed';
@@ -152,7 +154,7 @@ sub problem_as_hashref {
         if ( $problem->state eq 'confirmed' ) {
             $hashref->{state} = 'open';
             $hashref->{state_t} = _('Open');
-        } elsif ( $problem->state eq 'wish' ) {
+        } elsif ( $problem->state eq 'wish' || $problem->state eq 'external' ) {
             $hashref->{state_t} = _('Closed');
         } elsif ( $problem->is_fixed ) {
             $hashref->{state} = 'closed';
@@ -328,6 +330,14 @@ sub report_page_data {
     if ($c->get_param('ajax')) {
         $c->detach('ajax', [ 'reports/_problem-list.html' ]);
     }
+
+    my @categories = $c->model('DB::Contact')->not_deleted->search(undef, {
+        columns => [ 'category', 'extra' ],
+        order_by => [ 'category' ],
+        distinct => 1
+    })->all;
+    $c->stash->{filter_categories} = \@categories;
+    $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
 
     my $pins = $c->stash->{pins};
     FixMyStreet::Map::display_map(
@@ -522,12 +532,16 @@ sub admin {
 }
 
 sub category_options {
-    my ($self, $c) = @_;
+    my $self = shift;
+    my $c = $self->{c};
     my @categories = $c->model('DB::Contact')->not_deleted->all;
-    $c->stash->{category_options} = [ map { {
-        category => $_->category, category_display => $_->category,
+    @categories = map { {
+        category => $_->category,
+        category_display => $_->get_extra_metadata('admin_label') || $_->category,
         abbreviation => $_->get_extra_metadata('abbreviation'),
-    } } @categories ];
+    } } @categories;
+    @categories = sort { $a->{category_display} cmp $b->{category_display} } @categories;
+    $c->stash->{category_options} = \@categories;
 }
 
 sub admin_report_edit {
@@ -553,21 +567,39 @@ sub admin_report_edit {
         $c->stash->{bodies} = \@bodies;
 
         # Can change category to any other
-        $self->category_options($c);
+        $self->category_options;
 
     } elsif ($type eq 'dm') {
 
         # Can assign to:
         my @bodies = $c->model('DB::Body')->search( [
-            { 'me.parent' => $body->parent->id }, # Other DMs on the same level
             { 'me.parent' => $body->id }, # Their subdivisions
             { 'me.parent' => undef, 'bodies.id' => undef }, # External bodies
-        ], { join => 'bodies', distinct => 1 } );
-        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+        ], { join => 'bodies', distinct => 1 } )->all;
+        @bodies = grep {
+            my $cat = $_->get_extra_metadata('category');
+            if ($cat) {
+                $cat = $c->model('DB::Contact')->not_deleted->search({ category => $cat })->first;
+            }
+            !$cat || $cat->body_id == $body->id;
+        } @bodies;
+        @bodies = sort {
+            my $a_cat = $a->get_extra_metadata('category');
+            my $b_cat = $b->get_extra_metadata('category');
+            if ($a_cat && $b_cat) {
+                strcoll($a->name, $b->name)
+            } elsif ($a_cat) {
+                -1;
+            } elsif ($b_cat) {
+                1;
+            } else {
+                strcoll($a->name, $b->name)
+            }
+        } @bodies;
         $c->stash->{bodies} = \@bodies;
 
         # Can change category to any other
-        $self->category_options($c);
+        $self->category_options;
 
     }
 
@@ -927,6 +959,11 @@ sub admin_report_edit {
 
 }
 
+sub admin_district_lookup {
+    my ($self, $row) = @_;
+    FixMyStreet::Geocode::Zurich::admin_district($row->local_coords);
+}
+
 sub stash_states {
     my ($self, $problem) = @_;
     my $c = $self->{c};
@@ -1135,7 +1172,7 @@ sub admin_stats {
     }
 
     # Can change category to any other
-    $self->category_options($c);
+    $self->category_options;
 
     # Total reports (non-hidden)
     my $total = $c->model('DB::Problem')->search( \%params )->count;
@@ -1305,7 +1342,9 @@ sub reports_per_page { return 20; }
 
 sub singleton_bodies_str { 1 }
 
-sub contact_extra_fields { [ 'abbreviation' ] };
+sub body_extra_fields { [ 'category' ] };
+
+sub contact_extra_fields { [ 'abbreviation', 'admin_label' ] };
 
 sub default_problem_state { 'submitted' }
 
@@ -1341,6 +1380,13 @@ sub db_state_migration {
     for ('action scheduled', 'duplicate', 'not responsible', 'internal referral', 'planned', 'investigating', 'unable to fix') {
         $rs->find({ label => $_ })->delete;
     }
+}
+
+sub hook_report_filter_status {
+    my ($self, $status) = @_;
+    @$status = map {
+        $_ eq 'closed' ? ('closed', 'fixed') : $_
+    } @$status;
 }
 
 1;

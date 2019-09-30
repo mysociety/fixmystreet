@@ -562,6 +562,9 @@ $.extend(fixmystreet.utils, {
                 } else {
                     $.extend(style.defaultStyle, { fillColor: 'black', strokeColor: 'black' });
                 }
+                if (!this.features.length) {
+                    return;
+                }
                 var geometry = this.features[0].geometry;
                 if (geometry.CLASS_NAME == 'OpenLayers.Geometry.Collection' ||
                     geometry.CLASS_NAME == 'OpenLayers.Geometry.MultiPolygon') {
@@ -1185,3 +1188,15 @@ OpenLayers.Renderer.SVGBig = OpenLayers.Class(OpenLayers.Renderer.SVG, {
     CLASS_NAME: "OpenLayers.Renderer.SVGBig"
 
 });
+
+/* Stop sending a needless header so that no preflight CORS request */
+OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, sValue) {
+    if (sName.toLowerCase() == 'x-requested-with') {
+        return;
+    }
+    if (!this._headers) {
+        this._headers = {};
+    }
+    this._headers[sName] = sValue;
+    return this._object.setRequestHeader(sName, sValue);
+};

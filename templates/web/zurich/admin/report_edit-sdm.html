@@ -39,23 +39,11 @@
     <dd class="screen-no-space-after">
         <strong>[% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</strong>
     </dd>
-    <dt class="print-only">[% loc('Coordinates:') %] <!-- Koordinaten --></dt>
-    <dd class="screen-no-space-after print-no-space-after">
-        [% problem.local_coords.join(',') %]
-        <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
-        <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
-    </dd>
-    <dd class="screen-no-space-after print-no-space-after">
-      [% IF problem.used_map %]
-        [% loc('Used map') %]
-      [% ELSE %]
-        [% loc("Didn't use map") %]
-      [% END %]
-    </dd>
-    <dd>[%
-        safe = problem.postcode | html;
-        tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
-    %]</dd>
+
+    <dd>[% c.cobrand.admin_district_lookup(problem) %]</dd>
+
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
 
     <dt class="print-only">[% loc('Reported by:') %] <!-- Meldende Person --></dt>
     <dd>
@@ -78,10 +66,6 @@
     <dt>[% loc('Time spent (in minutes):') %]</dt>
     <dd>[% problem.get_time_spent %]</dd>
 
-    <dd>
-    [% INCLUDE status_message %]
-    </dd>
-
   [% IF problem.photo %]
     <dd>
       [% FOR photo IN problem.photos %]
@@ -102,6 +86,9 @@
 <div class="admin-report-edit admin-report-edit--interact">
 
 <p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+
+[% status_message %]
+
 <p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
 
 <ul class="no-bullets screen-only">
