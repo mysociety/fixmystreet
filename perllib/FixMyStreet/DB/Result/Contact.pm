@@ -98,7 +98,7 @@ sub category_display {
     $self->translate_column('category');
 }
 
-sub get_metadata_for_editing {
+sub get_all_metadata {
     my $self = shift;
     my @metadata = @{$self->get_extra_fields};
 
@@ -111,9 +111,19 @@ sub get_metadata_for_editing {
     return \@metadata;
 }
 
+sub get_metadata_for_editing {
+    my $self = shift;
+    my $metadata = $self->get_all_metadata;
+
+    # Ignore the special admin-form-created entry
+    my @metadata = grep { $_->{code} ne '_fms_disable_' } @$metadata;
+
+    return \@metadata;
+}
+
 sub get_metadata_for_input {
     my $self = shift;
-    my $metadata = $self->get_metadata_for_editing;
+    my $metadata = $self->get_all_metadata;
 
     # Also ignore any we have with a 'server_set' automated attribute
     my @metadata = grep { !$_->{automated} || $_->{automated} ne 'server_set' } @$metadata;
@@ -134,6 +144,13 @@ sub get_metadata_for_storage {
 sub id_field {
     my $self = shift;
     return $self->get_extra_metadata('id_field') || 'fixmystreet_id';
+}
+
+sub disable_form_field {
+    my $self = shift;
+    my $metadata = $self->get_all_metadata;
+    my ($field) = grep { $_->{code} eq '_fms_disable_' } @$metadata;
+    return $field;
 }
 
 1;

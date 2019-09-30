@@ -217,6 +217,24 @@ subtest 'check text output' => sub {
     $mech->content_lacks('<body');
 };
 
+subtest 'disable form message editing' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        disable => 1,
+        disable_message => 'Please ring us!',
+        note => 'Adding emergency message',
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is_deeply $contact->get_extra_fields, [{
+        description => 'Please ring us!',
+        code => '_fms_disable_',
+        protected => 'true',
+        variable => 'false',
+        disable_form => 'true',
+    }], 'right message added';
+};
+
 
 }; # END of override wrap
 
@@ -230,7 +248,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
-        $mech->content_contains( 'group</strong> is used for the top-level category' );
+        $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
             category   => 'grouped category',
@@ -247,7 +265,7 @@ FixMyStreet::override_config {
 
     subtest 'group can be unset' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
-        $mech->content_contains( 'group</strong> is used for the top-level category' );
+        $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
             category   => 'grouped category',
@@ -270,12 +288,11 @@ FixMyStreet::override_config {
     BASE_URL => 'http://www.example.org',
     COBRAND_FEATURES => {
        category_groups => { default => 1 },
-       multiple_category_groups => { default => 1 },
     }
 }, sub {
     subtest 'multi group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
-        $mech->content_contains( 'group</strong> is used for the top-level category' );
+        $mech->content_contains('Parent categories');
 
         # have to do this as a post as adding a second group requires
         # javascript

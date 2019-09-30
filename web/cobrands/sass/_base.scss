@@ -331,6 +331,45 @@ select.form-control {
   max-width: 27em;
 }
 
+// Handy for lining up "child" form groups below show/hide checkboxes.
+.form-group--indented {
+  padding-left: 2em;
+}
+
+.form-check {
+  margin-top: 1.5em; // match margin-top on regular labels
+  padding-left: 2em;
+  position: relative;
+  
+  & > input {
+    position: absolute;
+    top: 0.3em;
+    left: 0.5em;
+  }
+
+  label {
+    margin-top: 0.5em;
+  }
+}
+
+.form-check--inline {
+  margin: 0.5em 0;
+
+  label {
+    margin: 0;
+    display: inline;
+  }
+
+  .form-hint {
+    display: inline;
+
+    &:before {
+      content: "\2013";
+      margin: 0 0.3em 0 0.1em;
+    }
+  }
+}
+
 .required-text {
   position: absolute;
   #{$right}: 0;
@@ -2030,7 +2069,9 @@ label .muted {
 }
 
 .form-hint {
+  display: block;
   color: #666;
+  margin-bottom: 0.5em;
 
   // Reduce space between labels and their form-hints
   label + & {

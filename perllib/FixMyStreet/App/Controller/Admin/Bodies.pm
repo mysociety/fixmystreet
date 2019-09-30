@@ -288,6 +288,22 @@ sub update_contacts : Private {
         $c->forward('/admin/update_extra_fields', [ $contact ]);
         $c->forward('contact_cobrand_extra_fields', [ $contact ]);
 
+        # Special form disabling form
+        if ($c->get_param('disable')) {
+            my $msg = $c->get_param('disable_message');
+            $errors{category} = _('Please enter a message') unless $msg;
+            my $meta = {
+                code => '_fms_disable_',
+                variable => 'false',
+                protected => 'true',
+                disable_form => 'true',
+                description => $msg,
+            };
+            $contact->update_extra_field($meta);
+        } else {
+            $contact->remove_extra_field('_fms_disable_');
+        }
+
         if ( %errors ) {
             $c->stash->{updated} = _('Please correct the errors below');
             $c->stash->{contact} = $contact;

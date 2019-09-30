@@ -79,6 +79,31 @@ subtest 'Default hash layout' => sub {
         is_deeply $contact->extra, { _fields => \@fields }, '(sanity check layout)';
     };
 
+    subtest 'updating extra field' => sub {
+        my $contact = get_test_contact();
+        my @fields = ( { code => 'ABC', description => 'ABC', variable => 'false', }, { code => 'DEF', description => 'DEF', variable => 'true' } );
+        $contact->set_extra_fields(@fields);
+        is_deeply $contact->get_extra_fields, \@fields, 'extra fields set...';
+        my $new_field = { code => 'ABC', description => 'XYZ', variable => 'false' };
+        $contact->update_extra_field($new_field);
+        $fields[0] = $new_field;
+        is_deeply $contact->get_extra_fields, \@fields, 'extra fields changed';
+        $new_field = { code => 'GHI', description => 'GHI', variable => 'false' };
+        $contact->update_extra_field($new_field);
+        push @fields, $new_field;
+        is_deeply $contact->get_extra_fields, \@fields, 'extra fields changed';
+    };
+
+    subtest 'removing extra field' => sub {
+        my $contact = get_test_contact();
+        my @fields = ( { code => 'ABC', description => 'ABC', variable => 'false', }, { code => 'DEF', description => 'DEF', variable => 'true' } );
+        $contact->set_extra_fields(@fields);
+        is_deeply $contact->get_extra_fields, \@fields, 'extra fields set...';
+        $contact->remove_extra_field('DEF');
+        pop @fields;
+        is_deeply $contact->get_extra_fields(), \@fields, 'extra field removed';
+    };
+
     subtest 'metadata' => sub {
         my $contact = get_test_contact();
         is_deeply $contact->get_extra_metadata, {}, 'No extra metadata';
