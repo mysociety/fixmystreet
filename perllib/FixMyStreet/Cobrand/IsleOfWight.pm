@@ -45,6 +45,17 @@ sub updates_disallowed {
     return 1;
 }
 
+# Island Roads don't want any reports made before their go-live date visible on
+# their cobrand at all.
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->config('STAGING_SITE') or FixMyStreet->test_mode;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->to_body($self->body)->search({
+      "$table.confirmed" => { '>=', '2019-09-30' }
+    });
+}
+
 sub get_geocoder { 'OSM' }
 
 sub open311_pre_send {
