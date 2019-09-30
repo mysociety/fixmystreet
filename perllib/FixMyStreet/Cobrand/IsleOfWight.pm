@@ -49,6 +49,7 @@ sub updates_disallowed {
 # their cobrand at all.
 sub problems_restriction {
     my ($self, $rs) = @_;
+    return $rs if FixMyStreet->config('STAGING_SITE') or FixMyStreet->test_mode;
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
     return $rs->to_body($self->body)->search({
       "$table.confirmed" => { '>=', '2019-09-30' }
