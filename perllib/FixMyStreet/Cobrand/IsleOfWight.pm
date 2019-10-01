@@ -58,6 +58,15 @@ sub problems_restriction {
 
 sub get_geocoder { 'OSM' }
 
+sub lookup_site_code_config { {
+    buffer => 50, # metres
+    url => "https://tilma.mysociety.org/mapserver/iow",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
+    typename => "streets",
+    property => "SITE_CODE",
+    accept_feature => sub { 1 }
+} }
+
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
@@ -80,6 +89,14 @@ sub open311_config {
           value => $row->title },
         { name => 'description',
           value => $row->detail };
+
+    if (!$row->get_extra_field_value('site_code')) {
+        if (my $site_code = $self->lookup_site_code($row)) {
+            push @$extra,
+                { name => 'site_code',
+                value => $site_code };
+        }
+    }
 
     $row->set_extra_fields(@$extra);
 }
