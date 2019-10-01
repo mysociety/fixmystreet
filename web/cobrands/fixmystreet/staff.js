@@ -369,7 +369,7 @@ $(fixmystreet).on('display:report', function() {
 
 $(fixmystreet).on('report_new:category_change', function() {
     var $this = $('#form_category');
-    var category = $this.val();
+    var category = $this.find("option:selected").text();
     if (category === '-- Pick a category --') { return; }
     var prefill_reports = $this.data('prefill');
     var display_names = fixmystreet.reporting_data ? fixmystreet.reporting_data.display_names || {} : {};
