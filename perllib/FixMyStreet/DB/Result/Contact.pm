@@ -98,6 +98,13 @@ sub category_display {
     $self->translate_column('category');
 }
 
+sub groups {
+    my $self = shift;
+    my $groups = $self->get_extra_metadata('group') || [];
+    $groups = [ $groups ] unless ref $groups eq 'ARRAY';
+    return $groups;
+}
+
 sub get_all_metadata {
     my $self = shift;
     my @metadata = @{$self->get_extra_fields};

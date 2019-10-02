@@ -280,16 +280,11 @@ sub _normalize_service_name {
 sub _set_contact_group {
     my ($self, $contact) = @_;
 
-    my $groups_enabled = $self->_current_body_cobrand && $self->_current_body_cobrand->enable_category_groups;
-    my $old_group = $contact->get_extra_metadata('group') || '';
-    my $new_group = $groups_enabled ? $self->_current_service->{group} || '' : '';
-    my $new_group_multi = $groups_enabled ? $self->_current_service->{groups} || [] : [];
-    if (@$new_group_multi) {
-        $new_group = $new_group_multi;
-    }
+    my $old_group = $contact->groups;
+    my $new_group = $self->_get_new_groups;
 
     if ($self->_groups_different($old_group, $new_group)) {
-        if ($new_group) {
+        if (@$new_group) {
             $contact->set_extra_metadata(group => @$new_group == 1 ? $new_group->[0] : $new_group);
             $contact->update({
                 editor => $0,
@@ -322,19 +317,22 @@ sub _set_contact_non_public {
     }) if $keywords{private};
 }
 
+sub _get_new_groups {
+    my $self = shift;
+    return [] unless $self->_current_body_cobrand && $self->_current_body_cobrand->enable_category_groups;
+
+    my $groups = $self->_current_service->{groups} || [];
+    return $groups if @$groups;
+
+    my $group = $self->_current_service->{group} || [];
+    $group = [] if @$group == 1 && !$group->[0]; # <group></group> becomes [undef]...
+    return $group;
+}
+
 sub _groups_different {
     my ($self, $old, $new) = @_;
 
-    my $diff = 1;
-    if ($old && $new) {
-        $old = [ $old ] unless ref $old eq 'ARRAY';
-        $new = [ $new ] unless ref $new eq 'ARRAY';
-        $diff = join( ',', sort(@$old) ) ne join( ',', sort(@$new) );
-    } elsif (!$old && !$new) {
-        $diff = 0;
-    }
-
-    return $diff;
+    return join( ',', sort(@$old) ) ne join( ',', sort(@$new) );
 }
 
 sub _delete_contacts_not_in_service_list {
