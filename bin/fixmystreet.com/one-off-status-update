@@ -133,7 +133,7 @@ if ($northants) {
             $updated++;
             $p->update({
                 state => $new_state,
-                last_update => \'current_timestamp',
+                lastupdate => \'current_timestamp',
             });
 
             my $comment = FixMyStreet::DB->resultset('Comment')->new({
