@@ -137,6 +137,18 @@ subtest 'check non public reports are not displayed on around page' => sub {
         'problem marked non public is not visible' );
 };
 
+subtest 'check missing body message not shown when it does not need to be' => sub {
+    $mech->get_ok('/');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+            "good location" );
+    };
+    $mech->content_lacks('yet have details for the other councils that cover this location');
+};
+
 for my $permission ( qw/ report_inspect report_mark_private/ ) {
     subtest 'check non public reports are displayed on around page with $permission permission' => sub {
         my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
