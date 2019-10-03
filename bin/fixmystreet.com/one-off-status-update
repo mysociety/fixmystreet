@@ -164,7 +164,7 @@ sub get_state {
     my $report = shift;
 
     if ( !$report->{Reason_for_Closure} && !$report->{DEFECT_STATUS} && $report->{Enquiry_TASK_STATUS} eq 'Completed') {
-        return "in progress";
+        return "closed";
     }
 
     my $fms_state = $alloy_to_fms_map{$report->{Reason_for_Closure}};
