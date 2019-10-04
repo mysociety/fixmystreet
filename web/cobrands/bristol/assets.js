@@ -19,7 +19,7 @@ var options = {
     wfs_url: "https://maps.bristol.gov.uk/arcgis/services/ext/FixMyStreetSupportData/MapServer/WFSServer",
     wfs_feature: "COD_ASSETS_POINT",
     asset_id_field: 'COD_ASSET_ID',
-    propertyNames: [ 'COD_ASSET_ID', 'COD_USRN', 'COD_ASSET_TYPE' ],
+    propertyNames: [ 'COD_ASSET_ID', 'COD_USRN', 'COD_ASSET_TYPE', 'SHAPE' ],
     filter_key: 'COD_ASSET_TYPE',
     attributes: {
         asset_id: 'COD_ASSET_ID',
