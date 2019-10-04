@@ -264,7 +264,7 @@ FixMyStreet::override_config {
             desc => 'edit user name',
             fields => {
                 name => '',
-                email => 'test@example.com',
+                email => $user->email,
                 email_verified => 1,
                 body => $haringey->id,
                 phone => '',
@@ -285,7 +285,7 @@ FixMyStreet::override_config {
             desc => 'edit user email',
             fields => {
                 name => 'Changed User',
-                email => 'test@example.com',
+                email => $user->email,
                 email_verified => 1,
                 body => $haringey->id,
                 phone => '',
@@ -464,7 +464,7 @@ FixMyStreet::override_config {
         $mech->create_problems_for_body(2, 2514, 'Title', { user => $existing_user });
         my $count = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
         $mech->get_ok( '/admin/users/' . $user->id );
-        $mech->submit_form_ok( { with_fields => { email => 'existing@example.com' } }, 'submit email change' );
+        $mech->submit_form_ok( { with_fields => { email => $existing_user->email } }, 'submit email change' );
         is $mech->uri->path, '/admin/users/' . $existing_user->id, 'redirected';
         my $p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $existing_user->id })->count;
         is $p, $count + 2, 'reports merged';
@@ -518,7 +518,7 @@ subtest "Send login email from admin for unverified email" => sub {
 
     is $email->header('Subject'), "Your FixMyStreet account details",
       "subject is correct";
-    is $email->header('To'), 'test@example.com', "to is correct";
+    is $email->header('To'), $user->email, "to is correct";
 
     my $link = $mech->get_link_from_email($email);
 

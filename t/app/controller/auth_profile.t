@@ -428,10 +428,9 @@ subtest "Test generate token page" => sub {
 };
 
 subtest "Test two-factor authentication admin" => sub {
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = $mech->log_in_ok($test_email);
     ok $user->update({ is_superuser => 1 }), 'user set to superuser';
 
-    $mech->log_in_ok($test_email);
     $mech->get_ok('/auth/generate_token');
     ok !$user->get_extra_metadata('2fa_secret');
 

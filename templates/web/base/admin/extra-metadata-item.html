@@ -1,0 +1,110 @@
+[%
+SET behaviour = '';
+DEFAULT behaviour = 'server' IF meta.automated == 'server_set';
+DEFAULT behaviour = 'hidden' IF meta.automated == 'hidden_field';
+DEFAULT behaviour = 'notice' IF meta.variable == 'false';
+DEFAULT behaviour = 'question';
+~%]
+
+<fieldset class="extra-metadata-item js-metadata-item" data-i="[% i %]">
+    <legend class="visuallyhidden">Extra data field [% i %]</legend>
+
+    <header class="extra-metadata-item__header hidden-nojs">
+        <div class="js-metadata-item-header-grab extra-metadata-item__header__grab" aria-label="Drag to reorder"></div>
+        <button type="button" class="js-metadata-item-header-title extra-metadata-item__header__title" data-default="[% loc('New field') %]" data-toggle-visibility="#metadata-fieldset-[% i %]">
+          [%~ IF meta.code ~%]
+            <strong>[% meta.code | html %]</strong>
+            / [% behaviour %]
+            [% IF meta.description %] / [% meta.description.substr(0, 50) | html %][% END %]
+          [%~ ELSE ~%]
+            <strong>[% loc('New field') %]</strong>
+          [%~ END ~%]
+        </button>
+        <button type="button" class="js-metadata-item-remove extra-metadata-item__header__remove">[% loc('Remove field') %]</button>
+    </header>
+
+    <div class="extra-metadata-item__body [% IF collapsed %]hidden-js[% END %]" id="metadata-fieldset-[% i %]">
+
+        <div class="form-group">
+            <label for="metadata-[% i %]-code">[% loc('Code') %]</label>
+            <span class="form-hint" id="metadata-[% i %]-code-hint">[% loc('The code used to store this field value in the database.') %]</span>
+            <input class="form-control" name="metadata[[% i %]].code" id="metadata-[% i %]-code" aria-describedby="metadata-[% i %]-code-hint" type=text value="[% meta.code | html %]">
+        </div>
+
+        <fieldset>
+            <legend>[% loc('Behaviour') %]</legend>
+            <div class="form-check form-check--inline">
+                <input type="radio" name="metadata[[% i %]].behaviour" id="metadata-[% i %]-behaviour-question" value="question" data-show="#metadata-[% i %]-description-group, #metadata-[% i %]-description-label-question, #metadata-[% i %]-datatype-group, #metadata-[% i %]-required-group, #metadata-[% i %]-protected-group" data-hide="#metadata-[% i %]-description-label-notice, #metadata-[% i %]-disabled-group"[% ' checked' IF behaviour == 'question' %]>
+                <label for="metadata-[% i %]-behaviour-question">[% loc('Extra question shown to user') %]</label>
+            </div>
+            <div class="form-check form-check--inline">
+                <input type="radio" name="metadata[[% i %]].behaviour" id="metadata-[% i %]-behaviour-notice" value="notice" data-show="#metadata-[% i %]-description-group, #metadata-[% i %]-description-label-notice, #metadata-[% i %]-protected-group, #metadata-[% i %]-disabled-group" data-hide="#metadata-[% i %]-description-label-question, #metadata-[% i %]-datatype-group, #metadata-[% i %]-required-group"[% ' checked' IF behaviour == 'notice' %]>
+                <label for="metadata-[% i %]-behaviour-notice">[% loc('Notice shown to user') %]</label>
+            </div>
+            <div class="form-check form-check--inline">
+                <input type="radio" name="metadata[[% i %]].behaviour" id="metadata-[% i %]-behaviour-hidden" value="hidden" data-show="#metadata-[% i %]-protected-group" data-hide="#metadata-[% i %]-description-group, #metadata-[% i %]-datatype-group, #metadata-[% i %]-required-group, #metadata-[% i %]-disabled-group"[% ' checked' IF behaviour == 'hidden' %]>
+                <label for="metadata-[% i %]-behaviour-hidden">[% loc('Hidden data in reporting form') %]</label>
+            </div>
+            <div class="form-check form-check--inline">
+                <input type="radio" name="metadata[[% i %]].behaviour" id="metadata-[% i %]-behaviour-server" value="server" data-show="#metadata-[% i %]-protected-group" data-hide="#metadata-[% i %]-description-group, #metadata-[% i %]-datatype-group, #metadata-[% i %]-required-group, #metadata-[% i %]-disabled-group"[% ' checked' IF behaviour == 'server' %]>
+                <label for="metadata-[% i %]-behaviour-server">[% loc('Internal data set by Open311') %]</label>
+            </div>
+        </fieldset>
+
+        <div class="form-group js-sort-order">
+            <label for="metadata-[% i %]-order">[% loc('Order') %]</label>
+            <input class="form-control" name="metadata[[% i %]].order" id="metadata-[% i %]-order" type=text value="[% meta.order OR 0 | html %]">
+        </div>
+
+        <div class="form-group hidden-js" id="metadata-[% i %]-description-group">
+            <label for="metadata-[% i %]-description" id="metadata-[% i %]-description-label-question" class="[% 'hidden-js' UNLESS behaviour == 'question' %]">[% loc('Question text') %]</label>
+            <label for="metadata-[% i %]-description" id="metadata-[% i %]-description-label-notice" class="[% 'hidden-js' UNLESS behaviour == 'notice' %]">[% loc('Notice text') %]</label>
+            <textarea class="form-control" name="metadata[[% i %]].description" id="metadata-[% i %]-description" rows="2">[% meta.description | html %]</textarea>
+        </div>
+
+        <div class="hidden-js" id="metadata-[% i %]-datatype-group">
+            <div class="form-group">
+                <label for="metadata-[% i %]-datatype">[% loc('Display as') %]</label>
+                <select class="form-control" name="metadata[[% i %]].datatype" id="metadata-[% i %]-datatype">
+                    <option value="string" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'string' %]>[% loc('Text field') %]</option>
+                    <option value="singlevaluelist" data-show="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'singlevaluelist' %]>[% loc('Drop-down list') %]</option>
+                </select>
+            </div>
+
+            <div class="hidden-js" id="metadata-[% i %]-options-group">
+                <p class="label">[% loc('Options') %]</p>
+                <div class="js-metadata-options">
+                  [% SET options = meta.item('values') ? meta.values : [] %]
+                  [% FOR option IN options %]
+                    [% INCLUDE 'admin/extra-metadata-option.html' option=option i=i j=loop.index %]
+                  [% END %]
+                </div>
+
+                <div class="hidden-js"[% IF i==9999 %] id="js-template-extra-metadata-option"[% END %]>
+                    [% INCLUDE 'admin/extra-metadata-option.html' option={} i=i j=8888 %]
+                </div>
+
+                <button type="button" class="btn btn--small js-metadata-option-add hidden-nojs">[% loc('Add option') %]</button>
+            </div>
+        </div>
+
+        <p class="form-check hidden-js" id="metadata-[% i %]-required-group">
+            <input type="checkbox" name="metadata[[% i %]].required" value="1" id="metadata-[% i %]-required" aria-describedby="metadata-[% i %]-required-hint" [% ' checked' IF meta.required == 'true' %]>
+            <label for="metadata-[% i %]-required">[% loc('Required') %]</label>
+            <span class="form-hint" id="metadata-[% i %]-required-hint">[% loc('Prevent user from submitting the form until this field is filled in.') %]</span>
+        </p>
+
+        <p class="form-check hidden-js" id="metadata-[% i %]-disabled-group">
+            <input type="checkbox" name="metadata[[% i %]].disable_form" value="1" id="metadata-[% i %]-disable_form" aria-describedby="metadata-[% i %]-disable_form-hint" [% ' checked' IF meta.disable_form == 'true' %]>
+            <label for="metadata-[% i %]-disable_form">[% loc('Disable form when this category is selected') %]</label>
+            <span class="form-hint" id="metadata[[% i %]]-disable_form-hint">[% loc('If ticked, the form will be disabled and this item’s notice text will be displayed.') %]</span>
+        </p>
+
+        <p class="form-check hidden-js" id="metadata-[% i %]-protected-group">
+            <input type="checkbox" name="metadata[[% i %]].protected" value="1" id="metadata-[% i %]-protected" aria-describedby="metadata-[% i %]-protected-hint" [% ' checked' IF meta.protected == 'true' %]>
+            <label for="metadata-[% i %]-protected">[% loc('Protect from Open311 changes') %]</label>
+            <span class="form-hint" id="metadata[[% i %]]-protected-hint">[% loc('If ticked, this extra data will not be edited or deleted by the Open311 population script.') %]</span>
+        </p>
+
+    </div>
+</fieldset>

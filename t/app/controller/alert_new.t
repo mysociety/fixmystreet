@@ -4,56 +4,56 @@ use FixMyStreet::Script::Alerts;
 
 my $mech = FixMyStreet::TestMech->new;
 
-$mech->log_in_ok('test@example.com');
+my $user = $mech->log_in_ok('test@example.com');
 $mech->get_ok('/alert/subscribe?id=1');
 my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
 foreach my $test (
     {
-        email      => 'test@example.com',
+        email      => $user->email,
         type       => 'area_problems',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
-'/alert/subscribe?type=local&rznvy=test@example.com&feed=area:1000:A_Location',
+'/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=area:1000:A_Location',
         param1 => 1000
     },
     {
-        email      => 'test@example.com',
+        email      => $user->email,
         type       => 'council_problems',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
-'/alert/subscribe?type=local&rznvy=test@example.com&feed=council:1000:A_Location',
+'/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=council:1000:A_Location',
         param1 => 1000,
         param2 => 1000,
     },
     {
-        email      => 'test@example.com',
+        email      => $user->email,
         type       => 'ward_problems',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
-'/alert/subscribe?type=local&rznvy=test@example.com&feed=ward:1000:1001:A_Location:Diff_Location',
+'/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=ward:1000:1001:A_Location:Diff_Location',
         param1 => 1000,
         param2 => 1001,
     },
     {
-        email      => 'test@example.com',
+        email      => $user->email,
         type       => 'local_problems',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
-'/alert/subscribe?type=local&rznvy=test@example.com&feed=local:10.2:20.1',
+'/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=local:10.2:20.1',
         param1 => 20.1,
         param2 => 10.2,
     },
     {
-        email      => 'test@example.com',
+        email      => $user->email,
         type       => 'new_updates',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
-        uri    => '/alert/subscribe?type=updates&rznvy=test@example.com&id=1',
+        uri    => '/alert/subscribe?type=updates&rznvy=' . $user->email . '&id=1',
         param1 => 1,
     }
   )
@@ -163,7 +163,7 @@ foreach my $test (
         # clear existing data so we can be sure we're creating it
         ok $alert->delete() if $alert && !$test->{exist};
 
-        $mech->get_ok( '/alert/subscribe?type=local&rznvy=test-new@example.com&feed=area:1000:A_Location&token=' . $csrf );
+        $mech->get_ok( '/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=area:1000:A_Location&token=' . $csrf );
 
         $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
@@ -232,11 +232,11 @@ foreach my $test (
 
 for my $test (
     {
-        email      => 'test@example.com',
+        email      => $user->email,
         type       => 'new_updates',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => 'confirm the alert',
-        uri    => '/alert/subscribe?type=updates&rznvy=test@example.com&id=1',
+        uri    => '/alert/subscribe?type=updates&rznvy=' . $user->email . '&id=1',
         param1 => 1,
     }
   )

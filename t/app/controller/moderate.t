@@ -204,7 +204,7 @@ subtest 'Problem moderation' => sub {
         is $report->state, 'hidden', 'Is hidden';
 
         my $email = $mech->get_email;
-        is $email->header('To'), '"Test User 2" <test-moderation2@example.com>', 'Sent to correct email';
+        is $email->header('To'), '"Test User 2" <' . $user2->email . '>', 'Sent to correct email';
         my $url = $mech->get_link_from_email($email);
         ok $url, "extracted complain url '$url'";
 

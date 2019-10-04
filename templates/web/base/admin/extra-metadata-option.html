@@ -1,0 +1,29 @@
+<fieldset class="extra-metadata-option js-metadata-option">
+    <legend class="visuallyhidden">Option [% j %]</legend>
+
+    <div class="row">
+        <div class="col">
+            <label for="metadata-[% i %]-values-[% j %]-key">[% loc('Internal key') %]</label>
+            <input type="text" class="form-control" name="metadata[[% i %]].values[[% j %]].key" id="metadata-[% i %]-values-[% j %]-key" value="[% option.key | html %]">
+        </div>
+        <div class="col">
+            <label for="metadata-[% i %]-values-[% j %]-name">[% loc('Displayed label') %]</label>
+            <input type="text" class="form-control" name="metadata[[% i %]].values[[% j %]].name" id="metadata-[% i %]-values-[% j %]-name" value="[% option.name | html %]">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p class="form-check">
+                <input type="checkbox" name="metadata[[% i %]].values[[% j %]].disable" value="1" id="metadata-[% i %]-values-[% j %]-disable" data-toggle-visibility="#js-disable-form-message-box-[% i %]-[% j %]" [% ' checked' IF option.disable %]>
+                <label for="metadata-[% i %]-values-[% j %]-disable">[% loc('Disable form when this option is selected') %]</label>
+            </p>
+            <p class="form-group [% 'hidden-js' IF NOT option.disable %]" id="js-disable-form-message-box-[% i %]-[% j %]">
+                <label for="disabled-message-[% i %]-[% j %]">[% loc('Message to show when form is disabled (HTML permitted)') %]</label>
+                <textarea id="disabled-message-[% i %]-[% j %]" name="metadata[[% i %]].values[[% j %]].disable_message" class="form-control">[% option.disable_message OR meta.datatype_description | html %]</textarea>
+            </p>
+        </div>
+        <div class="col">
+            <button type="button" class="js-metadata-option-remove">[% loc('Remove option') %]</button>
+        </div>
+    </div>
+</fieldset>

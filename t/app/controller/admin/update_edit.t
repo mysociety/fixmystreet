@@ -83,7 +83,7 @@ for my $test (
             state => 'confirmed',
             name => '',
             anonymous => 1,
-            username => 'test@example.com',
+            username => $update->user->email,
         },
         changes => {
             text => 'this is a changed update',
@@ -98,7 +98,7 @@ for my $test (
             state => 'confirmed',
             name => '',
             anonymous => 1,
-            username => 'test@example.com',
+            username => $update->user->email,
         },
         changes => {
             name => 'A User',
@@ -113,7 +113,7 @@ for my $test (
             state => 'confirmed',
             name => 'A User',
             anonymous => 1,
-            username => 'test@example.com',
+            username => $update->user->email,
         },
         changes => {
             anonymous => 0,
@@ -128,10 +128,10 @@ for my $test (
             state => 'confirmed',
             name => 'A User',
             anonymous => 0,
-            username => 'test@example.com',
+            username => $update->user->email,
         },
         changes => {
-            username => 'test2@example.com',
+            username => $user2->email,
         },
         log_count => 4,
         log_entries => [qw/edit edit edit edit/],
@@ -144,7 +144,7 @@ for my $test (
             state => 'confirmed',
             name => 'A User',
             anonymous => 0,
-            username => 'test2@example.com',
+            username => $user2->email,
         },
         changes => {
             state => 'unconfirmed',
@@ -159,7 +159,7 @@ for my $test (
             state => 'unconfirmed',
             name => 'A User',
             anonymous => 0,
-            username => 'test2@example.com',
+            username => $user2->email,
         },
         changes => {
             text => 'this is a twice changed update',

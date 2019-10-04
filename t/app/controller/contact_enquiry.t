@@ -95,10 +95,10 @@ FixMyStreet::override_config {
 
     subtest 'Enquiry can be submitted when logged in' => sub {
         my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
-        my $user = $problems->first->user;
+        my $prob_user = $problems->first->user;
         $problems->delete_all;
 
-        $mech->log_in_ok( $user->email );
+        my $user = $mech->log_in_ok( $prob_user->email );
 
         $mech->get_ok( '/contact/enquiry' );
         $mech->submit_form_ok( {
@@ -123,7 +123,7 @@ FixMyStreet::override_config {
         ok $problem->confirmed, 'problem confirmed';
         is $problem->name, 'Test User', 'Report created with correct name';
         is $problem->user->name, 'Test User', 'User name updated in DB';
-        is $problem->user->email, 'testuser@example.org', 'Report user has correct email';
+        is $problem->user->email, $user->email, 'Report user has correct email';
 
         $mech->log_out_ok;
     };
@@ -139,7 +139,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( {
             with_fields => {
                 name => 'Simon Neil',
-                username => 'testuser@example.org',
+                username => $user->email,
                 category => 'General Enquiry',
                 detail => 'This is a general enquiry',
             }
@@ -158,7 +158,7 @@ FixMyStreet::override_config {
         is $problem->longitude, -0.35, 'Problem has correct longitude';
         ok $problem->confirmed, 'problem confirmed';
         is $problem->name, 'Simon Neil', 'Report created with correct name';
-        is $problem->user->email, 'testuser@example.org', 'Report user has correct email';
+        is $problem->user->email, $user->email, 'Report user has correct email';
         $user->discard_changes;
         is $user->name, 'Test User', 'User name in DB not changed';
 

@@ -42,7 +42,7 @@ sub munge_around_category_where {
     my ($self, $where) = @_;
 
     my $user = $self->{c}->user;
-    my @iow = grep { $_->name eq 'Isle of Wight Council' } @{ $self->{c}->stash->{bodies} };
+    my @iow = grep { $_->name eq 'Isle of Wight Council' } @{ $self->{c}->stash->{around_bodies} };
     return unless @iow;
 
     # display all the categories on Isle of Wight at the moment as there's no way to

@@ -102,19 +102,18 @@ sub report_new : Path : Args(0) {
     $c->stash->{template} = "report/new/fill_in_details.html";
     $c->forward('setup_categories_and_bodies');
     $c->forward('setup_report_extra_fields');
-    $c->forward('generate_map');
     $c->forward('check_for_category');
     $c->forward('setup_report_extras');
 
     # deal with the user and report and check both are happy
 
-    return unless $c->forward('check_form_submitted');
+    $c->detach('generate_map') unless $c->forward('check_form_submitted');
 
     $c->forward('/auth/check_csrf_token');
     $c->forward('process_report');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
-    return unless $c->forward('check_for_errors');
+    $c->detach('generate_map') unless $c->forward('check_for_errors');
     $c->forward('save_user_and_report');
     $c->forward('redirect_or_confirm_creation');
 }
@@ -322,7 +321,7 @@ sub disable_form_message : Private {
         } elsif (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
             foreach my $opt (@{$_->{values}}) {
                 if ($opt->{disable}) {
-                    $out{message} = $_->{datatype_description};
+                    $out{message} = $opt->{disable_message} || $_->{datatype_description};
                     $out{code} = $_->{code};
                     push @{$out{answers}}, $opt->{key};
                 }

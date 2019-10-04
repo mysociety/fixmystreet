@@ -17,6 +17,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report');
+my $test_email = $report->user->email;
 
 my $contact = $mech->create_contact_ok(
     body_id => $body->id, category => 'Damaged bin', email => 'BIN',
@@ -44,7 +45,7 @@ for my $test (
         MAPIT_URL => 'http://mapit.uk/',
     },
     update => 1,
-    email => 'facebook@example.org',
+    email => $mech->uniquify_email('facebook@example.org'),
     uid => 123456789,
     mock => 't::Mock::Facebook',
     mock_hosts => ['www.facebook.com', 'graph.facebook.com'],
@@ -71,7 +72,7 @@ for my $test (
             }
         }
     },
-    email => 'oidc@example.org',
+    email => $mech->uniquify_email('oidc@example.org'),
     uid => "westminster:example_client_id:my_cool_user_id",
     mock => 't::Mock::OpenIDConnect',
     mock_hosts => ['oidc.example.org'],
@@ -113,7 +114,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             if ($page eq 'my' && $state eq 'existing UID') {
                 $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } )->id });
             } else {
-                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => 'test@example.com' } )->id });
+                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => $test_email } )->id });
             }
 
             # Set up a mock to catch (most, see below) requests to the OAuth API
@@ -269,10 +270,10 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
 
-$resolver->mock('address', sub { 'twitter@example.org' });
-
-my $tw_email = 'twitter@example.org';
+my $tw_email = $mech->uniquify_email('twitter@example.org');
 my $tw_uid = 987654321;
+
+$resolver->mock('address', sub { $tw_email });
 
 # Twitter has no way of getting the email, so no "okay" state here
 for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
