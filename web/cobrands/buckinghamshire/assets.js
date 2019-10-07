@@ -14,7 +14,6 @@ var defaults = {
             SRSNAME: "urn:ogc:def:crs:EPSG::27700"
         }
     },
-    format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
     asset_type: 'spot',
     max_resolution: {
       'buckinghamshire': 2.116670900008467,

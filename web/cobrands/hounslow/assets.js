@@ -14,7 +14,6 @@ var defaults = {
             SRSNAME: "urn:ogc:def:crs:EPSG::27700"
         }
     },
-    format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
     asset_type: 'spot',
     max_resolution: {
         'hounslow': 0.5291677250021167,

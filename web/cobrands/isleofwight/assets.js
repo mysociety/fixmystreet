@@ -19,7 +19,6 @@ var defaults = {
             SRSNAME: "urn:ogc:def:crs:EPSG::27700"
         }
     },
-    format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
     max_resolution: {
         'isleofwight': 0.5291677250021167,
         'fixmystreet': 1.194328566789627

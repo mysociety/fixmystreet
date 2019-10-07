@@ -14,7 +14,6 @@ var defaults = {
             SRSNAME: "urn:ogc:def:crs:EPSG::3857"
         }
     },
-    format_class: OpenLayers.Format.GML.v3.MultiCurveFix, // Not sure needed any more
     max_resolution: 4.777314267158508,
     min_resolution: 0.5971642833948135,
     geometryName: 'msGeometry',
