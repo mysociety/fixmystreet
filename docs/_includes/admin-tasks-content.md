@@ -564,6 +564,13 @@ that, a form by which you can create new ones.
 Input a title for the category, and the email address to which reports in that category should be
 forwarded. When creating a category, these are the only fields required.
 
+You can also choose a variety of options – whether to automatically hide any
+reports made in this category, whether to prevent form submission when this
+category is selected, or what parent category or categories a particular
+category is in. See below for information on <a
+href="#creating-editing-notices">creating/editing extra notices and
+questions</a> for a category.
+
 You can set up as many or as few categories as you like, and each category can have its own email
 address attached to it, so for example, reports about potholes may go to one council email
 address, while reports about road signs go to another. More than one category may share the
@@ -593,22 +600,63 @@ ticked.</span>
 You can edit categories at any time by clicking on their title within the table at the top of the
 Categories page.
 
-From here, you can:
+From here, you can change the email address that the reports in this category are routed to,
+or any of the other options for the category.
 
-- Change the email address that the reports in this category are routed to
-- Set the category’s ‘state’ to Confirmed, Unconfirmed, Inactive or Deleted. This can be
-    useful when categories are discontinued or changed, for example if responsibilities are
-    transferred to another council, or your own council reconfigures its departments.
-  - **Confirmed** ​ indicates that the email address has been verified as correct.
-  - **Inactive** ​ will remove the category from use when reporting problems, but keep it
-          available in map filters. It’s useful for categories which have been discontinued,
-          but which you’d still like users to to be able to view data on.
-  - **Deleted** ​ will remove the category from use, and from map filters. Use this if you
-          want to discontinue a category and have no need for it to appear on the site.
-  - **Unconfirmed** ​ is for categories where the attached email address has not been
-    verified as correct. This option is not commonly used by councils. Reports sent to
-    unconfirmed categories are not routed to the council; instead, an alert email is
-    sent to mySociety staff.
+</div>
+
+<div class="admin-task" markdown="1" id="creating-editing-notices">
+
+### Creating and editing category notices and questions
+
+<div class="boxout" markdown="1">
+
+#### Note
+
+If your FixMyStreet Pro installation has been integrated with a CRM system, some of this
+section may not not apply, e.g. extra questions may be pulled directly from the backend.
+
+</div>
+
+<span class="admin-task__permissions">Permissions required: User must be marked as staff; “Add/edit problem categories” must be
+ticked.</span>
+
+Each category can have additional notices and questions associated with it, called “Extra data”.
+You can add as many as necessary (though we do recommend as few as possible, to stop people
+being put off from filling in your form), reorder them, and update them. No extra data answers
+are shown in public by default.
+
+<img alt="Control the extra notices and questions the site displays when a report is made in this category"
+    src="/assets/img/pro-user-guide/edit-category-notice.png" class="admin-screenshot" />
+
+#### Notices
+
+A notice is some text that is displayed to the user when the category is
+selected. This can be used to provide extra information about the category,
+point specific cases elsewhere (e.g. a phone number for urgent enquiries), or
+anything else you think the reporter may find useful.
+
+#### Questions
+
+A question can ask the user to provide some specific additional information
+that you require in order to treat the problem appropriately, such as what
+specific type of issue is being reported, or some additional details you
+require to take the report forward. It can either be a free-text field, or a
+drop-down, where you can specify the options to be picked from.
+
+You can also selectively disable the form submission process based upon a
+drop-down question answer - for example, if you had a question asking if the
+situation was dangerous, you could disable the form if the reporter answered
+Yes and display a message asking the user to ring a number instead.
+
+#### Hidden/internal data fields
+
+As well as questions and notices, you can set up hidden and internal data
+fields.  A hidden data field will be output in the reporting form HTML (so e.g.
+clicking on a map asset could fill this field with the asset’s ID), whereas an
+internal data field is not output in the HTML (this is for special fields that
+your server knows to accept, e.g. different co-ordinate systems, special
+handling of textual input, and so on).
 
 </div>
 
