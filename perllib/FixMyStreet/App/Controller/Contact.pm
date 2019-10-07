@@ -93,11 +93,11 @@ sub determine_contact_type : Private {
     } elsif ($id) {
         $c->forward( '/report/load_problem_or_display_error', [ $id ] );
         if ($update_id) {
-            my $update = $c->model('DB::Comment')->search(
+            my $update = $c->cobrand->updates->search(
                 {
-                    id => $update_id,
+                    "me.id" => $update_id,
                     problem_id => $id,
-                    state => 'confirmed',
+                    "me.state" => 'confirmed',
                 }
             )->first;
 

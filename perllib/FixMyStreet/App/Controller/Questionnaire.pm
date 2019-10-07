@@ -290,9 +290,9 @@ sub display : Private {
 
     my $problem = $c->stash->{questionnaire}->problem;
 
-    $c->stash->{updates} = [ $c->model('DB::Comment')->search(
-        { problem_id => $problem->id, state => 'confirmed' },
-        { order_by => 'confirmed' }
+    $c->stash->{updates} = [ $c->cobrand->updates->search(
+        { problem_id => $problem->id, "me.state" => 'confirmed' },
+        { order_by => 'me.confirmed' }
     )->all ];
 
     $c->stash->{page} = 'questionnaire';

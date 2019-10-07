@@ -183,9 +183,9 @@ sub load_problem_or_display_error : Private {
 sub load_updates : Private {
     my ( $self, $c ) = @_;
 
-    my $updates = $c->model('DB::Comment')->search(
-        { problem_id => $c->stash->{problem}->id, state => 'confirmed' },
-        { order_by => [ 'confirmed', 'id' ] }
+    my $updates = $c->cobrand->updates->search(
+        { problem_id => $c->stash->{problem}->id, "me.state" => 'confirmed' },
+        { order_by => [ 'me.confirmed', 'me.id' ] }
     );
 
     my $questionnaires_still_open = $c->model('DB::Questionnaire')->search(
