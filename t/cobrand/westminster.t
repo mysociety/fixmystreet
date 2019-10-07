@@ -23,7 +23,14 @@ my $staff_user = $mech->create_user_ok(
     name => 'Test User',
     from_body => $body
 );
+my $normal_user = $mech->create_user_ok(
+    'westminster-resident@example.com',
+    name => 'Public User'
+);
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title');
+my $comment1 = $mech->create_comment_for_problem($report, $normal_user, 'User', 'this update was left on the Westminster cobrand', 0, 'confirmed', 'confirmed', { cobrand => 'westminster' });
+my $comment2 = $mech->create_comment_for_problem($report, $normal_user, 'User', 'this update was left on the fixmystreet.com cobrand', 0, 'confirmed', 'confirmed', { cobrand => 'fixmystreet' });
+my $comment3 = $mech->create_comment_for_problem($report, $normal_user, 'User', 'this update was imported via Open311', 0, 'confirmed', 'confirmed', { cobrand => '' });
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'westminster',
@@ -56,6 +63,21 @@ FixMyStreet::override_config {
     subtest 'Reports do not have update form' => sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks('Provide an update');
+    };
+
+    subtest 'Reports show updates from Westminster cobrand' => sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains($comment1->text);
+    };
+
+    subtest 'Reports show updates from Open311' => sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains($comment3->text);
+    };
+
+    subtest 'Reports don’t show updates from fixmystreet.com cobrand' => sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks($comment2->text);
     };
 };
 
@@ -140,7 +162,7 @@ for (
     };
 }
 
-FixMyStreet::DB->resultset('Problem')->delete_all;
+$mech->delete_problems_for_body($body->id);
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned bike', email => "BIKE");
 ($report) = $mech->create_problems_for_body(1, $body->id, 'Bike', {
     category => "Abandoned bike", cobrand => 'westminster',

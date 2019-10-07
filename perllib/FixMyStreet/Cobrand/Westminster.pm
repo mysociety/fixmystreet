@@ -153,4 +153,13 @@ sub categories_restriction {
         }, { join => 'body' });
 }
 
+sub updates_restriction {
+    my $self = shift;
+
+    # Westminster don't want any fms.com updates shown on their cobrand.
+    return $self->next::method(@_)->search({
+        "me.cobrand" => { '!=', 'fixmystreet' }
+    });
+}
+
 1;
