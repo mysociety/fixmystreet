@@ -534,7 +534,7 @@ function construct_protocol_options(options) {
     if (options.http_options !== undefined) {
         protocol_options = options.http_options;
         OpenLayers.Util.applyDefaults(options, {
-            format_class: OpenLayers.Format.GML,
+            format_class: OpenLayers.Format.GML.v3,
             format_options: {}
         });
         if (options.geometryName) {
