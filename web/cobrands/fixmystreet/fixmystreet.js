@@ -796,6 +796,9 @@ $.extend(fixmystreet.set_up, {
     }
 
     $('.report-a-problem-btn').on('click', function(e){
+      if (e.metaKey || e.ctrlKey) {
+          return;
+      }
       var url = this.href;
       if ( url.indexOf('report/new') > -1 ) {
         try {
