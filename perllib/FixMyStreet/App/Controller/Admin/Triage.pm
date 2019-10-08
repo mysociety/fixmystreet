@@ -45,6 +45,7 @@ sub index : Path : Args(0) {
     }
     $c->stash->{body} = $c->forward('/reports/body_find', [ $c->cobrand->council_area ]);
     $c->forward( 'stash_report_filter_status' );
+    $c->forward('/reports/stash_report_sort', [ $c->cobrand->reports_ordering ]);
     $c->forward( '/reports/load_and_group_problems' );
     $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
 
