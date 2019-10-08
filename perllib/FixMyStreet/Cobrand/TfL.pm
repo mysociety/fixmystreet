@@ -14,6 +14,7 @@ sub council_area { return 'TfL'; }
 sub council_name { return 'TfL'; }
 sub council_url { return 'tfl'; }
 sub area_types  { [ 'LBO' ] }
+sub is_council { 0 }
 
 sub area_check {
     my ( $self, $params, $context ) = @_;
@@ -29,5 +30,14 @@ sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter a London postcode, or street name and area';
 }
+
+sub body {
+    # Overridden because UKCouncils::body excludes TfL
+    FixMyStreet::DB->resultset('Body')->search({ name => 'TfL' })->first;
+}
+
+# This needs to be overridden so the method in UKCouncils doesn't create
+# a fixmystreet.com link (because of the false-returning owns_problem call)
+sub relative_url_for_report { "" }
 
 1;
