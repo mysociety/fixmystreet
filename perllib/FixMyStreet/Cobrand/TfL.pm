@@ -29,4 +29,24 @@ sub example_places {
     return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
 }
 
+sub owns_problem {
+    my ($self, $report) = @_;
+
+    return 1;
+}
+
+sub body {
+    my $self = shift;
+    my $body = FixMyStreet::DB->resultset('Body')->search({ name => 'TfL' })->first;
+    return $body;
+}
+
+sub get_body_handler_for_problem {
+    my ($self, $row) = @_;
+
+    return $self;
+}
+
+
+
 1;
