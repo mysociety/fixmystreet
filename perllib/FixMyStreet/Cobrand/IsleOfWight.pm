@@ -173,11 +173,7 @@ sub munge_load_and_group_problems {
 
     return unless $where->{category};
 
-    my $cat_names = $self->expand_triage_cat_list($where->{category});
-
-    $where->{category} = $cat_names;
-    my $problems = $self->problems->search($where, $filter);
-    return $problems;
+    $where->{category} = $self->expand_triage_cat_list($where->{category});
 }
 
 sub munge_around_filter_category_list {
