@@ -1,16 +1,16 @@
 @font-face {
     font-family: 'Johnston100-Light';
-    src: url("https://tfl.gov.uk/cdn/static/assets/fonts/Johnston100-Light.woff2") format("woff2"),url("https://tfl.gov.uk/cdn/static/assets/fonts/Johnston100-Light.woff") format("woff")
+    src: url("fonts/Johnston100-Light.woff2") format("woff2"),url("fonts/Johnston100-Light.woff") format("woff")
 }
 
 @font-face {
     font-family: 'Johnston100-Medium';
-    src: url("https://tfl.gov.uk/cdn/static/assets/fonts/Johnston100-Medium.woff2") format("woff2"),url("https://tfl.gov.uk/cdn/static/assets/fonts/Johnston100-Medium.woff") format("woff")
+    src: url("fonts/Johnston100-Medium.woff2") format("woff2"),url("fonts/Johnston100-Medium.woff") format("woff")
 }
 
 @font-face {
     font-family: 'Johnston100-Regular';
-    src: url("https://tfl.gov.uk/cdn/static/assets/fonts/Johnston100-Regular.woff2") format("woff2"),url("https://tfl.gov.uk/cdn/static/assets/fonts/Johnston100-Regular.woff") format("woff")
+    src: url("fonts/Johnston100-Regular.woff2") format("woff2"),url("fonts/Johnston100-Regular.woff") format("woff")
 }
 
 @import "../sass/h5bp";
