@@ -19,9 +19,10 @@ It takes a single command line argument which is the path to the csv
 file containing the reports to update, along with details of the current
 alloy state which it uses to determine what state to update them too.
 
-Only reports that match the state in the `fms_state` column of the csv
-file will be updated. Similarly, if it cannot determine what state to
-update the report to it will skip that report.
+Only reports that do not match the state in the spreadsheet will be updated.
+Reports that are closed/fixed on FixMyStreet but open in the spreadsheet
+will also be ignored. It will also skip reports that it cannot determine
+the state for.
 
 Any update made will set the appropriate response template.
 
@@ -29,7 +30,7 @@ It will not update the database unless the `--commit` flag is used.
 
 =head1 EXPECTED CSV HEADERS
 
-RESOURCE_ID,INSPECTION_NUMBER,Street_Doctor_No,fms_state,Reason_for_Closure,Enquiry_TASK_STATUS,Enquiry_Type,Summary,Reported_DateTime,Response_to_Customer,DEFECT_REPORTED_DATE,DEFECT_STATUS_NO,DEFECT_STATUS,DEFECT_NUMBER,REMEDIED_DATE,TEAM_DESCRIPTION,User_Name,Category,Stage,Stage_Description,blank,blank2
+RESOURCE_ID,INSPECTION_NUMBER,Street_Doctor_No,Reason_for_Closure,Enquiry_TASK_STATUS,Enquiry_Type,Summary,Reported_DateTime,Response_to_Customer,DEFECT_REPORTED_DATE,DEFECT_STATUS_NO,DEFECT_STATUS,DEFECT_NUMBER,REMEDIED_DATE,TEAM_DESCRIPTION,User_Name,Category,Stage,Stage_Description,blank,blank2
 
 
 Of these the following are used:
@@ -38,7 +39,6 @@ Of these the following are used:
 
 =item * Street_Doctor_No - FixMyStreet id
 
-=item * fms_state - expected state on FixMyStreet
 
 =item * Enquiry_TASK_STATUS - Alloy status
 
@@ -46,7 +46,7 @@ Of these the following are used:
 
 =item * Response_to_Customer - Alloy text to add to update on FixMyStreet
 
-=item * DEFECT_STATUS - used to check if there is extra status on the defect
+=item * DEFECT_STATUS - Alloy defect status
 
 =back
 
@@ -78,11 +78,24 @@ if (!$commit) {
     say "*** DRY RUN ***";
 }
 
-my %alloy_to_fms_map = (
+my %enq_to_fms_map = (
+    'Issued to Inspector' => 'investigating',
+    'In Progress' => 'investigating',
+    'Completed' => 'closed',
+);
+
+my %rfc_to_fms_map = (
     'No Action Necessary' => 'unable to fix',
     'Outside NCC Control' => 'not responsible',
     'Highways to Monitor. No Action' => 'unable to fix',
-    'Work Instructed' => 'in progess',
+    'Work Instructed' => 'action scheduled',
+);
+
+my %defect_to_fms_map = (
+    'Remedied' => 'fixed - council',
+    'Order Raised' => 'action scheduled',
+    'Rejected' => 'closed',
+    'Found and Forwarded' => 'closed',
 );
 
 my $file = shift;
@@ -106,11 +119,6 @@ if ($northants) {
             next;
         }
 
-        unless ($p->state eq $report->{fms_state}) {
-            warn sprintf("Report $id has state %s, %s expected\n", $p->state, $report->{fms_state});
-            next;
-        }
-
         my $new_state = get_state( $report );
 
         unless ( $new_state ) {
@@ -118,7 +126,24 @@ if ($northants) {
             next;
         }
 
+        if ($p->state eq $new_state) {
+            warn "skipping $id as has correct state\n" if $verbose;
+            next;
+        }
+
+        if ( ($p->is_fixed || $p->is_closed)
+             && $p->open_states->{$new_state} ) {
+            warn "skipping $id as already closed and would re-open\n" if $verbose;
+            next;
+        }
+
         my $text = $report->{Response_to_Customer};
+        # do not add a second response to customer if it's already there.
+        if ($text) {
+            my $c = $p->comments->search({text => $text});
+            $text = '' if $c->count;
+        }
+
         if (!$text) {
             if (my $t = $p->response_templates->search({
                 auto_response => 1,
@@ -163,14 +188,16 @@ say "$checked reports looked at, $updated updated";
 sub get_state {
     my $report = shift;
 
-    if ( !$report->{Reason_for_Closure} && !$report->{DEFECT_STATUS} && $report->{Enquiry_TASK_STATUS} eq 'Completed') {
-        return "closed";
+    my $fms_state = $enq_to_fms_map{$report->{Enquiry_TASK_STATUS}};
+
+    if ( $report->{Reason_for_Closure} ) {
+        $fms_state = $rfc_to_fms_map{$report->{Reason_for_Closure}};
     }
 
-    my $fms_state = $alloy_to_fms_map{$report->{Reason_for_Closure}};
-
     if ( $report->{DEFECT_STATUS} ) {
-        say STDERR $report->{Street_Doctor_No} . " has a defect status of " . $report->{DEFECT_STATUS};
+        $fms_state = $defect_to_fms_map{$report->{DEFECT_STATUS}};
+
+        say STDERR $report->{Street_Doctor_No} . " has an unmapped defect status: " . $report->{DEFECT_STATUS} unless $fms_state;
     }
 
     return $fms_state;
