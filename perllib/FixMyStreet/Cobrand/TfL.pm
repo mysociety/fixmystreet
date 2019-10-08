@@ -25,4 +25,23 @@ sub area_check {
     return (0, "That location is not covered by TfL");
 }
 
+sub owns_problem {
+    # Overridden because UKCouncils::owns_problem excludes TfL
+    my ($self, $report) = @_;
+    my @bodies;
+    if (ref $report eq 'HASH') {
+        return unless $report->{bodies_str};
+        @bodies = split /,/, $report->{bodies_str};
+        @bodies = FixMyStreet::DB->resultset('Body')->search({ id => \@bodies })->all;
+    } else { # Object
+        @bodies = values %{$report->bodies};
+    }
+    return ( scalar grep { $_->name eq 'TfL' } @bodies ) ? 1 : undef;
+}
+
+sub body {
+    # Overridden because UKCouncils::body excludes TfL
+    FixMyStreet::DB->resultset('Body')->search({ name => 'TfL' })->first;
+}
+
 1;
