@@ -233,10 +233,11 @@ subtest 'check heatmap page' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => { heatmap => { bromley => 1 } },
     }, sub {
         $mech->log_in_ok($user->email);
-        $mech->get_ok('/about/heatmap?end_date=2018-12-31');
-        $mech->get_ok('/about/heatmap?filter_category=RED&ajax=1');
+        $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
+        $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
 };
 

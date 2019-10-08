@@ -19,6 +19,7 @@ if (window.Heatmap) {
 fixmystreet.protocol_params.wards = 'wards';
 fixmystreet.protocol_params.start_date = 'start_date';
 fixmystreet.protocol_params.end_date = 'end_date';
+fixmystreet.protocol_params.body = 'body';
 
 $(function(){
     if (!window.Heatmap) {

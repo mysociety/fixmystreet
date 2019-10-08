@@ -20,7 +20,7 @@
     [%~ END ~%]
     [% INCLUDE 'reports/_status_filter_options.html' %]
     >
-      [% IF c.user_exists AND c.user.has_body_permission_to('planned_reports') AND !shortlist %]
+      [% IF c.user_exists AND c.user.has_body_permission_to('planned_reports') AND !shortlist AND !heatmap %]
         <option value="shortlisted"[% ' selected' IF filter_status.shortlisted %]>[% loc('Shortlisted') %]</option>
         <option value="unshortlisted"[% ' selected' IF filter_status.unshortlisted %]>[% loc('Unshortlisted') %]</option>
       [% END %]

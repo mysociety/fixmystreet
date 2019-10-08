@@ -127,16 +127,9 @@ sub tweak_all_reports_map {
     }
 
     # A place where this can happen
-    return unless $c->stash->{template} && $c->stash->{template} eq 'about/heatmap.html';
+    return unless $c->action eq 'dashboard/heatmap';
 
-    my $children = $c->stash->{body}->first_area_children;
-    foreach (values %$children) {
-        $_->{url} = $c->uri_for( $c->stash->{body_url}
-            . '/' . $c->cobrand->short_name( $_ )
-        );
-    }
-    $c->stash->{children} = $children;
-
+    # Bromley only subcategory stuff
     my %subcats = $self->subcategories;
     my $filter = $c->stash->{filter_categories};
     my @new_contacts;
@@ -156,8 +149,6 @@ sub tweak_all_reports_map {
         my $subcats = $c->user->get_extra_metadata('subcategories') || [];
         $c->stash->{filter_category} = { map { $_ => 1 } @$cats, @$subcats } if @$cats || @$subcats;
     }
-
-    $c->stash->{ward_hash} = { map { $_->{id} => 1 } @{$c->stash->{wards}} } if $c->stash->{wards};
 }
 
 sub title_list {
@@ -331,27 +322,14 @@ sub add_admin_subcategories {
     return \@new_contacts;
 }
 
-sub about_hook {
-    my $self = shift;
-    my $c = $self->{c};
-
-    # Display a special custom dashboard page, with heatmap
-    if ($c->stash->{template} eq 'about/heatmap.html') {
-        $c->forward('/dashboard/check_page_allowed');
-        # We want a special sidebar
-        $c->stash->{ajax_template} = "about/heatmap-list.html";
-        $c->set_param('js', 1) unless $c->get_param('ajax'); # Want to load pins client-side
-        $c->forward('/reports/body', [ 'Bromley' ]);
-    }
-}
-
-# On heatmap page, include querying on subcategories, wards, dates, provided
+# On heatmap page, include querying on subcategories
 sub munge_load_and_group_problems {
     my ($self, $where, $filter) = @_;
     my $c = $self->{c};
 
-    return unless $c->stash->{template} && $c->stash->{template} eq 'about/heatmap.html';
+    return unless $c->action eq 'dashboard/heatmap';
 
+    # Bromley subcategory stuff
     if (!$where->{category}) {
         my $cats = $c->user->categories;
         my $subcats = $c->user->get_extra_metadata('subcategories') || [];
@@ -370,61 +348,6 @@ sub munge_load_and_group_problems {
         };
         delete $where->{category};
     }
-
-    # Wards
-    my @areas = @{$c->user->area_ids || []};
-    # Want to get everything if nothing given in an ajax call
-    if (!$c->stash->{wards} && @areas) {
-        $c->stash->{wards} = [ map { { id => $_ } } @areas ];
-        $where->{areas} = [
-            map { { 'like', '%,' . $_ . ',%' } } @areas
-        ];
-    }
-
-    # Date range
-    my $start_default = DateTime->today(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(months => 1);
-    $c->stash->{start_date} = $c->get_param('start_date') || $start_default->strftime('%Y-%m-%d');
-    $c->stash->{end_date} = $c->get_param('end_date');
-
-    my $range = FixMyStreet::DateRange->new(
-        start_date => $c->stash->{start_date},
-        start_default => $start_default,
-        end_date => $c->stash->{end_date},
-        formatter => $c->model('DB')->storage->datetime_parser,
-    );
-    $where->{'me.confirmed'} = $range->sql;
-
-    delete $filter->{rows};
-
-    # Load the relevant stuff for the sidebar as well
-    my $problems = $self->problems->search($where, $filter);
-
-    $c->stash->{five_newest} = [ $problems->search(undef, {
-        rows => 5,
-        order_by => { -desc => 'confirmed' },
-    })->all ];
-
-    $c->stash->{ten_oldest} = [ $problems->search({
-        'me.state' => [ FixMyStreet::DB::Result::Problem->open_states() ],
-    }, {
-        rows => 10,
-        order_by => 'lastupdate',
-    })->all ];
-
-    my $params = { map { my $n = $_; s/me\./problem\./; $_ => $where->{$n} } keys %$where };
-    my @c = $c->model('DB::Comment')->to_body($self->body)->search({
-        %$params,
-        'me.user_id' => { -not_in => [ $c->user->id, $self->body->comment_user_id || () ] },
-        'me.state' => 'confirmed',
-    }, {
-        columns => 'problem_id',
-        group_by => 'problem_id',
-        order_by => { -desc => \'max(me.confirmed)' },
-        rows => 5,
-    })->all;
-    $c->stash->{five_commented} = [ map { $_->problem } @c ];
-
-    return $problems;
 }
 
 1;

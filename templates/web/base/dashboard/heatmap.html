@@ -1,5 +1,8 @@
 [%
-    map_js.push(version('/cobrands/bromley/HeatmapLayer.js'));
+    map_js.push(
+        '/vendor/HeatmapLayer.js',
+        '/cobrands/fixmystreet/density-map.js',
+    );
     PROCESS "maps/${map.type}.html";
     SET bodyclass = 'mappage';
     INCLUDE 'header.html',
@@ -18,7 +21,9 @@
 
 <div class="full-width">
 
-[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 heatmap=1 %]
+
+<input type="hidden" id="body" name="body" value="[% body.id | html %]">
 
 <p class="report-list-filters" style='padding-top:0.25em'>
     From <input type="date" id="start_date" name="start_date" class="form-control" value="[% start_date | html %]">
@@ -42,7 +47,7 @@ In wards <select class="form-control js-multiple" multiple id="wards" name="ward
 </p>
 
 <div id="js-reports-list">
-    [% INCLUDE 'about/heatmap-list.html' %]
+    [% INCLUDE 'dashboard/heatmap-list.html' %]
 </div>
 
     </div>

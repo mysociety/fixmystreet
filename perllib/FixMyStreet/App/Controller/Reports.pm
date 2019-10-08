@@ -560,29 +560,23 @@ sub load_and_group_problems : Private {
 
     my $parameters = $c->forward('load_problems_parameters');
 
-    # JS will request the same (or more) data client side
-    return if $c->get_param('js');
-
     my $body = $c->stash->{body}; # Might be undef
     my $page = $c->get_param('p') || 1;
 
-    my $problems = $parameters->{problems};
-    unless ($problems) {
-        my $where = $parameters->{where};
-        my $filter = $parameters->{filter};
+    my $problems = $c->cobrand->problems;
+    my $where = $parameters->{where};
+    my $filter = $parameters->{filter};
 
-        $problems = $c->cobrand->problems;
-        if ($where->{areas} || $body) {
-            $problems = $problems->to_body($body);
-        }
-
-        $problems = $problems->search(
-            $where,
-            $filter
-        )->include_comment_counts->page( $page );
-
-        $c->stash->{pager} = $problems->pager;
+    if ($where->{areas} || $body) {
+        $problems = $problems->to_body($body);
     }
+
+    $problems = $problems->search(
+        $where,
+        $filter
+    )->include_comment_counts->page( $page );
+
+    $c->stash->{pager} = $problems->pager;
 
     my ( %problems, @pins );
     while ( my $problem = $problems->next ) {
@@ -667,10 +661,9 @@ sub load_problems_parameters : Private {
         $where->{longitude} = { '>=', $min_lon, '<', $max_lon };
     }
 
-    my $cobrand_problems = $c->cobrand->call_hook('munge_load_and_group_problems', $where, $filter);
+    $c->cobrand->call_hook('munge_load_and_group_problems', $where, $filter);
 
     return {
-        problems => $cobrand_problems,
         where => $where,
         filter => $filter,
     };
