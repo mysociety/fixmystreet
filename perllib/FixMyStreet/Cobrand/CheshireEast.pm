@@ -12,6 +12,14 @@ sub council_area { 'Cheshire East' }
 sub council_name { 'Cheshire East Council' }
 sub council_url { 'cheshireeast' }
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'yellow' if $p->is_in_progress;
+    return 'red';
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -30,6 +38,10 @@ sub enter_postcode_text {
 sub admin_user_domain { 'cheshireeast.gov.uk' }
 
 sub map_type { 'OSM' }
+
+sub default_map_zoom { 3 }
+
+sub on_map_default_status { return 'open'; }
 
 sub abuse_reports_only { 1 }
 
@@ -65,10 +77,10 @@ sub open311_config {
 # TODO These values may not be accurate
 sub lookup_site_code_config { {
     buffer => 200, # metres
-    url => "https://tilma.mysociety.org/mapserver/cheshireeast",
+    url => "https://tilma.staging.mysociety.org/mapserver/cheshireeast",
     srsname => "urn:ogc:def:crs:EPSG::27700",
-    typename => "NSG",
-    property => "Site_Code",
+    typename => "AdoptedRoads",
+    property => "site_code",
     accept_feature => sub { 1 }
 } }
 

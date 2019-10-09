@@ -1,6 +1,7 @@
 use CGI::Simple;
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -37,6 +38,26 @@ FixMyStreet::override_config {
     is_deeply $cobrand->disambiguate_location->{bounds}, [ 52.947150, -2.752929, 53.387445, -1.974789 ];
 };
 
+my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+    category => 'Zebra Crossing',
+});
+my $report = $reports[0];
+
+my $alert = FixMyStreet::DB->resultset("Alert")->create({
+    alert_type => 'new_updates',
+    cobrand => 'cheshireeast',
+    parameter => $report->id,
+    user => {
+        email => 'alert@example.com',
+        email_verified => 1,
+    },
+});
+$alert->confirm;
+
+$mech->create_comment_for_problem($report, $report->user, $report->name, 'blah', 0, 'confirmed', 'confirmed', {
+    confirmed => \'current_timestamp'
+});
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'cheshireeast',
     MAPIT_URL => 'http://mapit.uk/',
@@ -50,11 +71,6 @@ FixMyStreet::override_config {
     };
 
     subtest 'testing special Open311 behaviour', sub {
-        my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
-            category => 'Zebra Crossing',
-        });
-        my $report = $reports[0];
-
         my $test_data = FixMyStreet::Script::Reports::send();
         $report->discard_changes;
         ok $report->whensent, 'Report marked as sent';
@@ -66,9 +82,27 @@ FixMyStreet::override_config {
         is $c->param('attribute[title]'), 'Test Test 1 for ' . $body->id, 'Request had correct title';
     };
 
+    subtest 'testing reference numbers shown' => sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Council ref:&nbsp;' . $report->id);
+        FixMyStreet::Script::Alerts::send();
+        like $mech->get_text_body_from_email, qr/reference number is @{[$report->id]}/;
+    };
+
     subtest 'contact page blocked', sub {
         $mech->get('/contact');
         is $mech->res->code, 404;
+    };
+
+    subtest 'check post-submission message', sub {
+        $mech->log_in_ok($report->user->email);
+        $mech->get_ok('/report/new?latitude=53.145324&longitude=-2.370437');
+        $mech->submit_form_ok({ with_fields => {
+            title => 'title',
+            detail => 'detail',
+        }});
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->single;
+        $mech->content_contains('please call us on 0300 123 5020, quoting your reference number ' . $report->id);
     };
 
     subtest 'checking alert pages', sub {
