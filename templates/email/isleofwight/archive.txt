@@ -1,0 +1,26 @@
+Subject: Your reports on FixMyStreet
+
+Hello [% user.name %],
+
+FixMyStreet is being updated for the Isle of Wight to improve how problems get reported.
+
+As part of this process we are closing all enquiries made before the update. We noticed
+that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system, which we've listed below.
+
+If your enquiry is no longer an issue, you don't need to do anything. If you believe
+that the issue has not been resolved, please log it again on
+https://fms.islandroads.com/ or contact the Island Roads Help Desk via info@islandroads.com or 01983 822440.
+
+[% FOR report IN reports %]
+
+[% report.title %]
+
+Reported [% report.time_ago %] ago.
+
+View report: https://www.fixmystreet.com/report/[% report.id %]
+
+----
+
+[% END %]
+
+The FixMyStreet team and Island Roads

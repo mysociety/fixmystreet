@@ -1,0 +1,48 @@
+[%
+
+email_summary = "Your reports on FixMyStreet";
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Your reports on FixMyStreet</h1>
+  <p style="[% p_style %]">
+    Hello [% user.name %],
+  </p>
+  <p style="[% p_style %]">
+    FixMyStreet is being updated for the Isle of Wight to improve how problems get reported.
+  </p>
+  <p style="[% p_style %]">
+As part of this process we are closing all enquiries made before the update. We noticed
+that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system, which we've listed below.
+  </p>
+  <p style="[% p_style %]">
+If your enquiry is no longer an issue, you don't need to do anything. If you believe
+that the issue has not been resolved, please log it again on
+<a href="https://fms.islandroads.com/">https://fms.islandroads.com/</a> or contact the Island Roads Help Desk via <a href="mailto:info@islandroads.com">info@islandroads.com</a> or 01983 822440.
+  </p>
+
+  [% FOR report IN reports %]
+  <div style="[% list_item_style %]">
+  [% IF report.photo %]
+    <a href="https://www.fixmystreet.com/report/[% report.id %]">
+      <img style="[% list_item_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="">
+    </a>
+  [% END %]
+    <h2 style="[% list_item_h2_style %]"><a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
+      [%~ report.title | html ~%]
+    </a></h2>
+    <p style="[% list_item_p_style %]">[% report.detail | html %]</p>
+    <p style="[% list_item_date_style %]">
+      Reported [% report.time_ago %] ago.
+    </p>
+  </div>
+  [% END %]
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
