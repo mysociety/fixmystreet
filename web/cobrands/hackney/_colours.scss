@@ -1,0 +1,45 @@
+/* COLOURS */
+
+$menu-image: 'menu-black';
+
+// Primary
+$white: #fff;
+$green: #00b341;
+$grey: #666664;
+
+
+// Secondary
+$yellow: #ffc845; 
+$blue: #0072ce;
+$pale_green: #f2f7f0;
+$alt_green: #328b15;
+$light_green: #84bd00;
+$dark_green: #00664f;
+$teal :#1e98a7;
+$black: #000;
+$red: #be3a34;
+
+$primary: $green;
+$primary_b: #000;
+$primary_text: $black;
+
+$base_bg: $white;
+$base_fg: $black;
+
+$link-color: $blue;
+$link-visited_color: $dark-green;
+$link-hover-color: $green;
+
+$nav_background_colour: $black;
+$nav_colour: $white;
+$nav_hover_background_colour: $black;
+
+$col_click_map: $green;
+
+$header-top-border: false;
+
+$montserrat: 'Montserrat', Arial, sans-serif;
+
+$heading-font: $montserrat;
+$body-font: $montserrat;
+$meta-font: $montserrat;
