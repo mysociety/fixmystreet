@@ -1491,9 +1491,6 @@ fixmystreet.display = {
             $('.two_column_sidebar').remove();
 
             fixmystreet.mobile_reporting.remove_ui();
-            if (fixmystreet.map.updateSize && ($twoColReport.length || $('html').hasClass('mobile'))) {
-                fixmystreet.map.updateSize();
-            }
 
             // Insert this report's content
             if ($twoColReport.length) {
@@ -1502,6 +1499,11 @@ fixmystreet.display = {
             } else {
                 $sideReport.appendTo('#map_sidebar');
             }
+
+            if (fixmystreet.map.updateSize && ($twoColReport.length || $('html').hasClass('mobile'))) {
+                fixmystreet.map.updateSize();
+            }
+
             $('#map_sidebar').scrollTop(0);
             if ($("html").hasClass("mobile")) {
                 $(document).scrollTop(0);
@@ -1583,7 +1585,6 @@ fixmystreet.display = {
 
             if (fixmystreet.maps.setup_inspector) {
                 fixmystreet.maps.setup_inspector();
-                fixmystreet.map.updateSize();
             }
 
 
