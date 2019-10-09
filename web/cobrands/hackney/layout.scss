@@ -1,0 +1,130 @@
+@import "_colours";
+@import "../sass/layout";
+
+#main-nav {
+  display: block; // remove flex so nav touches top of parent
+  min-height: 0; // no vertical align, so no need for a height
+  margin-top: 0; // don't bother overlapping the border
+  height: auto;
+  margin-top: 0.5em;
+  .frontpage & {
+    margin-top: 1em;
+  }
+  .ie9 & {
+    position: static;
+    float: $right;
+
+    & > * {
+        position: static;
+        -ms-transform: none;
+    }
+  }
+
+  a {
+    font-weight: 600;
+  }
+}
+
+.nav-menu--mysoc {
+  padding: 0em 0.5em;
+  margin-#{$left}: 0.25em;
+  background-color: $primary;
+  @include border-radius(0 0 0.375em 0.375em);
+  a {
+    background-color: transparent;
+    color: $primary_text;
+    text-transform: uppercase;
+    font-size: 0.6875em;
+    padding: 1.3em 0.7em 1em;
+    &:hover {
+      color: #fff;
+      background-color: transparent;
+    }
+  }
+}
+
+body.frontpage {
+  #site-logo {
+    margin: 0.5em 0 0.5em;
+    width: 200px;
+    height: 54px;
+    background: transparent url('images/hackney-logo-white.png') 0 50% no-repeat;
+    background-size: 200px 36px;
+  }
+}
+
+#site-header {
+  padding: 4px 0;
+  margin-bottom: 2em;
+  .mappage & {
+    margin-bottom: 0;
+  }
+}
+
+#front-main {
+  background-color: $white;
+  padding: 50px 0;
+  border-bottom: 3px solid $light_green;
+  label {
+      font-size: 18px;
+      font-weight: 600;
+  }
+
+  h1 {
+      font-size: 40px;
+      font-weight: 600;
+  }
+
+  #postcodeForm {
+      overflow: visible;
+      margin: 0;
+
+      div {
+          margin: 0;
+      }
+    }
+
+  #front-main-container {
+      padding: 0 1em;
+  }
+}
+
+ol.big-numbers>li:before {
+  color: $dark_green;
+}
+
+.nav-menu--main span {
+  color: $light_green;
+  font-weight: 600;
+}
+
+#front_stats {
+  border-color: $dark_green;
+  big {
+    color: $dark_green;
+  }
+} 
+
+.nav-menu--main a.report-a-problem-btn {
+  background-color: transparent;
+  color: white;
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: transparent;
+    color: white;
+  }
+}
+
+#front-howto h2,
+#front-recently h2 {
+  font-weight: 600;
+}
+
+#front_stats {
+  background-color: transparent;
+}
+
+.big-green-banner {
+  background-color: $dark_green;
+}
