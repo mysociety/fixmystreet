@@ -37,6 +37,7 @@
           here’ link.
         - Allow contact send method to be unset always.
         - Fix z-index stacking bug that was causing unclickable RSS icons on /alert page. #2624
+        - Fix issue with inspector duplication workflow.
     - Front end improvements:
         - Set report title autocomplete to off to prevent email autocompleting
     - Development improvements:

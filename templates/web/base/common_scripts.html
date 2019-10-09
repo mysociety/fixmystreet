@@ -39,6 +39,11 @@ IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
         version('/jslib/jquery-1.7.2.min.js'),
         version('/cobrands/fixmystreet/staff.js')
     );
+    IF bodyclass.match('mappage');
+        scripts.push(
+            version('/js/duplicates.js')
+        );
+    END;
     IF c.user.has_body_permission_to('planned_reports');
         scripts.push(
             version('/cobrands/fixmystreet/offline.js'),
