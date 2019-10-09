@@ -1,0 +1,28 @@
+          </tr>
+        </table>
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+  </table>
+  <table [% wrapper_table | safe %] style="[% wrapper_style %]">
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
+        [%~ IF email_footer %]
+          [% email_footer | safe %]
+        [%~ ELSE %]
+          This email was sent automatically, from an unmonitored email account. Please do not reply to it.
+        [%~ END %]
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]">
+        Powered by <a href="http://www.fixmystreet.com">FixMyStreet</a>
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+  </table>
+</body>
+</html>

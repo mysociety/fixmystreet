@@ -231,6 +231,11 @@ When you make a report
 </h2>
 
 <p>
+[% IF c.cobrand.moniker == 'hackney' %]
+    In using FixMyStreet for any of the functions listed above (sending a
+    report, leaving an update, email alerts or site registration), we are
+    processing your data under the legal basis 6(1)(a) – consent.
+[% ELSE %]
     In using FixMyStreet for any of the functions listed above (sending a
     report, leaving an update, email alerts or site registration), we are
     processing your data under the legal basis 6(1)(f) – legitimate interests.
@@ -243,6 +248,7 @@ When you make a report
     communities, so it's easy to see what the common problems are in a given
     area, and how quickly they get fixed. Other local residents can browse, read
     and comment on problems – and perhaps even offer a solution.
+[% END %]
 </p>
 
 <h2>
