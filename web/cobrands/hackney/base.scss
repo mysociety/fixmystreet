@@ -1,0 +1,124 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+#site-header {
+  box-shadow: 
+    0 0 0 6px $white,
+    0 0 0 10px $dark-green,
+    0 0 0 13px $white,
+    0 0 0 16px $green,
+    0 0 0 19px $white,
+    0 0 0 21px $light-green;
+}
+
+#site-logo {
+    background: transparent url('hackney-logo-white.png') 0 50% no-repeat;
+    background-size: 200px 36px;
+    width: 200px;
+    &:focus {
+      outline: 4px solid $yellow;
+    }
+}
+
+.nav-menu--mysoc {
+  a {
+    color: $primary_text;
+    background-color: $primary;
+  }
+}
+
+#front-main {
+    background-color: $white;
+    margin: 0;
+    padding: 1em;
+    text-align: inherit;
+
+    h1 {
+        font-weight: bold;
+        color: $black;
+    }
+
+    #postcodeForm {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+
+        div {
+            border: none;
+            background: transparent;
+            position: relative;
+            background: #fff;
+            box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
+
+            input#pc {
+                box-sizing: border-box;
+                padding: 10px 22px;
+            }
+
+            input#sub {
+                width: 0;
+                padding-left: 50px;
+                overflow: hidden;
+                @include flex(0 0 auto);
+                background: $black url('hackney-search-icon.png') no-repeat 50% 50%;
+                background-size: 25px 25px;
+                color: $black;
+                &:hover,
+                &:focus {
+                    background: $dark-green url('hackney-search-icon.png') no-repeat 50% 50%;
+                    background-size: 25px 25px;
+                }
+                &:focus {
+                    outline: 4px solid $yellow;
+                }
+            }
+        }
+    }
+
+    a#geolocate_link {
+        background: transparent;
+        display: block;
+        padding: 0;
+        margin-top: 0.5em;
+        font-family: inherit;
+        font-size: 1em;
+        border-radius: 0;
+        color: $dark_green;
+
+        &:hover {
+            background: transparent;
+            text-decoration: underline;
+        }
+    }
+
+    .form-hint {
+        color: inherit;
+    }
+}
+
+.hackney-footer {
+  background-color: $dark_green;
+  color: #fff;
+  padding: 1em 0;
+}
+
+.hackney-footer__logo {
+  background: transparent url('hackney-logo-white.png') 0 50% no-repeat;
+  background-size: 200px 36px;
+  width: 200px;
+  height: 54px;
+  text-indent: -999999px;
+  display: inline-block;
+  &:focus {
+    outline: 4px solid $yellow;
+  }
+}
+
+#front_stats {
+  background-color: $dark_green;
+  color: #fff;
+}
