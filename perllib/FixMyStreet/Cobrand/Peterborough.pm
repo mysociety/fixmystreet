@@ -23,6 +23,15 @@ sub disambiguate_location {
     };
 }
 
+sub get_geocoder { 'OSM' }
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} = '' unless $result->{display_name} =~ /City of Peterborough/;
+    $result->{display_name} =~ s/, UK$//;
+    $result->{display_name} =~ s/, City of Peterborough, East of England, England//;
+}
+
 sub admin_user_domain { "peterborough.gov.uk" }
 
 sub open311_config {
