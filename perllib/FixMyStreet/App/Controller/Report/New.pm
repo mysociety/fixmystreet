@@ -706,12 +706,6 @@ sub setup_categories_and_bodies : Private {
     # keysort does not appear to obey locale so use strcoll (see i18n.t)
     @contacts = sort { strcoll( $a->category, $b->category ) } @contacts;
 
-    # Get defect types for inspectors
-    if ($c->cobrand->can('council_area_id')) {
-        my $category_defect_types = FixMyStreet::App->model('DB::DefectType')->by_categories($c->cobrand->council_area_id, @contacts);
-        $c->stash->{category_defect_types} = $category_defect_types;
-    }
-
     my %seen;
     foreach my $contact (@contacts) {
 

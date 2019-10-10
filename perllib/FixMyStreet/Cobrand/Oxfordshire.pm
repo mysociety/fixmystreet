@@ -172,13 +172,6 @@ sub admin_pages {
     return $pages;
 }
 
-sub defect_types {
-    {
-        SFP2 => "SFP2: sweep and fill <1m2",
-        POT2 => "POT2",
-    };
-}
-
 sub reputation_increment_states {
     return {
         'action scheduled' => 1,

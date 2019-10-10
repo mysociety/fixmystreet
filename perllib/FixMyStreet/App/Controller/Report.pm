@@ -515,14 +515,6 @@ sub inspect : Private {
             }
         }
 
-        if ($permissions->{report_inspect}) {
-            if ( $c->get_param('defect_type') ) {
-                $problem->defect_type($problem->defect_types->find($c->get_param('defect_type')));
-            } else {
-                $problem->defect_type(undef);
-            }
-        }
-
         $c->cobrand->call_hook(report_inspect_update_extra => $problem);
 
         if ($valid) {

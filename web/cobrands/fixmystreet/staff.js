@@ -176,8 +176,6 @@ fixmystreet.staff_set_up = {
             selector = "[data-category='" + category + "']",
             entry = $inspect_form.find(selector),
             $priorities = $('#problem_priority'),
-            $defect_types = $('#defect_type'),
-            defect_types_data = entry.data('defect-types') || [],
             priorities_data = entry.data('priorities') || [],
             curr_pri = $priorities.val();
 
@@ -185,7 +183,6 @@ fixmystreet.staff_set_up = {
         entry.removeClass("hidden");
 
         populateSelect($priorities, priorities_data, 'priorities_type_format');
-        populateSelect($defect_types, defect_types_data, 'defect_type_format');
         updateTemplates({'category': category});
         $priorities.val(curr_pri);
     });
@@ -457,9 +454,6 @@ $(fixmystreet).on('map:zoomend', function() {
 fixmystreet.utils = fixmystreet.utils || {};
 
 $.extend(fixmystreet.utils, {
-    defect_type_format: function(data) {
-        return data.name;
-    },
     priorities_type_format: function(data) {
         return data.name;
     },

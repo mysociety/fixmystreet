@@ -1,9 +1,0 @@
-[%
-# This template can be overridden by cobrands if they've added extra fields
-# to the DefectType model (e.g Cobrand::Oxfordshire->defect_type_extra_fields)
-# which should be used to represent this DefectType
-# to the user in the inspect form.
-~%]
-[% MACRO defect_type_format BLOCK ~%]
-[%~ defect_type.name | html ~%]
-[%~ END %]

@@ -10,10 +10,9 @@
     </tr>
     </thead>
     <tbody>
-      [% PROCESS 'defect_type/format.html' %]
       [% FOR d IN defect_types %]
           <tr>
-              <td>  [% defect_type_format(defect_type=d) %] </td>
+              <td>  [% d.name | html %] </td>
               <td>  [% d.description | html %] </td>
               <td>
                 [% UNLESS d.contacts.size %]
