@@ -1,23 +1,4 @@
 fixmystreet.staff_set_up = {
-  action_scheduled_raise_defect: function() {
-    $("#report_inspect_form").find('[name=state]').on('change', function() {
-        if ($(this).val() !== "action scheduled") {
-            $("#js-inspect-action-scheduled").addClass("hidden");
-            $('#raise_defect_yes').prop('required', false);
-            $('#defect_type').prop('required', false);
-        } else {
-            $("#js-inspect-action-scheduled").removeClass("hidden");
-            $('#raise_defect_yes').prop('required', true);
-            var dt_required = $('#defect_type')[0].length > 1 && $('input[name=raise_defect]:checked').val();
-            $('#defect_type').prop('required', dt_required ? true : false);
-        }
-    });
-    $('input[name=raise_defect]').change(function() {
-        var dt_required = $('#defect_type')[0].length > 1 && this.value;
-        $('#defect_type').prop('required', dt_required ? true : false);
-    });
-  },
-
   list_item_actions: function() {
     $('#js-reports-list').on('click', ':submit', function(e) {
       e.preventDefault();
@@ -386,7 +367,6 @@ $(fixmystreet).on('display:report', function() {
     fixmystreet.staff_set_up.response_templates();
     if ($("#report_inspect_form").length) {
         fixmystreet.staff_set_up.report_page_inspect();
-        fixmystreet.staff_set_up.action_scheduled_raise_defect();
     }
 });
 

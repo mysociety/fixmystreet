@@ -159,7 +159,6 @@ sub send(;$) {
                     $reputation_threshold_met = $user_reputation >= $reputation_threshold;
                 }
                 unless (
-                        $row->get_extra_metadata('inspected') ||
                         $row->user->has_permission_to( trusted => $row->bodies_str_ids ) ||
                         $reputation_threshold_met
                 ) {
