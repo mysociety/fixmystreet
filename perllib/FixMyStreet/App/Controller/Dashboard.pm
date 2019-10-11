@@ -70,15 +70,20 @@ sub check_page_allowed : Private {
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
-    $c->detach( '/page_error_404_not_found' )
-        unless $c->user->from_body || $c->user->is_superuser;
+    my $cobrand_body = $c->cobrand->can('council_area_id') ? $c->cobrand->body : undef;
 
-    my $body = $c->user->from_body;
-    if (!$body && $c->get_param('body')) {
-        # Must be a superuser, so allow query parameter if given
-        $body = $c->model('DB::Body')->find({ id => $c->get_param('body') });
+    my $body;
+    if ($c->user->is_superuser) {
+        if ($c->get_param('body')) {
+            $body = $c->model('DB::Body')->find({ id => $c->get_param('body') });
+        } else {
+            $body = $cobrand_body;
+        }
+    } elsif ($c->user->from_body && (!$cobrand_body || $cobrand_body->id == $c->user->from_body->id)) {
+        $body = $c->user->from_body;
+    } else {
+        $c->detach( '/page_error_404_not_found' )
     }
-
     return $body;
 }
 
