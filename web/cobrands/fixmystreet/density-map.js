@@ -26,6 +26,8 @@ $(function(){
         return;
     }
 
+    var heatmap_on = $('input[name=heatmap]:checked').val() === 'Yes';
+
     var heat_layer = new Heatmap.Layer("Heatmap");
     heat_layer.setOpacity(0.7);
     heat_layer.setVisibility(false);
@@ -59,6 +61,11 @@ $(function(){
         heat_layer.setVisibility(false);
         fixmystreet.markers.setVisibility(true);
     });
+
+    if (heatmap_on) {
+        fixmystreet.markers.setVisibility(false);
+        heat_layer.setVisibility(true);
+    }
 
     $('#sort').closest('.report-list-filters').hide();
 
