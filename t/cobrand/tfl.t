@@ -158,10 +158,101 @@ FixMyStreet::override_config {
                 },
             ],
         } },
+        anonymous_account => {
+            tfl => 'anonymous'
+        },
     },
 }, sub {
 
 $mech->host("tfl.fixmystreet.com");
+
+subtest "test report creation anonymously by button" => sub {
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok(
+        {
+            button => 'report_anonymously',
+            with_fields => {
+                title => 'Anonymous Test Report 1',
+                detail => 'Test report details.',
+                category => 'Bus stops',
+            }
+        },
+        "submit report anonymously"
+    );
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Anonymous Test Report 1'});
+    ok $report, "Found the report";
+
+    $mech->content_contains('Your issue is on its way to Transport for London');
+    $mech->content_contains('Your reference for this report is FMS' . $report->id) or diag $mech->content;
+
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    is $report->state, 'confirmed', "report confirmed";
+    $mech->get_ok( '/report/' . $report->id );
+
+    is $report->bodies_str, $body->id;
+    is $report->name, 'Anonymous user';
+    is $report->user->email, 'anonymous@tfl.gov.uk';
+    is $report->anonymous, 1; # Doesn't change behaviour here, but uses anon account's name always
+    is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+
+    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+        user => $report->user,
+        alert_type => 'new_updates',
+        parameter => $report->id,
+    } );
+    is $alert, undef, "no alert created";
+
+    $mech->not_logged_in_ok;
+};
+
+subtest "test report creation anonymously by staff user" => sub {
+    $mech->clear_emails_ok;
+    $mech->log_in_ok( $staffuser->email );
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok(
+        {
+            button => 'report_anonymously',
+            with_fields => {
+                title => 'Anonymous Test Report 2',
+                detail => 'Test report details.',
+                category => 'Bus stops',
+            }
+        },
+        "submit report"
+    );
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Anonymous Test Report 2'});
+    ok $report, "Found the report";
+
+    $mech->content_contains('Your issue is on its way to Transport for London');
+    $mech->content_contains('Your reference for this report is FMS' . $report->id) or diag $mech->content;
+
+    is $report->state, 'confirmed', "report confirmed";
+    $mech->get_ok( '/report/' . $report->id );
+
+    is $report->bodies_str, $body->id;
+    is $report->name, 'Anonymous user';
+    is $report->user->email, 'anonymous@tfl.gov.uk';
+    is $report->anonymous, 1;
+    is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+
+    my $alerts = FixMyStreet::App->model('DB::Alert')->search( {
+        alert_type => 'new_updates',
+        parameter => $report->id,
+    } );
+    is $alerts->count, 0, "no alerts created";
+    ok $mech->email_count_is(0), "no emails sent";
+
+    $mech->log_out_ok;
+};
+
+FixMyStreet::DB->resultset("Problem")->delete_all;
 
 subtest "test report creation and reference number" => sub {
     $mech->log_in_ok( $user->email );
