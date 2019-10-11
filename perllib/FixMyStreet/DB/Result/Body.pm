@@ -224,6 +224,17 @@ has a council_name, use it in preference to the body name.
 
 sub cobrand_name {
     my $self = shift;
+
+    # Because TfL covers all the boroughs in London, get_cobrand_handler
+    # may return another London cobrand if it is listed before tfl in
+    # ALLOWED_COBRANDS, because one of this body's area_ids will also
+    # match that cobrand's council_area_id. This leads to odd things like
+    # councils_text_all.html showing a message like "These will be sent to
+    # Bromley Council" when making a report within Westminster on the TfL
+    # cobrand.
+    # If the current body is TfL then we always want to show TfL as the cobrand name.
+    return $self->name if $self->name eq 'TfL';
+
     my $handler = $self->get_cobrand_handler;
     if ($handler && $handler->can('council_name')) {
         return $handler->council_name;
