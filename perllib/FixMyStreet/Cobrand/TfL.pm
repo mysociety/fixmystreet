@@ -10,7 +10,7 @@ sub council_area_id { return [
     2480, 2490, 2492, 2500, 2510, 2497, 2499, 2491, 2498, 2506,
     2496, 2501, 2504
 ]; }
-sub council_area { return 'London'; }
+sub council_area { return 'TfL'; }
 sub council_name { return 'TfL'; }
 sub council_url { return 'tfl'; }
 sub area_types  { [ 'LBO' ] }
@@ -42,6 +42,11 @@ sub owns_problem {
 sub body {
     # Overridden because UKCouncils::body excludes TfL
     FixMyStreet::DB->resultset('Body')->search({ name => 'TfL' })->first;
+}
+
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a London postcode, or street name and area';
 }
 
 1;
