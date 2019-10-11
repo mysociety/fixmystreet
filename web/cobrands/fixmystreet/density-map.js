@@ -62,15 +62,15 @@ $(function(){
 
     $('#sort').closest('.report-list-filters').hide();
 
-    $("#wards, #start_date, #end_date").on("change.filters", function() {
+    $("#wards, #start_date, #end_date").on("change.filters", debounce(function() {
         // If the category or status has changed we need to re-fetch map markers
         fixmystreet.markers.events.triggerEvent("refresh", {force: true});
-    });
-    $("#filter_categories, #statuses").on("change.filters", function() {
+    }, 1000));
+    $("#filter_categories, #statuses").on("change.filters", debounce(function() {
         if (!fixmystreet.markers.getVisibility()) {
             // If not visible, still want to trigger change for heatmap
             fixmystreet.markers.events.triggerEvent("refresh", {force: true});
         }
-    });
+    }, 1000));
 
 });

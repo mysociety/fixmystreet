@@ -14,6 +14,7 @@
         - Remove on-map Permalink.
         - Darken front page step numbers, and improve nested heading structure.
         - Set report title autocomplete to off to prevent email autocompleting
+        - Add map filter debouncing to reduce server requests. #2675
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.
