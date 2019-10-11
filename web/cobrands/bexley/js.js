@@ -81,6 +81,18 @@ fixmystreet.assets.add(road_defaults, {
     }
 });
 
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: "https://tilma.staging.mysociety.org/mapserver/bexley",
+        params: {
+            TYPENAME: "Trees"
+        }
+    },
+    asset_type: 'spot',
+    asset_group: "Trees",
+    asset_item: 'tree'
+});
+
 fixmystreet.assets.add(labeled_defaults, {
     http_options: {
         params: {
