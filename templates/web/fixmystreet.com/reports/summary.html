@@ -70,7 +70,7 @@
             <select class="form-control" id="area" name="area">
                 <option value="">[% body.name %]</option>
               [% FOR w IN children.values.sort('name') %]
-                <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
+                <option value="[% w.id %]"[% ' selected' IF w.id == ward.0 %]>[% w.name %]</option>
               [% END %]
             </select>
         </p>
