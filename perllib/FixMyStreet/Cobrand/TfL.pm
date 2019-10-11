@@ -49,4 +49,10 @@ sub enter_postcode_text {
     return 'Enter a London postcode, or street name and area';
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search( { 'body.name' => 'TfL' } );
+}
+
+
 1;
