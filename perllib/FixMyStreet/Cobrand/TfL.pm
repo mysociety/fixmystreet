@@ -40,4 +40,9 @@ sub body {
 # a fixmystreet.com link (because of the false-returning owns_problem call)
 sub relative_url_for_report { "" }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search( { 'body.name' => 'TfL' } );
+}
+
 1;
