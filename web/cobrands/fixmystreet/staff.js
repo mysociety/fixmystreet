@@ -1,23 +1,4 @@
 fixmystreet.staff_set_up = {
-  action_scheduled_raise_defect: function() {
-    $("#report_inspect_form").find('[name=state]').on('change', function() {
-        if ($(this).val() !== "action scheduled") {
-            $("#js-inspect-action-scheduled").addClass("hidden");
-            $('#raise_defect_yes').prop('required', false);
-            $('#defect_type').prop('required', false);
-        } else {
-            $("#js-inspect-action-scheduled").removeClass("hidden");
-            $('#raise_defect_yes').prop('required', true);
-            var dt_required = $('#defect_type')[0].length > 1 && $('input[name=raise_defect]:checked').val();
-            $('#defect_type').prop('required', dt_required ? true : false);
-        }
-    });
-    $('input[name=raise_defect]').change(function() {
-        var dt_required = $('#defect_type')[0].length > 1 && this.value;
-        $('#defect_type').prop('required', dt_required ? true : false);
-    });
-  },
-
   list_item_actions: function() {
     $('#js-reports-list').on('click', ':submit', function(e) {
       e.preventDefault();
@@ -195,8 +176,6 @@ fixmystreet.staff_set_up = {
             selector = "[data-category='" + category + "']",
             entry = $inspect_form.find(selector),
             $priorities = $('#problem_priority'),
-            $defect_types = $('#defect_type'),
-            defect_types_data = entry.data('defect-types') || [],
             priorities_data = entry.data('priorities') || [],
             curr_pri = $priorities.val();
 
@@ -204,7 +183,6 @@ fixmystreet.staff_set_up = {
         entry.removeClass("hidden");
 
         populateSelect($priorities, priorities_data, 'priorities_type_format');
-        populateSelect($defect_types, defect_types_data, 'defect_type_format');
         updateTemplates({'category': category});
         $priorities.val(curr_pri);
     });
@@ -386,15 +364,15 @@ $(fixmystreet).on('display:report', function() {
     fixmystreet.staff_set_up.response_templates();
     if ($("#report_inspect_form").length) {
         fixmystreet.staff_set_up.report_page_inspect();
-        fixmystreet.staff_set_up.action_scheduled_raise_defect();
     }
 });
 
 $(fixmystreet).on('report_new:category_change', function() {
     var $this = $('#form_category');
     var category = $this.val();
+    if (category === '-- Pick a category --') { return; }
     var prefill_reports = $this.data('prefill');
-    var display_names = fixmystreet.reporting_data.display_names || {};
+    var display_names = fixmystreet.reporting_data ? fixmystreet.reporting_data.display_names || {} : {};
     var body = display_names[ $this.data('body') ] || $this.data('body');
 
     if (prefill_reports) {
@@ -477,9 +455,6 @@ $(fixmystreet).on('map:zoomend', function() {
 fixmystreet.utils = fixmystreet.utils || {};
 
 $.extend(fixmystreet.utils, {
-    defect_type_format: function(data) {
-        return data.name;
-    },
     priorities_type_format: function(data) {
         return data.name;
     },

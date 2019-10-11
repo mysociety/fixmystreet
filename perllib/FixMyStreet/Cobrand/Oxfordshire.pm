@@ -164,11 +164,6 @@ sub admin_pages {
 
     my $pages = $self->next::method();
 
-    # Oxfordshire have a custom admin page for downloading reports in an Exor-
-    # friendly format which anyone with report_instruct permission can use.
-    if ( $user->has_body_permission_to('report_instruct') ) {
-        $pages->{exordefects} = [ ('Download Exor RDI'), 10 ];
-    }
     if ( $user->has_body_permission_to('defect_type_edit') ) {
         $pages->{defecttypes} = [ ('Defect Types'), 11 ];
         $pages->{defecttype_edit} = [ undef, undef ];
@@ -176,16 +171,6 @@ sub admin_pages {
 
     return $pages;
 }
-
-sub defect_types {
-    {
-        SFP2 => "SFP2: sweep and fill <1m2",
-        POT2 => "POT2",
-    };
-}
-
-sub exor_rdi_link_id { 1989169 }
-sub exor_rdi_link_length { 50 }
 
 sub reputation_increment_states {
     return {

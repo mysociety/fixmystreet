@@ -34,21 +34,8 @@ subtest "Report isn't sent if uninspected" => sub {
     is $report->whensent, undef, "Report hasn't been sent";
 };
 
-subtest 'Report is sent when inspected' => sub {
-    $mech->clear_emails_ok;
-    $report->set_extra_metadata(inspected => 1);
-    $report->update;
-
-    FixMyStreet::Script::Reports::send();
-
-    $report->discard_changes;
-    $mech->email_count_is( 1 );
-    ok $report->whensent, 'Report marked as sent';
-};
-
 subtest 'Uninspected report is sent when made by trusted user' => sub {
     $mech->clear_emails_ok;
-    $report->unset_extra_metadata('inspected');
     $report->whensent( undef );
     $report->update;
 
@@ -63,7 +50,6 @@ subtest 'Uninspected report is sent when made by trusted user' => sub {
     $report->discard_changes;
     $mech->email_count_is( 1 );
     ok $report->whensent, 'Report marked as sent';
-    is $report->get_extra_metadata('inspected'), undef, 'Report not marked as inspected';
 };
 
 subtest "Uninspected report isn't sent when user rep is too low" => sub {
@@ -94,7 +80,6 @@ subtest 'Uninspected report is sent when user rep is high enough' => sub {
     $report->discard_changes;
     $mech->email_count_is( 1 );
     ok $report->whensent, 'Report marked as sent';
-    is $report->get_extra_metadata('inspected'), undef, 'Report not marked as inspected';
 };
 
 done_testing();

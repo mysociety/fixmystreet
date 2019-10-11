@@ -475,14 +475,6 @@ sub inspect : Private {
                 };
                 $c->user->create_alert($problem->id, $options);
             }
-
-            # If the state has been changed to action scheduled and they've said
-            # they want to raise a defect, consider the report to be inspected.
-            if ($problem->state eq 'action scheduled' && $c->get_param('raise_defect') && !$problem->get_extra_metadata('inspected')) {
-                $update_params{extra} = { 'defect_raised' => 1 };
-                $problem->set_extra_metadata( inspected => 1 );
-                $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
-            }
         }
 
         $problem->non_public($c->get_param('non_public') ? 1 : 0);
@@ -520,14 +512,6 @@ sub inspect : Private {
                 $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
             } else {
                 $problem->response_priority(undef);
-            }
-        }
-
-        if ($permissions->{report_inspect}) {
-            if ( $c->get_param('defect_type') ) {
-                $problem->defect_type($problem->defect_types->find($c->get_param('defect_type')));
-            } else {
-                $problem->defect_type(undef);
             }
         }
 

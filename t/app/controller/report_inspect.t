@@ -8,14 +8,6 @@ my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_de
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $contact2 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Sheep', email => 'SHEEP', send_method => 'Open311' );
 my $contact3 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Badgers', email => 'badgers@example.net' );
-my $dt = FixMyStreet::DB->resultset("DefectType")->create({
-    body => $oxon,
-    name => 'Small Defect', description => "Teeny",
-});
-FixMyStreet::DB->resultset("ContactDefectType")->create({
-    contact => $contact,
-    defect_type => $dt,
-});
 my $rp = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
     name => 'High Priority',
@@ -144,7 +136,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => {
             public_update => "This is a public update.", include_update => "1",
-            state => 'action scheduled', raise_defect => 1,
+            state => 'action scheduled',
         } });
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ with_fields => {
@@ -153,28 +145,23 @@ FixMyStreet::override_config {
         $report->discard_changes;
         my $comment = ($report->comments( undef, { order_by => { -desc => 'id' } } )->all)[1]->text;
         is $comment, "This is a public update.", 'Update was created';
-        is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
         is $report->user->get_extra_metadata('reputation'), $reputation, "User reputation wasn't changed";
         $mech->get_ok("/report/$report_id");
         my $meta = $mech->extract_update_metas;
         like $meta->[0], qr/State changed to: Action scheduled/, 'First update mentions action scheduled';
-        like $meta->[2], qr/Posted by .*defect raised/, 'Update mentions defect raised';
 
         $user->unset_extra_metadata('categories');
         $user->update;
     };
 
     subtest "test update is required when instructing" => sub {
-        $report->unset_extra_metadata('inspected');
         $report->update;
-        $report->inspection_log_entry->delete;
         $report->comments->delete_all;
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { public_update => undef, include_update => "1" } });
         is_deeply $mech->page_errors, [ "Please provide a public update for this report." ], 'errors match';
         $report->discard_changes;
         is $report->comments->count, 0, "Update wasn't created";
-        is $report->get_extra_metadata('inspected'), undef, 'report not marked as inspected';
     };
 
     subtest "test location changes" => sub {
@@ -448,24 +435,6 @@ FixMyStreet::override_config {
         is $report->response_priority->id, $rp->id, 'response priority set';
     };
 
-    subtest "check can set defect type for category when changing from category with no defect types" => sub {
-        $report->update({ category => 'Sheep', defect_type_id => undef });
-        $user->user_body_permissions->delete;
-        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
-        $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({
-            button => 'save',
-            with_fields => {
-                include_update => 0,
-                defect_type => $dt->id,
-                category => 'Cows',
-            }
-        });
-        $report->discard_changes;
-        is $report->defect_type->id, $dt->id, 'defect type set';
-        $report->update({ defect_type_id => undef });
-    };
-
     subtest "check can't set priority that isn't for a category" => sub {
         $report->discard_changes;
         $report->update({ category => 'Cows', response_priority_id => $rp->id });
@@ -627,7 +596,6 @@ FixMyStreet::override_config {
 
     subtest "test positive reputation" => sub {
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
-        $report->unset_extra_metadata('inspected');
         $report->update;
         $report->inspection_log_entry->delete if $report->inspection_log_entry;
         my $reputation = $report->user->get_extra_metadata("reputation") || 0;
@@ -636,24 +604,16 @@ FixMyStreet::override_config {
             state => 'in progress', include_update => undef,
         } });
         $report->discard_changes;
-        is $report->get_extra_metadata('inspected'), undef, 'report not marked as inspected';
 
         $mech->submit_form_ok({ button => 'save', with_fields => {
             state => 'action scheduled', include_update => undef,
         } });
         $report->discard_changes;
-        is $report->get_extra_metadata('inspected'), undef, 'report not marked as inspected';
         is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
 
         $mech->submit_form_ok({ button => 'save', with_fields => {
             state => 'action scheduled', include_update => undef,
-            raise_defect => 1,
         } });
-        $report->discard_changes;
-        is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
-        $mech->get_ok("/report/$report_id");
-        my $meta = $mech->extract_update_metas;
-        like $meta->[-1], qr/Updated by .*defect raised/, 'Update mentions defect raised';
     };
 
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
@@ -697,7 +657,6 @@ FixMyStreet::override_config {
           priority => $rp->id,
           include_update => '1',
           detailed_information => 'XXX164XXXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-          defect_type => '',
           traffic_information => ''
         };
         my $values = $mech->visible_form_values('report_inspect_form');

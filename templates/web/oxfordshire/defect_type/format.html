@@ -1,4 +1,0 @@
-[% MACRO defect_type_format BLOCK ~%]
-[%~ defect_type.get_extra_metadata('defect_code') | html %] - [% defect_type.get_extra_metadata('activity_code') | html %]
-([% defect_type.name | html %])
-[%~ END %]
