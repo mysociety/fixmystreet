@@ -4,6 +4,8 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use mySociety::AuthToken;
+
 sub council_area_id { return [
     2511, 2489, 2494, 2488, 2482, 2505, 2512, 2481, 2484, 2495,
     2493, 2508, 2502, 2509, 2487, 2485, 2486, 2483, 2507, 2503,
@@ -43,6 +45,19 @@ sub relative_url_for_report { "" }
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( { 'body.name' => 'TfL' } );
+}
+
+sub admin_user_domain { 'tfl.gov.uk' }
+
+sub allow_anonymous_reports { 'button' }
+
+sub anonymous_account {
+    my $self = shift;
+    my $token = mySociety::AuthToken::random_token();
+    return {
+        email => $self->feature('anonymous_account') . '-' . $token . '@' . $self->admin_user_domain,
+        name => 'Anonymous user',
+    };
 }
 
 sub lookup_by_ref_regex {
