@@ -110,7 +110,7 @@ sub open311_post_send {
     if ($row->category eq 'Parks and open spaces') {
         $p1_email = 1 if $reportType =~ /locked in a park|Wild animal/;
         $p1_email = 1 if $dangerous eq 'Yes' && $reportType =~ /Playgrounds|park furniture|gates are broken|Vandalism|Other/;
-    } else {
+    } elsif (!$lighting{$row->category}) {
         $p1_email = 1 if $dangerous eq 'Yes';
     }
 
@@ -118,8 +118,9 @@ sub open311_post_send {
     if ($row->category eq 'Abandoned and untaxed vehicles' || $row->category eq 'Dead animal' || $p1_email) {
         push @to, [ $emails->{p1}, 'Bexley P1 email' ] if $emails->{p1};
     }
-    if ($lighting{$row->category}) {
-        push @to, [ $emails->{lighting}, 'FixMyStreet Bexley Street Lighting' ] if $emails->{lighting};
+    if ($lighting{$row->category} && $emails->{lighting}) {
+        my @lighting = split /,/, $emails->{lighting};
+        push @to, [ $_, 'FixMyStreet Bexley Street Lighting' ] for @lighting;
     }
     return unless @to;
     my $sender = FixMyStreet::SendReport::Email->new( to => \@to );

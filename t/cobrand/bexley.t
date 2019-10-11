@@ -45,7 +45,7 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     MAP_TYPE => 'Bexley',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
-    COBRAND_FEATURES => { open311_email => { bexley => { p1 => 'p1@bexley', lighting => 'thirdparty@notbexley.example.com' } } },
+    COBRAND_FEATURES => { open311_email => { bexley => { p1 => 'p1@bexley', lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com' } } },
 }, sub {
 
     subtest 'cobrand displays council name' => sub {
@@ -81,9 +81,9 @@ FixMyStreet::override_config {
                 { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' },
                 { 'name' => 'reportType', description => 'Type of report', 'value' => 'Vandalism' },
             ] },
-        { category => 'Lamp post', code => 'LAMP', email => 'thirdparty',
+        { category => 'Lamp post', code => 'LAMP', email => 'thirdparty.*another',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
-        { category => 'Lamp post', code => 'LAMP', email => 'p1.*thirdparty',
+        { category => 'Lamp post', code => 'LAMP', email => 'thirdparty.*another',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
     ) {
         ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
