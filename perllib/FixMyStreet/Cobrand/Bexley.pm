@@ -61,16 +61,33 @@ sub lookup_site_code_config {
 }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     my $extra = $row->get_extra_fields;
 
-    # Reports made via the app probably won't have a NSGRef because we don't
-    # display the road layer. Instead we'll look up the closest asset from the
-    # WFS service at the point we're sending the report over Open311.
-    if (!$row->get_extra_field_value('NSGRef')) {
-        if (my $ref = $self->lookup_site_code($row)) {
-            push @$extra, { name => 'NSGRef', description => 'NSG Ref', value => $ref };
+    if ($contact->email =~ /^Confirm/) {
+        push @$extra,
+            { name => 'report_url',
+              value => $h->{url} },
+            { name => 'title',
+              value => $row->title },
+            { name => 'description',
+              value => $row->detail };
+
+        if (!$row->get_extra_field_value('site_code')) {
+            if (my $ref = $self->lookup_site_code($row)) {
+                push @$extra, { name => 'site_code', value => $ref };
+            }
+        }
+    } elsif ($contact->email =~ /^Uniform/) {
+    } else { # Symology
+        # Reports made via the app probably won't have a NSGRef because we don't
+        # display the road layer. Instead we'll look up the closest asset from the
+        # WFS service at the point we're sending the report over Open311.
+        if (!$row->get_extra_field_value('NSGRef')) {
+            if (my $ref = $self->lookup_site_code($row)) {
+                push @$extra, { name => 'NSGRef', description => 'NSG Ref', value => $ref };
+            }
         }
     }
 
@@ -80,7 +97,7 @@ sub open311_config {
 sub admin_user_domain { 'bexley.gov.uk' }
 
 sub open311_post_send {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     # Check Open311 was successful
     return unless $row->external_id;
@@ -125,7 +142,7 @@ sub open311_post_send {
     return unless @to;
     my $sender = FixMyStreet::SendReport::Email->new( to => \@to );
 
-    $self->open311_config($row); # Populate NSGRef again if needed
+    $self->open311_config($row, $h, {}, $contact); # Populate NSGRef again if needed
 
     my $extra_data = join "; ", map { "$_->{description}: $_->{value}" } @{$row->get_extra_fields};
     $h->{additional_information} = $extra_data;
