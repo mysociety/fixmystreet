@@ -46,9 +46,13 @@ my @scheduled_problems = $mech->create_problems_for_body(7, $body->id, 'Title', 
 my @fixed_problems = $mech->create_problems_for_body(4, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'fixmystreet' });
 my @closed_problems = $mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'fixmystreet' });
 
+my $first_problem_id;
+my $first_update_id;
 foreach my $problem (@scheduled_problems) {
     $problem->update({ state => 'action scheduled' });
-    $mech->create_comment_for_problem($problem, $counciluser, 'Title', 'text', 0, 'confirmed', 'action scheduled');
+    my ($update) = $mech->create_comment_for_problem($problem, $counciluser, 'Title', 'text', 0, 'confirmed', 'action scheduled');
+    $first_problem_id = $problem->id unless $first_problem_id;
+    $first_update_id = $update->id unless $first_update_id;
 }
 
 foreach my $problem (@fixed_problems) {
@@ -56,13 +60,9 @@ foreach my $problem (@fixed_problems) {
     $mech->create_comment_for_problem($problem, $counciluser, 'Title', 'text', 0, 'confirmed', 'fixed');
 }
 
-my $first_problem_id;
-my $first_update_id;
 foreach my $problem (@closed_problems) {
     $problem->update({ state => 'closed' });
-    my ($update) = $mech->create_comment_for_problem($problem, $counciluser, 'Title', 'text', 0, 'confirmed', 'closed', { confirmed => \'current_timestamp' });
-    $first_problem_id = $problem->id unless $first_problem_id;
-    $first_update_id = $update->id unless $first_update_id;
+    $mech->create_comment_for_problem($problem, $counciluser, 'Title', 'text', 0, 'confirmed', 'closed');
 }
 
 my $categories = scraper {
@@ -218,7 +218,7 @@ FixMyStreet::override_config {
         is $rows[1]->[0], $first_problem_id, 'Correct report ID';
         is $rows[1]->[1], $first_update_id, 'Correct update ID';
         is $rows[1]->[3], 'confirmed', 'Correct state';
-        is $rows[1]->[4], 'closed', 'Correct problem state';
+        is $rows[1]->[4], 'action scheduled', 'Correct problem state';
         is $rows[1]->[5], 'text', 'Correct text';
         is $rows[1]->[6], 'Title', 'Correct name';
     };

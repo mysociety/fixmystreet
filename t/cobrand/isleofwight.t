@@ -255,7 +255,7 @@ subtest "fixing passes along the correct message" => sub {
         like $cgi->param('description'), qr/^FMS-Update:/, 'FMS update prefix included';
         unlike $cgi->param('description'), qr/The customer indicated that this issue had been fixed/, 'No fixed message included';
 
-        $c = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Update text', 'f', 'confirmed', 'fixed - user', { confirmed => \'current_timestamp' });
+        $c = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Update text', 'f', 'confirmed', 'fixed - user');
         $c->discard_changes; # Otherwise cannot set_nanosecond
 
         $id = $o->post_service_request_update($c);
@@ -367,7 +367,7 @@ my $alert = FixMyStreet::App->model('DB::Alert')->create( {
 } )->confirm;
 
 subtest "sends branded alert emails" => sub {
-    $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef, { confirmed => DateTime->now->add( minutes => 5 ) });
+    $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef);
     $mech->clear_emails_ok;
 
     FixMyStreet::override_config {

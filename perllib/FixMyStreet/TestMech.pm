@@ -741,6 +741,7 @@ sub create_comment_for_problem {
     $params->{problem_state} = $problem_state;
     $params->{state} = $state;
     $params->{mark_fixed} = $problem_state && FixMyStreet::DB::Result::Problem->fixed_states()->{$problem_state} ? 1 : 0;
+    $params->{confirmed} = \'current_timestamp' unless $params->{confirmed} || $state eq 'unconfirmed';
 
     FixMyStreet::App->model('DB::Comment')->create($params);
 }

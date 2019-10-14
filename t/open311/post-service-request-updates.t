@@ -61,7 +61,7 @@ my $other_user = $mech->create_user_ok('test2@example.com', title => 'MRS');
 
 sub c {
     my ($p, $user) = @_;
-    my $c = $mech->create_comment_for_problem($p, $user || $p->user, 'Name', 'Update text', 'f', 'confirmed', 'confirmed', { confirmed => \'current_timestamp' });
+    my $c = $mech->create_comment_for_problem($p, $user || $p->user, 'Name', 'Update text', 'f', 'confirmed', 'confirmed');
     $c->discard_changes;
     return $c;
 }
