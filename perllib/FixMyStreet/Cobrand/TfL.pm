@@ -85,4 +85,14 @@ sub lookup_by_ref {
 
 sub report_sent_confirmation_email { 'id' }
 
+sub report_age { '6 weeks' }
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'green' if $p->is_closed;
+    return 'green' if $p->is_fixed;
+    return 'red' if $p->state eq 'confirmed';
+    return 'orange'; # all the other `open_states` like "in progress"
+}
+
 1;
