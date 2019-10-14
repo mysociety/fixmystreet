@@ -80,6 +80,8 @@ subtest "reference number included in email" => sub {
     my @email = $mech->get_email;
     is $email[0]->header('To'), 'TfL <busstops@example.com>';
     like $mech->get_text_body_from_email($email[0]), qr/Report reference: FMS$id/, "FMS-prefixed ID in TfL email";
+    is $email[1]->header('To'), $report->user->email;
+    like $mech->get_text_body_from_email($email[1]), qr/report's reference number is FMS$id/, "FMS-prefixed ID in reporter email";
 
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('FMS' . $report->id) or diag $mech->content;
