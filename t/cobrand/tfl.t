@@ -107,6 +107,51 @@ subtest 'check lookup by reference' => sub {
     is $mech->uri->path, "/report/$id", "redirected to report page when using non-prefixed ref";
 };
 
+for my $test (
+    {
+        states => [ 'confirmed' ],
+        colour => 'red'
+    },
+    {
+        states => ['action scheduled', 'in progress', 'investigating', 'planned'],
+        colour => 'orange'
+    },
+    {
+        states => [ FixMyStreet::DB::Result::Problem->fixed_states, FixMyStreet::DB::Result::Problem->closed_states ],
+        colour => 'green'
+    },
+) {
+    subtest 'check ' . $test->{colour} . ' pin states' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+        my $url = '/around?ajax=1&bbox=' . ($report->longitude - 0.01) . ',' .  ($report->latitude - 0.01)
+            . ',' . ($report->longitude + 0.01) . ',' .  ($report->latitude + 0.01);
+
+        for my $state ( @{ $test->{states} } ) {
+            $report->update({ state => $state });
+            my $json = $mech->get_ok_json( $url );
+            my $colour = $json->{pins}[0][2];
+            is $colour, $test->{colour}, 'correct ' . $test->{colour} . ' pin for state ' . $state;
+        }
+    };
+}
+
+subtest 'check report age on /around' => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    $report->update({ state => 'confirmed' });
+
+    $mech->get_ok( '/around?lat=' . $report->latitude . '&lon=' . $report->longitude );
+    $mech->content_contains($report->title);
+
+    $report->update({
+        confirmed => \"current_timestamp-'7 weeks'::interval",
+        whensent => \"current_timestamp-'7 weeks'::interval",
+        lastupdate => \"current_timestamp-'7 weeks'::interval",
+    });
+
+    $mech->get_ok( '/around?lat=' . $report->latitude . '&lon=' . $report->longitude );
+    $mech->content_lacks($report->title);
+};
+
 };
 
 done_testing();
