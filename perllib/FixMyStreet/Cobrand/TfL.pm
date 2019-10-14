@@ -69,4 +69,18 @@ sub anonymous_account {
     };
 }
 
+sub lookup_by_ref_regex {
+    return qr/^\s*((?:FMS\s*)?\d+)\s*$/;
+}
+
+sub lookup_by_ref {
+    my ($self, $ref) = @_;
+
+    if ( $ref =~ s/^FMS\s*// ) {
+        return { 'id' => $ref };
+    }
+
+    return 0;
+}
+
 1;

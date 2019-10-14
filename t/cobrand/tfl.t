@@ -151,7 +151,28 @@ subtest "reports have unique users" => sub {
 
     isnt $report1->user->id, $report2->user->id, 'reports have different users';
     isnt $report1->user->email, $report2->user->email, 'anonymous users have different email addresses';
-}
+};
+
+subtest 'check lookup by reference' => sub {
+    my $id = FixMyStreet::DB->resultset("Problem")->first->id;
+
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => 'FMS12345' } }, 'bad ref');
+    $mech->content_contains('Searching found no reports');
+
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => "FMS$id" } }, 'good FMS-prefixed ref');
+    is $mech->uri->path, "/report/$id", "redirected to report page when using FMS-prefixed ref";
+
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => "FMS $id" } }, 'good FMS-prefixed with a space ref');
+    is $mech->uri->path, "/report/$id", "redirected to report page when using FMS-prefixed ref";
+
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => "$id" } }, 'good ref');
+    is $mech->uri->path, "/report/$id", "redirected to report page when using non-prefixed ref";
+};
+
 
 };
 
