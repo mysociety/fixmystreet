@@ -253,48 +253,48 @@ var layers = [
   "item_name": 'bridge',
   "layer_name": "Structures",
   "layer": 14,
-  "version": "14.3-"
+  "version": "14.7-"
 },
 {
   "categories": [ "Damaged / Missing / Facing Wrong Way", "Obscured by vegetation or Dirty" ],
   "item_name": "sign",
   "layer_name": "Signs",
   "layer": is_live ? 60 : 303,
-  "version": is_live ? "60.2113-" : "303.1-"
+  "version": is_live ? "60.2172-" : "303.1-"
 },
 {
   "categories": [ "Shelter Damaged", "Sign/Pole Damaged" ],
   "layer_name": "Bus Stop",
   "layer": 72,
-  "version": "72.8-"
+  "version": "72.14-"
 },
 {
   "categories": [ "Bridge-Damaged/ Missing" ],
   "item_name": "bridge or right of way",
   "layer_name": "BRIDGES",
   "layer": 177,
-  "version": "177.18-"
+  "version": "177.40-"
 },
 {
   "categories": [ "Gate - Damaged/ Missing" ],
   "item_name": "gate or right of way",
   "layer_name": "GATE",
   "layer": 181,
-  "version": "181.3-"
+  "version": "181.14-"
 },
 {
   "categories": [ "Stile-Damaged/Missing" ],
   "item_name": "stile or right of way",
   "layer_name": "STILE",
   "layer": 185,
-  "version": "185.3-"
+  "version": "185.10-"
 },
 {
   "categories": [ "Sign/Waymarking - Damaged/Missing" ],
   "item_name": "waymarking or right of way",
   "layer_name": "WAYMARK POST",
   "layer": 187,
-  "version": "187.3-"
+  "version": "187.10-"
 },
 {
   "categories": [
@@ -336,13 +336,13 @@ var layers = [
   ],
   "layer_name": "Tree",
   "layer": is_live ? 307 : 228,
-  "version": is_live ? "307.1-" : "228.24-"
+  "version": is_live ? "307.6-" : "228.24-"
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
   "layer_name": "Safety Bollard",
   "layer": 233,
-  "version": "233.27-"
+  "version": "233.28-"
 },
 ];
 
@@ -501,7 +501,7 @@ fixmystreet.assets.add(northants_road_defaults, {
     protocol_class: OpenLayers.Protocol.Alloy,
     http_options: {
       layerid: 20,
-      layerVersion: '20.143-',
+      layerVersion: '20.249-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
@@ -543,7 +543,7 @@ var prow_style = new OpenLayers.Style({
 fixmystreet.assets.add(northants_road_defaults, {
     http_options: {
       layerid: 173,
-      layerVersion: '173.1-',
+      layerVersion: '173.3-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': prow_style
