@@ -83,4 +83,6 @@ sub lookup_by_ref {
     return 0;
 }
 
+sub report_sent_confirmation_email { 'id' }
+
 1;
