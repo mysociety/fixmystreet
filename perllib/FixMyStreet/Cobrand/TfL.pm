@@ -61,4 +61,18 @@ sub categories_restriction {
     return $rs->search( { 'body.name' => 'TfL' } );
 }
 
+sub lookup_by_ref_regex {
+    return qr/^\s*((?:FMS\s*)?\d+)\s*$/i;
+}
+
+sub lookup_by_ref {
+    my ($self, $ref) = @_;
+
+    if ( $ref =~ s/^\s*FMS\s*//i ) {
+        return { 'id' => $ref };
+    }
+
+    return 0;
+}
+
 1;
