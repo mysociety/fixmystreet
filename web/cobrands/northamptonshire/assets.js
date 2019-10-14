@@ -228,6 +228,19 @@ var layers = [
 },
   */
 {
+  "categories": [
+        "Loose / Raised/Sunken",
+        "Broken / Missing",
+        "Blocked - flooding private property",
+        "Blocked - flooding road/path",
+        "Blocked/Damaged",
+  ],
+  "item_name": "drain",
+  "layer_name": "Gully",
+  "layer": 66,
+  "version": "66.80-"
+},
+{
   "categories": [ "Grit Bin - damaged/replacement", "Grit Bin - empty/refill" ],
   "item_name": "grit bin",
   "layer_name": "Grit Bins",
@@ -494,11 +507,6 @@ fixmystreet.assets.add(northants_road_defaults, {
         'default': highways_style
     }),
     asset_category: [
-        "Loose / Raised/Sunken",
-        "Broken / Missing",
-        "Blocked - flooding private property",
-        "Blocked - flooding road/path",
-        "Blocked/Damaged",
         "Blocked Ditch",
         "Blocked Ditch Causing Flooding",
         "Obstruction (Not Vegetation)",
