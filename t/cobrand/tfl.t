@@ -79,8 +79,8 @@ subtest "test report creation anonymously by button" => sub {
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
     ok $report, "Found the report";
 
-    $mech->content_contains('Your issue is on its way to the council');
-    $mech->content_contains('Your reference for this report is ' . $report->id) or diag $mech->content;
+    $mech->content_contains('Your issue is on its way to TfL');
+    $mech->content_contains('Your reference for this report is FMS' . $report->id);
 
     is_deeply $mech->page_errors, [], "check there were no errors";
 
@@ -124,8 +124,8 @@ subtest "test report creation anonymously by staff user" => sub {
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 2'});
     ok $report, "Found the report";
 
-    $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
-    $mech->content_contains('Your reference for this report is ' . $report->id) or diag $mech->content;
+    $mech->content_contains('Your issue is on its way to TfL') or diag $mech->content;
+    $mech->content_contains('Your reference for this report is FMS' . $report->id);
 
     is $report->state, 'confirmed', "report confirmed";
     $mech->get_ok( '/report/' . $report->id );
