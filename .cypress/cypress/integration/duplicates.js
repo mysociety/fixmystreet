@@ -50,4 +50,31 @@ describe('Duplicate tests', function() {
       cy.get('#js-duplicate-reports').should('not.exist');
     });
 
+    it('lets an inspector see duplicate reports coming from /reports', function() {
+      cy.request({
+        method: 'POST',
+        url: 'http://borsetshire.localhost:3001/auth?r=/reports',
+        form: true,
+        body: { username: 'admin@example.org', password_sign_in: 'password' }
+      });
+      cy.visit('http://borsetshire.localhost:3001/reports');
+      cy.get('[href$="/report/1"]:last').click();
+      cy.get('#report_inspect_form #state').select('Duplicate');
+      cy.get('#js-duplicate-reports li h3 a').should('have.attr', 'href', '/report/1');
+    });
+
+    it('lets an inspector see duplicate reports coming from /around', function() {
+      cy.request({
+        method: 'POST',
+        url: 'http://borsetshire.localhost:3001/auth?r=/reports',
+        form: true,
+        body: { username: 'admin@example.org', password_sign_in: 'password' }
+      });
+      cy.visit('http://borsetshire.localhost:3001/report/1');
+      cy.contains('Back to all').click();
+      cy.get('[href$="/report/1"]:last').click();
+      cy.get('#report_inspect_form #state').select('Duplicate');
+      cy.get('#js-duplicate-reports li h3 a').should('have.attr', 'href', '/report/1');
+    });
+
 });
