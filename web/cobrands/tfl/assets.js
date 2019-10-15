@@ -108,13 +108,14 @@ var tlrn_categories = [
     "Worn out road markings"
 ];
 
-fixmystreet.assets.add(defaults, {
+var red_routes_layer = fixmystreet.assets.add(defaults, {
     http_options: {
         url: "https://tilma.mysociety.org/mapserver/tfl",
         params: {
             TYPENAME: "RedRoutes"
         }
     },
+    name: "Red Routes",
     max_resolution: 9.554628534317017,
     road: true,
     non_interactive: true,
@@ -127,8 +128,147 @@ fixmystreet.assets.add(defaults, {
         not_found: fixmystreet.message_controller.road_not_found
     }
 });
+if (red_routes_layer) {
+    red_routes_layer.events.register( 'loadend', red_routes_layer, function(){
+        // The roadworks layer may have finished loading before this layer, so
+        // ensure the filters to only show markers that intersect with a red route
+        // are re-applied.
+        var roadworks = fixmystreet.map.getLayersByName("Roadworks");
+        if (roadworks.length) {
+            // .redraw() reapplies filters without issuing any new requests
+            roadworks[0].redraw();
+        }
+    });
+}
 
 
 /* Roadworks.org asset layer */
+
+var org_id = '1250';
+var body = "TfL";
+
+var rw_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillOpacity: 1,
+        fillColor: "#FFFF00",
+        strokeColor: "#000000",
+        strokeOpacity: 0.8,
+        strokeWidth: 2,
+        pointRadius: 6,
+        graphicWidth: 39,
+        graphicHeight: 25,
+        graphicOpacity: 1,
+        externalGraphic: '/cobrands/tfl/warning@2x.png'
+    }),
+    'hover': new OpenLayers.Style({
+        fillColor: "#55BB00",
+        externalGraphic: '/cobrands/tfl/warning-green@2x.png'
+    }),
+    'select': new OpenLayers.Style({
+        fillColor: "#55BB00",
+        externalGraphic: '/cobrands/tfl/warning-green@2x.png'
+    })
+});
+
+OpenLayers.Format.TfLRoadworksOrg = OpenLayers.Class(OpenLayers.Format.RoadworksOrg, {
+    updateParams: function(params) {
+        params.filterstartdate = fixmystreet.roadworks.format_date(new Date());
+        params.filterenddate = fixmystreet.roadworks.format_date(new Date(Date.now() + (21 * 86400 * 1000)));
+        return params;
+    },
+    convertToPoints: true,
+    CLASS_NAME: "OpenLayers.Format.TfLRoadworksOrg"
+});
+
+fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
+    http_options: {
+        params: { organisation_id: org_id },
+    },
+    name: "Roadworks",
+    format_class: OpenLayers.Format.TfLRoadworksOrg,
+    body: body,
+    non_interactive: false,
+    always_visible: false,
+    road: false,
+    all_categories: false,
+    asset_category: "Roadworks",
+    stylemap: rw_stylemap,
+    asset_id_field: 'promoter_works_ref',
+    asset_item: 'roadworks',
+    attributes: {
+        promoter_works_ref: 'promoter_works_ref',
+        start: 'start',
+        end: 'end',
+        promoter: 'promoter',
+        works_desc: 'works_desc',
+        works_state: function(feature) {
+            return {
+                1: "1", // Haven't seen this in the wild yet
+                2: "Advanced planning",
+                3: "Planned work about to start",
+                4: "Work in progress"
+            }[this.attributes.works_state] || this.attributes.works_state;
+        },
+        tooltip: 'tooltip'
+    },
+    filter_key: true,
+    filter_value: function(feature) {
+        var red_routes = fixmystreet.map.getLayersByName("Red Routes");
+        if (!red_routes.length) {
+            return false;
+        }
+        red_routes = red_routes[0];
+        return red_routes.getFeaturesWithinDistance(feature.geometry, 10).length > 0;
+    },
+    select_action: true,
+    actions: {
+        // Need to override these two from roadworks_defaults in roadworks.js
+        found: null,
+        not_found: null,
+
+        asset_found: function(feature) {
+            this.fixmystreet.actions.asset_not_found.call(this);
+            feature.layer = this;
+            var attr = feature.attributes,
+            tooltip = attr.tooltip.replace(/\\n/g, '\n'),
+            desc = attr.works_desc.replace(/\\n/g, '\n');
+
+            var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + this.id + ' box-warning"></div>');
+            var $dl = $("<dl></dl>").appendTo($msg);
+            if (attr.promoter) {
+                $dl.append("<dt>Responsibility</dt>");
+                $dl.append($("<dd></dd>").text(attr.promoter));
+            }
+            $dl.append("<dt>Location</dt>");
+            var $summary = $("<dd></dd>").appendTo($dl);
+            tooltip.split("\n").forEach(function(para) {
+                if (para.match(/^(\d{2}\s+\w{3}\s+(\d{2}:\d{2}\s+)?\d{4}( - )?){2}/)) {
+                    // skip showing the date again
+                    return;
+                }
+                if (para.match(/^delays/)) {
+                    // skip showing traffic delay information
+                    return;
+                }
+                $summary.append(para).append("<br />");
+            });
+            if (desc) {
+                $dl.append("<dt>Description</dt>");
+                $dl.append($("<dd></dd>").text(desc));
+            }
+            $dl.append("<dt>Dates</dt>");
+            var $dates = $("<dd></dd>").appendTo($dl);
+            $dates.text(attr.start + " until " + attr.end);
+            $msg.prependTo('#js-post-category-messages');
+            $('#js-post-category-messages .category_meta_message').hide();
+        },
+        asset_not_found: function() {
+            $(".js-roadworks-message-" + this.id).remove();
+            $('#js-post-category-messages .category_meta_message').show();
+        }
+    }
+
+});
+
 
 })();
