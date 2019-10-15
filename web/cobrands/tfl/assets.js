@@ -66,4 +66,72 @@ fixmystreet.assets.add(asset_defaults, {
 
 /* Roadworks.org asset layer */
 
+var org_id = '1250';
+var body = "TfL";
+
+var rw_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillOpacity: 1,
+        fillColor: "#FFFF00",
+        strokeColor: "#000000",
+        strokeOpacity: 0.8,
+        strokeWidth: 2,
+        pointRadius: 6,
+        graphicWidth: 34,
+        graphicHeight: 38,
+        graphicXOffset: -17,
+        graphicYOffset: -38,
+        graphicOpacity: 1,
+        externalGraphic: '/cobrands/tfl/roadworks.png'
+    }),
+    'hover': new OpenLayers.Style({
+        fillColor: "#55BB00",
+        externalGraphic: '/cobrands/tfl/roadworks-green.png'
+    }),
+    'select': new OpenLayers.Style({
+        fillColor: "#55BB00",
+        externalGraphic: '/cobrands/tfl/roadworks-green.png'
+    })
+});
+
+OpenLayers.Format.TfLRoadworksOrg = OpenLayers.Class(OpenLayers.Format.RoadworksOrg, {
+    endMonths: 0,
+    convertToPoints: true,
+    CLASS_NAME: "OpenLayers.Format.TfLRoadworksOrg"
+});
+
+fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
+    http_options: {
+        params: { organisation_id: org_id },
+    },
+    format_class: OpenLayers.Format.TfLRoadworksOrg,
+    body: body,
+    non_interactive: false,
+    always_visible: false,
+    road: false,
+    all_categories: false,
+    actions: null,
+    asset_category: "Roadworks",
+    stylemap: rw_stylemap,
+    asset_id_field: 'promoter_works_ref',
+    asset_item: 'roadworks',
+    attributes: {
+        promoter_works_ref: 'promoter_works_ref',
+        start: 'start',
+        end: 'end',
+        promoter: 'promoter',
+        works_desc: 'works_desc',
+        works_state: function(feature) {
+            return {
+                1: "1", // Haven't seen this in the wild yet
+                2: "Advanced planning",
+                3: "Planned work about to start",
+                4: "Work in progress"
+            }[this.attributes.works_state] || this.attributes.works_state;
+        },
+        tooltip: 'tooltip'
+    }
+});
+
+
 })();
