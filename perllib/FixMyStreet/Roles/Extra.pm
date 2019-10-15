@@ -141,6 +141,7 @@ sub push_extra_fields {
 
 Given an extra field, will replace one with the same code in the
 existing list of fields, or add to the end if not present.
+Returns true if it was already present, false if newly added.
 
 =cut
 
@@ -167,6 +168,7 @@ sub update_extra_field {
     }
 
     $self->set_extra_fields(@$existing);
+    return $found;
 }
 
 =head2 remove_extra_field
