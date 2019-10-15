@@ -95,4 +95,11 @@ sub pin_colour {
     return 'orange'; # all the other `open_states` like "in progress"
 }
 
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if $user->is_superuser;
+    return undef unless defined $user->from_body;
+    return $user->from_body->name eq 'TfL';
+}
+
 1;
