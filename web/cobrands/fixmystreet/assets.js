@@ -1182,6 +1182,7 @@ fixmystreet.message_controller = (function() {
             } else {
                 $msg.insertBefore('#js-post-category-messages');
             }
+            $msg[0].scrollIntoView();
         }
         disable_report_form(stopper.keep_category_extras);
     }
