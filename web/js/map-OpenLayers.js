@@ -10,6 +10,19 @@ if (!Object.keys) {
   };
 }
 
+function debounce(fn, delay) {
+    var timeout;
+    return function() {
+        var that = this, args = arguments;
+        var debounced = function() {
+            timeout = null;
+            fn.apply(that, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(debounced, delay);
+    };
+}
+
 var fixmystreet = fixmystreet || {};
 
 fixmystreet.utils = fixmystreet.utils || {};
@@ -428,10 +441,10 @@ $.extend(fixmystreet.utils, {
         }
     }
 
-    function categories_or_status_changed() {
+    var categories_or_status_changed = debounce(function() {
         // If the category or status has changed we need to re-fetch map markers
         fixmystreet.markers.refresh({force: true});
-    }
+    }, 1000);
 
     function replace_query_parameter(qs, id, key) {
         var value,

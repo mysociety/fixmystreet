@@ -151,6 +151,7 @@ sub ward : Path : Args(2) {
         if @wards;
     $c->forward( 'check_canonical_url', [ $body ] );
     $c->forward( 'stash_report_filter_status' );
+    $c->forward('stash_report_sort', [ $c->cobrand->reports_ordering ]);
     $c->forward( 'load_and_group_problems' );
 
     if ($c->get_param('ajax')) {
@@ -163,6 +164,25 @@ sub ward : Path : Args(2) {
         if $c->stash->{ward};
 
     $c->stash->{stats} = $c->cobrand->get_report_stats();
+
+    $c->forward('setup_categories_and_map');
+
+    # List of wards
+    if ( !$c->stash->{wards} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
+        my $children = $c->stash->{body}->first_area_children;
+        unless ($children->{error}) {
+            foreach (values %$children) {
+                $_->{url} = $c->uri_for( $c->stash->{body_url}
+                    . '/' . $c->cobrand->short_name( $_ )
+                );
+            }
+            $c->stash->{children} = $children;
+        }
+    }
+}
+
+sub setup_categories_and_map :Private {
+    my ($self, $c) = @_;
 
     my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
         columns => [ 'id', 'category', 'extra', 'body_id', 'send_method' ],
@@ -188,19 +208,6 @@ sub ward : Path : Args(2) {
     );
 
     $c->cobrand->tweak_all_reports_map( $c );
-
-    # List of wards
-    if ( !$c->stash->{wards} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
-        my $children = $c->stash->{body}->first_area_children;
-        unless ($children->{error}) {
-            foreach (values %$children) {
-                $_->{url} = $c->uri_for( $c->stash->{body_url}
-                    . '/' . $c->cobrand->short_name( $_ )
-                );
-            }
-            $c->stash->{children} = $children;
-        }
-    }
 }
 
 sub rss_area : Path('/rss/area') : Args(1) {
@@ -551,9 +558,51 @@ sub load_dashboard_data : Private {
 sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
-    $c->forward('stash_report_sort', [ $c->cobrand->reports_ordering ]);
+    my $parameters = $c->forward('load_problems_parameters');
 
+    my $body = $c->stash->{body}; # Might be undef
     my $page = $c->get_param('p') || 1;
+
+    my $problems = $c->cobrand->problems;
+    my $where = $parameters->{where};
+    my $filter = $parameters->{filter};
+
+    if ($where->{areas} || $body) {
+        $problems = $problems->to_body($body);
+    }
+
+    $problems = $problems->search(
+        $where,
+        $filter
+    )->include_comment_counts->page( $page );
+
+    $c->stash->{pager} = $problems->pager;
+
+    my ( %problems, @pins );
+    while ( my $problem = $problems->next ) {
+        if ( !$body ) {
+            add_row( $c, $problem, 0, \%problems, \@pins );
+            next;
+        }
+        # Add to bodies it was sent to
+        my $bodies = $problem->bodies_str_ids;
+        foreach ( @$bodies ) {
+            next if $_ != $body->id;
+            add_row( $c, $problem, $_, \%problems, \@pins );
+        }
+    }
+
+    $c->stash(
+        problems      => \%problems,
+        pins          => \@pins,
+    );
+
+    return 1;
+}
+
+sub load_problems_parameters : Private {
+    my ($self, $c) = @_;
+
     my $category = [ $c->get_param_list('filter_category', 1) ];
 
     my $states = $c->stash->{filter_problem_states};
@@ -600,15 +649,10 @@ sub load_and_group_problems : Private {
         $where->{category} = $category;
     }
 
-    my $problems = $c->cobrand->problems;
-
     if ($c->stash->{wards}) {
         $where->{areas} = [
             map { { 'like', '%,' . $_->{id} . ',%' } } @{$c->stash->{wards}}
         ];
-        $problems = $problems->to_body($body);
-    } elsif ($body) {
-        $problems = $problems->to_body($body);
     }
 
     if (my $bbox = $c->get_param('bbox')) {
@@ -617,44 +661,13 @@ sub load_and_group_problems : Private {
         $where->{longitude} = { '>=', $min_lon, '<', $max_lon };
     }
 
-    my $cobrand_problems = $c->cobrand->call_hook('munge_load_and_group_problems', $where, $filter);
+    $c->cobrand->call_hook('munge_load_and_group_problems', $where, $filter);
 
-    # JS will request the same (or more) data client side
-    return if $c->get_param('js');
-
-    if ($cobrand_problems) {
-        $problems = $cobrand_problems;
-    } else {
-        $problems = $problems->search(
-            $where,
-            $filter
-        )->include_comment_counts->page( $page );
-
-        $c->stash->{pager} = $problems->pager;
-    }
-
-    my ( %problems, @pins );
-    while ( my $problem = $problems->next ) {
-        if ( !$body ) {
-            add_row( $c, $problem, 0, \%problems, \@pins );
-            next;
-        }
-        # Add to bodies it was sent to
-        my $bodies = $problem->bodies_str_ids;
-        foreach ( @$bodies ) {
-            next if $_ != $body->id;
-            add_row( $c, $problem, $_, \%problems, \@pins );
-        }
-    }
-
-    $c->stash(
-        problems      => \%problems,
-        pins          => \@pins,
-    );
-
-    return 1;
+    return {
+        where => $where,
+        filter => $filter,
+    };
 }
-
 
 sub check_non_public_reports_permission : Private {
     my ($self, $c, $where) = @_;

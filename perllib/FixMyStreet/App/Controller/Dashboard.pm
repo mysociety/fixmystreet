@@ -70,15 +70,20 @@ sub check_page_allowed : Private {
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
-    $c->detach( '/page_error_404_not_found' )
-        unless $c->user->from_body || $c->user->is_superuser;
+    my $cobrand_body = $c->cobrand->can('council_area_id') ? $c->cobrand->body : undef;
 
-    my $body = $c->user->from_body;
-    if (!$body && $c->get_param('body')) {
-        # Must be a superuser, so allow query parameter if given
-        $body = $c->model('DB::Body')->find({ id => $c->get_param('body') });
+    my $body;
+    if ($c->user->is_superuser) {
+        if ($c->get_param('body')) {
+            $body = $c->model('DB::Body')->find({ id => $c->get_param('body') });
+        } else {
+            $body = $cobrand_body;
+        }
+    } elsif ($c->user->from_body && (!$cobrand_body || $cobrand_body->id == $c->user->from_body->id)) {
+        $body = $c->user->from_body;
+    } else {
+        $c->detach( '/page_error_404_not_found' )
     }
-
     return $body;
 }
 
@@ -492,6 +497,107 @@ sub generate_csv : Private {
             },
         ] );
     }
+}
+
+sub heatmap : Local : Args(0) {
+    my ($self, $c) = @_;
+
+    my $body = $c->stash->{body} = $c->forward('check_page_allowed');
+    $c->detach( '/page_error_404_not_found' )
+        unless $body && $c->cobrand->feature('heatmap');
+
+    $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
+
+    my @wards = $c->get_param_list('wards', 1);
+    $c->forward('/reports/ward_check', [ @wards ]) if @wards;
+    $c->forward('/reports/stash_report_filter_status');
+    $c->forward('/reports/stash_report_sort', [ $c->cobrand->reports_ordering ]); # Not actually used
+    my $parameters = $c->forward( '/reports/load_problems_parameters');
+
+    my $where = $parameters->{where};
+    my $filter = $parameters->{filter};
+    delete $filter->{rows};
+
+    $c->forward('heatmap_filters', [ $where ]);
+
+    # Load the relevant stuff for the sidebar as well
+    my $problems = $c->cobrand->problems;
+    $problems = $problems->to_body($body);
+    $problems = $problems->search($where, $filter);
+
+    $c->forward('heatmap_sidebar', [ $problems, $where ]);
+
+    if ($c->get_param('ajax')) {
+        my @pins;
+        while ( my $problem = $problems->next ) {
+            push @pins, $problem->pin_data($c, 'reports');
+        }
+        $c->stash->{pins} = \@pins;
+        $c->detach('/reports/ajax', [ 'dashboard/heatmap-list.html' ]);
+    }
+
+    my $children = $c->stash->{body}->first_area_children;
+    $c->stash->{children} = $children;
+    $c->stash->{ward_hash} = { map { $_->{id} => 1 } @{$c->stash->{wards}} } if $c->stash->{wards};
+
+    $c->forward('/reports/setup_categories_and_map');
+}
+
+sub heatmap_filters :Private {
+    my ($self, $c, $where) = @_;
+
+    # Wards
+    my @areas = @{$c->user->area_ids || []};
+    # Want to get everything if nothing given in an ajax call
+    if (!$c->stash->{wards} && @areas) {
+        $c->stash->{wards} = [ map { { id => $_ } } @areas ];
+        $where->{areas} = [
+            map { { 'like', '%,' . $_ . ',%' } } @areas
+        ];
+    }
+
+    # Date range
+    my $start_default = DateTime->today(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(months => 1);
+    $c->stash->{start_date} = $c->get_param('start_date') || $start_default->strftime('%Y-%m-%d');
+    $c->stash->{end_date} = $c->get_param('end_date');
+
+    my $range = FixMyStreet::DateRange->new(
+        start_date => $c->stash->{start_date},
+        start_default => $start_default,
+        end_date => $c->stash->{end_date},
+        formatter => $c->model('DB')->storage->datetime_parser,
+    );
+    $where->{'me.confirmed'} = $range->sql;
+}
+
+sub heatmap_sidebar :Private {
+    my ($self, $c, $problems, $where) = @_;
+
+    $c->stash->{five_newest} = [ $problems->search(undef, {
+        rows => 5,
+        order_by => { -desc => 'confirmed' },
+    })->all ];
+
+    $c->stash->{ten_oldest} = [ $problems->search({
+        'me.state' => [ FixMyStreet::DB::Result::Problem->open_states() ],
+    }, {
+        rows => 10,
+        order_by => 'lastupdate',
+    })->all ];
+
+    my $params = { map { my $n = $_; s/me\./problem\./; $_ => $where->{$n} } keys %$where };
+    my $body = $c->stash->{body};
+    my @c = $c->model('DB::Comment')->to_body($body)->search({
+        %$params,
+        'me.user_id' => { -not_in => [ $c->user->id, $body->comment_user_id || () ] },
+        'me.state' => 'confirmed',
+    }, {
+        columns => 'problem_id',
+        group_by => 'problem_id',
+        order_by => { -desc => \'max(me.confirmed)' },
+        rows => 5,
+    })->all;
+    $c->stash->{five_commented} = [ map { $_->problem } @c ];
 }
 
 =head1 AUTHOR

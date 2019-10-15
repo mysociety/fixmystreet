@@ -19,11 +19,14 @@ if (window.Heatmap) {
 fixmystreet.protocol_params.wards = 'wards';
 fixmystreet.protocol_params.start_date = 'start_date';
 fixmystreet.protocol_params.end_date = 'end_date';
+fixmystreet.protocol_params.body = 'body';
 
 $(function(){
     if (!window.Heatmap) {
         return;
     }
+
+    var heatmap_on = $('input[name=heatmap]:checked').val() === 'Yes';
 
     var heat_layer = new Heatmap.Layer("Heatmap");
     heat_layer.setOpacity(0.7);
@@ -59,17 +62,22 @@ $(function(){
         fixmystreet.markers.setVisibility(true);
     });
 
+    if (heatmap_on) {
+        fixmystreet.markers.setVisibility(false);
+        heat_layer.setVisibility(true);
+    }
+
     $('#sort').closest('.report-list-filters').hide();
 
-    $("#wards, #start_date, #end_date").on("change.filters", function() {
+    $("#wards, #start_date, #end_date").on("change.filters", debounce(function() {
         // If the category or status has changed we need to re-fetch map markers
         fixmystreet.markers.events.triggerEvent("refresh", {force: true});
-    });
-    $("#filter_categories, #statuses").on("change.filters", function() {
+    }, 1000));
+    $("#filter_categories, #statuses").on("change.filters", debounce(function() {
         if (!fixmystreet.markers.getVisibility()) {
             // If not visible, still want to trigger change for heatmap
             fixmystreet.markers.events.triggerEvent("refresh", {force: true});
         }
-    });
+    }, 1000));
 
 });

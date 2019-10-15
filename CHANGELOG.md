@@ -13,6 +13,8 @@
         - Pass ‘filter_category’ param to front page to pre-filter map.
         - Remove on-map Permalink.
         - Darken front page step numbers, and improve nested heading structure.
+        - Set report title autocomplete to off to prevent email autocompleting
+        - Add map filter debouncing to reduce server requests. #2675
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.
@@ -21,6 +23,7 @@
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523
+        - Heatmap dashboard. #2675
     - Bugfixes:
         - Prevent creation of two templates with same title. #2471
         - Fix bug going between report/new pages client side. #2484
@@ -38,8 +41,6 @@
         - Allow contact send method to be unset always.
         - Fix z-index stacking bug that was causing unclickable RSS icons on /alert page. #2624
         - Fix issue with inspector duplication workflow.
-    - Front end improvements:
-        - Set report title autocomplete to off to prevent email autocompleting
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages. #2473
         - Add feature cobrand helper function.

@@ -324,6 +324,7 @@ sub report_page_data {
 
     $c->stash->{page} = 'reports';
     $c->forward( 'stash_report_filter_status' );
+    $c->forward('stash_report_sort', [ $c->cobrand->reports_ordering ]);
     $c->forward( 'load_and_group_problems' );
     $c->stash->{body} = { id => 0 }; # So template can fetch the list
 

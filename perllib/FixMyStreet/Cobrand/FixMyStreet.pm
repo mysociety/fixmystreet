@@ -99,11 +99,7 @@ sub munge_load_and_group_problems {
 
     return unless $where->{category} && $self->{c}->stash->{body}->name eq 'Isle of Wight Council';
 
-    my $cat_names = $self->expand_triage_cat_list($where->{category});
-
-    $where->{category} = $cat_names;
-    my $problems = $self->problems->search($where, $filter);
-    return $problems;
+    $where->{category} = $self->expand_triage_cat_list($where->{category});
 }
 
 sub expand_triage_cat_list {
