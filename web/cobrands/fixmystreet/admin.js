@@ -89,7 +89,6 @@ $(function(){
                     selected_perms['permissions[' + p + ']'] = 1;
                 });
             });
-            console.log(selected_perms);
             $perms.css('color', '#666');
             $perms.find('a').css('color', '#666');
             $perms.find('input').each(function() {
@@ -139,15 +138,18 @@ $(function(){
         $(this).parents('.js-metadata-item').remove();
     }).on('change', '.js-metadata-item', updateMetadataItemTitle);
 
-    sortable('.js-metadata-items', {
+    var items = sortable('.js-metadata-items', {
         forcePlaceholderSize: true,
         handle: '.js-metadata-item-header-grab',
         placeholder: '<div class="extra-metadata-item-placeholder"></div>'
-    })[0].addEventListener('sortupdate', function(e) {
-        $(e.detail.destination.items).each(function(i){
-            $(this).find('.js-sort-order input').val(i);
-        });
     });
+    if (items.length) {
+        items[0].addEventListener('sortupdate', function(e) {
+            $(e.detail.destination.items).each(function(i){
+                $(this).find('.js-sort-order input').val(i);
+            });
+        });
+    }
     $('.js-sort-order').addClass('hidden-js');
 
     function reloadSortableMetadataItems(){
