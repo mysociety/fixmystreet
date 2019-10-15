@@ -241,6 +241,8 @@ sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
+    # Make sure TfL staff can't access other London cobrand admins
+    return undef if $user->from_body->name eq 'TfL';
     return $user->from_body->areas->{$self->council_area_id};
 }
 
