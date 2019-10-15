@@ -20,6 +20,9 @@ $staffuser->user_body_permissions->create({
 });
 my $user = $mech->create_user_ok('londonresident@example.com');
 
+my $bromley = $mech->create_body_ok(2482, 'Bromley');
+my $bromleyuser = $mech->create_user_ok('bromleyuser@bromley.example.com', name => 'Bromley Staff', from_body => $bromley);
+
 
 my $contact1 = $mech->create_contact_ok(
     body_id => $body->id,
@@ -150,6 +153,41 @@ subtest 'check report age on /around' => sub {
 
     $mech->get_ok( '/around?lat=' . $report->latitude . '&lon=' . $report->longitude );
     $mech->content_lacks($report->title);
+};
+
+subtest 'TfL staff can access TfL admin' => sub {
+    $mech->log_in_ok( $staffuser->email );
+    $mech->get_ok('/admin');
+    $mech->content_contains( 'This is the administration interface for' );
+    $mech->log_out_ok;
+};
+
+subtest 'Bromley staff cannot access TfL admin' => sub {
+    $mech->log_in_ok( $bromleyuser->email );
+    ok $mech->get('/admin');
+    is $mech->res->code, 403, "got 403";
+    $mech->log_out_ok;
+};
+
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    MAPIT_URL => 'http://mapit.uk/'
+}, sub {
+
+subtest 'Bromley staff can access Bromley admin' => sub {
+    $mech->log_in_ok( $bromleyuser->email );
+    $mech->get_ok('/admin');
+    $mech->content_contains( 'This is the administration interface for' );
+    $mech->log_out_ok;
+};
+
+subtest 'TfL staff cannot access Bromley admin' => sub {
+    $mech->log_in_ok( $staffuser->email );
+    ok $mech->get('/admin');
+    is $mech->res->code, 403, "got 403";
+    $mech->log_out_ok;
 };
 
 };
