@@ -13,12 +13,14 @@
     // but undefined on new report page.
     var report_id = $("#report_inspect_form .js-report-id").text() || undefined;
 
-    function refresh_duplicate_list(evt, params) {
+    function refresh_duplicate_list(evt, params, category) {
         if (params && params.skip_duplicates) {
             return;
         }
 
-        var category = $('select[name="category"]').val();
+        if (!category) {
+            category = $('select[name="category"]').val();
+        }
         if (category === '-- Pick a category --') {
             return;
         }
@@ -195,7 +197,8 @@
         if (!!duplicate_of) {
             return;
         }
-        refresh_duplicate_list();
+        var category = $("#report_inspect_form [name=category]").val();
+        refresh_duplicate_list(undefined, {}, category);
     }
 
     function take_effect() {
