@@ -22,6 +22,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         // Update layer based upon new data from category change
         $(fixmystreet).on('assets:selected', this.checkSelected.bind(this));
         $(fixmystreet).on('assets:unselected', this.checkSelected.bind(this));
+        $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
     },
 
@@ -101,6 +102,21 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
             var firstVisibleResolution = this.resolutions[0];
             var zoomLevel = fixmystreet.map.getZoomForResolution(firstVisibleResolution);
             fixmystreet.map.zoomTo(zoomLevel);
+        }
+    },
+
+    // It's possible an asset has been selected before a category (e.g. if
+    // assets are showing for a whole category group. So on category change,
+    // make sure we check if any attribute fields need setting/clearing.
+    changeCategory: function() {
+        if (!fixmystreet.map) {
+            return;
+        }
+        var feature = fixmystreet.assets.selectedFeature();
+        if (feature) {
+            this.setAttributeFields(feature);
+        } else {
+            this.clearAttributeFields();
         }
     },
 
