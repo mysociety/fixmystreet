@@ -238,7 +238,8 @@ var layers = [
   "item_name": "drain",
   "layer_name": "Gully",
   "layer": 66,
-  "version": "66.80-"
+  "version": "66.80-",
+  "max_resolution": 0.5971642833948135
 },
 {
   "categories": [ "Grit Bin - damaged/replacement", "Grit Bin - empty/refill" ],
@@ -417,15 +418,19 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
 
 $.each(layers, function(index, layer) {
     if ( layer.categories ) {
-        fixmystreet.assets.add(northants_defaults, {
-            http_options: {
-              layerid: layer.layer,
-              layerVersion: layer.version,
-            },
-            asset_type: layer.asset_type || 'spot',
-            asset_category: layer.categories,
-            asset_item: layer.item_name || layer.layer_name.toLowerCase(),
-        });
+        var options = {
+          http_options: {
+            layerid: layer.layer,
+            layerVersion: layer.version,
+          },
+          asset_type: layer.asset_type || 'spot',
+          asset_category: layer.categories,
+          asset_item: layer.item_name || layer.layer_name.toLowerCase(),
+        };
+        if (layer.max_resolution) {
+          options.max_resolution = layer.max_resolution;
+        }
+        fixmystreet.assets.add(northants_defaults, options);
     }
 });
 
