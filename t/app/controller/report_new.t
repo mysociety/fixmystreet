@@ -935,7 +935,7 @@ subtest "test password errors for a user who is signing in as they report" => su
         "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
     ], "check there were errors";
 
-    $mech->content_lacks('1234', 'phone number not shown');
+    $mech->content_lacks('1234 567', 'phone number not shown');
 };
 
 foreach my $test (
