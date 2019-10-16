@@ -1,0 +1,58 @@
+#!/usr/bin/env perl
+#
+# This script utilises Open311 as described at
+# http://wiki.open311.org/GeoReport_v2/#get-service-requests
+# and/or the Open311 extension explained at
+# https://github.com/mysociety/FixMyStreet/wiki/Open311-FMS---Proposed-differences-to-Open311
+# to fetch service requests or updates on service requests.
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use DateTime;
+use Getopt::Long::Descriptive;
+use Open311::GetServiceRequests;
+use Open311::GetServiceRequestUpdates;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['reports', 'fetch reports'],
+    ['updates', 'fetch updates'],
+    ['start|s:i', 'start time to use (hours before now), defaults to one (reports) or two (updates)' ],
+    ['end|e:i', 'end time to use (hours before now), defaults to zero' ],
+    ['body|b:s', 'body name to only fetch this body' ],
+    ['verbose|v', 'more verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+my %params = (
+    verbose => $opts->verbose,
+    body => $opts->body,
+);
+
+my $dt = DateTime->now();
+if ($opts->start) {
+    $params{start_date} = $dt->clone->add(hours => -$opts->start);
+}
+if ($opts->end) {
+    $params{end_date} = $dt->clone->add(hours => -$opts->end);
+}
+
+if ($opts->reports) {
+    my $reports = Open311::GetServiceRequests->new(%params);
+    $reports->fetch;
+}
+
+if ($opts->updates) {
+    my $updates = Open311::GetServiceRequestUpdates->new(%params);
+    $updates->fetch;
+}

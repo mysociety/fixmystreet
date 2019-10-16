@@ -60,31 +60,39 @@ sub fetch {
     }
 }
 
+sub parse_dates {
+    my $self = shift;
+    my $body = $self->current_body;
+
+    my @args = ();
+
+    my $dt = DateTime->now();
+    # Oxfordshire uses local time and not UTC for dates
+    FixMyStreet->set_time_zone($dt) if $body->areas->{$AREA_ID_OXFORDSHIRE};
+
+    # default to asking for last 2 hours worth if not Bromley
+    if ($self->start_date) {
+        push @args, DateTime::Format::W3CDTF->format_datetime( $self->start_date );
+    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
+        my $start_dt = $dt->clone->add( hours => -2 );
+        push @args, DateTime::Format::W3CDTF->format_datetime( $start_dt );
+    }
+
+    if ($self->end_date) {
+        push @args, DateTime::Format::W3CDTF->format_datetime( $self->end_date );
+    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
+        push @args, DateTime::Format::W3CDTF->format_datetime( $dt );
+    }
+
+    return @args;
+}
+
 sub process_body {
     my $self = shift;
 
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
-
-    my @args = ();
-
-    if ( $self->start_date || $self->end_date ) {
-        return 0 unless $self->start_date && $self->end_date;
-
-        push @args, $self->start_date;
-        push @args, $self->end_date;
-    # default to asking for last 2 hours worth if not Bromley
-    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
-        my $end_dt = DateTime->now();
-        # Oxfordshire uses local time and not UTC for dates
-        FixMyStreet->set_time_zone($end_dt) if ( $body->areas->{$AREA_ID_OXFORDSHIRE} );
-        my $start_dt = $end_dt->clone;
-        $start_dt->add( hours => -2 );
-
-        push @args, DateTime::Format::W3CDTF->format_datetime( $start_dt );
-        push @args, DateTime::Format::W3CDTF->format_datetime( $end_dt );
-    }
-
+    my @args = $self->parse_dates;
     my $requests = $open311->get_service_request_updates( @args );
 
     unless ( $open311->success ) {
@@ -106,15 +114,8 @@ sub process_body {
     return 1;
 }
 
-sub find_problem {
+sub check_date {
     my ($self, $request, @args) = @_;
-
-    my $body = $self->current_body;
-    my $request_id = $request->{service_request_id};
-
-    # If there's no request id then we can't work out
-    # what problem it belongs to so just skip
-    return unless $request_id || $request->{fixmystreet_id};
 
     my $comment_time = eval {
         DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} || "" )
@@ -124,6 +125,20 @@ sub find_problem {
     my $updated = DateTime::Format::W3CDTF->format_datetime($comment_time->clone->set_time_zone('UTC'));
     return if @args && ($updated lt $args[0] || $updated gt $args[1]);
     $request->{comment_time} = $comment_time;
+    return 1;
+}
+
+sub find_problem {
+    my ($self, $request, @args) = @_;
+
+    $self->check_date($request, @args) or return;
+
+    my $body = $self->current_body;
+    my $request_id = $request->{service_request_id};
+
+    # If there's no request id then we can't work out
+    # what problem it belongs to so just skip
+    return unless $request_id || $request->{fixmystreet_id};
 
     my $problem;
     my $criteria = {
