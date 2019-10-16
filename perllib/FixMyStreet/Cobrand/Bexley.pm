@@ -3,6 +3,11 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use Encode;
+use JSON::MaybeXS;
+use LWP::Simple qw($ua);
+use Path::Tiny;
+use Time::Piece;
 
 sub council_area_id { 2494 }
 sub council_area { 'Bexley' }
@@ -133,17 +138,20 @@ sub open311_post_send {
     my $dangerous = $row->get_extra_field_value('dangerous') || '';
 
     my $p1_email = 0;
+    my $outofhours_email = 0;
     if ($row->category eq 'Abandoned and untaxed vehicles') {
         my $burnt = $row->get_extra_field_value('burnt') || '';
         $p1_email = 1 if $burnt eq 'Yes';
     } elsif ($row->category eq 'Dead animal') {
         $p1_email = 1;
+        $outofhours_email = 1;
     } elsif ($row->category eq 'Parks and open spaces') {
         my $reportType = $row->get_extra_field_value('reportType') || '';
         $p1_email = 1 if $reportType =~ /locked in a park|Wild animal/;
         $p1_email = 1 if $dangerous eq 'Yes' && $reportType =~ /Playgrounds|park furniture|gates are broken|Vandalism|Other/;
     } elsif (!$lighting{$row->category}) {
         $p1_email = 1 if $dangerous eq 'Yes';
+        $outofhours_email = 1 if $dangerous eq 'Yes';
     }
 
     my @to;
@@ -157,6 +165,9 @@ sub open311_post_send {
     if ($flooding{$row->category} && $emails->{flooding}) {
         my @flooding = split /,/, $emails->{flooding};
         push @to, [ $_, 'FixMyStreet Bexley Flooding' ] for @flooding;
+    }
+    if ($outofhours_email && _is_out_of_hours() && $emails->{outofhours}) {
+        push @to, [ $emails->{outofhours}, 'Bexley out of hours' ];
     }
     if ($contact->email =~ /^Uniform/ && $emails->{eh}) {
         my @eh = split ',', $emails->{eh};
@@ -200,6 +211,46 @@ sub dashboard_export_problems_add_columns {
         }
         return {};
     };
+}
+
+sub _is_out_of_hours {
+    my $time = localtime;
+    return 1 if $time->hour > 16 || ($time->hour == 16 && $time->min >= 45);
+    return 1 if $time->hour < 8;
+    return 1 if $time->wday == 1 || $time->wday == 7;
+    return 1 if _is_bank_holiday();
+    return 0;
+}
+
+sub _is_bank_holiday {
+    my $json = _get_bank_holiday_json();
+    my $today = localtime->date;
+    for my $event (@{$json->{'england-and-wales'}{events}}) {
+        if ($event->{date} eq $today) {
+            return 1;
+        }
+    }
+}
+
+sub _get_bank_holiday_json {
+    my $file = 'bank-holidays.json';
+    my $cache_file = path(FixMyStreet->path_to("../data/$file"));
+    my $js;
+    if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
+        # uncoverable statement
+        $js = $cache_file->slurp_utf8;
+    } else {
+        $ua->timeout(5);
+        $js = get("https://www.gov.uk/$file");
+        # uncoverable branch false
+        $js = decode_utf8($js) if !utf8::is_utf8($js);
+        if ($js && !FixMyStreet->config('STAGING_SITE')) {
+            # uncoverable statement
+            $cache_file->spew_utf8($js);
+        }
+    }
+    $js = JSON->new->decode($js) if $js;
+    return $js;
 }
 
 1;
