@@ -187,7 +187,6 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
     initialize: function(name, options) {
         OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
         $(fixmystreet).on('maps:update_pin', this.checkFeature.bind(this));
-        $(fixmystreet).on('assets:selected', this.checkFeature.bind(this));
         // Update fields/etc from data now available from category change
         $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
     },
@@ -348,13 +347,6 @@ function asset_selected(e) {
     // Keep track of selection in case layer is reloaded or hidden etc.
     selected_feature = feature.clone();
 
-    // Pick up the USRN for the location of this asset. NB we do this *before*
-    // handling the attributes on the selected feature in case the feature has
-    // its own USRN which should take precedence.
-    $(fixmystreet).trigger('assets:selected', [ lonlat ]);
-
-    this.setAttributeFields(feature);
-
     // Hide the normal markers layer to keep things simple, but
     // move the green marker to the point of the click to stop
     // it jumping around unexpectedly if the user deselects the asset.
@@ -363,6 +355,10 @@ function asset_selected(e) {
 
     // Need to ensure the correct coords are used for the report
     fixmystreet.maps.update_pin(lonlat);
+
+    this.setAttributeFields(feature);
+
+    $(fixmystreet).trigger('assets:selected', [ lonlat ]);
 
     // Make sure the marker that was clicked is drawn on top of its neighbours
     layer.eraseFeatures([feature]);
