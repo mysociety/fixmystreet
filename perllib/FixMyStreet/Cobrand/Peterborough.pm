@@ -46,6 +46,9 @@ sub open311_config {
         { name => 'description',
           value => $row->detail };
 
+    # remove the emergency category which is informational only
+    @$extra = grep { $_->{name} ne 'emergency' } @$extra;
+
     # Reports made via FMS.com or the app probably won't have a site code
     # value because we don't display the adopted highways layer on those
     # frontends. Instead we'll look up the closest asset from the WFS
