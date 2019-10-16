@@ -119,6 +119,9 @@ if ($northants) {
             next;
         }
 
+        # we don't want to update hidden reports
+        next if $p->state eq 'hidden';
+
         my $new_state = get_state( $report );
 
         unless ( $new_state ) {
@@ -140,7 +143,14 @@ if ($northants) {
         my $text = $report->{Response_to_Customer};
         # do not add a second response to customer if it's already there.
         if ($text) {
-            my $c = $p->comments->search({text => $text});
+            # sometimes there are extra spaces on the end in the database
+            # there's also quite a few occurrences of the text having minor corrections
+            # to the thank you which we don't want to send out an update for potentially
+            # weeks later
+            my $search_text = $text;
+            $search_text =~ s/\sthank you[.\s]*$//i;
+            my $search = { text => { ilike => "$search_text%" } };
+            my $c = $p->comments->search($search);
             $text = '' if $c->count;
         }
 
