@@ -119,6 +119,11 @@ sub dispatch_request {
             $self->output({2650 => {parent_area => undef, id => 2650, name => "Aberdeen Council", type => "UTA"}});
         } elsif ($areas eq 'GRE') {
             $self->output({2493 => {parent_area => undef, id => 2493, name => "Greenwich Borough Council", type => "LBO"}});
+        } elsif ($areas eq 'LBO') {
+            $self->output({
+                2482 => {parent_area => undef, id => 2482, name => "Bromley Borough Council", type => "LBO"},
+                2483 => {parent_area => undef, id => 2483, name => "Hounslow Borough Council", type => "LBO"},
+            });
         } elsif ($areas eq 60705) {
             $self->output({60705 => {parent_area => 2245, id => 60705, name => "Trowbridge", type => "CPC"}});
         }
