@@ -386,6 +386,37 @@ subtest "sends branded alert emails" => sub {
 $p->comments->delete;
 $p->delete;
 
+subtest "check not responsible as correct text" => sub {
+    my ($p) = $mech->create_problems_for_body(
+        1, $isleofwight->id, 'Title',
+        {
+            category => 'Roads',
+            areas => 2636,
+            latitude => 50.71086,
+            longitude => -1.29573,
+            whensent => DateTime->now->add( minutes => -5 ),
+            send_method_used => 'Open311',
+            state => 'not responsible',
+            external_id => 1,
+        });
+
+    my $c = FixMyStreet::App->model('DB::Comment')->create({
+        problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
+        problem_state => 'not responsible', state => 'confirmed', mark_fixed => 0,
+        confirmed => DateTime->now(),
+    });
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['isleofwight'],
+    }, sub {
+        $mech->get_ok('/report/' . $p->id);
+    };
+
+    $mech->content_contains("not Island Roads' responsibility", "not reponsible message contains correct text");
+    $p->comments->delete;
+    $p->delete;
+};
+
 subtest "sends branded confirmation emails" => sub {
     $mech->log_out_ok;
     $mech->clear_emails_ok;
