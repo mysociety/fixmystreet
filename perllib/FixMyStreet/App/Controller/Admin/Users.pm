@@ -209,8 +209,12 @@ sub edit : Path : Args(1) {
     }
 
     $c->forward('/admin/fetch_all_bodies');
-    $c->forward('/admin/fetch_body_areas', [ $user->from_body ]) if $user->from_body;
-    $c->forward('fetch_body_roles', [ $user->from_body ]) if $user->from_body;
+    if ($user->from_body) {
+        unless ($c->cobrand->call_hook(admin_fetch_inspector_areas => $user->from_body)) {
+            $c->forward('/admin/fetch_body_areas', [ $user->from_body ]);
+        }
+        $c->forward('fetch_body_roles', [ $user->from_body ]) if $user->from_body;
+    }
     $c->cobrand->call_hook('admin_user_edit_extra_data');
 
     if ( defined $c->flash->{status_message} ) {
@@ -322,7 +326,9 @@ sub edit : Path : Args(1) {
         # Has the user's from_body changed since we fetched areas (if we ever did)?
         # If so, we need to re-fetch areas so the UI is up to date.
         if ( $user->from_body && $user->from_body->id ne $c->stash->{fetched_areas_body_id} ) {
-            $c->forward('/admin/fetch_body_areas', [ $user->from_body ]);
+            unless ($c->cobrand->call_hook(admin_fetch_inspector_areas => $user->from_body)) {
+                $c->forward('/admin/fetch_body_areas', [ $user->from_body ]);
+            }
             $c->forward('fetch_body_roles', [ $user->from_body ]);
         }
 
