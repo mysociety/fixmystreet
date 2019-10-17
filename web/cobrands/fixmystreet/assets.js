@@ -22,6 +22,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         // Update layer based upon new data from category change
         $(fixmystreet).on('assets:selected', this.checkSelected.bind(this));
         $(fixmystreet).on('assets:unselected', this.checkSelected.bind(this));
+        $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
     },
 
@@ -104,6 +105,45 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         }
     },
 
+    // It's possible an asset has been selected before a category (e.g. if
+    // assets are showing for a whole category group. So on category change,
+    // make sure we check if any attribute fields need setting/clearing.
+    changeCategory: function() {
+        if (!fixmystreet.map) {
+            return;
+        }
+        var feature = fixmystreet.assets.selectedFeature();
+        if (feature) {
+            this.setAttributeFields(feature);
+        } else {
+            this.clearAttributeFields();
+        }
+    },
+
+    setAttributeFields: function(feature) {
+        if (!this.fixmystreet.attributes) {
+            return;
+        }
+        // Set the extra fields to the value of the selected feature
+        $.each(this.fixmystreet.attributes, function(field_name, attribute_name) {
+            var $field = $("#form_" + field_name);
+            if (typeof attribute_name === 'function') {
+                $field.val(attribute_name.apply(feature));
+            } else {
+                $field.val(feature.attributes[attribute_name]);
+            }
+        });
+    },
+
+    clearAttributeFields: function() {
+        if (!this.fixmystreet.attributes) {
+            return;
+        }
+        $.each(this.fixmystreet.attributes, function(field_name, attribute_name) {
+            $("#form_" + field_name).val("");
+        });
+    },
+
     checkSelected: function(evt, lonlat) {
         if (!this.getVisibility()) {
           return;
@@ -163,7 +203,6 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, 
     initialize: function(name, options) {
         OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
         $(fixmystreet).on('maps:update_pin', this.checkFeature.bind(this));
-        $(fixmystreet).on('assets:selected', this.checkFeature.bind(this));
         // Update fields/etc from data now available from category change
         $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
     },
@@ -324,15 +363,6 @@ function asset_selected(e) {
     // Keep track of selection in case layer is reloaded or hidden etc.
     selected_feature = feature.clone();
 
-    // Pick up the USRN for the location of this asset. NB we do this *before*
-    // handling the attributes on the selected feature in case the feature has
-    // its own USRN which should take precedence.
-    $(fixmystreet).trigger('assets:selected', [ lonlat ]);
-
-    if (this.fixmystreet.attributes) {
-        set_fields_from_attributes(this.fixmystreet.attributes, feature);
-    }
-
     // Hide the normal markers layer to keep things simple, but
     // move the green marker to the point of the click to stop
     // it jumping around unexpectedly if the user deselects the asset.
@@ -342,6 +372,10 @@ function asset_selected(e) {
     // Need to ensure the correct coords are used for the report
     fixmystreet.maps.update_pin(lonlat);
 
+    this.setAttributeFields(feature);
+
+    $(fixmystreet).trigger('assets:selected', [ lonlat ]);
+
     // Make sure the marker that was clicked is drawn on top of its neighbours
     layer.eraseFeatures([feature]);
     layer.drawFeature(feature);
@@ -350,28 +384,8 @@ function asset_selected(e) {
 function asset_unselected(e) {
     fixmystreet.markers.setVisibility(true);
     selected_feature = null;
-    if (this.fixmystreet.attributes) {
-        clear_fields_for_attributes(this.fixmystreet.attributes);
-    }
+    this.clearAttributeFields();
     $(fixmystreet).trigger('assets:unselected');
-}
-
-function set_fields_from_attributes(attributes, feature) {
-    // Set the extra fields to the value of the selected feature
-    $.each(attributes, function (field_name, attribute_name) {
-        var $field = $("#form_" + field_name);
-        if (typeof attribute_name === 'function') {
-            $field.val(attribute_name.apply(feature));
-        } else {
-            $field.val(feature.attributes[attribute_name]);
-        }
-    });
-}
-
-function clear_fields_for_attributes(attributes) {
-    $.each(attributes, function (field_name, attribute_name) {
-        $("#form_" + field_name).val("");
-    });
 }
 
 function check_zoom_message_visibility() {
@@ -682,19 +696,15 @@ function construct_select_layer_events(asset_layer, options) {
         // attributes of the clicked feature are applied to the extra
         // details form fields first though.
         asset_layer.events.register( 'beforefeatureselected', asset_layer, function(e) {
-            var attributes = this.fixmystreet.attributes;
-            if (attributes) {
-                set_fields_from_attributes(attributes, e.feature);
-            }
+            var that = this;
+            this.setAttributeFields(e.feature);
 
             // The next click on the map may not be on an asset - so
             // clear the fields for this layer when the pin is next
             // updated. If it is on an asset then the fields will be
             // set by whatever feature was selected.
             $(fixmystreet).one('maps:update_pin', function() {
-                if (attributes) {
-                    clear_fields_for_attributes(attributes);
-                }
+                that.clearAttributeFields();
             });
             return false;
         });
