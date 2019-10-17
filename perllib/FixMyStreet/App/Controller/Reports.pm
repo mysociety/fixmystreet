@@ -195,12 +195,18 @@ sub setup_categories_and_map :Private {
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
 
+    my @areas = $c->stash->{wards} ? map { $_->{id} } @{$c->stash->{wards}} : keys %{$c->stash->{body}->areas};
+    if ( $c->get_param('areas') ) {
+        my $areas = { map { $_ => 1 } $c->get_param_list('areas', 1) };
+        @areas = grep { $areas->{$_} } @areas;
+    }
+
     my $pins = $c->stash->{pins} || [];
 
     my %map_params = (
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
         longitude => @$pins ? $pins->[0]{longitude} : 0,
-        area      => [ $c->stash->{wards} ? map { $_->{id} } @{$c->stash->{wards}} : keys %{$c->stash->{body}->areas} ],
+        area      => \@areas,
         any_zoom  => 1,
     );
     FixMyStreet::Map::display_map(
