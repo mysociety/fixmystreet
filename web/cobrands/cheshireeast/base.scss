@@ -18,7 +18,7 @@ h1, h2, h3, h4, h5, h6 {
     font-style: normal !important;
     color: #333;
 }
-h1 { font-size: 2.218em; line-height: 40px; margin: 0 0 20px 0; }
+h1 { font-size: 2.218em; line-height: 40px; margin: 16px 0 20px 0; }
 h2 { font-size: 1.869em; line-height: 35px; }
 h3 { font-size: 1.521em; line-height: 30px; }
 h4 { font-size: 1.281em; line-height: 27px; }
@@ -43,6 +43,11 @@ div.form-error, p.form-error {
     letter-spacing: 0.06em;
 }
 
+.report_meta_info,
+.council_sent_info {
+  font-size: inherit;
+}
+
 /* Font overrides */
 
 #front-main {
@@ -59,7 +64,7 @@ a,
     }
 }
 
-.content a,
+.content a[href],
 .fake-link {
     border-bottom: 1px solid #a6a7da;
     &:hover {
@@ -86,10 +91,16 @@ a,
 }
 
 #front-main a#geolocate_link {
-    color: #fff;
-    background: #206c49;
+    color: #2e3191;
+    background: transparent;
+    border-bottom: 1px solid #a6a7da;
+    padding: 0;
+    margin-top: 0.5em;
+    font-size: inherit;
     &:hover {
-        background: #214e39;
+        background: transparent;
+        border-bottom: 1px solid #2e3191;
+        transition: border-color 0.5s;
     }
 }
 

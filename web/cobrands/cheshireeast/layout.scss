@@ -9,6 +9,10 @@ footer {
     margin-top: 0; // So no sign of above gradient at bottom above footer
 }
 
+#site-header + .container {
+    background-color: $white;
+}
+
 body.frontpage .content {
     margin: 0 -1em;
 }
@@ -24,6 +28,12 @@ body.frontpage .content {
 #front-main #postcodeForm div {
     margin: 0;
     width: 30em;
+}
+#front-main a#geolocate_link {
+    color: #2e3191;
+    &:hover {
+        text-decoration: none;
+    }
 }
 
 .ce-footer {
@@ -46,6 +56,10 @@ body.mappage {
     }
 }
 
+.general-notes {
+    font-size: inherit;
+}
+
 /*body.twothirdswidthpage .content .sticky-sidebar aside {
     top: 10em;
 }
@@ -64,21 +78,3 @@ body.mappage {
 #front_stats big {
     color: $green;
 }
-
-/*
-.nav-menu--main {
-  span {
-    background-color: $nav_hover_background_colour;
-  }
-}
-*/
-
-/*
-.general-notes {
-    font-size: 0.89em;
-}
-
-#key-tools a,button {
-    font-size: 0.89em;
-}
-*/
