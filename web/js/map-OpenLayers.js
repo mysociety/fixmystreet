@@ -1081,6 +1081,7 @@ OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixe
 
 fixmystreet.protocol_params = {
     filter_category: 'filter_categories',
+    areas: 'filter_areas',
     status: 'statuses',
     sort: 'sort'
 };

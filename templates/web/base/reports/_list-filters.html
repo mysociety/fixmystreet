@@ -39,6 +39,9 @@
                 <option value="updated-asc"[% ' selected' IF sort_key == 'updated-asc' %]>[% loc('Least recently updated') %]</option>
                 <option value="comments-desc"[% ' selected' IF sort_key == 'comments-desc' %]>[% loc('Most commented') %]</option>
             </select>
+            [% IF filter_areas %]
+              <input type="hidden" id="filter_areas" name="areas" value="[% filter_areas.join(',') | html %]" />
+            [% END %]
             <input type="submit" name="filter_update" value="[% loc('Go') %]">
         </p>
         [% IF page == 'around' %]
