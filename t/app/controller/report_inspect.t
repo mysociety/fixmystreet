@@ -79,6 +79,74 @@ FixMyStreet::override_config {
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
     };
 
+    for my $test (
+        {
+            name => "categories only",
+            area_ids => undef,
+            categories => [ $contact->id ],
+            destination => "/reports/Oxfordshire",
+            previous => "/my/inspector_redirect",
+            query_form => { filter_category => $contact->category },
+            good_link => "/my/inspector_redirect",
+            bad_link => "/reports",
+        },
+        {
+            name => "categories and areas",
+            area_ids => [60705],
+            categories => [ $contact->id ],
+            destination => "/reports/Oxfordshire/Trowbridge",
+            previous => "/my/inspector_redirect",
+            query_form => { filter_category => $contact->category },
+            good_link => "/my/inspector_redirect",
+            bad_link => "/reports",
+        },
+        {
+            name => "areas only",
+            area_ids => [60705],
+            categories => undef,
+            destination => "/reports/Oxfordshire/Trowbridge",
+            previous => "/my/inspector_redirect",
+            query_form => {},
+            good_link => "/my/inspector_redirect",
+            bad_link => "/reports",
+        },
+        {
+            name => "no categories or areas",
+            area_ids => undef,
+            categories => undef,
+            destination => "/my",
+            query_form => {},
+            good_link => "/reports",
+            bad_link => "/my/inspector_redirect",
+        },
+    ) {
+        subtest "login destination and top-level nav for inspectors with " . $test->{name} => sub {
+            $mech->log_out_ok;
+
+            $user->area_ids($test->{area_ids});
+            $user->set_extra_metadata('categories', $test->{categories});
+            $user->update;
+
+            # Can't use log_in_ok, as the call to logged_in_ok clobbers our post-login
+            # redirect.
+            $mech->get_ok('/auth');
+            $mech->submit_form_ok(
+                { with_fields => { username => $user->email, password_sign_in => 'secret' } },
+                "sign in using form" );
+            is $mech->res->code, 200, "got 200";
+            is $mech->uri->path, $test->{destination}, 'redirected to correct destination';
+            is_deeply { $mech->uri->query_form }, $test->{query_form}, 'destination query params set correctly';
+            if ($test->{previous}) {
+                is $mech->res->previous->code, 302, "got 302 for post-login redirect";
+                is $mech->res->previous->base->path, $test->{previous}, "previous URI correct";
+            }
+
+            $mech->get_ok("/");
+            ok $mech->find_link( text => 'All reports', url => $test->{good_link} );
+            ok !$mech->find_link( text => 'All reports', url => $test->{bad_link} );
+        };
+    }
+
     subtest "council staff can't see admin report edit link on FMS.com" => sub {
         my $report_edit_permission = $user->user_body_permissions->create({
             body => $oxon, permission_type => 'report_edit' });
