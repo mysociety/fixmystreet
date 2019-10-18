@@ -63,20 +63,22 @@ sub lookup_site_code_config {
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
+    $params->{multi_photos} = 1;
+
     my $extra = $row->get_extra_fields;
 
     if ($contact->email =~ /^Confirm/) {
         push @$extra,
-            { name => 'report_url',
+            { name => 'report_url', description => 'Report URL',
               value => $h->{url} },
-            { name => 'title',
+            { name => 'title', description => 'Title',
               value => $row->title },
-            { name => 'description',
+            { name => 'description', description => 'Detail',
               value => $row->detail };
 
         if (!$row->get_extra_field_value('site_code')) {
             if (my $ref = $self->lookup_site_code($row)) {
-                push @$extra, { name => 'site_code', value => $ref };
+                push @$extra, { name => 'site_code', value => $ref, description => 'Site code' };
             }
         }
     } elsif ($contact->email =~ /^Uniform/) {
