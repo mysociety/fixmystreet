@@ -107,7 +107,9 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
 
     // It's possible an asset has been selected before a category (e.g. if
     // assets are showing for a whole category group. So on category change,
-    // make sure we check if any attribute fields need setting/clearing.
+    // make sure we check if any attribute fields need setting. We don't
+    // clear if not, because that might clear e.g. attributes set by a layer
+    // using `usrn`.
     changeCategory: function() {
         if (!fixmystreet.map) {
             return;
@@ -115,8 +117,6 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         var feature = fixmystreet.assets.selectedFeature();
         if (feature) {
             this.setAttributeFields(feature);
-        } else {
-            this.clearAttributeFields();
         }
     },
 
