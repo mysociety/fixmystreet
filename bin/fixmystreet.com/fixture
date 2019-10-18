@@ -95,7 +95,7 @@ if ($opt->test_fixtures) {
     my $bodies;
     foreach (
         { area_id => 2234, categories => ['Fallen Tree', 'Very Urgent'], name => 'Northamptonshire County Council' },
-        { area_id => 2217, categories => ['Flytipping', 'Roads'], name => 'Buckinghamshire County Council' },
+        { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks'], name => 'Buckinghamshire County Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
@@ -135,6 +135,21 @@ if ($opt->test_fixtures) {
             { key => 'road', name => 'The road' },
             { key => 'off-road', name => 'Off the road/on a verge' },
         ],
+    });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2217},
+        category => 'Parks',
+    });
+    $child_cat->set_extra_fields({
+        code => 'site_code',
+        datatype => 'string',
+        description => 'site code',
+        order => 100,
+        required => 'false',
+        variable => 'true',
+        automated => 'hidden_field',
     });
     $child_cat->update;
 
