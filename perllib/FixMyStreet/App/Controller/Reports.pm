@@ -151,6 +151,7 @@ sub ward : Path : Args(2) {
         if @wards;
     $c->forward( 'check_canonical_url', [ $body ] );
     $c->forward( 'stash_report_filter_status' );
+    $c->forward( 'stash_report_filter_areas' );
     $c->forward('stash_report_sort', [ $c->cobrand->reports_ordering ]);
     $c->forward( 'load_and_group_problems' );
 
@@ -661,6 +662,12 @@ sub load_problems_parameters : Private {
         ];
     }
 
+    if ( $c->stash->{filter_areas} ) {
+        $where->{areas} = [
+            map { { 'like', '%,' . $_ . ',%' } } @{$c->stash->{filter_areas}}
+        ];
+    }
+
     if (my $bbox = $c->get_param('bbox')) {
         my ($min_lon, $min_lat, $max_lon, $max_lat) = split /,/, $bbox;
         $where->{latitude} = { '>=', $min_lat, '<', $max_lat };
@@ -786,6 +793,14 @@ sub stash_report_filter_status : Private {
 
     $c->stash->{filter_problem_states} = \%filter_problem_states;
     $c->stash->{filter_status} = \%filter_status;
+    return 1;
+}
+
+sub stash_report_filter_areas : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{filter_areas} = [ $c->get_param_list('areas', 1) ] if $c->get_param('areas');
+
     return 1;
 }
 
