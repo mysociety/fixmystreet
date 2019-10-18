@@ -74,10 +74,16 @@ fixmystreet.assets.add(road_defaults, {
         }
     },
     nearest_radius: 100,
-    usrn: {
-        attribute: 'NSG_REF',
-        field: 'NSGRef'
-    }
+    usrn: [
+        {
+            attribute: 'NSG_REF',
+            field: 'NSGRef'
+        },
+        {
+            attribute: 'NSG_REF',
+            field: 'site_code'
+        }
+    ]
 });
 
 fixmystreet.assets.add(defaults, {
