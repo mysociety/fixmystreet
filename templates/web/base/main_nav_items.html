@@ -26,13 +26,23 @@
       cat_suffix = "?filter_category=" _ categories;
     END;
 
+    IF c.user_exists AND c.user.area_ids.size;
+      areas = c.user.areas_string | uri;
+      IF cat_suffix;
+        area_suffix = "&";
+      ELSE;
+        area_suffix = "?";
+      END;
+      area_suffix = area_suffix _ "areas=" _ areas;
+    END;
+
     reports_uri = '/reports';
     IF c.cobrand.council_area;
        body_name = c.cobrand.council_area | uri;
        reports_uri = "${reports_uri}/${body_name}";
     END;
 
-    INCLUDE navitem uri=reports_uri label=loc('All reports') suffix=cat_suffix;
+    INCLUDE navitem uri=reports_uri label=loc('All reports') suffix=(cat_suffix _ area_suffix);
   ~%]
 [%~ END ~%]
 

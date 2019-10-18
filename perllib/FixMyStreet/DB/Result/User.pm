@@ -651,6 +651,17 @@ has areas_hash => (
     },
 );
 
+has areas_string => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $csv = Text::CSV->new;
+        $csv->combine(@{$self->area_ids || []});
+        return $csv->string;
+    },
+);
+
 sub in_area {
     my ($self, $area) = @_;
     return $self->areas_hash->{$area};
