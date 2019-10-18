@@ -388,8 +388,11 @@ sub redirect_on_signin : Private {
     }
 
     unless ( $redirect ) {
-        $c->detach('redirect_to_categories') if $c->user->from_body && scalar @{ $c->user->categories };
-        $redirect = 'my';
+        my $inspector = $c->user->from_body && (
+            scalar @{ $c->user->categories } ||
+            scalar @{ $c->user->area_ids || [] }
+        );
+        $redirect = $inspector ? 'my/inspector_redirect' : 'my';
     }
     $redirect = 'my' if $redirect =~ /^admin/ && !$c->cobrand->admin_allow_user($c->user);
     if ( $c->cobrand->moniker eq 'zurich' ) {
@@ -400,22 +403,6 @@ sub redirect_on_signin : Private {
     } else {
         $c->res->redirect( $c->uri_for( "/$redirect" ) );
     }
-}
-
-=head2 redirect_to_categories
-
-Redirects the user to their body's reports page, prefiltered to whatever
-categories this user has been assigned to.
-
-=cut
-
-sub redirect_to_categories : Private {
-    my ( $self, $c ) = @_;
-
-    my $categories = $c->user->categories_string;
-    my $body_short = $c->cobrand->short_name( $c->user->from_body );
-
-    $c->res->redirect( $c->uri_for( "/reports/" . $body_short, { filter_category => $categories } ) );
 }
 
 =head2 redirect
