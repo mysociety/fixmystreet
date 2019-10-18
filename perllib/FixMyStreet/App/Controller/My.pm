@@ -45,6 +45,34 @@ sub my : Path : Args(0) {
     $c->forward('setup_page_data');
 }
 
+
+=head2 inspector_redirect
+
+A convenience redirect to the /reports/ page pre-filtered to the
+inspector's body, areas & categories.
+
+=cut
+
+sub inspector_redirect : Local : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $categories = $c->user->categories_string;
+    my $area_ids = $c->user->area_ids;
+    my $body = $c->user->from_body;
+
+    $c->detach('/page_error_404_not_found') unless $body && ($categories || $area_ids);
+
+    if ($area_ids) {
+        my $ids_string = join ",", @$area_ids;
+        my $areas = mySociety::MaPit::call('areas', [ $ids_string ]);
+        $c->stash->{wards} = [ values %$areas ];
+    }
+
+    $c->stash->{body} = $body;
+    $c->set_param('filter_category', $categories) if $categories;
+    $c->detach('/reports/redirect_body');
+}
+
 sub planned : Local : Args(0) {
     my ( $self, $c ) = @_;
 
