@@ -7,23 +7,7 @@
 [%~ ELSE ~%]
     [%~ INCLUDE navitem uri='/' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
 [%~ END ~%]
-
-[%~ UNLESS hide_all_reports_link ~%]
-  [%~
-    IF c.user_exists AND c.user.categories.size;
-      categories = c.user.categories_string | uri;
-      cat_suffix = "?filter_category=" _ categories;
-    END;
-
-    reports_uri = '/reports';
-    IF c.cobrand.council_area;
-       body_name = c.cobrand.council_area | uri;
-       reports_uri = "${reports_uri}/${body_name}";
-    END;
-
-    INCLUDE navitem uri=reports_uri label=loc('All reports') suffix=cat_suffix;
-  ~%]
-[%~ END ~%]
+[%~ INCLUDE 'navigation/_all_reports.html' ~%]
 
 [%~
   IF pc;
@@ -37,7 +21,7 @@
 [%~ INCLUDE navitem uri='/faq' label=loc('Help') ~%]
 
 [%~ UNLESS hide_privacy_link ~%]
-  [%~ INCLUDE navitem uri='/privacy' label=loc('Privacy') liattrs='class="nav-menu__item--privacy"' ~%]
+  [%~ INCLUDE navitem uri=c.cobrand.privacy_policy_url label=loc('Privacy') liattrs='class="nav-menu__item--privacy"' ~%]
 [%~ END ~%]
 
 [%~ IF c.user_exists ~%]
