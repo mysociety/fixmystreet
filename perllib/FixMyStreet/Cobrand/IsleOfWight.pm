@@ -4,6 +4,9 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use Moo;
+with 'FixMyStreet::Roles::ConfirmOpen311';
+
 sub council_area_id { 2636 }
 sub council_area { 'Isle of Wight' }
 sub council_name { 'Island Roads' }
@@ -76,29 +79,6 @@ sub open311_pre_send {
         @$extra = grep { $_->{name} ne 'urgent' } @$extra;
         $row->set_extra_fields(@$extra);
     }
-}
-
-sub open311_config {
-    my ($self, $row, $h, $params) = @_;
-
-    my $extra = $row->get_extra_fields;
-    push @$extra,
-        { name => 'report_url',
-          value => $h->{url} },
-        { name => 'title',
-          value => $row->title },
-        { name => 'description',
-          value => $row->detail };
-
-    if (!$row->get_extra_field_value('site_code')) {
-        if (my $site_code = $self->lookup_site_code($row)) {
-            push @$extra,
-                { name => 'site_code',
-                value => $site_code };
-        }
-    }
-
-    $row->set_extra_fields(@$extra);
 }
 
 # Make sure fetched report description isn't shown.

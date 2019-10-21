@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Moo;
+with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 
 sub council_area_id { 2483 }
@@ -89,35 +90,12 @@ sub open311_post_send {
     }
 }
 
-sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+around 'open311_config' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
 
-    my $extra = $row->get_extra_fields;
-    push @$extra,
-        { name => 'report_url',
-          value => $h->{url} },
-        { name => 'title',
-          value => $row->title },
-        { name => 'description',
-          value => $row->detail };
-
-    # Reports made via FMS.com or the app probably won't have a site code
-    # value because we don't display the adopted highways layer on those
-    # frontends. Instead we'll look up the closest asset from the WFS
-    # service at the point we're sending the report over Open311.
-    if (!$row->get_extra_field_value('site_code')) {
-        if (my $site_code = $self->lookup_site_code($row)) {
-            push @$extra,
-                { name => 'site_code',
-                value => $site_code };
-        }
-    }
-
-    $row->set_extra_fields(@$extra);
-
-    $params->{multi_photos} = 1;
     $params->{upload_files} = 1;
-}
+    $self->$orig($row, $h, $params);
+};
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;

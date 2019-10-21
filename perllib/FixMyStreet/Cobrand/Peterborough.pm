@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Moo;
+with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 
 sub council_area_id { 2566 }
@@ -34,35 +35,16 @@ sub geocoder_munge_results {
 
 sub admin_user_domain { "peterborough.gov.uk" }
 
-sub open311_config {
-    my ($self, $row, $h, $params) = @_;
-
-    my $extra = $row->get_extra_fields;
-    push @$extra,
-        { name => 'report_url',
-          value => $h->{url} },
-        { name => 'title',
-          value => $row->title },
-        { name => 'description',
-          value => $row->detail };
+around 'open311_config' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
 
     # remove the emergency category which is informational only
+    my $extra = $row->get_extra_fields;
     @$extra = grep { $_->{name} ne 'emergency' } @$extra;
-
-    # Reports made via FMS.com or the app probably won't have a site code
-    # value because we don't display the adopted highways layer on those
-    # frontends. Instead we'll look up the closest asset from the WFS
-    # service at the point we're sending the report over Open311.
-    if (!$row->get_extra_field_value('site_code')) {
-        if (my $site_code = $self->lookup_site_code($row)) {
-            push @$extra,
-                { name => 'site_code',
-                value => $site_code };
-        }
-    }
-
     $row->set_extra_fields(@$extra);
-}
+
+    $self->$orig($row, $h, $params);
+};
 
 sub lookup_site_code_config { {
     buffer => 50, # metres
