@@ -82,4 +82,17 @@ sub open311_munge_update_params {
     $params->{description} = "[Customer FMS update] " . $params->{description};
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    # Categories covering Peterborough have a mixture of Open311 and Email
+    # send methods. Peterborough only want specific categories to be visible on
+    # their cobrand, not the email categories from FMS.com.
+    # The FMS.com categories have a devolved send_method set to Email, so we can
+    # filter these out.
+    return $rs->search( { -or => [
+        'me.send_method' => undef, # Open311 categories
+        'me.send_method' => '', # Open311 categories that have been edited in the admin
+    ] } );
+}
+
 1;
