@@ -1,93 +1,154 @@
 @import "_colours";
 @import "../sass/layout";
 
-/* Top */
+h1 {
+  letter-spacing: -1px;
+  font-size: 2.333333333em; //42px
+  line-height: 1.142857143em; //42px
+}
 
-.tfl-mayor-logo {
-  display: block;
-  background-color: #1F2025;
-  color: #fff;
-  padding: 6px 0;
-  padding-right: 9px;
-  
-  img {
-    float: right;
+/* Top */
+#site-header {
+  &:after {
+    content: " ";
+    height: 3.75em;
+    display: block;
+    border-bottom: 1px solid $grey50;
+    background-color: white;
   }
 }
 
-.logo {
-  width: 155px;
+#main-nav {
+  float: none;
+  margin-top: 3em;
+
+  .ie9 & > * {
+    #{$right}: auto;
+    #{$left}: 0;
+  }
 }
-#site-logo {
-  position: absolute;
+
+.nav-menu {
+  border: 0;
 }
-.logo .name {
-    color: #fff;
-    display: inline-block;
-    margin: 7px 0 0 52px;
-    font-size: 15px;
-    font-family: "Johnston100-Regular";
-    line-height: 100%;
-    text-transform: uppercase;
+
+.nav-menu a, .nav-menu span {
+  color: $beck-blue;
+  font-family: $heading-font;
+  font-size: 1.125em;
+  border: 0;
+  background-color: transparent;
+  text-decoration: underline;
+  &:hover,
+  &:active,
+  &:focus,
+  &:visited {
+      color: $blue-dark;
+      background-color: transparent;
+  }
+}
+
+.nav-menu--main a.report-a-problem-btn {
+  background: transparent;
+  &:hover,
+  &:active,
+  &:focus {
+    background: transparent;
+  }
+}
+
+/* Homepage */
+#front-main {
+  background-color: transparent;
+  border-bottom: 1px solid $grey50;
+  #postcodeForm div {
+    margin: 0;
+  }
+  a#geolocate_link {
+    color: $beck-blue;
+    font-family: $heading-font;
+    text-decoration: underline;
+    font-size: 1.125em;
+  }
+}
+
+.frontpage .content {
+  padding: 2em 0;
+}
+
+#front_stats {
+  border: 0;
 }
 
 /* Bottom */
 
-.secondary-footer {
-  padding: 7px 0;
-}
-.secondary-footer li {
-  float: left;
-  margin: 0 1% 0 0;
-}
-
-#footer .secondary-footer span {
-    margin-top: 11px;
-    float: right;
-    display: block;
+#footer li {
+  display: inline-block;
+  width: auto;
+  margin-right: 2em;
 }
 
 /* Navigation */
 
 .top-row-extras { display: none; }
 
-#main-nav {
-  min-height: 55px; /* Not 58 */
-}
-
-.nav-menu--main a, .nav-menu--main span, .nav-menu--main a.report-a-problem-btn {
-  font-size: 1em;
-  color: #fff;
-  padding: 18px 8px 13px;
-  margin: 0;
-  background-color: inherit;
-  border-radius: 0;
-    display: block;
-    -webkit-transition: background-color 0.3s;
-    -moz-transition: background-color 0.3s;
-    transition: background-color 0.3s;
-  &:hover {
-    -webkit-transition: none;
-    -moz-transition: none;
-    transition: none;
-  }
-  &:hover, &:focus {
-    background-color: #444856;
-    border-bottom: 3px solid #2070B0;
-    margin-bottom: -3px
-  }
-}
-
 /* Map page */
 
-body.mappage #site-header {
-  top: 23px;
-  height: 55px; /* Not 58 */
+body.mappage {
+  #site-header {
+    @include box-sizing(border-box);
+    top: 0;
+  }
+
+  // Reinstate the floated nav bar on map pages
+  #main-nav {
+    float: #{$right};
+    margin-top: 0;
+    min-height: auto;
+    height: auto;
+    .nav-menu a, .nav-menu span {
+
+    }
+    // IE9 uses absolute positioning rather than floats.
+    .ie9 & {
+      float: none;
+
+      & > * {
+        #{$right}: 0;
+        #{$left}: auto;
+      }
+    }
+  }
+
+  // A few changes to the nav items now they're on a black background
+  .nav-menu {
+    a, span {
+      color: white;
+      font-size: 1.1em;
+    }
+
+    a {
+      &:hover,
+      &:active,
+      &:focus {
+        background: transparent;
+        text-decoration: underline;
+      }
+    }
+
+    a.report-a-problem-btn {
+      color: white;
+      background: transparent;
+    }
+  }
+
+  .big-green-banner {
+    display: block;
+    text-transform: none;
+  }
 }
 
-body.mappage .nav-wrapper {
-  top: 23px;
-}
+
 
 body.mappage #footer { display: none; }
 

@@ -13,44 +13,152 @@
     src: url("fonts/Johnston100-Regular.woff2") format("woff2"),url("fonts/Johnston100-Regular.woff") format("woff")
 }
 
+@font-face {
+    font-family: 'Johnston100-Bold';
+    src: url("fonts/Johnston100-Bold.woff2") format("woff2"),url("fonts/Johnston100-Bold.woff") format("woff")
+}
+
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
 @import "../sass/base";
 
+
+
+/* General */
+
+body {
+    font-family: $body-font;
+    font-size: 18px;
+    letter-spacing: 0.1px;
+}
+
+h1 {
+    font-family: $heading-font;
+    letter-spacing: -0.85px;
+    font-size: 1.888888889em; //34px
+    line-height: 1.235294118em; //42px
+}
+
+h2 {
+    font-family: $heading-font;
+    font-size: 1.444444444em; //26px
+    line-height: 1.230769231em; //32px
+}
+
+h3 {
+    font-family: $heading-font;
+    font-size: 1.166666667em; //21px
+    line-height: 1.238095238em; //26px
+}
+
+.btn--primary,
+.btn,
+.green-btn {
+    @include tflbutton;
+}
+
+.form-control, .dropzone {
+    @include tflfield;
+}
+
+div.form-error, p.form-error {
+    background: $red;
+}
+
+input.form-error, textarea.form-error {
+    border-color: $red;
+}
+
 /* Header */
 
-.tfl-mayor-logo {
-  display: none;
-}
-
-.logo {
-    float: left;
-    margin-bottom: 0;
-    margin-left: -1em;
-    padding: 6px 4px 6px 10px;
-    width: 48px;
-    height: 43px;
-    background-color: #113B92;
-    background-position: center center;
-}
-.logo .name {
-  display: none;
-}
 #site-logo {
-    background-image: url("https://tfl.gov.uk/static/1/images/vsprite_x2.6cea7f1f.png");
-    background-image: url("https://tfl.gov.uk/static/1/images/vsprite.236da77f.png") \9;
-    background-size: 126px 4914px;
-    background-position: -42px -210px;
-    height: 42px;
-    width: 42px;
+    @include svg-background-image("/cobrands/tfl/images/Tfl_Logo_Blue-banner");
+    background-repeat: no-repeat;
+    background-size: 170px 60px;
+    height: 60px;
+    width: 170px;
+    padding: 0;
+    float: left;
 }
 
 #site-header {
-    border-bottom: 3px solid #121315;
-    background-color: #2D3039;
-    max-height: 58px;
+    background-color: $dark;
     position: relative
+}
+
+
+/* Homepage */
+#front-main {
+    background-color: transparent;
+    text-align: left;
+    #postcodeForm {
+        color: $johnston-black;
+        margin-top: 1em;
+        background-color: transparent;
+        label {
+            font-family: $bold-font;
+        }
+        div {
+            display: block;
+            border: 0;
+            input#sub {
+                @include tflbutton;
+                flex: unset;
+                margin-top: 1em;
+            }
+            input#pc {
+                width: 100%;
+                flex: unset;
+                @include tflfield;
+            }
+        } 
+    }
+    a#geolocate_link {
+        color: $beck-blue;
+        font-family: $heading-font;
+        text-decoration: underline;
+        font-size: 1.125em;
+    }
+    h2 {
+        font-style: normal;
+        font-family: $body-font;
+        font-size: 1.625em;
+        max-width: 29em;
+    }
+}
+
+.item-list__heading {
+    font-family: $body-font;
+}
+
+ol.big-numbers>li {
+    list-style: decimal;
+    padding: 0;
+    margin-left: 1em;
+    margin-bottom: 1em;
+
+    &:before {
+        display: none;
+    }
+}
+
+#front_stats {
+    background-color: transparent;
+    font-family: $heading-font;
+    div {
+        font-size: 1em;
+    }
+    big {
+        color: $beck-blue;
+        letter-spacing: -1px;
+    }
+}
+
+.item-list--front-page {
+    .item-list--reports__item {
+        border-bottom: 1px solid $grey50;
+    }
 }
 
 /* Mobile navigation links */
@@ -76,6 +184,29 @@
     width: 21px;
     margin: -4px 0 0 -8px;
   }
+  &:first-child {
+    .arrow {
+        display: none;
+    }
+  }
+}
+
+.nav-menu {
+    border-top: 1px solid $grey50;
+}
+
+.nav-menu a, .nav-menu span {
+    color: $beck-blue;
+    font-family: $heading-font;
+    border: 0;
+    background-color: transparent;
+    text-decoration: underline;
+    &:hover,
+    &:active,
+    &:focus,
+    &:visited {
+        color: $blue-dark;
+    }
 }
 
 .top-row-extras span {
@@ -103,47 +234,24 @@
 /* Footer */
 
 #footer {
-    border-top: 3px solid #ccc;
-    background-color: #202329;
-    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0px,#292C34),color-stop(6px,#373D48),color-stop(300px,#1F2329));
-    background-image: -webkit-linear-gradient(#292C34 0px,#373D48 6px,#1F2329 300px);
-    background-image: linear-gradient(#292C34 0px,#373D48 6px,#1F2329 300px)
+    border-top: 3px solid $grey50;
+    background-color: $dark;
+    padding: 3em 0;
 }
 
 #footer ul, #footer li {
-    list-style-type: none;
-    margin-bottom: 0
+    list-style-type: none outside none;
+    margin: 0;
 }
 
 #footer a,#footer a:visited {
-    color: #CDCDCD;
-    font-size: 14px;
-    padding: 7px 0;
-    display: block
+    color: $white;
+    text-decoration: underline;
 }
 
-#footer .footer-links {
-    padding-top: 10px;
-    height: 100%;
-    margin: 0 2.54% 10px
-}
 
 #footer .about-tfl-menu,#footer .terms-and-conditions-menu {
     margin: 0
 }
 
-#footer .secondary-footer {
-    background-color: #2C2F38
-}
 
-#footer .secondary-footer span.heading {
-    margin-left: 2.54%;
-    color: #fff;
-    font-size: 14px
-}
-
-#footer .secondary-footer a,#footer .secondary-footer a:visited {
-    color: #66CCCC;
-    text-decoration: underline;
-    font-size: 14px
-}
