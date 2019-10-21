@@ -40,6 +40,7 @@ FixMyStreet::override_config {
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     category => 'Zebra Crossing',
+    photo => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
 });
 my $report = $reports[0];
 
@@ -80,6 +81,11 @@ FixMyStreet::override_config {
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
         is $c->param('attribute[title]'), 'Test Test 1 for ' . $body->id, 'Request had correct title';
+        is_deeply [ $c->param('media_url') ], [
+            'http://www.example.org/photo/' . $report->id . '.0.full.jpeg?74e33622',
+            'http://www.example.org/photo/' . $report->id . '.1.full.jpeg?74e33622',
+        ], 'Request had multiple photos';
+
     };
 
     subtest 'testing reference numbers shown' => sub {
@@ -101,7 +107,7 @@ FixMyStreet::override_config {
             title => 'title',
             detail => 'detail',
         }});
-        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->single;
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
         $mech->content_contains('please call us on 0300 123 5020, quoting your reference number ' . $report->id);
     };
 

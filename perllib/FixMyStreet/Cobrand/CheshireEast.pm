@@ -50,6 +50,8 @@ sub send_questionnaires { 0 }
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
+    $params->{multi_photos} = 1;
+
     my $extra = $row->get_extra_fields;
     push @$extra,
         { name => 'report_url',
