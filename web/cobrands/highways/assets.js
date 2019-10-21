@@ -14,7 +14,6 @@ var defaults = {
             SRSNAME: "urn:ogc:def:crs:EPSG::3857"
         }
     },
-    format_class: OpenLayers.Format.GML.v3.MultiCurveFix,
     asset_type: 'area',
     // this covers zoomed right out on Cumbrian sections of
     // the M6

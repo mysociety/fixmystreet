@@ -1,0 +1,83 @@
+#!/usr/bin/env perl
+#
+# One off script to add emergency messages to a council
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Getopt::Long::Descriptive;
+use Term::ANSIColor;
+use FixMyStreet::DB;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit', 'whether to commit changes to the database' ],
+    ['body=s', 'name of body to attach question to', { required => 1 } ],
+    ['code=s', 'code to use for question', { required => 1 } ],
+    ['question=s', 'question to ask user first', { required => 1 } ],
+    ['yes=s', 'yes answer to question', { required => 1 } ],
+    ['no=s', 'no answer to question', { required => 1 } ],
+    ['message=s', 'message to be shown if form disabled', { required => 1 } ],
+    ['send_method=s', 'send method to restrict categories to' ],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+if (!$opts->commit) {
+    say colored("*** DRY RUN ***", 'cyan');
+}
+
+my $field = {
+    order => 0,
+    required => 'true',
+    protected => 'true',
+    code => $opts->code,
+    description => $opts->question,
+    datatype => 'singlevaluelist',
+    variable => 'true',
+    values => [
+        {
+            key => 'yes',
+            name => $opts->yes,
+            disable => 1,
+            disable_message => $opts->message,
+        },
+        {
+            key => 'no',
+            name => $opts->no,
+        }
+    ],
+};
+
+my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opts->body });
+unless ($body) {
+    say STDERR "Could not find body " . $opts->body;
+    exit 1;
+}
+
+my $contacts = $body->contacts->not_deleted;
+$contacts = $contacts->search({ send_method => $opts->send_method }) if $opts->send_method;
+foreach my $category ($contacts->all) {
+    my $found = $category->update_extra_field($field);
+    if ($found) {
+        say colored("Updating ", 'red') . $opts->code . " message disable form on " . $category->category . ", " . $opts->body;
+    } else {
+        say colored("Making ", 'green') . $opts->code . " message disable form on " . $category->category . ", " . $opts->body;
+    }
+
+    if ($opts->commit) {
+        $category->update({
+            editor => $0,
+            whenedited => \'current_timestamp',
+            note => $opts->code . ' extra field updated by script',
+        });
+    }
+}
