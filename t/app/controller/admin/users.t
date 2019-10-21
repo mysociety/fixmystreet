@@ -249,7 +249,6 @@ my %default_perms = (
     "permissions[template_edit]" => undef,
     "permissions[responsepriority_edit]" => undef,
     "permissions[category_edit]" => undef,
-    trusted_bodies => undef,
 );
 
 # Start this section with user having no name

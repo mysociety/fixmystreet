@@ -356,8 +356,6 @@ sub delete :Chained('id') :Args(0) {
     $p->lastupdate( \'current_timestamp' );
     $p->update;
 
-    $p->user->update_reputation(-1);
-
     $c->model('DB::AdminLog')->create( {
         user => $c->user->obj,
         admin_user => $c->user->from_body->name,
@@ -408,7 +406,6 @@ sub inspect : Private {
 
         my $valid = 1;
         my $update_text = '';
-        my $reputation_change = 0;
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
@@ -463,8 +460,6 @@ sub inspect : Private {
                 $update_params{problem_state} = $problem->state;
 
                 my $state = $problem->state;
-                $reputation_change = 1 if $c->cobrand->reputation_increment_states->{$state};
-                $reputation_change = -1 if $c->cobrand->reputation_decrement_states->{$state};
 
                 # If an inspector has changed the state, subscribe them to
                 # updates
@@ -518,9 +513,6 @@ sub inspect : Private {
         $c->cobrand->call_hook(report_inspect_update_extra => $problem);
 
         if ($valid) {
-            if ( $reputation_change != 0 ) {
-                $problem->user->update_reputation($reputation_change);
-            }
             $problem->lastupdate( \'current_timestamp' );
             $problem->update;
             if ($update_text || %update_params) {

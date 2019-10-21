@@ -748,12 +748,6 @@ sub available_permissions {
             contribute_as_body => _("Create reports/updates as the council"),
             default_to_body => _("Default to creating reports/updates as the council"),
             view_body_contribute_details => _("See user detail for reports created as the council"),
-
-            # NB this permission is special in that it can be assigned to users
-            # without their from_body being set. It's included here for
-            # reference, but left commented out because it's not assigned in the
-            # same way as other permissions.
-            # trusted => _("Trusted to make reports that don't need to be inspected"),
         },
         _("Users") => {
             user_edit => _("Edit users' details/search for their reports"),
@@ -1226,16 +1220,6 @@ sub category_extra_hidden {
     return 1 if ($meta->{automated} || '') eq 'hidden_field';
     return 0;
 }
-
-=item reputation_increment_states/reputation_decrement_states
-
-Get a hashref of states that cause the reporting user's reputation to be
-incremented/decremented, if a report is changed to this state upon inspection.
-
-=cut
-
-sub reputation_increment_states { {} };
-sub reputation_decrement_states { {} };
 
 sub traffic_management_options {
     return [

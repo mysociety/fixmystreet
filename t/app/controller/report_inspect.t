@@ -132,7 +132,6 @@ FixMyStreet::override_config {
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
         $report->state('confirmed');
         $report->update;
-        my $reputation = $report->user->get_extra_metadata("reputation");
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => {
             public_update => "This is a public update.", include_update => "1",
@@ -145,7 +144,6 @@ FixMyStreet::override_config {
         $report->discard_changes;
         my $comment = ($report->comments( undef, { order_by => { -desc => 'id' } } )->all)[1]->text;
         is $comment, "This is a public update.", 'Update was created';
-        is $report->user->get_extra_metadata('reputation'), $reputation, "User reputation wasn't changed";
         $mech->get_ok("/report/$report_id");
         my $meta = $mech->extract_update_metas;
         like $meta->[0], qr/State changed to: Action scheduled/, 'First update mentions action scheduled';
@@ -583,38 +581,6 @@ FixMyStreet::override_config {
 
         return $perms;
     });
-    subtest "test negative reputation" => sub {
-        my $reputation = $report->user->get_extra_metadata("reputation") || 0;
-
-        $mech->get_ok("/report/$report_id");
-        $mech->submit_form( button => 'remove_from_site' );
-
-        $report->discard_changes;
-        is $report->user->get_extra_metadata('reputation'), $reputation-1, "User reputation was decreased";
-        $report->update({ state => 'confirmed' });
-    };
-
-    subtest "test positive reputation" => sub {
-        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_instruct' });
-        $report->update;
-        $report->inspection_log_entry->delete if $report->inspection_log_entry;
-        my $reputation = $report->user->get_extra_metadata("reputation") || 0;
-        $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => {
-            state => 'in progress', include_update => undef,
-        } });
-        $report->discard_changes;
-
-        $mech->submit_form_ok({ button => 'save', with_fields => {
-            state => 'action scheduled', include_update => undef,
-        } });
-        $report->discard_changes;
-        is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
-
-        $mech->submit_form_ok({ button => 'save', with_fields => {
-            state => 'action scheduled', include_update => undef,
-        } });
-    };
 
     subtest "Oxfordshire-specific traffic management options are shown" => sub {
         $report->update({ state => 'confirmed' });

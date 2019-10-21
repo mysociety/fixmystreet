@@ -371,35 +371,6 @@ sub edit : Path : Args(1) {
             $user->area_ids( @area_ids ? \@area_ids : undef );
         }
 
-        # Handle 'trusted' flag(s)
-        my @trusted_bodies = $c->get_param_list('trusted_bodies');
-        if ( $c->user->is_superuser ) {
-            $user->user_body_permissions->search({
-                body_id => { -not_in => \@trusted_bodies },
-                permission_type => 'trusted',
-            })->delete;
-            foreach my $body_id (@trusted_bodies) {
-                $user->user_body_permissions->find_or_create({
-                    body_id => $body_id,
-                    permission_type => 'trusted',
-                });
-            }
-        } elsif ( $c->user->from_body ) {
-            my %trusted = map { $_ => 1 } @trusted_bodies;
-            my $body_id = $c->user->from_body->id;
-            if ( $trusted{$body_id} ) {
-                $user->user_body_permissions->find_or_create({
-                    body_id => $body_id,
-                    permission_type => 'trusted',
-                });
-            } else {
-                $user->user_body_permissions->search({
-                    body_id => $body_id,
-                    permission_type => 'trusted',
-                })->delete;
-            }
-        }
-
         # Update the categories this user operates in
         if ( $user->from_body ) {
             $c->stash->{body} = $user->from_body;

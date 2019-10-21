@@ -116,29 +116,6 @@
           </label>
         </li>
 
-        [% UNLESS user.is_superuser %]
-          <li>
-            <div class="admin-hint">
-              <p>
-                [% loc("Reports made by trusted users will be sent to the responsible body without being inspected first.") %]
-              </p>
-            </div>
-            [% IF c.user.is_superuser %]
-              <label for="trusted_bodies">[% loc('Trusted by bodies:') %]</label>
-              <select class="form-control js-multiple" id='trusted_bodies' name='trusted_bodies' multiple>
-                [% FOR body IN bodies %]
-                  <option value="[% body.id %]"[% ' selected' IF user.has_permission_to('trusted', body.id) %]>[% body.name %]</option>
-                [% END %]
-              </select>
-            [% ELSE %]
-              <label>
-                [% loc('Trusted:') %]
-                <input type="checkbox" id="trusted_bodies" name="trusted_bodies" value="[% c.user.from_body.id %]" [% 'checked' IF user.has_permission_to('trusted', c.user.from_body.id) %]>
-              </label>
-            [% END %]
-          </li>
-        [% END %]
-
         [% IF c.user.is_superuser %]
           <li>
             <div class="admin-hint">

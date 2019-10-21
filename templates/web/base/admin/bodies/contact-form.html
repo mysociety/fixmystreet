@@ -58,21 +58,6 @@
         <textarea id="disabled-message" name="disable_message" class="form-control">[% contact.disable_form_field.description %]</textarea>
     </p>
 
-    <p class="form-check">
-        <input type="checkbox" name="inspection_required" value="1" id="inspection_required" data-toggle-visibility="#js-inspection-reputation-box" [% 'checked' IF contact.get_extra_metadata('inspection_required') %]>
-        <label for="inspection_required">[% loc('Reports in this category must be inspected before being sent') %]</label>
-    </p>
-
-    <p class="form-group form-group--indented [% 'hidden-js' IF NOT contact.get_extra_metadata('inspection_required') %]" id="js-inspection-reputation-box">
-        <label for="reputation_threshold">[% loc('Reputation threshold') %]</label>
-        <span class="form-hint" id="reputation_threshold_hint">
-            [% loc("Reports will automatically be sent without needing to be inspected if the user's <strong>reputation</strong> is at or above this value. Set to <strong>0</strong> if all reports must be inspected regardless.") %]
-        </span>
-        <input type="text" class="form-control" name="reputation_threshold" id="reputation_threshold"
-            value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30"
-            aria-describedby="reputation_threshold_hint">
-    </p>
-
   [% IF body.can_be_devolved %]
     <div class="admin-hint">
       <p>

@@ -438,9 +438,6 @@ sub has_permission_to {
     my $cobrand = $self->result_source->schema->cobrand;
     my $cobrand_perms = $cobrand->available_permissions;
     my %available = map { %$_ } values %$cobrand_perms;
-    # The 'trusted' permission is never set in the cobrand's
-    # available_permissions (see note there in Default.pm) so include it here.
-    $available{trusted} = 1;
     return 0 unless $available{$permission_type};
 
     return 1 if $self->is_superuser;
@@ -598,14 +595,6 @@ sub is_planned_report {
     my ($self, $problem) = @_;
     my $id = $problem->id;
     return scalar grep { $_->report_id == $id } @{$self->active_user_planned_reports};
-}
-
-sub update_reputation {
-    my ( $self, $change ) = @_;
-
-    my $reputation = $self->get_extra_metadata('reputation') || 0;
-    $self->set_extra_metadata( reputation => $reputation + $change);
-    $self->update;
 }
 
 has categories => (
