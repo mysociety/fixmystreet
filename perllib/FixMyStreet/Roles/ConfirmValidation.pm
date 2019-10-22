@@ -24,7 +24,7 @@ sub report_validation {
         $errors->{name} = sprintf( _('Names are limited to %d characters in length.'), 50 );
     }
 
-    if ( length( $report->user->phone ) > 20 ) {
+    if ( $report->user->phone && length( $report->user->phone ) > 20 ) {
         $errors->{phone} = sprintf( _('Phone numbers are limited to %s characters in length.'), 20 );
     }
 

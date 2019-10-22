@@ -35,7 +35,7 @@ sub contact_extra_fields_validation {
     return unless $contact->get_extra_metadata('display_name');
 
     my @contacts = $contact->body->contacts->not_deleted->search({ id => { '!=', $contact->id } });
-    my %display_names = map { $_->get_extra_metadata('display_name') => 1 } @contacts;
+    my %display_names = map { ($_->get_extra_metadata('display_name') || '') => 1 } @contacts;
     if ($display_names{$contact->get_extra_metadata('display_name')}) {
         $errors->{display_name} = 'That display name is already in use';
     }

@@ -79,7 +79,7 @@ FixMyStreet::override_config {
         $mech->content_contains($comment3->text);
     };
 
-    subtest 'Reports don’t show updates from fixmystreet.com cobrand' => sub {
+    subtest "Reports don't show updates from fixmystreet.com cobrand" => sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks($comment2->text);
     };
