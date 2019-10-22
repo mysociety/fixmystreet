@@ -37,8 +37,6 @@ sub enter_postcode_text {
 
 sub admin_user_domain { 'cheshireeast.gov.uk' }
 
-sub map_type { 'OSM' }
-
 sub get_geocoder { 'OSM' }
 
 sub geocoder_munge_results {
