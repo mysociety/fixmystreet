@@ -39,9 +39,11 @@ sub admin_user_domain { 'cheshireeast.gov.uk' }
 
 sub map_type { 'OSM' }
 
+sub get_geocoder { 'OSM' }
+
 sub default_map_zoom { 3 }
 
-sub on_map_default_status { return 'open'; }
+sub on_map_default_status { 'open' }
 
 sub abuse_reports_only { 1 }
 
