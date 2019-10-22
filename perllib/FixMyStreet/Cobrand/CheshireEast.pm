@@ -41,6 +41,13 @@ sub map_type { 'OSM' }
 
 sub get_geocoder { 'OSM' }
 
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} = '' unless $result->{display_name} =~ /Cheshire East/;
+    $result->{display_name} =~ s/, UK$//;
+    $result->{display_name} =~ s/, Cheshire East, North West England, England//;
+}
+
 sub default_map_zoom { 3 }
 
 sub on_map_default_status { 'open' }
