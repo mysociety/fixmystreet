@@ -68,6 +68,10 @@ fixmystreet.assets.add(labeled_defaults, {
             TYPENAME: "StreetLights"
         }
     },
+    filter_key: 'feature_id',
+    filter_value: function(asset) {
+        return asset.attributes.feature_id.substring(0, 1) !== 'B';
+    },
     asset_group: 'Street lights',
     asset_item: 'street light',
     asset_item_message: 'You can pick a <b class="asset-spot">street light</b> from the map &raquo;'
