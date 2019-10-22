@@ -1699,12 +1699,24 @@ sub generate_category_extra_json : Private {
     my $false = JSON->false;
 
     my @fields = map {
-        {
-            %$_,
-            required => ($_->{required} || '') eq "true" ? $true : $false,
-            variable => ($_->{variable} || '') eq "true" ? $true : $false,
-            order => int($_->{order} || 0),
+        my %data = %$_;
+
+        # Mobile app still looks in datatype_description
+        if (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
+            foreach my $opt (@{$_->{values}}) {
+                if ($opt->{disable}) {
+                    my $message = $opt->{disable_message} || $_->{datatype_description};
+                    $data{datatype_description} = $message;
+                }
+            }
         }
+
+        # Remove unneeded
+        delete $data{$_} for qw(datatype protected variable order disable_form);
+        delete $data{datatype_description} unless $data{datatype_description};
+
+        $data{required} = ($_->{required} || '') eq "true" ? $true : $false;
+        \%data;
     } @{ $c->stash->{category_extras}->{$c->stash->{category}} };
 
     return \@fields;
