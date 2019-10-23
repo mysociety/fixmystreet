@@ -359,6 +359,8 @@ subtest "Test superuser can access generate token page" => sub {
     $mech->get_ok('/auth/generate_token');
 };
 
+my $body = $mech->create_body_ok(2237, 'Oxfordshire');
+
 subtest "Test staff user can access generate token page" => sub {
     my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
     ok $user->update({ is_superuser => 0 }), 'user not superuser';
@@ -373,8 +375,6 @@ subtest "Test staff user can access generate token page" => sub {
     });
 
     $mech->content_lacks('Security');
-
-    my $body = $mech->create_body_ok(2237, 'Oxfordshire');
 
     $mech->get('/auth/generate_token');
     is $mech->res->code, 403, "access denied";
@@ -428,8 +428,13 @@ subtest "Test generate token page" => sub {
 };
 
 subtest "Test two-factor authentication admin" => sub {
+  for (0, 1) {
     my $user = $mech->log_in_ok($test_email);
-    ok $user->update({ is_superuser => 1 }), 'user set to superuser';
+    if ($_) {
+        ok $user->update({ is_superuser => 1, from_body => undef }), 'user set to superuser';
+    } else {
+        ok $user->update({ is_superuser => 0, from_body => $body }), 'user set to staff user';
+    }
 
     $mech->get_ok('/auth/generate_token');
     ok !$user->get_extra_metadata('2fa_secret');
@@ -448,4 +453,5 @@ subtest "Test two-factor authentication admin" => sub {
 
     $mech->submit_form_ok({ button => 'toggle_2fa' }, "submit 2FA deactivation");
     $mech->content_contains('has been deactivated', "2FA deactivated");
+  }
 };

@@ -501,7 +501,7 @@ sub redirect_or_confirm_creation : Private {
         return 1;
     }
 
-    # Superusers using 2FA can not log in by code
+    # People using 2FA can not log in by code
     $c->detach( '/page_error_403_access_denied', [] ) if $update->user->has_2fa;
 
     my $data = $c->stash->{token_data};

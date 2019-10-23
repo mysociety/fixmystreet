@@ -283,7 +283,7 @@ sub send_confirmation_email : Private {
 
     my $user = $c->stash->{alert}->user;
 
-    # Superusers using 2FA can not log in by code
+    # People using 2FA can not log in by code
     $c->detach( '/page_error_403_access_denied', [] ) if $user->has_2fa;
 
     my $token = $c->model("DB::Token")->create(

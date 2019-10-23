@@ -21,6 +21,7 @@
         - Allow categories/Open311 questions to disable the reporting form. #2599
         - Improve category edit form. #2469
         - Allow editing of category name. #1398
+        - Allow non-superusers to store 2FA secrets.
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523

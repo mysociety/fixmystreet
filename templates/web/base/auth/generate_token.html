@@ -50,7 +50,7 @@ INCLUDE 'header.html', title = loc('Security'), bodyclass = 'fullwidthpage'
 
     <p>
     <input name="generate_token" type="submit" class="btn" value="[% existing_token ? loc('Replace token') : loc('Generate token') %]">
-      [% IF c.user.is_superuser %]
+      [% IF c.user.is_superuser || c.user.from_body %]
         <input name="toggle_2fa" type="submit" class="btn" value="[% has_2fa ? loc('Deactivate two-factor authentication') : loc('Activate two-factor authentication') %]">
       [% END %]
     </p>

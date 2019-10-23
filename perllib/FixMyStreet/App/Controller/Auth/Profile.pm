@@ -191,7 +191,7 @@ sub generate_token : Path('/auth/generate_token') {
             $c->stash->{token_generated} = 1;
         }
 
-        if ($c->get_param('toggle_2fa') && $c->user->is_superuser) {
+        if ($c->get_param('toggle_2fa')) {
             if ($has_2fa) {
                 $c->user->unset_extra_metadata('2fa_secret');
                 $c->stash->{toggle_2fa_off} = 1;

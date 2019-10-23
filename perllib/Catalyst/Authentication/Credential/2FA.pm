@@ -21,8 +21,7 @@ sub authenticate {
 
     my $user_obj = $realm->find_user($userfindauthinfo, $c);
     if (ref($user_obj)) {
-        # We don't care unless user is a superuser and has a 2FA secret
-        return $user_obj unless $user_obj->is_superuser;
+        # We don't care unless user has a 2FA secret
         return $user_obj unless $user_obj->get_extra_metadata('2fa_secret');
 
         $c->stash->{token} = $c->get_param('token');
@@ -91,8 +90,8 @@ with a two-factor authentication code.
 
 This authentication credential checker takes authentication information
 (most often a username), and only passes if a valid 2FA code is then
-entered. It only works for Users that have an is_superuser flag set,
-plus store the 2FA secret in a FixMyStreet::Role::Extra metadata key.
+entered. It only works for Users that have a 2FA secret stored in a
+FixMyStreet::Role::Extra metadata key.
 
 =head1 CONFIGURATION
 

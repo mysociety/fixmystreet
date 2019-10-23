@@ -290,7 +290,6 @@ subtest "Test two-factor authentication login" => sub {
     my $wrong_code = $auth->code(undef, time() - 120);
 
     my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
-    $user->is_superuser(1);
     $user->password('password');
     $user->set_extra_metadata('2fa_secret', $auth->secret32);
     $user->update;
