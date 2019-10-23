@@ -1,0 +1,59 @@
+#!/usr/bin/env perl
+
+# update the emergency message on NCC categories
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+
+use Getopt::Long;
+
+my ($commit, $message);
+GetOptions(
+    'commit' => \$commit,
+    'message=s' => \$message,
+);
+
+if (!$commit) {
+    say "*** DRY RUN ***";
+}
+
+my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire County Council' });
+if ($northants) {
+    my @northants_contacts = $northants->contacts->all;
+    my $found_total = 0;
+    foreach my $category (@northants_contacts) {
+        my $extra_fields = $category->get_extra_fields;
+        my $found = 0;
+        foreach (@$extra_fields) {
+            next unless $_->{code} eq 'emergency';
+            $found_total++;
+            $_->{code} = '_fms_disable_';
+            $_->{description} = $message;
+            $_->{protected} = 'true';
+            $_->{disable_form} = 'true';
+            $found = 1;
+        }
+        if ($found) {
+            $category->set_extra_fields(@$extra_fields);
+            say "Updating emergency message on " . $category->category . ", Northamptonshire";
+            if ($commit) {
+                $category->update;
+            }
+        }
+    }
+    if (!$found_total) {
+        say STDERR "No emergency messages found for Northamptonshire";
+    }
+} else {
+    say STDERR "Could not find Northamptonshire";
+}
