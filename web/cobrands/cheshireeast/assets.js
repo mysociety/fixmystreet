@@ -5,15 +5,7 @@ if (!fixmystreet.maps) {
 }
 
 var defaults = {
-    http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/cheshireeast",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
+    wfs_url: "https://tilma.staging.mysociety.org/mapserver/cheshireeast",
     format_class: OpenLayers.Format.GML.v3.MultiCurveFix, // XXX Remove on merge
     max_resolution: 4.777314267158508,
     min_resolution: 0.5971642833948135,
@@ -63,15 +55,9 @@ var labeled_defaults = $.extend(true, {}, defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "StreetLights"
-        }
-    },
-    filter_key: 'feature_id',
-    filter_value: function(asset) {
-        return asset.attributes.feature_id.substring(0, 1) !== 'B';
-    },
+    wfs_feature: 'StreetLights',
+    filter_key: 'feature_gr',
+    filter_value: 'LCOL',
     asset_group: 'Street lights',
     asset_item: 'street light',
     asset_item_message: 'You can pick a <b class="asset-spot">street light</b> from the map &raquo;'
@@ -84,11 +70,7 @@ var road_defaults = $.extend(true, {}, defaults, {
 });
 
 fixmystreet.assets.add(road_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "AdoptedRoads"
-        }
-    },
+    wfs_feature: 'AdoptedRoads',
     usrn: {
         attribute: 'site_code',
         field: 'site_code'
@@ -96,11 +78,7 @@ fixmystreet.assets.add(road_defaults, {
 });
 
 fixmystreet.assets.add(road_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "UnAdoptedRoads"
-        }
-    },
+    wfs_feature: 'UnAdoptedRoads',
     road: true,
     all_categories: true,
     no_asset_msg_id: '#js-not-council-road',
