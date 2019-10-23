@@ -119,6 +119,12 @@ input.form-error, textarea.form-error {
         font-family: $heading-font;
         text-decoration: underline;
         font-size: 1.125em;
+        background: transparent;
+        &:hover,
+        &:active,
+        &:focus {
+            background: transparent;
+        }
     }
     h2 {
         font-style: normal;
@@ -206,6 +212,7 @@ ol.big-numbers>li {
     &:focus,
     &:visited {
         color: $blue-dark;
+        background-color: transparent;
     }
 }
 
