@@ -188,23 +188,37 @@ sub generate_token : Path('/auth/generate_token') {
         if ($c->get_param('generate_token')) {
             my $token = mySociety::AuthToken::random_token();
             $c->user->set_extra_metadata('access_token', $token);
+            $c->user->update;
             $c->stash->{token_generated} = 1;
         }
 
-        if ($c->get_param('toggle_2fa')) {
-            if ($has_2fa) {
-                $c->user->unset_extra_metadata('2fa_secret');
-                $c->stash->{toggle_2fa_off} = 1;
+        my $action = $c->get_param('2fa_action') || '';
+        $action = 'deactivate' if $c->get_param('2fa_deactivate');
+        $action = 'activate' if $c->get_param('2fa_activate');
+
+        my $secret;
+        if ($action eq 'deactivate') {
+            $c->user->unset_extra_metadata('2fa_secret');
+            $c->user->update;
+            $c->stash->{toggle_2fa_off} = 1;
+        } elsif ($action eq 'confirm') {
+            $secret = $c->get_param('secret32');
+            if ($c->check_2fa($secret)) {
+                $c->user->set_extra_metadata('2fa_secret', $secret);
+                $c->user->update;
+                $c->stash->{stage} = 'success';
+                $has_2fa = 1;
             } else {
-                my $auth = Auth::GoogleAuth->new;
-                $c->stash->{qr_code} = $auth->qr_code(undef, $c->user->email, 'FixMyStreet');
-                $c->stash->{secret32} = $auth->secret32;
-                $c->user->set_extra_metadata('2fa_secret', $auth->secret32);
-                $c->stash->{toggle_2fa_on} = 1;
+                $action = 'activate'; # Incorrect code, reshow
             }
         }
 
-        $c->user->update();
+        if ($action eq 'activate') {
+            my $auth = Auth::GoogleAuth->new;
+            $c->stash->{qr_code} = $auth->qr_code($secret, $c->user->email, 'FixMyStreet');
+            $c->stash->{secret32} = $auth->secret32;
+            $c->stash->{stage} = 'activate';
+        }
     }
 
     $c->stash->{has_2fa} = $has_2fa ? 1 : 0;

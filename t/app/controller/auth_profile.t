@@ -439,19 +439,28 @@ subtest "Test two-factor authentication admin" => sub {
     $mech->get_ok('/auth/generate_token');
     ok !$user->get_extra_metadata('2fa_secret');
 
-    $mech->submit_form_ok({ button => 'toggle_2fa' }, "submit 2FA activation");
+    $mech->submit_form_ok({ button => '2fa_activate' }, "submit 2FA activation");
+    my ($token) = $mech->content =~ /name="secret32" value="([^"]*)">/;
+
+    use Auth::GoogleAuth;
+    my $auth = Auth::GoogleAuth->new({ secret32 => $token });
+    my $code = $auth->code;
+    my $wrong_code = $auth->code(undef, time() - 120);
+
+    $mech->submit_form_ok({ with_fields => { '2fa_code' => $wrong_code } }, "provide wrong 2FA code" );
+    $mech->content_contains('Try again');
+    $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+
     $mech->content_contains('has been activated', "2FA activated");
 
     $user->discard_changes();
-    my $token = $user->get_extra_metadata('2fa_secret');
-    ok $token, '2FA secret set';
-
-    $mech->content_contains($token, 'secret displayed');
+    my $user_token = $user->get_extra_metadata('2fa_secret');
+    is $token, $user_token, '2FA secret set';
 
     $mech->get_ok('/auth/generate_token');
     $mech->content_lacks($token, 'secret no longer displayed');
 
-    $mech->submit_form_ok({ button => 'toggle_2fa' }, "submit 2FA deactivation");
+    $mech->submit_form_ok({ button => '2fa_deactivate' }, "submit 2FA deactivation");
     $mech->content_contains('has been deactivated', "2FA deactivated");
   }
 };

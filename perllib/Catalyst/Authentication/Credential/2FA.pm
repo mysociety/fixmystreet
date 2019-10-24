@@ -26,7 +26,7 @@ sub authenticate {
 
         $c->stash->{token} = $c->get_param('token');
 
-        if ($self->check_2fa($c, $user_obj)) {
+        if ($c->check_2fa($user_obj->has_2fa)) {
             if ($c->stash->{token}) {
                 my $token = $c->forward('/tokens/load_auth_token', [ $c->stash->{token}, '2fa' ]);
                 # Will contain a detach_to and report/update data
@@ -46,18 +46,6 @@ sub authenticate {
         $c->stash->{template} = 'auth/2fa/form.html';
         $c->detach;
     }
-}
-
-sub check_2fa {
-    my ($self, $c, $user) = @_;
-
-    if (my $code = $c->get_param('2fa_code')) {
-        my $auth = Auth::GoogleAuth->new;
-        my $secret32 = $user->get_extra_metadata('2fa_secret');
-        return 1 if $auth->verify($code, 2, $secret32);
-        $c->stash->{incorrect_code} = 1;
-    }
-    return 0;
 }
 
 __PACKAGE__;
