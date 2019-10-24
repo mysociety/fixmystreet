@@ -243,4 +243,24 @@ sub get_extra_field_value {
     return $field->{value};
 }
 
+=head2 get_extra_field
+
+    my $field = $problem->get_extra_field(name => 'field_name');
+
+Return a field stored in `_fields` in extra, or undefined if it's not present.
+Can use either `name` or `code` to identify the field.
+
+=cut
+
+sub get_extra_field {
+    my ($self, %opts) = @_;
+
+    my @fields = @{ $self->get_extra_fields() };
+
+    my $comparison = $opts{code} ? 'code' : 'name';
+
+    my ($field) = grep { $_->{$comparison} && $_->{$comparison} eq $opts{$comparison} } @fields;
+    return $field;
+}
+
 1;
