@@ -107,6 +107,22 @@ FixMyStreet::override_config {
     };
 };
 
-END {
-    done_testing();
-}
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+}, sub {
+    subtest 'test enforced 2FA for superusers' => sub {
+        my $test_email = 'test@example.com';
+        my $user = FixMyStreet::DB->resultset('User')->find_or_create({ email => $test_email });
+        $user->password('password');
+        $user->is_superuser(1);
+        $user->update;
+
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $test_email, password_sign_in => 'password' } },
+            "sign in using form" );
+        $mech->content_contains('requires two-factor');
+    };
+};
+
+done_testing();

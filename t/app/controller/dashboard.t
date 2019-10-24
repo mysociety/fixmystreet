@@ -1,5 +1,9 @@
 use Test::MockTime ':all';
 
+package FixMyStreet::Cobrand::No2FA;
+use parent 'FixMyStreet::Cobrand::FixMyStreet';
+sub must_have_2fa { 0 }
+
 package FixMyStreet::Cobrand::Tester;
 use parent 'FixMyStreet::Cobrand::Default';
 # Allow access if CSV export for a body, otherwise deny
@@ -38,13 +42,13 @@ my $area_id = '60705';
 my $alt_area_id = '62883';
 
 my $last_month = DateTime->now->subtract(months => 2);
-$mech->create_problems_for_body(2, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'fixmystreet' });
-$mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'fixmystreet', dt => $last_month });
-$mech->create_problems_for_body(1, $body->id, 'Title', { areas => ",$alt_area_id,2651,", category => 'Litter', cobrand => 'fixmystreet' });
+$mech->create_problems_for_body(2, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fat' });
+$mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'no2fa', dt => $last_month });
+$mech->create_problems_for_body(1, $body->id, 'Title', { areas => ",$alt_area_id,2651,", category => 'Litter', cobrand => 'no2fa' });
 
-my @scheduled_problems = $mech->create_problems_for_body(7, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'fixmystreet' });
-my @fixed_problems = $mech->create_problems_for_body(4, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'fixmystreet' });
-my @closed_problems = $mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'fixmystreet' });
+my @scheduled_problems = $mech->create_problems_for_body(7, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'no2fa' });
+my @fixed_problems = $mech->create_problems_for_body(4, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fa' });
+my @closed_problems = $mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'no2fa' });
 
 my $first_problem_id;
 my $first_update_id;
@@ -73,7 +77,7 @@ my $categories = scraper {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+    ALLOWED_COBRANDS => 'no2fa',
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
 

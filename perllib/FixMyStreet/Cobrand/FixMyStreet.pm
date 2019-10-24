@@ -310,4 +310,10 @@ sub suppress_reporter_alerts {
     return 0;
 }
 
+sub must_have_2fa {
+    my ($self, $user) = @_;
+    return 1 if $user->is_superuser;
+    return 0;
+}
+
 1;

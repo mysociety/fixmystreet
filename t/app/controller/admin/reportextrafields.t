@@ -9,6 +9,8 @@ sub allow_report_extra_fields { 1 }
 
 sub area_types { [ 'UTA' ] }
 
+sub must_have_2fa { 0 }
+
 
 package FixMyStreet::Cobrand::SecondTester;
 
