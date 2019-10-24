@@ -44,7 +44,7 @@ sub authenticate {
             $c->stash->{token} = $token->token;
         }
 
-        $c->stash->{template} = 'auth/2faform.html';
+        $c->stash->{template} = 'auth/2fa/form.html';
         $c->detach;
     }
 }
