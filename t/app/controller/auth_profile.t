@@ -1,3 +1,10 @@
+package FixMyStreet::Cobrand::Dummy;
+use parent 'FixMyStreet::Cobrand::Default';
+
+sub must_have_2fa { 1 }
+
+package main;
+
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -9,10 +16,6 @@ LWP::Protocol::PSGI->register($twilio->to_psgi_app, host => 'api.twilio.com');
 my $test_email    = 'test@example.com';
 my $test_email2   = 'test@example.net';
 my $test_password = 'foobar123';
-
-END {
-    done_testing();
-}
 
 # get a sign in email and change password
 subtest "Test change password page" => sub {
@@ -425,6 +428,7 @@ subtest "Test generate token page" => sub {
     $mech->log_out_ok;
     $mech->add_header('Authorization', "Bearer $token");
     $mech->logged_in_ok;
+    $mech->delete_header('Authorization');
 };
 
 subtest "Test two-factor authentication admin" => sub {
@@ -464,3 +468,40 @@ subtest "Test two-factor authentication admin" => sub {
     $mech->content_contains('has been deactivated', "2FA deactivated");
   }
 };
+
+subtest "Test enforced two-factor authentication" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'dummy',
+    }, sub {
+        use Auth::GoogleAuth;
+        my $auth = Auth::GoogleAuth->new;
+        my $code = $auth->code;
+
+        # Sign in with 2FA
+        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        $user->password('password');
+        $user->set_extra_metadata('2fa_secret', $auth->secret32);
+        $user->update;
+
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $test_email, password_sign_in => 'password' } },
+            "sign in using form" );
+        $mech->content_contains('Please generate a two-factor code');
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+
+        $mech->get_ok('/auth/generate_token');
+        $mech->content_contains('Change two-factor');
+        $mech->content_lacks('Deactivate two-factor');
+
+        my ($csrf) = $mech->content =~ /meta content="([^"]*)" name="csrf-token"/;
+        $mech->post_ok('/auth/generate_token', {
+            '2fa_deactivate' => 1,
+            'token' => $csrf,
+        });
+        $mech->content_lacks('has been deactivated', "2FA not deactivated");
+        $mech->content_contains('Please scan this image', 'Change 2FA page shown instead');
+    };
+};
+
+done_testing();

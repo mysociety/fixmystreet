@@ -59,7 +59,9 @@ INCLUDE 'header.html', title = loc('Security'), bodyclass = 'fullwidthpage'
       [% IF c.user.is_superuser || c.user.from_body %]
         [% IF has_2fa %]
         <input name="2fa_activate" type="submit" class="btn" value="[% loc('Change two-factor authentication') %]">
-        <input name="2fa_deactivate" type="submit" class="btn" value="[% loc('Deactivate two-factor authentication') %]">
+          [% IF !c.cobrand.call_hook('must_have_2fa', c.user) %]
+            <input name="2fa_deactivate" type="submit" class="btn" value="[% loc('Deactivate two-factor authentication') %]">
+          [% END %]
         [% ELSE %]
         <input name="2fa_activate" type="submit" class="btn" value="[% loc('Activate two-factor authentication') %]">
         [% END %]

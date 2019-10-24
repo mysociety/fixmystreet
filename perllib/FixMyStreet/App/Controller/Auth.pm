@@ -540,6 +540,11 @@ sub check_auth : Local {
     return;
 }
 
+sub two_factor_setup_success : Private {
+    my ($self, $c) = @_;
+    # Only here to be detached to after setup success
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

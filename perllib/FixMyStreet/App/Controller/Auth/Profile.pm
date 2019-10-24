@@ -195,6 +195,7 @@ sub generate_token : Path('/auth/generate_token') {
         my $action = $c->get_param('2fa_action') || '';
         $action = 'deactivate' if $c->get_param('2fa_deactivate');
         $action = 'activate' if $c->get_param('2fa_activate');
+        $action = 'activate' if $action eq 'deactivate' && $has_2fa && $c->cobrand->call_hook('must_have_2fa', $c->user);
 
         my $secret;
         if ($action eq 'deactivate') {
