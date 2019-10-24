@@ -21,10 +21,15 @@ my ($opts, $usage) = describe_options(
     '%c %o',
     ['commit', 'whether to commit changes to the database' ],
     ['body=s', 'name of body to attach question to', { required => 1 } ],
-    ['code=s', 'code to use for question', { required => 1 } ],
-    ['question=s', 'question to ask user first', { required => 1 } ],
-    ['yes=s', 'yes answer to question', { required => 1 } ],
-    ['no=s', 'no answer to question', { required => 1 } ],
+    ['mode' => 'hidden' => { one_of => [
+        ['questions' => 'add an emergency question'],
+        ['category' => 'add an emergency message'],
+    ], required => 1 }],
+    ['update' => 'only update existing messages'],
+    ['code=s', 'code to use for question'],
+    ['question=s', 'question to ask user first'],
+    ['yes=s', 'yes answer to question'],
+    ['no=s', 'no answer to question'],
     ['message=s', 'message to be shown if form disabled', { required => 1 } ],
     ['send_method=s', 'send method to restrict categories to' ],
     ['help|h', "print usage message and exit" ],
@@ -35,27 +40,43 @@ if (!$opts->commit) {
     say colored("*** DRY RUN ***", 'cyan');
 }
 
-my $field = {
-    order => 0,
-    required => 'true',
-    protected => 'true',
-    code => $opts->code,
-    description => $opts->question,
-    datatype => 'singlevaluelist',
-    variable => 'true',
-    values => [
-        {
-            key => 'yes',
-            name => $opts->yes,
-            disable => 1,
-            disable_message => $opts->message,
-        },
-        {
-            key => 'no',
-            name => $opts->no,
-        }
-    ],
-};
+my $field;
+
+if ( $opts->mode eq 'questions' ) {
+    die "questions, code, yes and no required"
+        unless $opts->questions && $opts->code && $opts->yes && $opts->no;
+
+    $field = {
+        order => 0,
+        required => 'true',
+        protected => 'true',
+        code => $opts->code,
+        description => $opts->question,
+        datatype => 'singlevaluelist',
+        variable => 'true',
+        values => [
+            {
+                key => 'yes',
+                name => $opts->yes,
+                disable => 1,
+                disable_message => $opts->message,
+            },
+            {
+                key => 'no',
+                name => $opts->no,
+            }
+        ],
+    };
+} else {
+    $field = {
+        order => 0,
+        protected => 'true',
+        disable_form => 'true',
+        code => '_fms_disable_',
+        description => $opts->message,
+        variable => 'false',
+    };
+}
 
 my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opts->body });
 unless ($body) {
@@ -66,11 +87,13 @@ unless ($body) {
 my $contacts = $body->contacts->not_deleted;
 $contacts = $contacts->search({ send_method => $opts->send_method }) if $opts->send_method;
 foreach my $category ($contacts->all) {
-    my $found = $category->update_extra_field($field);
+    my $found = $category->get_extra_field(code => $field->{code});
     if ($found) {
-        say colored("Updating ", 'red') . $opts->code . " message disable form on " . $category->category . ", " . $opts->body;
-    } else {
-        say colored("Making ", 'green') . $opts->code . " message disable form on " . $category->category . ", " . $opts->body;
+        say colored("Updating ", 'red') . $field->{code} . " message disable form on " . $category->category . ", " . $opts->body;
+        $category->update_extra_field($field);
+    } elsif (!$opts->update) {
+        say colored("Making ", 'green') . $field->{code} . " message disable form on " . $category->category . ", " . $opts->body;
+        $category->update_extra_field($field);
     }
 
     if ($opts->commit) {
