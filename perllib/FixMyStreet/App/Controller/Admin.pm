@@ -1208,11 +1208,13 @@ sub update_extra_fields : Private {
                     my $key = $c->get_param("metadata[$i].values[$j].key");
                     my $disable = $c->get_param("metadata[$i].values[$j].disable");
                     my $disable_message = $c->get_param("metadata[$i].values[$j].disable_message");
-                    push(@{$meta->{values}}, {
+                    my $value = {
                         name => $name,
                         key => $key,
                         $disable ? (disable => 1, disable_message => $disable_message) : (),
-                    }) if $name;
+                    };
+                    $c->cobrand->call_hook('munge_singlevaluelist_value', "metadata[$i].values[$j]", $value);
+                    push(@{$meta->{values}}, $value) if $name;
                 }
             }
         } elsif ($behaviour eq 'notice') {
