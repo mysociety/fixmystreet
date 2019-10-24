@@ -125,4 +125,10 @@ sub all_reports_ward_areas {
     FixMyStreet::MapIt::call('areas', $self->area_types);
 }
 
+sub munge_singlevaluelist_value {
+    my ($self, $prefix, $value) = @_;
+
+    $value->{safety_critical} = 1 if $self->{c}->get_param("$prefix.safety_critical");
+}
+
 1;
