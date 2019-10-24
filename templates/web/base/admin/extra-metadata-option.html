@@ -21,6 +21,7 @@
                 <label for="disabled-message-[% i %]-[% j %]">[% loc('Message to show when form is disabled (HTML permitted)') %]</label>
                 <textarea id="disabled-message-[% i %]-[% j %]" name="metadata[[% i %]].values[[% j %]].disable_message" class="form-control">[% option.disable_message OR meta.datatype_description | html %]</textarea>
             </p>
+            [% TRY %][% INCLUDE 'admin/_extra-metadata-option-extras.html' %][% CATCH file %][% END %]
         </div>
         <div class="col">
             <button type="button" class="js-metadata-option-remove">[% loc('Remove option') %]</button>
