@@ -192,6 +192,7 @@ var bucks_types = [
     "3B", // HW: SECONDARY DISTRIBUTOR
     "4A", // HW: LINK ROAD
     "4B", // HW: LOCAL ACCESS ROAD
+    "9", // HW: NO CARRIAGEWAY
     "98", // HW: METALLED PUBLIC FOOTPATH
     "99"  // HW: METALLED PUBLIC BRIDLEWAY
 ];
