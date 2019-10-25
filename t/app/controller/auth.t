@@ -343,4 +343,27 @@ subtest "Test enforced two-factor authentication" => sub {
     };
 };
 
+subtest "Check two-factor log in by email works" => sub {
+    use Auth::GoogleAuth;
+    my $auth = Auth::GoogleAuth->new;
+    my $code = $auth->code;
+
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    $user->set_extra_metadata('2fa_secret', $auth->secret32);
+    $user->update;
+
+    $mech->clear_emails_ok;
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok({
+        fields => { username => $test_email, password_register => $test_password },
+        button => 'sign_in_by_code',
+    }, "log in by email");
+
+    my $link = $mech->get_link_from_email;
+    $mech->get_ok($link);
+    $mech->content_contains('Please generate a two-factor code');
+    $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+    $mech->logged_in_ok;
+};
+
 done_testing();
