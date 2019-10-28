@@ -146,6 +146,12 @@ sub area_check {
     if ($council_match) {
         return 1;
     }
+    return ( 0, $self->area_check_error_message($params, $context) );
+}
+
+sub area_check_error_message {
+    my ( $self, $params, $context ) = @_;
+
     my $url = 'https://www.fixmystreet.com/';
     if ($context eq 'alert') {
         $url .= 'alert';
@@ -157,9 +163,8 @@ sub area_check {
     $url .= '?latitude=' . URI::Escape::uri_escape( $self->{c}->get_param('latitude') )
          .  '&amp;longitude=' . URI::Escape::uri_escape( $self->{c}->get_param('longitude') )
       if $self->{c}->get_param('latitude');
-    my $error_msg = "That location is not covered by " . $self->council_name . ".
+    return "That location is not covered by " . $self->council_name . ".
 Please visit <a href=\"$url\">the main FixMyStreet site</a>.";
-    return ( 0, $error_msg );
 }
 
 # All reports page only has the one council.
