@@ -790,6 +790,21 @@ The MaPit types this site handles
 sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
 sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
 
+=item fetch_area_children
+
+Fetches the children of a particular MapIt area ID that match the current
+cobrand's area_types_children type.
+
+=cut
+
+sub fetch_area_children {
+    my ($self, $area_id) = @_;
+
+    return FixMyStreet::MapIt::call('area/children', $area_id,
+        type => $self->area_types_children
+    );
+}
+
 =item contact_name, contact_email
 
 Return the contact name or email for the cobranded version of the site (to be
