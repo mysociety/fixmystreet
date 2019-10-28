@@ -1,5 +1,6 @@
 use CGI::Simple;
 use DateTime;
+use Test::MockModule;
 use FixMyStreet::TestMech;
 use Open311;
 use Open311::GetServiceRequests;
@@ -7,6 +8,16 @@ use Open311::GetServiceRequestUpdates;
 use Open311::PostServiceRequestUpdates;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
+
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::IsleOfWight');
+$cobrand->mock('lookup_site_code', sub {
+    my ($self, $row) = @_;
+    return "Road ID" if $row->latitude == 50.7108;
+});
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
@@ -290,6 +301,7 @@ subtest 'Check special Open311 request handling', sub {
     my $req = $test_data->{test_req_used};
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[urgent]'), undef, 'no urgent param sent';
+    is $c->param('attribute[site_code]'), 'Road ID', 'road ID set';
 
     $mech->email_count_is(1);
     my $email = $mech->get_email;

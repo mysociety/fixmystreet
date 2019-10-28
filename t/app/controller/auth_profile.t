@@ -1,5 +1,9 @@
+use Test::MockModule;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
+
+my $resolver = Test::MockModule->new('Email::Valid');
+$resolver->mock('address', sub { $_[1] });
 
 use t::Mock::Twilio;
 
@@ -9,10 +13,6 @@ LWP::Protocol::PSGI->register($twilio->to_psgi_app, host => 'api.twilio.com');
 my $test_email    = 'test@example.com';
 my $test_email2   = 'test@example.net';
 my $test_password = 'foobar123';
-
-END {
-    done_testing();
-}
 
 # get a sign in email and change password
 subtest "Test change password page" => sub {
@@ -449,3 +449,5 @@ subtest "Test two-factor authentication admin" => sub {
     $mech->submit_form_ok({ button => 'toggle_2fa' }, "submit 2FA deactivation");
     $mech->content_contains('has been deactivated', "2FA deactivated");
 };
+
+done_testing();
