@@ -400,7 +400,7 @@ sub ward_check : Private {
         $parent_id = $c->stash->{area}->{id};
     }
 
-    my $qw = FixMyStreet::MapIt::call('area/children', [ $parent_id ],
+    my $qw = $c->cobrand->call_hook('all_reports_ward_areas') || FixMyStreet::MapIt::call('area/children', [ $parent_id ],
         type => $c->cobrand->area_types_children,
     );
     my %names = map { $c->cobrand->short_name({ name => $_ }) => 1 } @wards;
