@@ -193,7 +193,7 @@ sub first_area_children {
 
     my $cobrand = $self->result_source->schema->cobrand;
 
-    my $children = FixMyStreet::MapIt::call('area/children', $body_area->area_id,
+    my $children = $cobrand->call_hook('all_reports_ward_areas') || FixMyStreet::MapIt::call('area/children', $body_area->area_id,
         type => $cobrand->area_types_children,
     );
 
