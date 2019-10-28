@@ -105,4 +105,10 @@ sub admin_fetch_inspector_areas {
     return 1;
 }
 
+sub all_reports_ward_areas {
+    my $self = shift;
+
+    FixMyStreet::MapIt::call('areas', $self->area_types);
+}
+
 1;
