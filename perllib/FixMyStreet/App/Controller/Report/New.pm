@@ -285,7 +285,7 @@ sub by_category_ajax_data : Private {
 
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
         my $disable_form = $c->forward('disable_form_message');
-        $body->{disable_form} = $disable_form if $disable_form;
+        $body->{disable_form} = $disable_form if %$disable_form;
     }
 
     my $unresponsive = $c->stash->{unresponsive}->{$category};
