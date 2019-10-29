@@ -334,9 +334,8 @@ sub report_page_data {
 
     my @categories = $c->model('DB::Contact')->not_deleted->search(undef, {
         columns => [ 'category', 'extra' ],
-        order_by => [ 'category' ],
         distinct => 1
-    })->all;
+    })->all_sorted;
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
 
