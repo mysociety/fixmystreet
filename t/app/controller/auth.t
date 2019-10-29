@@ -95,8 +95,10 @@ $mech->not_logged_in_ok;
 
     # visit the confirm link and check user is confirmed
     $mech->get_ok($link);
-    ok get_user(), "user created";
+    my $user = get_user();
+    ok $user, "user created";
     is $mech->uri->path, '/my', "redirected to the 'my' section of site";
+    ok $user->get_extra_metadata('last_password_change'), 'password change set';
     $mech->logged_in_ok;
 
     # logout

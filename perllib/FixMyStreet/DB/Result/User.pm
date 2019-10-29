@@ -167,6 +167,14 @@ __PACKAGE__->add_columns(
     },
 );
 
+around password => sub {
+    my ($orig, $self) = (shift, shift);
+    if (@_) {
+        $self->set_extra_metadata(last_password_change => time());
+    }
+    $self->$orig(@_);
+};
+
 =head2 username
 
 Returns a verified email or phone for this user, preferring email,

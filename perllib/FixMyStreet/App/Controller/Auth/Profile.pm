@@ -74,7 +74,8 @@ sub change_password : Path('/auth/change_password') {
 
     if ($c->user->password) {
         # we should have a usable password - save it to the user
-        $c->user->obj->update( { password => $new } );
+        $c->user->obj->password($new);
+        $c->user->obj->update;
         $c->stash->{password_changed} = 1;
     } else {
         # Set up arguments for code sign in
