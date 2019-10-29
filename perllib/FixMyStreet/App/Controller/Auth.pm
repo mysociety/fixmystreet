@@ -366,11 +366,11 @@ sub redirect_on_signin : Private {
     }
 
     unless ( $redirect ) {
-        $c->detach('/my/inspector_redirect') if $c->user->from_body && (
+        my $inspector = $c->user->from_body && (
             scalar @{ $c->user->categories } ||
             scalar @{ $c->user->area_ids || [] }
         );
-        $redirect = 'my';
+        $redirect = $inspector ? 'my/inspector_redirect' : 'my';
     }
     $redirect = 'my' if $redirect =~ /^admin/ && !$c->cobrand->admin_allow_user($c->user);
     if ( $c->cobrand->moniker eq 'zurich' ) {
