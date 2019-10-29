@@ -39,6 +39,7 @@ sub auto : Private {
 
     # decide which cobrand this request should use
     $c->setup_request();
+    $c->forward('check_password_expiry');
     $c->detach('/auth/redirect') if $c->cobrand->call_hook('check_login_disallowed');
 
     return 1;
@@ -164,6 +165,27 @@ sub check_login_required : Private {
     $c->detach('/page_error_404_not_found', []) if $c->request->path =~ /^offline/;
 
     $c->detach( '/auth/redirect' );
+}
+
+sub check_password_expiry : Private {
+    my ($self, $c) = @_;
+
+    return unless $c->user_exists;
+
+    return if $c->action eq $c->controller('JS')->action_for('translation_strings');
+    return if $c->controller eq $c->controller('Auth');
+
+    my $expiry = $c->cobrand->call_hook('password_expiry');
+    return unless $expiry;
+
+    my $last_change = $c->user->get_extra_metadata('last_password_change') || 0;
+    my $midnight = int(time()/86400)*86400;
+    my $expired = $last_change + $expiry < $midnight;
+    return unless $expired;
+
+    my $uri = $c->uri_for('/auth/expired');
+    $c->res->redirect( $uri );
+    $c->detach;
 }
 
 =head2 end

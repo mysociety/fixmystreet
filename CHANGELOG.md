@@ -22,6 +22,7 @@
         - Improve category edit form. #2469
         - Allow editing of category name. #1398
         - Allow non-superuser staff to use 2FA, and optional enforcement of 2FA.
+        - Add optional enforced password expiry.
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523

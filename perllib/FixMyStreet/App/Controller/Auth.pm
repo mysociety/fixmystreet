@@ -67,6 +67,25 @@ sub forgot : Path('forgot') : Args(0) {
     $c->detach('code_sign_in');
 }
 
+sub expired : Path('expired') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->detach('/page_error_403_access_denied', []) unless $c->user_exists;
+
+    my $expiry = $c->cobrand->call_hook('password_expiry');
+    $c->detach('/page_error_403_access_denied', []) unless $expiry;
+
+    my $last_change = $c->user->get_extra_metadata('last_password_change') || 0;
+    my $midnight = int(time()/86400)*86400;
+    my $expired = $last_change + $expiry < $midnight;
+    $c->detach('/page_error_403_access_denied', []) unless $expired;
+
+    $c->stash->{expired_password} = 1;
+    $c->stash->{template} = 'auth/create.html';
+    return unless $c->req->method eq 'POST';
+    $c->detach('code_sign_in', [ $c->user->email ]);
+}
+
 sub authenticate : Private {
     my ($self, $c, $type, $username, $password) = @_;
     return 1 if $type eq 'email' && $c->authenticate({ email => $username, email_verified => 1, password => $password });
@@ -121,9 +140,9 @@ they come back with a token (which contains the email/phone).
 =cut
 
 sub code_sign_in : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $override_username ) = @_;
 
-    my $username = $c->stash->{username} = $c->get_param('username') || '';
+    my $username = $c->stash->{username} = $override_username || $c->get_param('username') || '';
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
 
