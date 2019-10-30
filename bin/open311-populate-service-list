@@ -16,17 +16,22 @@ use Getopt::Long::Descriptive;
 
 my ($opt, $usage) = describe_options(
     '%c %o',
+    ['body|b:s',   "body name to only fetch this body"],
     ['verbose|v',  "print out all services as they are found"],
     ['warn|w',     "output warnings about any issues"],
     ['help',       "print usage message and exit" ],
 );
-print($usage->text), exit if $opt->help;
+$usage->die if $opt->help;
 
 my $bodies = FixMyStreet::DB->resultset('Body')->search( {
     # Until Oxfordshire does
     name => { -not_in => [ 'Oxfordshire County Council' ] },
     send_method => 'Open311'
 } );
+if ($opt->body) {
+    $bodies = $bodies->search({ name => $opt->body });
+}
+
 my $verbose = 0;
 $verbose = 1 if $opt->warn;
 $verbose = 2 if $opt->verbose;
