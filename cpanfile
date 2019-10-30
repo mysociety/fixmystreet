@@ -131,6 +131,8 @@ requires 'YAML', '1.28';
 feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     # East Hampshire
     requires 'SOAP::Lite', '1.20';
+    # TfL
+    requires 'Net::Subnet';
 };
 
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {

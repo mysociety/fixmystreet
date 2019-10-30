@@ -10,7 +10,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'TfL');
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
-my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 $staffuser->user_body_permissions->create({
     body => $body,
     permission_type => 'contribute_as_body',
@@ -38,7 +38,8 @@ my $contact2 = $mech->create_contact_ok(
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'tfl',
-    MAPIT_URL => 'http://mapit.uk/'
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => { internal_ips => { tfl => [ '127.0.0.1' ] } },
 }, sub {
 
 subtest "test report creation and reference number" => sub {
@@ -185,6 +186,74 @@ subtest 'Bromley staff cannot access TfL admin' => sub {
     $mech->log_out_ok;
 };
 
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'tfl',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => { internal_ips => { tfl => [ '127.0.0.1' ] } },
+}, sub {
+    subtest 'On internal network, user not asked to sign up for 2FA' => sub {
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $staffuser->email, password_sign_in => 'password' } },
+            "sign in using form" );
+        $mech->content_contains('Your account');
+    };
+    subtest 'On internal network, user with 2FA not asked to enter it' => sub {
+        use Auth::GoogleAuth;
+        my $auth = Auth::GoogleAuth->new;
+        my $code = $auth->code;
+
+        $staffuser->set_extra_metadata('2fa_secret', $auth->secret32);
+        $staffuser->update;
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $staffuser->email, password_sign_in => 'password' } },
+            "sign in using form" );
+        $mech->content_lacks('generate a two-factor code');
+        $mech->content_contains('Your account');
+    };
+    subtest 'On internal network, cannot disable 2FA' => sub {
+        $mech->get_ok('/auth/generate_token');
+        $mech->content_contains('Change two-factor');
+        $mech->content_lacks('Deactivate two-factor');
+        $staffuser->unset_extra_metadata('2fa_secret');
+        $staffuser->update;
+    };
+};
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'tfl',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'On external network, user asked to sign up for 2FA' => sub {
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $staffuser->email, password_sign_in => 'password' } },
+            "sign in using form" );
+        $mech->content_contains('requires two-factor authentication');
+    };
+    subtest 'On external network, user with 2FA asked to enter it' => sub {
+        use Auth::GoogleAuth;
+        my $auth = Auth::GoogleAuth->new;
+        my $code = $auth->code;
+
+        $staffuser->set_extra_metadata('2fa_secret', $auth->secret32);
+        $staffuser->update;
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $staffuser->email, password_sign_in => 'password' } },
+            "sign in using form" );
+        $mech->content_contains('Please generate a two-factor code');
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+    };
+    subtest 'On external network, cannot disable 2FA' => sub {
+        $mech->get_ok('/auth/generate_token');
+        $mech->content_contains('Change two-factor');
+        $mech->content_lacks('Deactivate two-factor');
+        $staffuser->unset_extra_metadata('2fa_secret');
+        $staffuser->update;
+    };
 };
 
 FixMyStreet::override_config {
