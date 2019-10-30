@@ -5,15 +5,7 @@ if (!fixmystreet.maps) {
 }
 
 var defaults = {
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/lincs",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::3857"
-        }
-    },
+    wfs_url: "https://tilma.mysociety.org/mapserver/lincs",
     asset_type: 'spot',
     max_resolution: 2.388657133579254,
     min_resolution: 0.5971642833948135,
@@ -29,21 +21,13 @@ var defaults = {
 };
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "SL_Bollards"
-        }
-    },
+    wfs_feature: "SL_Bollards",
     asset_category: "Bollards (lit)",
     asset_item: 'bollard'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "SL_Street_Light_Units"
-        }
-    },
+    wfs_feature: "SL_Street_Light_Units",
     asset_category: "Street light",
     asset_item: 'street light',
     filter_key: 'Type',
@@ -53,11 +37,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "SL_Street_Light_Units"
-        }
-    },
+    wfs_feature: "SL_Street_Light_Units",
     asset_category: "Subway light",
     asset_item: 'light',
     filter_key: 'Type',
@@ -86,11 +66,7 @@ function get_barrier_stylemap() {
 }
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Safety_Barriers"
-        }
-    },
+    wfs_feature: "Safety_Barriers",
     asset_category: ["Roadside safety barrier", "Missing safety fence"],
     asset_item: 'barrier or fence',
     filter_key: 'Type',
@@ -100,21 +76,13 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "LCC_Drainage-GulliesOffletsManholes"
-        }
-    },
+    wfs_feature: "LCC_Drainage-GulliesOffletsManholes",
     asset_category: "Blocked drain",
     asset_item: 'drain'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "ST_All_Structures"
-        }
-    },
+    wfs_feature: "ST_All_Structures",
     asset_category: "Damaged dyke, ditch or culvert",
     asset_item: 'culvert',
     filter_key: 'Type',
@@ -124,21 +92,13 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "SL_Lit_Signs"
-        }
-    },
+    wfs_feature: "SL_Lit_Signs",
     asset_category: "Sign (lit)",
     asset_item: 'street sign'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "ST_All_Structures"
-        }
-    },
+    wfs_feature: "ST_All_Structures",
     asset_category: [
         "Bridge",
         "Bridge or Structure"
@@ -153,11 +113,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Carriageway"
-        }
-    },
+    wfs_feature: "Carriageway",
     asset_category: [
         "Damaged/missing cats eye",
         "Damaged road edge, encroaches less than 100mm",
@@ -176,11 +132,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "NSG"
-        }
-    },
+    wfs_feature: "NSG",
     always_visible: true,
     non_interactive: true,
     usrn: {
@@ -207,11 +159,7 @@ var llpg_stylemap = new OpenLayers.StyleMap({
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "LLPG"
-        }
-    },
+    wfs_feature: "LLPG",
     // LLPG is only to be shown when fully zoomed in
     max_resolution: 0.5971642833948135,
     stylemap: llpg_stylemap,
