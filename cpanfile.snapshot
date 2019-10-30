@@ -5424,6 +5424,13 @@ DISTRIBUTIONS
       POSIX 0
       Socket 0
       Time::HiRes 0
+  Net-Subnet-1.03
+    pathname: J/JU/JUERD/Net-Subnet-1.03.tar.gz
+    provides:
+      Net::Subnet 1.03
+    requirements:
+      ExtUtils::MakeMaker 0
+      Socket6 0.23
   Net-Twitter-Lite-0.12008
     pathname: M/MM/MMIMS/Net-Twitter-Lite-0.12008.tar.gz
     provides:
@@ -6771,6 +6778,12 @@ DISTRIBUTIONS
       ExtUtils::Constant 0.23
       ExtUtils::MakeMaker 0
       perl 5.006001
+  Socket6-0.29
+    pathname: U/UM/UMEMOTO/Socket6-0.29.tar.gz
+    provides:
+      Socket6 0.29
+    requirements:
+      ExtUtils::MakeMaker 0
   Sort-Key-1.32
     pathname: S/SA/SALVA/Sort-Key-1.32.tar.gz
     provides:
