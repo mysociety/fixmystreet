@@ -343,6 +343,40 @@ subtest "Test enforced two-factor authentication" => sub {
     };
 };
 
+subtest "Test enforced two-factor authentication, no password yet set" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'dummy',
+    }, sub {
+        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        $user->unset_extra_metadata('2fa_secret');
+        $user->update;
+
+        $mech->clear_emails_ok;
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok({
+            fields => { username => $test_email, password_register => $test_password },
+            button => 'sign_in_by_code',
+        }, "log in by email");
+
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+
+        $mech->content_contains('requires two-factor');
+        $mech->submit_form_ok({ with_fields => { '2fa_action' => 'activate' } }, "submit 2fa activation");
+        my ($token) = $mech->content =~ /name="secret32" value="([^"]*)">/;
+
+        my $auth = Auth::GoogleAuth->new({ secret32 => $token });
+        my $code = $auth->code;
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2fa code" );
+
+        $user->discard_changes();
+        my $user_token = $user->get_extra_metadata('2fa_secret');
+        is $token, $user_token, '2FA secret set';
+
+        $mech->logged_in_ok;
+    };
+};
+
 subtest "Check two-factor log in by email works" => sub {
     use Auth::GoogleAuth;
     my $auth = Auth::GoogleAuth->new;

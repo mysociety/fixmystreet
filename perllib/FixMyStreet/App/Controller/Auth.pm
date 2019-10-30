@@ -259,6 +259,7 @@ sub process_login : Private {
 
     # People using 2FA need to supply a code
     $c->forward( 'token_2fa', [ $user, $url_token ] ) if $user->has_2fa;
+    $c->forward( 'signup_2fa', [ $user ] ) if $c->cobrand->call_hook('must_have_2fa', $user);
 
     if ($data->{old_user_id}) {
         # Were logged in as old_user_id, want to switch to $user
@@ -317,6 +318,36 @@ sub token_2fa : Private {
     $c->stash->{form_action} = $c->req->path;
     $c->stash->{token} = $url_token;
     $c->stash->{template} = 'auth/2fa/form.html';
+    $c->detach;
+}
+
+sub signup_2fa : Private {
+    my ($self, $c, $user) = @_;
+
+    $c->stash->{form_action} = $c->req->path;
+    $c->stash->{template} = 'auth/2fa/intro.html';
+    my $action = $c->get_param('2fa_action') || '';
+
+    my $secret;
+    if ($action eq 'confirm') {
+        $secret = $c->get_param('secret32');
+        if ($c->check_2fa($secret)) {
+            $user->set_extra_metadata('2fa_secret' => $secret);
+            $user->update;
+            $c->stash->{stage} = 'success';
+            return;
+        } else {
+            $action = 'activate'; # Incorrect code, reshow
+        }
+    }
+
+    if ($action eq 'activate') {
+        my $auth = Auth::GoogleAuth->new;
+        $c->stash->{qr_code} = $auth->qr_code($secret, $user->email, 'FixMyStreet');
+        $c->stash->{secret32} = $auth->secret32;
+        $c->stash->{stage} = 'activate';
+    }
+
     $c->detach;
 }
 

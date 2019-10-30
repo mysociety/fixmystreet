@@ -5,7 +5,7 @@ INCLUDE 'header.html', title = loc('Two-factor authentication'), bodyclass = 'fu
 <div class="confirmation-header confirmation-header--phone">
     <h1>[% loc('Two-factor authentication') %]</h1>
 
-    <form action="/auth" method="post">
+    <form action="/[% form_action OR 'auth' %]" method="post">
 
       [% IF stage == 'success' %]
         <p>[% loc('Thanks, you have successfully enabled two-factor authentication on your account.') %]</p>
