@@ -37,7 +37,8 @@ my $contact2 = $mech->create_contact_ok(
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'tfl',
-    MAPIT_URL => 'http://mapit.uk/'
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => { internal_ips => { tfl => [ '127.0.0.1' ] } },
 }, sub {
 
 subtest "test report creation and reference number" => sub {
