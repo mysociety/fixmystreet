@@ -91,13 +91,6 @@ OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.
 
 // ---
 
-function format_date(date) {
-    var day = ('0' + date.getDate()).slice(-2);
-    var month = ('0' + (date.getMonth() + 1)).slice(-2);
-    var year = date.getFullYear();
-    return day + '/' + month + '/' + year;
-}
-
 var stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
         fillOpacity: 0,
@@ -135,9 +128,9 @@ var roadworks_defaults = {
             filter.value.transform('EPSG:4326', 'EPSG:27700');
             params.b = filter.value.toArray();
             var date = new Date();
-            params.filterstartdate = format_date(date);
+            params.filterstartdate = fixmystreet.roadworks.format_date(date);
             date.setMonth(date.getMonth() + 3);
-            params.filterenddate = format_date(date);
+            params.filterenddate = fixmystreet.roadworks.format_date(date);
             params.mapzoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
             return params;
         }
@@ -166,7 +159,14 @@ var roadworks_defaults = {
     }
 };
 
-fixmystreet.roadworks = {};
+fixmystreet.roadworks = {
+    format_date: function(date) {
+        var day = ('0' + date.getDate()).slice(-2);
+        var month = ('0' + (date.getMonth() + 1)).slice(-2);
+        var year = date.getFullYear();
+        return day + '/' + month + '/' + year;
+    }
+};
 
 fixmystreet.roadworks.layer_planned = $.extend(true, {}, roadworks_defaults, {
     http_options: { params: { t: 'fp' } }
