@@ -72,8 +72,7 @@ subtest 'check override contact display name' => sub {
         'extra[display_name]' => 'Wittering'
     }});
     $mech->get_ok('/reports/Bath+and+North+East+Somerset');
-    $mech->content_contains('Wittering</option>');
-    $mech->content_contains('value="Litter"');
+    $mech->content_like(qr/Traffic lights<\/option>\s*<option value="Litter">\s*Wittering<\/option>/);
     $mech->content_lacks('Litter</option>');
 };
 

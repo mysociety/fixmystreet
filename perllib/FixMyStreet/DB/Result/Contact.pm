@@ -93,6 +93,21 @@ __PACKAGE__->many_to_many( response_templates => 'contact_response_templates', '
 __PACKAGE__->many_to_many( response_priorities => 'contact_response_priorities', 'response_priority' );
 __PACKAGE__->many_to_many( defect_types => 'contact_defect_types', 'defect_type' );
 
+__PACKAGE__->might_have(
+  "translations",
+  "FixMyStreet::DB::Result::Translation",
+  sub {
+    my $args = shift;
+    return {
+        "$args->{foreign_alias}.object_id" => { -ident => "$args->{self_alias}.id" },
+        "$args->{foreign_alias}.tbl" => { '=' => \"?" },
+        "$args->{foreign_alias}.col" => { '=' => \"?" },
+        "$args->{foreign_alias}.lang" => { '=' => \"?" },
+    };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 sub category_display {
     my $self = shift;
     $self->get_extra_metadata('display_name') || $self->translate_column('category');

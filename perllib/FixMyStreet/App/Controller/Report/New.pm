@@ -7,7 +7,6 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Encode;
 use List::MoreUtils qw(uniq);
 use List::Util 'first';
-use POSIX 'strcoll';
 use HTML::Entities;
 use Path::Class;
 use Utils;
@@ -285,7 +284,7 @@ sub by_category_ajax_data : Private {
 
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
         my $disable_form = $c->forward('disable_form_message');
-        $body->{disable_form} = $disable_form if $disable_form;
+        $body->{disable_form} = $disable_form if %$disable_form;
     }
 
     my $unresponsive = $c->stash->{unresponsive}->{$category};
@@ -677,7 +676,7 @@ sub setup_categories_and_bodies : Private {
       ->model('DB::Contact')    #
       ->active
       ->search( { 'me.body_id' => [ keys %bodies ] }, { prefetch => 'body' } );
-    my @contacts = $c->cobrand->categories_restriction($contacts)->all;
+    my @contacts = $c->cobrand->categories_restriction($contacts)->all_sorted;
 
     # variables to populate
     my %bodies_to_list = ();       # Bodies with categories assigned
@@ -702,9 +701,6 @@ sub setup_categories_and_bodies : Private {
         }
         $c->stash->{unresponsive}{$k} = { map { $_ => 1 } keys %bodies };
     }
-
-    # keysort does not appear to obey locale so use strcoll (see i18n.t)
-    @contacts = sort { strcoll( $a->category, $b->category ) } @contacts;
 
     my %seen;
     foreach my $contact (@contacts) {

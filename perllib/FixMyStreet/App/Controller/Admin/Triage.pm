@@ -57,8 +57,7 @@ sub index : Path : Args(0) {
     my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
         columns => [ 'id', 'category', 'extra' ],
         distinct => 1,
-        order_by => [ 'category' ],
-    } )->all;
+    } )->all_sorted;
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
     my $pins = $c->stash->{pins} || [];

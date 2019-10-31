@@ -187,8 +187,7 @@ sub setup_categories_and_map :Private {
     my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
         columns => [ 'id', 'category', 'extra', 'body_id', 'send_method' ],
         distinct => 1,
-        order_by => [ 'category' ],
-    } )->all;
+    } )->all_sorted;
 
     $c->cobrand->call_hook('munge_reports_category_list', \@categories);
 
