@@ -65,8 +65,10 @@ OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.
                 'org': data.org_name_disp[i],
                 'promoter': data.promoter[i],
                 'works_desc': data.works_desc[i],
-                'start': data.start_date[i],
-                'end': data.end_date[i],
+                'start': new Date(data.start_date[i].replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
+                'end': new Date(data.end_date[i].replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
+                'promoter_works_ref': data.promoter_works_ref[i],
+                'works_state': data.works_state[i],
               }
             };
             // var geojson = false;
@@ -180,8 +182,6 @@ fixmystreet.roadworks.config = {};
 
 fixmystreet.roadworks.display_message = function(feature) {
     var attr = feature.attributes,
-        start = new Date(attr.start.replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
-        end = new Date(attr.end.replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
         tooltip = attr.tooltip.replace(/\\n/g, '\n'),
         desc = attr.works_desc.replace(/\\n/g, '\n');
 
@@ -194,7 +194,7 @@ fixmystreet.roadworks.display_message = function(feature) {
     var $dl = $("<dl></dl>").appendTo($msg);
     $dl.append("<dt>Dates" + colon + "</dt>");
     var $dates = $("<dd></dd>").appendTo($dl);
-    $dates.text(start + " until " + end);
+    $dates.text(attr.start + " until " + attr.end);
     if (config.extra_dates_text) {
         $dates.append('<br>' + config.extra_dates_text);
     }
