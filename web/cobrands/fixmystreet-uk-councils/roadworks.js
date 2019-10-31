@@ -28,7 +28,10 @@ function getColumn(symbol) {
   return 1 + impact[symbol.substr(0, 1)] + tm * 3 - 1;
 }
 
-OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.GeoJSON, {
+OpenLayers.Format.RoadworksOrg = OpenLayers.Class(OpenLayers.Format.GeoJSON, {
+    endMonths: 3,
+    convertToPoints: false,
+
     read: function(json, type, filter) {
         type = (type) ? type : "FeatureCollection";
         var results = null;
@@ -65,8 +68,10 @@ OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.
                 'org': data.org_name_disp[i],
                 'promoter': data.promoter[i],
                 'works_desc': data.works_desc[i],
-                'start': data.start_date[i],
-                'end': data.end_date[i],
+                'start': new Date(data.start_date[i].replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
+                'end': new Date(data.end_date[i].replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
+                'promoter_works_ref': data.promoter_works_ref[i],
+                'works_state': data.works_state[i]
               }
             };
             // var geojson = false;
@@ -79,12 +84,28 @@ OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.
                   'coordinates': [data.longitude[i], data.latitude[i]]
                 };
             }
+            if (this.convertToPoints && feature.geometry.type !== 'Point') {
+                // Convert it to a point based on the centre of the feature bounds
+                var features = OpenLayers.Format.GeoJSON.prototype.read.apply(this, [feature]);
+                if (features.length) {
+                    var f = features[0];
+                    if (f.geometry) {
+                        var point = f.geometry.getBounds().getCenterLonLat();
+                        if (point) {
+                            feature.geometry = {
+                                'type': 'Point',
+                                'coordinates': [point.lon, point.lat]
+                            };
+                        }
+                    }
+                }
+            }
             obj.features.push(feature);
         }
         return OpenLayers.Format.GeoJSON.prototype.read.apply(this, [obj, type, filter]);
     },
 
-    CLASS_NAME: "OpenLayers.Format.RoadworksForwardPlanning"
+    CLASS_NAME: "OpenLayers.Format.RoadworksOrg"
 });
 
 // ---
@@ -134,14 +155,14 @@ var roadworks_defaults = {
             params.b = filter.value.toArray();
             var date = new Date();
             params.filterstartdate = format_date(date);
-            date.setMonth(date.getMonth() + 3);
+            date.setMonth(date.getMonth() + this.format.endMonths);
             params.filterenddate = format_date(date);
             params.mapzoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
             return params;
         }
     },
     srsName: "EPSG:4326",
-    format_class: OpenLayers.Format.RoadworksForwardPlanning,
+    format_class: OpenLayers.Format.RoadworksOrg,
     strategy_class: OpenLayers.Strategy.FixMyStreet,
     stylemap: stylemap,
     body: "", // Cobrand JS should extend and override this.
@@ -180,8 +201,6 @@ fixmystreet.roadworks.config = {};
 
 fixmystreet.roadworks.display_message = function(feature) {
     var attr = feature.attributes,
-        start = new Date(attr.start.replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
-        end = new Date(attr.end.replace(/{ts '([^ ]*).*/, '$1')).toDateString(),
         tooltip = attr.tooltip.replace(/\\n/g, '\n'),
         desc = attr.works_desc.replace(/\\n/g, '\n');
 
@@ -194,7 +213,7 @@ fixmystreet.roadworks.display_message = function(feature) {
     var $dl = $("<dl></dl>").appendTo($msg);
     $dl.append("<dt>Dates" + colon + "</dt>");
     var $dates = $("<dd></dd>").appendTo($dl);
-    $dates.text(start + " until " + end);
+    $dates.text(attr.start + " until " + attr.end);
     if (config.extra_dates_text) {
         $dates.append('<br>' + config.extra_dates_text);
     }
