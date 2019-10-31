@@ -13,6 +13,7 @@ use FixMyStreet::Email::Sender;
 use FixMyStreet::PhotoStorage;
 use Utils;
 
+use Auth::GoogleAuth;
 use Path::Tiny 'path';
 use Try::Tiny;
 use Text::CSV;
@@ -514,6 +515,23 @@ Sets the query parameter to the passed variable.
 sub set_param {
     my ($c, $param, $value) = @_;
     $c->req->params->{$param} = $value;
+}
+
+=head2 check_2fa
+
+Given a user's secret, verifies a submitted code.
+
+=cut
+
+sub check_2fa {
+    my ($c, $secret32) = @_;
+
+    if (my $code = $c->get_param('2fa_code')) {
+        my $auth = Auth::GoogleAuth->new;
+        return 1 if $auth->verify($code, 2, $secret32);
+        $c->stash->{incorrect_code} = 1;
+    }
+    return 0;
 }
 
 =head1 SEE ALSO

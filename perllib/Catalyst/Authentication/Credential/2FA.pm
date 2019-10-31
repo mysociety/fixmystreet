@@ -21,13 +21,55 @@ sub authenticate {
 
     my $user_obj = $realm->find_user($userfindauthinfo, $c);
     if (ref($user_obj)) {
-        # We don't care unless user is a superuser and has a 2FA secret
-        return $user_obj unless $user_obj->is_superuser;
-        return $user_obj unless $user_obj->get_extra_metadata('2fa_secret');
+
+        # We don't care unless user has a 2FA secret, or the cobrand mandates it
+        return $user_obj unless $user_obj->has_2fa || $c->cobrand->call_hook('must_have_2fa', $user_obj);
 
         $c->stash->{token} = $c->get_param('token');
 
-        if ($self->check_2fa($c, $user_obj)) {
+        if (!$user_obj->has_2fa) {
+            $c->stash->{template} = 'auth/2fa/intro.html';
+            my $action = $c->get_param('2fa_action') || '';
+
+            my $secret;
+            if ($action eq 'confirm') {
+                $secret = $c->get_param('secret32');
+                if ($c->check_2fa($secret)) {
+                    $user_obj->set_extra_metadata('2fa_secret' => $secret);
+                    $user_obj->update;
+                    if ($c->stash->{token}) {
+                        my $token = $c->forward('/tokens/load_auth_token', [ $c->stash->{token}, '2fa' ]);
+                        # Will contain a detach_to and report/update data
+                        $c->stash($token->data);
+                    } else {
+                        $c->stash->{stage} = 'success';
+                        $c->stash->{detach_to} = '/auth/two_factor_setup_success';
+                    }
+                    return $user_obj;
+                } else {
+                    $action = 'activate'; # Incorrect code, reshow
+                }
+            }
+
+            if ($action eq 'activate') {
+                my $auth = Auth::GoogleAuth->new;
+                $c->stash->{qr_code} = $auth->qr_code($secret, $user_obj->email, 'FixMyStreet');
+                $c->stash->{secret32} = $auth->secret32;
+                $c->stash->{stage} = 'activate';
+            }
+
+            if ($c->stash->{tfa_data}) {
+                my $token = $c->model("DB::Token")->create( {
+                    scope => '2fa',
+                    data => $c->stash->{tfa_data},
+                });
+                $c->stash->{token} = $token->token;
+            }
+
+            $c->detach;
+        }
+
+        if ($c->check_2fa($user_obj->has_2fa)) {
             if ($c->stash->{token}) {
                 my $token = $c->forward('/tokens/load_auth_token', [ $c->stash->{token}, '2fa' ]);
                 # Will contain a detach_to and report/update data
@@ -44,21 +86,9 @@ sub authenticate {
             $c->stash->{token} = $token->token;
         }
 
-        $c->stash->{template} = 'auth/2faform.html';
+        $c->stash->{template} = 'auth/2fa/form.html';
         $c->detach;
     }
-}
-
-sub check_2fa {
-    my ($self, $c, $user) = @_;
-
-    if (my $code = $c->get_param('2fa_code')) {
-        my $auth = Auth::GoogleAuth->new;
-        my $secret32 = $user->get_extra_metadata('2fa_secret');
-        return 1 if $auth->verify($code, 2, $secret32);
-        $c->stash->{incorrect_code} = 1;
-    }
-    return 0;
 }
 
 __PACKAGE__;
@@ -91,8 +121,8 @@ with a two-factor authentication code.
 
 This authentication credential checker takes authentication information
 (most often a username), and only passes if a valid 2FA code is then
-entered. It only works for Users that have an is_superuser flag set,
-plus store the 2FA secret in a FixMyStreet::Role::Extra metadata key.
+entered. It only works for Users that have a 2FA secret stored in a
+FixMyStreet::Role::Extra metadata key.
 
 =head1 CONFIGURATION
 

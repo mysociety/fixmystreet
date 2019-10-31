@@ -241,11 +241,11 @@ sub token : Path('/M') : Args(1) {
             && (!$c->user_exists || $c->user->id ne $data->{old_user_id});
 
     my $type = $data->{login_type} || 'email';
-    $c->detach( '/auth/process_login', [ $data, $type ] );
+    $c->detach( '/auth/process_login', [ $data, $type, $url_token ] );
 }
 
 sub process_login : Private {
-    my ( $self, $c, $data, $type ) = @_;
+    my ( $self, $c, $data, $type, $url_token ) = @_;
 
     # sign out in case we are another user
     $c->logout();
@@ -257,8 +257,9 @@ sub process_login : Private {
     $c->detach( '/page_error_403_access_denied', [] )
         if FixMyStreet->config('SIGNUPS_DISABLED') && !$user->in_storage && !$data->{old_user_id};
 
-    # Superusers using 2FA can not log in by code
-    $c->detach( '/page_error_403_access_denied', [] ) if $user->has_2fa;
+    # People using 2FA need to supply a code
+    $c->forward( 'token_2fa', [ $user, $url_token ] ) if $user->has_2fa;
+    $c->forward( 'signup_2fa', [ $user ] ) if $c->cobrand->call_hook('must_have_2fa', $user);
 
     if ($data->{old_user_id}) {
         # Were logged in as old_user_id, want to switch to $user
@@ -301,6 +302,53 @@ sub process_login : Private {
 
     # send the user to their page
     $c->detach( 'redirect_on_signin', [ $data->{r}, $data->{p} ] );
+}
+
+=head2 token_2fa
+
+Used after clicking an email token link to request a 2FA code
+
+=cut
+
+sub token_2fa : Private {
+    my ($self, $c, $user, $url_token) = @_;
+
+    return if $c->check_2fa($user->has_2fa);
+
+    $c->stash->{form_action} = $c->req->path;
+    $c->stash->{token} = $url_token;
+    $c->stash->{template} = 'auth/2fa/form.html';
+    $c->detach;
+}
+
+sub signup_2fa : Private {
+    my ($self, $c, $user) = @_;
+
+    $c->stash->{form_action} = $c->req->path;
+    $c->stash->{template} = 'auth/2fa/intro.html';
+    my $action = $c->get_param('2fa_action') || '';
+
+    my $secret;
+    if ($action eq 'confirm') {
+        $secret = $c->get_param('secret32');
+        if ($c->check_2fa($secret)) {
+            $user->set_extra_metadata('2fa_secret' => $secret);
+            $user->update;
+            $c->stash->{stage} = 'success';
+            return;
+        } else {
+            $action = 'activate'; # Incorrect code, reshow
+        }
+    }
+
+    if ($action eq 'activate') {
+        my $auth = Auth::GoogleAuth->new;
+        $c->stash->{qr_code} = $auth->qr_code($secret, $user->email, 'FixMyStreet');
+        $c->stash->{secret32} = $auth->secret32;
+        $c->stash->{stage} = 'activate';
+    }
+
+    $c->detach;
 }
 
 =head2 redirect_on_signin
@@ -538,6 +586,11 @@ sub check_auth : Local {
     # header but we ignore that here. The spec is not keeping up with usage.
 
     return;
+}
+
+sub two_factor_setup_success : Private {
+    my ($self, $c) = @_;
+    # Only here to be detached to after setup success
 }
 
 __PACKAGE__->meta->make_immutable;

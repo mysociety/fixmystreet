@@ -914,8 +914,9 @@ subtest "test password errors for a user who is signing in as they report" => su
 };
 
 foreach my $test (
-  { two_factor => 0, desc => '', },
-  { two_factor => 1, desc => ' with two-factor', },
+  { two_factor => '', desc => '', },
+  { two_factor => 'yes', desc => ' with two-factor', },
+  { two_factor => 'new', desc => ' with mandated two-factor, not yet set up', },
 ) {
   subtest "test report creation for a user who is signing in as they report$test->{desc}" => sub {
     $mech->log_out_ok;
@@ -932,21 +933,25 @@ foreach my $test (
         name     => 'Joe Bloggs',
         phone    => '01234 567 890',
         password => 'secret2',
+        $test->{two_factor} ? (is_superuser => 1) : (),
     } ), "set user details";
 
     my $auth;
-    if ($test->{two_factor}) {
+    my $mock;
+    if ($test->{two_factor} eq 'yes') {
         use Auth::GoogleAuth;
         $auth = Auth::GoogleAuth->new;
-        $user->is_superuser(1);
         $user->set_extra_metadata('2fa_secret', $auth->generate_secret32);
         $user->update;
+    } elsif ($test->{two_factor} eq 'new') {
+        $mock = Test::MockModule->new('FixMyStreet::Cobrand::FixMyStreet');
+        $mock->mock(must_have_2fa => sub { 1 });
     }
 
     # submit initial pc form
     $mech->get_ok('/around');
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
@@ -971,12 +976,22 @@ foreach my $test (
             "submit good details"
         );
 
-        if ($test->{two_factor}) {
+        if ($test->{two_factor} eq 'yes') {
             my $code = $auth->code;
             my $wrong_code = $auth->code(undef, time() - 120);
             $mech->content_contains('Please generate a two-factor code');
             $mech->submit_form_ok({ with_fields => { '2fa_code' => $wrong_code } }, "provide wrong 2FA code" );
             $mech->content_contains('Try again');
+            $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+        } elsif ($test->{two_factor} eq 'new') {
+            $mech->content_contains('requires two-factor');
+            $mech->submit_form_ok({ with_fields => { '2fa_action' => 'activate' } }, "submit 2FA activation");
+            my ($token) = $mech->content =~ /name="secret32" value="([^"]*)">/;
+
+            use Auth::GoogleAuth;
+            my $auth = Auth::GoogleAuth->new({ secret32 => $token });
+            my $code = $auth->code;
+            print $mech->encoded_content;
             $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
         }
 
@@ -998,7 +1013,7 @@ foreach my $test (
     my $report = $user->problems->first;
     ok $report, "Found the report";
 
-    if (!$test->{two_factor}) {
+    if ($test->{two_factor} eq '') {
         # The superuser account will be immediately redirected
         $mech->content_contains('Thank you for reporting this issue');
     }

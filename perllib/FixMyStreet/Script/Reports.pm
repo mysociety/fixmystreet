@@ -148,25 +148,6 @@ sub send(;$) {
             }
             $reporters{ $sender } ||= $sender->new();
 
-            my $inspection_required = $sender_info->{contact}
-                ? $sender_info->{contact}->get_extra_metadata('inspection_required')
-                : undef;
-            if ( $inspection_required ) {
-                my $reputation_threshold = $sender_info->{contact}->get_extra_metadata('reputation_threshold') || 0;
-                my $reputation_threshold_met = 0;
-                if ( $reputation_threshold > 0 ) {
-                    my $user_reputation = $row->user->get_extra_metadata('reputation') || 0;
-                    $reputation_threshold_met = $user_reputation >= $reputation_threshold;
-                }
-                unless (
-                        $row->user->has_permission_to( trusted => $row->bodies_str_ids ) ||
-                        $reputation_threshold_met
-                ) {
-                    $skip = 1;
-                    debug_print("skipped because not yet inspected", $row->id) if $debug_mode;
-                }
-            }
-
             if ( $reporters{ $sender }->should_skip( $row, $debug_mode ) ) {
                 $skip = 1;
                 debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;

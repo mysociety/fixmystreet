@@ -1,3 +1,10 @@
+package FixMyStreet::Cobrand::Dummy;
+use parent 'FixMyStreet::Cobrand::Default';
+
+sub must_have_2fa { 1 }
+
+package main;
+
 use Test::MockModule;
 
 use FixMyStreet::TestMech;
@@ -6,10 +13,6 @@ my $mech = FixMyStreet::TestMech->new;
 my $test_email    = 'test@example.com';
 my $test_email3   = 'newuser@example.org';
 my $test_password = 'foobar123';
-
-END {
-    done_testing();
-}
 
 $mech->get_ok('/auth');
 
@@ -290,7 +293,6 @@ subtest "Test two-factor authentication login" => sub {
     my $wrong_code = $auth->code(undef, time() - 120);
 
     my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
-    $user->is_superuser(1);
     $user->password('password');
     $user->set_extra_metadata('2fa_secret', $auth->secret32);
     $user->update;
@@ -305,3 +307,97 @@ subtest "Test two-factor authentication login" => sub {
     $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
     $mech->logged_in_ok;
 };
+
+subtest "Test enforced two-factor authentication" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'dummy',
+    }, sub {
+        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        $user->unset_extra_metadata('2fa_secret');
+        $user->update;
+
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $test_email, password_sign_in => 'password' } },
+            "sign in using form" );
+
+        $mech->content_contains('requires two-factor');
+        $mech->submit_form_ok({ with_fields => { '2fa_action' => 'activate' } }, "submit 2FA activation");
+        my ($token) = $mech->content =~ /name="secret32" value="([^"]*)">/;
+
+        use Auth::GoogleAuth;
+        my $auth = Auth::GoogleAuth->new({ secret32 => $token });
+        my $code = $auth->code;
+        my $wrong_code = $auth->code(undef, time() - 120);
+
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $wrong_code } }, "provide wrong 2FA code" );
+        $mech->content_contains('Try again');
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+        $mech->content_contains('successfully enabled two-factor authentication', "2FA activated");
+
+        $user->discard_changes();
+        my $user_token = $user->get_extra_metadata('2fa_secret');
+        is $token, $user_token, '2FA secret set';
+
+        $mech->logged_in_ok;
+    };
+};
+
+subtest "Test enforced two-factor authentication, no password yet set" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'dummy',
+    }, sub {
+        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        $user->unset_extra_metadata('2fa_secret');
+        $user->update;
+
+        $mech->clear_emails_ok;
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok({
+            fields => { username => $test_email, password_register => $test_password },
+            button => 'sign_in_by_code',
+        }, "log in by email");
+
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+
+        $mech->content_contains('requires two-factor');
+        $mech->submit_form_ok({ with_fields => { '2fa_action' => 'activate' } }, "submit 2fa activation");
+        my ($token) = $mech->content =~ /name="secret32" value="([^"]*)">/;
+
+        my $auth = Auth::GoogleAuth->new({ secret32 => $token });
+        my $code = $auth->code;
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2fa code" );
+
+        $user->discard_changes();
+        my $user_token = $user->get_extra_metadata('2fa_secret');
+        is $token, $user_token, '2FA secret set';
+
+        $mech->logged_in_ok;
+    };
+};
+
+subtest "Check two-factor log in by email works" => sub {
+    use Auth::GoogleAuth;
+    my $auth = Auth::GoogleAuth->new;
+    my $code = $auth->code;
+
+    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    $user->set_extra_metadata('2fa_secret', $auth->secret32);
+    $user->update;
+
+    $mech->clear_emails_ok;
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok({
+        fields => { username => $test_email, password_register => $test_password },
+        button => 'sign_in_by_code',
+    }, "log in by email");
+
+    my $link = $mech->get_link_from_email;
+    $mech->get_ok($link);
+    $mech->content_contains('Please generate a two-factor code');
+    $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+    $mech->logged_in_ok;
+};
+
+done_testing();

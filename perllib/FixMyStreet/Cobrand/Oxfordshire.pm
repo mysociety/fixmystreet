@@ -172,12 +172,6 @@ sub admin_pages {
     return $pages;
 }
 
-sub reputation_increment_states {
-    return {
-        'action scheduled' => 1,
-    };
-}
-
 sub user_extra_fields {
     return [ 'initials' ];
 }

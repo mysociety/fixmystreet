@@ -1,15 +1,6 @@
 <li>
   <div class="admin-hint">
     <p>
-      [% loc("Reports from users with high enough reputation will be sent immediately without requiring inspection. Each category's threshold can be managed on its edit page. Users earn reputation when a report they have made is marked as inspected by inspectors.") %]
-    </p>
-  </div>
-  [% loc('Reputation:') %] [% user.get_extra_metadata('reputation') %]
-</li>
-
-<li>
-  <div class="admin-hint">
-    <p>
       [% loc(
         "The user's initials are used when sending inspections to Exor.
         Only inspectors need to have this field filled in.")

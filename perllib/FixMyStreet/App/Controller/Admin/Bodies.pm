@@ -269,14 +269,6 @@ sub update_contact : Private {
     } else {
         $contact->unset_extra_metadata( 'photo_required' );
     }
-    if ( $c->get_param('inspection_required') ) {
-        $contact->set_extra_metadata( inspection_required => 1 );
-    } else {
-        $contact->unset_extra_metadata( 'inspection_required' );
-    }
-    if ( $c->get_param('reputation_threshold') ) {
-        $contact->set_extra_metadata( reputation_threshold => int($c->get_param('reputation_threshold')) );
-    }
     if ( my @group = $c->get_param_list('group') ) {
         @group = grep { $_ } @group;
         if (scalar @group == 0) {

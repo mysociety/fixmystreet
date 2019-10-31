@@ -8,20 +8,9 @@ INCLUDE 'header.html', title = loc('Security'), bodyclass = 'fullwidthpage'
     <h1>[% loc('Your token has been generated') %]</h1>
 
     <p>
-        <strong>[% loc('Token:') %]</strong>
+        <strong>[% loc('Token') %]:</strong>
         <span>[% existing_token | html %]</span>
     </p>
-
-    <p><a href="/my">[% loc('Your account') %]</a></p>
-  </div>
-
-[% ELSIF toggle_2fa_on %]
-
-  <div class="confirmation-header">
-    <h1>[% loc('Two-factor authentication has been activated') %]</h1>
-
-    <p align="center"><img src="[% qr_code %]"></p>
-    <p align="center">[% secret32.replace('(....)', '$1 ') %]</p>
 
     <p><a href="/my">[% loc('Your account') %]</a></p>
   </div>
@@ -34,11 +23,48 @@ INCLUDE 'header.html', title = loc('Security'), bodyclass = 'fullwidthpage'
     <p><a href="/my">[% loc('Your account') %]</a></p>
   </div>
 
+[% ELSIF stage == 'success' %]
+
+  <div class="confirmation-header">
+    <h1>[% loc('Two-factor authentication has been activated') %]</h1>
+    <p>[% loc('Thanks, you have successfully enabled two-factor authentication on your account.') %]</p>
+    <p><a href="/my">[% loc('Your account') %]</a></p>
+  </div>
+
+[% ELSIF stage == 'activate' %]
+  <div class="confirmation-header confirmation-header--phone">
+    <h1>[% loc('Two-factor authentication') %]</h1>
+
+    <form action="[% c.uri_for_action('/auth/profile/generate_token') %]" method="post" name="generate_token">
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        [% PROCESS 'auth/2fa/form-add.html' %]
+    </form>
+
 [% ELSE %]
 
 <h1>[% loc('Security') %]</h1>
 
 <form action="[% c.uri_for_action('/auth/profile/generate_token') %]" method="post" name="generate_token">
+
+<h2>[% loc('Two-factor authentication') %]</h2>
+
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    <p>
+      [% IF c.user.is_superuser || c.user.from_body %]
+        [% IF has_2fa %]
+        <input name="2fa_activate" type="submit" class="btn" value="[% loc('Change two-factor authentication') %]">
+          [% IF !c.cobrand.call_hook('must_have_2fa', c.user) %]
+            <input name="2fa_deactivate" type="submit" class="btn" value="[% loc('Deactivate two-factor authentication') %]">
+          [% END %]
+        [% ELSE %]
+        <input name="2fa_activate" type="submit" class="btn" value="[% loc('Activate two-factor authentication') %]">
+        [% END %]
+      [% END %]
+    </p>
+
+<h2>[% loc('Token') %]</h2>
+
     <input type="hidden" name="token" value="[% csrf_token %]">
 
     [% IF existing_token %]
@@ -50,17 +76,15 @@ INCLUDE 'header.html', title = loc('Security'), bodyclass = 'fullwidthpage'
 
     <p>
     <input name="generate_token" type="submit" class="btn" value="[% existing_token ? loc('Replace token') : loc('Generate token') %]">
-      [% IF c.user.is_superuser %]
-        <input name="toggle_2fa" type="submit" class="btn" value="[% has_2fa ? loc('Deactivate two-factor authentication') : loc('Activate two-factor authentication') %]">
-      [% END %]
     </p>
-</form>
 
 [% IF existing_token %]
   <p>
   [% loc('If you generate a new token the existing token will no longer work.') %]
   </p>
 [% END %]
+
+</form>
 [% END %]
 
 [% INCLUDE 'footer.html' %]

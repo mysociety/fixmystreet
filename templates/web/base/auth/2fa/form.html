@@ -8,7 +8,7 @@
         <h1>[% loc("Nearly done! Now check your phone&hellip;") %]</h1>
         <p>[% loc("Please generate a two-factor code and enter it below:") %]</p>
     [% END %]
-    <form action="/auth" method="post">
+    <form action="/[% form_action OR 'auth' %]" method="post">
         <input type="hidden" name="username" value="[% c.get_param('username') | html %]">
         <input type="hidden" name="password_sign_in" value="[% c.get_param('password_sign_in') | html %]">
         <input type="hidden" name="r" value="[% c.get_param('r') | html %]">

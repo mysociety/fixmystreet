@@ -1,0 +1,32 @@
+[%
+INCLUDE 'header.html', title = loc('Two-factor authentication'), bodyclass = 'fullwidthpage'
+%]
+
+<div class="confirmation-header confirmation-header--phone">
+    <h1>[% loc('Two-factor authentication') %]</h1>
+
+    <form action="/[% form_action OR 'auth' %]" method="post">
+
+      [% IF stage == 'success' %]
+        <p>[% loc('Thanks, you have successfully enabled two-factor authentication on your account.') %]</p>
+        <p><a href="/my">[% loc('Your account') %]</a></p>
+
+      [% ELSIF stage == 'activate' %]
+        [% PROCESS 'auth/2fa/form-add.html' %]
+
+      [% ELSE # stage is intro %]
+      <p align="center">[% loc('Your account requires two-factor authentication to be set up.') %]</p>
+        <p align="center">
+            <input class="btn-primary" type="submit" value="[% loc('Activate two-factor authentication') %]">
+        </p>
+        <input type="hidden" name="2fa_action" value="activate">
+      [% END %]
+
+        <input type="hidden" name="username" value="[% c.get_param('username') | html %]">
+        <input type="hidden" name="password_sign_in" value="[% c.get_param('password_sign_in') | html %]">
+        <input type="hidden" name="r" value="[% c.get_param('r') | html %]">
+        <input type="hidden" name="token" value="[% token | html %]">
+    </form>
+</div>
+
+[% INCLUDE 'footer.html' %]
