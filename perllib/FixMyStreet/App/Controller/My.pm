@@ -62,11 +62,13 @@ sub inspector_redirect : Local : Args(0) {
 
     $c->detach('/page_error_404_not_found') unless $body && ($categories || $area_ids);
 
-    my $ids_string = join ",", @$area_ids;
-    my $areas = mySociety::MaPit::call('areas', [ $ids_string ]);
+    if ($area_ids) {
+        my $ids_string = join ",", @$area_ids;
+        my $areas = mySociety::MaPit::call('areas', [ $ids_string ]);
+        $c->stash->{wards} = [ values %$areas ];
+    }
 
     $c->stash->{body} = $body;
-    $c->stash->{wards} = [ values %$areas ];
     $c->set_param('filter_category', $categories) if $categories;
     $c->detach('/reports/redirect_body');
 }
