@@ -131,4 +131,16 @@ sub munge_singlevaluelist_value {
     $value->{safety_critical} = 1 if $self->{c}->get_param("$prefix.safety_critical");
 }
 
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+
+    delete $perms->{Problems}->{report_edit_priority};
+    delete $perms->{Bodies}->{responsepriority_edit};
+
+    return $perms;
+}
+
+
 1;
