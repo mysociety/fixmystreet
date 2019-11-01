@@ -69,6 +69,10 @@ a, .fake-link {
     @include tflfield;
 }
 
+.dropzone {
+    padding: 2.5em 0.5em;
+}
+
 div.form-error, p.form-error {
     background: $red;
 }
