@@ -28,7 +28,10 @@ function getColumn(symbol) {
   return 1 + impact[symbol.substr(0, 1)] + tm * 3 - 1;
 }
 
-OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.GeoJSON, {
+OpenLayers.Format.RoadworksOrg = OpenLayers.Class(OpenLayers.Format.GeoJSON, {
+    endMonths: 3,
+    convertToPoints: false,
+
     read: function(json, type, filter) {
         type = (type) ? type : "FeatureCollection";
         var results = null;
@@ -81,12 +84,28 @@ OpenLayers.Format.RoadworksForwardPlanning = OpenLayers.Class(OpenLayers.Format.
                   'coordinates': [data.longitude[i], data.latitude[i]]
                 };
             }
+            if (this.convertToPoints && feature.geometry.type !== 'Point') {
+                // Convert it to a point based on the centre of the feature bounds
+                var features = OpenLayers.Format.GeoJSON.prototype.read.apply(this, [feature]);
+                if (features.length) {
+                    var f = features[0];
+                    if (f.geometry) {
+                        var point = f.geometry.getBounds().getCenterLonLat();
+                        if (point) {
+                            feature.geometry = {
+                                'type': 'Point',
+                                'coordinates': [point.lon, point.lat]
+                            };
+                        }
+                    }
+                }
+              }
             obj.features.push(feature);
         }
         return OpenLayers.Format.GeoJSON.prototype.read.apply(this, [obj, type, filter]);
     },
 
-    CLASS_NAME: "OpenLayers.Format.RoadworksForwardPlanning"
+    CLASS_NAME: "OpenLayers.Format.RoadworksOrg"
 });
 
 // ---
@@ -129,14 +148,14 @@ var roadworks_defaults = {
             params.b = filter.value.toArray();
             var date = new Date();
             params.filterstartdate = fixmystreet.roadworks.format_date(date);
-            date.setMonth(date.getMonth() + 3);
+            date.setMonth(date.getMonth() + this.format.endMonths);
             params.filterenddate = fixmystreet.roadworks.format_date(date);
             params.mapzoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
             return params;
         }
     },
     srsName: "EPSG:4326",
-    format_class: OpenLayers.Format.RoadworksForwardPlanning,
+    format_class: OpenLayers.Format.RoadworksOrg,
     strategy_class: OpenLayers.Strategy.FixMyStreet,
     stylemap: stylemap,
     body: "", // Cobrand JS should extend and override this.
