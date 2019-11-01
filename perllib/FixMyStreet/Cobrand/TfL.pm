@@ -100,7 +100,7 @@ sub admin_fetch_inspector_areas {
     return FixMyStreet::MapIt::call('areas', $self->area_types);
 }
 
-sub all_reports_ward_areas {
+sub fetch_area_children {
     my $self = shift;
 
     FixMyStreet::MapIt::call('areas', $self->area_types);
