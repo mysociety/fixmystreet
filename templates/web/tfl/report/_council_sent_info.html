@@ -3,7 +3,7 @@
     <p class="council_sent_info">
     [%- IF problem.whensent %]
         [%- IF duration_clause %]
-            [%- external_ref_clause = tprintf(loc('Council ref:&nbsp;FMS%s'), problem.id) %]
+            [%- external_ref_clause = tprintf(loc('TfL ref:&nbsp;FMS%s'), problem.id) %]
         [%- ELSE %]
             [%- external_ref_clause = tprintf(loc('%s ref:&nbsp;%s'), problem.external_body, problem.id) %]
         [%- END %]
