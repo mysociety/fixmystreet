@@ -66,7 +66,7 @@ subtest 'Problem->defect_types behaves correctly' => sub {
 
 subtest 'by_categories returns all defect types grouped by category' => sub {
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $defect_types = FixMyStreet::DB->resultset('DefectType')->by_categories($area_id, @contacts);
+    my $defect_types = FixMyStreet::DB->resultset('DefectType')->by_categories(\@contacts, body_id => $oxfordshire->id);
     my $potholes = decode_json($defect_types->{Potholes});
     my $traffic_lights = decode_json($defect_types->{'Traffic lights'});
     my $pavements = decode_json($defect_types->{Pavements});
@@ -88,7 +88,7 @@ subtest 'by_categories returns defect types for an area with multiple bodies' =>
     );
 
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $defect_types = FixMyStreet::DB->resultset('DefectType')->by_categories($area_id, @contacts);
+    my $defect_types = FixMyStreet::DB->resultset('DefectType')->by_categories(\@contacts, area_id => $area_id);
     my $potholes = decode_json($defect_types->{Potholes});
     my $traffic_lights = decode_json($defect_types->{'Traffic lights'});
     my $pavements = decode_json($defect_types->{Pavements});
