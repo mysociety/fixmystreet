@@ -375,10 +375,16 @@ sub inspect : Private {
     $c->forward('/admin/reports/categories_for_point');
     $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
-    if ($c->cobrand->can('council_area_id')) {
-        my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});
+    if ($c->cobrand->can('body')) {
+        my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories(
+            $c->stash->{contacts},
+            body_id => $c->cobrand->body->id
+        );
         $c->stash->{priorities_by_category} = $priorities_by_category;
-        my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});
+        my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories(
+            $c->stash->{contacts},
+            body_id => $c->cobrand->body->id
+        );
         $c->stash->{templates_by_category} = $templates_by_category;
     }
 
