@@ -49,9 +49,9 @@ subtest 'for_bodies returns correct results' => sub {
     is $priorities->first->name, $general_response_priority->name, 'Correct priority is returned for Traffic lights category';
 };
 
-subtest 'by_categories returns allresponse priorities grouped by category' => sub {
+subtest 'by_categories returns all response priorities grouped by category' => sub {
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $priorities = FixMyStreet::DB->resultset('ResponsePriority')->by_categories($area_id, @contacts);
+    my $priorities = FixMyStreet::DB->resultset('ResponsePriority')->by_categories(\@contacts, body_id => $oxfordshire->id);
     my $potholes = decode_json($priorities->{Potholes});
     my $traffic_lights = decode_json($priorities->{'Traffic lights'});
 
@@ -69,7 +69,7 @@ subtest 'by_categories returns all response priorities for an area with multiple
     );
 
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $priorities = FixMyStreet::DB->resultset('ResponsePriority')->by_categories($area_id, @contacts);
+    my $priorities = FixMyStreet::DB->resultset('ResponsePriority')->by_categories(\@contacts, area_id => $area_id);
     my $potholes = decode_json($priorities->{Potholes});
     my $traffic_lights = decode_json($priorities->{'Traffic lights'});
 
