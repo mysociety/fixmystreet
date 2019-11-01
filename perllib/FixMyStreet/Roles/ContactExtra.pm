@@ -25,8 +25,15 @@ sub for_bodies {
 }
 
 sub by_categories {
-    my ($rs, $area_id, @contacts) = @_;
-    my %body_ids = map { $_->body_id => 1 } FixMyStreet::DB->resultset('BodyArea')->search({ area_id => $area_id });
+    my ($rs, $contacts, %params) = @_;
+
+    my %body_ids = ();
+    if ( $params{body_id} ) {
+        %body_ids = ( $params{body_id} => 1 );
+    } else {
+        %body_ids = map { $_->body_id => 1 } FixMyStreet::DB->resultset('BodyArea')->search({ area_id => $params{area_id} });
+    }
+    my @contacts = @$contacts;
     my @body_ids = keys %body_ids;
     my %extras = ();
     my @results = $rs->for_bodies(\@body_ids, undef);
