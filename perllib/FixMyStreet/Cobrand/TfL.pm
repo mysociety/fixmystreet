@@ -105,4 +105,50 @@ sub admin_fetch_inspector_areas {
     return 1;
 }
 
+sub dashboard_export_problems_add_columns {
+    my $self = shift;
+    my $c = $self->{c};
+
+    $c->stash->{csv}->{headers} = [
+        @{ $c->stash->{csv}->{headers} },
+        "Agent responsible",
+        "Borough",
+        "Safety critical",
+    ];
+
+    $c->stash->{csv}->{columns} = [
+        @{ $c->stash->{csv}->{columns} },
+        "agent_responsible",
+        "borough",
+        "safety_critical",
+    ];
+
+    my %areas;
+    if ($c->stash->{body}) {
+        $self->admin_fetch_inspector_areas($c->stash->{body});
+        my $areas = $self->{c}->stash->{areas};
+        foreach (@$areas) {
+            $areas{$_->{id}} = $_->{name};
+        }
+    }
+
+    $c->stash->{csv}->{extra_data} = sub {
+        my $report = shift;
+
+        my $agent = $report->shortlisted_user;
+        my ($borough) = map { $areas{$_} } grep { $areas{$_} } split /,/, $report->areas;
+
+        my $safety_critical = 0;
+        for (@{$report->get_extra_fields}) {
+            $safety_critical = 1, last if $_->{safety_critical};
+        }
+        return {
+            acknowledged => $report->whensent,
+            agent_responsible => $agent ? $agent->name : '',
+            safety_critical => $safety_critical ? 'Yes' : 'No',
+            borough => $borough,
+        };
+    };
+}
+
 1;
