@@ -10,6 +10,30 @@ my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
+my $bromley = $mech->create_body_ok(2482, 'Bromley Borough Council');
+my $bromleycontact = $mech->create_contact_ok( body_id => $bromley->id, category => 'Potholes', email => 'potholes@example.com' );
+my $bromleyuser = $mech->create_user_ok('bromleyuser@example.com', name => 'Council User', from_body => $bromley);
+$bromleyuser->user_body_permissions->find_or_create({
+    body => $bromley,
+    permission_type => 'report_inspect',
+});
+my $bromleytemplate = $bromley->response_templates->create({
+    title => "Bromley-specific response template.",
+    text => "This template will only appear on the Bromley cobrand.",
+});
+
+my $tfl = $mech->create_body_ok(2482, 'TfL');
+my $tflcontact = $mech->create_contact_ok( body_id => $tfl->id, category => 'Potholes', email => 'potholes@example.com' );
+my $tfluser = $mech->create_user_ok('tfluser@example.com', name => 'Council User', from_body => $tfl);
+$tfluser->user_body_permissions->find_or_create({
+    body => $tfl,
+    permission_type => 'report_inspect',
+});
+my $tfltemplate = $tfl->response_templates->create({
+    title => "TfL-specific response template.",
+    text => "This template will only appear on the TfL cobrand.",
+});
+
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,
@@ -256,6 +280,47 @@ subtest "templates that set state and external_status_code can't be added" => su
     $mech->content_contains( 'State and external status code cannot be used simultaneously.' );
 
     is $oxfordshire->response_templates->count, 0, "Invalid response template wasn't added";
+};
+
+subtest "TfL cobrand only shows TfL templates" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tfl' ],
+    }, sub {
+        $report->update({
+            category => $tflcontact->category,
+            bodies_str => $tfl->id,
+            latitude => 51.402096,
+            longitude => 0.015784,
+            state => 'confirmed',
+            areas => ',2482,',
+        });
+        $mech->log_in_ok( $tfluser->email );
+
+        $mech->get_ok("/report/" . $report->id);
+        $mech->content_contains( $tfltemplate->text );
+        $mech->content_contains( $tfltemplate->title );
+        $mech->content_lacks( $bromleytemplate->text );
+        $mech->content_lacks( $bromleytemplate->title );
+
+        $mech->log_out_ok;
+    };
+};
+
+subtest "Bromley cobrand only shows Bromley templates" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'bromley' ],
+    }, sub {
+        $report->update({ category => $bromleycontact->category, bodies_str => $bromley->id });
+        $mech->log_in_ok( $bromleyuser->email );
+
+        $mech->get_ok("/report/" . $report->id);
+        $mech->content_contains( $bromleytemplate->text );
+        $mech->content_contains( $bromleytemplate->title );
+        $mech->content_lacks( $tfltemplate->text );
+        $mech->content_lacks( $tfltemplate->title );
+
+        $mech->log_out_ok;
+    };
 };
 
 done_testing();
