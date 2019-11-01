@@ -1,0 +1,19 @@
+[% RETURN IF problem.to_body_named('TfL') OR problem.to_body_named('Hounslow') %]
+
+[% IF (problem.is_fixed OR problem.is_closed) AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
+
+    <input type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF (update.mark_open || c.req.params.reopen) %]>
+    [% IF problem.is_closed %]
+      <label class="inline" for="form_reopen">[% loc('This problem is still ongoing') %]</label>
+    [% ELSE %]
+      <label class="inline" for="form_reopen">[% loc('This problem has not been fixed') %]</label>
+    [% END %]
+
+[% ELSIF !problem.is_fixed AND has_fixed_state %]
+
+    <div class="checkbox-group">
+        <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
+        <label class="inline" for="form_fixed">[% loc('This problem has been fixed') %]</label>
+    </div>
+
+[% END %]
