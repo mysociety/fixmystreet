@@ -9,6 +9,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'TfL');
+my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 $staffuser->user_body_permissions->create({
     body => $body,
@@ -153,6 +154,21 @@ subtest 'check report age on /around' => sub {
 
     $mech->get_ok( '/around?lat=' . $report->latitude . '&lon=' . $report->longitude );
     $mech->content_lacks($report->title);
+};
+
+subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {
+    $mech->log_in_ok($superuser->email);
+
+    $mech->get_ok("/admin/users/" . $staffuser->id) or diag $mech->content;
+
+    $mech->submit_form_ok( { with_fields => {
+        area_ids => [2482],
+    } } );
+
+    $staffuser->discard_changes;
+    is_deeply $staffuser->area_ids, [2482], "User assigned to Bromley LBO area";
+
+    $staffuser->update({ area_ids => undef}); # so login below doesn't break
 };
 
 subtest 'TfL staff can access TfL admin' => sub {
