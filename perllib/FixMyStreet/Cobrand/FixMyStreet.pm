@@ -316,4 +316,12 @@ sub must_have_2fa {
     return 0;
 }
 
+sub send_questionnaire {
+    my ($self, $problem) = @_;
+    my $cobrand = $problem->get_cobrand_logged;
+    return 0 if $cobrand->moniker eq 'tfl';
+    return 0 if $problem->to_body_named('TfL');
+    return 1;
+}
+
 1;
