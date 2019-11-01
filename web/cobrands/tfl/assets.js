@@ -79,22 +79,17 @@ var rw_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+OpenLayers.Format.TfLRoadworksOrg = OpenLayers.Class(OpenLayers.Format.RoadworksOrg, {
+    endMonths: 0,
+    convertToPoints: true,
+    CLASS_NAME: "OpenLayers.Format.TfLRoadworksOrg"
+});
+
 fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
     http_options: {
         params: { organisation_id: org_id },
-        filterToParams: function(filter, params) {
-            params = params || {};
-            filter.value.transform('EPSG:4326', 'EPSG:27700');
-            params.b = filter.value.toArray();
-            var date = new Date();
-            params.filterstartdate = fixmystreet.roadworks.format_date(date);
-            // To get roadworks affecting today's date, set end date to today
-            params.filterenddate = params.filterstartdate;
-            params.mapzoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
-            return params;
-        }
-
     },
+    format_class: OpenLayers.Format.TfLRoadworksOrg,
     body: body,
     non_interactive: false,
     always_visible: false,
