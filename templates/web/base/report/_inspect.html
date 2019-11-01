@@ -60,39 +60,7 @@
 
     [% IF permissions.report_edit_priority OR permissions.report_inspect %]
       <div class="inspect-section">
-        <p>
-          <label for="problem_priority">[% loc('Priority') %]</label>
-          <select name="priority" id="problem_priority" class="form-control">
-            <option value="" [% 'selected' UNLESS problem.response_priority_id OR has_default_priority %]>-</option>
-            [% FOREACH priority IN problem.response_priorities %]
-              <option value="[% priority.id %]" [% 'selected' IF ( problem.response_priority_id == priority.id ) OR priority.is_default %][% 'disabled' IF priority.deleted %]>[% priority.name | html %]</option>
-            [% END %]
-          </select>
-        </p>
-
-        [% IF permissions.report_inspect %]
-        <p>
-          <label for="traffic_information">[% loc('Traffic management required?') %]</label>
-          [% traffic_info = problem.get_extra_metadata('traffic_information') %]
-          <select id="traffic_information" name="traffic_information" class="form-control">
-            <option value=""[% ' selected' IF NOT traffic_info %]>-</option>
-            [% FOREACH option IN problem.traffic_management_options %]
-                <option value='[% option %]'[% ' selected' IF traffic_info == option %]>[% option %]</option>
-            [% END %]
-          </select>
-        </p>
-        <p>
-          <label for="detailed_information">[% loc('Extra details') %]</label>
-        [% IF max_detailed_info_length %]
-          <span id="detailed_information_length">
-              [% tprintf(loc('%d characters maximum'), max_detailed_info_length) %]
-          </span>
-        [% END %]
-          <textarea rows="2" name="detailed_information" id="detailed_information" class="form-control"
-            [% IF max_detailed_info_length %]data-max-length="[% max_detailed_info_length %]"[% END %]>[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
-        </p>
-        [% END %]
-
+          [% INCLUDE 'report/inspect/extra_details.html' %]
       </div>
     [% END %]
 
