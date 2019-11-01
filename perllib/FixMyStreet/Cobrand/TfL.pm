@@ -97,13 +97,17 @@ sub admin_fetch_inspector_areas {
 
     return undef unless $body->name eq 'TfL';
 
-    return FixMyStreet::MapIt::call('areas', $self->area_types);
+    return $self->fetch_area_children;
 }
 
 sub fetch_area_children {
     my $self = shift;
 
-    FixMyStreet::MapIt::call('areas', $self->area_types);
+    my $areas = FixMyStreet::MapIt::call('areas', $self->area_types);
+    foreach (keys %$areas) {
+        $areas->{$_}->{name} =~ s/\s*(Borough|City|District|County) Council$//;
+    }
+    return $areas;
 }
 
 1;
