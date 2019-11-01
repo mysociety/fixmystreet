@@ -30,6 +30,8 @@ my $contact1 = $mech->create_contact_ok(
     category => 'Bus stops',
     email => 'busstops@example.com',
 );
+$contact1->set_extra_metadata(group => [ 'Bus things' ]);
+$contact1->update;
 my $contact2 = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Traffic lights',
@@ -175,6 +177,35 @@ subtest "reference number included in email" => sub {
 
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('FMS' . $report->id) or diag $mech->content;
+};
+
+subtest 'Dashboard extra columns' => sub {
+    $mech->log_in_ok( $staffuser->email );
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('Category,Subcategory');
+    $mech->content_contains('Query,Borough');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
+    $mech->content_contains('"Bus things","Bus stops"');
+    $mech->content_contains('"BR1 3UH",Bromley,');
+    $mech->content_contains(',,,no');
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    $report->set_extra_fields({ name => 'safety_critical', value => 'yes' });
+    $report->anonymous(1);
+    $report->update;
+    my $dt = DateTime->now();
+    FixMyStreet::DB->resultset("AdminLog")->create({
+        action => 'category_change',
+        whenedited => $dt,
+        object_id => $report->id,
+        object_type => 'problem',
+        admin_user => $staffuser->name,
+        user => $staffuser,
+    });
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('Query,Borough');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
+    $mech->content_contains('(anonymous ' . $report->id . ')');
+    $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 };
 
 subtest 'check lookup by reference' => sub {
