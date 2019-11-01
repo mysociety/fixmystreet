@@ -142,5 +142,13 @@ sub available_permissions {
     return $perms;
 }
 
+sub response_template_body_ids {
+    my $self = shift;
+
+    my $tfl_id = FixMyStreet::DB->resultset('Body')->find({ name => 'TfL' })->id;
+    return {
+        $tfl_id => 1
+    };
+}
 
 1;

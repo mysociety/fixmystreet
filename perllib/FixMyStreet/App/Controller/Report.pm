@@ -376,9 +376,16 @@ sub inspect : Private {
     $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
     if ($c->cobrand->can('council_area_id')) {
-        my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});
+        my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($c->cobrand->council_area_id, $c->stash->{contacts});
         $c->stash->{priorities_by_category} = $priorities_by_category;
-        my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories($c->cobrand->council_area_id, @{$c->stash->{contacts}});
+        my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories(
+            $c->cobrand->council_area_id,
+            $c->stash->{contacts},
+            # The cobrand may wish to provide its own list of bodies independent
+            # of council_area_id - e.g. TfL covers many areas but we only want
+            # to show response templates directly owned by the TfL body.
+            $c->cobrand->call_hook('response_template_body_ids')
+        );
         $c->stash->{templates_by_category} = $templates_by_category;
     }
 
