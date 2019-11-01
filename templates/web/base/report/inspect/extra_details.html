@@ -1,0 +1,23 @@
+<p>
+    <label for="problem_priority">[% loc('Priority') %]</label>
+    <select name="priority" id="problem_priority" class="form-control">
+        <option value="" [% 'selected' UNLESS problem.response_priority_id OR has_default_priority %]>-</option>
+        [% FOREACH priority IN problem.response_priorities %]
+        <option value="[% priority.id %]" [% 'selected' IF ( problem.response_priority_id == priority.id ) OR priority.is_default %][% 'disabled' IF priority.deleted %]>[% priority.name | html %]</option>
+        [% END %]
+    </select>
+</p>
+
+[% IF permissions.report_inspect %]
+    <p>
+        <label for="traffic_information">[% loc('Traffic management required?') %]</label>
+        [% traffic_info = problem.get_extra_metadata('traffic_information') %]
+        <select id="traffic_information" name="traffic_information" class="form-control">
+            <option value=""[% ' selected' IF NOT traffic_info %]>-</option>
+            [% FOREACH option IN problem.traffic_management_options %]
+                <option value='[% option %]'[% ' selected' IF traffic_info == option %]>[% option %]</option>
+            [% END %]
+        </select>
+    </p>
+    [% INCLUDE 'report/inspect/_extra_details_field.html' %]
+[% END %]
