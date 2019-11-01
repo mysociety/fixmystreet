@@ -1,0 +1,10 @@
+<p>
+    <label for="detailed_information">[% loc('Extra details') %]</label>
+    [% IF max_detailed_info_length %]
+    <span id="detailed_information_length">
+        [% tprintf(loc('%d characters maximum'), max_detailed_info_length) %]
+    </span>
+    [% END %]
+    <textarea rows="2" name="detailed_information" id="detailed_information" class="form-control"
+        [% IF max_detailed_info_length %]data-max-length="[% max_detailed_info_length %]"[% END %]>[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
+</p>
