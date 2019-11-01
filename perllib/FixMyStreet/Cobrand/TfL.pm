@@ -89,4 +89,10 @@ sub available_permissions {
     return $perms;
 }
 
+sub response_template_body_ids {
+    {
+        FixMyStreet::DB->resultset('Body')->find({ name => 'TfL' })->id => 1
+    }
+}
+
 1;
