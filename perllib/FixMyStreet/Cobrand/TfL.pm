@@ -107,4 +107,37 @@ sub available_permissions {
     return $perms;
 }
 
+sub dashboard_export_problems_add_columns {
+    my $self = shift;
+    my $c = $self->{c};
+
+    $c->stash->{csv}->{headers} = [
+        map { $_ eq 'Ward' ? 'Borough' : $_ } @{ $c->stash->{csv}->{headers} },
+        "Agent responsible",
+        "Safety critical",
+    ];
+
+    $c->stash->{csv}->{columns} = [
+        @{ $c->stash->{csv}->{columns} },
+        "agent_responsible",
+        "safety_critical",
+    ];
+
+    $c->stash->{csv}->{extra_data} = sub {
+        my $report = shift;
+
+        my $agent = $report->shortlisted_user;
+
+        my $safety_critical = 0;
+        for (@{$report->get_extra_fields}) {
+            $safety_critical = 1, last if $_->{safety_critical};
+        }
+        return {
+            acknowledged => $report->whensent,
+            agent_responsible => $agent ? $agent->name : '',
+            safety_critical => $safety_critical ? 'Yes' : 'No',
+        };
+    };
+}
+
 1;
