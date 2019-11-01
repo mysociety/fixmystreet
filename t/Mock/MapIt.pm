@@ -115,6 +115,12 @@ sub dispatch_request {
             $self->output({2326 => {parent_area => undef, id => 2326, name => "Cheltenham Borough Council", type => "DIS"}});
         } elsif ($areas eq 'UTA') {
             $self->output({2650 => {parent_area => undef, id => 2650, name => "Aberdeen Council", type => "UTA"}});
+        } elsif ($areas eq 'LBO') {
+            $self->output({
+                2494 => {id => 2494, name => "Bexley Borough Council", type => "LBO"},
+                2482 => {id => 2482, name => "Bromley Council", type => "LBO"},
+                2504 => {id => 2504, name => "Westminster City Council", type => "LBO"},
+            });
         }
     },
 
