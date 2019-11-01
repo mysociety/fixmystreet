@@ -11,7 +11,7 @@ h1 {
 #site-header {
   &:after {
     content: " ";
-    height: 3.75em;
+    height: $mappage-header-height + 1px;
     display: block;
     border-bottom: 1px solid $grey50;
     background-color: white;
@@ -20,7 +20,7 @@ h1 {
 
 #main-nav {
   float: none;
-  margin-top: 3em;
+  margin-top: $mappage-header-height;
 
   .ie9 & > * {
     #{$right}: auto;
@@ -150,10 +150,12 @@ body.mappage {
   }
 }
 
-
-
 body.mappage #footer { display: none; }
 
 .big-green-banner {
   text-transform: none;
+
+  // Prevent blue button from touching blue logo above.
+  // The 3px border is stolen from the official TFL website header.
+  border-top: 3px solid #121315;
 }
