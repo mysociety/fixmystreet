@@ -95,14 +95,9 @@ appropriate areas in the stash that are shown in the areas dropdown on the form.
 sub admin_fetch_inspector_areas {
     my ($self, $body) = @_;
 
-    return undef unless $body;
     return undef unless $body->name eq 'TfL';
 
-    my $areas = FixMyStreet::MapIt::call('areas', $self->area_types);
-    $self->{c}->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
-    $self->{c}->stash->{fetched_areas_body_id} = $body->id;
-
-    return 1;
+    return FixMyStreet::MapIt::call('areas', $self->area_types);
 }
 
 sub all_reports_ward_areas {
