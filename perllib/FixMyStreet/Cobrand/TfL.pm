@@ -96,4 +96,15 @@ sub fetch_area_children {
     return $areas;
 }
 
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+
+    delete $perms->{Problems}->{report_edit_priority};
+    delete $perms->{Bodies}->{responsepriority_edit};
+
+    return $perms;
+}
+
 1;
