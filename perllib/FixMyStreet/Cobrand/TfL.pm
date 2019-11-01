@@ -16,6 +16,8 @@ sub council_url { return 'tfl'; }
 sub area_types  { [ 'LBO' ] }
 sub is_council { 0 }
 
+sub send_questionnaires { 0 }
+
 sub area_check {
     my ( $self, $params, $context ) = @_;
 
