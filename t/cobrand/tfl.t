@@ -87,6 +87,7 @@ subtest "reference number included in email" => sub {
     like $mech->get_text_body_from_email($email[0]), qr/Report reference: FMS$id/, "FMS-prefixed ID in TfL email";
     is $email[1]->header('To'), $report->user->email;
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number is FMS$id/, "FMS-prefixed ID in reporter email";
+    $mech->clear_emails_ok;
 
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('FMS' . $report->id) or diag $mech->content;
@@ -170,6 +171,16 @@ subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {
     is_deeply $staffuser->area_ids, [2482], "User assigned to Bromley LBO area";
 
     $staffuser->update({ area_ids => undef}); # so login below doesn't break
+};
+
+subtest 'Leave an update on a shortlisted report, get an email' => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    $staffuser->add_to_planned_reports($report);
+    $mech->log_in_ok( $user->email );
+    $mech->get_ok('/report/' . $report->id);
+    $mech->submit_form_ok({ with_fields => { update => 'This is an update' }});
+    my $email = $mech->get_text_body_from_email;
+    like $email, qr/This is an update/;
 };
 
 subtest 'TfL staff can access TfL admin' => sub {
