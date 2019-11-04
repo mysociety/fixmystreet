@@ -119,6 +119,8 @@ sub dispatch_request {
             $self->output({
                 2482 => {parent_area => undef, id => 2482, name => "Bromley Borough Council", type => "LBO"},
                 2483 => {parent_area => undef, id => 2483, name => "Hounslow Borough Council", type => "LBO"},
+                2494 => {id => 2494, name => "Bexley Borough Council", type => "LBO"},
+                2504 => {id => 2504, name => "Westminster City Council", type => "LBO"},
             });
         } elsif ($areas eq 60705) {
             $self->output({60705 => {parent_area => 2245, id => 60705, name => "Trowbridge", type => "CPC"}});
