@@ -316,4 +316,9 @@ sub must_have_2fa {
     return 0;
 }
 
+sub update_email_shortlisted_user {
+    my ($self, $update) = @_;
+    FixMyStreet::Cobrand::TfL::update_email_shortlisted_user($self, $update);
+}
+
 1;
