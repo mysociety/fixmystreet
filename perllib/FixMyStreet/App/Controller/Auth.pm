@@ -277,8 +277,11 @@ sub process_login : Private {
         if FixMyStreet->config('SIGNUPS_DISABLED') && !$user->in_storage && !$data->{old_user_id};
 
     # People using 2FA need to supply a code
-    $c->forward( 'token_2fa', [ $user, $url_token ] ) if $user->has_2fa;
-    $c->forward( 'signup_2fa', [ $user ] ) if $c->cobrand->call_hook('must_have_2fa', $user);
+    if ($user->has_2fa) {
+        $c->forward( 'token_2fa', [ $user, $url_token ] );
+    } elsif ($c->cobrand->call_hook('must_have_2fa', $user)) {
+        $c->forward( 'signup_2fa', [ $user ] );
+    }
 
     if ($data->{old_user_id}) {
         # Were logged in as old_user_id, want to switch to $user

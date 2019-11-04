@@ -382,6 +382,11 @@ subtest "Test enforced two-factor authentication, no password yet set" => sub {
         is $token, $user_token, '2FA secret set';
 
         $mech->logged_in_ok;
+
+        $mech->get_ok($link);
+        $mech->content_contains('Please generate a two-factor code');
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+        $mech->content_lacks('requires two-factor');
     };
 };
 
