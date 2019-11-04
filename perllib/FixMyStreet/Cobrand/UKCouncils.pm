@@ -267,6 +267,26 @@ sub prefill_report_fields_for_inspector { 1 }
 
 sub social_auth_disabled { 1 }
 
+
+=head2 response_template_body_ids
+
+The default behaviour of looking up response templates for a problem by the
+area it was reported in doesn't work for London-based problems since we
+added the TfL cobrand. This behaviour results in TfL response templates
+showing up in Borough cobrands, and vice-versa.
+
+This cobrand hook returns the ID for this cobrand's body, which is
+passed to ResponseTemplate::by_categories and overrides the problem's
+areas, therefore limiting the response templates to the correct ones.
+
+=cut
+
+sub response_template_body_ids {
+    my $self = shift;
+
+    return [ $self->body->id ];
+}
+
 =head2 lookup_site_code
 
 Reports made via FMS.com or the app probably won't have a site code
