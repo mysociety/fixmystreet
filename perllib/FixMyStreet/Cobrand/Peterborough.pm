@@ -13,6 +13,8 @@ sub council_area { 'Peterborough' }
 sub council_name { 'Peterborough City Council' }
 sub council_url { 'peterborough' }
 
+sub send_questionnaires { 0 }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
