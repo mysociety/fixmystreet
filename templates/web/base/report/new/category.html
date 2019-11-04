@@ -8,10 +8,10 @@ END
 ~%]
 [% IF category_options.size OR category_groups.size ~%]
     [%~ BLOCK category_option ~%]
-    [% cat_op_lc = cat_op.category | lower =%]
-    <option value='[% cat_op.category | html %]'[% ' selected' IF report.category == cat_op.category || category_lc == cat_op_lc ~%]
-    >[% IF loop.first %][% cat_op.category_display %][% ELSE %][% cat_op.category_display | html %][% END %]
-    [%~ IF cat_op.get_extra_metadata('help_text') %] ([% cat_op.get_extra_metadata('help_text') %])[% END ~%]
+    [% cat_lc = cat.category | lower =%]
+    <option value='[% cat.category | html %]'[% ' selected' IF report.category == cat.category || category_lc == cat_lc ~%]
+    >[% IF loop.first %][% cat.category_display %][% ELSE %][% cat.category_display | html %][% END %]
+    [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
     </option>
     [%~ END ~%]
 
@@ -27,19 +27,7 @@ END
       data-body="[% c.user.from_body.name %]" data-prefill="[% prefill_report %]"
     [%~ END ~%]
     >
-        [%~ IF category_groups.size ~%]
-            [%~ FOREACH group IN category_groups ~%]
-                [% IF group.name %]<optgroup label="[% group.name %]">[% END %]
-                [%~ FOREACH cat_op IN group.categories ~%]
-                    [% INCLUDE category_option %]
-                [%~ END ~%]
-                [% IF group.name %]</optgroup>[% END %]
-            [%~ END =%]
-        [%~ ELSE ~%]
-            [%~ FOREACH cat_op IN category_options ~%]
-                [% INCLUDE category_option %]
-            [%~ END =%]
-        [%~ END ~%]
+        [%~ INCLUDE 'report/new/_category_select.html' ~%]
     </select>
     [%~ IF category_groups.size ~%]
           <label id="form_subcategory_label" class="hidden">
