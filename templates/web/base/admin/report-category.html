@@ -1,17 +1,15 @@
 [%~ IF NOT select_name %]
     [%~ select_name = 'category' %]
 [%~ END %]
+[%~ BLOCK category_option ~%]
+<option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display | html %]</option>
+[%~ END ~%]
+
 <select class="form-control" name="[% select_name %]" id="[% select_name %]">
   [% IF NOT problem.category OR NOT categories_hash.${problem.category} %]
     <optgroup label="[% loc('Existing category') %]">
         <option selected value="[% problem.category | html %]">[% (problem.category_display OR '-') | html %]</option>
     </optgroup>
   [% END %]
-  [% IF category_options.size %]
-    <optgroup label="[% loc('Available categories') %]">
-      [% FOREACH cat IN category_options %]
-        <option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display | html %]</option>
-      [% END %]
-    </optgroup>
-  [% END %]
+  [%~ INCLUDE 'report/new/_category_select.html' ~%]
 </select>
