@@ -400,9 +400,7 @@ sub ward_check : Private {
         $parent_id = $c->stash->{area}->{id};
     }
 
-    my $qw = FixMyStreet::MapIt::call('area/children', [ $parent_id ],
-        type => $c->cobrand->area_types_children,
-    );
+    my $qw = $c->cobrand->fetch_area_children($parent_id);
     my %names = map { $c->cobrand->short_name({ name => $_ }) => 1 } @wards;
     my @areas;
     foreach my $area (sort { $a->{name} cmp $b->{name} } values %$qw) {

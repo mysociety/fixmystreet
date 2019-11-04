@@ -4,6 +4,10 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use POSIX qw(strcoll);
+
+use FixMyStreet::MapIt;
+
 sub council_area_id { return [
     2511, 2489, 2494, 2488, 2482, 2505, 2512, 2481, 2484, 2495,
     2493, 2508, 2502, 2509, 2487, 2485, 2486, 2483, 2507, 2503,
@@ -78,6 +82,34 @@ sub admin_allow_user {
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
     return $user->from_body->name eq 'TfL';
+}
+
+=head2 admin_fetch_inspector_areas
+
+Inspector users in TfL are assigned to London borough (LBO) areas, not
+wards/districts.
+
+This hook is called when rendering the user editing form, and sets the
+appropriate areas in the stash that are shown in the areas dropdown on the form.
+
+=cut
+
+sub admin_fetch_inspector_areas {
+    my ($self, $body) = @_;
+
+    return undef unless $body->name eq 'TfL';
+
+    return $self->fetch_area_children;
+}
+
+sub fetch_area_children {
+    my $self = shift;
+
+    my $areas = FixMyStreet::MapIt::call('areas', $self->area_types);
+    foreach (keys %$areas) {
+        $areas->{$_}->{name} =~ s/\s*(Borough|City|District|County) Council$//;
+    }
+    return $areas;
 }
 
 1;

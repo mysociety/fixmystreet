@@ -1163,7 +1163,7 @@ sub fetch_all_bodies : Private {
 sub fetch_body_areas : Private {
     my ($self, $c, $body ) = @_;
 
-    my $children = $body->first_area_children;
+    my $children = $c->cobrand->call_hook('admin_fetch_inspector_areas', $body) || $body->first_area_children;
     unless ($children) {
         # Body doesn't have any areas defined.
         delete $c->stash->{areas};
