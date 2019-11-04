@@ -328,4 +328,9 @@ sub send_questionnaire {
     return 1;
 }
 
+sub update_email_shortlisted_user {
+    my ($self, $update) = @_;
+    FixMyStreet::Cobrand::TfL::update_email_shortlisted_user($self, $update);
+}
+
 1;
