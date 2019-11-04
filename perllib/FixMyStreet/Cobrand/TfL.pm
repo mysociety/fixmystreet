@@ -126,4 +126,10 @@ sub fetch_area_children {
     return $areas;
 }
 
+sub munge_singlevaluelist_value {
+    my ($self, $prefix, $value) = @_;
+
+    $value->{safety_critical} = 1 if $self->{c}->get_param("$prefix.safety_critical");
+}
+
 1;
