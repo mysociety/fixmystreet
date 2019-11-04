@@ -141,4 +141,23 @@ sub must_have_2fa {
     return 0;
 }
 
+sub update_email_shortlisted_user {
+    my ($self, $update) = @_;
+    my $c = $self->{c};
+    my $shortlisted_by = $update->problem->shortlisted_user;
+    if ($shortlisted_by && $shortlisted_by->from_body && $shortlisted_by->from_body->name eq 'TfL' && $shortlisted_by->id ne $update->user_id) {
+        $c->send_email('alert-update.txt', {
+            to => [ [ $shortlisted_by->email, $shortlisted_by->name ] ],
+            report => $update->problem,
+            problem_url => $c->cobrand->base_url_for_report($update->problem) . $update->problem->url,
+            data => [ {
+                item_photo => $update->photo,
+                item_text => $update->text,
+                item_name => $update->name,
+                item_anonymous => $update->anonymous,
+            } ],
+        });
+    }
+}
+
 1;
