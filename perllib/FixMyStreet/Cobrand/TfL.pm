@@ -208,4 +208,17 @@ sub update_email_shortlisted_user {
     }
 }
 
+sub must_have_2fa {
+    my ($self, $user) = @_;
+
+    require Net::Subnet;
+    my $ips = $self->feature('internal_ips');
+    my $is_internal_network = Net::Subnet::subnet_matcher(@$ips);
+
+    my $ip = $self->{c}->req->address;
+    return 0 if $is_internal_network->($ip);
+    return 1 if $user->from_body && $user->from_body->name eq 'TfL';
+    return 0;
+}
+
 1;

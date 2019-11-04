@@ -40,6 +40,9 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'tfl',
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
+        internal_ips => {
+            tfl => [ '127.0.0.1' ]
+        },
         anonymous_account => {
             tfl => 'anonymous'
         }
