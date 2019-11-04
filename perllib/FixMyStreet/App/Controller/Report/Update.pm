@@ -642,6 +642,8 @@ sub signup_for_alerts : Private {
         $alert->disable();
     }
 
+    $c->cobrand->call_hook(update_email_shortlisted_user => $update);
+
     return 1;
 }
 
