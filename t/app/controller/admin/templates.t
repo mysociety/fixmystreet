@@ -287,6 +287,7 @@ subtest "TfL cobrand only shows TfL templates" => sub {
         $report->update({
             category => $tflcontact->category,
             bodies_str => $tfl->id,
+            areas => ',2482,',
             latitude => 51.402096,
             longitude => 0.015784,
             state => 'confirmed',
@@ -299,6 +300,7 @@ subtest "TfL cobrand only shows TfL templates" => sub {
         $mech->content_contains( $tfltemplate->title );
         $mech->content_lacks( $bromleytemplate->text );
         $mech->content_lacks( $bromleytemplate->title );
+        $mech->content_lacks( "Bromley" );
 
         $mech->log_out_ok;
     };
