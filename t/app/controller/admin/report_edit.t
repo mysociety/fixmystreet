@@ -353,7 +353,7 @@ foreach my $test (
         user_body => $oxfordshire,
         changes   => { state => 'in progress', category => 'Potholes' },
         log_entries => [
-            qw/edit state_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit state_change category_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },

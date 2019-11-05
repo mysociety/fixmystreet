@@ -171,7 +171,7 @@ sub add : Local : Args(0) {
     $c->forward('user_cobrand_extra_fields');
     $user->insert;
 
-    $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
+    $c->forward( '/admin/log_edit', [ $user->id, 'user', 'add' ] );
 
     $c->flash->{status_message} = _("Updated!");
     $c->detach('post_edit_redirect', [ $user ]);
@@ -243,8 +243,6 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
         $c->forward('update_alerts');
     } elsif ( $c->get_param('submit') ) {
 
-        my $edited = 0;
-
         my $name = $c->get_param('name');
         my $email = lc $c->get_param('email');
         my $phone = $c->get_param('phone');
@@ -285,15 +283,6 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
         }
 
         return if %{$c->stash->{field_errors}};
-
-        if ( ($user->email || "") ne $email ||
-            $user->name ne $name ||
-            ($user->phone || "") ne $phone ||
-            ($user->from_body && $c->get_param('body') && $user->from_body->id ne $c->get_param('body')) ||
-            (!$user->from_body && $c->get_param('body'))
-        ) {
-                $edited = 1;
-        }
 
         if ($existing_user_cobrand) {
             $existing_user->adopt($user);
@@ -387,9 +376,7 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
         }
 
         $user->update;
-        if ($edited) {
-            $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
-        }
+        $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
         $c->flash->{status_message} = _("Updated!");
 
         $c->detach('post_edit_redirect', [ $user ]);
@@ -610,6 +597,7 @@ sub user_remove_account : Private {
     my ( $self, $c, $user ) = @_;
     $c->forward('user_logout_everywhere', [ $user ]);
     $user->anonymize_account;
+    $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
     $c->stash->{status_message} = _('That user’s personal details have been removed.');
 }
 
@@ -637,6 +625,7 @@ sub ban : Private {
             $c->stash->{status_message} = _('User already in abuse list');
         } else {
             $abuse->insert;
+            $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
             $c->stash->{status_message} = _('User added to abuse list');
         }
         $c->stash->{username_in_abuse} = 1;
@@ -647,6 +636,7 @@ sub ban : Private {
             $c->stash->{status_message} = _('User already in abuse list');
         } else {
             $abuse->insert;
+            $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
             $c->stash->{status_message} = _('User added to abuse list');
         }
         $c->stash->{username_in_abuse} = 1;
@@ -668,6 +658,7 @@ sub unban : Private {
         my $abuse = $c->model('DB::Abuse')->search({ email => \@username });
         if ( $abuse ) {
             $abuse->delete;
+            $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
             $c->stash->{status_message} = _('user removed from abuse list');
         } else {
             $c->stash->{status_message} = _('user not in abuse list');
@@ -697,6 +688,7 @@ sub flag : Private {
     } else {
         $user->flagged(1);
         $user->update;
+        $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
         $c->stash->{status_message} = _('User flagged');
     }
 
@@ -726,6 +718,7 @@ sub flag_remove : Private {
     } else {
         $user->flagged(0);
         $user->update;
+        $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
         $c->stash->{status_message} = _('User flag removed');
     }
 

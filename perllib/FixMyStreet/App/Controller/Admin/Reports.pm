@@ -405,6 +405,7 @@ sub edit_category : Private {
                 anonymous => 0,
             });
         }
+        $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'category_change' ] );
         return 1;
     }
     return 0;

@@ -77,6 +77,7 @@ sub edit : Path : Args(2) {
         if ($c->get_param('delete_template') && $c->get_param('delete_template') eq _("Delete template")) {
             $template->contact_response_templates->delete_all;
             $template->delete;
+            $c->forward('/admin/log_edit', [ $template->id, 'template', 'delete' ]);
         } else {
             my @live_contact_ids = map { $_->id } @live_contacts;
             my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @live_contact_ids;
@@ -144,6 +145,8 @@ sub edit : Path : Args(2) {
                     contact_id => $contact_id,
                 });
             }
+            my $action = $template_id eq 'new' ? 'add' : 'edit';
+            $c->forward('/admin/log_edit', [ $template->id, 'template', $action ]);
         }
 
         $c->res->redirect( $c->uri_for_action( '/admin/templates/view', $c->stash->{body}->id ) );

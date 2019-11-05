@@ -516,6 +516,7 @@ sub inspect : Private {
         if ($valid) {
             $problem->lastupdate( \'current_timestamp' );
             $problem->update;
+            $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'edit' ] );
             if ($update_text || %update_params) {
                 my $timestamp = \'current_timestamp';
                 if (my $saved_at = $c->get_param('saved_at')) {

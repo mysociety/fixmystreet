@@ -445,6 +445,10 @@ create table admin_log (
       or object_type = 'update'
       or object_type = 'user'
       or object_type = 'moderation'
+      or object_type = 'template'
+      or object_type = 'body'
+      or object_type = 'category'
+      or object_type = 'role'
     ),
     object_id integer not null,
     action text not null,

@@ -280,7 +280,6 @@ sub update_contact : Private {
         $contact->unset_extra_metadata( 'group' );
     }
 
-
     $c->forward('/admin/update_extra_fields', [ $contact ]);
     $c->forward('contact_cobrand_extra_fields', [ $contact, \%errors ]);
 
@@ -306,12 +305,13 @@ sub update_contact : Private {
         $c->stash->{errors} = \%errors;
     } elsif ( $contact->in_storage ) {
         $c->stash->{updated} = _('Values updated');
-
+        $c->forward('/admin/log_edit', [ $contact->id, 'category', 'edit' ]);
         # NB: History is automatically stored by a trigger in the database
         $contact->update;
     } else {
         $c->stash->{updated} = _('New category contact added');
         $contact->insert;
+        $c->forward('/admin/log_edit', [ $contact->id, 'category', 'add' ]);
     }
 
     unless ( %errors ) {
@@ -346,6 +346,7 @@ sub confirm_contacts : Private {
         }
     );
 
+    $c->forward('/admin/log_edit', [ $c->stash->{body_id}, 'body', 'edit' ]);
     $c->stash->{updated} = _('Values updated');
 }
 
@@ -360,8 +361,10 @@ sub update_body : Private {
 
     if ($body) {
         $body->update( $values->{params} );
+        $c->forward('/admin/log_edit', [ $body->id, 'body', 'edit' ]);
     } else {
         $body = $c->model('DB::Body')->create( $values->{params} );
+        $c->forward('/admin/log_edit', [ $body->id, 'body', 'add' ]);
     }
 
     if ($values->{extras}) {
