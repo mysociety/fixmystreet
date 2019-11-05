@@ -268,13 +268,13 @@ subtest 'Dashboard extra columns' => sub {
         $mech->log_in_ok( $staffuser->email );
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Borough,"Safety critical"');
-        $mech->content_contains('"Bromley Council",No');
+        $mech->content_contains('Bromley,No');
         my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
         $report->set_extra_fields({ name => 'severity', value => 'Yes', safety_critical => 1 });
         $report->update;
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Borough,"Safety critical"');
-        $mech->content_contains('"Bromley Council",Yes');
+        $mech->content_contains('Bromley,Yes');
     };
 };
 

@@ -282,6 +282,7 @@ subtest "templates that set state and external_status_code can't be added" => su
 subtest "TfL cobrand only shows TfL templates" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'tfl' ],
+        COBRAND_FEATURES => { internal_ips => { tfl => [ '127.0.0.1' ] } },
     }, sub {
         $report->update({
             category => $tflcontact->category,

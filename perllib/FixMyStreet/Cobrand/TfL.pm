@@ -163,9 +163,8 @@ sub dashboard_export_problems_add_columns {
 
     my %areas;
     if ($c->stash->{body}) {
-        $self->admin_fetch_inspector_areas($c->stash->{body});
-        my $areas = $self->{c}->stash->{areas};
-        foreach (@$areas) {
+        my $areas = $self->admin_fetch_inspector_areas($c->stash->{body});
+        foreach (values %$areas) {
             $areas{$_->{id}} = $_->{name};
         }
     }
