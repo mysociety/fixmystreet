@@ -48,13 +48,13 @@ sub categories_restriction {
 }
 
 sub lookup_by_ref_regex {
-    return qr/^\s*((?:FMS\s*)?\d+)\s*$/;
+    return qr/^\s*((?:FMS\s*)?\d+)\s*$/i;
 }
 
 sub lookup_by_ref {
     my ($self, $ref) = @_;
 
-    if ( $ref =~ s/^\s*FMS\s*// ) {
+    if ( $ref =~ s/^\s*FMS\s*//i ) {
         return { 'id' => $ref };
     }
 

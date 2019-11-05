@@ -102,7 +102,7 @@ subtest 'check lookup by reference' => sub {
     is $mech->uri->path, "/report/$id", "redirected to report page when using FMS-prefixed ref";
 
     $mech->get_ok('/');
-    $mech->submit_form_ok( { with_fields => { pc => "FMS $id" } }, 'good FMS-prefixed with a space ref');
+    $mech->submit_form_ok( { with_fields => { pc => "fms $id" } }, 'good FMS-prefixed with a space ref');
     is $mech->uri->path, "/report/$id", "redirected to report page when using FMS-prefixed ref";
 
     $mech->get_ok('/');
