@@ -1,7 +1,11 @@
 package FixMyStreet::Cobrand::Dummy;
 use parent 'FixMyStreet::Cobrand::Default';
 
-sub must_have_2fa { 1 }
+sub must_have_2fa {
+    my ($self, $user) = @_;
+    return 'skip' if $user->name eq 'skip';
+    return 1;
+}
 
 package FixMyStreet::Cobrand::Expiring;
 use parent 'FixMyStreet::Cobrand::Default';
@@ -348,6 +352,14 @@ subtest "Test enforced two-factor authentication" => sub {
         is $token, $user_token, '2FA secret set';
 
         $mech->logged_in_ok;
+
+        $user->name('skip');
+        $user->update;
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            { with_fields => { username => $test_email, password_sign_in => 'password' } },
+            "sign in using form" );
+        $mech->content_contains('<h1>Your account');
     };
 };
 
@@ -357,6 +369,7 @@ subtest "Test enforced two-factor authentication, no password yet set" => sub {
     }, sub {
         my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         $user->unset_extra_metadata('2fa_secret');
+        $user->name('Test User');
         $user->update;
 
         $mech->clear_emails_ok;
@@ -387,6 +400,11 @@ subtest "Test enforced two-factor authentication, no password yet set" => sub {
         $mech->content_contains('Please generate a two-factor code');
         $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
         $mech->content_lacks('requires two-factor');
+
+        $user->name('skip');
+        $user->update;
+        $mech->get_ok($link);
+        $mech->content_contains('Your account');
     };
 };
 
