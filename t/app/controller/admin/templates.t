@@ -45,8 +45,6 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     }
 );
 
-$mech->log_in_ok( $superuser->email );
-
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
