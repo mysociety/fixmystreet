@@ -23,7 +23,9 @@ sub authenticate {
     if (ref($user_obj)) {
 
         # We don't care unless user has a 2FA secret, or the cobrand mandates it
-        return $user_obj unless $user_obj->has_2fa || $c->cobrand->call_hook('must_have_2fa', $user_obj);
+        # We also don't care if the cobrand says we don't
+        my $must_have_2fa = $c->cobrand->call_hook('must_have_2fa', $user_obj) || '';
+        return $user_obj if $must_have_2fa eq 'skip' || !($user_obj->has_2fa || $must_have_2fa);
 
         $c->stash->{token} = $c->get_param('token');
 
