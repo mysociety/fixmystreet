@@ -69,6 +69,8 @@ sub report_sent_confirmation_email { 'id' }
 
 sub report_age { '6 weeks' }
 
+sub password_expiry { 86400 * 365 }
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'green' if $p->is_closed;
