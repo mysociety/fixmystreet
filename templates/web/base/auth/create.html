@@ -1,6 +1,8 @@
 [%
 IF forgotten;
     title = loc('Forgot password');
+ELSIF expired_password;
+    title = loc('Password expired');
 ELSE;
     title = loc('Create an account');
 END;
@@ -9,9 +11,11 @@ INCLUDE 'header.html', bodyclass='authpage' %]
 
 <h1>
     [% title %]
+  [% IF NOT expired_password %]
     <small>
         [% tprintf(loc('or <a href="%s">sign in</a>'), '/auth') %]
     </small>
+  [% END %]
 </h1>
 
 [% IF forgotten %]
@@ -19,29 +23,40 @@ INCLUDE 'header.html', bodyclass='authpage' %]
   [% IF c.config.SMS_AUTHENTICATION %]
     [% loc('Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated.') %]</p>
   [% ELSE %]
-    [% loc('Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated.') %]</p>
+    [% loc('Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated.') %]
   [% END %]
+</p>
+[% ELSIF expired_password %]
+<p>
+    <a href="/auth/sign_out">[% loc('Sign out') %]</a>
+</p>
+<p>
+    [% loc('Your password has expired, please create a new one below. When you click the link in your email, your password will be updated.') %]
 </p>
 [% END %]
 
-<form action="/auth/[% forgotten ? 'forgot' : 'create' %]" method="post" name="general_auth" class="validate">
+<form action="/auth/[% expired_password ? 'expired' : forgotten ? 'forgot' : 'create' %]" method="post" name="general_auth" class="validate">
     <fieldset>
 
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
+    [% IF NOT expired_password %]
+
         [% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
 
-[% IF c.config.SMS_AUTHENTICATION %]
-    [% SET username_label = loc('Your email or mobile') %]
-[% ELSE %]
-    [% SET username_label = loc('Your email') %]
-[% END %]
+        [% IF c.config.SMS_AUTHENTICATION %]
+            [% SET username_label = loc('Your email or mobile') %]
+        [% ELSE %]
+            [% SET username_label = loc('Your email') %]
+        [% END %]
 
         <label class="n" for="username">[% username_label %]</label>
       [% IF loc_username_error %]
         <div class="form-error">[% loc_username_error %]</div>
       [% END %]
         <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]" autofocus autocomplete="username">
+
+  [% END %]
 
       [% IF field_errors.password_register %]
         <p class='form-error'>[% field_errors.password_register %]</p>
@@ -54,7 +69,7 @@ INCLUDE 'header.html', bodyclass='authpage' %]
 
         <div class="form-txt-submit-box">
             <input class="required form-control js-password-validate" type="password" name="password_register" id="password_register" value="" autocomplete="new-password">
-            <input class="green-btn" type="submit" name="sign_in_by_code" value="[% loc('Sign in') %]">
+            <input class="green-btn" type="submit" name="sign_in_by_code" value="[% expired_password ? loc('Reset') : loc('Sign in') %]">
         </div>
 
     </fieldset>

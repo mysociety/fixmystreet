@@ -3,6 +3,11 @@ use parent 'FixMyStreet::Cobrand::Default';
 
 sub must_have_2fa { 1 }
 
+package FixMyStreet::Cobrand::Expiring;
+use parent 'FixMyStreet::Cobrand::Default';
+
+sub password_expiry { 86400 }
+
 package main;
 
 use Test::MockModule;
@@ -95,8 +100,10 @@ $mech->not_logged_in_ok;
 
     # visit the confirm link and check user is confirmed
     $mech->get_ok($link);
-    ok get_user(), "user created";
+    my $user = get_user();
+    ok $user, "user created";
     is $mech->uri->path, '/my', "redirected to the 'my' section of site";
+    ok $user->get_extra_metadata('last_password_change'), 'password change set';
     $mech->logged_in_ok;
 
     # logout
@@ -284,6 +291,7 @@ subtest 'test forgotten password page' => sub {
         fields => { username => $test_email, password_register => 'squirblewirble' },
         button => 'sign_in_by_code',
     });
+    $mech->clear_emails_ok;
 };
 
 subtest "Test two-factor authentication login" => sub {
@@ -398,6 +406,28 @@ subtest "Check two-factor log in by email works" => sub {
     $mech->content_contains('Please generate a two-factor code');
     $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
     $mech->logged_in_ok;
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'expiring'
+}, sub {
+    subtest 'Password expiry' => sub {
+        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        $user->set_extra_metadata('last_password_change', time() - 200000);
+        $user->unset_extra_metadata('2fa_secret');
+        $user->update;
+
+        $mech->get_ok('/');
+        $mech->content_contains('Password expired');
+        $mech->submit_form_ok(
+            { with_fields => { password_register => 'new-password' } },
+            "fill in reset form" );
+
+        my $link = $mech->get_link_from_email;
+        $mech->clear_emails_ok;
+        $mech->get_ok($link);
+        $mech->logged_in_ok;
+    };
 };
 
 done_testing();
