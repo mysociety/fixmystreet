@@ -258,7 +258,7 @@ sub about_hook {
             if ($body) {
                 # Send confirmation email (hopefully)
                 $c->stash->{template} = 'auth/general.html';
-                $c->detach('/auth/general');
+                $c->detach('/auth/general', []);
             } else {
                 $c->stash->{error} = 'bad_email';
             }
