@@ -287,3 +287,19 @@ ol.big-numbers>li {
 #footer .about-tfl-menu,#footer .terms-and-conditions-menu {
     margin: 0
 }
+
+/* Safety critical reports */
+.item-list__item--safety-critical {
+    background-color: #ffb6b6;
+
+    &:hover, &:active {
+        a {
+        background-color: #ff9b9b;
+        }
+    }
+
+    .item-list__safety-critical {
+        font-style: normal;
+        text-transform: uppercase;
+    }
+}
