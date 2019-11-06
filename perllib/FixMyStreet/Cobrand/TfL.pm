@@ -132,14 +132,11 @@ sub dashboard_export_problems_add_columns {
 
         my $agent = $report->shortlisted_user;
 
-        my $safety_critical = 0;
-        for (@{$report->get_extra_fields}) {
-            $safety_critical = 1, last if $_->{safety_critical};
-        }
+        my $safety_critical = $report->get_extra_field_value('safety_critical') || 'no';
         return {
             acknowledged => $report->whensent,
             agent_responsible => $agent ? $agent->name : '',
-            safety_critical => $safety_critical ? 'Yes' : 'No',
+            safety_critical => $safety_critical,
         };
     };
 }
@@ -175,6 +172,34 @@ sub update_email_shortlisted_user {
             } ],
         });
     }
+}
+
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    # Sets the safety critical flag on this report according to category/extra
+    # fields selected.
+
+    my $safety_critical = 0;
+    my $categories = $self->feature('safety_critical_categories');
+    my $category = $categories->{$report->category};
+    if ( ref $category eq 'HASH' ) {
+        # report is safety critical if any of its field values match
+        # the critical values from the config
+        for my $code (keys %$category) {
+            my $value = $report->get_extra_field_value($code);
+            my %critical_values = map { $_ => 1 } @{ $category->{$code} };
+            $safety_critical ||= $critical_values{$value};
+        }
+    } elsif ($category) {
+        # the entire category is safety critical
+        $safety_critical = 1;
+    }
+
+    my $extra = $report->get_extra_fields;
+    @$extra = grep { $_->{name} ne 'safety_critical' } @$extra;
+    push @$extra, { name => 'safety_critical', value => $safety_critical ? 'yes' : 'no' };
+    $report->set_extra_fields(@$extra);
 }
 
 1;
