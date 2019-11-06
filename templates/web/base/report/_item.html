@@ -28,6 +28,11 @@
     [% END %]
 [% END %]
 
+[%~ TRY ~%]
+  [% PROCESS 'report/_item_extra_class.html' %]
+[%~ CATCH file ~%]
+[%~ END ~%]
+
 <li class="item-list__item item-list--reports__item [% item_extra_class %]"
     data-report-id="[% problem.id | html %]" data-lastupdate="[% problem.lastupdate %]" id="report-[% problem.id | html %]">
 <a href="[% c.cobrand.relative_url_for_report( problem ) %][% problem.url %]">
