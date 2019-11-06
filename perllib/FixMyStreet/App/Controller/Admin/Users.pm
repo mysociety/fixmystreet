@@ -189,19 +189,24 @@ sub fetch_body_roles : Private {
     $c->stash->{roles} = [ $roles->all ];
 }
 
-sub edit : Path : Args(1) {
+sub user : Chained('/') PathPart('admin/users') : CaptureArgs(1) {
     my ( $self, $c, $id ) = @_;
-
-    $c->forward('/auth/get_csrf_token');
 
     my $user = $c->cobrand->users->find( { id => $id } );
     $c->detach( '/page_error_404_not_found', [] ) unless $user;
+    $c->stash->{user} = $user;
 
     unless ( $c->user->has_body_permission_to('user_edit') || $c->cobrand->moniker eq 'zurich' ) {
         $c->detach('/page_error_403_access_denied', []);
     }
+}
 
-    $c->stash->{user} = $user;
+sub edit : Chained('user') : PathPart('') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->forward('/auth/get_csrf_token');
+
+    my $user = $c->stash->{user};
     $c->forward( '/admin/check_username_for_abuse', [ $user ] );
 
     if ( $user->from_body && $c->user->has_permission_to('user_manage_permissions', $user->from_body->id) ) {
@@ -232,7 +237,7 @@ sub edit : Path : Args(1) {
     } elsif ( $c->get_param('submit') and $c->get_param('send_login_email') ) {
         my $email = lc $c->get_param('email');
         my %args = ( email => $email );
-        $args{user_id} = $id if $user->email ne $email || !$user->email_verified;
+        $args{user_id} = $user->id if $user->email ne $email || !$user->email_verified;
         $c->forward('send_login_email', [ \%args ]);
     } elsif ( $c->get_param('update_alerts') ) {
         $c->forward('update_alerts');
@@ -292,8 +297,8 @@ sub edit : Path : Args(1) {
 
         if ($existing_user_cobrand) {
             $existing_user->adopt($user);
-            $c->forward( '/admin/log_edit', [ $id, 'user', 'merge' ] );
-            return $c->res->redirect( $c->uri_for_action( 'admin/users/edit', $existing_user->id ) );
+            $c->forward( '/admin/log_edit', [ $user->id, 'user', 'merge' ] );
+            return $c->res->redirect( $c->uri_for_action( 'admin/users/edit', [ $existing_user->id ] ) );
         }
 
         $user->email($email) if !$existing_email;
@@ -383,7 +388,7 @@ sub edit : Path : Args(1) {
 
         $user->update;
         if ($edited) {
-            $c->forward( '/admin/log_edit', [ $id, 'user', 'edit' ] );
+            $c->forward( '/admin/log_edit', [ $user->id, 'user', 'edit' ] );
         }
         $c->flash->{status_message} = _("Updated!");
 
@@ -420,7 +425,7 @@ sub post_edit_redirect : Private {
     # User may not be visible on this cobrand, e.g. if their from_body
     # wasn't set.
     if ( $c->cobrand->users->find( { id => $user->id } ) ) {
-        return $c->res->redirect( $c->uri_for_action( 'admin/users/edit', $user->id ) );
+        return $c->res->redirect( $c->uri_for_action( 'admin/users/edit', [ $user->id ] ) );
     } else {
         return $c->res->redirect( $c->uri_for_action( 'admin/users/index' ) );
     }
