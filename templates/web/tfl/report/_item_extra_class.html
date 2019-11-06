@@ -1,0 +1,3 @@
+[%~ IF c.user.has_permission_to('report_inspect', problem.bodies_str_ids) AND problem.get_extra_field_value('safety_critical') == 'yes';
+    item_extra_class = item_extra_class _ " item-list__item--safety-critical";
+END ~%]
