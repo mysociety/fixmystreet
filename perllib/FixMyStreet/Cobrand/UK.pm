@@ -413,4 +413,13 @@ sub category_extra_hidden {
     return $self->SUPER::category_extra_hidden($meta);
 }
 
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    if ($report->to_body_named('TfL')) {
+        my $tfl = FixMyStreet::Cobrand->get_class_for_moniker('tfl')->new();
+        $tfl->report_new_munge_before_insert($report);
+    }
+}
+
 1;
