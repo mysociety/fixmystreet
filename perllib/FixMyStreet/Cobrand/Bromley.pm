@@ -30,6 +30,9 @@ sub report_validation {
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
+    # Make sure TfL reports are marked safety critical
+    $self->SUPER::report_new_munge_before_insert($report);
+
     $report->subcategory($report->get_extra_field_value('service_sub_code'));
 }
 

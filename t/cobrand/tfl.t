@@ -35,6 +35,90 @@ my $contact2 = $mech->create_contact_ok(
     category => 'Traffic lights',
     email => 'trafficlights@example.com',
 );
+$contact2->set_extra_fields({
+    code => "safety_critical",
+    description => "Safety critical",
+    automated => "hidden_field",
+    order => 1,
+    datatype => "singlevaluelist",
+    values => [
+        {
+            name => "Yes",
+            key => "yes"
+        },
+        {
+            name => "No",
+            key => "no"
+        }
+    ]
+});
+$contact2->update;
+my $contact3 = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Pothole',
+    email => 'pothole@example.com',
+);
+$contact3->set_extra_fields({
+    code => "safety_critical",
+    description => "Safety critical",
+    automated => "hidden_field",
+    order => 1,
+    datatype => "singlevaluelist",
+    values => [
+        {
+            name => "Yes",
+            key => "yes"
+        },
+        {
+            name => "No",
+            key => "no"
+        }
+    ]
+});
+$contact3->update;
+my $contact4 = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Flooding',
+    email => 'flooding@example.com',
+);
+$contact4->set_extra_fields(
+    {
+        code => "safety_critical",
+        description => "Safety critical",
+        automated => "hidden_field",
+        order => 1,
+        datatype => "singlevaluelist",
+        values => [
+            {
+                name => "Yes",
+                key => "yes"
+            },
+            {
+                name => "No",
+                key => "no"
+            }
+        ]
+    },
+    {
+        code => "location",
+        description => "Where is the flooding?",
+        variable => "true",
+        order => 1,
+        required => "true",
+        datatype => "singlevaluelist",
+        values => [
+            {
+                name => "Carriageway",
+                key => "carriageway"
+            },
+            {
+                name => "Footway",
+                key => "footway"
+            }
+        ]
+    }
+);
+$contact4->update;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'tfl',
@@ -197,6 +281,96 @@ subtest 'Bromley staff cannot access TfL admin' => sub {
     $mech->log_out_ok;
 };
 
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        internal_ips => { tfl => [ '127.0.0.1' ] },
+        safety_critical_categories => { tfl => {
+            Pothole => 1,
+            Flooding => {
+                location => [ "carriageway" ],
+            },
+        } },
+    },
+}, sub {
+
+for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystreet.com' ) {
+    for my $test (
+        {
+            name => "test non-safety critical category",
+            safety_critical => 'no',
+            category => "Traffic lights"
+        },
+        {
+            name => "test safety critical category",
+            safety_critical => 'yes',
+            category => "Pothole"
+        },
+        {
+            name => "test category extra field - safety critical",
+            safety_critical => 'yes',
+            category => "Flooding",
+            extra_fields => {
+                location => "carriageway",
+            }
+        },
+        {
+            name => "test category extra field - non-safety critical",
+            safety_critical => 'no',
+            category => "Flooding",
+            extra_fields => {
+                location => "footway",
+            }
+        },
+    ) {
+    subtest $test->{name} . ' on ' . $host => sub {
+            $mech->log_in_ok( $user->email );
+            $mech->host($host);
+            $mech->get_ok('/around');
+            $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        category => $test->{category}
+                    },
+                    button => 'submit_category_part_only',
+                }
+            );
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        title => 'Test Report',
+                        detail => 'Test report details.',
+                        may_show_name => '1',
+                        category => $test->{category},
+                        %{ $test->{extra_fields} || {} },
+                        $host eq 'bromley.fixmystreet.com' ? (
+                            fms_extra_title => 'DR',
+                            first_name => "Joe",
+                            last_name => "Bloggs",
+                        ) : (
+                            name => 'Joe Bloggs',
+                        ),
+                    }
+                },
+                "submit report form"
+            );
+
+            my $report = FixMyStreet::App->model('DB::Problem')->to_body( $body->id )->search(undef, {
+                order_by => { -desc => 'id' },
+            })->first;
+            ok $report, "Found the report";
+
+            is $report->get_extra_field_value('safety_critical'), $test->{safety_critical}, "safety critical flag set to " . $test->{safety_critical};
+
+            $mech->log_out_ok;
+        };
+    }
+}
 };
 
 FixMyStreet::override_config {
