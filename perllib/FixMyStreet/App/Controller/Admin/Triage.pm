@@ -113,7 +113,7 @@ sub update : Private {
     my $current_category = $problem->category;
     my $new_category = $c->get_param('category');
 
-    my $changed = $c->forward('/admin/report_edit_category', [ $problem, 1 ] );
+    my $changed = $c->forward('/admin/reports/edit_category', [ $problem, 1 ] );
 
     if ( $changed ) {
         $c->stash->{problem}->update( { state => 'confirmed' } );

@@ -57,7 +57,7 @@
             [% PROCESS value_or_nbsp value=user.name %]
             [% IF user.from_body %]</label>[% END %]
         </td>
-        <td><a href="[% c.uri_for_action( 'admin/reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
+        <td><a href="[% c.uri_for_action( 'admin/reports/index', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td>
         <td>[% PROCESS value_or_nbsp value=user.from_body.name %]
             [% IF user.is_superuser %] * [% END %]
         </td>

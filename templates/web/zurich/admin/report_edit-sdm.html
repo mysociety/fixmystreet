@@ -12,7 +12,7 @@
 
 <div id="map_sidebar">
 
-<form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="post" action="[% c.uri_for_action( 'admin/reports/edit', [ problem.id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
 

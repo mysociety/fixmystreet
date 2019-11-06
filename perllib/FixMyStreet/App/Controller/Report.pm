@@ -372,7 +372,7 @@ sub inspect : Private {
     my $problem = $c->stash->{problem};
     my $permissions = $c->stash->{_permissions};
 
-    $c->forward('/admin/categories_for_point');
+    $c->forward('/admin/reports/categories_for_point');
     $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
     if ($c->cobrand->can('council_area_id')) {
@@ -477,7 +477,7 @@ sub inspect : Private {
             $problem->get_photoset->delete_cached(plus_updates => 1);
         }
 
-        if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
+        if ( !$c->forward( '/admin/reports/edit_location', [ $problem ] ) ) {
             # New lat/lon isn't valid, show an error
             $valid = 0;
             $c->stash->{errors} ||= [];
@@ -485,7 +485,7 @@ sub inspect : Private {
         }
 
         if ($permissions->{report_inspect} || $permissions->{report_edit_category}) {
-            $c->forward( '/admin/report_edit_category', [ $problem, 1 ] );
+            $c->forward( '/admin/reports/edit_category', [ $problem, 1 ] );
 
             if ($c->stash->{update_text}) {
                 $update_text .= "\n\n" . $c->stash->{update_text};
