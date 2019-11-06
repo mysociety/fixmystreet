@@ -488,7 +488,8 @@ sub inspect : Private {
             $c->forward( '/admin/reports/edit_category', [ $problem, 1 ] );
 
             if ($c->stash->{update_text}) {
-                $update_text .= "\n\n" . $c->stash->{update_text};
+                $update_text .= "\n\n" if $update_text;
+                $update_text .= $c->stash->{update_text};
             }
 
             # The new category might require extra metadata (e.g. pothole size), so
