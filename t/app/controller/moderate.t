@@ -475,8 +475,6 @@ subtest 'updates' => sub {
         }});
         $mech->content_lacks('update good good bad good');
     };
-
-    $update->moderation_original_data->delete;
 };
 
 my $update2 = create_update();
@@ -515,4 +513,14 @@ subtest 'And do it as a superuser' => sub {
 subtest 'Check moderation history in admin' => sub {
     $mech->get_ok('/admin/report_edit/' . $report->id);
 };
+
+subtest 'Check moderation in user log' => sub {
+    $mech->get_ok('/admin/users/' . $user->id . '/log');
+    my $report_id = $report->id;
+    $mech->content_like(qr/Moderated report.*?$report_id/);
+    my $update_id = $update->id;
+    $mech->content_like(qr/Moderated update.*?$update_id/);
+};
+
+
 done_testing();

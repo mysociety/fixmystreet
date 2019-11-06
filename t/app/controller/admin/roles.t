@@ -22,7 +22,7 @@ $user->user_body_permissions->create({
     permission_type => 'report_edit_priority',
 });
 
-FixMyStreet::DB->resultset("Role")->create({
+my $role_a = FixMyStreet::DB->resultset("Role")->create({
     body => $body,
     name => 'Role A',
     permissions => ['moderate', 'user_edit'],
@@ -127,6 +127,13 @@ subtest 'superuser can see all bodies' => sub {
         permissions => 'contribute_as_body',
     }});
     $mech->content_contains('Role C');
+};
+
+subtest 'check log of the above' => sub {
+    my $id = FixMyStreet::DB->resultset("Role")->find({ name => "Role B" })->id;
+    $mech->get_ok('/admin/users/' . $editor->id . '/log');
+    $mech->content_contains('Added role <a href="/admin/roles/' . $id . '">Role B</a>');
+    $mech->content_contains('Deleted role ' . $role_a->id);
 };
 
 done_testing();

@@ -1,0 +1,72 @@
+[% INCLUDE 'admin/header.html' title=loc('Timeline') _ ', ' _ user.name %]
+
+<style>
+.timeline ul {
+    margin-bottom: 0;
+}
+.timeline dd {
+    margin-bottom: 0;
+}
+</style>
+
+[%
+action_map = {
+    add = 'Added'
+    delete = 'Deleted'
+    edit = 'Edited'
+    merge = 'Merged'
+    moderation = 'Moderated'
+    resend = 'Resent'
+    category_change = 'Changed category of'
+    state_change = 'Changed state of'
+}
+%]
+
+[%- date = '' %]
+[% FOREACH moment IN time.keys.sort.reverse %]
+    [%- curdate = time.$moment.0.date.strftime('%A, %e %B %Y') -%]
+    [%- IF date != curdate %]
+        [% '</dl>' IF date %]
+        <h2>[% curdate %]</h2>
+
+        <dl class="timeline">
+        [%- date = curdate -%]
+    [%- END -%]
+    <dt><b>[% time.$moment.0.date.hms %]</b></dt>
+    <dd><ul>
+    [% FOREACH item IN time.$moment %]
+        <li>
+        [%~ IF item.obj.problem_id %]
+            [%~ SET report_url = c.uri_for( '/report', item.obj.problem_id ) _ "#update_" _ item.obj.id %]
+        [%~ ELSE %]
+            [%~ SET report_url = c.uri_for('/report', item.obj.id) %]
+        [%~ END %]
+        [%~ SET report_link = "<a href='" _ report_url _ "'>" _ item.obj.id _ "</a>" %]
+        [%- SWITCH item.type -%]
+            [%~ CASE 'problem' %]
+                [%- tprintf(loc('Problem %s created'), report_link) %], ‘[% item.obj.title | html %]’
+            [%~ CASE 'problemContributedBy' %]
+                [%- tprintf(loc('Problem %s created on behalf of %s'), report_link, item.obj.name) %], ‘[% item.obj.title | html %]’
+            [%~ CASE 'update' %]
+                [% tprintf(loc("Update %s created for problem %d"), report_link, item.obj.problem_id) %]
+                [% item.obj.text | add_links | markup(item.obj.user) | html_para %]
+            [%~ CASE 'shortlistAdded' %]
+                [%- tprintf(loc('Problem %s added to shortlist'), report_link) %]
+            [%~ CASE 'shortlistRemoved' %]
+                [%- tprintf(loc('Problem %s removed from shortlist'), report_link) %]
+            [%~ CASE 'log' %]
+                [%~ SET object_summary = item.log.object_summary %]
+              [% IF object_summary %]
+                [%~ SET link = tprintf('<a href="%s">%s</a>', item.log.link, object_summary) %]
+                [%- tprintf('%s %s %s', action_map.${item.log.action}, item.log.actual_object_type, link) %]
+                [% ' – ' _ item.log.reason IF item.log.reason %]
+              [% ELSE %]
+                [%- tprintf('%s %s %s', action_map.${item.log.action}, item.log.actual_object_type, item.log.object_id) %]
+              [% END %]
+        [%- END %]
+        </li>
+    [%- END %]
+    </ul></dd>
+[% END %]
+
+[% INCLUDE 'admin/footer.html' %]

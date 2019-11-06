@@ -406,6 +406,38 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
     return 1;
 }
 
+sub log : Chained('user') : PathPart('log') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $user = $c->stash->{user};
+
+    my $after = $c->get_param('after');
+
+    my %time;
+    foreach ($user->admin_logs->all) {
+        push @{$time{$_->whenedited->epoch}}, { type => 'log', date => $_->whenedited, log => $_ };
+    }
+    foreach ($c->cobrand->problems->search({ extra => { like => '%contributed_by%' . $user->id . '%' } })->all) {
+        next unless $_->get_extra_metadata('contributed_by') == $user->id;
+        push @{$time{$_->created->epoch}}, { type => 'problemContributedBy', date => $_->created, obj => $_ };
+    }
+
+    foreach ($user->user_planned_reports->all) {
+        push @{$time{$_->added->epoch}}, { type => 'shortlistAdded', date => $_->added, obj => $_->report };
+        push @{$time{$_->removed->epoch}}, { type => 'shortlistRemoved', date => $_->removed, obj => $_->report } if $_->removed;
+    }
+
+    foreach ($user->problems->all) {
+        push @{$time{$_->created->epoch}}, { type => 'problem', date => $_->created, obj => $_ };
+    }
+
+    foreach ($user->comments->all) {
+        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_};
+    }
+
+    $c->stash->{time} = \%time;
+}
+
 sub post_edit_redirect : Private {
     my ( $self, $c, $user ) = @_;
 
