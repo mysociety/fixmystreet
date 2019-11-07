@@ -23,7 +23,20 @@ var defaults = {
     body: "TfL"
 };
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+var asset_defaults = $.extend(true, {}, defaults, {
+    select_action: true,
+    no_asset_msg_id: '#js-not-an-asset',
+    actions: {
+        asset_found: function() {
+            fixmystreet.message_controller.asset_found();
+        },
+        asset_not_found: function() {
+            fixmystreet.message_controller.asset_not_found(this);
+        }
+    }
+});
+
+fixmystreet.assets.add(asset_defaults, {
     http_options: {
         params: {
             TYPENAME: "trafficsignals"
@@ -35,9 +48,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_group: "Traffic Lights",
     asset_item: 'traffic signal'
-}));
+});
 
-fixmystreet.assets.add($.extend(true, {}, defaults, {
+fixmystreet.assets.add(asset_defaults, {
     http_options: {
         params: {
             TYPENAME: "busstops"
@@ -49,7 +62,9 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
     },
     asset_group: "Bus Stops and Shelters",
     asset_item: 'bus stop'
-}));
+});
+
+/* Roadworks.org asset layer */
 
 var org_id = '1250';
 var body = "TfL";
