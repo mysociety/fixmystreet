@@ -151,6 +151,17 @@ var roadworks_defaults = {
         },
         filterToParams: function(filter, params) {
             params = params || {};
+            // There may be more than one filter applied to the layer
+            // but we only care about the BBOX filter for the purposes of the
+            // API query string.
+            if (filter.filters) {
+                $.each(filter.filters, function() {
+                    if ( this.type == "BBOX") {
+                        filter = this;
+                        return false; // break out of the $.each loop
+                    }
+                });
+            }
             filter.value.transform('EPSG:4326', 'EPSG:27700');
             params.b = filter.value.toArray();
             var date = new Date();
