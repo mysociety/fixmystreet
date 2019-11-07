@@ -9,6 +9,10 @@ END { FixMyStreet::App->log->enable('info'); }
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'TfL');
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2483, # Hounslow
+    body_id => $body->id,
+});
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 $staffuser->user_body_permissions->create({
@@ -126,12 +130,38 @@ $contact4->set_extra_fields(
     }
 );
 $contact4->update;
+my $contact5 = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Trees',
+    email => 'AOAT',
+);
+my $contact6 = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Grit bins',
+    email => 'AOAT,gritbins@example.com',
+);
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'tfl',
+    ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet'],
     MAPIT_URL => 'http://mapit.uk/',
-    COBRAND_FEATURES => { internal_ips => { tfl => [ '127.0.0.1' ] } },
+    COBRAND_FEATURES => {
+        internal_ips => { tfl => [ '127.0.0.1' ] },
+        borough_email_addresses => { tfl => {
+            AOAT => [
+                {
+                    email => 'hounslow@example.com',
+                    areas => [ 2483 ],
+                },
+                {
+                    email => 'bromley@example.com',
+                    areas => [ 2482 ],
+                },
+            ],
+        } },
+    },
 }, sub {
+
+$mech->host("tfl.fixmystreet.com");
 
 subtest "test report creation and reference number" => sub {
     $mech->log_in_ok( $user->email );
@@ -232,6 +262,52 @@ subtest "change category, report resent to new location" => sub {
 
     $mech->log_out_ok;
 };
+
+for my $test (
+    [ 'BR1 3UH', 'tfl.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team' ],
+    [ 'BR1 3UH', 'www.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team' ],
+    [ 'BR1 3UH', 'bromley.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team' ],
+    [ 'TW7 5JN', 'tfl.fixmystreet.com', 'Trees', 'TfL <hounslow@example.com>', 'Hounslow borough team' ],
+    [ 'TW7 5JN', 'www.fixmystreet.com', 'Trees', 'TfL <hounslow@example.com>', 'Hounslow borough team' ],
+    [ 'TW7 5JN', 'tfl.fixmystreet.com', 'Grit bins', 'TfL <hounslow@example.com>, TfL <gritbins@example.com>', 'Hounslow borough team and additional address' ],
+    [ 'TW7 5JN', 'www.fixmystreet.com', 'Grit bins', 'TfL <hounslow@example.com>, TfL <gritbins@example.com>', 'Hounslow borough team and additional address' ],
+) {
+    my ($postcode, $host, $category, $to, $name ) = @$test;
+    subtest "test report is sent to $name" => sub {
+        $mech->host($host);
+        $mech->log_in_ok( $user->email );
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => $postcode, } }, "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    title => 'Test Report for borough team',
+                    detail => 'Test report details.',
+                    may_show_name => '1',
+                    category => $category,
+                    $host eq 'bromley.fixmystreet.com' ? (
+                        fms_extra_title => 'DR',
+                        first_name => "Joe",
+                        last_name => "Bloggs",
+                    ) : (
+                        name => 'Joe Bloggs',
+                    ),
+                }
+            },
+            "submit good details"
+        );
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), $to, 'Sent to correct address';
+        $mech->clear_emails_ok;
+        FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report for borough team'})->delete;
+    };
+}
+
+$mech->host("tfl.fixmystreet.com");
 
 subtest 'check lookup by reference' => sub {
     my $id = FixMyStreet::DB->resultset("Problem")->first->id;
