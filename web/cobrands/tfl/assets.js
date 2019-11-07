@@ -112,13 +112,14 @@ var tlrn_categories = [
     "Worn out road markings"
 ];
 
-fixmystreet.assets.add(defaults, {
+var red_routes_layer = fixmystreet.assets.add(defaults, {
     http_options: {
         url: "https://tilma.mysociety.org/mapserver/tfl",
         params: {
             TYPENAME: "RedRoutes"
         }
     },
+    name: "Red Routes",
     max_resolution: 9.554628534317017,
     road: true,
     non_interactive: true,
@@ -131,6 +132,18 @@ fixmystreet.assets.add(defaults, {
         not_found: fixmystreet.message_controller.road_not_found
     }
 });
+if (red_routes_layer) {
+    red_routes_layer.events.register( 'loadend', red_routes_layer, function(){
+        // The roadworks layer may have finished loading before this layer, so
+        // ensure the filters to only show markers that intersect with a red route
+        // are re-applied.
+        var roadworks = fixmystreet.map.getLayersByName("Roadworks");
+        if (roadworks.length) {
+            // .redraw() reapplies filters without issuing any new requests
+            roadworks[0].redraw();
+        }
+    });
+}
 
 
 /* Roadworks.org asset layer */
@@ -173,6 +186,7 @@ fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
     http_options: {
         params: { organisation_id: org_id },
     },
+    name: "Roadworks",
     format_class: OpenLayers.Format.TfLRoadworksOrg,
     body: body,
     non_interactive: false,
@@ -199,6 +213,15 @@ fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
             }[this.attributes.works_state] || this.attributes.works_state;
         },
         tooltip: 'tooltip'
+    },
+    filter_key: true,
+    filter_value: function(feature) {
+        var red_routes = fixmystreet.map.getLayersByName("Red Routes");
+        if (!red_routes.length) {
+            return false;
+        }
+        red_routes = red_routes[0];
+        return red_routes.getFeaturesWithinDistance(feature.geometry, 10).length > 0;
     }
 });
 
