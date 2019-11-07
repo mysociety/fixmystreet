@@ -293,6 +293,22 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         foreach (qw/state anonymous title detail name external_id external_body external_team/) {
             $columns{$_} = $c->get_param($_);
         }
+
+        # Look this up here for moderation line to use
+        my $remove_photo_param = $c->forward('/admin/_get_remove_photo_param');
+
+        if ($columns{title} ne $problem->title || $columns{detail} ne $problem->detail ||
+                $columns{anonymous} ne $problem->anonymous || $remove_photo_param) {
+            $problem->create_related( moderation_original_data => {
+                title => $problem->title,
+                detail => $problem->detail,
+                photo => $problem->photo,
+                anonymous => $problem->anonymous,
+                category => $problem->category,
+                $problem->extra ? (extra => $problem->extra) : (),
+            });
+        }
+
         $problem->set_inflated_columns(\%columns);
 
         if ($c->get_param('closed_updates')) {
@@ -305,7 +321,6 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         $c->forward('/admin/update_user', [ $problem ]);
 
         # Deal with photos
-        my $remove_photo_param = $c->forward('/admin/_get_remove_photo_param');
         if ($remove_photo_param) {
             $c->forward('/admin/remove_photo', [ $problem, $remove_photo_param ]);
         }
