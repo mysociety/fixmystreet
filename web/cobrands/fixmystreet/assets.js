@@ -809,6 +809,7 @@ fixmystreet.assets = {
         options = $.extend(true, {}, default_options, options);
         var asset_layer = this.add_layer(options);
         this.add_controls([asset_layer], options);
+        return asset_layer;
     },
 
     add_layer: function(options) {
