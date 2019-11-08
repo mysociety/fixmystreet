@@ -11,6 +11,7 @@ BEGIN {
     require "$d/../../setenv.pl";
 }
 
+use Term::ANSIColor;
 use FixMyStreet;
 use FixMyStreet::DB;
 use Getopt::Long::Descriptive;
@@ -20,6 +21,7 @@ use Path::Tiny;
 my ($opt, $usage) = describe_options(
     '%c %o',
     [ 'commit', "Actually commit changes to the database" ],
+    [ 'delete', "Delete all existing TfL categories first" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
 print($usage->text), exit if $opt->help;
@@ -36,12 +38,14 @@ END {
 $db = FixMyStreet::DB->schema->storage;
 $db->txn_begin;
 if (!$opt->commit) {
-    say "NOT COMMITTING TO DATABASE";
+    say colored("NOT COMMITTING TO DATABASE", 'cyan');
 }
 
 my $config = decode_json(path($ARGV[0])->slurp_utf8);
 
 my $body = FixMyStreet::DB->resultset('Body')->find({ name => 'TfL' });
+
+$body->contacts->delete_all if $opt->delete;
 
 die "Couldn't find TfL body" unless $body;
 
@@ -58,17 +62,13 @@ for my $group (keys %$groups) {
         $child_cat->editor($0);
         $child_cat->whenedited(\'current_timestamp');
         $child_cat->note($child_cat->in_storage ? 'Updated by import_categories' : 'Created by import_categories');
+        say colored("WARNING", 'red') . " " . $child_cat->category . " already exists" if $child_cat->in_storage and $child_cat->category ne 'Other';
         my $groups = $child_cat->groups;
         my %groups = map { $_ => 1} @$groups;
         $groups{$group} = 1;
         my @groups = keys %groups;
         $child_cat->extra(undef) if $child_cat->in_storage;
         $child_cat->set_extra_metadata(group => \@groups);
-        if ($cat->{safety_critical}) {
-            $child_cat->set_extra_metadata(safety_critical => 1);
-        } else {
-            $child_cat->unset_extra_metadata('safety_critical');
-        }
         if ($cat->{disable}) {
             $child_cat->update_extra_field({
                 code => "_fms_disable_",
@@ -89,6 +89,24 @@ for my $group (keys %$groups) {
                 order => 1,
             });
         }
+        # Add the safety critical hidden field
+        $child_cat->update_extra_field({
+            code => "safety_critical",
+            description => "Safety critical",
+            automated => "hidden_field",
+            order => 1,
+            datatype => "singlevaluelist",
+            values => [
+                {
+                    name => "Yes",
+                    key => "yes"
+                },
+                {
+                    name => "No",
+                    key => "no"
+                }
+            ]
+        });
         $child_cat->in_storage ? $child_cat->update : $child_cat->insert;
     }
 
