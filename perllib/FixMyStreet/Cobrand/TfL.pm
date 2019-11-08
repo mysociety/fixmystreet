@@ -22,6 +22,8 @@ sub is_council { 0 }
 
 sub send_questionnaires { 0 }
 
+sub category_change_force_resend { 1 }
+
 sub area_check {
     my ( $self, $params, $context ) = @_;
 
