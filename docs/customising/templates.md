@@ -109,5 +109,5 @@ and click the email you wish to preview.
 To include an inline logo in your HTML email, put it at
 `web/cobrands/yourcobrands/images/email-logo.gif` and make sure `logo_width`
 and `logo_height` are set appropriately in your
-`_email_setting_overrides.html`. The email template should then pick it up
+`_email_color_overrides.html`. The email template should then pick it up
 automatically.
