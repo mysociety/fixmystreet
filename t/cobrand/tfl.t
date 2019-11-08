@@ -342,12 +342,14 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
         {
             name => "test non-safety critical category",
             safety_critical => 'no',
-            category => "Traffic lights"
+            category => "Traffic lights",
+            subject => "Problem Report: Test Report",
         },
         {
             name => "test safety critical category",
             safety_critical => 'yes',
-            category => "Pothole"
+            category => "Pothole",
+            subject => "Dangerous Pothole Report: Test Report",
         },
         {
             name => "test category extra field - safety critical",
@@ -355,7 +357,8 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
             category => "Flooding",
             extra_fields => {
                 location => "carriageway",
-            }
+            },
+            subject => "Dangerous Flooding Report: Test Report",
         },
         {
             name => "test category extra field - non-safety critical",
@@ -363,7 +366,8 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
             category => "Flooding",
             extra_fields => {
                 location => "footway",
-            }
+            },
+            subject => "Problem Report: Test Report",
         },
     ) {
     subtest $test->{name} . ' on ' . $host => sub {
@@ -406,6 +410,16 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
             ok $report, "Found the report";
 
             is $report->get_extra_field_value('safety_critical'), $test->{safety_critical}, "safety critical flag set to " . $test->{safety_critical};
+
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Reports::send();
+            my @email = $mech->get_email;
+            is $email[0]->header('Subject'), $test->{subject};
+            if ($test->{safety_critical} eq 'yes') {
+                like $mech->get_text_body_from_email($email[0]), qr/This report is marked as safety critical./, "Safety critical message included in email body";
+            }
+            $mech->clear_emails_ok;
+
 
             $mech->log_out_ok;
         };

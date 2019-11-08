@@ -1,8 +1,10 @@
-Subject: Problem Report: [% report.title %]
+Subject: [% IF report.get_extra_field_value('safety_critical') == 'yes' %]Dangerous [% report.category %][% ELSE %]Problem[% END %] Report: [% report.title %]
 
 [% multiple %]A user of
 [% site_name %] has submitted the following report
 of a local problem that they believe might require your attention.
+
+[% IF report.get_extra_field_value('safety_critical') == 'yes' %]This report is marked as safety critical.[% END %]
 
 [% fuzzy %], or to provide an update on the problem,
 please visit the following link:
