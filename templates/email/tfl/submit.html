@@ -16,6 +16,8 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">[% multiple %]A user of [% site_name %] has submitted the following report
 of a local problem that they believe might require your attention.</p>
 
+  [% IF report.get_extra_field_value('safety_critical') == 'yes' %]<p>This report is marked as safety critical.</p>[% END %]
+
   <p style="margin: 20px auto; text-align: center">
     <a style="[% button_style %]" href="[% url %]">Show full report</a>
   </p>
