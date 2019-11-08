@@ -121,6 +121,13 @@ sub send() {
                 $data{state_message} = _("This report is currently marked as open.");
             }
 
+            if (!$data{alert_user_id}) {
+                if ($ref eq 'new_updates') {
+                    # Get a report object for its photo and static map
+                    $data{report} = $schema->resultset('Problem')->find({ id => $row->{id} });
+                }
+            }
+
             my $url = $cobrand->base_url_for_report($row);
             # this is currently only for new_updates
             if (defined($row->{item_text})) {
@@ -138,6 +145,12 @@ sub send() {
                         }
                     } );
                     $data{problem_url} = $url . "/R/" . $token_obj->token;
+
+                    # Also record timestamp on report if it's an update about being fixed...
+                    if (FixMyStreet::DB::Result::Problem::fixed_states()->{$row->{state}} || FixMyStreet::DB::Result::Problem::closed_states()->{$row->{state}}) {
+                        $data{report}->set_extra_metadata_if_undefined('closure_alert_sent_at', time());
+                        $data{report}->update;
+                    }
                 } else {
                     $data{problem_url} = $url . "/report/" . $row->{id};
                 }
@@ -181,10 +194,6 @@ sub send() {
 
             if (!$data{alert_user_id}) {
                 %data = (%data, %$row);
-                if ($ref eq 'new_updates') {
-                    # Get a report object for its photo and static map
-                    $data{report} = $schema->resultset('Problem')->find({ id => $row->{id} });
-                }
                 if ($ref eq 'area_problems') {
                     my $va_info = FixMyStreet::MapIt::call('area', $row->{alert_parameter});
                     $data{area_name} = $va_info->{name};
