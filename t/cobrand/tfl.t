@@ -165,27 +165,6 @@ subtest "test report creation anonymously by button" => sub {
     $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
     $mech->submit_form_ok(
         {
-            button => 'submit_register',
-            with_fields => {
-                title => 'Anonymous Test Report 1',
-                detail => 'Test report details.',
-                name => 'Joe Bloggs',
-                may_show_name => '1',
-                category => 'Bus stops',
-            }
-        },
-        "submit good details"
-    );
-
-    is_deeply $mech->page_errors, [
-        'Please enter your email'
-    ], "check there were no errors";
-
-    $mech->get_ok('/around');
-    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
-    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
-    $mech->submit_form_ok(
-        {
             button => 'report_anonymously',
             with_fields => {
                 title => 'Anonymous Test Report 1',
@@ -193,7 +172,7 @@ subtest "test report creation anonymously by button" => sub {
                 category => 'Bus stops',
             }
         },
-        "submit good details"
+        "submit report anonymously"
     );
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Anonymous Test Report 1'});
     ok $report, "Found the report";
@@ -223,6 +202,7 @@ subtest "test report creation anonymously by button" => sub {
 };
 
 subtest "test report creation anonymously by staff user" => sub {
+    $mech->clear_emails_ok;
     $mech->log_in_ok( $staffuser->email );
     $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
@@ -236,7 +216,7 @@ subtest "test report creation anonymously by staff user" => sub {
                 category => 'Bus stops',
             }
         },
-        "submit good details"
+        "submit report"
     );
     is_deeply $mech->page_errors, [], "check there were no errors";
 
@@ -255,12 +235,12 @@ subtest "test report creation anonymously by staff user" => sub {
     is $report->anonymous, 1;
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
 
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
-        user => $report->user,
+    my $alerts = FixMyStreet::App->model('DB::Alert')->search( {
         alert_type => 'new_updates',
         parameter => $report->id,
     } );
-    is $alert, undef, "no alert created";
+    is $alerts->count, 0, "no alerts created";
+    ok $mech->email_count_is(0), "no emails sent";
 
     $mech->log_out_ok;
 };
