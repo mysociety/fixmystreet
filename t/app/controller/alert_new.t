@@ -412,6 +412,9 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     is +(my $c = () = $email->as_string =~ /Other User/g), 2, 'Update name given, twice';
     unlike $email->as_string, qr/Anonymous User/, 'Update name not given';
 
+    $report->discard_changes;
+    ok $report->get_extra_metadata('closure_alert_sent_at'), 'Closure time set';
+
     # The update alert was to the problem reporter, so has a special update URL
     $mech->log_out_ok;
     $mech->get_ok( "/report/$report_id" );
