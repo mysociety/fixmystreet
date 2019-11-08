@@ -367,6 +367,10 @@ cobrand class is returned, otherwise the default FixMyStreet cobrand is used.
 sub get_body_handler_for_problem {
     my ($self, $row) = @_;
 
+    if ($row->to_body_named('TfL')) {
+        return FixMyStreet::Cobrand::TfL->new;
+    }
+
     my @bodies = values %{$row->bodies};
     my %areas = map { %{$_->areas} } grep { $_->name ne 'TfL' } @bodies;
 
