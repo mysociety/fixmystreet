@@ -110,12 +110,19 @@ sub send {
         $params, $sender, $nomail, $cobrand, $row->lang);
 
     unless ($result) {
+        $row->set_extra_metadata('sent_to' => email_list($params->{To}));
         $self->success(1);
     } else {
         $self->error( 'Failed to send email' );
     }
 
     return $result;
+}
+
+sub email_list {
+    my $list = shift;
+    my @list = map { ref $_ ? $_->[0] : $_ } @$list;
+    return \@list;
 }
 
 # SW&T has different contact addresses depending upon the old district
