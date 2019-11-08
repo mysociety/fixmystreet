@@ -217,6 +217,22 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 };
 
+subtest "change category, report resent to new location" => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    my $id = $report->id;
+
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok("/admin/report_edit/$id");
+    $mech->submit_form_ok({ with_fields => { category => 'Traffic lights' } });
+
+    FixMyStreet::Script::Reports::send();
+    my @email = $mech->get_email;
+    is $email[0]->header('To'), 'TfL <trafficlights@example.com>';
+    $mech->clear_emails_ok;
+
+    $mech->log_out_ok;
+};
+
 subtest 'check lookup by reference' => sub {
     my $id = FixMyStreet::DB->resultset("Problem")->first->id;
 
