@@ -616,6 +616,8 @@ subtest 'check can set multiple emails as a single contact' => sub {
         FixMyStreet::Script::Reports::send();
     };
 
+    $problem->discard_changes;
+    is_deeply $problem->get_extra_metadata('sent_to'), [ '2636@example.com', '2636-2@example.com' ];
     $mech->email_count_is(1);
     my $email = $mech->get_email;
     is $email->header('To'), '"City of Edinburgh Council" <2636@example.com>, "City of Edinburgh Council" <2636-2@example.com>', 'To contains two email addresses';
@@ -662,6 +664,7 @@ subtest 'check can turn on report sent email alerts' => sub {
 
     $problem->discard_changes;
     ok defined( $problem->whensent ), 'whensent set';
+    is_deeply $problem->get_extra_metadata('sent_to'), [ 'test@example.org' ];
 
     $email = $emails[1];
     like $email->header('Subject'), qr/FixMyStreet Report Sent/, 'report sent email title correct';

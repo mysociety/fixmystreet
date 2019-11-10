@@ -1,0 +1,17 @@
+[% SET duration_clause = problem.duration_string(c) %]
+[% IF duration_clause || problem.whensent %]
+    <p class="council_sent_info">
+    [%- IF problem.whensent %]
+        [%- IF duration_clause %]
+            [%- external_ref_clause = tprintf(loc('Council ref:&nbsp;%s'), problem.id) %]
+        [%- ELSE %]
+            [%- external_ref_clause = tprintf(loc('%s ref:&nbsp;%s'), problem.external_body, problem.id) %]
+        [%- END %]
+    [%- END -%]
+    [% duration_clause %]
+    [%- IF external_ref_clause %]
+        [%- IF duration_clause %]. [% END %]
+        <strong>[% external_ref_clause %].</strong>
+    [%- END %]
+    </p>
+[% END %]

@@ -23,6 +23,8 @@
         - Allow editing of category name. #1398
         - Allow non-superuser staff to use 2FA, and optional enforcement of 2FA.
         - Add optional enforced password expiry.
+        - Store a moderation history on admin report edit.
+        - Add user admin log page.
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523
@@ -51,6 +53,7 @@
         - Allow cobrands to disable admin resending.
         - Sass variables for default link colour and decoration.
         - Make contact edit note optional on staging sites.
+        - Store email addresses report sent to on the report.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private. #2488

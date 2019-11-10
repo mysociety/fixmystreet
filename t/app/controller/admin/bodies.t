@@ -327,4 +327,11 @@ FixMyStreet::override_config {
     };
 };
 
+subtest 'check log of the above' => sub {
+    $mech->get_ok('/admin/users/' . $superuser->id . '/log');
+    $mech->content_contains('Added category <a href="/admin/body/' . $body->id . '/test/category">test/category</a>');
+    $mech->content_contains('Edited category <a href="/admin/body/' . $body->id . '/test category">test category</a>');
+    $mech->content_contains('Edited body <a href="/admin/body/' . $body->id . '">Aberdeen City Council</a>');
+};
+
 done_testing();

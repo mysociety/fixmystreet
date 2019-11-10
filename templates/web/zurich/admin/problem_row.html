@@ -46,7 +46,7 @@
         </td>
 
         [% IF NOT no_edit %]
-            <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+            <td><a href="[% c.uri_for_action( 'admin/reports/edit', [ problem.id ] ) %]">[% loc('Edit') %]</a></td>
         [% END %]
     </tr>
 [%- END -%]

@@ -41,7 +41,7 @@
         </small></td>
         <td rowspan=2>
             [% IF c.user.has_permission_to('report_edit', update.problem.bodies_str_ids) %]
-                <a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a>
+                <a href="[% c.uri_for_action( 'admin/update_edit', [ update.id ] ) %]">[% loc('Edit') %]</a>
             [% END %]
         </td>
     </tr>
