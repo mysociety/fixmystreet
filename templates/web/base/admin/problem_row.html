@@ -23,7 +23,7 @@
             [% PROCESS value_or_nbsp value=problem.category_display %]
             <br>[%- IF edit_body_contacts -%]
               [% FOR body IN problem.bodies.values %]
-                <a href="[% c.uri_for('body', body.id ) %]">[% PROCESS value_or_nbsp value=body.name %]</a>
+                <a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ] ) %]">[% PROCESS value_or_nbsp value=body.name %]</a>
               [% END %]
             [%- ELSE -%]
                 [%- PROCESS value_or_nbsp value=problem.bodies_str -%]
@@ -40,7 +40,7 @@
         </small></td>
         <td>
             [% IF c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
-                <a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a>
+                <a href="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]">[% loc('Edit') %]</a>
             [% END %]
         </td>
     </tr>

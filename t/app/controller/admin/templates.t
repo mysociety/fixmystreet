@@ -45,8 +45,6 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     }
 );
 
-$mech->log_in_ok( $superuser->email );
-
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
@@ -63,7 +61,13 @@ subtest "response templates can be added" => sub {
     };
     $mech->submit_form_ok( { with_fields => $fields } );
 
-     is $oxfordshire->response_templates->count, 1, "Response template was added";
+    is $oxfordshire->response_templates->count, 1, "Response template was added";
+};
+
+subtest 'check log of the above' => sub {
+    my $template_id = $oxfordshire->response_templates->first->id;
+    $mech->get_ok('/admin/users/' . $superuser->id . '/log');
+    $mech->content_contains('Added template <a href="/admin/templates/' . $oxfordshire->id . '/' . $template_id . '">Report acknowledgement</a>');
 };
 
 subtest "but not another with the same title" => sub {
@@ -216,7 +220,6 @@ subtest "auto-response templates that duplicate external_status_code can't be ad
         contact_id => $oxfordshirecontact->id,
     });
     is $oxfordshire->response_templates->count, 1, "Initial response template was created";
-
 
     $mech->log_in_ok( $superuser->email );
     $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );

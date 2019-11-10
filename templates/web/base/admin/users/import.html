@@ -27,7 +27,7 @@
         [% FOREACH user IN new_users %]
             <tr>
                 <td>
-                    <a href="[% c.uri_for_action( 'admin/users/edit', user.id ) %]">
+                    <a href="[% c.uri_for_action( 'admin/users/edit', [ user.id ] ) %]">
                         [% user.name %]
                     </a>
                 </td>
@@ -50,7 +50,7 @@
         [% FOREACH user IN existing_users %]
             <tr>
                 <td>
-                    <a href="[% c.uri_for_action( 'admin/users/edit', user.id ) %]">
+                    <a href="[% c.uri_for_action( 'admin/users/edit', [ user.id ] ) %]">
                         [% user.name %]
                     </a>
                 </td>

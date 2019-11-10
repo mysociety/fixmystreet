@@ -364,7 +364,7 @@ sub set_problem_state {
     my ($self, $c, $problem, $new_state) = @_;
     return $self->update_admin_log($c, $problem) if $new_state eq $problem->state;
     $problem->state( $new_state );
-    $c->forward( 'log_edit', [ $problem->id, 'problem', "state change to $new_state" ] );
+    $c->forward( '/admin/log_edit', [ $problem->id, 'problem', "state change to $new_state" ] );
 }
 
 =head1 C<update_admin_log>
@@ -388,7 +388,7 @@ sub update_admin_log {
         $text = "Logging time_spent";
     }
 
-    $c->forward( 'log_edit', [ $problem->id, 'problem', $text, $time_spent ] );
+    $c->forward( '/admin/log_edit', [ $problem->id, 'problem', $text, $time_spent ] );
 }
 
 # Any user with from_body set can view admin
@@ -898,7 +898,7 @@ sub admin_report_edit {
                 $self->set_problem_state($c, $problem, 'confirmed');
             }
             $problem->update;
-            $c->forward( 'log_edit', [ $problem->id, 'problem', 
+            $c->forward( '/admin/log_edit', [ $problem->id, 'problem',
                 $not_contactable ?
                     _('Customer not contactable')
                     : _('Sent report back') ] );

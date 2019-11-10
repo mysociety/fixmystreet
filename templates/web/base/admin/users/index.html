@@ -46,7 +46,7 @@
       [% IF c.cobrand.moniker != 'zurich' %]
         <th>[% loc('Flagged') %]</th>
       [% END %]
-        <th>*</th>
+        <th colspan="2">*</th>
     </tr>
 [%- FOREACH user IN users %]
     <tr>
@@ -57,14 +57,15 @@
             [% PROCESS value_or_nbsp value=user.name %]
             [% IF user.from_body %]</label>[% END %]
         </td>
-        <td><a href="[% c.uri_for_action( 'admin/reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
+        <td><a href="[% c.uri_for_action( 'admin/reports/index', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td>
         <td>[% PROCESS value_or_nbsp value=user.from_body.name %]
             [% IF user.is_superuser %] * [% END %]
         </td>
       [% IF c.cobrand.moniker != 'zurich' %]
         <td>[% user.flagged == 2 ? loc('User in abuse table') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
       [% END %]
-        <td>[% IF user.id %]<a href="[% c.uri_for_action( 'admin/users/edit', user.id ) %]">[% loc('Edit') %]</a>[% END %]</td>
+        <td>[% IF user.id %]<a href="[% c.uri_for_action( 'admin/users/edit', [ user.id ] ) %]">[% loc('Edit') %]</a>[% END %]</td>
+        <td>[% IF user.id %]<a href="[% c.uri_for_action( 'admin/users/log', [ user.id ] ) %]">[% loc('Timeline') %]</a>[% END %]</td>
     </tr>
 [%- END -%]
 </table>

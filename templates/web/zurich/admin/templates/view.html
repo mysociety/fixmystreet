@@ -17,12 +17,12 @@
         <td>  [% t.title %] </td>
         <td> [% t.text %] </td>
         <td> [% t.created %] </td>
-        <td> <a href="[% c.uri_for('templates', body.id, t.id) %]" class="btn">[% loc('Edit') %]</a> </td>
+        <td> <a href="[% c.uri_for_action('/admin/templates/edit', body.id, t.id) %]" class="btn">[% loc('Edit') %]</a> </td>
     </tr>
 [% END %]
     </tbody>
 </table>
 
-<a href="[% c.uri_for('templates', body.id, 'new') %]" class="btn">[% loc('New template') %]</a>
+<a href="[% c.uri_for_action('/admin/templates/edit', body.id, 'new') %]" class="btn">[% loc('New template') %]</a>
 
 [% INCLUDE 'admin/footer.html' %]

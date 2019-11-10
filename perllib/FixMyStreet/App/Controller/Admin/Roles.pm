@@ -63,6 +63,7 @@ sub form {
 
     if ($c->get_param('delete_role')) {
         $role->delete;
+        $c->forward('/admin/log_edit', [ $role->id, 'role', 'delete' ]);
         $c->response->redirect($c->uri_for($self->action_for('index')));
         $c->detach;
     }
@@ -88,11 +89,13 @@ sub form {
         $opts->{body_id} = $c->user->from_body->id;
     }
 
+    my $action = $role->in_storage ? 'edit' : 'add';
     my $form = FixMyStreet::App::Form::Role->new(%$opts);
     $c->stash(template => 'admin/roles/form.html', form => $form);
     $form->process(item => $role, params => $c->req->params);
     return unless $form->validated;
 
+    $c->forward('/admin/log_edit', [ $role->id, 'role', $action ]);
     $c->response->redirect($c->uri_for($self->action_for('index')));
 }
 

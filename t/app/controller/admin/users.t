@@ -3,6 +3,7 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
+my $original_user_id = $user->id; # For log later
 my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 3');
 
@@ -647,6 +648,27 @@ subtest "can edit list of user's alerts" => sub {
 
 subtest "View timeline" => sub {
     $mech->get_ok('/admin/timeline');
+};
+
+subtest 'View user log' => sub {
+    my $p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->first;
+    $user->add_to_planned_reports($p);
+
+    # User 1 created all the reports
+    my $id = $p->id;
+    $mech->get_ok('/admin/users?search=' . $user->email);
+    $mech->follow_link_ok({ text => 'Timeline', n => 2 });
+    $mech->content_like(qr/Problem.*?>$id<\/a> created/);
+    $mech->content_like(qr/Problem.*?>$id<\/a> added to shortlist/);
+
+    # User 3 edited user 2 above
+    $mech->get_ok('/admin/users/' . $user3->id . '/log');
+    $mech->content_like(qr/Edited user.*?test2\@example/);
+
+    # Superuser added a user, and merged one
+    $mech->get_ok('/admin/users/' . $superuser->id . '/log');
+    $mech->content_like(qr/Added user.*?0156/);
+    $mech->content_like(qr/Merged user $original_user_id/);
 };
 
 done_testing();

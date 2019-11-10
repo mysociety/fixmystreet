@@ -353,7 +353,7 @@ foreach my $test (
         user_body => $oxfordshire,
         changes   => { state => 'in progress', category => 'Potholes' },
         log_entries => [
-            qw/edit state_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit state_change category_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -410,6 +410,13 @@ foreach my $test (
             $report->unset_extra_metadata('closed_updates');
             $report->update;
             delete $test->{changes}->{closed_updates};
+        }
+
+        if ($test->{changes}{title} || $test->{changes}{detail} || $test->{changes}{anonymous}) {
+            $mech->get_ok("/report/$report_id");
+            $mech->content_contains("Anonymous: <del style='background-color:#fcc'>No</del><ins style='background-color:#cfc'>Yes</ins>") if $test->{changes}{anonymous};
+            $mech->content_contains("Details: <ins style='background-color:#cfc'>Edited </ins>Detail<del style='background-color:#fcc'> for Report to Edit</del>") if $test->{changes}{detail};
+            $mech->content_contains("Subject: <ins style='background-color:#cfc'>Edited </ins>Repor<del style='background-color:#fcc'>t to Edi</del>") if $test->{changes}{title};
         }
 
         is $report->$_, $test->{changes}->{$_}, "$_ updated" for grep { $_ ne 'username' } keys %{ $test->{changes} };
