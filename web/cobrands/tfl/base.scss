@@ -292,3 +292,17 @@ ol.big-numbers>li {
         text-transform: uppercase;
     }
 }
+
+
+.pagination a {
+    border-radius: 22.5px;
+    color: #fff;
+    padding: 0.3em 1em;
+    font-size: 14px;
+    &:hover,
+    &:active,
+    &:focus,
+    &:visited {
+        color: #fff;
+    }
+}
