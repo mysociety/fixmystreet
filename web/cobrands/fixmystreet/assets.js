@@ -1212,11 +1212,11 @@ fixmystreet.message_controller = (function() {
             return ($('#' + stopperId).length);
         },
 
-        asset_not_found: function(layer) {
-            if (!layer.visibility) {
+        asset_not_found: function() {
+            if (!this.visibility) {
                 responsibility_off();
             } else {
-                responsibility_on('#js-not-an-asset', layer.fixmystreet.asset_item, layer.fixmystreet.asset_type);
+                responsibility_on('#js-not-an-asset', this.fixmystreet.asset_item, this.fixmystreet.asset_type);
             }
         },
 
