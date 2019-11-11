@@ -4,6 +4,18 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var cleaning_categories = [
+    'Street cleaning',
+    'Street Cleaning',
+    'Accumulated Litter',
+    'Street Cleaning Enquiry',
+    'Street Cleansing'
+];
+var cleaning_groups = [
+    'Street cleaning'
+];
+var tfl_council_category = 'General Litter / Rubbish Collection';
+
 var defaults = {
     http_options: {
         url: "https://tilma.mysociety.org/mapserver/tfl",
@@ -19,47 +31,14 @@ var defaults = {
     min_resolution: 0.5971642833948135,
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
-    body: "TfL"
+    strategy_class: OpenLayers.Strategy.FixMyStreet
 };
-
-var asset_defaults = $.extend(true, {}, defaults, {
-    select_action: true,
-    no_asset_msg_id: '#js-not-an-asset',
-    actions: {
-        asset_found: fixmystreet.message_controller.asset_found,
-        asset_not_found: fixmystreet.message_controller.asset_not_found
-    }
-});
-
-fixmystreet.assets.add(asset_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "trafficsignals"
-        }
-    },
-    asset_id_field: 'Site',
-    attributes: {
-        site: 'Site',
-    },
-    asset_group: "Traffic Lights",
-    asset_item: 'traffic signal'
-});
-
-fixmystreet.assets.add(asset_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "busstops"
-        }
-    },
-    asset_id_field: 'STOP_CODE',
-    attributes: {
-        stop_code: 'STOP_CODE',
-    },
-    asset_group: "Bus Stops and Shelters",
-    asset_item: 'bus stop'
-});
-
+if (fixmystreet.cobrand === 'tfl') {
+    // On .com we change the categories depending on where is clicked; on the
+    // cobrand we use the standard 'Please click on a road' message which needs
+    // the body to be set so is_only_body passes.
+    defaults.body = 'TfL';
+}
 
 /* Red routes (TLRN) asset layer & handling for disabling form when red route
    is not selected for specific categories. */
@@ -108,6 +87,18 @@ var tlrn_categories = [
     "Worn out road markings"
 ];
 
+function is_tlrn_category_only(category, bodies) {
+    return OpenLayers.Util.indexOf(tlrn_categories, category) > -1 &&
+        OpenLayers.Util.indexOf(bodies, 'TfL') > -1 &&
+        bodies.length <= 1;
+}
+
+function regenerate_category_groups() {
+    var old_category_group = $('#category_group').val() || $('#filter_group').val();
+    $('#category_group').remove();
+    fixmystreet.set_up.category_groups(old_category_group, true);
+}
+
 var red_routes_layer = fixmystreet.assets.add(defaults, {
     http_options: {
         url: "https://tilma.mysociety.org/mapserver/tfl",
@@ -119,13 +110,72 @@ var red_routes_layer = fixmystreet.assets.add(defaults, {
     max_resolution: 9.554628534317017,
     road: true,
     non_interactive: true,
-    asset_category: tlrn_categories,
+    always_visible: true,
+    all_categories: true,
     nearest_radius: 0.1,
     stylemap: tlrn_stylemap,
     no_asset_msg_id: '#js-not-tfl-road',
     actions: {
-        found: fixmystreet.message_controller.road_found,
-        not_found: fixmystreet.message_controller.road_not_found
+        found: function(layer, feature) {
+            fixmystreet.message_controller.road_found(layer, feature);
+
+            if (fixmystreet.cobrand === 'tfl' || !fixmystreet.reporting_data) {
+                return;
+            }
+
+            // On a TfL road, remove any council categories, except street cleaning
+            var changed = false;
+            $('#form_category').find('option').each(function(i, option) {
+                var val = option.value;
+                if (OpenLayers.Util.indexOf(cleaning_categories, val) > -1) {
+                    return;
+                }
+                var optgroup = $(option).closest('optgroup').attr('label');
+                if (OpenLayers.Util.indexOf(cleaning_groups, optgroup) > -1) {
+                    return;
+                }
+                if (val === tfl_council_category) {
+                    changed = true;
+                    $(option).remove();
+                }
+                var data = fixmystreet.reporting_data.by_category[val];
+                if (data && OpenLayers.Util.indexOf(data.bodies, 'TfL') === -1) {
+                    changed = true;
+                    $(option).remove();
+                }
+            });
+            if (changed) {
+                regenerate_category_groups();
+            }
+        },
+        not_found: function(layer) {
+            var category = $('#form_category').val();
+            if (is_tlrn_category_only(category, fixmystreet.bodies)) {
+                fixmystreet.message_controller.road_not_found(layer);
+            } else {
+                fixmystreet.message_controller.road_found(layer);
+            }
+
+            if (fixmystreet.cobrand === 'tfl' || !fixmystreet.reporting_data) {
+                return;
+            }
+
+            // On non-TfL, remove any TfL-road-only categories
+            var changed = false;
+            $('#form_category').find('option').each(function(i, option) {
+                if (option.value === tfl_council_category) {
+                    $(option).remove();
+                }
+                var data = fixmystreet.reporting_data.by_category[option.value];
+                if (data && is_tlrn_category_only(option.value, data.bodies)) {
+                    changed = true;
+                    $(option).remove();
+                }
+            });
+            if (changed) {
+                regenerate_category_groups();
+            }
+        }
     }
 });
 if (red_routes_layer) {
@@ -141,6 +191,47 @@ if (red_routes_layer) {
     });
 }
 
+/* Point asset layers, bus stops and traffic lights. This comes after the red
+ * route so its check for asset not clicked on happens after whether red route
+ * clicked on or not */
+
+var asset_defaults = $.extend(true, {}, defaults, {
+    body: 'TfL',
+    select_action: true,
+    no_asset_msg_id: '#js-not-an-asset',
+    actions: {
+        asset_found: fixmystreet.message_controller.asset_found,
+        asset_not_found: fixmystreet.message_controller.asset_not_found
+    }
+});
+
+fixmystreet.assets.add(asset_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "trafficsignals"
+        }
+    },
+    asset_id_field: 'Site',
+    attributes: {
+        site: 'Site',
+    },
+    asset_group: "Traffic Lights",
+    asset_item: 'traffic signal'
+});
+
+fixmystreet.assets.add(asset_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "busstops"
+        }
+    },
+    asset_id_field: 'STOP_CODE',
+    attributes: {
+        stop_code: 'STOP_CODE',
+    },
+    asset_group: "Bus Stops and Shelters",
+    asset_item: 'bus stop'
+});
 
 /* Roadworks asset layer */
 

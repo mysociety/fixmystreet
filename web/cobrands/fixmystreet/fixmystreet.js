@@ -503,10 +503,12 @@ $.extend(fixmystreet.set_up, {
         });
   },
 
-  category_groups: function(old_group) {
+  // no_event makes sure no change event is fired (so we don't end up in an infinite loop)
+  // and also only sets up the main group dropdown, assuming the subs are left alone
+  category_groups: function(old_group, no_event) {
     var $category_select = $("select#form_category");
     if (!$category_select.hasClass('js-grouped-select')) {
-        if ($category_select.val() !== '-- Pick a category --') {
+        if (!no_event && $category_select.val() !== '-- Pick a category --') {
             $category_select.change();
         }
         return;
@@ -544,7 +546,9 @@ $.extend(fixmystreet.set_up, {
         var $el = $(el);
         var $options = $el.find("option");
 
-        if ($options.length == 1) {
+        if ($options.length === 0) {
+            /// Pass empty optgroups
+        } else if ($options.length == 1) {
             add_option($options.get(0));
         } else {
             var label = $el.attr("label");
@@ -552,6 +556,16 @@ $.extend(fixmystreet.set_up, {
             var $opt = $("<option></option>").text(label).val(label);
             $opt.data("subcategory_id", subcategory_id);
             $group_select.append($opt);
+
+            if (no_event) {
+                $options.each(function() {
+                    // Make sure any preselected value is preserved in the new UI:
+                    if (this.selected) {
+                        $group_select.val(label);
+                    }
+                });
+                return;
+            }
 
             var $sub_select = $("<select></select>").addClass("form-control js-subcategory validCategory");
             $sub_select.attr("id", subcategory_id);
@@ -593,7 +607,9 @@ $.extend(fixmystreet.set_up, {
     if (old_group !== '-- Pick a category --' && $category_select.val() == '-- Pick a category --') {
         $group_select.val(old_group);
     }
-    $group_select.change();
+    if (!no_event) {
+        $group_select.change();
+    }
   },
 
   hide_name: function() {
