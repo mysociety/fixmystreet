@@ -75,52 +75,10 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'tree'
 });
 
-var bromley_to_tfl = {
-    'Enforcement': ['ENF_NUI_SIGN', 'ENF_OBS_HIGH', 'ENF_OHANG_HANG', 'ENF_UNLIC_HIGH'],
-    'Graffiti and Flyposting': ['GF_NUI_SIGN'],
-    'Parks and Greenspace': ['PG_BLOC_DRAIN', 'PG_FLO_DISP', 'PG_GRASS_CUT'],
-    'Street Cleansing': ['SC_BLOCK_DRAIN'],
-    'Road and Pavement Issues': true,
-    'Street Lighting and Road Signs': true,
-    'Public Trees': true
-};
-var tfl_asset_categories = Object.keys(bromley_to_tfl);
-
 $(function(){
     $("#problem_form").on("change.category", "#form_service_sub_code", function() {
         $(fixmystreet).trigger('report_new:category_change');
     });
-});
-
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "TFL_Red_Route"
-        }
-    },
-    stylemap: fixmystreet.assets.stylemap_invisible,
-    always_visible: true,
-
-    asset_category: tfl_asset_categories,
-    non_interactive: true,
-    road: true,
-    body: 'Bromley Council',
-    actions: {
-        found: function(layer, feature) {
-            var category = $('select#form_category').val(),
-                subcategory = $('#form_service_sub_code').val(),
-                subcategories = bromley_to_tfl[category],
-                relevant = (subcategories === true || (subcategory && OpenLayers.Util.indexOf(subcategories, subcategory) > -1));
-            if (!fixmystreet.assets.selectedFeature() && relevant) {
-                fixmystreet.body_overrides.only_send('TfL');
-            } else {
-                fixmystreet.body_overrides.remove_only_send();
-            }
-        },
-        not_found: function(layer) {
-            fixmystreet.body_overrides.remove_only_send();
-        }
-    }
 });
 
 var prow_stylemap = new OpenLayers.StyleMap({

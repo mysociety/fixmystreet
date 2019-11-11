@@ -1119,7 +1119,6 @@ fixmystreet.message_controller = (function() {
     }
 
     function is_matching_stopper(stopper, i) {
-        var only_send = fixmystreet.body_overrides.get_only_send();
         var body = $('#form_category').data('body');
 
         if (OpenLayers.Util.indexOf(ignored_bodies, body) > -1) {
@@ -1128,9 +1127,6 @@ fixmystreet.message_controller = (function() {
 
         var category = $('#form_category').val();
         if (category != stopper.category) {
-            return false;
-        }
-        if (only_send == 'TfL') {
             return false;
         }
 
