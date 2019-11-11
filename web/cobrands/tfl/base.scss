@@ -62,8 +62,8 @@ h3 {
     @include tflfield;
 }
 
-.form-control {
-    padding: 0.5em;
+.dropzone {
+    padding: 2.5em 0.5em;
 }
 
 div.form-error, p.form-error {
@@ -290,5 +290,19 @@ ol.big-numbers>li {
     .item-list__safety-critical {
         font-style: normal;
         text-transform: uppercase;
+    }
+}
+
+
+.pagination a {
+    border-radius: 22.5px;
+    color: #fff;
+    padding: 0.3em 1em;
+    font-size: 14px;
+    &:hover,
+    &:active,
+    &:focus,
+    &:visited {
+        color: #fff;
     }
 }
