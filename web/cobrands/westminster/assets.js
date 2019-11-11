@@ -218,7 +218,7 @@ $.each(layer_data, function(i, o) {
             asset_not_found: function() {
                 $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
                 $("#uprn_select").remove();
-                fixmystreet.message_controller.asset_not_found(this);
+                fixmystreet.message_controller.asset_not_found.call(this);
             }
         }
     };

@@ -411,7 +411,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloy_defaults, {
     },
     asset_not_found: function() {
       $("#overlapping_features_msg").addClass('hidden');
-      fixmystreet.message_controller.asset_not_found(this);
+      fixmystreet.message_controller.asset_not_found.call(this);
     }
   }
 });
