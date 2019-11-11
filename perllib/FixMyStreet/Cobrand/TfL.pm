@@ -121,12 +121,16 @@ sub dashboard_export_problems_add_columns {
         map { $_ eq 'Ward' ? 'Borough' : $_ } @{ $c->stash->{csv}->{headers} },
         "Agent responsible",
         "Safety critical",
+        "Reassigned at",
+        "Reassigned by",
     ];
 
     $c->stash->{csv}->{columns} = [
         @{ $c->stash->{csv}->{columns} },
         "agent_responsible",
         "safety_critical",
+        "reassigned_at",
+        "reassigned_by",
     ];
 
     $c->stash->{csv}->{extra_data} = sub {
@@ -134,11 +138,20 @@ sub dashboard_export_problems_add_columns {
 
         my $agent = $report->shortlisted_user;
 
+        my $change = $report->admin_log_entries->search(
+            { action => 'category_change' },
+            { prefetch => 'user', rows => 1, order_by => { -desc => 'me.id' } }
+        )->single;
+        my $reassigned_at = $change ? $change->whenedited : '';
+        my $reassigned_by = $change ? $change->user->name : '';
+
         my $safety_critical = $report->get_extra_field_value('safety_critical') || 'no';
         return {
             acknowledged => $report->whensent,
             agent_responsible => $agent ? $agent->name : '',
             safety_critical => $safety_critical,
+            reassigned_at => $reassigned_at,
+            reassigned_by => $reassigned_by,
         };
     };
 }
