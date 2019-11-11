@@ -211,7 +211,7 @@ subtest 'Dashboard extra columns' => sub {
     $mech->log_in_ok( $staffuser->email );
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('Query,Borough');
-    $mech->content_contains(',"Safety critical","Reassigned at","Reassigned by"');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
     $mech->content_contains('"BR1 3UH",Bromley,');
     $mech->content_contains(',,,no');
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
@@ -228,8 +228,8 @@ subtest 'Dashboard extra columns' => sub {
     });
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('Query,Borough');
-    $mech->content_contains(',"Safety critical","Reassigned at","Reassigned by"');
-    $mech->content_contains(',,,yes,' . $dt . ',"Council User"');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
+    $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 };
 
 subtest "change category, report resent to new location" => sub {

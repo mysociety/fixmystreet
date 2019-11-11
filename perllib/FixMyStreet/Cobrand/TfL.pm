@@ -121,6 +121,8 @@ sub dashboard_export_problems_add_columns {
         map { $_ eq 'Ward' ? 'Borough' : $_ } @{ $c->stash->{csv}->{headers} },
         "Agent responsible",
         "Safety critical",
+        "Delivered to",
+        "Closure email at",
         "Reassigned at",
         "Reassigned by",
     ];
@@ -129,6 +131,8 @@ sub dashboard_export_problems_add_columns {
         @{ $c->stash->{csv}->{columns} },
         "agent_responsible",
         "safety_critical",
+        "delivered_to",
+        "closure_email_at",
         "reassigned_at",
         "reassigned_by",
     ];
@@ -146,10 +150,17 @@ sub dashboard_export_problems_add_columns {
         my $reassigned_by = $change ? $change->user->name : '';
 
         my $safety_critical = $report->get_extra_field_value('safety_critical') || 'no';
+        my $delivered_to = $report->get_extra_metadata('sent_to') || [];
+        my $closure_email_at = $report->get_extra_metadata('closure_alert_sent_at') || '';
+        $closure_email_at = DateTime->from_epoch(
+            epoch => $closure_email_at, time_zone => FixMyStreet->local_time_zone
+        ) if $closure_email_at;
         return {
             acknowledged => $report->whensent,
             agent_responsible => $agent ? $agent->name : '',
             safety_critical => $safety_critical,
+            delivered_to => join(',', @$delivered_to),
+            closure_email_at => $closure_email_at,
             reassigned_at => $reassigned_at,
             reassigned_by => $reassigned_by,
         };
