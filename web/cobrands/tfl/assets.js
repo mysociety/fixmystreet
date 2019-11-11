@@ -27,12 +27,8 @@ var asset_defaults = $.extend(true, {}, defaults, {
     select_action: true,
     no_asset_msg_id: '#js-not-an-asset',
     actions: {
-        asset_found: function() {
-            fixmystreet.message_controller.asset_found();
-        },
-        asset_not_found: function() {
-            fixmystreet.message_controller.asset_not_found(this);
-        }
+        asset_found: fixmystreet.message_controller.asset_found,
+        asset_not_found: fixmystreet.message_controller.asset_not_found
     }
 });
 
