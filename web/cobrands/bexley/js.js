@@ -136,32 +136,5 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'public toilet'
 });
 
-fixmystreet.assets.add(road_defaults, {
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/tfl",
-        params: {
-            TYPENAME: "RedRoutes"
-        }
-    },
-    road: true,
-    all_categories: true,
-    nearest_radius: 0.1,
-    actions: {
-        found: function(layer, feature) {
-            var category = $('select#form_category').val(),
-                relevant = (category !== 'Street cleaning');
-            if (!fixmystreet.assets.selectedFeature() && relevant) {
-                fixmystreet.body_overrides.only_send('TfL');
-                $('#category_meta').empty();
-            } else {
-                fixmystreet.body_overrides.remove_only_send();
-            }
-        },
-        not_found: function(layer) {
-            fixmystreet.body_overrides.remove_only_send();
-        }
-    }
-});
-
 })();
 
