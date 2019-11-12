@@ -277,15 +277,20 @@ sub by_category_ajax_data : Private {
         $non_public ? ( non_public => JSON->true ) : (),
     };
 
+    if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
+        my $disable_form = $c->forward('disable_form_message');
+        $body->{disable_form} = $disable_form if %$disable_form;
+
+        # Remove the full disable_form extras, as included in disable form output
+        @{$c->stash->{category_extras}->{$c->stash->{category}}} = grep {
+            !$_->{disable_form} || $_->{disable_form} ne 'true'
+        } @{$c->stash->{category_extras}->{$c->stash->{category}}};
+    }
+
     if (($c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1) or
             $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
         $body->{category_extra} = $c->render_fragment('report/new/category_extras.html', $vars);
         $body->{category_extra_json} = $c->forward('generate_category_extra_json');
-    }
-
-    if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
-        my $disable_form = $c->forward('disable_form_message');
-        $body->{disable_form} = $disable_form if %$disable_form;
     }
 
     my $unresponsive = $c->stash->{unresponsive}->{$category};
@@ -332,6 +337,7 @@ sub disable_form_message : Private {
             }
         }
     }
+
     return \%out;
 }
 
