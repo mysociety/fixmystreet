@@ -76,6 +76,7 @@ var tlrn_categories = [
     "Manhole Cover - Damaged (rocking or noisy)",
     "Manhole Cover - Missing",
     "Mobile Crane Operation",
+    "Other (TfL)",
     "Pavement Defect (uneven surface / cracked paving slab)",
     "Pothole",
     "Roadworks",
