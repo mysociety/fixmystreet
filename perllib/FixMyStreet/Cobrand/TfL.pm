@@ -44,9 +44,13 @@ sub body {
     FixMyStreet::DB->resultset('Body')->search({ name => 'TfL' })->first;
 }
 
-# This needs to be overridden so the method in UKCouncils doesn't create
+# These need to be overridden so the method in UKCouncils doesn't create
 # a fixmystreet.com link (because of the false-returning owns_problem call)
 sub relative_url_for_report { "" }
+sub base_url_for_report {
+    my $self = shift;
+    return $self->base_url;
+}
 
 sub categories_restriction {
     my ($self, $rs) = @_;
