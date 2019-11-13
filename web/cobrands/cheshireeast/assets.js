@@ -6,8 +6,11 @@ if (!fixmystreet.maps) {
 
 var defaults = {
     wfs_url: "https://tilma.mysociety.org/mapserver/cheshireeast",
-    max_resolution: 4.777314267158508,
-    min_resolution: 0.5971642833948135,
+    max_resolution: {
+        fixmystreet: 4.777314267158508,
+        cheshireeast: 1.4000028000056002
+    },
+    min_resolution: 0.00001,
     attributes: {
         central_asset_id: 'central_as',
         site_code: 'site_code'

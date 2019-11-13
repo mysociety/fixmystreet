@@ -46,6 +46,8 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, Cheshire East, North West England, England//;
 }
 
+sub map_type { 'CheshireEast' }
+
 sub default_map_zoom { 3 }
 
 sub on_map_default_status { 'open' }
