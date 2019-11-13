@@ -74,10 +74,33 @@ fixmystreet.assets.add(road_defaults, {
         }
     },
     nearest_radius: 100,
-    usrn: {
-        attribute: 'NSG_REF',
-        field: 'NSGRef'
-    }
+    usrn: [
+        {
+            attribute: 'NSG_REF',
+            field: 'NSGRef'
+        },
+        {
+            attribute: 'NSG_REF',
+            field: 'site_code'
+        }
+    ]
+});
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: "https://tilma.staging.mysociety.org/mapserver/bexley",
+        params: {
+            TYPENAME: "Trees"
+        }
+    },
+    asset_id_field: 'central_as',
+    attributes: {
+        central_asset_id: 'central_as',
+        site_code: 'site_code'
+    },
+    asset_type: 'spot',
+    asset_category: ['Street', 'TPO enquiry'],
+    asset_item: 'tree'
 });
 
 fixmystreet.assets.add(labeled_defaults, {

@@ -34,10 +34,10 @@ sub send {
             fixmystreet_body => $body,
         );
 
-        my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
-        $cobrand->call_hook(open311_config => $row, $h, \%open311_params);
-
         my $contact = $self->fetch_category($body, $row) or next;
+
+        my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
+        $cobrand->call_hook(open311_config => $row, $h, \%open311_params, $contact);
 
         # Try and fill in some ones that we've been asked for, but not asked the user for
         my $extra = $row->get_extra_fields();
@@ -94,7 +94,7 @@ sub send {
             $self->error( $self->error . "\n" . $open311->error );
         }
 
-        $cobrand->call_hook(open311_post_send => $row, $h);
+        $cobrand->call_hook(open311_post_send => $row, $h, $contact);
     }
 
 

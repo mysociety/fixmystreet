@@ -42,4 +42,13 @@ describe('flytipping', function() {
     cy.get('body').should('contain', 'Thank you for your report');
   });
 
+  it('sets the site_code correctly', function() {
+    cy.get('.olMapViewport #fms_pan_zoom_zoomin').click();
+    cy.wait('@roads-layer');
+    cy.get('#map_box').click(290, 307);
+    cy.wait('@report-ajax');
+    cy.get('select:eq(4)').select('Parks');
+    cy.get('[name=site_code]').should('have.value', '7300268');
+  });
+
 });

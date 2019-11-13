@@ -34,7 +34,7 @@ my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ABAN");
 $mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "LAMP");
-$mech->create_contact_ok(body_id => $body->id, category => 'Parks and open spaces', email => "PARK");
+$mech->create_contact_ok(body_id => $body->id, category => 'Parks and open spaces', email => "ConfirmPARK");
 $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
 my $category = $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
 $category->set_extra_metadata(group => 'Danger things');
@@ -70,13 +70,13 @@ FixMyStreet::override_config {
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Something dangerous', code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
-        { category => 'Parks and open spaces', email => 1, code => 'PARK',
+        { category => 'Parks and open spaces', email => 1, code => 'ConfirmPARK',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Wild animal' } },
-        { category => 'Parks and open spaces', code => 'PARK',
+        { category => 'Parks and open spaces', code => 'ConfirmPARK',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Maintenance' } },
-        { category => 'Parks and open spaces', code => 'PARK',
+        { category => 'Parks and open spaces', code => 'ConfirmPARK',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
-        { category => 'Parks and open spaces', email => 1, code => 'PARK',
+        { category => 'Parks and open spaces', email => 1, code => 'ConfirmPARK',
             extra => [
                 { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' },
                 { 'name' => 'reportType', description => 'Type of report', 'value' => 'Vandalism' },
@@ -100,7 +100,11 @@ FixMyStreet::override_config {
             my $req = $test_data->{test_req_used};
             my $c = CGI::Simple->new($req->content);
             is $c->param('service_code'), $test->{code};
-            is $c->param('attribute[NSGRef]'), 'Road ID';
+            if ($test->{code} =~ /Confirm/) {
+                is $c->param('attribute[site_code]'), 'Road ID';
+            } else {
+                is $c->param('attribute[NSGRef]'), 'Road ID';
+            }
 
             if (my $t = $test->{email}) {
                 my $email = $mech->get_email;
@@ -109,7 +113,11 @@ FixMyStreet::override_config {
                 } else {
                     like $email->header('To'), qr/$t/;
                 }
-                like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
+                if ($test->{code} =~ /Confirm/) {
+                    like $mech->get_text_body_from_email($email), qr/Site code: Road ID/;
+                } else {
+                    like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
+                }
                 $mech->clear_emails_ok;
             } else {
                 $mech->email_count_is(0);
@@ -129,6 +137,30 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
+    };
+
+
+    subtest 'testing special Open311 behaviour', sub {
+        my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+            category => 'Parks and open spaces', cobrand => 'bexley',
+            latitude => 51.408484, longitude => 0.074653, areas => '2494',
+            photo => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
+        });
+        my $report = $reports[0];
+
+        my $test_data = FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+        ok $report->whensent, 'Report marked as sent';
+        is $report->send_method_used, 'Open311', 'Report sent via Open311';
+        is $report->external_id, 248, 'Report has right external ID';
+
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[title]'), 'Test Test 1 for ' . $body->id, 'Request had correct title';
+        is_deeply [ $c->param('media_url') ], [
+            'http://bexley.example.org/photo/' . $report->id . '.0.full.jpeg?74e33622',
+            'http://bexley.example.org/photo/' . $report->id . '.1.full.jpeg?74e33622',
+        ], 'Request had multiple photos';
     };
 
 };
