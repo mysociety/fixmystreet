@@ -151,4 +151,21 @@ subtest "check RSS feeds on cobrand have correct URLs for non-cobrand reports" =
     $mech->content_contains($expected2, 'cobrand area report point to cobrand url');
 };
 
+subtest 'Check XSL' => sub {
+    $mech->host('www.fixmystreet.com');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+    }, sub {
+        $mech->get_ok('/rss/xsl');
+    };
+    $mech->content_contains('/cobrands/fixmystreet.com/images/email-logo.gif');
+    $mech->content_contains('FixMyStreet');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bexley',
+    }, sub {
+        $mech->get_ok('/rss/xsl');
+    };
+    $mech->content_contains('/cobrands/bexley/images/logo.png');
+};
+
 done_testing();

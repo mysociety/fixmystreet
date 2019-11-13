@@ -186,6 +186,7 @@ sub generate : Private {
     $c->stash->{rss} = new XML::RSS(
         version       => '2.0',
         encoding      => 'UTF-8',
+        stylesheet    => '/rss/xsl',
         encode_output => undef
     );
     $c->stash->{rss}->add_module(
@@ -375,6 +376,20 @@ sub redirect_lat_lon : Private {
     my $state_qs = '';
     $state_qs    = $c->stash->{state_qs} if $c->stash->{state_qs};
     $c->res->redirect( "/rss/l/$lat,$lon" . $d_str . $state_qs );
+}
+
+sub xsl : Path {
+    my ($self, $c) = @_;
+
+    my @include_path = @{ $c->cobrand->path_to_email_templates($c->stash->{lang_code}) };
+    my $vars = {
+        %{ $c->stash },
+        additional_template_paths => \@include_path,
+    };
+    my $body = $c->view('Email')->render($c, 'xsl.xsl', $vars);
+
+    $c->response->header('Content-Type' => 'text/xml; charset=utf-8');
+    $c->response->body($body);
 }
 
 =head1 AUTHOR
