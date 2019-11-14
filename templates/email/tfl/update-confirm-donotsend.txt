@@ -1,0 +1,2 @@
+This update will be sent to Transport for London and will
+also be displayed on the [% site_name %] website.
