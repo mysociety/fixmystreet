@@ -1,0 +1,2 @@
+This update will be sent to [% update.problem.body %] and will
+also be displayed on the [% site_name %] website.
