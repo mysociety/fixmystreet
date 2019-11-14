@@ -250,9 +250,11 @@ $.extend(fixmystreet.utils, {
 
       marker_size: function() {
         var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
-        if (zoom >= 15) {
+        var size_normal = fixmystreet.maps.zoom_for_normal_size || 15;
+        var size_small = fixmystreet.maps.zoom_for_small_size || 13;
+        if (zoom >= size_normal) {
             return window.selected_problem_id ? 'small' : 'normal';
-        } else if (zoom >= 13) {
+        } else if (zoom >= size_small) {
             return window.selected_problem_id ? 'mini' : 'small';
         } else {
             return 'mini';
@@ -261,9 +263,11 @@ $.extend(fixmystreet.utils, {
 
       selected_marker_size: function() {
         var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
-        if (zoom >= 15) {
+        var size_normal = fixmystreet.maps.zoom_for_normal_size || 15;
+        var size_small = fixmystreet.maps.zoom_for_small_size || 13;
+        if (zoom >= size_normal) {
             return 'big';
-        } else if (zoom >= 13) {
+        } else if (zoom >= size_small) {
             return 'normal';
         } else {
             return 'small';
