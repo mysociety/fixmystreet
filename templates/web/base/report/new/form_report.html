@@ -7,10 +7,9 @@
     <p class='form-error'>[% field_errors.bodies %]</p>
 [% END %]
 
-[% IF c.cobrand.moniker == 'tfl' %]
-<div style="margin-top:1em">
-    [% PROCESS 'report/new/form_public_councils_text.html' %]
-</div>
+[% PROCESS 'report/new/form_public_councils_text.html' %]
+[% IF public_councils_text_at_top %]
+    [% INCLUDE public_councils_text %]
 [% END %]
 
 [% PROCESS "report/new/category_wrapper.html" %]
@@ -28,8 +27,8 @@
 <div class="js-hide-if-invalid-category[% ' hidden-nojs' IF form_show_category_only %]">
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
-  [% IF c.cobrand.moniker != 'tfl' %]
-    [% PROCESS 'report/new/form_public_councils_text.html' %]
+  [% UNLESS public_councils_text_at_top %]
+    [% INCLUDE public_councils_text %]
   [% END %]
 
     [% INCLUDE 'report/new/form_title.html' %]

@@ -1,3 +1,4 @@
+[% BLOCK public_councils_text %]
 [% IF c.cobrand.moniker != 'tfl' %]
     <h2 class="form-section-heading js-hide-if-private-category">[% loc( 'Public details' ) %]</h2>
 [% END %]
@@ -9,3 +10,4 @@
     [% PROCESS 'report/new/councils_text.html' %]
   [% END %]
 </div>
+[% END %]
