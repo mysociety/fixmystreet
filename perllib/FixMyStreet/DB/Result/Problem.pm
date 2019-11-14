@@ -911,6 +911,8 @@ bodies by some mechanism. Right now that mechanism is Open311.
 
 sub updates_sent_to_body {
     my $self = shift;
+
+    return 1 if $self->to_body_named('TfL');
     return unless $self->send_method_used && $self->send_method_used =~ /Open311/;
 
     # Some bodies only send updates *to* FMS, they don't receive updates.
