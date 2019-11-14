@@ -1,0 +1,13 @@
+[% public_councils_text_at_top = 1 %]
+[% BLOCK public_councils_text %]
+<div style="margin-top:1em">
+    <h2 class="form-section-heading form-section-heading--private js-hide-if-public-category hidden-js">[% loc( 'Report details' ) %]</h2>
+    <div class="form-section-description" id="js-councils_text">
+    [% IF js %]
+        [% PROCESS 'report/new/councils_text_all.html' list_of_names = [ loc('the local council') ] %]
+    [% ELSE %]
+        [% PROCESS 'report/new/councils_text.html' %]
+    [% END %]
+    </div>
+</div>
+[% END %]
