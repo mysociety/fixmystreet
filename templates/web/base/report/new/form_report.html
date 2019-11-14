@@ -7,6 +7,11 @@
     <p class='form-error'>[% field_errors.bodies %]</p>
 [% END %]
 
+[% PROCESS 'report/new/form_public_councils_text.html' %]
+[% IF public_councils_text_at_top %]
+    [% INCLUDE public_councils_text %]
+[% END %]
+
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
@@ -22,15 +27,9 @@
 <div class="js-hide-if-invalid-category[% ' hidden-nojs' IF form_show_category_only %]">
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
-    <h2 class="form-section-heading js-hide-if-private-category">[% loc( 'Public details' ) %]</h2>
-    <h2 class="form-section-heading form-section-heading--private js-hide-if-public-category hidden-js">[% loc( 'Report details' ) %]</h2>
-    <div class="form-section-description" id="js-councils_text">
-      [% IF js %]
-        [% PROCESS 'report/new/councils_text_all.html' list_of_names = [ loc('the local council') ] %]
-      [% ELSE %]
-        [% PROCESS 'report/new/councils_text.html' %]
-      [% END %]
-    </div>
+  [% UNLESS public_councils_text_at_top %]
+    [% INCLUDE public_councils_text %]
+  [% END %]
 
     [% INCLUDE 'report/new/form_title.html' %]
 

@@ -1,0 +1,19 @@
+<!-- private_details.html -->
+<h2 class="form-section-heading form-section-heading--private">[% loc('Tell us about you') %]</h2>
+
+[% UNLESS c.user_exists %]
+<p class="hidden-nojs js-new-report-sign-in-hidden">
+    <a class="js-new-report-show-sign-in" href="#">[% loc('Or sign in with password to prefill this information.') %]</a>
+</p>
+[% END %]
+
+<p class="form-section-description js-new-report-sign-in-hidden" id="js-councils_text_private">
+  [% IF js %]
+    These details will be sent to Transport for London, but will never be shown online without your permission.
+    (<a href="[% c.cobrand.privacy_policy_url %]">[% loc('See our privacy policy') %]</a>.)
+  [% ELSE %]
+    [% PROCESS 'report/new/councils_text_private.html' %]
+  [% END %]
+</p>
+
+<!-- /private_details.html -->
