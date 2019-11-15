@@ -171,8 +171,8 @@ sub all_reports_single_body {
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
 
-    # Deal with Bexley name not starting with short name
-    if ($code =~ /bexley/i) {
+    # Deal with Bexley/Greenwich name not starting with short name
+    if ($code =~ /bexley|greenwich/i) {
         my $body = $c->model('DB::Body')->search( { name => { -like => "%$code%" } } )->single;
         $c->stash->{body} = $body;
         return $body;

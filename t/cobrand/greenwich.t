@@ -5,7 +5,7 @@ use Open311::PopulateServiceList;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok( 2493, 'Greenwich Council', {
+my $body = $mech->create_body_ok( 2493, 'Royal Borough of Greenwich', {
     send_method => 'Open311',
     endpoint => 'endpoint',
     api_key => 'key',
@@ -110,5 +110,26 @@ subtest 'testing special Open311 behaviour', sub {
     is $c->param('attribute[easting]'), 529025, 'Request had correct easting';
 };
 
-done_testing();
+subtest 'RSS feed on .com' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_TYPES => ['GRE'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/rss/reports/Greenwich');
+        is $mech->uri->path, '/rss/reports/Greenwich';
+    };
+};
 
+subtest 'RSS feed on Greenwich' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'greenwich',
+        MAPIT_TYPES => ['GRE'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/rss/reports/Greenwich');
+        is $mech->uri->path, '/rss/reports/Greenwich';
+    };
+};
+
+done_testing();
