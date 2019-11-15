@@ -247,6 +247,14 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 };
 
+subtest 'Inspect form state choices' => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    my $id = $report->id;
+    $mech->get_ok("/report/$id");
+    $mech->content_lacks('for triage');
+    $mech->content_lacks('action scheduled');
+};
+
 subtest "change category, report resent to new location" => sub {
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
     my $id = $report->id;
