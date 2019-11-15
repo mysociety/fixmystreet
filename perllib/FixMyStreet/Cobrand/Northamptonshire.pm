@@ -137,4 +137,13 @@ sub report_validation {
     }
 }
 
+sub staff_ignore_form_disable_form {
+    my $self = shift;
+
+    my $c = $self->{c};
+
+    return $c->user_exists
+        && $c->user->belongs_to_body( $self->body->id );
+}
+
 1;

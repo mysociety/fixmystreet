@@ -313,6 +313,10 @@ sub disable_form_message : Private {
     my ( $self, $c ) = @_;
 
     my %out;
+
+    # do not set disable form message if they are a staff user
+    return \%out if $c->cobrand->call_hook('staff_ignore_form_disable_form');
+
     foreach (@{$c->stash->{category_extras}->{$c->stash->{category}}}) {
         if ($_->{disable_form} && $_->{disable_form} eq 'true') {
             $out{all} .= ' ' if $out{all};
