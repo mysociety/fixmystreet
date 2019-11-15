@@ -69,6 +69,19 @@ $mech->create_contact_ok(
     email => '104',
 );
 
+my $staff_user = $mech->create_user_ok('staff@example.org', name => 'staff', from_body => $body->id);
+
+my $body3 = $mech->create_body_ok(2234, 'Northamptonshire County Council');
+my $ncc_staff_user = $mech->create_user_ok('ncc_staff@example.org', name => 'ncc staff', from_body => $body3->id);
+$mech->create_contact_ok(
+    body_id => $body3->id,
+    category => 'Flooding',
+    email => '104',
+    extra => { _fields => [
+        { description => 'Please ring us!', code => 'ring', variable => 'false', order => '0', disable_form => 'true' }
+    ] },
+);
+
 # test that the various bit of form get filled in and errors correctly
 # generated.
 my $empty_form = {
@@ -359,6 +372,44 @@ subtest "Category extras includes form disabling string" => sub {
         $mech->submit_form_ok({ with_fields => { dangerous => 'yes' } });
         $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
         $mech->content_contains('Please please ring');
+    };
+};
+
+subtest "Staff users still see disable form categories" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'borsetshire',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+
+        $mech->log_in_ok($staff_user->email);
+
+        $contact2->push_extra_fields({ description => 'Please ring us!', code => 'ring', variable => 'false', order => '0', disable_form => 'true' });
+        $contact2->update;
+
+        # Test new non-JS form disabling flow
+        $mech->get_ok('/report/new?latitude=51.496194&longitude=-2.603439');
+        $mech->submit_form_ok({ with_fields => { category => 'Graffiti Removal' } });
+        $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_contains('Please ring us!');
+    };
+};
+
+subtest "Staff users disable form categories" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'northamptonshire',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($ncc_staff_user->email);
+
+        $mech->get_ok('/report/new?latitude=52.236251&longitude=-0.892052');
+        $mech->submit_form_ok({ with_fields => {
+            category => 'Flooding', title => 'Title', detail => 'Detail',
+        } });
+
+        my $prob = $ncc_staff_user->problems->first;
+        ok $prob, 'problem created';
+        is $prob->title, "Title", 'Report title correct';
     };
 };
 
