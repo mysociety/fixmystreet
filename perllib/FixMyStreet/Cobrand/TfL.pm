@@ -108,6 +108,17 @@ sub admin_allow_user {
     return $user->from_body->name eq 'TfL';
 }
 
+sub state_groups_inspect {
+    my $rs = FixMyStreet::DB->resultset("State");
+    my @open = grep { $_ !~ /^(planned|action scheduled|for triage)$/ } FixMyStreet::DB::Result::Problem->open_states;
+    my @closed = grep { $_ ne 'closed' } FixMyStreet::DB::Result::Problem->closed_states;
+    [
+        [ $rs->display('confirmed'), \@open ],
+        [ $rs->display('fixed'), [ 'fixed - council' ] ],
+        [ $rs->display('closed'), \@closed ],
+    ]
+}
+
 sub fetch_area_children {
     my $self = shift;
 
