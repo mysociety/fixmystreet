@@ -307,6 +307,7 @@ subtest 'Dashboard extra columns' => sub {
     $mech->content_contains(',,,no');
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
     $report->set_extra_fields({ name => 'safety_critical', value => 'yes' });
+    $report->anonymous(1);
     $report->update;
     my $dt = DateTime->now();
     FixMyStreet::DB->resultset("AdminLog")->create({
@@ -320,7 +321,16 @@ subtest 'Dashboard extra columns' => sub {
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('Query,Borough');
     $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
+    $mech->content_contains('(anonymous ' . $report->id . ')');
     $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
+};
+
+subtest 'Inspect form state choices' => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    my $id = $report->id;
+    $mech->get_ok("/report/$id");
+    $mech->content_lacks('for triage');
+    $mech->content_lacks('action scheduled');
 };
 
 subtest "change category, report resent to new location" => sub {

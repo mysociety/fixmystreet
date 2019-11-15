@@ -108,6 +108,17 @@ sub admin_allow_user {
     return $user->from_body->name eq 'TfL';
 }
 
+sub state_groups_inspect {
+    my $rs = FixMyStreet::DB->resultset("State");
+    my @open = grep { $_ !~ /^(planned|action scheduled|for triage)$/ } FixMyStreet::DB::Result::Problem->open_states;
+    my @closed = grep { $_ ne 'closed' } FixMyStreet::DB::Result::Problem->closed_states;
+    [
+        [ $rs->display('confirmed'), \@open ],
+        [ $rs->display('fixed'), [ 'fixed - council' ] ],
+        [ $rs->display('closed'), \@closed ],
+    ]
+}
+
 sub fetch_area_children {
     my $self = shift;
 
@@ -165,6 +176,9 @@ sub dashboard_export_problems_add_columns {
         my $reassigned_at = $change ? $change->whenedited : '';
         my $reassigned_by = $change ? $change->user->name : '';
 
+        my $user_name_display = $report->anonymous
+            ? '(anonymous ' . $report->id . ')' : $report->name;
+
         my $safety_critical = $report->get_extra_field_value('safety_critical') || 'no';
         my $delivered_to = $report->get_extra_metadata('sent_to') || [];
         my $closure_email_at = $report->get_extra_metadata('closure_alert_sent_at') || '';
@@ -174,6 +188,7 @@ sub dashboard_export_problems_add_columns {
         return {
             acknowledged => $report->whensent,
             agent_responsible => $agent ? $agent->name : '',
+            user_name_display => $user_name_display,
             safety_critical => $safety_critical,
             delivered_to => join(',', @$delivered_to),
             closure_email_at => $closure_email_at,
