@@ -20,6 +20,7 @@ sub council_url { return 'tfl'; }
 sub area_types  { [ 'LBO' ] }
 sub is_council { 0 }
 
+sub abuse_reports_only { 1 }
 sub send_questionnaires { 0 }
 
 sub category_change_force_resend { 1 }
