@@ -107,7 +107,7 @@ sub short_name {
     return 'Durham+County' if $name eq 'Durham County Council';
     return 'Durham+City' if $name eq 'Durham City Council';
 
-    $name =~ s/^London Borough of //;
+    $name =~ s/^(Royal|London) Borough of //;
     $name =~ s/ (Borough|City|District|County) Council$//;
     $name =~ s/ Council$//;
     $name =~ s/ & / and /;
@@ -140,8 +140,8 @@ sub find_closest {
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
 
-    # Deal with Bexley name not starting with short name
-    if ($code =~ /bexley/i) {
+    # Deal with Bexley and Greenwich name not starting with short name
+    if ($code =~ /bexley|greenwich/i) {
         my $body = $c->model('DB::Body')->search( { name => { -like => "%$code%" } } )->single;
         $c->stash->{body} = $body;
         return $body;
