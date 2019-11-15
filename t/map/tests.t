@@ -14,6 +14,7 @@ my $requires = {
     'Hounslow' => 'map-wmts-hounslow.js',
     'IsleOfWight' => 'map-wmts-isleofwight.js',
     'OSM' => 'OpenStreetMap.js',
+    'MasterMap' => 'map-mastermap.js',
     'CycleMap' => 'OpenStreetMap.js',
     'MapQuest' => 'OpenStreetMap.js',
     'StreetView' => 'map-streetview.js',
