@@ -155,10 +155,13 @@ sub _recent {
     } else {
         $probs = Memcached::get($key);
         if ($probs) {
-            # Need to reattach schema so that confirmed column gets reinflated.
-            $probs->[0]->result_source->schema( $rs->result_source->schema ) if $probs->[0];
-            # Catch any cached ones since hidden
-            $probs = [ grep { $_->photo && ! $_->is_hidden && !$_->non_public } @$probs ];
+            # Need to refetch to check if hidden since cached
+            $probs = [ $rs->search({
+                id => [ map { $_->id } @$probs ],
+                photo => { '!=', undef },
+                non_public => 'f',
+                state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+            })->all ];
         } else {
             $probs = [ $rs->search( $query, $attrs )->all ];
             Memcached::set($key, $probs, _cache_timeout());
