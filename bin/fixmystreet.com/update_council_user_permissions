@@ -1,0 +1,70 @@
+#!/usr/bin/env perl
+#
+# script to add/remove a list of permissions to all staff belonging to a body.
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit', 'whether to commit changes to the database'],
+    ['permissions=s', 'comma seperated list of permissions to add/delete', { required => 1 }],
+    ['council=s', 'name of council to update', { required => 1 }],
+    ['mode' => 'hidden' => { one_of => [
+        ['add', 'add permissions to council\'s users'],
+        ['remove', 'remove permissions from council\'s users'],
+    ], required => 1 }],
+    ['help|h', 'print usage message and exit']
+);
+$usage->die if $opts->help;
+
+if (!$opts->commit) {
+    say "*** DRY RUN ***";
+}
+
+my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opts->council});
+
+if ($body) {
+    my @permissions_list = map { Utils::trim_text($_) } split(',', $opts->permissions);
+
+    my $staff = FixMyStreet::DB->resultset("User")->search({ from_body => $body->id });
+    for my $user ( $staff->all ) {
+        my $permissions = $user->user_body_permissions->search({
+            body_id => $body->id,
+            permission_type => { in => \@permissions_list}
+        });
+        if ( $opts->mode eq 'remove') {
+            next unless $permissions->count;
+            if ($opts->commit) {
+                $permissions->delete;
+            }
+        } elsif ( $opts->mode eq 'add' ) {
+            my %existing = map { $_->permission_type => 1 } $permissions->all;
+            my @permissions_to_add = grep { !$existing{$_} } @permissions_list;
+            next unless @permissions_to_add;
+            if ($opts->commit) {
+                for my $permission ( @permissions_to_add ) {
+                    $user->user_body_permissions->create({
+                        body_id => $body->id,
+                        permission_type => $permission
+                    });
+                }
+            }
+        }
+        say "updated permissions for user id " . $user->id;
+    }
+} else {
+    say STDERR "Could not find " . $opts->council;
+}
