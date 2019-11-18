@@ -108,7 +108,9 @@ FixMyStreet::override_config {
             detail => 'detail',
         }});
         my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
-        $mech->content_contains('please call us on 0300 123 5020, quoting your reference number ' . $report->id);
+        my $report_id = $report->id;
+        $mech->content_contains('0300 123 5020');
+        $mech->content_like(qr/quoting your reference number $report_id/);
     };
 
     subtest 'checking alert pages', sub {
