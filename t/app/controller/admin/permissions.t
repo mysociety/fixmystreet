@@ -1,5 +1,4 @@
 use FixMyStreet::TestMech;
-use Test::MockModule;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -28,13 +27,6 @@ my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
 $mech->log_in_ok( $oxfordshireuser->email );
-
-my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
-$cobrand->mock('available_permissions', sub {
-    my $self = shift;
-
-    return FixMyStreet::Cobrand::Default->available_permissions;
-});
 
 subtest "Users can't edit report without report_edit permission" => sub {
     FixMyStreet::override_config {
