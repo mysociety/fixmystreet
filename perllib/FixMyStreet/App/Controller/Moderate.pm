@@ -263,8 +263,8 @@ sub moderate_boolean : Private {
 
     if ($new != $old) {
         if ($thing eq 'photo') {
-            $object->$thing($new ? $original : undef);
             $object->get_photoset->delete_cached;
+            $object->$thing($new ? $original : undef);
         } else {
             $object->$thing($new);
         }

@@ -47,6 +47,7 @@
         - Allow contact send method to be unset always.
         - Fix z-index stacking bug that was causing unclickable RSS icons on /alert page. #2624
         - Fix issue with inspector duplication workflow.
+        - Fix removal of cached photos on moderation. #2696
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages. #2473
         - Add feature cobrand helper function.

@@ -472,8 +472,8 @@ sub _get_remove_photo_param : Private {
 sub remove_photo : Private {
     my ($self, $c, $object, $keys) = @_;
     if ($keys eq 'ALL') {
-        $object->photo(undef);
         $object->get_photoset->delete_cached;
+        $object->photo(undef);
     } else {
         my $fileids = $object->get_photoset->remove_images($keys);
         $object->photo($fileids);
