@@ -496,7 +496,7 @@ small#or:after {
 
 .change_location {
     color: #666;
-    margin: 0;
+    margin: 0 0 1em;
 
     // No need for this element on mobile, where they can't click the map,
     // and there's already a "Report" button in the header that leads to
@@ -2117,10 +2117,8 @@ label .muted {
   display: inline-block;
 }
 
-#problem_form {
-  & > label:first-child {
+#form_category_row > label:first-child {
     margin-top: 0;
-  }
 }
 
 .box-warning,
