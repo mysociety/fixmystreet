@@ -52,6 +52,10 @@ h3 {
     line-height: 1.238095238em; //26px
 }
 
+a, .fake-link {
+    text-decoration: underline;
+}
+
 .btn--primary,
 .btn,
 .green-btn {
@@ -73,6 +77,7 @@ div.form-error, p.form-error {
 input.form-error, textarea.form-error {
     border-color: $red;
 }
+
 
 .btn--back,
 .btn--forward,
@@ -181,6 +186,18 @@ ol.big-numbers>li {
     .item-list--reports__item {
         border-bottom: 1px solid $grey50;
     }
+}
+
+#front-recently {
+    a {
+        text-decoration: none;
+    }
+}
+
+.item-list--reports li > a,
+#key-tools a,
+.problem-back {
+    text-decoration: none;
 }
 
 /* Mobile navigation links */
@@ -306,3 +323,5 @@ ol.big-numbers>li {
         color: #fff;
     }
 }
+
+
