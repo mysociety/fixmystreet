@@ -52,6 +52,10 @@ h3 {
     line-height: 1.238095238em; //26px
 }
 
+a, .fake-link {
+    text-decoration: underline;
+}
+
 .btn--primary,
 .btn,
 .green-btn {
@@ -69,6 +73,7 @@ div.form-error, p.form-error {
 input.form-error, textarea.form-error {
     border-color: $red;
 }
+
 
 .btn--back,
 .btn--forward,
@@ -179,6 +184,12 @@ ol.big-numbers>li {
     }
 }
 
+.item-list--reports li > a,
+#key-tools a,
+.problem-back {
+    text-decoration: none;
+}
+
 /* Mobile navigation links */
 
 .top-row-extras a, .top-row-extras a:visited {
@@ -272,5 +283,3 @@ ol.big-numbers>li {
 #footer .about-tfl-menu,#footer .terms-and-conditions-menu {
     margin: 0
 }
-
-
