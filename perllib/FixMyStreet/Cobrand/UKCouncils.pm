@@ -391,9 +391,12 @@ sub updates_disallowed {
         my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
         my $superuser = $c->user_exists && $c->user->is_superuser;
         return 1 unless $staff || $superuser;
-    } elsif ($cfg eq 'reporter') {
+    }
+
+    if ($cfg =~ /reporter/) {
         return 1 if !$c->user_exists || $c->user->id != $problem->user->id;
-    } elsif ($cfg eq 'open') {
+    }
+    if ($cfg =~ /open/) {
         return 1 if $problem->is_fixed || $problem->is_closed;
     }
 
