@@ -109,6 +109,8 @@ sub log_in_ok {
     my $mech  = shift;
     my $username = shift;
 
+    $mech->get_ok('/auth'); # Doing this here so schema cobrand set appropriately (for e.g. TfL password setting)
+
     $username = $mech->uniquify_email($username, (caller)[1]);
     my $user = $mech->create_user_ok($username);
 
@@ -117,7 +119,6 @@ sub log_in_ok {
     $user->update( { password => 'secret' } );
 
     # log in
-    $mech->get_ok('/auth');
     $mech->submit_form_ok(
         { with_fields => { username => $username, password_sign_in => 'secret' } },
         "sign in using form" );
@@ -125,12 +126,7 @@ sub log_in_ok {
 
     # restore the password (if there was one)
     if ($old_password) {
-
-        # Use store_column and then make_column_dirty to bypass the filters that
-        # would hash the password, otherwise the password required ito log in
-        # would be the hash of the previous one.
-        $user->store_column("password", $old_password);
-        $user->make_column_dirty("password");
+        $user->password($old_password, 1);
         $user->update();
 
         # Belt and braces, check that the password has been correctly saved.
