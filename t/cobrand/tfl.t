@@ -146,6 +146,9 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         internal_ips => { tfl => [ '127.0.0.1' ] },
+        base_url => {
+            tfl => 'https://street.tfl'
+        },
         borough_email_addresses => { tfl => {
             AOAT => [
                 {
@@ -456,6 +459,35 @@ for my $test (
     };
 }
 
+subtest 'check correct base URL & title in AJAX pins' => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    my $url = '/around?ajax=1&bbox=' . ($report->longitude - 0.01) . ',' .  ($report->latitude - 0.01)
+        . ',' . ($report->longitude + 0.01) . ',' .  ($report->latitude + 0.01);
+
+    $report->update({ state => 'confirmed' });
+    $report->discard_changes;
+    is $report->cobrand, 'tfl', 'Report made on TfL cobrand';
+
+    $mech->host("fixmystreet.com");
+    my $json = $mech->get_ok_json( $url );
+    is $json->{pins}[0][4], $report->category . " problem", "category is used for title" or diag $mech->content;
+    is $json->{pins}[0][7], "https://street.tfl", "base_url is included and correct" or diag $mech->content;
+
+    $mech->host("tfl.fixmystreet.com");
+    $json = $mech->get_ok_json( $url );
+    is $json->{pins}[0][4], $report->title, "title is shown on TfL cobrand" or diag $mech->content;
+    is $json->{pins}[0][7], undef, "base_url is not present on TfL cobrand response";
+
+    $mech->host("fixmystreet.com");
+    $report->update({cobrand => 'fixmystreet'});
+    $json = $mech->get_ok_json( $url );
+    is $json->{pins}[0][4], $report->title, "title is shown if report made on fixmystreet cobrand" or diag $mech->content;
+    is $json->{pins}[0][7], undef, "base_url is not present if report made on fixmystreet cobrand";
+
+    $report->update({cobrand => 'tfl'});
+    $mech->host("tfl.fixmystreet.com");
+};
+
 subtest 'check report age on /around' => sub {
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
     $report->update({ state => 'confirmed' });
@@ -542,6 +574,43 @@ subtest 'Test passwords work appropriately' => sub {
     $mech->content_lacks('Your account');
 };
 
+my $tfl_report;
+subtest 'Test user reports are visible on cobrands appropriately' => sub {
+    ($tfl_report) = $mech->create_problems_for_body(1, $body->id, 'Test TfL report made on TfL', { cobrand => 'tfl' });
+    $mech->create_problems_for_body(1, $body->id, 'Test TfL report made on .com', { cobrand => 'fixmystreet' });
+    $mech->create_problems_for_body(1, $bromley->id, 'Test Bromley report made on .com', { cobrand => 'fixmystreet' });
+
+    $mech->log_in_ok('test@example.com');
+    $mech->get_ok('/my');
+    $mech->content_contains('1 to 2 of 2');
+    $mech->content_contains('Test TfL report made on .com');
+    $mech->content_lacks('Test TfL report made on TfL');
+    $mech->content_contains('Test Bromley report');
+
+    $mech->host('tfl.fixmystreet.com');
+    $mech->log_in_ok('test@example.com');
+    $mech->get_ok('/my');
+    $mech->content_contains('1 to 2 of 2');
+    $mech->content_contains('Test TfL report made on .com');
+    $mech->content_contains('Test TfL report made on TfL');
+    $mech->content_lacks('Test Bromley report');
+};
+
+subtest 'Test public reports are visible on cobrands appropriately' => sub {
+    $mech->get_ok('/around?pc=SW1A+1AA');
+    $mech->content_contains('Test TfL report made on .com');
+    $mech->content_contains('Test TfL report made on TfL');
+    $mech->content_lacks('Test Bromley report');
+
+    $mech->host('www.fixmystreet.com');
+    $mech->get_ok('/around?pc=SW1A+1AA');
+    $mech->content_contains('Test TfL report made on .com');
+    $mech->content_lacks('Test TfL report made on TfL');
+    $mech->content_contains('Test Bromley report');
+    $mech->content_contains('https://street.tfl/report/' . $tfl_report->id);
+    $mech->content_contains('Other problem');
+};
+
 };
 
 FixMyStreet::override_config {
@@ -555,6 +624,9 @@ FixMyStreet::override_config {
                 location => [ "carriageway" ],
             },
         } },
+        anonymous_account => {
+            tfl => 'anonymous'
+        },
     },
 }, sub {
 

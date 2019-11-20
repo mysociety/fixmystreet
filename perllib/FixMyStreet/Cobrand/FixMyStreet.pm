@@ -9,6 +9,13 @@ use constant COUNCIL_ID_ISLEOFWIGHT => 2636;
 
 sub on_map_default_status { return 'open'; }
 
+# Show TfL pins as grey
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $p->to_body_named('TfL');
+    return $self->next::method($p, $context);
+}
+
 # Special extra
 sub path_to_web_templates {
     my $self = shift;
@@ -26,6 +33,18 @@ sub path_to_email_templates {
 # FixMyStreet should return all cobrands
 sub restriction {
     return {};
+}
+
+# FixMyStreet needs to not show TfL reports...
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->search({ "$table.cobrand" => { '!=' => 'tfl' } });
+}
+
+sub relative_url_for_report {
+    my ( $self, $report ) = @_;
+    return $report->cobrand eq 'tfl' ? FixMyStreet::Cobrand::TfL->base_url : "";
 }
 
 sub munge_around_category_where {

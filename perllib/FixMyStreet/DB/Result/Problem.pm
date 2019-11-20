@@ -340,6 +340,7 @@ around service => sub {
 sub title_safe {
     my $self = shift;
     return _('Awaiting moderation') if $self->cobrand eq 'zurich' && $self->state eq 'submitted';
+    return sprintf("%s problem", $self->category) if $self->cobrand eq 'tfl' && $self->result_source->schema->cobrand->moniker ne 'tfl';
     return $self->title;
 }
 
@@ -1039,6 +1040,7 @@ sub pin_data {
         problem => $self,
         draggable => $opts{draggable},
         type => $opts{type},
+        base_url => $c->cobrand->relative_url_for_report($self),
     }
 };
 
