@@ -512,6 +512,36 @@ subtest 'Bromley staff cannot access TfL admin' => sub {
     $mech->log_out_ok;
 };
 
+subtest 'Test passwords work appropriately' => sub {
+    $mech->host('www.fixmystreet.com');
+    $mech->get_ok('/auth');
+    $user->password('dotcom');
+    $user->update;
+    $mech->submit_form_ok(
+        { with_fields => { username => $user->email, password_sign_in => 'dotcom' } },
+        "sign in using form" );
+    $mech->content_contains('Your account');
+    $mech->host('tfl.fixmystreet.com');
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        { with_fields => { username => $user->email, password_sign_in => 'dotcom' } },
+        "sign in using form" );
+    $mech->content_lacks('Your account');
+
+    $user->password('tfl');
+    $user->update;
+    $mech->submit_form_ok(
+        { with_fields => { username => $user->email, password_sign_in => 'tfl' } },
+        "sign in using form" );
+    $mech->content_contains('Your account');
+    $mech->host('www.fixmystreet.com');
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        { with_fields => { username => $user->email, password_sign_in => 'tfl' } },
+        "sign in using form" );
+    $mech->content_lacks('Your account');
+};
+
 };
 
 FixMyStreet::override_config {
