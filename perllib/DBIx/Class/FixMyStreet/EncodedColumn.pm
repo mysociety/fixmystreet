@@ -8,6 +8,20 @@ use base qw/DBIx::Class::EncodedColumn/;
 # mySociety override to allow direct setting without double encryption
 sub set_column {
   my $self = shift;
+  if ($_[0] eq 'password') {
+    my $cobrand = $self->result_source->schema->cobrand;
+    if ($cobrand->moniker eq 'tfl') {
+      if (defined $_[1]) {
+        if (defined $_[2]) {
+          $self->set_extra_metadata(tfl_password => $_[1]);
+        } else {
+          my $encoder = $self->_column_encoders->{password};
+          $self->set_extra_metadata(tfl_password => $encoder->($_[1]));
+        }
+      }
+      return $self->get_extra_metadata('tfl_password');
+    }
+  }
   return DBIx::Class::Row::set_column($self, @_) unless defined $_[1] and not defined $_[2];
   $self->next::method(@_);
 }
