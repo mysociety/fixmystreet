@@ -163,9 +163,21 @@ __PACKAGE__->add_columns(
         encode_column => 1,
         encode_class => 'Crypt::Eksblowfish::Bcrypt',
         encode_args => { cost => cost() },
-        encode_check_method => 'check_password',
+        encode_check_method => '_check_password',
     },
 );
+
+sub check_password {
+    my $self = shift;
+    my $cobrand = $self->result_source->schema->cobrand;
+    if ($cobrand->moniker eq 'tfl') {
+        my $col_v = $self->get_extra_metadata('tfl_password');
+        return unless defined $col_v;
+        $self->_column_encoders->{password}->($_[0], $col_v) eq $col_v;
+    } else {
+        $self->_check_password(@_);
+    }
+}
 
 around password => sub {
     my ($orig, $self) = (shift, shift);
