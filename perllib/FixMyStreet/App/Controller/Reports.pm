@@ -824,7 +824,12 @@ sub ajax : Private {
     my @pins = map {
         my $p = $_;
         # lat, lon, 'colour', ID, title, type/size, draggable
-        [ $p->{latitude}, $p->{longitude}, $p->{colour}, $p->{id}, $p->{title}, '', JSON->false ]
+        my $parts = [ $p->{latitude}, $p->{longitude}, $p->{colour}, $p->{id}, $p->{title}, '', JSON->false ];
+        # Some reports may only be visible on a specific cobrand on this FMS site.
+        # If that's the case, include the base URL for the pin's cobrand here so
+        # the app can link to the right place.
+        push @$parts, $p->{base_url} if $p->{base_url};
+        $parts;
     } @{$c->stash->{pins}};
 
     my $list_html = $c->render_fragment($template);
