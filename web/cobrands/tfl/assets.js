@@ -251,27 +251,16 @@ var org_id = '1250';
 var body = "TfL";
 
 var rw_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fillOpacity: 1,
-        fillColor: "#FFFF00",
-        strokeColor: "#000000",
-        strokeOpacity: 0.8,
-        strokeWidth: 2,
-        pointRadius: 6,
-        graphicWidth: 34,
-        graphicHeight: 38,
-        graphicXOffset: -17,
-        graphicYOffset: -38,
-        graphicOpacity: 1,
-        externalGraphic: '/cobrands/tfl/roadworks.png'
-    }),
+    'default': fixmystreet.assets.style_default,
+    'select': fixmystreet.assets.style_default_select,
     'hover': new OpenLayers.Style({
         fillColor: "#55BB00",
-        externalGraphic: '/cobrands/tfl/roadworks-green.png'
-    }),
-    'select': new OpenLayers.Style({
-        fillColor: "#55BB00",
-        externalGraphic: '/cobrands/tfl/roadworks-green.png'
+        fillOpacity: 0.8,
+        strokeColor: "#000000",
+        strokeOpacity: 1,
+        strokeWidth: 2,
+        pointRadius: 8,
+        cursor: 'pointer'
     })
 });
 
