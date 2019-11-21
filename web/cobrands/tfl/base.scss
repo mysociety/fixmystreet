@@ -39,6 +39,9 @@ h1 {
     font-size: 1.888888889em; //34px
     line-height: 1.235294118em; //42px
 }
+h1 a {
+    letter-spacing: 0;
+}
 
 h2 {
     font-family: $heading-font;
