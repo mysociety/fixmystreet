@@ -52,46 +52,6 @@ OpenLayers.Layer.TfLVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset,
     CLASS_NAME: 'OpenLayers.Layer.TfLVectorAsset'
 });
 
-var asset_defaults = $.extend(true, {}, defaults, {
-    class: OpenLayers.Layer.TfLVectorAsset,
-    body: 'TfL',
-    select_action: true,
-    no_asset_msg_id: '#js-not-an-asset',
-    actions: {
-        asset_found: fixmystreet.message_controller.asset_found,
-        asset_not_found: fixmystreet.message_controller.asset_not_found
-    }
-});
-
-fixmystreet.assets.add(asset_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "trafficsignals"
-        }
-    },
-    asset_id_field: 'Site',
-    attributes: {
-        site: 'Site',
-    },
-    asset_group: "Traffic Lights",
-    asset_item: 'traffic signal'
-});
-
-fixmystreet.assets.add(asset_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "busstops"
-        }
-    },
-    asset_id_field: 'STOP_CODE',
-    attributes: {
-        stop_code: 'STOP_CODE',
-    },
-    asset_group: "Bus Stops and Shelters",
-    asset_item: 'bus stop'
-});
-
-
 /* Red routes (TLRN) asset layer & handling for disabling form when red route
    is not selected for specific categories. */
 
@@ -244,6 +204,48 @@ if (red_routes_layer) {
     });
 }
 
+/* Point asset layers, bus stops and traffic lights. This comes after the red
+ * route so its check for asset not clicked on happens after whether red route
+ * clicked on or not */
+
+var asset_defaults = $.extend(true, {}, defaults, {
+    class: OpenLayers.Layer.TfLVectorAsset,
+    body: 'TfL',
+    select_action: true,
+    no_asset_msg_id: '#js-not-an-asset',
+    actions: {
+        asset_found: fixmystreet.message_controller.asset_found,
+        asset_not_found: fixmystreet.message_controller.asset_not_found
+    }
+});
+
+fixmystreet.assets.add(asset_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "trafficsignals"
+        }
+    },
+    asset_id_field: 'Site',
+    attributes: {
+        site: 'Site',
+    },
+    asset_group: "Traffic Lights",
+    asset_item: 'traffic signal'
+});
+
+fixmystreet.assets.add(asset_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "busstops"
+        }
+    },
+    asset_id_field: 'STOP_CODE',
+    attributes: {
+        stop_code: 'STOP_CODE',
+    },
+    asset_group: "Bus Stops and Shelters",
+    asset_item: 'bus stop'
+});
 
 /* Roadworks.org asset layer */
 
