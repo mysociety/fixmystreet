@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Security:
+        - Fix XSS vulnerability in pagination page number.
     - Front end improvements:
         - Improved 403 message, especially for private reports. #2511
         - Mobile users can now filter the pins on the `/around` map view. #2366
