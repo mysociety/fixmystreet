@@ -13,7 +13,7 @@ OpenLayers.Layer.Bexley = OpenLayers.Class(OpenLayers.Layer.BingUK, {
 
         var urls = [];
         var servers = [ '', 'a.', 'b.', 'c.' ];
-        var base = "//{S}tilma.mysociety.org/bexley/${z}/${x}/${y}.png";
+        var base = "//{S}tilma.mysociety.org/mastermap/${z}/${x}/${y}.png";
         for (var i=0; i < servers.length; i++) {
             urls.push( base.replace('{S}', servers[i]) );
         }
