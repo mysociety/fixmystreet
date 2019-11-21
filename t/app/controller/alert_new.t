@@ -3,9 +3,8 @@ use FixMyStreet::Script::Alerts;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $user = $mech->log_in_ok('test@example.com');
-$mech->get_ok('/alert/subscribe?id=1');
-my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
+my $user = FixMyStreet::App->model('DB::User')
+          ->new( { email => 'test@example.com' } );
 
 foreach my $test (
     {
@@ -62,19 +61,13 @@ foreach my $test (
 
         my $type = $test->{type};
 
-        my $user =
-          FixMyStreet::DB->resultset('User')
-          ->find( { email => $test->{email} } );
-
-        # we don't want an alert
-        if ($user) {
-            $mech->delete_user($user);
-        }
+        $mech->get_ok('/alert/subscribe?id=1');
+        my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
         $mech->get_ok( $test->{uri} . "&token=$csrf" );
         $mech->content_contains( $test->{content} );
 
-        $user =
+        my $user =
           FixMyStreet::DB->resultset('User')
           ->find( { email => $test->{email} } );
 
@@ -161,6 +154,9 @@ foreach my $test (
         );
         # clear existing data so we can be sure we're creating it
         ok $alert->delete() if $alert && !$test->{exist};
+
+        $mech->get_ok('/alert/subscribe?id=1');
+        my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
         $mech->get_ok( '/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=area:1000:A_Location&token=' . $csrf );
 
@@ -258,6 +254,9 @@ for my $test (
         my $abuse =
           FixMyStreet::DB->resultset('Abuse')
           ->find_or_create( { email => $test->{email} } );
+
+        $mech->get_ok('/alert/subscribe?id=1');
+        my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
         $mech->get_ok( $test->{uri} . "&token=$csrf" );
         $mech->content_contains( $test->{content} );

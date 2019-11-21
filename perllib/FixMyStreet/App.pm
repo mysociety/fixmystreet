@@ -27,6 +27,7 @@ use Catalyst (
     'Session::State::Cookie',    # FIXME - we're using our own override atm
     'Authentication',
     'SmartURI',
+    'FixMyStreet::Session::RotateSession',
     'FixMyStreet::Session::StoreSessions',
 );
 

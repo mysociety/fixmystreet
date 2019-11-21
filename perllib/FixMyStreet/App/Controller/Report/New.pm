@@ -514,9 +514,11 @@ sub initialize_report : Private {
               ->first;
 
             if ($report) {
-                # log the problem creation user in to the site
-                $c->authenticate( { email => $report->user->email, email_verified => 1 },
-                    'no_password' );
+                # log the problem creation user in to the site, if not already logged in
+                if (!$c->user_exists || $c->user->email ne $report->user->email) {
+                    $c->authenticate( { email => $report->user->email, email_verified => 1 },
+                        'no_password' );
+                }
 
                 # save the token to delete at the end
                 $c->stash->{partial_token} = $token if $report;
