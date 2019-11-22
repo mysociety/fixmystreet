@@ -90,5 +90,29 @@ subtest "Test update shown/not shown appropriately" => sub {
     }
 };
 
+subtest "CSP header from feature" => sub {
+    foreach my $cobrand (
+        { moniker => 'oxfordshire', test => 'oxon.analytics.example.org' },
+        { moniker =>'fixmystreet', test => '' },
+        { moniker => 'nonsecure', test => undef },
+    ) {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => $cobrand->{moniker},
+            COBRAND_FEATURES => {
+                content_security_policy => {
+                    oxfordshire => 'oxon.analytics.example.org',
+                    fixmystreet => 1,
+                }
+            },
+        }, sub {
+            $mech->get_ok("/");
+            if (defined $cobrand->{test}) {
+                like $mech->res->header('Content-Security-Policy'), qr/script-src 'self' 'unsafe-inline' 'nonce-[^']*' $cobrand->{test}/;
+            } else {
+                is $mech->res->header('Content-Security-Policy'), undef;
+            }
+        };
+    }
+};
 
 done_testing();
