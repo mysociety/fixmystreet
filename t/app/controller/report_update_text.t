@@ -18,7 +18,7 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode => 'SW1A 1AA',
         bodies_str => $body->id,
@@ -44,7 +44,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
-my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create( {
+my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
     problem_id => $report_id,
     user_id => $user2->id,
     name => 'Other User',
@@ -181,7 +181,7 @@ for my $test (
         }
 
         my ($token) = $mech->content =~ /name="token" value="([^"]*)"/;
-        $token = FixMyStreet::App->model('DB::Token')->find({
+        $token = FixMyStreet::DB->resultset('Token')->find({
             token => $token,
             scope => 'comment'
         });
@@ -189,7 +189,7 @@ for my $test (
 
         my $update_id = $token->data->{id};
         my $add_alerts = $token->data->{add_alert};
-        my $update = FixMyStreet::App->model('DB::Comment')->find( { id => $update_id } );
+        my $update = FixMyStreet::DB->resultset('Comment')->find( { id => $update_id } );
 
         ok $update, 'found update in database';
         is $update->state, 'unconfirmed', 'update unconfirmed';
@@ -211,11 +211,11 @@ for my $test (
             ok $user->check_password( 'new_secret' ), 'password changed';
             is $user->name, 'Reg User', 'name changed';
         } else {
-            $user = FixMyStreet::App->model( 'DB::User' )->find( { phone => $details->{username} } );
+            $user = FixMyStreet::DB->resultset( 'User' )->find( { phone => $details->{username} } );
             ok $user, 'found user';
         }
 
-        my $alert = FixMyStreet::App->model( 'DB::Alert' )->find(
+        my $alert = FixMyStreet::DB->resultset( 'Alert' )->find(
             { user => $user, alert_type => 'new_updates', confirmed => 1, }
         );
 

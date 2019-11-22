@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 
-use FixMyStreet::App;
 use FixMyStreet::TestMech;
 use JSON::MaybeXS;
 
@@ -14,7 +13,7 @@ my $other_body = $mech->create_body_ok($area_id, 'Some Other Council');
 my $potholes_contact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 my $traffic_lights_contact =$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 
-my $potholes_response_priority = FixMyStreet::App->model('DB::ResponsePriority')->find_or_create(
+my $potholes_response_priority = FixMyStreet::DB->resultset('ResponsePriority')->find_or_create(
     {
         body_id => $oxfordshire->id,
         name => 'Potholes',
@@ -25,7 +24,7 @@ $potholes_response_priority->contact_response_priorities->find_or_create({
     contact_id => $potholes_contact->id,
 });
 
-my $general_response_priority = FixMyStreet::App->model('DB::ResponsePriority')->find_or_create(
+my $general_response_priority = FixMyStreet::DB->resultset('ResponsePriority')->find_or_create(
     {
         body_id => $oxfordshire->id,
         name => 'All categories',
@@ -34,14 +33,14 @@ my $general_response_priority = FixMyStreet::App->model('DB::ResponsePriority')-
 );
 
 subtest 'for_bodies returns correct results' => sub {
-    my $priorities = FixMyStreet::App->model('DB::ResponsePriority')->for_bodies(
+    my $priorities = FixMyStreet::DB->resultset('ResponsePriority')->for_bodies(
         [ $oxfordshire->id ],
         'Potholes'
     );
 
     is $priorities->count, 2, 'Both priorities are included for Potholes category';
 
-    $priorities = FixMyStreet::App->model('DB::ResponsePriority')->for_bodies(
+    $priorities = FixMyStreet::DB->resultset('ResponsePriority')->for_bodies(
         [ $oxfordshire->id ],
         'Traffic lights'
     );
@@ -52,7 +51,7 @@ subtest 'for_bodies returns correct results' => sub {
 
 subtest 'by_categories returns allresponse priorities grouped by category' => sub {
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $priorities = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($area_id, @contacts);
+    my $priorities = FixMyStreet::DB->resultset('ResponsePriority')->by_categories($area_id, @contacts);
     my $potholes = decode_json($priorities->{Potholes});
     my $traffic_lights = decode_json($priorities->{'Traffic lights'});
 
@@ -61,7 +60,7 @@ subtest 'by_categories returns allresponse priorities grouped by category' => su
 };
 
 subtest 'by_categories returns all response priorities for an area with multiple bodies' => sub {
-    my $other_response_priority = FixMyStreet::App->model('DB::ResponsePriority')->find_or_create(
+    my $other_response_priority = FixMyStreet::DB->resultset('ResponsePriority')->find_or_create(
         {
             body_id => $other_body->id,
             name => 'All categories',
@@ -70,7 +69,7 @@ subtest 'by_categories returns all response priorities for an area with multiple
     );
 
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $priorities = FixMyStreet::App->model('DB::ResponsePriority')->by_categories($area_id, @contacts);
+    my $priorities = FixMyStreet::DB->resultset('ResponsePriority')->by_categories($area_id, @contacts);
     my $potholes = decode_json($priorities->{Potholes});
     my $traffic_lights = decode_json($priorities->{'Traffic lights'});
 

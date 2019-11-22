@@ -115,9 +115,9 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->delete_user($test->{email});
             }
             if ($page eq 'my' && $state eq 'existing UID') {
-                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } )->id });
+                $report->update({ user_id => FixMyStreet::DB->resultset( 'User' )->find( { email => $test->{email} } )->id });
             } else {
-                $report->update({ user_id => FixMyStreet::App->model( 'DB::User' )->find( { email => $test_email } )->id });
+                $report->update({ user_id => FixMyStreet::DB->resultset( 'User' )->find( { email => $test_email } )->id });
             }
 
             # Set up a mock to catch (most, see below) requests to the OAuth API
@@ -198,7 +198,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->clear_emails_ok;
                 ok $url, "extracted confirm url '$url'";
 
-                my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
+                my $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $test->{email} } );
                 if ($page eq 'my') {
                     is $user, undef, 'No user yet exists';
                 } else {
@@ -209,7 +209,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                     }
                 }
                 $mech->get_ok( $url );
-                $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
+                $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $test->{email} } );
                 if ($test->{type} eq 'facebook') {
                     is $user->facebook_id, $test->{uid}, 'User now has correct facebook ID';
                 } elsif ($test->{type} eq 'oidc') {
@@ -227,7 +227,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->content_contains('You have successfully signed in; please check and confirm your details are accurate');
                 $mech->logged_in_ok;
                 if ($test->{user_extras}) {
-                    my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
+                    my $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $test->{email} } );
                     for my $extra (@{ $test->{user_extras} }) {
                         my ($k, $v) = @$extra;
                         is $user->get_extra_metadata($k), $v, "User has correct $k extra field";
@@ -236,7 +236,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             } else {
                 is $mech->uri->path, '/my', 'Successfully on /my page';
                 if ($test->{user_extras}) {
-                    my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $test->{email} } );
+                    my $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $test->{email} } );
                     for my $extra (@{ $test->{user_extras} }) {
                         my ($k, $v) = @$extra;
                         is $user->get_extra_metadata($k), $v, "User has correct $k extra field";
@@ -365,14 +365,14 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->clear_emails_ok;
                 ok $url, "extracted confirm url '$url'";
 
-                my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $tw_email } );
+                my $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $tw_email } );
                 if ($page eq 'my') {
                     is $user, undef, 'No user yet exists';
                 } else {
                     is $user->twitter_id, undef, 'User has no twitter ID';
                 }
                 $mech->get_ok( $url );
-                $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $tw_email } );
+                $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $tw_email } );
                 is $user->twitter_id, $tw_uid, 'User now has correct twitter ID';
 
             } elsif ($page ne 'my') {

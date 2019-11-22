@@ -1,5 +1,4 @@
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
 use Web::Scraper;
 use Path::Tiny;
 use File::Temp 'tempdir';

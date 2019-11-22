@@ -290,7 +290,7 @@ subtest 'check old problems not shown by default on around page' => sub {
     my $pins = $json->{pins};
     is scalar @$pins, 9, 'correct number of reports when no age';
 
-    my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+    my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
     $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
 
     $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
@@ -313,7 +313,7 @@ subtest 'check sorting by update uses lastupdate to determine age' => sub {
     my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
                 . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
 
-    my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+    my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
     $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
 
     my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
@@ -336,7 +336,7 @@ subtest 'check show old reports checkbox shown on around page' => sub {
         $mech->get_ok( '/around?pc=OX20+1SZ' );
         $mech->content_contains('id="show_old_reports_wrapper" class="report-list-filters hidden"');
 
-        my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+        my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
         $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
 
         $mech->get_ok( '/around?pc=OX20+1SZ&status=all' );

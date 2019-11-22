@@ -834,7 +834,7 @@ subtest "problems can't be assigned to deleted bodies" => sub {
 };
 
 subtest "photo must be supplied for categories that require it" => sub {
-    FixMyStreet::App->model('DB::Contact')->find_or_create({
+    FixMyStreet::DB->resultset('Contact')->find_or_create({
         body => $division,
         category => "Graffiti - photo required",
         email => "graffiti\@example.org",

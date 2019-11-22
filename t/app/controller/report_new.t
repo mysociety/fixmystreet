@@ -7,7 +7,6 @@ package main;
 
 use Test::MockModule;
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
 use Web::Scraper;
 use Path::Class;
 
@@ -744,14 +743,14 @@ foreach my $test (
     # check that the user does not exist
     my $test_email = 'test-1@example.com';
     if ($test->{user}) {
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         ok $user, "test user does exist";
         $user->problems->delete;
         $user->name( 'Old Name' );
         $user->password( 'old_password' );
         $user->update;
     } elsif (!$first_user) {
-        ok !FixMyStreet::App->model('DB::User')->find( { email => $test_email } ),
+        ok !FixMyStreet::DB->resultset('User')->find( { email => $test_email } ),
           "test user does not exist";
         $first_user = 1;
     } else {
@@ -796,7 +795,7 @@ foreach my $test (
 
     # check that the user has been created/ not changed
     my $user =
-      FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+      FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     ok $user, "user found";
     if ($test->{user}) {
         is $user->name, 'Old Name', 'name unchanged';
@@ -841,7 +840,7 @@ foreach my $test (
     }
 
     # check that the reporter has an alert
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user       => $report->user,
         alert_type => 'new_updates',
         parameter  => $report->id,
@@ -1029,7 +1028,7 @@ foreach my $test (
     $mech->get_ok( '/report/' . $report->id );
 
     # check that the reporter has an alert
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user       => $report->user,
         alert_type => 'new_updates',
         parameter  => $report->id,
@@ -1130,7 +1129,7 @@ foreach my $test (
         $mech->get_ok( '/report/' . $report->id );
 
         # check that the reporter has an alert
-        my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+        my $alert = FixMyStreet::DB->resultset('Alert')->find( {
             user       => $report->user,
             alert_type => 'new_updates',
             parameter  => $report->id,
@@ -1506,13 +1505,13 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
 };
 
 subtest "check we load a partial report correctly" => sub {
-    my $user = FixMyStreet::App->model('DB::User')->find_or_create(
+    my $user = FixMyStreet::DB->resultset('User')->find_or_create(
         {
             email => 'test-partial@example.com'
         }
     );
 
-    my $report = FixMyStreet::App->model('DB::Problem')->create( {
+    my $report = FixMyStreet::DB->resultset('Problem')->create( {
         name               => '',
         postcode           => '',
         category           => 'Street lighting',
@@ -1531,7 +1530,7 @@ subtest "check we load a partial report correctly" => sub {
 
     my $report_id = $report->id;
 
-    my $token = FixMyStreet::App->model("DB::Token")
+    my $token = FixMyStreet::DB->resultset("Token")
         ->create( { scope => 'partial', data => $report->id } );
 
     my $token_code = $token->token;
@@ -1677,7 +1676,7 @@ for my $test (
         # confirm token in order to update the user details
         $mech->get_ok($url);
 
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => 'firstlast@example.com' } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => 'firstlast@example.com' } );
 
         my $report = $user->problems->first;
         ok $report, "Found the report";
@@ -1816,7 +1815,7 @@ subtest "test Hart" => sub {
 
             # check that the user has been created/ not changed
             $user =
-              FixMyStreet::App->model('DB::User')->find( { email => $user ? $user->email : $test_email } );
+              FixMyStreet::DB->resultset('User')->find( { email => $user ? $user->email : $test_email } );
             ok $user, "user found";
 
             # find the report
@@ -1942,7 +1941,7 @@ subtest "unresponsive body handling works" => sub {
             "submit good details"
         );
 
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         ok $user, "test user does exist";
 
         my $report = $user->problems->first;
@@ -1976,7 +1975,7 @@ subtest "unresponsive body handling works" => sub {
         my $res = $mech->response;
         ok $res->header('Content-Type') =~ m{^application/json\b}, 'response should be json';
 
-        $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         ok $user, "test user does exist";
 
         $report = $user->problems->first;
@@ -2150,7 +2149,7 @@ subtest "extra google analytics code displayed on email confirmation problem cre
         $mech->get_ok($url);
 
         # find the report
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => 'firstlast@example.com' } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => 'firstlast@example.com' } );
 
         my $report = $user->problems->first;
         ok $report, "Found the report";

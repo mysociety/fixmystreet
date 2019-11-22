@@ -16,7 +16,7 @@ my $southend = $mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
 $mech->log_in_ok( $superuser->email );
 
 subtest 'search abuse' => sub {
-    my $abuse = FixMyStreet::App->model('DB::Abuse')->find_or_create( { email => $user->email } );
+    my $abuse = FixMyStreet::DB->resultset('Abuse')->find_or_create( { email => $user->email } );
     $mech->get_ok( '/admin/users?search=example' );
     $mech->content_like(qr{test\@example.com.*</td>\s*<td>.*?</td>\s*<td>User in abuse table}s);
 };
@@ -27,26 +27,26 @@ subtest 'remove user from abuse list from edit user page' => sub {
 
     $mech->click_ok('unban');
 
-    my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $user->email } );
+    my $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $user->email } );
     ok !$abuse, 'record removed from abuse table';
 };
 
 subtest 'remove user with phone account from abuse list from edit user page' => sub {
     my $abuse_user = $mech->create_user_ok('01234 456789');
-    my $abuse = FixMyStreet::App->model('DB::Abuse')->find_or_create( { email => $abuse_user->phone } );
+    my $abuse = FixMyStreet::DB->resultset('Abuse')->find_or_create( { email => $abuse_user->phone } );
     $mech->get_ok( '/admin/users/' . $abuse_user->id );
     $mech->content_contains('User in abuse table');
-    my $abuse_found = FixMyStreet::App->model('DB::Abuse')->find( { email => $abuse_user->phone } );
+    my $abuse_found = FixMyStreet::DB->resultset('Abuse')->find( { email => $abuse_user->phone } );
     ok $abuse_found, 'user in abuse table';
 
     $mech->click_ok('unban');
 
-    $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $user->phone } );
+    $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $user->phone } );
     ok !$abuse, 'record removed from abuse table';
 };
 
 subtest 'no option to remove user already in abuse list' => sub {
-    my $abuse = FixMyStreet::App->model('DB::Abuse')->find( { email => $user->email } );
+    my $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $user->email } );
     $abuse->delete if $abuse;
     $mech->get_ok( '/admin/users/' . $user->id );
     $mech->content_lacks('User in abuse table');

@@ -1,5 +1,4 @@
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
 use Test::LongString;
 use Web::Scraper;
 
@@ -186,7 +185,7 @@ foreach my $test (
 
         # check that the user does not exist
         my $test_email = $test->{submit_with}->{username};
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         if ( $user ) {
             $user->problems->delete;
             $user->comments->delete;
@@ -252,7 +251,7 @@ foreach my $test (
             $mech->submit_form_ok( { with_fields => $new_values } );
         };
 
-        $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         ok $user, 'created user';
         my $prob = $user->problems->first;
         ok $prob, 'problem created';

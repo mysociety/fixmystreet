@@ -23,7 +23,7 @@ $mech->content_lacks('Another Title');
 my @update;
 my $i = 0;
 foreach ($user, $user, $other_user) {
-    $update[$i] = FixMyStreet::App->model('DB::Comment')->create({
+    $update[$i] = FixMyStreet::DB->resultset('Comment')->create({
         text => 'this is an update',
         user => $_,
         state => 'confirmed',

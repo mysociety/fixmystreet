@@ -110,14 +110,14 @@ foreach my $test (
     $mech->log_out_ok;
 
     if ($test->{user}) {
-        my $user = FixMyStreet::App->model('DB::User')->find( { phone => $test_phone } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { phone => $test_phone } );
         ok $user, "test user does exist";
         $user->problems->delete;
         $user->name( 'Old Name' );
         $user->password( 'old_password' );
         $user->update;
     } elsif (!$first_user) {
-        ok !FixMyStreet::App->model('DB::User')->find( { phone => $test_phone } ),
+        ok !FixMyStreet::DB->resultset('User')->find( { phone => $test_phone } ),
           "test user does not exist";
         $first_user = 1;
     } else {
@@ -153,7 +153,7 @@ foreach my $test (
 
     is_deeply $mech->page_errors, [], "check there were no errors";
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { phone => $test_phone } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { phone => $test_phone } );
     ok $user, "user found";
     if ($test->{user}) {
         is $user->name, 'Old Name', 'name unchanged';
@@ -189,7 +189,7 @@ foreach my $test (
     }
 
     # check that the reporter has an alert
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user => $report->user,
         alert_type => 'new_updates',
         parameter => $report->id,
@@ -300,7 +300,7 @@ subtest "test report creation for a user who is signing in as they report" => su
     is $report->bodies_str, $body->id;
     is $report->state, 'confirmed', "report is now confirmed";
     $mech->get_ok( '/report/' . $report->id );
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user => $report->user,
         alert_type => 'new_updates',
         parameter => $report->id,
@@ -356,7 +356,7 @@ subtest "test report creation for a user who is logged in" => sub {
     $mech->content_contains('Thank you for reporting this issue');
     is $report->state, 'confirmed', "report is now confirmed";
     $mech->get_ok( '/report/' . $report->id );
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user => $report->user,
         alert_type => 'new_updates',
         parameter => $report->id,

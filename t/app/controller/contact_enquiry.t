@@ -64,7 +64,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Enquiry can be submitted when logged out' => sub {
-        my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+        my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
 
         $mech->get_ok( '/contact/enquiry' );
         $mech->submit_form_ok( {
@@ -94,7 +94,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Enquiry can be submitted when logged in' => sub {
-        my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+        my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
         my $prob_user = $problems->first->user;
         $problems->delete_all;
 
@@ -129,7 +129,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'User name not changed if logged out when making report' => sub {
-        my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+        my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
         my $user = $problems->first->user;
         $problems->delete_all;
 
@@ -188,7 +188,7 @@ FixMyStreet::override_config {
     my $image_hash = '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
 
     subtest "Check photo & file upload works" => sub {
-        my $problems = FixMyStreet::App->model('DB::Problem')->to_body( $body->id );
+        my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
         $problems->delete_all;
 
 

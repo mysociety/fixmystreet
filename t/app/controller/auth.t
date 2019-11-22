@@ -89,7 +89,7 @@ $mech->not_logged_in_ok;
 
     # check that the user does not exist
     sub get_user {
-        FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     }
     ok !get_user(), "no user exists";
 
@@ -164,7 +164,7 @@ subtest "sign in with uppercase email" => sub {
     $mech->content_contains($test_email);
     $mech->content_lacks($uc_test_email);
 
-    my $count = FixMyStreet::App->model('DB::User')->search( { email => $uc_test_email } )->count;
+    my $count = FixMyStreet::DB->resultset('User')->search( { email => $uc_test_email } )->count;
     is $count, 0, "uppercase user wasn't created";
 };
 
@@ -188,7 +188,7 @@ FixMyStreet::override_config {
 
         ok $mech->email_count_is(0);
 
-        my $count = FixMyStreet::App->model('DB::User')->search( { email => $test_email3 } )->count;
+        my $count = FixMyStreet::DB->resultset('User')->search( { email => $test_email3 } )->count;
         is $count, 0, "no user exists";
     };
 
@@ -239,7 +239,7 @@ subtest "check logging in with token" => sub {
     $mech->log_out_ok;
     $mech->not_logged_in_ok;
 
-    my $user =  FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user =  FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     # token needs to be 18 characters
     $user->set_extra_metadata('access_token', '1234567890abcdefgh');
     $user->update();
@@ -300,7 +300,7 @@ subtest "Test two-factor authentication login" => sub {
     my $code = $auth->code;
     my $wrong_code = $auth->code(undef, time() - 120);
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     $user->password('password');
     $user->set_extra_metadata('2fa_secret', $auth->secret32);
     $user->update;
@@ -320,7 +320,7 @@ subtest "Test enforced two-factor authentication" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'dummy',
     }, sub {
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         $user->unset_extra_metadata('2fa_secret');
         $user->update;
 
@@ -355,7 +355,7 @@ subtest "Test enforced two-factor authentication, no password yet set" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'dummy',
     }, sub {
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         $user->unset_extra_metadata('2fa_secret');
         $user->update;
 
@@ -395,7 +395,7 @@ subtest "Check two-factor log in by email works" => sub {
     my $auth = Auth::GoogleAuth->new;
     my $code = $auth->code;
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     $user->set_extra_metadata('2fa_secret', $auth->secret32);
     $user->update;
 
@@ -417,7 +417,7 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'expiring'
 }, sub {
     subtest 'Password expiry' => sub {
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         $user->set_extra_metadata('last_password_change', time() - 200000);
         $user->unset_extra_metadata('2fa_secret');
         $user->update;

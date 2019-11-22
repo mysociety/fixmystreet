@@ -254,7 +254,7 @@ subtest "fixing passes along the correct message" => sub {
 
         my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { external_id => 1 });
 
-        my $c = FixMyStreet::App->model('DB::Comment')->create({
+        my $c = FixMyStreet::DB->resultset('Comment')->create({
             problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
             problem_state => 'fixed - council', state => 'confirmed', mark_fixed => 0,
             confirmed => DateTime->now(),
@@ -371,7 +371,7 @@ subtest "comment recording triage details is not sent" => sub {
 };
 
 my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, '', { cobrand => 'isleofwight' });
-my $alert = FixMyStreet::App->model('DB::Alert')->create( {
+my $alert = FixMyStreet::DB->resultset('Alert')->create( {
     parameter  => $p->id,
     alert_type => 'new_updates',
     user       => $user,
@@ -412,7 +412,7 @@ subtest "check not responsible as correct text" => sub {
             external_id => 1,
         });
 
-    my $c = FixMyStreet::App->model('DB::Comment')->create({
+    my $c = FixMyStreet::DB->resultset('Comment')->create({
         problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
         problem_state => 'not responsible', state => 'confirmed', mark_fixed => 0,
         confirmed => DateTime->now(),

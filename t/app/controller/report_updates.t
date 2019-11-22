@@ -31,7 +31,7 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
         bodies_str         => $body->id,
@@ -57,7 +57,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
-my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create(
     {
         problem_id => $report_id,
         user_id    => $user2->id,
@@ -201,7 +201,7 @@ subtest "several updates shown in correct order" => sub {
             new_state => 'fixed - user',
         },
     ) {
-        my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
+        my $q = FixMyStreet::DB->resultset('Questionnaire')->find_or_create(
             $fields
         );
         push @qs, $q;
@@ -238,7 +238,7 @@ subtest "several updates shown in correct order" => sub {
             confirmed  => '2011-03-15 08:12:36',
         }
     ) {
-        my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+        my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create(
             $fields
         );
         if ($fields->{text} eq 'Second update') {
@@ -443,7 +443,7 @@ for my $test (
         my ($url_token) = $url =~ m{/C/(\S+)};
         ok $url, "extracted confirm url '$url'";
 
-        my $token = FixMyStreet::App->model('DB::Token')->find(
+        my $token = FixMyStreet::DB->resultset('Token')->find(
             {
                 token => $url_token,
                 scope => 'comment'
@@ -454,7 +454,7 @@ for my $test (
         my $update_id  = $token->data->{id};
         my $add_alerts = $token->data->{add_alert};
         my $update =
-          FixMyStreet::App->model('DB::Comment')->find( { id => $update_id } );
+          FixMyStreet::DB->resultset('Comment')->find( { id => $update_id } );
 
         my $details = {
             %{ $test->{form_values} },
@@ -470,11 +470,11 @@ for my $test (
         $mech->get_ok( $url );
         $mech->content_contains("/report/$report_id#update_$update_id");
 
-        my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => $details->{username} } );
+        my $unreg_user = FixMyStreet::DB->resultset( 'User' )->find( { email => $details->{username} } );
 
         ok $unreg_user, 'found user';
 
-        my $alert = FixMyStreet::App->model( 'DB::Alert' )->find(
+        my $alert = FixMyStreet::DB->resultset( 'Alert' )->find(
             { user => $unreg_user, alert_type => 'new_updates', confirmed => 1, }
         );
 
@@ -548,7 +548,7 @@ for my $test (
         my $email = $mech->email_count_is(0);
 
         my $update =
-          FixMyStreet::App->model('DB::Comment')->find( { problem_id => $report_id, text => 'Update no email confirm' } );
+          FixMyStreet::DB->resultset('Comment')->find( { problem_id => $report_id, text => 'Update no email confirm' } );
         my $update_id = $update->id;
 
         $mech->content_contains('name="update_' . $update_id . '"');
@@ -563,7 +563,7 @@ for my $test (
         is $update->user->email, $details->{username}, 'update email';
         is $update->text, $details->{update}, 'update text';
 
-        my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => $details->{username} } );
+        my $unreg_user = FixMyStreet::DB->resultset( 'User' )->find( { email => $details->{username} } );
 
         ok $unreg_user, 'found user';
 
@@ -790,7 +790,7 @@ for my $test (
 
 subtest 'check meta correct for comments marked confirmed but not marked open' => sub {
     $report->comments->delete;
-    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+    my $comment = FixMyStreet::DB->resultset('Comment')->create(
         {
             user          => $user,
             problem_id    => $report->id,
@@ -911,7 +911,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         like $update_meta->[3], qr/investigating/i, 'third update meta says investigating';
 
         my $dt = DateTime->now( time_zone => "local" )->add( seconds => 1 );
-        $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+        $comment = FixMyStreet::DB->resultset('Comment')->find_or_create(
             {
                 problem_id => $report_id,
                 user_id    => $user->id,
@@ -943,7 +943,7 @@ subtest "check comment with no status change has not status in meta" => sub {
 
 subtest 'check meta correct for second comment marking as reopened' => sub {
     $report->comments->delete;
-    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+    my $comment = FixMyStreet::DB->resultset('Comment')->create(
         {
             user          => $user,
             problem_id    => $report->id,
@@ -961,7 +961,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
     my $update_meta = $mech->extract_update_metas;
     like $update_meta->[0], qr/fixed/i, 'update meta says fixed';
 
-    $comment = FixMyStreet::App->model('DB::Comment')->create(
+    $comment = FixMyStreet::DB->resultset('Comment')->create(
         {
             user          => $user,
             problem_id    => $report->id,
@@ -982,7 +982,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
 
 subtest 'check meta correct for comment after mark_fixed with not problem_state' => sub {
     $report->comments->delete;
-    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+    my $comment = FixMyStreet::DB->resultset('Comment')->create(
         {
             user          => $user,
             problem_id    => $report->id,
@@ -1000,7 +1000,7 @@ subtest 'check meta correct for comment after mark_fixed with not problem_state'
     my $update_meta = $mech->extract_update_metas;
     like $update_meta->[0], qr/fixed/i, 'update meta says fixed';
 
-    $comment = FixMyStreet::App->model('DB::Comment')->create(
+    $comment = FixMyStreet::DB->resultset('Comment')->create(
         {
             user          => $user,
             problem_id    => $report->id,
@@ -1066,7 +1066,7 @@ subtest $test->{desc} => sub {
 
     $report->comments->delete;
 
-    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+    my $comment = FixMyStreet::DB->resultset('Comment')->create(
         {
             user          => $test->{user},
             name          => $test->{name},
@@ -1130,7 +1130,7 @@ subtest $test->{desc} => sub {
 
     $report->comments->delete;
 
-    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+    my $comment = FixMyStreet::DB->resultset('Comment')->create(
         {
             user          => $user2,
             name          => 'an administrator',
@@ -1182,7 +1182,7 @@ subtest $test->{desc} => sub {
     $report->comments->delete;
 
     for my $state (@{$test->{problem_states}}) {
-        my $comment = FixMyStreet::App->model('DB::Comment')->create(
+        my $comment = FixMyStreet::DB->resultset('Comment')->create(
             {
                 user          => $user2,
                 name          => 'an administrator',
@@ -1327,7 +1327,7 @@ subtest 'submit an update for a registered user, creating update by email' => su
     my ($url_token) = $url =~ m{/C/(\S+)};
     ok $url, "extracted confirm url '$url'";
 
-    my $token = FixMyStreet::App->model('DB::Token')->find( {
+    my $token = FixMyStreet::DB->resultset('Token')->find( {
         token => $url_token,
         scope => 'comment'
     } );
@@ -1335,7 +1335,7 @@ subtest 'submit an update for a registered user, creating update by email' => su
 
     my $update_id  = $token->data->{id};
     my $add_alerts = $token->data->{add_alert};
-    my $update = FixMyStreet::App->model('DB::Comment')->find( { id => $update_id } );
+    my $update = FixMyStreet::DB->resultset('Comment')->find( { id => $update_id } );
 
     ok $update, 'found update in database';
     is $update->state, 'unconfirmed', 'update unconfirmed';
@@ -1554,7 +1554,7 @@ for my $test (
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
         my $alert =
-          FixMyStreet::App->model('DB::Alert')
+          FixMyStreet::DB->resultset('Alert')
           ->find( { user => $update->user, alert_type => 'new_updates', confirmed => 1, whendisabled => undef } );
 
         ok $test->{alert} ? $alert : !$alert, 'not signed up for alerts';
@@ -1664,7 +1664,7 @@ foreach my $test (
         my $questionnaire;
         if ( $test->{answered} ) {
             $questionnaire =
-              FixMyStreet::App->model('DB::Questionnaire')->create(
+              FixMyStreet::DB->resultset('Questionnaire')->create(
                 {
                     problem_id    => $report_id,
                     ever_reported => 'y',
@@ -1729,7 +1729,7 @@ foreach my $test (
             $mech->content_contains( $report->title );
             $mech->content_contains( 'Thank you for updating this issue' );
 
-            $questionnaire = FixMyStreet::App->model( 'DB::Questionnaire' )->find(
+            $questionnaire = FixMyStreet::DB->resultset( 'Questionnaire' )->find(
                 { problem_id => $report_id }
             );
 
@@ -1806,7 +1806,7 @@ for my $test (
         my $questionnaire;
         if ( $test->{answered} ) {
             $questionnaire =
-              FixMyStreet::App->model('DB::Questionnaire')->create(
+              FixMyStreet::DB->resultset('Questionnaire')->create(
                 {
                     problem_id    => $report_id,
                     ever_reported => 'y',
@@ -1852,7 +1852,7 @@ for my $test (
         my ($url_token) = $url =~ m{/C/(\S+)};
         ok $url, "extracted confirm url '$url'";
 
-        my $token = FixMyStreet::App->model('DB::Token')->find(
+        my $token = FixMyStreet::DB->resultset('Token')->find(
             {
                 token => $url_token,
                 scope => 'comment'
@@ -1878,7 +1878,7 @@ for my $test (
             $mech->content_contains( $report->title );
             $mech->content_contains( 'Thank you for updating this issue' );
 
-            $questionnaire = FixMyStreet::App->model( 'DB::Questionnaire' )->find(
+            $questionnaire = FixMyStreet::DB->resultset( 'Questionnaire' )->find(
                 { problem_id => $report_id }
             );
 

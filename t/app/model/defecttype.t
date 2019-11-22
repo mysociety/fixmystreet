@@ -1,4 +1,3 @@
-use FixMyStreet::App;
 use FixMyStreet::TestMech;
 use JSON::MaybeXS;
 
@@ -11,7 +10,7 @@ my $potholes_contact = $mech->create_contact_ok( body_id => $oxfordshire->id, ca
 my $traffic_lights_contact =$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 my $pavements_contact =$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Pavements', email => 'pavements@example.com' );
 
-my $potholes_defect_type = FixMyStreet::App->model('DB::DefectType')->find_or_create(
+my $potholes_defect_type = FixMyStreet::DB->resultset('DefectType')->find_or_create(
     {
         body_id => $oxfordshire->id,
         name => 'Potholes and Pavements',
@@ -27,7 +26,7 @@ $potholes_defect_type->contact_defect_types->find_or_create({
 });
 $potholes_defect_type->update();
 
-my $general_defect_type = FixMyStreet::App->model('DB::DefectType')->find_or_create(
+my $general_defect_type = FixMyStreet::DB->resultset('DefectType')->find_or_create(
     {
         body_id => $oxfordshire->id,
         name => 'All categories',
@@ -37,14 +36,14 @@ my $general_defect_type = FixMyStreet::App->model('DB::DefectType')->find_or_cre
 
 
 subtest 'for_bodies returns correct results' => sub {
-    my $defect_types = FixMyStreet::App->model('DB::DefectType')->for_bodies(
+    my $defect_types = FixMyStreet::DB->resultset('DefectType')->for_bodies(
         [ $oxfordshire->id ],
         'Potholes'
     );
 
     is $defect_types->count, 2, 'Both defect types are included for Potholes category';
 
-    $defect_types = FixMyStreet::App->model('DB::DefectType')->for_bodies(
+    $defect_types = FixMyStreet::DB->resultset('DefectType')->for_bodies(
         [ $oxfordshire->id ],
         'Traffic lights'
     );
@@ -67,7 +66,7 @@ subtest 'Problem->defect_types behaves correctly' => sub {
 
 subtest 'by_categories returns all defect types grouped by category' => sub {
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $defect_types = FixMyStreet::App->model('DB::DefectType')->by_categories($area_id, @contacts);
+    my $defect_types = FixMyStreet::DB->resultset('DefectType')->by_categories($area_id, @contacts);
     my $potholes = decode_json($defect_types->{Potholes});
     my $traffic_lights = decode_json($defect_types->{'Traffic lights'});
     my $pavements = decode_json($defect_types->{Pavements});
@@ -80,7 +79,7 @@ subtest 'by_categories returns all defect types grouped by category' => sub {
 };
 
 subtest 'by_categories returns defect types for an area with multiple bodies' => sub {
-    FixMyStreet::App->model('DB::DefectType')->find_or_create(
+    FixMyStreet::DB->resultset('DefectType')->find_or_create(
         {
             body_id => $other_body->id,
             name => 'All categories',
@@ -89,7 +88,7 @@ subtest 'by_categories returns defect types for an area with multiple bodies' =>
     );
 
     my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $oxfordshire->id ] } )->all;
-    my $defect_types = FixMyStreet::App->model('DB::DefectType')->by_categories($area_id, @contacts);
+    my $defect_types = FixMyStreet::DB->resultset('DefectType')->by_categories($area_id, @contacts);
     my $potholes = decode_json($defect_types->{Potholes});
     my $traffic_lights = decode_json($defect_types->{'Traffic lights'});
     my $pavements = decode_json($defect_types->{Pavements});

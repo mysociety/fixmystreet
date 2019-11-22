@@ -1,5 +1,4 @@
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
 use FixMyStreet::Script::Reports;
 
 # disable info logs for this test run

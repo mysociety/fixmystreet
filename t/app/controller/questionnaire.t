@@ -1,7 +1,6 @@
 use DateTime;
 
 use FixMyStreet::TestMech;
-use FixMyStreet::App::Controller::Questionnaire;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
@@ -12,7 +11,7 @@ my $report_time = $dt->ymd . ' ' . $dt->hms;
 my $sent = $dt->add( minutes => 5 );
 my $sent_time = $sent->ymd . ' ' . $sent->hms;
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'EH1 1BB',
         bodies_str         => '2651',
@@ -47,7 +46,7 @@ foreach my $state (
     subtest "questionnaire not sent for $state state" => sub {
         $report->update( { send_questionnaire => 1, state => $state } );
         $report->questionnaires->delete;
-        FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
+        FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires( {
             site => 'fixmystreet'
         } );
 
@@ -61,7 +60,7 @@ $report->update( { send_questionnaire => 1, state => 'confirmed' } );
 $report->questionnaires->delete;
 
 # Call the questionaire sending function...
-FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
+FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires( {
     site => 'fixmystreet'
 } );
 my $email = $mech->get_email;
@@ -80,12 +79,12 @@ $mech->clear_emails_ok;
 $report->discard_changes;
 is $report->send_questionnaire, 0;
 
-$token = FixMyStreet::App->model("DB::Token")->find( {
+$token = FixMyStreet::DB->resultset("Token")->find( {
     scope => 'questionnaire', token => $token
 } );
 ok $token, 'found token for questionnaire';
 
-my $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->find( {
+my $questionnaire = FixMyStreet::DB->resultset('Questionnaire')->find( {
     id => $token->data
 } );
 ok $questionnaire, 'found questionnaire';
@@ -317,7 +316,7 @@ foreach my $test (
         is $questionnaire->new_state, $result;
         is $questionnaire->ever_reported, $test->{fields}{reported} eq 'Yes' ? 1 : 0;
         if ($test->{fields}{update} || $test->{comment}) {
-            my $c = FixMyStreet::App->model("DB::Comment")->find(
+            my $c = FixMyStreet::DB->resultset("Comment")->find(
                 { problem_id => $report->id }
             );
             is $c->text, $test->{fields}{update} || $test->{comment};
@@ -346,7 +345,7 @@ foreach my $test (
     };
 }
 
-my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create(
     {
         problem_id => $report->id,
         user_id    => $user->id,
@@ -436,7 +435,7 @@ FixMyStreet::override_config {
     $report->update;
     $questionnaire->delete;
 
-    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires();
+    FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires();
 
     my $email = $mech->get_email;
     my $body = $mech->get_text_body_from_email($email);
@@ -449,7 +448,7 @@ FixMyStreet::override_config {
 
     # Test already answered the ever reported question, so not shown again
     $dt = $dt->add( weeks => 4 );
-    my $questionnaire2 = FixMyStreet::App->model('DB::Questionnaire')->find_or_create(
+    my $questionnaire2 = FixMyStreet::DB->resultset('Questionnaire')->find_or_create(
         {
             problem_id => $report->id,
             whensent => $dt->ymd . ' ' . $dt->hms,
@@ -462,9 +461,9 @@ FixMyStreet::override_config {
     $mech->content_contains( 'Has this problem been fixed?' );
     $mech->content_lacks( 'ever reported' );
 
-    $token = FixMyStreet::App->model("DB::Token")->find( { scope => 'questionnaire', token => $token } );
+    $token = FixMyStreet::DB->resultset("Token")->find( { scope => 'questionnaire', token => $token } );
     ok $token, 'found token for questionnaire';
-    $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->find( { id => $token->data } );
+    $questionnaire = FixMyStreet::DB->resultset('Questionnaire')->find( { id => $token->data } );
     ok $questionnaire, 'found questionnaire';
 
     $questionnaire2->delete;
@@ -479,7 +478,7 @@ FixMyStreet::override_config {
     $report->cobrand( 'fiksgatami' );
     $report->update;
     $questionnaire->delete;
-    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires();
+    FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires();
     $email = $mech->get_email;
     ok $email, "got an email";
     $mech->clear_emails_ok;

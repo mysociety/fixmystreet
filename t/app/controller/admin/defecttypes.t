@@ -107,7 +107,7 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
     };
 
     subtest 'check editing a defect type' => sub {
-        my $defect = FixMyStreet::App->model('DB::DefectType')->search( {
+        my $defect = FixMyStreet::DB->resultset('DefectType')->search( {
                 name => 'A defect',
                 body_id => $body->id
             } )->first;
@@ -126,7 +126,7 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
         $mech->content_lacks('A defect');
         $mech->content_contains('Updated defect');
 
-        my $defects = FixMyStreet::App->model('DB::DefectType')->search( {
+        my $defects = FixMyStreet::DB->resultset('DefectType')->search( {
             body_id => $body->id
         } );
 
@@ -134,7 +134,7 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
     };
 
     subtest 'check adding a category to a defect' => sub {
-        my $defect = FixMyStreet::App->model('DB::DefectType')->search( {
+        my $defect = FixMyStreet::DB->resultset('DefectType')->search( {
                 name => 'Updated defect',
                 body_id => $body->id
             } )->first;
@@ -163,7 +163,7 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
     };
 
     subtest 'check removing category from a defect' => sub {
-        my $defect = FixMyStreet::App->model('DB::DefectType')->search( {
+        my $defect = FixMyStreet::DB->resultset('DefectType')->search( {
                 name => 'Updated defect',
                 body_id => $body->id
             } )->first;
@@ -191,7 +191,7 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
     };
 
     subtest 'check adding codes to a defect' => sub {
-        my $defect = FixMyStreet::App->model('DB::DefectType')->search( {
+        my $defect = FixMyStreet::DB->resultset('DefectType')->search( {
                 name => 'Updated defect',
                 body_id => $body->id
             } )->first;

@@ -101,7 +101,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { non_public => 1 } });
         $report->discard_changes;
-        my $alert = FixMyStreet::App->model('DB::Alert')->find(
+        my $alert = FixMyStreet::DB->resultset('Alert')->find(
             { user => $user, alert_type => 'new_updates', confirmed => 1, }
         );
 
@@ -118,7 +118,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action scheduled', include_update => undef } });
         $report->discard_changes;
-        my $alert = FixMyStreet::App->model('DB::Alert')->find(
+        my $alert = FixMyStreet::DB->resultset('Alert')->find(
             { user => $user, alert_type => 'new_updates', confirmed => 1, }
         );
 
@@ -290,7 +290,7 @@ FixMyStreet::override_config {
       $mech->get_ok("/report/$report_id");
       $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Investigating', public_update => "We're investigating.", include_update => "1" } });
 
-      my $alert_count = FixMyStreet::App->model('DB::Alert')->search(
+      my $alert_count = FixMyStreet::DB->resultset('Alert')->search(
           { user_id => $user->id, alert_type => 'new_updates', confirmed => 1, parameter => $report_id }
       )->count();
 

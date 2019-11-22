@@ -16,7 +16,7 @@ $t2->add_to_contacts($c2);
 my @contacts = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { body_id => [ $body->id ] } )->all;
 
 subtest 'by_categories returns allresponse templates grouped by category' => sub {
-    my $templates = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories($area_id, @contacts);
+    my $templates = FixMyStreet::DB->resultset('ResponseTemplate')->by_categories($area_id, @contacts);
     my $potholes = decode_json($templates->{Potholes});
     my $graffiti = decode_json($templates->{Graffiti});
 

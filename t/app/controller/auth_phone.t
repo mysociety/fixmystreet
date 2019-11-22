@@ -60,7 +60,7 @@ FixMyStreet::override_config {
             with_fields => { code => $code }
         }, 'submit correct code');
 
-        my $user = FixMyStreet::App->model('DB::User')->find( { phone => '+18165550100' } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { phone => '+18165550100' } );
         ok $user, "user created";
         is $mech->uri->path, '/my', "redirected to the 'my' section of site";
         $mech->logged_in_ok;

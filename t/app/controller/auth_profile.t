@@ -73,7 +73,7 @@ subtest "Test change password page" => sub {
         $mech->content_contains( $test->{err}, "found expected error" );
     }
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     ok $user, "got a user";
     ok !$user->password, "user has no password";
 
@@ -133,7 +133,7 @@ subtest "Test change password page with current password" => sub {
         $mech->content_contains( $test->{err}, "found expected error" );
     }
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     ok $user, "got a user";
 
     $mech->get_ok('/auth/change_password');
@@ -186,12 +186,12 @@ subtest "Test change email page" => sub {
     $mech->get_ok($link);
     is $mech->uri->path, '/my', "redirected to /my page";
     $mech->content_contains('successfully confirmed');
-    ok(FixMyStreet::App->model('DB::User')->find( { email => $test_email2 } ), "got a user");
+    ok(FixMyStreet::DB->resultset('User')->find( { email => $test_email2 } ), "got a user");
 
     my $p = FixMyStreet::DB->resultset("Problem")->first;
     is $p->user->email, $test_email2, 'problem user updated';
 
-    my $user1 = FixMyStreet::App->model('DB::User')->create( { email => $test_email, email_verified => 1 } );
+    my $user1 = FixMyStreet::DB->resultset('User')->create( { email => $test_email, email_verified => 1 } );
     ok($user1, "created old user");
     $mech->create_problems_for_body(1, 2514, 'Title1', { user => $user1 } );
 
@@ -229,7 +229,7 @@ my $test_landline = '01214960000';
 my $test_mobile = '+61491570156';
 my $test_mobile2 = '+61491570157';
 
-my $user_mob2 = FixMyStreet::App->model('DB::User')->create( {
+my $user_mob2 = FixMyStreet::DB->resultset('User')->create( {
     phone => $test_mobile,
     phone_verified => 1,
     name => 'Aus Mobile user',
@@ -291,7 +291,7 @@ subtest "Test add/verify/change phone page" => sub {
         with_fields => { code => $code }
     }, 'submit correct code');
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { phone => $test_mobile } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { phone => $test_mobile } );
     ok $user, "user exists";
     is $user->email_verified, 1;
     is $user->email, $test_email, 'email still same';
@@ -327,9 +327,9 @@ subtest "Test change phone to existing account" => sub {
     my $code = $twilio->get_text_code;
     $mech->submit_form_ok({ with_fields => { code => $code } }, 'submit correct code');
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { phone => $test_mobile } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { phone => $test_mobile } );
     ok !$user, 'old user does not exist';
-    $user = FixMyStreet::App->model('DB::User')->find( { phone => $test_mobile2 } );
+    $user = FixMyStreet::DB->resultset('User')->find( { phone => $test_mobile2 } );
     ok $user, "new mobile user exists";
     is $user->email_verified, 1;
     is $user->email, $test_email, 'email still same';
@@ -342,7 +342,7 @@ subtest "Test change phone to existing account" => sub {
 };
 
 subtest "Test superuser can access generate token page" => sub {
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     ok $user->update({ is_superuser => 0 }), 'user not superuser';
 
     $mech->log_out_ok;
@@ -369,7 +369,7 @@ subtest "Test superuser can access generate token page" => sub {
 my $body = $mech->create_body_ok(2237, 'Oxfordshire');
 
 subtest "Test staff user can access generate token page" => sub {
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     ok $user->update({ is_superuser => 0 }), 'user not superuser';
 
     $mech->log_out_ok;
@@ -394,7 +394,7 @@ subtest "Test staff user can access generate token page" => sub {
 };
 
 subtest "Test generate token page" => sub {
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     ok $user->update({ is_superuser => 1 }), 'user set to superuser';
 
     $mech->log_out_ok;
@@ -482,7 +482,7 @@ subtest "Test enforced two-factor authentication" => sub {
         my $code = $auth->code;
 
         # Sign in with 2FA
-        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         $user->password('password');
         $user->set_extra_metadata('2fa_secret', $auth->secret32);
         $user->update;

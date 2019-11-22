@@ -169,7 +169,7 @@ for my $test (
         like $body, qr/This update will be sent to Bromley Council/i, "Email indicates problem will be sent to Bromley";
         unlike $body, qr/Note that we do not send updates to/i, "Email does not say updates aren't sent to Bromley";
 
-        my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => 'unregistered@example.com' } );
+        my $unreg_user = FixMyStreet::DB->resultset('User')->find( { email => 'unregistered@example.com' } );
 
         ok $unreg_user, 'found user';
 

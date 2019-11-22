@@ -1,5 +1,4 @@
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
 use Web::Scraper;
 use Path::Class;
 use LWP::Protocol::PSGI;
@@ -227,7 +226,7 @@ subtest "Submit a correct entry" => sub {
 
     # check that report has been created
     my $user =
-      FixMyStreet::App->model('DB::User')
+      FixMyStreet::DB->resultset('User')
       ->find( { email => 'test@example.com' } );
     ok $user, "Found a user";
 
@@ -315,7 +314,7 @@ subtest "Submit a correct entry (with location)" => sub {
 
     # check that report has been created
     my $user =
-      FixMyStreet::App->model('DB::User')
+      FixMyStreet::DB->resultset('User')
       ->find( { email => 'test-ll@example.com' } );
     ok $user, "Found a user";
 
@@ -382,7 +381,7 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
       "check imported fields are shown"
           or diag Dumper( $mech->visible_form_values ); use Data::Dumper;
 
-    my $user = FixMyStreet::App->model('DB::User')->find( { email => 'test-ll@example.com' } );
+    my $user = FixMyStreet::DB->resultset('User')->find( { email => 'test-ll@example.com' } );
     ok $user, "Found a user";
 
     my $report = $user->problems->first;

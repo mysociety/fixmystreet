@@ -75,7 +75,7 @@ FixMyStreet::override_config {
         my $report_url = '/report/' . $report->id;
         $mech->get_ok($report_url);
 
-        my $alert = FixMyStreet::App->model('DB::Alert')->create(
+        my $alert = FixMyStreet::DB->resultset('Alert')->create(
             {
                 user       => $user2,
                 alert_type => 'new_updates',

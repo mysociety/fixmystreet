@@ -11,7 +11,6 @@ sub anonymous_account { { email => 'anonbutton@example.org', name => 'Anonymous 
 package main;
 
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -93,7 +92,7 @@ subtest "test report creation anonymously" => sub {
     is $report->name, 'Anonymous';
     is $report->anonymous, 0; # Doesn't change behaviour here, but uses anon account's name always
 
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user => $report->user,
         alert_type => 'new_updates',
         parameter => $report->id,
@@ -161,7 +160,7 @@ subtest "test report creation anonymously by button" => sub {
     is $report->anonymous, 1; # Doesn't change behaviour here, but uses anon account's name always
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
 
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user => $report->user,
         alert_type => 'new_updates',
         parameter => $report->id,
@@ -204,7 +203,7 @@ subtest "test report creation anonymously by staff user" => sub {
     is $report->anonymous, 1;
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
 
-    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+    my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user => $report->user,
         alert_type => 'new_updates',
         parameter => $report->id,

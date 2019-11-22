@@ -168,7 +168,7 @@ FixMyStreet::override_config {
     subtest 'Create and update new ReportExtraFields' => sub {
         my $extra_fields = [];
 
-        my $model = FixMyStreet::App->model('DB::ReportExtraField');
+        my $model = FixMyStreet::DB->resultset('ReportExtraField');
         is $model->count, 0, 'no ReportExtraFields yet';
 
         $mech->get_ok("/admin/reportextrafields");
@@ -298,7 +298,7 @@ FixMyStreet::override_config {
     LANGUAGES => [ 'en-gb,English,en_GB' ]
 }, sub {
     subtest "Extra fields are missing from cobrand that doesn't allow them" => sub {
-        my $object = FixMyStreet::App->model('DB::ReportExtraField')->first;
+        my $object = FixMyStreet::DB->resultset('ReportExtraField')->first;
         $object->update({ language => "", cobrand => ""});
 
         $mech->get_ok("/report/new?longitude=-1.351488&latitude=51.847235&category=" . $contact->category);
@@ -307,7 +307,7 @@ FixMyStreet::override_config {
     };
 };
 
-FixMyStreet::App->model('DB::ReportExtraField')->delete_all;
+FixMyStreet::DB->resultset('ReportExtraField')->delete_all;
 $mech->log_out_ok;
 
 subtest 'Reports are created with correct extra metadata' => sub {
@@ -315,7 +315,7 @@ subtest 'Reports are created with correct extra metadata' => sub {
         ALLOWED_COBRANDS => [ 'tester' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        my $model = FixMyStreet::App->model('DB::ReportExtraField');
+        my $model = FixMyStreet::DB->resultset('ReportExtraField');
         my $extra_fields = $model->find_or_create({
             name => "Test extra fields",
             language => "",

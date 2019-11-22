@@ -20,7 +20,7 @@ $mech->create_contact_ok( body_id => $oxford->id, category => 'Graffiti', email 
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council');
 
-my $user3 = FixMyStreet::App->model('DB::User')->create( { email => 'test3@example.com' } );
+my $user3 = FixMyStreet::DB->resultset('User')->create( { email => 'test3@example.com' } );
 
 my $dt = DateTime->new(
     year   => 2011,
@@ -31,7 +31,7 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
         bodies_str         => '2504',
@@ -68,7 +68,7 @@ subtest 'show flagged entries' => sub {
     $mech->content_contains( $report->title );
 };
 
-my $update = FixMyStreet::App->model('DB::Comment')->create(
+my $update = FixMyStreet::DB->resultset('Comment')->create(
     {
         text => 'this is an update',
         user => $user,

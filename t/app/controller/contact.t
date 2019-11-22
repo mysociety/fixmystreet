@@ -114,7 +114,7 @@ for my $test (
     subtest 'check reporting a problem displays correctly' => sub {
         my $user = $mech->create_user_ok($test->{email}, name => $test->{name});
 
-        my $problem = FixMyStreet::App->model('DB::Problem')->create(
+        my $problem = FixMyStreet::DB->resultset('Problem')->create(
             {
                 title     => $test->{title},
                 detail    => $test->{detail},
@@ -138,7 +138,7 @@ for my $test (
             my $update_user = $mech->create_user_ok($update_info->{email},
                 name => $update_info->{name});
 
-            $update = FixMyStreet::App->model('DB::Comment')->create(
+            $update = FixMyStreet::DB->resultset('Comment')->create(
                 {
                     problem_id => $update_info->{other_problem} ? $problem_main->id : $problem->id,
                     user        => $update_user,
@@ -346,7 +346,7 @@ for my $test (
             name => $test->{fields}->{name}
         );
 
-        my $older_unhidden_problem = FixMyStreet::App->model('DB::Problem')->create(
+        my $older_unhidden_problem = FixMyStreet::DB->resultset('Problem')->create(
             {
                 title     => 'Some problem or other',
                 detail    => 'More detail on the problem',
@@ -363,7 +363,7 @@ for my $test (
             }
         );
 
-        my $newer_hidden_problem = FixMyStreet::App->model('DB::Problem')->create(
+        my $newer_hidden_problem = FixMyStreet::DB->resultset('Problem')->create(
             {
                 title     => 'A hidden problem',
                 detail    => 'Shhhh secret',
@@ -557,7 +557,7 @@ subtest 'check can limit contact to abuse reports' => sub {
         is $mech->res->code, 404, 'cannot visit contact page';
         $mech->get_ok( '/contact?id=' . $problem_main->id, 'can visit for abuse report' );
 
-        my $token = FixMyStreet::App->model("DB::Token")->create({
+        my $token = FixMyStreet::DB->resultset("Token")->create({
             scope => 'moderation',
             data => { id => $problem_main->id }
         });
@@ -578,7 +578,7 @@ subtest 'check redirected to correct form for general enquiries cobrand' => sub 
 
         $mech->get_ok( '/contact?id=' . $problem_main->id, 'can visit for abuse report' );
 
-        my $token = FixMyStreet::App->model("DB::Token")->create({
+        my $token = FixMyStreet::DB->resultset("Token")->create({
             scope => 'moderation',
             data => { id => $problem_main->id }
         });
