@@ -2,3 +2,162 @@
 @import "./_colours";
 @import "../sass/mixins";
 @import "../sass/base";
+
+.eh-header {
+    background-color: $eh_green;
+    color: #fff;
+    padding: 1em 0;
+    position: relative;
+}
+
+a:focus,
+input:focus,
+button:focus {
+    outline: 3px dotted red;
+}
+
+.eh-header__logo,
+.eh-footer__logo {
+    display: block;
+    overflow: hidden;
+    width: 91px;
+    height: 0;
+    padding-top: 84px;
+    @include svg-background-image('/cobrands/eastherts/logo');
+    background-size: 91px 84px;
+}
+
+.eh-header__form {
+    @include flex-container();
+    margin-top: 1em;
+}
+
+.eh-header__search {
+    font-family: inherit;
+    border-radius: 0.25em 0 0 0.25em;
+    color: #495057;
+    border: none;
+
+    // override input[type="text"] { width: 100% } in core
+    &[type="text"] {
+        width: 80%;
+        font-size: 1.2em;
+        line-height: 1.4em;
+        padding: 6px 12px;
+    }
+}
+
+.eh-header__button {
+    background-color: $eh_yellow;
+    color: $eh_mid_grey;
+    border-radius: 0 0.25em 0.25em 0;
+    padding: 6px 12px;
+    border: none;
+
+    width: 20%;
+
+    @include flex-container();
+    @include flex-align(center);
+    @include justify-content(center);
+    text-align: center;
+
+    i {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        @include svg-background-image('/cobrands/eastherts/search');
+        background-size: 16px 16px;
+        margin: 0 auto;
+    }
+
+    span {
+        // .visuallyhidden
+        clip: rect(0 0 0 0);
+        height: 1px;
+        width: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+    }
+}
+
+.eh-header__nav-link {
+    position: absolute;
+    right: 1em;
+    top: 40px; // vertically centre alongside logo
+    display: block;
+    overflow: hidden;
+    width: 40px;
+    height: 0;
+    padding-top: 40px;
+    @include svg-background-image('/cobrands/eastherts/menu');
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.eh-footer {
+    background-color: $eh_dark_grey;
+    color: #fff;
+    padding: 2em 0;
+    margin: 0;
+    box-shadow: 0 1000px 0 1000px $eh_dark_grey;
+
+    ul {
+        overflow: auto;
+        margin: 1em 0;
+    }
+
+    li {
+        list-style: none;
+        float: left;
+
+        &:after {
+            content: '|';
+            display: inline-block;
+            margin-left: 0.3em;
+            margin-right: 0.3em;
+        }
+
+        &:last-child:after {
+            display: none;
+        }
+    }
+
+    a {
+        color: inherit;
+    }
+}
+
+.nav-menu {
+    a, span, a:visited {
+        font-size: 1em;
+        background-color: #3B3B3B;
+        color: #fff;
+        border-bottom: 1px solid $eh_dark_grey;
+    }
+}
+
+#front-main {
+    text-align: left;
+    color: inherit;
+
+    h1 {
+        font-size: 1.75em;
+    }
+
+    #postcodeForm {
+        margin-top: 1em;
+    }
+}
+
+a#geolocate_link {
+    color: $eh_green;
+}
+
+.map-fullscreen {
+    .eh-header,
+    .eh-footer {
+        display: none;
+    }
+}

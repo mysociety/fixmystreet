@@ -1,11 +1,15 @@
 /* COLOURS */
 
-$eh_dark_grey: #555;
-$eh_green: #00843d;
+$eh_green: #006633;
+$eh_yellow: #fedd33;
+$eh_blue: #007FA3;
+$eh_light_grey: #EBEBEB;
+$eh_mid_grey: #4A4A4A;
+$eh_dark_grey: #262626;
 
-$primary: $eh_green;
-$primary_b: #000000;
-$primary_text: #fff;
+$primary: $eh_light_grey;
+$primary_b: #000;
+$primary_text: #000;
 
 $base_bg: white;
 $base_fg: $eh_dark_grey;
@@ -25,3 +29,9 @@ $col_click_map_dark: darken($eh_green, 10%);
 $body-font: 'Open Sans', sans-serif;
 $meta-font: $body-font;
 $heading-font: $body-font;
+
+$container-max-width: 70.5em; // match 1128px row width in East Herts template
+
+$eh-header-height: 84px + 16px + 16px;
+$eh-nav-height: 48px;
+$mappage-header-height: $eh-header-height + $eh-nav-height;

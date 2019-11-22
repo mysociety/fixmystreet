@@ -1,2 +1,152 @@
 @import "_colours";
 @import "../sass/layout";
+
+// give .eh-header a set height (like 8em) and a thick grey border-bottom
+
+// give .nav-wrapper { top: 6em } and remove all the { float: right }
+// so that it sits in front of the grey border-bottom from .eh-header
+
+.eh-header {
+    @include box-sizing(border-box);
+    height: $eh-header-height + $eh-nav-height;
+    border-bottom: $eh-nav-height solid $eh_light_grey;
+}
+
+.eh-header__form {
+    width: 70%;
+    max-width: 40em;
+    position: absolute;
+    top: 0.5em; // Note: this is relative to .container, not .eh-header!
+    right: 1em;
+
+    body.mappage & {
+        top: 1.5em; // Relative to .eh-header again.
+    }
+}
+
+.eh-header__button {
+    font-family: inherit;
+
+    i {
+        margin: 0 0.5em 0 0;
+    }
+
+    span {
+        clip: auto;
+        height: auto;
+        width: auto;
+        margin: 0;
+        overflow: visible;
+        position: static;
+
+        font-size: 1.1em;
+    }
+}
+
+.nav-wrapper {
+    top: $eh-header-height;
+}
+
+#main-nav {
+    min-height: 0;
+    height: auto;
+    display: block;
+    float: none;
+    margin: 0 -0.75em; // compensate for 0.75em padding on nav links
+}
+
+.nav-menu {
+    float: none;
+
+    a, span, a:visited {
+        color: $eh_green;
+        font-size: 1em;
+    }
+
+    span,
+    span.report-a-problem-btn {
+        cursor: default;
+    }
+
+    a:hover,
+    a:focus {
+        color: #000;
+        background: transparent;
+        text-decoration: underline;
+    }
+
+    a.report-a-problem-btn,
+    span.report-a-problem-btn {
+        padding: 0.75em;
+        margin: 0;
+        color: $eh_green;
+        background: transparent;
+        border-radius: 0;
+
+        &:hover,
+        &:focus {
+            color: #000;
+            background: transparent;
+            text-decoration: underline;
+        }
+    }
+}
+
+.eh-header__nav-link {
+    display: none;
+}
+
+.eh-footer__logo {
+    position: absolute;
+    top: 0;
+    right: 1em;
+}
+
+#front-main {
+    background-color: white;
+    text-align: left;
+    padding-top: 40px;
+    color: inherit;
+
+    #postcodeForm {
+        margin-top: 0;
+
+        div {
+            margin: 0;
+        }
+    }
+
+    a#geolocate_link {
+        color: $eh_green;
+    }
+
+    h1 {
+        font-size: 2.5em;
+    }
+
+    h1 + p {
+        font-size: 1.5em;
+        line-height: 1.25em;
+        max-width: 640px;
+    }
+}
+
+body.mappage {
+    .eh-footer {
+        display: none;
+    }
+}
+
+body.frontpage {
+    .content {
+        padding: 2em 0;
+        margin: 2em 0 0 0;
+        border-top: 2px solid $eh_light_grey;
+    }
+}
+
+body.twothirdswidthpage {
+    .content .sticky-sidebar aside {
+        top: 12em; // up from 7em, because of the taller header
+    }
+}
