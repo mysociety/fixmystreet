@@ -3696,6 +3696,13 @@ DISTRIBUTIONS
       IO::WrapTie::Slave 2.110
     requirements:
       ExtUtils::MakeMaker 0
+  Image-PNG-QRCode-0.10
+    pathname: B/BK/BKB/Image-PNG-QRCode-0.10.tar.gz
+    provides:
+      Image::PNG::QRCode 0.10
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.006001
   Image-Size-3.300
     pathname: R/RJ/RJRAY/Image-Size-3.300.tar.gz
     provides:

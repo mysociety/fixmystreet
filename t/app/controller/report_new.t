@@ -990,7 +990,6 @@ foreach my $test (
             use Auth::GoogleAuth;
             my $auth = Auth::GoogleAuth->new({ secret32 => $token });
             my $code = $auth->code;
-            print $mech->encoded_content;
             $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
         }
 

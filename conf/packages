@@ -6,6 +6,7 @@ make
 g++
 jhead
 liblocale-gettext-perl
+libpng-dev
 libsoap-lite-perl
 memcached
 perl

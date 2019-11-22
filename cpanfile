@@ -87,6 +87,7 @@ requires 'HTML::Entities';
 requires 'HTML::FormHandler::Model::DBIC';
 requires 'HTTP::Request::Common';
 requires 'Image::Size', '3.300';
+requires 'Image::PNG::QRCode';
 requires 'IO::Socket::SSL', '2.066';
 requires 'IO::String';
 requires 'JSON::MaybeXS';

@@ -364,8 +364,8 @@ sub signup_2fa : Private {
     }
 
     if ($action eq 'activate') {
-        my $auth = Auth::GoogleAuth->new;
-        $c->stash->{qr_code} = $auth->qr_code($secret, $user->email, 'FixMyStreet');
+        my $auth = FixMyStreet::Auth::GoogleAuth->new;
+        $c->stash->{qr_code} = $auth->qr_code($secret, $user->email, $c->cobrand->base_url);
         $c->stash->{secret32} = $auth->secret32;
         $c->stash->{stage} = 'activate';
     }
