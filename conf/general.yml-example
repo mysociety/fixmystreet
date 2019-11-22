@@ -28,6 +28,10 @@ SECURE_PROXY_SSL_HEADER: ''
 # If you're behind a proxy, set this to a two-element list containing the
 # trusted HTTP header and the required value. For example:
 #   SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]
+CONTENT_SECURITY_POLICY: ''
+# To activate CSP, set this to 1. If you have additional third party domains to
+# allow JavaScript on, or want to specify extra script-src CSP directives, set
+# this to a e.g. space-separated list of domains or a list of the same.
 
 # Email domain used for emails, and contact name/email for admin use.
 EMAIL_DOMAIN: 'example.org'
