@@ -118,6 +118,12 @@ sub open311_post_send {
     );
     my %lighting = map { $_ => 1 } @lighting;
 
+    my @flooding = (
+        'Flooding in the road',
+        'Blocked rainwater gulleys',
+    );
+    my %flooding = map { $_ => 1 } @flooding;
+
     my $emails = $self->feature('open311_email') || return;
     my $dangerous = $row->get_extra_field_value('dangerous') || '';
     my $reportType = $row->get_extra_field_value('reportType') || '';
@@ -137,6 +143,10 @@ sub open311_post_send {
     if ($lighting{$row->category} && $emails->{lighting}) {
         my @lighting = split /,/, $emails->{lighting};
         push @to, [ $_, 'FixMyStreet Bexley Street Lighting' ] for @lighting;
+    }
+    if ($flooding{$row->category} && $emails->{flooding}) {
+        my @flooding = split /,/, $emails->{flooding};
+        push @to, [ $_, 'FixMyStreet Bexley Flooding' ] for @flooding;
     }
     return unless @to;
     my $sender = FixMyStreet::SendReport::Email->new( to => \@to );
