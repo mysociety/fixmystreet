@@ -235,6 +235,7 @@ sub check_and_stash_category : Private {
     my $csv = Text::CSV->new();
     $csv->combine(@list_of_names);
     $c->stash->{around_bodies} = \@bodies;
+    $c->stash->{bodies_ids} = [ map { $_->id } @bodies];
     $c->{stash}->{list_of_names_as_string} = $csv->string;
 
     my $where  = { body_id => [ keys %bodies ], };

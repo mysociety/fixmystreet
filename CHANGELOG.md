@@ -52,6 +52,7 @@
         - Fix issue with inspector duplication workflow.
         - Fix removal of cached photos on moderation. #2696
         - Checking of cached front page details against database. #2696
+        - Inconsistent display of mark private checkbox for staff users
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages. #2473
         - Add feature cobrand helper function.
