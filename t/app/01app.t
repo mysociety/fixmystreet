@@ -17,7 +17,6 @@ use charnames ':full';
 
 ok( request('/')->is_success, 'Request should succeed' );
 
-SKIP: {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tester' ],
 }, sub {
@@ -25,6 +24,34 @@ FixMyStreet::override_config {
     my $num = "12( | )345";
     like $page, qr/$num/;
 };
-}
+
+subtest 'CSP header' => sub {
+    my $res = request('/');
+    is $res->header('Content-Security-Policy'), undef, 'None by default';
+
+    FixMyStreet::override_config {
+        CONTENT_SECURITY_POLICY => 1,
+    }, sub {
+        my $res = request('/');
+        like $res->header('Content-Security-Policy'), qr/script-src 'self' 'unsafe-inline' 'nonce-[^']*' ; object-src 'none'; base-uri 'none'/,
+            'Default CSP header if requested';
+    };
+
+    FixMyStreet::override_config {
+        CONTENT_SECURITY_POLICY => 'www.example.org',
+    }, sub {
+        my $res = request('/');
+        like $res->header('Content-Security-Policy'), qr/script-src 'self' 'unsafe-inline' 'nonce-[^']*' www.example.org; object-src 'none'; base-uri 'none'/,
+            'With 3P domains if given';
+    };
+
+    FixMyStreet::override_config {
+        CONTENT_SECURITY_POLICY => [ 'www.example.org' ],
+    }, sub {
+        my $res = request('/');
+        like $res->header('Content-Security-Policy'), qr/script-src 'self' 'unsafe-inline' 'nonce-[^']*' www.example.org; object-src 'none'; base-uri 'none'/,
+            'With 3P domains if given';
+    };
+};
 
 done_testing();

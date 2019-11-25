@@ -11,6 +11,11 @@ sub country             { return 'GB'; }
 sub area_types          { [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ] }
 sub area_types_children { $mySociety::VotingArea::council_child_types }
 
+sub csp_config {
+    my $self = shift;
+    return $self->feature('content_security_policy');
+}
+
 sub enter_postcode_text {
     my ( $self ) = @_;
     return _("Enter a nearby UK postcode, or street name and area");

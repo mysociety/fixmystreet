@@ -14,6 +14,7 @@ use Digest::MD5 qw(md5_hex);
 
 use Carp;
 use mySociety::PostcodeUtil;
+use mySociety::Random;
 
 =head1 The default cobrand
 
@@ -72,6 +73,22 @@ sub feature {
     return unless $features && ref $features eq 'HASH';
     return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
     return $features->{$feature}->{$self->moniker};
+}
+
+sub csp_config {
+    FixMyStreet->config('CONTENT_SECURITY_POLICY');
+}
+
+sub add_response_headers {
+    my $self = shift;
+    # uncoverable branch true
+    return if $self->{c}->debug;
+    if (my $csp_domains = $self->csp_config) {
+        $csp_domains = '' if $csp_domains eq '1';
+        $csp_domains = join(' ', @$csp_domains) if ref $csp_domains;
+        my $csp_nonce = $self->{c}->stash->{csp_nonce} = unpack('h*', mySociety::Random::random_bytes(16, 1));
+        $self->{c}->res->header('Content-Security-Policy', "script-src 'self' 'unsafe-inline' 'nonce-$csp_nonce' $csp_domains; object-src 'none'; base-uri 'none'")
+    }
 }
 
 =item password_minimum_length

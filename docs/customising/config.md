@@ -56,6 +56,7 @@ The following are all the configuration settings that you can change in `conf/ge
 
 * <code><a href="#base_url">BASE_URL</a></code>
 * <code><a href="#secure_proxy_ssl_header">SECURE_PROXY_SSL_HEADER</a></code>
+* <code><a href="#content_security_policy">CONTENT_SECURITY_POLICY</a></code>
 * <code><a href="#geo_cache">GEO_CACHE</a></code>
 * <code><a href="#admin_base_url">ADMIN_BASE_URL</a></code>
 
@@ -196,6 +197,33 @@ The following are all the configuration settings that you can change in `conf/ge
       <ul class="examples">
         <li>
           <code>SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]</code>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="content_security_policy"><code>CONTENT_SECURITY_POLICY</code></a>
+  </dt>
+  <dd>
+    A Content-Security-Policy header can prevent cross-site scripting,
+    clickjacking and other code injection attacks (see
+    <a href="https://en.wikipedia.org/wiki/Content_Security_Policy">Wikipedia</a>
+    for more). To have FixMyStreet output such a header, set this setting to 1.
+    If you load third-party JavaScript on your site, you will need to set this
+    setting to a space-separated list of domains; whatever is here, if not 1,
+    will be included in the header output.
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <code>CONTENT_SECURITY_POLICY: 1</code>
+        </li>
+        <li>
+          <code>CONTENT_SECURITY_POLICY: 'www.example.org other.example.org'</code>
+        </li>
+        <li>
+          <code>CONTENT_SECURITY_POLICY: [ 'www.example.org', 'other.example.org' ]</code>
         </li>
       </ul>
     </div>

@@ -60,6 +60,7 @@
         - Sass variables for default link colour and decoration.
         - Make contact edit note optional on staging sites.
         - Store email addresses report sent to on the report.
+        - Add configuration for setting Content-Security-Policy header.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private. #2488
