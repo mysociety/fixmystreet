@@ -1,6 +1,6 @@
 <p>[% loc('Please scan this image with your app, or enter the text code into your app, then generate a new one-time code and enter it below:') %]</p>
 
-<p align="center"><img src="[% qr_code %]"></p>
+<p align="center"><img src="[% qr_code %]" alt=""></p>
 <p align="center">[% secret32.replace('(....)', '$1 ') %]</p>
 
 [% IF incorrect_code %]

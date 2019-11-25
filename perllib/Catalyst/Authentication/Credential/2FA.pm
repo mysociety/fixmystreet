@@ -2,7 +2,7 @@ package Catalyst::Authentication::Credential::2FA;
 
 use strict;
 use warnings;
-use Auth::GoogleAuth;
+use FixMyStreet::Auth::GoogleAuth;
 
 our $VERSION = "0.01";
 
@@ -52,8 +52,8 @@ sub authenticate {
             }
 
             if ($action eq 'activate') {
-                my $auth = Auth::GoogleAuth->new;
-                $c->stash->{qr_code} = $auth->qr_code($secret, $user_obj->email, 'FixMyStreet');
+                my $auth = FixMyStreet::Auth::GoogleAuth->new;
+                $c->stash->{qr_code} = $auth->qr_code($secret, $user_obj->email, $c->cobrand->base_url);
                 $c->stash->{secret32} = $auth->secret32;
                 $c->stash->{stage} = 'activate';
             }

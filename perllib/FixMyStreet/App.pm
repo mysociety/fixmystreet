@@ -13,7 +13,7 @@ use FixMyStreet::Email::Sender;
 use FixMyStreet::PhotoStorage;
 use Utils;
 
-use Auth::GoogleAuth;
+use FixMyStreet::Auth::GoogleAuth;
 use Path::Tiny 'path';
 use Try::Tiny;
 use Text::CSV;
@@ -528,7 +528,7 @@ sub check_2fa {
     my ($c, $secret32) = @_;
 
     if (my $code = $c->get_param('2fa_code')) {
-        my $auth = Auth::GoogleAuth->new;
+        my $auth = FixMyStreet::Auth::GoogleAuth->new;
         return 1 if $auth->verify($code, 2, $secret32);
         $c->stash->{incorrect_code} = 1;
     }
