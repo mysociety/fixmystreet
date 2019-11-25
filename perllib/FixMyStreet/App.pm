@@ -373,6 +373,7 @@ sub construct_email {
     };
     $vars->{site_name} = Utils::trim_text($c->view('Email')->render($c, 'site-name.txt', $vars));
     $vars->{signature} = $c->view('Email')->render($c, 'signature.txt', $vars);
+    $vars->{staging} = FixMyStreet->config('STAGING_SITE');
 
     return if FixMyStreet::Email::is_abuser($c->model('DB')->schema, $vars->{to});
 
