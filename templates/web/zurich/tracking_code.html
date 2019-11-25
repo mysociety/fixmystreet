@@ -2,7 +2,7 @@
     SET ga_code = 'UA-38427437-1';
     SET ga_code = 'UA-39223200-1' IF c.config.BASE_URL == "https://www.zueriwieneu.ch";
 %]
-<script type="text/javascript">
+<script nonce="[% csp_nonce %]">
 
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', '[% ga_code %]']);

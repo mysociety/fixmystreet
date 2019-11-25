@@ -1,6 +1,6 @@
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
 
-<script>
+<script nonce="[% csp_nonce %]">
     !function(b,r,i,s,t,o,l){b.GoogleAnalyticsObject=i;b[i]||(b[i]=function(){
     (b[i].q=b[i].q||[]).push(arguments)});b[i].l=+new Date;o=r.createElement(s);
     l=r.getElementsByTagName(s)[0];o.src=t;l.parentNode.insertBefore(o,l)}

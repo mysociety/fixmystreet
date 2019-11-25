@@ -2,7 +2,7 @@
 
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-10804167-1"></script>
-<script>
+<script nonce="[% csp_nonce %]">
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
