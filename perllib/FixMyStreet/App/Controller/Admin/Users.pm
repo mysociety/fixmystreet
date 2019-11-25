@@ -392,7 +392,7 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
         my @live_contacts = $c->stash->{live_contacts}->all;
         my @all_contacts = map { {
             id => $_->id,
-            category => $_->category,
+            category => $_->category_display,
             active => $active_contacts{$_->id},
         } } @live_contacts;
         $c->stash->{contacts} = \@all_contacts;

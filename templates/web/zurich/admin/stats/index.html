@@ -27,7 +27,7 @@
   <select class="form-control" name="category" id="category">
     <option value="">--</option>
   [% FOREACH cat IN category_options %]
-    <option value="[% cat.category %]"[% ' selected' IF cat.category == category %]>[% cat.category_display ~%]
+    <option value="[% cat.category | html %]"[% ' selected' IF cat.category == category %]>[% cat.category_display | html ~%]
         [% ' (' _ cat.abbreviation _ ')' IF cat.abbreviation %]</option>
   [% END %]
   </select>
@@ -69,7 +69,7 @@
 
 <table>
 <tr><th>[% loc('Category') %]</th><th>[% loc('Count') %]</th></tr>
-[% WHILE ( cc = per_category.next ) %]<tr><td>[% cc.category %]</td><td>[% cc.get_column('c') %]</td></tr>[% END %]
+[% WHILE ( cc = per_category.next ) %]<tr><td>[% cc.category | html %]</td><td>[% cc.get_column('c') %]</td></tr>[% END %]
 </table>
 
 [% INCLUDE 'admin/footer.html' %]

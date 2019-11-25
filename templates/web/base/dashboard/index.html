@@ -65,7 +65,7 @@
           [% FOR group IN filter_states %]
           [% FOR state IN group.1 %]
             [% NEXT IF state == 'hidden' %]
-            <option [% 'selected ' IF state == q_state %] value="[% state %]">[% prettify_state(state, 1) %]</option>
+            <option [% 'selected ' IF state == q_state %] value="[% state %]">[% prettify_state(state, 1) | html %]</option>
           [% END %]
           [% END %]
         </select>
@@ -127,7 +127,7 @@
   [% FOR k IN rows %]
     <tr>
       [% IF group_by == 'state' %]
-        <th scope="row">[% prettify_state(k) %]</th>
+        <th scope="row">[% prettify_state(k) | html %]</th>
       [% ELSE %]
         <th scope="row">[% k %]</th>
       [% END %]

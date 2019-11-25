@@ -26,7 +26,7 @@
         <select class="form-control" name="extra[category]" id="category">
             <option value="">[% loc('-- Pick a category --') %]</option>
             [% FOR cat IN c.cobrand.category_options %]
-            <option value="[% cat.category %]"[% ' selected' IF cat.category == body.get_extra_metadata('category') %]>[% cat.category_display | html %]</option>
+            <option value="[% cat.category | html %]"[% ' selected' IF cat.category == body.get_extra_metadata('category') %]>[% cat.category_display | html %]</option>
             [% END %]
         </select>
     </p>

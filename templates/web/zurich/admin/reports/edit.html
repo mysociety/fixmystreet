@@ -89,7 +89,7 @@
     <dd>[% problem.category_display | html %]</dd>
 
     <dt class="print-only">[% loc('State:') %] <!-- Status --></dt>
-    <dd class="print-only">[% prettify_state(problem.state) %]</dd>
+    <dd class="print-only">[% prettify_state(problem.state) | html %]</dd>
 
     <dt>[% loc('Time spent (in minutes):') %]</dt>
     <dd>[% problem.get_time_spent %]</dd>
@@ -142,8 +142,8 @@
         <select class="form-control" name="state"  id="state" data-pstate="[% pstate %]">
             <option value="">--</option>
           [% FOREACH s IN states %]
-            <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">
-            [% IF s.trans; s.trans; ELSE; prettify_state(s.state); END %]</option>
+            <option [% 'selected ' IF s.state == pstate %] value="[% s.state | html %]">
+            [% IF s.trans; s.trans; ELSE; prettify_state(s.state) | html; END %]</option>
           [% END %]
         </select>
     </dd>
@@ -159,7 +159,7 @@
             <select class="form-control" name="category" id="category">
                 <option value="">--</option>
               [% FOREACH cat IN category_options %]
-                <option value="[% cat.category %]">[% cat.category_display ~%]
+                <option value="[% cat.category | html %]">[% cat.category_display | html ~%]
                     [% ' (' _ cat.abbreviation _ ')' IF cat.abbreviation %]</option>
               [% END %]
             </select>

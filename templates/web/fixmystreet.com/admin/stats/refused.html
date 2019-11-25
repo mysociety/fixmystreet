@@ -9,7 +9,7 @@
             <li>ALL</li>
           [%~ END %]
           [%~ IF data.contacts.size; FOR c IN data.contacts %]
-            <li>[% c.category %]</li>
+            <li>[% c.category | html %]</li>
           [%~ END; END %]
         </ul>
     </li>

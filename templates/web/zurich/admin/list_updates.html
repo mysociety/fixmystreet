@@ -24,7 +24,7 @@
         <div class="admin-note [% 'adminhidden' IF update.state == 'hidden' || update.problem.state == 'hidden' %]" title="[% loc('ID') %]: [% update.id %]">
           <p class="admin-note__text">[% update.text | html %]</p>
           <p class="admin-note__creator">
-            <a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a>
+            <a href="mailto:[% update.user.email | html %]">[% (update.user.name || update.user.email) | html %]</a>
             &middot; [% PROCESS format_date this_date=update.created %] [% update.created.hms %]
           </p>
         </div>
@@ -38,7 +38,7 @@
         <div class="admin-note admininternal" title="[% loc('ID') %]: [% update.id %]">
           <p class="admin-note__text">[% update.text | html %]</p>
           <p class="admin-note__creator">
-            <a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a>
+            <a href="mailto:[% update.user.email | html %]">[% (update.user.name || update.user.email) | html %]</a>
             &middot; [% PROCESS format_date this_date=update.created %] [% update.created.hms %]
           </p>
         </div>

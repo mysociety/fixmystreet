@@ -39,7 +39,7 @@
     [% IF permissions.report_edit_category OR permissions.report_inspect OR permissions.triage %]
       <div class="inspect-section">
         <p>
-            <strong>Holding category:</strong> [% problem.category %]
+            <strong>Holding category:</strong> [% problem.category | html %]
         </p>
 
         <p>

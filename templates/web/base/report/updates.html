@@ -18,7 +18,7 @@
       [% IF update.marks_fixed %]
         [%# A questionnaire update that marked the report fixed %]
         [% loc("Questionnaire filled in by problem reporter") %];
-        [% loc('State changed to:') %] [% prettify_state('fixed') %],
+        [% loc('State changed to:') %] [% prettify_state('fixed') | html %],
         [% prettify_dt( update.whenanswered ) %]
       [% ELSE %]
         [%# A questionnaire update, currently saying report is still open %]

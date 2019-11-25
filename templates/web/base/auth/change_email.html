@@ -12,7 +12,7 @@ END
 <h1>[% title %]</h1>
 
 [% IF c.user.email_verified OR (c.user.email AND NOT verifying) %]
-[% loc('Your email address') %]: [% c.user.email %]
+[% loc('Your email address') %]: [% c.user.email | html %]
 [% ELSIF c.user.email %]
 [% DEFAULT username = c.user.email %]
 [% END %]

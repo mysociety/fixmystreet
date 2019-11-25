@@ -22,7 +22,7 @@
 <input type='hidden' name='name' id='name' value='[% update.name | html %]'>
 <input type='hidden' id='username' name='username' value='[% update.user.username | html %]'>
 [% IF update.problem_state %]
-<li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) %]</li>
+<li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) | html %]</li>
 [% END %]
 </li>
 

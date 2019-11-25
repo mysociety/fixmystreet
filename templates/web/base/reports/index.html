@@ -100,7 +100,7 @@
         <table class="dashboard-ranking-table">
             <tbody>
               [% FOR line IN wards %]
-                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s report", "%s reports", line.reports), line.reports) %]</td></tr>
+                <tr><td>[% line.name | html %]</td><td>[% tprintf(nget("%s report", "%s reports", line.reports), line.reports) %]</td></tr>
               [% END %]
             </tbody>
             <tfoot>
@@ -113,7 +113,7 @@
         <table class="dashboard-ranking-table">
             <tbody>
               [% FOR line IN top_five_bodies %]
-                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s day", "%s days", line.days), line.days) %]</td></tr>
+                <tr><td>[% line.name | html %]</td><td>[% tprintf(nget("%s day", "%s days", line.days), line.days) %]</td></tr>
               [% END %]
             </tbody>
             <tfoot>
@@ -129,7 +129,7 @@
             <tbody>
               [% FOR line IN top_five_categories %]
                 [% line_count = line.count | format_number ~%]
-                <tr><td>[% line.category %]</td><td>[% tprintf(nget("%s report", "%s reports", line.count), decode(line_count)) %]</td></tr>
+                <tr><td>[% line.category | html %]</td><td>[% tprintf(nget("%s report", "%s reports", line.count), decode(line_count)) %]</td></tr>
               [% END %]
             </tbody>
             <tfoot>

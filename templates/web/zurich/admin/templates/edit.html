@@ -4,7 +4,7 @@
 <h2> [% tprintf(loc('Response Templates for %s'), body.name) %] </h2>
 
 <h3> [% IF rt.id %]
-    [% tprintf(loc('Template &laquo;%s&raquo;'), rt.title) %]
+    [% tprintf(loc('Template &laquo;%s&raquo;'), rt.title) | html %]
     [% ELSE %]
     [% loc('New template') %]
     [% END %]

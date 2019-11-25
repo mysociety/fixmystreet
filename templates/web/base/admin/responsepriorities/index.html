@@ -26,7 +26,7 @@
                 <em>[% loc('All categories') %]</em>
               [% ELSE %]
                 [% FOR contact IN p.contacts %]
-                  [% contact.category_display %][% ',' UNLESS loop.last %]
+                  [% contact.category_display | html %][% ',' UNLESS loop.last %]
                 [% END %]
               [% END %]
             </td>

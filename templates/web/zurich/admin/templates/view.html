@@ -14,8 +14,8 @@
     <tbody>
 [% FOR t IN response_templates %]
     <tr>
-        <td>  [% t.title %] </td>
-        <td> [% t.text %] </td>
+        <td>  [% t.title | html %] </td>
+        <td> [% t.text | html %] </td>
         <td> [% t.created %] </td>
         <td> <a href="[% c.uri_for_action('/admin/templates/edit', body.id, t.id) %]" class="btn">[% loc('Edit') %]</a> </td>
     </tr>

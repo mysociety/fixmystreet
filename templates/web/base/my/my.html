@@ -32,8 +32,8 @@ li .my-account-buttons a {
 }
 </style>
 <ul>
-<li>[% loc('Name:') %] [% c.user.name %]
-<li>[% loc('Email:') %] [% c.user.email OR '-' %]
+<li>[% loc('Name:') %] [% c.user.name | html %]
+<li>[% loc('Email:') %] [% (c.user.email OR '-') | html %]
     <p class="my-account-buttons my-account-buttons--email">
       [% IF NOT c.user.email %]
         <a href="/auth/change_email">[% loc('Add') %]</a>
@@ -44,7 +44,7 @@ li .my-account-buttons a {
         <a href="/auth/change_email">[% loc('Change') %]</a>
       [% END %]
     </p>
-<li>[% loc('Phone:') %] [% c.user.phone_display OR '-' %]
+<li>[% loc('Phone:') %] [% (c.user.phone_display OR '-') | html %]
     <p class="my-account-buttons">
       [% IF NOT c.user.phone %]
         <a href="/auth/change_phone">[% loc('Add') %]</a>

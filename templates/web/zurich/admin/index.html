@@ -9,7 +9,7 @@
 <h2>[% loc('Problem breakdown by state') %]</h2>
 <ul>
   [% FOREACH state IN problems.keys.sort %]
-    <li>[% problems.$state %] [% prettify_state(state) %]</li>
+    <li>[% problems.$state %] [% prettify_state(state) | html %]</li>
   [% END %]
 </ul>
 

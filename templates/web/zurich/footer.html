@@ -8,7 +8,7 @@
                     <div id="main-nav" role="navigation">
                       [% IF c.user_exists %]
                         <p>
-                            [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                            [% tprintf(loc('Hi %s'), c.user.name || c.user.email) | html %]
                         </p><p><a href="/admin">[% loc('Summary') %]</a> | <a href="/auth/sign_out">[% loc('sign out') %]</a>
                         </p>
                       [% END %]

@@ -17,7 +17,7 @@
       <li>
         <label class="inline" title="[% contact.email | html %]">
           <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
-          [% contact.category %]
+          [% contact.category | html %]
         </label>
       </li>
     [% END %]

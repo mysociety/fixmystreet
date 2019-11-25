@@ -2,6 +2,6 @@
     data-all="[% loc('All') %]" data-all-options='["open","closed"]'
     [% INCLUDE 'reports/_status_filter_options.html' %]
 >
-    <option value="open"[% ' selected' IF filter_status.open %]>[% prettify_state('confirmed') %]</option>
-    <option value="closed"[% ' selected' IF filter_status.closed %]>[% prettify_state('closed') %]</option>
+    <option value="open"[% ' selected' IF filter_status.open %]>[% prettify_state('confirmed') | html %]</option>
+    <option value="closed"[% ' selected' IF filter_status.closed %]>[% prettify_state('closed') | html %]</option>
 </select>

@@ -43,7 +43,7 @@
 [% END -%]
 </li>
 [% IF update.problem_state %]
-<li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) %]</li>
+<li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) | html %]</li>
 [% ELSIF update.mark_fixed %]
 <li>[% loc('Update marked problem as fixed') %]</li>
 [% ELSIF update.user.id == update.problem.user.id && update.mark_open %]

@@ -32,14 +32,14 @@
           [% FOR state IN group.1 %]
             [% NEXT IF state == 'hidden' %]
             [% SET state = 'fixed' IF state == 'fixed - council' ~%]
-            <option value="[% state %]"[% ' selected' IF filter_status.$state %]>[% prettify_state(state, 1) %]</option>
+            <option value="[% state %]"[% ' selected' IF filter_status.$state %]>[% prettify_state(state, 1) | html %]</option>
           [% END %]
         [% END %]
       [% ELSE %]
-        <option value="open"[% ' selected' IF filter_status.open %]>[% prettify_state('confirmed') %]</option>
-        <option value="closed"[% ' selected' IF filter_status.closed %]>[% prettify_state('closed') %]</option>
+        <option value="open"[% ' selected' IF filter_status.open %]>[% prettify_state('confirmed') | html %]</option>
+        <option value="closed"[% ' selected' IF filter_status.closed %]>[% prettify_state('closed') | html %]</option>
         [% IF has_fixed_state %]
-            <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% prettify_state('fixed') %]</option>
+            <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% prettify_state('fixed') | html %]</option>
         [% END %]
       [% END %]
 </select>
