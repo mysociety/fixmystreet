@@ -769,22 +769,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{missing_details_bodies} = \@missing_details_bodies;
     $c->stash->{missing_details_body_names} = \@missing_details_body_names;
 
-    if ( $c->cobrand->enable_category_groups ) {
-        my %category_groups = ();
-        for my $category (@category_options) {
-            my $group = $category->{group} // $category->get_extra_metadata('group') // [''];
-            # this could be an array ref or a string
-            my @groups = ref $group eq 'ARRAY' ? @$group : ($group);
-            push( @{$category_groups{$_}}, $category ) for @groups;
-        }
-
-        my @category_groups = ();
-        for my $group ( grep { $_ ne _('Other') } sort keys %category_groups ) {
-            push @category_groups, { name => $group, categories => $category_groups{$group} };
-        }
-        push @category_groups, { name => _('Other'), categories => $category_groups{_('Other')} } if ($category_groups{_('Other')});
-        $c->stash->{category_groups}  = \@category_groups;
-    }
+    $c->forward('/report/stash_category_groups', [ \@category_options ]) if $c->cobrand->enable_category_groups;
 }
 
 sub setup_report_extra_fields : Private {
