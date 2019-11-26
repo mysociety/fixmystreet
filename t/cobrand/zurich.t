@@ -1,6 +1,7 @@
 # TODO
 # Overdue alerts
 
+use utf8;
 use DateTime;
 use Email::MIME;
 use File::Temp;
@@ -109,11 +110,11 @@ my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
 my $report = $reports[0];
 
 $mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('&Uuml;berpr&uuml;fung ausstehend')
+$mech->content_contains('Überprüfung ausstehend')
     or die $mech->content;
 
 my $json = $mech->get_ok_json( '/report/ajax/' . $report->id );
-is $json->{report}->{title}, "&Uuml;berpr&uuml;fung ausstehend", "correct title";
+is $json->{report}->{title}, "Überprüfung ausstehend", "correct title";
 is $json->{report}->{state}, "submitted", "correct state";
 
 subtest "Banners are displayed correctly" => sub {
@@ -308,7 +309,7 @@ subtest "report_edit" => sub {
 
     $mech->log_in_ok( 'dm1@example.org') ;
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
+    $mech->content_contains( 'Unbestätigt' ); # Unconfirmed email
     $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
     $mech->get_ok( '/report/' . $report->id );
 
@@ -538,7 +539,7 @@ subtest 'Test publishing of final update by DM' => sub {
 
     $mech->content_contains('Admin district');
 
-    $mech->content_lacks( 'Unbest&auml;tigt' ); # Confirmed email
+    $mech->content_lacks( 'Unbestätigt' ); # Confirmed email
     $mech->submit_form_ok( { with_fields => { status_update => 'FINAL UPDATE' } } );
     $mech->form_with_fields( 'status_update' );
     $mech->submit_form_ok( { button => 'publish_response' } );
@@ -573,7 +574,7 @@ subtest "Assign feedback pending (via confirmed), don't confirm email, no email 
     $mech->content_contains('Second Test');
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains( 'Unbest&auml;tigt' );
+    $mech->content_contains( 'Unbestätigt' );
     $report->discard_changes;
     $mech->form_with_fields( 'status_update' );
     $mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
@@ -757,7 +758,7 @@ subtest "phone number is mandatory" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
     $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
     $mech->submit_form( with_fields => { phone => "" } );
-    $mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
+    $mech->content_contains( 'Diese Information wird benötigt' );
     $mech->log_out_ok;
 };
 
@@ -774,7 +775,7 @@ subtest "phone number is not mandatory for reports from mobile apps" => sub {
     });
     my $res = $mech->response;
     ok $res->header('Content-Type') =~ m{^application/json\b}, 'response should be json';
-    unlike $res->content, qr/Diese Information wird ben&ouml;tigt/, 'response should not contain phone error';
+    unlike $res->content, qr/Diese Information wird benötigt/, 'response should not contain phone error';
     # Clear out the mailq
     $mech->clear_emails_ok;
 };
@@ -861,7 +862,7 @@ subtest "test stats" => sub {
     is $mech->res->code, 200, "superuser should be able to see stats page";
 
     $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 3');
-    $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 3');
+    $mech->content_contains('Innerhalb von fünf Arbeitstagen abgeschlossen: 3');
     # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
     # diag Dumper(\@data); use Data::Dumper;
 

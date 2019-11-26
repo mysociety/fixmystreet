@@ -3,14 +3,14 @@
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
 
-    problem_title = problem.title_safe _ ' - ' _ loc('Viewing a problem');
+    problem_title = tprintf('%s - %s', problem.title_safe, loc('Viewing a problem'));
     INCLUDE 'header.html'
         title = problem_title
         rss = [ tprintf(loc('Updates to this problem, %s', "%s is the site name"), site_name), "/rss/$problem.id" ]
         robots = 'index, nofollow';
 %]
 
-[% map_html %]
+[% map_html | safe %]
 </div>
 
 <div id="map_sidebar">
@@ -66,7 +66,7 @@
 
   </div>
 
-  [% second_column %]
+  [% second_column | safe %]
 
 [% IF two_column_sidebar %]
   </div>

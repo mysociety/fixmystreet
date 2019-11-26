@@ -4,18 +4,18 @@
     <div class="admin-hint">
       <p>[% loc("The role's <strong>name</strong> is used to refer to this group of permissions elsewhere in the admin.") %]</p>
     </div>
-    [% form.field('name').render %]
+    [% form.field('name').render | safe %]
 
   [% IF form.field('body').is_active %]
-    [% form.field('body').render %]
+    [% form.field('body').render | safe %]
   [% END %]
 
     <div class="admin-hint">
       <p>[% loc("Users with this role can perform the following actions within their assigned body or area.") %]</p>
     </div>
-    [% form.field('permissions').render %]
+    [% form.field('permissions').render | safe %]
 
-    [% form.field('submit').render %]
+    [% form.field('submit').render | safe %]
 
     <p>
         <input class="btn" type="submit" name="submit" value="[% loc('Save changes') %]">

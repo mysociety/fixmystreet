@@ -9,7 +9,7 @@
         title = tprintf(loc('%s - Summary reports'), body.name)
 %]
 
-[% map_html %]
+[% map_html | safe %]
 
 </div>
 <div id="map_sidebar">

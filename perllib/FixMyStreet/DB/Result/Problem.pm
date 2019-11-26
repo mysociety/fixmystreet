@@ -201,6 +201,8 @@ use Moo;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
 use FixMyStreet::Map::FMS;
+use FixMyStreet::Template;
+use FixMyStreet::Template::SafeString;
 use LWP::Simple qw($ua);
 use RABX;
 use URI;
@@ -669,16 +671,16 @@ sub body {
             my $cache = $problem->result_source->schema->cache;
             return $cache->{bodies}{$problem->external_body} //= $c->model('DB::Body')->find({ id => $problem->external_body });
         } else {
-            $body = $problem->external_body;
+            $body = FixMyStreet::Template::html_filter($problem->external_body);
         }
     } else {
         my $bodies = $problem->bodies;
         my @body_names = sort map {
             my $name = $_->name;
             if ($c and FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS')) {
-                '<a href="' . $_->url . '">' . $name . '</a>';
+                '<a href="' . $_->url . '">' . FixMyStreet::Template::html_filter($name) . '</a>';
             } else {
-                $name;
+                FixMyStreet::Template::html_filter($name);
             }
         } values %$bodies;
         if ( scalar @body_names > 2 ) {
@@ -688,7 +690,7 @@ sub body {
             $body = join( _(' and '), @body_names);
         }
     }
-    return $body;
+    return FixMyStreet::Template::SafeString->new($body);
 }
 
 
@@ -778,17 +780,20 @@ sub can_display_external_id {
     return 0;
 }
 
+# This can return HTML and is safe, so returns a FixMyStreet::Template::SafeString
 sub duration_string {
     my ( $problem, $c ) = @_;
     my $body = $c->cobrand->call_hook(link_to_council_cobrand => $problem) || $problem->body($c);
     my $handler = $c->cobrand->call_hook(get_body_handler_for_problem => $problem);
     if ( $handler && $handler->call_hook('is_council_with_case_management') ) {
-        return sprintf(_('Received by %s moments later'), $body);
+        my $s = sprintf(_('Received by %s moments later'), $body);
+        return FixMyStreet::Template::SafeString->new($s);
     }
     return unless $problem->whensent;
-    return sprintf(_('Sent to %s %s later'), $body,
+    my $s = sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
+    return FixMyStreet::Template::SafeString->new($s);
 }
 
 sub local_coords {

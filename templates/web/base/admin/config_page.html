@@ -51,7 +51,12 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE just_value value="ALLOWED_COBRANDS" conf = allowed_conf %]
 <tr>
 <td>Web templates</td>
-<td colspan=2>[% c.cobrand.path_to_web_templates.join('<br>') %]</td>
+<td colspan=2>
+    [% FOR path IN c.cobrand.path_to_web_templates %]
+        [% path %]
+        [% IF NOT loop.last %]<br>[% END %]
+    [% END %]
+</td>
 </tr>
 [% INCLUDE with_cobrand value="MAP_TYPE" cob=c.cobrand.map_type %]
 [% INCLUDE with_cobrand value="EXAMPLE_PLACES"

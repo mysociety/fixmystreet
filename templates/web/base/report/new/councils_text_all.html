@@ -6,14 +6,14 @@
 
     tprintf(
         loc('These will be sent to <strong>%s</strong> and also published online for others to see, in accordance with our <a href="%s">privacy policy</a>.'),
-        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' ), c.cobrand.privacy_policy_url
+        mark_safe(list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )), c.cobrand.privacy_policy_url
     );
 
 ELSE;
 
     tprintf(
         loc('These will be sent to <strong>%s</strong> but not published online.'),
-        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+        mark_safe(list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' ))
     );
 
 END %]

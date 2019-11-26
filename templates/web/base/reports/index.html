@@ -25,7 +25,7 @@
         <h2>[% loc('All time') %]</h2>
         <div class="labelled-line-chart">
             <canvas id="chart-all-reports" width="600" height="300"
-                data-labels="[&quot;[% problem_periods.join('&quot;,&quot;') %]&quot;]"
+                data-labels="[[% FOR period IN problem_periods %]&quot;[% period %]&quot;[% IF NOT loop.last %],[% END %][% END %]]"
                 data-values-reports="[[% problems_reported_by_period.join(',') %]]"
                 data-values-fixed="[[% problems_fixed_by_period.join(',') %]]"
                 ></canvas>

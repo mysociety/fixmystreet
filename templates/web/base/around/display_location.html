@@ -57,7 +57,7 @@
     [% END %]
 [% END %]
 
-    [% map_html %]
+    [% map_html | safe %]
 
     [% IF c.req.params.no_pins %]
         <a class="big-hide-pins-link" rel='nofollow' href="[% c.uri_with( { no_pins => 0 } ) %]">[% loc('Show pins') %]</a>
@@ -66,7 +66,7 @@
     [% END %]
 
         <p class="sub-map-links" id='sub_map_links'>
-            [% map_sub_links %]
+            [% map_sub_links | safe %]
             [% IF c.req.params.no_pins %]
                 <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => 0 } ) %]">[% loc('Show pins') %]</a>
             [% ELSE %]

@@ -35,7 +35,7 @@
 
   [% IF errors %]
     <div class="fms-admin-warning">
-        [% errors.values.join('<br>') %]
+        [% FOR error IN errors.values %][% error %][% IF NOT loop.last %]<br>[% END %][% END %]
     </div>
   [% END %]
 

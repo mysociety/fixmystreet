@@ -74,6 +74,7 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FLKiZELcfBcc9VwHU2MZYQ
 
 use Moo;
+use FixMyStreet::Template::SafeString;
 use Text::Diff;
 use Data::Dumper;
 
@@ -147,11 +148,12 @@ sub compare_photo {
         push @deleted, $diff->Items(1);
         push @added, $diff->Items(2);
     }
-    return (join ', ', map {
+    my $s = (join ', ', map {
             "<del style='background-color:#fcc'>$_</del>";
         } @deleted) . (join ', ', map {
             "<ins style='background-color:#cfc'>$_</ins>";
         } @added);
+    return FixMyStreet::Template::SafeString->new($s);
 }
 
 sub compare_extra {
@@ -212,7 +214,7 @@ sub string_diff {
             $string .= $inserted;
         }
     }
-    return $string;
+    return FixMyStreet::Template::SafeString->new($string);
 }
 
 1;

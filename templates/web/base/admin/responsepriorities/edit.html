@@ -4,22 +4,22 @@
 
 <form method="post" accept-charset="utf-8" class="validate">
 
-    [% form.field('name').render %]
-    [% form.field('description').render %]
+    [% form.field('name').render | safe %]
+    [% form.field('description').render | safe %]
 
     <div class="admin-hint">
       <p>
         [% loc('If this priority is passed to an external service (e.g. Exor/Confirm) enter the priority code to use with that service here.') %]
       </p>
     </div>
-    [% form.field('external_id').render %]
+    [% form.field('external_id').render | safe %]
 
     <div class="admin-hint">
       <p>
         [% loc('Select if this is the default priority') %]
       </p>
     </div>
-    [% form.field('is_default').render %]
+    [% form.field('is_default').render | safe %]
 
     <fieldset>
         <legend>
@@ -31,10 +31,10 @@
             [% loc('Categories:') %]
         </legend>
         [%# TODO Select all/none %]
-        [% form.field('contacts').render %]
+        [% form.field('contacts').render | safe %]
     </fieldset>
 
-    [% form.field('deleted').render %]
+    [% form.field('deleted').render | safe %]
 
     <p>
       <input type="hidden" name="token" value="[% csrf_token %]" >

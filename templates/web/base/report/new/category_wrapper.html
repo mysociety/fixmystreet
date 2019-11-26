@@ -21,7 +21,7 @@
 
 [% IF disable_form_message %]
 <div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">
-    [% disable_form_message %]
+    [% disable_form_message | safe %]
 </div>
 [% ELSE %]
 <div id="js-post-category-messages" class="js-hide-if-invalid-category_extras">

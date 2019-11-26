@@ -1,23 +1,23 @@
 [% SET start = c.config.ADMIN_BASE_URL IF admin -%]
 <div class="noscript">
     <div id="[% nsm_prefix %]drag">
-        <[% map.img_type %]
+        <[% map.img_type | safe %]
             alt="NW map tile" id="[% nsm_prefix %]t2.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile - 1 %]"
             src="[% map.tiles.0 %]"
             style="top:0; left:0;">
-        <[% map.img_type %]
+        <[% map.img_type | safe %]
             alt="NE map tile" id="[% nsm_prefix %]t2.3"
             name="tile_[% map.x_tile %].[% map.y_tile - 1 %]"
             src="[% map.tiles.1 %]"
             style="top:0px; left:256px;">
         <br>
-        <[% map.img_type %]
+        <[% map.img_type | safe %]
             alt="SW map tile" id="[% nsm_prefix %]t3.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile %]"
             src="[% map.tiles.2 %]"
             style="top:256px; left:0;">
-        <[% map.img_type %]
+        <[% map.img_type | safe %]
             alt="SE map tile" id="[% nsm_prefix %]t3.3"
             name="tile_[% map.x_tile %].[% map.y_tile %]"
             src="[% map.tiles.3 %]"

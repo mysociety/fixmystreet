@@ -34,4 +34,4 @@ document.getElementById('preload_base_css').onload = function(){this.onload=null
     <link rel="stylesheet" href="[% layout_css %]">
 <![endif]-->
 
-[% extra_css %]
+[% extra_css | safe %]

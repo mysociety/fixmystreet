@@ -4,6 +4,7 @@ use Moose;
 use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
+use utf8;
 use Encode;
 use List::MoreUtils qw(uniq);
 use List::Util 'first';
@@ -895,7 +896,7 @@ sub process_user : Private {
             oauth_report => { $report->get_inflated_columns }
         };
         unless ( $c->forward( '/auth/sign_in', [ $params{username} ] ) ) {
-            $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the &lsquo;No&rsquo; section of the form.');
+            $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the ‘No’ section of the form.');
             return 1;
         }
         my $user = $c->user->obj;

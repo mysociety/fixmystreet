@@ -7,6 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use MIME::Base64;
 use mySociety::EmailUtil;
 use FixMyStreet::Email;
+use FixMyStreet::Template::SafeString;
 
 =head1 NAME
 
@@ -253,8 +254,9 @@ generally required to stash
 sub setup_request : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{contact_email} = $c->cobrand->contact_email;
-    $c->stash->{contact_email} =~ s/\@/&#64;/;
+    my $email = $c->cobrand->contact_email;
+    $email =~ s/\@/&#64;/;
+    $c->stash->{contact_email} = FixMyStreet::Template::SafeString->new($email);
 
     for my $param (qw/em subject message/) {
         $c->stash->{$param} = $c->get_param($param);

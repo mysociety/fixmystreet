@@ -5,7 +5,7 @@
                 [%- FOR tile IN row -%]
                     [%- top_px = tile.row_offset * map.tile_size -%]
                     [%- left_px = tile.col_offset * map.tile_size %]
-                    <[% map.img_type %]
+                    <[% map.img_type | safe %]
                         class="square-map__tile"
                         alt="[% tile.alt %]"
                         id="[% nsm_prefix %]t[% tile.dotted_id %]"

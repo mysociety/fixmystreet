@@ -24,7 +24,7 @@
                     <a href="#main-nav" id="nav-link">Main Navigation</a>
                 </div>
             </header>
-            [% pre_container_extra %]
+            [% pre_container_extra | safe %]
 
             <div class="container">
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">

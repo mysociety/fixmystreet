@@ -6,7 +6,7 @@
 %]
 
 [% IF problems.size %]
-    [% map_html %]
+    [% map_html | safe %]
     </div>
     <div id="map_sidebar">
         <div id="side">

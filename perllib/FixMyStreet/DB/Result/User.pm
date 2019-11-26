@@ -449,8 +449,8 @@ sub has_permission_to {
     return 0 unless $available{$permission_type};
 
     return 1 if $self->is_superuser;
-    return 0 if !$body_ids || (ref $body_ids && !@$body_ids);
-    $body_ids = [ $body_ids ] unless ref $body_ids;
+    return 0 if !$body_ids || (ref $body_ids eq 'ARRAY' && !@$body_ids);
+    $body_ids = [ $body_ids ] unless ref $body_ids eq 'ARRAY';
     my %body_ids = map { $_ => 1 } @$body_ids;
 
     foreach (@{$self->body_permissions}) {

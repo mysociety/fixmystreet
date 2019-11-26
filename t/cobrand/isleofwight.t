@@ -425,7 +425,7 @@ subtest "check not responsible as correct text" => sub {
         $mech->get_ok('/report/' . $p->id);
     };
 
-    $mech->content_contains("not Island Roads' responsibility", "not reponsible message contains correct text");
+    $mech->content_contains("not Island Roads&#39; responsibility", "not reponsible message contains correct text");
     $p->comments->delete;
     $p->delete;
 };

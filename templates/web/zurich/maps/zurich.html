@@ -7,7 +7,7 @@
 [% INCLUDE maps/wmts_config.html %]
 [% UNLESS around_page %]
 <p class="sub-map-links" id="sub_map_links">
-     [% map_sub_links %]
+     [% map_sub_links | safe %]
 </p>
 [% END %]
 [% END %]

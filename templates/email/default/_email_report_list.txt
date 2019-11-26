@@ -1,4 +1,4 @@
-[% FOR report IN data -%]
+[% FOR report IN data %]
 [% cobrand.base_url_for_report(report) %]/report/[% report.id %] - [% report.title %]
 
 [% report.nearest ~%]

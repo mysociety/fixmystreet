@@ -98,12 +98,12 @@
     [%# We don't want to output shortlist on report page (in duplicate list) %]
   [% ELSIF page == 'around' ~%]
     [%# The around page list is already contained within the new report form %]
-    [% item_action.replace('("shortlist-[^"]*)', '$1-' _ problem.id) %]
+    [% item_action.replace('("shortlist-[^"]*)', '$1-' _ problem.id) | safe %]
   [% ELSE ~%]
     <form method="post" action="/my/planned/change">
         <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="token" value="[% csrf_token %]">
-        [% item_action %]
+        [% item_action | safe %]
     </form>
   [% END ~%]
 [% END %]

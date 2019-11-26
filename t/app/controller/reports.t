@@ -139,7 +139,7 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/reports/Birmingham/Bordesley+and+Highgate';
         $mech->get_ok('/reports/Birmingham/Bordesley+and+Highgate|Birchfield');
         is $mech->uri->path, '/reports/Birmingham/Bordesley+and+Highgate%7CBirchfield';
-        $mech->content_contains('Birchfield, Bordesley & Highgate');
+        $mech->content_contains('Birchfield, Bordesley &amp; Highgate');
     };
 
     $mech->get_ok('/reports/Westminster');

@@ -14,7 +14,7 @@
         rss = [ tprintf(loc('Problems within %s, %s', "First %s is the body name, second %s the site name"), name, site_name), rss_url ]
 %]
 
-[% map_html %]
+[% map_html | safe %]
 
 </div>
 <div id="map_sidebar">

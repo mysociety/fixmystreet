@@ -6,6 +6,9 @@ use warnings;
 use FixMyStreet;
 use mySociety::Locale;
 use Attribute::Handlers;
+use FixMyStreet::Template::SafeString;
+use FixMyStreet::Template::Context;
+use FixMyStreet::Template::Stash;
 
 my %FILTERS;
 my %SUBS;
@@ -39,6 +42,8 @@ sub new {
     my ($class, $config) = @_;
     $config->{FILTERS}->{$_} = $FILTERS{$_} foreach keys %FILTERS;
     $config->{ENCODING} = 'utf8';
+    $config->{STASH} = FixMyStreet::Template::Stash->new($config);
+    $config->{CONTEXT} = FixMyStreet::Template::Context->new($config);
     $class->SUPER::new($config);
 }
 
@@ -57,7 +62,8 @@ Passes the text to the localisation engine for translations.
 =cut
 
 sub loc : Fn {
-    return _(@_);
+    my $s = _(@_);
+    return FixMyStreet::Template::SafeString->new($s);
 }
 
 =head2 nget
@@ -69,7 +75,7 @@ Use first or second string depending on the number.
 =cut
 
 sub nget : Fn {
-    return mySociety::Locale::nget(@_);
+    return FixMyStreet::Template::SafeString->new(mySociety::Locale::nget(@_));
 }
 
 =head2 file_exists
@@ -104,6 +110,12 @@ sub html_filter : Filter('html') {
     return $text;
 }
 
+sub conditional_escape {
+    my $text = shift;
+    $text = html_filter($text) unless UNIVERSAL::isa($text, 'FixMyStreet::Template::SafeString');
+    return $text;
+}
+
 =head2 html_paragraph
 
 Same as Template Toolkit's html_paragraph, but converts single newlines
@@ -113,10 +125,11 @@ into <br>s too.
 
 sub html_paragraph : Filter('html_para') {
     my $text = shift;
+    $text = conditional_escape($text);
     my @paras = grep { $_ } split(/(?:\r?\n){2,}/, $text);
     s/\r?\n/<br>\n/g for @paras;
     $text = "<p>\n" . join("\n</p>\n\n<p>\n", @paras) . "</p>\n";
-    return $text;
+    return FixMyStreet::Template::SafeString->new($text);
 }
 
 1;

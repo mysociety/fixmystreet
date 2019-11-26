@@ -4,6 +4,7 @@
     - Security:
         - Fix XSS vulnerability in pagination page number.
         - Rotate session ID after successful login.
+        - Switch to auto-escaping of all template variables (see below).
     - Front end improvements:
         - Improved 403 message, especially for private reports. #2511
         - Mobile users can now filter the pins on the `/around` map view. #2366
@@ -77,6 +78,10 @@
         - Add support for account_id parameter to POST Service Request calls.
         - Do not overwrite/remove protected meta data. #2598
         - Spot multiple groups inside a <groups> element.
+    - Backwards incompatible changes:
+        - The FixMyStreet templating code will now escape all variables by
+          default. If you need to output HTML in a variable directly, you will
+          need to escape it with the `safe` filter, e.g. `[% some_html | safe %]`.
 
 * v2.6 (3rd May 2019)
     - New features:

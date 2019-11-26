@@ -26,7 +26,7 @@
 
   <p id="rss_local_alt">
   [% SET distance_options = '<a href="' _ rss_feed_2k _ ' ">2km</a> / <a href="' _ rss_feed_5k _ ' ">5km</a> / <a href="' _ rss_feed_10k _ '">10km</a> / <a href="' _ rss_feed_20k _ '">20km</a>' %]
-  [% tprintf(loc('(we also have RSS feeds for problems within %s)', "%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]"), distance_options) %]
+  [% tprintf(loc('(we also have RSS feeds for problems within %s)', "%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]"), mark_safe(distance_options)) %]
   </p>
 
   [% FOREACH option IN options %]

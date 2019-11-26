@@ -30,7 +30,7 @@
     <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
 
   [% IF report.used_map %]
-    [% map_html %]
+    [% map_html | safe %]
     </div>
     <div id="map_sidebar">
         <div id="side-form">

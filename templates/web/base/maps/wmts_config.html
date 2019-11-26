@@ -3,12 +3,12 @@
   fixmystreet.wmts_config = {
         'map_projection': '[% map.map_projection %]',
         'tile_dpi': [% map.tile_dpi %],
-        'tile_urls': [% map.tile_urls %],
+        'tile_urls': [% map.tile_urls | safe %],
         'tile_suffix': '[% map.tile_suffix %]',
-        'layer_names': [% map.layer_names %],
+        'layer_names': [% map.layer_names | safe %],
         'layer_style': '[% map.layer_style %]',
         'matrix_set': '[% map.matrix_set %]',
-        'scales': [% map.scales %],
+        'scales': [% map.scales | safe %],
         'origin_x': [% map.origin_x %],
         'origin_y': [% map.origin_y %]
   };

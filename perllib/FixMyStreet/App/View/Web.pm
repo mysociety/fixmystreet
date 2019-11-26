@@ -6,6 +6,7 @@ use warnings;
 
 use FixMyStreet;
 use FixMyStreet::Template;
+use FixMyStreet::Template::SafeString;
 use Utils;
 
 __PACKAGE__->config(
@@ -19,6 +20,7 @@ __PACKAGE__->config(
         'tprintf', 'prettify_dt',
         'version', 'decode',
         'prettify_state',
+        'mark_safe',
     ],
     FILTERS => {
         add_links => \&add_links,
@@ -59,7 +61,15 @@ sprintf (different name to avoid clash)
 sub tprintf {
     my ( $self, $c, $format, @args ) = @_;
     @args = @{$args[0]} if ref $args[0] eq 'ARRAY';
-    return sprintf $format, @args;
+    #$format = $format->plain if UNIVERSAL::isa($format, 'Template::HTML::Variable');
+    my $s = sprintf $format, @args;
+    return FixMyStreet::Template::SafeString->new($s);
+}
+
+sub mark_safe {
+    my ($self, $c, $s) = @_;
+    $s = $s->plain if UNIVERSAL::isa($s, 'FixMyStreet::Template::Variable');
+    return FixMyStreet::Template::SafeString->new($s);
 }
 
 =head2 Utils::prettify_dt
@@ -82,16 +92,16 @@ sub prettify_dt {
 
     [% text | add_links | html_para %]
 
-Add some links to some text (and thus HTML-escapes the other text.
+Add some links to some text (and thus HTML-escapes the other text).
 
 =cut
 
 sub add_links {
     my $text = shift;
+    $text = FixMyStreet::Template::conditional_escape($text);
     $text =~ s/\r//g;
-    $text = FixMyStreet::Template::html_filter($text);
     $text =~ s{(https?://)([^\s]+)}{"<a href=\"$1$2\">$1" . _space_slash($2) . '</a>'}ge;
-    return $text;
+    return FixMyStreet::Template::SafeString->new($text);
 }
 
 sub _space_slash {
@@ -113,7 +123,7 @@ sub markup_factory {
         my $text = shift;
         return $text unless $user && ($user->from_body || $user->is_superuser);
         $text =~ s{\*(\S.*?\S)\*}{<i>$1</i>};
-        $text;
+        FixMyStreet::Template::SafeString->new($text);
     }
 }
 

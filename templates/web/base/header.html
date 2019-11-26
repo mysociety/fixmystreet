@@ -4,9 +4,9 @@
     # SET html_att = html_att _ ' dir="rtl"';
 -%]
 <!doctype html>
-<!--[if IE 8]>   <html class="no-js ie8"[% html_att %]><![endif]-->
-<!--[if IE 9]>   <html class="no-js ie9"[% html_att %]><![endif]-->
-<!--[if gt IE 9]><!--><html class="no-js"[% html_att %]
+<!--[if IE 8]>   <html class="no-js ie8"[% html_att | safe %]><![endif]-->
+<!--[if IE 9]>   <html class="no-js ie9"[% html_att | safe %]><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"[% html_att | safe %]
 [% IF appcache ~%]
  manifest="/offline/appcache.manifest"
 [%~ END %]><!--<![endif]-->
@@ -32,7 +32,7 @@
         <div class="table-cell">
             [% INCLUDE 'header_site.html' %]
 
-            [% pre_container_extra %]
+            [% pre_container_extra | safe %]
 
             <div class="container">
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">

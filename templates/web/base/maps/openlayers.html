@@ -33,10 +33,13 @@
 <div id="map_box" aria-hidden="true">
     [% pre_map %]
     <div id="map">
-      [% DEFAULT noscript_map_template = 'maps/noscript_map.html' %]
-      [% INCLUDE $noscript_map_template js = 1 %]
+      [% IF noscript_map_template == 'maps/noscript_map_wmts.html' %]
+          [% INCLUDE 'maps/noscript_map_wmts.html' js = 1 %]
+      [% ELSE %]
+          [% INCLUDE 'maps/noscript_map.html' js = 1 %]
+      [% END %]
     </div>
     [% IF map.copyright %]
-    <div class="olControlAttribution" style="position: absolute;">[% map.copyright %]</div>
+    <div class="olControlAttribution" style="position: absolute;">[% map.copyright | safe %]</div>
     [% END %]
     <img id="loading-indicator" class="hidden" aria-hidden="true" src="/i/loading.svg" alt="Loading...">

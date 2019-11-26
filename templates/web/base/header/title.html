@@ -1,4 +1,4 @@
 <title>
-    [% "$title :: " | html IF title %]
+    [% tprintf('%s :: ', title) IF title %]
     [% site_name -%]
 </title>

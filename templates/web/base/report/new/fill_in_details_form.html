@@ -26,7 +26,7 @@
     <p class="form-error">[% loc('Sorry, we could not log you in. Please fill in the form below.') %]</p>
 [% END %]
 
-[% sidebar_html %]
+[% sidebar_html | safe %]
 
 [% INCLUDE 'errors.html' %]
 

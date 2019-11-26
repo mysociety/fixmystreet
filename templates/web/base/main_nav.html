@@ -4,11 +4,11 @@
     SET ul_class="nav-menu nav-menu--main" UNLESS ul_class.defined;
 %]
 [% BLOCK navitem ~%]
-    <li [% liattrs %]>
+    <li [% liattrs | safe %]>
       [%~ IF c.req.uri.path == uri AND NOT always_url ~%]
-          <span [% attrs %]>[% label %]</span>
+          <span [% attrs | safe %]>[% label %]</span>
       [%~ ELSE ~%]
-          <a href="[% uri %][% suffix IF suffix %]" [% attrs %]>[% label %]</a>
+          <a href="[% uri %][% suffix IF suffix %]" [% attrs | safe %]>[% label %]</a>
       [%~ END ~%]
     </li>
 [%~ END %]

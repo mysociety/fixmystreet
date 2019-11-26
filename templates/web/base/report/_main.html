@@ -48,7 +48,7 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
   [% END %]
 
   [% FOR error IN moderate_errors %]
-    <p class="form-error js-moderation-error">[% error %]</p>
+    <p class="form-error js-moderation-error">[% error | safe %]</p>
   [% END %]
 
   [% IF can_moderate_title %]
