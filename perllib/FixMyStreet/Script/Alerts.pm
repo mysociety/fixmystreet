@@ -97,7 +97,7 @@ sub send() {
                     !( $last_problem_state eq '' && $row->{item_problem_state} eq 'confirmed' ) &&
                     $last_problem_state ne $row->{item_problem_state}
                 ) {
-                    my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand);
+                    my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand->moniker);
 
                     my $update = _('State changed to:') . ' ' . $state;
                     $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
