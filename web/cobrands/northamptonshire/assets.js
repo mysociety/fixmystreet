@@ -333,11 +333,13 @@ var layers = [
 },
 {
   "categories": [
-    "Fallen Tree"
+      "Fallen Tree",
+      "Restricted Visibility / Overgrown / Overhanging",
+      "Restricted Visibility"
   ],
   "layer_name": "Tree",
-  "layer": is_live ? 307 : 228,
-  "version": is_live ? "307.6-" : "228.24-"
+  "layer": 307,
+  "version": "307.7-"
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
@@ -532,6 +534,7 @@ fixmystreet.assets.add(northants_road_defaults, {
         "Icy Footpath",
         "Icy Road",
         "Missed published Gritted Route",
+        "Fallen Tree",
         "Restricted Visibility / Overgrown / Overhanging",
         "Restricted Visibility"
     ]
