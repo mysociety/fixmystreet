@@ -337,6 +337,8 @@ foreach my $test (
     };
 }
 
+my $hart = $mech->create_body_ok(2333, 'Hart');
+
 my $ward_alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {
         user => $user,
@@ -351,7 +353,7 @@ my $ward_alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
 my $report_to_council = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
-        bodies_str         => '2434',
+        bodies_str         => $hart->id,
         areas              => ',105255,11806,11828,2247,2504,7117,',
         category           => 'Other',
         title              => 'council report',
@@ -375,7 +377,7 @@ my $report_to_council = FixMyStreet::DB->resultset('Problem')->find_or_create(
 my $report_to_county_council = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
-        bodies_str         => '2240',
+        bodies_str         => '2227',
         areas              => ',105255,11806,11828,2247,2504,7117,',
         category           => 'Other',
         title              => 'county report',
@@ -430,21 +432,22 @@ subtest "check alerts from cobrand send main site url for alerts for different c
     )->delete;
 
     FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['hart', 'fixmystreet'],
+        BASE_URL => 'https://national.example.org',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         FixMyStreet::DB->resultset('AlertType')->email_alerts();
+
+        my $body = $mech->get_text_body_from_email;
+
+        my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
+        my $expected3 = FixMyStreet->config('BASE_URL') . '/report/' . $report_outside_district->id;
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
+        my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
+        like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
+        like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
+        like $body, qr#$expected3#, 'report outside district report point to fixmystreet.com';
     };
-
-    my $body = $mech->get_text_body_from_email;
-
-    my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
-    my $expected3 = FixMyStreet->config('BASE_URL') . '/report/' . $report_outside_district->id;
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
-    my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
-
-    like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
-    like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
-    like $body, qr#$expected3#, 'report outside district report point to fixmystreet.com';
 };
 
 
