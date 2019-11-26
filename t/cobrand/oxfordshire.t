@@ -1,6 +1,7 @@
 use Test::MockModule;
 
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Alerts;
 my $mech = FixMyStreet::TestMech->new;
 
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
@@ -58,6 +59,49 @@ subtest 'can use customer reference to search for reports' => sub {
 
         $mech->get_ok('/around?pc=ENQ12456');
         is $mech->uri->path, '/report/' . $problem->id, 'redirects to report';
+    };
+};
+
+my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
+my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
+
+subtest 'check unable to fix label' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $problem = $problems[0];
+        $problem->state( 'unable to fix' );
+        $problem->update;
+
+        my $alert = FixMyStreet::DB->resultset('Alert')->create( {
+            parameter  => $problem->id,
+            alert_type => 'new_updates',
+            cobrand    => 'oxfordshire',
+            user       => $user,
+        } )->confirm;
+
+        FixMyStreet::DB->resultset('Comment')->create( {
+            problem_state => 'unable to fix',
+            problem_id => $problem->id,
+            user_id    => $user2->id,
+            name       => 'User',
+            mark_fixed => 'f',
+            text       => "this is an update",
+            state      => 'confirmed',
+            confirmed  => 'now()',
+            anonymous  => 'f',
+        } );
+
+
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('Investigation complete');
+
+        FixMyStreet::Script::Alerts::send();
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/Investigation complete/, 'state correct in email';
     };
 };
 
