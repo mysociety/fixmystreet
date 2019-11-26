@@ -69,8 +69,10 @@ sub edit : Path : Args(2) {
         category => $_->category_display,
         active => $active_contacts{$_->id},
         email => $_->email,
+        group => $_->get_extra_metadata('group') // '',
     } } @live_contacts;
     $c->stash->{contacts} = \@all_contacts;
+    $c->forward('/report/stash_category_groups', [ \@all_contacts, 1 ]) if $c->cobrand->enable_category_groups;
 
     # bare block to use 'last' if form is invalid.
     if ($c->req->method eq 'POST') { {

@@ -8,6 +8,7 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
+my $oxfordshirecontact2 = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Flytipping', email => 'flytipping@example.com' );
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Borough Council');
@@ -280,6 +281,50 @@ subtest "templates that set state and external_status_code can't be added" => su
     $mech->content_contains( 'State and external status code cannot be used simultaneously.' );
 
     is $oxfordshire->response_templates->count, 0, "Invalid response template wasn't added";
+};
+
+subtest "category groups are shown" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        COBRAND_FEATURES => {
+            category_groups => {
+                oxfordshire => 1,
+            },
+            multiple_category_groups => {
+                oxfordshire => 1,
+            },
+        },
+    }, sub {
+
+        $mech->log_in_ok( $superuser->email );
+
+        $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+        $mech->content_contains("No Group") or diag $mech->content;
+        $mech->content_lacks("Multiple Groups");
+        $mech->content_lacks("These categories appear in more than one group:");
+
+        $oxfordshirecontact->set_extra_metadata( group => [ 'Highways' ] );
+        $oxfordshirecontact->update;
+        $oxfordshirecontact2->set_extra_metadata( group => [ 'Street Cleaning' ] );
+        $oxfordshirecontact2->update;
+        $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+        $mech->content_lacks("No Group");
+        $mech->content_lacks("Multiple Groups");
+        $mech->content_lacks("These categories appear in more than one group:");
+        $mech->content_contains("Highways");
+        $mech->content_contains("Street Cleaning");
+
+        $oxfordshirecontact->set_extra_metadata( group => [ 'Highways', 'Roads & Pavements' ] );
+        $oxfordshirecontact->update;
+        $oxfordshirecontact2->set_extra_metadata( group => [ 'Street Cleaning' ] );
+        $oxfordshirecontact2->update;
+        $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+        $mech->content_lacks("No Group");
+        $mech->content_contains("Multiple Groups");
+        $mech->content_contains("These categories appear in more than one group:");
+        $mech->content_contains("Highways; Roads &amp; Pavements");
+        $mech->content_contains("Street Cleaning");
+    };
 };
 
 subtest "TfL cobrand only shows TfL templates" => sub {
