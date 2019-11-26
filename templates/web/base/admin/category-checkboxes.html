@@ -1,12 +1,4 @@
-<fieldset>
-  <legend>
-  [% IF hint %]
-    <div class="admin-hint">
-      <p>[% hint %]</p>
-    </div>
-  [% END %]
-    [% loc('Categories:') %]
-  </legend>
+[% BLOCK checkboxes %]
   <ul class="no-bullets no-margin">
     <li>
       [% loc('Select:') %]
@@ -18,8 +10,31 @@
         <label class="inline" title="[% contact.email | html %]">
           <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
           [% contact.category %]
+          [% IF contact.group.size > 1 %]<small>([% contact.group.join('; ') | html %])</small>[% END %]
         </label>
       </li>
     [% END %]
   </ul>
+[% END %]
+<fieldset>
+  <legend>
+  [% IF hint %]
+    <div class="admin-hint">
+      <p>[% hint %]</p>
+    </div>
+  [% END %]
+    [% loc('Categories:') %]
+  </legend>
+
+  [% IF category_groups %]
+    [% FOR group IN category_groups %]
+      <h3>[% ( group.name OR loc('No Group') ) | html %]</h3>
+      [% IF group.name == loc("Multiple Groups") %]
+        <small>[% loc('These categories appear in more than one group:') %]</small>
+      [% END %]
+      [% INCLUDE checkboxes contacts=group.categories %]
+    [% END %]
+  [% ELSE %]
+    [% INCLUDE checkboxes contacts=contacts %]
+  [% END %]
 </fieldset>
