@@ -12,11 +12,11 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">New updates on <a href="[% problem_url %]">[% category %] report</a></h1>
   [%~ INCLUDE '_email_comment_list.html' %]
   <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about this report</a></p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% title %]</h2>

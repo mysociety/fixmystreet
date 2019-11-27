@@ -10,7 +10,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Din rapport har blivit&nbsp;modererad</h1>
 [% IF types == 'hide' -%]
   <p style="[% p_style %]">Din rapport har dolts från sajten.</p>
@@ -22,7 +22,7 @@ INCLUDE '_email_top.html';
 [% END -%]
   <p style="[% p_style %]">Om du inte tycker att rapporten skulle ha blivit modererad kan du
 kontakta FixaMinGata:s support på <a href="[% report_complain_uri %]">[% report_complain_uri %]</a></p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = problem %]
     <h2 style="[% h2_style %]">[% problem.moderation_original_data.title | html %]</h2>

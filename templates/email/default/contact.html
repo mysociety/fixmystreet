@@ -13,7 +13,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% contact_meta_style %]">
-  <table [% table_reset %]>
+  <table [% table_reset | safe %]>
     <tr>
       <th style="[% contact_th_style %]">From</th>
       <td style="[% contact_td_style %]">

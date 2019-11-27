@@ -40,10 +40,13 @@ sub Fn : ATTR(CODE,BEGIN) {
 
 sub new {
     my ($class, $config) = @_;
+    my $disable_autoescape = delete $config->{disable_autoescape};
     $config->{FILTERS}->{$_} = $FILTERS{$_} foreach keys %FILTERS;
     $config->{ENCODING} = 'utf8';
-    $config->{STASH} = FixMyStreet::Template::Stash->new($config);
-    $config->{CONTEXT} = FixMyStreet::Template::Context->new($config);
+    if (!$disable_autoescape) {
+        $config->{STASH} = FixMyStreet::Template::Stash->new($config);
+        $config->{CONTEXT} = FixMyStreet::Template::Context->new($config);
+    }
     $class->SUPER::new($config);
 }
 

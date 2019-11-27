@@ -9,14 +9,14 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Your update has been&nbsp;logged</h1>
   <p style="[% p_style %]">Your update has been logged on [% site_name %].</p>
   [% TRY %][% INCLUDE '_council_reference.html' %][% CATCH file %][% END %]
   <p style="margin: 20px auto; text-align: center">
   <a style="[% button_style %]" href="[% cobrand.base_url_for_report(problem) %][% update.url %]">View my update</a>
   </p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html'
     object = update

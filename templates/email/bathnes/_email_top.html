@@ -51,7 +51,7 @@
   </style>
 </head>
 <body style="[% body_style %]">
-  <table [% wrapper_table %] style="[% wrapper_style %]">
+  <table [% wrapper_table | safe %] style="[% wrapper_style %]">
     <tr>
       <th class="spacer-cell"></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
@@ -60,11 +60,11 @@
       <th class="spacer-cell"></th>
     </tr>
   </table>
-  <table [% wrapper_table %] style="[% wrapper_style %]">
+  <table [% wrapper_table | safe %] style="[% wrapper_style %]">
     <tr>
       <th class="spacer-cell"></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %] min-width: [% wrapper_min_width %]px;" id="main">
-        <table [% table_reset %]>
+        <table [% table_reset | safe %]>
           <tr>
             <th id="header" colspan="[% email_columns %]" style="[% td_style %][% header_style %]">
               [%~ IF file_exists("web/cobrands/${ img_dir }/images/email-logo.gif") ~%]

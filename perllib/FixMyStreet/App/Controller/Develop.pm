@@ -142,6 +142,7 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
 
     # Look through the Email::MIME email for the text/html part, and any inline
     # images. Turn the images into data: URIs.
+    my $text = '';
     my $html = '';
     my %images;
     $email->walk_parts(sub {
@@ -151,6 +152,8 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
             (my $cid = $part->header('Content-ID')) =~ s/[<>]//g;
             (my $ct = $part->content_type) =~ s/;.*//;
             $images{$cid} = "$ct;base64," . $part->body_raw;
+        } elsif ($part->content_type =~ m[text/plain]i) {
+            $text = $part->body_str;
         } elsif ($part->content_type =~ m[text/html]i) {
             $html = $part->body_str;
         }
@@ -160,7 +163,12 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
         $html =~ s/cid:([^"]*)/data:$images{$1}/g;
     }
 
-    $c->response->body($html);
+    if ($c->get_param('text')) {
+        $c->response->header(Content_type => 'text/plain');
+        $c->response->body($text);
+    } else {
+        $c->response->body($html);
+    }
 }
 
 =item problem_confirm_previewer

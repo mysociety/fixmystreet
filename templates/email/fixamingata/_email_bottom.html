@@ -4,7 +4,7 @@
       <th></th>
     </tr>
   </table>
-  <table [% wrapper_table %] style="[% wrapper_style %]">
+  <table [% wrapper_table | safe %] style="[% wrapper_style %]">
     <tr>
       <th></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">

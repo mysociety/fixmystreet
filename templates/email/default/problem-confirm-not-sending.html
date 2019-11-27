@@ -10,7 +10,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Please confirm your&nbsp;report</h1>
   <p style="[% p_style %]">Please click on the link below to confirm that you want your report to appear
 on [% site_name %], despite not being sent to the
@@ -20,7 +20,7 @@ council.</p>
     <a style="[% button_style %]" href="[% token_url %]">Yes, publish my report</a>
   </p>
   <p style="[% p_style %]">If you no longer wish to publish this report, please take no further action.</p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>

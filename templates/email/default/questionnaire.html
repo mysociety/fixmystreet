@@ -11,7 +11,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Has your problem been&nbsp;fixed?</h1>
   <p style="[% p_style %]">[% created %] ago, you reported a problem using [% site_name %].</p>
   <p style="[% p_style %]">Help us keep [% site_name %] up to date by letting us know whether the problem has been fixed yet:</p>
@@ -23,7 +23,7 @@ INCLUDE '_email_top.html';
     <a style="[% dontknow_button_style %]" href="[% url %]?been_fixed=Unknown">Don’t know</a>
   </p>
   <p style="[% p_style %]">Thank you! Your feedback is really valuable.</p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report, url = url %]
     <h2 style="[% h2_style %]">[% title %]</h2>

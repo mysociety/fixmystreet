@@ -10,7 +10,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Bekräfta din uppdatering</h1>
   <p style="[% p_style %]">Vänligen klicka på knappen nedan för att bekräfta den uppdatering du just lämnade:</p>
   <p style="margin: 20px auto; text-align: center">
@@ -18,7 +18,7 @@ INCLUDE '_email_top.html';
   </p>
   <p style="[% p_style %]">[% INCLUDE 'update-confirm-donotsend.txt' %]</p>
   <p style="[% p_style %]">Om du inte vill bekräfta din uppdatering behöver du inte göra något.</p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html'
     object = update

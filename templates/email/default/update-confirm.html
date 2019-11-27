@@ -10,7 +10,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Please confirm your&nbsp;update</h1>
   <p style="[% p_style %]">Please click on the link below to confirm your update on [% site_name %].</p>
   <p style="margin: 20px auto; text-align: center">
@@ -18,7 +18,7 @@ INCLUDE '_email_top.html';
   </p>
   <p style="[% p_style %]">[% INCLUDE 'update-confirm-donotsend.txt' %]</p>
   <p style="[% p_style %]">If you no longer wish to confirm this update, please take no further action.</p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html'
     object = update

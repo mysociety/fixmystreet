@@ -1,4 +1,4 @@
-<table [% table_reset %]>
+<table [% table_reset | safe %]>
   <tr>
     <th style="[% td_style %] padding: [% column_padding %]px; background-color: [% color_yellow %]; color: [% color_black %];">
       <h2 style="[% h2_style %] margin-bottom: 15px;">
@@ -14,7 +14,7 @@
   </tr>
 </table>
 
-<table [% table_reset %] style="table-layout: fixed;">
+<table [% table_reset | safe %] style="table-layout: fixed;">
   <tr>
     <th style="[% submit_footer_td_style %] padding: [% column_padding %]px 40px 0 0;">
       <h2 style="[% submit_footer_h2_style %]">

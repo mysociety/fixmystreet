@@ -17,7 +17,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $c = ctx_request("/");
 
 # set some values in the stash
-$c->stash->{foo} = 'bar';
+$c->stash->{foo} = 'bar <b>bold</b>';
 
 # clear the email queue
 $mech->clear_emails_ok;
@@ -118,6 +118,14 @@ subtest 'Inline emails!' => sub {
            \ {10}\+\ text/plain.*\n
            \ {10}\+\ text/html.*\n
         \ {5}\+\ image/gif]x;
+    $email->walk_parts(sub {
+        my ($part) = @_;
+        if ($part->content_type =~ m[text/plain]i) {
+            like $part->body_str, qr/foo: bar <b>bold<\/b>/;
+        } elsif ($part->content_type =~ m[text/html]i) {
+            like $part->body_str, qr/foo: bar &lt;b&gt;bold&lt;\/b&gt;/;
+        }
+    });
     $mech->clear_emails_ok;
 };
 

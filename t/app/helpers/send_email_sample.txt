@@ -7,7 +7,7 @@ From: CONTACT_EMAIL
 
 Hello,
 
-This is a test email where foo: bar.
+This is a test email where foo: bar <b>bold</b>.
 
 utf8: =E6=88=91=E4=BB=AC=E5=BA=94=E8=AF=A5=E8=83=BD=E5=A4=9F=E6=97=A0=E7=BC=
 =9D=E5=A4=84=E7=90=86UTF8=E7=BC=96=E7=A0=81

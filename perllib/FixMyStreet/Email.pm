@@ -169,6 +169,7 @@ sub send_cron {
     push @include_path, FixMyStreet->path_to( 'templates', 'email', 'default' );
     my $tt = FixMyStreet::Template->new({
         INCLUDE_PATH => \@include_path,
+        disable_autoescape => 1,
     });
     $vars->{signature} = _render_template($tt, 'signature.txt', $vars);
     $vars->{site_name} = Utils::trim_text(_render_template($tt, 'site-name.txt', $vars));
@@ -178,6 +179,9 @@ sub send_cron {
         my @inline_images;
         $vars->{inline_image} = sub { add_inline_image(\@inline_images, @_) };
         $vars->{file_exists} = sub { -e FixMyStreet->path_to(@_) };
+        my $tt = FixMyStreet::Template->new({
+            INCLUDE_PATH => \@include_path,
+        });
         $hdrs->{_html_} = _render_template($tt, $html_template, $vars);
         $hdrs->{_html_images_} = \@inline_images;
     }

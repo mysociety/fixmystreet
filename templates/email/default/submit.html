@@ -11,7 +11,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">New problem in your&nbsp;area</h1>
   <p style="[% p_style %]">[% missing %][% multiple %]A user of [% site_name %] has submitted the following report
 of a local problem that they believe might require your attention.</p>
@@ -20,7 +20,7 @@ of a local problem that they believe might require your attention.</p>
     <a style="[% button_style %]" href="[% url %]">Show full report</a>
   </p>
   <h2 style="[% h2_style %] margin: 30px 0 10px 0">Reported by:</h2>
-  <table [% table_reset %]>
+  <table [% table_reset | safe %]>
     <tr>
       <th style="[% contact_th_style %]">Name</th>
       <td style="[% contact_td_style %]">[% report.name | html %]</td>
@@ -43,7 +43,7 @@ of a local problem that they believe might require your attention.</p>
     [%~ END %]
   </table>
   <p style="[% p_style %] margin-top: 0.5em;">Replies to this message will go directly to [% report.name | html %], the user who reported the problem.</p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>

@@ -371,8 +371,8 @@ sub construct_email {
         %$extra_stash_values,
         additional_template_paths => \@include_path,
     };
-    $vars->{site_name} = Utils::trim_text($c->view('Email')->render($c, 'site-name.txt', $vars));
-    $vars->{signature} = $c->view('Email')->render($c, 'signature.txt', $vars);
+    $vars->{site_name} = Utils::trim_text($c->view('EmailText')->render($c, 'site-name.txt', $vars));
+    $vars->{signature} = $c->view('EmailText')->render($c, 'signature.txt', $vars);
 
     return if FixMyStreet::Email::is_abuser($c->model('DB')->schema, $vars->{to});
 
@@ -386,7 +386,7 @@ sub construct_email {
     $c->log->debug("Error compiling HTML $template: $@") if $@;
 
     my $data = {
-        _body_ => $c->view('Email')->render( $c, $template, $vars ),
+        _body_ => $c->view('EmailText')->render( $c, $template, $vars ),
         _attachments_ => $extra_stash_values->{attachments},
         From => $vars->{from},
         To => $vars->{to},

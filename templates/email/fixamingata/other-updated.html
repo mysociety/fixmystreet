@@ -9,13 +9,13 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Din uppdatering har&nbsp;loggats</h1>
   <p style="[% p_style %]">Din uppdatering har blivit loggad på [% site_name %]:</p>
   <p style="margin: 20px auto; text-align: center">
   <a style="[% button_style %]" href="[% cobrand.base_url_for_report(problem) %][% problem.url %]#update_[% update.id %]">Visa min uppdatering</a>
   </p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html'
     object = update

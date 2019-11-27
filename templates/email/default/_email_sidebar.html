@@ -16,10 +16,10 @@ DEFAULT url = cobrand.base_url_for_report(report) _ report.url
   [% IF url %]
   <a href="[% url %]"><img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt=""></a>
   [% END %]
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
     [%~ IF object.photo %]
       <img style="[% preview_photo_style %]" src="[% inline_image(object.get_first_image_fp) %]" alt="" align="right">
     [%~ END %]
-    [%~ content %]
-  [% end_padded_box %]
+    [%~ content | safe %]
+  [% end_padded_box | safe %]
 </th>

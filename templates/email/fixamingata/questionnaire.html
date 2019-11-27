@@ -11,7 +11,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Har ditt problem blivit&nbsp;fixat?</h1>
   <p style="[% p_style %]">[% created %] sedan lämnade du en rapport på FixaMinGata.</p>
   <p style="[% p_style %]">För att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde informera oss om huruvida problemet har blivit fixat än:</p>
@@ -23,7 +23,7 @@ INCLUDE '_email_top.html';
     <a style="[% dontknow_button_style %]" href="[% url %]?been_fixed=Unknown">Vet ej</a>
   </p>
   <p style="[% p_style %]">Tack! Din feedback är värdefull.</p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report, url = url %]
     <h2 style="[% h2_style %]">[% title %]</h2>

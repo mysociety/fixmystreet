@@ -11,7 +11,7 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
-  [% start_padded_box %]
+  [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Ny rapport för [% report.body %]</h1>
   <p style="[% p_style %]">[% missing %][% multiple %]Följande rapport
 tror medborgaren behöver er uppmärksamhet.</p>
@@ -20,7 +20,7 @@ tror medborgaren behöver er uppmärksamhet.</p>
     <a style="[% button_style %]" href="[% url %]">Visa rapporten</a>
   </p>
   <h2 style="[% h2_style %] margin: 30px 0 10px 0">Rapporterad av:</h2>
-  <table [% table_reset %]>
+  <table [% table_reset | safe %]>
     <tr>
       <th style="[% contact_th_style %]">Namn</th>
       <td style="[% contact_td_style %]">[% report.name | html %]</td>
@@ -42,7 +42,7 @@ tror medborgaren behöver er uppmärksamhet.</p>
     [%~ END %]
   </table>
   <p style="[% p_style %] margin-top: 0.5em;">Svar på det här brevet kommer att skickas till den person som lämnade rapporten.</p>
-  [% end_padded_box %]
+  [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
