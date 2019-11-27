@@ -1,0 +1,17 @@
+[% cfg = c.cobrand.updates_disallowed_config(problem).0 ~%]
+[% IF cfg.match('reporter') AND (NOT cfg.match('open') OR problem.is_open) %]
+    <p>
+        Only the original reporter may leave updates.
+        [% IF NOT c.user_exists %]
+            If you made the original report please
+            <a href="/auth?r=report/[% problem.id %]">log in</a>
+            to leave an update.
+        [% END %]
+    </p>
+[% ELSE %]
+    <p>[% loc('This report is now closed to updates.') %]
+       [% tprintf(loc('You can <a href="%s">make a new report in the same location</a>.'),
+              c.uri_for( '/report/new', { longitude = longitude, latitude = latitude } )
+          ) %]
+    </p>
+[% END %]

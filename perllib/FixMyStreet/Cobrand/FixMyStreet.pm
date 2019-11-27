@@ -256,10 +256,8 @@ sub about_hook {
     }
 }
 
-sub updates_disallowed {
-    my $self = shift;
-    my ($problem) = @_;
-    my $c = $self->{c};
+sub updates_disallowed_config {
+    my ($self, $problem) = @_;
 
     # This is a hash of council name to match, and what to do
     my $cfg = $self->feature('updates_allowed') || {};
@@ -273,6 +271,15 @@ sub updates_disallowed {
             last;
         }
     }
+    return ($type, $body);
+}
+
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+    my $c = $self->{c};
+
+    my ($type, $body) = $self->updates_disallowed_config($problem);
 
     if ($type eq 'none') {
         return 1;

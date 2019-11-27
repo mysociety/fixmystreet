@@ -104,6 +104,7 @@ subtest "only original reporter can comment" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'isleofwight',
+        COBRAND_FEATURES => { updates_allowed => { isleofwight => 'reporter' } },
     }, sub {
         $mech->get_ok('/report/' . $reports[0]->id);
         $mech->content_contains('Only the original reporter may leave updates');
