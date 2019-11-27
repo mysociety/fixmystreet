@@ -18,6 +18,9 @@ my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
 my $body_fife_id = $mech->create_body_ok(2649, 'Fife Council')->id;
 my $body_slash_id = $mech->create_body_ok(10000, 'Electricity/Gas Council')->id;
 
+$mech->create_contact_ok(body_id => $body_edin_id, category => 'Potholes', email => 'potholes@example.org');
+$mech->create_contact_ok(body_id => $body_west_id, category => 'Graffiti', email => 'graffiti@example.org');
+$mech->create_contact_ok(body_id => $body_fife_id, category => 'Flytipping', email => 'flytipping@example.org');
 my @edinburgh_problems = $mech->create_problems_for_body(3, $body_edin_id, 'All reports', { category => 'Potholes' });
 my @westminster_problems = $mech->create_problems_for_body(5, $body_west_id, 'All reports', { category => 'Graffiti' });
 my @fife_problems = $mech->create_problems_for_body(15, $body_fife_id, 'All reports', { category => 'Flytipping' });
@@ -128,9 +131,11 @@ $mech->content_contains('2,3,4,4');
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => { category_groups => { fixmystreet => 1 } },
 }, sub {
     $mech->submit_form_ok( { with_fields => { body => $body_edin_id } }, 'Submitted dropdown okay' );
     is $mech->uri->path, '/reports/City+of+Edinburgh';
+    $mech->content_contains('<optgroup label="">');
 
     subtest "test ward pages" => sub {
         $mech->get_ok('/reports/Birmingham/Bad-Ward');

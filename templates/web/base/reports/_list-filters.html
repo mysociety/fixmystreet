@@ -1,15 +1,28 @@
 [% select_status = PROCESS 'reports/_list-filter-status.html' %]
 
+[% BLOCK category_options %]
+    [% FOR cat IN categories %]
+        <option value="[% cat.category %]"[% ' selected' IF filter_category.${cat.category} OR ( filter_group AND ( cat.get_extra_metadata('group') == filter_group OR cat.category == filter_group ) ) %]>
+            [% cat.category_display %]
+            [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
+        </option>
+    [% END %]
+[% END %]
+
+
 [% select_category = BLOCK %]
   [% IF filter_categories.size %]
     [% SET filter_group = c.get_param('filter_group') %]
     <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
-        [% FOR cat IN filter_categories %]
-            <option value="[% cat.category | html %]"[% ' selected' IF filter_category.${cat.category} OR ( filter_group AND ( cat.get_extra_metadata('group') == filter_group OR cat.category == filter_group ) ) %]>
-                [% cat.category_display | html %]
-                [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
-            </option>
+      [% IF category_groups %]
+        [% FOR group IN category_groups %]
+          <optgroup label="[% group.name %]">
+            [% INCLUDE category_options categories=group.categories %]
+          </optgroup>
         [% END %]
+      [% ELSE %]
+        [% INCLUDE category_options categories=filter_categories %]
+      [% END %]
     </select>
   [% ELSE %]
     [% loc('Everything') %]

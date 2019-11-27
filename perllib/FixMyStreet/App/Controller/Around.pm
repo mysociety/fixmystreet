@@ -254,6 +254,7 @@ sub check_and_stash_category : Private {
     )->all_sorted;
     $c->stash->{filter_categories} = \@categories;
     my %categories_mapped = map { $_->category => 1 } @categories;
+    $c->forward('/report/stash_category_groups', [ \@categories ]) if $c->cobrand->enable_category_groups;
 
     my $categories = [ $c->get_param_list('filter_category', 1) ];
     my %valid_categories = map { $_ => 1 } grep { $_ && $categories_mapped{$_} } @$categories;

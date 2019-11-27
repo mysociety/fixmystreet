@@ -23,6 +23,7 @@
         - Add XSL to RSS feeds so they look nicer in browsers.
         - Add per-report OpenGraph images. #2394
         - Display GPS marker on /around map. #2359
+        - Use category groups whenever category lists are shown. #2702
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.
