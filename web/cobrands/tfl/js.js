@@ -2,6 +2,14 @@
 
 translation_strings.name.validName = 'Please enter your full name, Transport for London needs this information – if you do not wish your name to be shown on the site, untick the box below';
 translation_strings.upload_default_message = 'Drag photo here to upload or <u>browse files</u>';
+translation_strings.incident_date = { date: 'Enter a date in the format dd/mm/yyyy' };
+translation_strings.time = 'Enter a time in the format hh:mm';
+
+if (jQuery.validator) {
+    jQuery.validator.addMethod('time', function(value, element) {
+        return this.optional(element) || /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test( value );
+    }, translation_strings.time );
+}
 
 fixmystreet.tfl_link_update = function() {
     var lat = document.getElementById('fixmystreet.latitude');
