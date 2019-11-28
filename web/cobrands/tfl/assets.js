@@ -277,9 +277,8 @@ var rw_stylemap = new OpenLayers.StyleMap({
 
 OpenLayers.Format.TfLRoadworksOrg = OpenLayers.Class(OpenLayers.Format.RoadworksOrg, {
     updateParams: function(params) {
-        var now = Date.now();
-        params.filterstartdate = fixmystreet.roadworks.format_date(new Date(now - (7 * 86400 * 1000)));
-        params.filterenddate = fixmystreet.roadworks.format_date(new Date(now + (21 * 86400 * 1000)));
+        params.filterstartdate = fixmystreet.roadworks.format_date(new Date());
+        params.filterenddate = fixmystreet.roadworks.format_date(new Date(Date.now() + (21 * 86400 * 1000)));
         return params;
     },
     convertToPoints: true,
@@ -341,6 +340,10 @@ fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
 
             var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + this.id + ' box-warning"></div>');
             var $dl = $("<dl></dl>").appendTo($msg);
+            if (attr.promoter) {
+                $dl.append("<dt>Responsibility</dt>");
+                $dl.append($("<dd></dd>").text(attr.promoter));
+            }
             $dl.append("<dt>Location</dt>");
             var $summary = $("<dd></dd>").appendTo($dl);
             tooltip.split("\n").forEach(function(para) {
