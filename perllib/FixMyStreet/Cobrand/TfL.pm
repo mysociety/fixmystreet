@@ -161,6 +161,17 @@ sub dashboard_export_problems_add_columns {
         "reassigned_by",
     ];
 
+    if ($c->stash->{category}) {
+        my ($contact) = grep { $_->category eq $c->stash->{category} } @{$c->stash->{contacts}};
+        if ($contact) {
+            foreach (@{$contact->get_metadata_for_storage}) {
+                next if $_->{code} eq 'safety_critical';
+                push @{$c->stash->{csv}->{columns}}, "extra.$_->{code}";
+                push @{$c->stash->{csv}->{headers}}, $_->{description};
+            }
+        }
+    }
+
     $c->stash->{csv}->{extra_data} = sub {
         my $report = shift;
 
@@ -182,7 +193,7 @@ sub dashboard_export_problems_add_columns {
         $closure_email_at = DateTime->from_epoch(
             epoch => $closure_email_at, time_zone => FixMyStreet->local_time_zone
         ) if $closure_email_at;
-        return {
+        my $fields = {
             acknowledged => $report->whensent,
             agent_responsible => $agent ? $agent->name : '',
             category => $groups{$report->category},
@@ -194,6 +205,11 @@ sub dashboard_export_problems_add_columns {
             reassigned_at => $reassigned_at,
             reassigned_by => $reassigned_by,
         };
+        foreach (@{$report->get_extra_fields}) {
+            next if $_->{name} eq 'safety_critical';
+            $fields->{"extra.$_->{name}"} = $_->{value};
+        }
+        return $fields;
     };
 }
 
