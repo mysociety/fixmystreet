@@ -1,0 +1,44 @@
+2020/02/12-16:10:49 Starman::Server (type Net::Server::PreFork) starting! pid(36517)
+Resolved [*]:3001 to [0.0.0.0]:3001, IPv4
+Binding to TCP port 3001 on host 0.0.0.0 with IPv4
+Setting gid to "20 20 20 12 61 79 80 81 98 33 100 204 250 395 398 399 701"
+Child process 36567 exited with status 0 - signal was 11
+Child process 36569 exited with status 0 - signal was 11
+Child process 36566 exited with status 0 - signal was 11
+Child process 36568 exited with status 0 - signal was 11
+Child process 36565 exited with status 0 - signal was 11
+Child process 36666 exited with status 0 - signal was 11
+Child process 36693 exited with status 0 - signal was 11
+Child process 36695 exited with status 0 - signal was 11
+Child process 36724 exited with status 0 - signal was 11
+Child process 36750 exited with status 0 - signal was 11
+Child process 36775 exited with status 0 - signal was 11
+Child process 36777 exited with status 0 - signal was 11
+Child process 36779 exited with status 0 - signal was 11
+Child process 36781 exited with status 0 - signal was 11
+Child process 36784 exited with status 0 - signal was 11
+Child process 36809 exited with status 0 - signal was 11
+Child process 36834 exited with status 0 - signal was 11
+Child process 36836 exited with status 0 - signal was 11
+Child process 36862 exited with status 0 - signal was 11
+Child process 36887 exited with status 0 - signal was 11
+Child process 36889 exited with status 0 - signal was 11
+Child process 36891 exited with status 0 - signal was 11
+Child process 36893 exited with status 0 - signal was 11
+Child process 36895 exited with status 0 - signal was 11
+Child process 36921 exited with status 0 - signal was 11
+Child process 36946 exited with status 0 - signal was 11
+Child process 36948 exited with status 0 - signal was 11
+Child process 36950 exited with status 0 - signal was 11
+Child process 36952 exited with status 0 - signal was 11
+Child process 36954 exited with status 0 - signal was 11
+Child process 36956 exited with status 0 - signal was 11
+Child process 36958 exited with status 0 - signal was 11
+Child process 36984 exited with status 0 - signal was 11
+Child process 36997 exited with status 0 - signal was 11
+Child process 37008 exited with status 0 - signal was 11
+Child process 37010 exited with status 0 - signal was 11
+Child process 37012 exited with status 0 - signal was 11
+Child process 37014 exited with status 0 - signal was 11
+Child process 37039 exited with status 0 - signal was 11
+2020/02/12-16:11:25 Server closing!
