@@ -339,7 +339,8 @@ var layers = [
   ],
   "layer_name": "Tree",
   "layer": 307,
-  "version": "307.7-"
+  "version": "307.7-",
+  "snap_threshold": 0,
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
@@ -431,6 +432,9 @@ $.each(layers, function(index, layer) {
         };
         if (layer.max_resolution) {
           options.max_resolution = layer.max_resolution;
+        }
+        if (layer.snap_threshold || layer.snap_threshold === 0) {
+          options.snap_threshold = layer.snap_threshold;
         }
         fixmystreet.assets.add(northants_defaults, options);
     }
