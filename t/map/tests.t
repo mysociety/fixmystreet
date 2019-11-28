@@ -2,7 +2,6 @@ use FixMyStreet::Map;
 use Test::More;
 
 my $requires = {
-    'Bexley' => 'map-bexley.js',
     'Bing' => 'map-bing-ol.js',
     'Bristol' => 'map-wmts-bristol.js',
     'Bromley' => 'map-fms.js',
@@ -14,6 +13,7 @@ my $requires = {
     'Hounslow' => 'map-wmts-hounslow.js',
     'IsleOfWight' => 'map-wmts-isleofwight.js',
     'OSM' => 'OpenStreetMap.js',
+    'MasterMap' => 'map-mastermap.js',
     'CycleMap' => 'OpenStreetMap.js',
     'MapQuest' => 'OpenStreetMap.js',
     'StreetView' => 'map-streetview.js',

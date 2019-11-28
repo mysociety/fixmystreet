@@ -1,8 +1,8 @@
-# FixMyStreet:Map::Bexley
+# FixMyStreet:Map::MasterMap
 #
 # A combination of FMS OS maps and our own tiles
 
-package FixMyStreet::Map::Bexley;
+package FixMyStreet::Map::MasterMap;
 use base 'FixMyStreet::Map::FMS';
 
 use strict;
@@ -16,14 +16,14 @@ sub map_javascript { [
     '/js/map-OpenLayers.js',
     '/js/map-bing-ol.js',
     '/js/map-fms.js',
-    '/js/map-bexley.js',
+    '/js/map-mastermap.js',
 ] }
 
 sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     if ($z >= 17) {
-        my $base = "//%stilma.mysociety.org/bexley/%d/%d/%d.png";
+        my $base = "//%stilma.mysociety.org/mastermap/%d/%d/%d.png";
         return [
             sprintf($base, 'a.', $z, $x-1, $y-1),
             sprintf($base, 'b.', $z, $x, $y-1),

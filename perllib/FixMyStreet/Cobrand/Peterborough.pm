@@ -12,6 +12,7 @@ sub council_area_id { 2566 }
 sub council_area { 'Peterborough' }
 sub council_name { 'Peterborough City Council' }
 sub council_url { 'peterborough' }
+sub map_type { 'MasterMap' }
 
 sub send_questionnaires { 0 }
 
