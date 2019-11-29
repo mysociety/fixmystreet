@@ -5,10 +5,10 @@ it('loads the right front page', function() {
 
 it('prevents clicking unless asset selected', function() {
   cy.server();
-  cy.fixture('trees.json');
-  cy.fixture('trees_none.json');
-  cy.route('**/render-layer/**', 'fixture:trees_none.json').as('empty-trees-layer');
-  cy.route('**/16301/10787**', 'fixture:trees.json').as('trees-layer');
+  cy.fixture('bus_stops.json');
+  cy.fixture('bus_stops_none.json');
+  cy.route('**/render-layer/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
+  cy.route('**/16301/10787**', 'fixture:bus_stops.json').as('bus_stops-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 1NS');
@@ -17,20 +17,20 @@ it('prevents clicking unless asset selected', function() {
   cy.get('#map_box').click();
   cy.wait('@report-ajax');
 
-  cy.get('[id=category_group]').select('Fallen Tree');
+  cy.get('[id=category_group]').select('Shelter Damaged');
 
-  cy.wait('@trees-layer');
-  cy.wait('@empty-trees-layer');
-  cy.contains(/Please select a.*tree.*from the map/);
+  cy.wait('@bus_stops-layer');
+  cy.wait('@empty-bus_stops-layer');
+  cy.contains(/Please select a.*bus stop.*from the map/);
   cy.get('#js-councils_text').should('be.hidden');
 });
 
 it('selecting an asset allows a report', function() {
   cy.server();
-  cy.fixture('trees.json');
-  cy.fixture('trees_none.json');
-  cy.route('**/render-layer/**', 'fixture:trees_none.json').as('empty-trees-layer');
-  cy.route('**/16301/10787**', 'fixture:trees.json').as('trees-layer');
+  cy.fixture('bus_stops.json');
+  cy.fixture('bus_stops_none.json');
+  cy.route('**/render-layer/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
+  cy.route('**/16301/10787**', 'fixture:bus_stops.json').as('bus_stops-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 2NS');
@@ -39,21 +39,21 @@ it('selecting an asset allows a report', function() {
   cy.get('#map_box').click();
   cy.wait('@report-ajax');
 
-  cy.get('[id=category_group]').select('Fallen Tree');
+  cy.get('[id=category_group]').select('Shelter Damaged');
 
-  cy.wait('@trees-layer');
-  cy.wait('@empty-trees-layer');
+  cy.wait('@bus_stops-layer');
+  cy.wait('@empty-bus_stops-layer');
 
   cy.get('#js-councils_text').should('be.visible');
 });
 
 it('detects multiple assets at same location', function() {
   cy.server();
-  cy.fixture('trees.json');
-  cy.fixture('trees_none.json');
-  cy.route('**/render-layer/**', 'fixture:trees_none.json').as('empty-trees-layer');
-  cy.route('**/16301/10787**', 'fixture:trees.json').as('trees-layer');
-  cy.route('**/16301/10788**', 'fixture:trees.json').as('trees-layer2');
+  cy.fixture('bus_stops.json');
+  cy.fixture('bus_stops_none.json');
+  cy.route('**/render-layer/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
+  cy.route('**/16301/10787**', 'fixture:bus_stops.json').as('bus_stops-layer');
+  cy.route('**/16301/10788**', 'fixture:bus_stops.json').as('bus_stops-layer2');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 2NS');
@@ -62,13 +62,13 @@ it('detects multiple assets at same location', function() {
   cy.get('#map_box').click();
   cy.wait('@report-ajax');
 
-  cy.get('[id=category_group]').select('Fallen Tree');
+  cy.get('[id=category_group]').select('Shelter Damaged');
 
-  cy.wait('@trees-layer');
-  cy.wait('@trees-layer2');
-  cy.wait('@empty-trees-layer');
+  cy.wait('@bus_stops-layer');
+  cy.wait('@bus_stops-layer2');
+  cy.wait('@empty-bus_stops-layer');
 
-  cy.contains('more than one tree at this location');
+  cy.contains('more than one bus stop at this location');
 });
 
 it('shows the emergency message', function() {

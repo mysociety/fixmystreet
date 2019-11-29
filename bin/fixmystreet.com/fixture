@@ -94,7 +94,7 @@ for my $cat ('Dropped Kerbs', 'Skips') {
 if ($opt->test_fixtures) {
     my $bodies;
     foreach (
-        { area_id => 2234, categories => ['Fallen Tree', 'Very Urgent'], name => 'Northamptonshire County Council' },
+        { area_id => 2234, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire County Council' },
         { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks'], name => 'Buckinghamshire County Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
