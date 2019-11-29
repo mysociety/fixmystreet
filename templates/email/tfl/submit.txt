@@ -23,6 +23,10 @@ Report reference: FMS[% report.id %]
 
 Category: [% report.category %]
 
+[% IF report.get_extra_field_value('stop_code') %]Stop number: [% report.get_extra_field_value('stop_code') %]
+[% END %]
+[% IF report.get_extra_field_value('site') %]Signal site number: [% report.get_extra_field_value('site') %]
+[% END %]
 Subject: [% report.title %]
 
 Details: [% report.detail %]
