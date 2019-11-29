@@ -212,18 +212,12 @@ ol.big-numbers>li {
   text-decoration: none;
   .arrow {
     display: inline-block;
-    background-image: url("https://tfl.gov.uk/static/1/images/vsprite_x2.6cea7f1f.png");
-    background-image: url("https://tfl.gov.uk/static/1/images/vsprite.236da77f.png") \9;
-    background-size: 96px 3744px;
-    background-position: -64px -672px;
+    background-image: url("/cobrands/tfl/images/arrow@2x.png");
+    background-image: url("/cobrands/tfl/images/arrow.png") \9;
+    background-size: 32px 32px;
     height: 28px;
     width: 21px;
     margin: -4px 0 0 -8px;
-  }
-  &:first-child {
-    .arrow {
-        display: none;
-    }
   }
 }
 
