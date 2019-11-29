@@ -7,7 +7,7 @@ fixmystreet.inspect_form_no_scroll_on_load = 1;
 // Hopefully we can get rid of this eventually if Chrome changes
 // its behaviour.
 fixmystreet.fixChromeAutocomplete = function() {
-    let title = document.getElementById("form_title");
+    var title = document.getElementById("form_title");
 
     if (title) {
 	if (title.value == "" ||
@@ -15,6 +15,6 @@ fixmystreet.fixChromeAutocomplete = function() {
             title.value = "";
         }
     }
-}
+};
 
 $(fixmystreet).on('report_new:category_change', fixmystreet.fixChromeAutocomplete);
