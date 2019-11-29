@@ -35,11 +35,19 @@ my $contact1 = $mech->create_contact_ok(
     email => 'busstops@example.com',
 );
 $contact1->set_extra_metadata(group => [ 'Bus things' ]);
-$contact1->set_extra_fields({
-    code => 'leaning',
-    description => 'Is the pole leaning?',
-    datatype => 'string',
-});
+$contact1->set_extra_fields(
+    {
+        code => 'leaning',
+        description => 'Is the pole leaning?',
+        datatype => 'string',
+    },
+    {
+        code => 'stop_code',
+        description => 'Stop number',
+        datatype => 'string',
+        automated => 'hidden_field',
+    }
+);
 $contact1->update;
 my $contact2 = $mech->create_contact_ok(
     body_id => $body->id,
@@ -291,8 +299,10 @@ subtest "test report creation and reference number" => sub {
     $mech->log_out_ok;
 };
 
-subtest "reference number included in email" => sub {
+subtest "extra information included in email" => sub {
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    $report->set_extra_fields({ name => 'stop_code', value => '12345678' });
+    $report->update;
     my $id = $report->id;
 
     $mech->clear_emails_ok;
@@ -300,6 +310,7 @@ subtest "reference number included in email" => sub {
     my @email = $mech->get_email;
     is $email[0]->header('To'), 'TfL <busstops@example.com>';
     like $mech->get_text_body_from_email($email[0]), qr/Report reference: FMS$id/, "FMS-prefixed ID in TfL email";
+    like $mech->get_text_body_from_email($email[0]), qr/Stop number: 12345678/, "Bus stop code in TfL email";
     is $email[1]->header('To'), $report->user->email;
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number is FMS$id/, "FMS-prefixed ID in reporter email";
     $mech->clear_emails_ok;
