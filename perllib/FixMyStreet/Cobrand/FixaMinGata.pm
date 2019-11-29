@@ -192,4 +192,8 @@ sub body_responsiveness_threshold {
     return 5;
 }
 
+sub suggest_duplicates { 1 }
+
+sub default_show_name { 1 }
+
 1;
