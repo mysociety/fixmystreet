@@ -122,7 +122,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE just_value value="EMAIL_DOMAIN" %]
 [% INCLUDE with_cobrand value="CONTACT_NAME" cob=c.cobrand.contact_name %]
 [% INCLUDE with_cobrand value="CONTACT_EMAIL" cob=c.cobrand.contact_email %]
-[% INCLUDE just_value value="DO_NOT_REPLY_EMAIL" %]
+[% INCLUDE with_cobrand value="DO_NOT_REPLY_EMAIL" cob=c.cobrand.do_not_reply_email %]
 
 [% INCLUDE subsection heading="Development" %]
 [% INCLUDE just_value value="STAGING_SITE" %]

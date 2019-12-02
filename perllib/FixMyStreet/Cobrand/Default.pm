@@ -805,15 +805,17 @@ sub fetch_area_children {
     );
 }
 
-=item contact_name, contact_email
+=item contact_name, contact_email, do_not_reply_email
 
 Return the contact name or email for the cobranded version of the site (to be
-used in emails).
+used in emails). do_not_reply_email is used for emails you don't expect a reply
+to (for example, confirmation emails).
 
 =cut
 
 sub contact_name  { FixMyStreet->config('CONTACT_NAME') }
 sub contact_email { FixMyStreet->config('CONTACT_EMAIL') }
+sub do_not_reply_email { FixMyStreet->config('DO_NOT_REPLY_EMAIL') }
 
 =item abuse_reports_only
 

@@ -152,7 +152,7 @@ sub find_template_dir {
 sub send_cron {
     my ( $schema, $template, $vars, $hdrs, $env_from, $nomail, $cobrand, $lang_code ) = @_;
 
-    my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+    my $sender = $cobrand->do_not_reply_email;
     $env_from ||= $sender;
     if (!$hdrs->{From}) {
         my $sender_name = $cobrand->contact_name;

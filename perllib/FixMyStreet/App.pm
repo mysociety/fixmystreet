@@ -342,7 +342,7 @@ sub send_email {
     my $template           = shift;
     my $extra_stash_values = shift || {};
 
-    my $sender = $c->config->{DO_NOT_REPLY_EMAIL};
+    my $sender = $c->cobrand->do_not_reply_email;
     my $email = $c->construct_email($template, $extra_stash_values) or return;
 
     my $result = 0;
@@ -360,7 +360,7 @@ sub construct_email {
     my ($c, $template, $extra_stash_values) = @_;
     $extra_stash_values //= {};
 
-    my $sender = $c->config->{DO_NOT_REPLY_EMAIL};
+    my $sender = $c->cobrand->do_not_reply_email;
     my $sender_name = $c->cobrand->contact_name;
 
     # create the vars to pass to the email template
