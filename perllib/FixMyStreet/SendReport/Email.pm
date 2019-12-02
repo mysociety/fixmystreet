@@ -59,7 +59,7 @@ sub envelope_sender {
     if ($row->user->email && $row->user->email_verified) {
         return FixMyStreet::Email::unique_verp_id('report', $row->id);
     }
-    return FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+    return $row->get_cobrand_logged->do_not_reply_email;
 }
 
 sub send {
