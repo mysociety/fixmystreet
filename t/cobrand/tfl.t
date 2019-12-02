@@ -172,6 +172,12 @@ FixMyStreet::override_config {
         anonymous_account => {
             tfl => 'anonymous'
         },
+        contact_name => {
+            tfl => 'TfL Street Care',
+        },
+        do_not_reply_email => {
+            tfl => 'fms-tfl-DO-NOT-REPLY@example.com',
+        },
     },
 }, sub {
 
@@ -312,6 +318,7 @@ subtest "extra information included in email" => sub {
     like $mech->get_text_body_from_email($email[0]), qr/Report reference: FMS$id/, "FMS-prefixed ID in TfL email";
     like $mech->get_text_body_from_email($email[0]), qr/Stop number: 12345678/, "Bus stop code in TfL email";
     is $email[1]->header('To'), $report->user->email;
+    is $email[1]->header('From'), '"TfL Street Care" <fms-tfl-DO-NOT-REPLY@example.com>';
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number is FMS$id/, "FMS-prefixed ID in reporter email";
     $mech->clear_emails_ok;
 
@@ -637,6 +644,9 @@ FixMyStreet::override_config {
         } },
         anonymous_account => {
             tfl => 'anonymous'
+        },
+        do_not_reply_email => {
+            tfl => 'fms-tfl-DO-NOT-REPLY@example.com',
         },
     },
 }, sub {
