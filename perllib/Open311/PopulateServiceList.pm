@@ -248,7 +248,7 @@ sub _add_meta_to_contact {
         # remove trailing colon as we add this when we display so we don't want 2
         map { $_->{description} =~ s/:\s*$// if $_->{description}; $_ }
         # there is a display order and we only want to sort once
-        sort { $a->{order} <=> $b->{order} }
+        sort { ($a->{order} || 0) <=> ($b->{order} || 0) }
         @meta;
 
     # Some Open311 endpoints, such as Bromley and Warwickshire send <metadata>
