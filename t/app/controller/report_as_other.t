@@ -40,7 +40,6 @@ subtest "Body user, has permission to add report as council" => sub {
     is $report->anonymous, 0, 'report not anonymous';
 };
 
-my @users;
 subtest "Body user, has permission to add report as another user with email" => sub {
     my $report = add_report(
         'contribute_as_another_user',
@@ -56,7 +55,6 @@ subtest "Body user, has permission to add report as another user with email" => 
     is $report->user->email, 'another@example.net', 'user email correct';
     isnt $report->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
-    push @users, $report->user;
 };
 
 subtest "Body user, has permission to add report as another user with mobile phone number" => sub {
@@ -77,7 +75,6 @@ subtest "Body user, has permission to add report as another user with mobile pho
     is $report->user->email_verified, 0, 'user email not verified';
     isnt $report->user->id, $user->id, 'user does not match';
     $mech->email_count_is(0);
-    push @users, $report->user;
 };
 
 subtest "Body user, has permission to add report as another user with landline number" => sub {
@@ -98,7 +95,23 @@ subtest "Body user, has permission to add report as another user with landline n
     is $report->user->email_verified, 0, 'user email not verified';
     isnt $report->user->id, $user->id, 'user does not match';
     $mech->email_count_is(0);
-    push @users, $report->user;
+};
+
+subtest "Body user, has permission to add report as another user with only name" => sub {
+    my $report = add_report(
+        'contribute_as_another_user',
+        form_as => 'another_user',
+        title => "Test Report",
+        detail => 'Test report details.',
+        category => 'Potholes',
+        name => 'Another User',
+        username => '',
+        may_show_name => undef,
+    );
+    is $report->name, 'Another User', 'report name is name given';
+    is $report->user->name, 'Body User', 'user name unchanged';
+    is $report->user->id, $user->id, 'user matches';
+    is $report->anonymous, 1, 'report anonymous';
 };
 
 subtest "Body user, has permission to add report as another (existing) user with email" => sub {
@@ -120,7 +133,6 @@ subtest "Body user, has permission to add report as another (existing) user with
     is $report->user->email, $existing->email, 'user email correct';
     isnt $report->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
-    push @users, $report->user;
 
     my $send_confirmation_mail_override = Sub::Override->new(
         "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
@@ -148,7 +160,6 @@ subtest "Body user, has permission to add report as another (existing) user with
     is $report->user->phone, '+447906333333', 'user phone correct';
     isnt $report->user->id, $user->id, 'user does not match';
     $mech->email_count_is(0);
-    push @users, $report->user;
 };
 
 subtest "Superuser, can add report as anonymous user" => sub {
@@ -231,7 +242,6 @@ subtest "Body user, has permission to add update as another user with email" => 
     is $update->user->email, 'another2@example.net', 'user email correct';
     isnt $update->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your update has been logged/;
-    push @users, $update->user;
 };
 
 subtest "Body user, has permission to add update as another user with mobile phone" => sub {
@@ -247,7 +257,6 @@ subtest "Body user, has permission to add update as another user with mobile pho
     is $update->user->phone, '+447906444444', 'user phone correct';
     isnt $update->user->id, $user->id, 'user does not match';
     $mech->email_count_is(0);
-    push @users, $update->user;
 };
 
 subtest "Body user, has permission to add update as another user with landline phone" => sub {
@@ -263,7 +272,6 @@ subtest "Body user, has permission to add update as another user with landline p
     is $update->user->phone, '+441685555555', 'user phone correct';
     isnt $update->user->id, $user->id, 'user does not match';
     $mech->email_count_is(0);
-    push @users, $update->user;
 };
 
 subtest "Body user, has permission to add update as another (existing) user with email" => sub {

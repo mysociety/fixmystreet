@@ -838,9 +838,11 @@ sub process_user : Private {
         my $user = $c->user->obj;
 
         if ($c->stash->{contributing_as_another_user}) {
-            # Act as if not logged in (and it will be auto-confirmed later on)
-            $report->user(undef);
-            last;
+            if ($params{username} || $params{phone}) {
+                # Act as if not logged in (and it will be auto-confirmed later on)
+                $report->user(undef);
+                last;
+            }
         }
 
         $report->user( $user );
@@ -853,6 +855,8 @@ sub process_user : Private {
             my $name = $user->moderating_user_name;
             $report->name($name);
             $user->name($name) unless $user->name;
+            $c->stash->{no_reporter_alert} = 1;
+        } elsif ($c->stash->{contributing_as_another_user}) {
             $c->stash->{no_reporter_alert} = 1;
         }
 
@@ -1595,6 +1599,7 @@ sub redirect_or_confirm_creation : Private {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
         if ($c->stash->{contributing_as_another_user} && $report->user->email
+            && $report->user->id != $c->user->id
             && !$c->cobrand->report_sent_confirmation_email) {
                 $c->send_email( 'other-reported.txt', {
                     to => [ [ $report->user->email, $report->name ] ],
