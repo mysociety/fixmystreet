@@ -16,6 +16,8 @@ sub map_type { 'MasterMap' }
 
 sub send_questionnaires { 0 }
 
+sub max_title_length { 50 }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

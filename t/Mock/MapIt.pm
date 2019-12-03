@@ -51,6 +51,7 @@ my @PLACES = (
     [ 'GU51 4AE', 51.279456, -0.846216, 2333, 'Hart District Council', 'DIS', 2227, 'Hampshire County Council', 'CTY' ],
     [ 'WS1 4NH', 52.563074, -1.991032, 2535, 'Sandwell Borough Council', 'MTD' ],
     [ 'PO30 5XJ', 50.71086, -1.29573, 2636, 'Isle of Wight Council', 'UTA' ],
+    [ 'PE1 1HF', 52.57146, -0.24201, 2566, 'Peterborough City Council', 'UTA' ],
     [ 'OX28 4DS', 51.784721, -1.494453 ],
     [ 'E14 2DN', 51.508536, '0.000001' ],
     # Norway

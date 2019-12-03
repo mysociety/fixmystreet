@@ -58,3 +58,8 @@ body_validation_rules = {
         }
     }
 };
+
+body_validation_rules['Peterborough City Council'].title = {
+  required: true,
+  maxlength: 50
+};

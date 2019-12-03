@@ -59,6 +59,7 @@ for my $body (
     { area_id => 2600, name => 'Rutland County Council' },
     { area_id => 2234, name => 'Northamptonshire County Council' },
     { area_id => 2483, name => 'Hounslow Borough Council' },
+    { area_id => 2566, name => 'Peterborough City Council' },
 ) {
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
     push @bodies, $body_obj;
@@ -156,6 +157,11 @@ my $contact18 = $mech->create_contact_ok(
     category => 'General Enquiry',
     email => 'general-enquiry-2483@example.com',
     non_public => 1,
+);
+my $contact19 = $mech->create_contact_ok(
+    body_id => $body_ids{2566}, # Peterborough
+    category => 'Trees',
+    email => 'trees-2566@example.com',
 );
 
 # test that the various bit of form get filled in and errors correctly
@@ -681,6 +687,26 @@ foreach my $test (
         changes => { },
         errors => [ 'Summaries are limited to 120 characters in length. Please shorten your summary', 'Please enter some details'],
     },
+    {
+        msg    => 'Peterborough validation',
+        pc     => 'PE1 1HF',
+        fields => {
+            title         => 'This is a very long title that should fail the validation',
+            detail        => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
+            name          => 'A User',
+            may_show_name => '1',
+            username      => 'user@example.org',
+            phone         => '',
+            category      => 'Trees',
+            password_sign_in => '',
+            password_register => '',
+        },
+        changes => { },
+        errors => [ 'Summaries are limited to 50 characters in length. Please shorten your summary', 'Please enter some details'],
+    },
   )
 {
     subtest "check form errors where $test->{msg}" => sub {
@@ -688,7 +714,7 @@ foreach my $test (
 
         # submit initial pc form
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire', 'northamptonshire' ],
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire', 'northamptonshire', 'peterborough' ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
