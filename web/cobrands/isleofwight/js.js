@@ -19,15 +19,4 @@ if (fixmystreet.cobrand == 'isleofwight') {
     };
 }
 
-var org_id = '1062';
-var body = "Isle of Wight Council";
-fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
-    http_options: { params: { organisation_id: org_id } },
-    body: body
-});
-fixmystreet.assets.add(fixmystreet.roadworks.layer_planned, {
-    http_options: { params: { organisation_id: org_id } },
-    body: body
-});
-
 })();
