@@ -17,6 +17,8 @@ Confirm field lengths.
 
 has max_report_length => ( is => 'ro', default => 2000 );
 
+has max_title_length => ( is => 'ro', default => 0 );
+
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
@@ -26,6 +28,10 @@ sub report_validation {
 
     if ( $report->user->phone && length( $report->user->phone ) > 20 ) {
         $errors->{phone} = sprintf( _('Phone numbers are limited to %s characters in length.'), 20 );
+    }
+
+    if ( $self->max_title_length > 0 && length( $report->title ) > $self->max_title_length ) {
+        $errors->{title} = sprintf( _('Summaries are limited to %d characters in length. Please shorten your summary'), 50 );
     }
 
     if ( length( $report->detail ) > $self->max_report_length ) {
