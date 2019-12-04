@@ -51,6 +51,12 @@ of a local problem that they believe might require your attention.</p>
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     <p style="[% secondary_p_style %]"><strong>Report reference:</strong> FMS[% report.id %]</p>
     <p style="[% secondary_p_style %]"><strong>Category:</strong> [% report.category | html %]</p>
+    [% IF report.get_extra_field_value('stop_code') %]
+      <p style="[% secondary_p_style %]"><strong>Stop number:</strong> [% report.get_extra_field_value('stop_code') | html %]</p>
+    [% END %]
+    [% IF report.get_extra_field_value('site') %]
+      <p style="[% secondary_p_style %]"><strong>Signal site number:</strong> [% report.get_extra_field_value('site') | html %]</p>
+    [% END %]
     <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
     [%~ IF additional_information %]
     <p style="[% secondary_p_style %]">[% additional_information %]</p>
