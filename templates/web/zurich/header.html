@@ -20,6 +20,8 @@
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
 
+    [% INCLUDE 'debug_header.html' %]
+
     <div class="wrapper">
         <div class="table-cell clearfix">
             <header id="site-header" role="banner">
@@ -80,5 +82,3 @@
                 [% END %]
 
                 [% pre_container_extra %]
-
-        <!-- [% INCLUDE 'debug_header.html' %] -->

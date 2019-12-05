@@ -1,5 +1,5 @@
-[% IF c.config.STAGING_SITE and c.config.SHOW_DEBUG %]
-    <p class="dev-site-notice">
-        [% loc("This is a developer site; things might break at any time, and the database will be periodically deleted.") %]
-    </p>
+[% IF c.config.STAGING_SITE ~%]
+    <div class="dev-site-notice">
+        [% loc("Staging site") %]
+    </div>
 [% END %]

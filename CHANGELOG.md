@@ -62,6 +62,7 @@
         - Make contact edit note optional on staging sites.
         - Store email addresses report sent to on the report.
         - Add configuration for setting Content-Security-Policy header.
+        - Add banner on staging website/emails.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private. #2488
