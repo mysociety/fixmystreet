@@ -430,7 +430,7 @@ for my $test (
                 required => 'true',
                 datatype_description => 'Type of bin',
                 order => 1,
-                description => 'Type of bin'
+                description => 'Type of <b>bin</b>'
 
         } ],
         meta_xml => '<?xml version="1.0" encoding="utf-8"?>
@@ -444,7 +444,7 @@ for my $test (
                 <required>true</required>
                 <datatype_description>Type of bin</datatype_description>
                 <order>1</order>
-                <description>Type of bin</description>
+                <description>&lt;type&gt;Type&lt;/type&gt; of &lt;b&gt;bin&lt;/b&gt;</description>
             </attribute>
         </attributes>
     </service_definition>

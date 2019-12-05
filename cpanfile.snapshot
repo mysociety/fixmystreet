@@ -3377,6 +3377,19 @@ DISTRIBUTIONS
       HTML::Tagset 3
       XSLoader 0
       perl 5.008
+  HTML-Scrubber-0.19
+    pathname: N/NI/NIGELM/HTML-Scrubber-0.19.tar.gz
+    provides:
+      HTML::Scrubber 0.19
+    requirements:
+      ExtUtils::MakeMaker 0
+      HTML::Entities 0
+      HTML::Parser 3.47
+      List::Util 1.33
+      Scalar::Util 0
+      perl 5.008
+      strict 0
+      warnings 0
   HTML-Selector-XPath-0.15
     pathname: C/CO/CORION/HTML-Selector-XPath-0.15.tar.gz
     provides:

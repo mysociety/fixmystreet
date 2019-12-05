@@ -6,6 +6,7 @@ use warnings;
 use FixMyStreet;
 use mySociety::Locale;
 use Attribute::Handlers;
+use HTML::Scrubber;
 use FixMyStreet::Template::SafeString;
 use FixMyStreet::Template::Context;
 use FixMyStreet::Template::Stash;
@@ -133,6 +134,22 @@ sub html_paragraph : Filter('html_para') {
     s/\r?\n/<br>\n/g for @paras;
     $text = "<p>\n" . join("\n</p>\n\n<p>\n", @paras) . "</p>\n";
     return FixMyStreet::Template::SafeString->new($text);
+}
+
+sub sanitize {
+    my $text = shift;
+
+    my %allowed_tags = map { $_ => 1 } qw( p ul ol li br b i strong em );
+    my $scrubber = HTML::Scrubber->new(
+        rules => [
+            %allowed_tags,
+            a => { href => qr{^(http|/|tel)}i, style => 1, target => qr/^_blank$/, title => 1 },
+            font => { color => 1 },
+            span => { style => 1 },
+        ]
+    );
+    $text = $scrubber->scrub($text);
+    return $text;
 }
 
 1;

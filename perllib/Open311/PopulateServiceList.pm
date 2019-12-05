@@ -246,7 +246,13 @@ sub _add_meta_to_contact {
     # turn the data into something a bit more friendly to use
     @meta =
         # remove trailing colon as we add this when we display so we don't want 2
-        map { $_->{description} =~ s/:\s*$// if $_->{description}; $_ }
+        map {
+            if ($_->{description}) {
+                $_->{description} =~ s/:\s*$//;
+                $_->{description} = FixMyStreet::Template::sanitize($_->{description});
+            }
+            $_
+        }
         # there is a display order and we only want to sort once
         sort { ($a->{order} || 0) <=> ($b->{order} || 0) }
         @meta;

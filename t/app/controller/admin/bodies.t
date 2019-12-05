@@ -236,13 +236,13 @@ subtest 'disable form message editing' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
         disable => 1,
-        disable_message => 'Please ring us!',
+        disable_message => '<em>Please</em> <u>ring</u> us on <a href="tel:01234">01234</a>, click <a href="javascript:bad">bad</a>',
         note => 'Adding emergency message',
     } } );
     $mech->content_contains('Values updated');
     my $contact = $body->contacts->find({ category => 'test category' });
     is_deeply $contact->get_extra_fields, [{
-        description => 'Please ring us!',
+        description => '<em>Please</em> ring us on <a href="tel:01234">01234</a>, click <a>bad</a>',
         code => '_fms_disable_',
         protected => 'true',
         variable => 'false',

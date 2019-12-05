@@ -557,7 +557,8 @@ sub update_extra_fields : Private {
         if ($behaviour eq 'question') {
             $meta->{required} = $c->get_param("metadata[$i].required") ? 'true' : 'false';
             $meta->{variable} = 'true';
-            $meta->{description} = $c->get_param("metadata[$i].description");
+            my $desc = $c->get_param("metadata[$i].description");
+            $meta->{description} = FixMyStreet::Template::sanitize($desc);
             $meta->{datatype} = $c->get_param("metadata[$i].datatype");
 
             if ( $meta->{datatype} eq "singlevaluelist" ) {
@@ -579,7 +580,8 @@ sub update_extra_fields : Private {
             }
         } elsif ($behaviour eq 'notice') {
             $meta->{variable} = 'false';
-            $meta->{description} = $c->get_param("metadata[$i].description");
+            my $desc = $c->get_param("metadata[$i].description");
+            $meta->{description} = FixMyStreet::Template::sanitize($desc);
             $meta->{disable_form} = $c->get_param("metadata[$i].disable_form") ? 'true' : 'false';
         } elsif ($behaviour eq 'hidden') {
             $meta->{automated} = 'hidden_field';

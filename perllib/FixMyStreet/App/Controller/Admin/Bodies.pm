@@ -286,6 +286,7 @@ sub update_contact : Private {
     # Special form disabling form
     if ($c->get_param('disable')) {
         my $msg = $c->get_param('disable_message');
+        $msg = FixMyStreet::Template::sanitize($msg);
         $errors{category} = _('Please enter a message') unless $msg;
         my $meta = {
             code => '_fms_disable_',
