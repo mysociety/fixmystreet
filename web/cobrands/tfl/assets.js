@@ -247,10 +247,7 @@ fixmystreet.assets.add(asset_defaults, {
     asset_item: 'bus stop'
 });
 
-/* Roadworks.org asset layer */
-
-var org_id = '1250';
-var body = "TfL";
+/* Roadworks asset layer */
 
 var rw_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -275,46 +272,29 @@ var rw_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-OpenLayers.Format.TfLRoadworksOrg = OpenLayers.Class(OpenLayers.Format.RoadworksOrg, {
-    updateParams: function(params) {
-        params.filterstartdate = fixmystreet.roadworks.format_date(new Date());
-        params.filterenddate = fixmystreet.roadworks.format_date(new Date(Date.now() + (21 * 86400 * 1000)));
-        return params;
-    },
-    convertToPoints: true,
-    CLASS_NAME: "OpenLayers.Format.TfLRoadworksOrg"
-});
-
-fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
+fixmystreet.assets.add(asset_defaults, {
     http_options: {
-        params: { organisation_id: org_id },
+        params: {
+            TYPENAME: "roadworks"
+        }
     },
     name: "Roadworks",
-    format_class: OpenLayers.Format.TfLRoadworksOrg,
-    body: body,
     non_interactive: false,
     always_visible: false,
     road: false,
     all_categories: false,
     asset_category: "Roadworks",
     stylemap: rw_stylemap,
-    asset_id_field: 'promoter_works_ref',
+    asset_id_field: 'works_ref',
     asset_item: 'roadworks',
     attributes: {
-        promoter_works_ref: 'promoter_works_ref',
+        promoter_works_ref: 'works_ref',
         start: 'start',
         end: 'end',
         promoter: 'promoter',
-        works_desc: 'works_desc',
-        works_state: function(feature) {
-            return {
-                1: "1", // Haven't seen this in the wild yet
-                2: "Advanced planning",
-                3: "Planned work about to start",
-                4: "Work in progress"
-            }[this.attributes.works_state] || this.attributes.works_state;
-        },
-        tooltip: 'tooltip'
+        works_desc: 'description',
+        works_state: 'status',
+        tooltip: 'location'
     },
     filter_key: true,
     filter_value: function(feature) {
@@ -327,16 +307,12 @@ fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
     },
     select_action: true,
     actions: {
-        // Need to override these two from roadworks_defaults in roadworks.js
-        found: null,
-        not_found: null,
-
         asset_found: function(feature) {
             this.fixmystreet.actions.asset_not_found.call(this);
             feature.layer = this;
             var attr = feature.attributes,
-            tooltip = attr.tooltip.replace(/\\n/g, '\n'),
-            desc = attr.works_desc.replace(/\\n/g, '\n');
+            location = attr.location.replace(/\\n/g, '\n'),
+            desc = attr.description.replace(/\\n/g, '\n');
 
             var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + this.id + ' box-warning"></div>');
             var $dl = $("<dl></dl>").appendTo($msg);
@@ -346,7 +322,7 @@ fixmystreet.assets.add(fixmystreet.roadworks.layer_future, {
             }
             $dl.append("<dt>Location</dt>");
             var $summary = $("<dd></dd>").appendTo($dl);
-            tooltip.split("\n").forEach(function(para) {
+            location.split("\n").forEach(function(para) {
                 if (para.match(/^(\d{2}\s+\w{3}\s+(\d{2}:\d{2}\s+)?\d{4}( - )?){2}/)) {
                     // skip showing the date again
                     return;
