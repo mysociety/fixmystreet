@@ -22,6 +22,7 @@ BEGIN {
 use Getopt::Long;
 use Path::Tiny;
 use FixMyStreet;
+use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use FixMyStreet::Email;
 use mySociety::HandleMail;
@@ -31,7 +32,7 @@ use mySociety::SystemMisc qw(print_log);
 # messages being generated (only in response to non-bounce input, obviously).
 mySociety::SystemMisc::log_to_stderr(0);
 
-my $cobrand = "default";
+my $cobrand;
 
 # Where to forward mail that should be looked at by a person,
 # such as a permanent bounce for a report.
@@ -180,18 +181,42 @@ sub handle_non_bounce_to_null_address {
     # Send an automatic response
     print_log('info', "Received non-bounce to null address, auto-replying");
 
+    my ( $cobrand, $from_addr, $from_name ) = get_config_for_autoresponse();
+
     my $template = path(FixMyStreet->path_to("templates", "email", $cobrand, 'reply-autoresponse'))->slurp_utf8;
 
     # We generate this as a bounce.
     my ($rp) = $data{return_path} =~ /^\s*<(.*)>\s*$/;
     my $mail = FixMyStreet::Email::construct_email({
         'Auto-Submitted' => 'auto-replied',
-        From => [ FixMyStreet->config('CONTACT_EMAIL'),
-                  FixMyStreet->config('CONTACT_NAME') ],
+        From => [ $from_addr, $from_name ],
         To => $rp,
         _body_ => $template,
     });
     send_mail($mail, $rp);
+}
+
+# Based on the address the incoming message was sent to, we might want to
+# use a cobrand's own reply-autoresponse template.
+sub get_config_for_autoresponse {
+    # cobrand might have been set from command line, so prefer that if so.
+    if ( defined $cobrand ) {
+        return ( $cobrand, FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') );
+    }
+
+    # Try and find a matching email address in the COBRAND_FEATURES config
+    my $recipient = mySociety::HandleMail::get_bounce_recipient($data{message})->address;
+    my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
+    my $cobrands = $features->{do_not_reply_email} || {};
+    for my $moniker ( keys %$cobrands ) {
+        if ( $cobrands->{$moniker} eq $recipient ) {
+            my $cb = FixMyStreet::Cobrand->get_class_for_moniker($moniker)->new();
+            return ( $moniker, $cb->contact_email, $cb->contact_name );
+        }
+    }
+
+    # No match found, so use default cobrand
+    return ( "default", FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') );
 }
 
 sub forward_on_to {
