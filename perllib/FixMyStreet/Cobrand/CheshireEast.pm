@@ -32,7 +32,7 @@ sub disambiguate_location {
 }
 
 sub enter_postcode_text {
-    'Enter a postcode or street name and area in Cheshire East';
+    'Enter a postcode, or a road and place name';
 }
 
 sub admin_user_domain { 'cheshireeast.gov.uk' }
