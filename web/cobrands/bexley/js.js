@@ -76,6 +76,10 @@ fixmystreet.assets.add(road_defaults, {
     nearest_radius: 100,
     usrn: [
         {
+            attribute: 'UPRN',
+            field: 'uprn'
+        },
+        {
             attribute: 'NSG_REF',
             field: 'NSGRef'
         },

@@ -45,6 +45,8 @@ sub open311_get_update_munging {
 }
 
 sub lookup_site_code_config {
+    my ($self, $property) = @_;
+
     # uncoverable subroutine
     # uncoverable statement
     {
@@ -52,7 +54,7 @@ sub lookup_site_code_config {
         url => "https://tilma.mysociety.org/mapserver/bexley",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => "Streets",
-        property => "NSG_REF",
+        property => $property,
         accept_feature => sub { 1 }
     }
 }
@@ -74,17 +76,25 @@ sub open311_config {
               value => $row->detail };
 
         if (!$row->get_extra_field_value('site_code')) {
-            if (my $ref = $self->lookup_site_code($row)) {
+            if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
                 push @$extra, { name => 'site_code', value => $ref, description => 'Site code' };
             }
         }
     } elsif ($contact->email =~ /^Uniform/) {
+        # Reports made via the app probably won't have a UPRN because we don't
+        # display the road layer. Instead we'll look up the closest asset from the
+        # WFS service at the point we're sending the report over Open311.
+        if (!$row->get_extra_field_value('uprn')) {
+            if (my $ref = $self->lookup_site_code($row, 'UPRN')) {
+                push @$extra, { name => 'uprn', description => 'UPRN', value => $ref };
+            }
+        }
     } else { # Symology
         # Reports made via the app probably won't have a NSGRef because we don't
         # display the road layer. Instead we'll look up the closest asset from the
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('NSGRef')) {
-            if (my $ref = $self->lookup_site_code($row)) {
+            if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
                 push @$extra, { name => 'NSGRef', description => 'NSG Ref', value => $ref };
             }
         }
