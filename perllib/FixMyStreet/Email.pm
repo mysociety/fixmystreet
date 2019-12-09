@@ -173,6 +173,7 @@ sub send_cron {
     });
     $vars->{signature} = _render_template($tt, 'signature.txt', $vars);
     $vars->{site_name} = Utils::trim_text(_render_template($tt, 'site-name.txt', $vars));
+    $vars->{staging} = FixMyStreet->config('STAGING_SITE');
     $hdrs->{_body_} = _render_template($tt, $template, $vars);
 
     if ($html_template) {

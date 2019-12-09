@@ -19,6 +19,8 @@
     [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
     <body class="[% bodyclass | html IF bodyclass %]">
 
+    [% INCLUDE 'debug_header.html' %]
+
     <div class="wrapper">
         <div class="table-cell">
             <header id="site-header" role="banner">
@@ -32,5 +34,3 @@
 
             <div class="container">
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
-
-        <!-- [% INCLUDE 'debug_header.html' %] -->

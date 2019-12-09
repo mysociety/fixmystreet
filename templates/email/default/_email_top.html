@@ -47,6 +47,17 @@
   </style>
 </head>
 <body style="[% body_style %]">
+[% IF staging AND NOT for_rss %]
+  <table [% wrapper_table | safe %] style="[% td_style %]">
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% warning_style %]" class="hint">
+        [% loc('This email was sent from a staging site.') %]
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+  </table>
+[% END %]
   <table [% wrapper_table | safe %] style="[% wrapper_style %]">
     <tr>
       <th class="spacer-cell"></th>
