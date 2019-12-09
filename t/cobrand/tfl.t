@@ -521,6 +521,12 @@ subtest 'check report age on /around' => sub {
 
     $mech->get_ok( '/around?lat=' . $report->latitude . '&lon=' . $report->longitude );
     $mech->content_lacks($report->title);
+
+    $report->update({
+        confirmed => \"current_timestamp",
+        whensent => \"current_timestamp",
+        lastupdate => \"current_timestamp",
+    });
 };
 
 subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {

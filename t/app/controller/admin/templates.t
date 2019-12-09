@@ -35,14 +35,7 @@ my $tfltemplate = $tfl->response_templates->create({
     text => "This template will only appear on the TfL cobrand.",
 });
 
-my $dt = DateTime->new(
-    year   => 2011,
-    month  => 04,
-    day    => 16,
-    hour   => 15,
-    minute => 47,
-    second => 23
-);
+my $dt = DateTime->now();
 
 my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
