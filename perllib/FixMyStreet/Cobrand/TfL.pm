@@ -110,6 +110,9 @@ sub problems_restriction {
       "$table.confirmed" => { '>=', '2019-12-09 12:00' }
     });
 }
+sub problems_sql_restriction {
+    return "AND confirmed >= '2019-12-09 12:00'";
+}
 
 sub password_expiry {
     return if FixMyStreet->test_mode;

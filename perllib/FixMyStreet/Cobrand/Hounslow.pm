@@ -173,5 +173,8 @@ sub problems_restriction {
       "$table.confirmed" => { '>=', '2019-05-06' }
     });
 }
+sub problems_sql_restriction {
+    return "AND confirmed >= '2019-05-06'";
+}
 
 1;

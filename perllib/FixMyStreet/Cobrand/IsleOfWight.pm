@@ -58,6 +58,9 @@ sub problems_restriction {
       "$table.confirmed" => { '>=', '2019-09-30' }
     });
 }
+sub problems_sql_restriction {
+    return "AND confirmed >= '2019-09-30'";
+}
 
 sub get_geocoder { 'OSM' }
 

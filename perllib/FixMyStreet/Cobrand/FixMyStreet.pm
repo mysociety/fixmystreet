@@ -41,6 +41,10 @@ sub problems_restriction {
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
     return $rs->search({ "$table.cobrand" => { '!=' => 'tfl' } });
 }
+sub problems_sql_restriction {
+    my $self = shift;
+    return "AND cobrand != 'tfl'";
+}
 
 sub relative_url_for_report {
     my ( $self, $report ) = @_;
