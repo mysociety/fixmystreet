@@ -68,8 +68,8 @@ $admin_user->user_body_permissions->create({
 });
 
 my @reports = $mech->create_problems_for_body(1, $isleofwight->id, 'An Isle of wight report', {
-    confirmed => '2019-05-25 09:00',
-    lastupdate => '2019-05-25 09:00',
+    confirmed => '2019-10-25 09:00',
+    lastupdate => '2019-10-25 09:00',
     latitude => 50.7108,
     longitude => -1.29573,
     user => $user,

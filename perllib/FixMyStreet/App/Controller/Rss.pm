@@ -223,8 +223,11 @@ sub query_main : Private {
     # FIXME Do this in a nicer way at some point in the future...
     my $query = 'select * from ' . $alert_type->item_table . ' where '
         . ($alert_type->head_table ? $alert_type->head_table . '_id=? and ' : '')
-        . $alert_type->item_where . ' order by '
-        . $alert_type->item_order;
+        . $alert_type->item_where . ' ';
+    if ($c->cobrand->can('problems_sql_restriction')) {
+        $query .= $c->cobrand->problems_sql_restriction($alert_type->item_table);
+    }
+    $query .= ' order by ' . $alert_type->item_order;
     my $rss_limit = FixMyStreet->config('RSS_LIMIT');
     $query .= " limit $rss_limit" unless $c->stash->{type} =~ /^all/;
 

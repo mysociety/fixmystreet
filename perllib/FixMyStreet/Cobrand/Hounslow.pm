@@ -166,12 +166,6 @@ sub lookup_site_code_config { {
 
 # Hounslow don't want any reports made before their go-live date visible on
 # their cobrand at all.
-sub problems_restriction {
-    my ($self, $rs) = @_;
-    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
-    return $rs->to_body($self->body)->search({
-      "$table.confirmed" => { '>=', '2019-05-06' }
-    });
-}
+sub cut_off_date { '2019-05-06' }
 
 1;

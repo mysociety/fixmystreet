@@ -56,10 +56,32 @@ sub body {
     return $body;
 }
 
+sub cut_off_date { '' }
+
 sub problems_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
-    return $rs->to_body($self->body);
+    $rs = $rs->to_body($self->body);
+    if (my $date = $self->cut_off_date) {
+        my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+        $rs = $rs->search({
+            "$table.confirmed" => { '>=', $date }
+        });
+    }
+    return $rs;
+}
+
+sub problems_sql_restriction {
+    my ($self, $item_table) = @_;
+    my $q = '';
+    if (!$self->is_two_tier && $item_table ne 'comment') {
+        my $body_id = $self->body->id;
+        $q .= "AND regexp_split_to_array(bodies_str, ',') && ARRAY['$body_id']";
+    }
+    if (my $date = $self->cut_off_date) {
+        $q .= " AND confirmed >= '$date'";
+    }
+    return $q;
 }
 
 sub problems_on_map_restriction {
