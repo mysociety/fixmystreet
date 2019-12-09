@@ -13,7 +13,7 @@
 [% END ~%]
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>[% rss_title %]</title>
+  <title>[% rss_title | safe %]</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <style type="text/css">
   [%~ # Styles here will be applied by everything except Gmail.com %]
