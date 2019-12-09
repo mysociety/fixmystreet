@@ -102,6 +102,15 @@ sub report_sent_confirmation_email { 'id' }
 
 sub report_age { '6 weeks' }
 
+# We don't want any reports made before the go-live date visible
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->to_body($self->body)->search({
+      "$table.confirmed" => { '>=', '2019-12-09 12:00' }
+    });
+}
+
 sub password_expiry {
     return if FixMyStreet->test_mode;
     # uncoverable statement
