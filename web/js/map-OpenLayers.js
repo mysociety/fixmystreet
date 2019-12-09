@@ -943,10 +943,23 @@ $.extend(fixmystreet.utils, {
                 // This option is thankfully used by them both
                 numZoomLevels: fixmystreet.numZoomLevels
             }, fixmystreet.layer_options[i]);
-            if (fixmystreet.layer_options[i].matrixIds) {
-                layer = new fixmystreet.map_type(fixmystreet.layer_options[i]);
+            var layer_options = fixmystreet.layer_options[i];
+            if (layer_options.wms_version) {
+                var options = {
+                  layers: layer_options.layer_names[0],
+                  size: layer_options.tile_size,
+                  format: layer_options.format
+                };
+                layer = new fixmystreet.map_type(
+                  layer_options.name,
+                  layer_options.url,
+                  options,
+                  layer_options
+                );
+            } else if (layer_options.matrixIds) {
+                layer = new fixmystreet.map_type(layer_options);
             } else {
-                layer = new fixmystreet.map_type(fixmystreet.layer_name, fixmystreet.layer_options[i]);
+                layer = new fixmystreet.map_type(fixmystreet.layer_name, layer_options);
             }
             fixmystreet.map.addLayer(layer);
         }

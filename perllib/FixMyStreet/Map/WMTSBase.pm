@@ -4,40 +4,9 @@
 # methods. See, e.g. FixMyStreet::Map::Zurich or FixMyStreet::Map::Bristol.
 
 package FixMyStreet::Map::WMTSBase;
+use parent FixMyStreet::Map::WMXBase;
 
 use strict;
-use Math::Trig;
-use Utils;
-use JSON::MaybeXS;
-
-sub scales {
-    my $self = shift;
-    my @scales = (
-        # A list of scales corresponding to zoom levels, e.g.
-        # '192000',
-        # '96000',
-        # '48000',
-        # etc...
-    );
-    return @scales;
-}
-
-# The copyright string to display in the corner of the map.
-sub copyright {
-    return '';
-}
-
-# A hash of parameters that control the zoom options for the map
-sub zoom_parameters {
-    my $self = shift;
-    my $params = {
-        zoom_levels    => scalar $self->scales,
-        default_zoom   => 0,
-        min_zoom_level => 0,
-        id_offset      => 0,
-    };
-    return $params;
-}
 
 # A hash of parameters used in calculations for map tiles
 sub tile_parameters {
@@ -58,162 +27,46 @@ sub tile_parameters {
     return $params;
 }
 
-# This is used to determine which template to render the map with
-sub map_template { 'fms' }
+sub _get_tile_params {
+    my ($self, $params, $left_col, $top_row, $z, $tile_url) = @_;
 
-# Reproject a WGS84 lat/lon into an x/y coordinate in this map's CRS.
-# Subclasses will want to override this.
-sub reproject_from_latlon($$$) {
-    my ($self, $lat, $lon) = @_;
-    return (0.0, 0.0);
+    return ($tile_url, $z, $self->tile_parameters->{suffix});
 }
 
-# Reproject a x/y coordinate from this map's CRS into WGS84 lat/lon
-# Subclasses will want to override this.
-sub reproject_to_latlon($$$) {
-    my ($self, $x, $y) = @_;
-    return (0.0, 0.0);
+sub _get_tile_src {
+    my ($self, $tile_url, $z, $suffix, $col, $row) = @_;
+
+    return sprintf( '%s/%d/%d/%d%s',
+        $tile_url, $z, $row, $col, $suffix);
 }
 
+sub _get_tile_id {
+    my ($self, $tile_url, $x, $suffix, $col, $row) = @_;
 
-sub map_tiles {
-    my ($self, %params) = @_;
-    my ($left_col, $top_row, $z) = @params{'x_left_tile', 'y_top_tile', 'matrix_id'};
-    my $tile_url = $self->tile_base_url;
-    my $tile_suffix = $self->tile_parameters->{suffix};
-    my $cols = $params{cols};
-    my $rows = $params{rows};
-
-    my @col_offsets = (0.. ($cols-1) );
-    my @row_offsets = (0.. ($rows-1) );
-
-    return [
-        map {
-            my $row_offset = $_;
-            [
-                map {
-                    my $col_offset = $_;
-                    my $row = $top_row + $row_offset;
-                    my $col = $left_col + $col_offset;
-                    my $src = sprintf '%s/%d/%d/%d%s',
-                        $tile_url, $z, $row, $col, $tile_suffix;
-                    my $dotted_id = sprintf '%d.%d', $col, $row;
-
-                    # return the data structure for the cell
-                    +{
-                        src => $src,
-                        row_offset => $row_offset,
-                        col_offset => $col_offset,
-                        dotted_id => $dotted_id,
-                        alt => "Map tile $dotted_id", # TODO "NW map tile"?
-                    }
-                }
-                @col_offsets
-            ]
-        }
-        @row_offsets
-    ];
+    return sprintf( '%d.%d', $col, $row);
 }
 
-# display_map C PARAMS
-# PARAMS include:
-# latitude, longitude for the centre point of the map
-# CLICKABLE is set if the map is clickable
-# PINS is array of pins to show, location and colour
-sub display_map {
-    my ($self, $c, %params) = @_;
-
-    # Map centre may be overridden in the query string
-    $params{latitude} = Utils::truncate_coordinate($c->get_param('lat') + 0)
-        if defined $c->get_param('lat');
-    $params{longitude} = Utils::truncate_coordinate($c->get_param('lon') + 0)
-        if defined $c->get_param('lon');
-
-    $params{rows} //= 2; # 2x2 square is default
-    $params{cols} //= 2;
-
-    my $zoom_params = $self->zoom_parameters;
-
-    $params{zoom} = do {
-        my $zoom = defined $c->get_param('zoom')
-            ? $c->get_param('zoom') + 0
-            : $c->stash->{page} eq 'report'
-                ? $zoom_params->{default_zoom}+1
-                : $zoom_params->{default_zoom};
-        $zoom = $zoom_params->{zoom_levels} - 1
-            if $zoom >= $zoom_params->{zoom_levels};
-        $zoom = 0 if $zoom < 0;
-        $zoom;
-    };
-
-    $c->stash->{map} = $self->get_map_hash( %params );
-
-    if ($params{print_report}) {
-        $params{zoom}++ unless $params{zoom} >= $zoom_params->{zoom_levels};
-        $c->stash->{print_report_map}
-            = $self->get_map_hash(
-                %params,
-                img_type => 'img',
-                cols => 4, rows => 4,
-            );
-        # NB: we can passthrough img_type as literal here, as only designed for print
-
-        # NB we can do arbitrary size, including non-squares, however we'd have
-        # to modify .square-map style with padding-bottom percentage calculated in
-        # an inline style:
-        # <zarino> in which case, the only change that'd be required is
-        # removing { padding-bottom: 100% } from .square-map__outer, putting
-        # the percentage into an inline style on the element itself, and then
-        # probably renaming .square-map__* to .fixed-aspect-map__* or something
-        # since it's no longer necessarily square
-    }
+sub _get_row {
+    my ($self, $top_row, $row_offset, $size) = @_;
+    return $top_row + $row_offset;
 }
 
-sub get_map_hash {
-    my ($self, %params) = @_;
+sub _get_col {
+    my ($self, $left_col, $col_offset, $size) = @_;
+    return $left_col + $col_offset;
+}
 
-    @params{'x_centre_tile', 'y_centre_tile', 'matrix_id'}
-        = $self->latlon_to_tile_with_adjust(
-            @params{'latitude', 'longitude', 'zoom', 'rows', 'cols'});
+sub map_type { 'OpenLayers.Layer.WMTS' }
 
-    # centre_(row|col) is either in middle, or just to right.
-    # e.g. if centre is the number in parens:
-    # 1 (2) 3 => 2 - int( 3/2 ) = 1
-    # 1 2 (3) 4 => 3 - int( 4/2 ) = 1
-    $params{x_left_tile} = $params{x_centre_tile} - int($params{cols} / 2);
-    $params{y_top_tile}  = $params{y_centre_tile} - int($params{rows} / 2);
+sub _map_hash_extras {
+    my $self = shift;
 
-    $params{pins} = [
-        map {
-            my $pin = { %$_ }; # shallow clone
-            ($pin->{px}, $pin->{py})
-                = $self->latlon_to_px($pin->{latitude}, $pin->{longitude},
-                            @params{'x_left_tile', 'y_top_tile', 'zoom'});
-            $pin;
-        } @{ $params{pins} }
-    ];
-
-    my @scales = $self->scales;
     return {
-        %params,
-        type => $self->map_template,
-        map_type => 'OpenLayers.Layer.WMTS',
-        tiles => $self->map_tiles( %params ),
-        copyright => $self->copyright(),
-        zoom => $params{zoom},
-        zoomOffset => $self->zoom_parameters->{min_zoom_level},
-        numZoomLevels => $self->zoom_parameters->{zoom_levels},
-        tile_size => $self->tile_parameters->{size},
-        tile_dpi => $self->tile_parameters->{dpi},
-        tile_urls => encode_json( $self->tile_parameters->{urls} ),
-        tile_suffix => $self->tile_parameters->{suffix},
-        layer_names => encode_json( $self->tile_parameters->{layer_names} ),
         layer_style => $self->tile_parameters->{layer_style},
         matrix_set => $self->tile_parameters->{matrix_set},
-        map_projection => $self->tile_parameters->{projection},
         origin_x => force_float_format($self->tile_parameters->{origin_x}),
         origin_y => force_float_format($self->tile_parameters->{origin_y}),
-        scales => encode_json( \@scales ),
+        tile_suffix => $self->tile_parameters->{suffix},
     };
 }
 

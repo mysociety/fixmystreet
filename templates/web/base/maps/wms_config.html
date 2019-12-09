@@ -1,0 +1,13 @@
+<script nonce="[% csp_nonce %]">
+  var fixmystreet = window.fixmystreet || {};
+  fixmystreet.wms_config = {
+        'map_projection': '[% map.map_projection %]',
+        'tile_urls': [% map.tile_urls | safe %],
+        'tile_size': [% map.tile_size %],
+        'layer_names': [% map.layer_names | safe  %],
+        'wms_version': '[% map.wms_version %]',
+        'format': '[% map.format %]',
+        'scales': [% map.scales | safe %],
+        'requestEncoding': "REST"
+  };
+</script>
