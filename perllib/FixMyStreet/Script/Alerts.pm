@@ -40,6 +40,7 @@ sub send() {
                    $item_table.confirmed as item_confirmed,
                    $item_table.photo as item_photo,
                    $item_table.problem_state as item_problem_state,
+                   $item_table.cobrand as item_cobrand,
                    $head_table.*
             from alert, $item_table, $head_table
                 where alert.parameter::integer = $head_table.id
@@ -47,6 +48,7 @@ sub send() {
                 ";
         } else {
             $query .= " $item_table.*,
+                   $item_table.cobrand as item_cobrand,
                    $item_table.id as item_id
             from alert, $item_table
             where 1 = 1";
@@ -83,6 +85,8 @@ sub send() {
             next if $row->{non_public} and $row->{user_id} != $row->{alert_user_id};
 
             next unless FixMyStreet::DB::Result::Problem::visible_states()->{$row->{state}};
+
+            next if $row->{alert_cobrand} ne 'tfl' && $row->{item_cobrand} eq 'tfl';
 
             $schema->resultset('AlertSent')->create( {
                 alert_id  => $row->{alert_id},
@@ -248,7 +252,7 @@ sub send() {
             cobrand_data => $alert->cobrand_data,
             schema => $schema,
         );
-        my $q = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.confirmed,
+        my $q = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.confirmed, problem.cobrand,
             problem.title, problem.detail, problem.photo from problem_find_nearby(?, ?, ?) as nearby, problem, users
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
@@ -261,6 +265,8 @@ sub send() {
         $q = FixMyStreet::DB->schema->storage->dbh->prepare($q);
         $q->execute($latitude, $longitude, $d, $alert->whensubscribed, $alert->id, $alert->user->email);
         while (my $row = $q->fetchrow_hashref) {
+            next if $alert->cobrand ne 'tfl' && $row->{cobrand} eq 'tfl';
+
             $schema->resultset('AlertSent')->create( {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
