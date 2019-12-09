@@ -83,7 +83,7 @@ sub is_two_tier { 1 }
 
 sub get_geocoder { 'OSM' }
 
-sub map_type { 'OSM' }
+sub map_type { 'Northamptonshire' }
 
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
