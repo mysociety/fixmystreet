@@ -12,7 +12,7 @@ email_footer = site_name;
 
         <th style="[% td_style %][% rss_meta_style %]">
             <p>
-            This is an RSS feed from the FixMyStreet website. RSS feeds allow you
+            This is an RSS feed from the [% site_name %] website. RSS feeds allow you
             to stay up to date with the latest changes and additions to the site.
             <a href="https://www.bbc.co.uk/news/10628494">Learn more about RSS feeds.</a>
             </p>

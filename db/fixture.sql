@@ -26,7 +26,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('new_problems', '', '',
-    'New problems on FixMyStreet', '/', 'The latest problems reported by users',
+    'New problems on {{SITE_NAME}}', '/', 'The latest problems reported by users',
     'problem',
     'problem.non_public = ''f'' and problem.state NOT IN
         (''unconfirmed'', ''hidden'', ''partial'')',
@@ -40,7 +40,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('new_fixed_problems', '', '',
-    'Problems recently reported fixed on FixMyStreet', '/', 'The latest problems reported fixed by users',
+    'Problems recently reported fixed on {{SITE_NAME}}', '/', 'The latest problems reported fixed by users',
     'problem', 'problem.non_public = ''f'' and problem.state in (''fixed'', ''fixed - user'', ''fixed - council'')', 'lastupdate desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem');
 
@@ -51,7 +51,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('local_problems', '', '',
-    'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
+    'New local problems on {{SITE_NAME}}', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem',
     'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state NOT IN
         (''unconfirmed'', ''hidden'', ''partial'')',
@@ -65,7 +65,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('local_problems_state', '', '',
-    'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
+    'New local problems on {{SITE_NAME}}', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in (?)', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
@@ -76,7 +76,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('postcode_local_problems', '', '',
-    'New problems near {{POSTCODE}} on FixMyStreet', '/', 'The latest local problems reported by users',
+    'New problems near {{POSTCODE}} on {{SITE_NAME}}', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem',
     'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state NOT IN
         (''unconfirmed'', ''hidden'', ''partial'')',
@@ -90,7 +90,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('postcode_local_problems_state', '', '',
-    'New problems near {{POSTCODE}} on FixMyStreet', '/', 'The latest local problems reported by users',
+    'New problems near {{POSTCODE}} on {{SITE_NAME}}', '/', 'The latest local problems reported by users',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in (?)', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
@@ -101,7 +101,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
-    'New problems to {{COUNCIL}} on FixMyStreet', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
+    'New problems to {{COUNCIL}} on {{SITE_NAME}}', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
     'problem',
     'problem.non_public = ''f'' and problem.state NOT IN
         (''unconfirmed'', ''hidden'', ''partial'') AND
@@ -117,7 +117,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('ward_problems', '', '',
-    'New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet', '/reports',
+    'New problems for {{COUNCIL}} within {{WARD}} ward on {{SITE_NAME}}', '/reports',
     'The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users',
     'problem',
     'problem.non_public = ''f'' and problem.state NOT IN
@@ -135,7 +135,7 @@ insert into alert_type
     item_table, item_where, item_order,
     item_title, item_link, item_description, template)
 values ('area_problems', '', '',
-    'New problems within {{NAME}}''s boundary on FixMyStreet', '/reports',
+    'New problems within {{NAME}}''s boundary on {{SITE_NAME}}', '/reports',
     'The latest problems within {{NAME}}''s boundary reported by users', 'problem',
     'problem.non_public = ''f'' and problem.state NOT IN
         (''unconfirmed'', ''hidden'', ''partial'') AND

@@ -302,9 +302,8 @@ sub add_row : Private {
         $item{description} .= encode_entities("\n<br>$address") if $address;
     }
 
-    my $recipient_name = $c->cobrand->contact_name;
     $item{description} .= encode_entities("\n<br><a href='$url'>" .
-        sprintf(_("Report on %s"), $recipient_name) . "</a>");
+        sprintf(_("Report on %s"), $c->stash->{site_name}) . "</a>");
 
     if ($row->{latitude} || $row->{longitude}) {
         $item{georss} = { point => "$row->{latitude} $row->{longitude}" };
@@ -332,6 +331,7 @@ sub add_parameters : Private {
     foreach ( keys %{ $c->stash->{title_params} } ) {
         $row->{$_} = $c->stash->{title_params}->{$_};
     }
+    $row->{SITE_NAME} = $c->stash->{site_name};
 
     (my $title = _($alert_type->head_title)) =~ s/\{\{(.*?)}}/$row->{$1}/g;
     (my $link = $alert_type->head_link) =~ s/\{\{(.*?)}}/$row->{$1}/g;

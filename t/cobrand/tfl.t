@@ -781,6 +781,7 @@ FixMyStreet::override_config {
         $staffuser->update;
     };
 };
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'tfl',
     MAPIT_URL => 'http://mapit.uk/',
@@ -812,6 +813,15 @@ FixMyStreet::override_config {
         $mech->content_lacks('Deactivate two-factor');
         $staffuser->unset_extra_metadata('2fa_secret');
         $staffuser->update;
+    };
+
+    subtest 'RSS feed has correct name' => sub {
+        $mech->get_ok('/rss/xsl');
+        $mech->content_contains('RSS feed from the Street Care website');
+        $mech->content_lacks('FixMyStreet');
+        $mech->get_ok('/rss/problems');
+        $mech->content_contains('New problems on Street Care');
+        $mech->content_lacks('FixMyStreet');
     };
 };
 
