@@ -422,6 +422,7 @@ for my $test (
         FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), $to, 'Sent to correct address';
+        like $email[0]->as_string, qr/iEYI87gX6Upb\+tKYzrSmN83pTnv606AOtahHTepSm/, 'Right logo';
         $mech->clear_emails_ok;
         FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report for borough team'})->delete;
     };

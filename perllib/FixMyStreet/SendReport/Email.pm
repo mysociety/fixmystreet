@@ -106,7 +106,10 @@ sub send {
     }
 
     my $result = FixMyStreet::Email::send_cron($row->result_source->schema,
-        $self->get_template($row), $h,
+        $self->get_template($row), {
+            %$h,
+            cobrand => $cobrand, # For correct logo that uses cobrand object
+        },
         $params, $sender, $nomail, $cobrand, $row->lang);
 
     unless ($result) {
