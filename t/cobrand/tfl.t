@@ -813,19 +813,27 @@ FixMyStreet::override_config {
         $staffuser->unset_extra_metadata('2fa_secret');
         $staffuser->update;
     };
+};
 
-    subtest "check not responsible as correct text" => sub {
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmystreet', 'tfl' ],
+    MAPIT_URL => 'http://mapit.uk/'
+}, sub {
+    foreach (qw(tfl.fixmystreet.com fixmystreet.com)) {
+        $mech->host($_);
         my ($p) = $mech->create_problems_for_body(1, $body->id, 'NotResp');
         my $c = FixMyStreet::DB->resultset('Comment')->create({
             problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
             problem_state => 'not responsible', state => 'confirmed', mark_fixed => 0,
             confirmed => DateTime->now(),
         });
-        $mech->get_ok('/report/' . $p->id);
-        $mech->content_contains("not TfL’s responsibility", "not reponsible message contains correct text");
+        subtest "check not responsible as correct text on $_" => sub {
+            $mech->get_ok('/report/' . $p->id);
+            $mech->content_contains("not TfL’s responsibility", "not reponsible message contains correct text");
+        };
         $p->comments->delete;
         $p->delete;
-    };
+    }
 };
 
 FixMyStreet::override_config {
