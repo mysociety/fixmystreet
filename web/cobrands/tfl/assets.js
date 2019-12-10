@@ -63,7 +63,7 @@ var tlrn_categories = [
     "Debris in the carriageway",
     "Fallen Tree",
     "Flooding",
-    "Flytipping",
+    "Flytipping (TfL)",
     "Graffiti / Flyposting (non-offensive)",
     "Graffiti / Flyposting (offensive)",
     "Graffiti / Flyposting on street light (non-offensive)",
