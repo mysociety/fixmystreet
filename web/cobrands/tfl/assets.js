@@ -4,18 +4,6 @@ if (!fixmystreet.maps) {
     return;
 }
 
-var cleaning_categories = [
-    'Street cleaning',
-    'Street Cleaning',
-    'Accumulated Litter',
-    'Street Cleaning Enquiry',
-    'Street Cleansing'
-];
-var cleaning_groups = [
-    'Street cleaning'
-];
-var tfl_council_category = 'General Litter / Rubbish Collection';
-
 var defaults = {
     http_options: {
         url: "https://tilma.mysociety.org/mapserver/tfl",
@@ -94,12 +82,6 @@ function is_tlrn_category_only(category, bodies) {
         bodies.length <= 1;
 }
 
-function regenerate_category_groups() {
-    var old_category_group = $('#category_group').val() || $('#filter_group').val();
-    $('#category_group').remove();
-    fixmystreet.set_up.category_groups(old_category_group, true);
-}
-
 var red_routes_layer = fixmystreet.assets.add(defaults, {
     http_options: {
         url: "https://tilma.mysociety.org/mapserver/tfl",
@@ -117,64 +99,17 @@ var red_routes_layer = fixmystreet.assets.add(defaults, {
     stylemap: tlrn_stylemap,
     no_asset_msg_id: '#js-not-tfl-road',
     actions: {
-        found: function(layer, feature) {
-            fixmystreet.message_controller.road_found(layer, feature);
-
-            if (fixmystreet.cobrand === 'tfl' || !fixmystreet.reporting_data) {
+        found: fixmystreet.message_controller.road_found,
+        not_found: function(layer) {
+            // Only care about this on TfL cobrand
+            if (fixmystreet.cobrand !== 'tfl') {
                 return;
             }
-
-            // On a TfL road, remove any council categories, except street cleaning
-            var changed = false;
-            $('#form_category').find('option').each(function(i, option) {
-                var val = option.value;
-                if (OpenLayers.Util.indexOf(cleaning_categories, val) > -1) {
-                    return;
-                }
-                var optgroup = $(option).closest('optgroup').attr('label');
-                if (OpenLayers.Util.indexOf(cleaning_groups, optgroup) > -1) {
-                    return;
-                }
-                if (val === tfl_council_category) {
-                    changed = true;
-                    $(option).remove();
-                }
-                var data = fixmystreet.reporting_data.by_category[val];
-                if (data && OpenLayers.Util.indexOf(data.bodies, 'TfL') === -1) {
-                    changed = true;
-                    $(option).remove();
-                }
-            });
-            if (changed) {
-                regenerate_category_groups();
-            }
-        },
-        not_found: function(layer) {
             var category = $('#form_category').val();
             if (is_tlrn_category_only(category, fixmystreet.bodies)) {
                 fixmystreet.message_controller.road_not_found(layer);
             } else {
                 fixmystreet.message_controller.road_found(layer);
-            }
-
-            if (fixmystreet.cobrand === 'tfl' || !fixmystreet.reporting_data) {
-                return;
-            }
-
-            // On non-TfL, remove any TfL-road-only categories
-            var changed = false;
-            $('#form_category').find('option').each(function(i, option) {
-                if (option.value === tfl_council_category) {
-                    $(option).remove();
-                }
-                var data = fixmystreet.reporting_data.by_category[option.value];
-                if (data && is_tlrn_category_only(option.value, data.bodies)) {
-                    changed = true;
-                    $(option).remove();
-                }
-            });
-            if (changed) {
-                regenerate_category_groups();
             }
         }
     }

@@ -8,6 +8,11 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
+use t::Mock::Tilma;
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+
+
 my $body = $mech->create_body_ok(2482, 'TfL');
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 2483, # Hounslow
@@ -27,7 +32,26 @@ my $user = $mech->create_user_ok('londonresident@example.com');
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley');
 my $bromleyuser = $mech->create_user_ok('bromleyuser@bromley.example.com', name => 'Bromley Staff', from_body => $bromley);
+$mech->create_contact_ok(
+    body_id => $bromley->id,
+    category => 'Accumulated Litter',
+    email => 'litter-bromley@example.com',
+);
+my $bromley_flooding = $mech->create_contact_ok(
+    body_id => $bromley->id,
+    category => 'Flooding (Bromley)',
+    email => 'litter-bromley@example.com',
+);
+$bromley_flooding->set_extra_metadata(display_name => 'Flooding');
+$bromley_flooding->update;
 
+my $bromley_flytipping = $mech->create_contact_ok(
+    body_id => $bromley->id,
+    category => 'Flytipping (Bromley)',
+    email => 'flytipping-bromley@example.com',
+);
+$bromley_flytipping->set_extra_metadata(group => [ 'Street cleaning' ]);
+$bromley_flytipping->update;
 
 my $contact1 = $mech->create_contact_ok(
     body_id => $body->id,
@@ -660,6 +684,106 @@ FixMyStreet::override_config {
     },
 }, sub {
 
+for my $test (
+    {
+        host => 'www.fixmystreet.com',
+        name => "test red route categories",
+        lat => 51.4039,
+        lon => 0.018697,
+        expected => [
+            'Accumulated Litter', # Tests TfL->_cleaning_categories
+            'Bus stops',
+            'Flooding',
+            'Flytipping (Bromley)', # In the 'Street cleaning' group
+            'Grit bins',
+            'Pothole',
+            'Traffic lights',
+            'Trees'
+        ],
+    },
+    {
+        host => 'www.fixmystreet.com',
+        name => "test non-red route categories",
+        lat => 51.4021,
+        lon => 0.01578,
+        expected => [
+            'Accumulated Litter', # Tests TfL->_cleaning_categories
+            'Bus stops',
+            'Flooding (Bromley)',
+            'Flytipping (Bromley)', # In the 'Street cleaning' group
+            'Grit bins',
+            'Traffic lights',
+            'Trees'
+        ],
+    },
+    {
+        host => 'tfl.fixmystreet.com',
+        name => "test red route categories",
+        lat => 51.4039,
+        lon => 0.018697,
+        expected => [
+            'Bus stops',
+            'Flooding',
+            'Grit bins',
+            'Pothole',
+            'Traffic lights',
+            'Trees'
+        ],
+    },
+    {
+        host => 'tfl.fixmystreet.com',
+        name => "test non-red route categories",
+        lat => 51.4021,
+        lon => 0.01578,
+        expected => [
+            'Bus stops',
+            'Flooding',
+            'Grit bins',
+            'Pothole',
+            'Traffic lights',
+            'Trees'
+        ],
+    },
+    {
+        host => 'bromley.fixmystreet.com',
+        name => "test red route categories",
+        lat => 51.4039,
+        lon => 0.018697,
+        expected => [
+            'Accumulated Litter',
+            'Bus stops',
+            'Flooding',
+            'Flytipping (Bromley)',
+            'Grit bins',
+            'Pothole',
+            'Traffic lights',
+            'Trees'
+        ],
+    },
+    {
+        host => 'bromley.fixmystreet.com',
+        name => "test non-red route categories",
+        lat => 51.4021,
+        lon => 0.01578,
+        expected => [
+            'Accumulated Litter',
+            'Bus stops',
+            'Flooding (Bromley)',
+            'Flytipping (Bromley)',
+            'Grit bins',
+            'Traffic lights',
+            'Trees'
+        ],
+    },
+) {
+    subtest $test->{name} . ' on ' . $test->{host} => sub {
+        $mech->host($test->{host});
+        my $resp = $mech->get_ok_json( '/report/new/ajax?latitude=' . $test->{lat} . '&longitude=' . $test->{lon} );
+        my @actual = sort keys %{ $resp->{by_category} };
+        is_deeply \@actual, $test->{expected};
+    };
+}
+
 for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystreet.com' ) {
     for my $test (
         {
@@ -673,6 +797,7 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
             safety_critical => 'yes',
             category => "Pothole",
             subject => "Dangerous Pothole Report: Test Report",
+            pc => "BR1 3EF", # this is on a red route (according to Mock::MapIt and Mock::Tilma anyway)
         },
         {
             name => "test category extra field - safety critical",
@@ -682,6 +807,7 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
                 location => "carriageway",
             },
             subject => "Dangerous Flooding Report: Test Report",
+            pc => "BR1 3EF", # this is on a red route (according to Mock::MapIt and Mock::Tilma anyway)
         },
         {
             name => "test category extra field - non-safety critical",
@@ -691,13 +817,15 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
                 location => "footway",
             },
             subject => "Problem Report: Test Report",
+            pc => "BR1 3EF", # this is on a red route (according to Mock::MapIt and Mock::Tilma anyway)
         },
     ) {
     subtest $test->{name} . ' on ' . $host => sub {
             $mech->log_in_ok( $user->email );
             $mech->host($host);
             $mech->get_ok('/around');
-            $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+            my $pc = $test->{pc} || 'BR1 3UH';
+            $mech->submit_form_ok( { with_fields => { pc => $pc, } }, "submit location ($pc)" );
             $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
             $mech->submit_form_ok(
                 {

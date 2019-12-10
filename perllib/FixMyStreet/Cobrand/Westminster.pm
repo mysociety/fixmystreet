@@ -122,7 +122,7 @@ sub lookup_site_code_config {
 }
 
 sub _fetch_features_url {
-    my ($self, $cfg, $w, $s, $e, $n) = @_;
+    my ($self, $cfg) = @_;
 
     # Westminster's asset proxy has a slightly different calling style to
     # a standard WFS server.
@@ -132,7 +132,7 @@ sub _fetch_features_url {
         outSR => "27700",
         f => "geojson",
         outFields => $cfg->{property},
-        geometry => "$w,$s,$e,$n",
+        geometry => $cfg->{bbox},
     );
 
     return $cfg->{proxy_url} . "?" . $uri->as_string;

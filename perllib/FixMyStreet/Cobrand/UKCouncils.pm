@@ -289,6 +289,18 @@ sub prefill_report_fields_for_inspector { 1 }
 
 sub social_auth_disabled { 1 }
 
+sub munge_report_new_category_list {
+    my ($self, $options, $contacts, $extras) = @_;
+
+    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    if ( $bodies{'TfL'} ) {
+        # Presented categories vary if we're on/off a red route
+        my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
+        $tfl->munge_red_route_categories($options, $contacts);
+    }
+}
+
+
 =head2 lookup_site_code
 
 Reports made via FMS.com or the app probably won't have a site code
@@ -317,10 +329,16 @@ sub lookup_site_code {
 
 sub _fetch_features {
     my ($self, $cfg, $x, $y) = @_;
-    my $buffer = $cfg->{buffer};
-    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
-    my $uri = $self->_fetch_features_url($cfg, $w, $s, $e,$n);
+    # default to a buffered bounding box around the given point unless
+    # a custom filter parameter has been specified.
+    unless ( $cfg->{filter} ) {
+        my $buffer = $cfg->{buffer};
+        my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+        $cfg->{bbox} = "$w,$s,$e,$n";
+    }
+
+    my $uri = $self->_fetch_features_url($cfg);
     my $response = get($uri) or return;
 
     my $j = JSON->new->utf8->allow_nonref;
@@ -336,7 +354,7 @@ sub _fetch_features {
 }
 
 sub _fetch_features_url {
-    my ($self, $cfg, $w, $s, $e, $n) = @_;
+    my ($self, $cfg) = @_;
 
     my $uri = URI->new($cfg->{url});
     $uri->query_form(
@@ -346,7 +364,7 @@ sub _fetch_features_url {
         TYPENAME => $cfg->{typename},
         VERSION => "1.1.0",
         outputformat => "geojson",
-        BBOX => "$w,$s,$e,$n"
+        $cfg->{filter} ? ( Filter => $cfg->{filter} ) : ( BBOX => $cfg->{bbox} ),
     );
 
     return $uri;
@@ -372,7 +390,7 @@ sub _nearest_feature {
         next unless $accept_types->{$feature->{geometry}->{type}};
 
         my @linestrings = @{ $feature->{geometry}->{coordinates} };
-        if ( $feature->{geometry}->{type} eq 'LineString') {
+        if ( $feature->{geometry}->{type} eq 'LineString' ) {
             @linestrings = ([ @linestrings ]);
         }
         # If it is a point, upgrade it to a one-segment zero-length

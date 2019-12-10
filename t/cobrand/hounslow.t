@@ -75,16 +75,6 @@ subtest "it shows the right things on an /around page" => sub {
     };
 };
 
-subtest "does not show TfL traffic lights category" => sub {
-    FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'fixmystreet',
-    }, sub {
-        my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.482286&longitude=-0.328163');
-        is $json->{by_category}{"Traffic lights"}, undef;
-    };
-};
-
 subtest "Shows external ID on report page to staff users only" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'hounslow',

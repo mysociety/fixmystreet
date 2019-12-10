@@ -7,6 +7,8 @@ use warnings;
 use POSIX qw(strcoll);
 
 use FixMyStreet::MapIt;
+use mySociety::ArrayUtils;
+use Utils;
 
 sub council_area_id { return [
     2511, 2489, 2494, 2488, 2482, 2505, 2512, 2481, 2484, 2495,
@@ -361,5 +363,95 @@ sub munge_sendreport_params {
     }
     $params->{To} = \@munged_to;
 }
+
+sub report_new_is_on_tlrn {
+    my ( $self ) = @_;
+
+    my ($x, $y) = Utils::convert_latlon_to_en(
+        $self->{c}->stash->{latitude},
+        $self->{c}->stash->{longitude},
+        'G'
+    );
+
+    my $cfg = {
+        url => "https://tilma.mysociety.org/mapserver/tfl",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "RedRoutes",
+        filter => "<Filter><Contains><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y);
+    return scalar @$features ? 1 : 0;
+}
+
+sub munge_report_new_category_list { }
+
+sub munge_red_route_categories {
+    my ($self, $options, $contacts) = @_;
+    if ( $self->report_new_is_on_tlrn ) {
+        # We're on a red route - only send TfL categories (except the disabled
+        # one that directs the user to borough for street cleaning XXX TODO: make sure this is included when on the TfL cobrand) and borough
+        # street cleaning categories.
+        my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
+        @$contacts = grep {
+            ( $_->body->name eq 'TfL' && $_->category ne $self->_tfl_council_category )
+            || $cleaning_cats{$_->category}
+            || @{ mySociety::ArrayUtils::intersection( $self->_cleaning_groups, $_->groups ) }
+        } @$contacts;
+    } else {
+        # We're not on a red route - send all categories except
+        # TfL red-route-only.
+        my %tlrn_cats = map { $_ => 1 } @{ $self->_tlrn_categories };
+        @$contacts = grep { !( $_->body->name eq 'TfL' && $tlrn_cats{$_->category } ) } @$contacts;
+    }
+    my $seen = { map { $_->category => 1 } @$contacts };
+    @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
+}
+
+# Reports in these categories can only be made on a red route
+sub _tlrn_categories { [
+    "All out - three or more street lights in a row",
+    "Blocked drain",
+    "Damage - general (Trees)",
+    "Dead animal in the carriageway or footway",
+    "Debris in the carriageway",
+    "Fallen Tree",
+    "Flooding",
+    "Flytipping (TfL)",
+    "Graffiti / Flyposting (non-offensive)",
+    "Graffiti / Flyposting (offensive)",
+    "Graffiti / Flyposting on street light (non-offensive)",
+    "Graffiti / Flyposting on street light (offensive)",
+    "Grass Cutting and Hedges",
+    "Hoardings blocking carriageway or footway",
+    "Light on during daylight hours",
+    "Lights out in Pedestrian Subway",
+    "Low hanging branches and general maintenance",
+    "Manhole Cover - Damaged (rocking or noisy)",
+    "Manhole Cover - Missing",
+    "Mobile Crane Operation",
+    "Other (TfL)",
+    "Pavement Defect (uneven surface / cracked paving slab)",
+    "Pothole",
+    "Roadworks",
+    "Scaffolding blocking carriageway or footway",
+    "Single Light out (street light)",
+    "Standing water",
+    "Unstable hoardings",
+    "Unstable scaffolding",
+    "Worn out road markings",
+] }
+
+sub _cleaning_categories { [
+    'Street cleaning',
+    'Street Cleaning',
+    'Accumulated Litter',
+    'Street Cleaning Enquiry',
+    'Street Cleansing',
+] }
+
+sub _cleaning_groups { [ 'Street cleaning' ] }
+
+sub _tfl_council_category { 'General Litter / Rubbish Collection' }
 
 1;

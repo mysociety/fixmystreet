@@ -347,7 +347,7 @@ subtest "TfL cobrand only shows TfL templates" => sub {
 
 subtest "Bromley cobrand only shows Bromley templates" => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'bromley' ],
+        ALLOWED_COBRANDS => [ 'bromley', 'tfl' ],
     }, sub {
         $report->update({ category => $bromleycontact->category, bodies_str => $bromley->id });
         $mech->log_in_ok( $bromleyuser->email );

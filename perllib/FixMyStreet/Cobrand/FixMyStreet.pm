@@ -86,11 +86,7 @@ sub munge_reports_categories_list {
 sub munge_report_new_category_list {
     my ($self, $options, $contacts, $extras) = @_;
 
-    # No TfL Traffic Lights category in Hounslow
     my %bodies = map { $_->body->name => $_->body } @$contacts;
-    if ( $bodies{'Hounslow Borough Council'} ) {
-        @$options = grep { ($_->{category} || $_->category) !~ /^Traffic lights$/i } @$options;
-    }
 
     if ( $bodies{'Isle of Wight Council'} ) {
         my $user = $self->{c}->user;
@@ -105,6 +101,13 @@ sub munge_report_new_category_list {
         my $seen = { map { $_->category => 1 } @$contacts };
         @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
     }
+
+    if ( $bodies{'TfL'} ) {
+        # Presented categories vary if we're on/off a red route
+        my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
+        $tfl->munge_red_route_categories($options, $contacts);
+    }
+
 }
 
 sub munge_load_and_group_problems {
