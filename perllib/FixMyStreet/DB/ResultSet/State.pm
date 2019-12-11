@@ -1,6 +1,7 @@
 package FixMyStreet::DB::ResultSet::State;
 use base 'DBIx::Class::ResultSet';
 
+use utf8;
 use strict;
 use warnings;
 use Memcached;
@@ -74,7 +75,8 @@ sub display {
     return $unchanging->{$label} if $unchanging->{$label};
     if ($cobrand && $label eq 'not responsible') {
         return 'third party responsibility' if $cobrand eq 'bromley';
-        return "not Island Roads' responsibility" if $cobrand eq 'isleofwight';
+        return "not Island Roads’ responsibility" if $cobrand eq 'isleofwight';
+        return "not TfL’s responsibility" if $cobrand eq 'tfl';
         return _("not the council's responsibility");
     }
     if ($cobrand && $cobrand eq 'oxfordshire' && $label eq 'unable to fix') {
