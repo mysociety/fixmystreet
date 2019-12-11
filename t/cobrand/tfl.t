@@ -384,16 +384,16 @@ subtest "change category, report resent to new location" => sub {
 };
 
 for my $test (
-    [ 'BR1 3UH', 'tfl.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team' ],
-    [ 'BR1 3UH', 'www.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team' ],
-    [ 'BR1 3UH', 'bromley.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team' ],
-    [ 'TW7 5JN', 'tfl.fixmystreet.com', 'Trees', 'TfL <hounslow@example.com>', 'Hounslow borough team' ],
-    [ 'TW7 5JN', 'www.fixmystreet.com', 'Trees', 'TfL <hounslow@example.com>', 'Hounslow borough team' ],
-    [ 'TW7 5JN', 'tfl.fixmystreet.com', 'Grit bins', 'TfL <hounslow@example.com>, TfL <gritbins@example.com>', 'Hounslow borough team and additional address' ],
-    [ 'TW7 5JN', 'www.fixmystreet.com', 'Grit bins', 'TfL <hounslow@example.com>, TfL <gritbins@example.com>', 'Hounslow borough team and additional address' ],
+    [ 'BR1 3UH', 'tfl.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team', 'reference number is FMS' ],
+    [ 'BR1 3UH', 'www.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team', 'reference number is' ],
+    [ 'BR1 3UH', 'bromley.fixmystreet.com', 'Trees', 'TfL <bromley@example.com>', 'Bromley borough team', '' ],
+    [ 'TW7 5JN', 'tfl.fixmystreet.com', 'Trees', 'TfL <hounslow@example.com>', 'Hounslow borough team', 'reference number is FMS' ],
+    [ 'TW7 5JN', 'www.fixmystreet.com', 'Trees', 'TfL <hounslow@example.com>', 'Hounslow borough team', 'reference number is' ],
+    [ 'TW7 5JN', 'tfl.fixmystreet.com', 'Grit bins', 'TfL <hounslow@example.com>, TfL <gritbins@example.com>', 'Hounslow borough team and additional address', 'reference number is FMS' ],
+    [ 'TW7 5JN', 'www.fixmystreet.com', 'Grit bins', 'TfL <hounslow@example.com>, TfL <gritbins@example.com>', 'Hounslow borough team and additional address', 'reference number is' ],
 ) {
-    my ($postcode, $host, $category, $to, $name ) = @$test;
-    subtest "test report is sent to $name" => sub {
+    my ($postcode, $host, $category, $to, $name, $ref ) = @$test;
+    subtest "test report is sent to $name on $host" => sub {
         $mech->host($host);
         $mech->log_in_ok( $user->email );
         $mech->get_ok('/around');
@@ -423,6 +423,7 @@ for my $test (
         my @email = $mech->get_email;
         is $email[0]->header('To'), $to, 'Sent to correct address';
         like $mech->get_text_body_from_email($email[0]), qr/https:\/\/street.tfl/, 'Correct link';
+        like $mech->get_text_body_from_email($email[1]), qr/$ref/, "Correct reference number in reporter email" if $ref;
         $mech->clear_emails_ok;
         FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report for borough team'})->delete;
     };

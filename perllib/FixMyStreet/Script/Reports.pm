@@ -129,19 +129,12 @@ sub send(;$) {
             $missing = join(' / ', @missing) if @missing;
         }
 
-        my $send_confirmation_email = $cobrand->report_sent_confirmation_email;
+        my $send_confirmation_email = $cobrand_handler->report_sent_confirmation_email;
 
         my @dear;
         my %reporters = ();
         my $skip = 0;
         while (my $body = $bodies->next) {
-            # See if this body wants confirmation email (in case report made on national site, for example)
-            if (my $cobrand_body = $body->get_cobrand_handler) {
-                if (my $id_ref = $cobrand_body->report_sent_confirmation_email) {
-                    $send_confirmation_email = $id_ref;
-                }
-            }
-
             my $sender_info = $cobrand->get_body_sender( $body, $row->category );
             my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
