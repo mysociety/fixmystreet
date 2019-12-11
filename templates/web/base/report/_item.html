@@ -22,7 +22,7 @@
 [% IF shortlist %]
     [% item_extra_class = "item-list__item--indented item-list__item--act-and-sort" %]
     [% item_action = BLOCK %]
-        [% item_action %]
+        [% item_action | safe %]
         <input type="submit" name="shortlist-up" value="[% loc('Up one') %]" title="[% loc('Up one') %]" class="item-list__item__shortlist-up" [% IF loop.first %]disabled[% END %]>
         <input type="submit" name="shortlist-down" value="[% loc('Down one') %]" title="[% loc('Down one') %]" class="item-list__item__shortlist-down" [% IF loop.last %]disabled[% END %]>
     [% END %]
