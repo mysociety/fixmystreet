@@ -97,6 +97,22 @@ subtest 'check updates sent for non defects' => sub {
     is $comment->send_fail_count, 1, "comment sending attempted";
 };
 
+subtest 'check closing reports disallowed' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'northamptonshire',
+        #MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $report->update({ state => 'confirmed' });
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('This problem has been fixed');
+        $mech->log_out_ok;
+        $mech->log_in_ok($counciluser->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('fixed - council');
+    };
+};
+
+
 my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new;
 
 subtest 'check updates disallowed correctly' => sub {
