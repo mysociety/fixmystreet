@@ -50,6 +50,14 @@ sub categories_restriction {
     return $rs->search( { 'body.name' => 'Royal Borough of Greenwich' } );
 }
 
+sub munge_around_category_where {
+    my ($self, $where) = @_;
+    # Hide TfL categories on the categories filter dropdown on /around
+    my $b = $self->{c}->model('DB::Body')->find({ name => 'Royal Borough of Greenwich' });
+    return unless $b;
+    return { body_id => $b->id };
+}
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
