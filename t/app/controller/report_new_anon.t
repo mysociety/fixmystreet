@@ -202,6 +202,7 @@ subtest "test report creation anonymously by staff user" => sub {
     is $report->name, 'Anonymous Button';
     is $report->anonymous, 1;
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+    is $report->get_extra_metadata('contributed_by'), $staffuser->id;
 
     my $alert = FixMyStreet::DB->resultset('Alert')->find( {
         user => $report->user,

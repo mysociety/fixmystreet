@@ -167,6 +167,8 @@ subtest "Superuser, can add report as anonymous user" => sub {
     is $report->user->name, 'Super', 'user name unchanged';
     is $report->user->id, $user->id, 'user matches';
     is $report->anonymous, 1, 'report anonymous';
+    is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+    is $report->get_extra_metadata('contributed_by'), undef;
 
     my $send_confirmation_mail_override = Sub::Override->new(
         "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
@@ -178,6 +180,28 @@ subtest "Superuser, can add report as anonymous user" => sub {
     like $email->header('Subject'), qr/Problem Report: Test Report/, 'report email title correct';
     $mech->clear_emails_ok;
     $send_confirmation_mail_override->restore();
+
+    $mech->log_in_ok($test_email);
+};
+
+subtest "Body user, can add report as anonymous user" => sub {
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+
+    my $user = $mech->log_in_ok($user->email);
+    my $report = add_report(
+        'contribute_as_anonymous_user',
+        form_as => 'anonymous_user',
+        title => "Test Report",
+        detail => 'Test report details.',
+        category => 'Street lighting',
+    );
+    is $report->name, $body->name, 'report name is OK';
+    is $report->user->name, 'Body User', 'user name unchanged';
+    is $report->user->id, $user->id, 'user matches';
+    is $report->anonymous, 1, 'report anonymous';
+    is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+    is $report->get_extra_metadata('contributed_by'), $user->id;
 
     $mech->log_in_ok($test_email);
 };
