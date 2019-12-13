@@ -44,20 +44,6 @@ sub reports_per_page { return 20; }
 
 sub admin_user_domain { 'royalgreenwich.gov.uk' }
 
-sub categories_restriction {
-    my ($self, $rs) = @_;
-    # Greenwich only want to display their own categories; not TfL
-    return $rs->search( { 'body.name' => 'Royal Borough of Greenwich' } );
-}
-
-sub munge_around_category_where {
-    my ($self, $where) = @_;
-    # Hide TfL categories on the categories filter dropdown on /around
-    my $b = $self->{c}->model('DB::Body')->find({ name => 'Royal Borough of Greenwich' });
-    return unless $b;
-    return { body_id => $b->id };
-}
-
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
@@ -69,6 +55,9 @@ sub open311_config {
 
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
+
+    # Greenwich returns groups we do not want to use
+    $service->{group} = [];
 
     my %server_set = (easting => 1, northing => 1, closest_address => 1);
     foreach (@$meta) {
