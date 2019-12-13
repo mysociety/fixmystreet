@@ -111,11 +111,6 @@ sub open311_post_send {
     # Check Open311 was successful
     return unless $row->external_id;
 
-    if ($row->category eq 'Abandoned and untaxed vehicles') {
-        my $burnt = $row->get_extra_field_value('burnt') || '';
-        return unless $burnt eq 'Yes';
-    }
-
     my @lighting = (
         'Lamp post',
         'Light in multi-storey car park',
@@ -136,10 +131,15 @@ sub open311_post_send {
 
     my $emails = $self->feature('open311_email') || return;
     my $dangerous = $row->get_extra_field_value('dangerous') || '';
-    my $reportType = $row->get_extra_field_value('reportType') || '';
 
     my $p1_email = 0;
-    if ($row->category eq 'Parks and open spaces') {
+    if ($row->category eq 'Abandoned and untaxed vehicles') {
+        my $burnt = $row->get_extra_field_value('burnt') || '';
+        $p1_email = 1 if $burnt eq 'Yes';
+    } elsif ($row->category eq 'Dead animal') {
+        $p1_email = 1;
+    } elsif ($row->category eq 'Parks and open spaces') {
+        my $reportType = $row->get_extra_field_value('reportType') || '';
         $p1_email = 1 if $reportType =~ /locked in a park|Wild animal/;
         $p1_email = 1 if $dangerous eq 'Yes' && $reportType =~ /Playgrounds|park furniture|gates are broken|Vandalism|Other/;
     } elsif (!$lighting{$row->category}) {
@@ -147,7 +147,7 @@ sub open311_post_send {
     }
 
     my @to;
-    if ($row->category eq 'Abandoned and untaxed vehicles' || $row->category eq 'Dead animal' || $p1_email) {
+    if ($p1_email) {
         push @to, [ $emails->{p1}, 'Bexley P1 email' ] if $emails->{p1};
     }
     if ($lighting{$row->category} && $emails->{lighting}) {
