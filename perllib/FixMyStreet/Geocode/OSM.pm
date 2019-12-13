@@ -14,8 +14,8 @@ use Memcached;
 use XML::Simple;
 use Utils;
 
-my $osmapibase    = "http://www.openstreetmap.org/api/";
-my $nominatimbase = "http://nominatim.openstreetmap.org/";
+my $osmapibase    = "https://www.openstreetmap.org/api/";
+my $nominatimbase = "https://nominatim.openstreetmap.org/";
 
 # string STRING CONTEXT
 # Looks up on Nominatim, and caches, a user-inputted location.
