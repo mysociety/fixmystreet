@@ -390,7 +390,7 @@ sub munge_red_route_categories {
     my ($self, $options, $contacts) = @_;
     if ( $self->report_new_is_on_tlrn ) {
         # We're on a red route - only send TfL categories (except the disabled
-        # one that directs the user to borough for street cleaning XXX TODO: make sure this is included when on the TfL cobrand) and borough
+        # one that directs the user to borough for street cleaning) and borough
         # street cleaning categories.
         my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
         @$contacts = grep {
@@ -400,8 +400,9 @@ sub munge_red_route_categories {
         } @$contacts;
     } else {
         # We're not on a red route - send all categories except
-        # TfL red-route-only.
+        # TfL red-route-only and the TfL street cleaning.
         my %tlrn_cats = map { $_ => 1 } @{ $self->_tlrn_categories };
+        $tlrn_cats{$self->_tfl_council_category} = 1;
         @$contacts = grep { !( $_->body->name eq 'TfL' && $tlrn_cats{$_->category } ) } @$contacts;
     }
     my $seen = { map { $_->category => 1 } @$contacts };
