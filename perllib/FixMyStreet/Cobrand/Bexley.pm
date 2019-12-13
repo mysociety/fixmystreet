@@ -158,6 +158,12 @@ sub open311_post_send {
         my @flooding = split /,/, $emails->{flooding};
         push @to, [ $_, 'FixMyStreet Bexley Flooding' ] for @flooding;
     }
+    if ($contact->email =~ /^Uniform/ && $emails->{eh}) {
+        my @eh = split ',', $emails->{eh};
+        push @to, [ $_, 'FixMyStreet Bexley EH' ] for @eh;
+        $row->push_extra_fields({ name => 'uniform_id', description => 'Uniform ID', value => $row->external_id });
+    }
+
     return unless @to;
     my $sender = FixMyStreet::SendReport::Email->new( to => \@to );
 
