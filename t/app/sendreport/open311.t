@@ -75,6 +75,7 @@ my $bromley_check =
             { name => 'email_alerts_requested', value => 'FALSE' },
             { name => 'requested_datetime', value => re(qr/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)/) },
             { name => 'email', value => TEST_USER_EMAIL },
+            { name => 'fms_extra_title', value => 'MR' },
             { name => 'last_name', value => 'Bloggs' },
         ),
     });
@@ -179,6 +180,7 @@ sub test_overrides {
                     name => 'Fred Bloggs',
                     email => TEST_USER_EMAIL,
                     password => 'dummy',
+                    title => 'MR',
             });
 
             my $row = $db->resultset('Problem')->create( {

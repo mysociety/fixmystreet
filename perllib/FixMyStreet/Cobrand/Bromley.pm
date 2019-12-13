@@ -187,9 +187,12 @@ sub open311_config {
 
     # make sure we have last_name attribute present in row's extra, so
     # it is passed correctly to Bromley as attribute[]
-    if ( $row->cobrand ne 'bromley' ) {
+    if (!$row->get_extra_field_value('last_name')) {
         my ( $firstname, $lastname ) = ( $row->name =~ /(\S+)\.?\s+(.+)/ );
         push @$extra, { name => 'last_name', value => $lastname };
+    }
+    if (!$row->get_extra_field_value('fms_extra_title') && $row->user->title) {
+        push @$extra, { name => 'fms_extra_title', value => $row->user->title };
     }
 
     $row->set_extra_fields(@$extra);
