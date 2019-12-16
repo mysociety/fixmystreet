@@ -375,6 +375,96 @@ $.extend(fixmystreet.utils, {
               new OpenLayers.LonLat( state.lon, state.lat ),
               state.zoom
           );
+      },
+
+      setup_geolocation: function() {
+          if (!OpenLayers.Control.Geolocate || !fixmystreet.map ||
+              !fixmystreet.utils || !fixmystreet.utils.parse_query_string ||
+              fixmystreet.utils.parse_query_string().geolocate !== '1'
+          ) {
+              return;
+          }
+
+          var layer;
+
+          function createCircleOfUncertainty(e) {
+              var loc = new OpenLayers.Geometry.Point(e.point.x, e.point.y);
+              return new OpenLayers.Feature.Vector(
+                  OpenLayers.Geometry.Polygon.createRegularPolygon(
+                      loc,
+                      e.position.coords.accuracy,
+                      40,
+                      0
+                  ),
+                  {},
+                  {
+                      fillColor: '#0074FF',
+                      fillOpacity: 0.3,
+                      strokeWidth: 0
+                  }
+              );
+          }
+          function addGeolocationLayer(e) {
+            layer = new OpenLayers.Layer.Vector('Geolocation');
+            fixmystreet.map.addLayer(layer);
+            layer.setZIndex(fixmystreet.map.getLayersByName("Pins")[0].getZIndex() - 1);
+            var marker = new OpenLayers.Feature.Vector(
+                new OpenLayers.Geometry.Point(e.point.x, e.point.y),
+                {
+                    marker: true
+                },
+                {
+                    graphicName: 'circle',
+                    strokeColor: '#fff',
+                    strokeWidth: 4,
+                    fillColor: '#0074FF',
+                    fillOpacity: 1,
+                    pointRadius: 10
+                }
+            );
+            layer.addFeatures([ createCircleOfUncertainty(e), marker ]);
+          }
+
+          function updateGeolocationMarker(e) {
+              if (!layer) {
+                  addGeolocationLayer(e);
+              } else {
+                  // Reuse the existing circle marker so its DOM element (and
+                  // hopefully CSS animation) is preserved.
+                  var marker = layer.getFeaturesByAttribute('marker', true)[0];
+                  // Can't reuse the background circle feature as there seems to
+                  // be no easy way to replace its geometry with a new
+                  // circle sized according to this location update's accuracy.
+                  // Instead recreate the feature from scratch.
+                  var uncertainty = createCircleOfUncertainty(e);
+                  // Because we're replacing the accuracy circle, it needs to be
+                  // rendered underneath the location marker. In order to do this
+                  // we have to remove all features and re-add, as simply removing
+                  // and re-adding one feature will always render it on top of others.
+                  layer.removeAllFeatures();
+                  layer.addFeatures([ uncertainty, marker ]);
+
+                  // NB The above still breaks CSS animation because the marker
+                  // was removed from the DOM and re-added. We could leave the
+                  // marker alone and just remove the uncertainty circle
+                  // feature, re-add it as a new feature and then manually shift
+                  // its position in the DOM by getting its element's ID from
+                  // uncertainty.geometry.id and moving it before the <circle>
+                  // element.
+
+                  // Don't forget to update the position of the GPS marker.
+                  marker.move(new OpenLayers.LonLat(e.point.x, e.point.y));
+              }
+          }
+
+          var control = new OpenLayers.Control.Geolocate({
+              bind: false, // Don't want the map to pan to each location
+              watch: true,
+              enableHighAccuracy: true
+          });
+          control.events.register("locationupdated", null, updateGeolocationMarker);
+          fixmystreet.map.addControl(control);
+          control.activate();
       }
     });
 
@@ -785,6 +875,10 @@ $.extend(fixmystreet.utils, {
 
         if (fixmystreet.page == "report") {
             setup_inspector_marker_drag();
+        }
+
+        if (fixmystreet.page == "around" || fixmystreet.page == "new") {
+            fixmystreet.maps.setup_geolocation();
         }
 
         if ( fixmystreet.zoomToBounds ) {
