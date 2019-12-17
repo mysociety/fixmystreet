@@ -146,7 +146,11 @@ body.frontpage {
 }
 
 body.twothirdswidthpage {
-    .content .sticky-sidebar aside {
-        top: 12em; // up from 7em, because of the taller header
+    .content .sticky-sidebar {
+        z-index: 1; // rather than -1, which hides it behind .container
+
+        aside {
+            top: 12em; // up from 7em, because of the taller header
+        }
     }
 }
