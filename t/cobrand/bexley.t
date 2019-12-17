@@ -34,6 +34,7 @@ my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ABAN");
 $mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "LAMP");
 $mech->create_contact_ok(body_id => $body->id, category => 'Parks and open spaces', email => "ConfirmPARK");
+$mech->create_contact_ok(body_id => $body->id, category => 'Flooding in the road', email => "FLOD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "UniformFLY");
 $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
 my $category = $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
@@ -44,7 +45,12 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bexley' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
-    COBRAND_FEATURES => { open311_email => { bexley => { p1 => 'p1@bexley', lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com' } } },
+    COBRAND_FEATURES => { open311_email => { bexley => {
+        p1 => 'p1@bexley',
+        lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com',
+        flooding => 'flooding@bexley',
+        eh => 'eh@bexley',
+    } } },
 }, sub {
 
     subtest 'cobrand displays council name' => sub {
@@ -84,7 +90,8 @@ FixMyStreet::override_config {
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
         { category => 'Lamp post', code => 'LAMP', email => 'thirdparty.*another',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
-        { category => 'Flytipping', code => 'UniformFLY' },
+        { category => 'Flytipping', code => 'UniformFLY', email => 'EH.*eh@bexley' },
+        { category => 'Flooding in the road', code => 'FLOD', email => 'Flooding.*flooding' },
     ) {
         ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
             category => $test->{category}, cobrand => 'bexley',
@@ -117,6 +124,9 @@ FixMyStreet::override_config {
                 }
                 if ($test->{code} =~ /Confirm/) {
                     like $mech->get_text_body_from_email($email), qr/Site code: Road ID/;
+                } elsif ($test->{code} =~ /Uniform/) {
+                    like $mech->get_text_body_from_email($email), qr/UPRN: Road ID/;
+                    like $mech->get_text_body_from_email($email), qr/Uniform ID: 248/;
                 } else {
                     like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
                 }
