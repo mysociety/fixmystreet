@@ -67,6 +67,9 @@ sub open311_munge_update_params {
     # Peterborough want to make it clear in Confirm when an update has come
     # from FMS.
     $params->{description} = "[Customer FMS update] " . $params->{description};
+
+    # Send the FMS problem ID with the update.
+    $params->{service_request_id_ext} = $comment->problem->id;
 }
 
 1;
