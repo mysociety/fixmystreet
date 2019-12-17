@@ -23,6 +23,8 @@ FixMyBarangay.po
 
 # Photo upload cache
 /web/photo
+# And theme upload
+/web/theme
 
 # Installation
 /local

@@ -351,4 +351,13 @@ sub update_email_shortlisted_user {
     FixMyStreet::Cobrand::TfL::update_email_shortlisted_user($self, $update);
 }
 
+sub manifest {
+    return {
+        related_applications => [
+            { platform => 'play', url => 'https://play.google.com/store/apps/details?id=org.mysociety.FixMyStreet', id => 'org.mysociety.FixMyStreet' },
+            { platform => 'itunes', url => 'https://apps.apple.com/gb/app/fixmystreet/id297456545', id => 'id297456545' },
+        ],
+    };
+}
+
 1;
