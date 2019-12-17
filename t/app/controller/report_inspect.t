@@ -82,7 +82,7 @@ FixMyStreet::override_config {
     for my $test (
         {
             name => "categories only",
-            area_ids => undef,
+            area_ids => [],
             categories => [ $contact->id ],
             destination => "/reports/Oxfordshire",
             previous => "/my/inspector_redirect",

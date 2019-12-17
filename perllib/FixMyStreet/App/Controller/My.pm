@@ -57,12 +57,12 @@ sub inspector_redirect : Local : Args(0) {
     my ( $self, $c ) = @_;
 
     my $categories = $c->user->categories_string;
-    my $area_ids = $c->user->area_ids;
+    my $area_ids = $c->user->area_ids || [];
     my $body = $c->user->from_body;
 
-    $c->detach('/page_error_404_not_found') unless $body && ($categories || $area_ids);
+    $c->detach('/page_error_404_not_found') unless $body && ($categories || @$area_ids);
 
-    if ($area_ids) {
+    if (@$area_ids) {
         my $ids_string = join ",", @$area_ids;
         my $areas = mySociety::MaPit::call('areas', [ $ids_string ]);
         $c->stash->{wards} = [ values %$areas ];
