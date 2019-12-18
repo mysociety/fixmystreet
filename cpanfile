@@ -86,6 +86,7 @@ requires 'Getopt::Long::Descriptive';
 requires 'HTML::Entities';
 requires 'HTML::FormHandler::Model::DBIC';
 requires 'HTTP::Request::Common';
+requires 'Image::ExifTool::Location';
 requires 'Image::Size', '3.300';
 requires 'Image::PNG::QRCode';
 requires 'IO::Socket::SSL', '2.066';
