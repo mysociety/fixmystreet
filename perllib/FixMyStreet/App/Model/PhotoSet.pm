@@ -192,7 +192,6 @@ sub get_image_data {
 
     my $image = $self->get_raw_image( $num )
         or return;
-    my $photo = $image->{data};
 
     my $size = $args{size};
 
@@ -201,19 +200,24 @@ sub get_image_data {
         return $image;
     }
 
-    my $im = FixMyStreet::ImageMagick->new(blob => $photo);
+    my $im = FixMyStreet::ImageMagick->new(blob => $image->{data});
+    my $photo;
     if ( $size eq 'tn' ) {
-        $photo = $im->shrink('x100')->as_blob;
+        $photo = $im->shrink('x100');
     } elsif ( $size eq 'fp' ) {
-        $photo = $im->crop->as_blob;
+        $photo = $im->crop;
+    } elsif ( $size eq 'og' ) {
+        $photo = $im->crop('1200x630');
     } elsif ( $size eq 'full' ) {
-        # do nothing
+        $photo = $im
     } else {
-        $photo = $im->shrink($args{default} || '250x250')->as_blob;
+        $photo = $im->shrink($args{default} || '250x250');
     }
 
     return {
-        data => $photo,
+        data => $photo->as_blob,
+        width => $photo->width,
+        height => $photo->height,
         content_type => $image->{content_type},
     };
 }

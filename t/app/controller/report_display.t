@@ -441,6 +441,20 @@ for my $test (
     };
 }
 
+subtest "Correct OpenGraph image is used when report has no photo" => sub {
+        $report->update({ photo => undef });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains("/cobrands/fixmystreet/images/fms-og_image.jpg", "site image is used");
+        $mech->content_lacks("/photo/$report_id.0.og", "report image is not present");
+};
+
+subtest "Correct OpenGraph image is used when report has a photo" => sub {
+        $report->update({ photo => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains("/photo/$report_id.0.og.jpeg", "report opengraph image is present");
+        $mech->content_lacks("/cobrands/fixmystreet/images/fms-og_image.jpg", "site image is not used");
+};
+
 my $body_westminster = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body_camden = $mech->create_body_ok(2505, 'Camden Borough Council');
 

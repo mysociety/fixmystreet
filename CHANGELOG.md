@@ -21,6 +21,7 @@
         - Set report title autocomplete to off to prevent email autocompleting
         - Add map filter debouncing to reduce server requests. #2675
         - Add XSL to RSS feeds so they look nicer in browsers.
+        - Add per-report OpenGraph images. #2394
         - Display GPS marker on /around map. #2359
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483

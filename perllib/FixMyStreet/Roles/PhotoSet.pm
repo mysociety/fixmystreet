@@ -31,6 +31,11 @@ sub get_first_image_fp {
     return $self->get_photoset->get_image_data( num => 0, size => 'fp' );
 }
 
+sub get_first_image_og {
+    my ($self) = @_;
+    return $self->get_photoset->get_image_data( num => 0, size => 'og' );
+}
+
 sub photos {
     my $self = shift;
     my $photoset = $self->get_photoset;
@@ -62,6 +67,7 @@ sub photos {
             url_full => "/photo/$typ$id.$i.full.$format?$cachebust",
             url_tn => "/photo/$typ$id.$i.tn.$format?$cachebust",
             url_fp => "/photo/$typ$id.$i.fp.$format?$cachebust",
+            url_og => "/photo/$typ$id.$i.og.$format?$cachebust",
             idx => $i++,
         }
     } $photoset->all_ids;

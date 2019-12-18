@@ -1,4 +1,13 @@
+        [% IF problem.photo %]
+        [% photo = problem.photos.first %]
+        [% data = problem.get_first_image_og %]
+        <meta property="og:image" content="[% c.cobrand.base_url %][% photo.url_og %]">
+        <meta property="og:image:type" content="[% data.content_type %]">
+        <meta property="og:image:width" content="[% data.width %]">
+        <meta property="og:image:height" content="[% data.height %]">
+        [% ELSE %]
         <meta property="og:image" content="[% c.cobrand.base_url %]/cobrands/fixamingata/images/fms-og_image.jpg">
         <meta property="og:image:type" content="image/jpeg">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
+        [% END %]
