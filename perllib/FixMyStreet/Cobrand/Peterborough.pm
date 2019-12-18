@@ -70,6 +70,9 @@ sub open311_munge_update_params {
 
     # Send the FMS problem ID with the update.
     $params->{service_request_id_ext} = $comment->problem->id;
+
+    my $contact = $comment->problem->category_row;
+    $params->{service_code} = $contact->email;
 }
 
 1;
