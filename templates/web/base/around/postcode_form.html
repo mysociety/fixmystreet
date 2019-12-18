@@ -33,6 +33,15 @@
         %]
         <a href="[% c.uri_for('/around', link_params) | html %]" id="geolocate_link">&hellip; [% loc('or use my location') %]</a>
 
+        <form action="[% c.uri_for('/photo/frontpage_upload') %]" id="postcodeForm" method="post" enctype="multipart/form-data">
+            <label for="pc">Upload your photo of the problem:</label>
+            <div>
+            <input type="file" id="pc" name="photo" />
+            <input id="sub" type="submit" value="Upload photo" />
+        </div>
+
+        </form>
+
         [% UNLESS possible_location_matches %]
             [% INCLUDE 'around/_postcode_form_post.html' %]
         [% END %]

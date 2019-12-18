@@ -550,6 +550,8 @@ sub initialize_report : Private {
     } else {
         # If we didn't find one otherwise, start with a blank report
         $report = $c->model('DB::Problem')->new( {} );
+
+        $c->stash->{upload_fileid} = $c->get_param('upload_fileid');
     }
 
     # If we have a user logged in let's prefill some values for them.

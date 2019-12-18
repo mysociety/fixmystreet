@@ -8,6 +8,8 @@ use JSON::MaybeXS;
 use Path::Tiny;
 use Try::Tiny;
 use FixMyStreet::App::Model::PhotoSet;
+use Image::ExifTool;
+use Image::ExifTool::Location;
 
 =head1 NAME
 
@@ -111,7 +113,7 @@ sub no_photo : Private {
     $c->detach( '/page_error_404_not_found', [ 'No photo' ] );
 }
 
-sub upload : Local {
+sub handle_upload : Private {
     my ( $self, $c ) = @_;
     my @items = (
         ( map {
@@ -137,9 +139,44 @@ sub upload : Local {
     } else {
         $out = { id => $fileid };
     }
+    my $exif = Image::ExifTool->new;
+    for my $item ( @items ) {
+        $exif->ExtractInfo($item->tempname);
+        my ($lat, $lon) = $exif->GetLocation();
+        if ( $lat && $lon ) {
+            $out->{latitude} = $lat;
+            $out->{longitude} = $lon;
+            last;
+        }
+    }
+    $c->stash->{photo} = $out;
+}
+
+sub upload : Local {
+    my ( $self, $c ) = @_;
+
+    $c->forward('handle_upload');
 
     $c->res->content_type('application/json; charset=utf-8');
-    $c->res->body(encode_json($out));
+    $c->res->body(encode_json($c->stash->{photo}));
+}
+
+sub frontpage_upload : Local {
+    my ( $self, $c ) = @_;
+
+    $c->forward('handle_upload');
+
+    # what do we do if there was no geotag?
+
+    if ( $c->stash->{photo}->{longitude} && $c->stash->{photo}->{latitude} ) {
+        my $params = {
+            latitude  => $c->stash->{photo}->{latitude},
+            longitude => $c->stash->{photo}->{longitude},
+            upload_fileid => $c->stash->{photo}->{id},
+        };
+        my $new_uri = $c->uri_for('/report/new', $params);
+        return $c->res->redirect($new_uri);
+    }
 }
 
 =head2 process_photo
