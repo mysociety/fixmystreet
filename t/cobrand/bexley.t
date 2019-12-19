@@ -1,8 +1,11 @@
 use CGI::Simple;
 use Test::MockModule;
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Catalyst::Test 'FixMyStreet::App';
+
+set_fixed_time('2019-10-16T17:00:00Z'); # Out of hours
 
 use_ok 'FixMyStreet::Cobrand::Bexley';
 use_ok 'FixMyStreet::Geocode::Bexley';
@@ -48,6 +51,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => { open311_email => { bexley => {
         p1 => 'p1@bexley',
         lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com',
+        outofhours => 'outofhours@bexley',
         flooding => 'flooding@bexley',
         eh => 'eh@bexley',
     } } },
@@ -66,32 +70,32 @@ FixMyStreet::override_config {
 
     my $report;
     foreach my $test (
-        { category => 'Abandoned and untaxed vehicles', email => 1, code => 'ABAN',
+        { category => 'Abandoned and untaxed vehicles', email => ['p1'], code => 'ABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' } },
         { category => 'Abandoned and untaxed vehicles', code => 'ABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'No' } },
-        { category => 'Dead animal', email => 1, code => 'ANIM' },
-        { category => 'Something dangerous', email => 1, code => 'DANG',
+        { category => 'Dead animal', email => ['p1', 'outofhours'], code => 'ANIM' },
+        { category => 'Something dangerous', email => ['p1', 'outofhours'], code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Something dangerous', code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
-        { category => 'Parks and open spaces', email => 1, code => 'ConfirmPARK',
+        { category => 'Parks and open spaces', email => ['p1'], code => 'ConfirmPARK',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Wild animal' } },
         { category => 'Parks and open spaces', code => 'ConfirmPARK',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Maintenance' } },
         { category => 'Parks and open spaces', code => 'ConfirmPARK',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
-        { category => 'Parks and open spaces', email => 1, code => 'ConfirmPARK',
+        { category => 'Parks and open spaces', email => ['p1'], code => 'ConfirmPARK',
             extra => [
                 { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' },
                 { 'name' => 'reportType', description => 'Type of report', 'value' => 'Vandalism' },
             ] },
-        { category => 'Lamp post', code => 'LAMP', email => 'thirdparty.*another',
+        { category => 'Lamp post', code => 'LAMP', email => ['thirdparty', 'another'],
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
-        { category => 'Lamp post', code => 'LAMP', email => 'thirdparty.*another',
+        { category => 'Lamp post', code => 'LAMP', email => ['thirdparty', 'another'],
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
-        { category => 'Flytipping', code => 'UniformFLY', email => 'EH.*eh@bexley' },
-        { category => 'Flooding in the road', code => 'FLOD', email => 'Flooding.*flooding' },
+        { category => 'Flytipping', code => 'UniformFLY', email => ['eh'] },
+        { category => 'Flooding in the road', code => 'FLOD', email => ['flooding'] },
     ) {
         ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
             category => $test->{category}, cobrand => 'bexley',
@@ -117,11 +121,8 @@ FixMyStreet::override_config {
 
             if (my $t = $test->{email}) {
                 my $email = $mech->get_email;
-                if ($t eq 1) {
-                    like $email->header('To'), qr/"Bexley P1 email".*bexley/;
-                } else {
-                    like $email->header('To'), qr/$t/;
-                }
+                $t = join('@[^@]*', @$t);
+                like $email->header('To'), qr/^[^@]*$t@[^@]*$/;
                 if ($test->{code} =~ /Confirm/) {
                     like $mech->get_text_body_from_email($email), qr/Site code: Road ID/;
                 } elsif ($test->{code} =~ /Uniform/) {
@@ -227,6 +228,31 @@ subtest 'geocoder' => sub {
             'latitude' => '49.766863'
         }
     ] };
+};
+
+my $bex = Test::MockModule->new('FixMyStreet::Cobrand::Bexley');
+$bex->mock('get', sub {
+    return <<EOF
+{
+    "england-and-wales": {
+        "events": [
+            { "date": "2019-12-25", "title": "Christmas Day", "notes": "", "bunting": true }
+        ]
+    }
+}
+EOF
+});
+
+subtest 'out of hours' => sub {
+    my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+    set_fixed_time('2019-10-16T12:00:00Z');
+    is $cobrand->_is_out_of_hours(), 0, 'not out of hours in the day';
+    set_fixed_time('2019-10-16T04:00:00Z');
+    is $cobrand->_is_out_of_hours(), 1, 'out of hours early in the morning';
+    set_fixed_time('2019-10-13T12:00:00Z');
+    is $cobrand->_is_out_of_hours(), 1, 'out of hours at weekends';
+    set_fixed_time('2019-12-25T12:00:00Z');
+    is $cobrand->_is_out_of_hours(), 1, 'out of hours on bank holiday';
 };
 
 done_testing();
