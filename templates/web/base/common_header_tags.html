@@ -16,6 +16,14 @@
     (function(a){a=a.documentElement;a.className=a.className.replace(/\bno-js\b/,"js");var b=-1<a.className.indexOf("ie8");b=Modernizr.mq("(min-width: 48em)")||b?"desktop":"mobile";"IntersectionObserver"in window&&(a.className+=" lazyload");"mobile"==b&&(a.className+=' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" %]')})(document);
 </script>
 
+<script nonce="[% csp_nonce %]">
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js');
+    });
+}
+</script>
+
 [% IF robots %]
     <meta name="robots" content="[% robots %]">
 [% ELSIF c.config.STAGING_SITE %]

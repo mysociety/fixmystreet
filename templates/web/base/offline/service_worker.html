@@ -1,0 +1,62 @@
+[%
+SET bodyclass = "offlinepage"; # For selection of scripts
+PROCESS 'common_scripts.html';
+SET offline_html = version('../templates/web/base/offline/fallback.html', '/offline/fallback');
+SET scripts_seen = {};
+
+~%]
+
+const requiredOffline = [
+  "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]",
+  "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]",
+  "[% version('/vendor/OpenLayers/theme/default/style.css') %]",
+  "[% version('/vendor/fancybox/jquery.fancybox-1.3.4.css') %]",
+  [%
+  FOR script IN scripts;
+    NEXT IF scripts_seen.${script};
+    scripts_seen.${script} = 1;
+    ~%]
+    "[%- script %]",
+  [% END %]
+  "[% offline_html %]"
+];
+
+const staticCache = 'static';
+
+addEventListener('install', function(evt) {
+  evt.waitUntil(precache());
+});
+
+async function precache() {
+  const cache = await caches.open(staticCache);
+  return cache.addAll(requiredOffline);
+}
+
+addEventListener('fetch',  fetchEvent => {
+  const request = fetchEvent.request;
+  const url = new URL(request.url);
+
+  if (request.method !== "GET" || url.origin !== location.origin) {
+      return;
+  }
+
+  fetchEvent.respondWith(async function() {
+    if (request.mode === 'navigate') {
+      const fetchPromise = fetch(request);
+
+      try {
+        return await fetchPromise;
+      }
+      catch {
+        let cached = await caches.match("[% offline_html %]");
+        return cached || offlineResponse();
+      }
+    } else {
+      const responseFromCache = await caches.match(request);
+      return responseFromCache || fetch(request);
+    }
+  }());
+});
+
+var offlineResponse = () =>
+    new Response('Service Unavailable', { status: 503, statusText: 'Service Unavailable', headers: { 'Content-Type': 'text/html' }});

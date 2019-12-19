@@ -33,4 +33,16 @@ FixMyStreet::override_config {
     };
 };
 
+subtest 'service worker' => sub {
+    $mech->get_ok('/service-worker.js');
+    $mech->content_contains('translation_strings');
+    $mech->content_contains('offline/fallback');
+};
+
+subtest 'offline fallback page' => sub {
+    $mech->get_ok('/offline/fallback');
+    $mech->content_contains('Offline');
+    $mech->content_contains('offline_list');
+};
+
 done_testing();

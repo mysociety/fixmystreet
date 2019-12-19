@@ -20,6 +20,15 @@ Offline pages Catalyst Controller - service worker and appcache.
 
 =cut
 
+sub service_worker : Path("/service-worker.js") {
+    my ($self, $c) = @_;
+    $c->res->content_type('application/javascript');
+}
+
+sub fallback : Local {
+    my ($self, $c) = @_;
+}
+
 sub manifest: Path("/.well-known/manifest.webmanifest") {
     my ($self, $c) = @_;
     $c->res->content_type('application/manifest+json');

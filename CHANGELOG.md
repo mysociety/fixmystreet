@@ -29,7 +29,7 @@
         - Display map inline with duplicate suggestions on mobile. #2668
         - Improved try again process on mobile. #2863
         - Improve messaging/display of private reports.
-        - Add a web manifest. #2220
+        - Add a web manifest and service worker. #2220
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.

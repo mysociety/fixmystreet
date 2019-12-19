@@ -411,9 +411,10 @@ if ($('#offline_list').length) {
     }
     fixmystreet.offlineBanner.make(true);
 } else {
-    // Put the appcache manifest in a page in an iframe so that HTML pages
-    // aren't cached (thanks to Jake Archibald for documenting this!)
-    if (window.applicationCache && window.localStorage) {
+    // If we're using appcache, not a service worker, put the appcache manifest
+    // in a page in an iframe so that HTML pages aren't cached
+    // (thanks to Jake Archibald for documenting this!)
+    if (!('serviceWorker' in navigator) && window.applicationCache && window.localStorage) {
         $(document.body).prepend('<iframe src="/offline/appcache" style="position:absolute;top:-999em;visibility:hidden"></iframe>');
     }
 
