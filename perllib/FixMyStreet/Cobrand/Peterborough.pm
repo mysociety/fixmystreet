@@ -43,9 +43,10 @@ sub admin_user_domain { "peterborough.gov.uk" }
 around 'open311_config' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
-    # remove the emergency category which is informational only
+    # remove categories which are informational only
     my $extra = $row->get_extra_fields;
     @$extra = grep { $_->{name} ne 'emergency' } @$extra;
+    @$extra = grep { $_->{name} ne 'private_land' } @$extra;
     $row->set_extra_fields(@$extra);
 
     $self->$orig($row, $h, $params);
