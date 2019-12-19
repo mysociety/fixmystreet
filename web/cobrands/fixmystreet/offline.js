@@ -308,13 +308,7 @@ fixmystreet.offline = (function() {
     }
 
     function showReportFromCache(url) {
-        var html = localStorage.getItem(url);
-        if (!html) {
-            return false;
-        }
         var map = localStorage.getItem(url + '/map');
-        var found = html.match(/<body[^>]*>[\s\S]*<\/body>/);
-        document.body.outerHTML = found[0];
         $('#map_box').html('<img src="' + map + '">').css({ textAlign: 'center', height: 'auto' });
         replaceImages('img');
 
@@ -375,49 +369,36 @@ fixmystreet.offline = (function() {
 
 if ($('#offline_list').length) {
     // We are OFFLINE
-    var success = false;
-    if (location.pathname.indexOf('/report') === 0) {
-        success = fixmystreet.offline.showReportFromCache(location.pathname);
-    }
-    if (!success) {
-        var html = localStorage.getItem('/my/planned');
-        if (html) {
-            $('#offline_list').before('<h2>'+translation_strings.offline.your_reports+'</h2>');
-            $('#offline_list').html(html);
-            if (location.search.indexOf('saved=1') > 0) {
-                $('#offline_list').before('<p class="form-success">'+translation_strings.offline.update_saved+'</p>');
-            }
-            fixmystreet.offline.replaceImages('#offline_list img');
-            var offlineForms = fixmystreet.offlineData.getForms();
-            var savedForms = {};
-            offlineForms.forEach(function(form) {
-                savedForms[form[0]] = 1;
-            });
-            $('#offline_list a').each(function(i, a) {
-                if (savedForms[a.href]) {
-                    $(this).find('h3').prepend('<em>'+translation_strings.offline.update_data_saved+'</em> ');
-                }
-            });
-            $('#offline_clear').css('margin-top', '5em').html('<button id="js-clear-localStorage">'+translation_strings.offline.clear_data+'</button>');
-            $('#js-clear-localStorage').click(function() {
-                if (window.confirm(translation_strings.offline.are_you_sure)) {
-                    fixmystreet.offline.removeReports(fixmystreet.offlineData.getCachedUrls());
-                    fixmystreet.offlineData.clearForms();
-                    localStorage.removeItem('/my/planned');
-                    alert(translation_strings.offline.data_cleared);
-                }
-            });
+    var html = localStorage.getItem('/my/planned');
+    if (html) {
+        $('#offline_list').before('<h2>'+translation_strings.offline.your_reports+'</h2>');
+        $('#offline_list').html(html);
+        if (location.search.indexOf('saved=1') > 0) {
+            $('#offline_list').before('<p class="form-success">'+translation_strings.offline.update_saved+'</p>');
         }
+        fixmystreet.offline.replaceImages('#offline_list img');
+        var offlineForms = fixmystreet.offlineData.getForms();
+        var savedForms = {};
+        offlineForms.forEach(function(form) {
+            savedForms[form[0]] = 1;
+        });
+        $('#offline_list a').each(function(i, a) {
+            if (savedForms[a.href]) {
+                $(this).find('h3').prepend('<em>'+translation_strings.offline.update_data_saved+'</em> ');
+            }
+        });
+        $('#offline_clear').css('margin-top', '5em').html('<button id="js-clear-localStorage">'+translation_strings.offline.clear_data+'</button>');
+        $('#js-clear-localStorage').click(function() {
+            if (window.confirm(translation_strings.offline.are_you_sure)) {
+                fixmystreet.offline.removeReports(fixmystreet.offlineData.getCachedUrls());
+                fixmystreet.offlineData.clearForms();
+                localStorage.removeItem('/my/planned');
+                alert(translation_strings.offline.data_cleared);
+            }
+        });
     }
     fixmystreet.offlineBanner.make(true);
 } else {
-    // If we're using appcache, not a service worker, put the appcache manifest
-    // in a page in an iframe so that HTML pages aren't cached
-    // (thanks to Jake Archibald for documenting this!)
-    if (!('serviceWorker' in navigator) && window.applicationCache && window.localStorage) {
-        $(document.body).prepend('<iframe src="/offline/appcache" style="position:absolute;top:-999em;visibility:hidden"></iframe>');
-    }
-
     fixmystreet.offlineBanner.make(false);
 
     // On /my/planned, when online, cache all shortlisted
