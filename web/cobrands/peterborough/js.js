@@ -38,4 +38,36 @@ fixmystreet.assets.add(defaults, {
     name: "Adopted Highways"
 });
 
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
+        params: {
+            TYPENAME: "tree_groups"
+        }
+    },
+    asset_id_field: 'TREE_CODE',
+    attributes: {
+        tree_code: 'TREE_CODE'
+    },
+    asset_type: 'area',
+    asset_group: 'Trees',
+    asset_item: 'tree group'
+});
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
+        params: {
+            TYPENAME: "tree_points"
+        }
+    },
+    asset_id_field: 'TREE_CODE',
+    attributes: {
+        tree_code: 'TREE_CODE'
+    },
+    asset_type: 'spot',
+    asset_group: 'Trees',
+    asset_item: 'tree'
+});
+
 })();
