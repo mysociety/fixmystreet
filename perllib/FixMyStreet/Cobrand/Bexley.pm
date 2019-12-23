@@ -155,23 +155,12 @@ sub open311_post_send {
     }
 
     my @to;
-    if ($p1_email) {
-        push @to, [ $emails->{p1}, 'Bexley P1 email' ] if $emails->{p1};
-    }
-    if ($lighting{$row->category} && $emails->{lighting}) {
-        my @lighting = split /,/, $emails->{lighting};
-        push @to, [ $_, 'FixMyStreet Bexley Street Lighting' ] for @lighting;
-    }
-    if ($flooding{$row->category} && $emails->{flooding}) {
-        my @flooding = split /,/, $emails->{flooding};
-        push @to, [ $_, 'FixMyStreet Bexley Flooding' ] for @flooding;
-    }
-    if ($outofhours_email && _is_out_of_hours() && $emails->{outofhours}) {
-        push @to, [ $emails->{outofhours}, 'Bexley out of hours' ];
-    }
-    if ($contact->email =~ /^Uniform/ && $emails->{eh}) {
-        my @eh = split ',', $emails->{eh};
-        push @to, [ $_, 'FixMyStreet Bexley EH' ] for @eh;
+    push @to, email_list($emails->{p1}, 'Bexley P1 email') if $p1_email;
+    push @to, email_list($emails->{lighting}, 'FixMyStreet Bexley Street Lighting') if $lighting{$row->category};
+    push @to, email_list($emails->{flooding}, 'FixMyStreet Bexley Flooding') if $flooding{$row->category};
+    push @to, email_list($emails->{outofhours}, 'Bexley out of hours') if $outofhours_email && _is_out_of_hours();
+    if ($contact->email =~ /^Uniform/) {
+        push @to, email_list($emails->{eh}, 'FixMyStreet Bexley EH');
         $row->push_extra_fields({ name => 'uniform_id', description => 'Uniform ID', value => $row->external_id });
     }
 
@@ -184,6 +173,14 @@ sub open311_post_send {
     $h->{additional_information} = $extra_data;
 
     $sender->send($row, $h);
+}
+
+sub email_list {
+    my ($emails, $name) = @_;
+    return unless $emails;
+    my @emails = split /,/, $emails;
+    my @to = map { [ $_, $name ] } @emails;
+    return @to;
 }
 
 sub dashboard_export_problems_add_columns {
