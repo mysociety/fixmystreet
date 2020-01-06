@@ -1,5 +1,5 @@
 [%~
-    IF c.user_exists AND ( c.user.categories.size OR c.user.area_ids.size );
+    IF c.user_exists AND c.user.from_body AND ( c.user.categories.size OR c.user.area_ids.size );
       reports_uri = '/my/inspector_redirect';
     ELSE;
       reports_uri = '/reports';

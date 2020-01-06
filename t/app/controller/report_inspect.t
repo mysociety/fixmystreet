@@ -119,12 +119,23 @@ FixMyStreet::override_config {
             good_link => "/reports",
             bad_link => "/my/inspector_redirect",
         },
+        {
+            name => "categories but no from_body",
+            area_ids => undef,
+            categories => [ $contact->id ],
+            destination => "/my",
+            query_form => {},
+            good_link => "/reports",
+            bad_link => "/my/inspector_redirect",
+            unset_from_body => 1,
+        },
     ) {
         subtest "login destination and top-level nav for inspectors with " . $test->{name} => sub {
             $mech->log_out_ok;
 
             $user->area_ids($test->{area_ids});
             $user->set_extra_metadata('categories', $test->{categories});
+            $user->from_body(undef) if $test->{unset_from_body};
             $user->update;
 
             # Can't use log_in_ok, as the call to logged_in_ok clobbers our post-login
@@ -144,6 +155,8 @@ FixMyStreet::override_config {
             $mech->get_ok("/");
             ok $mech->find_link( text => 'All reports', url => $test->{good_link} );
             ok !$mech->find_link( text => 'All reports', url => $test->{bad_link} );
+
+            $user->update( { from_body => $oxon } ) if $test->{unset_from_body};
         };
     }
 
