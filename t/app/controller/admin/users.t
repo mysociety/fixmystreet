@@ -162,6 +162,30 @@ subtest 'user_edit redirects appropriately' => sub {
     };
 };
 
+subtest 'user categories are cleared when from_body is unset' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok( $user3->email );
+
+        my $cat1 = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
+        my $cat2 = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
+        $user2->set_extra_metadata('categories', [ $cat1->id, $cat2->id ]);
+        $user2->from_body($oxfordshire->id);
+        $user2->update;
+
+        $mech->get_ok('/admin/users/' . $user2->id);
+        $mech->submit_form_ok( { with_fields => {
+            body => undef
+        } } );
+
+        $user2->discard_changes;
+        is $user2->from_body, undef, "from_body unset";
+        is $user2->get_extra_metadata('categories'), undef, "categories unset";
+    };
+};
+
 $mech->log_in_ok( $superuser->email );
 
 for my $test (
