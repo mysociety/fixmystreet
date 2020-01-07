@@ -145,10 +145,12 @@ sub open311_post_send {
     } elsif ($row->category eq 'Dead animal') {
         $p1_email = 1;
         $outofhours_email = 1;
-    } elsif ($row->category eq 'Parks and open spaces') {
+    } elsif ($row->category eq 'Gulley covers' || $row->category eq 'Manhole covers') {
         my $reportType = $row->get_extra_field_value('reportType') || '';
-        $p1_email = 1 if $reportType =~ /locked in a park|Wild animal/;
-        $p1_email = 1 if $dangerous eq 'Yes' && $reportType =~ /Playgrounds|park furniture|gates are broken|Vandalism|Other/;
+        $p1_email = 1 if $reportType eq 'Cover missing';
+        $p1_email = 1 if $dangerous eq 'Yes';
+    } elsif ($row->category eq 'Damage to kerb' || $row->category eq 'Damaged road' || $row->category eq 'Damaged pavement') {
+        $p1_email = 1;
     } elsif (!$lighting{$row->category}) {
         $p1_email = 1 if $dangerous eq 'Yes';
         $outofhours_email = 1 if $dangerous eq 'Yes';
