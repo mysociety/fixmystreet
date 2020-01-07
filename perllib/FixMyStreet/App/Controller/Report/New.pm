@@ -697,6 +697,8 @@ sub setup_categories_and_bodies : Private {
     my %category_extras  = ();       # extra fields to fill in for open311
     my %category_extras_hidden =
       (); # whether all of a category's fields are hidden
+    my %category_extras_notices =
+      (); # whether all of a category's fields are simple notices and not inputs
     my %non_public_categories =
       ();    # categories for which the reports are not public
     $c->stash->{unresponsive} = {};
@@ -729,6 +731,16 @@ sub setup_categories_and_bodies : Private {
             } else {
                 $category_extras_hidden{$contact->category} = $all_hidden;
             }
+
+            my $all_notices = (grep {
+                ( $_->{variable} || '' ) ne 'false'
+                && !$c->cobrand->category_extra_hidden($_)
+            } @$metas) ? 0 : 1;
+            if (exists($category_extras_notices{$contact->category})) {
+                $category_extras_notices{$contact->category} &&= $all_notices;
+            } else {
+                $category_extras_notices{$contact->category} = $all_notices;
+            }
         }
 
         $non_public_categories{ $contact->category } = 1 if $contact->non_public;
@@ -760,6 +772,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_hidden}  = \%category_extras_hidden;
+    $c->stash->{category_extras_notices}  = \%category_extras_notices;
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{extra_name_info} = $first_area->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
 

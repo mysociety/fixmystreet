@@ -67,6 +67,23 @@ $mech->create_contact_ok(
     category => 'Something Other',
     email => '104',
 );
+$mech->create_contact_ok(
+    body_id => $body2->id, # Edinburgh
+    category => 'Abandoned vehicle',
+    email => '105',
+    extra => { _fields => [
+        { description => 'This is a warning message.', code => 'notice', required => 'false', variable => 'false', order => '0' },
+        { description => 'USRN', code => 'usrn', required => 'false', automated => 'hidden_field' },
+    ] },
+);
+$mech->create_contact_ok(
+    body_id => $body2->id, # Edinburgh
+    category => 'Traffic signals',
+    email => '106',
+    extra => { _fields => [
+        { description => 'This is a warning message for traffic signals.', code => 'notice', required => 'false', variable => 'false', order => '0' },
+    ] },
+);
 
 my $staff_user = $mech->create_user_ok('staff@example.org', name => 'staff', from_body => $body->id);
 
@@ -278,6 +295,42 @@ subtest "Category extras omits description label when all fields are hidden" => 
             contains_string($category_extra, "central_asset_id");
             lacks_string($category_extra, "USRN", "Lacks 'USRN' label");
             lacks_string($category_extra, "Asset ID", "Lacks 'Asset ID' label");
+            lacks_string($category_extra, "resolve your problem quicker, by providing some extra detail", "Lacks description text");
+        }
+    };
+};
+
+subtest "Category extras omits preamble when all fields are notices" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        for (
+          { url => '/report/new/ajax?' },
+          { url => '/report/new/category_extras?category=Traffic+signals' },
+        ) {
+            my $json = $mech->get_ok_json($_->{url} . '&latitude=55.952055&longitude=-3.189579');
+            my $category_extra = $json->{by_category} ? $json->{by_category}{'Traffic signals'}{category_extra} : $json->{category_extra};
+            contains_string($category_extra, "This is a warning message for traffic signals.");
+            lacks_string($category_extra, "resolve your problem quicker, by providing some extra detail", "Lacks description text");
+        }
+    };
+};
+
+subtest "Category extras omits preamble when fields are only notices and hidden" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        for (
+          { url => '/report/new/ajax?' },
+          { url => '/report/new/category_extras?category=Abandoned+vehicle' },
+        ) {
+            my $json = $mech->get_ok_json($_->{url} . '&latitude=55.952055&longitude=-3.189579');
+            my $category_extra = $json->{by_category} ? $json->{by_category}{'Abandoned vehicle'}{category_extra} : $json->{category_extra};
+            contains_string($category_extra, "This is a warning message.");
+            contains_string($category_extra, "usrn");
+            lacks_string($category_extra, "USRN", "Lacks 'USRN' label");
             lacks_string($category_extra, "resolve your problem quicker, by providing some extra detail", "Lacks description text");
         }
     };
