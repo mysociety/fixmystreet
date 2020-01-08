@@ -255,7 +255,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         $c->detach('edit_display') if $done;
     }
 
-    if ( $c->get_param('resend') && !$c->cobrand->call_hook('disable_resend') ) {
+    if ( $c->get_param('resend') && !$c->cobrand->call_hook('disable_resend_button') ) {
         $c->forward('/auth/check_csrf_token');
 
         $problem->resend;

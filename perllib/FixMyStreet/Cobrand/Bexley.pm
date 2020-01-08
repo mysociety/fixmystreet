@@ -27,7 +27,7 @@ sub disambiguate_location {
     };
 }
 
-sub disable_resend { 1 }
+sub disable_resend_button { 1 }
 
 sub on_map_default_status { 'open' }
 
