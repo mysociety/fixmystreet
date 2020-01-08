@@ -30,6 +30,7 @@
         - Add optional enforced password expiry.
         - Store a moderation history on admin report edit.
         - Add user admin log page.
+        - Allow staff users to sign other people up for alerts.
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523

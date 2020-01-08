@@ -289,6 +289,53 @@ for my $test (
     };
 }
 
+subtest 'Test body user signing someone else up for alerts' => sub {
+    my $staff_user = $mech->create_user_ok('astaffuser@example.com', name => 'A staff user', from_body => $body);
+    $mech->log_in_ok($staff_user->email);
+
+    $mech->get_ok('/alert/subscribe?id=' . $report->id);
+    my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
+    $mech->post_ok('/alert/subscribe', { rznvy => 'someoneelse@example.org', id => $report->id, type => 'updates', token => $csrf });
+
+    my $user = FixMyStreet::DB->resultset('User')->find({ email => 'someoneelse@example.org' });
+    is $user, undef, 'No user made by bad request';
+
+    my $alert = FixMyStreet::DB->resultset('Alert')->find({
+        user       => $staff_user,
+        alert_type => 'new_updates',
+        parameter  => $report->id,
+        confirmed  => 1,
+    });
+    ok $alert, 'New alert created with logged in user';
+    $alert->delete;
+
+    $staff_user->user_body_permissions->create({ permission_type => 'contribute_as_another_user', body => $body });
+    $mech->get_ok('/alert/subscribe?id=' . $report->id);
+    $mech->submit_form_ok({ with_fields => { rznvy => 'someoneelse@example.org' } });
+    $mech->content_contains('Email alert created');
+
+    $user = FixMyStreet::DB->resultset('User')->find({ email => 'someoneelse@example.org' });
+    ok $user, 'user created for alert';
+
+    $alert = FixMyStreet::DB->resultset('Alert')->find({
+        user       => $user,
+        alert_type => 'new_updates',
+        parameter  => $report->id,
+        confirmed  => 1,
+    });
+    ok $alert, 'New alert created for another user';
+
+    $alert = FixMyStreet::DB->resultset('Alert')->find({
+        user       => $staff_user,
+        alert_type => 'new_updates',
+        parameter  => $report->id,
+        confirmed  => 1,
+    });
+    is $alert, undef, 'No alert created for staff user';
+};
+
+$report->delete; # Emails sent otherwise below
+
 my $gloucester = $mech->create_body_ok(2226, 'Gloucestershire County Council');
 $mech->create_body_ok(2326, 'Cheltenham Borough Council');
 

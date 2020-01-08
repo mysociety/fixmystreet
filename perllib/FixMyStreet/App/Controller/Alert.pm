@@ -151,7 +151,7 @@ sub updates : Path('updates') : Args(0) {
     $c->forward('/auth/get_csrf_token');
 
     $c->stash->{email} = $c->get_param('rznvy');
-    $c->stash->{problem_id} = $c->get_param('id');
+    $c->stash->{email} ||= $c->user->email if $c->user_exists;
 }
 
 =head2 confirm
@@ -196,7 +196,7 @@ sub create_alert : Private {
         $alert->insert();
     }
 
-    if ( $c->user && $c->user->id == $alert->user->id ) {
+    if ( $c->user_exists && ($c->user->id == $alert->user->id || $c->stash->{can_create_for_another})) {
         $alert->confirm();
     } else {
         $alert->confirmed(0);
@@ -340,8 +340,12 @@ sub process_user : Private {
     my ( $self, $c ) = @_;
 
     if ( $c->user_exists ) {
-        $c->stash->{alert_user} = $c->user->obj;
-        return;
+        $c->stash->{can_create_for_another} = $c->stash->{problem}
+            && $c->user->has_permission_to(contribute_as_another_user => $c->stash->{problem}->bodies_str_ids);
+        if (!$c->stash->{can_create_for_another}) {
+            $c->stash->{alert_user} = $c->user->obj;
+            return;
+        }
     }
 
     my $email = $c->get_param('rznvy');
