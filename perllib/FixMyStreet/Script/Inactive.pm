@@ -126,6 +126,7 @@ sub anonymize_users {
 
     my $users = FixMyStreet::DB->resultset("User")->search({
         last_active => { '<', interval($self->anonymize) },
+        email => { -not_like => 'removed-%@' . FixMyStreet->config('EMAIL_DOMAIN') },
     });
 
     while (my $user = $users->next) {

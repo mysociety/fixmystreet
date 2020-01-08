@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use Test::Output;
 
 use_ok 'FixMyStreet::Script::Inactive';
 
@@ -60,10 +61,19 @@ subtest 'Closing updates on inactive fixed/closed reports' => sub {
 };
 
 subtest 'Anonymization of inactive users' => sub {
-    $in->users;
+    my $in = FixMyStreet::Script::Inactive->new( anonymize => 6, email => 3, verbose => 1 );
+    stdout_is { $in->users } "Anonymizing user #" . $user->id . "\nEmailing user #" . $user_inactive->id . "\n", 'users dealt with first time';
 
     my $email = $mech->get_email;
     like $email->as_string, qr/inactive\@example.com/, 'Inactive email sent';
+    $mech->clear_emails_ok;
+
+    $user->discard_changes;
+    is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
+
+    stdout_is { $in->users } '', 'No output second time';
+
+    $mech->email_count_is(0); # No further email sent
 
     $user->discard_changes;
     is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
