@@ -95,6 +95,7 @@ sub _relevant_reports {
     });
     if ($self->cobrand) {
         $problems = $problems->search({ cobrand => $self->cobrand->moniker });
+        $problems = $self->cobrand->call_hook(inactive_reports_filter => $time, $problems) || $problems;
     }
     return $problems;
 }

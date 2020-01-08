@@ -109,4 +109,33 @@ subtest 'Anonymization of inactive users' => sub {
     is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
 };
 
+subtest 'Test TfL deletion of safety critical reports' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'tfl'
+    }, sub {
+        for (my $y = 2; $y <= 10; $y+=2) {
+            # 2 years, not safety; 4 years safety, 6 years not safety, 8 years safety, 10 years not safety
+            my $t = DateTime->now->subtract(years => $y);
+            my ($problem) = $mech->create_problems_for_body(1, 2237, 'Title', {
+                dt => $t,
+                lastupdate => "$t",
+                state => 'fixed - user',
+                cobrand => 'tfl',
+            });
+            $problem->update_extra_field({ name => 'safety_critical', value => $y % 4 ? 'no' : 'yes' });
+            $problem->update;
+        }
+
+        my $in = FixMyStreet::Script::Inactive->new( cobrand => 'tfl', delete => 36 );
+        $in->reports;
+        my $count = FixMyStreet::DB->resultset("Problem")->search({ cobrand => 'tfl' })->count;
+        is $count, 3, 'Three reports left, one too recent, two safety critical';
+
+        $in = FixMyStreet::Script::Inactive->new( cobrand => 'tfl', delete => 84 );
+        $in->reports;
+        $count = FixMyStreet::DB->resultset("Problem")->search({ cobrand => 'tfl' })->count;
+        is $count, 2, 'Two reports left, two too recent';
+    }
+};
+
 done_testing;

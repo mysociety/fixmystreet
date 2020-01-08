@@ -127,6 +127,16 @@ sub problems_sql_restriction {
     return $q;
 }
 
+sub inactive_reports_filter {
+    my ($self, $time, $rs) = @_;
+    if ($time < 7*12) {
+        $rs = $rs->search({ extra => { like => '%safety_critical,T5:value,T2:no%' } });
+    } else {
+        $rs = $rs->search({ extra => { like => '%safety_critical,T5:value,T3:yes%' } });
+    }
+    return $rs;
+}
+
 sub password_expiry {
     return if FixMyStreet->test_mode;
     # uncoverable statement
