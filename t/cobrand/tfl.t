@@ -556,6 +556,16 @@ subtest 'check report age on /around' => sub {
     });
 };
 
+subtest 'check report age in general' => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    $report->update({ state => 'confirmed' });
+    $mech->get_ok('/report/' . $report->id);
+    $report->update({ lastupdate => \"current_timestamp-'4 years'::interval" });
+    $mech->get('/report/' . $report->id);
+    is $mech->res->code, 404;
+    $report->update({ lastupdate => \"current_timestamp" });
+};
+
 subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {
     $mech->log_in_ok($superuser->email);
 

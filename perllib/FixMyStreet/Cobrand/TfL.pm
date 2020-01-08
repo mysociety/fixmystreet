@@ -107,6 +107,26 @@ sub report_age { '6 weeks' }
 # We don't want any reports made before the go-live date visible
 sub cut_off_date { '2019-12-09 12:00' }
 
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    $rs = $self->next::method($rs);
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    $rs = $rs->search({
+        "$table.lastupdate" => { '>=', \"now() - '3 years'::interval" }
+    });
+    return $rs;
+}
+
+sub problems_sql_restriction {
+    my ($self, $item_table) = @_;
+    my $q = $self->next::method($item_table);
+    if ($item_table ne 'comment') {
+        $q .= " AND lastupdate >= now() - '3 years'::interval";
+    }
+    return $q;
+}
+
 sub password_expiry {
     return if FixMyStreet->test_mode;
     # uncoverable statement
