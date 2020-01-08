@@ -1108,6 +1108,24 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
     updateLink: function() {
         this._updateLink(0);
     },
+    draw: function() {
+        OpenLayers.Control.Permalink.prototype.draw.apply(this, arguments);
+
+        // fms.com has so many layers now that zooming events were causing
+        // enough quick-fire history.replaceState calls (in updateLink)
+        // that iOS Safari was raising "SecurityError: Attempt to use
+        // history.replaceState() more than 100 times per 30 seconds" errors,
+        // as well as being throttled on Chrome on Android. Zooming in causes
+        // lots of layers to come into range simultaneously, and each was
+        // triggering the 'changelayer' event. In our use we don't include the
+        // layers state string in the permalink URL (see `delete params.layers`
+        // above), so there's no need to listen to those events.
+        this.map.events.un({
+            'changelayer': this.updateLink,
+            'changebaselayer': this.updateLink,
+            scope: this
+        });
+    },
     CLASS_NAME: "OpenLayers.Control.PermalinkFMS"
 });
 
