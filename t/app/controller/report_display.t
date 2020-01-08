@@ -255,6 +255,39 @@ for my $test (
         fixed => 0
     },
     {
+        cobrand => 'fixmystreet',
+        description => 'old open311 report',
+        date => DateTime->new(
+            year => 2009,
+            month => 6,
+            day => 12,
+            hour => 9,
+            minute => 43,
+            second => 12
+        ),
+        state => 'confirmed',
+        send_method => 'Open311',
+        banner_id => undef,
+        banner_text => undef,
+        fixed => 0
+    },
+    {
+        cobrand => 'westminster',
+        description => 'old westminster report',
+        date => DateTime->new(
+            year => 2009,
+            month => 6,
+            day => 12,
+            hour => 9,
+            minute => 43,
+            second => 12
+        ),
+        state => 'confirmed',
+        banner_id => undef,
+        banner_text => undef,
+        fixed => 0
+    },
+    {
         description => 'old fixed report',
         date => DateTime->new(
             year => 2009,
@@ -370,9 +403,16 @@ for my $test (
         $report->confirmed( $test->{date}->ymd . ' ' . $test->{date}->hms );
         $report->lastupdate( $test->{date}->ymd . ' ' . $test->{date}->hms );
         $report->state( $test->{state} );
+        $report->send_method_used( $test->{send_method} || undef );
         $report->update;
 
-        $mech->get_ok("/report/$report_id");
+        my $cobrands = $test->{cobrand} ? [ $test->{cobrand} ] : [];
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => $cobrands,
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $mech->get_ok("/report/$report_id");
+        };
         is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
         my $banner = $mech->extract_problem_banner;
         if ( $banner->{text} ) {
