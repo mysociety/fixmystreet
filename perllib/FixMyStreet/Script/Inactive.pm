@@ -12,6 +12,7 @@ use FixMyStreet::Email;
 
 has anonymize => ( is => 'ro' );
 has close => ( is => 'ro' );
+has delete => ( is => 'ro' );
 has email => ( is => 'ro' );
 has verbose => ( is => 'ro' );
 has dry_run => ( is => 'ro' );
@@ -55,6 +56,7 @@ sub reports {
 
     say "DRY RUN" if $self->dry_run;
     $self->anonymize_reports if $self->anonymize;
+    $self->delete_reports if $self->delete;
     $self->close_updates if $self->close;
 }
 
@@ -110,15 +112,38 @@ sub anonymize_reports {
         });
 
         # Remove alerts - could just delete, but of interest how many there were, perhaps?
-        FixMyStreet::DB->resultset('Alert')->search({
+        $problem->alerts->search({
             user_id => { '!=' => $self->anonymous_user->id },
-            alert_type => 'new_updates',
-            parameter => $problem->id,
         })->update({
             user_id => $self->anonymous_user->id,
             whendisabled => \'current_timestamp',
         });
     }
+}
+
+sub delete_reports {
+    my $self = shift;
+
+    my $problems = FixMyStreet::DB->resultset("Problem")->search({
+        lastupdate => { '<', interval($self->delete) },
+        state => [
+            FixMyStreet::DB::Result::Problem->closed_states(),
+            FixMyStreet::DB::Result::Problem->fixed_states(),
+            FixMyStreet::DB::Result::Problem->hidden_states(),
+        ],
+    });
+
+    while (my $problem = $problems->next) {
+        say "Deleting associated data of problem #" . $problem->id if $self->verbose;
+        next if $self->dry_run;
+
+        $problem->comments->delete;
+        $problem->questionnaires->delete;
+        $problem->alerts->delete;
+    }
+    say "Deleting all matching problems" if $self->verbose;
+    return if $self->dry_run;
+    $problems->delete;
 }
 
 sub anonymize_users {

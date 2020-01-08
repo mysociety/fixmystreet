@@ -1187,4 +1187,15 @@ has inspection_log_entry => (
     },
 );
 
+has alerts => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        return $self->result_source->schema->resultset('Alert')->search({
+            alert_type => 'new_updates', parameter => $self->id
+        });
+    },
+);
+
 1;

@@ -60,6 +60,17 @@ subtest 'Closing updates on inactive fixed/closed reports' => sub {
     $mech->content_contains('now closed to updates');
 };
 
+subtest 'Deleting reports' => sub {
+    my $in = FixMyStreet::Script::Inactive->new( delete => 6 );
+    $in->reports;
+
+    my $count = FixMyStreet::DB->resultset("Problem")->count;
+    is $count, 6, 'Six left';
+
+    $mech->get("/report/" . $problems[2]->id);
+    is $mech->res->code, 404;
+};
+
 subtest 'Anonymization of inactive users' => sub {
     my $in = FixMyStreet::Script::Inactive->new( anonymize => 6, email => 3, verbose => 1 );
     stdout_is { $in->users } "Anonymizing user #" . $user->id . "\nEmailing user #" . $user_inactive->id . "\n", 'users dealt with first time';
