@@ -29,6 +29,24 @@ sub disambiguate_location {
 
 sub disable_resend_button { 1 }
 
+# We can resend reports upon category change, unless it will be going to the
+# same Symology database, because that will reject saying it already has the
+# ID.
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+    ($old) = map { $_->email } grep { $_->category eq $old } @$contacts;
+    ($new) = map { $_->email } grep { $_->category eq $new } @$contacts;
+
+    # Okay if we're switching to/from/within Confirm/Uniform
+    return 1 if $old =~ /^(Confirm|Uniform)/ || $new =~ /^(Confirm|Uniform)/;
+
+    # Otherwise, okay if we're switching between Symology DBs, but not within
+    return ($old =~ /^StreetLighting/ xor $new =~ /^StreetLighting/);
+}
+
 sub on_map_default_status { 'open' }
 
 sub open311_munge_update_params {
