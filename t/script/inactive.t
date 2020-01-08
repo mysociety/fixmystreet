@@ -23,6 +23,7 @@ for (my $m = 1; $m <= 12; $m++) {
         dt => $t,
         lastupdate => "$t",
         state => $m % 2 ? 'fixed - user' : 'confirmed',
+        cobrand => $m % 3 ? 'default' : 'bromley',
     });
 }
 
@@ -51,12 +52,30 @@ subtest 'Anonymization of inactive fixed/closed reports' => sub {
     is $comment->user->email, 'removed-automatically@example.org', 'Comment user anonymized';
 };
 
+subtest 'Test operating on one cobrand only' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley'
+    }, sub {
+        my $in = FixMyStreet::Script::Inactive->new( cobrand => 'bromley', close => 1 );
+        $in->reports;
+        # Reports not a multiple of 2 are fixed, reports a multiple of 3 are bromley
+        $problems[2]->discard_changes;
+        is $problems[2]->get_extra_metadata('closed_updates'), 1, 'Closed to updates';
+        $problems[4]->discard_changes;
+        is $problems[4]->get_extra_metadata('closed_updates'), undef, 'Not closed to updates';
+        $problems[6]->discard_changes;
+        is $problems[6]->get_extra_metadata('closed_updates'), undef, 'Not closed to updates';
+        $problems[8]->discard_changes;
+        is $problems[8]->get_extra_metadata('closed_updates'), 1, 'Closed to updates';
+    };
+};
+
 subtest 'Closing updates on inactive fixed/closed reports' => sub {
     my $in = FixMyStreet::Script::Inactive->new( close => 1 );
     $in->reports;
-    $problems[2]->discard_changes;
-    is $problems[2]->get_extra_metadata('closed_updates'), 1, 'Closed to updates';
-    $mech->get_ok("/report/" . $problems[2]->id);
+    $problems[4]->discard_changes;
+    is $problems[4]->get_extra_metadata('closed_updates'), 1, 'Closed to updates';
+    $mech->get_ok("/report/" . $problems[4]->id);
     $mech->content_contains('now closed to updates');
 };
 
