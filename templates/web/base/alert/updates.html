@@ -5,7 +5,7 @@
 
 [% INCLUDE 'errors.html' %]
 
-<p><a href="[% c.uri_for( '/rss', problem_id ) %]">
+<p><a href="[% c.uri_for( '/rss', problem.id ) %]">
         <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float:right">
     </a>
 </p>
@@ -24,7 +24,7 @@
         </div>
 
         <input type="hidden" name="token" value="[% csrf_token %]">
-        <input type="hidden" name="id" value="[% problem_id | html %]">
+        <input type="hidden" name="id" value="[% problem.id | html %]">
         <input type="hidden" name="type" value="updates">
     </fieldset>
 </form>

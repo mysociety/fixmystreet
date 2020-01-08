@@ -6,6 +6,9 @@ my $mech = FixMyStreet::TestMech->new;
 my $user = FixMyStreet::App->model('DB::User')
           ->new( { email => 'test@example.com' } );
 
+my $body = $mech->create_body_ok(2651, 'Edinburgh Council');
+my ($report) = $mech->create_problems_for_body(1, $body->id, 'Existing');
+
 foreach my $test (
     {
         email      => $user->email,
@@ -51,8 +54,8 @@ foreach my $test (
         type       => 'new_updates',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
-        uri    => '/alert/subscribe?type=updates&rznvy=' . $user->email . '&id=1',
-        param1 => 1,
+        uri    => '/alert/subscribe?type=updates&rznvy=' . $user->email . '&id=' . $report->id,
+        param1 => $report->id,
     }
   )
 {
@@ -61,7 +64,7 @@ foreach my $test (
 
         my $type = $test->{type};
 
-        $mech->get_ok('/alert/subscribe?id=1');
+        $mech->get_ok('/alert/subscribe?id=' . $report->id);
         my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
         $mech->get_ok( $test->{uri} . "&token=$csrf" );
@@ -155,7 +158,7 @@ foreach my $test (
         # clear existing data so we can be sure we're creating it
         ok $alert->delete() if $alert && !$test->{exist};
 
-        $mech->get_ok('/alert/subscribe?id=1');
+        $mech->get_ok('/alert/subscribe?id=' . $report->id);
         my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
         $mech->get_ok( '/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=area:1000:A_Location&token=' . $csrf );
@@ -178,8 +181,6 @@ foreach my $test (
         $mech->delete_user($user) if $test->{exist};
     };
 }
-
-my $body = $mech->create_body_ok(2651, 'Edinburgh Council');
 
 foreach my $test (
     {
@@ -231,8 +232,8 @@ for my $test (
         type       => 'new_updates',
         content    => 'Click the link in our confirmation email to activate your alert',
         email_text => 'confirm the alert',
-        uri    => '/alert/subscribe?type=updates&rznvy=' . $user->email . '&id=1',
-        param1 => 1,
+        uri    => '/alert/subscribe?type=updates&rznvy=' . $user->email . '&id=' . $report->id,
+        param1 => $report->id,
     }
   )
 {
@@ -255,7 +256,7 @@ for my $test (
           FixMyStreet::DB->resultset('Abuse')
           ->find_or_create( { email => $test->{email} } );
 
-        $mech->get_ok('/alert/subscribe?id=1');
+        $mech->get_ok('/alert/subscribe?id=' . $report->id);
         my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
 
         $mech->get_ok( $test->{uri} . "&token=$csrf" );
