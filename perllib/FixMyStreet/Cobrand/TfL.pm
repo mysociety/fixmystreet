@@ -25,6 +25,18 @@ sub is_council { 0 }
 sub abuse_reports_only { 1 }
 sub send_questionnaires { 0 }
 
+sub disambiguate_location {
+    my $self    = shift;
+    my $string  = shift;
+
+    return {
+        %{ $self->SUPER::disambiguate_location() },
+        town   => "London",
+    };
+}
+
+sub get_geocoder { 'OSM' }
+
 sub category_change_force_resend { 1 }
 
 sub do_not_reply_email { shift->feature('do_not_reply_email') }
