@@ -10,7 +10,7 @@ use base 'FixMyStreet::Map::FMS';
 use strict;
 
 sub map_tile_base {
-    '-', "https://%sfix.bromley.gov.uk/tilma/%d/%d/%d.png";
+    '-', "//%stilma.mysociety.org/bromley/%d/%d/%d.png";
 }
 
 1;
