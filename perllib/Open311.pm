@@ -67,20 +67,20 @@ sub get_service_meta_info {
     return $self->_get_xml_object( $service_meta_xml );
 }
 
-sub to_bristol {
+sub ignore_failure {
     my $problem = shift;
-    return unless $problem->cobrand =~ /fixmystreet|bristol/;
+    return unless $problem->cobrand =~ /fixmystreet|bristol|westminster/;
     my $bodies = $problem->bodies;
     return unless %$bodies;
     my $body = (values %$bodies)[0];
-    return unless $body->areas->{2561};
+    return unless $body->areas->{2561} || $body->areas->{2504};
     return 1;
 }
 
 sub warn_failure {
     my ($obj, $problem) = @_;
     # Special case a poorly behaving Open311 server
-    return 0 if to_bristol($problem || $obj);
+    return 0 if ignore_failure($problem || $obj);
     my $threshold = 1;
     return $obj->send_fail_count && $obj->send_fail_count == $threshold;
 }
