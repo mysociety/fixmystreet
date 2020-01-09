@@ -10,19 +10,21 @@
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
             <label for="pc">[% question %]:</label>
+            [% INCLUDE 'around/_postcode_form_examples.html' %]
             <div>
-                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" required>
-                <input type="submit" value="[% loc('Find') %]" id="sub">
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" required aria-describedby="pc-hint">
+                [% INCLUDE 'around/_postcode_submit_button.html' attr='id="sub"' %]
             </div>
 
             [% IF partial_token %]
                 <input type="hidden" name="partial" value="[% partial_token.token %]">
             [% END %]
 
-            [% IF c.get_param('filter_category') %]
+            [% IF c.get_param('filter_category') OR c.get_param('filter_group') %]
               <input type="hidden" name="filter_category" value="[% c.get_param('filter_category') | html %]">
+              <input type="hidden" name="filter_group" value="[% c.get_param('filter_group') | html %]">
             [% ELSIF c.user_exists AND c.user.categories.size %]
-              <input type="hidden" name="filter_category" value="[% c.user.categories.join(",") | html %]">
+              <input type="hidden" name="filter_category" value="[% c.user.categories_string | html %]">
             [% END %]
         </form>
         [%~ SET link_params = {

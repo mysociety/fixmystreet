@@ -41,7 +41,7 @@ sub area_check {
 
 sub enter_postcode_text {
     my ($self) = @_;
-    return 'Enter a London postcode, or street name and area';
+    return 'Enter a London postcode, or street name and area, or a reference number of a problem previous reported';
 }
 
 sub privacy_policy_url { 'https://tfl.gov.uk/corporate/privacy-and-cookies/reporting-street-problems' }
