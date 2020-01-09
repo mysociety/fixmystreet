@@ -32,7 +32,7 @@ sub disambiguate_location {
 }
 
 sub enter_postcode_text {
-    'Enter a postcode or street name and area in Cheshire East';
+    'Enter a postcode, or a road and place name';
 }
 
 sub admin_user_domain { 'cheshireeast.gov.uk' }
@@ -45,6 +45,8 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, UK$//;
     $result->{display_name} =~ s/, Cheshire East, North West England, England//;
 }
+
+sub map_type { 'CheshireEast' }
 
 sub default_map_zoom { 3 }
 

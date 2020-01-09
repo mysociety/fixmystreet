@@ -6,8 +6,11 @@ if (!fixmystreet.maps) {
 
 var defaults = {
     wfs_url: "https://tilma.mysociety.org/mapserver/cheshireeast",
-    max_resolution: 4.777314267158508,
-    min_resolution: 0.5971642833948135,
+    max_resolution: {
+        fixmystreet: 4.777314267158508,
+        cheshireeast: 1.4000028000056002
+    },
+    min_resolution: 0.00001,
     attributes: {
         central_asset_id: 'central_as',
         site_code: 'site_code'
@@ -62,29 +65,23 @@ fixmystreet.assets.add(labeled_defaults, {
     asset_item_message: 'You can pick a <b class="asset-spot">street light</b> from the map &raquo;'
 });
 
-var road_defaults = $.extend(true, {}, defaults, {
+fixmystreet.assets.add(defaults, {
     stylemap: fixmystreet.assets.stylemap_invisible,
     always_visible: true,
-    non_interactive: true
-});
-
-fixmystreet.assets.add(road_defaults, {
+    non_interactive: true,
     wfs_feature: 'AdoptedRoads',
     usrn: {
         attribute: 'site_code',
         field: 'site_code'
-    }
-});
-
-fixmystreet.assets.add(road_defaults, {
-    wfs_feature: 'UnAdoptedRoads',
+    },
     road: true,
+    no_asset_msg_id: '#js-not-a-road',
+    asset_item: 'road',
+    asset_type: 'road',
     all_categories: true,
-    no_asset_msg_id: '#js-not-council-road',
-    // The functions assume allow when found, disallow when not found, so we want the reverse
     actions: {
-        found: fixmystreet.message_controller.road_not_found,
-        not_found: fixmystreet.message_controller.road_found
+        found: fixmystreet.message_controller.road_found,
+        not_found: fixmystreet.message_controller.road_not_found
     }
 });
 

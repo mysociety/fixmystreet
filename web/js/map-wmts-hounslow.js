@@ -177,13 +177,5 @@ fixmystreet.maps.config = function() {
     this.setup_wmts_base_map();
 };
 
-fixmystreet.maps.marker_size = function() {
-    var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
-    if (zoom >= 8) {
-        return 'normal';
-    } else if (zoom >= 4) {
-        return 'small';
-    } else {
-        return 'mini';
-    }
-};
+fixmystreet.maps.zoom_for_normal_size = 8;
+fixmystreet.maps.zoom_for_small_size = 4;

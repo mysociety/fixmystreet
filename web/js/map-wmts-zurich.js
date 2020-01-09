@@ -152,13 +152,5 @@ fixmystreet.maps.config = function() {
     fixmystreet.area_format = { fillColor: 'none', strokeWidth: 4, strokeColor: 'black' };
 };
 
-fixmystreet.maps.marker_size = function() {
-    var zoom = fixmystreet.map.getZoom() + fixmystreet.zoomOffset;
-    if (zoom >= 6) {
-        return 'normal';
-    } else if (zoom >= 3) {
-        return 'small';
-    } else {
-        return 'mini';
-    }
-};
+fixmystreet.maps.zoom_for_normal_size = 6;
+fixmystreet.maps.zoom_for_small_size = 3;
