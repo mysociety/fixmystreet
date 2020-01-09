@@ -91,6 +91,10 @@ sub display :PathPart('') :Chained('id') :Args(0) {
         $c->stash->{template} = 'report/inspect.html';
         $c->forward('inspect');
     }
+
+    if ($c->user_exists && $c->user->has_permission_to(contribute_as_another_user => $c->stash->{problem}->bodies_str_ids)) {
+        $c->stash->{email} = $c->user->email;
+    }
 }
 
 sub moderate_report :PathPart('moderate') :Chained('id') :Args(0) {

@@ -5,7 +5,7 @@
 
 [% INCLUDE 'errors.html' %]
 
-<p><a href="[% c.uri_for( '/rss', problem_id ) %]">
+<p><a href="[% c.uri_for( '/rss', problem.id ) %]">
         <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float:right">
     </a>
 </p>
@@ -16,15 +16,27 @@
 
 <form action="/alert/subscribe" method="post">
     <fieldset>
+      [% IF c.user_exists %]
+        [% IF c.user.has_permission_to("contribute_as_another_user", problem.bodies_str_ids) %]
+          <label class="hidden n" for="alert_rznvy">[% loc('Email') %]</label>
+          <div class="form-txt-submit-box">
+              <input class="form-control" type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]">
+              <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
+          </div>
+        [% ELSE %]
+          <input class="green-btn" type="submit" name="alert" value="[% loc('Subscribe') %]">
+        [% END %]
+      [% ELSE %]
         <label class="hidden n" for="alert_rznvy">[% loc('Your email') %]</label>
 
         <div class="form-txt-submit-box">
             <input class="form-control" type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]">
             <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
         </div>
+      [% END %]
 
         <input type="hidden" name="token" value="[% csrf_token %]">
-        <input type="hidden" name="id" value="[% problem_id | html %]">
+        <input type="hidden" name="id" value="[% problem.id | html %]">
         <input type="hidden" name="type" value="updates">
     </fieldset>
 </form>

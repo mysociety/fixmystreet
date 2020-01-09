@@ -58,12 +58,15 @@ sub subscribe : Path('subscribe') : Args(0) {
 
     $c->detach('rss') if $c->get_param('rss');
 
+    my $id = $c->get_param('id');
+    $c->forward('/report/load_problem_or_display_error', [ $id ]) if $id;
+
     # if it exists then it's been submitted so we should
     # go to subscribe email and let it work out the next step
     $c->detach('subscribe_email')
         if $c->get_param('rznvy') || $c->get_param('alert');
 
-    $c->go('updates') if $c->get_param('id');
+    $c->go('updates') if $id;
 
     # shouldn't get to here but if we have then do something sensible
     $c->go('index');
@@ -148,7 +151,7 @@ sub updates : Path('updates') : Args(0) {
     $c->forward('/auth/get_csrf_token');
 
     $c->stash->{email} = $c->get_param('rznvy');
-    $c->stash->{problem_id} = $c->get_param('id');
+    $c->stash->{email} ||= $c->user->email if $c->user_exists;
 }
 
 =head2 confirm
@@ -193,7 +196,7 @@ sub create_alert : Private {
         $alert->insert();
     }
 
-    if ( $c->user && $c->user->id == $alert->user->id ) {
+    if ( $c->user_exists && ($c->user->id == $alert->user->id || $c->stash->{can_create_for_another})) {
         $alert->confirm();
     } else {
         $alert->confirmed(0);
@@ -211,13 +214,10 @@ Set up the options in the stash required to create a problem update alert
 sub set_update_alert_options : Private {
     my ( $self, $c ) = @_;
 
-    my $report_id = $c->get_param('id');
-    return unless $report_id =~ /^[1-9]\d*$/;
-
     my $options = {
         user       => $c->stash->{alert_user},
         alert_type => 'new_updates',
-        parameter  => $report_id,
+        parameter  => $c->stash->{problem}->id,
     };
 
     $c->stash->{alert_options} = $options;
@@ -340,16 +340,16 @@ sub process_user : Private {
     my ( $self, $c ) = @_;
 
     if ( $c->user_exists ) {
-        $c->stash->{alert_user} = $c->user->obj;
-        return;
+        $c->stash->{can_create_for_another} = $c->stash->{problem}
+            && $c->user->has_permission_to(contribute_as_another_user => $c->stash->{problem}->bodies_str_ids);
+        if (!$c->stash->{can_create_for_another}) {
+            $c->stash->{alert_user} = $c->user->obj;
+            return;
+        }
     }
 
-    # Extract all the params to a hash to make them easier to work with
-    my %params = map { $_ => $c->get_param($_) }
-      ( 'rznvy' ); # , 'password_register' );
-
-    # cleanup the email address
-    my $email = $params{rznvy} ? lc $params{rznvy} : '';
+    my $email = $c->get_param('rznvy');
+    $email = $email ? lc $email : '';
     $email =~ s{\s+}{}g;
 
     push @{ $c->stash->{errors} }, _('Please enter a valid email address')
@@ -357,19 +357,6 @@ sub process_user : Private {
 
     my $alert_user = $c->model('DB::User')->find_or_new( { email => $email } );
     $c->stash->{alert_user} = $alert_user;
-
-#    # The user is trying to sign in. We only care about email from the params.
-#    if ( $c->get_param('submit_sign_in') ) {
-#        unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
-#            $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. Please try again.');
-#            return 1;
-#        }
-#        my $user = $c->user->obj;
-#        $c->stash->{alert_user} = $user;
-#        return 1;
-#    }
-#
-#    $alert_user->password( $params{password_register} );
 }
 
 =head2 setup_coordinate_rss_feeds
