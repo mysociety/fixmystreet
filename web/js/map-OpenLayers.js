@@ -1049,51 +1049,61 @@ OpenLayers.Control.ArgParserFMS = OpenLayers.Class(OpenLayers.Control.ArgParser,
     CLASS_NAME: "OpenLayers.Control.ArgParserFMS"
 });
 
-/* Overriding Permalink so that it can pass the correct zoom to OSM */
-OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink, {
-    _updateLink: function(alter_zoom) {
-        // this.base was originally set in initialize(), but the window's href
-        // may have changed since then if e.g. the map filters have been updated.
-        // NB this won't change the base of the 'problems nearby' permalink on
-        // /report, as this would result in it pointing at the wrong page.
-        if (this.base !== '/around' && fixmystreet.page !== 'report') {
-            this.base = window.location.href;
-        }
+/* Replacing Permalink so that it can do things a bit differently */
+OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control, {
+    element: null,
+    base: '',
 
-        var separator = this.anchor ? '#' : '?';
+    initialize: function(element, base, options) {
+        OpenLayers.Control.prototype.initialize.apply(this, [options]);
+        this.element = OpenLayers.Util.getElement(element);
+        this.base = base || document.location.href;
+    },
+
+    destroy: function()  {
+        if (this.map) {
+            this.map.events.unregister('moveend', this, this.updateLink);
+        }
+        OpenLayers.Control.prototype.destroy.apply(this, arguments);
+    },
+
+    draw: function() {
+        OpenLayers.Control.prototype.draw.apply(this, arguments);
+
+        // We do not need to listen to change layer events, no layers in our permalinks
+        this.map.events.on({
+            'moveend': this.updateLink,
+            scope: this
+        });
+
+        // Make it so there is at least a link even though the map may not have
+        // moved yet.
+        this.updateLink();
+
+        return this.div;
+    },
+
+    updateLink: function() {
+        // The window's href may have changed if e.g. the map filters have been
+        // updated. NB this won't change the base of the 'problems nearby'
+        // permalink on /report, as this would result in it pointing at the
+        // wrong page.
         var href = this.base;
-        if (href.indexOf(separator) != -1) {
-            href = href.substring( 0, href.indexOf(separator) );
+        if (this.base !== '/around' && fixmystreet.page !== 'report') {
+            href = window.location.href;
         }
+        var params = this.createParams(href);
 
-        var center = this.map.getCenter();
-
-        var zoom = this.map.getZoom();
-        if ( alter_zoom ) {
-            zoom += fixmystreet.zoomOffset;
+        if (href.indexOf('?') != -1) {
+            href = href.substring( 0, href.indexOf('?') );
         }
-
-        var params = this.createParams(center, zoom);
-
-        // Strip out the ugly OpenLayers layers state string
-        delete params.layers;
-        if (params.lat && params.lon) {
-            // No need for the postcode string either, if we have a latlon
-            delete params.pc;
-        }
-
-        href += separator + OpenLayers.Util.getParameterString(params);
+        href += '?' + OpenLayers.Util.getParameterString(params);
         // Could use mlat/mlon here as well if we are on a page with a marker
-        if (this.base == '/around') {
+        if (this.base === '/around') {
             href += '&js=1';
         }
 
-        if (this.anchor && !this.element) {
-            window.location.href = href;
-        }
-        else {
-            this.element.href = href;
-        }
+        this.element.href = href;
 
         if ('replaceState' in history) {
             if (fixmystreet.page.match(/around|reports/)) {
@@ -1105,27 +1115,37 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
             }
         }
     },
-    updateLink: function() {
-        this._updateLink(0);
-    },
-    draw: function() {
-        OpenLayers.Control.Permalink.prototype.draw.apply(this, arguments);
 
-        // fms.com has so many layers now that zooming events were causing
-        // enough quick-fire history.replaceState calls (in updateLink)
-        // that iOS Safari was raising "SecurityError: Attempt to use
-        // history.replaceState() more than 100 times per 30 seconds" errors,
-        // as well as being throttled on Chrome on Android. Zooming in causes
-        // lots of layers to come into range simultaneously, and each was
-        // triggering the 'changelayer' event. In our use we don't include the
-        // layers state string in the permalink URL (see `delete params.layers`
-        // above), so there's no need to listen to those events.
-        this.map.events.un({
-            'changelayer': this.updateLink,
-            'changebaselayer': this.updateLink,
-            scope: this
-        });
+    createParams: function(href) {
+        center = this.map.getCenter();
+
+        var params = OpenLayers.Util.getParameters(href);
+
+        // If there's still no center, map is not initialized yet.
+        // Break out of this function, and simply return the params from the
+        // base link.
+        if (center) {
+
+            params.zoom = this.map.getZoom();
+
+            var mapPosition = OpenLayers.Projection.transform(
+              { x: center.lon, y: center.lat },
+              this.map.getProjectionObject(),
+              this.map.displayProjection );
+            var lon = mapPosition.x;
+            var lat = mapPosition.y;
+            params.lat = Math.round(lat*100000)/100000;
+            params.lon = Math.round(lon*100000)/100000;
+        }
+
+        if (params.lat && params.lon) {
+            // No need for the postcode string either, if we have a latlon
+            delete params.pc;
+        }
+
+        return params;
     },
+
     CLASS_NAME: "OpenLayers.Control.PermalinkFMS"
 });
 
