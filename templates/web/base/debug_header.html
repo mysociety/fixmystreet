@@ -1,4 +1,4 @@
-[% IF c.config.STAGING_SITE ~%]
+[% IF c.config.STAGING_SITE and !c.config.STAGING_FLAGS.hide_staging_banner ~%]
     <div class="dev-site-notice">
         [% loc("Staging site") %]
     </div>

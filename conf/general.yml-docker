@@ -57,6 +57,7 @@ STAGING_SITE: 1
 STAGING_FLAGS:
   send_reports: 0
   skip_checks: 0
+  hide_staging_banner: 0
   enable_appcache: 0
 
 # What to use as front page/alert example places placeholder

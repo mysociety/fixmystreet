@@ -311,12 +311,23 @@ The following are all the configuration settings that you can change in `conf/ge
     <p>
       A variety of flags that change the behaviour of a site when
       <code><a href="#staging_site">STAGING_SITE</a></code> is <code>1</code>.
-      <code>send_reports</code> being set to 0 will
+    </p>
+    <p>
+      Setting <code>send_reports</code> to <code>0</code> will
       <a href="{{ "/customising/send_reports" | relative_url }}">send
       reports</a> to the reporter <em>instead of</em> the relevant body's
-      contact address; <code>skip_checks</code> will stop cobrands from
+      contact address.
+    </p>
+    <p>
+      Setting <code>skip_checks</code> to <code>1</code> will stop cobrands from
       performing some checks such as the map pin location being within their
-      covered area, which makes testing multiple cobrands much easier;
+      covered area, which makes testing multiple cobrands much easier.
+    </p>
+    <p>
+      Setting <code>hide_staging_banner</code> to <code>1</code> will hide the
+      red “Staging site” banner in the top left corner of the site.
+    </p>
+    <p>
       <code>enable_appcache</code> lets you say whether the appcache should be
       active or not.
     </p>
@@ -336,6 +347,7 @@ The following are all the configuration settings that you can change in `conf/ge
 STAGING_FLAGS:
   send_reports: 0
   skip_checks: 1
+  hide_staging_banner: 1
   enable_appcache: 0
 </pre>
     </div>

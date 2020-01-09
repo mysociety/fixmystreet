@@ -65,7 +65,7 @@
         - Make contact edit note optional on staging sites.
         - Store email addresses report sent to on the report.
         - Add configuration for setting Content-Security-Policy header.
-        - Add banner on staging website/emails.
+        - Add banner on staging website/emails, and STAGING_FLAGS option to hide it.
         - Do not hard code site name in database fixture.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
