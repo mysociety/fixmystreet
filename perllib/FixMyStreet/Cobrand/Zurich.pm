@@ -80,7 +80,7 @@ sub find_closest {
 
 sub enter_postcode_text {
     my ( $self ) = @_;
-    return _('Enter a Z&uuml;rich street name');
+    return _('Enter a Zürich street name');
 }
 
 sub example_places {
