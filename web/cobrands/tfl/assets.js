@@ -67,6 +67,7 @@ var tlrn_categories = [
     "Other (TfL)",
     "Pavement Defect (uneven surface / cracked paving slab)",
     "Pothole",
+    "Pothole (minor)",
     "Roadworks",
     "Scaffolding blocking carriageway or footway",
     "Single Light out (street light)",
