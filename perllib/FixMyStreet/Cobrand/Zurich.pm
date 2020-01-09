@@ -1153,7 +1153,7 @@ sub admin_stats {
     if ($y && $m) {
         $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
         $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
-        $optional_params{created} = {
+        $optional_params{'me.created'} = {
             '>=', DateTime::Format::Pg->format_datetime($c->stash->{start_date}), 
             '<',  DateTime::Format::Pg->format_datetime($c->stash->{end_date}),
         };

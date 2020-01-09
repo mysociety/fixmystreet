@@ -81,7 +81,8 @@ my $external_body2 = $mech->create_body_ok( 4, 'Another Body External',
 
 sub get_export_rows_count {
     my $mech = shift;
-    $mech->get_ok( '/admin/stats?export=1' );
+    my $extra = shift || '';
+    $mech->get_ok( '/admin/stats?export=1' . $extra);
     is $mech->res->code, 200, 'csv retrieved ok';
     is $mech->content_type, 'text/csv', 'content_type correct' and do {
         my @lines = split /\n/, $mech->content;
@@ -871,6 +872,8 @@ subtest "test stats" => sub {
         is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
         $mech->content_contains('fixed - council');
     }
+    $export_count =  get_export_rows_count($mech, '&ym=' . DateTime->now->strftime("%m.%Y"));
+    is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports when filtering by month';
 };
 
 subtest "test admin_log" => sub {
