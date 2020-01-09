@@ -117,7 +117,7 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
-[% status_message %]
+[% status_message | safe %]
 
 <dl [% IF status_message %]class="with-message"[% END %]>
 
@@ -176,7 +176,7 @@
         <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision" class="form-control assignation__select">
             <option value="">--</option>
-            [% list %]
+            [% list | safe %]
         </select>
     </li>
   [% END %]

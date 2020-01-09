@@ -2,7 +2,7 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <div class="index-status">
-[% status_message %]
+[% status_message | safe %]
 </div>
 
 <h2 id="submitted">[% loc('Submitted') %]</h2>

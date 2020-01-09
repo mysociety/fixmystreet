@@ -87,7 +87,7 @@
 
 <p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 
-[% status_message %]
+[% status_message | safe %]
 
 <p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
 
