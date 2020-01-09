@@ -255,7 +255,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         $c->detach('edit_display') if $done;
     }
 
-    if ( $c->get_param('resend') && !$c->cobrand->call_hook('disable_resend') ) {
+    if ( $c->get_param('resend') && !$c->cobrand->call_hook('disable_resend_button') ) {
         $c->forward('/auth/check_csrf_token');
 
         $problem->resend;
@@ -382,7 +382,7 @@ sub edit_category : Private {
     my ($self, $c, $problem, $no_comment) = @_;
 
     if ((my $category = $c->get_param('category')) ne $problem->category) {
-        my $force_resend = $c->cobrand->call_hook('category_change_force_resend');
+        my $force_resend = $c->cobrand->call_hook('category_change_force_resend', $problem->category, $category);
         my $disable_resend = $c->cobrand->call_hook('disable_resend');
         my $category_old = $problem->category;
         $problem->category($category);

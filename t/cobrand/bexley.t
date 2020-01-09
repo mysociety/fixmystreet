@@ -35,7 +35,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ABAN");
-$mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "LAMP");
+$mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "StreetLightingLAMP");
 $mech->create_contact_ok(body_id => $body->id, category => 'Gulley covers', email => "GULL");
 $mech->create_contact_ok(body_id => $body->id, category => 'Damaged road', email => "ROAD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flooding in the road', email => "ConfirmFLOD");
@@ -90,9 +90,9 @@ FixMyStreet::override_config {
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
         { category => 'Damaged road', code => 'ROAD', email => ['p1'],
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
-        { category => 'Lamp post', code => 'LAMP', email => ['thirdparty', 'another'],
+        { category => 'Lamp post', code => 'StreetLightingLAMP', email => ['thirdparty', 'another'],
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
-        { category => 'Lamp post', code => 'LAMP', email => ['thirdparty', 'another'],
+        { category => 'Lamp post', code => 'StreetLightingLAMP', email => ['thirdparty', 'another'],
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Flytipping', code => 'UniformFLY', email => ['eh'] },
         { category => 'Flooding in the road', code => 'ConfirmFLOD', email => ['flooding'] },
@@ -144,6 +144,25 @@ FixMyStreet::override_config {
         $mech->get_ok('/admin/report_edit/' . $report->id);
         $mech->content_contains('View report on site');
         $mech->content_lacks('Resend report');
+    };
+
+    subtest "resending of reports by changing category" => sub {
+        $mech->get_ok('/admin/report_edit/' . $report->id);
+        $mech->submit_form_ok({ with_fields => { category => 'Damaged road' } });
+        my $test_data = FixMyStreet::Script::Reports::send();
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), 'ROAD', 'Report resent in new category';
+
+        $mech->submit_form_ok({ with_fields => { category => 'Gulley covers' } });
+        $test_data = FixMyStreet::Script::Reports::send();
+        is $test_data, undef, 'Report not resent';
+
+        $mech->submit_form_ok({ with_fields => { category => 'Lamp post' } });
+        $test_data = FixMyStreet::Script::Reports::send();
+        $req = $test_data->{test_req_used};
+        $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), 'StreetLightingLAMP', 'Report resent';
     };
 
     subtest 'extra CSV column present' => sub {
