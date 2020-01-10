@@ -8,13 +8,15 @@ sub op_factory {
     my ($op) = @_;
 
     return eval q|sub {
-        my ($self, $str) = @_;
+        my ($self, $str, $swapped) = @_;
 
         if ( ref $str eq __PACKAGE__) {
-            return $self->{value} | . $op . q| $str->{value};
+            return $self->{value} | . $op . q| $str->{value} unless $swapped;
+            return $str->{value} | . $op . q| $self->{value};
         }
         else {
-            return $self->{value} | . $op . q| $str;
+            return $self->{value} | . $op . q| $str unless $swapped;
+            return $str | . $op . q| $self->{value};
         }
     }|;
 }

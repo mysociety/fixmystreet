@@ -30,4 +30,10 @@ $tt->process(\'H: [% s.split(":").join(",") %]', {
 }, \$output);
 is $output, 'H: 1,sp&lt;i&gt;l&lt;/i&gt;it,3';
 
+$output = '';
+$tt->process(\'[% size %] [% 100 / size %] [% size / 100 %]', {
+    size => 4
+}, \$output);
+is $output, '4 25 0.04';
+
 done_testing;
