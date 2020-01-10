@@ -10,7 +10,7 @@
 
 [% IF pretty_pc %]
     [%
-        pretty_pc = pretty_pc | html | replace(' ', '&nbsp;');
+        pretty_pc = pretty_pc | replace(' ', ' '); # Non-breaking space
         title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
     %]
 [% END %]
