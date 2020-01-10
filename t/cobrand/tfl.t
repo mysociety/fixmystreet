@@ -96,6 +96,12 @@ $contact2->set_extra_fields({
     ]
 });
 $contact2->update;
+my $contact2b = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Timings',
+    email => 'trafficlighttimings@example.com',
+);
+
 my $contact3 = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Pothole',
@@ -397,6 +403,7 @@ subtest "change category, report resent to new location" => sub {
 
     $mech->log_in_ok( $superuser->email );
     $mech->get_ok("/admin/report_edit/$id");
+    $mech->content_lacks('Timings');
     $mech->submit_form_ok({ with_fields => { category => 'Traffic lights' } });
 
     FixMyStreet::Script::Reports::send();
@@ -707,6 +714,7 @@ for my $test (
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
             'Pothole',
+            'Timings',
             'Traffic lights',
             'Trees'
         ],
@@ -722,6 +730,7 @@ for my $test (
             'Flooding (Bromley)',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
+            'Timings',
             'Traffic lights',
             'Trees'
         ],
@@ -736,6 +745,7 @@ for my $test (
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Timings',
             'Traffic lights',
             'Trees'
         ],
@@ -750,6 +760,7 @@ for my $test (
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Timings',
             'Traffic lights',
             'Trees'
         ],
@@ -766,6 +777,7 @@ for my $test (
             'Flytipping (Bromley)',
             'Grit bins',
             'Pothole',
+            'Timings',
             'Traffic lights',
             'Trees'
         ],
@@ -781,6 +793,7 @@ for my $test (
             'Flooding (Bromley)',
             'Flytipping (Bromley)',
             'Grit bins',
+            'Timings',
             'Traffic lights',
             'Trees'
         ],

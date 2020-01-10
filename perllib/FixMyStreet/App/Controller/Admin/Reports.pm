@@ -485,6 +485,7 @@ sub categories_for_point : Private {
     my $prefetched_all_areas = [ grep { $_ } split ',', $c->stash->{report}->areas ];
     $c->forward('/around/check_location_is_acceptable', [ $prefetched_all_areas ]);
     # As with a new report, fetch the bodies/categories
+    $c->stash->{categories_for_point} = 1;
     $c->forward('/report/new/setup_categories_and_bodies');
 
     # Remove the "Pick a category" option
