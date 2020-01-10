@@ -85,6 +85,7 @@ requires 'Geography::NationalGrid',
 requires 'Getopt::Long::Descriptive';
 requires 'HTML::Entities';
 requires 'HTML::FormHandler::Model::DBIC';
+requires 'HTML::Scrubber';
 requires 'HTTP::Request::Common';
 requires 'Image::Size', '3.300';
 requires 'Image::PNG::QRCode';

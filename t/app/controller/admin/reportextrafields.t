@@ -68,7 +68,7 @@ FixMyStreet::override_config {
             "metadata[9999].code" => "string_test",
             "metadata[9999].required" => 1,
             "metadata[9999].behaviour" => "question",
-            "metadata[9999].description" => "this is a test description",
+            "metadata[9999].description" => "<div style='foo'>this is a test description</div>",
             "metadata[9999].datatype" => "string",
             "note" => "Added extra field",
         }});
