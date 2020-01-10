@@ -15,9 +15,9 @@ use FixMyStreet::Script::Inactive;
 use Pod::Usage;
 
 my %h;
-GetOptions(\%h, 'anonymize=i', 'close=i', 'verbose|v', 'help|h', 'dry-run|n');
+GetOptions(\%h, 'anonymize=i', 'close=i', 'delete=i', 'cobrand=s', 'verbose|v', 'help|h', 'dry-run|n');
 pod2usage(0) if $h{help};
-pod2usage(1) unless $h{anonymize} || $h{close};
+pod2usage(1) unless $h{anonymize} || $h{close} || $h{delete};
 
 FixMyStreet::Script::Inactive->new(%h)->reports;
 
@@ -29,11 +29,13 @@ process-inactive-reports - deal with anonymizing inactive non-open reports
 
 =head1 SYNOPSIS
 
-process-inactive-reports [--anonymize N] [--close N]
+process-inactive-reports [--anonymize N] [--close N] [--delete N] [--cobrand COBRAND]
 
  Options:
    --anonymize   Anonymize non-open reports (and related) inactive longer than this time (months)
    --close       Close comments on non-open reports inactive longer than this time (months)
+   --delete      Delete non-open reports inactive longer than this time (months)
+   --cobrand     Only act upon reports made on this cobrand
    --dry-run     Don't actually anonymize anything or send any emails
    --verbose     Output as to which reports are being affected
    --help        This help message

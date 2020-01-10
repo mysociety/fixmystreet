@@ -12,9 +12,15 @@ use FixMyStreet::Email;
 
 has anonymize => ( is => 'ro' );
 has close => ( is => 'ro' );
+has delete => ( is => 'ro' );
 has email => ( is => 'ro' );
 has verbose => ( is => 'ro' );
 has dry_run => ( is => 'ro' );
+
+has cobrand => (
+    is => 'ro',
+    coerce => sub { FixMyStreet::Cobrand->get_class_for_moniker($_[0])->new },
+);
 
 sub BUILDARGS {
     my ($cls, %args) = @_;
@@ -22,7 +28,7 @@ sub BUILDARGS {
     return \%args;
 }
 
-has cobrand => (
+has base_cobrand => (
     is => 'lazy',
     default => sub {
         my $base_url = FixMyStreet->config('BASE_URL');
@@ -55,6 +61,7 @@ sub reports {
 
     say "DRY RUN" if $self->dry_run;
     $self->anonymize_reports if $self->anonymize;
+    $self->delete_reports if $self->delete;
     $self->close_updates if $self->close;
 }
 
@@ -66,6 +73,7 @@ sub close_updates {
         state => [ FixMyStreet::DB::Result::Problem->closed_states(), FixMyStreet::DB::Result::Problem->fixed_states() ],
         extra => [ undef, { -not_like => '%closed_updates%' } ],
     });
+    $problems = $problems->search({ cobrand => $self->cobrand->moniker }) if $self->cobrand;
 
     while (my $problem = $problems->next) {
         say "Closing updates on problem #" . $problem->id if $self->verbose;
@@ -75,18 +83,28 @@ sub close_updates {
     }
 }
 
-sub anonymize_reports {
-    my $self = shift;
-
-    # Need to look though them all each time, in case any new updates/alerts
+sub _relevant_reports {
+    my ($self, $time) = @_;
     my $problems = FixMyStreet::DB->resultset("Problem")->search({
-        lastupdate => { '<', interval($self->anonymize) },
+        lastupdate => { '<', interval($time) },
         state => [
             FixMyStreet::DB::Result::Problem->closed_states(),
             FixMyStreet::DB::Result::Problem->fixed_states(),
             FixMyStreet::DB::Result::Problem->hidden_states(),
         ],
     });
+    if ($self->cobrand) {
+        $problems = $problems->search({ cobrand => $self->cobrand->moniker });
+        $problems = $self->cobrand->call_hook(inactive_reports_filter => $time, $problems) || $problems;
+    }
+    return $problems;
+}
+
+sub anonymize_reports {
+    my $self = shift;
+
+    # Need to look though them all each time, in case any new updates/alerts
+    my $problems = $self->_relevant_reports($self->anonymize);
 
     while (my $problem = $problems->next) {
         say "Anonymizing problem #" . $problem->id if $self->verbose;
@@ -110,10 +128,8 @@ sub anonymize_reports {
         });
 
         # Remove alerts - could just delete, but of interest how many there were, perhaps?
-        FixMyStreet::DB->resultset('Alert')->search({
+        $problem->alerts->search({
             user_id => { '!=' => $self->anonymous_user->id },
-            alert_type => 'new_updates',
-            parameter => $problem->id,
         })->update({
             user_id => $self->anonymous_user->id,
             whendisabled => \'current_timestamp',
@@ -121,11 +137,30 @@ sub anonymize_reports {
     }
 }
 
+sub delete_reports {
+    my $self = shift;
+
+    my $problems = $self->_relevant_reports($self->delete);
+
+    while (my $problem = $problems->next) {
+        say "Deleting associated data of problem #" . $problem->id if $self->verbose;
+        next if $self->dry_run;
+
+        $problem->comments->delete;
+        $problem->questionnaires->delete;
+        $problem->alerts->delete;
+    }
+    say "Deleting all matching problems" if $self->verbose;
+    return if $self->dry_run;
+    $problems->delete;
+}
+
 sub anonymize_users {
     my $self = shift;
 
     my $users = FixMyStreet::DB->resultset("User")->search({
         last_active => { '<', interval($self->anonymize) },
+        email => { -not_like => 'removed-%@' . FixMyStreet->config('EMAIL_DOMAIN') },
     });
 
     while (my $user = $users->next) {
@@ -154,10 +189,10 @@ sub email_inactive_users {
                 email_from => $self->email,
                 anonymize_from => $self->anonymize,
                 user => $user,
-                url => $self->cobrand->base_url_with_lang . '/my',
+                url => $self->base_cobrand->base_url_with_lang . '/my',
             },
             { To => [ $user->email, $user->name ] },
-            undef, 0, $self->cobrand,
+            undef, 0, $self->base_cobrand,
         );
 
         $user->set_extra_metadata('inactive_email_sent', 1);
