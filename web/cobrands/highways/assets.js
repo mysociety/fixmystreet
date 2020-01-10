@@ -23,7 +23,7 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-fixmystreet.assets.add(defaults, {
+fixmystreet.highways_layer = fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
             TYPENAME: "Highways"
