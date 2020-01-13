@@ -83,7 +83,9 @@ sub base_url_for_report {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    return $rs->search( { 'body.name' => 'TfL' } );
+    $rs = $rs->search( { 'body.name' => 'TfL' } );
+    return $rs unless $self->{c}->stash->{categories_for_point}; # Admin page
+    return $rs->search( { category => { -not_in => $self->_tfl_no_resend_categories } } );
 }
 
 sub admin_user_domain { 'tfl.gov.uk' }
@@ -497,5 +499,11 @@ sub _cleaning_categories { [
 sub _cleaning_groups { [ 'Street cleaning' ] }
 
 sub _tfl_council_category { 'General Litter / Rubbish Collection' }
+
+sub _tfl_no_resend_categories { [
+    'General Litter / Rubbish Collection',
+    'Other (TfL)',
+    'Timings',
+] }
 
 1;
