@@ -2,3 +2,33 @@
 @import "./_colours";
 @import "../sass/mixins";
 @import "../sass/base";
+
+@import "styles.css"; // styles taken from rbkc.gov.uk and filtered down with uncss
+
+.header {
+  position: unset; // fixed header does not really work for FMS
+
+  .header__nav-item > a {
+    border-right: none; // no boarder needed
+  }
+}
+
+.header,
+.footer {
+  ul li {
+    list-style: none; // remove squares
+  }
+}
+
+html {
+  font-size: 10px; // correct font sizes RBKC html base size is 10 where FMS is 14
+}
+
+.dev-site-notice {
+  font-size: 2.1em; // restore larger font size for notice
+  z-index: 200; // ensure notice is above header
+}
+
+.main-content {
+  font-size: 1.4em; // restore FMS base size for the main content block
+}
