@@ -1009,6 +1009,40 @@ foreach my $test ( {
         $problem->comments->delete;
     };
 }
+subtest 'check that first comment always updates state'  => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>in_progress</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->state( 'confirmed' );
+    $problem->lastupdate( $dt->clone->subtract( hours => 1 ) );
+    $problem->update;
+
+    $requests_xml =~ s/UPDATED_DATETIME/@{[$dt->clone->subtract( minutes => 62 )]}/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    $update->process_body;
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, 'one comment after fetching updates';
+    is $problem->state, 'in progress', 'correct problem status';
+    $problem->comments->delete;
+};
 
 foreach my $test ( {
         desc => 'normally alerts are not suppressed',

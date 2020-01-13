@@ -85,6 +85,7 @@
         - Add support for account_id parameter to POST Service Request calls.
         - Do not overwrite/remove protected meta data. #2598
         - Spot multiple groups inside a <groups> element.
+        - Always update problem state from first comment #2832
     - Backwards incompatible changes:
         - The FixMyStreet templating code will now escape all variables by
           default. If you need to output HTML in a variable directly, you will
