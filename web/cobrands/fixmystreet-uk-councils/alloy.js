@@ -55,7 +55,9 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 
     getTileCoord: function(bounds, maxExtent, map, reverse) {
         var origin = new OpenLayers.LonLat(maxExtent.left, maxExtent.top);
-        var resolution = map.getResolutionForZoom(3);
+        // hard code this number as we want to avoid fetching asset groups
+        // which happens at more zoomed out levels
+        var resolution = 2.388657133579254;
 
         var adjustX = reverse ? 0.5 : 0;
         var adjustY = reverse ? 0 : 0.5;
