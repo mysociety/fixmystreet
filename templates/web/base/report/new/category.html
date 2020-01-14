@@ -1,3 +1,4 @@
+[% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END ~%]
 [%
 # If only one option, pre-select that as if it were already selected. This
 # carries through to the category_extras template because this template is
@@ -19,7 +20,7 @@ END
         category_lc = category | lower;
        END; ~%]
     <label for='form_category' id="form_category_label">
-        [%~ loc('Category') ~%]
+        [%~ form_category_label OR loc('Category') ~%]
     </label>[% =%]
     <select required class="validCategory form-control[% IF category_groups.size %] js-grouped-select[% END %]" name="category" id="form_category"
     [%~ IF c.user.from_body =%]

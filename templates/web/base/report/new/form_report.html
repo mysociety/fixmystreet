@@ -1,4 +1,5 @@
 [% SET form_show_category_only = NOT category || field_errors.category || disable_form_message || have_disable_qn_to_answer %]
+[% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
 <!-- report/new/form_report.html -->
 [% INCLUDE 'report/new/form_after_heading.html' %]
@@ -25,7 +26,6 @@
 [% END %]
 
 <div class="js-hide-if-invalid-category[% ' hidden-nojs' IF form_show_category_only %]">
-[% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
 
   [% UNLESS public_councils_text_at_top %]
     [% INCLUDE public_councils_text %]
