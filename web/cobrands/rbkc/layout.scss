@@ -3,6 +3,7 @@
 
 .big-green-banner {
     text-transform: none;
+    background-color: $blue;
 }
 
 .nav-menu--main a.report-a-problem-btn {
@@ -11,5 +12,11 @@
 
 #front-main {
     background-color: $front_main_background;
+    padding: 3em 1em;
+    border-bottom: 4px solid $blue;
 }
+
+#front_stats big {
+    color: $mint;
+  }
 

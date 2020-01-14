@@ -12,11 +12,15 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 3em;
 }
 
 h2 {
-  font-size: 2.6em;
+  font-size: 2.25em;
+}
+
+a {
+  color: $blue;
 }
 
 .header {
@@ -44,9 +48,14 @@ html {
 }
 
 .main-content {
-  font-size: 1.4em; // restore FMS base size for the main content block
+  font-size: 1.6em; // restore FMS base size for the main content block
 }
 
+.frontpage {
+  .main-content {
+      padding-top: 0;
+  }
+} 
 
 #front-howto,
 #front-recently {
@@ -54,3 +63,31 @@ html {
     font-size: 1.5em;
   }
 }
+
+#front-main {
+  background-color: $front_main_background;
+  padding: 1.5em 1em;
+  border-bottom: 4px solid $blue;
+  #postcodeForm {
+    font-family: $body-font;
+    background: transparent;
+    div input#sub {
+      background-color: $mint;
+    }
+  }
+  h2 {
+    font-family: $heading-font;
+  }
+}
+
+ol.big-numbers > li::before {
+  color: $mint;
+  top: 0.2em;
+}
+
+#front_stats {
+  font-family: $body-font;
+  big {
+    color: $mint;
+  }
+} 
