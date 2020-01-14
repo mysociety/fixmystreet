@@ -495,7 +495,11 @@ OpenLayers.Projection.addTransform("EPSG:27700", "EPSG:4326",
     OpenLayers.Projection.OS.projectInverseBritish);
 OpenLayers.Projection.addTransform("EPSG:900913", "EPSG:27700",
     OpenLayers.Projection.OS.goog2osgb);
+OpenLayers.Projection.addTransform("EPSG:3857", "EPSG:27700",
+    OpenLayers.Projection.OS.goog2osgb);
 OpenLayers.Projection.addTransform("EPSG:27700", "EPSG:900913",
+    OpenLayers.Projection.OS.osgb2goog);
+OpenLayers.Projection.addTransform("EPSG:27700", "EPSG:3857",
     OpenLayers.Projection.OS.osgb2goog);
 
 }
