@@ -5,6 +5,20 @@
 
 @import "styles.css"; // styles taken from rbkc.gov.uk and filtered down with uncss
 
+
+h1, h2, h3, h4 { 
+  font-family: $heading-font;
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 3.2em;
+}
+
+h2 {
+  font-size: 2.6em;
+}
+
 .header {
   position: unset; // fixed header does not really work for FMS
 
@@ -31,4 +45,12 @@ html {
 
 .main-content {
   font-size: 1.4em; // restore FMS base size for the main content block
+}
+
+
+#front-howto,
+#front-recently {
+  h2 {
+    font-size: 1.5em;
+  }
 }
