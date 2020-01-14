@@ -501,6 +501,7 @@ sub _cleaning_groups { [ 'Street cleaning' ] }
 sub _tfl_council_category { 'General Litter / Rubbish Collection' }
 
 sub _tfl_no_resend_categories { [
+    'Countdown - not working',
     'General Litter / Rubbish Collection',
     'Other (TfL)',
     'Timings',
