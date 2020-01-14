@@ -691,6 +691,8 @@ sub setup_categories_and_bodies : Private {
       ->search( { 'me.body_id' => [ keys %bodies ] }, { prefetch => 'body' } );
     my @contacts = $c->cobrand->categories_restriction($contacts)->all_sorted;
 
+    $c->cobrand->call_hook(munge_report_new_contacts => \@contacts);
+
     # variables to populate
     my %bodies_to_list = ();       # Bodies with categories assigned
     my @category_options = ();       # categories to show

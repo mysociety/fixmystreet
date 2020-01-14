@@ -83,8 +83,8 @@ sub munge_reports_categories_list {
     }
 }
 
-sub munge_report_new_category_list {
-    my ($self, $options, $contacts, $extras) = @_;
+sub munge_report_new_contacts {
+    my ($self, $contacts) = @_;
 
     my %bodies = map { $_->body->name => $_->body } @$contacts;
 
@@ -92,20 +92,16 @@ sub munge_report_new_category_list {
         my $user = $self->{c}->user;
         if ( $user && ( $user->is_superuser || $user->belongs_to_body( $bodies{'Isle of Wight Council'}->id ) ) ) {
             @$contacts = grep { !$_->send_method || $_->send_method ne 'Triage' } @$contacts;
-            my $seen = { map { $_->category => 1 } @$contacts };
-            @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
             return;
         }
 
         @$contacts = grep { $_->send_method && $_->send_method eq 'Triage' } @$contacts;
-        my $seen = { map { $_->category => 1 } @$contacts };
-        @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
     }
 
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
-        $tfl->munge_red_route_categories($options, $contacts);
+        $tfl->munge_red_route_categories($contacts);
     }
 
 }
