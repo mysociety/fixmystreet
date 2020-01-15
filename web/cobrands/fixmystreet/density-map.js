@@ -55,9 +55,11 @@ $(function(){
     $('#heatmap_yes').on('click', function() {
         fixmystreet.markers.setVisibility(false);
         heat_layer.setVisibility(true);
+        $(fixmystreet.map.div).addClass("heatmap-active");
     });
 
     $('#heatmap_no').on('click', function() {
+        $(fixmystreet.map.div).removeClass("heatmap-active");
         heat_layer.setVisibility(false);
         fixmystreet.markers.setVisibility(true);
     });
@@ -65,6 +67,7 @@ $(function(){
     if (heatmap_on) {
         fixmystreet.markers.setVisibility(false);
         heat_layer.setVisibility(true);
+        $(fixmystreet.map.div).addClass("heatmap-active");
     }
 
     $('#sort').closest('.report-list-filters').hide();

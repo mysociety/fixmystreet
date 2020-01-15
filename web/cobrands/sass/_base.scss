@@ -1683,6 +1683,12 @@ input.final-submit {
     height: 100%;
     // Needs to be position:absolute for the mobile banners to show on top
     position: absolute;
+
+    &.heatmap-active {
+      .olLayerGrid, .olBackBuffer {
+        filter: grayscale(0.75);
+      }
+    }
   }
 }
 
