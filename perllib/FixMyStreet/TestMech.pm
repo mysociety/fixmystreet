@@ -68,7 +68,7 @@ sub uniquify_email {
     my ($self, $email, $file) = @_;
 
     $file = (caller)[1] unless $file;
-    (my $pkg = $file) =~ s{/}{}g;
+    (my $pkg = $file) =~ s{[/\.]}{}g;
 
     if ($email =~ /@/ && $email !~ /^pkg-/) {
         $email = "pkg-$pkg-$email";

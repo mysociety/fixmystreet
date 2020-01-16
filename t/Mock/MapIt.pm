@@ -55,6 +55,7 @@ my @PLACES = (
     [ 'PE1 1HF', 52.57146, -0.24201, 2566, 'Peterborough City Council', 'UTA' ],
     [ 'OX28 4DS', 51.784721, -1.494453 ],
     [ 'E14 2DN', 51.508536, '0.000001' ],
+    [ '?', 52.51093, -1.86514, 11809, 'West Midlands', 'EUR' ],
     # Norway
     [ '3290', 59, 10, 709, 'Larvik', 'NKO', 7, 'Vestfold', 'NFY' ],
     [ '0045', "59.9", "10.9", 301, 'Oslo', 'NKO', 3, 'Oslo', 'NFY' ],
