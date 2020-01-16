@@ -38,9 +38,10 @@
     <p>
         <label for="category">[% loc('Category:') %]</label>
         <select class="form-control" name="category" id="category"><option value=''>[% loc('All') %]</option>
-            [% FOR cat IN contacts %]
+            [% BLOCK category_option %]
                 <option value='[% cat.category | html %]'[% ' selected' IF category == cat.category %]>[% cat.category_display | html %]</option>
             [% END %]
+            [%~ INCLUDE 'report/new/_category_select.html' category_options=contacts ~%]
         </select>
     </p>
 

@@ -30,7 +30,11 @@ my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
 my $body = $mech->create_body_ok(2651, 'City of Edinburgh Council');
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
 for my $contact ( @cats ) {
-    $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
+    my $c = $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
+    if ($contact eq 'Potholes') {
+        $c->set_extra_metadata(group => ['Road']);
+        $c->update;
+    }
 }
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
@@ -70,7 +74,7 @@ foreach my $problem (@closed_problems) {
 }
 
 my $categories = scraper {
-    process "select[name=category] > option", 'cats[]' => 'TEXT',
+    process "select[name=category] option", 'cats[]' => 'TEXT',
     process "table[id=overview] > tr", 'rows[]' => scraper {
         process 'td', 'cols[]' => 'TEXT'
     },
@@ -135,8 +139,9 @@ FixMyStreet::override_config {
 
     subtest 'The correct categories and totals shown by default' => sub {
         $mech->get_ok("/dashboard");
-        my $expected_cats = [ 'All', @cats ];
+        my $expected_cats = [ 'All', 'Litter', 'Other', 'Traffic lights', 'Potholes' ];
         my $res = $categories->scrape( $mech->content );
+        $mech->content_contains('<optgroup label="Road">');
         is_deeply( $res->{cats}, $expected_cats, 'correct list of categories' );
         # Three missing as more than a month ago
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 7, 3, 0, 10, 10, 3, 4, 17);
