@@ -1,0 +1,14 @@
+<p class="report-list-filters">
+    <label for="sort">[% loc('Sort by') %]</label>
+    <select class="form-control" name="sort" id="sort">
+      [% IF shortlist %]
+        <option value="shortlist"[% ' selected' IF sort_key == 'shortlist' %]>[% loc('Manual order') %]</option>
+      [% END %]
+        <option value="created-desc"[% ' selected' IF sort_key == 'created-desc' %]>[% loc('Newest') %]</option>
+        <option value="created-asc"[% ' selected' IF sort_key == 'created-asc' %]>[% loc('Oldest') %]</option>
+        <option value="updated-desc"[% ' selected' IF sort_key == 'updated-desc' %]>[% loc('Recently updated') %]</option>
+        <option value="updated-asc"[% ' selected' IF sort_key == 'updated-asc' %]>[% loc('Least recently updated') %]</option>
+        <option value="comments-desc"[% ' selected' IF sort_key == 'comments-desc' %]>[% loc('Most commented') %]</option>
+    </select>
+    <input type="submit" name="filter_update" value="[% loc('Go') %]">
+</p>
