@@ -548,13 +548,15 @@ sub heatmap_filters :Private {
     my ($self, $c, $where) = @_;
 
     # Wards
-    my @areas = @{$c->user->area_ids || []};
-    # Want to get everything if nothing given in an ajax call
-    if (!$c->stash->{wards} && @areas) {
-        $c->stash->{wards} = [ map { { id => $_ } } @areas ];
-        $where->{areas} = [
-            map { { 'like', '%,' . $_ . ',%' } } @areas
-        ];
+    if ($c->user_exists) {
+        my @areas = @{$c->user->area_ids || []};
+        # Want to get everything if nothing given in an ajax call
+        if (!$c->stash->{wards} && @areas) {
+            $c->stash->{wards} = [ map { { id => $_ } } @areas ];
+            $where->{areas} = [
+                map { { 'like', '%,' . $_ . ',%' } } @areas
+            ];
+        }
     }
 
     # Date range
@@ -588,9 +590,14 @@ sub heatmap_sidebar :Private {
 
     my $params = { map { my $n = $_; s/me\./problem\./; $_ => $where->{$n} } keys %$where };
     my $body = $c->stash->{body};
+
+    my @user;
+    push @user, $c->user->id if $c->user_exists;
+    push @user, $body->comment_user_id if $body->comment_user_id;
+    $params->{'me.user_id'} = { -not_in => \@user } if @user;
+
     my @c = $c->model('DB::Comment')->to_body($body)->search({
         %$params,
-        'me.user_id' => { -not_in => [ $c->user->id, $body->comment_user_id || () ] },
         'me.state' => 'confirmed',
     }, {
         columns => 'problem_id',
