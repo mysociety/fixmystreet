@@ -172,6 +172,12 @@ sub admin_allow_user {
     return $user->from_body->name eq 'TfL';
 }
 
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+    # Include all reports in duplicate spotting
+    delete $params->{states};
+}
+
 sub state_groups_inspect {
     my $rs = FixMyStreet::DB->resultset("State");
     my @open = grep { $_ !~ /^(planned|action scheduled|for triage)$/ } FixMyStreet::DB::Result::Problem->open_states;

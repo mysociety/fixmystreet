@@ -329,12 +329,14 @@ sub nearby : Path {
     my ($self, $c) = @_;
 
     my $states = FixMyStreet::DB::Result::Problem->open_states();
-    $c->forward('/report/_nearby_json', [ {
+    my $params = {
         latitude => $c->get_param('latitude'),
         longitude => $c->get_param('longitude'),
         categories => [ $c->get_param('filter_category') || () ],
         states => $states,
-    } ]);
+    };
+    $c->cobrand->call_hook('around_nearby_filter', $params);
+    $c->forward('/report/_nearby_json', [ $params ]);
 }
 
 sub location_closest_address : Path('/ajax/closest') {

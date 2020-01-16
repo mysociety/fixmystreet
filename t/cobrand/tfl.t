@@ -283,6 +283,10 @@ subtest "test report creation anonymously by staff user" => sub {
     is $report->state, 'confirmed', "report confirmed";
     $mech->get_ok( '/report/' . $report->id );
 
+    $report->update({ state => 'fixed - council' });
+    my $json = $mech->get_ok_json('/around/nearby?latitude=' . $report->latitude . '&longitude=' . $report->longitude);
+    is @{$json->{pins}}, 2, 'right number of pins';
+
     is $report->bodies_str, $body->id;
     is $report->name, 'Anonymous user';
     is $report->user->email, 'anonymous@tfl.gov.uk';
