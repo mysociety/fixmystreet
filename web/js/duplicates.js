@@ -42,6 +42,10 @@
             url_params.pin_size = 'normal';
         }
 
+        if ($('html').hasClass('mobile')) {
+            url_params.inline_maps = 1;
+        }
+
         if (category && params && params.check_duplicates_dismissal ) {
             dismissed = category === dismissed_category;
             dismissed_category = category;

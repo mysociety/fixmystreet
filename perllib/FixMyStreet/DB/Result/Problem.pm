@@ -1045,7 +1045,7 @@ sub pin_data {
 };
 
 sub static_map {
-    my ($self) = @_;
+    my ($self, %params) = @_;
 
     return unless $IM;
 
@@ -1053,7 +1053,11 @@ sub static_map {
         unless $FixMyStreet::Map::map_class->isa("FixMyStreet::Map::OSM");
 
     my $map_data = $FixMyStreet::Map::map_class->generate_map_data(
-        { cobrand => $self->get_cobrand_logged },
+        {
+            cobrand => $self->get_cobrand_logged,
+            distance => 1, # prevents the call to Gaze which isn't necessary
+            $params{zoom} ? ( zoom => $params{zoom} ) : (),
+        },
         latitude  => $self->latitude,
         longitude => $self->longitude,
         pins      => $self->used_map
@@ -1110,7 +1114,7 @@ sub static_map {
     $image->Extent( geometry => '512x384', gravity => 'NorthWest');
     $image->Extent( geometry => '512x320', gravity => 'SouthWest');
 
-    $image->Scale( geometry => "310x200>" );
+    $image->Scale( geometry => "310x200>" ) unless $params{full_size};
 
     my @blobs = $image->ImageToBlob(magick => 'jpeg');
     undef $image;

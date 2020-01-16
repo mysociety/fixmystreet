@@ -44,6 +44,11 @@
         [% INCLUDE 'report/_main_sent_info.html' %]
         [% INCLUDE 'report/photo.html' object=problem %]
         [% full_detail %]
+        [% IF inline_maps %]
+          <div class="duplicate-map">
+            <img src="/report/[% problem.id %]/map?inline_duplicate=1" alt="" />
+          </div>
+        [% END %]
     </div>
 
     <div class="item-list__item--expandable__actions">

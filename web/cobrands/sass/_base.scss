@@ -1489,6 +1489,12 @@ input.final-submit {
   }
 }
 
+.item-list__item .duplicate-map {
+  padding: 1em;
+  clear: both;
+  text-align: center;
+}
+
 .problem-header .update-img,
 .item-list .update-img {
     float: $right;

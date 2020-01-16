@@ -590,7 +590,13 @@ sub inspect : Private {
 sub map :Chained('id') :Args(0) {
     my ($self, $c) = @_;
 
-    my $image = $c->stash->{problem}->static_map;
+    my %params;
+    if ( $c->get_param('inline_duplicate') ) {
+        $params{full_size} = 1;
+        $params{zoom} = 5;
+    }
+
+    my $image = $c->stash->{problem}->static_map(%params);
     $c->res->content_type($image->{content_type});
     $c->res->body($image->{data});
 }
@@ -639,7 +645,7 @@ sub _nearby_json :Private {
 
     my $list_html = $c->render_fragment(
         'report/nearby.html',
-        { reports => $nearby }
+        { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0 }
     );
 
     my $json = { pins => \@pins };
