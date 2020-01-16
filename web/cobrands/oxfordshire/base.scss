@@ -279,6 +279,10 @@ textarea {
     color: $color-oxfordshire-link-blue;
 }
 
+.asset-spot:before {
+    background-color: #007258;
+}
+
 @media print {
     body {
         background-color: #fff !important;

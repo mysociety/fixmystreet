@@ -549,15 +549,7 @@ function get_asset_stylemap() {
     return new OpenLayers.StyleMap({
         'default': fixmystreet.assets.style_default,
         'select': fixmystreet.assets.style_default_select,
-        'hover': new OpenLayers.Style({
-            fillColor: "#55BB00",
-            fillOpacity: 0.8,
-            strokeColor: "#000000",
-            strokeOpacity: 1,
-            strokeWidth: 2,
-            pointRadius: 8,
-            cursor: 'pointer'
-        })
+        'hover': fixmystreet.assets.style_default_hover
     });
 }
 
@@ -822,6 +814,16 @@ fixmystreet.assets = {
         strokeOpacity: 0.8,
         strokeWidth: 2,
         pointRadius: 6
+    }),
+
+    style_default_hover: new OpenLayers.Style({
+        fillColor: "#55BB00",
+        fillOpacity: 0.8,
+        strokeColor: "#000000",
+        strokeOpacity: 1,
+        strokeWidth: 2,
+        pointRadius: 8,
+        cursor: 'pointer'
     }),
 
     style_default_select: new OpenLayers.Style({
