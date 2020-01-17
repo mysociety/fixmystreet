@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 sub council_area_id { 2503 }
-sub council_area { 'Royal Borough of Kensington and Chelsea' }
+sub council_area { 'Kensington and Chelsea Borough Council' }
 sub council_name { 'Kensington and Chelsea Borough Council' }
 sub council_url { 'rbkc' }
 sub admin_user_domain { 'rbkc.gov.uk' }
