@@ -93,15 +93,21 @@
             $('.js-hide-if-invalid-category_extras').slideUp();
         }
 
-        // Highlight map pin when hovering associated list item.
-        var timeout;
-        $reports.on('mouseenter', function(){
-            var id = parseInt( $(this).data('reportId'), 10 );
-            clearTimeout( timeout );
-            fixmystreet.maps.markers_highlight( id );
-        }).on('mouseleave', function(){
-            timeout = setTimeout( fixmystreet.maps.markers_highlight, 50 );
-        });
+        if (!fixmystreet.map.events.extensions.buttonclick.isDeviceTouchCapable) {
+            // Highlight map pin when hovering associated list item.
+            // (not on touchscreens though because a) the 'mouseenter' handler means
+            // two taps are required on the 'read more' button - one to highlight
+            // the list item and another to activate the button- and b) the pins
+            // might be scrolled off the top of the screen anyway e.g. on phones)
+            var timeout;
+            $reports.on('mouseenter', function(){
+                var id = parseInt( $(this).data('reportId'), 10 );
+                clearTimeout( timeout );
+                fixmystreet.maps.markers_highlight( id );
+            }).on('mouseleave', function(){
+                timeout = setTimeout( fixmystreet.maps.markers_highlight, 50 );
+            });
+        }
 
         // Add a "select this report" button, when on the report inspect form.
         if ( $('#report_inspect_form').length ) {
