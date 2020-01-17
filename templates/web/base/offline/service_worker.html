@@ -22,6 +22,7 @@ const requiredOffline = [
 ];
 
 const staticCache = 'static';
+// const pageCache = 'pages';
 
 addEventListener('install', function(evt) {
   evt.waitUntil(precache());
@@ -44,11 +45,18 @@ addEventListener('fetch',  fetchEvent => {
     if (request.mode === 'navigate') {
       const fetchPromise = fetch(request);
 
+// For now, only save pages manually for inspectors
+//      fetchEvent.waitUntil(async function() {
+//        const responseCopy = (await fetchPromise).clone();
+//        const cache = await caches.open(pageCache);
+//        await responseCopy.ok ? cache.put(request, responseCopy) : cache.delete(request);
+//      }());
+
       try {
         return await fetchPromise;
       }
       catch {
-        let cached = await caches.match("[% offline_html %]");
+        let cached = await caches.match(request) || await caches.match("[% offline_html %]");
         return cached || offlineResponse();
       }
     } else {
