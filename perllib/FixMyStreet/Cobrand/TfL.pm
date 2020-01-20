@@ -313,12 +313,18 @@ sub must_have_2fa {
 sub update_email_shortlisted_user {
     my ($self, $update) = @_;
     my $c = $self->{c};
+    my $cobrand = FixMyStreet::Cobrand::TfL->new; # $self may be FMS
     my $shortlisted_by = $update->problem->shortlisted_user;
     if ($shortlisted_by && $shortlisted_by->from_body && $shortlisted_by->from_body->name eq 'TfL' && $shortlisted_by->id ne $update->user_id) {
         $c->send_email('alert-update.txt', {
+            additional_template_paths => [
+                FixMyStreet->path_to( 'templates', 'email', 'tfl' ),
+                FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
+            ],
             to => [ [ $shortlisted_by->email, $shortlisted_by->name ] ],
             report => $update->problem,
-            problem_url => $c->cobrand->base_url_for_report($update->problem) . $update->problem->url,
+            cobrand => $cobrand,
+            problem_url => $cobrand->base_url . $update->problem->url,
             data => [ {
                 item_photo => $update->photo,
                 item_text => $update->text,
