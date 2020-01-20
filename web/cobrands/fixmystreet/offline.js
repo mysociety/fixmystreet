@@ -145,15 +145,6 @@ fixmystreet.offlineData = (function() {
         getForms: function() {
             return getData().then(function(data) { return data.forms; });
         },
-        addForm: function(action, formData) {
-            updateData(function(data) {
-                var forms = data.forms;
-                if (!forms.length || formData != forms[forms.length - 1][1]) {
-                    forms.push([action, formData]);
-                }
-                fixmystreet.offlineBanner.update();
-            });
-        },
         shiftForm: function(idx) {
             updateData(function(data) {
                 data.forms.shift();
@@ -328,20 +319,6 @@ fixmystreet.offline = (function() {
                 });
             }
         });
-
-        // If we catch the form submit, e.g. Chrome still seems to
-        // try and submit and we get the Chrome offline error page
-        var btn = $('#report_inspect_form input[type=submit]');
-        btn.click(function() {
-            var form = $(this).closest('form');
-            var data = form.serialize() + '&save=1&saved_at=' + Math.floor(+new Date() / 1000);
-            fixmystreet.offlineData.addForm(form.attr('action'), data);
-            location.href = '/my/planned?saved=1';
-            return false;
-        });
-        btn[0].type = 'button';
-
-        return true;
     }
 
     return {

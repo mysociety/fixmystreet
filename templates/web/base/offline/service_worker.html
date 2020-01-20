@@ -6,6 +6,8 @@ SET scripts_seen = {};
 
 ~%]
 
+importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js');
+
 const requiredOffline = [
   "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]",
   "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]",
@@ -37,7 +39,39 @@ addEventListener('fetch',  fetchEvent => {
   const request = fetchEvent.request;
   const url = new URL(request.url);
 
-  if (request.method !== "GET" || url.origin !== location.origin) {
+  if (url.origin !== location.origin) {
+      return;
+  }
+
+  // Handle inspection form submission if offline...
+  if (request.method === 'POST' && RegExp('/report/\\d+$').test(url)) {
+    fetchEvent.respondWith(async function() {
+      const fetchPromise = fetch(request.clone());
+      try {
+        return await fetchPromise;
+      }
+      catch {
+        fetchEvent.waitUntil(async function() {
+          var text = await request.text();
+          let formData = new URLSearchParams(text);
+          formData.set('save', 2);
+          formData.set('saved_at', Math.floor(+new Date() / 1000));
+          formData = formData.toString();
+
+          var data = await idbKeyval.get('offlineData') || { cachedReports: {}, forms: [] };
+          var forms = data.forms;
+          if (!forms.length || formData != forms[forms.length - 1][1]) {
+            forms.push([request.url, formData]);
+          }
+          return idbKeyval.set('offlineData', data);
+        }());
+
+        return Response.redirect('/my/planned?saved=1');
+      };
+    }());
+  }
+
+  if (request.method !== "GET") {
       return;
   }
 
