@@ -27,7 +27,6 @@ var defaults = {
         central_asset_id: 'central_asset_id',
         site_code: 'site_code'
     },
-    min_resolution: 0.00001,
     asset_id_field: 'asset_id',
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",

@@ -587,7 +587,7 @@ function construct_layer_options(options, protocol) {
         protocol: protocol,
         visibility: false,
         maxResolution: max_resolution,
-        minResolution: options.min_resolution,
+        minResolution: options.min_resolution || 0.00001,
         styleMap: options.stylemap || get_asset_stylemap(),
         assets: true
     };

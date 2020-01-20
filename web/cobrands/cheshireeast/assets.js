@@ -10,7 +10,6 @@ var defaults = {
         fixmystreet: 4.777314267158508,
         cheshireeast: 1.4000028000056002
     },
-    min_resolution: 0.00001,
     attributes: {
         central_asset_id: 'central_as',
         site_code: 'site_code'
