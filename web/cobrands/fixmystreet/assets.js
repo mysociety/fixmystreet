@@ -590,7 +590,10 @@ function construct_layer_options(options, protocol) {
         protocol: protocol,
         visibility: false,
         maxResolution: max_resolution,
-        minResolution: options.min_resolution,
+        // If minimum resolution not specified, we only want to set a default
+        // if max_resolution is specified, otherwise the default minimum will
+        // be used to construct all the resolutions and it won't work
+        minResolution: options.min_resolution || (max_resolution ? 0.00001 : undefined),
         styleMap: options.stylemap || get_asset_stylemap(),
         assets: true
     };

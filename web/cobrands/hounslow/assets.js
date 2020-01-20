@@ -19,7 +19,6 @@ var defaults = {
         'hounslow': 0.5291677250021167,
         'fixmystreet': 1.194328566789627
     },
-    min_resolution: 0.00001,
     asset_id_field: 'CentralAssetId',
     attributes: {
         central_asset_id: 'CentralAssetId',
