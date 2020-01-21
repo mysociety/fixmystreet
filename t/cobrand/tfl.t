@@ -592,15 +592,24 @@ subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {
     $staffuser->update({ area_ids => undef}); # so login below doesn't break
 };
 
-subtest 'Leave an update on a shortlisted report, get an email' => sub {
-    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
-    $staffuser->add_to_planned_reports($report);
-    $mech->log_in_ok( $user->email );
-    $mech->get_ok('/report/' . $report->id);
-    $mech->submit_form_ok({ with_fields => { update => 'This is an update' }});
-    my $email = $mech->get_text_body_from_email;
-    like $email, qr/This is an update/;
-};
+my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+$report->update({ cobrand => 'fixmystreet' });
+$staffuser->add_to_planned_reports($report);
+
+for my $host ( 'www.fixmystreet.com', 'tfl.fixmystreet.com' ) {
+    subtest "Leave an update on a shortlisted report on $host, get an email" => sub {
+        $mech->host($host);
+        $mech->log_in_ok( $user->email );
+        $mech->get_ok('/report/' . $report->id);
+        $mech->submit_form_ok({ with_fields => { update => 'This is an update' }});
+        my $email = $mech->get_email;
+        my $text = $mech->get_text_body_from_email;
+        like $text, qr/This is an update/, 'Right email';
+        like $text, qr/street.tfl/, 'Right url';
+        like $text, qr/Street Care/, 'Right name';
+        like $email->as_string, qr/iEYI87gX6Upb\+tKYzrSmN83pTnv606AOtahHTepSm/, 'Right logo';
+    };
+}
 
 subtest 'TfL staff can access TfL admin' => sub {
     $mech->log_in_ok( $staffuser->email );

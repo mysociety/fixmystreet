@@ -368,8 +368,8 @@ sub construct_email {
     my $vars = {
         from => [ $sender, _($sender_name) ],
         %{ $c->stash },
-        %$extra_stash_values,
         additional_template_paths => \@include_path,
+        %$extra_stash_values,
     };
     $vars->{site_name} = Utils::trim_text($c->view('EmailText')->render($c, 'site-name.txt', $vars));
     $vars->{signature} = $c->view('EmailText')->render($c, 'signature.txt', $vars);
