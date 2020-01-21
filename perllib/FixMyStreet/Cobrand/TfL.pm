@@ -434,10 +434,10 @@ sub report_new_is_on_tlrn {
     return scalar @$features ? 1 : 0;
 }
 
-sub munge_report_new_category_list { }
+sub munge_report_new_contacts { }
 
 sub munge_red_route_categories {
-    my ($self, $options, $contacts) = @_;
+    my ($self, $contacts) = @_;
     if ( $self->report_new_is_on_tlrn ) {
         # We're on a red route - only send TfL categories (except the disabled
         # one that directs the user to borough for street cleaning) and borough
@@ -455,8 +455,6 @@ sub munge_red_route_categories {
         $tlrn_cats{$self->_tfl_council_category} = 1;
         @$contacts = grep { !( $_->body->name eq 'TfL' && $tlrn_cats{$_->category } ) } @$contacts;
     }
-    my $seen = { map { $_->category => 1 } @$contacts };
-    @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
 }
 
 # Reports in these categories can only be made on a red route

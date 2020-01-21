@@ -108,8 +108,8 @@ sub munge_reports_category_list {
     return @$categories;
 }
 
-sub munge_report_new_category_list {
-    my ($self, $options, $contacts, $extras) = @_;
+sub munge_report_new_contacts {
+    my ($self, $contacts) = @_;
 
     my $user = $self->{c}->user;
     my %bodies = map { $_->body->name => $_->body } @$contacts;
@@ -117,14 +117,10 @@ sub munge_report_new_category_list {
 
     if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
         @$contacts = grep { !$_->send_method || $_->send_method ne 'Triage' } @$contacts;
-        my $seen = { map { $_->category => 1 } @$contacts };
-        @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
         return;
     }
 
     @$contacts = grep { $_->send_method && $_->send_method eq 'Triage' } @$contacts;
-    my $seen = { map { $_->category => 1 } @$contacts };
-    @$options = grep { my $c = ($_->{category} || $_->category); $c =~ 'Pick a category' || $seen->{ $c } } @$options;
 }
 
 sub munge_around_category_where {
