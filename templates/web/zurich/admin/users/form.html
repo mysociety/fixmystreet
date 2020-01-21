@@ -19,6 +19,13 @@
           </select>
         </li>
 
+        <li>
+          <label>
+            [% loc('government-internal') %]
+            <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]>
+          </label>
+        </li>
+
     </ul>
     <p>
       <input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
