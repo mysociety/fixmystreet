@@ -1,4 +1,4 @@
-[% WHILE ( contact = contacts.next ) -%]
+[% FOR contact IN contacts -%]
 [%- NEXT IF contact.state != 'confirmed' %]
 [% contact.category_display %]	[% contact.email %]
 [%- END %]

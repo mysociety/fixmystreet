@@ -18,7 +18,7 @@
             <th>[% loc('When edited') %]</th>
             <th>Kürzel</th>
         </tr>
-        [% WHILE ( cat = contacts.next ) %]
+        [% FOR cat IN contacts %]
             <tr[% IF cat.state == 'deleted' %] class="is-deleted"[% END %]>
                 <td><a href="[% c.uri_for_action( 'admin/bodies/edit', [ body_id ], cat.category ) %]">[% cat.category_display %]</a></td>
                 <td>[% cat.email | html %]</td>
