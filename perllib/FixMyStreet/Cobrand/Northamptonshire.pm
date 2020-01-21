@@ -36,6 +36,8 @@ sub on_map_default_status { 'open' }
 
 sub report_sent_confirmation_email { 'id' }
 
+sub admin_user_domain { 'northamptonshire.gov.uk' }
+
 has body_obj => (
     is => 'lazy',
     default => sub {
