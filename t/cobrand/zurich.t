@@ -98,7 +98,7 @@ my $superuser;
 subtest "set up superuser" => sub {
     $superuser = $mech->log_in_ok( 'super@example.org' );
     # a user from body $zurich is a superuser, as $zurich has no parent id!
-    $superuser->update({ from_body => $zurich->id });
+    $superuser->update({ name => 'Superuser', from_body => $zurich->id });
     $EXISTING_REPORT_COUNT = get_export_rows_count($mech);
     $mech->log_out_ok;
 };
@@ -989,6 +989,15 @@ $mech->log_out_ok;
 subtest 'users at the top level can be edited' => sub {
     $mech->log_in_ok( $superuser->email );
     $mech->get_ok('/admin/users/' . $superuser->id );
+    $mech->content_contains('name="flagged">');
+    $mech->submit_form_ok({ with_fields => { flagged => 1 } });
+    $superuser->discard_changes;
+    is $superuser->flagged, 1, 'Marked as flagged';
+    $mech->get_ok('/admin/users/' . $superuser->id );
+    $mech->content_contains('name="flagged" checked');
+    $mech->submit_form_ok({ with_fields => { flagged => 0 } });
+    $superuser->discard_changes;
+    is $superuser->flagged, 0, 'Unmarked';
 };
 
 subtest 'A visit to /reports is okay' => sub {
