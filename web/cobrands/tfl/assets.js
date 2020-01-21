@@ -72,6 +72,7 @@ var tlrn_categories = [
     "Scaffolding blocking carriageway or footway",
     "Single Light out (street light)",
     "Standing water",
+    "Street Light - Equipment damaged, pole leaning",
     "Unstable hoardings",
     "Unstable scaffolding",
     "Worn out road markings"
