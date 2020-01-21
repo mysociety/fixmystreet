@@ -163,17 +163,13 @@ sub _dashboard_export_add_columns {
     push @{$c->stash->{csv}->{headers}}, "Staff User";
     push @{$c->stash->{csv}->{columns}}, "staff_user";
 
-    # All staff users, for contributed_by lookup
-    my @user_ids = $c->model('DB::User')->search(
-        { from_body => $self->body->id },
-        { columns => [ 'id', 'email', ] })->all;
-    my %user_lookup = map { $_->id => $_->email } @user_ids;
+    my $user_lookup = $c->stash->{body_user_lookup};
 
     $c->stash->{csv}->{extra_data} = sub {
         my $report = shift;
         my $staff_user = '';
         if (my $contributed_by = $report->get_extra_metadata('contributed_by')) {
-            $staff_user = $user_lookup{$contributed_by};
+            $staff_user = $user_lookup->{$contributed_by};
         }
         return {
             staff_user => $staff_user,

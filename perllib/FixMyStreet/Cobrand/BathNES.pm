@@ -168,19 +168,6 @@ sub categories_restriction {
     ] } );
 }
 
-# Do a manual prefetch of all staff users for contributed_by lookup
-sub _dashboard_user_lookup {
-    my $self = shift;
-    my $c = $self->{c};
-
-    my @user_ids = $c->model('DB::User')->search(
-        { from_body => { '!=' => undef } },
-        { columns => [ 'id', 'email' ] })->all;
-
-    my %user_lookup = map { $_->id => $_->email } @user_ids;
-    return \%user_lookup;
-}
-
 sub dashboard_export_updates_add_columns {
     my $self = shift;
     my $c = $self->{c};
@@ -196,7 +183,7 @@ sub dashboard_export_updates_add_columns {
         '+columns' => ['user.email'],
         prefetch => 'user',
     });
-    my $user_lookup = $self->_dashboard_user_lookup;
+    my $user_lookup = $c->stash->{body_user_lookup};
 
     $c->stash->{csv}->{extra_data} = sub {
         my $report = shift;
@@ -239,7 +226,7 @@ sub dashboard_export_problems_add_columns {
         '+columns' => ['user.email', 'user.phone'],
         prefetch => 'user',
     });
-    my $user_lookup = $self->_dashboard_user_lookup;
+    my $user_lookup = $c->stash->{body_user_lookup};
 
     $c->stash->{csv}->{extra_data} = sub {
         my $report = shift;

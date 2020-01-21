@@ -138,6 +138,7 @@ sub index : Path : Args(0) {
     $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
 
     if ( $c->get_param('export') ) {
+        $c->stash->{body_user_lookup} = _dashboard_body_user_lookup($c);
         if ($c->get_param('updates')) {
             $c->forward('export_as_csv_updates');
         } else {
@@ -321,6 +322,18 @@ sub csv_filename {
         } sort keys %where
 };
 
+# Do a manual prefetch of all staff users for contributed_by lookup
+sub _dashboard_body_user_lookup {
+    my $c = shift;
+
+    my @user_ids = $c->model('DB::User')->search(
+        { from_body => { '!=' => undef } },
+        { columns => [ 'id', 'email' ] })->all;
+
+    my %user_lookup = map { $_->id => $_->email } @user_ids;
+    return \%user_lookup;
+}
+
 sub export_as_csv_updates : Private {
     my ($self, $c) = @_;
 
@@ -443,6 +456,8 @@ sub generate_csv : Private {
     my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
     my $closed_states = FixMyStreet::DB::Result::Problem->closed_states;
 
+    my $user_lookup = $c->stash->{body_user_lookup};
+
     my %asked_for = map { $_ => 1 } @{$c->stash->{csv}->{columns}};
 
     my $objects = $c->stash->{csv}->{objects};
@@ -486,6 +501,9 @@ sub generate_csv : Private {
         $hashref->{site_used} = $obj->can('service') ? ($obj->service || $obj->cobrand) : $obj->cobrand;
 
         $hashref->{reported_as} = $obj->get_extra_metadata('contributed_as') || '';
+        if (!$hashref->{reported_as} && $user_lookup->{$obj->user_id}) {
+            $hashref->{reported_as} = 'staff';
+        }
 
         if (my $fn = $c->stash->{csv}->{extra_data}) {
             my $extra = $fn->($obj);
