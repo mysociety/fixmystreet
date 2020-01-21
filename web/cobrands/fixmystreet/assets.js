@@ -31,7 +31,9 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
           group = $('select#category_group').val(),
           layer = this.fixmystreet,
           relevant;
-      if (layer.asset_group) {
+      if (layer.relevant) {
+          relevant = layer.relevant({category: category, group: group});
+      } else if (layer.asset_group) {
           relevant = (layer.asset_group === group);
       } else {
           relevant = (OpenLayers.Util.indexOf(layer.asset_category, category) != -1);
