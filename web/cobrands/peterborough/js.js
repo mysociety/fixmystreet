@@ -54,6 +54,8 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'tree group'
 });
 
+var NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
+
 fixmystreet.assets.add(defaults, {
     http_options: {
         url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
@@ -67,7 +69,27 @@ fixmystreet.assets.add(defaults, {
     },
     asset_type: 'spot',
     asset_group: 'Trees',
-    asset_item: 'tree'
+    asset_item: 'tree',
+    relevant: function(options) {
+        return options.group === 'Trees' && options.category !== NEW_TREE_CATEGORY_NAME;
+    }
+});
+
+// We don't want to plant trees where the existing trees are, so add a
+// separate layer with pin-snapping disabled for new tree requests.
+// The new tree request category is disabled in the other tree point layer.
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
+        params: {
+            TYPENAME: "tree_points"
+        }
+    },
+    asset_id_field: 'TREE_CODE',
+    asset_type: 'spot',
+    asset_category: NEW_TREE_CATEGORY_NAME,
+    asset_item: 'tree',
+    disable_pin_snapping: true
 });
 
 })();
