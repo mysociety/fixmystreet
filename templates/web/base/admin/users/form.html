@@ -7,38 +7,9 @@
 
     [% INCLUDE 'errors.html' errors = field_errors.values %]
     <ul class="no-bullets">
-        <li>
-          <div class="admin-hint">
-            <p>
-              [% loc(
-                "The user's <strong>name</strong> is displayed publicly on reports that have not been marked <em>anonymous</em>.
-                Names are not necessarily unique.")
-              %]
-            </p>
-          </div>
-          <label for="name">[% loc('Name:') %]</label>
-          <input type='text' class="form-control" name='name' id='name' value='[% user.name | html %]'>
-        </li>
-        <li><label for="email">[% loc('Email:') %]</label>
-        <input type='text' class="form-control" id='email' name='email' value='[% user.email | html %]'>
-        [% IF user %]
-            <input class="btn" type="submit" name="send_login_email" value="[% loc('Send login email') %]">
-        [% END %]
-        </li>
-        <li><label class="inline-text" for="email_verified">[% loc('Email verified:') %]</label>
-        <input type="checkbox" id="email_verified" name="email_verified" value="1" [% user.email_verified ? ' checked' : '' %]>
-        <li><label for="phone">[% loc('Phone:') %]</label>
-        <input type='text' class="form-control" id='phone' name='phone' value='[% user.phone | html %]'></li>
-        <li><label class="inline-text" for="phone_verified">[% loc('Phone verified:') %]</label>
-        <input type="checkbox" id="phone_verified" name="phone_verified" value="1" [% user.phone_verified ? ' checked' : '' %]>
+        [% PROCESS 'admin/users/_form_details.html' %]
 
-      [% IF username_in_abuse %]
-      <li>
-            <p class="error">[% loc('User in abuse table') %] <input name="unban" type="submit" value="[% loc('Unban') %]"></p>
-      </li>
-      [% END %]
-
-      [% IF c.user.is_superuser || c.cobrand.moniker == 'zurich' %]
+      [% IF c.user.is_superuser %]
         <li>
           <div class="admin-hint">
             <p>
@@ -72,7 +43,7 @@
           </li>
       [% END %]
 
-        [% IF areas AND c.cobrand.moniker != 'zurich' %]
+        [% IF areas %]
           <li>
             <div class="admin-hint">
               <p>
@@ -94,14 +65,14 @@
           </li>
         [% END %]
 
-        [% IF contacts AND c.cobrand.moniker != 'zurich'%]
+        [% IF contacts %]
           <li class="js-user-categories">
             [% INCLUDE 'admin/category-checkboxes.html' hint=loc("Authorised staff users can be associated with the categories in which they operate.") %]
           </li>
         [% END %]
 
 
-      [% IF user.from_body AND c.cobrand.moniker != 'zurich' %]
+      [% IF user.from_body %]
         <li>
           <div class="admin-hint">
             <p>
@@ -116,7 +87,6 @@
         </li>
       [% END %]
 
-      [% IF c.cobrand.moniker != 'zurich' %]
         <li>
           <div class="admin-hint">
             <p>
@@ -197,7 +167,7 @@
             </fieldset>
           </li>
         [% END %]
-      [% END %]
+
       [% TRY %][% INCLUDE 'admin/users/form-extra-fields.html' %][% CATCH file %][% END %]
     </ul>
     <p>
