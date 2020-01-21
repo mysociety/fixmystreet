@@ -15,7 +15,7 @@ var defaults = {
         }
     },
     max_resolution: 4.777314267158508,
-    min_resolution: 0.5971642833948135,
+    min_resolution: 0.00001,
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
     body: "Peterborough City Council",
