@@ -2,33 +2,13 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <h2 id="new">[% loc('New reports') %]</h2>
-[% INCLUDE list, problems = reports_new.all, hash = 'new' %]
+[% INCLUDE 'admin/_index_table.html' problems=reports_new.all hash='new' %]
 
 <h2 id="wait">[% loc('Reports awaiting approval') %]</h2>
-[% INCLUDE list, problems = reports_unpublished.all, hash = 'wait' %]
+[% INCLUDE 'admin/_index_table.html' problems=reports_unpublished.all hash='wait' %]
 
 <h2 id="alle">[% loc('Reports published') %]</h2>
-[% INCLUDE list, problems = reports_published.all, no_edit = 1, hash = 'alle' %]
+[% INCLUDE 'admin/_index_table.html' problems=reports_published.all no_edit=1 hash='alle' %]
 [% INCLUDE 'pagination.html', admin = 1, param = 'p', hash = 'alle' %]
 
 [% INCLUDE 'admin/footer.html' %]
-
-[% BLOCK list %]
-<table cellspacing="0" cellpadding="2" border="1">
-    <tr>
-        <th>[% loc('ID') %]</th>
-        <th>[% loc('Description') %]</th>
-      [% FOREACH col IN [ [ 'category', loc('Category') ], [ 'created', loc('Submitted') ], [ 'lastupdate', loc('Updated') ], [ 'state', loc('Status') ] ] %]
-        <th><a href="[% INCLUDE sort_link choice = col.0 %]#[% hash %]">[% col.1 %] [% INCLUDE sort_arrow choice = col.0 %]</a></th>
-      [% END %]
-        <th>[% loc('Photo') %]</th>
-        [% IF NOT no_edit %]
-        <th class='edit'>*</th>
-        [% END %]
-    </tr>
-    <tr class="filter-row">
-        <td colspan="8"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
-    </tr>
-[% INCLUDE 'admin/problem_row.html' %]
-</table>
-[% END %]
