@@ -6,21 +6,8 @@
 </form>
 
 [% IF problems.size %]
-<table cellspacing="0" cellpadding="2" border="1">
-    <tr>
-        <th>[% loc('ID') %]</th>
-        <th>[% loc('Description') %]</th>
-      [% FOREACH col IN [ [ 'category', loc('Category') ], [ 'created', loc('Submitted') ], [ 'lastupdate', loc('Updated') ], [ 'state', loc('Status') ] ] %]
-        <th><a href="[% INCLUDE sort_link choice = col.0 %]">[% col.1 %] [% INCLUDE sort_arrow choice = col.0 %]</a></th>
-      [% END %]
-        <th>[% loc('Photo') %]</th>
-        <th class='edit'>*</th>
-    </tr>
-    [% INCLUDE 'admin/problem_row.html' %]
-</table>
-
-[% INCLUDE 'pagination.html', admin = 1, param = 'p', pager = problems_pager %]
-
+    [% PROCESS 'admin/_index_table.html' %]
+    [% INCLUDE 'pagination.html', admin = 1, param = 'p', pager = problems_pager %]
 [% END %]
 
 [% INCLUDE 'admin/list_updates.html' %]

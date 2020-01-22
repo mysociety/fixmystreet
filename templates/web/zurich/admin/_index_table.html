@@ -1,0 +1,20 @@
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('Description') %]</th>
+      [% FOREACH col IN [ [ 'category', loc('Category') ], [ 'created', loc('Submitted') ], [ 'lastupdate', loc('Updated') ], [ 'state', loc('Status') ] ] %]
+        <th><a href="[% INCLUDE sort_link choice = col.0 %]#[% hash %]">[% col.1 %] [% INCLUDE sort_arrow choice = col.0 %]</a></th>
+      [% END %]
+    [% IF include_subdiv %]
+        <th>[% loc('Subdivision/Body') %]</th>
+    [% END %]
+        <th>[% loc('Photo') %]</th>
+        [% IF NOT no_edit %]
+        <th class='edit'>*</th>
+        [% END %]
+    </tr>
+    <tr class="filter-row">
+        <td colspan="8"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
+    </tr>
+[% INCLUDE 'admin/problem_row.html' %]
+</table>
