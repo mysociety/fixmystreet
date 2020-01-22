@@ -43,8 +43,8 @@ if (!$opts->commit) {
 my $field;
 
 if ( $opts->mode eq 'questions' ) {
-    die "questions, code, yes and no required"
-        unless $opts->questions && $opts->code && $opts->yes && $opts->no;
+    die "question, code, yes and no required"
+        unless $opts->question && $opts->code && $opts->yes && $opts->no;
 
     $field = {
         order => 0,
