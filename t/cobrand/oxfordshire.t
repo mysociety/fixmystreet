@@ -1,7 +1,9 @@
 use Test::MockModule;
 
+use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
@@ -50,6 +52,7 @@ subtest 'check /around?ajax defaults to open reports only' => sub {
 my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3, order_by => 'id' })->all;
 
 FixMyStreet::override_config {
+    STAGING_FLAGS => { send_reports => 1, skip_checks => 1 },
     ALLOWED_COBRANDS => 'oxfordshire',
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
@@ -63,10 +66,10 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/report/' . $problem->id, 'redirects to report';
     };
 
-    subtest 'check unable to fix label' => sub {
-        my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
-        my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
+    my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
+    my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
 
+    subtest 'check unable to fix label' => sub {
         my $problem = $problems[0];
         $problem->state( 'unable to fix' );
         $problem->update;
@@ -128,6 +131,44 @@ FixMyStreet::override_config {
         is $rows[2]->[20], '', 'Report without HIAMS ref has empty ref field';
         is $rows[3]->[20], '123098123', 'Older Exor report has correct ref';
     };
+
+    $oxon->update({
+        send_method => 'Open311',
+        endpoint => 'endpoint',
+        api_key => 'key',
+        jurisdiction => 'home',
+    });
+    my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Gullies and Catchpits', email => 'GC' );
+    $contact->set_extra_fields( (
+        { code => 'feature_id', datatype => 'hidden', variable => 'true' },
+    ) );
+    $contact->update;
+    FixMyStreet::Script::Reports::send(); # Make sure no waiting reports
+
+    subtest 'Check special Open311 request handling', sub {
+        my ($p) = $mech->create_problems_for_body( 1, $oxon->id, 'Test', {
+            cobrand => 'oxfordshire',
+            category => 'Gullies and Catchpits',
+            user => $user,
+            latitude => 51.754926,
+            longitude => -1.256179,
+        });
+        $p->set_extra_fields({ name => 'feature_id', value => 9875432});
+        $p->update;
+
+        my $test_data = FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->send_method_used, 'Open311', 'Report sent via Open311';
+        is $p->external_id, 248, 'Report has right external ID';
+        unlike $p->detail, qr/Asset Id:/, 'asset id not saved to report detail';
+
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        like $c->param('description'), qr/Asset Id: 9875432/, 'asset id included in body';
+    };
+
 };
 
 done_testing();
