@@ -85,6 +85,12 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
+[% IF problem.non_public %]
+<p align="right" class="screen-only">
+    <input [% sdm_disabled %] type="submit" class="btn" name="stop_internal" value="Keine interne Meldung">
+</p>
+[% END %]
+
 <p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 
 [% status_message | safe %]

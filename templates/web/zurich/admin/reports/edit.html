@@ -119,6 +119,10 @@
 
 [% status_message | safe %]
 
+[% IF problem.non_public %]
+<p align="right" class="screen-only"><input type="submit" class="btn" name="stop_internal" value="Keine interne Meldung"></p>
+[% END %]
+
 <dl [% IF status_message %]class="with-message"[% END %]>
 
     <dt class="screen-only">

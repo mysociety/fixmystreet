@@ -552,6 +552,18 @@ sub category_options {
     $c->stash->{category_options} = \@categories;
 }
 
+sub report_remove_internal_flag {
+    my $self = shift;
+    my $c = $self->{c};
+    my $problem = $c->stash->{problem};
+    $c->forward('/auth/check_csrf_token');
+    $problem->non_public(0);
+    $problem->update;
+    $c->forward('/admin/log_edit', [ $problem->id, 'problem', 'Intern Flag entfernt' ]);
+    # Make sure the problem's time_spent is updated
+    $self->update_admin_log($c, $problem);
+}
+
 sub admin_report_edit {
     my $self = shift;
     my $c = $self->{c};
@@ -631,6 +643,10 @@ sub admin_report_edit {
         }
     }
 
+    if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('stop_internal') ) {
+        $self->report_remove_internal_flag;
+        return $self->admin_report_edit_done;
+    }
 
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
@@ -871,12 +887,7 @@ sub admin_report_edit {
             $c->go('index');
         }
 
-        $c->stash->{updates} = [ $c->model('DB::Comment')
-          ->search( { problem_id => $problem->id }, { order_by => 'created' } )
-          ->all ];
-
-        $self->stash_states($problem);
-        return 1;
+        return $self->admin_report_edit_done;
     }
 
     if ($type eq 'sdm') {
@@ -913,6 +924,8 @@ sub admin_report_edit {
             # Make sure the problem's time_spent is updated
             $self->update_admin_log($c, $problem);
             $c->res->redirect( '/admin/summary' );
+        } elsif ($editable && $c->get_param('stop_internal')) {
+            $self->report_remove_internal_flag;
         } elsif ($editable && $c->get_param('submit')) {
             $c->forward('/auth/check_csrf_token');
 
@@ -953,19 +966,26 @@ sub admin_report_edit {
             }
         }
 
-        $c->stash->{updates} = [ $c->model('DB::Comment')
-            ->search( { problem_id => $problem->id }, { order_by => 'created' } )
-            ->all ];
-
-        $self->stash_states($problem);
-        return 1;
-
+        return $self->admin_report_edit_done;
     }
 
     $self->stash_states($problem);
     return 0;
 
 }
+
+sub admin_report_edit_done {
+    my $self = shift;
+    my $c = $self->{c};
+    my $problem = $c->stash->{problem};
+    $c->stash->{updates} = [ $c->model('DB::Comment')
+        ->search( { problem_id => $problem->id }, { order_by => 'created' } )
+        ->all ];
+
+    $self->stash_states($problem);
+    return 1;
+}
+
 
 sub admin_district_lookup {
     my ($self, $row) = @_;

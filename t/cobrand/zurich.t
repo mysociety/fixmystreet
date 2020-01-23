@@ -800,7 +800,12 @@ subtest 'test no email sent if closed' => sub {
     $internal->discard_changes;
     is $internal->state, 'fixed - council';
     $mech->email_count_is(0);
+};
 
+subtest 'remove internal flag' => sub {
+    $mech->submit_form_ok( { form_number => 2, button => 'stop_internal' } );
+    $internal->discard_changes;
+    is $internal->non_public, 0;
     $internal->delete;
     $mech->log_out_ok;
 };
