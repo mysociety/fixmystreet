@@ -45,6 +45,7 @@ sub loop_through {
         state => $states,
         created => { '<',  $date_threshold },
         bodies_str => { '!=', undef },
+        non_public => 0,
     } );
 
     my %to_send = ();
