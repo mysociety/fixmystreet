@@ -1390,4 +1390,13 @@ sub hook_report_filter_status {
     } @$status;
 }
 
+# If report is made by a flagged user, mark as non-public
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    if ($report->user->flagged) {
+        $report->non_public(1);
+    }
+}
+
 1;
