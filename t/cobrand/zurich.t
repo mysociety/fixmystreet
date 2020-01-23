@@ -802,7 +802,18 @@ subtest 'test no email sent if closed' => sub {
     $mech->email_count_is(0);
 };
 
+subtest 'SDM closing internal report' => sub {
+    $mech->log_in_ok('sdm1@example.org');
+    $internal->update({ bodies_str => $subdivision->id, state => 'confirmed' });
+    $mech->get_ok('/admin/report_edit/' . $internal->id);
+    $mech->submit_form_ok( { form_number => 2, button => 'no_more_updates' } );
+    $internal->discard_changes;
+    is $internal->state, 'fixed - council', 'State updated';
+};
+
 subtest 'remove internal flag' => sub {
+    $internal->update({ bodies_str => $subdivision->id, state => 'confirmed' });
+    $mech->get_ok('/admin/report_edit/' . $internal->id);
     $mech->submit_form_ok( { form_number => 2, button => 'stop_internal' } );
     $internal->discard_changes;
     is $internal->non_public, 0;
