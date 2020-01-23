@@ -454,6 +454,16 @@ sub admin_type {
     return $type;
 }
 
+sub _admin_index_order {
+    my $self = shift;
+    my $c = $self->{c};
+    my $order = $c->get_param('o') || 'created';
+    my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
+    $c->stash->{order} = $order;
+    $c->stash->{dir} = $dir;
+    return $dir ? { -desc => $order } : $order;
+}
+
 sub admin {
     my $self = shift;
     my $c = $self->{c};
@@ -466,13 +476,9 @@ sub admin {
         my @children = map { $_->id } $body->bodies->all;
         my @all = (@children, $body->id);
 
-        my $order = $c->get_param('o') || 'created';
-        my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
-        $c->stash->{order} = $order;
-        $c->stash->{dir} = $dir;
-        $order = { -desc => $order } if $dir;
+        my $order = $self->_admin_index_order;
 
-        # XXX No multiples or missing bodies
+        # No multiples or missing bodies
         $c->stash->{submitted} = $c->cobrand->problems->search({
             state => [ 'submitted', 'confirmed' ],
             bodies_str => $c->stash->{body}->id,
@@ -499,14 +505,9 @@ sub admin {
         $c->stash->{template} = 'admin/index-sdm.html';
 
         my $body = $c->stash->{body};
+        my $order = $self->_admin_index_order;
 
-        my $order = $c->get_param('o') || 'created';
-        my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
-        $c->stash->{order} = $order;
-        $c->stash->{dir} = $dir;
-        $order = { -desc => $order } if $dir;
-
-        # XXX No multiples or missing bodies
+        # No multiples or missing bodies
         $c->stash->{reports_new} = $c->cobrand->problems->search( {
             state => 'in progress',
             bodies_str => $body->id,
