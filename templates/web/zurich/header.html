@@ -41,11 +41,20 @@
             [% pagename = c.req.uri.path %]
             [% pagename = pagename.replace('/admin/?(\w*).*', '$1') %]
 
+            [% IF admin_type == 'super' %]
             <li [% IF pagename == 'summary' OR pagename == '' %]class="current"[% END %]>
                 <a href="/admin/summary">[% loc('Summary') %]</a>
             </li>
+            [% ELSE %]
+            <li [% IF NOT c.get_param('internal') AND (pagename == 'summary' OR pagename == '') %]class="current"[% END %]>
+                <a href="/admin/summary">Öffentliche</a>
+            </li>
+            <li [% IF c.get_param('internal') AND (pagename == 'summary' OR pagename == '') %]class="current"[% END %]>
+                <a href="/admin/summary?internal=1">Interne</a>
+            </li>
+            [% END %]
             <li [% IF pagename == 'reports' OR pagename == 'report_edit' %]class="current"[% END %]>
-                <a href="/admin/reports">[% loc('Reports') %]</a>
+                <a href="/admin/reports">[% loc('All') %]</a>
             </li>
             [% IF admin_type == 'dm' OR admin_type == 'super' %]
             <li [% IF pagename == 'bodies' OR pagename == 'body' %]class="current"[% END %]>

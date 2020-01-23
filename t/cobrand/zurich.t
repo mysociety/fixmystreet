@@ -769,12 +769,20 @@ subtest "phone number is mandatory" => sub {
     $mech->content_contains( 'Diese Information wird benötigt' );
 };
 
+my $internal;
 subtest 'test flagged users make internal reports' => sub {
     $user->update({ flagged => 1 });
     $mech->submit_form( with_fields => { phone => "01234", category => 'Cat1', detail => 'Details' } );
-    my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' }, rows => 1 })->single;
-    is $report->non_public, 1;
-    $report->delete;
+    $internal = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' }, rows => 1 })->single;
+    is $internal->non_public, 1;
+};
+
+subtest 'internal report admin display' => sub {
+    $mech->get_ok('/admin/summary');
+    $mech->content_lacks('href="report_edit/' . $internal->id);
+    $mech->get_ok('/admin/summary?internal=1');
+    $mech->content_contains('href="report_edit/' . $internal->id);
+    $internal->delete;
     $mech->log_out_ok;
 };
 

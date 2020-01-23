@@ -21,7 +21,8 @@
         <td>[% prettify_state(problem.state) %]
             [% IF problem.state == 'feedback pending';
             SET cs=problem.get_extra_metadata('closure_status');
-            IF cs %] ([% prettify_state(cs) %]) [% END; END %]</td>
+            IF cs %] ([% prettify_state(cs) %]) [% END; END %]
+            [% IF problem.non_public %]<br><i>Interne Meldung</i>[% END %]</td>
 
         [% IF include_subdiv %]
             <td>
