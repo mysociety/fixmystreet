@@ -459,9 +459,13 @@ $.extend(fixmystreet.set_up, {
             $(".js-hide-if-public-category").hide();
         }
 
-        if (fixmystreet.message_controller && data && data.disable_form && data.disable_form.answers) {
-            $('#form_' + data.disable_form.code).on('change.category', function() {
-                $(fixmystreet).trigger('report_new:category_change');
+        if (fixmystreet.message_controller && data && data.disable_form && data.disable_form.questions) {
+            $.each(data.disable_form.questions, function(_, question) {
+                if (question.message && question.code) {
+                    $('#form_' + question.code).on('change.category', function() {
+                        $(fixmystreet).trigger('report_new:category_change');
+                    });
+                }
             });
         }
 
@@ -1334,10 +1338,14 @@ fixmystreet.fetch_reporting_data = function() {
                         message: details.disable_form.all
                     });
                 }
-                if (details.disable_form.answers) {
-                    details.disable_form.category = category;
-                    details.disable_form.keep_category_extras = true;
-                    fixmystreet.message_controller.register_category(details.disable_form);
+                if (details.disable_form.questions) {
+                    $.each(details.disable_form.questions, function(_, question) {
+                        if (question.message && question.code) {
+                            question.category = category;
+                            question.keep_category_extras = true;
+                            fixmystreet.message_controller.register_category(question);
+                        }
+                    });
                 }
             });
         }
