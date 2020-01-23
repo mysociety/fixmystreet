@@ -138,6 +138,23 @@ sub open311_config_updates {
     $params->{use_customer_reference} = 1;
 }
 
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    $self->{ox_original_detail} = $row->detail;
+
+    if (my $fid = $row->get_extra_field_value('feature_id')) {
+        my $text = $row->detail . "\n\nAsset Id: $fid\n";
+        $row->detail($text);
+    }
+}
+
+sub open311_post_send {
+    my ($self, $row, $h, $contact) = @_;
+
+    $row->detail($self->{ox_original_detail});
+}
+
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
 

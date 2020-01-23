@@ -126,7 +126,7 @@ sub process_update {
 
     my $o = $self->construct_open311($body, $comment);
 
-    $cobrand->call_hook(open311_pre_send => $comment, $o);
+    $cobrand->call_hook(open311_pre_send_updates => $comment);
 
     my $id = $o->post_service_request_update( $comment );
 

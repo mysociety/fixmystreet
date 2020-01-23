@@ -232,6 +232,11 @@ sub open311_pre_send {
     }
 }
 
+sub open311_pre_send_updates {
+    my ($self, $row) = @_;
+    return $self->open311_pre_send($row);
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
     delete $params->{update_id};
