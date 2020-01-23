@@ -66,7 +66,7 @@
             </li>
             [% END %]
             <li class="search-box">
-                <form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+                <form method="get" action="[% c.uri_for_action('/admin/reports/index') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
                     <input type="text" name="search" size="20" id="search" placeholder="[% loc('Search reports') %]">
                 </form>
 
