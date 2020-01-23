@@ -957,10 +957,15 @@ sub admin_report_edit {
 
             # If they clicked the no more updates button, we're done.
             if ($c->get_param('no_more_updates')) {
-                $problem->set_extra_metadata( subdiv_overdue => $self->overdue( $problem ) );
-                $problem->bodies_str( $body->parent->id );
-                $problem->whensent( undef );
-                $self->set_problem_state($c, $problem, 'feedback pending');
+                if ($problem->non_public) {
+                    $problem->bodies_str( $body->parent->id );
+                    $self->set_problem_state($c, $problem, 'fixed - council');
+                } else {
+                    $problem->set_extra_metadata( subdiv_overdue => $self->overdue( $problem ) );
+                    $problem->bodies_str( $body->parent->id );
+                    $problem->whensent( undef );
+                    $self->set_problem_state($c, $problem, 'feedback pending');
+                }
                 $problem->update;
                 $c->res->redirect( '/admin/summary' );
             }
