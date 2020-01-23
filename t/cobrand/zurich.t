@@ -14,6 +14,9 @@ use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
 #
@@ -764,6 +767,14 @@ subtest "phone number is mandatory" => sub {
     $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
     $mech->submit_form( with_fields => { phone => "" } );
     $mech->content_contains( 'Diese Information wird benötigt' );
+};
+
+subtest 'test flagged users make internal reports' => sub {
+    $user->update({ flagged => 1 });
+    $mech->submit_form( with_fields => { phone => "01234", category => 'Cat1', detail => 'Details' } );
+    my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' }, rows => 1 })->single;
+    is $report->non_public, 1;
+    $report->delete;
     $mech->log_out_ok;
 };
 
