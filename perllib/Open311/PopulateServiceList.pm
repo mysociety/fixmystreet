@@ -129,6 +129,16 @@ sub process_service {
     }
 }
 
+sub _action_params {
+    my ( $self, $action ) = @_;
+
+    return {
+        editor => basename($0),
+        whenedited => \'current_timestamp',
+        note => "$action automatically by script",
+    };
+}
+
 sub _handle_existing_contact {
     my ( $self, $contact ) = @_;
 
@@ -143,9 +153,7 @@ sub _handle_existing_contact {
                     category => $service_name,
                     email => $self->_current_service->{service_code},
                     state => 'confirmed',
-                    editor => basename($0),
-                    whenedited => \'current_timestamp',
-                    note => 'automatically undeleted by script',
+                    %{ $self->_action_params("undeleted") },
                 }
             );
         };
@@ -189,9 +197,7 @@ sub _create_contact {
                 body_id => $self->_current_body->id,
                 category => $service_name,
                 state => 'confirmed',
-                editor => basename($0),
-                whenedited => \'current_timestamp',
-                note => 'created automatically by script',
+                %{ $self->_action_params("created") },
             }
         );
     };
@@ -293,18 +299,10 @@ sub _set_contact_group {
     if ($self->_groups_different($old_group, $new_group)) {
         if (@$new_group) {
             $contact->set_extra_metadata(group => @$new_group == 1 ? $new_group->[0] : $new_group);
-            $contact->update({
-                editor => basename($0),
-                whenedited => \'current_timestamp',
-                note => 'group updated automatically by script',
-            });
+            $contact->update( $self->_action_params("group updated") );
         } else {
             $contact->unset_extra_metadata('group');
-            $contact->update({
-                editor => basename($0),
-                whenedited => \'current_timestamp',
-                note => 'group removed automatically by script',
-            });
+            $contact->update( $self->_action_params("group removed") );
         }
     }
 }
@@ -318,9 +316,7 @@ sub _set_contact_non_public {
     my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
     $contact->update({
         non_public => 1,
-        editor => basename($0),
-        whenedited => \'current_timestamp',
-        note => 'marked private automatically by script',
+        %{ $self->_action_params("marked private") },
     }) if $keywords{private};
 }
 
@@ -365,9 +361,7 @@ sub _delete_contacts_not_in_service_list {
     $found_contacts->update(
         {
             state => 'deleted',
-            editor  => basename($0),
-            whenedited => \'current_timestamp',
-            note => 'automatically marked as deleted by script'
+            %{ $self->_action_params("marked as deleted") },
         }
     );
 }
