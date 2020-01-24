@@ -257,8 +257,8 @@ var layers = [
   "categories": [ "Damaged / Missing / Facing Wrong Way", "Obscured by vegetation or Dirty" ],
   "item_name": "sign",
   "layer_name": "Signs",
-  "layer": is_live ? 60 : 303,
-  "version": is_live ? "60.2172-" : "303.1-"
+  "layer": 60,
+  "version": "60.2172-"
 },
 {
   "categories": [ "Shelter Damaged", "Sign/Pole Damaged" ],
@@ -489,8 +489,8 @@ var barrier_style = new OpenLayers.Style({
 
 fixmystreet.assets.add(northants_road_defaults, {
     http_options: {
-      layerid: is_live ? 1068 : 230,
-      layerVersion: is_live ? '1068.1-' : '230.4-',
+      layerid: 1068,
+      layerVersion: '1068.1-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': barrier_style
