@@ -747,26 +747,20 @@ subtest "superuser and dm can see stats" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
     $mech->get( '/admin/stats' );
     is $mech->res->code, 200, "dm can now also see stats page";
-    $mech->log_out_ok;
 };
 
 subtest "only superuser can edit bodies" => sub {
-    $user = $mech->log_in_ok( 'dm1@example.org' );
     $mech->get( '/admin/body/' . $zurich->id );
     is $mech->res->code, 403, "only superuser should be able to edit bodies";
-    $mech->log_out_ok;
 };
 
 subtest "only superuser can see 'Add body' form" => sub {
-    $user = $mech->log_in_ok( 'dm1@example.org' );
     $mech->get_ok( '/admin/bodies' );
     $mech->content_contains('External Body');
     $mech->content_lacks( '<form method="post" action="bodies"' );
-    $mech->log_out_ok;
 };
 
 subtest "phone number is mandatory" => sub {
-    $user = $mech->log_in_ok( 'dm1@example.org' );
     $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
     $mech->submit_form( with_fields => { phone => "" } );
     $mech->content_contains( 'Diese Information wird benötigt' );
