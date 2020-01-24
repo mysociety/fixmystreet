@@ -1061,6 +1061,7 @@ sub _admin_send_email {
     my ( $c, $template, $problem ) = @_;
 
     return unless $problem->get_extra_metadata('email_confirmed');
+    return if $problem->non_public;
 
     my $to = $problem->name
         ? [ $problem->user->email, $problem->name ]

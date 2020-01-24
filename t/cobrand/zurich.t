@@ -775,6 +775,7 @@ subtest 'test flagged users make internal reports' => sub {
     $mech->submit_form( with_fields => { phone => "01234", category => 'Cat1', detail => 'Details' } );
     $internal = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' }, rows => 1 })->single;
     is $internal->non_public, 1;
+    $mech->clear_emails_ok;
 };
 
 subtest 'internal report admin display' => sub {
@@ -782,6 +783,24 @@ subtest 'internal report admin display' => sub {
     $mech->content_lacks('href="report_edit/' . $internal->id);
     $mech->get_ok('/admin/summary?internal=1');
     $mech->content_contains('href="report_edit/' . $internal->id);
+};
+
+subtest 'test no email sent if closed' => sub {
+    $internal->state('feedback pending');
+    $internal->set_extra_metadata('email_confirmed' => 1);
+    $internal->update;
+
+    $mech->get_ok( '/admin/report_edit/' . $internal->id );
+    $mech->submit_form_ok( {
+        button => 'publish_response',
+        with_fields => {
+            status_update => 'Testing no email sent',
+        } });
+
+    $internal->discard_changes;
+    is $internal->state, 'fixed - council';
+    $mech->email_count_is(0);
+
     $internal->delete;
     $mech->log_out_ok;
 };
