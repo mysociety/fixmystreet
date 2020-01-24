@@ -1,6 +1,7 @@
 package Open311::PopulateServiceList;
 
 use Moo;
+use File::Basename;
 use Open311;
 
 has bodies => ( is => 'ro' );
@@ -142,7 +143,7 @@ sub _handle_existing_contact {
                     category => $service_name,
                     email => $self->_current_service->{service_code},
                     state => 'confirmed',
-                    editor => $0,
+                    editor => basename($0),
                     whenedited => \'current_timestamp',
                     note => 'automatically undeleted by script',
                 }
@@ -188,7 +189,7 @@ sub _create_contact {
                 body_id => $self->_current_body->id,
                 category => $service_name,
                 state => 'confirmed',
-                editor => $0,
+                editor => basename($0),
                 whenedited => \'current_timestamp',
                 note => 'created automatically by script',
             }
@@ -293,14 +294,14 @@ sub _set_contact_group {
         if (@$new_group) {
             $contact->set_extra_metadata(group => @$new_group == 1 ? $new_group->[0] : $new_group);
             $contact->update({
-                editor => $0,
+                editor => basename($0),
                 whenedited => \'current_timestamp',
                 note => 'group updated automatically by script',
             });
         } else {
             $contact->unset_extra_metadata('group');
             $contact->update({
-                editor => $0,
+                editor => basename($0),
                 whenedited => \'current_timestamp',
                 note => 'group removed automatically by script',
             });
@@ -317,7 +318,7 @@ sub _set_contact_non_public {
     my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
     $contact->update({
         non_public => 1,
-        editor => $0,
+        editor => basename($0),
         whenedited => \'current_timestamp',
         note => 'marked private automatically by script',
     }) if $keywords{private};
@@ -364,7 +365,7 @@ sub _delete_contacts_not_in_service_list {
     $found_contacts->update(
         {
             state => 'deleted',
-            editor  => $0,
+            editor  => basename($0),
             whenedited => \'current_timestamp',
             note => 'automatically marked as deleted by script'
         }
