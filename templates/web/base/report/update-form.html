@@ -24,6 +24,7 @@
           [% IF login_success %]
             [% PROCESS "report/update/form_user_loggedin.html" %]
             [% INCLUDE 'report/update/form_update.html' %]
+            <hr>
           [% ELSIF oauth_need_email %]
             <div id="form_sign_in">
                 [% PROCESS "report/form/user_loggedout_by_email.html" object=update type='update' valid_class='validNameU' email_required=1 %]
