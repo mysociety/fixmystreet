@@ -1,7 +1,6 @@
 (function(){
 
 translation_strings.name.validName = 'Please enter your full name, Transport for London needs this information – if you do not wish your name to be shown on the site, untick the box below';
-translation_strings.upload_default_message = 'Drag photo here to upload or <u>browse files</u>';
 translation_strings.incident_date = { date: 'Enter a date in the format dd/mm/yyyy' };
 translation_strings.time = 'Enter a time in the format hh:mm';
 

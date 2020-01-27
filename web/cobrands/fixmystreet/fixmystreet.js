@@ -684,6 +684,10 @@ $.extend(fixmystreet.set_up, {
       $originalInput.hide();
 
       $dropzone.insertAfter($originalInput);
+      var default_message = translation_strings.upload_default_message;
+      if ($("html").hasClass("mobile")) {
+        default_message = translation_strings.upload_default_message_mobile;
+      }
       var photodrop = new Dropzone($dropzone[0], {
         url: '/photo/upload',
         paramName: 'photo',
@@ -695,7 +699,7 @@ $.extend(fixmystreet.set_up, {
         resizeHeight: 2048,
         resizeQuality: 0.6,
         acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png',
-        dictDefaultMessage: translation_strings.upload_default_message,
+        dictDefaultMessage: default_message,
         dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,
         dictInvalidFileType: translation_strings.upload_invalid_file_type,
         dictMaxFilesExceeded: translation_strings.upload_max_files_exceeded,
