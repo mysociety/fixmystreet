@@ -3,108 +3,108 @@ var fixmystreet = fixmystreet || {};
 fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
 
     translation_strings = {
-        update: '[% loc('Please enter a message') | replace("'", "\\'") %]',
-        error: '[% loc('Error') | replace("'", "\\'") %]',
+        update: '[% loc_js('Please enter a message') %]',
+        error: '[% loc_js('Error') %]',
         title: {
-            required: '[% loc('Please enter a subject') | replace("'", "\\'") %]',
-            maxlength: '[% loc('Summaries are limited to {0} characters in length. Please shorten your summary') | replace("'", "\\'") %]',
-            notEmail: '[% loc('Please make sure you are not including an email address') %]'
+            required: '[% loc_js('Please enter a subject') %]',
+            maxlength: '[% loc_js('Summaries are limited to {0} characters in length. Please shorten your summary') %]',
+            notEmail: '[% loc_js('Please make sure you are not including an email address') %]'
         },
         detail: {
-            required: '[% loc('Please enter some details') | replace("'", "\\'") %]',
-            maxlength: '[% loc('Reports are limited to {0} characters in length. Please shorten your report') | replace("'", "\\'") %]',
+            required: '[% loc_js('Please enter some details') %]',
+            maxlength: '[% loc_js('Reports are limited to {0} characters in length. Please shorten your report') %]',
         },
         name: {
-            required: '[% loc('Please enter your name') | replace("'", "\\'") %]',
-            validName: '[% loc('Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below') | replace("'", "\\'") %]'
+            required: '[% loc_js('Please enter your name') %]',
+            validName: '[% loc_js('Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below') %]'
         },
-        category: '[% loc('Please choose a category') | replace("'", "\\'") %]',
+        category: '[% loc_js('Please choose a category') %]',
         rznvy: {
-            required: '[% loc('Please enter your email') | replace("'", "\\'") %]',
-            email: '[% loc('Please enter a valid email') | replace("'", "\\'") %]'
+            required: '[% loc_js('Please enter your email') %]',
+            email: '[% loc_js('Please enter a valid email') %]'
         },
         email: {
-            required: '[% loc('Please enter your email') | replace("'", "\\'") %]',
-            email: '[% loc('Please enter a valid email') | replace("'", "\\'") %]'
+            required: '[% loc_js('Please enter your email') %]',
+            email: '[% loc_js('Please enter a valid email') %]'
         },
         password_sign_in: {
-            required: '[% loc('Please enter a password') | replace("'", "\\'") %]'
+            required: '[% loc_js('Please enter a password') %]'
         },
         password_register: {
-            short: '[% tprintf(loc('Please make sure your password is at least %d characters long'), c.cobrand.password_minimum_length) | replace("'", "\\'") %]',
+            short: '[% tprintf(loc_js('Please make sure your password is at least %d characters long'), c.cobrand.password_minimum_length) %]',
         },
         phone: {
-            required: '[% loc('Please enter your phone number') | replace("'", "\\'") %]'
+            required: '[% loc_js('Please enter your phone number') %]'
         },
-        fms_extra_title: '[% loc('Please enter your title') | replace("'", "\\'") %]',
-        first_name: '[% loc('Please enter your first name') | replace("'", "\\'") %]',
-        last_name: '[% loc('Please enter your second name') | replace("'", "\\'") %]',
-        right_place: '[% loc('Right place?') | replace("'", "\\'") %]',
-        try_again: '[% loc('Try again') | replace("'", "\\'") %]',
-        place_pin_on_map: '[% loc('Place pin on map') | replace("'", "\\'") %]',
-        back: '[% loc('Back') | replace("'", "\\'") %]',
-        how_to_send: '[% loc('How to send successful reports') | replace("'", "\\'") %]',
-        more_details: '[% loc('Details') | replace("'", "\\'") %]',
+        fms_extra_title: '[% loc_js('Please enter your title') %]',
+        first_name: '[% loc_js('Please enter your first name') %]',
+        last_name: '[% loc_js('Please enter your second name') %]',
+        right_place: '[% loc_js('Right place?') %]',
+        try_again: '[% loc_js('Try again') %]',
+        place_pin_on_map: '[% loc_js('Place pin on map') %]',
+        back: '[% loc_js('Back') %]',
+        how_to_send: '[% loc_js('How to send successful reports') %]',
+        more_details: '[% loc_js('Details') %]',
 
-        this_report: '[% loc('This report') | replace("'", "\\'") %]',
-        this_is_the_problem: '[% loc('This is the problem') | replace("'", "\\'") %]',
+        this_report: '[% loc_js('This report') %]',
+        this_is_the_problem: '[% loc_js('This is the problem') %]',
 
-        or: '[% loc(' or ') | replace("'", "\\'") %]',
+        or: '[% loc_js(' or ') %]',
 
-        geolocation_declined: '[% loc('You declined; please fill in the box above') | replace("'", "\\'") %]',
-        geolocation_no_position: '[% loc('Could not look up location') | replace("'", "\\'") %]',
-        geolocation_no_result: '[% loc('No result returned') | replace("'", "\\'") %]',
-        geolocation_unknown: '[% loc('Unknown error') | replace("'", "\\'") %]',
+        geolocation_declined: '[% loc_js('You declined; please fill in the box above') %]',
+        geolocation_no_position: '[% loc_js('Could not look up location') %]',
+        geolocation_no_result: '[% loc_js('No result returned') %]',
+        geolocation_unknown: '[% loc_js('Unknown error') %]',
 
-        correct_position: '[% loc('Right place?') | replace("'", "\\'") %]',
+        correct_position: '[% loc_js('Right place?') %]',
 
-        reporting_a_problem: '[% loc('Reporting a problem') | replace("'", "\\'") %]',
-        ok: '[% loc('OK') | replace("'", "\\'") %]',
-        map: '[% loc('MAP') | replace("'", "\\'") %]',
+        reporting_a_problem: '[% loc_js('Reporting a problem') %]',
+        ok: '[% loc_js('OK') %]',
+        map: '[% loc_js('MAP') %]',
 
-        map_map: '[% loc('Map') | replace("'", "\\'") %]',
-        map_satellite: '[% loc('Satellite') | replace("'", "\\'") %]',
+        map_map: '[% loc_js('Map') %]',
+        map_satellite: '[% loc_js('Satellite') %]',
 
-        expand_map: '[% loc('Expand map') | replace("'", "\\'") %]',
-        collapse_map: '[% loc('Collapse map') | replace("'", "\\'") %]',
+        expand_map: '[% loc_js('Expand map') %]',
+        collapse_map: '[% loc_js('Collapse map') %]',
 
-        filter: '[% loc('Filter') | replace("'", "\\'") %]',
+        filter: '[% loc_js('Filter') %]',
 
-        show_pins: '[% loc('Show pins') | replace("'", "\\'") %]',
-        hide_pins: '[% loc('Hide pins') | replace("'", "\\'") %]',
+        show_pins: '[% loc_js('Show pins') %]',
+        hide_pins: '[% loc_js('Hide pins') %]',
 
-        upload_max_files_exceeded: '[% loc ('Sorry! You’ve hit the limit of images that can be attached to one report.') | replace("'", "\\'") %]',
-        upload_default_message: '[% loc('Drag photos here or <u>browse photos</u>') | replace("'", "\\'") %]',
-        upload_default_message_mobile: '[% loc('<u>Take or choose existing photo</u>') | replace("'", "\\'") %]',
-        upload_cancel_confirmation: '[% loc ('Are you sure you want to cancel this upload?') | replace("'", "\\'") %]',
-        upload_invalid_file_type: '[% loc ('Please upload an image only') | replace("'", "\\'") %]',
+        upload_max_files_exceeded: '[% loc_js('Sorry! You’ve hit the limit of images that can be attached to one report.') %]',
+        upload_default_message: '[% loc_js('Drag photos here or <u>browse photos</u>') %]',
+        upload_default_message_mobile: '[% loc_js('<u>Take or choose existing photo</u>') %]',
+        upload_cancel_confirmation: '[% loc_js('Are you sure you want to cancel this upload?') %]',
+        upload_invalid_file_type: '[% loc_js('Please upload an image only') %]',
 
         [% IF c.config.SMS_AUTHENTICATION ~%]
-        login_with_email: '[% loc('Log in with email/text') | replace("'", "\\'") %]',
+        login_with_email: '[% loc_js('Log in with email/text') %]',
         [% ELSE ~%]
-        login_with_email: '[% loc('Log in with email') | replace("'", "\\'") %]',
+        login_with_email: '[% loc_js('Log in with email') %]',
         [% END ~%]
 
         report_a_problem_btn: {
-            default: '[% loc('Report a problem') | replace("'", "\\'") %]',
-            here: '[% loc('Report a problem here') | replace("'", "\\'") %]',
-            another: '[% loc('Report another problem here') | replace("'", "\\'") %]'
+            default: '[% loc_js('Report a problem') %]',
+            here: '[% loc_js('Report a problem here') %]',
+            another: '[% loc_js('Report another problem here') %]'
         },
 
         offline: {
-            your_reports: '[% loc('Your offline reports') | replace("'", "\\'") %]',
-            update_saved: '[% loc('Your update has been saved offline for submission when back online.') | replace("'", "\\'") %]',
-            update_data_saved: '[% loc('Offline update data saved') | replace("'", "\\'") %]',
-            clear_data: '[% loc('Clear offline data') | replace("'", "\\'") %]',
-            are_you_sure: '[% loc('Are you sure?') | replace("'", "\\'") %]',
-            data_cleared: '[% loc('Offline data cleared') | replace("'", "\\'") %]',
-            reports_saved: '[% loc('Reports saved offline.') | replace("'", "\\'") %]',
-            saving_reports: '[% loc('Saving reports offline', "This is followed by a progress count, e.g. 3/5") | replace("'", "\\'") %]',
-            you_are_offline: '[% loc('You are offline') | replace("'", "\\'") %]',
-            N_saved: '[% loc('<span>%s</span> saved.') | replace("'", "\\'") %]',
-            saved_to_submit: '[% loc('You have <a id="oFN" href=""><span>%s</span> saved to submit</a>.') | replace("'", "\\'") %]',
-            update_single: '[% loc('update') | replace("'", "\\'") %]',
-            update_plural: '[% loc('updates') | replace("'", "\\'") %]'
+            your_reports: '[% loc_js('Your offline reports') %]',
+            update_saved: '[% loc_js('Your update has been saved offline for submission when back online.') %]',
+            update_data_saved: '[% loc_js('Offline update data saved') %]',
+            clear_data: '[% loc_js('Clear offline data') %]',
+            are_you_sure: '[% loc_js('Are you sure?') %]',
+            data_cleared: '[% loc_js('Offline data cleared') %]',
+            reports_saved: '[% loc_js('Reports saved offline.') %]',
+            saving_reports: '[% loc_js('Saving reports offline', "This is followed by a progress count, e.g. 3/5") %]',
+            you_are_offline: '[% loc_js('You are offline') %]',
+            N_saved: '[% loc_js('<span>%s</span> saved.') %]',
+            saved_to_submit: '[% loc_js('You have <a id="oFN" href=""><span>%s</span> saved to submit</a>.') %]',
+            update_single: '[% loc_js('update') %]',
+            update_plural: '[% loc_js('updates') %]'
         }
     };
 [% END %]
