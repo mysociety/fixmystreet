@@ -1285,9 +1285,13 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
     if (savePushState !== false) {
         if ('pushState' in history) {
             var newReportUrl = '/report/new?longitude=' + lonlats.url.lon + '&latitude=' + lonlats.url.lat;
-            history.pushState({
-                newReportAtLonlat: lonlats.state
-            }, null, newReportUrl);
+            var newState = { newReportAtLonlat: lonlats.state };
+            // If we're already in the reporting place, we want to replace state, it's a pin move
+            if (fixmystreet.page === 'new') {
+                history.replaceState(newState, null, newReportUrl);
+            } else {
+                history.pushState(newState, null, newReportUrl);
+            }
         }
     }
 
