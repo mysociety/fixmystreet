@@ -1816,9 +1816,14 @@ html.js #map .noscript {
         }
     }
 
+    #problems_nearby,
     #try_again,
     #mob_ok {
         width: 50%;
+    }
+
+    #try_again {
+        display: none;
     }
 
     .feed:after {
@@ -1875,6 +1880,10 @@ html.js #map .noscript {
     // "Fade out" the map.
     top: 30px;
     background-color: rgba(#000, 0.3);
+
+    #problems_nearby {
+        display: none;
+    }
 
     #try_again,
     #mob_ok {
@@ -1935,7 +1944,6 @@ html.js #map .noscript {
   .map-fullscreen & {
     display: block;
   }
-  text-transform: uppercase;
   text-align: center;
   font-family: $heading-font;
   line-height: 1em;
