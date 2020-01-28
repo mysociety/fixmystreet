@@ -60,6 +60,7 @@
         - Checking of cached front page details against database. #2696
         - Inconsistent display of mark private checkbox for staff users
         - Clear user categories when staff access is removed. #2815
+        - Only trigger one change event on initial popstate.
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages. #2473
         - Add feature cobrand helper function.
