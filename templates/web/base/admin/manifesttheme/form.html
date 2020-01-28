@@ -1,0 +1,42 @@
+[% INCLUDE 'admin/header.html' title=loc('Theme') -%]
+
+<form method="post">
+    <div class="admin-hint">
+      <p>[% loc("The <strong>name</strong> is a string that represents the name of the web application as it is usually displayed to the user (e.g., amongst a list of other applications, or as a label for an icon).") %]</p>
+    </div>
+    [% form.field('name').render | safe %]
+
+    <div class="admin-hint">
+      <p>[% loc("The <strong>short name</strong> is a string that represents the name of the web application displayed to the user if there is not enough space to display name (e.g., as a label for an icon on the phone home screen).") %]</p>
+    </div>
+    [% form.field('short_name').render | safe %]
+
+    <div class="admin-hint">
+      <p>[% loc("The <strong>theme colour</strong> defines the default theme colour for the application. This sometimes affects how the OS displays the site (e.g., on Android's task switcher, the theme colour surrounds the site). Colours should be specified with CSS syntax, e.g. <strong><code>#ff00ff</code></strong> or <strong><code>rgb(255, 0, 255)</code></strong> or a named colour like <strong><code>fuchsia</code></strong>.") %]</p>
+    </div>
+    [% form.field('theme_colour').render | safe %]
+
+    <div class="admin-hint">
+      <p>[% loc("The <strong>background colour</strong> defines a placeholder background colour for the application splash screen before it has loaded.  Colours should be specified with CSS syntax, e.g. <strong><code>#ff00ff</code></strong> or <strong><code>rgb(255, 0, 255)</code></strong> or a named colour like <strong><code>fuchsia</code></strong>.") %]</p>
+    </div>
+    [% form.field('background_colour').render | safe %]
+
+    [% IF show_all %]
+      [% form.field('cobrand').render | safe %]
+    [% END %]
+
+    <p>
+        <input class="btn" type="submit" name="submit" value="[% loc('Save changes') %]">
+    </p>
+  [% IF form.item.id %]
+    <p>
+        <input class="btn-danger" type="submit" name="delete_theme" value="[% loc('Delete theme') %]" data-confirm="[% loc('Are you sure?') %]">
+    </p>
+  [% END %]
+</form>
+
+[% IF show_all %]
+  <p><a href="[% c.uri_for(c.controller.action_for('list')) %]">Return to themes list</a></p>
+[% END %]
+
+[% INCLUDE 'admin/footer.html' %]

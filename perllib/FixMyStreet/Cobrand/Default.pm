@@ -685,6 +685,7 @@ sub admin_pages {
         $pages->{flagged} = [ _('Flagged'), 7 ];
         $pages->{states} = [ _('States'), 8 ];
         $pages->{config} = [ _('Configuration'), 9];
+        $pages->{manifesttheme} = [ _('Manifest Theme'), 11];
         $pages->{user_import} = [ undef, undef ];
     };
     # And some that need special permissions

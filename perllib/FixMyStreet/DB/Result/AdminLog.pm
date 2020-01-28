@@ -91,6 +91,10 @@ sub link {
         my $category = $self->object;
         return "/admin/body/" . $category->body_id . '/' . $category->category;
     }
+    if ($type eq 'manifesttheme') {
+        my $theme = $self->object;
+        return "/admin/manifesttheme/" . $theme->cobrand;
+    }
     return '';
 }
 
@@ -114,6 +118,7 @@ sub object_summary {
         role => 'name',
         template => 'title',
         category => 'category',
+        manifesttheme => 'cobrand',
     };
     my $thing = $type_to_thing->{$self->object_type} || 'id';
 
@@ -130,6 +135,7 @@ sub object {
         template => 'ResponseTemplate',
         category => 'Contact',
         update => 'Comment',
+        manifesttheme => 'ManifestTheme',
     };
     $type = $type_to_object->{$type} || ucfirst $type;
     my $object = $self->result_source->schema->resultset($type)->find($id);

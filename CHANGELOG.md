@@ -43,6 +43,7 @@
         - Allow report as another user with only name.
         - Allow staff users to sign other people up for alerts.
         - Group categories on body page. #2850
+        - Add admin UI for managing web manifest themes. #2792
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523

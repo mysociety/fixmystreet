@@ -1,0 +1,35 @@
+[% INCLUDE 'admin/header.html' title=loc('Themes') %]
+
+<table>
+  <thead>
+  <tr>
+      <th>  [% loc('Cobrand') %] </th>
+      <th>  [% loc('Name') %] </th>
+      <th>  [% loc('Short Name') %] </th>
+      <th>  [% loc('Background Colour') %] </th>
+      <th>  [% loc('Theme Colour') %] </th>
+      <th>  &nbsp; </th>
+  </tr>
+  </thead>
+  <tbody>
+    [% FOR theme IN rs.all %]
+      <tr>
+        <td>[% theme.cobrand %]</td>
+        <td>[% theme.name %]</td>
+        <td>[% theme.short_name %]</td>
+        <td>[% theme.background_colour %]</td>
+        <td>[% theme.theme_colour %]</td>
+        <td> <a href="[% c.uri_for(c.controller.action_for('edit'), [theme.cobrand]) %]" class="btn">[% loc('Edit') %]</a> </td>
+      </tr>
+    [% END %]
+  </tbody>
+</table>
+
+
+
+<p>
+    <a href="[% c.uri_for(c.controller.action_for('create')) %]">[% loc('Create') %]</a>
+  </p>
+  
+
+[% INCLUDE 'admin/footer.html' %]
