@@ -132,8 +132,8 @@ $.extend(fixmystreet.utils, {
             new OpenLayers.Projection("EPSG:4326")
         );
 
-        var lat = transformedLonlat.lat;
-        var lon = transformedLonlat.lon;
+        var lat = transformedLonlat.lat.toFixed(6);
+        var lon = transformedLonlat.lon.toFixed(6);
 
         document.getElementById('fixmystreet.latitude').value = lat;
         document.getElementById('fixmystreet.longitude').value = lon;
