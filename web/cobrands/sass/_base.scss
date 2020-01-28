@@ -1699,15 +1699,18 @@ html.js #map .noscript {
   display: none;
 }
 
-// OpenLayers fix for navigation being top right
-// Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
-  top: 0.5em; // This will be overridden in JS if there's a full screen map with banner
-  #{$left}: 0.5em;
+  top: 0.5em;
   #{$right}: 0.5em;
 }
 
-// Openlayers map controls (overrides)
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown,
+#fms_pan_zoom_panleft,
+#fms_pan_zoom_panright {
+    display: none;
+}
+
 #fms_pan_zoom_panup,
 #fms_pan_zoom_pandown,
 #fms_pan_zoom_panleft,
@@ -1755,13 +1758,13 @@ html.js #map .noscript {
 #fms_pan_zoom_zoomin {
   background-position: -84px 0;
   padding-top: 44px;
-  #{$left}: 0;
+  #{$right}: 0;
   top: 0;
 }
 #fms_pan_zoom_zoomout {
   background-position: -120px 100%;
   padding-top: 44px;
-  #{$left}: 0;
+  #{$right}: 0;
   top: 44px;
 }
 
@@ -2071,10 +2074,9 @@ img.pin {
   background-color: #333;
   border-radius: 0.25em;
   padding: 0.25em;
-  // Offset from top same as fms_pan_zoom, from left so as not
-  // to appear on top of zoom buttons (0.5em, 36px, 0.5em)
+  // Offset from top and left same as fms_pan_zoom
   top: 0.5em;
-  #{$left}: 3.25em;
+  #{$left}: 0.5em;
   .map-reporting & {
     // Same as fms_pan_zoom above, leaving space for the top bar when reporting
     top: 2.75em;
