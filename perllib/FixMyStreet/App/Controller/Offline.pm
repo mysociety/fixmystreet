@@ -43,8 +43,32 @@ sub manifest: Path("/.well-known/manifest.webmanifest") {
         });
     }
 
+    $c->forward("_stash_manifest_icons", [ $c->cobrand->moniker ]);
+
+    my $data = {
+        name => $theme->name,
+        short_name => $theme->short_name,
+        background_color => $theme->background_colour,
+        theme_color => $theme->theme_colour,
+        icons => $c->stash->{manifest_icons},
+        lang => $c->stash->{lang_code},
+        display => "minimal-ui",
+        start_url => "/?pwa",
+        scope => "/",
+    };
+    if ($c->cobrand->can('manifest')) {
+        $data = { %$data, %{$c->cobrand->manifest} };
+    }
+
+    my $json = encode_json($data);
+    $c->res->body($json);
+}
+
+sub _stash_manifest_icons : Private {
+    my ($self, $c, $cobrand, $skip_defaults) = @_;
+
     my @icons;
-    my $uri = '/theme/' . $c->cobrand->moniker;
+    my $uri = '/theme/' . $cobrand;
     my $theme_path = path(FixMyStreet->path_to('web' . $uri));
     $theme_path->visit(
         sub {
@@ -57,29 +81,14 @@ sub manifest: Path("/.well-known/manifest.webmanifest") {
         }
     );
 
-    unless (@icons) {
+    unless (@icons || $skip_defaults) {
         push @icons,
             { src => "/cobrands/fixmystreet/images/192.png", sizes => "192x192", type => "image/png" },
             { src => "/cobrands/fixmystreet/images/512.png", sizes => "512x512", type => "image/png" };
     }
 
-    my $data = {
-        name => $theme->name,
-        short_name => $theme->short_name,
-        background_color => $theme->background_colour,
-        theme_color => $theme->theme_colour,
-        icons => \@icons,
-        lang => $c->stash->{lang_code},
-        display => "minimal-ui",
-        start_url => "/?pwa",
-        scope => "/",
-    };
-    if ($c->cobrand->can('manifest')) {
-        $data = { %$data, %{$c->cobrand->manifest} };
-    }
+    $c->stash->{manifest_icons} = \@icons;
 
-    my $json = encode_json($data);
-    $c->res->body($json);
 }
 
 __PACKAGE__->meta->make_immutable;

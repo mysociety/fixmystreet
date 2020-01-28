@@ -2,6 +2,9 @@
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link rel="manifest" href="/.well-known/manifest.webmanifest">
+[% FOREACH icon IN manifest_icons %]
+    <link rel="apple-touch-icon" sizes="[% icon.sizes %]" href="[% icon.src %]">
+[% END %]
 
 [% IF csrf_token %]
   <meta content="[% csrf_token %]" name="csrf-token" />

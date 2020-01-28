@@ -77,6 +77,10 @@ sub index : Path : Args(0) {
         $c->detach;
     }
 
+    # TODO: Not sure we want to hammer the FS for every front page request,
+    # might need a smarter way to tell iOS about the icons
+    $c->forward('/offline/_stash_manifest_icons', [ $c->cobrand->moniker ]);
+
     $c->forward('/auth/get_csrf_token');
 }
 
