@@ -34,6 +34,11 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
                 color: white;
             }
         }
+        th.group {
+            color: inherit;
+            background-color: inherit;
+            text-align: left;
+        }
         td.record-id {
             text-align: center;
             font-weight: bold;

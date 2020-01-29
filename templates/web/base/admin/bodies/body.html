@@ -70,15 +70,16 @@
 
   <table cellspacing="0" cellpadding="2" border="1" id="admin_contacts">
     <tr>
-      <th>[% loc('Category') %]</th>
-      <th>[% loc('State') %]</th>
-      <th>[% loc('Last editor') %]</th>
-      <th>[% loc('Note') %]</th>
+      <th scope="col">[% loc('Category') %]</th>
+      <th scope="col">[% loc('State') %]</th>
+      <th scope="col">[% loc('Last editor') %]</th>
+      <th scope="col">[% loc('Note') %]</th>
     [% IF any_not_confirmed %]
-      <th>[% loc('Confirm') %]</th>
+      <th scope="col">[% loc('Confirm') %]</th>
     [% END %]
     </tr>
-    [% WHILE ( cat = contacts.next ) %]
+
+    [% BLOCK category_row %]
       <tr [% IF cat.state == 'deleted' %]class="is-deleted"[% END %]>
         <td class="contact-category"><a href="[% c.uri_for_action( '/admin/bodies/edit', [ body_id ], cat.category ) %]">[% cat.category_display | html %]</a>
             <br>[% cat.email | html %]</td>
@@ -102,6 +103,24 @@
       [% END %]
       </tr>
     [% END %]
+
+  [%~ IF category_groups.size ~%]
+    [%~ FOREACH group IN category_groups ~%]
+      [% IF group.name %]
+        <tr>
+          <th class="group" colspan="[% any_not_confirmed ? 5 : 4 %]" scope="colgroup">[% group.name %]</th>
+        </tr>
+      [% END %]
+        [%~ FOREACH cat IN group.categories ~%]
+            [% INCLUDE category_row %]
+        [%~ END ~%]
+    [%~ END =%]
+  [%~ ELSE ~%]
+    [%~ FOREACH cat IN contacts ~%]
+        [% INCLUDE category_row %]
+    [%~ END =%]
+  [%~ END ~%]
+
   </table>
 
   [% IF any_not_confirmed %]
