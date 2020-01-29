@@ -27,7 +27,7 @@ sub send_questionnaires { 0 }
 
 sub report_sent_confirmation_email { 'external_id' }
 
-sub map_type { 'IsleOfWight' }
+sub map_type { 'FMS' }
 
 sub disambiguate_location {
     my $self    = shift;
