@@ -144,6 +144,7 @@ sub sanitize {
         rules => [
             %allowed_tags,
             a => { href => qr{^(http|/|tel)}i, style => 1, target => qr/^_blank$/, title => 1 },
+            img => { src => 1, alt => 1, width => 1, height => 1, hspace => 1, vspace => 1, align => 1, sizes => 1, srcset => 1 },
             font => { color => 1 },
             span => { style => 1 },
         ]
