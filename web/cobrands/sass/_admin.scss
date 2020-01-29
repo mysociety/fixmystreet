@@ -61,7 +61,10 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         }
         tr.is-deleted {
           background-color: #ffdddd;
-          td.contact-category {
+          img {
+              filter: grayscale(1);
+          }
+          td.contact-category, td.icon-size {
             text-decoration: line-through;
           }
         }

@@ -190,5 +190,12 @@ $(function(){
     $('.js-metadata-items').on('click', '.js-metadata-option-remove', function(){
         $(this).parents('.js-metadata-option').remove();
     });
+
+    // On the manifest theme editing page we have tickboxes for deleting individual
+    // icons - ticking one of these should grey out that row to indicate it will be
+    // deleted upon form submission.
+    $("input[name=delete_icon]").change(function() {
+        $(this).closest("tr").toggleClass("is-deleted", this.checked);
+    });
 });
 

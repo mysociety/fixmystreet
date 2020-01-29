@@ -58,8 +58,10 @@ sub base64_decode_upload {
             print $fh $decoded;
             close $fh
         } else {
-            $c->log->info('Couldn\'t open temp file to save base64 decoded image: ' . $!);
-            $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");
+            if ($c) {
+                $c->log->info('Couldn\'t open temp file to save base64 decoded image: ' . $!);
+                $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");
+            }
             return ();
         }
     }

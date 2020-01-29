@@ -1,6 +1,6 @@
 [% INCLUDE 'admin/header.html' title=loc('Theme') -%]
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div class="admin-hint">
       <p>[% loc("The <strong>name</strong> is a string that represents the name of the web application as it is usually displayed to the user (e.g., amongst a list of other applications, or as a label for an icon).") %]</p>
     </div>
@@ -24,6 +24,33 @@
     [% IF show_all %]
       [% form.field('cobrand').render | safe %]
     [% END %]
+
+    <table>
+      <thead>
+        <tr>
+          <th>Icon</th>
+          <th>Size</th>
+          <th>Delete?</th>
+        </tr>
+      </thead>
+      <tbody>
+        [% FOREACH icon IN manifest_icons %]
+          <tr>
+            <td><img src="[% icon.src %]" /></td>
+            <td class="icon-size">[% icon.sizes %]</td>
+            <td><input type=checkbox name=delete_icon value='[% icon.src %]' /></td>
+          </tr>
+        [% END %]
+        <tr>
+          <td colspan=3>
+            <div class="admin-hint">
+              <p>[% loc("The <strong>icons</strong> are used when the application is installed to the user's home screen. Icons must be <strong>square</strong>, with <strong>512x512</strong>px and <strong>192x192</strong>px being the most common sizes.") %]</p>
+            </div>
+            [% form.field('icon').render | safe %]
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <p>
         <input class="btn" type="submit" name="submit" value="[% loc('Save changes') %]">

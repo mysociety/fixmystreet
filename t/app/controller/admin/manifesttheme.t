@@ -1,5 +1,6 @@
-use FixMyStreet::TestMech;
+use Path::Tiny;
 use FixMyStreet::DB;
+use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -72,19 +73,90 @@ subtest "cobrand admin lets you create a new theme" => sub {
     is $log->action, "add";
     is $log->object_summary, "lincolnshire";
     is $log->link, "/admin/manifesttheme/lincolnshire";
+};
 
-    $fields = {
+subtest "cobrand admin lets you update an existing theme" => sub {
+    $mech->get_ok("/admin/manifesttheme/lincolnshire");
+
+    my $fields = {
         background_colour => "#663399",
         theme_colour => "rgb(102, 51, 153)",
     };
     $mech->submit_form_ok( { with_fields => $fields } );
-    $theme->discard_changes;
+
+    my $theme = FixMyStreet::DB->resultset('ManifestTheme')->find({ cobrand => 'lincolnshire' });
     is $theme->background_colour, "#663399";
     is $theme->theme_colour, "rgb(102, 51, 153)";
 
-    $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
+    my $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
     is $log->object_id, $theme->id;
     is $log->action, "edit";
+};
+
+subtest "cobrand admin lets you add an icon to an existing theme" => sub {
+    $mech->get_ok("/admin/manifesttheme/lincolnshire");
+
+    my $sample_jpeg = path(__FILE__)->parent->parent->child("sample.jpg");
+    ok $sample_jpeg->exists, "sample image $sample_jpeg exists";
+    my $icon_filename = '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpg';
+
+    $mech->post( '/admin/manifesttheme/lincolnshire',
+        Content_Type => 'form-data',
+        Content => {
+            name => "Lincolnshire FixMyStreet",
+            short_name => "Lincs FMS",
+            background_colour => "#663399",
+            theme_colour => "rgb(102, 51, 153)",
+            icon => [ $sample_jpeg, undef, Content_Type => 'image/jpeg' ],
+        },
+    );
+    ok $mech->success, 'Posted request successfully';
+
+    is $mech->uri->path, '/admin/manifesttheme/lincolnshire', "redirected back to edit page";
+    $mech->content_contains($icon_filename);
+    $mech->content_contains("133x100");
+    my $icon_dest = path(FixMyStreet->path_to('web/theme/lincolnshire/', $icon_filename));
+    ok $icon_dest->exists, "Icon stored on disk";
+};
+
+subtest "cobrand admin lets you delete an icon from an existing theme" => sub {
+    my $icon_filename = '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpg';
+    my $icon_dest = path(FixMyStreet->path_to('web/theme/lincolnshire/', $icon_filename));
+    ok $icon_dest->exists, "Icon exists on disk";
+
+    $mech->get_ok("/admin/manifesttheme/lincolnshire");
+    my $fields = {
+        delete_icon => "/theme/lincolnshire/$icon_filename",
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+    is $mech->uri->path, '/admin/manifesttheme/lincolnshire', "redirected back to edit page";
+    $mech->content_lacks($icon_filename);
+    $mech->content_lacks("133x100");
+    ok !$icon_dest->exists, "Icon removed from disk";
+};
+
+subtest "cobrand admin rejects non-images" => sub {
+    $mech->get_ok("/admin/manifesttheme/lincolnshire");
+
+    my $sample_pdf = path(__FILE__)->parent->parent->child("sample.pdf");
+    ok $sample_pdf->exists, "sample image $sample_pdf exists";
+
+    $mech->post( '/admin/manifesttheme/lincolnshire',
+        Content_Type => 'form-data',
+        Content => {
+            name => "Lincolnshire FixMyStreet",
+            short_name => "Lincs FMS",
+            background_colour => "#663399",
+            theme_colour => "rgb(102, 51, 153)",
+            icon => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+        },
+    );
+    ok $mech->success, 'Posted request successfully';
+
+    is $mech->uri->path, '/admin/manifesttheme/lincolnshire', "redirected back to edit page";
+    $mech->content_lacks("90f7a64043fb458d58de1a0703a6355e2856b15e.pdf");
+    $mech->content_contains("File type not recognised. Please upload an image.");
 };
 
 subtest "theme link on cobrand admin goes to edit form when theme exists" => sub {
@@ -110,13 +182,34 @@ subtest "create page on cobrand admin redirects to edit form when theme exists" 
 subtest "can delete theme" => sub {
     is( FixMyStreet::DB->resultset('ManifestTheme')->count, 1, "theme exists" );
 
-    $mech->get_ok("/admin/manifesttheme/lincolnshire");
     my $theme_id = FixMyStreet::DB->resultset('ManifestTheme')->find({ cobrand => 'lincolnshire' })->id;
+
+    # Add an icon so we can test it gets deleted when the theme is deleted
+    my $sample_jpeg = path(__FILE__)->parent->parent->child("sample.jpg");
+    ok $sample_jpeg->exists, "sample image $sample_jpeg exists";
+    my $icon_filename = '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpg';
+
+    $mech->post( '/admin/manifesttheme/lincolnshire',
+        Content_Type => 'form-data',
+        Content => {
+            name => "Lincolnshire FixMyStreet",
+            short_name => "Lincs FMS",
+            background_colour => "#663399",
+            theme_colour => "rgb(102, 51, 153)",
+            icon => [ $sample_jpeg, undef, Content_Type => 'image/jpeg' ],
+        },
+    );
+    ok $mech->success, 'Posted request successfully';
+
+    is $mech->uri->path, '/admin/manifesttheme/lincolnshire', "redirected back to edit page";
+    my $icon_dest = path(FixMyStreet->path_to('web/theme/lincolnshire/', $icon_filename));
+    ok $icon_dest->exists, "Icon stored on disk";
 
     $mech->submit_form_ok({ button => 'delete_theme' });
     is $mech->uri->path, '/admin/manifesttheme/create', "redirected to create page";
 
     is( FixMyStreet::DB->resultset('ManifestTheme')->count, 0, "theme deleted" );
+    ok !$icon_dest->exists, "Icon removed from disk";
 
     my $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
     is $log->object_id, $theme_id;
