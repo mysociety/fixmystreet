@@ -328,13 +328,15 @@ sub disable_form_message : Private {
             $out{all} .= ' ' if $out{all};
             $out{all} .= $_->{description};
         } elsif (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
+            my %category;
             foreach my $opt (@{$_->{values}}) {
                 if ($opt->{disable}) {
-                    $out{message} = $opt->{disable_message} || $_->{datatype_description};
-                    $out{code} = $_->{code};
-                    push @{$out{answers}}, $opt->{key};
+                    $category{message} = $opt->{disable_message} || $_->{datatype_description};
+                    $category{code} = $_->{code};
+                    push @{$category{answers}}, $opt->{key};
                 }
             }
+            push @{$out{questions}}, \%category if %category;
         }
     }
 
@@ -1575,16 +1577,19 @@ sub check_for_category : Private {
         my $disable_form_messages = $c->forward('disable_form_message');
         if ($disable_form_messages->{all}) {
             $c->stash->{disable_form_message} = $disable_form_messages->{all};
-        } elsif (my $code = $disable_form_messages->{code}) {
-            my $answer = $c->get_param($code);
-            my $message = $disable_form_messages->{message};
-            if ($answer) {
-                foreach (@{$disable_form_messages->{answers}}) {
-                    if ($answer eq $_) {
-                        $c->stash->{disable_form_message} = $message;
+        } elsif (my $questions = $disable_form_messages->{questions}) {
+            foreach my $question (@$questions) {
+                my $answer = $c->get_param($question->{code});
+                my $message = $question->{message};
+                if ($answer) {
+                    foreach (@{$question->{answers}}) {
+                        if ($answer eq $_) {
+                            $c->stash->{disable_form_message} = $message;
+                        }
                     }
                 }
-            } else {
+            }
+            if (!$c->stash->{disable_form_message}) {
                 $c->stash->{have_disable_qn_to_answer} = 1;
             }
         }

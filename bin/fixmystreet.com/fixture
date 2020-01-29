@@ -100,6 +100,7 @@ if ($opt->test_fixtures) {
         { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
         { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council' },
+        { area_id => 2566, categories => [ 'Fallen branch' ], name => 'Peterborough City Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
@@ -189,6 +190,38 @@ if ($opt->test_fixtures) {
         order => 1,
         variable => 'true',
     });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2566},
+        category => 'Fallen branch',
+    });
+    $child_cat->set_extra_fields(
+        {
+            code => 'emergency',
+            datatype => 'singlevaluelist',
+            description => 'Is it blocking a footpath or a highway?',
+            order => 0,
+            variable => 'true',
+            required => 'true',
+            values => [
+                { key => 'yes', name => 'Yes', disable => 1, disable_message => 'Please phone customer services to report this problem.' },
+                { key => 'no', name => 'No' },
+            ]
+        },
+        {
+            code => 'private_land',
+            datatype => 'singlevaluelist',
+            description => 'Is this problem on private land?',
+            order => 0,
+            variable => 'true',
+            required => 'true',
+            values => [
+                { key => 'yes', name => 'Yes', disable => 1, disable_message => 'The council do not have powers to address issues on private land.' },
+                { key => 'no', name => 'No' },
+            ]
+        }
+    );
     $child_cat->update;
 }
 

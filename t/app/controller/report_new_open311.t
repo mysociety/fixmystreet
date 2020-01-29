@@ -378,9 +378,13 @@ subtest "Category extras includes form disabling string" => sub {
             my $output = $json->{by_category} ? $json->{by_category}{Pothole}{disable_form} : $json->{disable_form};
             is_deeply $output, {
                 all => 'Please ring us!',
-                message => 'Please please ring',
-                code => 'dangerous',
-                answers => [ 'yes' ],
+                questions => [
+                    {
+                        message => 'Please please ring',
+                        code => 'dangerous',
+                        answers => [ 'yes' ],
+                    },
+                ],
             };
         }
 
