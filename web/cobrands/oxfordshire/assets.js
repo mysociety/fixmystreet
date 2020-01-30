@@ -107,4 +107,30 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'drain'
 });
 
+fixmystreet.assets.add(defaults, {
+    // have to do this by hand rather than using wfs_* options
+    // as the server does not like being POSTed xml with application/xml
+    // as the Content-Type which is what using those options results in.
+    http_options: {
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+        url: proxy_base_url + 'grit/wfs',
+        params: {
+            SERVICE: "WFS",
+            VERSION: "1.1.0",
+            REQUEST: "GetFeature",
+            SRSNAME: "urn:ogc:def:crs:EPSG::27700",
+            TYPENAME: "Gritbins"
+        }
+    },
+    srsName: "EPSG:27700",
+    asset_id_field: 'id',
+    attributes: {
+        feature_id: 'id'
+    },
+    asset_category: ["Ice/Snow"],
+    asset_item: 'grit bin'
+});
+
 })();
