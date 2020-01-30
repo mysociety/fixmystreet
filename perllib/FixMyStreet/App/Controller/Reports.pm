@@ -193,6 +193,7 @@ sub setup_categories_and_map :Private {
 
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
+    $c->forward('/report/stash_category_groups', [ \@categories ]) if $c->cobrand->enable_category_groups;
 
     my $pins = $c->stash->{pins} || [];
 

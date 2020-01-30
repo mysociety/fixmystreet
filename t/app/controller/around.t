@@ -232,7 +232,11 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
     # Create one open and one fixed report in each category
     foreach my $category ( @$categories ) {
-        $mech->create_contact_ok( category => $category, body_id => $body->id, email => "$category\@example.org" );
+        my $contact = $mech->create_contact_ok( category => $category, body_id => $body->id, email => "$category\@example.org" );
+        if ($category ne 'Pothole') {
+            $contact->set_extra_metadata(group => ['Environment']);
+            $contact->update;
+        }
         foreach my $state ( 'confirmed', 'fixed - user', 'fixed - council' ) {
             my %report_params = (
                 %$params,
@@ -252,9 +256,11 @@ subtest 'check category, status and extra filtering works on /around' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => { category_groups => { fixmystreet => 1 } },
     }, sub {
         $mech->get_ok( '/around?filter_category=Pothole&bbox=' . $bbox );
         $mech->content_contains('<option value="Pothole" selected>');
+        $mech->content_contains('<optgroup label="Environment">');
     };
 
     $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Pothole&bbox=' . $bbox );

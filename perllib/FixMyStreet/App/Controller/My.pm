@@ -189,11 +189,12 @@ sub setup_page_data : Private {
     my @categories = $c->stash->{problems_rs}->search({
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
-        columns => [ 'category', 'bodies_str' ],
+        columns => [ 'category', 'bodies_str', 'extra' ],
         distinct => 1,
         order_by => [ 'category' ],
     } )->all;
     $c->stash->{filter_categories} = \@categories;
+    $c->forward('/report/stash_category_groups', [ \@categories ]) if $c->cobrand->enable_category_groups;
 
     my $pins = $c->stash->{pins};
     FixMyStreet::Map::display_map(
