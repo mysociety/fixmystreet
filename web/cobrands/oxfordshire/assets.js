@@ -5,10 +5,10 @@ if (!fixmystreet.maps) {
 }
 
 var tilma_url = "https://tilma.staging.mysociety.org/mapserver/oxfordshire";
-var proxy_url = "https://tilma.staging.mysociety.org/proxy/occ/wfs";
+var proxy_base_url = "https://tilma.staging.mysociety.org/proxy/occ/";
 if ( location.hostname === 'www.fixmystreet.com' || location.hostname == 'fixmystreet.oxfordshire.gov.uk' ) {
     tilma_url = "https://tilma.mysociety.org/mapserver/oxfordshire";
-    proxy_url = "https://tilma.mysociety.org/proxy/occ/wfs";
+    proxy_base_url = "https://tilma.mysociety.org/proxy/occ/";
 }
 
 var defaults = {
@@ -89,7 +89,7 @@ fixmystreet.assets.add(defaults, {
         headers: {
             'Content-Type': 'text/plain'
         },
-        url: proxy_url,
+        url: proxy_base_url + 'drains/wfs',
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
