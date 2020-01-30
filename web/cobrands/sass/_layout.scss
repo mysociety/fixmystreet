@@ -553,6 +553,13 @@ body.authpage {
 #fms_pan_zoom_panup,
 #fms_pan_zoom_pandown,
 #fms_pan_zoom_panleft,
+#fms_pan_zoom_panright {
+    display: block;
+}
+
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown,
+#fms_pan_zoom_panleft,
 #fms_pan_zoom_panright,
 #fms_pan_zoom_zoomin,
 #fms_pan_zoom_zoomout,
@@ -563,14 +570,12 @@ body.authpage {
   }
 }
 
-// push zoom back over to right
+// indent zoom to line up with pan
 #fms_pan_zoom_zoomin {
-  #{$left}: auto;
   #{$right}: 30px;
   top: 130px;
 }
 #fms_pan_zoom_zoomout {
-  #{$left}: auto;
   #{$right}: 30px;
   top: 174px;
 }
@@ -724,8 +729,6 @@ body.authpage {
   height: 64px;
   width: 64px;
   background-color: rgba(0, 0, 0, 0.7);
-  // Reset the base left, as zoom buttons now elsewhere
-  #{$left}: 0.5em;
 }
 
 .big-green-banner {
