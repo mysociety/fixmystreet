@@ -1,6 +1,7 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::DB;
 use Path::Tiny;
+use Memcached;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -12,6 +13,7 @@ FixMyStreet::override_config {
     my $image_path = path('t/app/controller/sample.jpg');
     $image_path->copy($theme_dir->child('sample.jpg'));
     subtest 'manifest' => sub {
+        Memcached::delete("manifest_theme:test");
         my $j = $mech->get_ok_json('/.well-known/manifest.webmanifest');
         is $j->{name}, 'FixMyStreet', 'correct name';
         is $j->{theme_color}, '#ffd000', 'correct theme colour';
@@ -22,6 +24,7 @@ FixMyStreet::override_config {
         }, 'correct icon';
     };
     subtest 'themed manifest' => sub {
+        Memcached::delete("manifest_theme:test");
         FixMyStreet::DB->resultset('ManifestTheme')->create({
             cobrand => "test",
             name => "My Test Cobrand FMS",

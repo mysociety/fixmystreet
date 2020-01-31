@@ -42,6 +42,8 @@ sub auto : Private {
     $c->forward('check_password_expiry');
     $c->detach('/auth/redirect') if $c->cobrand->call_hook('check_login_disallowed');
 
+    $c->forward('/offline/_stash_manifest_theme', [ $c->cobrand->moniker ]);
+
     return 1;
 }
 
@@ -76,8 +78,6 @@ sub index : Path : Args(0) {
         $c->stash->{template} = $c->stash->{homepage_template};
         $c->detach;
     }
-
-    $c->forward('/offline/_stash_manifest_icons', [ $c->cobrand->moniker ]);
 
     $c->forward('/auth/get_csrf_token');
 }

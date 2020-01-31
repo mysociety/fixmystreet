@@ -29,4 +29,8 @@ sub set {
     instance->set(@_);
 }
 
+sub delete {
+    instance->delete(@_);
+}
+
 1;

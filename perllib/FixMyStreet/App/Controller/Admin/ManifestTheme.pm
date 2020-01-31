@@ -44,7 +44,7 @@ sub edit :PathPart('') :Chained('item') :Args(0) {
 
     # We need to do this after form processing, in case a form POST has deleted
     # an icon.
-    $c->forward('/offline/_stash_manifest_icons', [ $c->stash->{obj}->cobrand, 1 ]);
+    $c->stash->{editing_manifest_theme} = $c->forward('/offline/_find_manifest_theme', [ $c->stash->{obj}->cobrand, 1 ]);
 
     return $form;
 }
@@ -67,7 +67,7 @@ sub form {
 
     if ($c->get_param('delete_theme')) {
         $c->forward('_delete_all_manifest_icons');
-        $c->forward('/offline/_clear_manifest_icons_cache', [ $theme->cobrand ]);
+        $c->forward('/offline/_clear_manifest_theme_cache', [ $theme->cobrand ]);
         $theme->delete;
         $c->forward('/admin/log_edit', [ $theme->id, 'manifesttheme', 'delete' ]);
         $c->response->redirect($c->uri_for($self->action_for('index')));
@@ -83,15 +83,15 @@ sub form {
     return unless $form->validated;
 
     $c->forward('/admin/log_edit', [ $theme->id, 'manifesttheme', $action ]);
-    $c->forward('/offline/_clear_manifest_icons_cache', [ $theme->cobrand ]);
+    $c->forward('/offline/_clear_manifest_theme_cache', [ $theme->cobrand ]);
     $c->response->redirect($c->uri_for($self->action_for('index')));
 }
 
 sub _delete_all_manifest_icons :Private {
     my ($self, $c) = @_;
 
-    $c->forward('/offline/_stash_manifest_icons', [ $c->stash->{obj}->cobrand, 1 ]);
-    foreach my $icon ( @{ $c->stash->{manifest_icons} } ) {
+    my $theme = $c->forward('/offline/_find_manifest_theme', [ $c->stash->{obj}->cobrand, 1 ]);
+    foreach my $icon ( @{ $theme->{icons} } ) {
         unlink FixMyStreet->path_to('web', $icon->{src});
     }
 }

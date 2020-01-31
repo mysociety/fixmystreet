@@ -114,8 +114,8 @@ subtest "cobrand admin lets you add an icon to an existing theme" => sub {
     ok $mech->success, 'Posted request successfully';
 
     is $mech->uri->path, '/admin/manifesttheme/lincolnshire', "redirected back to edit page";
-    $mech->content_contains($icon_filename);
-    $mech->content_contains("133x100");
+    $mech->content_contains("<img src=\"/theme/lincolnshire/" . $icon_filename);
+    $mech->content_contains("<td class=\"icon-size\">133x100</td>");
     my $icon_dest = path(FixMyStreet->path_to('web/theme/lincolnshire/', $icon_filename));
     ok $icon_dest->exists, "Icon stored on disk";
 };
@@ -132,8 +132,8 @@ subtest "cobrand admin lets you delete an icon from an existing theme" => sub {
     $mech->submit_form_ok( { with_fields => $fields } );
 
     is $mech->uri->path, '/admin/manifesttheme/lincolnshire', "redirected back to edit page";
-    $mech->content_lacks($icon_filename);
-    $mech->content_lacks("133x100");
+    $mech->content_lacks("<img src=\"/theme/lincolnshire/" . $icon_filename);
+    $mech->content_lacks("<td class=\"icon-size\">133x100</td>");
     ok !$icon_dest->exists, "Icon removed from disk";
 };
 
