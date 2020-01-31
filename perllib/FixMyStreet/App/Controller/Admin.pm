@@ -369,8 +369,8 @@ sub set_allowed_pages : Private {
 sub get_user : Private {
     my ( $self, $c ) = @_;
 
-    my $user = $c->req->remote_user();
-    $user ||= ($c->user && $c->user->name);
+    my $user = ($c->user && $c->user->name);
+    $user ||= $c->req->remote_user();
     $user ||= '';
 
     return $user;
