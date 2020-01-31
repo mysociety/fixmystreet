@@ -1,6 +1,7 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Questionnaires;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -207,6 +208,11 @@ FixMyStreet::override_config {
         },
         do_not_reply_email => {
             tfl => 'fms-tfl-DO-NOT-REPLY@example.com',
+        },
+        send_questionnaire => {
+            fixmystreet => {
+                TfL => 0,
+            }
         },
     },
 }, sub {
@@ -690,6 +696,12 @@ subtest 'Test public reports are visible on cobrands appropriately' => sub {
     $mech->content_contains('Test Bromley report');
     $mech->content_contains('https://street.tfl/report/' . $tfl_report->id);
     $mech->content_contains('Other problem');
+};
+
+subtest 'Test no questionnaire sending' => sub {
+    $report->update({ send_questionnaire => 1, whensent => \"current_timestamp-'7 weeks'::interval" });
+    FixMyStreet::Script::Questionnaires::send();
+    $mech->email_count_is(0);
 };
 
 };

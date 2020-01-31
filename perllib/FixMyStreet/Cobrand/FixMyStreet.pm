@@ -278,22 +278,22 @@ sub about_hook {
     }
 }
 
-sub updates_disallowed_config {
-    my ($self, $problem) = @_;
+sub per_body_config {
+    my ($self, $feature, $problem) = @_;
 
     # This is a hash of council name to match, and what to do
-    my $cfg = $self->feature('updates_allowed') || {};
+    my $cfg = $self->feature($feature) || {};
 
-    my $type = '';
+    my $value;
     my $body;
     foreach (keys %$cfg) {
         if ($problem->to_body_named($_)) {
-            $type = $cfg->{$_};
+            $value = $cfg->{$_};
             $body = $_;
             last;
         }
     }
-    return ($type, $body);
+    return ($value, $body);
 }
 
 sub updates_disallowed {
@@ -301,7 +301,8 @@ sub updates_disallowed {
     my ($problem) = @_;
     my $c = $self->{c};
 
-    my ($type, $body) = $self->updates_disallowed_config($problem);
+    my ($type, $body) = $self->per_body_config('updates_allowed', $problem);
+    $type //= '';
 
     if ($type eq 'none') {
         return 1;
@@ -341,10 +342,8 @@ sub must_have_2fa {
 
 sub send_questionnaire {
     my ($self, $problem) = @_;
-    my $cobrand = $problem->get_cobrand_logged;
-    return 0 if $cobrand->moniker eq 'tfl';
-    return 0 if $problem->to_body_named('TfL');
-    return 1;
+    my ($send, $body) = $self->per_body_config('send_questionnaire', $problem);
+    return $send // 1;
 }
 
 sub update_email_shortlisted_user {
