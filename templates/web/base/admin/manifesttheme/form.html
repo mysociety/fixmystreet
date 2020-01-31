@@ -23,6 +23,8 @@
 
     [% IF show_all %]
       [% form.field('cobrand').render | safe %]
+    [% ELSE %]
+      <input type=hidden name=cobrand value='[% c.cobrand.moniker %]' />
     [% END %]
 
     <table>

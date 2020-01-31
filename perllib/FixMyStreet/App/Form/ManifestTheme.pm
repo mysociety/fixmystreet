@@ -6,6 +6,7 @@ use Digest::SHA qw(sha1_hex);
 use File::Basename;
 use HTML::FormHandler::Moose;
 use FixMyStreet::App::Form::I18N;
+use List::MoreUtils qw(uniq);
 extends 'HTML::FormHandler::Model::DBIC';
 use namespace::autoclean;
 
@@ -14,7 +15,7 @@ has 'cobrand' => ( isa => 'Str', is => 'ro' );
 has '+widget_name_space' => ( default => sub { ['FixMyStreet::App::Form::Widget'] } );
 has '+widget_tags' => ( default => sub { { wrapper_tag => 'p' } } );
 has '+item_class' => ( default => 'ManifestTheme' );
-has_field 'cobrand' => ( required => 0 );
+has_field 'cobrand' => ( type => 'Select', empty_select => 'Select a cobrand', required => 1 );
 has_field 'name' => ( required => 1 );
 has_field 'short_name' => ( required => 1 );
 has_field 'background_colour' => ( required => 0 );
@@ -22,12 +23,12 @@ has_field 'theme_colour' => ( required => 0 );
 has_field 'icon' => ( required => 0, type => 'Upload', label => "Add icon" );
 has_field 'delete_icon' => ( type => 'Multiple' );
 
-before 'update_model' => sub {
-    my $self = shift;
-    $self->item->cobrand($self->cobrand) if $self->cobrand && !$self->item->cobrand;
-};
-
 sub _build_language_handle { FixMyStreet::App::Form::I18N->new }
+
+sub options_cobrand {
+    my @cobrands = uniq sort map { $_->{moniker} } FixMyStreet::Cobrand->available_cobrand_classes;
+    return map { $_ => $_ } @cobrands;
+}
 
 sub validate {
     my $self = shift;

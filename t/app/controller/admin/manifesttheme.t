@@ -9,7 +9,7 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 $mech->log_in_ok( $superuser->email );
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'lincolnshire', 'fixmystreet' ],
+    ALLOWED_COBRANDS => [ 'lincolnshire', 'tfl', 'fixmystreet' ],
 }, sub {
 
 ok $mech->host('lincolnshire.fixmystreet.com');
@@ -107,6 +107,7 @@ subtest "cobrand admin lets you add an icon to an existing theme" => sub {
             short_name => "Lincs FMS",
             background_colour => "#663399",
             theme_colour => "rgb(102, 51, 153)",
+            cobrand => 'lincolnshire',
             icon => [ $sample_jpeg, undef, Content_Type => 'image/jpeg' ],
         },
     );
@@ -149,6 +150,7 @@ subtest "cobrand admin rejects non-images" => sub {
             short_name => "Lincs FMS",
             background_colour => "#663399",
             theme_colour => "rgb(102, 51, 153)",
+            cobrand => 'lincolnshire',
             icon => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         },
     );
@@ -196,6 +198,7 @@ subtest "can delete theme" => sub {
             short_name => "Lincs FMS",
             background_colour => "#663399",
             theme_colour => "rgb(102, 51, 153)",
+            cobrand => "lincolnshire",
             icon => [ $sample_jpeg, undef, Content_Type => 'image/jpeg' ],
         },
     );
