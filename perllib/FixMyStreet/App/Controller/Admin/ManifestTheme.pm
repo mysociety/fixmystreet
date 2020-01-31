@@ -67,6 +67,7 @@ sub form {
 
     if ($c->get_param('delete_theme')) {
         $c->forward('_delete_all_manifest_icons');
+        $c->forward('/offline/_clear_manifest_icons_cache', [ $theme->cobrand ]);
         $theme->delete;
         $c->forward('/admin/log_edit', [ $theme->id, 'manifesttheme', 'delete' ]);
         $c->response->redirect($c->uri_for($self->action_for('index')));
@@ -82,6 +83,7 @@ sub form {
     return unless $form->validated;
 
     $c->forward('/admin/log_edit', [ $theme->id, 'manifesttheme', $action ]);
+    $c->forward('/offline/_clear_manifest_icons_cache', [ $theme->cobrand ]);
     $c->response->redirect($c->uri_for($self->action_for('index')));
 }
 

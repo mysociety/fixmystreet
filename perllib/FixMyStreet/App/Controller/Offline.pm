@@ -65,30 +65,47 @@ sub manifest: Path("/.well-known/manifest.webmanifest") {
 }
 
 sub _stash_manifest_icons : Private {
-    my ($self, $c, $cobrand, $skip_defaults) = @_;
+    my ($self, $c, $cobrand, $ignore_cache_and_defaults) = @_;
 
-    my @icons;
-    my $uri = '/theme/' . $cobrand;
-    my $theme_path = path(FixMyStreet->path_to('web' . $uri));
-    $theme_path->visit(
-        sub {
-            my ($x, $y, $typ) = Image::Size::imgsize($_->stringify);
-            push @icons, {
-                src => join('/', $uri, $_->basename),
-                sizes => join('x', $x, $y),
-                type => $typ eq 'PNG' ? 'image/png' : $typ eq 'GIF' ? 'image/gif' : $typ eq 'JPG' ? 'image/jpeg' : '',
-            };
+    my $key = "manifest_icons:$cobrand";
+    # ignore_cache_and_defaults is only used in the admin, so no harm bypassing cache
+    my $icons = $ignore_cache_and_defaults ? undef : Memcached::get($key);
+
+    unless ( $icons ) {
+        my @icons;
+        my $uri = '/theme/' . $cobrand;
+        my $theme_path = path(FixMyStreet->path_to('web' . $uri));
+        $theme_path->visit(
+            sub {
+                my ($x, $y, $typ) = Image::Size::imgsize($_->stringify);
+                push @icons, {
+                    src => join('/', $uri, $_->basename),
+                    sizes => join('x', $x, $y),
+                    type => $typ eq 'PNG' ? 'image/png' : $typ eq 'GIF' ? 'image/gif' : $typ eq 'JPG' ? 'image/jpeg' : '',
+                };
+            }
+        );
+
+        unless (@icons || $ignore_cache_and_defaults) {
+            push @icons,
+                { src => "/cobrands/fixmystreet/images/192.png", sizes => "192x192", type => "image/png" },
+                { src => "/cobrands/fixmystreet/images/512.png", sizes => "512x512", type => "image/png" };
         }
-    );
 
-    unless (@icons || $skip_defaults) {
-        push @icons,
-            { src => "/cobrands/fixmystreet/images/192.png", sizes => "192x192", type => "image/png" },
-            { src => "/cobrands/fixmystreet/images/512.png", sizes => "512x512", type => "image/png" };
+        $icons = \@icons;
+
+        unless ($ignore_cache_and_defaults) {
+            Memcached::set($key, $icons);
+        }
     }
 
-    $c->stash->{manifest_icons} = \@icons;
+    $c->stash->{manifest_icons} = $icons;
+}
 
+sub _clear_manifest_icons_cache : Private {
+    my ($self, $c, $cobrand ) = @_;
+
+    Memcached::set("manifest_icons:$cobrand", "");
 }
 
 __PACKAGE__->meta->make_immutable;
