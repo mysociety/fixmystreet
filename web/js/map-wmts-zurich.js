@@ -102,8 +102,8 @@ fixmystreet.maps.matrix_ids = [
 
 (function() {
     function pin_dragged(lonlat) {
-        document.getElementById('fixmystreet.latitude').value = lonlat.y;
-        document.getElementById('fixmystreet.longitude').value = lonlat.x;
+        document.getElementById('fixmystreet.latitude').value = lonlat.y.toFixed(6);
+        document.getElementById('fixmystreet.longitude').value = lonlat.x.toFixed(6);
     }
 
     $(function(){

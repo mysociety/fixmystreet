@@ -11,8 +11,8 @@ fixmystreet.maps = {};
 (function() {
 
     fixmystreet.maps.update_pin = function(lonlat) {
-        var lat = lonlat.lat();
-        var lon = lonlat.lng();
+        var lat = lonlat.lat().toFixed(6);
+        var lon = lonlat.lng().toFixed(6);
         document.getElementById('fixmystreet.latitude').value = lat;
         document.getElementById('fixmystreet.longitude').value = lon;
         return {

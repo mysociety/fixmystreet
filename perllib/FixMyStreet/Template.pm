@@ -70,6 +70,18 @@ sub loc : Fn {
     return FixMyStreet::Template::SafeString->new($s);
 }
 
+=head2 loc_js
+
+Same as loc() but escapes single quotes (for use in JavaScript).
+
+=cut
+
+sub loc_js : Fn {
+    my $s = _(@_);
+    $s =~ s/'/\\'/g;
+    return FixMyStreet::Template::SafeString->new($s);
+}
+
 =head2 nget
 
     [% nget( 'singular', 'plural', $number ) %]

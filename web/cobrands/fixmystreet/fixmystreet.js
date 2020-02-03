@@ -1285,9 +1285,13 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
     if (savePushState !== false) {
         if ('pushState' in history) {
             var newReportUrl = '/report/new?longitude=' + lonlats.url.lon + '&latitude=' + lonlats.url.lat;
-            history.pushState({
-                newReportAtLonlat: lonlats.state
-            }, null, newReportUrl);
+            var newState = { newReportAtLonlat: lonlats.state };
+            // If we're already in the reporting place, we want to replace state, it's a pin move
+            if (fixmystreet.page === 'new') {
+                history.replaceState(newState, null, newReportUrl);
+            } else {
+                history.pushState(newState, null, newReportUrl);
+            }
         }
     }
 
@@ -1455,6 +1459,9 @@ fixmystreet.display = {
             height = $map_box.height();
         $map_box.append(
             '<p class="sub-map-links" id="mob_sub_map_links">' +
+            '<a href="#" id="problems_nearby">' +
+                translation_strings.back +
+            '</a>' +
             '<a href="#" id="try_again">' +
                 translation_strings.try_again +
             '</a>' +
@@ -1467,25 +1474,32 @@ fixmystreet.display = {
             width: width,
             height: height
         });
-        $('#try_again').click(function(e){
+
+        $('.mobile-map-banner span').text(translation_strings.right_place);
+
+        $('#problems_nearby').click(function(e){
             e.preventDefault();
             history.back();
         });
 
-        $('.mobile-map-banner span').text(translation_strings.right_place);
+        $('#try_again').click(function(e) {
+            e.preventDefault();
+            $('#mob_ok').click();
+        });
 
         // mobile user clicks 'ok' on map
         $('#mob_ok').toggle(function(){
             //scroll the height of the map box instead of the offset
             //of the #side-form or whatever as we will probably want
             //to do this on other pages where #side-form might not be
-            $('html, body').animate({ scrollTop: height-60 }, 1000, function(){
+            $('html, body').animate({ scrollTop: height-60 }, 500, function(){
                 $('html').removeClass('only-map');
                 $('#mob_sub_map_links').addClass('map_complete');
                 $('#mob_ok').text(translation_strings.map);
             });
         }, function(){
-            $('html, body').animate({ scrollTop: 0 }, 1000, function(){
+            var current = $('html, body').scrollTop();
+            $('html, body').animate({ scrollTop: 0 }, 500/height*current, function(){
                 $('html').addClass('only-map');
                 $('#mob_sub_map_links').removeClass('map_complete');
                 $('#mob_ok').text(translation_strings.ok);

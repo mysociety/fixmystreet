@@ -34,7 +34,7 @@ describe('Around page responsive design tests', function() {
         cy.get('#map_links_toggle').should('not.be.visible');
         cy.get('#map_box').click(200, 200);
         cy.get('#sub_map_links').should('not.be.visible');
-        cy.get('#try_again').should('be.visible');
+        cy.get('#problems_nearby').should('be.visible');
         cy.get('#mob_ok').click();
         cy.cleanUpXHR();
     });
