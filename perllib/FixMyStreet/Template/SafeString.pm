@@ -69,6 +69,12 @@ sub clone {
     return $clone;
 }
 
+sub TO_JSON {
+    my $self = shift;
+
+    return $$self;
+}
+
 1;
 __END__
 

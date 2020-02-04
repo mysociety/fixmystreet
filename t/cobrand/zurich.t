@@ -118,6 +118,15 @@ my $json = $mech->get_ok_json( '/report/ajax/' . $report->id );
 is $json->{report}->{title}, "Überprüfung ausstehend", "correct title";
 is $json->{report}->{state}, "submitted", "correct state";
 
+$report->state('fixed - council');
+$report->set_extra_metadata(public_response => 'Freundliche Grüsse');
+$report->update;
+$json = $mech->get_ok_json( '/report/ajax/' . $report->id );
+is $json->{report}->{state}, "closed", "correct state";
+is $json->{updates}->{details}, "Freundliche Grüsse", "correct public response";
+
+$report->update({ state => 'submitted' });
+
 subtest "Banners are displayed correctly" => sub {
     for my $test (
         {

@@ -299,7 +299,8 @@ sub format_problem_for_display : Private {
         delete $report_hashref->{created};
         delete $report_hashref->{confirmed};
 
-        my $content = encode_json(
+        my $json = JSON::MaybeXS->new( convert_blessed => 1, utf8 => 1 );
+        my $content = $json->encode(
             {
                 report => $report_hashref,
                 updates => $c->cobrand->updates_as_hashref( $problem, $c ),
