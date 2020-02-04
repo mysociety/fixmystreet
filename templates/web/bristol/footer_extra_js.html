@@ -1,9 +1,7 @@
-[% scripts.push(
-    version('/cobrands/fixmystreet-uk-councils/js.js'),
-) %]
 [%~
 IF bodyclass.match('mappage');
     scripts.push(
+        version('/cobrands/fixmystreet-uk-councils/js.js'),
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
         version('/cobrands/fixmystreet/assets.js'),
         version('/cobrands/bristol/assets.js'),

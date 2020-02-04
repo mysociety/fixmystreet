@@ -4,6 +4,7 @@
 ) %]
 [% IF bodyclass.match('mappage');
     scripts.push(
+        version('/cobrands/fixmystreet-uk-councils/js.js'),
         version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
         version('/cobrands/fixmystreet/assets.js'),
