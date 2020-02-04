@@ -1,0 +1,29 @@
+[%
+IF bodyclass.match('mappage');
+    scripts.push(
+        version('/cobrands/fixmystreet-uk-councils/js.js'),
+        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
+        version('/cobrands/fixmystreet/assets.js'),
+    );
+    IF validation;
+        scripts.push(
+            version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
+        );
+    END;
+    IF cobrand_js;
+        scripts.push(
+            version('/cobrands/' _ c.cobrand.moniker _ '/assets.js'),
+        );
+    END;
+    IF highways;
+        scripts.push(
+            version('/cobrands/highways/assets.js'),
+        );
+    END;
+    IF tfl;
+        scripts.push(
+            version('/cobrands/tfl/assets.js'),
+        );
+    END;
+END
+~%]
