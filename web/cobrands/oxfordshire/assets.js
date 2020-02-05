@@ -133,4 +133,35 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'grit bin'
 });
 
+var highways_style = new OpenLayers.Style({
+    fill: false,
+    strokeColor: "#5555FF",
+    strokeOpacity: 0.1,
+    strokeWidth: 7
+});
+
+fixmystreet.assets.add(defaults, {
+    stylemap: new OpenLayers.StyleMap({
+        'default': highways_style
+    }),
+    wfs_url: proxy_base_url + 'nsg/',
+    wfs_feature: "WFS_LIST_OF_STREETS",
+    srsName: "EPSG:27700",
+    geometryName: null,
+    usrn: {
+        attribute: 'USRN',
+        field: 'usrn'
+    },
+    non_interactive: true,
+    road: true,
+    no_asset_msg_id: '#js-not-a-road',
+    asset_item: 'road',
+    asset_type: 'road',
+    actions: {
+        found: fixmystreet.message_controller.road_found,
+        not_found: fixmystreet.message_controller.road_not_found
+    },
+    asset_category: ["Carriageway Defect", "Pavement", "Pothole"],
+});
+
 })();

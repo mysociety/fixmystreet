@@ -116,39 +116,53 @@ $oxon->update({
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Gullies and Catchpits', email => 'GC' );
 $contact->set_extra_fields( (
     { code => 'feature_id', datatype => 'hidden', variable => 'true' },
+    { code => 'usrn', datatype => 'hidden', variable => 'true' },
 ) );
 $contact->update;
 
-subtest 'Check special Open311 request handling', sub {
-    my ($p) = $mech->create_problems_for_body( 1, $oxon->id, 'Test', {
-        cobrand => 'oxfordshire',
-        category => 'Gullies and Catchpits',
-        user => $user,
-        latitude => 51.754926,
-        longitude => -1.256179,
-    });
-    $p->set_extra_fields({ name => 'feature_id', value => 9875432});
-    $p->update;
+for my $test (
+    {
+        field => 'usrn',
+        value => '12345',
+        text => 'USRN',
+    },
+    {
+        field => 'feature_id',
+        value => '12345',
+        text => 'Asset Id',
+    },
+) {
+    subtest 'Check special Open311 request handling of ' . $test->{text}, sub {
+        my ($p) = $mech->create_problems_for_body( 1, $oxon->id, 'Test', {
+            cobrand => 'oxfordshire',
+            category => 'Gullies and Catchpits',
+            user => $user,
+            latitude => 51.754926,
+            longitude => -1.256179,
+        });
+        $p->set_extra_fields({ name => $test->{field}, value => $test->{value}});
+        $p->update;
 
-    my $test_data;
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        ALLOWED_COBRANDS => ['oxfordshire' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        my $test_data;
+        FixMyStreet::override_config {
+            STAGING_FLAGS => { send_reports => 1 },
+            ALLOWED_COBRANDS => ['oxfordshire' ],
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            $test_data = FixMyStreet::Script::Reports::send();
+        };
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->send_method_used, 'Open311', 'Report sent via Open311';
+        is $p->external_id, 248, 'Report has right external ID';
+        unlike $p->detail, qr/$test->{text}:/, $test->{text} . ' not saved to report detail';
+
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        like $c->param('description'), qr/$test->{text}: $test->{value}/, $test->{text} . ' included in body';
     };
-
-    $p->discard_changes;
-    ok $p->whensent, 'Report marked as sent';
-    is $p->send_method_used, 'Open311', 'Report sent via Open311';
-    is $p->external_id, 248, 'Report has right external ID';
-    unlike $p->detail, qr/Assset Id:/, 'asset id not saved to report detail';
-
-    my $req = $test_data->{test_req_used};
-    my $c = CGI::Simple->new($req->content);
-    like $c->param('description'), qr/Asset Id: 9875432/, 'asset id included in body';
-};
+}
 
 END {
     done_testing();

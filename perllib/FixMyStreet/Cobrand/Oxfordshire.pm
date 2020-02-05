@@ -146,6 +146,12 @@ sub open311_pre_send {
         $text .= "\n\nAsset Id: " . $row->get_extra_field_value('feature_id') . "\n";
         $row->detail($text);
     }
+
+    if ($row->get_extra_field_value('usrn')) {
+        my $text = $row->detail;
+        $text .= "\n\nUSRN: " . $row->get_extra_field_value('usrn') . "\n";
+        $row->detail($text);
+    }
 }
 
 sub should_skip_sending_update {
