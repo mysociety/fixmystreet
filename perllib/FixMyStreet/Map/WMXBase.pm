@@ -180,7 +180,19 @@ sub get_map_hash {
         layer_names => encode_json( $self->tile_parameters->{layer_names} ),
         map_projection => $self->tile_parameters->{projection},
         scales => encode_json( \@scales ),
+        compass => $self->compass( $params{x_centre_tile}, $params{y_centre_tile}, $params{zoom} ),
         %{ $self->_map_hash_extras },
+    };
+}
+
+sub compass {
+    my ( $self, $x, $y, $z ) = @_;
+    return {
+        north => [ map { Utils::truncate_coordinate($_) } $self->tile_to_latlon( $x, $y-1, $z ) ],
+        south => [ map { Utils::truncate_coordinate($_) } $self->tile_to_latlon( $x, $y+1, $z ) ],
+        west  => [ map { Utils::truncate_coordinate($_) } $self->tile_to_latlon( $x-1, $y, $z ) ],
+        east  => [ map { Utils::truncate_coordinate($_) } $self->tile_to_latlon( $x+1, $y, $z ) ],
+        here  => [ map { Utils::truncate_coordinate($_) } $self->tile_to_latlon( $x, $y, $z ) ],
     };
 }
 
