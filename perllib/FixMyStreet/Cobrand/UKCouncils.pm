@@ -261,7 +261,9 @@ sub base_url_for_report {
 
 sub relative_url_for_report {
     my ( $self, $report ) = @_;
-    return $self->owns_problem($report) ? "" : FixMyStreet->config('BASE_URL');
+    return "" if $self->owns_problem($report);
+    return FixMyStreet::Cobrand::TfL->base_url if $report->cobrand eq 'tfl';
+    return FixMyStreet->config('BASE_URL');
 }
 
 sub admin_allow_user {
