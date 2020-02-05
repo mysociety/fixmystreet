@@ -165,12 +165,13 @@ sub open311_post_send {
         $outofhours_email = 1;
     } elsif ($row->category eq 'Gulley covers' || $row->category eq 'Manhole covers') {
         my $reportType = $row->get_extra_field_value('reportType') || '';
-        $p1_email = 1 if $reportType eq 'Cover missing';
-        $p1_email = 1 if $dangerous eq 'Yes';
-        $outofhours_email = 1 if $dangerous eq 'Yes';
+        if ($reportType eq 'Cover missing' || $dangerous eq 'Yes') {
+            $p1_email = 1;
+            $outofhours_email = 1;
+        }
     } elsif ($row->category eq 'Damage to kerb' || $row->category eq 'Damaged road' || $row->category eq 'Damaged pavement') {
         $p1_email = 1;
-        $outofhours_email = 1 if $dangerous eq 'Yes';
+        $outofhours_email = 1;
     } elsif (!$lighting{$row->category}) {
         $p1_email = 1 if $dangerous eq 'Yes';
         $outofhours_email = 1 if $dangerous eq 'Yes';
