@@ -135,4 +135,54 @@ fixmystreet.assets.add(owned_defaults, {
     asset_item: 'grit bin'
 });
 
+var road_occ_maintainable = 'Maintainable at Public Expense';
+
+function road_owned(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.STREET_MAINTENANCE_RESPONSIBILITY_NAME &&
+           f.attributes.STREET_MAINTENANCE_RESPONSIBILITY_NAME.lastIndexOf(road_occ_maintainable, 0) === 0;
+}
+
+fixmystreet.assets.add(defaults, {
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    wfs_url: proxy_base_url + 'nsg/',
+    wfs_feature: "WFS_STREETS_CLASSIFIED_ROADS_INTERESTS",
+    propertyNames: ['TYPE1_2_USRN', 'STREET_MAINTENANCE_RESPONSIBILITY_NAME', 'SHAPE_GEOMETRY'],
+    srsName: "EPSG:27700",
+    geometryName: null,
+    usrn: {
+        attribute: 'TYPE1_2_USRN',
+        field: 'usrn'
+    },
+    non_interactive: true,
+    road: true,
+    no_asset_msg_id: '#js-not-a-road',
+    asset_item: 'road',
+    asset_type: 'road',
+    actions: {
+        found: function(layer, feature) {
+            fixmystreet.message_controller.road_found(layer, feature, road_owned, '#js-not-a-road');
+        },
+        not_found: fixmystreet.message_controller.road_not_found
+    },
+    asset_category: [
+        "Bridges",
+        "Carriageway Defect",
+        "Current Roadworks",
+        "Drainage",
+        "Gully and Catchpits",
+        "Highway Schemes",
+        "Ice/Snow",
+        "Manhole",
+        "Pavements",
+        "Pothole",
+        "Road Traffic Signs and Road Markings",
+        "Roads/highways",
+        "Street lighting",
+        "Traffic Lights (permanent only)",
+        "Trees"
+    ]
+});
+
 })();
