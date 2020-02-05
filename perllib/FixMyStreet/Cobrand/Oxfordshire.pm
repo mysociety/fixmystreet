@@ -147,6 +147,11 @@ sub open311_pre_send {
         my $text = $row->detail . "\n\nAsset Id: $fid\n";
         $row->detail($text);
     }
+
+    if (my $usrn = $row->get_extra_field_value('usrn')) {
+        my $text = $row->detail . "\n\nUSRN: $usrn\n";
+        $row->detail($text);
+    }
 }
 
 sub open311_post_send {
