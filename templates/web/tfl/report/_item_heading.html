@@ -1,4 +1,7 @@
 <h3 class="item-list__heading">[% problem.title | html %]</h3>
+[% IF c.user.from_body || c.user.is_superuser %]
+    <small class="item-list__item__borough">[% c.cobrand.borough_for_report(problem) %]</small>
+[% END %]
 [%~ IF c.user.has_permission_to('report_inspect', problem.bodies_str_ids) AND problem.get_extra_field_value('safety_critical') == 'yes' ~%]
     <small class="item-list__safety-critical">Safety Critical</small>
 [%~ END ~%]
