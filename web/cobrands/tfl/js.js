@@ -40,3 +40,33 @@ $(function() {
 });
 
 })();
+
+OpenLayers.Layer.TLRN = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+    name: 'TLRN',
+    url: [
+        "//tilma.mysociety.org/tlrn/${z}/${x}/${y}.png",
+        "//a.tilma.mysociety.org/tlrn/${z}/${x}/${y}.png",
+        "//b.tilma.mysociety.org/tlrn/${z}/${x}/${y}.png",
+        "//c.tilma.mysociety.org/tlrn/${z}/${x}/${y}.png"
+    ],
+    sphericalMercator: true,
+    isBaseLayer: false,
+    CLASS_NAME: "OpenLayers.Layer.TLRN"
+});
+
+$(function() {
+    if (!fixmystreet.map) {
+        return;
+    }
+
+    // Can't use vector layer on reports, too big, use tiles instead
+    if (fixmystreet.page === 'reports') {
+        var layer = new OpenLayers.Layer.TLRN();
+        fixmystreet.map.addLayer(layer);
+        layer.setVisibility(true);
+        var pins_layer = fixmystreet.map.getLayersByName("Pins")[0];
+        if (pins_layer) {
+            layer.setZIndex(pins_layer.getZIndex()-1);
+        }
+    }
+});
