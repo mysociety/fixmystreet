@@ -25,7 +25,7 @@ sub tile_parameters {
         suffix          => '.png', # appended to tile URLs
         size            => 256, # pixels
         dpi             => 96,
-        inches_per_unit => 39.3701, # BNG uses metres
+        inches_per_unit => 39.37, # BNG uses metres
         projection      => 'EPSG:27700',
         origin_x        => -5220400.0,
         origin_y        => 4470200.0,
