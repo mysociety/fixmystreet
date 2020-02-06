@@ -155,7 +155,7 @@ sub sanitize {
     my $scrubber = HTML::Scrubber->new(
         rules => [
             %allowed_tags,
-            a => { href => qr{^(http|/|tel)}i, style => 1, target => qr/^_blank$/, title => 1 },
+            a => { href => qr{^(http|/|tel)}i, style => 1, target => qr/^_blank$/, title => 1, class => qr/^js-/ },
             img => { src => 1, alt => 1, width => 1, height => 1, hspace => 1, vspace => 1, align => 1, sizes => 1, srcset => 1 },
             font => { color => 1 },
             span => { style => 1 },
