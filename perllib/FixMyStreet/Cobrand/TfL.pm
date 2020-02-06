@@ -446,19 +446,22 @@ sub munge_red_route_categories {
     my ($self, $contacts) = @_;
     if ( $self->report_new_is_on_tlrn ) {
         # We're on a red route - only send TfL categories (except the disabled
-        # one that directs the user to borough for street cleaning) and borough
-        # street cleaning categories.
+        # ones that direct the user to borough for street cleaning & flytipping)
+        # and borough street cleaning/flytipping categories.
         my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
+        my %council_cats = map { $_ => 1 } @{ $self->_tfl_council_categories };
         @$contacts = grep {
-            ( $_->body->name eq 'TfL' && $_->category ne $self->_tfl_council_category )
+            ( $_->body->name eq 'TfL' && !$council_cats{$_->category} )
             || $cleaning_cats{$_->category}
             || @{ mySociety::ArrayUtils::intersection( $self->_cleaning_groups, $_->groups ) }
         } @$contacts;
     } else {
         # We're not on a red route - send all categories except
-        # TfL red-route-only and the TfL street cleaning.
-        my %tlrn_cats = map { $_ => 1 } @{ $self->_tlrn_categories };
-        $tlrn_cats{$self->_tfl_council_category} = 1;
+        # TfL red-route-only and the TfL street cleaning & flytipping.
+        my %tlrn_cats = (
+            map { $_ => 1 } @{ $self->_tlrn_categories },
+            map { $_ => 1 } @{ $self->_tfl_council_categories },
+        );
         @$contacts = grep { !( $_->body->name eq 'TfL' && $tlrn_cats{$_->category } ) } @$contacts;
     }
 }
@@ -472,7 +475,6 @@ sub _tlrn_categories { [
     "Debris in the carriageway",
     "Fallen Tree",
     "Flooding",
-    "Flytipping (TfL)",
     "Graffiti / Flyposting (non-offensive)",
     "Graffiti / Flyposting (offensive)",
     "Graffiti / Flyposting on street light (non-offensive)",
@@ -502,18 +504,29 @@ sub _tlrn_categories { [
 sub _cleaning_categories { [
     'Street cleaning',
     'Street Cleaning',
+    'Street cleaning and litter',
     'Accumulated Litter',
     'Street Cleaning Enquiry',
     'Street Cleansing',
+    'Flytipping',
+    'Fly tipping',
+    'Fly Tipping',
+    'Fly-tipping',
+    'Fly-Tipping',
+    'Fly tipping - Enforcement Request',
 ] }
 
-sub _cleaning_groups { [ 'Street cleaning' ] }
+sub _cleaning_groups { [ 'Street cleaning', 'Fly-tipping' ] }
 
-sub _tfl_council_category { 'General Litter / Rubbish Collection' }
+sub _tfl_council_categories { [
+    'General Litter / Rubbish Collection',
+    'Flytipping (TfL)',
+] }
 
 sub _tfl_no_resend_categories { [
     'Countdown - not working',
     'General Litter / Rubbish Collection',
+    'Flytipping (TfL)',
     'Other (TfL)',
     'Timings',
 ] }
