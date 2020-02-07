@@ -55,7 +55,7 @@ addons:
 install:
   - .travis/install
   - 'if [ "$COVERAGE_PART" != "0" ]; then cpanm --quiet --notest Devel::Cover::Report::Codecov; fi'
-  - 'if [ "$CYPRESS" = "1" ]; then npm install cypress; fi'
+  - 'if [ "$CYPRESS" = "1" ]; then npm install cypress@3.8.3; fi'
 before_script:
   - commonlib/bin/gettext-makemo FixMyStreet
   - 'if [ "$COVERAGE_PART" != "0" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,^t"; fi'
