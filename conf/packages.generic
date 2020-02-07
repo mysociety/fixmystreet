@@ -2,6 +2,7 @@ make
 g++
 jhead
 liblocale-gettext-perl
+libpng-dev
 memcached
 perl
 perlmagick
