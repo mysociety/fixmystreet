@@ -197,10 +197,12 @@ sub setup_categories_and_map :Private {
 
     my $pins = $c->stash->{pins} || [];
 
+    my $areas = [ $c->stash->{wards} ? map { $_->{id} } @{$c->stash->{wards}} : keys %{$c->stash->{body}->areas} ];
+    $c->cobrand->call_hook(munge_reports_area_list => $areas);
     my %map_params = (
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
         longitude => @$pins ? $pins->[0]{longitude} : 0,
-        area      => [ $c->stash->{wards} ? map { $_->{id} } @{$c->stash->{wards}} : keys %{$c->stash->{body}->areas} ],
+        area      => $areas,
         any_zoom  => 1,
     );
     FixMyStreet::Map::display_map(

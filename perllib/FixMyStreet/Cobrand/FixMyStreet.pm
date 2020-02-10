@@ -83,6 +83,15 @@ sub munge_reports_categories_list {
     }
 }
 
+sub munge_reports_area_list {
+    my ($self, $areas) = @_;
+    my $c = $self->{c};
+    if ($c->stash->{body}->name eq 'TfL') {
+        my %london_hash = map { $_ => 1 } FixMyStreet::Cobrand::TfL->london_boroughs;
+        @$areas = grep { $london_hash{$_} } @$areas;
+    }
+}
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 

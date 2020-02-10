@@ -468,6 +468,12 @@ sub report_new_is_on_tlrn {
     return scalar @$features ? 1 : 0;
 }
 
+sub munge_reports_area_list {
+    my ($self, $areas) = @_;
+    my %london_hash = map { $_ => 1 } $self->london_boroughs;
+    @$areas = grep { $london_hash{$_} } @$areas;
+}
+
 sub munge_report_new_contacts { }
 sub munge_report_new_bodies { }
 
