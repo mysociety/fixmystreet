@@ -291,6 +291,17 @@ sub prefill_report_fields_for_inspector { 1 }
 
 sub social_auth_disabled { 1 }
 
+sub munge_report_new_bodies {
+    my ($self, $bodies) = @_;
+
+    my %bodies = map { $_->name => 1 } values %$bodies;
+    if ( $bodies{'TfL'} ) {
+        # Presented categories vary if we're on/off a red route
+        my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
+        $tfl->munge_surrounding_london($bodies);
+    }
+}
+
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 

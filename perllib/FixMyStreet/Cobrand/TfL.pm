@@ -10,16 +10,29 @@ use FixMyStreet::MapIt;
 use mySociety::ArrayUtils;
 use Utils;
 
-sub council_area_id { return [
+sub london_boroughs { (
     2511, 2489, 2494, 2488, 2482, 2505, 2512, 2481, 2484, 2495,
     2493, 2508, 2502, 2509, 2487, 2485, 2486, 2483, 2507, 2503,
     2480, 2490, 2492, 2500, 2510, 2497, 2499, 2491, 2498, 2506,
-    2496, 2501, 2504
-]; }
+    2496, 2501, 2504,
+) }
+
+# Surrounding areas for bus stops which can be outside London
+sub surrounding_london { (
+    # Clockwise from top left: South Bucks, Three Rivers, Watford, Hertsmere,
+    # Welwyn Hatfield, Broxbourne, Epping Forest, Brentwood, Thurrock,
+    # Dartford, Sevenoaks, Tandridge, Reigate and Banstead, Epsom and Ewell,
+    # Mole Valley, Elmbridge, Spelthorne, Slough
+    2256, 2338, 2346, 2339, 2344, 2340, 2311, 2309, 2615,
+    2358, 2350, 2448, 2453, 2457, 2454, 2455, 2456, 2606,
+) }
+
+sub council_area_id { [ $_[0]->london_boroughs, $_[0]->surrounding_london ] }
+
 sub council_area { return 'TfL'; }
 sub council_name { return 'TfL'; }
 sub council_url { return 'tfl'; }
-sub area_types  { [ 'LBO' ] }
+sub area_types  { [ 'LBO', 'UTA', 'DIS' ] }
 sub is_council { 0 }
 
 sub borough_for_report {
@@ -205,7 +218,9 @@ sub state_groups_inspect {
 sub fetch_area_children {
     my $self = shift;
 
-    my $areas = FixMyStreet::MapIt::call('areas', $self->area_types);
+    # This is for user admin display, in testing can only be London (for MapIt mock)
+    my $ids = FixMyStreet->test_mode ? 'LBO' : $self->council_area_id;
+    my $areas = FixMyStreet::MapIt::call('areas', $ids);
     foreach (keys %$areas) {
         $areas->{$_}->{name} =~ s/\s*(Borough|City|District|County) Council$//;
     }
@@ -454,6 +469,18 @@ sub report_new_is_on_tlrn {
 }
 
 sub munge_report_new_contacts { }
+sub munge_report_new_bodies { }
+
+sub munge_surrounding_london {
+    my ($self, $bodies) = @_;
+    # Are we in a London borough?
+    my $all_areas = $self->{c}->stash->{all_areas};
+    my %london_hash = map { $_ => 1 } $self->london_boroughs;
+    if (!grep { $london_hash{$_} } keys %$all_areas) {
+        # Don't send any TfL categories
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'TfL' } values %$bodies;
+    }
+}
 
 sub munge_red_route_categories {
     my ($self, $contacts) = @_;

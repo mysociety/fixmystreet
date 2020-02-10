@@ -101,6 +101,7 @@ if ($opt->test_fixtures) {
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
         { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council' },
         { area_id => 2566, categories => [ 'Fallen branch' ], name => 'Peterborough City Council' },
+        { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation' ], name => 'TfL' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
@@ -222,6 +223,15 @@ if ($opt->test_fixtures) {
             ]
         }
     );
+    $child_cat->update;
+
+    FixMyStreet::DB->resultset('BodyArea')->create({ body_id => $bodies->{2498}->id, area_id => 2457 });
+    FixMyStreet::DB->resultset('BodyArea')->create({ body_id => $bodies->{2498}->id, area_id => 2483 });
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({ body => $bodies->{2498}, category => 'Incorrect timetable' });
+    $child_cat->set_extra_metadata(group => ['Bus Stops and Shelters']);
+    $child_cat->update;
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({ body => $bodies->{2498}, category => 'Glass broken' });
+    $child_cat->set_extra_metadata(group => ['Bus Stops and Shelters']);
     $child_cat->update;
 }
 

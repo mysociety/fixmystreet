@@ -19,6 +19,10 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 2483, # Hounslow
     body_id => $body->id,
 });
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2457, # Epsom Ewell, outside London, for bus stop test
+    body_id => $body->id,
+});
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 $staffuser->user_body_permissions->create({
@@ -341,6 +345,40 @@ subtest "test report creation and reference number" => sub {
 
     is $report->bodies_str, $body->id;
     is $report->name, 'Joe Bloggs';
+};
+
+subtest "test bus report creation outside London, .com" => sub {
+    $mech->host('www.fixmystreet.com');
+    $mech->get_ok('/report/new?latitude=51.345714&longitude=-0.227959');
+    $mech->content_lacks('Bus things');
+    $mech->host('tfl.fixmystreet.com');
+};
+
+subtest "test bus report creation outside London" => sub {
+    $mech->get_ok('/report/new?latitude=51.345714&longitude=-0.227959');
+    $mech->submit_form_ok(
+        {
+            with_fields => {
+                # A bus stop in East Ewell
+                latitude => 51.345714,
+                longitude => -0.227959,
+                title => 'Test outwith London',
+                detail => 'Test report details.',
+                name => 'Joe Bloggs',
+                may_show_name => '1',
+                category => 'Bus stops',
+            }
+        },
+        "submit good details"
+    );
+    $mech->content_contains('Your issue is on its way to Transport for London');
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test outwith London'});
+    ok $report, "Found the report";
+    is $report->state, 'confirmed', "report confirmed";
+    is $report->bodies_str, $body->id;
+    $report->delete;
 
     $mech->log_out_ok;
 };

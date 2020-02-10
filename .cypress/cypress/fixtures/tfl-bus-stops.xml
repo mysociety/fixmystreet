@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.mysociety.org:80/mapserver/tfl?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=busstops&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:3857">
+      		<gml:lowerCorner>-26966.052548 6682557.933485</gml:lowerCorner>
+      		<gml:upperCorner>-24818.713303 6683455.672461</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+<!-- WARNING: FeatureId item 'fid' not found in typename 'busstops'. -->
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-26739.919949 6682734.390283</gml:lowerCorner>
+        		<gml:upperCorner>-26739.919949 6682734.390283</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-26739.919949 6682734.390283</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3936</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-24974.257309 6683105.238970</gml:lowerCorner>
+        		<gml:upperCorner>-24974.257309 6683105.238970</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-24974.257309 6683105.238970</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3931</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-24826.301974 6683406.167649</gml:lowerCorner>
+        		<gml:upperCorner>-24826.301974 6683406.167649</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-24826.301974 6683406.167649</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3929</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-26021.414677 6682568.040132</gml:lowerCorner>
+        		<gml:upperCorner>-26021.414677 6682568.040132</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-26021.414677 6682568.040132</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3939</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-24818.713303 6683455.672461</gml:lowerCorner>
+        		<gml:upperCorner>-24818.713303 6683455.672461</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-24818.713303 6683455.672461</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3930</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-25376.237114 6682675.840759</gml:lowerCorner>
+        		<gml:upperCorner>-25376.237114 6682675.840759</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-25376.237114 6682675.840759</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3934</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-26966.052548 6682770.284294</gml:lowerCorner>
+        		<gml:upperCorner>-26966.052548 6682770.284294</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-26966.052548 6682770.284294</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3935</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-26068.008727 6682557.933485</gml:lowerCorner>
+        		<gml:upperCorner>-26068.008727 6682557.933485</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-26068.008727 6682557.933485</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3938</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-25333.074328 6682676.397427</gml:lowerCorner>
+        		<gml:upperCorner>-25333.074328 6682676.397427</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-25333.074328 6682676.397427</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3933</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:busstops>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-24959.726550 6683177.005692</gml:lowerCorner>
+        		<gml:upperCorner>-24959.726550 6683177.005692</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-24959.726550 6683177.005692</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:STOP_CODE>BP3932</ms:STOP_CODE>
+      </ms:busstops>
+    </gml:featureMember>
+</wfs:FeatureCollection>

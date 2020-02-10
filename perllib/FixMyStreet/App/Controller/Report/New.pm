@@ -688,6 +688,8 @@ sub setup_categories_and_bodies : Private {
     my @bodies = $c->model('DB::Body')->active->for_areas(keys %$all_areas)->all;
     my %bodies = map { $_->id => $_ } @bodies;
 
+    $c->cobrand->call_hook(munge_report_new_bodies => \%bodies);
+
     my $contacts                #
       = $c                      #
       ->model('DB::Contact')    #
@@ -774,7 +776,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{bodies} = \%bodies;
     $c->stash->{contacts} = \@contacts;
     $c->stash->{bodies_to_list} = \%bodies_to_list;
-    $c->stash->{bodies_ids} = [ map { $_->id } @bodies];
+    $c->stash->{bodies_ids} = [ map { $_ } keys %bodies ];
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{category_extras_hidden}  = \%category_extras_hidden;
