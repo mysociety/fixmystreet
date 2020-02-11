@@ -640,10 +640,10 @@ function construct_layer_options(options, protocol) {
 }
 
 function construct_layer_class(options) {
-    var layer_class = options.class || OpenLayers.Layer.VectorAsset;
-    if (options.usrn || options.road) {
-        layer_class = OpenLayers.Layer.VectorNearest;
-    }
+    var default_class = (options.usrn || options.road) ? OpenLayers.Layer.VectorNearest : OpenLayers.Layer.VectorAsset;
+
+    var layer_class = options.class || default_class;
+
     return layer_class;
 }
 
