@@ -4,6 +4,13 @@ Hello [% report.name %],
 
 Your report to [% report.body %] has been logged on [% site_name %].
 
+[% IF report.non_public ~%]
+It has been marked as private and will not be visible to the general public;
+you may view it using the link below, or if you sign in using the email address
+associated with the report.
+
+[% END ~%]
+
 [% IF cobrand.owns_problem( report ) %]
 [% TRY %][% INCLUDE '_council_reference.txt' problem=report %][% CATCH file %][% END %]
 [% END %]
