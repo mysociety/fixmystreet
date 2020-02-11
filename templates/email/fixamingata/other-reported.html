@@ -25,7 +25,7 @@ rapporter, så kommer rapporten istället att skickas till [% report.body %].
 [% END %]
   </p>
   <p style="margin: 20px auto; text-align: center">
-  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.url %]">Visa min rapport</a>
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.view_url %]">Visa min rapport</a>
   </p>
   [% end_padded_box | safe %]
 </th>

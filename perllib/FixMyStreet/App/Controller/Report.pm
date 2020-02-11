@@ -160,7 +160,16 @@ sub load_problem_or_display_error : Private {
         $c->stash->{problem} = $problem;
         my $permissions = $c->stash->{_permissions} = $c->forward( 'check_has_permission_to',
             [ qw/report_inspect report_edit_category report_edit_priority report_mark_private / ] );
-        if ( !$c->user || ($c->user->id != $problem->user->id && !($permissions->{report_inspect} || $permissions->{report_mark_private})) ) {
+
+        # If someone has clicked a unique token link in an email to them
+        my $from_email = $c->sessionid && $c->flash->{alert_to_reporter} && $c->flash->{alert_to_reporter} == $problem->id;
+
+        my $allowed = 0;
+        $allowed = 1 if $from_email;
+        $allowed = 1 if $c->user_exists && $c->user->id == $problem->user->id;
+        $allowed = 1 if $permissions->{report_inspect} || $permissions->{report_mark_private};
+
+        unless  ($allowed) {
             my $url = '/auth?r=report/' . $problem->id;
             $c->detach(
                 '/page_error_403_access_denied',

@@ -20,7 +20,7 @@ of report, so it will instead be sent to [% report.body %].
 
 It is available to view at:
 
-[% cobrand.base_url_for_report(report) %][% report.url %]
+[% cobrand.base_url_for_report(report) %][% report.view_url %]
 
 Your report has the title:
 

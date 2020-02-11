@@ -525,6 +525,31 @@ sub tokenised_url {
     return "/M/". $token->token;
 }
 
+has view_token => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $token = FixMyStreet::App->model('DB::Token')->create({
+            scope => 'alert_to_reporter',
+            data => { id => $self->id }
+        });
+    },
+);
+
+=head2 view_url
+
+Return a url for this problem report that will always show it
+(even if e.g. a private report) but does not log the user in.
+
+=cut
+
+sub view_url {
+    my $self = shift;
+    return $self->url unless $self->non_public;
+    return "/R/" . $self->view_token->token;
+}
+
 =head2 is_hidden
 
 Returns 1 if the problem is in an hidden state otherwise 0.

@@ -23,7 +23,7 @@ using the email address associated with the report.</p>
 [% TRY %][% INCLUDE '_council_reference.html' problem=report %][% CATCH file %][% END %]
 [% END %]
   <p style="margin: 20px auto; text-align: center">
-  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.url %]">View my report</a>
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.view_url %]">View my report</a>
   </p>
   [% end_padded_box | safe %]
 </th>

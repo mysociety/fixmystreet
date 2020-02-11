@@ -18,7 +18,7 @@ rapporter, så kommer rapporten istället att skickas till [% report.body %].
 
 Du kan se din rapport på:
 
-[% cobrand.base_url_for_report(report) %][% report.url %]
+[% cobrand.base_url_for_report(report) %][% report.view_url %]
 
 Din rapport har titeln:
 

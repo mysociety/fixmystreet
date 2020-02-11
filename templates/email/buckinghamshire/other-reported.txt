@@ -17,7 +17,7 @@ associated with the report.
 
 It is available to view at:
 
-[% cobrand.base_url_for_report(report) %][% report.url %]
+[% cobrand.base_url_for_report(report) %][% report.view_url %]
 
 Your report is at the following location:
 
