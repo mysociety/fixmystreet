@@ -1,4 +1,5 @@
 [% FILTER collapse %]
+[% category = mark_safe(category) %]
 [% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
     [% tprintf(
         loc('These will be published online for others to see, in accordance with our <a href="%s">privacy policy</a>.'),

@@ -360,6 +360,31 @@ subtest "Category extras includes description label for user" => sub {
     };
 };
 
+subtest "Category extras are correct even if category has an ampersand in it" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        for (
+          { url => '/report/new/ajax?' },
+          { url => '/report/new/category_extras?category=Potholes+%26+Road+Defects' },
+        ) {
+            my $category = "Potholes & Road Defects";
+            $contact4->update({ category => $category });
+            my $json = $mech->get_ok_json($_->{url} . '&latitude=55.952055&longitude=-3.189579');
+            my $category_extra = $json->{by_category} ? $json->{by_category}{$category}{category_extra} : $json->{category_extra};
+            contains_string($category_extra, "usrn") or diag $mech->content;
+            contains_string($category_extra, "central_asset_id");
+            lacks_string($category_extra, "USRN", "Lacks 'USRN' label");
+            lacks_string($category_extra, "Asset ID", "Lacks 'Asset ID' label");
+            contains_string($category_extra, "Size?");
+            lacks_string($category_extra, '<option value=""');
+            contains_string($category_extra, "resolve your problem quicker, by providing some extra detail", "Contains description text");
+            $contact4->update({ category => "Pothole" });
+        }
+    };
+};
+
 subtest "Category extras includes form disabling string" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'fixmystreet',

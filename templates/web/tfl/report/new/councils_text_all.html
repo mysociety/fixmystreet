@@ -1,4 +1,5 @@
 <p>
+[% category = mark_safe(category) %]
 [% UNLESS non_public_categories.$category;
 
     tprintf(

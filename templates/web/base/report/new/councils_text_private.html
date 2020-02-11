@@ -1,4 +1,5 @@
 [% FILTER collapse %]
+[% category = mark_safe(category) %]
 [% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
     [% loc('These details will never be shown online without your permission.') %]
 [% ELSE %]
