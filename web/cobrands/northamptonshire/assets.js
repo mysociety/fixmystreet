@@ -362,6 +362,29 @@ OpenLayers.Layer.NCCVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset,
     CLASS_NAME: 'OpenLayers.Layer.NCCVectorAsset'
 });
 
+OpenLayers.Layer.NCCVectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorNearest, {
+    feature_table: {},
+    initialize: function(name, options) {
+        OpenLayers.Layer.VectorNearest.prototype.initialize.apply(this, arguments);
+        this.events.register('beforefeatureadded', this, this.checkCanAddFeature);
+    },
+
+    destroyFeatures: function(features, options) {
+        OpenLayers.Layer.VectorNearest.prototype.destroyFeatures.apply(this, arguments);
+        this.feature_table = {};
+    },
+
+    checkCanAddFeature: function(obj) {
+      if (this.feature_table[obj.feature.fid]) {
+        return false;
+      }
+
+      this.feature_table[obj.feature.fid] = 1;
+    },
+
+    CLASS_NAME: 'OpenLayers.Layer.NCCVectorNearest'
+});
+
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
@@ -443,6 +466,7 @@ $.each(layers, function(index, layer) {
 // NCC roads layers which prevent report submission unless we have selected
 // an asset.
 var northants_road_defaults = $.extend(true, {}, fixmystreet.alloy_defaults, {
+    class: OpenLayers.Layer.NCCVectorNearest,
     protocol_class: OpenLayers.Protocol.Alloy,
     http_options: {
         environment: is_live ? 26 : 28
