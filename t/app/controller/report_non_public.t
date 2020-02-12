@@ -80,6 +80,8 @@ subtest "Logged email working on private report" => sub {
     my $url = $mech->get_link_from_email($email);
     like $body, qr/Your report to Oxfordshire County Council has been logged/;
     $mech->get_ok($url);
+    $mech->content_lacks('Get updates');
+    $mech->content_contains('To provide an update, please');
 };
 
 done_testing();

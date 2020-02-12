@@ -1,4 +1,10 @@
 [% UNLESS c.cobrand.updates_disallowed(problem) %]
+
+  [% IF NOT c.user_exists AND problem.non_public # Came via other-reported token or similar %]
+    <p>[% tprintf(loc('To provide an update, please <a href="%s">sign in</a>.'), '/auth?r=report/' _ problem.id) %]</p>
+
+  [% ELSE %]
+
     [% IF two_column_sidebar %]
         <button type="button" class="btn btn--provide-update js-provide-update hidden-nojs">[% loc('Provide an update') %]</button>
         <div class="hidden-js">
@@ -7,6 +13,9 @@
     [% IF two_column_sidebar %]
         </div>
     [% END %]
+
+  [% END %]
+
 [% ELSE %]
     [% TRY %][% INCLUDE 'report/_updates_disallowed_message.html' %][% CATCH file %][% END %]
 [% END %]
