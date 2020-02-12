@@ -32,4 +32,13 @@
     <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
 [% END %]
 </div>
+
+[% IF (c.user_exists OR NOT c.cobrand.social_auth_enabled) AND type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]
+<div class="form-section-preview form-section-preview--next hidden-js">
+    <button name="report_anonymously" value="yes" class="btn btn--block">[% loc('Report anonymously') %]</button>
+    <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
+    <small id="or">[% loc('or') %]</small>
+</div>
+[% END %]
+
 <!-- /report/form/user.html -->
