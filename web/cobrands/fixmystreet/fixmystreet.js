@@ -453,7 +453,7 @@ $.extend(fixmystreet.set_up, {
         }
         if (data && data.non_public) {
             $(".js-hide-if-private-category").hide();
-            $(".js-hide-if-public-category").show();
+            $(".js-hide-if-public-category").removeClass("hidden-js").show();
         } else {
             $(".js-hide-if-private-category").show();
             $(".js-hide-if-public-category").hide();
