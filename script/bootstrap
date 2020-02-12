@@ -4,4 +4,14 @@ set -e
 cd "$(dirname "$0")/.."
 
 git submodule --quiet update --init --recursive --rebase
+
+# Let's see if we can't work out where we might be running.
+if cut -d/ -f2 /proc/self/cgroup | sort -u | grep -q docker ; then
+    # Docker
+    sudo bin/install_packages docker
+else
+    # Fallback
+    sudo bin/install_packages generic
+fi
+
 bin/install_perl_modules

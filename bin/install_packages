@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+PACKAGE_FILE=conf/packages
+
+[ -n "$1" ] && PACKAGE_FILE="conf/packages.${1}"
+
+apt-get update
+
+grep -v ^# $PACKAGE_FILE | grep -v ^$ | xargs apt-get install -qq -y
+

@@ -84,6 +84,7 @@
         - Add configuration for setting Content-Security-Policy header.
         - Add banner on staging website/emails, and STAGING_FLAGS option to hide it.
         - Do not hard code site name in database fixture.
+        - Ensure OS dependencies are kept updated in development environments.
     - Open311 improvements:
         - Support use of 'private' service definition <keywords> to mark
           reports made in that category private. #2488
