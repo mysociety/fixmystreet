@@ -38,7 +38,28 @@ fixmystreet.assets.add(defaults, {
     name: "Adopted Highways"
 });
 
-fixmystreet.assets.add(defaults, {
+// This is required so that the found/not found actions are fired on category
+// select and pin move rather than just on asset select/not select.
+OpenLayers.Layer.PeterboroughVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+    initialize: function(name, options) {
+        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
+        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
+    },
+
+    CLASS_NAME: 'OpenLayers.Layer.PeterboroughVectorAsset'
+});
+
+var trees_defaults = $.extend(true, {}, defaults, {
+    class: OpenLayers.Layer.PeterboroughVectorAsset,
+    select_action: true,
+    actions: {
+        asset_found: fixmystreet.message_controller.asset_found,
+        asset_not_found: fixmystreet.message_controller.asset_not_found
+    }
+});
+
+fixmystreet.assets.add(trees_defaults, {
     http_options: {
         url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
         params: {
@@ -56,7 +77,7 @@ fixmystreet.assets.add(defaults, {
 
 var NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
 
-fixmystreet.assets.add(defaults, {
+fixmystreet.assets.add(trees_defaults, {
     http_options: {
         url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
         params: {
