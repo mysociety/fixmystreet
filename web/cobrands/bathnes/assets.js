@@ -207,15 +207,24 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     all_categories: true, // Not really, but want to allow on all but one, not stop
     no_asset_msg_id: '#js-not-a-road',
     cat_map: {
+      'Blocked drain surface': 'road',
+      'Blocked drain': 'road',
       'Damage to pavement': 'pavement',
-      'Damage to road': 'road'
+      'Damage to road': 'road',
+      'Damaged Railing, manhole, or drain cover': 'road',
+      'Damaged bollard or post': 'road',
+      'Damaged road sign': 'road',
+      'Damaged street nameplate': 'road',
+      'Faded road markings': 'road',
+      'Flooding of a road or pavement': 'road'
     },
     actions: {
         found: fixmystreet.message_controller.road_found,
         not_found: function(layer) {
             var cat = $('select#form_category').val();
-            if (cat === 'Damage to pavement' || cat === 'Damage to road') {
-                layer.fixmystreet.asset_item = layer.fixmystreet.cat_map[cat];
+            var asset_item = layer.fixmystreet.cat_map[cat];
+            if (asset_item) {
+                layer.fixmystreet.asset_item = asset_item;
                 fixmystreet.message_controller.road_not_found(layer);
             } else {
                 fixmystreet.message_controller.road_found(layer);
