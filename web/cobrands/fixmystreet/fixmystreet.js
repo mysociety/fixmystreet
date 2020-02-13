@@ -458,6 +458,11 @@ $.extend(fixmystreet.set_up, {
             $(".js-hide-if-private-category").show();
             $(".js-hide-if-public-category").hide();
         }
+        if (data && data.allow_anonymous) {
+            $('.js-show-if-anonymous').removeClass('hidden-js');
+        } else {
+            $('.js-show-if-anonymous').addClass('hidden-js');
+        }
 
         if (fixmystreet.message_controller && data && data.disable_form && data.disable_form.questions) {
             $.each(data.disable_form.questions, function(_, question) {

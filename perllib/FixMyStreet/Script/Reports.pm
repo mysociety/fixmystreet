@@ -107,7 +107,7 @@ sub send(;$) {
             $h{osm_url} .= '?m';
         }
 
-        if ( $cobrand->allow_anonymous_reports &&
+        if ( $cobrand->allow_anonymous_reports($row->category) &&
              $row->user->email eq $cobrand->anonymous_account->{'email'}
          ) {
             $h{anonymous_report} = 1;
