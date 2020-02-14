@@ -530,7 +530,7 @@ has view_token => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        my $token = FixMyStreet::App->model('DB::Token')->create({
+        my $token = FixMyStreet::DB->resultset('Token')->create({
             scope => 'alert_to_reporter',
             data => { id => $self->id }
         });
