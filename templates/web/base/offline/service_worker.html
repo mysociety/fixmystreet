@@ -6,7 +6,7 @@ SET scripts_seen = {};
 
 ~%]
 
-importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js');
+importScripts('[% version('/vendor/idb-keyval-iife.min.js') %]');
 
 const requiredOffline = [
   "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]",
