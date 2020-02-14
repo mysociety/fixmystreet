@@ -49,6 +49,10 @@ svg|g.site-logo__svg {
     @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
 }
 
+#postcodeForm .form-hint {
+    color: $primary_text;
+}
+
 .next-steps {
   margin: 0 -1em; // counteract padding on parent
   background-color: #faf7e2;
