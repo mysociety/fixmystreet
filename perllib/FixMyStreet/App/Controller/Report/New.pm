@@ -272,9 +272,11 @@ sub by_category_ajax_data : Private {
     }
 
     my $non_public = $c->stash->{non_public_categories}->{$category};
+    my $anon_button = ($c->cobrand->allow_anonymous_reports($category) eq 'button');
     my $body = {
         bodies => [ map { $_->name } @bodies ],
         $non_public ? ( non_public => JSON->true ) : (),
+        $anon_button ? ( allow_anonymous => JSON->true ) : (),
     };
 
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
@@ -984,7 +986,7 @@ sub process_report : Private {
         $c->stash->{contributing_as_anonymous_user} = $user->contributing_as('anonymous_user', $c, $c->stash->{bodies});
     }
     # This is also done in process_user, but is needed here for anonymous() just below
-    my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
+    my $anon_button = $c->cobrand->allow_anonymous_reports($params{category}) eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
         $c->stash->{contributing_as_anonymous_user} = 1;
         $c->stash->{contributing_as_body} = undef;
