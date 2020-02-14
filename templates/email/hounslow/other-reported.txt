@@ -4,6 +4,13 @@ Hello [% report.name %],
 
 Your report to [% cobrand.council_name %] has been logged on [% site_name %].
 
+[% IF report.non_public ~%]
+It has been marked as private and will not be visible to the general public;
+you may view it using the link below, or if you sign in using the email address
+associated with the report.
+
+[% END ~%]
+
 [% IF cobrand.is_council && !cobrand.owns_problem( report ) %]
 Please note that [% cobrand.council_name %] is not responsible for this type
 of report, so it will instead be sent to [% report.body %].
@@ -13,7 +20,7 @@ of report, so it will instead be sent to [% report.body %].
 
 It is available to view at:
 
-[% cobrand.base_url_for_report(report) %][% report.url %]
+[% cobrand.base_url_for_report(report) %][% report.view_url %]
 
 Your report has the title:
 

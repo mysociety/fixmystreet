@@ -28,6 +28,7 @@
         - Use category groups whenever category lists are shown. #2702
         - Display map inline with duplicate suggestions on mobile. #2668
         - Improved try again process on mobile. #2863
+        - Improve messaging/display of private reports.
     - Admin improvements:
         - Add new roles system, to group permissions and apply to users. #2483
         - Contact form emails now include user admin links.

@@ -12,11 +12,18 @@ INCLUDE '_email_top.html';
   [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
   <p style="[% p_style %]">Your report to [% report.body %] has been logged on [% site_name %].</p>
+
+[% IF report.non_public %]
+<p style="[% p_style %]">It has been marked as private and will not be visible
+to the general public; you may view it using the link below, or if you sign in
+using the email address associated with the report.</p>
+[% END %]
+
 [% IF cobrand.owns_problem( report ) %]
 [% TRY %][% INCLUDE '_council_reference.html' problem=report %][% CATCH file %][% END %]
 [% END %]
   <p style="margin: 20px auto; text-align: center">
-  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.url %]">View my report</a>
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.view_url %]">View my report</a>
   </p>
   [% end_padded_box | safe %]
 </th>

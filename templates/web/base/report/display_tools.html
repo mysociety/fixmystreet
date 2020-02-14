@@ -1,5 +1,6 @@
 <div class="shadow-wrap">
     <ul id="key-tools">
+      [% IF c.user_exists OR NOT problem.non_public %]
         [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_body( problem.bodies_str ) %]
         <li><form method="post" action="/report/[% problem.id %]/delete" id="remove-from-site-form">
             <input type="hidden" name="token" value="[% csrf_token %]">
@@ -16,6 +17,7 @@
         [% IF c.cobrand.moniker == 'fixmystreet' %]
         <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>
         [% END %]
+      [% END %]
       [% IF c.cobrand.moniker == 'zurich' %]
         <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems on the map' ) %]</a></li>
       [% ELSE %]

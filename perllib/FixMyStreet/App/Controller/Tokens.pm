@@ -185,9 +185,7 @@ sub alert_to_reporter : Path('/R') {
     my $problem = $c->model('DB::Problem')->find( { id => $problem_id } )
       || $c->detach('token_error');
 
-    $c->detach('token_too_old') if $auth_token->created < DateTime->now->subtract( months => 1 );
-
-    $c->flash->{alert_to_reporter} = 1;
+    $c->flash->{alert_to_reporter} = $problem->id;
     my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
     $c->res->redirect($report_uri);
 }
