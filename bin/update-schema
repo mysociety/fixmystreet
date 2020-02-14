@@ -212,6 +212,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0071' if table_exists('manifest_theme');
     return '0070' if column_like('alert_type', "ref='new_problems'", 'head_title', '{{SITE_NAME}}');
     return '0069' if constraint_contains('admin_log_object_type_check', 'template');
     return '0068' if column_exists('users', 'oidc_ids');

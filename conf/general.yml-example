@@ -52,13 +52,10 @@ STAGING_SITE: 1
 #   this to 1 if you want a staging site to route reports as normal.
 # - skip_checks: Manual testing of multiple cobrands can be made easier by
 #   skipping some checks they have in them, if this variable is set.
-# - enable_appcache: Whether the appcache should be active. NB: Only affects
-#     superuser sessions.
 STAGING_FLAGS:
   send_reports: 0
   skip_checks: 0
   hide_staging_banner: 0
-  enable_appcache: 0
 
 # What to use as front page/alert example places placeholder
 # Defaults to High Street, Main Street

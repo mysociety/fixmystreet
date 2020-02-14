@@ -449,6 +449,7 @@ create table admin_log (
       or object_type = 'body'
       or object_type = 'category'
       or object_type = 'role'
+      or object_type = 'manifesttheme'
     ),
     object_id integer not null,
     action text not null,
@@ -561,4 +562,14 @@ CREATE TABLE state (
     label text not null unique,
     type text not null check (type = 'open' OR type = 'closed' OR type = 'fixed'),
     name text not null unique
+);
+
+CREATE TABLE manifest_theme (
+    id serial not null primary key,
+    cobrand text not null unique,
+    name text not null,
+    short_name text not null,
+    background_colour text,
+    theme_colour text,
+    images text ARRAY
 );

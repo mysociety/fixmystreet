@@ -348,13 +348,12 @@ STAGING_FLAGS:
   send_reports: 0
   skip_checks: 1
   hide_staging_banner: 1
-  enable_appcache: 0
 </pre>
     </div>
           <p>
             Any reports created will now be sent to the email of the reporter
-            and <em>not</em> the body's; any location checks are skipped, and
-            we won't ever use appcache. Great for testing!
+            and <em>not</em> the body's; and any location checks are skipped.
+            Great for testing!
           </p>
   </dd>
 

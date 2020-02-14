@@ -1,6 +1,7 @@
 [% SET start = c.config.ADMIN_BASE_URL IF admin %]
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="manifest" href="/.well-known/manifest.webmanifest">
 
 [% IF csrf_token %]
   <meta content="[% csrf_token %]" name="csrf-token" />
@@ -13,6 +14,14 @@
     window.Modernizr=function(e,t,n){function r(e){p.cssText=e}function o(e,t){return typeof e===t}var a,i,c,l="2.8.3",s={},u=t.documentElement,d="modernizr",f=t.createElement(d),p=f.style,m=({}.toString,{}),h=[],y=h.slice,v=function(e,n,r,o){var a,i,c,l,s=t.createElement("div"),f=t.body,p=f||t.createElement("body");if(parseInt(r,10))for(;r--;)c=t.createElement("div"),c.id=o?o[r]:d+(r+1),s.appendChild(c);return a=["&#173;",'<style id="s',d,'">',e,"</style>"].join(""),s.id=d,(f?s:p).innerHTML+=a,p.appendChild(s),f||(p.style.background="",p.style.overflow="hidden",l=u.style.overflow,u.style.overflow="hidden",u.appendChild(p)),i=n(s,e),f?s.parentNode.removeChild(s):(p.parentNode.removeChild(p),u.style.overflow=l),!!i},g=function(t){var n=e.matchMedia||e.msMatchMedia;if(n)return n(t)&&n(t).matches||!1;var r;return v("@media "+t+" { #"+d+" { position: absolute; } }",function(t){r="absolute"==(e.getComputedStyle?getComputedStyle(t,null):t.currentStyle).position}),r},b={}.hasOwnProperty;c=o(b,"undefined")||o(b.call,"undefined")?function(e,t){return t in e&&o(e.constructor.prototype[t],"undefined")}:function(e,t){return b.call(e,t)};for(var E in m)c(m,E)&&(i=E.toLowerCase(),s[i]=m[E](),h.push((s[i]?"":"no-")+i));return r(""),f=a=null,s._version=l,s.mq=g,s.testStyles=v,s}(this,this.document);
     var fixmystreet=fixmystreet||{};fixmystreet.page="[% page %]";fixmystreet.cobrand="[% c.cobrand.moniker %]";
     (function(a){a=a.documentElement;a.className=a.className.replace(/\bno-js\b/,"js");var b=-1<a.className.indexOf("ie8");b=Modernizr.mq("(min-width: 48em)")||b?"desktop":"mobile";"IntersectionObserver"in window&&(a.className+=" lazyload");"mobile"==b&&(a.className+=' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" %]')})(document);
+</script>
+
+<script nonce="[% csp_nonce %]">
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js');
+    });
+}
 </script>
 
 [% IF robots %]

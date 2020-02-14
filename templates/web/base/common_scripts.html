@@ -46,6 +46,7 @@ IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
     END;
     IF c.user.has_body_permission_to('planned_reports');
         scripts.push(
+            'https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js',
             version('/cobrands/fixmystreet/offline.js'),
         );
     END;

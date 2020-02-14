@@ -585,7 +585,7 @@ sub get_ok_json {
 
     # check that the content-type of response is correct
     croak "Response was not JSON"
-      unless $res->header('Content-Type') =~ m{^application/json\b};
+      unless $res->header('Content-Type') =~ m{^application/(?:[a-z]+\+)?json\b};
 
     return decode_json( $res->content );
 }

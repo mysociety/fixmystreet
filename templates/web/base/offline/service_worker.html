@@ -1,0 +1,104 @@
+[%
+SET bodyclass = "offlinepage"; # For selection of scripts
+PROCESS 'common_scripts.html';
+SET offline_html = version('../templates/web/base/offline/fallback.html', '/offline/fallback');
+SET scripts_seen = {};
+
+~%]
+
+importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js');
+
+const requiredOffline = [
+  "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]",
+  "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]",
+  "[% version('/vendor/OpenLayers/theme/default/style.css') %]",
+  "[% version('/vendor/fancybox/jquery.fancybox-1.3.4.css') %]",
+  [%
+  FOR script IN scripts;
+    NEXT IF scripts_seen.${script};
+    scripts_seen.${script} = 1;
+    ~%]
+    "[%- script %]",
+  [% END %]
+  "[% offline_html %]"
+];
+
+const staticCache = 'static';
+// const pageCache = 'pages';
+
+addEventListener('install', function(evt) {
+  evt.waitUntil(precache());
+});
+
+async function precache() {
+  const cache = await caches.open(staticCache);
+  return cache.addAll(requiredOffline);
+}
+
+addEventListener('fetch',  fetchEvent => {
+  const request = fetchEvent.request;
+  const url = new URL(request.url);
+
+  if (url.origin !== location.origin) {
+      return;
+  }
+
+  // Handle inspection form submission if offline...
+  if (request.method === 'POST' && RegExp('/report/\\d+$').test(url)) {
+    fetchEvent.respondWith(async function() {
+      const fetchPromise = fetch(request.clone());
+      try {
+        return await fetchPromise;
+      }
+      catch {
+        fetchEvent.waitUntil(async function() {
+          var text = await request.text();
+          let formData = new URLSearchParams(text);
+          formData.set('save', 2);
+          formData.set('saved_at', Math.floor(+new Date() / 1000));
+          formData = formData.toString();
+
+          var data = await idbKeyval.get('offlineData') || { cachedReports: {}, forms: [] };
+          var forms = data.forms;
+          if (!forms.length || formData != forms[forms.length - 1][1]) {
+            forms.push([request.url, formData]);
+          }
+          return idbKeyval.set('offlineData', data);
+        }());
+
+        return Response.redirect('/my/planned?saved=1');
+      };
+    }());
+  }
+
+  if (request.method !== "GET") {
+      return;
+  }
+
+  fetchEvent.respondWith(async function() {
+    if (request.mode === 'navigate') {
+      const fetchPromise = fetch(request);
+
+// For now, only save pages manually for inspectors
+//      fetchEvent.waitUntil(async function() {
+//        const responseCopy = (await fetchPromise).clone();
+//        const cache = await caches.open(pageCache);
+//        await responseCopy.ok ? cache.put(request, responseCopy) : cache.delete(request);
+//      }());
+
+      try {
+        return await fetchPromise;
+      }
+      catch {
+        let cached = await caches.match(request) || await caches.match("[% offline_html %]");
+        return cached || offlineResponse();
+      }
+    } else {
+      const responseFromCache = await caches.match(request);
+      return responseFromCache || fetch(request);
+    }
+  }());
+});
+
+var offlineResponse = () =>
+    new Response('Service Unavailable', { status: 503, statusText: 'Service Unavailable', headers: { 'Content-Type': 'text/html' }});

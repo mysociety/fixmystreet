@@ -60,18 +60,6 @@ FixMyStreet::override_config {
             is $mech->res->previous, undef, 'No redirect';
         }
     };
-
-    subtest 'LOGIN_REQUIRED = 1 404s blacklisted URLs' => sub {
-        my @blacklist = (
-            '/offline/appcache',
-        );
-
-        foreach my $url (@blacklist) {
-            $mech->get($url);
-            ok !$mech->res->is_success(), "want a bad response";
-            is $mech->res->code, 404, "got 404";
-        }
-    };
 };
 
 subtest "check_login_disallowed cobrand hook" => sub {
