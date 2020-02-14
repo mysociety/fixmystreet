@@ -1,11 +1,1 @@
-[%~
-IF bodyclass.match('mappage');
-    scripts.push(
-        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
-        version('/cobrands/fixmystreet/assets.js'),
-        version('/cobrands/westminster/assets.js'),
-        version('/cobrands/tfl/assets.js'),
-    );
-END
-%]
-
+[% PROCESS 'footer_extra_js_base.html' cobrand_js=1 tfl=1 %]

@@ -1,13 +1,1 @@
-[% scripts.push(
-    version('/cobrands/fixmystreet-uk-councils/js.js'),
-) %]
-[%~
-IF bodyclass.match('mappage');
-    scripts.push(
-        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
-        version('/cobrands/fixmystreet/assets.js'),
-        version('/cobrands/highways/assets.js'),
-        version('/cobrands/tfl/assets.js'),
-    );
-END
-%]
+[% PROCESS 'footer_extra_js_base.html' highways=1 tfl=1 %]

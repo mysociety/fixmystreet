@@ -1,7 +1,1 @@
-[%~
-IF bodyclass.match('mappage');
-    scripts.push(
-        version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
-    );
-END
-%]
+[% PROCESS 'footer_extra_js_base.html' highways=1 validation=1 %]

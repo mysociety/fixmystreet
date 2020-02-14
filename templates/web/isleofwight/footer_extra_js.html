@@ -1,9 +1,6 @@
+[% PROCESS 'footer_extra_js_base.html' cobrand_js=1 %]
 [% IF bodyclass.match('mappage');
     scripts.push(
-        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
-        version('/cobrands/fixmystreet/assets.js'),
-        version('/cobrands/fixmystreet-uk-councils/js.js'),
         version('/cobrands/isleofwight/js.js'),
-        version('/cobrands/isleofwight/assets.js'),
     );
 END %]

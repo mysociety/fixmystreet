@@ -1,13 +1,4 @@
-[%~
-IF bodyclass.match('mappage');
-    scripts.push(
-        version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
-        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
-        version('/cobrands/fixmystreet/assets.js'),
-        version('/cobrands/bathnes/assets.js'),
-    );
-END
-%]
+[% PROCESS 'footer_extra_js_base.html' highways=1 cobrand_js=1 validation=1 %]
 [%~
 SET council_area_id = c.cobrand.council_area_id;
 IF c.user_exists AND ((c.user.from_body AND c.user.from_body.areas.$council_area_id) OR c.user.is_superuser);

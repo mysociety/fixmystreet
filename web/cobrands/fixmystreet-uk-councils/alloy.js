@@ -122,7 +122,7 @@ OpenLayers.Strategy.Alloy = OpenLayers.Class(OpenLayers.Strategy.FixMyStreet, {
 
 });
 
-fixmystreet.assets.alloy_defaults = {
+fixmystreet.alloy_defaults = {
     http_options: {
       base: "https://alloy-api-tile01.yotta.co.uk/api/render-layer/tile/${layerid}/${environment}/${layerVersion}/${z}/${x}/${y}",
     },
