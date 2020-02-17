@@ -9,3 +9,10 @@ IF bodyclass.match('mappage');
   );
 END
 %]
+[%~
+IF c.user_exists AND ((c.user.from_body AND c.user.from_body.name == 'TfL') OR c.user.is_superuser);
+    scripts.push(
+        version('/cobrands/tfl/staff.js'),
+    );
+END
+%]

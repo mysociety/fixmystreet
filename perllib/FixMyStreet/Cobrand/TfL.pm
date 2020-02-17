@@ -22,6 +22,19 @@ sub council_url { return 'tfl'; }
 sub area_types  { [ 'LBO' ] }
 sub is_council { 0 }
 
+sub borough_for_report {
+    my ($self, $problem) = @_;
+
+    # Get relevant area ID from report
+    my %areas = map { $_ => 1 } split ',', $problem->areas;
+    my ($council_match) = grep { $areas{$_} } @{ $self->council_area_id };
+    return unless $council_match;
+
+    # Look up area names if not already fetched
+    my $areas = $self->{c}->stash->{children} ||= $self->fetch_area_children;
+    return $areas->{$council_match}{name};
+}
+
 sub abuse_reports_only { 1 }
 sub send_questionnaires { 0 }
 
