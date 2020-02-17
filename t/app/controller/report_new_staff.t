@@ -18,7 +18,7 @@ for my $body (
 
 # Let's make some contacts to send things to!
 $mech->create_contact_ok( body_id => $body_ids{2651}, category => 'Street lighting', email => 'highways@example.com' );
-$mech->create_contact_ok( body_id => $body_ids{2651}, category => 'Trees', email => 'trees@example.com' );
+my $edin_trees = $mech->create_contact_ok( body_id => $body_ids{2651}, category => 'Trees', email => 'trees@example.com' );
 $mech->create_contact_ok( body_id => $body_ids{2482}, category => 'Trees', email => 'trees@example.com' );
 $mech->create_contact_ok( body_id => $body_ids{2237}, category => 'Trees', email => 'trees-2247@example.com' );
 
@@ -223,5 +223,35 @@ for my $test (
         ok !$extra_details->{contribute_as}, 'no contribute as section for other council';
     };
 }
+
+subtest 'staff-only categories when reporting' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        MAPIT_TYPES => ['UTA'],
+    }, sub {
+        $inspector->update({ is_superuser => 1 });
+        $mech->log_in_ok('inspector@example.org');
+
+        $mech->get_ok('/admin/body/' . $body_ids{2651} . '/Trees');
+        $mech->submit_form_ok({ with_fields => { state => 'staff' } }, 'mark Trees as staff-only');
+        $edin_trees->discard_changes;
+        is $edin_trees->state, 'staff', 'category is staff only';
+
+        my $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+        is_deeply [ sort keys %{$extra_details->{by_category}} ], [ 'Street lighting', 'Trees' ], 'Superuser can see staff-only category';
+
+        $inspector->update({ is_superuser => 0 });
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+        is_deeply [ sort keys %{$extra_details->{by_category}} ], [ 'Street lighting', 'Trees' ], 'Body staff user can see staff-only category';
+
+        $inspector->update({ from_body => $body_ids{2482} });
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+        is_deeply [ sort keys %{$extra_details->{by_category}} ], [ 'Street lighting' ], 'Different body staff user cannot see staff-only category';
+
+        $mech->log_out_ok;
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+        is_deeply [ sort keys %{$extra_details->{by_category}} ], [ 'Street lighting' ], 'Normal user cannot see staff-only category';
+    };
+};
 
 done_testing;

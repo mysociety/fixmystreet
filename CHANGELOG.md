@@ -43,6 +43,7 @@
         - Allow report as another user with only name.
         - Allow staff users to sign other people up for alerts.
         - Group categories on body page. #2850
+        - Add a new "staff" contact state.
     - New features:
         - Categories can be listed under more than one group #2475
         - OpenID Connect login support. #2523

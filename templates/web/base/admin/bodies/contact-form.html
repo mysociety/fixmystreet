@@ -40,6 +40,11 @@
             <label for="state-deleted">[% loc('Deleted') %]</label>
             <p class="form-hint" id="state-deleted-hint">[% loc('Prevent new reports from using this category, <em>and</em> also remove it from map filters.') %]</p>
         </div>
+        <div class="form-check form-check--inline">
+            <input type="radio" name="state" id="state-staff" aria-describedby="state-staff-hint" value="staff"[% ' checked' IF contact.state == 'staff' %]>
+            <label for="state-staff">[% loc('Staff only') %]</label>
+            <p class="form-hint" id="state-staff-hint">[% loc('Only staff users will be able to add reports in this category.') %]</p>
+        </div>
     </fieldset>
 
     <p class="form-check">

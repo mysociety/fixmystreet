@@ -690,11 +690,7 @@ sub setup_categories_and_bodies : Private {
 
     $c->cobrand->call_hook(munge_report_new_bodies => \%bodies);
 
-    my $contacts                #
-      = $c                      #
-      ->model('DB::Contact')    #
-      ->active
-      ->search( { 'me.body_id' => [ keys %bodies ] }, { prefetch => 'body' } );
+    my $contacts = $c->model('DB::Contact')->for_new_reports($c, \%bodies);
     my @contacts = $c->cobrand->categories_restriction($contacts)->all_sorted;
 
     $c->cobrand->call_hook(munge_report_new_contacts => \@contacts);

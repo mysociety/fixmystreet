@@ -17,12 +17,37 @@ Filter down to not deleted contacts (so active or inactive).
 
 sub not_deleted {
     my $rs = shift;
-    return $rs->search( { $rs->me('state') => { '!=' => 'deleted' } } );
+    return $rs->search( { $rs->me('state') => { -not_in => [ 'deleted', 'staff' ] } } );
 }
 
 sub active {
     my $rs = shift;
     $rs->search( { $rs->me('state') => [ 'unconfirmed', 'confirmed' ] } );
+}
+
+sub for_new_reports {
+    my ($rs, $c, $bodies) = @_;
+    my $params = {
+        $rs->me('body_id') => [ keys %$bodies ],
+    };
+
+    if ($c->user_exists && $c->user->from_body) {
+        # Everything normal OR staff state in the user body
+        $params->{'-or'} = [
+            $rs->me('state') => [ 'unconfirmed', 'confirmed' ],
+            {
+                $rs->me('body_id') => $c->user->from_body->id,
+                $rs->me('state') => 'staff',
+            },
+        ];
+    } elsif ($c->user_exists && $c->user->is_superuser) {
+        # Everything normal OR any staff states
+        $params->{$rs->me('state')} = [ 'unconfirmed', 'confirmed', 'staff' ];
+    } else {
+        $params->{$rs->me('state')} = [ 'unconfirmed', 'confirmed' ];
+    }
+
+    $rs->search($params, { prefetch => 'body' });
 }
 
 sub translated {
