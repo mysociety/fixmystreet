@@ -50,50 +50,46 @@ OpenLayers.Layer.PeterboroughVectorAsset = OpenLayers.Class(OpenLayers.Layer.Vec
     CLASS_NAME: 'OpenLayers.Layer.PeterboroughVectorAsset'
 });
 
+var NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
+
 var trees_defaults = $.extend(true, {}, defaults, {
     class: OpenLayers.Layer.PeterboroughVectorAsset,
     select_action: true,
     actions: {
         asset_found: fixmystreet.message_controller.asset_found,
         asset_not_found: fixmystreet.message_controller.asset_not_found
+    },
+    http_options: {
+        url: "https://tilma.staging.mysociety.org/mapserver/peterborough"
+    },
+    attributes: {
+        tree_code: 'TREE_CODE'
+    },
+    asset_id_field: 'TREE_CODE',
+    asset_group: 'Trees',
+    relevant: function(options) {
+        return options.group === 'Trees' && options.category !== NEW_TREE_CATEGORY_NAME;
     }
 });
 
 fixmystreet.assets.add(trees_defaults, {
     http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
         params: {
             TYPENAME: "tree_groups"
         }
     },
-    asset_id_field: 'TREE_CODE',
-    attributes: {
-        tree_code: 'TREE_CODE'
-    },
     asset_type: 'area',
-    asset_group: 'Trees',
     asset_item: 'tree group'
 });
 
-var NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
-
 fixmystreet.assets.add(trees_defaults, {
     http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
         params: {
             TYPENAME: "tree_points"
         }
     },
-    asset_id_field: 'TREE_CODE',
-    attributes: {
-        tree_code: 'TREE_CODE'
-    },
     asset_type: 'spot',
-    asset_group: 'Trees',
-    asset_item: 'tree',
-    relevant: function(options) {
-        return options.group === 'Trees' && options.category !== NEW_TREE_CATEGORY_NAME;
-    }
+    asset_item: 'tree'
 });
 
 // We don't want to plant trees where the existing trees are, so add a
@@ -110,7 +106,8 @@ fixmystreet.assets.add(defaults, {
     asset_type: 'spot',
     asset_category: NEW_TREE_CATEGORY_NAME,
     asset_item: 'tree',
-    disable_pin_snapping: true
+    disable_pin_snapping: true,
+    asset_item_message: ''
 });
 
 })();
