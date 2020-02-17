@@ -577,15 +577,15 @@ function ncc_match_prow_type(f, styleId) {
 }
 
 function ncc_prow_is_fp(f) {
-    return ncc_match_prow_type(f, 1454);
+    return ncc_match_prow_type(f, is_live ? 6190 : 1454);
 }
 
 function ncc_prow_is_bw(f) {
-    return ncc_match_prow_type(f, 1453);
+    return ncc_match_prow_type(f, is_live ? 6192 : 1453);
 }
 
 function ncc_prow_is_boat(f) {
-    return ncc_match_prow_type(f, 1455);
+    return ncc_match_prow_type(f, is_live ? 6193: 1455);
 }
 
 var rule_footpath = new OpenLayers.Rule({
@@ -627,8 +627,8 @@ prow_style.addRules([rule_footpath, rule_boat, rule_bridleway]);
 
 fixmystreet.assets.add(northants_road_defaults, {
     http_options: {
-      layerid: 310,
-      layerVersion: '310.1-',
+      layerid: is_live ? 1110 : 310,
+      layerVersion: is_live ? '1110.1-' : '310.1-',
     },
     stylemap: new OpenLayers.StyleMap({
         'default': prow_style
