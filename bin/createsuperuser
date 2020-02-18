@@ -30,4 +30,4 @@ BEGIN {
 use FixMyStreet;
 use FixMyStreet::Script::CreateSuperuser;
 
-FixMyStreet::Script::CreateSuperuser::createsuperuser();
+exit FixMyStreet::Script::CreateSuperuser::createsuperuser(@ARGV);
