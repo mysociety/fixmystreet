@@ -105,7 +105,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # When using the mySociety box, just mount the local perl modules and run `script/update`
   # For any other box, just run the full setup process.
-  if "#{baseBox}" == "mysociety/fixmystreet"
+  if "#{baseBox}" == "mysociety/fixmystreet" || "#{baseBox}" == "fms-local"
     config.vm.provision "shell", run: "always", inline: $mount_modules
     config.vm.provision "shell", run: "always", inline: $update
   else
