@@ -1554,6 +1554,8 @@ sub check_for_category : Private {
 
     my $category = $c->get_param('category') || $c->stash->{report}->category || '';
     $category = '' if $category eq _('Loading...') || $category eq _('-- Pick a category --');
+    # Just check to see if the filter had an option
+    $category ||= $c->get_param('filter_category') || '';
     $c->stash->{category} = $category;
 
     # Bit of a copy of set_report_extras, because we need the results here, but
