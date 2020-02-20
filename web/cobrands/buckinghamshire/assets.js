@@ -19,7 +19,6 @@ var defaults = {
       'buckinghamshire': 2.116670900008467,
       'fixmystreet': 4.777314267158508
     },
-    min_resolution: 0.00001,
     asset_id_field: 'central_as',
     attributes: {
         central_asset_id: 'central_as',

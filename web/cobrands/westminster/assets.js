@@ -60,7 +60,6 @@ var defaults = {
     },
     asset_type: 'spot',
     max_resolution: 4.777314267158508,
-    min_resolution: 0.5971642833948135,
     asset_id_field: 'central_asset_id',
     srsName: "EPSG:4326",
     body: "Westminster City Council",

@@ -11,7 +11,6 @@ var options = {
         'bristol': 0.33072982812632296,
         'fixmystreet': 4.777314267158508
     },
-    min_resolution: 0.00001,
     asset_type: 'spot',
     body: "Bristol City Council",
     srsName: "EPSG:27700",

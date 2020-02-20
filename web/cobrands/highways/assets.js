@@ -18,7 +18,6 @@ var defaults = {
     // this covers zoomed right out on Cumbrian sections of
     // the M6
     max_resolution: 20,
-    min_resolution: 0.5971642833948135,
     srsName: "EPSG:900913",
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
