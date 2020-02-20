@@ -59,7 +59,7 @@ var trees_defaults = $.extend(true, {}, defaults, {
         asset_not_found: fixmystreet.message_controller.asset_not_found
     },
     http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/peterborough"
+        url: "https://tilma.mysociety.org/mapserver/peterborough"
     },
     attributes: {
         tree_code: 'TREE_CODE'
@@ -96,7 +96,7 @@ fixmystreet.assets.add(trees_defaults, {
 // The new tree request category is disabled in the other tree point layer.
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/peterborough",
+        url: "https://tilma.mysociety.org/mapserver/peterborough",
         params: {
             TYPENAME: "tree_points"
         }
