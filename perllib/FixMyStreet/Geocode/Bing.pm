@@ -38,6 +38,7 @@ sub string {
     $url .= '&userLocation=' . $params->{centre} if $params->{centre};
     $url .= '&c=' . $params->{bing_culture} if $params->{bing_culture};
 
+    $c->stash->{geocoder_url} = $url;
     my $js = FixMyStreet::Geocode::cache('bing', $url, 'key=' . FixMyStreet->config('BING_MAPS_API_KEY'));
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };

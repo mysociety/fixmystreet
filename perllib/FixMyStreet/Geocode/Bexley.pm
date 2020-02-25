@@ -23,6 +23,8 @@ sub string {
     my $js = query_layer($s);
     return $osm unless $js && @{$js->{features}};
 
+    $c->stash->{geocoder_url} = $s;
+
     my ( $error, @valid_locations, $latitude, $longitude, $address );
     foreach (sort { $a->{properties}{ADDRESS} cmp $b->{properties}{ADDRESS} } @{$js->{features}}) {
         my @lines = @{$_->{geometry}{coordinates}};

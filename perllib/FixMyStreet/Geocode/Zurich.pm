@@ -97,6 +97,7 @@ sub string {
     my $cache_dir = path(FixMyStreet->config('GEO_CACHE'), 'zurich')->absolute(FixMyStreet->path_to());
     my $cache_file = $cache_dir->child(md5_hex($s));
     my $result;
+    $c->stash->{geocoder_url} = $s;
     if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
         $result = retrieve($cache_file);
     } else {
