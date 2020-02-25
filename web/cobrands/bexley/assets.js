@@ -91,7 +91,7 @@ fixmystreet.assets.add(road_defaults, {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/bexley",
+        url: "https://tilma.mysociety.org/mapserver/bexley",
         params: {
             TYPENAME: "Trees"
         }
