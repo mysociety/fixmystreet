@@ -261,6 +261,9 @@ subtest 'check category, status and extra filtering works on /around' => sub {
         $mech->get_ok( '/around?filter_category=Pothole&bbox=' . $bbox );
         $mech->content_contains('<option value="Pothole" selected>');
         $mech->content_contains('<optgroup label="Environment">');
+
+        $mech->get_ok( '/around?filter_group=Environment&bbox=' . $bbox );
+        $mech->content_contains('<option value="Flytipping" selected>');
     };
 
     $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Pothole&bbox=' . $bbox );
