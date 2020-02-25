@@ -13,7 +13,8 @@ OpenLayers.Layer.MasterMap = OpenLayers.Class(OpenLayers.Layer.BingUK, {
 
         var urls = [];
         var servers = [ '', 'a.', 'b.', 'c.' ];
-        var base = "//{S}tilma.mysociety.org/mastermap/${z}/${x}/${y}.png";
+        var layer = fixmystreet.staging ? 'mastermap-staging' : 'mastermap';
+        var base = "//{S}tilma.mysociety.org/" + layer + "/${z}/${x}/${y}.png";
         for (var i=0; i < servers.length; i++) {
             urls.push( base.replace('{S}', servers[i]) );
         }

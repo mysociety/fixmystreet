@@ -4,9 +4,10 @@ if (!fixmystreet.maps) {
     return;
 }
 
+
 var defaults = {
     http_options: {
-        url: "https://tilma.mysociety.org/mapserver/peterborough",
+        url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/peterborough" : "https://tilma.mysociety.org/mapserver/peterborough",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
@@ -58,9 +59,6 @@ var trees_defaults = $.extend(true, {}, defaults, {
         asset_found: fixmystreet.message_controller.asset_found,
         asset_not_found: fixmystreet.message_controller.asset_not_found
     },
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/peterborough"
-    },
     attributes: {
         tree_code: 'TREE_CODE'
     },
@@ -96,7 +94,6 @@ fixmystreet.assets.add(trees_defaults, {
 // The new tree request category is disabled in the other tree point layer.
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: "https://tilma.mysociety.org/mapserver/peterborough",
         params: {
             TYPENAME: "tree_points"
         }

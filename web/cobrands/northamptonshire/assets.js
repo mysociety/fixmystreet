@@ -4,10 +4,7 @@ if (!fixmystreet.maps) {
     return;
 }
 
-var is_live = false;
-if ( location.hostname === 'www.fixmystreet.com' || location.hostname == 'fixmystreet.northamptonshire.gov.uk' ) {
-    is_live = true;
-}
+var is_live = !fixmystreet.staging;
 
 var layers = [
   /*
