@@ -49,6 +49,7 @@ sub string {
 
     $url .= '&components=' . $components if $components;
 
+    $c->stash->{geocoder_url} = $url;
     my $args = 'key=' . FixMyStreet->config('GOOGLE_MAPS_API_KEY');
     my $js = FixMyStreet::Geocode::cache('google', $url, $args, qr/"status"\s*:\s*"(OVER_QUERY_LIMIT|REQUEST_DENIED|INVALID_REQUEST|UNKNOWN_ERROR)"/);
     if (!$js) {

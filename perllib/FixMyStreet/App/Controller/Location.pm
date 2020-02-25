@@ -6,6 +6,7 @@ BEGIN {extends 'Catalyst::Controller'; }
 
 use Encode;
 use FixMyStreet::Geocode;
+use Try::Tiny;
 use Utils;
 
 =head1 NAME
@@ -107,6 +108,25 @@ sub determine_location_from_pc : Private {
     # pass errors back to the template
     $c->stash->{location_error_pc_lookup} = 1;
     $c->stash->{location_error} = $error;
+
+    # Log failure in a log db
+    try {
+        my $dbfile = FixMyStreet->path_to('../data/analytics.sqlite');
+        my $db = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef) or die "$DBI::errstr\n";
+        my $sth = $db->prepare("INSERT INTO location_searches_with_no_results
+            (datetime, cobrand, geocoder, url, user_input)
+            VALUES (?, ?, ?, ?, ?)") or die $db->errstr . "\n";
+        my $rv = $sth->execute(
+            POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time())),
+            $c->cobrand->moniker,
+            $c->cobrand->get_geocoder(),
+            $c->stash->{geocoder_url},
+            $pc,
+        );
+    } catch {
+        $c->log->debug("Unable to log to analytics.sqlite: $_");
+    };
+
     return;
 }
 

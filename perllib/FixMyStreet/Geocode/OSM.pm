@@ -47,6 +47,7 @@ sub string {
         if $params->{country};
     $url .= join('&', map { "$_=$query_params{$_}" } sort keys %query_params);
 
+    $c->stash->{geocoder_url} = $url;
     my $js = FixMyStreet::Geocode::cache('osm', $url);
     if (!$js) {
         return { error => _('Sorry, we could not find that location.') };
