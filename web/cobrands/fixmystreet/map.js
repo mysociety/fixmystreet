@@ -3,7 +3,7 @@ var fixmystreet = fixmystreet || {};
 (function(){
 
     var map_data = document.getElementById('js-map-data'),
-        map_keys = [ 'area', 'latitude', 'longitude', 'zoomToBounds', 'zoom', 'pin_prefix', 'pin_new_report_colour', 'numZoomLevels', 'zoomOffset', 'map_type', 'key', 'bodies' ],
+        map_keys = [ 'area', 'latitude', 'longitude', 'zoomToBounds', 'zoom', 'pin_prefix', 'pin_new_report_colour', 'numZoomLevels', 'zoomOffset', 'map_type', 'key', 'bodies', 'staging' ],
         numeric = { zoom: 1, numZoomLevels: 1, zoomOffset: 1, id: 1 },
         bool = { draggable: 1 },
         pin_keys = [ 'lat', 'lon', 'colour', 'id', 'title', 'type', 'draggable' ];
