@@ -564,7 +564,10 @@ subtest "Send login email from admin for unverified email" => sub {
 };
 
 subtest "Anonymizing user from admin" => sub {
-    $mech->create_problems_for_body(4, 2237, 'Title');
+    my ($problem) = $mech->create_problems_for_body(4, 2237, 'Title');
+    $mech->create_comment_for_problem($problem, $user, $user->name, 'An update', 'f', 'confirmed', 'confirmed');
+    $mech->create_comment_for_problem($problem, $user, $user->name, '2nd update', 't', 'confirmed', 'fixed - user');
+    $mech->create_comment_for_problem($problem, $user, $user->name, '3rd update', 'f', 'unconfirmed', 'confirmed');
     my $count_p = FixMyStreet::DB->resultset('Problem')->search({ user_id => $user->id })->count;
     my $count_u = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id })->count;
     $mech->get_ok( '/admin/users/' . $user->id );
@@ -584,6 +587,12 @@ subtest "Hiding user's reports from admin" => sub {
     is $c, $count_p;
     $c = FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id, state => 'hidden' })->count;
     is $c, $count_u;
+};
+
+subtest "Hiding user with only unconfirmed updates does not error" => sub {
+    FixMyStreet::DB->resultset('Comment')->search({ user_id => $user->id, state => 'hidden' })->update({ state => 'unconfirmed' });
+    $mech->get_ok( '/admin/users/' . $user->id );
+    $mech->submit_form_ok({ button => 'hide_everywhere' });
 };
 
 subtest "Logging user out" => sub {

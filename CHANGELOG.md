@@ -69,6 +69,7 @@
         - Inconsistent display of mark private checkbox for staff users
         - Clear user categories when staff access is removed. #2815
         - Only trigger one change event on initial popstate.
+        - Fix error when hiding a user's updates with no confirmed updates. #2898
     - Development improvements:
         - Upgrade the underlying framework and a number of other packages. #2473
         - Add feature cobrand helper function.
