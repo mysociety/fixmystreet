@@ -34,7 +34,7 @@ my $body = FixMyStreet::DB->resultset("Body")->for_areas(BUCKS_AREA_ID)->first;
 die "Could not find Bucks body" unless $body;
 
 my @districts = FixMyStreet::DB->resultset("Body")->for_areas(DISTRICT_IDS)->all;
-my @district_ids = map { $_->id } @districts;
+my @district_ids = map { $_->id } grep { $_->name ne 'TfL' } @districts;
 die "Did not find all districts" unless @district_ids == 4;
 
 find_problems(TIME_OPEN_ALERT, TIME_OPEN, 'Auto-closure', 1);
