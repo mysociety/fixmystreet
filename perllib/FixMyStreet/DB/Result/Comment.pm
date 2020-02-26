@@ -292,6 +292,7 @@ sub is_latest {
         { problem_id => $self->problem_id, state => 'confirmed' },
         { order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ] }
     )->first;
+    return unless $latest_update;
     return $latest_update->id == $self->id;
 }
 
