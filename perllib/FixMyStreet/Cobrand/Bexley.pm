@@ -212,7 +212,7 @@ sub dashboard_export_problems_add_columns {
 
     my %groups;
     if ($c->stash->{body}) {
-        %groups = FixMyStreet::DB->resultset('Contact')->active->search({
+        %groups = FixMyStreet::DB->resultset('Contact')->search({
             body_id => $c->stash->{body}->id,
         })->group_lookup;
     }

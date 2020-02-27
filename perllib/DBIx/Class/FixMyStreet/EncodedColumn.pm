@@ -10,7 +10,7 @@ sub set_column {
   my $self = shift;
   if ($_[0] eq 'password') {
     my $cobrand = $self->result_source->schema->cobrand;
-    if ($cobrand->moniker eq 'tfl') {
+    if ($cobrand && $cobrand->moniker eq 'tfl') {
       if (defined $_[1]) {
         if (defined $_[2]) {
           $self->set_extra_metadata(tfl_password => $_[1]);

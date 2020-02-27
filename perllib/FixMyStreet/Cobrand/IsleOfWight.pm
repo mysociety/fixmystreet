@@ -142,7 +142,7 @@ sub munge_load_and_group_problems {
 
     return unless $where->{category};
 
-    $where->{category} = $self->expand_triage_cat_list($where->{category});
+    $where->{category} = $self->_expand_triage_cat_list($where->{category});
 }
 
 sub munge_around_filter_category_list {
@@ -151,17 +151,21 @@ sub munge_around_filter_category_list {
     my $c = $self->{c};
     return unless $c->stash->{filter_category};
 
-    my $cat_names = $self->expand_triage_cat_list([ keys %{$c->stash->{filter_category}} ]);
+    my $cat_names = $self->_expand_triage_cat_list([ keys %{$c->stash->{filter_category}} ]);
     $c->stash->{filter_category} = { map { $_ => 1 } @$cat_names };
+}
+
+sub _expand_triage_cat_list {
+    my ($self, $categories) = @_;
+    my $b = $self->{c}->model('DB::Body')->for_areas( $self->council_area_id )->first;
+    return $self->expand_triage_cat_list($categories, $b);
 }
 
 # this assumes that each Triage category has the same name as a group
 # and uses this to generate a list of categories that a triage category
 # could be triaged to
 sub expand_triage_cat_list {
-    my ($self, $categories) = @_;
-
-    my $b = $self->{c}->model('DB::Body')->for_areas( $self->council_area_id )->first;
+    my ($self, $categories, $b) = @_;
 
     my $all_cats = $self->{c}->model('DB::Contact')->not_deleted->search(
         {
@@ -190,7 +194,7 @@ sub expand_triage_cat_list {
 
     my @cat_names;
     while ( my $cat = $cats->next ) {
-        if ( $cat->send_method eq 'Triage' ) {
+        if ( $cat->send_method && $cat->send_method eq 'Triage' ) {
             # include the category itself
             push @cat_names, $cat->category;
             push @cat_names, @{ $group_to_category{$cat->category} } if $group_to_category{$cat->category};

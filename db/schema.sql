@@ -100,6 +100,7 @@ create table contacts (
         state = 'unconfirmed'
         or state = 'confirmed'
         or state = 'inactive'
+        or state = 'staff'
         or state = 'deleted'
     ),
 
@@ -137,6 +138,7 @@ create table contacts_history (
         state = 'unconfirmed'
         or state = 'confirmed'
         or state = 'inactive'
+        or state = 'staff'
         or state = 'deleted'
     ),
 

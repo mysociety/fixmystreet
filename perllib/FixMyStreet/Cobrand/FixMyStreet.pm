@@ -131,51 +131,8 @@ sub munge_load_and_group_problems {
 
     return unless $where->{category} && $self->{c}->stash->{body}->name eq 'Isle of Wight Council';
 
-    $where->{category} = $self->expand_triage_cat_list($where->{category});
-}
-
-sub expand_triage_cat_list {
-    my ($self, $categories) = @_;
-
-    my $b = $self->{c}->stash->{body};
-
-    my $all_cats = $self->{c}->model('DB::Contact')->not_deleted->search(
-        {
-            body_id => $b->id,
-            send_method => [{ '!=', 'Triage'}, undef]
-        }
-    );
-
-    my %group_to_category;
-    while ( my $cat = $all_cats->next ) {
-        next unless $cat->get_extra_metadata('group');
-        my $groups = $cat->get_extra_metadata('group');
-        $groups = ref $groups eq 'ARRAY' ? $groups : [ $groups ];
-        for my $group ( @$groups ) {
-            $group_to_category{$group} //= [];
-            push @{ $group_to_category{$group} }, $cat->category;
-        }
-    }
-
-    my $cats = $self->{c}->model('DB::Contact')->not_deleted->search(
-        {
-            body_id => $b->id,
-            category => $categories
-        }
-    );
-
-    my @cat_names;
-    while ( my $cat = $cats->next ) {
-        if ( $cat->send_method && $cat->send_method eq 'Triage' ) {
-            # include the category itself
-            push @cat_names, $cat->category;
-            push @cat_names, @{ $group_to_category{$cat->category} } if $group_to_category{$cat->category};
-        } else {
-            push @cat_names, $cat->category;
-        }
-    }
-
-    return \@cat_names;
+    my $iow = FixMyStreet::Cobrand->get_class_for_moniker( 'isleofwight' )->new({ c => $self->{c} });
+    $where->{category} = $iow->expand_triage_cat_list($where->{category}, $self->{c}->stash->{body});
 }
 
 sub title_list {
