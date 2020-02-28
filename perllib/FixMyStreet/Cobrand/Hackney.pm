@@ -21,4 +21,26 @@ sub disambiguate_location {
     };
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+}
+
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
+
+    my $open311_only = [
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'category',
+          value => $row->category },
+    ];
+
+    return $open311_only;
+}
 1;
