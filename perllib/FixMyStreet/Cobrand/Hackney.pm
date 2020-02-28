@@ -21,4 +21,23 @@ sub disambiguate_location {
     };
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+
+    push @$extra,
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'category',
+          value => $row->category };
+
+    $row->set_extra_fields(@$extra);
+
+    $params->{multi_photos} = 1;
+}
 1;
