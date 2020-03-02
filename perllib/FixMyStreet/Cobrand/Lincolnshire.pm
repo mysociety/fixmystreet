@@ -77,4 +77,11 @@ sub pin_colour {
     return 'yellow';
 }
 
+around 'open311_config' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    $params->{upload_files} = 1;
+    $self->$orig($row, $h, $params);
+};
+
 1;

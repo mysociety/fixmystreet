@@ -77,6 +77,13 @@ sub open311_pre_send {
 # Make sure fetched report description isn't shown.
 sub filter_report_description { "" }
 
+around 'open311_config' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    $params->{upload_files} = 1;
+    $self->$orig($row, $h, $params);
+};
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 

@@ -43,6 +43,8 @@ sub admin_user_domain { "peterborough.gov.uk" }
 around 'open311_config' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
+    $params->{upload_files} = 1;
+
     # remove categories which are informational only
     my $extra = $row->get_extra_fields;
     @$extra = grep { $_->{name} ne 'emergency' } @$extra;
