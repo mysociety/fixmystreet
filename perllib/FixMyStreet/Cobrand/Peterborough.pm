@@ -89,4 +89,11 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+around 'open311_config' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    $params->{upload_files} = 1;
+    $self->$orig($row, $h, $params);
+};
+
 1;
