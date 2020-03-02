@@ -892,8 +892,10 @@ sub admin_report_edit {
 
     if ($type eq 'sdm') {
 
-        my $editable = $type eq 'sdm' && $body->id eq $problem->bodies_str;
+        my $editable = $body->id eq $problem->bodies_str;
         $c->stash->{sdm_disabled} = $editable ? '' : 'disabled';
+        $c->stash->{sdm_disabled_internal} = $problem->non_public ? 'disabled' : '';
+        $c->stash->{sdm_disabled_fixed} = $problem->is_fixed ? 'disabled' : '';
 
         # Has cut-down edit template for adding update and sending back up only
         $c->stash->{template} = 'admin/report_edit-sdm.html';
