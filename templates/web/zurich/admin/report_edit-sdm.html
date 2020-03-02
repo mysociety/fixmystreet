@@ -87,15 +87,15 @@
 
 [% IF problem.non_public %]
 <p align="right" class="screen-only">
-    <input [% sdm_disabled %] type="submit" class="btn" name="stop_internal" value="Keine interne Meldung">
+    <input [% sdm_disabled %] [% sdm_disabled_fixed %] type="submit" class="btn" name="stop_internal" value="Keine interne Meldung">
 </p>
 [% END %]
 
-<p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+<p align="right" class="screen-only"><input [% sdm_disabled %] [% sdm_disabled_fixed %] type="submit" class="btn" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 
 [% status_message | safe %]
 
-<p align="right" class="screen-only"><input [% sdm_disabled %] type="submit" class="btn" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
+<p align="right" class="screen-only"><input [% sdm_disabled %] [% sdm_disabled_internal %] [% sdm_disabled_fixed %] type="submit" class="btn" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
 
 <ul class="no-bullets screen-only">
     <li>
@@ -104,7 +104,7 @@
     </li>
     <li>
         <label for="status_update">[% loc('New note to DM:') %]</label>
-        <textarea [% sdm_disabled %] class="form-control" name='status_update' id='status_update' cols=60 rows=4></textarea>
+        <textarea [% sdm_disabled %] [% sdm_disabled_internal %] [% sdm_disabled_fixed %] class="form-control" name='status_update' id='status_update' cols=60 rows=4></textarea>
     </li>
 </ul>
 
@@ -115,7 +115,7 @@
 
 <p class="clearfix screen-only">
     <input [% sdm_disabled %] style="float:left" type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
-    <input [% sdm_disabled %] style="float:right" type="submit" class="btn" name="no_more_updates" value="[% loc('No further updates') %]">
+    <input [% sdm_disabled %] [% sdm_disabled_fixed %] style="float:right" type="submit" class="btn" name="no_more_updates" value="[% loc('No further updates') %]">
 </p>
 
 [% INCLUDE 'admin/list_updates.html' %]
