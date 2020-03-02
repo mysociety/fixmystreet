@@ -218,37 +218,12 @@ input.field, input.text,
   font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
 }
 
-// Bromley's button definitions
-.button__primary, .button, input[type=submit], .doc-main-content .byEditor .basketitem a.button {
-  background: #647890;
-  color: white;
-  border: none;
-}
-.button, input[type=submit] {
-  border-style: solid;
-  border-width: 1px;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 400;
-  cursor: pointer;
-  font-size: 1em;
-  line-height: 2em;
-  height: 2em;
-  padding: 0 1em;
-  margin: 0.5em 0;
-  opacity: 1;
-  transition: opacity .25s ease-in-out;
-  -moz-transition: opacity .25s ease-in-out;
-  -webkit-transition: opacity .25s ease-in-out;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-
-  #postcodeForm & {
-    margin: 0;
-    height: auto;
-    line-height: 1;
-  }
+.btn-primary,
+.green-btn,
+.btn--primary {
+  $bg: $bromley_blue;
+  $hover-bg: darken($bromley_blue, 10%);
+  @include button-variant($bg, $bg, false, #fff, $hover-bg, $hover-bg, false, #fff);
 }
 
 // Bromley's silly A-Z menu
