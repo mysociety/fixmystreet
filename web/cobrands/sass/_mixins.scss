@@ -42,21 +42,37 @@ $direction: 'left' !default;
 @mixin button-variant($bg-top: #fff, $bg-bottom: #eee, $border: #ccc, $text: inherit, $hover-bg-bottom: #e9e9e9, $hover-bg-top: #f9f9f9, $hover-border: #ccc, $hover-text: inherit) {
     color: $text !important; // !important to override more specific selectors like `a:link`
     background: $bg-bottom;
-    @include linear-gradient($bg-top, $bg-bottom);
-    border: 1px solid $border;
+    @if $bg-top != $bg-bottom {
+        @include linear-gradient($bg-top, $bg-bottom);
+    }
+    @if $border {
+        border: 1px solid $border;
+    } @else {
+        border: none;
+    }
 
     &:hover,
     &:focus {
         color: $hover-text !important;
         background: $hover-bg-bottom;
-        @include linear-gradient($hover-bg-top, $hover-bg-bottom);
-        border-color: $hover-border;
+        @if $hover-bg-top != $hover-bg-bottom {
+            @include linear-gradient($hover-bg-top, $hover-bg-bottom);
+        }
+        @if $hover-border {
+            border-color: $hover-border;
+        } @else {
+            border: none;
+        }
     }
 
     &:disabled {
         color: desaturate(darken($bg-bottom, 50%), 50%) !important;
         background: $bg-bottom;
-        border-color: $border;
+        @if $border {
+            border-color: $border;
+        } @else {
+            border: none;
+        }
     }
 }
 
