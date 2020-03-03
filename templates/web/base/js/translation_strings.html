@@ -3,108 +3,108 @@ var fixmystreet = fixmystreet || {};
 fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
 
     translation_strings = {
-        update: '[% loc_js('Please enter a message') %]',
-        error: '[% loc_js('Error') %]',
+        update: '[% loc('Please enter a message', "JS") %]',
+        error: '[% loc('Error', "JS") %]',
         title: {
-            required: '[% loc_js('Please enter a subject') %]',
-            maxlength: '[% loc_js('Summaries are limited to {0} characters in length. Please shorten your summary') %]',
-            notEmail: '[% loc_js('Please make sure you are not including an email address') %]'
+            required: '[% loc('Please enter a subject', "JS") %]',
+            maxlength: '[% loc('Summaries are limited to {0} characters in length. Please shorten your summary', "JS") %]',
+            notEmail: '[% loc('Please make sure you are not including an email address', "JS") %]'
         },
         detail: {
-            required: '[% loc_js('Please enter some details') %]',
-            maxlength: '[% loc_js('Reports are limited to {0} characters in length. Please shorten your report') %]',
+            required: '[% loc('Please enter some details', "JS") %]',
+            maxlength: '[% loc('Reports are limited to {0} characters in length. Please shorten your report', "JS") %]',
         },
         name: {
-            required: '[% loc_js('Please enter your name') %]',
-            validName: '[% loc_js('Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below') %]'
+            required: '[% loc('Please enter your name', "JS") %]',
+            validName: '[% loc('Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below', "JS") %]'
         },
-        category: '[% loc_js('Please choose a category') %]',
+        category: '[% loc('Please choose a category', "JS") %]',
         rznvy: {
-            required: '[% loc_js('Please enter your email') %]',
-            email: '[% loc_js('Please enter a valid email') %]'
+            required: '[% loc('Please enter your email', "JS") %]',
+            email: '[% loc('Please enter a valid email', "JS") %]'
         },
         email: {
-            required: '[% loc_js('Please enter your email') %]',
-            email: '[% loc_js('Please enter a valid email') %]'
+            required: '[% loc('Please enter your email', "JS") %]',
+            email: '[% loc('Please enter a valid email', "JS") %]'
         },
         password_sign_in: {
-            required: '[% loc_js('Please enter a password') %]'
+            required: '[% loc('Please enter a password', "JS") %]'
         },
         password_register: {
-            short: '[% tprintf(loc_js('Please make sure your password is at least %d characters long'), c.cobrand.password_minimum_length) %]',
+            short: '[% tprintf(loc('Please make sure your password is at least %d characters long', "JS"), c.cobrand.password_minimum_length) %]',
         },
         phone: {
-            required: '[% loc_js('Please enter your phone number') %]'
+            required: '[% loc('Please enter your phone number', "JS") %]'
         },
-        fms_extra_title: '[% loc_js('Please enter your title') %]',
-        first_name: '[% loc_js('Please enter your first name') %]',
-        last_name: '[% loc_js('Please enter your second name') %]',
-        right_place: '[% loc_js('Reposition if needed, then hit Continue') %]',
-        try_again: '[% loc_js('Try again') %]',
-        place_pin_on_map: '[% loc_js('Place pin on map') %]',
-        back: '[% loc_js('Back') %]',
-        how_to_send: '[% loc_js('How to send successful reports') %]',
-        more_details: '[% loc_js('Details') %]',
+        fms_extra_title: '[% loc('Please enter your title', "JS") %]',
+        first_name: '[% loc('Please enter your first name', "JS") %]',
+        last_name: '[% loc('Please enter your second name', "JS") %]',
+        right_place: '[% loc('Reposition if needed, then hit Continue', "JS") %]',
+        try_again: '[% loc('Try again', "JS") %]',
+        place_pin_on_map: '[% loc('Place pin on map', "JS") %]',
+        back: '[% loc('Back', "JS") %]',
+        how_to_send: '[% loc('How to send successful reports', "JS") %]',
+        more_details: '[% loc('Details', "JS") %]',
 
-        this_report: '[% loc_js('This report') %]',
-        this_is_the_problem: '[% loc_js('This is the problem') %]',
+        this_report: '[% loc('This report', "JS") %]',
+        this_is_the_problem: '[% loc('This is the problem', "JS") %]',
 
-        or: '[% loc_js(' or ') %]',
+        or: '[% loc(' or ', "JS") %]',
 
-        geolocation_declined: '[% loc_js('You declined; please fill in the box above') %]',
-        geolocation_no_position: '[% loc_js('Could not look up location') %]',
-        geolocation_no_result: '[% loc_js('No result returned') %]',
-        geolocation_unknown: '[% loc_js('Unknown error') %]',
+        geolocation_declined: '[% loc('You declined; please fill in the box above', "JS") %]',
+        geolocation_no_position: '[% loc('Could not look up location', "JS") %]',
+        geolocation_no_result: '[% loc('No result returned', "JS") %]',
+        geolocation_unknown: '[% loc('Unknown error', "JS") %]',
 
-        correct_position: '[% loc_js('Right place?') %]',
+        correct_position: '[% loc('Right place?', "JS") %]',
 
-        reporting_a_problem: '[% loc_js('Reporting a problem') %]',
-        ok: '[% loc_js('Continue') %]',
-        map: '[% loc_js('MAP') %]',
+        reporting_a_problem: '[% loc('Reporting a problem', "JS") %]',
+        ok: '[% loc('Continue', "JS") %]',
+        map: '[% loc('MAP', "JS") %]',
 
-        map_map: '[% loc_js('Map') %]',
-        map_satellite: '[% loc_js('Satellite') %]',
+        map_map: '[% loc('Map', "JS") %]',
+        map_satellite: '[% loc('Satellite', "JS") %]',
 
-        expand_map: '[% loc_js('Expand map') %]',
-        collapse_map: '[% loc_js('Collapse map') %]',
+        expand_map: '[% loc('Expand map', "JS") %]',
+        collapse_map: '[% loc('Collapse map', "JS") %]',
 
-        filter: '[% loc_js('Filter') %]',
+        filter: '[% loc('Filter', "JS") %]',
 
-        show_pins: '[% loc_js('Show pins') %]',
-        hide_pins: '[% loc_js('Hide pins') %]',
+        show_pins: '[% loc('Show pins', "JS") %]',
+        hide_pins: '[% loc('Hide pins', "JS") %]',
 
-        upload_max_files_exceeded: '[% loc_js('Sorry! You’ve hit the limit of images that can be attached to one report.') %]',
-        upload_default_message: '[% loc_js('Drag photos here or <u>browse photos</u>') %]',
-        upload_default_message_mobile: '[% loc_js('<u>Take or choose existing photo</u>') %]',
-        upload_cancel_confirmation: '[% loc_js('Are you sure you want to cancel this upload?') %]',
-        upload_invalid_file_type: '[% loc_js('Please upload an image only') %]',
+        upload_max_files_exceeded: '[% loc('Sorry! You’ve hit the limit of images that can be attached to one report.', "JS") %]',
+        upload_default_message: '[% loc('Drag photos here or <u>browse photos</u>', "JS") %]',
+        upload_default_message_mobile: '[% loc('<u>Take or choose existing photo</u>', "JS") %]',
+        upload_cancel_confirmation: '[% loc('Are you sure you want to cancel this upload?', "JS") %]',
+        upload_invalid_file_type: '[% loc('Please upload an image only', "JS") %]',
 
         [% IF c.config.SMS_AUTHENTICATION ~%]
-        login_with_email: '[% loc_js('Log in with email/text') %]',
+        login_with_email: '[% loc('Log in with email/text', "JS") %]',
         [% ELSE ~%]
-        login_with_email: '[% loc_js('Log in with email') %]',
+        login_with_email: '[% loc('Log in with email', "JS") %]',
         [% END ~%]
 
         report_a_problem_btn: {
-            default: '[% loc_js('Report a problem') %]',
-            here: '[% loc_js('Report a problem here') %]',
-            another: '[% loc_js('Report another problem here') %]'
+            default: '[% loc('Report a problem', "JS") %]',
+            here: '[% loc('Report a problem here', "JS") %]',
+            another: '[% loc('Report another problem here', "JS") %]'
         },
 
         offline: {
-            your_reports: '[% loc_js('Your offline reports') %]',
-            update_saved: '[% loc_js('Your update has been saved offline for submission when back online.') %]',
-            update_data_saved: '[% loc_js('Offline update data saved') %]',
-            clear_data: '[% loc_js('Clear offline data') %]',
-            are_you_sure: '[% loc_js('Are you sure?') %]',
-            data_cleared: '[% loc_js('Offline data cleared') %]',
-            reports_saved: '[% loc_js('Reports saved offline.') %]',
-            saving_reports: '[% loc_js('Saving reports offline', "This is followed by a progress count, e.g. 3/5") %]',
-            you_are_offline: '[% loc_js('You are offline') %]',
-            N_saved: '[% loc_js('<span>%s</span> saved.') %]',
-            saved_to_submit: '[% loc_js('You have <a id="oFN" href=""><span>%s</span> saved to submit</a>.') %]',
-            update_single: '[% loc_js('update') %]',
-            update_plural: '[% loc_js('updates') %]'
+            your_reports: '[% loc('Your offline reports', "JS") %]',
+            update_saved: '[% loc('Your update has been saved offline for submission when back online.', "JS") %]',
+            update_data_saved: '[% loc('Offline update data saved', "JS") %]',
+            clear_data: '[% loc('Clear offline data', "JS") %]',
+            are_you_sure: '[% loc('Are you sure?', "JS") %]',
+            data_cleared: '[% loc('Offline data cleared', "JS") %]',
+            reports_saved: '[% loc('Reports saved offline.', "JS") %]',
+            saving_reports: '[% loc('Saving reports offline', "This is followed by a progress count, e.g. 3/5", "JS") %]',
+            you_are_offline: '[% loc('You are offline', "JS") %]',
+            N_saved: '[% loc('<span>%s</span> saved.', "JS") %]',
+            saved_to_submit: '[% loc('You have <a id="oFN" href=""><span>%s</span> saved to submit</a>.', "JS") %]',
+            update_single: '[% loc('update', "JS") %]',
+            update_plural: '[% loc('updates', "JS") %]'
         }
     };
 [% END %]

@@ -62,23 +62,13 @@ sub process {
     [% loc('Some text to localize', 'Optional comment for translator') %]
 
 Passes the text to the localisation engine for translations.
+Pass in "JS" as the optional comment to escape single quotes (for use in JavaScript).
 
 =cut
 
 sub loc : Fn {
     my $s = _(@_);
-    return FixMyStreet::Template::SafeString->new($s);
-}
-
-=head2 loc_js
-
-Same as loc() but escapes single quotes (for use in JavaScript).
-
-=cut
-
-sub loc_js : Fn {
-    my $s = _(@_);
-    $s =~ s/'/\\'/g;
+    $s =~ s/'/\\'/g if $_[1] && $_[1] eq 'JS';
     return FixMyStreet::Template::SafeString->new($s);
 }
 
