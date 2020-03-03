@@ -4,14 +4,9 @@ if (!fixmystreet.maps) {
     return;
 }
 
-var is_live = false;
-if ( location.hostname === 'www.fixmystreet.com' || location.hostname === 'fms.islandroads.com' ) {
-    is_live = true;
-}
-
 var defaults = {
     http_options: {
-        url: is_live ? "https://tilma.mysociety.org/mapserver/iow": "https://staging.tilma.mysociety.org/mapserver/iow",
+        url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/iow": "https://tilma.mysociety.org/mapserver/iow",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",

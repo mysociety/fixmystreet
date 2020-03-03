@@ -23,7 +23,8 @@ sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     if ($z >= 17) {
-        my $base = "//%stilma.mysociety.org/mastermap/%d/%d/%d.png";
+        my $layer = FixMyStreet->config('STAGING_SITE') ? 'mastermap-staging' : 'mastermap';
+        my $base = "//%stilma.mysociety.org/$layer/%d/%d/%d.png";
         return [
             sprintf($base, 'a.', $z, $x-1, $y-1),
             sprintf($base, 'b.', $z, $x, $y-1),

@@ -6,6 +6,9 @@
 
 <input type="hidden" name="zoom" value="[% map.zoom %]">
 <div id="js-map-data"
+[%- IF c.config.STAGING_SITE %]
+    data-staging=1
+[%- END %]
 [%- UNLESS c.cobrand.call_hook('hide_areas_on_reports') %]
     data-area="[% map.area.join(',') %]"
 [%- END %]
