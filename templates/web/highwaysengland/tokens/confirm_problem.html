@@ -1,0 +1,21 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation') %]
+
+<div class="confirmation-header">
+
+  <h1><a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">[% report.title %]</a></h1>
+
+  <p>Thank you for submitting your report.<br>Reference: <strong>FMS[% report.id %]</strong>.</p>
+  <p>We aim to respond within 3 working days.</p>
+  <p>Please be aware that, for your privacy, we will not respond to you directly.</p>
+  <p>If you’d like to view the status of your report, or check for updates, then please visit
+  <a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">the report page</a>.</p>
+
+  <p class="confirmation-again">
+    <a href="/report/new?latitude=[% report.latitude %]&amp;longitude=[% report.longitude %]" class="btn btn-primary">
+      [% loc('Report another problem here') %]
+    </a>
+  </p>
+
+</div>
+
+[% INCLUDE 'footer.html' %]

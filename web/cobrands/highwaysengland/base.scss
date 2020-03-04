@@ -1,0 +1,205 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+#site-header {
+    padding: 1em 0;
+}
+
+// Highways England cobrand sets up a .site-logo class to match #site-logo,
+// so that we can use the same logo in the header and footer.
+.site-logo {
+    display: block;
+    text-indent: -999999px;
+}
+
+#site-logo,
+.site-logo {
+    width: 150px;
+    height: 45px;
+    @include svg-background-image('/cobrands/highwaysengland/images/logo');
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 150px 45px;
+}
+
+#nav-link {
+    @include svg-background-image('/cobrands/highwaysengland/images/menu');
+}
+
+#report-cta {
+    background-color: $color-he-blue;
+    border: none;
+    color: $white;
+    font-weight: bold;
+    padding: 0.4em 0.8em;
+    border-radius: 1em;
+
+    &:hover,
+    &:focus {
+        background-color: darken($color-he-blue, 10%);
+        color: $black;
+    }
+}
+
+%warning-icon {
+    content: "";
+    display: block;
+    @include svg-background-image('/cobrands/highwaysengland/images/warning-red');
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: 1em;
+    @include flex(0 0 auto); // do not shrink
+}
+
+.front-warning {
+    background: mix($color-he-red, #fff, 25%);
+    line-height: 1.3;
+
+    .container {
+        @include flex-container();
+        @include flex-align(center);
+        padding-top: 1em;
+        padding-bottom: 1em;
+
+        &:before {
+            @extend %warning-icon;
+        }
+    }
+}
+
+div.form-error,
+p.form-error {
+    padding: 1em;
+    color: $color-he-black;
+    border-radius: 0;
+    background: mix($color-he-red, #fff, 25%);
+    border-left: 8px solid $color-he-red;
+    @include flex-container();
+    @include flex-align(center);
+
+    &:before {
+        @extend %warning-icon;
+    }
+}
+
+#front-main {
+    margin: 0;
+    padding: 1em;
+    background: $color-he-grey-2;
+    text-align: left;
+
+    #postcodeForm {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        color: inherit;
+        font-family: inherit;
+
+        div {
+            border: none;
+            background: transparent;
+
+            input#pc {
+                background: #fff;
+                border-radius: 4em;
+                margin-right: 0.5em;
+                padding: 0.5em 1.5em;
+                border: 2px solid $color-he-grey-3;
+
+                &:focus {
+                    border-color: $black;
+                    box-shadow: 0 0 0 4px $color-he-yellow;
+                }
+            }
+
+            input#sub {
+                border-radius: 4em;
+                background: $color-he-blue;
+                font-weight: bold;
+                padding: 0.5em 1em;
+
+                &:hover, &:focus {
+                    background: darken($color-he-blue, 10%);
+                }
+            }
+        }
+    }
+
+    h1 {
+        margin-top: 0;
+
+        span {
+            display: block;
+            font-weight: normal;
+            color: $color-he-grey-4;
+        }
+    }
+}
+
+.front-blurb {
+    max-width: 32em;
+    margin: 1em 0;
+}
+
+.form-control,
+.dropzone {
+    border-radius: 0;
+    box-shadow: none;
+    border: 2px solid $black;
+
+    &:focus {
+        box-shadow: 0 0 0 4px $color-he-yellow;
+    }
+}
+
+.btn,
+.form-txt-submit-box input[type="submit"] {
+    border-radius: 10em; // pill-shaped ends
+}
+
+.form-txt-submit-box input[type="submit"] {
+    margin: 0 0 0.5em 1em;
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    background: $color-he-blue;
+    border: none;
+
+    &:hover, &:focus {
+        background: darken($color-he-blue, 10%);
+    }
+}
+
+.big-green-banner {
+    text-transform: none;
+}
+
+.site-footer {
+    margin-top: 0;
+    background: $color-he-grey-2;
+    box-shadow: 0 1000px 0 1000px $color-he-grey-2; // infinite footer
+    border-top: 8px solid $color-he-darkblue;
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    .powered-by-fms {
+        display: block;
+        margin-top: 1em;
+    }
+}
+
+.olMapViewport {
+    background-color: #fff;
+}
+
+.olLayerGrid, .olBackBuffer {
+    opacity: 0.3;
+    filter: grayscale(1);
+}

@@ -1,0 +1,17 @@
+<p>
+[% category = mark_safe(category) %]
+[% UNLESS non_public_categories.$category;
+
+    tprintf(
+        'These will be sent to us and also published online for others to see, in line with our <a href="%s">privacy policy</a>.',
+        c.cobrand.privacy_policy_url
+    );
+
+ELSE;
+
+    'These will be sent to us but not published online.';
+
+END %]
+
+[% TRY %][% INCLUDE 'report/new/councils_extra_text.html' %][% CATCH file %][% END %]
+</p>

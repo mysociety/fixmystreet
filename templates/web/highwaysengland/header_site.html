@@ -1,0 +1,14 @@
+<header id="site-header" role="banner">
+    <div class="container">
+        [% INCLUDE 'header_logo.html' %]
+        <a href="#main-nav" id="nav-link">Main Navigation</a>
+    </div>
+</header>
+
+[% IF c.req.uri.path == '/' %]
+    <div class="front-warning">
+        <div class="container">
+            Please don&rsquo;t endanger your safety to make a report to us, only do so from a safe location
+        </div>
+    </div>
+[% END %]

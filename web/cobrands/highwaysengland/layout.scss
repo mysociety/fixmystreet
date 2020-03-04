@@ -1,0 +1,98 @@
+@import "_colours";
+@import "../sass/layout";
+
+#site-logo,
+.site-logo {
+    width: 200px;
+    height: 60px;
+    background-size: 200px 60px;
+}
+
+.nav-menu--main {
+    li + li {
+        margin-left: 1.5em;
+    }
+
+    a, span {
+        padding: 0;
+        font-size: 1em;
+        font-weight: bold;
+        color: $nav_colour;
+    }
+
+    a {
+        &:hover,
+        &:focus {
+            color: $nav_colour;
+            box-shadow: 0 4px 0 0 $color-he-brightblue;
+        }
+    }
+
+    a.report-a-problem-btn {
+        color: $nav_colour;
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+
+        &:hover, &:focus {
+            background-color: transparent;
+        }
+    }
+
+    span.report-a-problem-btn,
+    span.report-a-problem-btn:hover {
+        color: $nav_colour;
+    }
+}
+
+div.form-error,
+p.form-error {
+    @include flex-container();
+}
+
+#front-main {
+    background: $color-he-grey-2;
+    color: inherit;
+    padding: 5% 1em;
+
+    #postcodeForm {
+        overflow: visible;
+
+        div {
+            margin: 0;
+            width: 100%;
+            max-width: 30em;
+
+            input#sub {
+                padding: 0.5em 1.5em;
+            }
+        }
+    }
+
+    h1 {
+        font-size: 3em;
+        font-weight: bold;
+        color: $color-he-darkblue;
+    }
+}
+
+.front-blurb {
+    margin: 2em 0;
+}
+
+.site-footer {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    margin-top: 2em;
+
+    .powered-by-fms {
+        margin: 0;
+    }
+
+    .container {
+        @include flex-container();
+        @include justify-content(space-between);
+        @include flex-align(center);
+    }
+}
