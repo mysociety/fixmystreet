@@ -5,6 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2019
+# michag86 <micha_g@arcor.de>, 2019
 #
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2019-04-29 18:56+0100\n"
 "PO-Revision-Date: 2019-04-29 18:03+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
+"Last-Translator: michag86 <micha_g@arcor.de>, 2019\n"
 "Language-Team: German (Germany) (https://www.transifex.com/mysociety/teams/12067/de_DE/)\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -38,7 +39,7 @@ msgstr "oder"
 
 #: templates/web/base/report/_inspect.html:171
 msgid "%d characters maximum"
-msgstr ""
+msgstr "maximal %d Zeichen"
 
 #: templates/web/base/admin/bodies/edit-league.html:12
 msgid "%d edits by %s"
@@ -148,7 +149,7 @@ msgstr ""
 
 #: templates/web/base/around/intro.html:2
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
-msgstr "(z.B. illegale Deponien, Strassenschäden, Graffitis usw.)"
+msgstr "(z.B. illegale Deponien, Straßenschäden, Graffitis usw.)"
 
 #: templates/web/base/reports/index.html:82
 msgid "(no longer exists)"
@@ -3321,7 +3322,7 @@ msgstr ""
 #: templates/web/base/around/intro.html:1
 #: templates/web/zurich/around/intro.html:1
 msgid "Report, view, or discuss local problems"
-msgstr "Melden sie Mängel an der Infrastruktur von Zürich"
+msgstr "Lokale Mängel melden, anzeigen oder diskutieren"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:616
 #: templates/web/base/contact/index.html:60

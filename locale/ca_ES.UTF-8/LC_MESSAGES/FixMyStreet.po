@@ -5,6 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2019
+# Eduard Molist Gallifa <edumolist@gmail.com>, 2019
 #
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2019-04-29 18:56+0100\n"
 "PO-Revision-Date: 2019-04-29 18:03+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
+"Last-Translator: Eduard Molist Gallifa <edumolist@gmail.com>, 2019\n"
 "Language-Team: Catalan (Spain) (https://www.transifex.com/mysociety/teams/12067/ca_ES/)\n"
 "Language: ca_ES\n"
 "MIME-Version: 1.0\n"
@@ -38,7 +39,7 @@ msgstr "o"
 
 #: templates/web/base/report/_inspect.html:171
 msgid "%d characters maximum"
-msgstr ""
+msgstr "%d caràcters màxims"
 
 #: templates/web/base/admin/bodies/edit-league.html:12
 msgid "%d edits by %s"
@@ -50,21 +51,21 @@ msgstr "%d a %d de %d"
 
 #: templates/web/base/admin/users/import.html:42
 msgid "%d users already existed"
-msgstr ""
+msgstr "%d usuaris ja existeixen"
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
 msgid "%s - Summary reports"
-msgstr "%s - Resum d'informes"
+msgstr "%s - Resum de notificacions"
 
 #. ("%s here is the site name")
 #: templates/web/base/admin/navigation.html:3
 msgid "%s admin:"
-msgstr "%s admin:"
+msgstr "%s administrador:"
 
 #: templates/web/base/status/stats.html:26
 msgid "%s bodies"
-msgstr "%s cossos"
+msgstr "%s àrees"
 
 #: templates/web/base/status/stats.html:24
 msgid "%s confirmed alerts, %s unconfirmed"
@@ -73,7 +74,7 @@ msgstr "%s alertes confirmades, %s no confirmades"
 #: templates/web/base/status/stats.html:27
 #: templates/web/zurich/admin/index.html:6
 msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
-msgstr ""
+msgstr "%s contactes de l'ajuntament &ndash; %s confirmades, %s no confirmades"
 
 #. ("%s is the site name")
 #: templates/web/base/alert/index.html:8
@@ -82,6 +83,9 @@ msgid ""
 "problems, including alerts for all problems within a particular ward, or all\n"
 "problems within a certain distance of a particular location."
 msgstr ""
+"%s té una varietat de canals RSS i alertes de correu electrònic per \n"
+"incidències locals, incloent alertes per totes les incidències d'un determinat nucli de població\n"
+" o totes les que es trobin a una certa distància d’un lloc concret."
 
 #. ("%s is the site name")
 #: templates/web/base/alert/index.html:12
@@ -90,19 +94,22 @@ msgid ""
 "alerts for all problems within a particular ward or council, or all problems\n"
 "within a certain distance of a particular location."
 msgstr ""
+"%s té una varietat de canals RSS i alertes de correu electrònic per \n"
+"incidències locals, incloent alertes per totes les incidències d'una determinat nucli de població o\n"
+"municipi o totes les que es trobin a una certa distància d’un lloc concret."
 
 #: templates/web/base/status/stats.html:23
 msgid "%s live updates"
-msgstr ""
+msgstr "%s actualitzacions en directe"
 
 #: templates/web/base/dashboard/index.html:164
 #: templates/web/base/dashboard/index.html:168
 msgid "%s opened, %s closed, %s fixed"
-msgstr ""
+msgstr "%s obert, %s tancat, %s arreglat"
 
 #: templates/web/base/status/stats.html:25
 msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
-msgstr ""
+msgstr "%s preguntes enviades &ndash; %s respostes (%s%%)"
 
 #: templates/web/base/report/_council_sent_info.html:8
 msgid "%s ref:&nbsp;%s"
@@ -110,11 +117,11 @@ msgstr "%s ref:&nbsp;%s"
 
 #: perllib/FixMyStreet/Map/OSM.pm:44
 msgid "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
-msgstr ""
+msgstr "&copy; Col·laboradors d'<a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:21
 msgid "(Defect &amp; location of defect)"
-msgstr ""
+msgstr "(Incidència &amp; localització de la incidència)"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:62
 #: templates/web/zurich/admin/report_edit.html:90
@@ -128,7 +135,7 @@ msgstr "(sense número de telèfon)"
 
 #: templates/web/base/admin/states/index.html:95
 msgid "(a-z and space only)"
-msgstr ""
+msgstr "(a-z i espai en blanc)"
 
 #: templates/web/zurich/report/_item.html:21
 msgid "(closed)"
@@ -136,7 +143,7 @@ msgstr "(tancat)"
 
 #: templates/web/base/alert/_list.html:30
 msgid "(covers roughly 200,000 people)"
-msgstr ""
+msgstr "(cobreix aproximadament 200.000 persones)"
 
 #: templates/web/zurich/report/_item.html:19
 msgid "(fixed)"
@@ -144,19 +151,19 @@ msgstr "(corregit)"
 
 #: templates/web/base/admin/extra-metadata-form.html:63
 msgid "(ignored if type is \"String\")"
-msgstr ""
+msgstr "(ignorat si el tipus és \"Cadena\")"
 
 #: templates/web/base/around/intro.html:2
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
-msgstr ""
+msgstr "(com pintades, abocaments incontrolats, voreres o enllumenat públic malmès)"
 
 #: templates/web/base/reports/index.html:82
 msgid "(no longer exists)"
-msgstr ""
+msgstr "(ja no existeix)"
 
 #: templates/web/base/report/_item_small.html:30
 msgid "(not sent to council)"
-msgstr ""
+msgstr "(no enviat a l'ajuntament)"
 
 #: templates/web/base/report/new/form_user_loggedin.html:39
 #: templates/web/zurich/report/new/fill_in_details_form.html:59
@@ -165,7 +172,7 @@ msgstr "(opcional)"
 
 #: templates/web/base/report/_item_small.html:28
 msgid "(sent to all)"
-msgstr ""
+msgstr "(enviat a tothom)"
 
 #: templates/web/base/report/_item_small.html:29
 msgid "(sent to both)"
@@ -174,7 +181,7 @@ msgstr "(enviat als dos)"
 #. ("%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]")
 #: templates/web/base/alert/_list.html:36
 msgid "(we also have RSS feeds for problems within %s)"
-msgstr ""
+msgstr "(també tenim canals RSS per incidències sobre %s)"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:251
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:710
@@ -184,7 +191,7 @@ msgstr "-- Tria una categoria --"
 
 #: templates/web/base/report/new/category_extras_fields.html:19
 msgid "-- Pick an option --"
-msgstr ""
+msgstr "-- Tria una opció --"
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
@@ -197,15 +204,18 @@ msgid ""
 "              This is probably why \"area covered\" is empty (below).<br>\n"
 "              Maybe add some <code>MAPIT_TYPES</code> to your config file?"
 msgstr ""
+"<code>MAPIT_URL</code> s'ha establert (<code>%s</code>) però no <code>MAPIT_TYPES</code>.<br>\n"
+"              Probablement per això la \"zona coberta\" està buida (a sota). <br>\n"
+"              Pots afegir algunes <code>MAPIT_TYPES</code> en el fitxer de configuració?"
 
 #: templates/web/base/dashboard/index.html:18
 msgid "<h2>Reports, Statistics and Actions for</h2> <h1>%s</h1>"
-msgstr ""
+msgstr "<h2>Notificacions, estadístiques i accions per</h2> <h1>%s</h1>"
 
 #. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:70
 msgid "<label for=\"statuses\">Show</label> %s reports <label for=\"filter_categories\">about</label> %s"
-msgstr ""
+msgstr "<label for=\"statuses\">Mostra</label> %s notificacions <label for=\"filter_categories\">sobre</label> %s"
 
 #: templates/web/base/js/translation_strings.html:101
 msgid "<span>%s</span> saved."
@@ -214,15 +224,15 @@ msgstr "<span>%s</span> desat."
 #: templates/web/base/status/stats.html:18
 #: templates/web/zurich/admin/index.html:4
 msgid "<strong>%s</strong> live problems"
-msgstr "<strong>%s</strong> problemes actuals"
+msgstr "<strong>%s</strong> incidències actuals"
 
 #: templates/web/base/report/form/user_loggedout_by_email_heading.html:11
 msgid "<strong>No</strong> Let me confirm my report by email"
-msgstr ""
+msgstr "<strong>No</strong>Deixa'm confirmar la notificació per correu electrònic"
 
 #: templates/web/base/report/form/user_loggedout_by_email_heading.html:5
 msgid "<strong>No</strong> Let me confirm my report by email/text"
-msgstr ""
+msgstr "<strong>No</strong> Deixa'm confirmar la notificació per correu electrònic o text"
 
 #: templates/web/base/report/form/user_loggedout_by_email_heading.html:9
 msgid "<strong>No</strong> Let me confirm my update by email"
@@ -234,7 +244,7 @@ msgstr ""
 
 #: templates/web/base/report/_inspect.html:200
 msgid "<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on."
-msgstr ""
+msgstr "<strong>Avís:</strong> Aquesta notificació s'ha enviat per resoldre-la. Els canvis realitzats no es transmetran."
 
 #: templates/web/base/report/_inspect.html:202
 msgid "<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on."
@@ -242,7 +252,7 @@ msgstr ""
 
 #: templates/web/base/report/form/user_loggedout_password.html:4
 msgid "<strong>Yes</strong> I have a password"
-msgstr "<strong>Sí </strong> Tinc contrasenya"
+msgstr "<strong>Sí </strong> Tinc una contrasenya"
 
 #: templates/web/base/report/new/form_user.html:8
 msgid "About the problem"
@@ -272,7 +282,7 @@ msgstr "Afegeix un contacte utilitzant el formulari següent."
 #: templates/web/base/admin/bodies/index.html:78
 #: templates/web/zurich/admin/bodies/form.html:51
 msgid "Add body"
-msgstr "Afegeix el cos"
+msgstr "Afegeix una àrea"
 
 #: templates/web/base/auth/change_email.html:1
 #: templates/web/base/auth/change_email.html:7
@@ -321,7 +331,7 @@ msgstr "Afegeix un usuari"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:736
 msgid "Add/edit problem categories"
-msgstr "Afegeix/edita categories de problemes"
+msgstr "Afegeix/edita categories d'incidències"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:738
 msgid "Add/edit response priorities"
@@ -373,11 +383,11 @@ msgstr "Tot"
 
 #: templates/web/zurich/reports/index.html:14
 msgid "All Reports"
-msgstr "Tots els informes"
+msgstr "Totes les notificacions"
 
 #: templates/web/zurich/admin/stats/index.html:47
 msgid "All Reports as CSV"
-msgstr "Tots els informes en CSV"
+msgstr "Totes les notificacions en CSV"
 
 #: templates/web/base/admin/category-multiselect.html:5
 #: templates/web/base/admin/responsepriorities/list.html:20
@@ -400,7 +410,7 @@ msgstr ""
 #: templates/web/zurich/footer.html:20
 #: templates/web/zurich/nav_over_content.html:6
 msgid "All reports"
-msgstr "Tots els informes"
+msgstr "Totes les notificacions"
 
 #: templates/web/zurich/admin/stats/index.html:45
 msgid "All reports between %s and %s"
@@ -420,7 +430,7 @@ msgstr ""
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:165
 msgid "Always fetch all problems"
-msgstr ""
+msgstr "Carregar sempre totes les incidències"
 
 #: templates/web/base/questionnaire/index.html:31
 msgid "An update marked this problem as fixed."
@@ -476,7 +486,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit.html:211
 msgid "Assign to competent body:"
-msgstr "Assigna a un cos competent:"
+msgstr "Assigna a una àrea competent:"
 
 #: templates/web/zurich/admin/report_edit.html:170
 #: templates/web/zurich/admin/stats/index.html:57
@@ -485,7 +495,7 @@ msgstr "Assigna a una categoria diferent:"
 
 #: templates/web/zurich/admin/report_edit.html:209
 msgid "Assign to external body:"
-msgstr "Assigna a un cos extern:"
+msgstr "Assigna a una àrea externa:"
 
 #: templates/web/zurich/admin/report_edit.html:188
 msgid "Assign to subdivision:"
@@ -564,7 +574,7 @@ msgstr ""
 #: templates/web/base/admin/report_edit.html:56
 #: templates/web/zurich/header.html:49
 msgid "Bodies"
-msgstr "Cossos"
+msgstr "Àrees"
 
 #: templates/web/base/admin/flagged.html:17
 #: templates/web/base/admin/index.html:63
@@ -573,11 +583,11 @@ msgstr "Cossos"
 #: templates/web/base/admin/users/import.html:48
 #: templates/web/base/admin/users/index.html:18
 msgid "Body"
-msgstr "Cos"
+msgstr "Àrea"
 
 #: templates/web/base/admin/users/form.html:50
 msgid "Body:"
-msgstr "Cos:"
+msgstr "Àrea:"
 
 #: templates/web/base/admin/users/import.html:12
 msgid "CSV File"
@@ -634,7 +644,7 @@ msgstr "Categoria canviada de ‘%s’ a ‘%s’"
 #: templates/web/base/admin/stats/fix_rate.html:1
 #: templates/web/base/admin/stats/index.html:6
 msgid "Category fix rate for problems > 4 weeks old"
-msgstr ""
+msgstr "Termini de resolució d'incidències > 4 setmanes"
 
 #: templates/web/base/admin/report_edit.html:126
 #: templates/web/base/dashboard/index.html:39
@@ -741,7 +751,7 @@ msgstr "Tancat"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:866
 msgid "Closed by council"
-msgstr ""
+msgstr "Tancat per l'ajuntament"
 
 #: templates/web/base/admin/report_edit.html:176
 msgid "Closed to updates"
@@ -860,7 +870,7 @@ msgstr ""
 
 #: templates/web/base/admin/list_updates.html:9
 msgid "Council"
-msgstr ""
+msgstr "Ajuntament"
 
 #: templates/web/base/admin/bodies/body.html:1
 #: templates/web/base/admin/bodies/body.html:2
@@ -876,7 +886,7 @@ msgstr ""
 
 #: templates/web/base/dashboard/index.html:50
 msgid "Council:"
-msgstr ""
+msgstr "Ajuntament:"
 
 #: templates/web/zurich/admin/stats/index.html:66
 #: templates/web/zurich/admin/stats/index.html:71
@@ -1135,7 +1145,7 @@ msgstr "Edita"
 #: templates/web/base/admin/index.html:39
 #: templates/web/zurich/admin/bodies/body.html:47
 msgid "Edit body details"
-msgstr "Edita els detalls del cos"
+msgstr "Edita els detalls de l'àrea"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:731
 msgid "Edit other users' permissions"
@@ -1163,7 +1173,7 @@ msgstr ""
 
 #: templates/web/base/report/update/form_user.html:8
 msgid "Edit your update"
-msgstr ""
+msgstr "Modifica l'actualització"
 
 #: templates/web/base/admin/report_edit.html:0
 #: templates/web/base/admin/report_edit.html:15
@@ -1232,7 +1242,7 @@ msgstr ""
 
 #: templates/web/base/admin/users/form.html:25
 msgid "Email verified:"
-msgstr ""
+msgstr "Correu electrònic verificat:"
 
 #: templates/web/base/admin/report_edit.html:146
 #: templates/web/base/admin/users/form.html:19 templates/web/base/my/my.html:36
@@ -1242,7 +1252,7 @@ msgstr "Correu electrònic:"
 
 #: templates/web/base/admin/users/alerts.html:13
 msgid "Enable"
-msgstr ""
+msgstr "Habilitar"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:156
 #: templates/web/base/admin/bodies/open311-form-fields.html:157
@@ -1292,7 +1302,7 @@ msgstr ""
 
 #: templates/web/base/dashboard/index.html:78
 msgid "End Date"
-msgstr ""
+msgstr "Data final"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:21
 msgid "Endpoint"
@@ -1318,7 +1328,7 @@ msgstr ""
 
 #: templates/web/base/index-steps.html:6
 msgid "Enter details of the problem"
-msgstr "Entra els detalls del problema"
+msgstr "Entra els detalls de la incidència"
 
 #: templates/web/base/errors/generic.html:1
 #: templates/web/base/errors/generic.html:8
@@ -1337,7 +1347,7 @@ msgstr "Tot"
 #: templates/web/base/admin/bodies/body.html:19
 #: templates/web/base/admin/bodies/category.html:19
 msgid "Example postcode %s"
-msgstr ""
+msgstr "Exemple de codi postal %s"
 
 #: templates/web/base/open311/index.html:86
 msgid "Examples:"
@@ -1374,7 +1384,7 @@ msgstr "URL externa"
 
 #: templates/web/base/admin/report_edit.html:100
 msgid "External body"
-msgstr "Cos extern"
+msgstr "Àrea externa"
 
 #: templates/web/base/admin/report_edit.html:107
 #: templates/web/base/admin/template_edit.html:66
@@ -1519,7 +1529,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:787
 msgid "Forwarded wish to external body"
-msgstr ""
+msgstr "Suggeriment enviat a l'àrea externa"
 
 #: templates/web/base/about/_sidebar.html:4
 #: templates/web/base/about/faq-en-gb.html:1
@@ -1958,7 +1968,7 @@ msgstr ""
 
 #: templates/web/base/admin/bodies/body.html:32
 msgid "List all reported problems"
-msgstr "Llista tots els problemes informats"
+msgstr "Mostra totes les incidències notificades"
 
 #: templates/web/base/around/on_map_list_items.html:18
 msgid "Loading reports…"
@@ -2205,7 +2215,7 @@ msgstr "Nova nota interna:"
 
 #: db/alert_types.pl:18 db/alert_types.pl:22
 msgid "New local problems on FixMyStreet"
-msgstr "Nous problemes locals a FixMyStreet"
+msgstr "Noves incidències locals a FixMyStreet"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:113
 msgid "New note to DM:"
@@ -2228,7 +2238,7 @@ msgstr "Nova prioritat"
 
 #: templates/web/base/admin/users/alerts.html:44
 msgid "New problems for %s"
-msgstr ""
+msgstr "Noves incidències per %s"
 
 #: templates/web/base/admin/users/alerts.html:42
 msgid "New problems for <a href=\"%s\">%s</a>"
@@ -5537,8 +5547,8 @@ msgstr[1] "%d setmanes"
 #, perl-format
 msgid "%d year"
 msgid_plural "%d years"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d anys"
+msgstr[1] "%d anys"
 
 #: templates/web/base/reports/index.html:120
 #, perl-format
@@ -5628,15 +5638,15 @@ msgstr[1] ""
 #, perl-format
 msgid "last updated %d day ago"
 msgid_plural "last updated %d days ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "última actualització fa %d dies "
+msgstr[1] "última actualització fa %d dies"
 
 #: templates/email/default/inactive-account.html:18
 #, perl-format
 msgid "month"
 msgid_plural "months"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "mesos"
+msgstr[1] "mesos"
 
 #: templates/email/bathnes/archive.html:25
 #, perl-format

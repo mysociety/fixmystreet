@@ -5,6 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2019
+# ButterflyOfFire, 2019
 #
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2019-04-29 18:56+0100\n"
 "PO-Revision-Date: 2019-04-29 18:03+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
+"Last-Translator: ButterflyOfFire, 2019\n"
 "Language-Team: Arabic (https://www.transifex.com/mysociety/teams/12067/ar/)\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -190,7 +191,7 @@ msgstr "--إختر تصنيف--"
 
 #: templates/web/base/report/new/category_extras_fields.html:19
 msgid "-- Pick an option --"
-msgstr ""
+msgstr "-- اختر خيارا --"
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
@@ -374,7 +375,7 @@ msgstr "نبهني بأحدث المستجدات"
 
 #: templates/web/base/admin/report_edit.html:91
 msgid "Alerts:"
-msgstr ""
+msgstr "تحذيرات:"
 
 #: templates/web/base/dashboard/index.html:40
 #: templates/web/base/dashboard/index.html:51
@@ -593,7 +594,7 @@ msgstr "الهيئة:"
 
 #: templates/web/base/admin/users/import.html:12
 msgid "CSV File"
-msgstr ""
+msgstr "ملف CSV"
 
 #: templates/web/base/admin/extra-metadata-form.html:46
 msgid "Can be used to display extra text to the user alongside the field. The default template does not show this (<code>meta.datatype_description</code>), you must add it in <code>category_extras_fields.html</code>"
@@ -744,7 +745,7 @@ msgstr ""
 
 #: templates/web/base/report/new/duplicate_suggestions.html:6
 msgid "Close"
-msgstr ""
+msgstr "إعلاق"
 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:180
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:156
@@ -1382,7 +1383,7 @@ msgstr ""
 
 #: templates/web/base/js/translation_strings.html:66
 msgid "Expand map"
-msgstr ""
+msgstr "توسيع الخريطة"
 
 #: templates/web/base/report/new/form_report.html:53
 msgid "Explain what’s wrong"
@@ -1977,7 +1978,7 @@ msgstr "آخر تحديث:"
 #: templates/web/base/report/_item.html:60
 #: templates/web/base/report/update/moderation_diff.html:6
 msgid "Latitude/Longitude:"
-msgstr ""
+msgstr "الطول/العرض:"
 
 #: templates/web/base/reports/_list-filters.html:83
 msgid "Least recently updated"
@@ -3235,7 +3236,7 @@ msgstr ""
 
 #: templates/web/base/report/_item_expandable.html:50
 msgid "Read more"
-msgstr ""
+msgstr "اقرأ المزيد"
 
 #: templates/web/base/alert/updates.html:14
 #: templates/web/base/report/display_tools.html:44

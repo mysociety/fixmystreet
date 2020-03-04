@@ -5,7 +5,6 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2019
-# Jon Kristensen <info@jonkri.com>, 2018
 # Joe Siltberg <joe@joesiltberg.se>, 2019
 #
 msgid ""
@@ -21,7 +20,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:678
 #: perllib/FixMyStreet/DB/Result/Problem.pm:680
@@ -4174,7 +4172,7 @@ msgstr "Den positionen verkar inte vara i Sverige: försök gärna igen."
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:104
 #: perllib/FixMyStreet/Cobrand/UK.pm:73
 msgid "That postcode was not recognised, sorry."
-msgstr "Det postnummret finns tyvärr inte."
+msgstr "Det postnumret finns tyvärr inte."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:495
 msgid "That problem has been marked as sent."

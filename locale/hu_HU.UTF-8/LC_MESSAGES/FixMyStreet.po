@@ -5,6 +5,7 @@
 #
 # Translators:
 # mySociety <transifex@mysociety.org>, 2019
+# Gyula Rácz <gyula_racz25@hotmail.com>, 2020
 #
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2019-04-29 18:56+0100\n"
 "PO-Revision-Date: 2019-04-29 18:03+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
+"Last-Translator: Gyula Rácz <gyula_racz25@hotmail.com>, 2020\n"
 "Language-Team: Hungarian (Hungary) (https://www.transifex.com/mysociety/teams/12067/hu_HU/)\n"
 "Language: hu_HU\n"
 "MIME-Version: 1.0\n"
@@ -246,7 +247,7 @@ msgstr "<strong>Igen</strong> van jelszavam"
 
 #: templates/web/base/report/new/form_user.html:8
 msgid "About the problem"
-msgstr ""
+msgstr "A problémáról"
 
 #: templates/web/base/auth/generate_token.html:54
 msgid "Activate two-factor authentication"
@@ -599,12 +600,12 @@ msgstr ""
 #: templates/web/base/admin/responsepriorities/list.html:8
 #: templates/web/base/admin/templates.html:7
 msgid "Categories"
-msgstr ""
+msgstr "Kategóriák"
 
 #: templates/web/base/admin/category-checkboxes.html:2
 #: templates/web/base/admin/category-multiselect.html:2
 msgid "Categories:"
-msgstr ""
+msgstr "Kategóriák:"
 
 #: templates/web/base/admin/bodies/body.html:73
 #: templates/web/base/admin/bodies/contact-form.html:19
@@ -621,7 +622,7 @@ msgstr ""
 #: templates/web/zurich/admin/stats/index.html:26
 #: templates/web/zurich/admin/stats/index.html:71
 msgid "Category"
-msgstr ""
+msgstr "Kategória"
 
 #: templates/web/base/dashboard/index.html:103
 msgid "Category and State"
@@ -643,7 +644,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit-sdm.html:72
 #: templates/web/zurich/admin/report_edit.html:100
 msgid "Category:"
-msgstr ""
+msgstr "Kategória"
 
 #: templates/web/base/my/my.html:41 templates/web/base/my/my.html:44
 #: templates/web/base/my/my.html:52 templates/web/base/my/my.html:57
@@ -659,7 +660,7 @@ msgstr ""
 #: templates/web/base/auth/change_password.html:5
 #: templates/web/base/my/my.html:65
 msgid "Change password"
-msgstr ""
+msgstr "Jelszó megváltoztatása"
 
 #: templates/web/base/auth/change_phone.html:1
 #: templates/web/base/auth/change_phone.html:3
@@ -5608,7 +5609,7 @@ msgstr[1] ""
 msgid "Reported %d day ago"
 msgid_plural "Reported %d days ago"
 msgstr[0] "Jelentve %d napja"
-msgstr[1] "Jelentve %d napja"
+msgstr[1] "%d napja jelentve"
 
 #: templates/web/base/report/new/top_message_some.html:3
 #, perl-format
