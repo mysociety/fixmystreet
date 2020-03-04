@@ -137,6 +137,22 @@ subtest "check moderation label uses correct name" => sub {
     };
 };
 
+subtest "front page summary uses report category not title" => sub {
+    my $category = $reports[0]->category;
+    ok $category, "category is not blank";
+    my $title = $reports[0]->title;
+    ok $title, "title is not blank";
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['isleofwight'],
+    }, sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/');
+        $mech->content_like( qr/item-list__heading">$category/ );
+        $mech->content_unlike( qr/item-list__heading">$title/ );
+    };
+};
+
 $_->delete for @reports;
 
 my $system_user = $mech->create_user_ok('system_user@example.org');

@@ -1,0 +1,7 @@
+[%
+    SET title = problem.title;
+    IF c.req.uri.path == '/';
+        title = problem.category_display;
+    END;
+%]
+<h3 class="item-list__heading">[% title %]</h3>
