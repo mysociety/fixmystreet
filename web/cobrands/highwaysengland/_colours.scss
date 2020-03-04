@@ -1,0 +1,42 @@
+$menu-image: 'menu-black';
+
+$color-he-darkblue: #011e41;
+$color-he-blue: #0073a6;
+$color-he-brightblue: #0082c9;
+$color-he-paleblue: #99cceb;
+$color-he-black: #00050d;
+$color-he-orange: #f28a00;
+$color-he-green: #4a7529;
+$color-he-red: #d13339;
+$color-he-yellow: #ffc726; // for alerts
+$color-he-pink: #cc2b99; // for alerts
+
+$color-he-grey-1: #f2f2f2;
+$color-he-grey-2: #eff0f2;
+$color-he-grey-3: #cfd1d1;
+$color-he-grey-4: #59595c;
+$color-he-grey-5: #38383b;
+$color-he-grey-6: #241f21;
+
+$white: #fff;
+$black: $color-he-black;
+
+$primary: $color-he-blue;
+$primary_b: $black;
+$primary_text: $white;
+
+$base_bg: $white;
+$base_fg: $black;
+
+$nav_background_colour: $white;
+$nav_colour: $color-he-darkblue;
+$nav_hover_background_colour: transparent;
+
+$col_click_map: $color-he-brightblue;
+
+$header-top-border: false;
+$mappage-header-height: 5.75em;
+
+$body-font: "proxima-nova", "Proxima Nova", Montserrat, Arial, sans-serif;
+$heading-font: $body-font;
+$meta-font: $body-font;

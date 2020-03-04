@@ -1,0 +1,55 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+
+#site-header {
+    padding: 1em 0;
+}
+
+#site-logo {
+    width: 150px;
+    height: 45px;
+    @include svg-background-image('/cobrands/highwaysengland/images/logo');
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 150px 45px;
+}
+
+#nav-link {
+    @include svg-background-image('/cobrands/highwaysengland/images/menu');
+}
+
+#report-cta {
+    background-color: $color-he-blue;
+    border: none;
+    color: $white;
+    font-weight: bold;
+    padding: 0.4em 0.8em;
+    border-radius: 1em;
+
+    &:hover,
+    &:focus {
+        background-color: darken($color-he-blue, 10%);
+        color: $black;
+    }
+}
+
+#front-main {
+    margin: 0;
+    padding: 1em;
+    background: $color-he-grey-2;
+    text-align: left;
+
+    #postcodeForm {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        color: inherit;
+        font-family: inherit;
+    }
+
+    h1 {
+        margin-top: 0;
+    }
+}
