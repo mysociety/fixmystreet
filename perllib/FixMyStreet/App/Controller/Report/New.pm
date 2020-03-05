@@ -202,6 +202,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     my $extra_titles_list = $c->cobrand->title_list($c->stash->{all_areas});
 
     my @list_of_names = map { $_->name } values %{$c->stash->{bodies}};
+    @list_of_names = $c->cobrand->call_hook('munge_list_of_body_names' => \@list_of_names);
     my %display_names = map {
         my $name = $_->cobrand_name;
         ( $_->name ne $name ) ? ( $_->name => $name ) : ();
@@ -266,15 +267,17 @@ sub by_category_ajax_data : Private {
     if ($category) {
         $bodies = $c->forward('contacts_to_bodies', [ $category ]);
         @bodies = @$bodies;
-        $vars->{list_of_names} = [ map { $_->cobrand_name } @bodies ];
+        my @list_of_names = $c->cobrand->call_hook('munge_list_of_body_names' => [ map { $_->cobrand_name } @bodies ]);
+        $vars->{list_of_names} = \@list_of_names;
     } else {
         @bodies = values %{$c->stash->{bodies_to_list}};
     }
 
     my $non_public = $c->stash->{non_public_categories}->{$category};
     my $anon_button = ($c->cobrand->allow_anonymous_reports($category) eq 'button');
+    my @list_of_names = $c->cobrand->call_hook('munge_list_of_body_names' => [ map { $_->name } @bodies ]);
     my $body = {
-        bodies => [ map { $_->name } @bodies ],
+        bodies => \@list_of_names,
         $non_public ? ( non_public => JSON->true ) : (),
         $anon_button ? ( allow_anonymous => JSON->true ) : (),
     };

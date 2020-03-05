@@ -116,26 +116,28 @@ subtest "only original reporter can comment" => sub {
     };
 };
 
-subtest "check moderation label uses correct name" => sub {
-    my $REPORT_URL = '/report/' . $reports[0]->id;
-    FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => ['isleofwight'],
-    }, sub {
-        $mech->log_out_ok;
-        $mech->log_in_ok( $iow_user->email );
-        $mech->get_ok($REPORT_URL);
-        $mech->content_lacks('show-moderation');
-        $mech->follow_link_ok({ text_regex => qr/^Moderate$/ });
-        $mech->content_contains('show-moderation');
-        $mech->submit_form_ok({ with_fields => {
-            problem_title  => 'Good good',
-            problem_detail => 'Good good improved',
-        }});
-        $mech->base_like( qr{\Q$REPORT_URL\E} );
-        $mech->content_like(qr/Moderated by Island Roads/);
+for my $cobrand ( qw/ isleofwight fixmystreet/ ) {
+    subtest "check moderation label uses correct name" => sub {
+        my $REPORT_URL = '/report/' . $reports[0]->id;
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+            ALLOWED_COBRANDS => [$cobrand],
+        }, sub {
+            $mech->log_out_ok;
+            $mech->log_in_ok( $iow_user->email );
+            $mech->get_ok($REPORT_URL);
+            $mech->content_lacks('show-moderation');
+            $mech->follow_link_ok({ text_regex => qr/^Moderate$/ });
+            $mech->content_contains('show-moderation');
+            $mech->submit_form_ok({ with_fields => {
+                problem_title  => 'Good good',
+                problem_detail => 'Good good improved',
+            }});
+            $mech->base_like( qr{\Q$REPORT_URL\E} );
+            $mech->content_like(qr/Moderated by Island Roads/);
+        };
     };
-};
+}
 
 $_->delete for @reports;
 
@@ -427,6 +429,46 @@ subtest "check not responsible as correct text" => sub {
     };
 
     $mech->content_contains("not Island Roads’ responsibility", "not reponsible message contains correct text");
+    $p->comments->delete;
+    $p->delete;
+};
+
+subtest "check sent to has correct text" => sub {
+    my ($p) = $mech->create_problems_for_body(
+        1, $isleofwight->id, 'Title',
+        {
+            category => 'Roads',
+            areas => 2636,
+            latitude => 50.71086,
+            longitude => -1.29573,
+            whensent => DateTime->now->add( minutes => -5 ),
+            send_method_used => 'Open311',
+            state => 'not responsible',
+            external_id => 1,
+        });
+
+    my $c = FixMyStreet::DB->resultset('Comment')->create({
+        problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
+        problem_state => 'not responsible', state => 'confirmed', mark_fixed => 0,
+        confirmed => DateTime->now(),
+    });
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['isleofwight'],
+    }, sub {
+        $mech->get_ok('/report/' . $p->id);
+    };
+
+    $mech->content_contains("Sent to Island Roads ", "sent to message contains correct text");
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['fixmystreet'],
+    }, sub {
+        $mech->get_ok('/report/' . $p->id);
+    };
+
+    $mech->content_contains("Sent to Island Roads ", "sent to message contains correct text on fixmystreet");
     $p->comments->delete;
     $p->delete;
 };

@@ -1314,4 +1314,12 @@ The URL of the privacy policy to use on the report and update submissions forms.
 
 sub privacy_policy_url { '/privacy' }
 
+=item munge_list_of_body_names
+
+Hook to alter the list of body names a report will be sent to.
+
+=cut
+
+sub munge_list_of_body_names { my ($self, $list) = @_; return @$list };
+
 1;

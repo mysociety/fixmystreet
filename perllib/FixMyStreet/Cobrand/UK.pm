@@ -403,7 +403,9 @@ sub link_to_council_cobrand {
         my $url = sprintf("%s%s", $handler->base_url, $problem->url);
         return sprintf("<a href='%s'>%s</a>", $url, $problem->body( $self->{c} ));
     } else {
-        return $problem->body( $self->{c} );
+        my $body = $problem->body( $self->{c} );
+        $body = "Island Roads" if $body = "Isle of Wight Council";
+        return $body;
     }
 }
 
@@ -424,6 +426,12 @@ sub report_new_munge_before_insert {
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker('tfl')->new();
         $tfl->report_new_munge_before_insert($report);
     }
+}
+
+sub munge_list_of_body_names {
+    my ($self, $list) = @_;
+    my @list = map { $_ eq 'Isle of Wight Council' ? 'Island Roads' : $_ } @$list;
+    return @list;
 }
 
 1;
