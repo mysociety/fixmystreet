@@ -45,7 +45,7 @@ $.each(layers, function(index, layer) {
         if (layer.snap_threshold || layer.snap_threshold === 0) {
           options.snap_threshold = layer.snap_threshold;
         }
-        fixmystreet.assets.add(northants_defaults, options);
+        fixmystreet.assets.add(hackney_defaults, options);
     }
 });
 
