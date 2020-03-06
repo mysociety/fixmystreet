@@ -73,6 +73,9 @@ sub index : Path : Args(0) {
         bodies_str => { '!=', undef },
         # Ignore very recent ones that probably just haven't been sent yet
         confirmed => { '<', \"current_timestamp - '5 minutes'::interval" },
+    },
+    {
+        order_by => 'confirmed',
     } )->all;
     $c->stash->{unsent_reports} = \@unsent;
 
