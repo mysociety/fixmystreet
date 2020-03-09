@@ -1247,7 +1247,7 @@ sub check_for_errors : Private {
     if ( $c->cobrand->allow_anonymous_reports ) {
         my $anon_details = $c->cobrand->anonymous_account;
         $report->user->email(undef) if $report->user->email eq $anon_details->{email};
-        $report->name(undef) if $report->name eq $anon_details->{name};
+        $report->name(undef) if $report->name && $report->name eq $anon_details->{name};
     }
 
     return;

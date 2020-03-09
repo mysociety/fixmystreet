@@ -45,6 +45,7 @@ sub reproject_from_latlon($$$) {
 # Reproject a BNG easting/northing into WGS84 lat/lon
 sub reproject_to_latlon($$$) {
     my ($self, $x, $y) = @_;
+    return (0,0) if $x<0 || $y<0;
     my ($lat, $lon) = Utils::convert_en_to_latlon($x, $y);
     return ($lat, $lon);
 }

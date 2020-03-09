@@ -112,7 +112,7 @@ sub determine_location_from_pc : Private {
     # Log failure in a log db
     try {
         my $dbfile = FixMyStreet->path_to('../data/analytics.sqlite');
-        my $db = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef) or die "$DBI::errstr\n";
+        my $db = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef, { PrintError => 0 }) or die "$DBI::errstr\n";
         my $sth = $db->prepare("INSERT INTO location_searches_with_no_results
             (datetime, cobrand, geocoder, url, user_input)
             VALUES (?, ?, ?, ?, ?)") or die $db->errstr . "\n";
