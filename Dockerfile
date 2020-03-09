@@ -2,6 +2,7 @@ FROM jgoerzen/debian-base-standard:stretch
 MAINTAINER sysadmin@mysociety.org
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG VERSION_OVERRIDE
 
 RUN apt-get -qq update \
       && apt-get -qq -y install ca-certificates sudo \
