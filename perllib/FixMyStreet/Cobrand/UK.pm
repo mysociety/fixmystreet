@@ -6,6 +6,7 @@ use JSON::MaybeXS;
 use mySociety::MaPit;
 use mySociety::VotingArea;
 use Utils;
+use HighwaysEngland;
 
 sub country             { return 'GB'; }
 sub area_types          { [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ] }
@@ -89,6 +90,8 @@ sub geocode_postcode {
             latitude  => $location->{wgs84_lat},
             longitude => $location->{wgs84_lon},
         };
+    } elsif (my $junction_location = HighwaysEngland::junction_lookup($s)) {
+        return $junction_location;
     }
     return {};
 }

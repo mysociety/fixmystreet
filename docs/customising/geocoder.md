@@ -30,6 +30,27 @@ a specific country or city.
 
 The options vary [depending on which geocoder you use]({{ "/customising/config/#geocoding_disambiguation" | relative_url }}).
 
+If you're running a site in the UK and want junction lookup (e.g. "M5 junction
+11a") then see the [Junction lookup](#junction-lookup) section below.
+
 ## Detailed flow: location &rarr; map pin &rarr; drop-down menu
 
 ![FMS bodies and contacts](/assets/img/fms_bodies_and_contacts.png)
+
+## Junction lookup
+
+If the site is going to be run in the UK and you'd like the ability to do
+junction lookups, i.e. allow the user to search for "M60, Junction 2" and have
+it geocode to the correct location, then you'll need to generate a junctions
+database.
+
+{% highlight bash %}
+$ mkdir ../data
+$ wget https://www.whatdotheyknow.com/request/272238/response/675823/attach/2/Gazetteer%20All%20Mposts%20only.zip
+$ unzip Gazetteer\ All\ Mposts\ only.zip
+$ in2csv Gazetteer_All_Mposts_only.xlsx > markerposts.csv
+$ bin/make-junctions-database markerposts.csv
+{% endhighlight %}
+
+This will create a SQLite database at `../data/roads.sqlite`. If this is present
+then it will be used by the postcode search to do a junction lookup.

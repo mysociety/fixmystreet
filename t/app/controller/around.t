@@ -400,4 +400,33 @@ subtest 'check nearby lookup' => sub {
     $mech->content_contains('[51.754926,-1.256179,"yellow",' . $p->id . ',"Around page Test 1 for ' . $body->id . '","small",false]');
 };
 
+my $he = Test::MockModule->new('HighwaysEngland');
+$he->mock('_lookup_db', sub {
+    my ($road, $table, $thing, $thing_name) = @_;
+
+    if ($road eq 'M6' && $thing eq '11') {
+        return { latitude => 52.65866, longitude => -2.06447 };
+    } elsif ($road eq 'M5' && $thing eq '132.5') {
+        return { latitude => 51.5457, longitude => 2.57136 };
+    }
+});
+
+subtest 'junction lookup' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk',
+        MAPIT_TYPES => ['EUR'],
+    }, sub {
+        $mech->log_out_ok;
+
+        $mech->get_ok('/');
+        $mech->submit_form_ok({ with_fields => { pc => 'M6, Junction 11' } });
+        $mech->content_contains('52.65866');
+
+        $mech->get_ok('/');
+        $mech->submit_form_ok({ with_fields => { pc => 'M5 132.5' } });
+        $mech->content_contains('51.5457');
+    };
+};
+
 done_testing();
