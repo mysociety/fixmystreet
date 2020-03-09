@@ -3,6 +3,8 @@
 * Unreleased
     - Admin improvements:
         - order unsent reports by confirmed date
+    - Bugfixes
+	- Application user in Docker container can't install packages. #2914
 
 * v3.0 (4th March 2020)
     - Security:
