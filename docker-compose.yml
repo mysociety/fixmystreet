@@ -30,6 +30,7 @@ services:
       FMS_ROOT: '/var/www/fixmystreet/fixmystreet'
       SUPERUSER_EMAIL: 'superuser@example.org'
       SUPERUSER_PASSWORD: '5up3r53cr3t'
+      SKIP_PACKAGES_INSTALL:
     networks:
       default:
         aliases:

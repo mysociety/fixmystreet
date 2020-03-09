@@ -7,10 +7,13 @@ git submodule --quiet update --init --recursive --rebase
 
 # Let's see if we can't work out where we might be running.
 if cut -d/ -f2 /proc/self/cgroup | sort -u | grep -q docker ; then
-    # Docker
-    sudo bin/install_packages docker
+    if [ -z ${SKIP_PACKAGES_INSTALL:+x} ] ; then
+        echo "==> Installing Docker packages..."
+        sudo bin/install_packages docker
+    fi
 else
     # Fallback
+    echo "==> Installing generic packages..."
     sudo bin/install_packages generic
 fi
 
