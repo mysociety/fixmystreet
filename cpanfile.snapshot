@@ -6028,6 +6028,24 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001
+  Parallel-ForkManager-2.02
+    pathname: Y/YA/YANICK/Parallel-ForkManager-2.02.tar.gz
+    provides:
+      Parallel::ForkManager 2.02
+      Parallel::ForkManager::Child 2.02
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 0
+      File::Path 0
+      File::Spec 0
+      File::Temp 0
+      Moo 0
+      Moo::Role 0
+      POSIX 0
+      Storable 0
+      perl 5.006
+      strict 0
+      warnings 0
   Params-Classify-0.015
     pathname: Z/ZE/ZEFRAM/Params-Classify-0.015.tar.gz
     provides:

@@ -2,6 +2,7 @@ package Open311::GetServiceRequestUpdates;
 
 use Moo;
 use Open311;
+use Parallel::ForkManager;
 use FixMyStreet::DB;
 use FixMyStreet::App::Model::PhotoSet;
 use DateTime::Format::W3CDTF;
@@ -37,7 +38,11 @@ sub fetch {
         $bodies = $bodies->search( { name => $self->body } );
     }
 
+    my $procs = FixMyStreet->config('FETCH_COMMENTS_PROCESSES') || 0;
+    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode ? 0 : $procs);
     while ( my $body = $bodies->next ) {
+        $pm->start and next;
+
         $self->current_body( $body );
 
         my %open311_conf = (
@@ -57,7 +62,11 @@ sub fetch {
         $self->blank_updates_permitted( $body->blank_updates_permitted );
         $self->system_user( $body->comment_user );
         $self->process_body();
+
+        $pm->finish;
     }
+
+    $pm->wait_all_children;
 }
 
 sub parse_dates {

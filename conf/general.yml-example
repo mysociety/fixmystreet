@@ -261,3 +261,6 @@ LOGIN_REQUIRED: 0
 # If you want to stop new users from registering, set this to 1.
 # NB: This also disables all Facebook/Twitter logins.
 SIGNUPS_DISABLED: 0
+
+# Setting this variable to more than 1 will let fetch-comments run in parallel
+FETCH_COMMENTS_PROCESSES: 0
