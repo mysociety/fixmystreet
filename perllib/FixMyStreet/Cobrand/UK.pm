@@ -93,15 +93,6 @@ sub geocode_postcode {
     return {};
 }
 
-sub remove_redundant_areas {
-  my $self = shift;
-  my $all_areas = shift;
-
-  # Norwich is responsible for everything in its areas, not Norfolk
-  delete $all_areas->{2233}    #
-    if $all_areas->{2391};
-}
-
 sub short_name {
     my $self = shift;
     my ($area) = @_;
