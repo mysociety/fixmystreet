@@ -188,7 +188,7 @@ OpenLayers.Strategy.AlloyV2 = OpenLayers.Class(OpenLayers.Strategy.Alloy, {
 
 fixmystreet.assets.alloyv2_defaults = {
     http_options: {
-      base: "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://northants.assets/api/layer/${layerid}/${x}/${y}/${z}/cluster?styleIds=${styleid}"
+      base: "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://northants.assets/${layerid}/${x}/${y}/${z}/cluster?styleIds=${styleid}"
     },
     format_class: OpenLayers.Format.Alloy,
     srsName: "EPSG:3857",
