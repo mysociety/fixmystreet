@@ -75,6 +75,18 @@ sub problems_on_map_restriction {
     return $self->problems_restriction($rs);
 }
 
+sub problem_state_processed {
+    my ($self, $comment) = @_;
+
+    my $state = $comment->problem_state;
+
+    if ( $state eq 'investigating' and $comment->get_extra_metadata('external_status_code') eq 'further' ) {
+        $state = 'Under further investigation';
+    }
+
+    return $state;
+}
+
 sub privacy_policy_url {
     'https://www3.northamptonshire.gov.uk/councilservices/council-and-democracy/transparency/information-policies/privacy-notice/place/Pages/street-doctor.aspx'
 }
