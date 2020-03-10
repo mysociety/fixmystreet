@@ -107,6 +107,32 @@ subtest 'check updates disallowed correctly' => sub {
     is $cobrand->updates_disallowed($report), 1;
 };
 
+subtest 'check further investigation state' => sub {
+    $comment->problem_state('investigating');
+    $comment->update();
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/report/' . $comment->problem_id);
+    };
+
+    $mech->content_lacks('Under further investigation');
+
+    $comment->set_extra_metadata('external_status_code' => 'further');
+    $comment->update;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/report/' . $comment->problem_id);
+    };
+
+    $mech->content_contains('Under further investigation');
+};
+
 subtest 'check pin colour / reference shown' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'northamptonshire',

@@ -265,16 +265,18 @@ sub meta_line {
 };
 
 sub problem_state_processed {
-    my $self = shift;
+    my ( $self, $c ) = @_;
     return 'fixed - user' if $self->mark_fixed;
     return 'confirmed' if $self->mark_open;
-    return $self->problem_state;
+    my $cobrand_state = $c->cobrand->call_hook(problem_state_processed => $self);
+
+    return $cobrand_state || $self->problem_state;
 }
 
 sub problem_state_display {
     my ( $self, $c ) = @_;
 
-    my $state = $self->problem_state_processed;
+    my $state = $self->problem_state_processed($c);
     return '' unless $state;
 
     my $cobrand_name = $c->cobrand->moniker;
@@ -323,7 +325,7 @@ sub as_hashref {
         created => $self->created,
     };
 
-    $out->{problem_state} = $self->problem_state_processed;
+    $out->{problem_state} = $self->problem_state_processed($c);
 
     $out->{photos} = [ map { $_->{url} } @{$self->photos} ] if !$cols || $cols->{photos};
 
