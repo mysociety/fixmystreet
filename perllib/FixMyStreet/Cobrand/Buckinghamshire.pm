@@ -10,7 +10,7 @@ with 'FixMyStreet::Roles::ConfirmValidation';
 
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
-sub council_name { return 'Buckinghamshire County Council'; }
+sub council_name { return 'Buckinghamshire Council'; }
 sub council_url { return 'buckinghamshire'; }
 
 sub disambiguate_location {

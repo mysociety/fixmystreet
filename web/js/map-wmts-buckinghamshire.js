@@ -1,5 +1,5 @@
 /*
- * Maps for FMS using Buckinghamshire County Council's WMTS tile server
+ * Maps for FMS using Buckinghamshire Council's WMTS tile server
  */
 
 fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
