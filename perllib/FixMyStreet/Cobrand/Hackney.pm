@@ -43,4 +43,9 @@ sub open311_extra_data {
 
     return $open311_only;
 }
+
+sub map_type { 'OSM' }
+
+sub default_map_zoom { 5 }
+
 1;
