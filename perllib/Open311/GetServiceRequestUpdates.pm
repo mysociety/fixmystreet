@@ -38,8 +38,26 @@ sub fetch {
         $bodies = $bodies->search( { name => $self->body } );
     }
 
-    my $procs = FixMyStreet->config('FETCH_COMMENTS_PROCESSES') || 0;
-    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode ? 0 : $procs);
+    my $procs_min = FixMyStreet->config('FETCH_COMMENTS_PROCESSES_MIN') || 0;
+    my $procs_max = FixMyStreet->config('FETCH_COMMENTS_PROCESSES_MAX');
+    my $procs_timeout = FixMyStreet->config('FETCH_COMMENTS_PROCESS_TIMEOUT');
+
+    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode ? 0 : $procs_min);
+
+    if ($procs_max && $procs_timeout) {
+        my %workers;
+        $pm->run_on_wait(sub {
+            while (my ($pid, $started_at) = each %workers) {
+                next unless time() - $started_at > $procs_timeout;
+                next if $pm->max_procs == $procs_max;
+                $pm->set_max_procs($pm->max_procs + 1);
+                delete $workers{$pid}; # Only want to increase once per long-running thing
+            }
+        }, 1);
+        $pm->run_on_start(sub { my $pid = shift; $workers{$pid} = time(); });
+        $pm->run_on_finish(sub { my $pid = shift; delete $workers{$pid}; });
+    }
+
     while ( my $body = $bodies->next ) {
         $pm->start and next;
 

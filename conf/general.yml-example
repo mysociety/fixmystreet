@@ -262,5 +262,9 @@ LOGIN_REQUIRED: 0
 # NB: This also disables all Facebook/Twitter logins.
 SIGNUPS_DISABLED: 0
 
-# Setting this variable to more than 1 will let fetch-comments run in parallel
-FETCH_COMMENTS_PROCESSES: 0
+# Setting these variable to more than 1 will let fetch-comments run in parallel
+# with MIN to MAX children (new children will be added if a child takes longer
+# than TIMEOUT on one body).
+FETCH_COMMENTS_PROCESSES_MIN: 0
+FETCH_COMMENTS_PROCESSES_MAX: 0
+FETCH_COMMENTS_PROCESS_TIMEOUT: 0
