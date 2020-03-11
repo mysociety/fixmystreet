@@ -35,7 +35,7 @@ $bromley->body_areas->create({
 } );
 
 my $bucks = FixMyStreet::DB->resultset('Body')->create({
-    name => 'Buckinghamshire County Council',
+    name => 'Buckinghamshire Council',
 });
 $bucks->body_areas->create({
     area_id => 2217

@@ -53,7 +53,7 @@ for my $body (
     { area_id => 2333, name => 'Hart Council' },
     { area_id => 2535, name => 'Sandwell Borough Council' },
     { area_id => 1000, name => 'Highways England' },
-    { area_id => 2217, name => 'Buckinghamshire County Council' },
+    { area_id => 2217, name => 'Buckinghamshire Council' },
     { area_id => 2232, name => 'Lincolnshire County Council' },
     { area_id => 2237, name => 'Oxfordshire County Council' },
     { area_id => 2600, name => 'Rutland County Council' },

@@ -94,7 +94,7 @@ subtest 'flytipping off road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
     is $email[0]->header('To'), 'Chiltern <flytipping@chiltern>';
-    unlike $mech->get_text_body_from_email($email[1]), qr/Please note that Buckinghamshire County Council is not responsible/;
+    unlike $mech->get_text_body_from_email($email[1]), qr/Please note that Buckinghamshire Council is not responsible/;
     $report->discard_changes;
     is $report->external_id, undef, 'Report has right external ID';
 };

@@ -21,7 +21,7 @@ describe('flytipping', function() {
     cy.get('#form_road-placement').select('off-road');
     cy.contains('sent to Chiltern District Council and also');
     cy.get('#form_road-placement').select('road');
-    cy.contains('sent to Buckinghamshire County Council and also');
+    cy.contains('sent to Buckinghamshire Council and also');
   });
 
   it('handles flytipping off a road correctly', function() {

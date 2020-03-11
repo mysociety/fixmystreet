@@ -20,7 +20,7 @@ body_validation_rules = {
           maxlength: 1750
         }
     },
-    'Buckinghamshire County Council': confirm_validation_rules,
+    'Buckinghamshire Council': confirm_validation_rules,
     'Cheshire East Council': confirm_validation_rules,
     'Hounslow Borough Council': confirm_validation_rules,
     'Lincolnshire County Council': confirm_validation_rules,

@@ -5,35 +5,69 @@
 
 /* COLOURS */
 
-$menu-image: 'menu-black';
+$menu-image: 'menu-white';
 
-$bucks_green: #97c34b;
-$bucks_dark_green: #547f35;
+$bucks_indigo: #2C2D84;
+$bucks_charcoal: #3C3C3B;
+$bucks_grass_green: #9FC63B;
+$bucks_orange: #ED7004;
+$bucks_sky_blue: #006AB4;
+$bucks_teal: #005961;
+$bucks_green_five: #00642F;
+
+$bucks_links: #3640B4;
+$bucks_active_link_bg: #FCBC00;
+
+$bucks_button_bg: #9FC63B;
+$bucks_button_bg_hover: #93B837;
+
+$bucks_button_secondary_bg: #EEEEEE;
+$bucks_button_secondary_bg_hover:#D9D9D9;
+
+$bucks_warning: #D92B38;
+$bucks_warning_hover: #C72833;
 
 
 $g1: #2e3137;
-$g2: #676973;
+$g2: #6D6D6C;
 $g6: #eaeaea;
 $g7: #f1f1f1;
 $b3: #0d45a0;
 $b4: #74a9ff;
 
-$primary: $bucks_dark_green;
-$primary_b: $g1;
-$primary_text: $g1;
+$primary: $bucks_indigo;
+$primary_b: $bucks_charcoal;
+$primary_text: $bucks_charcoal;
 
-$link-color: $b3;
-$link-hover-color: $b3;
+$link-color: $bucks_links;
+$link-hover-color: #1065a3;
 
 $base_bg: white;
-$base_fg: $g1;
+$base_fg: $bucks_charcoal;
 
 $nav_background_colour: #fff;
-$nav_colour: #000;
+$nav_colour: $bucks_charcoal;
 $nav_hover_background_colour: #eee;
 
-$col_click_map: $g1;
-$col_click_map_dark: darken($g1, 10%);
+$col_click_map: $bucks_charcoal;
+$col_click_map_dark: darken($bucks_charcoal, 10%);
 
-$header-top-border-width: 5px;
-$header-top-border: 5px solid $bucks_green;
+$header-top-border-width: 0;
+$header-top-border: 0;
+
+@mixin bucks-button {
+  background-color: $bucks_button_bg;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 2px 0 darken($bucks_button_bg, 10%);
+  color: $bucks_charcoal;
+  @extend %bold-font;
+  padding: 0.75em 1em;
+  font-size: 1em;
+  &:hover,
+  &:active,
+  &:focus {
+    color: $bucks_charcoal;
+    background-color: $bucks_button_bg_hover;
+  }
+}

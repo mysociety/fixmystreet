@@ -14,25 +14,11 @@ $header-top-border: false; // There is, but we want to do it ourselves
 // Don't want larger logo on mappage.
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   // Display the BCC logo and header correctly
-  #site-logo {
-    background-size: 60px;
-    text-indent: 80px;
-    padding-left: 0;
-    line-height: 92px;
-    font-size: 24px;
-    margin: 0;
-    height: 92px;
-    strong {
-      display: inline;
-    }
-  }
 
   .nav-wrapper {
-      margin-top: 102px; // 92px image header + 10px top border
-      border-bottom: solid 5px $g6;
-      border-top: solid 5px $g6;
+      margin-top: 69px;
+      background-color: #6D6D6C;
   }
-
   #main-nav {
     float: left;
     min-height: 3em;
@@ -44,35 +30,53 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   }
 
   .nav-menu {
+    margin-left: 160px;
     a, span {
       display: inline-block; // So the chevrons appear correctly
-      font-size: 1.2em;
       padding: 0.5em 0.75em;
       margin: 0;
     }
   }
 }
 
+#nav-link {
+  color: #fff;
+}
+
 // Stop the 'report a problem' button being red on non-map pages
 .nav-menu--main a.report-a-problem-btn {
-    color: $b3;
+    color: #fff;
     background-color: transparent;
 }
 .nav-menu--main a.report-a-problem-btn:hover {
+    color: #fff !important;
     background-color: transparent;
 }
 
 .nav-menu {
+    background-color: transparent;
     span {
-        color: $g1;
+        font-size: 1em;
+        color: #fff;
+        &:hover,
+        &:active,
+        &:focus {
+          color: #fff;
+        }
     }
     a {
-        text-decoration: underline;
-        color: $b3;
-        &:hover {
+        font-size: 1em;
+        text-decoration: none;
+        color: #fff;
+        &:hover,
+        &:active,
+        &:focus {
             text-decoration: underline;
             background-color: transparent;
-            color: $g1;
+            color: #fff;
+        }
+        &:visited {
+          color: #fff;
         }
     }
 }
@@ -108,16 +112,16 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
       line-height: 1.25em;
       max-width: 640px;
     }
+
+    .form-hint {
+      color: $g1;
+    }
 }
 
 body.mappage {
   // Mappage header is 10px top border, 50px logo (7px 37px 6px), 4px bottom border
-  #site-header {
-      height: 50px;
-      border-bottom: solid 4px $g6;
-  }
   #site-logo {
-      margin: 7px 0 6px;
+     padding-top: 6px;
   }
 
   #main-nav {
@@ -129,23 +133,27 @@ body.mappage {
     z-index: 10; // Clickable
 
     a, span {
-      font-size: 1.1em;
       padding: 0.5em;
     }
     a.report-a-problem-btn {
       color: white;
-      background-color: $bucks_dark_green;
-      padding: 0.25em;
-      margin: 0.25em;
-      &:hover {
-        background-color: lighten($bucks_green, 5%);
-      };
+      @include bucks-button();
+      margin: 0.15em 0.25em 0;
+      padding: 0.5em 1em;
+      position: relative;
+      top: -5px;
+      &:hover,
+      &:active, 
+      &:focus {
+        color: $bucks_charcoal !important;
+        text-decoration: none;
+      }
     }
   }
 
   .big-green-banner {
     display: block;
-    background-color: $bucks_green;
+    background-color: $bucks_grass_green;
     text-transform: none;
   }
 }
