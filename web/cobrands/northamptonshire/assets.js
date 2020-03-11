@@ -198,7 +198,7 @@ OpenLayers.Layer.NCCVectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorNear
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
-var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloyv2_defaults, {
+var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   class: OpenLayers.Layer.NCCVectorAsset,
   protocol_class: OpenLayers.Protocol.AlloyV2,
   http_options: {
