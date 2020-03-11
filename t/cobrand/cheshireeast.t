@@ -4,6 +4,9 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok( 21069, 'Cheshire East Council', {
