@@ -53,3 +53,34 @@
         margin-top: 0;
     }
 }
+
+.form-control,
+.dropzone {
+    border-radius: 0;
+    box-shadow: none;
+    border: 2px solid $black;
+
+    &:focus {
+        box-shadow: 0 0 0 4px $color-he-yellow;
+    }
+}
+
+.btn,
+.form-txt-submit-box input[type="submit"] {
+    border-radius: 10em; // pill-shaped ends
+}
+
+.form-txt-submit-box input[type="submit"] {
+    margin: 0 0 0.5em 1em;
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    background: $color-he-blue;
+    border: none;
+
+    &:hover, &:focus {
+        background: darken($color-he-blue, 10%);
+    }
+}
