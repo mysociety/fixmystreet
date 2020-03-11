@@ -138,6 +138,7 @@ fixmystreet.assets.add(defaults, {
         attribute: 'Site_Code',
         field: 'site_code'
     },
+    nearest_radius: 20,
     stylemap: fixmystreet.assets.stylemap_invisible
 });
 
