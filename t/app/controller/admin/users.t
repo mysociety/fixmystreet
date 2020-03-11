@@ -103,9 +103,12 @@ subtest 'search does not show user from another council' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
+        $superuser->update({ from_body => $oxfordshire->id });
         $mech->get_ok('/admin/users');
-        $mech->get_ok('/admin/users?search=' . $user->name);
+        $mech->content_lacks('Super User');
+        $superuser->update({ from_body => undef });
 
+        $mech->get_ok('/admin/users?search=' . $user->name);
         $mech->content_contains( "Searching found no users." );
 
         $mech->get_ok('/admin/users?search=' . $user->email);

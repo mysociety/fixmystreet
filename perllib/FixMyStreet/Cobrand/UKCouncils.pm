@@ -130,7 +130,11 @@ sub users_restriction {
         push @$or_query, email => @domains;
     }
 
-    return $rs->search($or_query);
+    my $query = {
+        is_superuser => 0,
+        -or => $or_query
+    };
+    return $rs->search($query);
 }
 
 sub base_url {
