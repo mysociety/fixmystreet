@@ -1,5 +1,6 @@
 use FixMyStreet::Test;
 
+use Test::MockModule;
 use Test::Deep;
 
 use Open311;
@@ -7,6 +8,13 @@ use FixMyStreet::SendReport::Open311;
 use FixMyStreet::DB;
 
 use Data::Dumper;
+
+my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+$ukc->mock('lookup_site_code', sub {
+    my ($self, $row, $buffer) = @_;
+    is $row->latitude, 100, 'Correct latitude';
+    return "Road ID";
+});
 
 package main;
 sub test_overrides; # defined below
@@ -32,7 +40,7 @@ my %standard_open311_parameters = (
 test_overrides oxfordshire =>
     {
         body_name => 'Oxfordshire',
-        body_id   => 2237,
+        area_id   => 2237,
         row_data  => {
             postcode => 'OX1 1AA',
         },
@@ -44,7 +52,6 @@ test_overrides oxfordshire =>
     },
     superhashof({
         handler => isa('FixMyStreet::Cobrand::Oxfordshire'),
-        discard_changes => 1,
         'open311' => noclass(superhashof({
             %standard_open311_parameters,
             'extended_description' => 'oxfordshire',
@@ -60,7 +67,6 @@ test_overrides oxfordshire =>
 my $bromley_check =
     superhashof({
         handler => isa('FixMyStreet::Cobrand::Bromley'),
-        discard_changes => 1,
         'open311' => noclass(superhashof({
             %standard_open311_parameters,
             'send_notpinpointed' => 1,
@@ -83,7 +89,7 @@ my $bromley_check =
 test_overrides bromley =>
     {
         body_name => 'Bromley',
-        body_id   => 2482,
+        area_id   => 2482,
         row_data  => {
             postcode => 'BR1 1AA',
             extra => [ { name => 'last_name', value => 'Bloggs' } ],
@@ -92,14 +98,16 @@ test_overrides bromley =>
             northing => 100,
             easting => 100,
             url => 'http://example.com/1234',
+            prow_reference => 'ABC',
         },
     },
-    $bromley_check;
+    $bromley_check,
+    [ { name => 'last_name', value => 'Bloggs' } ];
 
 test_overrides fixmystreet =>
     {
         body_name => 'Bromley',
-        body_id   => 2482,
+        area_id   => 2482,
         row_data  => {
             postcode => 'BR1 1AA',
             # NB: we don't pass last_name here, as main cobrand doesn't know to do this!
@@ -115,7 +123,7 @@ test_overrides fixmystreet =>
 test_overrides greenwich =>
     {
         body_name => 'Greenwich',
-        body_id   => 2493,
+        area_id   => 2493,
     },
     superhashof({
         handler => isa('FixMyStreet::Cobrand::Greenwich'),
@@ -130,7 +138,7 @@ test_overrides greenwich =>
 test_overrides fixmystreet =>
     {
         body_name => 'West Berkshire',
-        body_id   => 2619,
+        area_id   => 2619,
         row_data  => {
             postcode => 'RG1 1AA',
         },
@@ -146,20 +154,45 @@ test_overrides fixmystreet =>
         })),
     });
 
+test_overrides fixmystreet =>
+    {
+        body_name => 'Cheshire East',
+        area_id   => 21069,
+        row_data  => {
+            postcode => 'CW11 1HZ',
+        },
+        extra => {
+            url => 'http://example.com/1234',
+        },
+    },
+    superhashof({
+        handler => isa('FixMyStreet::Cobrand::CheshireEast'),
+        'open311' => noclass(superhashof({
+            %standard_open311_parameters,
+        })),
+        problem_extra => bag(
+            { name => 'report_url' => value => 'http://example.com/1234' },
+            { name => 'title', value => 'Problem' },
+            { name => 'description', value => 'A big problem' },
+            { name => 'site_code', value => 'Road ID' },
+        ),
+    }),
+    [ { name => 'site_code', value => 'Road ID' } ];
+
 sub test_overrides {
     # NB: Open311 and ::SendReport::Open311 are mocked below in BEGIN { ... }
-    my ($cobrand, $input, $expected_data) = @_;
+    my ($cobrand, $input, $expected_data, $end_extra) = @_;
     subtest "$cobrand ($input->{body_name}) overrides" => sub {
 
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich'],
+            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast'],
         }, sub {
             my $db = FixMyStreet::DB->schema;
             #$db->txn_begin;
 
-            my $params = { id => $input->{body_id}, name => $input->{body_name} };
+            my $params = { name => $input->{body_name} };
             my $body = $db->resultset('Body')->find_or_create($params);
-            $body->body_areas->find_or_create({ area_id => $input->{body_id} });
+            $body->body_areas->find_or_create({ area_id => $input->{area_id} });
             ok $body, "found/created body " . $input->{body_name};
             $body->update({ can_be_devolved => 1 });
 
@@ -172,7 +205,7 @@ sub test_overrides {
                 whenedited => DateTime->now,
                 jurisdiction => '1234',
                 api_key => 'SEEKRIT',
-                body_id => $input->{body_id},
+                body_id => $body->id,
             );
             $contact->update({ send_method => 'Open311', endpoint => 'http://example.com/open311' });
 
@@ -190,8 +223,8 @@ sub test_overrides {
                 name => 'Fred Bloggs',
                 anonymous => 1,
                 state => 'unconfirmed',
-                bodies_str => $input->{body_id},
-                areas => (sprintf ',%d,', $input->{body_id}),
+                bodies_str => $body->id,
+                areas => (sprintf ',%d,', $input->{area_id}),
                 category => 'ZZ',
                 cobrand => $cobrand,
                 user => $user,
@@ -206,6 +239,8 @@ sub test_overrides {
             $sr->add_body($body, $contact);
             $sr->send( $row, $input->{extra} || {} );
 
+            my $new_extra = $row->get_extra_fields;
+            cmp_deeply $new_extra, $end_extra || [];
             cmp_deeply (Open311->_get_test_data, $expected_data, 'Data as expected')
                 or diag Dumper( Open311->_get_test_data );
 
@@ -240,13 +275,6 @@ BEGIN {
 
     sub _get_test_data { return +{ %data } }
     sub _reset_test_data { %data = () }
-
-    package FixMyStreet::DB::Result::Problem;
-    use Class::Method::Modifiers; # is marked as immutable by Moose
-    sub discard_changes {
-        $data{discard_changes}++;
-        # no need to actually discard, as we're in transaction anyway
-    };
 
     package FixMyStreet::DB::Result::Body;
     use Class::Method::Modifiers; # is marked as immutable by Moose

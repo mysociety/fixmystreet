@@ -76,8 +76,10 @@ sub open311_config {
     my $id = $row->user->get_extra_metadata('westminster_account_id');
     # Westminster require 0 as the account ID if there's no MyWestminster ID.
     $h->{account_id} = $id || '0';
+}
 
-    my $extra = $row->get_extra_fields;
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
 
     # Reports made via the app probably won't have a USRN because we don't
     # display the road layer. Instead we'll look up the closest asset from the
@@ -97,8 +99,6 @@ sub open311_config {
             push @$extra, { name => 'UPRN', value => $ref };
         }
     }
-
-    $row->set_extra_fields(@$extra);
 }
 
 sub lookup_site_code_config {

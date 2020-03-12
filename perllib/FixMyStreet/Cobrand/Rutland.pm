@@ -26,17 +26,18 @@ sub report_validation {
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
-    my $extra = $row->get_extra_fields;
-    push @$extra, { name => 'external_id', value => $row->id };
-    push @$extra, { name => 'title', value => $row->title };
-    push @$extra, { name => 'description', value => $row->detail };
-
-    if ($h->{closest_address}) {
-        push @$extra, { name => 'closest_address', value => "$h->{closest_address}" }
-    }
-    $row->set_extra_fields( @$extra );
-
     $params->{multi_photos} = 1;
+}
+
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
+
+    return [
+        { name => 'external_id', value => $row->id },
+        { name => 'title', value => $row->title },
+        { name => 'description', value => $row->detail },
+        $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
+    ];
 }
 
 sub disambiguate_location {

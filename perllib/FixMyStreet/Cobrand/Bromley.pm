@@ -161,7 +161,14 @@ sub title_list {
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
-    my $extra = $row->get_extra_fields;
+    $params->{always_send_latlong} = 0;
+    $params->{send_notpinpointed} = 1;
+    $params->{extended_description} = 0;
+}
+
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
+
     my $title = $row->title;
 
     foreach (@$extra) {
@@ -169,9 +176,8 @@ sub open311_config {
         $title .= ' | ID: ' . $_->{value} if $_->{name} eq 'feature_id';
         $title .= ' | PROW ID: ' . $_->{value} if $_->{name} eq 'prow_reference';
     }
-    @$extra = grep { $_->{name} !~ /feature_id|prow_reference/ } @$extra;
 
-    push @$extra,
+    my $open311_only = [
         { name => 'report_url',
           value => $h->{url} },
         { name => 'report_title',
@@ -183,23 +189,20 @@ sub open311_config {
         { name => 'requested_datetime',
           value => DateTime::Format::W3CDTF->format_datetime($row->confirmed->set_nanosecond(0)) },
         { name => 'email',
-          value => $row->user->email };
+          value => $row->user->email }
+    ];
 
     # make sure we have last_name attribute present in row's extra, so
     # it is passed correctly to Bromley as attribute[]
     if (!$row->get_extra_field_value('last_name')) {
         my ( $firstname, $lastname ) = ( $row->name =~ /(\S+)\.?\s+(.+)/ );
-        push @$extra, { name => 'last_name', value => $lastname };
+        push @$open311_only, { name => 'last_name', value => $lastname };
     }
     if (!$row->get_extra_field_value('fms_extra_title') && $row->user->title) {
-        push @$extra, { name => 'fms_extra_title', value => $row->user->title };
+        push @$open311_only, { name => 'fms_extra_title', value => $row->user->title };
     }
 
-    $row->set_extra_fields(@$extra);
-
-    $params->{always_send_latlong} = 0;
-    $params->{send_notpinpointed} = 1;
-    $params->{extended_description} = 0;
+    return ($open311_only, [ 'feature_id', 'prow_reference' ]);
 }
 
 sub open311_config_updates {

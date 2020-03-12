@@ -197,13 +197,12 @@ sub send(;$) {
         # Multiply results together, so one success counts as a success.
         my $result = -1;
 
-        my @methods;
         for my $sender ( keys %reporters ) {
             debug_print("sending using " . $sender, $row->id) if $debug_mode;
             $sender = $reporters{$sender};
             my $res = $sender->send( $row, \%h );
             $result *= $res;
-            push @methods, $sender if !$res;
+            $row->add_send_method($sender) if !$res;
             if ( $sender->unconfirmed_counts) {
                 foreach my $e (keys %{ $sender->unconfirmed_counts } ) {
                     foreach my $c (keys %{ $sender->unconfirmed_counts->{$e} }) {
@@ -214,12 +213,6 @@ sub send(;$) {
             }
             $test_data->{test_req_used} = $sender->open311_test_req_used
                 if FixMyStreet->test_mode && $sender->can('open311_test_req_used');
-        }
-
-        # Add the send methods now because e.g. Open311
-        # send() calls $row->discard_changes
-        foreach (@methods) {
-            $row->add_send_method($_);
         }
 
         unless ($result) {
