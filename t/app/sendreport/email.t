@@ -63,8 +63,9 @@ foreach my $test ( {
         is $e->build_recipient_list( $row, {} ), $test->{count}, 'correct recipient list count';
 
         if ( $test->{unconfirmed} ) {
-            is_deeply $e->unconfirmed_counts, { 'council@example.com' => { 'category' => 1 } }, 'correct unconfirmed_counts count';
-            is_deeply $e->unconfirmed_notes, { 'council@example.com' => { 'category' => $test->{expected_note} } }, 'correct note used';
+            is_deeply $e->unconfirmed_data, { 'council@example.com' => {
+                'category' => { 'count' => 1, 'note' => $test->{expected_note} }
+            } }, 'correct unconfirmed_data';
         }
     };
 }
