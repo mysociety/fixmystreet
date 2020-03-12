@@ -156,7 +156,7 @@ FixMyStreet::override_config {
 
         $mech->submit_form_ok({ with_fields => { category => 'Gulley covers' } });
         $test_data = FixMyStreet::Script::Reports::send();
-        is $test_data, undef, 'Report not resent';
+        is_deeply $test_data, {}, 'Report not resent';
 
         $mech->submit_form_ok({ with_fields => { category => 'Lamp post' } });
         $test_data = FixMyStreet::Script::Reports::send();

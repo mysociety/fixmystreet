@@ -24,8 +24,8 @@ sub build_recipient_list {
             $note = 'Body ' . $row->bodies_str . ' deleted'
                 unless $note;
             $body_email = 'N/A' unless $body_email;
-            $self->unconfirmed_counts->{$body_email}{$row->category}++;
-            $self->unconfirmed_notes->{$body_email}{$row->category} = $note;
+            $self->unconfirmed_data->{$body_email}{$row->category}{count}++;
+            $self->unconfirmed_data->{$body_email}{$row->category}{note} = $note;
         }
 
         my @emails;
