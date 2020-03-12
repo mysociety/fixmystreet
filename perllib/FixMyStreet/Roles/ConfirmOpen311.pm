@@ -11,15 +11,19 @@ sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
     $params->{multi_photos} = 1;
+}
 
-    my $extra = $row->get_extra_fields;
-    push @$extra,
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
+
+    my $open311_only = [
         { name => 'report_url',
           value => $h->{url} },
         { name => 'title',
           value => $row->title },
         { name => 'description',
-          value => $row->detail };
+          value => $row->detail },
+    ];
 
     # Reports made via FMS.com or the app probably won't have a USRN
     # value because we don't display the adopted highways layer on those
@@ -33,7 +37,7 @@ sub open311_config {
         }
     }
 
-    $row->set_extra_fields(@$extra);
+    return $open311_only;
 }
 
 1;

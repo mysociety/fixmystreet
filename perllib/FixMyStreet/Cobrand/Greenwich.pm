@@ -44,13 +44,13 @@ sub reports_per_page { return 20; }
 
 sub admin_user_domain { 'royalgreenwich.gov.uk' }
 
-sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
 
-    my $extra = $row->get_extra_fields;
     # Greenwich doesn't have category metadata to fill this
-    push @$extra, { name => 'external_id', value => $row->id };
-    $row->set_extra_fields( @$extra );
+    return [
+        { name => 'external_id', value => $row->id },
+    ];
 }
 
 sub open311_contact_meta_override {

@@ -83,14 +83,17 @@ sub lookup_site_code_config {
 }
 
 sub open311_config {
-    my ($self, $row, $h, $params, $contact) = @_;
+    my ($self, $row, $h, $params) = @_;
 
     $params->{multi_photos} = 1;
+}
 
-    my $extra = $row->get_extra_fields;
+sub open311_extra_data {
+    my ($self, $row, $h, $extra, $contact) = @_;
 
+    my $open311_only;
     if ($contact->email =~ /^Confirm/) {
-        push @$extra,
+        push @$open311_only,
             { name => 'report_url', description => 'Report URL',
               value => $h->{url} },
             { name => 'title', description => 'Title',
@@ -123,7 +126,7 @@ sub open311_config {
         }
     }
 
-    $row->set_extra_fields(@$extra);
+    return $open311_only;
 }
 
 sub admin_user_domain { 'bexley.gov.uk' }

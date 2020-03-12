@@ -88,12 +88,13 @@ sub map_type { 'Northamptonshire' }
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
-    my $extra = $row->get_extra_fields;
+    $params->{multi_photos} = 1;
+}
 
-    # remove the emergency category which is informational only
-    @$extra = grep { $_->{name} ne 'emergency' } @$extra;
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
 
-    push @$extra,
+    return ([
         { name => 'report_url',
           value => $h->{url} },
         { name => 'title',
@@ -101,11 +102,10 @@ sub open311_config {
         { name => 'description',
           value => $row->detail },
         { name => 'category',
-          value => $row->category };
-
-    $row->set_extra_fields(@$extra);
-
-    $params->{multi_photos} = 1;
+          value => $row->category },
+    ], [
+        'emergency'
+    ]);
 }
 
 sub open311_get_update_munging {

@@ -37,10 +37,18 @@ sub send {
         my $contact = $self->fetch_category($body, $row) or next;
 
         my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
-        $cobrand->call_hook(open311_config => $row, $h, \%open311_params, $contact);
+        $cobrand->call_hook(open311_config => $row, $h, \%open311_params);
 
         # Try and fill in some ones that we've been asked for, but not asked the user for
         my $extra = $row->get_extra_fields();
+        my ($include, $exclude) = $cobrand->call_hook(open311_extra_data => $row, $h, $extra, $contact);
+
+        my $original_extra = [ @$extra ];
+        push @$extra, @$include if $include;
+        if ($exclude) {
+            $exclude = join('|', @$exclude);
+            @$extra = grep { $_->{name} !~ /$exclude/ } @$extra;
+        }
 
         my $id_field = $contact->id_field;
         foreach (@{$contact->get_extra_fields}) {
@@ -81,8 +89,8 @@ sub send {
             $self->open311_test_req_used($open311->test_req_used);
         }
 
-        # make sure we don't save user changes from above
-        $row->discard_changes();
+        # make sure we don't save extra changes from above
+        $row->set_extra_fields( @$original_extra );
 
         if ( $resp ) {
             $row->external_id( $resp );

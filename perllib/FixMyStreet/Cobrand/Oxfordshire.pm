@@ -118,18 +118,19 @@ sub state_groups_inspect {
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
-    my $extra = $row->get_extra_fields;
-    push @$extra, { name => 'external_id', value => $row->id };
-    push @$extra, { name => 'northing', value => $h->{northing} };
-    push @$extra, { name => 'easting', value => $h->{easting} };
-
-    if ($h->{closest_address}) {
-        push @$extra, { name => 'closest_address', value => "$h->{closest_address}" }
-    }
-    $row->set_extra_fields( @$extra );
-
     $params->{multi_photos} = 1;
     $params->{extended_description} = 'oxfordshire';
+}
+
+sub open311_extra_data {
+    my ($self, $row, $h, $extra) = @_;
+
+    return [
+        { name => 'external_id', value => $row->id },
+        { name => 'northing', value => $h->{northing} },
+        { name => 'easting', value => $h->{easting} },
+        $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
+    ];
 }
 
 sub open311_config_updates {
