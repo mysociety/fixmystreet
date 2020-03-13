@@ -46,10 +46,9 @@ if (!$opt->commit) {
 my $config = decode_json(path($ARGV[0])->slurp_utf8);
 
 my $body = FixMyStreet::DB->resultset('Body')->find({ name => $opt->body });
+die "Couldn't find body " . $opt->body unless $body;
 
 $body->contacts->delete_all if $opt->delete;
-
-die "Couldn't find body" unless $body;
 
 my $groups = $config->{groups};
 if ($groups) {
@@ -72,12 +71,14 @@ sub make_categories {
             category => $cat->{category}
         });
         $child_cat->email($cat->{email});
+        $child_cat->send_method($cat->{devolved}) if $cat->{devolved};
         $child_cat->state('confirmed');
         $child_cat->editor($0);
         $child_cat->whenedited(\'current_timestamp');
         $child_cat->note($child_cat->in_storage ? 'Updated by import_categories' : 'Created by import_categories');
         say colored("WARNING", 'red') . " " . $child_cat->category . " already exists" if $child_cat->in_storage and $child_cat->category ne 'Other (TfL)';
         $child_cat->extra(undef) if $child_cat->in_storage;
+        $child_cat->set_extra_metadata(open311_protect => 1) if $cat->{open311_protect};
 
         if ($group) {
             my $groups = $child_cat->groups;
