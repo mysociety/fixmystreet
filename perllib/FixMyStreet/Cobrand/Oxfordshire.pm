@@ -142,8 +142,13 @@ sub should_skip_sending_update {
     my ($self, $update ) = @_;
 
     # Oxfordshire stores the external id of the problem as a customer reference
-    # in metadata
-    return 1 if !$update->problem->get_extra_metadata('customer_reference');
+    # in metadata, it arrives in a fetched update (but give up if it never does,
+    # or the update is for an old pre-ref report)
+    my $customer_ref = $update->problem->get_extra_metadata('customer_reference');
+    my $diff = time() - $update->confirmed->epoch;
+    return 1 if !$customer_ref && $diff > 60*60*24;
+    return 'WAIT' if !$customer_ref;
+    return 0;
 }
 
 sub on_map_default_status { return 'open'; }
