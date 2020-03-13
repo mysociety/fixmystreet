@@ -119,3 +119,12 @@
         background: darken($color-he-blue, 10%);
     }
 }
+
+.olMapViewport {
+    background-color: #fff;
+}
+
+.olLayerGrid, .olBackBuffer {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
