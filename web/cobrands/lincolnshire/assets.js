@@ -134,6 +134,7 @@ fixmystreet.assets.add(defaults, {
     wfs_feature: "NSG",
     always_visible: true,
     non_interactive: true,
+    max_resolution: 9.554628534317017,
     usrn: {
         attribute: 'Site_Code',
         field: 'site_code'
