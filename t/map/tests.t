@@ -11,6 +11,7 @@ my $requires = {
     'FMS' => 'map-fms.js',
     'Google' => 'map-google.js',
     'GoogleOL' => 'map-google-ol.js',
+    'HighwaysEngland' => 'map-fms.js',
     'Hounslow' => 'map-wmts-hounslow.js',
     'IsleOfWight' => 'map-wmts-isleofwight.js',
     'OSM' => 'OpenStreetMap.js',
