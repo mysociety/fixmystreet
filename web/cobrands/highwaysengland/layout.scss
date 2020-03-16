@@ -1,7 +1,8 @@
 @import "_colours";
 @import "../sass/layout";
 
-#site-logo {
+#site-logo,
+.site-logo {
     width: 200px;
     height: 60px;
     background-size: 200px 60px;
@@ -73,5 +74,21 @@ p.form-error {
         font-size: 3em;
         font-weight: bold;
         color: $color-he-darkblue;
+    }
+}
+
+.site-footer {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    margin-top: 2em;
+
+    .powered-by-fms {
+        margin: 0;
+    }
+
+    .container {
+        @include flex-container();
+        @include justify-content(space-between);
+        @include flex-align(center);
     }
 }

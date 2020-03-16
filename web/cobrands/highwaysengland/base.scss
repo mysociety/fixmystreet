@@ -7,7 +7,15 @@
     padding: 1em 0;
 }
 
-#site-logo {
+// Highways England cobrand sets up a .site-logo class to match #site-logo,
+// so that we can use the same logo in the header and footer.
+.site-logo {
+    display: block;
+    text-indent: -999999px;
+}
+
+#site-logo,
+.site-logo {
     width: 150px;
     height: 45px;
     @include svg-background-image('/cobrands/highwaysengland/images/logo');
@@ -161,6 +169,20 @@ p.form-error {
 
     &:hover, &:focus {
         background: darken($color-he-blue, 10%);
+    }
+}
+
+.site-footer {
+    margin-top: 0;
+    background: $color-he-grey-2;
+    box-shadow: 0 1000px 0 1000px $color-he-grey-2; // infinite footer
+    border-top: 8px solid $color-he-darkblue;
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    .powered-by-fms {
+        display: block;
+        margin-top: 1em;
     }
 }
 
