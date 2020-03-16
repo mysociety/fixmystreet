@@ -6,6 +6,7 @@
     - Bugfixes
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.
+        - Provide access to staff-only categories in admin.
     - UK:
         - Added junction lookup, so you can search for things like "M60, Junction 2"
 

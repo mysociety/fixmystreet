@@ -20,6 +20,11 @@ sub not_deleted {
     return $rs->search( { $rs->me('state') => { -not_in => [ 'deleted', 'staff' ] } } );
 }
 
+sub not_deleted_admin {
+    my $rs = shift;
+    return $rs->search( { $rs->me('state') => { -not_in => [ 'deleted' ] } } );
+}
+
 sub active {
     my $rs = shift;
     $rs->search( { $rs->me('state') => [ 'unconfirmed', 'confirmed' ] } );
