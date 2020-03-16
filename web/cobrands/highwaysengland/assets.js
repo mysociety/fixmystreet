@@ -59,7 +59,12 @@ fixmystreet.assets.add(defaults, {
     asset_type: 'road',
     no_asset_msg_id: '#js-not-he-road',
     actions: {
-        found: fixmystreet.message_controller.road_found,
+        found: function(layer, feature) {
+            // If the road isn't in area 7 then we want to show the not found message.
+            fixmystreet.message_controller.road_found(layer, feature, function(feature) {
+                return feature.attributes.area_name === 'Area 7';
+            }, '#js-not-area7-road');
+        },
         not_found: fixmystreet.message_controller.road_not_found
     }
 });

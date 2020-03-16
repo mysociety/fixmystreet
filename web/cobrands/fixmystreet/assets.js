@@ -1237,6 +1237,8 @@ fixmystreet.message_controller = (function() {
                 fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
                 if (is_only_body(layer.fixmystreet.body)) {
                     responsibility_on(msg_id);
+                } else if (!layer.fixmystreet.body && fixmystreet.cobrand === 'highwaysengland') {
+                    responsibility_on(msg_id);
                 }
             }
         },
@@ -1252,6 +1254,8 @@ fixmystreet.message_controller = (function() {
                 fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
                 responsibility_off();
             } else if (is_only_body(layer.fixmystreet.body)) {
+                responsibility_on(layer.fixmystreet.no_asset_msg_id, layer.fixmystreet.asset_item, layer.fixmystreet.asset_type);
+            } else if (!layer.fixmystreet.body && fixmystreet.cobrand === 'highwaysengland') {
                 responsibility_on(layer.fixmystreet.no_asset_msg_id, layer.fixmystreet.asset_item, layer.fixmystreet.asset_type);
             }
         },
