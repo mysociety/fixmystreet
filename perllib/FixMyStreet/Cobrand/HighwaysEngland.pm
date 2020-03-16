@@ -19,4 +19,16 @@ sub report_form_extras { (
     { name => 'road_name', required => 0 },
 ) }
 
+sub allow_anonymous_reports { 'button' }
+
+sub admin_user_domain { 'highwaysengland.co.uk' }
+
+sub anonymous_account {
+    my $self = shift;
+    return {
+        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
+        name => 'Anonymous user',
+    };
+}
+
 1;
