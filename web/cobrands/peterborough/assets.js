@@ -106,4 +106,6 @@ fixmystreet.assets.add(defaults, {
     asset_item_message: ''
 });
 
+fixmystreet.message_controller.add_ignored_body(defaults.body);
+
 })();
