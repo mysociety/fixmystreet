@@ -4,7 +4,8 @@
     - Admin improvements:
         - order unsent reports by confirmed date
     - Bugfixes
-	- Application user in Docker container can't install packages. #2914
+        - Application user in Docker container can't install packages. #2914
+        - Look at all categories when sending reports.
     - UK:
         - Added junction lookup, so you can search for things like "M60, Junction 2"
 
