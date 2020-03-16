@@ -8,7 +8,7 @@ use warnings;
 sub enter_postcode_text { 'Enter a location, road name or postcode' }
 
 sub example_places {
-    ['M60, Junction 2’, ‘M6 323.5', 'Spaghetti Junction']
+    ['A14, Junction 13’, A1 98.5', 'Newark on Trent']
 }
 
 sub allow_photo_upload { 0 }
