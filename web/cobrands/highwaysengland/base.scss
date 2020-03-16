@@ -35,6 +35,50 @@
     }
 }
 
+%warning-icon {
+    content: "";
+    display: block;
+    @include svg-background-image('/cobrands/highwaysengland/images/warning-red');
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: 1em;
+    @include flex(0 0 auto); // do not shrink
+}
+
+.front-warning {
+    background: mix($color-he-red, #fff, 25%);
+    line-height: 1.3;
+
+    .container {
+        @include flex-container();
+        @include flex-align(center);
+        padding-top: 1em;
+        padding-bottom: 1em;
+
+        &:before {
+            @extend %warning-icon;
+        }
+    }
+}
+
+div.form-error,
+p.form-error {
+    padding: 1em;
+    color: $color-he-black;
+    border-radius: 0;
+    background: mix($color-he-red, #fff, 25%);
+    border-left: 8px solid $color-he-red;
+    @include flex-container();
+    @include flex-align(center);
+
+    &:before {
+        @extend %warning-icon;
+    }
+}
+
 #front-main {
     margin: 0;
     padding: 1em;

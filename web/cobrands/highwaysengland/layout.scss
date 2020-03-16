@@ -45,6 +45,11 @@
     }
 }
 
+div.form-error,
+p.form-error {
+    @include flex-container();
+}
+
 #front-main {
     background: $color-he-grey-2;
     color: inherit;
