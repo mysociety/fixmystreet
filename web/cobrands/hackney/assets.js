@@ -4,6 +4,30 @@ if (!fixmystreet.maps) {
     return;
 }
 
+/** These layers are from the Hackney WFS feed, for non-Alloy categories: */
+var wfs_defaults = {
+  wfs_url: "https://map.hackney.gov.uk/geoserver/wfs",
+  asset_type: 'spot',
+  max_resolution: 2.388657133579254,
+  asset_id_field: 'id',
+  attributes: {},
+  geometryName: 'geom',
+  srsName: "EPSG:27700",
+  strategy_class: OpenLayers.Strategy.FixMyStreet,
+  body: "Hackney Council",
+  asset_item: "item"
+};
+
+
+fixmystreet.assets.add(wfs_defaults, {
+  wfs_feature: "amenity:public_toilet",
+  asset_category: "Toilets (2)",
+  attributes: {"location": "location", "prinx": "prinx"}
+});
+
+
+/** These layers are served directly from Alloy: */
+
 // View all layers with something like:
 // curl https://tilma.staging.mysociety.org/resource-proxy/proxy.php\?https://hackney.assets/ | jq '.results[] | .layer.code, ( .layer.styles[] | { id, name } ) '
 var layers = [
