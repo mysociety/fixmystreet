@@ -51,7 +51,6 @@ sub send(;$) {
 
     $manager->end_debug_line;
     $manager->end_summary_unconfirmed;
-    $manager->end_summary_failures;
 
     return $manager->test_data;
 }
@@ -84,7 +83,6 @@ sub end_summary_unconfirmed {
 
 sub end_summary_failures {
     my $self = shift;
-    return unless $self->verbose || $self->debug_mode;
 
     my $sending_errors = '';
     my $unsent = FixMyStreet::DB->resultset('Problem')->search( {

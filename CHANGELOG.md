@@ -9,6 +9,7 @@
         - Provide access to staff-only categories in admin.
     - Development improvements:
         - Refactor Script::Report into an object.
+        - Move summary failures to a separate script.
     - UK:
         - Added junction lookup, so you can search for things like "M60, Junction 2"
 

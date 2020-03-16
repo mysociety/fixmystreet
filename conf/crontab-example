@@ -11,9 +11,8 @@
 PATH=/usr/local/bin:/usr/bin:/bin
 
 # send-reports has three rows so that its 8am entry can be run with --verbose to send a morning summary of anything that's gone wrong
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$FMS/send-reports.lock" "$FMS/bin/send-reports" || echo "stalled?"
-0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/send-reports" || echo "stalled?"
-0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/send-reports --verbose" || echo "stalled?"
+*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/send-reports" || echo "stalled?"
+0 8 * * * "$FMS/bin/send-reports-failure-summary"
 
 2 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-alerts.lock" "$FMS/bin/send-alerts" || echo "stalled?"
 22,52 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-questionnaires.lock" "$FMS/bin/send-questionnaires" || echo "stalled?"

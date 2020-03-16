@@ -1,0 +1,20 @@
+#!/usr/bin/env perl
+
+# send-reports-failure-summary:
+# Prints a summary of report sending failures
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::Script::Reports;
+
+my $manager = FixMyStreet::Script::Reports->new;
+$manager->end_summary_failures;
