@@ -6,7 +6,9 @@ Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Klicken Sie bitte auf diese
 
 [% token_url %]
 
-Wir werden Ihr Anliegen innerhalb der nächsten sechs Arbeitstage beantworten.
+Wir bitten Sie um Verständnis, dass Meldungen und Schäden während der
+Coronakrise weniger schnell als gewohnt beantwortet respektive repariert werden
+können.
 
 Achtung: Notfälle müssen der Polizei gemeldet werden via Telefon 117.
 
