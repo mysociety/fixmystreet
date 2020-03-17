@@ -157,6 +157,9 @@ def parse_email(row):
     if " " in email:
         # need a better way to handle these residential/commercial split categories
         email = email.split(" ", 1)[0]
+    if os.getenv("EMAIL_REPLACEMENT"):
+        email = email.translate(str.maketrans(".@", "__"))
+        email = os.environ['EMAIL_REPLACEMENT'].format(email=email)
     return email
 
 
