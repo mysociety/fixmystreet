@@ -49,10 +49,10 @@ sub restriction {
 }
 
 # UK cobrands assume that each MapIt area ID maps both ways with one
-# body. Except TfL.
+# body. Except TfL and Highways England.
 sub body {
     my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { '!=', 'TfL' } })->first;
+    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { 'not_in', ['TfL', 'Highways England'] } })->first;
     return $body;
 }
 
@@ -239,8 +239,8 @@ sub owns_problem {
     } else { # Object
         @bodies = values %{$report->bodies};
     }
-    # Want to ignore the TfL body that covers London councils
-    my %areas = map { %{$_->areas} } grep { $_->name ne 'TfL' } @bodies;
+    # Want to ignore the TfL body that covers London councils, and HE that is all England
+    my %areas = map { %{$_->areas} } grep { $_->name !~ /TfL|Highways England/ } @bodies;
     return $areas{$self->council_area_id} ? 1 : undef;
 }
 
