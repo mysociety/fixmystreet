@@ -35,6 +35,13 @@ Latitude: [% report.latitude %]
 
 Longitude: [% report.longitude %]
 
+[% IF report.get_extra_field_value('road_name') ~%]
+Road: [% report.get_extra_field_value('road_name') %]
+[% END %]
+[% IF report.get_extra_field_value('sect_label') ~%]
+Section: [% report.get_extra_field_value('sect_label') %]
+[% END %]
+
 View OpenStreetMap of this location: [% osm_url %]
 
 [% closest_address %]----------

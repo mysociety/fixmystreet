@@ -1,0 +1,46 @@
+[%
+
+email_summary = "A new problem in your area has been reported by a " _ site_name _ " user.";
+email_footer = "Sent via FixMyStreet";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">New problem in your&nbsp;area</h1>
+  <p style="[% p_style %]">[% missing %][% multiple %]A user of [% site_name %] has submitted the following report
+of a local problem that they believe might require your attention.</p>
+
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% url %]">Show full report</a>
+  </p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% report.category | html %]</p>
+    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+    <p style="[% secondary_p_style %]">
+      <strong>Location:</strong>
+      <a href="[% osm_url %]" title="View OpenStreetMap of this location">
+        [%~ report.latitude %], [% report.longitude ~%]
+      </a>
+      [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
+    </p>
+    <p style="[% secondary_p_style %]">
+      <strong>Road:</strong>
+        [% report.get_extra_field_value('road_name') %]
+    </p>
+    <p style="[% secondary_p_style %]">
+      <strong>Section:</strong>
+        [% report.get_extra_field_value('sect_label') %]
+    </p>
+
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

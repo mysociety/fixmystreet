@@ -62,6 +62,18 @@ of a local problem that they believe might require your attention.</p>
       </a>)
       [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
     </p>
+  [% IF report.get_extra_field_value('road_name') %]
+    <p style="[% secondary_p_style %]">
+      <strong>Road:</strong>
+        [% report.get_extra_field_value('road_name') %]
+    </p>
+  [% END %]
+  [% IF report.get_extra_field_value('sect_label') %]
+    <p style="[% secondary_p_style %]">
+      <strong>Section:</strong>
+        [% report.get_extra_field_value('sect_label') %]
+    </p>
+  [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
