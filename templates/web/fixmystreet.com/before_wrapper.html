@@ -1,0 +1,26 @@
+<div class="survey-banner">
+    <p>
+        <span class="survey-banner__text">Share your views and help us improve FixMyStreet for&nbsp;everyone</span>
+        <a class="survey-banner__cta" href="https://www.surveygizmo.com/s3/5506345/46e9932d0fbf" target="_blank">Take our short survey</a>
+    </p>
+    <button class="survey-banner__close">Close</button>
+</div>
+<script nonce="[% csp_nonce %]">
+(function(){
+    var live_site = location.hostname === 'www.fixmystreet.com';
+    var hasnt_opted_out = document.cookie.indexOf('__has_closed_march_2020_survey') === -1;
+    var randomly_chosen = Math.random() > 0.6;
+    if ( live_site && hasnt_opted_out && randomly_chosen ) {
+        document.body.className = ((document.body.className) ? document.body.className + ' has-survey-banner' : 'has-survey-banner');
+        document.querySelector('.survey-banner').style.display = 'block';
+    }
+    function hide_survey(){
+        document.querySelector('.survey-banner').style.display = 'none';
+        document.body.className = document.body.className.replace('has-survey-banner', '');
+        var t = new Date(); t.setFullYear(t.getFullYear() + 1);
+        document.cookie = '__has_closed_march_2020_survey=1; path=/; expires=' + t.toUTCString();
+    }
+    document.querySelector('.survey-banner__close').onclick = hide_survey;
+    document.querySelector('.survey-banner__cta').onclick = hide_survey;
+})();
+</script>
