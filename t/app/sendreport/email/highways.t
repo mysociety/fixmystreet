@@ -29,5 +29,17 @@ $e->add_body($highways);
 is $e->build_recipient_list($row), 1, 'correct recipient list count';
 is_deeply $e->to, [ [ 'highways@example.com', 'Highways England' ] ], 'correct To line';
 
+$row->set_extra_fields( { name => 'area_name', value => 'Area 6' } );
+is $e->build_recipient_list($row), 1, 'correct recipient list count';
+is_deeply $e->to, [ [ 'highways@example.com', 'Highways England' ] ], 'correct To line';
+
+FixMyStreet::override_config {
+    COBRAND_FEATURES => { open311_email => { highwaysengland => { area_seven => 'a7@example.com' } } }
+}, sub {
+    $row->set_extra_fields( { name => 'area_name', value => 'Area 7' } );
+    is $e->build_recipient_list($row), 1, 'correct recipient list count';
+    is_deeply $e->to, [ [ 'a7@example.com', 'Highways England' ] ], 'correct To line';
+};
+
 done_testing();
 
