@@ -111,4 +111,30 @@ sub fetch_area_children {
     return $areas;
 }
 
+sub munge_report_new_bodies {
+    my ($self, $bodies) = @_;
+    # On the cobrand there is only the HE body
+    %$bodies = map { $_->id => $_ } grep { $_->name eq 'Highways England' } values %$bodies;
+}
+
+sub report_new_is_on_he_road {
+    my ( $self ) = @_;
+
+    my ($x, $y) = (
+        $self->{c}->stash->{longitude},
+        $self->{c}->stash->{latitude},
+    );
+
+    my $cfg = {
+        url => "https://tilma.mysociety.org/mapserver/highways",
+        srsname => "urn:ogc:def:crs:EPSG::4326",
+        typename => "Highways",
+        filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",
+    };
+
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+    my $features = $ukc->_fetch_features($cfg, $x, $y);
+    return scalar @$features ? 1 : 0;
+}
+
 1;

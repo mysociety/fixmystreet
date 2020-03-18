@@ -1032,8 +1032,7 @@ sub process_report : Private {
         }
 
         # check that we've not indicated we only want to sent to a single body
-        # and if we find a matching one then only send to that. e.g. if we clicked
-        # on a TfL road on the map.
+        # and if we find a matching one then only send to that.
         my $body_string = do {
             if (my $single_body_only = $c->get_param('single_body_only')) {
                 my $body = $c->model('DB::Body')->search({ name => $single_body_only })->first;
