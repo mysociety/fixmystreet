@@ -34,6 +34,20 @@ fixmystreet.assets.add(defaults, {
     non_interactive: true,
     road: true,
     all_categories: true,
+    usrn: [
+        {
+            field: 'road_name',
+            attribute: 'ROA_NUMBER'
+        },
+        {
+            field: 'area_name',
+            attribute: 'area_name'
+        },
+        {
+            field: 'sect_label',
+            attribute: 'sect_label'
+        }
+    ],
     // motorways are wide and the lines to define them are narrow so we
     // need a bit more margin for error in finding the nearest to stop
     // clicking in the middle of them being undetected
