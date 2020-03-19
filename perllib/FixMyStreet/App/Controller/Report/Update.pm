@@ -106,6 +106,17 @@ sub process_user : Private {
     # Update form includes two username fields: #form_username_register and #form_username_sign_in
     $params{username} = (first { $_ } $c->get_param_list('username')) || '';
 
+    my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
+    if ($anon_button) {
+        my $anon_details = $c->cobrand->anonymous_account;
+        my $user = $c->model('DB::User')->find_or_new({ email => $anon_details->{email} });
+        $user->name($anon_details->{name});
+        $update->user($user);
+        $update->name($user->name);
+        $c->stash->{contributing_as_anonymous_user} = 1;
+        return 1;
+    }
+
     # Extra block to use 'last'
     if ( $c->user_exists ) { {
         my $user = $c->user->obj;
@@ -277,6 +288,16 @@ sub process_update : Private {
 
     $c->stash->{contributing_as_body} = $c->user_exists && $c->user->contributing_as('body', $c, $update->problem->bodies_str_ids);
     $c->stash->{contributing_as_anonymous_user} = $c->user_exists && $c->user->contributing_as('anonymous_user', $c, $update->problem->bodies_str_ids);
+
+    # This is also done in process_user, but is needed here for anonymous() just below
+    my $anon_button = $c->cobrand->allow_anonymous_reports($update->problem->category) eq 'button' && $c->get_param('report_anonymously');
+    if ($anon_button) {
+        $c->stash->{contributing_as_anonymous_user} = 1;
+        $c->stash->{contributing_as_body} = undef;
+        $c->stash->{contributing_as_another_user} = undef;
+    }
+
+
     if ($c->stash->{contributing_as_body}) {
         $update->name($c->user->from_body->name);
         $update->anonymous(0);
@@ -393,6 +414,13 @@ sub check_for_errors : Private {
     $c->stash->{errors} ||= [];
     #push @{ $c->stash->{errors} },
     #  _('There were problems with your update. Please see below.');
+
+    if ( $c->cobrand->allow_anonymous_reports ) {
+        my $anon_details = $c->cobrand->anonymous_account;
+        my $update = $c->stash->{update};
+        $update->user->email(undef) if $update->user->email eq $anon_details->{email};
+        $update->name(undef) if $update->name && $update->name eq $anon_details->{name};
+    }
 
     return;
 }
