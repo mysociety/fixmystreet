@@ -127,13 +127,16 @@ sub process_user : Private {
         }
 
         $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
+        $update->name($user->name);
         my $title = Utils::trim_text( $params{fms_extra_title} );
         $user->title( $title ) if $title;
         $update->user( $user );
 
         # Just in case, make sure the user will have a name
         if ($c->stash->{contributing_as_body} or $c->stash->{contributing_as_anonymous_user}) {
-            $user->name($user->from_body->name) unless $user->name;
+            my $name = $user->moderating_user_name;
+            $update->name($name);
+            $user->name($name) unless $user->name;
         }
 
         return 1;
@@ -167,6 +170,7 @@ sub process_user : Private {
 
     $update->user->name( Utils::trim_text( $params{name} ) )
         if $params{name};
+    $update->name($update->user->name);
     $update->user->title( Utils::trim_text( $params{fms_extra_title} ) )
         if $params{fms_extra_title};
 
@@ -299,13 +303,10 @@ sub process_update : Private {
 
 
     if ($c->stash->{contributing_as_body}) {
-        $update->name($c->user->from_body->name);
         $update->anonymous(0);
     } elsif ($c->stash->{contributing_as_anonymous_user}) {
-        $update->name($c->user->from_body->name);
         $update->anonymous(1);
     } else {
-        $update->name($name);
         $update->anonymous($c->get_param('may_show_name') ? 0 : 1);
     }
 
