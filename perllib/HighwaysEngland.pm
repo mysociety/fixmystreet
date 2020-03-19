@@ -9,14 +9,18 @@ use Utils;
 
 sub database_file { FixMyStreet->path_to('../data/roads.sqlite') }
 
+my $junction = '(junction|junc|jct|j)\.?\s*(?<junction>.*?)';
+my $road = '(?<road>[AM][0-9MT]*)';
+my $space = '[\s,.]*';
+
 sub junction_lookup {
     my $s = shift;
-    if ($s =~ /^\s*(?<road>[AM][0-9MT]*)[\s,.]*(junction|junc|j)\s*(?<junction>.*?)\s*$/i
-          || $s =~ /^\s*(junction|junc|j)\s*(?<junction>.*?)[,.\s]*(?<road>[AM][0-9MT]*)\s*$/i
+    if ($s =~ /^\s*$road$space$junction\s*$/i
+          || $s =~ /^\s*$junction$space$road\s*$/i
     ) {
         return _lookup_db($+{road}, 'junction', $+{junction}, 'name') || undef;
-    } elsif ($s =~ /^\s*(?<road>[AM][^ ]*)\s*(?<dist>[0-9.]+)\s*$/i
-          || $s =~ /^\s*(?<dist>[0-9.]+)\s*(?<road>[AM][^ ]*)\s*$/i
+    } elsif ($s =~ /^\s*(?<road>[AM][^ ]*)$space(?<dist>[0-9.]+)\s*$/i
+          || $s =~ /^\s*(?<dist>[0-9.]+)$space(?<road>[AM][^ ]*)\s*$/i
     ) {
         return _lookup_db($+{road}, 'sign', $+{dist}, 'distance') || undef;
     }
