@@ -231,6 +231,8 @@ sub check_and_stash_category : Private {
     my $all_areas = $c->stash->{all_areas};
     my @bodies = $c->model('DB::Body')->active->for_areas(keys %$all_areas)->all;
     my %bodies = map { $_->id => $_ } @bodies;
+    $c->cobrand->call_hook(munge_report_new_bodies => \%bodies); # To match setup_categories_and_bodies in New.pm
+
     my @list_of_names = map { $_->name } values %bodies;
     my $csv = Text::CSV->new();
     $csv->combine(@list_of_names);
