@@ -158,9 +158,7 @@ sub _recent {
             # Need to refetch to check if hidden since cached
             $probs = [ $rs->search({
                 id => [ map { $_->id } @$probs ],
-                photo => { '!=', undef },
-                non_public => 'f',
-                state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+                %$query,
             })->all ];
         } else {
             $probs = [ $rs->search( $query, $attrs )->all ];
