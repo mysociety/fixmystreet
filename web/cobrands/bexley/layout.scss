@@ -6,6 +6,10 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
     top: 10em;
 }
 
+#site-header {
+    border-top: 7px solid $fuchsia;
+}
+
 #site-logo {
     width: 208px;
     height: 80px;
@@ -18,10 +22,47 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
     color: $fuchsia_lt;
 }
 
+.frontpage {
+    .nav-menu--main { 
+        margin: 3em 0 0 0;
+    }
+}
+
 .nav-menu--main {
-  span {
-    background-color: $nav_hover_background_colour;
-  }
+    a {
+        &:hover,
+        &:active,
+        &:focus {
+            color: $text_black;
+        }
+    }
+    a.report-a-problem-btn,
+    span.report-a-problem-btn {
+        background-color: $nav_hover_background_colour;
+        color: $text_black;
+        border-radius: 0;
+        &:hover {
+            color: $fuchsia;
+            cursor: pointer;
+        }
+    }
+    a[href='/auth'] {
+        position: absolute;
+        top: 0;
+        right: 1em;
+        .frontpage & {
+            right: 0;
+        }
+        background-color: $fuchsia;
+        color: $white;
+        padding: 0 0.75em;
+        &:hover,
+        &:active,
+        &:focus {
+            color: $white;
+        }
+    }
+    
 }
 
 .general-notes {
