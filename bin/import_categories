@@ -1,0 +1,112 @@
+#!/usr/bin/env perl
+
+use warnings;
+use v5.14;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Term::ANSIColor;
+use FixMyStreet;
+use FixMyStreet::DB;
+use Getopt::Long::Descriptive;
+use JSON::MaybeXS;
+use Path::Tiny;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'body=s', "Name of body to add categories to" ],
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'delete', "Delete all existing body categories first" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+die "Usage: $0 <path/to/categories.json>" unless $opt->body; 
+die "Usage: $0 <path/to/categories.json>" unless -f $ARGV[0];
+
+my $db;
+END {
+    if ($db) {
+        $opt->commit ? $db->txn_commit : $db->txn_rollback;
+    }
+}
+
+$db = FixMyStreet::DB->schema->storage;
+$db->txn_begin;
+if (!$opt->commit) {
+    say colored("NOT COMMITTING TO DATABASE", 'cyan');
+}
+
+my $config = decode_json(path($ARGV[0])->slurp_utf8);
+
+my $body = FixMyStreet::DB->resultset('Body')->find({ name => $opt->body });
+
+$body->contacts->delete_all if $opt->delete;
+
+die "Couldn't find body" unless $body;
+
+my $groups = $config->{groups};
+if ($groups) {
+    for my $group (keys %$groups) {
+        my $cats = $groups->{$group};
+        make_categories($cats, $group);
+        say "Created $group group";
+    }
+} else {
+    my $categories = $config->{categories};
+    make_categories($categories);
+    say "Created non group categories";
+}
+
+sub make_categories {
+    my ($cats, $group) = @_;
+    for my $cat (@$cats) {
+        my $child_cat = FixMyStreet::DB->resultset("Contact")->find_or_new({
+            body => $body,
+            category => $cat->{category}
+        });
+        $child_cat->email($cat->{email});
+        $child_cat->state('confirmed');
+        $child_cat->editor($0);
+        $child_cat->whenedited(\'current_timestamp');
+        $child_cat->note($child_cat->in_storage ? 'Updated by import_categories' : 'Created by import_categories');
+        say colored("WARNING", 'red') . " " . $child_cat->category . " already exists" if $child_cat->in_storage and $child_cat->category ne 'Other (TfL)';
+        $child_cat->extra(undef) if $child_cat->in_storage;
+
+        if ($group) {
+            my $groups = $child_cat->groups;
+            my %groups = map { $_ => 1} @$groups;
+            $groups{$group} = 1;
+            my @groups = keys %groups;
+            $child_cat->set_extra_metadata(group => \@groups);
+        }
+
+        if ($cat->{disable}) {
+            $child_cat->update_extra_field({
+                code => "_fms_disable_",
+                disable_form => "true",
+                variable => "false",
+                protected => "true",
+                description => $cat->{disable} eq 1 ? $config->{disabled_message} : $cat->{disable},
+                order => 0,
+            });
+        }
+        $child_cat->set_extra_fields(@{ $cat->{extra_fields} }) if $cat->{extra_fields};
+        if (my $asset_field = $cat->{asset_field}) {
+            my ($description, $code) = @$asset_field;
+            $child_cat->update_extra_field({
+                code => $code,
+                description => $description,
+                automated => "hidden_field",
+                order => 1,
+            });
+        }
+        $child_cat->in_storage ? $child_cat->update : $child_cat->insert;
+    }
+}
