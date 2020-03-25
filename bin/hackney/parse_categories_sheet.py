@@ -15,13 +15,11 @@ from googleapiclient.discovery import build
 
 import click
 import yaml
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
+config = None
 
 @click.group()
 @click.pass_context
@@ -32,6 +30,10 @@ def cli(ctx):
     or an layers.js file which sets up the mapping between categories and
     WFS layers and can be copy/pasted into Hackney's assets.js
     """
+    global config
+    with open("config.yml") as f:
+        config = yaml.safe_load(f)
+
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -57,7 +59,7 @@ def cli(ctx):
     result = (
         sheet.values()
         .get(
-            spreadsheetId=os.environ["SPREADSHEET_ID"], range=os.environ["SHEET_RANGE"]
+            spreadsheetId=config["doc_id"], range=config["sheet_range"]
         )
         .execute()
     )
@@ -73,8 +75,6 @@ def cli(ctx):
 @cli.command()
 @click.pass_context
 def categories(ctx):
-    with open("config.yml") as f:
-        config = yaml.safe_load(f)
     groups = defaultdict(list)
     for row in ctx.obj["values"]:
         try:
@@ -92,7 +92,7 @@ def categories(ctx):
         groups[group].append(cat_obj)
     with open("categories.json", "w") as f:
         json.dump(
-            {"disabled_message": os.environ["DISABLED_MESSAGE"], "groups": groups},
+            {"disabled_message": config["disabled_message"], "groups": groups},
             f,
             indent=2,
             sort_keys=True,
@@ -109,8 +109,6 @@ fixmystreet.assets.add(wfs_defaults, {{
     attributes: {attributes}
 }});
 """
-    with open("config.yml") as f:
-        config = yaml.safe_load(f)
     with open("layers.js", "w") as layers:
         for row in ctx.obj["values"]:
             try:
@@ -157,9 +155,9 @@ def parse_email(row):
     if " " in email:
         # need a better way to handle these residential/commercial split categories
         email = email.split(" ", 1)[0]
-    if os.getenv("EMAIL_REPLACEMENT"):
+    if config.get("email_replacement"):
         email = email.translate(str.maketrans(".@", "__"))
-        email = os.environ['EMAIL_REPLACEMENT'].format(email=email)
+        email = config['email_replacement'].format(email=email)
     return email
 
 

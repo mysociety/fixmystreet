@@ -2,7 +2,6 @@ venv
 credentials.json
 token.pickle
 categories.json
-.env
 
 config.yml
 layers.js
