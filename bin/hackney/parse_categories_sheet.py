@@ -6,7 +6,7 @@ import json
 import os
 import pickle
 import sys
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from email.utils import parseaddr
 
 from google.auth.transport.requests import Request
@@ -20,6 +20,9 @@ import yaml
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
 config = None
+
+Row = namedtuple("Row", "group category email wfs_layer")
+
 
 @click.group()
 @click.pass_context
@@ -58,9 +61,7 @@ def cli(ctx):
     sheet = service.spreadsheets()
     result = (
         sheet.values()
-        .get(
-            spreadsheetId=config["doc_id"], range=config["sheet_range"]
-        )
+        .get(spreadsheetId=config["doc_id"], range=config["sheet_range"])
         .execute()
     )
     values = result.get("values", [])
@@ -69,27 +70,20 @@ def cli(ctx):
         print("No data found.", file=sys.stderr)
         sys.exit(1)
 
-    ctx.obj["values"] = values
+    ctx.obj["rows"] = parse_rows(values)
 
 
 @cli.command()
 @click.pass_context
 def categories(ctx):
     groups = defaultdict(list)
-    for row in ctx.obj["values"]:
-        try:
-            email = parse_email(row)
-        except IndexError:
-            # Row might not have been the required width, if there were
-            # trailing NULLs.
+    for row in ctx.obj["rows"]:
+        if not row.email:
             continue
-        if not email:
-            continue
-        group, category = row[0], row[1]
-        cat_obj = {"category": category, "email": email}
-        if config["categories"].get(category, {}).get("extra_fields"):
-            cat_obj["extra_fields"] = config["categories"][category]["extra_fields"]
-        groups[group].append(cat_obj)
+        cat_obj = {"category": row.category, "email": row.email}
+        if config["categories"].get(row.category, {}).get("extra_fields"):
+            cat_obj["extra_fields"] = config["categories"][row.category]["extra_fields"]
+        groups[row.group].append(cat_obj)
     with open("categories.json", "w") as f:
         json.dump(
             {"disabled_message": config["disabled_message"], "groups": groups},
@@ -110,46 +104,53 @@ fixmystreet.assets.add(wfs_defaults, {{
 }});
 """
     with open("layers.js", "w") as layers:
-        for row in ctx.obj["values"]:
-            try:
-                group, category, wfs_layer = row[0], row[1], row[15]
-            except IndexError:
-                # The Sheets API doesn't return a full row if it's got trailing NULLS?!
-                continue
-            if not parse_email(row):
+        for row in ctx.obj["rows"]:
+            if not row.email and row.wfs_layer:
                 print(
-                    f"No email category for WFS layer {row[15]}, skipping.",
+                    f"No email category for WFS layer {row.wfs_layer}, skipping.",
                     file=sys.stderr,
                 )
                 continue
-            if wfs_layer:
+            if row.wfs_layer:
                 attributes = json.dumps(
-                    config["categories"].get(category, {}).get("wfs_attributes", {})
+                    config["categories"].get(row.category, {}).get("wfs_attributes", {})
                 )
                 print(
                     TEMPLATE.format(
-                        wfs_layer=wfs_layer,
-                        category=category,
-                        group=group,
+                        wfs_layer=row.wfs_layer,
+                        category=row.category,
+                        group=row.group,
                         attributes=attributes,
                     ),
                     file=layers,
                 )
 
 
-def parse_email(row):
-    if row[3] == "Alloy":
+def parse_rows(rows):
+    return [parse_row(row) for row in rows]
+
+
+def parse_row(row):
+    last_col = ord(config["sheet_range"].rsplit(":", 1)[1].lower()) - 96
+    row += [""] * (last_col - len(row))
+    group = row[config["columns"]["group"]]
+    category = row[config["columns"]["category"]]
+    email = parse_email([row[c] for c in config["columns"]["emails"]])
+    wfs_layer = row[config["columns"]["wfs_layer"]]
+    return Row(group, category, email, wfs_layer)
+
+
+def parse_email(emails):
+    if "Alloy" in emails:
         # Skip this row entirely if it's going in to Alloy.
         return None
-    emails = [row[col] for col in (3, 6, 9) if "@" in row[col]]
+    emails = [e for e in emails if "@" in e]
     if not emails:
         # Might be an Alloy-only category, or awaiting an email address from Hackney
         return None
     # TODO: Figure out what to do if multiple columns have emails
     if len(emails) > 1:
-        print(
-            f"WARNING: {row[0]} - {row[1]} has {len(emails)} addresses; using the first one"
-        )
+        print(f"WARNING: {len(emails)} addresses; using the first one")
     # for now just take the first column that has an @
     email = emails[0]
     if " " in email:
@@ -157,7 +158,7 @@ def parse_email(row):
         email = email.split(" ", 1)[0]
     if config.get("email_replacement"):
         email = email.translate(str.maketrans(".@", "__"))
-        email = config['email_replacement'].format(email=email)
+        email = config["email_replacement"].format(email=email)
     return email
 
 
