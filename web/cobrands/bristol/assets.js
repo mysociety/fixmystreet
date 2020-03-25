@@ -15,7 +15,6 @@ var options = {
     body: "Bristol City Council",
     srsName: "EPSG:27700",
     geometryName: 'SHAPE',
-    wfs_url: "https://maps.bristol.gov.uk/arcgis/services/ext/FixMyStreetSupportData/MapServer/WFSServer",
     wfs_feature: "COD_ASSETS_POINT",
     asset_id_field: 'COD_ASSET_ID',
     propertyNames: [ 'COD_ASSET_ID', 'COD_USRN', 'SHAPE' ],
@@ -25,6 +24,12 @@ var options = {
         usrn: 'COD_USRN'
     }
 };
+
+if (fixmystreet.staging) {
+    options.wfs_url = "https://testmaps.bristol.gov.uk/arcgis/services/ext/FixMyStreetSupportData/MapServer/WFSServer";
+} else {
+    options.wfs_url = "https://maps.bristol.gov.uk/arcgis/services/ext/FixMyStreetSupportData/MapServer/WFSServer";
+}
 
 fixmystreet.assets.add(options, {
     filter_key: '',
