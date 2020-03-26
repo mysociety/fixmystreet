@@ -8,9 +8,9 @@ use strict;
 
 sub default_zoom { 5; }
 
-sub urls { [ 'https://maps.bristol.gov.uk/arcgis/rest/services/base/2015_BCC_96dpi/MapServer/WMTS/tile' ] }
+sub urls { [ 'https://maps.bristol.gov.uk/arcgis/rest/services/base/2019_Q2_BCC_96dpi/MapServer/WMTS/tile' ] }
 
-sub layer_names { [ '2015_BCC_96dpi' ] }
+sub layer_names { [ '2019_Q2_BCC_96dpi' ] }
 
 sub scales {
     my $self = shift;
