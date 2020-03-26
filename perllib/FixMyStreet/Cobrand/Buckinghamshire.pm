@@ -7,6 +7,7 @@ use warnings;
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
+with 'FixMyStreet::Roles::BoroughEmails';
 
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
@@ -437,5 +438,24 @@ sub lookup_site_code_config { {
         return $valid_types{$type};
     }
 } }
+
+around 'munge_sendreport_params' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    # The district areas don't exist in MapIt past generation 36, so look up
+    # what district this report would have been in and temporarily override
+    # the areas column so BoroughEmails::munge_sendreport_params can do its
+    # thing.
+    my ($lat, $lon) = ($row->latitude, $row->longitude);
+    my $district = FixMyStreet::MapIt::call( 'point', "4326/$lon,$lat", type => 'DIS', generation => 36 );
+    ($district) = keys %$district;
+
+    my $original_areas = $row->areas;
+    $row->areas(",$district,");
+
+    $self->$orig($row, $h, $params);
+
+    $row->areas($original_areas);
+};
 
 1;
