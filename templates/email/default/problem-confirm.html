@@ -25,6 +25,7 @@ of problem, so it will instead be sent to [% report.body %].
     <a style="[% button_style %]" href="[% token_url %]">Yes, send my report</a>
   </p>
   <p style="[% p_style %]">If you no longer wish to send this report, please take no further action.</p>
+  [% TRY %][% INCLUDE '_problem-confirm_footer.html' %][% CATCH file %][% END %]
   [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
