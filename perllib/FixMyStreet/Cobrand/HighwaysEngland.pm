@@ -43,6 +43,18 @@ sub example_places {
     return $self->feature('example_places') || $self->next::method();
 }
 
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    if ($s =~ /^\s*[AM]\d+\s*$/i) {
+        return {
+            error => "Please be more specific about the location of the issue, eg M1, Jct 16 or A5, Towcester"
+        };
+    }
+
+    return $self->next::method($s);
+}
+
 sub allow_photo_upload { 0 }
 
 sub allow_anonymous_reports { 'button' }
