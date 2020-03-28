@@ -203,6 +203,22 @@ var non_bucks_types = [
     "P", // HW: PRIVATE
 ];
 
+// Since Buckinghamshire went unitary, if the user selects an ex-district
+// category we shouldn't enforce the road asset selection.
+var ex_district_categories = [
+    "Abandoned vehicles",
+    "Car Parks",
+    "Dog fouling",
+    "Flyposting",
+    "Flytipping",
+    "Graffiti",
+    "Parks/landscapes",
+    "Public toilets",
+    "Rubbish (refuse and recycling)",
+    "Street cleaning",
+    "Street nameplates"
+];
+
 // We show roads that Bucks are and aren't responsible for, and display a
 // message to the user if they click something Bucks don't maintain.
 var types_to_show = bucks_types.concat(non_bucks_types);
@@ -287,6 +303,12 @@ fixmystreet.assets.add(defaults, {
             fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
             fixmystreet.body_overrides.remove_only_send();
             fixmystreet.message_controller.road_found(layer, feature, function(feature) {
+                // If an ex-district category is selected, always allow report
+                // regardless of road ownership.
+                var cat = $('select#form_category').val();
+                if (cat === "-- Pick a category --" || OpenLayers.Util.indexOf(ex_district_categories, cat) != -1) {
+                    return true;
+                }
                 if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
                     return true;
                 } else {
@@ -296,9 +318,16 @@ fixmystreet.assets.add(defaults, {
         },
 
         not_found: function(layer) {
-            fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
-            fixmystreet.body_overrides.remove_only_send();
-            fixmystreet.message_controller.road_not_found(layer);
+            // If an ex-district category is selected, always allow report.
+            var cat = $('select#form_category').val();
+            if (cat === "-- Pick a category --" || OpenLayers.Util.indexOf(ex_district_categories, cat) != -1) {
+                fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
+                fixmystreet.body_overrides.remove_only_send();
+            } else {
+                fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
+                fixmystreet.body_overrides.remove_only_send();
+                fixmystreet.message_controller.road_not_found(layer);
+            }
         }
     },
     no_asset_msg_id: '#js-not-a-road',
