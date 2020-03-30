@@ -22,6 +22,13 @@ using the email address associated with the report.</p>
 [% IF cobrand.owns_problem( report ) %]
 [% TRY %][% INCLUDE '_council_reference.html' problem=report %][% CATCH file %][% END %]
 [% END %]
+
+<p style="[% p_style %]">
+Due to the current COVID 19 crisis and associated restrictions regrettably we
+must prioritise more urgent work, therefore we hope you will understand that
+there may be a delay in fixing the defect.
+</p>
+
   <p style="margin: 20px auto; text-align: center">
   <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.view_url %]">View my report</a>
   </p>
