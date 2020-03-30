@@ -99,41 +99,15 @@ sub open311_contact_meta_override {
     } if $service->{service_name} eq 'Flytipping';
 }
 
-sub process_open311_extras {
-    my ($self, $c, $body, $extra) = @_;
-
-    return unless $c->stash->{report}; # Don't care about updates
-
-    $self->flytipping_body_fix(
-        $c->stash->{report},
-        $c->get_param('road-placement'),
-        $c->stash->{field_errors},
-    );
-}
-
-sub flytipping_body_fix {
-    my ($self, $report, $road_placement, $errors) = @_;
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
 
     return unless $report->category eq 'Flytipping';
 
-    if ($report->bodies_str =~ /,/) {
-        # Sent to both councils in the area
-        my @bodies = values %{$report->bodies};
-        my $county = (grep { $_->name =~ /^Buckinghamshire/ } @bodies)[0];
-        my $district = (grep { $_->name !~ /^Buckinghamshire/ } @bodies)[0];
-        # Decide which to send to based upon the answer to the extra question:
-        if ($road_placement eq 'road') {
-            $report->bodies_str($county->id);
-        } elsif ($road_placement eq 'off-road') {
-            $report->bodies_str($district->id);
-        }
-    } else {
-        # If the report is only being sent to the district, we do
-        # not care about the road question, if it is missing
-        if (!$report->to_body_named('Buckinghamshire')) {
-            delete $errors->{'xroad-placement'};
-        }
-    }
+    my $placement = $self->{c}->get_param('road-placement');
+    return unless $placement && $placement eq 'off-road';
+
+    $report->category('Flytipping (off-road)');
 }
 
 sub filter_report_description {
@@ -410,15 +384,8 @@ sub get_geocoder { 'OSM' }
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    # Buckinghamshire is a two-tier council, but mostly want to display
-    # county-level categories on their cobrand.
-    return $rs->search(
-        [
-            { 'body_areas.area_id' => 2217 },
-            { category => [ 'Flytipping', 'Car Parks' ] },
-        ],
-        { join => { body => 'body_areas' } }
-    );
+
+    return $rs->search( { category => { '!=', 'Flytipping (off-road)'} } );
 }
 
 sub lookup_site_code_config { {

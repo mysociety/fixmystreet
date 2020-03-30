@@ -57,12 +57,22 @@ sub find_problems {
         $time_param = { '<', \$to };
     }
 
-    # Fetch all Flytipping problems sent only to districts, between $from and $to
-    my $q = FixMyStreet::DB->resultset("Problem")->search(
-        \[ "? @> regexp_split_to_array(bodies_str, ',')", [ {} => \@district_ids ] ]
-    )->search({
+    # Fetch all Flytipping problems made off-road (i.e. those that previously
+    # would been sent only to districts) any any older ones which actually were
+    # sent to districts, between $from and $to
+    my $q = FixMyStreet::DB->resultset("Problem")->search([
+        # Reports sent to district, made before the unitary switchover
+        -and => [
+            \[ "? @> regexp_split_to_array(bodies_str, ',')", [ {} => \@district_ids ] ],
+            category => 'Flytipping'
+        ],
+        # Reports sent to Bucks Council after unitary switchover
+        {
+            bodies_str => $body->id,
+            category => 'Flytipping (off-road)'
+        }
+    ])->search({
         state => [ FixMyStreet::DB::Result::Problem->open_states() ],
-        category => 'Flytipping',
         confirmed => $time_param,
     });
 
