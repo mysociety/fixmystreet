@@ -3,7 +3,7 @@ describe('Highways England tests', function() {
         cy.server();
         cy.fixture('highways.xml');
         cy.route('**/mapserver/highways*', 'fixture:highways.xml').as('highways-tilma');
-        cy.route('/report/new/ajax*').as('report-ajax');
+        cy.route('**/report/new/ajax*', 'fixture:highways-ajax.json').as('report-ajax');
         cy.visit('/');
         cy.contains('Go');
         cy.get('[name=pc]').type(Cypress.env('postcode'));
@@ -15,11 +15,14 @@ describe('Highways England tests', function() {
         cy.get('#highways').should('contain', 'M6');
         cy.get('#js-councils_text').should('contain', 'Highways England');
         cy.get('#single_body_only').should('have.value', 'Highways England');
+        cy.get('#form_category').should('contain', 'Sign issue');
         cy.get('#js-not-highways').click();
         cy.get('#js-councils_text').should('contain', 'Borsetshire');
         cy.get('#single_body_only').should('have.value', '');
+        cy.get('#form_category').should('contain', 'Abandoned vehicles');
         cy.get('#js-highways').click({ force: true });
         cy.get('#js-councils_text').should('contain', 'Highways England');
         cy.get('#single_body_only').should('have.value', 'Highways England');
+        cy.get('#form_category').should('contain', 'Sign issue');
     });
 });
