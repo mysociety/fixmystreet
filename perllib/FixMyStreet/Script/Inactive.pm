@@ -191,7 +191,7 @@ sub email_inactive_users {
                 user => $user,
                 url => $self->base_cobrand->base_url_with_lang . '/my',
             },
-            { To => [ $user->email, $user->name ] },
+            { To => [ [ $user->email, $user->name ] ] },
             undef, 0, $self->base_cobrand,
         );
 
