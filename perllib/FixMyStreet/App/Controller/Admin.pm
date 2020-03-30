@@ -180,7 +180,7 @@ sub fetch_contacts : Private {
 
     my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
     $c->stash->{contacts} = $contacts;
-    $c->stash->{live_contacts} = $contacts->not_deleted;
+    $c->stash->{live_contacts} = $contacts->not_deleted_admin;
     $c->stash->{any_not_confirmed} = $contacts->search({ state => 'unconfirmed' })->count;
 
     if ( $c->get_param('text') && $c->get_param('text') eq '1' ) {

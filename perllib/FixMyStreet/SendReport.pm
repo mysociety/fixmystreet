@@ -63,7 +63,7 @@ sub add_body {
 sub fetch_category {
     my ($self, $body, $row, $category_override) = @_;
 
-    my $contact = $row->result_source->schema->resultset("Contact")->not_deleted->find( {
+    my $contact = $row->result_source->schema->resultset("Contact")->find( {
         body_id => $body->id,
         category => $category_override || $row->category,
     } );
