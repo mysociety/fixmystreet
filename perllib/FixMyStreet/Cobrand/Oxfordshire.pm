@@ -141,15 +141,31 @@ sub open311_config_updates {
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
-    if ($row->get_extra_field_value('feature_id')) {
+    if (my $fid = $row->get_extra_field_value('feature_id')) {
         my $text = $row->detail;
-        $text .= "\n\nAsset Id: " . $row->get_extra_field_value('feature_id') . "\n";
+        $text .= "\n\nAsset Id: $fid\n";
         $row->detail($text);
     }
 
-    if ($row->get_extra_field_value('usrn')) {
+    if (my $usrn = $row->get_extra_field_value('usrn')) {
         my $text = $row->detail;
-        $text .= "\n\nUSRN: " . $row->get_extra_field_value('usrn') . "\n";
+        $text .= "\n\nUSRN: $usrn\n";
+        $row->detail($text);
+    }
+}
+
+sub open311_post_send {
+    my ($self, $row, $h, $contact) = @_;
+
+    if (my $fid = $row->get_extra_field_value('feature_id')) {
+        my $text = $row->detail;
+        $text =~ s/\n\nAsset Id: $fid\n//;
+        $row->detail($text);
+    }
+
+    if (my $usrn = $row->get_extra_field_value('usrn')) {
+        my $text = $row->detail;
+        $text =~ s/\n\nUSRN: $usrn\n//;
         $row->detail($text);
     }
 }
