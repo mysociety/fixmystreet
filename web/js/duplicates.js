@@ -13,8 +13,15 @@
     // but undefined on new report page.
     var report_id = $("#report_inspect_form .js-report-id").text() || undefined;
 
+    // Don't make another call whilst one is in progress
+    var in_progress = false;
+
     function refresh_duplicate_list(evt, params, category) {
         if (params && params.skip_duplicates) {
+            return;
+        }
+
+        if (in_progress) {
             return;
         }
 
@@ -57,6 +64,7 @@
             }
         }
 
+        in_progress = true;
         $.ajax({
             url: nearby_url,
             data: url_params,
@@ -87,7 +95,9 @@
         $("#js-duplicate-reports ul").empty().prepend( $reports );
         fixmystreet.set_up.fancybox_images();
 
-        $('#js-duplicate-reports').hide().removeClass('hidden').slideDown();
+        $('#js-duplicate-reports').hide().removeClass('hidden').slideDown(function(){
+            in_progress = false;
+        });
         if ( $('#problem_form').length ) {
             $('.js-hide-if-invalid-category').slideUp();
             $('.js-hide-if-invalid-category_extras').slideUp();
@@ -175,6 +185,7 @@
         $('#js-duplicate-reports').slideUp(function(){
             $(this).addClass('hidden');
             $(this).find('ul').empty();
+            in_progress = false;
         });
         if ($('#problem_form').length && take_effect()) {
             $('.js-hide-if-invalid-category').slideDown();
