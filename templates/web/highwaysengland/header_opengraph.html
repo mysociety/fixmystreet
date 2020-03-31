@@ -1,0 +1,6 @@
+        <meta property="og:url" content="[% c.cobrand.base_url %][% c.req.uri.path %]">
+        <meta property="og:title" content="[% title || site_name %]">
+        <meta property="og:site_name" content="[% site_name %]">
+        [% IF c.req.uri.path == '/' %]<meta property="og:description" content="We carry out regular inspections and maintenance activities, but we also want to hear from you if you spot something wrong with our roads or any of the assets alongside them.">[% END %]
+        <meta property="og:type" content="website">
+        [% INCLUDE 'header_opengraph_image.html' %]
