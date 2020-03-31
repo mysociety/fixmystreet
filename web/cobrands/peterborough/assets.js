@@ -51,6 +51,7 @@ OpenLayers.Layer.PeterboroughVectorAsset = OpenLayers.Class(OpenLayers.Layer.Vec
 });
 
 var NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
+var UNKNOWN_LIGHT_CATEGORY_NAME = 'Problem with a light not shown on map';
 
 var trees_defaults = $.extend(true, {}, defaults, {
     class: OpenLayers.Layer.PeterboroughVectorAsset,
@@ -102,6 +103,59 @@ fixmystreet.assets.add(defaults, {
     asset_type: 'spot',
     asset_category: NEW_TREE_CATEGORY_NAME,
     asset_item: 'tree',
+    disable_pin_snapping: true,
+    asset_item_message: ''
+});
+
+var streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': fixmystreet.assets.style_default,
+  'select': fixmystreet.assets.construct_named_select_style("${UNITNO}")
+});
+
+var light_defaults = $.extend(true, {}, defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "StreetLights"
+        }
+    },
+    asset_id_field: 'UNITID',
+    asset_type: 'spot',
+    asset_item: 'light'
+});
+
+fixmystreet.assets.add(light_defaults, {
+    class: OpenLayers.Layer.PeterboroughVectorAsset,
+    stylemap: streetlight_stylemap,
+    feature_code: 'UNITNO',
+    attributes: {
+        asset_details: function() {
+            var a = this.attributes;
+            return "street: " + a.FULLSTREET + "\n" +
+                "locality: " + a.LOCALITY + "\n" +
+                "unitno: " + a.UNITNO + "\n" +
+                "unitid: " + a.UNITID;
+        }
+    },
+    asset_group: 'Street lighting',
+    relevant: function(options) {
+        return options.group === 'Street lighting' && options.category !== UNKNOWN_LIGHT_CATEGORY_NAME;
+    },
+    asset_item_message: 'You can pick a <b class="asset-spot">street light</b> from the map &raquo;',
+    select_action: true,
+    actions: {
+        asset_found: function(asset) {
+            fixmystreet.message_controller.asset_found.call(this, asset);
+            fixmystreet.assets.named_select_action_found.call(this, asset);
+        },
+        asset_not_found: function() {
+            fixmystreet.message_controller.asset_not_found.call(this);
+            fixmystreet.assets.named_select_action_not_found.call(this);
+        }
+    }
+});
+
+fixmystreet.assets.add(light_defaults, {
+    asset_category: UNKNOWN_LIGHT_CATEGORY_NAME,
     disable_pin_snapping: true,
     asset_item_message: ''
 });
