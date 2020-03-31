@@ -1,0 +1,51 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use feature qw/ say /;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet;
+use FixMyStreet::DB;
+use FixMyStreet::MapIt;
+use Term::ANSIColor;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+my $areas = FixMyStreet::MapIt::call(
+    'areas/CTY,UTA,MTD,LBO'
+);
+
+my $db;
+END {
+    if ($db) {
+        $opt->commit ? $db->txn_commit : $db->txn_rollback;
+    }
+}
+
+$db = FixMyStreet::DB->schema->storage;
+$db->txn_begin;
+if (!$opt->commit) {
+    say colored("NOT COMMITTING TO DATABASE", 'cyan');
+}
+
+my $body = FixMyStreet::DB->resultset('Body')->find({ name => 'Highways England' });
+die "Highways England not found\n" unless $body;
+
+for my $area ( values %{ $areas } ) {
+    next unless $area->{country} eq 'E';
+
+    FixMyStreet::DB->resultset('BodyArea')->find_or_create( { body => $body, area_id => $area->{id} } );
+}
