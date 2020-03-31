@@ -114,20 +114,11 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 //     asset_item: 'gulley'
 // }));
 
-var streetlight_select = $.extend({
-    label: "${FeatureId}",
-    labelOutlineColor: "white",
-    labelOutlineWidth: 3,
-    labelYOffset: 65,
-    fontSize: '15px',
-    fontWeight: 'bold'
-}, fixmystreet.assets.style_default_select.defaultStyle);
-
 // The label for street light markers should be everything after the final
 // '/' in the feature's FeatureId attribute.
 // This seems to be the easiest way to perform custom processing
 // on style attributes in OpenLayers...
-var select_style = new OpenLayers.Style(streetlight_select);
+var select_style = fixmystreet.assets.construct_named_select_style("${FeatureId}");
 select_style.createLiterals = function() {
     var literals = Object.getPrototypeOf(this).createLiterals.apply(this, arguments);
     if (literals.label && literals.label.split) {
@@ -145,19 +136,16 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     select_action: true,
     stylemap: streetlight_stylemap,
     feature_code: 'FeatureId',
-    actions: {
-        asset_found: function(asset) {
-          var id = asset.attributes[this.fixmystreet.feature_code] || '';
-          if (id !== '' && id.split) {
-              var code = id.split("/").slice(-1)[0];
-              $('.category_meta_message').html('You have selected column <b>' + code + '</b>');
-          } else {
-              $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
-          }
-        },
-        asset_not_found: function() {
-           $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+    asset_item_message: 'You can pick a <b class="asset-spot">ITEM</b> from the map &raquo;',
+    construct_asset_name: function(id) {
+        if (id.split) {
+            var code = id.split("/").slice(-1)[0];
+            return {id: code, name: 'column'};
         }
+    },
+    actions: {
+        asset_found: fixmystreet.assets.named_select_action_found,
+        asset_not_found: fixmystreet.assets.named_select_action_not_found
     }
 });
 

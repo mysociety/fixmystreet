@@ -31,41 +31,9 @@ var defaults = {
 
 var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data').getAttribute('data-pin_prefix');
 
-var labeled_default = {
-    fillColor: "#FFFF00",
-    fillOpacity: 0.6,
-    strokeColor: "#000000",
-    strokeOpacity: 0.8,
-    strokeWidth: 2,
-    pointRadius: 6
-};
-
-var labeled_select = {
-    externalGraphic: pin_prefix + "pin-spot.png",
-    fillColor: "#55BB00",
-    graphicWidth: 48,
-    graphicHeight: 64,
-    graphicXOffset: -24,
-    graphicYOffset: -56,
-    backgroundGraphic: pin_prefix + "pin-shadow.png",
-    backgroundWidth: 60,
-    backgroundHeight: 30,
-    backgroundXOffset: -7,
-    backgroundYOffset: -22,
-    popupYOffset: -40,
-    graphicOpacity: 1.0,
-
-    label: "${asset_id}",
-    labelOutlineColor: "white",
-    labelOutlineWidth: 3,
-    labelYOffset: 65,
-    fontSize: '15px',
-    fontWeight: 'bold'
-};
-
 var labeled_stylemap = new OpenLayers.StyleMap({
-  'default': new OpenLayers.Style(labeled_default),
-  'select': new OpenLayers.Style(labeled_select)
+  'default': fixmystreet.assets.style_default,
+  'select': fixmystreet.assets.construct_named_select_style("${asset_id}")
 });
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {

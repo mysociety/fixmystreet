@@ -20,18 +20,9 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-var streetlight_select = $.extend({
-    label: "${feature_id}",
-    labelOutlineColor: "white",
-    labelOutlineWidth: 3,
-    labelYOffset: 65,
-    fontSize: '15px',
-    fontWeight: 'bold'
-}, fixmystreet.assets.style_default_select.defaultStyle);
-
 var streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
-  'select': new OpenLayers.Style(streetlight_select)
+  'select': fixmystreet.assets.construct_named_select_style("${feature_id}")
 });
 
 var labeled_defaults = $.extend(true, {}, defaults, {
@@ -39,19 +30,10 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     stylemap: streetlight_stylemap,
     asset_type: 'spot',
     asset_id_field: 'central_as',
+    feature_code: 'feature_id',
     actions: {
-        asset_found: function(asset) {
-          var id = asset.attributes.feature_id || '';
-          if (id !== '') {
-              var asset_name = this.fixmystreet.asset_item;
-              $('.category_meta_message').html('You have selected ' + asset_name + ' <b>' + id + '</b>');
-          } else {
-              $('.category_meta_message').html(this.fixmystreet.asset_item_message);
-          }
-        },
-        asset_not_found: function() {
-           $('.category_meta_message').html(this.fixmystreet.asset_item_message);
-        }
+        asset_found: fixmystreet.assets.named_select_action_found,
+        asset_not_found: fixmystreet.assets.named_select_action_not_found
     }
 });
 

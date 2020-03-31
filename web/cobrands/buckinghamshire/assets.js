@@ -40,18 +40,9 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'grit bin'
 });
 
-var streetlight_select = $.extend({
-    label: "${feature_id}",
-    labelOutlineColor: "white",
-    labelOutlineWidth: 3,
-    labelYOffset: 65,
-    fontSize: '15px',
-    fontWeight: 'bold'
-}, fixmystreet.assets.style_default_select.defaultStyle);
-
 var streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
-  'select': new OpenLayers.Style(streetlight_select)
+  'select': fixmystreet.assets.construct_named_select_style("${feature_id}")
 });
 
 var streetlight_code_to_type = {
@@ -68,21 +59,16 @@ var streetlight_code_to_type = {
 
 var labeled_defaults = $.extend(true, {}, defaults, {
     select_action: true,
+    feature_code: 'feature_id',
     stylemap: streetlight_stylemap,
+    asset_item_message: 'You can pick a <b class="asset-spot">ITEM</b> from the map &raquo;',
+    construct_asset_name: function(id) {
+        var code = id.replace(/[0-9]/g, '');
+        return {id: id, name: streetlight_code_to_type[code]};
+    },
     actions: {
-        asset_found: function(asset) {
-          var id = asset.attributes.feature_id || '';
-          if (id !== '') {
-              var code = id.replace(/[0-9]/g, '');
-              var asset_name = streetlight_code_to_type[code] || this.fixmystreet.asset_item;
-              $('.category_meta_message').html('You have selected ' + asset_name + ' <b>' + id + '</b>');
-          } else {
-              $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
-          }
-        },
-        asset_not_found: function() {
-           $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
-        }
+        asset_found: fixmystreet.assets.named_select_action_found,
+        asset_not_found: fixmystreet.assets.named_select_action_not_found
     }
 });
 
