@@ -24,5 +24,7 @@ describe('Highways England tests', function() {
         cy.get('#js-councils_text').should('contain', 'Highways England');
         cy.get('#single_body_only').should('have.value', 'Highways England');
         cy.get('#form_category').should('contain', 'Sign issue');
+        cy.get('#category_group').select('Sign issue');
+        cy.get('#form_category').should('have.value', 'Sign issue');
     });
 });

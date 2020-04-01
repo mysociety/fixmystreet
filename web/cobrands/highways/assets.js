@@ -66,7 +66,6 @@ fixmystreet.assets.add(defaults, {
             $('#highways').remove();
             if ( !fixmystreet.assets.selectedFeature() ) {
                 add_highways_warning(feature.attributes.ROA_NUMBER);
-                $('#category_meta').empty();
             }
         },
         not_found: function(layer) {
@@ -82,6 +81,11 @@ fixmystreet.assets.add(defaults, {
 
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
+
+    fixmystreet.body_overrides.location = {
+        latitude: $('#fixmystreet\\.latitude').val(),
+        longitude: $('#fixmystreet\\.longitude').val()
+    };
 
     // Restart the category dropdown from the original data (not all of it as
     // we keep subcategories the same)
@@ -103,7 +107,6 @@ function regenerate_category(he_flag) {
 }
 
 function he_selected() {
-    fixmystreet.body_overrides.location = null;
     fixmystreet.body_overrides.only_send('Highways England');
     fixmystreet.body_overrides.allow_send('Highways England');
     regenerate_category(true);
@@ -111,14 +114,10 @@ function he_selected() {
 }
 
 function non_he_selected() {
-    fixmystreet.body_overrides.location = {
-        latitude: $('#fixmystreet\\.latitude').val(),
-        longitude: $('#fixmystreet\\.longitude').val()
-    };
     fixmystreet.body_overrides.remove_only_send();
     fixmystreet.body_overrides.do_not_send('Highways England');
-    $(fixmystreet).trigger('report_new:highways_change');
     regenerate_category(false);
+    $(fixmystreet).trigger('report_new:highways_change');
 }
 
 function add_highways_warning(road_name) {
