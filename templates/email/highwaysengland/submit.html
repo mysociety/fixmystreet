@@ -40,6 +40,10 @@ of a local problem that they believe might require your attention.</p>
       <strong>Section:</strong>
         [% report.get_extra_field_value('sect_label') %]
     </p>
+    <p style="[% secondary_p_style %]">
+      <strong>Heard from:</strong>
+        [% report.get_extra_metadata('where_hear') %]
+    </p>
 
 [% END %]
 

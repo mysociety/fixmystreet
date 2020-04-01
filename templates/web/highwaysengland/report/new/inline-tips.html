@@ -1,0 +1,13 @@
+<label for="where_hear">How did you hear about us?</label>
+
+[%~ SET where_hear = report.get_extra_metadata('where_hear') %]
+<select class="form-control" name="where_hear" id="where_hear">
+<option value="">[% loc('-- Pick an option --') %]</option>
+<option value="Facebook"[% ' selected' IF 'Facebook' == where_hear %]>Facebook</option>
+<option value="Search engine"[% ' selected' IF 'Search engine' == where_hear %]>Search engine</option>
+<option value="Highways England website"[% ' selected' IF 'Highways England website' == where_hear %]>Highways England website</option>
+<option value="Twitter"[% ' selected' IF 'Twitter' == where_hear %]>Twitter</option>
+<option value="Word of mouth"[% ' selected' IF 'Word of mouth' == where_hear %]>Word of mouth</option>
+<option value="Through the post"[% ' selected' IF 'Through the post' == where_hear %]>Through the post</option>
+<option value="Other"[% ' selected' IF 'Other' == where_hear %]>Other</option>
+</select>

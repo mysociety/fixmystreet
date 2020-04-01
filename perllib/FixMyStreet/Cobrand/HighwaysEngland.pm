@@ -36,6 +36,10 @@ sub admin_allow_user {
     return $user->from_body->name eq 'Highways England';
 }
 
+sub report_form_extras {
+    ( { name => 'where_hear' } )
+}
+
 sub enter_postcode_text { 'Enter a location, road name or postcode' }
 
 sub example_places {
