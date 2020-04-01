@@ -1,3 +1,12 @@
+LINK TO PROJECT BOARD: https://trello.com/b/M5aa7YDr/03-fix-mystreet-philly
+
+*Team Members:*
+Marcus Heimann	
+Alex Liu	
+Stephen Lucas	
+Mahmood	
+
+
 # Welcome to FixMyStreet Platform
 
 FixMyStreet Platform is an open source project to help people run websites for
