@@ -14,8 +14,8 @@ BEGIN {
     require "$d/../../setenv.pl";
 }
 
-use constant BUCKS_AREA_ID => 2217;
-use constant DISTRICT_IDS => (2255, 2256, 2257, 2258);
+use constant BUCKS_NAME => 'Buckinghamshire Council';
+use constant EX_DISTRICTS => ['Aylesbury Vale District Council', 'Chiltern District Council', 'South Bucks District Council', 'Wycombe District Council'];
 use constant TIME_OPEN => '3 weeks';
 use constant TIME_OPEN_ALERT => '6 weeks';
 
@@ -30,11 +30,11 @@ my ($opts, $usage) = describe_options(
 );
 print($usage->text), exit if $opts->help;
 
-my $body = FixMyStreet::DB->resultset("Body")->for_areas(BUCKS_AREA_ID)->first;
+my $body = FixMyStreet::DB->resultset("Body")->search({ name => BUCKS_NAME })->first;
 die "Could not find Bucks body" unless $body;
 
-my @districts = FixMyStreet::DB->resultset("Body")->for_areas(DISTRICT_IDS)->all;
-my @district_ids = map { $_->id } grep { $_->name ne 'TfL' } @districts;
+my @districts = FixMyStreet::DB->resultset("Body")->search({ name => EX_DISTRICTS })->all;
+my @district_ids = map { $_->id } @districts;
 die "Did not find all districts" unless @district_ids == 4;
 
 find_problems(TIME_OPEN_ALERT, TIME_OPEN, 'Auto-closure', 1);
