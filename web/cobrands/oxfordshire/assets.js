@@ -43,7 +43,8 @@ fixmystreet.assets.add(defaults, {
 
 var streetlight_select = $.extend({
     label: "${UNITNO}",
-    labelOutlineColor: "white",
+    fontColor: "#FFD800",
+    labelOutlineColor: "black",
     labelOutlineWidth: 3,
     labelYOffset: 65,
     fontSize: '15px',
