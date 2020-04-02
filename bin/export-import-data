@@ -1,0 +1,153 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use Getopt::Long::Descriptive;
+use JSON::MaybeXS;
+use Path::Tiny;
+
+my ($opt, $usage) = describe_options(
+    '%c',
+    [ 'name=s', "Name of body" ],
+    [ 'import=s', "File to import" ],
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+$usage->die unless $opt->name;
+die "Please specify a file to import\n" if $opt->import && (! -e $opt->import || -d $opt->import);
+
+my $J = JSON::MaybeXS->new(utf8 => 1, pretty => 1, canonical => 1);
+my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opt->name }) or die "Cannot find body " . $opt->name . "\n";
+
+if ($opt->import) {
+    import($opt->import);
+} else {
+    export();
+}
+
+sub export {
+    my %out;
+
+    for ($body->response_templates->all) {
+        push @{$out{templates}}, {
+            title => $_->title,
+            text => $_->text,
+            state => $_->state,
+            categories => [ map { $_->category } $_->contacts->all ],
+            auto_response => $_->auto_response,
+            external_status_code => $_->external_status_code,
+        };
+    }
+
+    for ($body->roles->all) {
+        push @{$out{roles}}, {
+            permissions => $_->permissions,
+            name => $_->name,
+        };
+    }
+
+    for ($body->users->all) {
+        my $cats = $_->get_extra_metadata('categories');
+        my @cat_names = map { $body->contacts->find({id => $_})->category } @$cats;
+        push @{$out{users}}, {
+            email => $_->email,
+            name => $_->name,
+            password => $_->password,
+            roles => [ map { $_->name } $_->roles->all ],
+            categories => \@cat_names,
+            areas => $_->area_ids || [],
+        };
+    }
+
+    print $J->encode(\%out);
+}
+
+sub import {
+    my $file = shift;
+
+    my $json = path($file)->slurp;
+    my $out = $J->decode($json);
+
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_begin;
+
+    foreach (@{$out->{templates}}) {
+        my $existing = $body->response_templates->search({ title => $_->{title} })->single;
+        if ($existing) {
+            warn "Template with title $_->{title} already exists, skipping";
+            next;
+        }
+        my $template = $body->response_templates->new({
+            title => $_->{title},
+            text => $_->{text},
+            state => $_->{state},
+            auto_response => $_->{auto_response},
+            external_status_code => $_->{external_status_code},
+        });
+        $template->insert;
+        foreach (@{$_->{categories}}) {
+            my $contact = $body->contacts->find({ category => $_ }) or die "Cannot find category $_ for template " . $template->title . "\n";
+            $template->contact_response_templates->find_or_create({
+                contact_id => $contact->id,
+            });
+        }
+    }
+
+    for my $r (@{$out->{roles}}) {
+        my $role = $body->roles->find_or_new({
+            name => $r->{name},
+            permissions => $r->{permissions},
+        });
+        if ($role->in_storage) {
+            warn "Role $r->{role} already exists; skipping";
+            next;
+        }
+        $role->insert;
+    }
+
+    for my $u (@{$out->{users}}) {
+        my $user = FixMyStreet::DB->resultset("User")->find_or_new({ email => $u->{email}, email_verified => 1 });
+        if ($user->in_storage) {
+            warn "User $u->{email} already exists; skipping";
+            next;
+        }
+        $user->from_body($body->id);
+        $user->name($u->{name});
+        $user->password($u->{password}, 1);
+        $user->area_ids($u->{areas});
+
+        $user->insert;
+
+        foreach my $role (@{$u->{roles}}) {
+            my $role = $body->roles->find({ name => $role }) or die "Couldn't find role $role for user $u->{email}\n";
+            $user->user_roles->create({
+                role_id => $role->id,
+            });
+        }
+
+        my @cat_ids;
+        for my $cat_name (@{$u->{categories}}) {
+            my $cat = $body->contacts->find({ category => $cat_name }) or die "Couldn't find category $cat_name for user $u->{email}\n";
+            push @cat_ids, $cat->id;
+        }
+        $user->set_extra_metadata('categories', \@cat_ids);
+        $user->set_extra_metadata(last_password_change => time());
+        $user->update;
+    }
+
+    if ($opt->commit) {
+        $db->txn_commit;
+    } else {
+        $db->txn_rollback;
+    }
+}
