@@ -2184,6 +2184,10 @@ label .muted {
         margin-bottom: 0.5em;
     }
 
+    dd:last-child {
+        margin-bottom: 0;
+    }
+
     .btn, .btn-primary {
         margin: 0.5em 0 1em 0;
 

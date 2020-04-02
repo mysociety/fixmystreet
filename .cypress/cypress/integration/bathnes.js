@@ -19,7 +19,7 @@ it('loads the staff layer correctly', function() {
     cy.window().then(function(win){
         var llpg = 0;
         win.fixmystreet.map.layers.forEach(function(lyr) {
-            if (lyr.fixmystreet && lyr.fixmystreet.http_options.params.TYPENAME === 'LLPG') {
+            if (lyr.fixmystreet && lyr.fixmystreet.http_options && lyr.fixmystreet.http_options.params && lyr.fixmystreet.http_options.params.TYPENAME === 'LLPG') {
                 llpg++;
             }
         });

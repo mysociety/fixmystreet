@@ -20,6 +20,11 @@ IF bodyclass.match('mappage');
             version('/cobrands/highways/assets.js'),
         );
     END;
+    IF roadworks;
+        scripts.push(
+            version('/cobrands/fixmystreet-uk-councils/roadworks.js'),
+        );
+    END;
     IF tfl;
         scripts.push(
             version('/cobrands/tfl/assets.js'),

@@ -1,4 +1,11 @@
-[% PROCESS 'footer_extra_js_base.html' highways=1 cobrand_js=1 validation=1 %]
+[% PROCESS 'footer_extra_js_base.html' highways=1 cobrand_js=1 validation=1 roadworks=1 %]
+[%
+IF bodyclass.match('mappage');
+    scripts.push(
+        version('/cobrands/bathnes/js.js')
+    );
+END
+%]
 [%~
 SET council_area_id = c.cobrand.council_area_id;
 IF c.user_exists AND ((c.user.from_body AND c.user.from_body.areas.$council_area_id) OR c.user.is_superuser);
