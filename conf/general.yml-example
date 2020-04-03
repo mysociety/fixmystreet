@@ -110,8 +110,8 @@ PHOTO_STORAGE_OPTIONS:
 #   MAPIT_URL: 'http://global.mapit.mysociety.org/'
 # And then specify whichever type code have the boundaries you want:
 #   MAPIT_TYPES: [ 'O06' ]
-MAPIT_URL: ''
-MAPIT_TYPES: [ 'ZZZ' ]
+MAPIT_URL: 'http://global.mapit.mysociety.org'
+MAPIT_TYPES: [ 'O08' ]
 
 # If the MapIt you're using in MAPIT_URL requires an API key
 # (as https://mapit.mysociety.org/ does, for example), specify it here.
@@ -123,8 +123,8 @@ MAPIT_TYPES: [ 'ZZZ' ]
 # generation those IDs are in.
 #   MAPIT_ID_WHITELIST: [ 240838, 246176, 246733 ]
 #   MAPIT_GENERATION: 2
-MAPIT_ID_WHITELIST: []
-MAPIT_GENERATION: 0
+MAPIT_ID_WHITELIST: [1013870]
+MAPIT_GENERATION: 9
 
 # If your MapIt has the concept of council wards (subareas of councils, where
 # people can sign up for alerts, but not report things), then you can give the
