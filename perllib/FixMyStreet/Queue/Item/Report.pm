@@ -181,7 +181,7 @@ sub _create_reporters {
         }
         $reporters{ $sender } ||= $sender->new();
 
-        $self->log("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method});
+        $self->log("Adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method});
         push @dear, $body->name;
         $reporters{ $sender }->add_body( $body, $sender_info->{config} );
     }
@@ -218,21 +218,23 @@ sub _send {
     my $result = -1;
 
     for my $sender ( keys %{$self->reporters} ) {
-        $self->log("sending using " . $sender);
+        $self->log("Sending using " . $sender);
         $sender = $self->reporters->{$sender};
         my $res = $sender->send( $self->report, $self->h );
         $result *= $res;
         $self->report->add_send_method($sender) if !$res;
-        if ( $sender->unconfirmed_data) {
-            foreach my $e (keys %{ $sender->unconfirmed_data } ) {
-                foreach my $c (keys %{ $sender->unconfirmed_data->{$e} }) {
-                    $self->manager->unconfirmed_data->{$e}{$c}{count} += $sender->unconfirmed_data->{$e}{$c}{count};
-                    $self->manager->unconfirmed_data->{$e}{$c}{note} = $sender->unconfirmed_data->{$e}{$c}{note};
+        if ( $self->manager ) {
+            if ($sender->unconfirmed_data) {
+                foreach my $e (keys %{ $sender->unconfirmed_data } ) {
+                    foreach my $c (keys %{ $sender->unconfirmed_data->{$e} }) {
+                        $self->manager->unconfirmed_data->{$e}{$c}{count} += $sender->unconfirmed_data->{$e}{$c}{count};
+                        $self->manager->unconfirmed_data->{$e}{$c}{note} = $sender->unconfirmed_data->{$e}{$c}{note};
+                    }
                 }
             }
+            $self->manager->test_data->{test_req_used} = $sender->open311_test_req_used
+                if FixMyStreet->test_mode && $sender->can('open311_test_req_used');
         }
-        $self->manager->test_data->{test_req_used} = $sender->open311_test_req_used
-            if FixMyStreet->test_mode && $sender->can('open311_test_req_used');
     }
 
     return $result;
@@ -251,7 +253,7 @@ sub _post_send {
             $self->h->{sent_confirm_id_ref} = $self->report->$send_confirmation_email;
             $self->_send_report_sent_email;
         }
-        $self->log("send successful: OK");
+        $self->log("Send successful");
     } else {
         my @errors;
         for my $sender ( keys %{$self->reporters} ) {
@@ -260,7 +262,7 @@ sub _post_send {
             }
         }
         $self->report->update_send_failed( join( '|', @errors ) );
-        $self->log("send FAILED: " . join( '|', @errors ));
+        $self->log("Send failed");
     }
 }
 

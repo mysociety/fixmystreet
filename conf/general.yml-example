@@ -268,3 +268,7 @@ SIGNUPS_DISABLED: 0
 FETCH_COMMENTS_PROCESSES_MIN: 0
 FETCH_COMMENTS_PROCESSES_MAX: 0
 FETCH_COMMENTS_PROCESS_TIMEOUT: 0
+
+# If you use the daemon for sending reports, rather than the cron script,
+# this is how many children it will have.
+QUEUE_DAEMON_PROCESSES: 4

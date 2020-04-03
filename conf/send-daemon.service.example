@@ -1,0 +1,17 @@
+#
+# systemd service unit for FixMyStreet Report Sending Daemon
+#
+[Unit]
+Description=FixMyStreet Report Sending Daemon
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/var/www/www.fixmystreet.com/fixmystreet/bin/send-daemon
+User=fms
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fms-send-daemon
+
+[Install]
+WantedBy=multi-user.target
