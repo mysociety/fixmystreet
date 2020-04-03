@@ -683,29 +683,11 @@ subtest 'using start and end date' => sub {
     my $local_requests_xml = $requests_xml;
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
-    my $start_dt = DateTime->now();
+    my $start_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+    my $end_dt = $start_dt->clone;
     $start_dt->subtract( days => 1 );
-    my $end_dt = DateTime->now();
 
     my $update = Open311::GetServiceRequestUpdates->new( 
-        system_user => $user,
-        start_date => $start_dt,
-        current_open311 => $o,
-    );
-
-    my $res = $update->process_body;
-    is $res, 0, 'returns 0 if start but no end date';
-
-    $update = Open311::GetServiceRequestUpdates->new( 
-        system_user => $user,
-        end_date => $end_dt,
-        current_open311 => $o,
-    );
-
-    $res = $update->process_body;
-    is $res, 0, 'returns 0 if end but no start date';
-
-    $update = Open311::GetServiceRequestUpdates->new( 
         system_user => $user,
         start_date => $start_dt,
         end_date => $end_dt,

@@ -10,6 +10,7 @@ use DateTime::Format::W3CDTF;
 has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => sub { undef } );
 has end_date => ( is => 'ro', default => sub { undef } );
+has body => ( is => 'ro', default => sub { undef } );
 has fetch_all => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
@@ -26,6 +27,10 @@ sub fetch {
             endpoint        => { '!=', '' },
         }
     );
+
+    if ( $self->body ) {
+        $bodies = $bodies->search( { name => $self->body } );
+    }
 
     while ( my $body = $bodies->next ) {
         my $o = $self->create_open311_object( $body );
@@ -55,18 +60,17 @@ sub create_problems {
 
     my $args = {};
 
-    if ( $self->start_date || $self->end_date ) {
-        return 0 unless $self->start_date && $self->end_date;
-
+    my $dt = DateTime->now();
+    if ($self->start_date) {
         $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $self->start_date );
+    } elsif ( !$self->fetch_all ) {
+        $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $dt->clone->add(hours => -1) );
+    }
+
+    if ($self->end_date) {
         $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $self->end_date );
     } elsif ( !$self->fetch_all ) {
-        my $end_dt = DateTime->now();
-        my $start_dt = $end_dt->clone;
-        $start_dt->add( hours => -1 );
-
-        $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $start_dt );
-        $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $end_dt );
+        $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $dt );
     }
 
     my $requests = $open311->get_service_requests( $args );

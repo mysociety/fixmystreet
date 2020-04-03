@@ -4,7 +4,7 @@
 # (by fetching all reports for a body and looking for updates). If possible,
 # please use the extension explained at
 # https://github.com/mysociety/FixMyStreet/wiki/Open311-FMS---Proposed-differences-to-Open311
-# and the fetch-comments/send-comments scripts.
+# and the fetch/send-comments scripts.
 
 use strict;
 use warnings;

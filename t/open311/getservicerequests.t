@@ -211,48 +211,6 @@ my $date = DateTime->new(
 
 for my $test (
   {
-      start_date => '1',
-      end_date => '',
-      desc => 'do not process if only a start_date',
-      subs => {},
-  },
-  {
-      start_date => '',
-      end_date => '1',
-      desc => 'do not process if only an end_date',
-      subs => {},
-  },
-) {
-    subtest $test->{desc} => sub {
-        my $xml = prepare_xml( $test->{subs} );
-        my $o = Open311->new(
-            jurisdiction => 'mysociety',
-            endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
-        );
-
-        my $update = Open311::GetServiceRequests->new(
-            start_date => $test->{start_date},
-            end_date => $test->{end_date},
-            system_user => $user,
-        );
-        my $ret = $update->create_problems( $o, $body );
-
-        is $ret, 0, 'failed correctly'
-    };
-}
-
-$date = DateTime->new(
-    year => 2010,
-    month => 4,
-    day => 14,
-    hour => 6,
-    minute => 37
-);
-
-for my $test (
-  {
       start_date => $date->clone->add(hours => -2),
       end_date => $date->clone->add(hours => -1),
       desc => 'do not process if update time after end_date',

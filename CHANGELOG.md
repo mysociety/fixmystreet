@@ -11,6 +11,7 @@
         - Refactor Script::Report into an object.
         - Move summary failures to a separate script.
         - Add script to export/import body data.
+        - Add fetch script that does combined job of fetch-comments and fetch-reports.
     - UK:
         - Added junction lookup, so you can search for things like "M60, Junction 2"
 

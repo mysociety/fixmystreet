@@ -1,37 +1,6 @@
-#!/usr/bin/env perl
+#!/bin/bash
 #
-# This script utilises the Open311 extension explained at
-# https://github.com/mysociety/FixMyStreet/wiki/Open311-FMS---Proposed-differences-to-Open311
-# to fetch updates on service requests from the past 24 hours, to check none
-# were missed.
+# Wrapper to call new script
 
-use strict;
-use warnings;
-require 5.8.0;
-
-BEGIN {
-    use File::Basename qw(dirname);
-    use File::Spec;
-    my $d = dirname(File::Spec->rel2abs($0));
-    require "$d/../setenv.pl";
-}
-
-use DateTime;
-use DateTime::Format::W3CDTF;
-
-use CronFns;
-my ($verbose, $nomail) = CronFns::options();
-
-use Open311::GetServiceRequestUpdates;
-
-my $dt = DateTime->now();
-my $dt_24hrs_ago = $dt->clone;
-$dt_24hrs_ago->add( hours => -24 );
-
-my $updates = Open311::GetServiceRequestUpdates->new(
-    verbose => 1,
-    start_date => DateTime::Format::W3CDTF->format_datetime( $dt_24hrs_ago ),
-    end_date => DateTime::Format::W3CDTF->format_datetime( $dt )
-);
-
-$updates->fetch;
+DIR="$(cd "$(dirname "$BASH_SOURCE")" && pwd -P)"
+$DIR/fetch --updates --start 24

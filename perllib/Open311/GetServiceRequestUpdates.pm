@@ -2,6 +2,7 @@ package Open311::GetServiceRequestUpdates;
 
 use Moo;
 use Open311;
+use Parallel::ForkManager;
 use FixMyStreet::DB;
 use FixMyStreet::App::Model::PhotoSet;
 use DateTime::Format::W3CDTF;
@@ -37,7 +38,29 @@ sub fetch {
         $bodies = $bodies->search( { name => $self->body } );
     }
 
+    my $procs_min = FixMyStreet->config('FETCH_COMMENTS_PROCESSES_MIN') || 0;
+    my $procs_max = FixMyStreet->config('FETCH_COMMENTS_PROCESSES_MAX');
+    my $procs_timeout = FixMyStreet->config('FETCH_COMMENTS_PROCESS_TIMEOUT');
+
+    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode ? 0 : $procs_min);
+
+    if ($procs_max && $procs_timeout) {
+        my %workers;
+        $pm->run_on_wait(sub {
+            while (my ($pid, $started_at) = each %workers) {
+                next unless time() - $started_at > $procs_timeout;
+                next if $pm->max_procs == $procs_max;
+                $pm->set_max_procs($pm->max_procs + 1);
+                delete $workers{$pid}; # Only want to increase once per long-running thing
+            }
+        }, 1);
+        $pm->run_on_start(sub { my $pid = shift; $workers{$pid} = time(); });
+        $pm->run_on_finish(sub { my $pid = shift; delete $workers{$pid}; });
+    }
+
     while ( my $body = $bodies->next ) {
+        $pm->start and next;
+
         $self->current_body( $body );
 
         my %open311_conf = (
@@ -57,7 +80,38 @@ sub fetch {
         $self->blank_updates_permitted( $body->blank_updates_permitted );
         $self->system_user( $body->comment_user );
         $self->process_body();
+
+        $pm->finish;
     }
+
+    $pm->wait_all_children;
+}
+
+sub parse_dates {
+    my $self = shift;
+    my $body = $self->current_body;
+
+    my @args = ();
+
+    my $dt = DateTime->now();
+    # Oxfordshire uses local time and not UTC for dates
+    FixMyStreet->set_time_zone($dt) if $body->areas->{$AREA_ID_OXFORDSHIRE};
+
+    # default to asking for last 2 hours worth if not Bromley
+    if ($self->start_date) {
+        push @args, DateTime::Format::W3CDTF->format_datetime( $self->start_date );
+    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
+        my $start_dt = $dt->clone->add( hours => -2 );
+        push @args, DateTime::Format::W3CDTF->format_datetime( $start_dt );
+    }
+
+    if ($self->end_date) {
+        push @args, DateTime::Format::W3CDTF->format_datetime( $self->end_date );
+    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
+        push @args, DateTime::Format::W3CDTF->format_datetime( $dt );
+    }
+
+    return @args;
 }
 
 sub process_body {
@@ -65,26 +119,7 @@ sub process_body {
 
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
-
-    my @args = ();
-
-    if ( $self->start_date || $self->end_date ) {
-        return 0 unless $self->start_date && $self->end_date;
-
-        push @args, $self->start_date;
-        push @args, $self->end_date;
-    # default to asking for last 2 hours worth if not Bromley
-    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
-        my $end_dt = DateTime->now();
-        # Oxfordshire uses local time and not UTC for dates
-        FixMyStreet->set_time_zone($end_dt) if ( $body->areas->{$AREA_ID_OXFORDSHIRE} );
-        my $start_dt = $end_dt->clone;
-        $start_dt->add( hours => -2 );
-
-        push @args, DateTime::Format::W3CDTF->format_datetime( $start_dt );
-        push @args, DateTime::Format::W3CDTF->format_datetime( $end_dt );
-    }
-
+    my @args = $self->parse_dates;
     my $requests = $open311->get_service_request_updates( @args );
 
     unless ( $open311->success ) {
@@ -106,15 +141,8 @@ sub process_body {
     return 1;
 }
 
-sub find_problem {
+sub check_date {
     my ($self, $request, @args) = @_;
-
-    my $body = $self->current_body;
-    my $request_id = $request->{service_request_id};
-
-    # If there's no request id then we can't work out
-    # what problem it belongs to so just skip
-    return unless $request_id || $request->{fixmystreet_id};
 
     my $comment_time = eval {
         DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} || "" )
@@ -124,6 +152,20 @@ sub find_problem {
     my $updated = DateTime::Format::W3CDTF->format_datetime($comment_time->clone->set_time_zone('UTC'));
     return if @args && ($updated lt $args[0] || $updated gt $args[1]);
     $request->{comment_time} = $comment_time;
+    return 1;
+}
+
+sub find_problem {
+    my ($self, $request, @args) = @_;
+
+    $self->check_date($request, @args) or return;
+
+    my $body = $self->current_body;
+    my $request_id = $request->{service_request_id};
+
+    # If there's no request id then we can't work out
+    # what problem it belongs to so just skip
+    return unless $request_id || $request->{fixmystreet_id};
 
     my $problem;
     my $criteria = {
