@@ -7,69 +7,63 @@ use FixMyStreet::DB;
 use FixMyStreet::Queue::Item::Report;
 
 has verbose => ( is => 'ro' );
-has debug_mode => ( is => 'ro' );
 
-has debug_unsent_count => ( is => 'rw', default => 0 );
 has unconfirmed_data => ( is => 'ro', default => sub { {} } );
 has test_data => ( is => 'ro', default => sub { {} } );
 
 # Static method, used by send-reports cron script and tests.
 # Creates a manager object from provided data and processes it.
-sub send(;$) {
-    my ($site_override) = @_;
-    my $rs = FixMyStreet::DB->resultset('Problem');
-
-    # Set up site, language etc.
-    my ($verbose, $nomail, $debug_mode) = CronFns::options();
+sub send {
+    my ($verbose, $nomail, $debug) = @_;
 
     my $manager = __PACKAGE__->new(
         verbose => $verbose,
-        debug_mode => $debug_mode,
     );
 
-    my $base_url = FixMyStreet->config('BASE_URL');
-    my $site = $site_override || CronFns::site($base_url);
-
+    my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
     my $states = [ FixMyStreet::DB::Result::Problem::open_states() ];
     $states = [ 'submitted', 'confirmed', 'in progress', 'feedback pending', 'external', 'wish' ] if $site eq 'zurich';
-    my $unsent = $rs->search( {
+
+    my $unsent = FixMyStreet::DB->resultset('Problem')->search( {
         state => $states,
         whensent => undef,
         bodies_str => { '!=', undef },
     } );
 
-    $manager->debug_print("starting to loop through unsent problem reports...");
+    $manager->log("starting to loop through unsent problem reports...");
+    my $unsent_count = 0;
     while (my $row = $unsent->next) {
+        $unsent_count++;
         my $item = FixMyStreet::Queue::Item::Report->new(
             report => $row,
             manager => $manager,
+            verbose => $verbose,
             nomail => $nomail,
-            debug_mode => $debug_mode,
+            debug => $debug,
         );
         $item->process;
     }
 
-    $manager->end_debug_line;
+    $manager->end_line($unsent_count);
     $manager->end_summary_unconfirmed;
 
     return $manager->test_data;
 }
 
-sub end_debug_line {
-    my $self = shift;
-    return unless $self->debug_mode;
+sub end_line {
+    my ($self, $unsent_count) = @_;
+    return unless $self->verbose;
 
-    print "\n";
-    if ($self->debug_unsent_count) {
-        $self->debug_print("processed all unsent reports (total: " . $self->debug_unsent_count . ")");
+    if ($unsent_count) {
+        $self->log("processed all unsent reports (total: $unsent_count)");
     } else {
-        $self->debug_print("no unsent reports were found (must have whensent=null and suitable bodies_str & state) -- nothing to send");
+        $self->log("no unsent reports were found (must have whensent=null and suitable bodies_str & state) -- nothing to send");
     }
 }
 
 sub end_summary_unconfirmed {
     my $self = shift;
-    return unless $self->verbose || $self->debug_mode;
+    return unless $self->verbose;
 
     my %unconfirmed_data = %{$self->unconfirmed_data};
     print "Council email addresses that need checking:\n" if keys %unconfirmed_data;
@@ -102,14 +96,10 @@ sub end_summary_failures {
     }
 }
 
-sub debug_print {
-    my $self = shift;
-    return unless $self->debug_mode;
-
-    my $msg = shift;
-    my $id = shift || '';
-    $id = "report $id: " if $id;
-    print "[] $id$msg\n";
+sub log {
+    my ($self, $msg) = @_;
+    return unless $self->verbose;
+    STDERR->print("[fmsd] $msg\n");
 }
 
 1;

@@ -41,19 +41,18 @@ has h => ( is => 'rwp' );
 has reporters => ( is => 'rwp' );
 
 # Run parameters
+has verbose => ( is => 'ro');
 has nomail => ( is => 'ro' );
-has debug_mode => ( is => 'ro' );
+has debug => ( is => 'ro' );
 
 sub process {
     my $self = shift;
 
     FixMyStreet::DB->schema->cobrand($self->cobrand);
 
-    if ($self->debug_mode) {
-        $self->manager->debug_unsent_count++;
-        print "\n";
+    if ($self->verbose) {
         my $row = $self->report;
-        $self->debug_print("state=" . $row->state . ", bodies_str=" . $row->bodies_str . ($row->cobrand? ", cobrand=" . $row->cobrand : ""), $row->id);
+        $self->log("state=" . $row->state . ", bodies_str=" . $row->bodies_str . ($row->cobrand? ", cobrand=" . $row->cobrand : ""));
     }
 
     # Cobranded and non-cobranded messages can share a database. In this case, the conf file
@@ -61,7 +60,7 @@ sub process {
     # more than once if there are multiple vhosts running off the same database. The email_host
     # call checks if this is the host that sends mail for this cobrand.
     if (! $self->cobrand->email_host()) {
-        $self->debug_print("skipping because this host does not send reports for cobrand " . $self->cobrand->moniker, $self->report->id);
+        $self->log("skipping because this host does not send reports for cobrand " . $self->cobrand->moniker);
         return;
     }
 
@@ -79,11 +78,11 @@ sub _check_abuse {
     my $self = shift;
     if ( $self->report->is_from_abuser) {
         $self->report->update( { state => 'hidden' } );
-        $self->debug_print("hiding because its sender is flagged as an abuser", $self->report->id);
+        $self->log("hiding because its sender is flagged as an abuser");
         return;
     } elsif ( $self->report->title =~ /app store test/i ) {
         $self->report->update( { state => 'hidden' } );
-        $self->debug_print("hiding because it is an app store test message", $self->report->id);
+        $self->log("hiding because it is an app store test message");
         return;
     }
     return 1;
@@ -179,16 +178,16 @@ sub _create_reporters {
         my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
         if ( ! exists $self->senders->{ $sender } ) {
-            warn sprintf "No such sender [ $sender ] for body %s ( %d )", $body->name, $body->id;
+            $self->log(sprintf "No such sender [ $sender ] for body %s ( %d )", $body->name, $body->id);
             next;
         }
         $reporters{ $sender } ||= $sender->new();
 
-        if ( $reporters{ $sender }->should_skip( $row, $self->debug_mode ) ) {
+        if ( $reporters{ $sender }->should_skip($row, $self->debug) ) {
             $skip = 1;
-            $self->debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id);
+            $self->log("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)");
         } else {
-            $self->debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method}, $row->id);
+            $self->log("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method});
             push @dear, $body->name;
             $reporters{ $sender }->add_body( $body, $sender_info->{config} );
         }
@@ -228,7 +227,7 @@ sub _send {
     my $result = -1;
 
     for my $sender ( keys %{$self->reporters} ) {
-        $self->debug_print("sending using " . $sender, $self->report->id);
+        $self->log("sending using " . $sender);
         $sender = $self->reporters->{$sender};
         my $res = $sender->send( $self->report, $self->h );
         $result *= $res;
@@ -261,7 +260,7 @@ sub _post_send {
             $self->h->{sent_confirm_id_ref} = $self->report->$send_confirmation_email;
             $self->_send_report_sent_email;
         }
-        $self->debug_print("send successful: OK", $self->report->id);
+        $self->log("send successful: OK");
     } else {
         my @errors;
         for my $sender ( keys %{$self->reporters} ) {
@@ -270,7 +269,7 @@ sub _post_send {
             }
         }
         $self->report->update_send_failed( join( '|', @errors ) );
-        $self->debug_print("send FAILED: " . join( '|', @errors ), $self->report->id);
+        $self->log("send FAILED: " . join( '|', @errors ));
     }
 }
 
@@ -297,9 +296,10 @@ sub _send_report_sent_email {
     );
 }
 
-sub debug_print {
-    my $self = shift;
-    $self->manager->debug_print(@_);
+sub log {
+    my ($self, $msg) = @_;
+    return unless $self->verbose;
+    STDERR->print("[fmsd] [" . $self->report->id . "] $msg\n");
 }
 
 1;
