@@ -33,6 +33,58 @@ var occ_stylemap = new OpenLayers.StyleMap({
     'hover': occ_hover
 });
 
+var occ_ownernames = [
+    "LocalAuthority", "CountyCouncil"
+];
+
+function occ_owns_feature(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.maintained_by &&
+           OpenLayers.Util.indexOf(occ_ownernames, f.attributes.maintained_by) > -1;
+}
+
+function occ_does_not_own_feature(f) {
+    return !occ_owns_feature(f);
+}
+
+var owned_default_style = new OpenLayers.Style({
+    fillColor: "#868686",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 4,
+    title: 'Not maintained by Oxfordshire County Council. Maintained by ${maintained_by}.'
+});
+
+var rule_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: occ_owns_feature
+    }),
+    symbolizer: {
+        fillColor: "#007258",
+        pointRadius: 6,
+        title: '',
+    }
+});
+
+var rule_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: occ_does_not_own_feature
+    })
+});
+
+owned_default_style.addRules([rule_owned, rule_not_owned]);
+
+var owned_stylemap = new OpenLayers.StyleMap({
+    'default': owned_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': occ_hover
+});
+
 fixmystreet.assets.add(defaults, {
     stylemap: occ_stylemap,
     wfs_feature: "Trees",
@@ -98,7 +150,8 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    stylemap: occ_stylemap,
+    stylemap: owned_stylemap,
+    select_action: true,
     // have to do this by hand rather than using wfs_* options
     // as the server does not like being POSTed xml with application/xml
     // as the Content-Type which is what using those options results in.
@@ -121,11 +174,27 @@ fixmystreet.assets.add(defaults, {
         feature_id: 'id'
     },
     asset_category: ["Gully and Catchpits"],
-    asset_item: 'drain'
+    asset_item: 'drain',
+    actions: {
+        asset_found: function(asset) {
+          var is_occ = occ_owns_feature(asset);
+          if (!is_occ) {
+              $("js-not-local-authority-asset").removeClass('hidden');
+              fixmystreet.message_controller.asset_not_found.call(this);
+          } else {
+              $("js-not-local-authority-asset").addClass('hidden');
+              $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+          }
+        },
+        asset_not_found: function() {
+            $("js-not-local-authority-asset").addClass('hidden');
+           $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+        }
+    }
 });
 
 fixmystreet.assets.add(defaults, {
-    stylemap: occ_stylemap,
+    stylemap: owned_stylemap,
     // have to do this by hand rather than using wfs_* options
     // as the server does not like being POSTed xml with application/xml
     // as the Content-Type which is what using those options results in.
