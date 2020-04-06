@@ -99,6 +99,8 @@ sub open311_extra_data {
             push @$extra, { name => 'UPRN', value => $ref };
         }
     }
+
+    return undef;
 }
 
 sub lookup_site_code_config {
