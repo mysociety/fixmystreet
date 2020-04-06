@@ -18,21 +18,6 @@ has 'error' => ( is => 'rw', isa => Str, default => '' );
 has 'unconfirmed_data' => ( 'is' => 'rw', isa => HashRef, default => sub { {} } );
 
 
-sub should_skip {
-    my $self  = shift;
-    my $row   = shift;
-    my $debug = shift;
-
-    return 0 unless $row->send_fail_count;
-    return 0 if $debug;
-
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $diff = $now - $row->send_fail_timestamp;
-
-    my $backoff = $row->send_fail_count > 1 ? 30 : 5;
-    return $diff->in_units( 'minutes' ) < $backoff;
-}
-
 sub get_senders {
     my $self = shift;
 

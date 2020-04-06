@@ -24,11 +24,38 @@ sub send {
     my $states = [ FixMyStreet::DB::Result::Problem::open_states() ];
     $states = [ 'submitted', 'confirmed', 'in progress', 'feedback pending', 'external', 'wish' ] if $site eq 'zurich';
 
-    my $unsent = FixMyStreet::DB->resultset('Problem')->search( {
+    # Devolved Noop categories (unlikely to be any, but still)
+    my @noop_params;
+    my $noop_cats = FixMyStreet::DB->resultset('Contact')->search({
+        'body.can_be_devolved' => 1,
+        'me.send_method' => 'Noop'
+    }, { join => 'body' });
+    while (my $cat = $noop_cats->next) {
+        push @noop_params, [
+            \[ "NOT regexp_split_to_array(bodies_str, ',') && ?", [ {} => [ $cat->body_id ] ] ],
+            category => { '!=' => $cat->category } ];
+    }
+
+    # Noop bodies
+    my @noop_bodies = FixMyStreet::DB->resultset('Body')->search({ send_method => 'Noop' })->all;
+    @noop_bodies = map { $_->id } @noop_bodies;
+    push @noop_params, \[ "NOT regexp_split_to_array(bodies_str, ',') && ?", [ {} => \@noop_bodies ] ];
+
+    my $params = {
         state => $states,
         whensent => undef,
         bodies_str => { '!=', undef },
-    } );
+        -and => \@noop_params,
+    };
+    if (!$debug) {
+        $params->{'-or'} = [
+            send_fail_count => 0,
+            { send_fail_count => 1, send_fail_timestamp => { '<', \"current_timestamp - '5 minutes'::interval" } },
+            { send_fail_timestamp => { '<', \"current_timestamp - '30 minutes'::interval" } },
+        ];
+    }
+
+    my $unsent = FixMyStreet::DB->resultset('Problem')->search($params);
 
     $manager->log("starting to loop through unsent problem reports...");
     my $unsent_count = 0;
@@ -39,7 +66,6 @@ sub send {
             manager => $manager,
             verbose => $verbose,
             nomail => $nomail,
-            debug => $debug,
         );
         $item->process;
     }

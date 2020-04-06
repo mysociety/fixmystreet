@@ -43,7 +43,6 @@ has reporters => ( is => 'rwp' );
 # Run parameters
 has verbose => ( is => 'ro');
 has nomail => ( is => 'ro' );
-has debug => ( is => 'ro' );
 
 sub process {
     my $self = shift;
@@ -172,7 +171,6 @@ sub _create_reporters {
 
     my @dear;
     my %reporters = ();
-    my $skip = 0;
     while (my $body = $bodies->next) {
         my $sender_info = $self->cobrand->get_body_sender( $body, $row->category );
         my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
@@ -183,21 +181,14 @@ sub _create_reporters {
         }
         $reporters{ $sender } ||= $sender->new();
 
-        if ( $reporters{ $sender }->should_skip($row, $self->debug) ) {
-            $skip = 1;
-            $self->log("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)");
-        } else {
-            $self->log("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method});
-            push @dear, $body->name;
-            $reporters{ $sender }->add_body( $body, $sender_info->{config} );
-        }
+        $self->log("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method});
+        push @dear, $body->name;
+        $reporters{ $sender }->add_body( $body, $sender_info->{config} );
     }
 
     unless ( keys %reporters ) {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
-
-    return if $skip;
 
     my $h = $self->h;
     $h->{bodies_name} = join(_(' and '), @dear);
