@@ -33,6 +33,58 @@ var occ_stylemap = new OpenLayers.StyleMap({
     'hover': occ_hover
 });
 
+var occ_ownernames = [
+    "LocalAuthority", "CountyCouncil", 'ODS'
+];
+
+function occ_owns_feature(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.maintained_by &&
+           OpenLayers.Util.indexOf(occ_ownernames, f.attributes.maintained_by) > -1;
+}
+
+function occ_does_not_own_feature(f) {
+    return !occ_owns_feature(f);
+}
+
+var owned_default_style = new OpenLayers.Style({
+    fillColor: "#868686",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 4,
+    title: 'Not maintained by Oxfordshire County Council. Maintained by ${maintained_by}.'
+});
+
+var rule_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: occ_owns_feature
+    }),
+    symbolizer: {
+        fillColor: "#007258",
+        pointRadius: 6,
+        title: ''
+    }
+});
+
+var rule_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: occ_does_not_own_feature
+    })
+});
+
+owned_default_style.addRules([rule_owned, rule_not_owned]);
+
+var owned_stylemap = new OpenLayers.StyleMap({
+    'default': owned_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': occ_hover
+});
+
 fixmystreet.assets.add(defaults, {
     stylemap: occ_stylemap,
     wfs_feature: "Trees",
@@ -90,7 +142,8 @@ fixmystreet.assets.add(defaults, {
 });
 
 var owned_defaults = $.extend({}, defaults, {
-    stylemap: occ_stylemap,
+    stylemap: owned_stylemap,
+    select_action: true,
     // have to do this by hand rather than using wfs_* options
     // as the server does not like being POSTed xml with application/xml
     // as the Content-Type which is what using those options results in.
@@ -110,6 +163,18 @@ var owned_defaults = $.extend({}, defaults, {
     asset_id_field: 'id',
     attributes: {
         feature_id: 'id'
+    },
+    actions: {
+        asset_found: function(asset) {
+          var is_occ = occ_owns_feature(asset);
+          if (!is_occ) {
+              fixmystreet.message_controller.asset_not_found.call(this);
+          } else {
+              fixmystreet.message_controller.asset_found.call(this);
+          }
+        },
+        // Not a typo, asset selection is not mandatory
+        asset_not_found: fixmystreet.message_controller.asset_found
     }
 });
 
