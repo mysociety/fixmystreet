@@ -105,7 +105,11 @@ fixmystreet.assets.add(defaults, {
         feature_id: 'id'
     },
     asset_category: ["Gully and Catchpits"],
-    asset_item: 'drain'
+    asset_item: 'drain',
+    filter_key: 'maintained_by',
+    filter_value: [
+        "LocalAuthority"
+    ]
 });
 
 fixmystreet.assets.add(defaults, {
@@ -131,7 +135,11 @@ fixmystreet.assets.add(defaults, {
         feature_id: 'id'
     },
     asset_category: ["Ice/Snow"],
-    asset_item: 'grit bin'
+    asset_item: 'grit bin',
+    filter_key: 'maintained_by',
+    filter_value: [
+        "LocalAuthority", "CountyCouncil"
+    ]
 });
 
 var highways_style = new OpenLayers.Style({
