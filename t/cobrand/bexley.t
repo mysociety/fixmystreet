@@ -41,6 +41,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Damaged road', email
 $mech->create_contact_ok(body_id => $body->id, category => 'Flooding in the road', email => "ConfirmFLOD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "UniformFLY");
 $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
+$mech->create_contact_ok(body_id => $body->id, category => 'Street cleaning and litter', email => "STREET");
 my $category = $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
 $category->set_extra_metadata(group => 'Danger things');
 $category->update;
@@ -81,6 +82,8 @@ FixMyStreet::override_config {
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Something dangerous', code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
+        { category => 'Street cleaning and litter', email => ['p1', 'outofhours', 'ooh2'], code => 'STREET',
+            extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Oil spillage' } },
         { category => 'Gulley covers', email => ['p1', 'outofhours', 'ooh2'], code => 'GULL',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Cover missing' } },
         { category => 'Gulley covers', code => 'GULL',
