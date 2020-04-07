@@ -34,7 +34,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
-$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ABAN");
+$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ConfirmABAN");
 $mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "StreetLightingLAMP");
 $mech->create_contact_ok(body_id => $body->id, category => 'Gulley covers', email => "GULL");
 $mech->create_contact_ok(body_id => $body->id, category => 'Damaged road', email => "ROAD");
@@ -51,6 +51,7 @@ FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => { open311_email => { bexley => {
         p1 => 'p1@bexley',
+        p1confirm => 'p1confirm@bexley',
         lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com',
         outofhours => 'outofhours@bexley,ooh2@bexley',
         flooding => 'flooding@bexley',
@@ -71,9 +72,9 @@ FixMyStreet::override_config {
 
     my $report;
     foreach my $test (
-        { category => 'Abandoned and untaxed vehicles', email => ['p1'], code => 'ABAN',
+        { category => 'Abandoned and untaxed vehicles', email => ['p1confirm'], code => 'ConfirmABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' } },
-        { category => 'Abandoned and untaxed vehicles', code => 'ABAN',
+        { category => 'Abandoned and untaxed vehicles', code => 'ConfirmABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'No' } },
         { category => 'Dead animal', email => ['p1', 'outofhours', 'ooh2'], code => 'ANIM' },
         { category => 'Something dangerous', email => ['p1', 'outofhours', 'ooh2'], code => 'DANG',
