@@ -64,7 +64,10 @@ sub categories_restriction {
     # cobrand, not the email categories from FMS.com. We've set up the
     # Email categories with a devolved send_method, so can identify Open311
     # categories as those which have a blank send_method.
-    return $rs->search( { 'me.send_method' => undef, 'body.name' => 'Hounslow Borough Council' } );
+    return $rs->search({
+        'me.send_method' => undef,
+        'body.name' => [ 'Hounslow Borough Council', 'Highways England' ],
+    });
 }
 
 sub report_sent_confirmation_email { 'external_id' }
