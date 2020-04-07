@@ -12,7 +12,7 @@ Content-Transfer-Encoding: quoted-printable
 
 Gr=C3=BCezi External Body,
 
-=C3=96ffentliche URL: http://www.example.org/report/REPORT_ID
+=C3=96ffentliche URL: https://www.zurich/report/REPORT_ID
 
 Bei Fragen zu "Z=C3=BCri wie neu" wenden Sie sich bitte an =
 gis-zentrum@zuerich.ch.=
