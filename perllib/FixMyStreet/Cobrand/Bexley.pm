@@ -172,6 +172,12 @@ sub open311_post_send {
             $p1_email = 1;
             $outofhours_email = 1;
         }
+    } elsif ($row->category eq 'Street cleaning and litter') {
+        my $reportType = $row->get_extra_field_value('reportType') || '';
+        if ($reportType eq 'Oil spillage' || $dangerous eq 'Yes') {
+            $p1_email = 1;
+            $outofhours_email = 1;
+        }
     } elsif ($row->category eq 'Damage to kerb' || $row->category eq 'Damaged road' || $row->category eq 'Damaged pavement') {
         $p1_email = 1;
         $outofhours_email = 1;
@@ -181,7 +187,8 @@ sub open311_post_send {
     }
 
     my @to;
-    push @to, email_list($emails->{p1}, 'Bexley P1 email') if $p1_email;
+    my $p1_email_to_use = ($contact->email =~ /^Confirm/) ? $emails->{p1confirm} : $emails->{p1};
+    push @to, email_list($p1_email_to_use, 'Bexley P1 email') if $p1_email;
     push @to, email_list($emails->{lighting}, 'FixMyStreet Bexley Street Lighting') if $lighting{$row->category};
     push @to, email_list($emails->{flooding}, 'FixMyStreet Bexley Flooding') if $flooding{$row->category};
     push @to, email_list($emails->{outofhours}, 'Bexley out of hours') if $outofhours_email && _is_out_of_hours();

@@ -34,13 +34,14 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
-$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ABAN");
+$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ConfirmABAN");
 $mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "StreetLightingLAMP");
 $mech->create_contact_ok(body_id => $body->id, category => 'Gulley covers', email => "GULL");
 $mech->create_contact_ok(body_id => $body->id, category => 'Damaged road', email => "ROAD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flooding in the road', email => "ConfirmFLOD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "UniformFLY");
 $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
+$mech->create_contact_ok(body_id => $body->id, category => 'Street cleaning and litter', email => "STREET");
 my $category = $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
 $category->set_extra_metadata(group => 'Danger things');
 $category->update;
@@ -51,6 +52,7 @@ FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => { open311_email => { bexley => {
         p1 => 'p1@bexley',
+        p1confirm => 'p1confirm@bexley',
         lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com',
         outofhours => 'outofhours@bexley,ooh2@bexley',
         flooding => 'flooding@bexley',
@@ -71,15 +73,17 @@ FixMyStreet::override_config {
 
     my $report;
     foreach my $test (
-        { category => 'Abandoned and untaxed vehicles', email => ['p1'], code => 'ABAN',
+        { category => 'Abandoned and untaxed vehicles', email => ['p1confirm'], code => 'ConfirmABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' } },
-        { category => 'Abandoned and untaxed vehicles', code => 'ABAN',
+        { category => 'Abandoned and untaxed vehicles', code => 'ConfirmABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'No' } },
         { category => 'Dead animal', email => ['p1', 'outofhours', 'ooh2'], code => 'ANIM' },
         { category => 'Something dangerous', email => ['p1', 'outofhours', 'ooh2'], code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Something dangerous', code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
+        { category => 'Street cleaning and litter', email => ['p1', 'outofhours', 'ooh2'], code => 'STREET',
+            extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Oil spillage' } },
         { category => 'Gulley covers', email => ['p1', 'outofhours', 'ooh2'], code => 'GULL',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Cover missing' } },
         { category => 'Gulley covers', code => 'GULL',
