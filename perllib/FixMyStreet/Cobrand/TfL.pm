@@ -112,7 +112,7 @@ sub base_url_for_report {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    $rs = $rs->search( { 'body.name' => 'TfL' } );
+    $rs = $rs->search( { 'body.name' => [ 'TfL', 'Highways England' ] } );
     return $rs unless $self->{c}->stash->{categories_for_point}; # Admin page
     return $rs->search( { category => { -not_in => $self->_tfl_no_resend_categories } } );
 }
