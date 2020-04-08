@@ -54,22 +54,27 @@ fixmystreet.assets.add(defaults, {
     nearest_radius: 15,
     actions: {
         found: function(layer, feature) {
-            // if we've changed location then we want to reset things otherwise
-            // this is probably just being called again by a category change
-            var lat = $('#fixmystreet\\.latitude').val(),
-                lon = $('#fixmystreet\\.longitude').val();
-            if ( fixmystreet.body_overrides.location &&
-                 lat == fixmystreet.body_overrides.location.latitude &&
-                 lon == fixmystreet.body_overrides.location.longitude ) {
+            if (fixmystreet.assets.selectedFeature()) {
+                $('#highways').remove();
                 return;
             }
-            $('#highways').remove();
-            if ( !fixmystreet.assets.selectedFeature() ) {
-                add_highways_warning(feature.attributes.ROA_NUMBER);
+            var current_road_name = $('#highways strong').first().text();
+            var new_road_name = feature.attributes.ROA_NUMBER;
+            if (current_road_name === new_road_name) {
+                // this could be because of a category change, or because we've
+                // received new data from the server (but the pin drop had
+                // already shown the HE message)
+                if ($('#js-highways:checked').length) {
+                    he_selected();
+                } else {
+                    non_he_selected();
+                }
+            } else {
+                $('#highways').remove();
+                add_highways_warning(new_road_name);
             }
         },
         not_found: function(layer) {
-            fixmystreet.body_overrides.location = null;
             if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
                 fixmystreet.body_overrides.remove_only_send();
                 fixmystreet.body_overrides.do_not_send('Highways England');
@@ -82,10 +87,7 @@ fixmystreet.assets.add(defaults, {
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
-    fixmystreet.body_overrides.location = {
-        latitude: $('#fixmystreet\\.latitude').val(),
-        longitude: $('#fixmystreet\\.longitude').val()
-    };
+    var old_category = $("#form_category").val();
 
     // Restart the category dropdown from the original data (not all of it as
     // we keep subcategories the same)
@@ -98,6 +100,9 @@ function regenerate_category(he_flag) {
         select.find('optgroup[label*="Highways England"]').remove();
         select = select.html();
         $('#form_category').html(select);
+    }
+    if ($("#form_category option[value=\"" + old_category + "\"]").length) {
+        $("#form_category").val(old_category);
     }
 
     // Recalculate the category groups
