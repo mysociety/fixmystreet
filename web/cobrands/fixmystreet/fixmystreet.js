@@ -660,6 +660,11 @@ $.extend(fixmystreet.set_up, {
   },
 
   dropzone: function($context) {
+    if ('Dropzone' in window) {
+        Dropzone.autoDiscover = false;
+      } else {
+        return;
+      }
 
     // Pass a jQuery element, eg $('.foobar'), into this function
     // to limit all the selectors to that element. Handy if you want
@@ -668,12 +673,6 @@ $.extend(fixmystreet.set_up, {
     // the whole page.
     if (typeof $context === undefined) {
         $context = $(document);
-    }
-
-    if ('Dropzone' in window) {
-      Dropzone.autoDiscover = false;
-    } else {
-      return;
     }
 
     var forms = $('[for="form_photo"], .js-photo-label', $context).closest('form');

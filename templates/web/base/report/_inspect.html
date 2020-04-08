@@ -5,7 +5,7 @@
 
     [% INCLUDE 'errors.html' %]
 
-    <form name="report_inspect_form" id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id ) %]" class="validate">
+    <form name="report_inspect_form" id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id ) %]" class="validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
 
     [% INCLUDE 'report/inspect/information.html' %]
 

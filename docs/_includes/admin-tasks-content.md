@@ -350,6 +350,9 @@ If ‘Create reports/updates as the council’ is ticked in the staff user’s a
 updates will be labeled as from the council rather than the staff member’s name. For the sake of
 staff privacy, this is usually preferable.
 
+Staff with appropriate permissions can also attach an image to the update, which will then be
+displayed publicly alongside the text update.
+
 This option is also available via the general 'Update' box under the main report.
 
 #### Requests for more information

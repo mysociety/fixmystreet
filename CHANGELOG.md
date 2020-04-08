@@ -61,6 +61,7 @@
         - Disable category rename on Open311 categories when unprotected. #2957
         - In category admin, group is already shown elsewhere.
         - Add assigned_(users|categories)_only functionality.
+        - Inspectors can now include a photo with public updates. #2902
     - Bugfixes:
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.

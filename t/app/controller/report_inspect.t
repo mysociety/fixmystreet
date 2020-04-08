@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use Test::MockModule;
+use Path::Class;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -41,6 +42,9 @@ $mech->create_user_ok('body@example.com', name => 'Body User');
 my $user = $mech->log_in_ok('body@example.com');
 $user->set_extra_metadata('categories', [ $contact->id ]);
 $user->update( { from_body => $oxon } );
+
+my $sample_file = file(__FILE__)->parent->file("sample.jpg")->stringify;
+ok -e $sample_file, "sample file $sample_file exists";
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
@@ -589,7 +593,27 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report_id");
         $mech->content_contains('Nearest calculated address', 'Address displayed');
         $mech->content_contains('Constitution Hill, London, SW1A', 'Correct address displayed');
-    }
+    };
+
+    subtest "test upload photo with public updates" => sub {
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+
+        $report->state('confirmed');
+        $report->update;
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            public_update => "This is a public update.", include_update => "1",
+            state => 'action scheduled',
+            photo1 => [ [ $sample_file, undef, Content_Type => 'image/jpeg' ], 1 ],
+        } });
+        $report->discard_changes;
+        my $comment = $report->comments(undef, { rows => 1, order_by => { -desc => "id" }})->first;
+        is $comment->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg', 'photo added to comment';
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains("/photo/c/" . $comment->id . ".0.jpeg");
+    };
+
 };
 
 foreach my $test (
@@ -705,7 +729,10 @@ FixMyStreet::override_config {
           priority => $rp->id,
           include_update => '1',
           detailed_information => 'XXX164XXXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-          traffic_information => ''
+          traffic_information => '',
+          photo1 => '',
+          photo2 => '',
+          photo3 => '',
         };
         my $values = $mech->visible_form_values('report_inspect_form');
         is_deeply $values, $expected_fields, 'correct form fields present';

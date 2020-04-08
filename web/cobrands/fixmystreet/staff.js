@@ -137,6 +137,10 @@ fixmystreet.staff_set_up = {
         document.getElementById('side-inspect').scrollIntoView();
     }
 
+    // make sure dropzone is set up, otherwise loading problem with
+    // JS leaves this uninitialized.
+    fixmystreet.set_up.dropzone($inspect_form);
+
     function updateTemplates(opts) {
         opts.category = opts.category || $inspect_form.find('[name=category]').val();
         opts.state = opts.state || $inspect_form.find('[name=state]').val();
@@ -212,9 +216,9 @@ fixmystreet.staff_set_up = {
         var $checkbox = $(this);
         var toggle_public_update = function() {
             if ($checkbox.prop('checked')) {
-                $('#public_update').parents('p').show();
+                $('#public_update_form_fields').show();
             } else {
-                $('#public_update').parents('p').hide();
+                $('#public_update_form_fields').hide();
             }
         };
         $checkbox.on('change', function() {
