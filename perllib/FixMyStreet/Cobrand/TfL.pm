@@ -421,7 +421,19 @@ sub munge_reports_area_list {
 }
 
 sub munge_report_new_contacts { }
-sub munge_report_new_bodies { }
+
+sub munge_report_new_bodies {
+    my ($self, $bodies) = @_;
+
+    # Highways England handling
+    my $c = $self->{c};
+    my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
+    my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
+
+    if (!$on_he_road) {
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
+    }
+}
 
 sub munge_surrounding_london {
     my ($self, $bodies) = @_;
