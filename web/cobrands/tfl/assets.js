@@ -35,7 +35,7 @@ var tlrn_stylemap = new OpenLayers.StyleMap({
         fillColor: "#ff0000",
         fillOpacity: 0.3,
         strokeColor: "#ff0000",
-        strokeOpacity: 0.6,
+        strokeOpacity: 1,
         strokeWidth: 2
     })
 });
