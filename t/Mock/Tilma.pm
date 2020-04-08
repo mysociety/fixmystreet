@@ -10,6 +10,18 @@ has json => (
     },
 );
 
+sub as_json {
+    my ($self, $features) = @_;
+    my $json = mySociety::Locale::in_gb_locale {
+        $self->json->encode({
+            type => "FeatureCollection",
+            crs => { type => "name", properties => { name => "urn:ogc:def:crs:EPSG::27700" } },
+            features => $features,
+        });
+    };
+    return $json;
+}
+
 sub dispatch_request {
     my $self = shift;
 
@@ -25,15 +37,16 @@ sub dispatch_request {
                     [ 539408.94, 170607.58 ],
                 ] ] } } ];
         }
-        my $json = mySociety::Locale::in_gb_locale {
-            $self->json->encode({
-                type => "FeatureCollection",
-                crs => { type => "name", properties => { name => "urn:ogc:def:crs:EPSG::27700" } },
-                features => $features,
-            });
-        };
+        my $json = $self->as_json($features);
         return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
+
+    sub (GET + /mapserver/highways + ?*) {
+        my ($self, $args) = @_;
+        my $json = $self->as_json([]);
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+    },
+
 }
 
 __PACKAGE__->run_if_script;
