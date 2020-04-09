@@ -22,9 +22,10 @@ subtest 'open311 request handling', sub {
     }, sub {
         my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Trees', email => 'TREES');
         my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Trees', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough' });
-        $p->set_extra_fields({ name => 'emergency', value => 'no'});
-        $p->set_extra_fields({ name => 'private_land', value => 'no'});
-        $p->set_extra_fields({ name => 'tree_code', value => 'tree-42'});
+        $p->push_extra_fields({ name => 'emergency', value => 'no'});
+        $p->push_extra_fields({ name => 'private_land', value => 'no'});
+        $p->push_extra_fields({ name => 'PCC-light', value => 'whatever'});
+        $p->push_extra_fields({ name => 'tree_code', value => 'tree-42'});
         $p->update;
 
         my $test_data = FixMyStreet::Script::Reports::send();
@@ -33,11 +34,13 @@ subtest 'open311 request handling', sub {
         ok $p->whensent, 'Report marked as sent';
         is $p->send_method_used, 'Open311', 'Report sent via Open311';
         is $p->external_id, 248, 'Report has correct external ID';
+        is $p->get_extra_field_value('emergency'), 'no';
 
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
         is $c->param('attribute[emergency]'), undef, 'no emergency param sent';
         is $c->param('attribute[private_land]'), undef, 'no private_land param sent';
+        is $c->param('attribute[PCC-light]'), undef, 'no pcc- param sent';
         is $c->param('attribute[tree_code]'), 'tree-42', 'tree_code param sent';
     };
 };
