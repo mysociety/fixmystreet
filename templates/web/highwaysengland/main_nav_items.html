@@ -1,10 +1,4 @@
-[%~ IF problem AND NOT problem.non_public ~%]
-    [%~ INCLUDE navitem uri='/report/new?longitude=' _ problem.longitude _ '&latitude=' _ problem.latitude label=loc('Report another problem here') attrs='class="report-a-problem-btn"' ~%]
-[%~ ELSIF latitude AND longitude ~%]
-    [%~ INCLUDE navitem uri='/report/new?longitude=' _ longitude _ '&latitude=' _ latitude label=loc('Report a problem here') attrs='class="report-a-problem-btn"' ~%]
-[%~ ELSE ~%]
-    [%~ INCLUDE navitem uri='/' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
-[%~ END ~%]
+[% INCLUDE 'navigation/_report.html' %]
 
 [%~ IF c.user_exists ~%]
     [%~ INCLUDE navitem uri='/my' label=loc('Your account') ~%]
