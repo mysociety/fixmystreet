@@ -1198,17 +1198,6 @@ fixmystreet.message_controller = (function() {
         disable_report_form(stopper.keep_category_extras);
     }
 
-    // make sure we fire the code to check if an asset is selected if
-    // we change options in the Highways England message
-    $(fixmystreet).on('report_new:highways_change', function() {
-        if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
-            $('#' + stopperId).remove(); // Get rid of any stopper message
-            responsibility_off(); // Will also reenable form
-        } else {
-            $(fixmystreet).trigger('report_new:category_change');
-        }
-    });
-
     $(fixmystreet).on('report_new:category_change', check_for_stopper);
 
     return {
