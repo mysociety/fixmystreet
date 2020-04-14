@@ -1,0 +1,11 @@
+[%~ INCLUDE navitem uri='https://www.bromley.gov.uk/news/article/1551/coronavirus_covid-19_%E2%80%93_what_you_need_to_know' label='Coronavirus update' ~%]
+
+[%~ IF problem AND NOT problem.non_public ~%]
+    [%~ INCLUDE navitem uri='/report/new?longitude=' _ problem.longitude _ '&latitude=' _ problem.latitude label=loc('Report another problem here') attrs='class="report-a-problem-btn"' ~%]
+[%~ ELSIF latitude AND longitude ~%]
+    [%~ INCLUDE navitem uri='/report/new?longitude=' _ longitude _ '&latitude=' _ latitude label=loc('Report a problem here') attrs='class="report-a-problem-btn"' ~%]
+[%~ ELSIF homepage_template ~%]
+    [%~ INCLUDE navitem uri='/report' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
+[%~ ELSE ~%]
+    [%~ INCLUDE navitem uri='/' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
+[%~ END ~%]
