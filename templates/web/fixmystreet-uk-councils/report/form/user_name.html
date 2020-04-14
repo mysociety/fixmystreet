@@ -1,10 +1,5 @@
 <!-- user_name.html -->
-<label for="form_name">Full name
-[% TRY %]
-    [% INCLUDE 'report/form/after_name.html' %]
-    [% CATCH file %]
-[% END %]
-</label>
+<label for="form_name">Full name</label>
 [% IF field_errors.name %]
     <p class='form-error'>[% field_errors.name %]</p>
 [% END %]
