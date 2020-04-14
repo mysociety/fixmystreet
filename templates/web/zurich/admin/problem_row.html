@@ -1,3 +1,5 @@
+[% no_edit = no_edit AND NOT c.req.params.internal ~%]
+
 [%- FOR problem IN problems %]
     [% SET p_body = problem.bodies.values.0 %]
     <tr[%
