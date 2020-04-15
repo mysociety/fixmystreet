@@ -125,6 +125,7 @@
     <h2>[% loc('Extra data:') %] </h2>
     <dl>
       [% FOR pair IN contact.get_extra_metadata %]
+        [% NEXT IF pair.key == 'group' %]
         <dt>[% pair.key %]</dt> <dd>[% pair.value OR '<em>-</em>' %]</dd>
       [% END %]
     </dl>
