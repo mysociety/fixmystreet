@@ -822,7 +822,53 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'oxfordshire',
+}, sub {
+    subtest 'test relevant staff user display' => sub {
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'moderate' });
+        $mech->log_in_ok('body@example.com');
 
-END {
-    done_testing();
-}
+        # First, check user can see staff things on reports 2 and 3
+        $mech->get_ok("/report/$report2_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+        $mech->get_ok("/report/$report3_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+
+        # User's categories are ["Cows"], which is currently report 2
+        # So should be able to see staff things on 2, but no longer on 3
+        $user->set_extra_metadata(assigned_categories_only => 1);
+        $user->update;
+        $mech->get_ok("/report/$report2_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+        $mech->get_ok("/report/$report3_id");
+        $mech->content_lacks('<select class="form-control" name="state"  id="state">');
+        $mech->content_lacks('<div class="inspect-section">');
+        $mech->content_lacks('Moderate this report');
+        $mech->content_lacks('shortlist');
+        $user->unset_extra_metadata('assigned_categories_only');
+        $user->update;
+
+        # Contact 2 is "Sheep", which is currently report 3
+        # So again, should be able to see staff things on 2, but no longer on 3
+        $contact2->set_extra_metadata(assigned_users_only => 1);
+        $contact2->update;
+        $mech->get_ok("/report/$report2_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+        $mech->get_ok("/report/$report3_id");
+        $mech->content_lacks('<select class="form-control" name="state"  id="state">');
+        $mech->content_lacks('<div class="inspect-section">');
+        $mech->content_lacks('Moderate this report');
+        $mech->content_lacks('shortlist');
+        $contact2->unset_extra_metadata('assigned_users_only');
+        $contact2->update;
+    };
+};
+
+done_testing();

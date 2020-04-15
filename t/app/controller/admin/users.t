@@ -299,6 +299,7 @@ FixMyStreet::override_config {
                 flagged => undef,
                 is_superuser => undef,
                 area_ids => undef,
+                assigned_categories_only => undef,
                 %default_perms,
                 roles => $role->id,
             },
@@ -320,6 +321,7 @@ FixMyStreet::override_config {
                 flagged => undef,
                 is_superuser => undef,
                 area_ids => undef,
+                assigned_categories_only => undef,
                 %default_perms,
                 roles => $role->id,
             },
@@ -341,6 +343,7 @@ FixMyStreet::override_config {
                 flagged => undef,
                 is_superuser => undef,
                 area_ids => undef,
+                assigned_categories_only => undef,
                 %default_perms,
                 roles => $role->id,
             },
@@ -365,6 +368,7 @@ FixMyStreet::override_config {
                 flagged => undef,
                 is_superuser => undef,
                 area_ids => undef,
+                assigned_categories_only => undef,
                 %default_perms,
             },
             changes => {
@@ -385,6 +389,7 @@ FixMyStreet::override_config {
                 flagged => 'on',
                 is_superuser => undef,
                 area_ids => undef,
+                assigned_categories_only => undef,
                 %default_perms,
             },
             changes => {
@@ -394,7 +399,7 @@ FixMyStreet::override_config {
             log_entries => [qw/edit edit edit edit/],
         },
         {
-            desc => 'edit user add is_superuser',
+            desc => 'edit user add is_superuser and assigned_categories_only',
             fields => {
                 name => 'Changed User',
                 email => 'changed@example.com',
@@ -405,10 +410,12 @@ FixMyStreet::override_config {
                 flagged => undef,
                 is_superuser => undef,
                 area_ids => undef,
+                assigned_categories_only => undef,
                 %default_perms,
             },
             changes => {
                 is_superuser => 'on',
+                assigned_categories_only => 'on',
             },
             removed => [
                 keys %default_perms,
@@ -428,6 +435,7 @@ FixMyStreet::override_config {
                 flagged => undef,
                 is_superuser => 'on',
                 area_ids => undef,
+                assigned_categories_only => 'on',
             },
             changes => {
                 is_superuser => undef,

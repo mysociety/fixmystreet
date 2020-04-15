@@ -101,6 +101,21 @@
         [% END %]
 
 
+      [% IF user.from_body AND c.cobrand.moniker != 'zurich' %]
+        <li>
+          <div class="admin-hint">
+            <p>
+              [% loc("This means the user will only see front end staff features (such as the inspector form) in their assigned categories.") %]
+            </p>
+          </div>
+
+          <label>
+            [% loc('Assigned categories only') %]:
+            <input type="checkbox" id="assigned_categories_only" name="assigned_categories_only"[% user.extra.assigned_categories_only ? ' checked' : '' %]>
+          </label>
+        </li>
+      [% END %]
+
       [% IF c.cobrand.moniker != 'zurich' %]
         <li>
           <div class="admin-hint">

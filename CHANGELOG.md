@@ -17,6 +17,7 @@
         - Interface for disabling updates/reopening for certain categories. #2991 #2992
         - Include group in CSV export if enabled. #2994
         - In category admin, group already shown elsewhere.
+        - Add assigned_(users|categories)_only functionality.
     - Bugfixes:
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.

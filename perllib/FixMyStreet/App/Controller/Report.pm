@@ -87,6 +87,24 @@ sub display :PathPart('') :Chained('id') :Args(0) {
 
     my $permissions = $c->stash->{permissions} ||= $c->forward('fetch_permissions');
 
+    my $staff_user = $c->user_exists && ($c->user->is_superuser || $c->user->belongs_to_body($c->stash->{problem}->bodies_str));
+
+    if ($staff_user) {
+        # Check assigned categories feature
+        my $okay = 1;
+        my $contact = $c->stash->{problem}->contact;
+        if ($contact && ($c->user->get_extra_metadata('assigned_categories_only') || $contact->get_extra_metadata('assigned_users_only'))) {
+            my $user_cats = $c->user->get_extra_metadata('categories') || [];
+            $okay = any { $contact->id eq $_ } @$user_cats;
+        }
+        if ($okay) {
+            $c->stash->{relevant_staff_user} = 1;
+        } else {
+            # Remove all staff permissions
+            $permissions = $c->stash->{permissions} = {};
+        }
+    }
+
     if (grep { $permissions->{$_} } qw/report_inspect report_edit_category report_edit_priority report_mark_private triage/) {
         $c->stash->{template} = 'report/inspect.html';
         $c->forward('inspect');
