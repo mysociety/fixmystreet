@@ -132,20 +132,25 @@ sub tweak_all_reports_map {
     # A place where this can happen
     return unless $c->action eq 'dashboard/heatmap';
 
-    # Bromley only subcategory stuff
+    # Bromley uses an extra attribute question to store 'subcategory',
+    # rather than group/category, but wants this extra question to act
+    # like a subcategory e.g. in the dashboard filter here.
     my %subcats = $self->subcategories;
-    my $filter = $c->stash->{filter_categories};
-    my @new_contacts;
-    foreach (@$filter) {
-        push @new_contacts, $_;
-        foreach (@{$subcats{$_->id}}) {
-            push @new_contacts, {
-                category => $_->{key},
-                category_display => (" " x 4) . $_->{name},
-            };
+    my $groups = $c->stash->{category_groups};
+    foreach (@$groups) {
+        my $filter = $_->{categories};
+        my @new_contacts;
+        foreach (@$filter) {
+            push @new_contacts, $_;
+            foreach (@{$subcats{$_->id}}) {
+                push @new_contacts, {
+                    category => $_->{key},
+                    category_display => (" " x 4) . $_->{name},
+                };
+            }
         }
+        $_->{categories} = \@new_contacts;
     }
-    $c->stash->{filter_categories} = \@new_contacts;
 
     if (!%{$c->stash->{filter_category}}) {
         my $cats = $c->user->categories;
