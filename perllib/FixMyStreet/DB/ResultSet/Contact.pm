@@ -36,7 +36,10 @@ sub for_new_reports {
         $rs->me('body_id') => [ keys %$bodies ],
     };
 
-    if ($c->user_exists && $c->user->from_body) {
+    if ($c->user_exists && $c->user->is_superuser) {
+        # Everything normal OR any staff states
+        $params->{$rs->me('state')} = [ 'unconfirmed', 'confirmed', 'staff' ];
+    } elsif ($c->user_exists && $c->user->from_body) {
         # Everything normal OR staff state in the user body
         $params->{'-or'} = [
             $rs->me('state') => [ 'unconfirmed', 'confirmed' ],
@@ -45,9 +48,6 @@ sub for_new_reports {
                 $rs->me('state') => 'staff',
             },
         ];
-    } elsif ($c->user_exists && $c->user->is_superuser) {
-        # Everything normal OR any staff states
-        $params->{$rs->me('state')} = [ 'unconfirmed', 'confirmed', 'staff' ];
     } else {
         $params->{$rs->me('state')} = [ 'unconfirmed', 'confirmed' ];
     }
