@@ -38,9 +38,6 @@
     [% SET shown_form = 1 %]
 [% END %]
 
-[% IF c.user_exists %]
-    [% DEFAULT permissions = c.user.permissions(problem) %]
-[%- END %]
 [% INCLUDE 'report/_main.html' %]
 
 [% IF problem.duplicate_of %]

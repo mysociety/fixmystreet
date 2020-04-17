@@ -85,14 +85,14 @@ sub display :PathPart('') :Chained('id') :Args(0) {
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
 
-    my $permissions = $c->stash->{_permissions} ||= $c->forward( 'check_has_permission_to',
-        [ qw/report_inspect report_edit_category report_edit_priority report_mark_private triage/ ] );
-    if (any { $_ } values %$permissions) {
+    my $permissions = $c->stash->{permissions} ||= $c->forward('fetch_permissions');
+
+    if (grep { $permissions->{$_} } qw/report_inspect report_edit_category report_edit_priority report_mark_private triage/) {
         $c->stash->{template} = 'report/inspect.html';
         $c->forward('inspect');
     }
 
-    if ($c->user_exists && $c->user->has_permission_to(contribute_as_another_user => $c->stash->{problem}->bodies_str_ids)) {
+    if ($permissions->{contribute_as_another_user}) {
         $c->stash->{email} = $c->user->email;
     }
 }
@@ -160,8 +160,7 @@ sub load_problem_or_display_error : Private {
     } elsif ( $problem->non_public ) {
         # Creator, and inspection users can see non_public reports
         $c->stash->{problem} = $problem;
-        my $permissions = $c->stash->{_permissions} = $c->forward( 'check_has_permission_to',
-            [ qw/report_inspect report_edit_category report_edit_priority report_mark_private / ] );
+        my $permissions = $c->stash->{permissions} = $c->forward('fetch_permissions');
 
         # If someone has clicked a unique token link in an email to them
         my $from_email = $c->sessionid && $c->flash->{alert_to_reporter} && $c->flash->{alert_to_reporter} == $problem->id;
@@ -386,7 +385,7 @@ sub delete :Chained('id') :Args(0) {
 sub inspect : Private {
     my ( $self, $c ) = @_;
     my $problem = $c->stash->{problem};
-    my $permissions = $c->stash->{_permissions};
+    my $permissions = $c->stash->{permissions};
 
     $c->forward('/admin/reports/categories_for_point');
     $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
@@ -668,21 +667,18 @@ sub _nearby_json :Private {
 }
 
 
-=head2 check_has_permission_to
+=head2 fetch_permissions
 
-Ensure the currently logged-in user has any of the provided permissions applied
-to the current Problem in $c->stash->{problem}. Shows the 403 page if not.
+Returns a hash of the user's permissions, applied to the problem
+in $c->stash->{problem}.
 
 =cut
 
-sub check_has_permission_to : Private {
-    my ( $self, $c, @permissions ) = @_;
+sub fetch_permissions : Private {
+    my ( $self, $c ) = @_;
     return {} unless $c->user_exists;
-    my $bodies = $c->stash->{problem}->bodies_str_ids;
-    my %permissions = map { $_ => $c->user->has_permission_to($_, $bodies) } @permissions;
-    return \%permissions;
+    return $c->user->permissions($c->stash->{problem});
 };
-
 
 sub stash_category_groups : Private {
     my ( $self, $c, $contacts, $combine_multiple ) = @_;

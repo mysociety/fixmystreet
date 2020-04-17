@@ -6,7 +6,7 @@
         <p>
           <strong>[% loc('Report ID:') %]</strong>
           <span class="js-report-id">[% problem.id %]</span>
-          [% IF c.user_exists AND c.cobrand.admin_allow_user(c.user) AND c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
+          [% IF c.user_exists AND c.cobrand.admin_allow_user(c.user) AND permissions.report_edit %]
             (<a href="[% c.uri_for_action( 'admin/reports/edit', [ problem.id ] ) %]">[% loc('admin') %]</a>)
           [% END %]
         </p>

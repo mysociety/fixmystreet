@@ -46,7 +46,7 @@
         [% loc('Receive email when updates are left on this problem.' ) %]</p>
         <fieldset>
       [% IF c.user_exists %]
-          [% IF c.user.has_permission_to("contribute_as_another_user", problem.bodies_str_ids) %]
+          [% IF permissions.contribute_as_another_user %]
             <label for="alert_rznvy">[% loc('Email') %]</label>
             <div class="form-txt-submit-box">
                 <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
