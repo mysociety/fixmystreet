@@ -150,7 +150,7 @@ subtest 'check missing body message not shown when it does not need to be' => su
 };
 
 for my $permission ( qw/ report_inspect report_mark_private/ ) {
-    subtest 'check non public reports are displayed on around page with $permission permission' => sub {
+    subtest "check non public reports are displayed on around page with $permission permission" => sub {
         my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
         my $body2 = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
@@ -217,6 +217,29 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
             'problem marked public is visible' );
     };
 }
+
+subtest 'check assigned-only list items do not display shortlist buttons' => sub {
+    my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
+    my $contact = $mech->create_contact_ok( category => 'Horses', body_id => $body->id, email => "horses\@example.org" );
+    $edinburgh_problems[4]->update({ category => 'Horses' });
+
+    my $user = $mech->log_in_ok( 'test@example.com' );
+    $user->set_extra_metadata(assigned_categories_only => 1);
+    $user->user_body_permissions->delete();
+    $user->set_extra_metadata(categories => [ $contact->id ]);
+    $user->update({ from_body => $body });
+    $user->user_body_permissions->find_or_create({ body => $body, permission_type => 'planned_reports' });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/around?pc=EH1+1BB');
+    };
+    $mech->content_contains('shortlist-add-' . $edinburgh_problems[4]->id);
+    $mech->content_lacks('shortlist-add-' . $edinburgh_problems[3]->id);
+    $mech->content_lacks('shortlist-add-' . $edinburgh_problems[1]->id);
+};
 
 my $body = $mech->create_body_ok(2237, "Oxfordshire");
 

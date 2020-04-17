@@ -724,6 +724,19 @@ sub stash_category_groups : Private {
     $c->stash->{category_groups}  = \@category_groups;
 }
 
+sub assigned_users_only : Private {
+    my ($self, $c, $categories) = @_;
+
+    # Assigned only category checking
+    if ($c->user_exists && $c->user->from_body) {
+        my @assigned_users_only = grep { $_->get_extra_metadata('assigned_users_only') } @$categories;
+        $c->stash->{assigned_users_only} = { map { $_->category => 1 } @assigned_users_only };
+        $c->stash->{assigned_categories_only} = $c->user->get_extra_metadata('assigned_categories_only');
+
+        $c->stash->{user_categories} = { map { $_ => 1 } @{$c->user->categories} };
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

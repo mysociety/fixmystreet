@@ -262,6 +262,8 @@ sub check_and_stash_category : Private {
     my %valid_categories = map { $_ => 1 } grep { $_ && $categories_mapped{$_} } @$categories;
     $c->stash->{filter_category} = \%valid_categories;
     $c->cobrand->call_hook('munge_around_filter_category_list');
+
+    $c->forward('/report/assigned_users_only', [ \@categories ]);
 }
 
 sub map_features : Private {
