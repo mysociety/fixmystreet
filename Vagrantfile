@@ -101,7 +101,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # And 3001 for the Cypress test server
   config.vm.network :forwarded_port, guest: 3001, host: 3001
 
-  config.vm.synced_folder "templates/web/bromley", "/home/vagrant/bromley", :owner => "vagrant", :group => "vagrant"
+  config.vm.synced_folder ".", "/home/vagrant/fixmystreet", :owner => "vagrant", :group => "vagrant"
 
   # When using the mySociety box, just mount the local perl modules and run `script/update`
   # For any other box, just run the full setup process.
