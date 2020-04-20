@@ -89,9 +89,19 @@ fixmystreet.assets.add(defaults, {
         "Filter Drain", "Gully and Catchpit"
       ]
     },
-    asset_id_field: 'id',
     asset_item: 'drain',
     asset_category: ["Blocked Drain", "Broken Drain Cover", "Ditches", "Missing Drain Cover"]
+});
+
+// can have multiple group
+$(function(){
+    $("#problem_form").on("change.category", function() {
+        var group = '';
+        if (OpenLayers.Util.indexOf(fixmystreet.bodies, 'East Sussex County Council') != -1 ) {
+          group = $('#form_category :selected').parent().attr('label');
+        }
+        $('#form_group').val(group);
+    });
 });
 
 })();
