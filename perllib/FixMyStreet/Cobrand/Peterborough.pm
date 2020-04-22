@@ -40,6 +40,19 @@ sub geocoder_munge_results {
 
 sub admin_user_domain { "peterborough.gov.uk" }
 
+around open311_extra_data => sub {
+    my ($orig, $self, $row, $h, $extra) = @_;
+
+    my $open311_only = $self->$orig($row, $h, $extra);
+    foreach (@$open311_only) {
+        if ($_->{name} eq 'description') {
+            my ($ref) = grep { $_->{name} =~ /pcc-Skanska-csc-ref/i } @{$row->get_extra_fields};
+            $_->{value} .= "\n\nSkanska CSC ref: $ref->{value}" if $ref;
+        }
+    }
+    return $open311_only;
+};
+
 # remove categories which are informational only
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
