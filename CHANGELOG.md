@@ -6,6 +6,7 @@
         - Disable staff private tickbox on new reports if category is private. #2961
         - Move stats from main admin index to stats index.
         - Speed up dashboard export and report search.
+        - Allow a template to be an initial update on reports. #2973
     - Bugfixes
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.

@@ -158,7 +158,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     my $report = $c->stash->{report};
     if ( $report->confirmed ) {
-        $c->forward( 'create_reporter_alert' );
+        $c->forward( 'create_related_things' );
         $c->stash->{ json_response } = { success => 1, report => $report->id };
     } else {
         $c->forward( 'send_problem_confirm_email' );
@@ -1363,7 +1363,7 @@ sub process_confirmation : Private {
     );
 
     # Subscribe problem reporter to email updates
-    $c->forward( '/report/new/create_reporter_alert' );
+    $c->forward( '/report/new/create_related_things' );
 
     # log the problem creation user in to the site
     if ( $data->{name} || $data->{password} ) {
@@ -1623,7 +1623,7 @@ sub redirect_or_confirm_creation : Private {
     # If confirmed send the user straight there.
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
-        $c->forward( 'create_reporter_alert' );
+        $c->forward( 'create_related_things' );
         if ($c->stash->{contributing_as_another_user} && $report->user->email
             && $report->user->id != $c->user->id
             && !$c->cobrand->report_sent_confirmation_email) {
@@ -1665,13 +1665,51 @@ sub redirect_or_confirm_creation : Private {
     $c->log->info($report->user->id . ' created ' . $report->id . ", $thing sent, " . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
 }
 
-sub create_reporter_alert : Private {
+sub create_related_things : Private {
     my ( $self, $c ) = @_;
 
+    my $problem = $c->stash->{report};
+
+    # If there is a special template, create a comment using that
+    foreach my $body (values %{$problem->bodies}) {
+        my $user = $body->comment_user or next;
+
+        my %open311_conf = (
+            endpoint => $body->endpoint || '',
+            api_key => $body->api_key || '',
+            jurisdiction => $body->jurisdiction || '',
+            extended_statuses => $body->send_extended_statuses,
+        );
+
+        my $cobrand = $body->get_cobrand_handler;
+        $cobrand->call_hook(open311_config_updates => \%open311_conf)
+            if $cobrand;
+
+        my $open311 = Open311->new(%open311_conf);
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $open311,
+            current_body => $body,
+            blank_updates_permitted => 1,
+        );
+
+        my $description = $updates->comment_text_for_request({}, $problem, 'confirmed', 'dummy', '', '');
+        next unless $description;
+
+        my $request = {
+            service_request_id => $problem->id,
+            update_id => 'auto-internal',
+            comment_time => DateTime->now,
+            status => 'open',
+            description => $description,
+        };
+        $updates->process_update($request, $problem);
+    }
+
+    # And now the reporter alert
     return if $c->stash->{no_reporter_alert};
     return if $c->cobrand->call_hook('suppress_reporter_alerts');
 
-    my $problem = $c->stash->{report};
     my $alert = $c->model('DB::Alert')->find_or_create( {
         user         => $problem->user,
         alert_type   => 'new_updates',

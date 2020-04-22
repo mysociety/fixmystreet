@@ -748,6 +748,12 @@ process. In this instance, if your Open311 server returns extra text as part of
 the update, you may put the placeholder `{% raw %}{{description}}{% endraw %}` in the template here,
 and that placeholder will be replaced by the text from the Open311 server.
 
+If you don’t have an Open311 connection, or your Open311 connection does not
+provide an immediate initial update, there is a special case where if a
+template is assigned to the Open state, and marked as ‘auto-response’, then it
+will automatically be added as a first update to any new report created that
+matches the template (ie. in the relevant category if assigned). This lets
+you give e.g. estimated timescales or other useful information up front.
 
 #### Editing or deleting a template
 
