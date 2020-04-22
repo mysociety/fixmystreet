@@ -70,7 +70,21 @@ fixmystreet.assets.add(defaults, {
       ]
     },
     asset_item: 'street light',
-    asset_category: ["Burning By Day", "Intermittent", "Knocked Down", "Lamp Dim", "Vandalism", "Wires Exposed"]
+    asset_category: ["Burning By Day", "Intermittent", "Lamp Dim", "Lamp Flashing", "Lamp Obscured", "Lamp Out", "Missing Number", "Noisy Column", "Vandalism" ],
+    select_action: true,
+    actions: {
+        asset_found: function(asset) {
+          var id = asset.attributes.Name || '';
+          if (id !== '') {
+              $('.category_meta_message').html('You have selected <b>' + id + '</b>');
+          } else {
+              $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+          }
+        },
+        asset_not_found: function() {
+           $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+        }
+    }
 });
 
 fixmystreet.assets.add(defaults, {
@@ -80,7 +94,7 @@ fixmystreet.assets.add(defaults, {
       ]
     },
     asset_item: 'grit bin',
-    asset_category: ["Broken Grit Bin", "Request To Refill Grit Bin"]
+    asset_category: ["Broken Grit Bin", "Request For New Grit Bin", "Request To Refill Grit Bin"]
 });
 
 fixmystreet.assets.add(defaults, {
@@ -90,7 +104,25 @@ fixmystreet.assets.add(defaults, {
       ]
     },
     asset_item: 'drain',
-    asset_category: ["Blocked Drain", "Broken Drain Cover", "Ditches", "Missing Drain Cover"]
+    asset_category: ["Blocked Drain", "Culvert", "Broken Drain Cover", "Smell", "Sunken Drain", "Missing Drain Cover"],
+    select_action: true,
+    actions: {
+        asset_found: function(asset) {
+          var last_clean = asset.attributes.Gully_Last_Clean_Date__c || '';
+          var next_clean = asset.attributes.Gully_Next_Clean_Date__c || '';
+          if (last_clean !== '' || next_clean !== '') {
+              var message = '';
+              if (last_clean) { message += '<b>Last Cleaned</b>: ' + last_clean; }
+              if (next_clean) { message += ' <b>Next Clean</b>: ' + next_clean; }
+              $('.category_meta_message').html(message);
+          } else {
+              $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+          }
+        },
+        asset_not_found: function() {
+           $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+        }
+    }
 });
 
 // can have multiple group
