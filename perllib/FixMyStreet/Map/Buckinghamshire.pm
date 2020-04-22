@@ -8,9 +8,9 @@ use strict;
 
 sub default_zoom { 8; }
 
-sub urls { [ 'https://maps.buckscc.gov.uk/arcgis/rest/services/Basemapping/MapServer/WMTS/tile' ] }
+sub urls { [ 'https://maps.buckscc.gov.uk/arcgis/rest/services/Bucks_Basemapping/MapServer/WMTS/tile' ] }
 
-sub layer_names{ [ 'Basemapping' ] }
+sub layer_names { [ 'Bucks_Basemapping' ] }
 
 sub scales {
     my $self = shift;
