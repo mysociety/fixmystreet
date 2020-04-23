@@ -51,7 +51,7 @@ sub create_report {
         longitude          => '0.007831',
         user_id            => $user2->id,
         photo              => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
-        extra => { moon => 'waxing full' },
+        extra => { moon => 'waxing full', sent_to => [ 'authority@example.org' ] },
     });
 }
 my $report = create_report();
@@ -115,6 +115,7 @@ subtest 'Problem moderation' => sub {
         }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
         $mech->content_like(qr/Moderated by Bromley Council/);
+        $mech->content_lacks('sent_to = ARRAY(0x');
 
         $report->discard_changes;
         is $report->title, 'Good good';
