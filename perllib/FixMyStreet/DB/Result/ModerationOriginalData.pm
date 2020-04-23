@@ -163,7 +163,7 @@ sub compare_extra {
     my $new = $other->get_extra_metadata;
 
     my $both = { %$old, %$new };
-    my @all_keys = sort keys %$both;
+    my @all_keys = grep { $_ ne 'sent_to' } sort keys %$both;
     my @s;
     foreach (@all_keys) {
         if ($old->{$_} && $new->{$_}) {
