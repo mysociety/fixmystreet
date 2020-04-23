@@ -16,9 +16,14 @@ sub disambiguate_location {
 
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town   => 'Hackney',
         centre => '51.552267,-0.063316',
         bounds => [ 51.519814, -0.104511, 51.577784, -0.016527 ],
     };
+}
+
+sub get_geocoder {
+    return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
 sub open311_config {
