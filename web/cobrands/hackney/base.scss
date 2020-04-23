@@ -138,9 +138,7 @@ a.platform-logo {
   display: inline-block;
   position: relative;
   border: 1px solid $dark_green;
-  color: $dark_green;
-  background:#ffffff;
-  box-shadow: inset#003d2f 0 -2px 0 0;
+  box-shadow: inset #003d2f 0 -2px 0 0;
   &:hover {
     background: none;
     background-color: #005a30;
@@ -157,6 +155,7 @@ a.platform-logo {
 }
 
 .btn--primary,
+.btn-primary,
 .green-btn {
   background: $dark_green;
   border: 2px solid transparent;
