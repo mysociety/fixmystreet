@@ -335,6 +335,21 @@ fixmystreet.staff_set_up = {
     });
   },
 
+  open311_category_edit: function() {
+    var protect_input = document.getElementById('open311_protect');
+    if (!protect_input) {
+        return;
+    }
+    protect_input.addEventListener('change', function() {
+        var cat = document.getElementById('category');
+        cat.readOnly = !this.checked;
+        cat.required = this.checked;
+        if (!this.checked) {
+            cat.value = cat.getAttribute('value');
+        }
+    });
+  },
+
   shortlist_listener: function() {
     $('#fms_shortlist_all').on('click', function() {
       var features = [];

@@ -16,6 +16,7 @@
         - Allow a template to be an initial update on reports. #2973
         - Interface for disabling updates/reopening for certain categories. #2991 #2992
         - Include group in CSV export if enabled. #2994
+        - Disable category rename on Open311 categories when unprotected. #2957
     - Bugfixes:
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.

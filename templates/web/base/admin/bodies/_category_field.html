@@ -9,7 +9,10 @@
 </div>
 
 <p>
-  <strong>[% loc('Category') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
+  <label for="category">[% loc('Category') %]</label>
+  <input type="text" class="form-control" id="category" name="category"
+    size="30" value="[% contact.category %]"
+    [% contact.category_uneditable ? 'readonly' : 'required' %]>
 </p>
 
 [% IF contact.in_storage %]

@@ -175,4 +175,25 @@ sub disable_form_field {
     return $field;
 }
 
+sub sent_by_open311 {
+    my $self = shift;
+    my $body = $self->body;
+    return 1 if
+        (!$body->can_be_devolved && $body->send_method eq 'Open311')
+        || ($body->can_be_devolved && $body->send_method eq 'Open311' && !$self->send_method)
+        || ($body->can_be_devolved && $self->send_method eq 'Open311');
+    return 0;
+}
+
+# We do not want to allow editing of a category's name
+# if it's Open311, unless it's marked as protected
+sub category_uneditable {
+    my $self = shift;
+    return 1 if
+        $self->in_storage
+        && !$self->get_extra_metadata('open311_protect')
+        && $self->sent_by_open311;
+    return 0;
+}
+
 1;

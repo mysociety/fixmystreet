@@ -210,6 +210,7 @@ subtest 'check open311 configuring' => sub {
 
 subtest 'check open311 devolved editing' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->content_contains("name=\"category\"\n    size=\"30\" value=\"test category\"\n    readonly>", 'Cannot edit Open311 category name');
     $mech->submit_form_ok( { with_fields => {
         send_method => 'Email',
         email => 'testing@example.org',
@@ -217,6 +218,7 @@ subtest 'check open311 devolved editing' => sub {
     } } );
     $mech->content_contains('Values updated');
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->content_contains("name=\"category\"\n    size=\"30\" value=\"test category\"\n    required>", 'Can edit as now devolved');
     $mech->submit_form_ok( { with_fields => {
         send_method => '',
         email => 'open311-code',

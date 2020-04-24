@@ -241,10 +241,14 @@ sub update_contact : Private {
     if ($current_contact && $contact->id && $contact->id != $current_contact->id) {
         $errors{category} = _('You cannot rename a category to an existing category');
     } elsif ($current_contact && !$contact->id) {
-        # Changed name
         $contact = $current_contact;
-        $c->model('DB::Problem')->to_body($c->stash->{body_id})->search({ category => $current_category })->update({ category => $category });
-        $contact->category($category);
+        # Set the flag here so we can run the editable test on it
+        $contact->set_extra_metadata(open311_protect => $c->get_param('open311_protect'));
+        if (!$contact->category_uneditable) {
+            # Changed name
+            $c->model('DB::Problem')->to_body($c->stash->{body_id})->search({ category => $current_category })->update({ category => $category });
+            $contact->category($category);
+        }
     }
 
     my $email = $c->get_param('email');
