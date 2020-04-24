@@ -7,6 +7,52 @@ BEGIN { extends 'Catalyst::Controller'; }
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
     return $c->cobrand->admin_stats() if $c->cobrand->moniker eq 'zurich';
+    $c->forward('gather');
+}
+
+sub gather : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('state'); # Problem/update stats used on that page
+    $c->forward('/admin/fetch_all_bodies'); # For body stat
+
+    my $alerts = $c->model('DB::Alert')->summary_report_alerts( $c->cobrand->restriction );
+
+    my %alert_counts =
+      map { $_->confirmed => $_->get_column('confirmed_count') } $alerts->all;
+
+    $alert_counts{0} ||= 0;
+    $alert_counts{1} ||= 0;
+
+    $c->stash->{alerts} = \%alert_counts;
+
+    my $contacts = $c->model('DB::Contact')->summary_count();
+
+    my %contact_counts =
+      map { $_->state => $_->get_column('state_count') } $contacts->all;
+
+    $contact_counts{confirmed} ||= 0;
+    $contact_counts{unconfirmed} ||= 0;
+    $contact_counts{total} = $contact_counts{confirmed} + $contact_counts{unconfirmed};
+
+    $c->stash->{contacts} = \%contact_counts;
+
+    my $questionnaires = $c->model('DB::Questionnaire')->summary_count( $c->cobrand->restriction );
+
+    my %questionnaire_counts = map {
+        $_->get_column('answered') => $_->get_column('questionnaire_count')
+    } $questionnaires->all;
+    $questionnaire_counts{1} ||= 0;
+    $questionnaire_counts{0} ||= 0;
+
+    $questionnaire_counts{total} =
+      $questionnaire_counts{0} + $questionnaire_counts{1};
+    $c->stash->{questionnaires_pc} =
+      $questionnaire_counts{total}
+      ? sprintf( '%.1f',
+        $questionnaire_counts{1} / $questionnaire_counts{total} * 100 )
+      : _('n/a');
+    $c->stash->{questionnaires} = \%questionnaire_counts;
 }
 
 sub state : Local : Args(0) {

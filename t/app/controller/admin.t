@@ -84,10 +84,10 @@ subtest 'check summary counts' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
     }, sub {
-        $mech->get_ok('/admin');
+        $mech->get_ok('/admin/stats');
     };
 
-    $mech->title_like(qr/Summary/);
+    $mech->title_like(qr/Stats/);
 
     $mech->content_contains( "$problem_count</strong> live problems" );
     $mech->content_contains( "$a_count confirmed alerts" );
@@ -102,8 +102,8 @@ subtest 'check summary counts' => sub {
     }, sub {
         ok $mech->host('oxfordshire.fixmystreet.com');
 
-        $mech->get_ok('/admin');
-        $mech->title_like(qr/Summary/);
+        $mech->get_ok('/admin/stats');
+        $mech->title_like(qr/Stats/);
 
         my ($num_live) = $mech->content =~ /(\d+)<\/strong> live problems/;
         my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
@@ -116,7 +116,7 @@ subtest 'check summary counts' => sub {
         $alert->cobrand('oxfordshire');
         $alert->update;
 
-        $mech->get_ok('/admin');
+        $mech->get_ok('/admin/stats');
 
         $mech->content_contains( ($num_live+1) . "</strong> live problems" );
         $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );

@@ -74,13 +74,4 @@ and to receive notices of updates.
 </table>
 [% END %]
 
-<h2>[% loc('Stats') %]</h2>
-[% INCLUDE 'status/stats.html' admin_include_users=1 %]
-
-[% IF c.cobrand.admin_show_creation_graph -%]
-    <p>
-        <a href="[% c.config.BASE_URL %]/fms-live-creation.png" class="admin-offsite-link">[% loc('Graph of problem creation by status over time') %]</a>
-    </p>
-[% END -%]
-
 [% INCLUDE 'admin/footer.html' %]

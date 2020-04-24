@@ -1,5 +1,13 @@
 [% INCLUDE 'admin/header.html' title=loc('Stats') %]
 
+[% INCLUDE 'status/stats.html' admin_include_users=1 %]
+
+[% IF c.cobrand.admin_show_creation_graph -%]
+    <p>
+        <a href="[% c.config.BASE_URL %]/fms-live-creation.png" class="admin-offsite-link">[% loc('Graph of problem creation by status over time') %]</a>
+    </p>
+[% END -%]
+
 <ul>
 <li><a href="[% c.uri_for_action('admin/stats/questionnaire') %]">[% loc('Survey Results') %]</a></li>
 <li><a href="[% c.uri_for_action('admin/stats/state') %]">[% loc('Problem breakdown by state') %]</a></li>
