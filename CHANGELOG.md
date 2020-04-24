@@ -3,6 +3,7 @@
 * Unreleased
     - Admin improvements:
         - order unsent reports by confirmed date
+        - Disable staff private tickbox on new reports if category is private. #2961
     - Bugfixes
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.

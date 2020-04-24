@@ -454,9 +454,11 @@ $.extend(fixmystreet.set_up, {
         if (data && data.non_public) {
             $(".js-hide-if-private-category").hide();
             $(".js-hide-if-public-category").removeClass("hidden-js").show();
+            $('#form_non_public').prop('checked', true).prop('disabled', true);
         } else {
             $(".js-hide-if-private-category").show();
             $(".js-hide-if-public-category").hide();
+            $('#form_non_public').prop('checked', false).prop('disabled', false);
         }
         if (data && data.allow_anonymous) {
             $('.js-show-if-anonymous').removeClass('hidden-js');
