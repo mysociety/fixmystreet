@@ -1362,7 +1362,10 @@ fixmystreet.fetch_reporting_data = function() {
         }
 
         $('#form_category_row').html(data.category);
-        if ($("#form_category option[value=\"" + old_category + "\"]").length) {
+        var cat_in_group = $("#form_category optgroup[label=\"" + old_category_group + "\"] option[value=\"" + old_category + "\"]");
+        if (cat_in_group.length) {
+            cat_in_group.prop({selected:true});
+        } else if ($("#form_category option[value=\"" + old_category + "\"]").length) {
             $("#form_category").val(old_category);
         } else if (filter_category !== undefined && $("#form_category option[value='" + filter_category + "']").length) {
             // If the category filter appears on the map and the user has selected
