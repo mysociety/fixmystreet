@@ -2,6 +2,8 @@
 
 <h1>External import</h1>
 
+[% INCLUDE 'errors.html' %]
+
 <p>You may inject problem reports into FixMyStreet programatically using this
 simple interface. Upon receipt, an email will be sent to the address given,
 with a link the user must click in order to check the details of their report,
@@ -14,12 +16,14 @@ line each starting with <samp>ERROR:</samp>.
 <p>You may submit the following information by POST to this URL
 (i.e. <samp>[% c.uri_for('/import') %]</samp> ):</p>
 
+[% IF NOT errors AND NOT c.req.params.web %]
 <style type="text/css" media="screen">
     input {
         /* Hide the form elements - they are just here for simpler testing */
-        display: none;
+        display: none !important;
     }
 </style>
+[% END %]
 
 <form method="POST" action="/import" enctype="multipart/form-data">
 
@@ -28,65 +32,75 @@ line each starting with <samp>ERROR:</samp>.
     <dd>
         <em>Required</em>.
         Name of application/service using this interface.
-        <input type="text" name="service" />
+        <input type="text" name="service" value="[% input.service %]">
     </dd>
 
     <dt>id</dt>
     <dd>
         Unique ID of a user/device, for possible future use.<br>
         <small>(e.g. used by Flickr import to know which accounts to look at)</small>
-        <input type="text" name="id" />
+        <input type="text" name="id" value="[% input.id %]">
     </dd>
 
     <dt>subject</dt>
     <dd>
         <em>Required</em>. Subject of problem report.
-        <input type="text" name="subject" />
+        <input type="text" name="subject" value="[% input.subject %]">
     </dd>
 
     <dt>detail</dt>
     <dd>
         Main body and details of problem report.
-        <input type="text" name="detail" />
+        <input type="text" name="detail" value="[% input.detail %]">
     </dd>
 
     <dt>name</dt>
     <dd>
         <em>Required</em>. Name of problem reporter.
-        <input type="text" name="name" />
+        <input type="text" name="name" value="[% input.name %]">
     </dd>
 
     <dt>email</dt>
     <dd>
         <em>Required</em>. Email address of problem reporter.
-        <input type="text" name="email" />
+        <input type="text" name="email" value="[% input.email %]">
     </dd>
 
     <dt>phone</dt>
     <dd>
         Telephone number of problem reporter.
-        <input type="text" name="phone" />
+        <input type="text" name="phone" value="[% input.phone %]">
     </dd>
 
     <dt>easting / northing</dt>
     <dt>lat / lon</dt>
     <dd>
         Location of problem report. You can either supply eastings/northings, or WGS84 latitude/longitude.
-        <input type="text" name="easting" />
-        <input type="text" name="northing" />
-        <input type="text" name="lat" />
-        <input type="text" name="lon" />
+        <input type="text" name="easting" value="[% input.easting %]">
+        <input type="text" name="northing" value="[% input.northing %]">
+        <input type="text" name="lat" value="[% input.lat %]">
+        <input type="text" name="lon" value="[% input.lon %]">
     </dd>
+
+  [% IF c.cobrand.allow_photo_upload %]
+    <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+      [% IF upload_fileid %]
+        [% FOREACH id IN upload_fileid.split(',') %]
+        <img align="right" src="/photo/temp.[% id %]" alt="">
+        [% END %]
+      [% END %]
 
     <dt>photo</dt>
     <dd>
-        Photo of problem (JPEG only).
+        Photo of problem.
         <input type="file" name="photo" />
     </dd>
+  [% END %]
+
 </dl>
 
-<input type="hidden" name="web" value="0">
-<input type="submit" />
+<input type="hidden" name="web" value="[% c.req.params.web ? 1 : 0 %]">
+<input type="submit" value="[% loc('Submit') %]">
 
 </form>
 

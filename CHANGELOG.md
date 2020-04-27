@@ -15,6 +15,7 @@
         - Move summary failures to a separate script.
         - Add script to export/import body data.
         - Add fetch script that does combined job of fetch-comments and fetch-reports.
+        - Show error page when submitting with web param to /import.
     - Open311 improvements:
         - match response templates on external status code over state
         - Add flag to protect category/group names from Open311 overwrite.

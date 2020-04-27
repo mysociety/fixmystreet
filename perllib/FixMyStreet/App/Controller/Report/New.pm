@@ -358,8 +358,7 @@ sub report_import : Path('/import') {
     # If this is not a POST then just print out instructions for using page
     return unless $c->req->method eq 'POST';
 
-    # anything else we return is plain text
-    $c->res->content_type('text/plain; charset=utf-8');
+    my $format = $c->get_param('web') ? 'web' : 'text';
 
     my %input =
       map { $_ => $c->get_param($_) || '' } (
@@ -412,8 +411,14 @@ sub report_import : Path('/import') {
 
     # if we have errors then we should bail out
     if (@errors) {
-        my $body = join '', map { "ERROR:$_\n" } @errors;
-        $c->res->body($body);
+        if ($format eq 'web') {
+            $c->stash->{input} = \%input;
+            $c->stash->{errors} = \@errors;
+        } else {
+            my $body = join '', map { "ERROR:$_\n" } @errors;
+            $c->res->content_type('text/plain; charset=utf-8');
+            $c->res->body($body);
+        }
         return;
     }
 
@@ -469,13 +474,13 @@ sub report_import : Path('/import') {
 
     $c->send_email( 'partial.txt', { to => $report->user->email, } );
 
-    if ( $c->get_param('web') ) {
-        $c->res->content_type('text/html; charset=utf-8');
+    if ($format eq 'web') {
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
-        return 1;
+    } else {
+        $c->res->content_type('text/plain; charset=utf-8');
+        $c->res->body('SUCCESS');
     }
-    $c->res->body('SUCCESS');
     return 1;
 }
 
