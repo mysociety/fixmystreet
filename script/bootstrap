@@ -5,16 +5,16 @@ cd "$(dirname "$0")/.."
 
 git submodule --quiet update --init --recursive --rebase
 
-# Let's see if we can't work out where we might be running.
-if cut -d/ -f2 /proc/self/cgroup | sort -u | grep -q docker ; then
-    if [ -z ${SKIP_PACKAGES_INSTALL:+x} ] ; then
+if [ -z ${SKIP_PACKAGES_INSTALL:+x} ] ; then
+    # Let's see if we can't work out where we might be running.
+    if cut -d/ -f2 /proc/self/cgroup | sort -u | grep -q docker ; then
         echo "==> Installing Docker packages..."
         sudo bin/install_packages docker
+    else
+        # Fallback
+        echo "==> Installing generic packages..."
+        sudo bin/install_packages generic
     fi
-else
-    # Fallback
-    echo "==> Installing generic packages..."
-    sudo bin/install_packages generic
 fi
 
 bin/install_perl_modules
