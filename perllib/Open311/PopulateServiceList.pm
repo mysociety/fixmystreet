@@ -143,6 +143,7 @@ sub _handle_existing_contact {
     my ( $self, $contact ) = @_;
 
     my $service_name = $self->_normalize_service_name;
+    my $protected = $contact->get_extra_metadata("open311_protect");
 
     print $self->_current_body->id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
 
@@ -150,7 +151,7 @@ sub _handle_existing_contact {
         eval {
             $contact->update(
                 {
-                    category => $service_name,
+                    $protected ? () : (category => $service_name),
                     email => $self->_current_service->{service_code},
                     state => 'confirmed',
                     %{ $self->_action_params("undeleted") },
@@ -178,7 +179,7 @@ sub _handle_existing_contact {
         $contact->update;
     }
 
-    $self->_set_contact_group($contact);
+    $self->_set_contact_group($contact) unless $protected;
     $self->_set_contact_non_public($contact);
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};

@@ -349,6 +349,52 @@ subtest 'check new category marked non_public' => sub {
     is $contact->non_public, 1, 'contact marked as non_public';
 };
 
+subtest 'check protected categories do not have name/group overwritten' => sub {
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    $contact->set_extra_metadata('open311_protect', 1);
+    $contact->set_extra_metadata('group', [ 'sanitation' ]);
+    $contact->non_public(0);
+    $contact->update;
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Cans left out constantly</service_name>
+        <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>private</keywords>
+        <group>cleansing</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tester' ],
+        COBRAND_FEATURES => {
+           category_groups => { tester => 1 },
+        }
+    }, sub {
+        my $processor = Open311::PopulateServiceList->new();
+        $processor->_current_body( $body );
+        $processor->process_services( $service_list );
+    };
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    $contact->discard_changes;
+    is $contact->email, '100', 'email correct';
+    is $contact->category, 'Cans left out 24x7', 'category unchanged';
+    is_deeply $contact->groups, ['sanitation'], 'group unchanged';
+    # test that something did change
+    is $contact->non_public, 1, 'contact marked as non_public';
+};
+
+
 subtest 'check existing category marked non_public' => sub {
     my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
     $contact->update({

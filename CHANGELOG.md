@@ -14,6 +14,7 @@
         - Add fetch script that does combined job of fetch-comments and fetch-reports.
     - Open311 improvements:
         - match response templates on external status code over state
+        - Add flag to protect category/group names from Open311 overwrite.
     - UK:
         - Added junction lookup, so you can search for things like "M60, Junction 2"
 

@@ -272,6 +272,11 @@ sub update_contact : Private {
     } else {
         $contact->unset_extra_metadata( 'photo_required' );
     }
+    if ( $c->get_param('open311_protect') ) {
+        $contact->set_extra_metadata( open311_protect => 1 );
+    } else {
+        $contact->unset_extra_metadata( 'open311_protect' );
+    }
     if ( my @group = $c->get_param_list('group') ) {
         @group = grep { $_ } @group;
         if (scalar @group == 0) {

@@ -250,6 +250,17 @@ subtest 'disable form message editing' => sub {
     }], 'right message added';
 };
 
+subtest 'open311 protection editing' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        open311_protect => 1,
+        note => 'Protected from Open311 changes',
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is $contact->get_extra_metadata('open311_protect'), 1, 'Open311 protect flag set';
+};
+
 
 }; # END of override wrap
 
