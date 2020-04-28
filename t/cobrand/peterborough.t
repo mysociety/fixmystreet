@@ -25,6 +25,7 @@ subtest 'open311 request handling', sub {
         $p->push_extra_fields({ name => 'emergency', value => 'no'});
         $p->push_extra_fields({ name => 'private_land', value => 'no'});
         $p->push_extra_fields({ name => 'PCC-light', value => 'whatever'});
+        $p->push_extra_fields({ name => 'PCC-skanska-csc-ref', value => '1234'});
         $p->push_extra_fields({ name => 'tree_code', value => 'tree-42'});
         $p->update;
 
@@ -38,6 +39,7 @@ subtest 'open311 request handling', sub {
 
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[description]'), "Title Test 1 for " . $peterborough->id . " Detail\r\n\r\nSkanska CSC ref: 1234", 'Ref added to description';
         is $c->param('attribute[emergency]'), undef, 'no emergency param sent';
         is $c->param('attribute[private_land]'), undef, 'no private_land param sent';
         is $c->param('attribute[PCC-light]'), undef, 'no pcc- param sent';
