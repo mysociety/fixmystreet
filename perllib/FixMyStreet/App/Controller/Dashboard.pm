@@ -349,7 +349,8 @@ sub export_as_csv : Private {
 
     my $csv = $c->stash->{csv} = {
         objects => $c->stash->{objects_rs}->search_rs({}, {
-            prefetch => 'comments',
+            join => 'comments',
+            '+columns' => ['comments.problem_state', 'comments.state', 'comments.confirmed', 'comments.mark_fixed'],
             order_by => ['me.confirmed', 'me.id'],
             cursor_page_size => 1000,
         }),

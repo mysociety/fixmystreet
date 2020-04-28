@@ -108,7 +108,8 @@ sub index : Path {
         my $problems = $c->cobrand->problems->search(
             $query,
             {
-                prefetch => 'user',
+                join => 'user',
+                '+columns' => 'user.email',
                 rows => 50,
                 order_by => $order,
             }
@@ -150,8 +151,9 @@ sub index : Path {
                     -or => $query,
                 },
                 {
-                    -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
-                    prefetch => [qw/user problem/],
+                    '+columns' => ['user.email'],
+                    join => 'user',
+                    prefetch => [qw/problem/],
                     rows => 50,
                     order_by => { -desc => 'me.id' }
                 }
