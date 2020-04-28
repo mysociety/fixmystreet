@@ -279,6 +279,8 @@ sub admin_allow_user {
     return $user->from_body->areas->{$self->council_area_id};
 }
 
+sub admin_show_creation_graph { 0 }
+
 sub available_permissions {
     my $self = shift;
 

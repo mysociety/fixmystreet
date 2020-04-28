@@ -63,7 +63,9 @@
 
 [% IF c.user.has_permission_to("report_inspect", bodies_ids) OR c.user.has_permission_to("report_mark_private", bodies_ids) %]
     <div class="checkbox-group">
-        <input type="checkbox" name="non_public" id="form_non_public" value="1"[% ' checked' IF report.non_public %]>
+        <input type="checkbox" name="non_public" id="form_non_public" value="1"
+            [%~ ' checked' IF report.non_public OR non_public_categories.$category %]
+            [%~ ' disabled' IF non_public_categories.$category %]>
         <label class="inline" for="form_non_public">[% loc('Private') %] </label>
     </div>
 [% END %]

@@ -2,7 +2,6 @@
 
 [%-
     total_problems_live = total_problems_live | format_number;
-    total_problems_users = total_problems_users | format_number;
     comments_confirmed = (comments.confirmed || 0) | format_number;
     alerts_1 = alerts.1 | format_number;
     alerts_0 = alerts.0 | format_number;
@@ -17,6 +16,7 @@
 <ul>
     <li>[% tprintf( loc('<strong>%s</strong> live problems'), decode(total_problems_live) ) %]
     [% IF admin_include_users %]
+        [% total_problems_users = total_problems_users | format_number ~%]
         [% tprintf( loc('from %s different users'), decode(total_problems_users) ) %]
     [% END %]
     </li>

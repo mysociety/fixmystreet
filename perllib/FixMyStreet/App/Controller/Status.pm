@@ -31,7 +31,7 @@ sub index : Path : Args(0) {
     # superusers. It doesn't have anything sensitive
     $c->stash->{admin_type} = 'super';
     # Fetch summary stats from admin front page
-    $c->forward('/admin/index');
+    $c->forward('/admin/stats/gather');
 
     # Fetch git version
     $c->forward('/admin/config_page');

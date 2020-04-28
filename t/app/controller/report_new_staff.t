@@ -45,6 +45,14 @@ subtest "report_mark_private allows users to mark reports as private" => sub {
             "follow 'skip this step' link"
         );
 
+        my $edin_cats = $mech->create_contact_ok( body_id => $body_ids{2651}, category => 'Cats', email => 'cats@example.com', non_public => 1 );
+        $mech->submit_form_ok({
+            button => 'submit_category_part_only',
+            with_fields => { category => 'Cats' }
+        });
+        $mech->content_contains('id="form_non_public" value="1" checked disabled');
+        $edin_cats->delete;
+
         $mech->submit_form_ok(
             {
                 with_fields => {
