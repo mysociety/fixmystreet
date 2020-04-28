@@ -177,6 +177,7 @@ fixmystreet.assets.add(asset_defaults, {
     asset_id_field: 'STOP_CODE',
     attributes: {
         stop_code: 'STOP_CODE',
+        shelter_id: 'SHELTER_ID',
     },
     asset_group: "Bus Stops and Shelters",
     asset_item: 'bus stop'
