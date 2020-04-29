@@ -21,6 +21,7 @@ __PACKAGE__->load_namespaces(
 use Moo;
 use FixMyStreet;
 
+__PACKAGE__->storage_type('::DBI::PgServerCursor');
 __PACKAGE__->connection(FixMyStreet->dbic_connect_info);
 
 has lang => ( is => 'rw' );

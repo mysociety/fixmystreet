@@ -293,7 +293,12 @@ sub dashboard_export_problems_add_columns {
 
         my $change = $report->admin_log_entries->search(
             { action => 'category_change' },
-            { prefetch => 'user', rows => 1, order_by => { -desc => 'me.id' } }
+            {
+                join => 'user',
+                '+columns' => ['user.name'],
+                rows => 1,
+                order_by => { -desc => 'me.id' }
+            }
         )->single;
         my $reassigned_at = $change ? $change->whenedited : '';
         my $reassigned_by = $change ? $change->user->name : '';

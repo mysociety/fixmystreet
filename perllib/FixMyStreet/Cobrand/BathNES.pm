@@ -194,7 +194,7 @@ sub dashboard_export_updates_add_columns {
 
     $c->stash->{csv}->{objects} = $c->stash->{csv}->{objects}->search(undef, {
         '+columns' => ['user.email'],
-        prefetch => 'user',
+        join => 'user',
     });
     my $user_lookup = $self->_dashboard_user_lookup;
 
@@ -237,7 +237,7 @@ sub dashboard_export_problems_add_columns {
 
     $c->stash->{csv}->{objects} = $c->stash->{csv}->{objects}->search(undef, {
         '+columns' => ['user.email', 'user.phone'],
-        prefetch => 'user',
+        join => 'user',
     });
     my $user_lookup = $self->_dashboard_user_lookup;
 
