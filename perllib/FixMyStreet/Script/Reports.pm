@@ -20,6 +20,36 @@ sub send {
         verbose => $verbose,
     );
 
+    my $params = construct_query($debug);
+    my $db = FixMyStreet::DB->schema->storage;
+
+    $db->txn_do(sub {
+        my $unsent = FixMyStreet::DB->resultset('Problem')->search($params, {
+            for => \'UPDATE SKIP LOCKED',
+        });
+
+        $manager->log("starting to loop through unsent problem reports...");
+        my $unsent_count = 0;
+        while (my $row = $unsent->next) {
+            $unsent_count++;
+            my $item = FixMyStreet::Queue::Item::Report->new(
+                report => $row,
+                manager => $manager,
+                verbose => $verbose,
+                nomail => $nomail,
+            );
+            $item->process;
+        }
+
+        $manager->end_line($unsent_count);
+        $manager->end_summary_unconfirmed;
+    });
+
+    return $manager->test_data;
+}
+
+sub construct_query {
+    my ($debug) = @_;
     my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
     my $states = [ FixMyStreet::DB::Result::Problem::open_states() ];
     $states = [ 'submitted', 'confirmed', 'in progress', 'feedback pending', 'external', 'wish' ] if $site eq 'zurich';
@@ -55,25 +85,7 @@ sub send {
         ];
     }
 
-    my $unsent = FixMyStreet::DB->resultset('Problem')->search($params);
-
-    $manager->log("starting to loop through unsent problem reports...");
-    my $unsent_count = 0;
-    while (my $row = $unsent->next) {
-        $unsent_count++;
-        my $item = FixMyStreet::Queue::Item::Report->new(
-            report => $row,
-            manager => $manager,
-            verbose => $verbose,
-            nomail => $nomail,
-        );
-        $item->process;
-    }
-
-    $manager->end_line($unsent_count);
-    $manager->end_summary_unconfirmed;
-
-    return $manager->test_data;
+    return $params;
 }
 
 sub end_line {

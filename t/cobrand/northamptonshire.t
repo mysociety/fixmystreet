@@ -83,6 +83,7 @@ subtest 'Check updates not sent for defects' => sub {
 };
 
 $report->update({ user => $user });
+$comment->update({ extra => undef });
 subtest 'check updates sent for non defects' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
