@@ -159,7 +159,7 @@ sub _recent {
             $probs = [ $rs->search({
                 id => [ map { $_->id } @$probs ],
                 %$query,
-            })->all ];
+            }, $attrs)->all ];
         } else {
             $probs = [ $rs->search( $query, $attrs )->all ];
             Memcached::set($key, $probs, _cache_timeout());
