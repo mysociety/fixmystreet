@@ -5,6 +5,7 @@ use FixMyStreet::Script::Alerts;
 my $mech = FixMyStreet::TestMech->new;
 
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
 
 subtest 'check /around?ajax defaults to open reports only' => sub {
     my $categories = [ 'Bridges', 'Fences', 'Manhole' ];
@@ -102,6 +103,34 @@ subtest 'check unable to fix label' => sub {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Investigation complete/, 'state correct in email';
+    };
+};
+
+subtest 'extra CSV columns are present' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+
+        $mech->log_in_ok( $counciluser->email );
+
+        $mech->get_ok('/dashboard?export=1');
+
+        my @rows = $mech->content_as_csv;
+        is scalar @rows, 7, '1 (header) + 6 (reports) = 7 lines';
+        is scalar @{$rows[0]}, 21, '21 columns present';
+
+        is_deeply $rows[0],
+            [
+                'Report ID', 'Title', 'Detail', 'User Name', 'Category',
+                'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
+                'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
+                'Easting', 'Northing', 'Report URL', 'Site Used',
+                'Reported As', 'HIAMS Ref',
+            ],
+            'Column headers look correct';
+
+        is $rows[1]->[20], 'ENQ12456', 'HIAMS reference included in row';
     };
 };
 

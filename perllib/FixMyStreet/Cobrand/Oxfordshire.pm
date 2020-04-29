@@ -197,4 +197,19 @@ sub available_permissions {
     return $perms;
 }
 
+sub dashboard_export_problems_add_columns {
+    my $self = shift;
+    my $c = $self->{c};
+
+    push @{$c->stash->{csv}->{headers}}, "HIAMS Ref";
+    push @{$c->stash->{csv}->{columns}}, "customer_reference";
+
+    $c->stash->{csv}->{extra_data} = sub {
+        my $ref = shift->get_extra_metadata('customer_reference') || '';
+        return {
+            customer_reference => $ref,
+        };
+    };
+}
+
 1;
