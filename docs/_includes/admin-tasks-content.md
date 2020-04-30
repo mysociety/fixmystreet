@@ -560,14 +560,14 @@ and staff users — can filter reports when viewing them on the site.
 From the Admin menu, click on ‘Categories’. You’ll see a table of existing categories, and below
 that, a form by which you can create new ones.
 
-
 Input a title for the category, and the email address to which reports in that category should be
 forwarded. When creating a category, these are the only fields required.
 
 You can also choose a variety of options – whether to automatically hide any
 reports made in this category, whether to prevent form submission when this
-category is selected, or what parent category or categories a particular
-category is in. See below for information on <a
+category is selected, whether updates are allowed on reports in this category,
+or what parent category or categories a particular category is in. See below
+for information on <a
 href="#creating-editing-notices">creating/editing extra notices and
 questions</a> for a category.
 
