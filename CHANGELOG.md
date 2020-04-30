@@ -18,6 +18,7 @@
         - Add fetch script that does combined job of fetch-comments and fetch-reports.
         - Show error page when submitting with web param to /import.
         - Add a daemon option for sending reports and updates.
+        - Update Getopt::Long::Descriptive to stop warning.
     - Open311 improvements:
         - match response templates on external status code over state
         - Add flag to protect category/group names from Open311 overwrite.

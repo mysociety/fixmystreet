@@ -3124,25 +3124,22 @@ DISTRIBUTIONS
       Geography::NationalGrid::IE 1.2
     requirements:
       ExtUtils::MakeMaker 0
-  Getopt-Long-Descriptive-0.093
-    pathname: R/RJ/RJBS/Getopt-Long-Descriptive-0.093.tar.gz
+  Getopt-Long-Descriptive-0.105
+    pathname: R/RJ/RJBS/Getopt-Long-Descriptive-0.105.tar.gz
     provides:
-      Getopt::Long::Descriptive 0.093
-      Getopt::Long::Descriptive::Opts 0.093
-      Getopt::Long::Descriptive::Usage 0.093
+      Getopt::Long::Descriptive 0.105
+      Getopt::Long::Descriptive::Opts 0.105
+      Getopt::Long::Descriptive::Usage 0.105
     requirements:
       Carp 0
-      ExtUtils::MakeMaker 6.30
+      ExtUtils::MakeMaker 0
       File::Basename 0
-      File::Find 0
-      File::Temp 0
       Getopt::Long 2.33
       List::Util 0
       Params::Validate 0.97
       Scalar::Util 0
       Sub::Exporter 0.972
       Sub::Exporter::Util 0
-      Test::More 0.96
       overload 0
       strict 0
       warnings 0
