@@ -206,13 +206,21 @@ sub dashboard_export_problems_add_columns {
     my $self = shift;
     my $c = $self->{c};
 
-    push @{$c->stash->{csv}->{headers}}, "HIAMS Ref";
-    push @{$c->stash->{csv}->{columns}}, "customer_reference";
+    push @{$c->stash->{csv}->{headers}}, "HIAMS/Exor Ref";
+    push @{$c->stash->{csv}->{columns}}, "external_ref";
 
     $c->stash->{csv}->{extra_data} = sub {
-        my $ref = shift->get_extra_metadata('customer_reference') || '';
+        my $report = shift;
+        # Try and get a HIAMS reference first of all
+        my $ref = $report->get_extra_metadata('customer_reference');
+        unless ($ref) {
+            # No HIAMS ref which means it's either an older Exor report
+            # or a HIAMS report which hasn't had its reference set yet.
+            # We detect the latter case by the id and external_id being the same.
+            $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
+        }
         return {
-            customer_reference => $ref,
+            external_ref => ( $ref || '' ),
         };
     };
 }

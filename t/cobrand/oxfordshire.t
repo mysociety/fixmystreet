@@ -112,6 +112,9 @@ subtest 'extra CSV columns are present' => sub {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
 
+        $problems[1]->update({ external_id => $problems[1]->id });
+        $problems[2]->update({ external_id => "123098123" });
+
         $mech->log_in_ok( $counciluser->email );
 
         $mech->get_ok('/dashboard?export=1');
@@ -126,11 +129,13 @@ subtest 'extra CSV columns are present' => sub {
                 'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
                 'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
                 'Easting', 'Northing', 'Report URL', 'Site Used',
-                'Reported As', 'HIAMS Ref',
+                'Reported As', 'HIAMS/Exor Ref',
             ],
             'Column headers look correct';
 
         is $rows[1]->[20], 'ENQ12456', 'HIAMS reference included in row';
+        is $rows[2]->[20], '', 'Report without HIAMS ref has empty ref field';
+        is $rows[3]->[20], '123098123', 'Older Exor report has correct ref';
     };
 };
 
