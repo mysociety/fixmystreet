@@ -620,6 +620,9 @@ sub load_problems_parameters : Private {
     };
     if ($c->user_exists && $body) {
         my $prefetch = [];
+        if ($c->user->from_body || $c->user->is_superuser) {
+            push @$prefetch, 'contact';
+        }
         if ($c->user->has_permission_to('planned_reports', $body->id)) {
             push @$prefetch, 'user_planned_reports';
         }
@@ -646,7 +649,7 @@ sub load_problems_parameters : Private {
     }
 
     if (@$category) {
-        $where->{category} = $category;
+        $where->{'me.category'} = $category;
     }
 
     if ($c->stash->{wards}) {
@@ -687,12 +690,12 @@ sub check_non_public_reports_permission : Private {
         }
 
         if ( $user_has_permission ) {
-            $where->{non_public} = 1 if $c->stash->{only_non_public};
+            $where->{'me.non_public'} = 1 if $c->stash->{only_non_public};
         } else {
-            $where->{non_public} = 0;
+            $where->{'me.non_public'} = 0;
         }
     } else {
-        $where->{non_public} = 0;
+        $where->{'me.non_public'} = 0;
     }
 }
 

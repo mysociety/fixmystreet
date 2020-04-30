@@ -135,13 +135,14 @@ sub get_problems : Private {
     my $problems = [];
 
     my $states = $c->stash->{filter_problem_states};
+    my $table = $c->action eq 'my/planned' ? 'report' : 'me';
     my $params = {
-        state => [ keys %$states ],
+        "$table.state" => [ keys %$states ],
     };
 
     my $categories = [ $c->get_param_list('filter_category', 1) ];
     if ( @$categories ) {
-        $params->{category} = $categories;
+        $params->{"$table.category"} = $categories;
         $c->stash->{filter_category} = { map { $_ => 1 } @$categories };
     }
 
@@ -149,6 +150,7 @@ sub get_problems : Private {
     $rows = 5000 if $c->stash->{sort_key} eq 'shortlist'; # Want all reports
 
     my $rs = $c->stash->{problems_rs}->search( $params, {
+        prefetch => 'contact',
         order_by => $c->stash->{sort_order},
         rows => $rows,
     } )->include_comment_counts->page( $p_page );
@@ -186,12 +188,14 @@ sub get_updates : Private {
 sub setup_page_data : Private {
     my ($self, $c) = @_;
 
+    my $table = $c->action eq 'my/planned' ? 'report' : 'me';
     my @categories = $c->stash->{problems_rs}->search({
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        "$table.state" => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
-        columns => [ 'category', 'bodies_str', 'extra' ],
+        join => 'contact',
+        columns => [ "$table.category", 'contact.extra', 'contact.category' ],
         distinct => 1,
-        order_by => [ 'category' ],
+        order_by => [ "$table.category" ],
     } )->all;
     $c->stash->{filter_categories} = \@categories;
     $c->forward('/report/stash_category_groups', [ \@categories ]) if $c->cobrand->enable_category_groups;

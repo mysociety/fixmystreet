@@ -193,6 +193,27 @@ __PACKAGE__->might_have(
     cascade_copy => 0, cascade_delete => 1 },
 );
 
+# Add a possible join for the Contact object associated with
+# this report (based on bodies_str and category). If the report
+# was sent to multiple bodies, only returns the first.
+__PACKAGE__->belongs_to(
+  contact => "FixMyStreet::DB::Result::Contact",
+  sub {
+    my $args = shift;
+    return {
+        "$args->{foreign_alias}.category" => { -ident => "$args->{self_alias}.category" },
+        -and => [
+            \[ "CAST($args->{foreign_alias}.body_id AS text) = (regexp_split_to_array($args->{self_alias}.bodies_str, ','))[1]" ],
+        ]
+    };
+  },
+  {
+    join_type => "LEFT",
+    on_delete => "NO ACTION",
+    on_update => "NO ACTION",
+  },
+);
+
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 __PACKAGE__->rabx_column('geocode');
@@ -407,28 +428,9 @@ sub confirm {
 
 sub category_display {
     my $self = shift;
-    my $contact = $self->category_row;
+    my $contact = $self->contact;
     return $self->category unless $contact; # Fallback; shouldn't happen, but some tests
     return $contact->category_display;
-}
-
-=head2 category_row
-
-Returns the corresponding Contact object for this problem's category and body.
-If the report was sent to multiple bodies, only returns the first.
-
-=cut
-
-sub category_row {
-    my $self = shift;
-    my $schema = $self->result_source->schema;
-    my $body_id = $self->bodies_str_ids->[0];
-    return unless $body_id && $body_id =~ /^[0-9]+$/;
-    my $contact = $schema->resultset("Contact")->find({
-        body_id => $body_id,
-        category => $self->category,
-    });
-    return $contact;
 }
 
 sub bodies_str_ids {

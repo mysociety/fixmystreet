@@ -344,23 +344,23 @@ sub munge_load_and_group_problems {
     return unless $c->action eq 'dashboard/heatmap';
 
     # Bromley subcategory stuff
-    if (!$where->{category}) {
+    if (!$where->{'me.category'}) {
         my $cats = $c->user->categories;
         my $subcats = $c->user->get_extra_metadata('subcategories') || [];
-        $where->{category} = [ @$cats, @$subcats ] if @$cats || @$subcats;
+        $where->{'me.category'} = [ @$cats, @$subcats ] if @$cats || @$subcats;
     }
 
     my %subcats = $self->subcategories;
     my $subcat;
-    my %chosen = map { $_ => 1 } @{$where->{category} || []};
+    my %chosen = map { $_ => 1 } @{$where->{'me.category'} || []};
     my @subcat = grep { $chosen{$_} } map { $_->{key} } map { @$_ } values %subcats;
     if (@subcat) {
         my %chosen = map { $_ => 1 } @subcat;
         $where->{'-or'} = {
-            category => [ grep { !$chosen{$_} } @{$where->{category}} ],
-            subcategory => \@subcat,
+            'me.category' => [ grep { !$chosen{$_} } @{$where->{'me.category'}} ],
+            'me.subcategory' => \@subcat,
         };
-        delete $where->{category};
+        delete $where->{'me.category'};
     }
 }
 

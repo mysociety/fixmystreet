@@ -11,7 +11,6 @@ sub open311_extra_data {
 
     $h->{es_original_detail} = $row->detail;
 
-    $contact = $row->category_row;
     my $fields = $contact->get_extra_fields;
     my $text = '';
     for my $field ( @$fields ) {
