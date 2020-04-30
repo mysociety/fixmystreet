@@ -110,6 +110,13 @@ sub sign_in : Private {
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
 
+    if (FixMyStreet->test_mode) {
+        my $ver = $parsed->{type} . '_verified';
+        $c->authenticate( { $parsed->{type} => $parsed->{username}, $ver => 1 }, 'no_password' );
+        $c->forward('get_csrf_token');
+        return 1;
+    }
+
     if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
         # Upgrade hash count if necessary
         my $cost = sprintf("%02d", FixMyStreet::DB::Result::User->cost);
