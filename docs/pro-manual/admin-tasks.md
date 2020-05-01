@@ -1,7 +1,7 @@
 ---
 layout: pro
 title: Administrator tasks
-order: 4
+order: 5
 user-guide: true
 ---
 
