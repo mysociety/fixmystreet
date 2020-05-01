@@ -81,7 +81,6 @@ body.mappage #site-logo {
 // Static map on front page
 body.frontpage {
     // Front page content needs a shadow.
-    // (Purely decorative: No need for border fallback for IE8)
     .content {
         @include box-shadow(0 0 6px 1px #000);
     }

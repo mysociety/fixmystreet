@@ -326,11 +326,10 @@ body.mappage.admin {
     }
   }
 
-  // No flexbox in IE8-9, so we settle for floating the columns instead.
+  // No flexbox in IE9, so we settle for floating the columns instead.
   // They will no longer stretch the full height of the sidebar, and the
   // width of #side-report will no longer match the width of .shadow-wrap
   // when a scrollbar is present.
-  .ie8 &,
   .ie9 & {
     @include clearfix();
 
@@ -422,13 +421,6 @@ a.platform-logo {
     height: 1.7em;
     width: 16em;
     padding-#{$right}: 0.25em;
-
-    .ie8 & {
-        color: #ffffff;
-        background: none;
-        text-indent: 0px;
-        height: auto;
-    }
 }
 
 // two thirds width page, also has option for a sidebar which can be sticky or not
@@ -723,11 +715,6 @@ body.authpage {
     display: block;
     font-size: 80%;
     padding-top: 0.5em;
-  }
-}
-.ie8 {
-  .big-green-banner {
-    background-image: url(/cobrands/fixmystreet/images/chevron-white-#{$right}-on-green.gif);
   }
 }
 

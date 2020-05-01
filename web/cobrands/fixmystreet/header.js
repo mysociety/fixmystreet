@@ -7,8 +7,7 @@ fixmystreet.cobrand = '[% c.cobrand.moniker %]';
 (function(D){
     var E = D.documentElement;
     E.className = E.className.replace(/\bno-js\b/, 'js');
-    var ie8 = E.className.indexOf('ie8') > -1;
-    var type = Modernizr.mq('(min-width: 48em)') || ie8 ? 'desktop' : 'mobile';
+    var type = Modernizr.mq('(min-width: 48em)') ? 'desktop' : 'mobile';
     if ('IntersectionObserver' in window) {
         E.className += ' lazyload';
     }

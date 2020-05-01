@@ -2749,10 +2749,6 @@ a#geolocate_link.loading, .btn--geolocate.loading {
 
   // Tell assistive devices to ignore this element.
   visibility: hidden;
-
-  // Hack for IE8 which doesn't allow interaction with
-  // `visibility:hidden` elements.
-  visibility: visible\9;
 }
 
 

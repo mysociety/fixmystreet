@@ -90,10 +90,6 @@ body.mappage {
 .big-green-banner {
     color: $westminster-black;
     background: $col_click_map inline-image("../westminster/images/chevron-black-right.svg") $right center no-repeat;
-
-    .ie8 & {
-        background-image: url(/cobrands/westminster/images/chevron-black-right.png);
-    }
 }
 
 .problem-header h1 {
