@@ -82,7 +82,7 @@ requires 'File::Find';
 requires 'File::Path';
 requires 'Geography::NationalGrid',
     mirror => 'https://cpan.metacpan.org/';
-requires 'Getopt::Long::Descriptive';
+requires 'Getopt::Long::Descriptive', '0.105';
 requires 'HTML::Entities';
 requires 'HTML::FormHandler::Model::DBIC';
 requires 'HTML::Scrubber';
