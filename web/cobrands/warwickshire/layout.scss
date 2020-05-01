@@ -43,17 +43,13 @@
             margin: 1.5em 0 0.5em 0;
         }
     }
+}
 
-    a#geolocate_link {
-        color: $link-color;
+a#geolocate_link {
+    color: $link-color; // override default `#front-main a`
 
-        &:hover {
-            color: $link-hover-color;
-        }
-
-        &:focus {
-            outline: 3px solid $warwickshire-yellow;
-        }
+    &:hover {
+        color: $link-hover-color; // override default `#front-main a`
     }
 }
 

@@ -29,13 +29,14 @@ body.frontpage #front-main {
         font-weight: normal;
         font-size: 1.5em;
     }
-    a#geolocate_link {
-        color: $link-color;
-        &:hover,
-        &:active,
-        &:focus {
-            color: $link-hover-color;
-        }
+}
+
+a#geolocate_link {
+    color: $link-color; // override default `#front-main a`
+    &:hover,
+    &:active,
+    &:focus {
+        color: $link-hover-color; // override default `#front-main a`
     }
 }
 

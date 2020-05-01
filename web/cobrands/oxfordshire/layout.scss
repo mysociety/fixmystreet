@@ -130,18 +130,13 @@ $mappage-header-height: 10em;
             }
         }
     }
+}
 
-    a#geolocate_link {
-        color: $color-oxfordshire-link-blue;
+a#geolocate_link {
+    color: $color-oxfordshire-link-blue; // override default `#front-main a`
 
-        &:hover {
-            color: $color-oxfordshire-bright-yellow;
-        }
-
-        &:focus {
-            background-color: $color-oxfordshire-bright-yellow;
-            outline: 2px solid $color-oxfordshire-bright-yellow;
-        }
+    &:hover {
+        color: $color-oxfordshire-bright-yellow; // override default `#front-main a`
     }
 }
 

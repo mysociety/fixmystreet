@@ -54,10 +54,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
       }
     }
 
-    a#geolocate_link {
-      color: $b3;
-    }
-
     h1 {
       font-size: 3em;
     }
@@ -97,6 +93,10 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   .content .sticky-sidebar aside {
     top: 12.5em;
   }
+}
+
+a#geolocate_link {
+  color: $b3; // override default `#front-main a`
 }
 
 body.mappage {

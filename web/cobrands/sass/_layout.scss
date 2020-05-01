@@ -860,18 +860,12 @@ textarea.form-error {
       text-decoration: none;
     }
   }
-  a#geolocate_link {
-    color: inherit;
-    background:none;
-    text-decoration: none;
-    padding-bottom: 0;
-    &:hover {
-      text-decoration:underline;
-      background:none;
-    }
-  }
-  a#geolocate_link.loading {
-      border-#{$right}: none;
+}
+
+a#geolocate_link {
+  text-decoration: none; // override `#front-main a`
+  &:hover {
+    text-decoration: underline;
   }
 }
 

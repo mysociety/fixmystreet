@@ -36,8 +36,8 @@
     }
 }
 
-#front-main a#geolocate_link {
-    color: $westminster-blue;
+a#geolocate_link {
+    color: $westminster-blue; // override default `#front-main a`
 }
 
 body.mappage {

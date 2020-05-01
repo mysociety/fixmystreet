@@ -116,10 +116,6 @@
         }
     }
 
-    a#geolocate_link {
-        color: $eh_green;
-    }
-
     h1 {
         font-size: 2.5em;
     }
@@ -129,6 +125,10 @@
         line-height: 1.25em;
         max-width: 640px;
     }
+}
+
+a#geolocate_link {
+    color: $eh_green; // override default `#front-main a`
 }
 
 body.mappage {
