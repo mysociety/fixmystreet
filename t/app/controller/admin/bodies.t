@@ -272,6 +272,17 @@ subtest 'updates disabling' => sub {
     is $contact->get_extra_metadata('updates_disallowed'), 1, 'Updates disallowed flag set';
 };
 
+subtest 'reopen disabling' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        reopening_disallowed => 1,
+        note => 'Disabling reopening',
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is $contact->get_extra_metadata('reopening_disallowed'), 1, 'Reopening disallowed flag set';
+};
+
 
 }; # END of override wrap
 

@@ -12,7 +12,7 @@
         - Move stats from main admin index to stats index. #2982
         - Speed up dashboard export and report search. #2988
         - Allow a template to be an initial update on reports. #2973
-        - Interface for disabling updates for certain categories. #2991
+        - Interface for disabling updates/reopening for certain categories. #2991 #2992
     - Bugfixes:
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.

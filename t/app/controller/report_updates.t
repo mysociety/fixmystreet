@@ -2145,6 +2145,17 @@ for my $test (
     };
 }
 
+subtest 'check disabling of reopening' => sub {
+    $report->state('fixed - council');
+    $report->update;
+    $mech->get_ok("/report/$report_id");
+    $mech->content_contains('This problem has not been fixed');
+    $contact->set_extra_metadata( reopening_disallowed => 1 );
+    $contact->update;
+    $mech->get_ok("/report/$report_id");
+    $mech->content_lacks('This problem has not been fixed');
+};
+
 subtest 'check have to be logged in for creator fixed questionnaire' => sub {
     $mech->log_out_ok();
 

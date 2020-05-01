@@ -566,6 +566,7 @@ forwarded. When creating a category, these are the only fields required.
 You can also choose a variety of options – whether to automatically hide any
 reports made in this category, whether to prevent form submission when this
 category is selected, whether updates are allowed on reports in this category,
+whether members of the public can reopen fixed/closed reports in this category,
 or what parent category or categories a particular category is in. See below
 for information on <a
 href="#creating-editing-notices">creating/editing extra notices and
