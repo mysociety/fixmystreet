@@ -45,7 +45,7 @@ if ('serviceWorker' in navigator) {
 [% IF bodyclass.match('frontpage') %]
     <link rel="prefetch" href="[% version('/js/validation_rules.js') %]">
   [%~ IF NOT c.user_exists OR NOT (c.user.from_body OR c.user.is_superuser) %]
-    <link rel="prefetch" href="[% version('/jslib/jquery-1.7.2.min.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/jquery-2.2.4.min.js') %]">
   [%~ END %]
     <link rel="prefetch" href="[% version('/vendor/jquery.multi-select.min.js') %]">
     <link rel="prefetch" href="[% version('/vendor/jquery.validate.min.js') %]">

@@ -23,7 +23,7 @@ ELSIF bodyclass.match('offlinepage');
 ELSE;
     scripts.push(
         version('/js/validation_rules.js'),
-        version('/jslib/jquery-1.7.2.min.js'),
+        version('/vendor/jquery-2.2.4.min.js'),
         version('/vendor/jquery.multi-select.min.js'),
         version('/vendor/jquery.validate.min.js'),
         version('/cobrands/fixmystreet/fixmystreet.js'),
@@ -37,7 +37,7 @@ END;
 IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
     scripts.push(
         version('/js/geolocation.js'),
-        version('/jslib/jquery-1.7.2.min.js'),
+        version('/vendor/jquery-2.2.4.min.js'),
         version('/cobrands/fixmystreet/staff.js')
     );
     IF bodyclass.match('mappage') AND c.cobrand.suggest_duplicates AND NOT login_success AND NOT oauth_need_email;

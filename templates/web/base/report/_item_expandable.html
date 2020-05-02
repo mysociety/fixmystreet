@@ -7,7 +7,7 @@
   Since the photo set includes `<a>` elements of its own, we drop the usual
   "wrapper" `<a>` and the associated `.item-list--reports__item` class, to
   avoid anchor nesting.
-%]
+~%]
 
 [% truncated_detail = BLOCK %][% problem.detail | truncate(75, '…') | html_para %][% END ~%]
 [% full_detail = BLOCK %][% problem.detail | add_links | html_para %][% END ~%]

@@ -94,3 +94,34 @@ describe('Clicking the "big green banner" on a map page', function() {
         cy.get('.js-reporting-page--next').should('be.visible');
     });
 });
+
+describe.only('Clicking on drawers', function() {
+    it('works on a direct report page', function() {
+        cy.visit('/report/15');
+        cy.contains('Get updates').click();
+        cy.contains('Receive email when updates are left').should('be.visible');
+        cy.contains('Get updates').click();
+        cy.contains('Receive email when updates are left').should('not.be.visible');
+    });
+
+    it('works on a pulled-in report page', function() {
+        cy.server();
+        cy.route('/report/*').as('show-report');
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
+        // force to hopefully work around apparent Cypress SVG issue
+        cy.get('image[title="Lights out in tunnel"]:last').click({force: true});
+        cy.wait('@show-report');
+        cy.get('#side-report').contains('Get updates').click();
+        cy.contains('Receive email when updates are left').should('be.visible');
+        cy.get('#side-report').contains('Get updates').click();
+        cy.contains('Receive email when updates are left').should('not.be.visible');
+    });
+
+    it('works on an around page', function() {
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
+        cy.contains('Get updates').click();
+        cy.contains('Which problems do you want alerts about?').should('be.visible');
+        cy.contains('Get updates').click();
+        cy.contains('Which problems do you want alerts about?').should('not.be.visible');
+    });
+});

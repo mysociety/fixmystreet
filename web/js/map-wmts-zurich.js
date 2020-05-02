@@ -68,11 +68,7 @@ fixmystreet.maps.matrix_ids = [
 
         /* Admin dragging of pin */
         if (fixmystreet.page == 'admin') {
-            if ($.browser.msie) {
-                $(window).load(function() { fixmystreet.maps.admin_drag(pin_dragged, true); });
-            } else {
-                fixmystreet.maps.admin_drag(pin_dragged, true);
-            }
+            fixmystreet.maps.admin_drag(pin_dragged, true);
         }
     });
 

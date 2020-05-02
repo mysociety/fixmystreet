@@ -38,9 +38,6 @@ ExpiresByType application/javascript "access plus 10 years"
     Header append Cache-Control "no-transform"
 </Location>
 
-# Don't want jslib being passed to Catalyst
-RewriteRule ^/jslib(.*)                 /jslib$1 [L,PT]
-
 # trap anything that reaches us here and send it to the Catalyst app
 RewriteRule ^(.*)$                      /fixmystreet_app_fastcgi.cgi$1  [L]
 

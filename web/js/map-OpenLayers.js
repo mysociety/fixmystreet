@@ -996,12 +996,7 @@ $.extend(fixmystreet.utils, {
             click.activate();
         }
 
-        // Vector layers must be added onload as IE sucks
-        if ($.browser.msie) {
-            $(window).load(onload);
-        } else {
-            onload();
-        }
+        onload();
 
         // Allow external scripts to react to pans/zooms on the map,
         // by subscribing to $(fixmystreet).on('maps:update_view')
