@@ -84,7 +84,7 @@
 			title = selectedOpts.title || (obj.nodeName ? $(obj).attr('title') : obj.title) || '';
 
 			if (obj.nodeName && !selectedOpts.orig) {
-				selectedOpts.orig = $(obj).children("img:first").length ? $(obj).children("img:first") : $(obj);
+				selectedOpts.orig = $(obj).children("img").first().length ? $(obj).children("img").first() : $(obj);
 			}
 
 			if (title === '' && selectedOpts.orig && selectedOpts.titleFromAlt) {
@@ -161,7 +161,7 @@
 
 			tmp.css('padding', (selectedOpts.padding + selectedOpts.margin));
 
-			$('.fancybox-inline-tmp').unbind('fancybox-cancel').bind('fancybox-change', function() {
+			$('.fancybox-inline-tmp').off('fancybox-cancel').on('fancybox-change', function() {
 				$(this).replaceWith(content.children());				
 			});
 
@@ -180,9 +180,9 @@
 					$('<div class="fancybox-inline-tmp" />')
 						.hide()
 						.insertBefore( $(obj) )
-						.bind('fancybox-cleanup', function() {
+						.on('fancybox-cleanup', function() {
 							$(this).replaceWith(content.children());
-						}).bind('fancybox-cancel', function() {
+						}).on('fancybox-cancel', function() {
 							$(this).replaceWith(tmp.children());
 						});
 
@@ -328,10 +328,10 @@
 
 			busy = true;
 
-			$(content.add( overlay )).unbind();
+			$(content.add( overlay )).off();
 
-			$(window).unbind("resize.fb scroll.fb");
-			$(document).unbind('keydown.fb');
+			$(window).off("resize.fb scroll.fb");
+			$(document).off('keydown.fb');
 
 			if (wrap.is(":visible") && currentOpts.titlePosition !== 'outside') {
 				wrap.css('height', wrap.height());
@@ -477,7 +477,7 @@
 				return;
 			}
 
-			titleStr = $.isFunction(currentOpts.titleFormat) ? currentOpts.titleFormat(titleStr, currentArray, currentIndex, currentOpts) : _format_title(titleStr);
+			titleStr = typeof currentOpts.titleFormat === 'function' ? currentOpts.titleFormat(titleStr, currentArray, currentIndex, currentOpts) : _format_title(titleStr);
 
 			if (!titleStr || titleStr === '') {
 				title.hide();
@@ -538,7 +538,7 @@
 
 		_set_navigation = function() {
 			if (currentOpts.enableEscapeButton || currentOpts.enableKeyboardNav) {
-				$(document).bind('keydown.fb', function(e) {
+				$(document).on('keydown.fb', function(e) {
 					if (e.keyCode == 27 && currentOpts.enableEscapeButton) {
 						e.preventDefault();
 						$.fancybox.close();
@@ -583,17 +583,17 @@
 			_set_navigation();
 	
 			if (currentOpts.hideOnContentClick)	{
-				content.bind('click', $.fancybox.close);
+				content.on('click', $.fancybox.close);
 			}
 
 			if (currentOpts.hideOnOverlayClick)	{
-				overlay.bind('click', $.fancybox.close);
+				overlay.on('click', $.fancybox.close);
 			}
 
-			$(window).bind("resize.fb", $.fancybox.resize);
+			$(window).on("resize.fb", $.fancybox.resize);
 
 			if (currentOpts.centerOnScroll) {
-				$(window).bind("scroll.fb", $.fancybox.center);
+				$(window).on("scroll.fb", $.fancybox.center);
 			}
 
 			if (currentOpts.type == 'iframe') {
@@ -776,8 +776,8 @@
 
 		$(this)
 			.data('fancybox', $.extend({}, options, ($.metadata ? $(this).metadata() : {})))
-			.unbind('click.fb')
-			.bind('click.fb', function(e) {
+			.off('click.fb')
+			.on('click.fb', function(e) {
 				e.preventDefault();
 
 				if (busy) {
@@ -786,7 +786,7 @@
 
 				busy = true;
 
-				$(this).blur();
+				$(this).trigger('blur');
 
 				selectedArray = [];
 				selectedIndex = 0;
@@ -923,10 +923,10 @@
 
 		$(close.add( nav_left ).add( nav_right )).hide();
 
-		$(content.add( overlay )).unbind();
+		$(content.add( overlay )).off();
 
-		$(window).unbind("resize.fb scroll.fb");
-		$(document).unbind('keydown.fb');
+		$(window).off("resize.fb scroll.fb");
+		$(document).off('keydown.fb');
 
 		content.find('iframe').attr('src', 'about:blank');
 
@@ -1042,21 +1042,21 @@
 			nav_right = $('<a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a>')
 		);
 
-		close.click($.fancybox.close);
-		loading.click($.fancybox.cancel);
+		close.on('click', $.fancybox.close);
+		loading.on('click', $.fancybox.cancel);
 
-		nav_left.click(function(e) {
+		nav_left.on('click', function(e) {
 			e.preventDefault();
 			$.fancybox.prev();
 		});
 
-		nav_right.click(function(e) {
+		nav_right.on('click', function(e) {
 			e.preventDefault();
 			$.fancybox.next();
 		});
 
 		if ($.fn.mousewheel) {
-			wrap.bind('mousewheel.fb', function(e, delta) {
+			wrap.on('mousewheel.fb', function(e, delta) {
 				if (busy) {
 					e.preventDefault();
 

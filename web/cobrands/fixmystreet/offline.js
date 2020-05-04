@@ -400,7 +400,7 @@ if ($('#offline_list').length) {
             });
         });
         $('#offline_clear').css('margin-top', '5em').html('<button id="js-clear-storage">'+translation_strings.offline.clear_data+'</button>');
-        $('#js-clear-storage').click(function() {
+        $('#js-clear-storage').on('click', function() {
             if (window.confirm(translation_strings.offline.are_you_sure)) {
                 fixmystreet.offlineData.getCachedReports().then(function(reports) {
                     fixmystreet.offline.removeReports(Object.keys(reports));

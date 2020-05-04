@@ -59,7 +59,7 @@
         - Show relevant updates in alert-update email preview. #3417
         - Add German and Swiss language packs to default
         linux install #3544
-        - Upgrade jQuery. #3017
+        - Upgrade jQuery to 3.6.0. #3017
         - Upgrade Mozilla::CA to handle new root certificates.
         - Factor alert script to slightly smaller functions. #3615
     - Open311 improvements:

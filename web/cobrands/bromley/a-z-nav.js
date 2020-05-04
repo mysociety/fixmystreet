@@ -5,7 +5,7 @@
     $('.custom-side-nav > ul > li > ul').hide();
 
     // Stops the toggle links going off to their actual link. Make the links actual links though for non js users.
-    $('.custom-side-nav > ul > li > a').click(function(e) {
+    $('.custom-side-nav > ul > li > a').on('click', function(e) {
       e.preventDefault();
       // When an item is clicked this checks to see if any other items are down and strips the class of active and toggles them up.
       if( !$(this).hasClass('active') ) {
