@@ -11,6 +11,7 @@ use FixMyStreet::Email;
 
 my $opts = {
     commit => 0,
+    close_state => 'closed',
 };
 
 sub query {
@@ -161,10 +162,10 @@ sub close_problems {
             mark_fixed => 0,
             anonymous => 0,
             state => 'confirmed',
-            problem_state => 'closed',
+            problem_state => $opts->{closed_state},
             extra => $extra,
         } );
-        $problem->update({ state => 'closed', send_questionnaire => 0 });
+        $problem->update({ state => $opts->{closed_state}, send_questionnaire => 0 });
 
         next if $opts->{retain_alerts};
 

@@ -1,0 +1,69 @@
+#!/usr/bin/env perl
+#
+# B&NES have sent a spreadsheet of reports that they want closing. This script
+# accepts a comma separated list of report IDs, which will be extracted from
+# the spreadsheet, marks those reports as "No further action" and leaves an
+# update on them.
+
+use utf8;
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use constant COUNCIL_NAME => 'Bath and North East Somerset Council';
+use constant CLOSURE_TEXT => <<'CLOSURE_TEXT';
+We’re sorry we've been unable to respond to your report.
+
+We’ve made a few changes recently to improve the way we respond to reports. We’re closing down any reports we think are now out of date, including this one, so that these changes can take effect.
+
+If you think this issue still requires attention, please report it again.
+CLOSURE_TEXT
+
+use FixMyStreet::DB;
+use FixMyStreet::Script::ArchiveOldEnquiries;
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['report-ids=s', "comma-separated list of report IDs to close", { required => 1 } ],
+    ['commit|c', "actually close reports and add comments. Omitting this flag will do a dry-run"],
+    ['help|h', "print usage message and exit" ],
+);
+print($usage->text), exit if $opts->help;
+
+my $body = FixMyStreet::DB->resultset("Body")->search({ name => COUNCIL_NAME })->first;
+die "Could not find body" unless $body;
+
+my @report_ids = split(',', $opts->{report_ids});
+
+my $q = FixMyStreet::DB->resultset("Problem")->search({
+    id => \@report_ids,
+    state => [ FixMyStreet::DB::Result::Problem->open_states() ],
+});
+
+# Provide some variables to the archiving script
+FixMyStreet::Script::ArchiveOldEnquiries::update_options({
+    user => $body->comment_user->id,
+    user_name => $body->comment_user->name,
+    closure_text => CLOSURE_TEXT,
+    retain_alerts => 1,
+    commit => $opts->commit,
+    closed_state => 'unable to fix',
+});
+
+if ($opts->{commit}) {
+    if ($q->count > scalar(@report_ids)) {
+        die "Found more reports than expected, bailing";
+    }
+    printf("Closing %d old reports: ", $q->count);
+    FixMyStreet::Script::ArchiveOldEnquiries::close_problems($q);
+    printf("done.\n");
+} else {
+    printf("Would close %d old reports. Run with --commit to actually close reports.\n", $q->count);
+}
