@@ -31,7 +31,7 @@ subtest 'check /around?ajax defaults to open reports only' => sub {
     }
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { 'oxfordshire' => '.' } ],
+        ALLOWED_COBRANDS => 'oxfordshire',
     }, sub {
         my $json = $mech->get_ok_json( '/around?ajax=1&status=all&bbox=' . $bbox );
         my $pins = $json->{pins};
@@ -47,13 +47,14 @@ subtest 'check /around?ajax defaults to open reports only' => sub {
     }
 };
 
-my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3 })->all;
+my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3, order_by => 'id' })->all;
 
-subtest 'can use customer reference to search for reports' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'oxfordshire' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'oxfordshire',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
+    subtest 'can use customer reference to search for reports' => sub {
         my $problem = $problems[0];
         $problem->set_extra_metadata( customer_reference => 'ENQ12456' );
         $problem->update;
@@ -61,16 +62,11 @@ subtest 'can use customer reference to search for reports' => sub {
         $mech->get_ok('/around?pc=ENQ12456');
         is $mech->uri->path, '/report/' . $problem->id, 'redirects to report';
     };
-};
 
-my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
-my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
+    subtest 'check unable to fix label' => sub {
+        my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
+        my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
 
-subtest 'check unable to fix label' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'oxfordshire' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
         my $problem = $problems[0];
         $problem->state( 'unable to fix' );
         $problem->update;
@@ -104,13 +100,8 @@ subtest 'check unable to fix label' => sub {
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Investigation complete/, 'state correct in email';
     };
-};
 
-subtest 'extra CSV columns are present' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'oxfordshire' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
+    subtest 'extra CSV columns are present' => sub {
 
         $problems[1]->update({ external_id => $problems[1]->id });
         $problems[2]->update({ external_id => "123098123" });
@@ -139,6 +130,4 @@ subtest 'extra CSV columns are present' => sub {
     };
 };
 
-END {
-    done_testing();
-}
+done_testing();
