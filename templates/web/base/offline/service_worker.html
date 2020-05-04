@@ -52,15 +52,30 @@ addEventListener('fetch',  fetchEvent => {
       }
       catch {
         fetchEvent.waitUntil(async function() {
-          var text = await request.text();
-          let formData = new URLSearchParams(text);
-          formData.set('save', 2);
-          formData.set('saved_at', Math.floor(+new Date() / 1000));
-          formData = formData.toString();
+          var request_buffer = await request.arrayBuffer();
+          var headers = request.headers;
+          let formData = {};
+          formData.contentType = headers.get('Content-Type');
+          let boundary_re = /.*boundary=(.*)/;
+          let bound = formData.contentType.match(boundary_re);
+
+          let saved = '--' + bound[1] + "\r\nContent-Disposition: form-data; name=\"saved_at\"\r\n\r\n" + Math.floor(+new Date() / 1000) + "\r\n";
+          var savedBuffer = new ArrayBuffer(saved.length);
+          var bufView = new Uint8Array(savedBuffer);
+          for (var i=0; i<saved.length; i++) {
+            bufView[i] = saved.charCodeAt(i);
+          }
+
+          var tmp = new Uint8Array(request_buffer.byteLength + savedBuffer.byteLength);
+          tmp.set(new Uint8Array(request_buffer), 0);
+          tmp.set(bufView, 0);
+          tmp.set(new Uint8Array(request_buffer), savedBuffer.byteLength);
+
+          formData.text = tmp.buffer;
 
           var data = await idbKeyval.get('offlineData') || { cachedReports: {}, forms: [] };
           var forms = data.forms;
-          if (!forms.length || formData != forms[forms.length - 1][1]) {
+          if (!forms.length || tmp.toString() != new Uint8Array(forms[forms.length - 1][1].text).toString()) {
             forms.push([request.url, formData]);
           }
           return idbKeyval.set('offlineData', data);
