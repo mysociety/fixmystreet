@@ -152,13 +152,13 @@ sub index : Path : Args(0) {
 sub construct_rs_filter : Private {
     my ($self, $c, $updates) = @_;
 
+    my $table_name = $updates ? 'problem' : 'me';
+
     my %where;
     $where{areas} = [ map { { 'like', "%,$_,%" } } @{$c->stash->{ward}} ]
         if @{$c->stash->{ward}};
-    $where{category} = $c->stash->{category}
+    $where{"$table_name.category"} = $c->stash->{category}
         if $c->stash->{category};
-
-    my $table_name = $updates ? 'problem' : 'me';
 
     my $state = $c->stash->{q_state};
     if ( FixMyStreet::DB::Result::Problem->fixed_states->{$state} ) { # Probably fixed - council
@@ -347,10 +347,17 @@ sub export_as_csv_updates : Private {
 sub export_as_csv : Private {
     my ($self, $c) = @_;
 
+    my $groups = $c->cobrand->enable_category_groups ? 1 : 0;
+    my $join = ['comments'];
+    my $columns = ['comments.problem_state', 'comments.state', 'comments.confirmed', 'comments.mark_fixed'];
+    if ($groups) {
+        push @$join, 'contact';
+        push @$columns, 'contact.extra';
+    }
     my $csv = $c->stash->{csv} = {
         objects => $c->stash->{objects_rs}->search_rs({}, {
-            join => 'comments',
-            '+columns' => ['comments.problem_state', 'comments.state', 'comments.confirmed', 'comments.mark_fixed'],
+            join => $join,
+            '+columns' => $columns,
             order_by => ['me.confirmed', 'me.id'],
             cursor_page_size => 1000,
         }),
@@ -360,6 +367,7 @@ sub export_as_csv : Private {
             'Detail',
             'User Name',
             'Category',
+            $groups ? ('Subcategory') : (),
             'Created',
             'Confirmed',
             'Acknowledged',
@@ -381,6 +389,7 @@ sub export_as_csv : Private {
             'detail',
             'user_name_display',
             'category',
+            $groups ? ('subcategory') : (),
             'created',
             'confirmed',
             'acknowledged',
@@ -481,6 +490,16 @@ sub generate_csv : Private {
             ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
                 $obj->local_coords;
         }
+
+        if ($asked_for{subcategory}) {
+            my $group = $obj->contact && $obj->contact->get_extra_metadata('group') || '';
+            $group = join(',', ref $group ? @$group : $group);
+            if ($group) {
+                $hashref->{subcategory} = $obj->category;
+                $hashref->{category} = $group;
+            }
+        }
+
         if ($obj->can('url')) {
             my $base = $c->cobrand->base_url_for_report($obj->can('problem') ? $obj->problem : $obj);
             $hashref->{url} = join '', $base, $obj->url;
