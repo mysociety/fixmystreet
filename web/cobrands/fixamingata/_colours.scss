@@ -2,8 +2,8 @@
 
 $menu-image: 'menu-black';
 
-$primary: #00b1da;
-$primary_b: #0087a6;
+$primary: #087FA0;
+$primary_b: #087FA0;
 $primary_text: #222;
 $primary_link_color: $primary_text;
 $primary_link_hover_color: rgba($primary_text, 0.8);
@@ -13,10 +13,13 @@ $base_fg: $primary_text;
 
 $nav_background_colour: #eee;
 $nav_colour: $primary_text;
-$nav_hover_background_colour: #20bbdf;
+$nav_hover_background_colour: $nav_background_colour;
 
 $header-top-border: false;
 
 $col_click_map: #00BD08;
 
 $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi';
+
+$link-color: #0000CC;
+$link-hover-color: #0000CC;

@@ -146,4 +146,36 @@ a#geolocate_link {
     a {
 	border-radius: 5px;
     }
+    span {
+    	 color: $primary_text;
+    	 font-weight: bold;
+    }
+    span.report-a-problem-btn {
+	display: none;
+    }
+    a.report-a-problem-btn {
+	display: none;
+    }
+}
+
+.mappage {
+    .nav-menu--main {
+	span.report-a-problem-btn {
+	    display: block;
+	}
+	a.report-a-problem-btn {
+	    display: block;
+	    border-width: 1px;
+	    border-color: $primary_text;
+	    border-style: solid;
+	}
+    }
+}
+
+body.twothirdswidthpage {
+    .content {
+       aside {
+           background:#fff;
+       }
+    }
 }
