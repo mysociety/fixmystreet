@@ -11,6 +11,7 @@
         - Look at all categories when sending reports.
         - Provide access to staff-only categories in admin.
         - Maintain group on pin move with same category in multiple groups. #2962
+        - Fix sorting by most commented on /around map view.
     - Development improvements:
         - Refactor Script::Report into an object.
         - Move summary failures to a separate script.
