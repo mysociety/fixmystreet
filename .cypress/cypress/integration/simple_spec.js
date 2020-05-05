@@ -18,6 +18,7 @@ describe('Clicking the map', function() {
         cy.get('[name=password_sign_in]').type('password');
         cy.get('[name=password_sign_in]').parents('form').submit();
         cy.get('#map_sidebar').should('contain', 'check and confirm your details');
+        cy.get('#form_service').should('have.value', 'desktop');
         cy.get('#map_sidebar').parents('form').submit();
         cy.get('body').should('contain', 'Thank you for reporting this issue');
         cy.visit('http://fixmystreet.localhost:3001/_test/setup/simple-service-check').then(function(w) {
@@ -72,9 +73,12 @@ describe('Leaving updates', function() {
 
 describe('Clicking the "big green banner" on a map page', function() {
     before(function() {
+        cy.server();
+        cy.route('/around\?ajax*').as('update-results');
         cy.visit('/');
         cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
+        cy.wait('@update-results');
         cy.get('.big-green-banner').click();
     });
 

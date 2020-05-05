@@ -4,15 +4,21 @@ it('loads the right front page', function() {
 });
 
 it('logs in without fuss', function() {
+    cy.server();
+    cy.route('/mapit/area/*').as('get-geometry');
+
     cy.contains('Sign in').click();
     cy.contains('Customer service').click();
     cy.url().should('include', '/reports');
+    cy.wait('@get-geometry');
 
     cy.contains('Your account').click();
     cy.contains('Sign out').click();
     cy.contains('Sign in').click();
     cy.contains('Inspector').click();
     cy.url().should('include', '/my/planned');
+    // Wait for offline stuff, which can take time
+    cy.get('.top_banner--offline', { timeout: 10000 }).contains('Reports saved offline', { timeout: 10000 });
 
     cy.contains('Your account').click();
     cy.contains('Sign out').click();
