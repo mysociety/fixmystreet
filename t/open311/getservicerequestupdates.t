@@ -1057,7 +1057,7 @@ for my $test (
         $problem->discard_changes;
         is $problem->comments->count, 2, 'two comment after fetching updates';
 
-        my @comments = $problem->comments;
+        my @comments = $problem->comments->search(undef, { order_by => 'confirmed' });
 
         is $comments[0]->text, "Thank you for your report. We will provide an update within 48 hours.", "correct external status code on first comment";
         is $comments[1]->text, "Thank you for your report. We will provide an update within 24 hours.", "correct external status code on second comment";
