@@ -313,7 +313,7 @@ subtest 'check old problems not shown by default on around page' => sub {
     $problems->update( { confirmed => \"current_timestamp" } );
 };
 
-subtest 'check sorting by update uses lastupdate to determine age' => sub {
+subtest 'check sorting' => sub {
     my $params = {
         postcode  => 'OX20 1SZ',
         latitude  => 51.754926,
@@ -322,19 +322,31 @@ subtest 'check sorting by update uses lastupdate to determine age' => sub {
     my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
                 . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
 
-    my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
-    $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
+    subtest 'by update uses lastupdate to determine age' => sub {
+        my $problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id );
+        $problems->first->update( { confirmed => \"current_timestamp-'7 months'::interval" } );
 
-    my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
-    my $pins = $json->{pins};
-    is scalar @$pins, 8, 'correct number of reports with default sorting';
+        my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
+        my $pins = $json->{pins};
+        is scalar @$pins, 8, 'correct number of reports with default sorting';
 
+        $json = $mech->get_ok_json( '/around?ajax=1&sort=updated-desc&bbox=' . $bbox );
+        $pins = $json->{pins};
+        is scalar @$pins, 9, 'correct number of reports with updated sort';
 
-    $json = $mech->get_ok_json( '/around?ajax=1&sort=updated-desc&bbox=' . $bbox );
-    $pins = $json->{pins};
-    is scalar @$pins, 9, 'correct number of reports with updated sort';
+        $problems->update( { confirmed => \"current_timestamp" } );
+    };
 
-    $problems->update( { confirmed => \"current_timestamp" } );
+    subtest 'by comment count' => sub {
+        my @problems = FixMyStreet::DB->resultset('Problem')->to_body( $body->id )->all;
+        $mech->create_comment_for_problem($problems[3], $problems[0]->user, 'Name', 'Text', 'f', 'confirmed', 'confirmed');
+        $mech->create_comment_for_problem($problems[3], $problems[0]->user, 'Name', 'Text', 'f', 'confirmed', 'confirmed');
+        $mech->create_comment_for_problem($problems[6], $problems[0]->user, 'Name', 'Text', 'f', 'confirmed', 'confirmed');
+        my $json = $mech->get_ok_json( '/around?ajax=1&sort=comments-desc&bbox=' . $bbox );
+        my $pins = $json->{pins};
+        is $pins->[0][3], $problems[3]->id, 'Report with two updates first';
+        is $pins->[1][3], $problems[6]->id, 'Report with one update second';
+    };
 };
 
 subtest 'check show old reports checkbox shown on around page' => sub {
