@@ -522,6 +522,17 @@ staff user only deals with reports of a specific type.
 To remove an account, the Administrator-level member of staff should make contact with
 mySociety.
 
+#### Two-factor authentication
+
+Any staff user can choose to set up two-factor authentication on their account.
+To do this, they will need an app on their phone that can generate time-based
+authentication keys, such as Google Authenticator or a password manager. Then.
+they can visit their account page on the site and select ‘Activate two-factor
+authentication’ to receive a QR code to scan with the app.
+
+If you wish your organisation to have mandated two-factor authentication,
+please get in touch.
+
 </div>
 
 <div class="admin-task" markdown="1" id="creating-editing-categories">
