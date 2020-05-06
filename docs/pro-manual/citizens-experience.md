@@ -22,12 +22,16 @@ When a citizen sees a problem and wishes to report it, they can do so in one of 
 <img alt="Make a report on a council website, fixmystreet.com, or via the FixMyStreet app" src="/assets/img/pro-user-guide/all-the-sites.png" />
 
 - Through the council website, on the council’s branded FixMyStreet instance
-- On FixMyStreet.com, the UK-wide site
-- Via the FixMystreet app
-
+- On [FixMyStreet.com](https://www.fixmystreet.com), the UK-wide site
+- Via the FixMyStreet app
 
 No matter which of these channels they use, the report will be visible in all three places. All
 FixMyStreet instances draw from the same database of reports.
+
+The FixMyStreet website, and the council’s branded version, can also be
+installed as a ‘web app’ – providing a logo on their homescreen that users can
+treat like a native app without the hassle of app stores. If that’s something
+that would be of interest for your installation, please get in touch.
 
 <div class="boxout" markdown="1">
 
