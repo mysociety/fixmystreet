@@ -770,12 +770,13 @@ above, ‘Creating a template’. Additionally you can delete the template from 
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff</span>
 
-When you first log in to the Admin area, you’ll see some top-level stats at the foot of the page,
-including the number of reports published on the site, the number of updates, the number of
-alerts set up and the number of user questionnaires sent out. This can be useful for a quick
-snapshot of activity.
+When you log in to the Admin area and click Stats in the admin navigation,
+you’ll see some top-level statistics, including the number of reports published
+on the site, the number of updates, and the number of alerts set up. This can
+be useful for a quick snapshot of activity.
 
-For a more detailed breakdown, visit the stats dashboard. This can be accessed by typing
+For a more detailed breakdown, visit the stats dashboard. This can be accessed
+by going to "Summary statistics" from the admin stats page, or by typing
 ‘/dashboard’ on the end of your FixMyStreet url.
 
 From here, you can access statistics on:
@@ -797,6 +798,16 @@ You can also group the results by:
 Android device or via an iOS device).
 
 These statistics can be downloaded as a CSV document, suitable for use in a spreadsheet program
-such as Excel.
+such as Excel or your own reporting tools.
+
+#### Heatmap
+
+Also accessible from the admin stats page is our heatmap. This can provide an
+overview of reporting in your area, filtered by state, category, or ward, for a
+particular date range:
+
+<img alt="Screenshot of Bromley heatmap showing clusters in the north and north west."
+    src="https://user-images.githubusercontent.com/4776/72752804-0eb6b700-3bbb-11ea-915b-5afde5235014.png">
+
 
 </div>
