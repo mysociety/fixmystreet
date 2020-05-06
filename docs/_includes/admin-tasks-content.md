@@ -579,6 +579,11 @@ for information on <a
 href="#creating-editing-notices">creating/editing extra notices and
 questions</a> for a category.
 
+Categories can be made ‘staff only’, where they are only available to logged-in
+members of staff, not members of the public. This could be used for e.g.
+contact centre staff to leave reports in categories that you still want to be
+phoned in.
+
 You can set up as many or as few categories as you like, and each category can have its own email
 address attached to it, so for example, reports about potholes may go to one council email
 address, while reports about road signs go to another. More than one category may share the
