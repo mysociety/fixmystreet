@@ -234,6 +234,26 @@ sub edit : Path('/admin/report_edit') : Args(1) {
             push @fields, { name => 'Duplicates', val => join( ',', @{ $problem->get_extra_metadata('duplicates') } ) };
             delete $extra->{duplicates};
         }
+
+        if ( $extra->{contributed_by} ) {
+            my $u = $c->cobrand->users->find({id => $extra->{contributed_by}});
+            if ( $u ) {
+                my $uri = $c->uri_for_action('admin/users/index', { search => $u->email } );
+                push @fields, {
+                    name => _('Created By'),
+                    val => FixMyStreet::Template::SafeString->new( "<a href=\"$uri\">@{[$u->name]} (@{[$u->email]})</a>" )
+                };
+                if ( $u->from_body ) {
+                    push @fields, { name => _('Created Body'), val => $u->from_body->name };
+                } elsif ( $u->is_superuser ) {
+                    push @fields, { name => _('Created Body'), val => _('Superuser') };
+                }
+            } else {
+                push @fields, { name => 'contributed_by', val => $extra->{contributed_by} };
+            }
+            delete $extra->{contributed_by};
+        }
+
         for my $key ( keys %$extra ) {
             push @fields, { name => $key, val => $extra->{$key} };
         }

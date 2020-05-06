@@ -9,6 +9,7 @@ my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', from_body => $oxfordshire);
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 
@@ -705,6 +706,22 @@ subtest "Test display of fields extra data" => sub {
 
     $mech->get_ok("/admin/report_edit/$report_id");
     $mech->content_contains('Report URL (report_url)</strong>: http://example.com');
+};
+
+subtest "Test display of contributed_as data" => sub {
+    $report->update( { extra => undef } );
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('Extra data: No');
+
+    $report->set_extra_metadata( contributed_as => 'another_user' );
+    $report->set_extra_metadata( contributed_by => $user3->id );
+    $report->update;
+
+    $report->discard_changes;
+
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_like(qr!Created By</strong>: <a[^>]*>Body User \(@{[ $user3->email ]}!);
+    $mech->content_contains('Created Body</strong>: Oxfordshire County Council');
 };
 
 done_testing();
