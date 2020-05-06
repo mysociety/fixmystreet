@@ -39,7 +39,7 @@ sub pin_colour {
     return 'yellow';
 }
 
-sub admin_user_domain { 'buckscc.gov.uk' }
+sub admin_user_domain { ( 'buckscc.gov.uk', 'buckinghamshire.gov.uk' ) }
 
 sub send_questionnaires {
     return 0;
