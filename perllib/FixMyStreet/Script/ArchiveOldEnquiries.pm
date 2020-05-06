@@ -11,7 +11,7 @@ use FixMyStreet::Email;
 
 my $opts = {
     commit => 0,
-    close_state => 'closed',
+    closed_state => 'closed',
 };
 
 sub query {
