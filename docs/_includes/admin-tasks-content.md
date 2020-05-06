@@ -114,25 +114,16 @@ to access the full report admin editing page.
 
 <div class="admin-task" markdown="1" id="search-user">
 
-### Searching for a user
+### User admin
 
 <span class="admin-task__permissions">Permissions required: User must be marked
 as staff; “Edit users' details/search for their reports” must be ticked</span>
 
-Click on ‘admin’ in the top menu bar.
-
-Enter any part of the user’s name or email address in the ‘Search users’ box.
-
-</div>
-
-<div class="admin-task" markdown="1" id="editing-users-information">
-
-### Editing a user’s information
-
-<span class="admin-task__permissions">Permissions required: User must be marked as staff; "Edit users' details/search for their reports" must be ticked.</span>
-
-Click on ‘Edit’ beside any user to view or change their account details.
-Or, click the user’s email address to view a list of all reports and updates made by that user.
+In the admin, enter any part of the user’s name or email address in the ‘Search
+users’ box. You may click on ‘Edit’ beside any user to view or change their
+account details, click the user’s email address to view a list of all reports
+and updates made by that user, or click ‘Timeline’ to see a timeline of that
+user’s activities on the site.
 
 </div>
 
