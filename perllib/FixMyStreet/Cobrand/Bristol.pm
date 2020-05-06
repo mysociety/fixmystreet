@@ -73,4 +73,6 @@ sub open311_contact_meta_override {
     }
 }
 
+sub admin_user_domain { 'bristol.gov.uk' }
+
 1;
