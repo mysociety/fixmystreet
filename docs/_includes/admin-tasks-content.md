@@ -4,9 +4,11 @@
 
 <img alt="When you're logged in as an administrator the 'admin' button is in the navigation menu" src="/assets/img/pro-user-guide/navigating-as-pro-staff.png" class="admin-screenshot" />
 
-If your Administrator has already given you staff permissions, you’ll see additional admin button
-on the top menu when you’re logged in. If not, your Administrator can add these permissions at
-any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
+If your Administrator has already given you staff permissions, you may see
+additional admin button on the top menu when you’re logged in. If not, your
+access may be only in the frontend (e.g. moderation does not require any
+backend admin access), or your Administrator can add these permissions at any
+time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 </div>
 
 <div class="admin-task" markdown="1" id="viewing-reports-your-area">
@@ -18,14 +20,15 @@ any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 If you want to view everything that’s been reported within the council area, here’s the quickest
 way.
 
-Click on ‘all reports’ in the top menu. You’ll see the boundaries of your council area on the map,
-and a list of all reports listed, with the most recent reports at the top, on the left hand panel.
+Click on ‘all reports’ in the top menu. You’ll see the boundaries of your
+council area on the map, and a list of all reports listed, with the most
+recently updated reports at the top, in the left hand panel.
 
 <img alt="Click all reports in the top menu to view all reports in an area" src="/assets/img/pro-user-guide/viewing-reports-your-area.png" class="admin-screenshot" />
 
 Note that staff members can be allocated one or more category (e.g. potholes, streetlights, etc) by
 the Administrator — see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’ for more details. When logged in, these staff
-members will see reports within these categories by default.
+members will only see reports within those categories by default.
 
 </div>
 
@@ -538,9 +541,11 @@ mySociety.
 
 #### Note
 
-If your FixMyStreet Pro installation has been integrated with a CRM system, this
-section does not apply. In such cases, categories are managed from within the CRM, and
-FixMyStreet will be set up to work with these.
+If your FixMyStreet Pro installation has been integrated with a CRM system,
+this section might not fully apply; it is possible categories are managed from
+within the CRM, and FixMyStreet will be set up to work with these. Some
+installations only integrate on some categories, and some sections such as form
+disabling can still be used on top of an integration.
 
 </div>
 
