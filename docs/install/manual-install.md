@@ -177,6 +177,13 @@ $ script/server
 The server will be accessible as <http://localhost:3000/>, and will
 automatically restart if you update the code or `general.yml`.
 
+If you need to run the server under HTTPS, to e.g. develop the service worker
+or geolocation, then you can run `script/server --listen :3000:ssl
+--ssl-cert=my.crt --ssl-key=my.key --Reload perllib,conf` where my.crt and
+my.key point to a key and self-signed certificate you have generated using
+something like `openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout
+my.key -out my.crt -subj "/CN=My local CA" -days 3650`.
+
 ### Post-install: Things you might want to change
 
 #### Next Steps
