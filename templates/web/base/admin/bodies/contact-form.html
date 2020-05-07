@@ -74,8 +74,14 @@
         <span class='form-hint'>[% loc('Use this where you do not want problem reporters to be able to reopen their fixed or closed reports when leaving an update.') %]</span>
     </p>
 
-    [% IF contact.sent_by_open311 %]
+    [% IF body.get_cobrand_handler.anonymous_account %]
+    <p class="form-check">
+        <input type="checkbox" name="anonymous_allowed" value="1" id="anonymous_allowed" [% ' checked' IF contact.get_extra_metadata('anonymous_allowed') %]>
+        <label for="anonymous_allowed">[% loc('Allow anonymous reports on this category') %]</label>
+    </p>
+    [% END %]
 
+    [% IF contact.sent_by_open311 %]
       <p class="form-check">
           <input type="checkbox" name="open311_protect" value="1" id="open311_protect"[% ' checked' IF contact.get_extra_metadata('open311_protect') %]>
           <label for="open311_protect">[% loc("Protect this category's name and group(s) from Open311 changes") %]</label>

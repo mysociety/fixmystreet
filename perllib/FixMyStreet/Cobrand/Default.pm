@@ -1123,7 +1123,22 @@ pressed in the front end, rather than whenever a username is not provided.
 
 =cut
 
-sub allow_anonymous_reports { 0; }
+sub allow_anonymous_reports {
+    my ($self, $category_name) = @_;
+
+    $category_name ||= $self->{c}->stash->{category};
+    if ( $category_name && $self->can('body') and $self->body ) {
+        my $category_rs = FixMyStreet::DB->resultset("Contact")->search({
+            body_id => $self->body->id,
+            category => $category_name
+        });
+        if ( my $category = $category_rs->first ) {
+            return 'button' if $category->get_extra_metadata('anonymous_allowed');
+        }
+    }
+
+    return 0;
+}
 
 =item anonymous_account
 

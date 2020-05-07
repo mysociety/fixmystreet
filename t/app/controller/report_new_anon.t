@@ -17,6 +17,14 @@ sub allow_anonymous_reports {
 }
 sub anonymous_account { { email => 'anoncategory@example.org', name => 'Anonymous Category' } }
 
+package FixMyStreet::Cobrand::AnonAllowedByCategory;
+use parent 'FixMyStreet::Cobrand::UKCouncils';
+sub council_url { 'anonbycategory' }
+sub council_name { 'Edinburgh City Council' }
+sub council_area { 'Edinburgh' }
+sub council_area_id { 2651 }
+sub anonymous_account { { email => 'anoncategory@example.org', name => 'Anonymous Category' } }
+
 package main;
 
 use FixMyStreet::TestMech;
@@ -265,6 +273,73 @@ subtest "test report creation anonymously by button, per category" => sub {
     is $report->name, 'Anonymous Category';
     is $report->anonymous, 1; # Doesn't change behaviour here, but uses anon account's name always
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+};
+
+};
+
+$contact2->set_extra_metadata( anonymous_allowed => 1 );
+$contact2->update;
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'anonallowedbycategory',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
+subtest "test report creation anonymously by button, per category from metadata" => sub {
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok({
+        button => 'submit_category_part_only',
+        with_fields => {
+            category => 'Street lighting',
+        }
+    }, "submit category with no anonymous reporting");
+    $mech->content_lacks('<button name="report_anonymously" value="yes" class="btn btn--block">'); # non-JS button, JS button always there
+    $mech->submit_form_ok({
+        button => 'submit_register',
+        with_fields => {
+            category => 'Trees',
+        }
+    }, "submit category with anonymous reporting");
+
+    $mech->submit_form_ok({
+        button => 'report_anonymously',
+        with_fields => {
+            title => 'Test Report',
+            detail => 'Test report details.',
+        }
+    }, "submit good details");
+    $mech->content_contains('Your issue is on its way to the council');
+
+    my $report = FixMyStreet::DB->resultset("Problem")->search({}, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+
+    is $report->state, 'confirmed', "report confirmed";
+    is $report->bodies_str, $body->id;
+    is $report->name, 'Anonymous Category';
+    is $report->anonymous, 1; # Doesn't change behaviour here, but uses anon account's name always
+    is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+};
+
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+    BASE_URL => 'https://www.fixmystreet.com',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+subtest "test anonymously by button, per category from metadata limited to cobrand" => sub {
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok({
+        button => 'submit_category_part_only',
+        with_fields => {
+            category => 'Trees',
+        }
+    }, "submit category with no anonymous reporting");
+    $mech->content_lacks('<button name="report_anonymously" value="yes" class="btn btn--block">'); # non-JS button, JS button always there
 };
 
 };

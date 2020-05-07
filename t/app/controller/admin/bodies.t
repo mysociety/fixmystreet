@@ -1,3 +1,13 @@
+package FixMyStreet::Cobrand::AnonAllowedByCategory;
+use parent 'FixMyStreet::Cobrand::UKCouncils';
+sub council_url { 'anonbycategory' }
+sub council_name { 'Aberdeen City Council' }
+sub council_area { 'Aberdeen' }
+sub council_area_id { 2650 }
+sub anonymous_account { { email => 'anoncategory@example.org', name => 'Anonymous Category' } }
+
+package main;
+
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -295,8 +305,32 @@ subtest 'reopen disabling' => sub {
     is $contact->get_extra_metadata('reopening_disallowed'), 1, 'Reopening disallowed flag set';
 };
 
+subtest 'allow anonymous reporting' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->content_lacks('Allow anonymous reports');
+};
 
 }; # END of override wrap
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    MAPIT_TYPES => [ 'UTA' ],
+    BASE_URL => 'http://www.example.org',
+    ALLOWED_COBRANDS => [ "fixmystreet", "anonallowedbycategory" ],
+}, sub {
+
+subtest 'allow anonymous reporting' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        anonymous_allowed => 1,
+        note => 'Anonymous Allowed',
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is $contact->get_extra_metadata('anonymous_allowed'), 1, 'Anonymous reports allowed flag set';
+};
+
+};
+
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
