@@ -349,14 +349,15 @@ sub export_as_csv : Private {
 
     my $groups = $c->cobrand->enable_category_groups ? 1 : 0;
     my $join = ['comments'];
-    my $columns = ['comments.problem_state', 'comments.state', 'comments.confirmed', 'comments.mark_fixed'];
+    my $columns = ['comments.id', 'comments.problem_state', 'comments.state', 'comments.confirmed', 'comments.mark_fixed'];
     if ($groups) {
         push @$join, 'contact';
-        push @$columns, 'contact.extra';
+        push @$columns, 'contact.id', 'contact.extra';
     }
     my $csv = $c->stash->{csv} = {
         objects => $c->stash->{objects_rs}->search_rs({}, {
             join => $join,
+            collapse => 1,
             '+columns' => $columns,
             order_by => ['me.confirmed', 'me.id'],
             cursor_page_size => 1000,
