@@ -121,7 +121,7 @@ sub process_user : Private {
     if ( $c->user_exists ) { {
         my $user = $c->user->obj;
 
-        if ($c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $update->problem->bodies_str_ids)) {
+        if ($c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $c->stash->{problem}->bodies_str_ids)) {
             # Act as if not logged in (and it will be auto-confirmed later on)
             last;
         }
@@ -248,7 +248,7 @@ sub load_problem : Private {
     # Problem ID could come from existing update in token, or from query parameter
     my $problem_id = $update->problem_id || $c->get_param('id');
     $c->forward( '/report/load_problem_or_display_error', [ $problem_id ] );
-    $update->problem($c->stash->{problem});
+    $update->problem_id($c->stash->{problem}->id);
 }
 
 =head2 check_form_submitted
@@ -282,7 +282,8 @@ sub process_update : Private {
 
     my $name = Utils::trim_text( $params{name} );
 
-    $params{reopen} = 0 unless $c->user && $c->user->id == $c->stash->{problem}->user->id;
+    my $problem = $c->stash->{problem};
+    $params{reopen} = 0 unless $c->user && $c->user->id == $problem->user->id;
 
     my $update = $c->stash->{update};
     $update->text($params{update});
@@ -290,11 +291,11 @@ sub process_update : Private {
     $update->mark_fixed($params{fixed} ? 1 : 0);
     $update->mark_open($params{reopen} ? 1 : 0);
 
-    $c->stash->{contributing_as_body} = $c->user_exists && $c->user->contributing_as('body', $c, $update->problem->bodies_str_ids);
-    $c->stash->{contributing_as_anonymous_user} = $c->user_exists && $c->user->contributing_as('anonymous_user', $c, $update->problem->bodies_str_ids);
+    $c->stash->{contributing_as_body} = $c->user_exists && $c->user->contributing_as('body', $c, $problem->bodies_str_ids);
+    $c->stash->{contributing_as_anonymous_user} = $c->user_exists && $c->user->contributing_as('anonymous_user', $c, $problem->bodies_str_ids);
 
     # This is also done in process_user, but is needed here for anonymous() just below
-    my $anon_button = $c->cobrand->allow_anonymous_reports($update->problem->category) eq 'button' && $c->get_param('report_anonymously');
+    my $anon_button = $c->cobrand->allow_anonymous_reports($problem->category) eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
         $c->stash->{contributing_as_anonymous_user} = 1;
         $c->stash->{contributing_as_body} = undef;
@@ -323,7 +324,6 @@ sub process_update : Private {
         # then we are not changing the state of the problem so can use the current
         # problem state
         } else {
-            my $problem = $c->stash->{problem} || $update->problem;
             $update->problem_state( $problem->state );
         }
     }
@@ -332,7 +332,7 @@ sub process_update : Private {
     my @extra; # Next function fills this, but we don't need it here.
     # This is just so that the error checking for these extra fields runs.
     # TODO Use extra here as it is used on reports.
-    my $body = (values %{$update->problem->bodies})[0];
+    my $body = (values %{$problem->bodies})[0];
     $c->cobrand->process_open311_extras( $c, $body, \@extra );
 
     if ( $c->get_param('fms_extra_title') ) {

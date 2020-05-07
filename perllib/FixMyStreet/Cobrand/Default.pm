@@ -530,6 +530,7 @@ or not. Default behaviour is disallowed if "closed_updates" metadata is set.
 sub updates_disallowed {
     my ($self, $problem) = @_;
     return 1 if $problem->get_extra_metadata('closed_updates');
+    return 1 if $problem->contact && $problem->contact->get_extra_metadata('updates_disallowed');
     return 0;
 }
 

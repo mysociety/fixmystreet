@@ -17,16 +17,16 @@ sub nearby {
     }
 
     my $params = {
-        state => [ keys %{$args{states}} ],
+        'problem.state' => [ keys %{$args{states}} ],
     };
-    $params->{id} = { -not_in => $args{ids} }
+    $params->{problem_id} = { -not_in => $args{ids} }
         if $args{ids};
-    $params->{category} = $args{categories} if $args{categories} && @{$args{categories}};
+    $params->{'problem.category'} = $args{categories} if $args{categories} && @{$args{categories}};
 
     $params->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$args{report_age}'::interval" }
         if $args{report_age};
 
-    FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c);
+    FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c, 'problem');
 
     $rs = $c->cobrand->problems_restriction($rs);
 
@@ -34,11 +34,22 @@ sub nearby {
     $params = { %$params, %{$args{extra}} } if $args{extra};
 
     my $attrs = {
-        prefetch => 'problem',
+        prefetch => { problem => [] },
         bind => [ $args{latitude}, $args{longitude}, $args{distance} ],
         order_by => [ 'distance', { -desc => 'created' } ],
         rows => $args{limit},
     };
+    if ($c->user_exists) {
+        if ($c->user->from_body || $c->user->is_superuser) {
+            push @{$attrs->{prefetch}{problem}}, 'contact';
+        }
+        if ($c->user->has_body_permission_to('planned_reports')) {
+            push @{$attrs->{prefetch}{problem}}, 'user_planned_reports';
+        }
+        if ($c->user->has_body_permission_to('report_edit_priority') || $c->user->has_body_permission_to('report_inspect')) {
+            push @{$attrs->{prefetch}{problem}}, 'response_priority';
+        }
+    }
 
     my @problems = mySociety::Locale::in_gb_locale { $rs->search( $params, $attrs )->all };
     return \@problems;

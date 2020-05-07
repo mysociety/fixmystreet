@@ -71,13 +71,16 @@ sub index : Path : Args(0) {
     }
 
     my @unsent = $c->cobrand->problems->search( {
-        state => [ FixMyStreet::DB::Result::Problem::open_states() ],
+        'me.state' => [ FixMyStreet::DB::Result::Problem::open_states() ],
         whensent => undef,
         bodies_str => { '!=', undef },
         # Ignore very recent ones that probably just haven't been sent yet
         confirmed => { '<', \"current_timestamp - '5 minutes'::interval" },
     },
     {
+        '+columns' => ['user.email'],
+        prefetch => 'contact',
+        join => 'user',
         order_by => 'confirmed',
     } )->all;
     $c->stash->{unsent_reports} = \@unsent;
@@ -301,7 +304,14 @@ sub add_flags : Private {
 sub flagged : Path('flagged') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $problems = $c->cobrand->problems->search( { flagged => 1 } );
+    my $problems = $c->cobrand->problems->search(
+        { 'me.flagged' => 1 },
+        {
+            '+columns' => ['user.email'],
+            join => 'user',
+            prefetch => 'contact',
+        }
+    );
 
     # pass in as array ref as using same template as search_reports
     # which has to use an array ref for sql quoting reasons

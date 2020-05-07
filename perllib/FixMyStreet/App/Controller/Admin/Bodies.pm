@@ -267,15 +267,12 @@ sub update_contact : Private {
     $contact->send_method( $c->get_param('send_method') );
 
     # Set flags in extra to the appropriate values
-    if ( $c->get_param('photo_required') ) {
-        $contact->set_extra_metadata_if_undefined(  photo_required => 1 );
-    } else {
-        $contact->unset_extra_metadata( 'photo_required' );
-    }
-    if ( $c->get_param('open311_protect') ) {
-        $contact->set_extra_metadata( open311_protect => 1 );
-    } else {
-        $contact->unset_extra_metadata( 'open311_protect' );
+    foreach (qw(photo_required open311_protect updates_disallowed)) {
+        if ( $c->get_param($_) ) {
+            $contact->set_extra_metadata( $_ => 1 );
+        } else {
+            $contact->unset_extra_metadata($_);
+        }
     }
     if ( my @group = $c->get_param_list('group') ) {
         @group = grep { $_ } @group;

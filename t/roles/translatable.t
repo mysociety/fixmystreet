@@ -77,8 +77,9 @@ FixMyStreet::override_config {
 subtest 'Check display_name override' => sub {
     $contact->set_extra_metadata( display_name => 'Override name' );
     $contact->update;
-    is $contact->category_display, "Override name";
-    is $problem->category_display, "Override name";
+    is $contact->category_display, "Override name", 'Contact uses display_name';
+    $problem->discard_changes;
+    is $problem->category_display, "Override name", 'Problem uses display_name';
 };
 
 done_testing;

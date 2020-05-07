@@ -26,30 +26,31 @@ sub body_query {
 # Edits PARAMS in place to either hide non_public reports, or show them
 # if user is superuser (all) or inspector (correct body)
 sub non_public_if_possible {
-    my ($rs, $params, $c) = @_;
+    my ($rs, $params, $c, $table) = @_;
+    $table ||= 'me';
     if ($c->user_exists) {
         my $only_non_public = $c->stash->{only_non_public} ? 1 : 0;
         if ($c->user->is_superuser) {
             # See all reports, no restriction
-            $params->{non_public} = 1 if $only_non_public;
+            $params->{"$table.non_public"} = 1 if $only_non_public;
         } elsif ($c->user->has_body_permission_to('report_inspect') ||
                  $c->user->has_body_permission_to('report_mark_private')) {
             if ($only_non_public) {
                 $params->{'-and'} = [
-                    non_public => 1,
+                    "$table.non_public" => 1,
                     $rs->body_query($c->user->from_body->id),
                 ];
             } else {
                 $params->{'-or'} = [
-                    non_public => 0,
+                    "$table.non_public" => 0,
                     $rs->body_query($c->user->from_body->id),
                 ];
             }
         } else {
-            $params->{non_public} = 0;
+            $params->{"$table.non_public"} = 0;
         }
     } else {
-        $params->{non_public} = 0;
+        $params->{"$table.non_public"} = 0;
     }
 }
 
@@ -175,22 +176,33 @@ sub around_map {
     my ( $rs, $c, %p) = @_;
     my $attr = {
         order_by => $p{order},
+        rows => $c->cobrand->reports_per_page,
     };
-    $attr->{rows} = $c->cobrand->reports_per_page;
+    if ($c->user_exists) {
+        if ($c->user->from_body || $c->user->is_superuser) {
+            push @{$attr->{prefetch}}, 'contact';
+        }
+        if ($c->user->has_body_permission_to('planned_reports')) {
+            push @{$attr->{prefetch}}, 'user_planned_reports';
+        }
+        if ($c->user->has_body_permission_to('report_edit_priority') || $c->user->has_body_permission_to('report_inspect')) {
+            push @{$attr->{prefetch}}, 'response_priority';
+        }
+    }
 
     unless ( $p{states} ) {
         $p{states} = FixMyStreet::DB::Result::Problem->visible_states();
     }
 
     my $q = {
-            state => [ keys %{$p{states}} ],
+            'me.state' => [ keys %{$p{states}} ],
             latitude => { '>=', $p{min_lat}, '<', $p{max_lat} },
             longitude => { '>=', $p{min_lon}, '<', $p{max_lon} },
     };
 
     $q->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$p{report_age}'::interval" } if
         $p{report_age};
-    $q->{category} = $p{categories} if $p{categories} && @{$p{categories}};
+    $q->{'me.category'} = $p{categories} if $p{categories} && @{$p{categories}};
 
     $rs->non_public_if_possible($q, $c);
 

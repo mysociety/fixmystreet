@@ -139,10 +139,10 @@ sub munge_report_new_contacts {
 sub munge_load_and_group_problems {
     my ($self, $where, $filter) = @_;
 
-    return unless $where->{category} && $self->{c}->stash->{body}->name eq 'Isle of Wight Council';
+    return unless $where->{'me.category'} && $self->{c}->stash->{body}->name eq 'Isle of Wight Council';
 
     my $iow = FixMyStreet::Cobrand->get_class_for_moniker( 'isleofwight' )->new({ c => $self->{c} });
-    $where->{category} = $iow->expand_triage_cat_list($where->{category}, $self->{c}->stash->{body});
+    $where->{'me.category'} = $iow->expand_triage_cat_list($where->{'me.category'}, $self->{c}->stash->{body});
 }
 
 sub title_list {

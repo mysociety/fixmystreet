@@ -140,9 +140,9 @@ sub munge_around_category_where {
 sub munge_load_and_group_problems {
     my ($self, $where, $filter) = @_;
 
-    return unless $where->{category};
+    return unless $where->{'me.category'};
 
-    $where->{category} = $self->_expand_triage_cat_list($where->{category});
+    $where->{'me.category'} = $self->_expand_triage_cat_list($where->{'me.category'});
 }
 
 sub munge_around_filter_category_list {

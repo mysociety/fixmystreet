@@ -591,7 +591,15 @@ sub heatmap_sidebar :Private {
         order_by => 'lastupdate',
     })->all ];
 
-    my $params = { map { my $n = $_; s/me\./problem\./; $_ => $where->{$n} } keys %$where };
+    my $params = { map {
+        my $v = $where->{$_};
+        if (ref $v eq 'HASH') {
+            $v = { map { my $vv = $v->{$_}; s/me\./problem\./; $_ => $vv } keys %$v };
+        } else {
+            s/me\./problem\./;
+        }
+        $_ => $v;
+    } keys %$where };
     my $body = $c->stash->{body};
 
     my @user;

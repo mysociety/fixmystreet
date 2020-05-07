@@ -110,6 +110,7 @@ sub index : Path {
             {
                 join => 'user',
                 '+columns' => 'user.email',
+                prefetch => 'contact',
                 rows => 50,
                 order_by => $order,
             }
@@ -166,7 +167,13 @@ sub index : Path {
 
         my $problems = $c->cobrand->problems->search(
             $query,
-            { order_by => $order, rows => 50 }
+            {
+                '+columns' => ['user.email'],
+                join => 'user',
+                prefetch => 'contact',
+                order_by => $order,
+                rows => 50
+            }
         )->page( $p_page );
         $c->stash->{problems} = [ $problems->all ];
         $c->stash->{problems_pager} = $problems->pager;
