@@ -53,4 +53,6 @@ sub map_type { 'OSM' }
 
 sub default_map_zoom { 5 }
 
+sub admin_user_domain { 'hackney.gov.uk' }
+
 1;
