@@ -245,16 +245,6 @@ sub dashboard_export_problems_add_columns {
     my $self = shift;
     my $c = $self->{c};
 
-    my %groups;
-    if ($c->stash->{body}) {
-        %groups = FixMyStreet::DB->resultset('Contact')->search({
-            body_id => $c->stash->{body}->id,
-        })->group_lookup;
-    }
-
-    splice @{$c->stash->{csv}->{headers}}, 5, 0, 'Subcategory';
-    splice @{$c->stash->{csv}->{columns}}, 5, 0, 'subcategory';
-
     $c->stash->{csv}->{headers} = [
         map { $_ eq 'Ward' ? 'Borough' : $_ } @{ $c->stash->{csv}->{headers} },
         "Agent responsible",
@@ -315,8 +305,6 @@ sub dashboard_export_problems_add_columns {
         my $fields = {
             acknowledged => $report->whensent,
             agent_responsible => $agent ? $agent->name : '',
-            category => $groups{$report->category},
-            subcategory => $report->category,
             user_name_display => $user_name_display,
             safety_critical => $safety_critical,
             delivered_to => join(',', @$delivered_to),

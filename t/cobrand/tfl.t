@@ -188,6 +188,7 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet'],
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
+        category_groups => { tfl => 1 },
         internal_ips => { tfl => [ '127.0.0.1' ] },
         base_url => {
             tfl => 'https://street.tfl'

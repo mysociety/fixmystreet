@@ -50,14 +50,17 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bexley' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
-    COBRAND_FEATURES => { open311_email => { bexley => {
-        p1 => 'p1@bexley',
-        p1confirm => 'p1confirm@bexley',
-        lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com',
-        outofhours => 'outofhours@bexley,ooh2@bexley',
-        flooding => 'flooding@bexley',
-        eh => 'eh@bexley',
-    } } },
+    COBRAND_FEATURES => {
+        open311_email => { bexley => {
+            p1 => 'p1@bexley',
+            p1confirm => 'p1confirm@bexley',
+            lighting => 'thirdparty@notbexley.example.com,another@notbexley.example.com',
+            outofhours => 'outofhours@bexley,ooh2@bexley',
+            flooding => 'flooding@bexley',
+            eh => 'eh@bexley',
+        } },
+        category_groups => { bexley => 1 },
+    },
 }, sub {
 
     subtest 'cobrand displays council name' => sub {
