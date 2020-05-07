@@ -486,6 +486,7 @@ sub _tlrn_categories { [
     "Mobile Crane Operation",
     "Other (TfL)",
     "Pavement Defect (uneven surface / cracked paving slab)",
+    "Pavement Overcrowding",
     "Pothole",
     "Pothole (minor)",
     "Roadworks",
