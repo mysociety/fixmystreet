@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes:
+        - Fix issue with dashboard report CSV export. #3026
 
 * v3.0.1 (6th May 2020)
     - New features:

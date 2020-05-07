@@ -70,6 +70,7 @@ foreach my $problem (@fixed_problems) {
 
 foreach my $problem (@closed_problems) {
     $problem->update({ state => 'closed' });
+    $mech->create_comment_for_problem($problem, $counciluser, 'Name', 'in progress text', 0, 'confirmed', 'in progress');
     $mech->create_comment_for_problem($problem, $counciluser, 'Title', 'text', 0, 'confirmed', 'closed');
 }
 
@@ -214,7 +215,7 @@ FixMyStreet::override_config {
     subtest 'export updates as csv' => sub {
         $mech->get_ok('/dashboard?updates=1&export=1');
         my @rows = $mech->content_as_csv;
-        is scalar @rows, 15, '1 (header) + 14 (updates) = 15 lines';
+        is scalar @rows, 18, '1 (header) + 17 (updates) = 18 lines';
         is scalar @{$rows[0]}, 8, '8 columns present';
 
         is_deeply $rows[0],
