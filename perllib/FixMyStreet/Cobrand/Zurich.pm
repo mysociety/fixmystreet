@@ -217,7 +217,7 @@ sub allow_photo_display {
 }
 
 sub get_body_sender {
-    my ( $self, $body, $category ) = @_;
+    my ( $self, $body, $problem ) = @_;
     return { method => 'Zurich' };
 }
 
