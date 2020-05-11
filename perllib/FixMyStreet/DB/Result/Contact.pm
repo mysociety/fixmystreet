@@ -113,9 +113,11 @@ sub category_display {
     $self->get_extra_metadata('display_name') || $self->translate_column('category');
 }
 
+# Returns an arrayref of groups this Contact is in; if it is
+# not in any group, returns an arrayref of the empty string.
 sub groups {
     my $self = shift;
-    my $groups = $self->get_extra_metadata('group') || [];
+    my $groups = $self->get_extra_metadata('group') || [''];
     $groups = [ $groups ] unless ref $groups eq 'ARRAY';
     return $groups;
 }

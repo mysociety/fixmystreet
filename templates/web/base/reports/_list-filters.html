@@ -2,7 +2,7 @@
 
 [% BLOCK category_options %]
     [% FOR cat IN categories %]
-        <option value="[% cat.category %]"[% ' selected' IF filter_category.${cat.category} OR ( filter_group AND ( cat.get_extra_metadata('group').grep(filter_group).size OR cat.category == filter_group ) ) %]>
+        <option value="[% cat.category %]"[% ' selected' IF filter_category.${cat.category} OR ( filter_group AND ( cat.groups.grep(filter_group).size OR cat.category == filter_group ) ) %]>
             [% cat.category_display %]
             [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
         </option>

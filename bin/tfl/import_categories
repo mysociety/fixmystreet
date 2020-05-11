@@ -65,7 +65,7 @@ for my $group (keys %$groups) {
         $child_cat->note($child_cat->in_storage ? 'Updated by import_categories' : 'Created by import_categories');
         say colored("WARNING", 'red') . " " . $child_cat->category . " already exists" if $child_cat->in_storage and $child_cat->category ne 'Other (TfL)';
         my $groups = $child_cat->groups;
-        my %groups = map { $_ => 1} @$groups;
+        my %groups = map { $_ => 1 } grep { $_ } @$groups;
         $groups{$group} = 1;
         my @groups = keys %groups;
         $child_cat->extra(undef) if $child_cat->in_storage;

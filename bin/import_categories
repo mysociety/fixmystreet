@@ -81,7 +81,7 @@ sub make_categories {
 
         if ($group) {
             my $groups = $child_cat->groups;
-            my %groups = map { $_ => 1} @$groups;
+            my %groups = map { $_ => 1 } grep { $_ } @$groups;
             $groups{$group} = 1;
             my @groups = keys %groups;
             $child_cat->set_extra_metadata(group => \@groups);

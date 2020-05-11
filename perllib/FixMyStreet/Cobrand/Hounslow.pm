@@ -138,8 +138,8 @@ sub setup_general_enquiries_stash {
         }
       )->all;
   @contacts = grep {
-    my $group = $_->get_extra_metadata('group') || '';
-    $group eq 'Other' || $group eq 'General Enquiries';
+    my $groups = $_->groups;
+    grep { $_ eq 'Other' || $_ eq 'General Enquiries' } @$groups;
   } @contacts;
   $self->{c}->stash->{bodies} = \%bodies;
   $self->{c}->stash->{bodies_to_list} = \%bodies;

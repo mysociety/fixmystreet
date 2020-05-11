@@ -493,8 +493,8 @@ sub generate_csv : Private {
         }
 
         if ($asked_for{subcategory}) {
-            my $group = $obj->contact && $obj->contact->get_extra_metadata('group') || '';
-            $group = join(',', ref $group ? @$group : $group);
+            my $group = $obj->contact && $obj->contact->groups;
+            $group = join(',', @$group);
             if ($group) {
                 $hashref->{subcategory} = $obj->category;
                 $hashref->{category} = $group;

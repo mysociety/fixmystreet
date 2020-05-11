@@ -90,10 +90,8 @@ sub setup_categories : Private {
         delete $c->stash->{categories_hash};
         my %category_groups = ();
         for my $category (@{$c->stash->{end_options}}) {
-            my $group = $category->{group} // $category->get_extra_metadata('group') // [''];
-            # this could be an array ref or a string
-            my @groups = ref $group eq 'ARRAY' ? @$group : ($group);
-            push( @{$category_groups{$_}}, $category ) for @groups;
+            my $groups = $category->groups;
+            push( @{$category_groups{$_}}, $category ) for @$groups;
         }
         my @category_groups = ();
         for my $group ( grep { $_ ne _('Other') } sort keys %category_groups ) {

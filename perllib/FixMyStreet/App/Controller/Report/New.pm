@@ -766,7 +766,7 @@ sub setup_categories_and_bodies : Private {
     if (@category_options) {
         # If there's an Other category present, put it at the bottom
         @category_options = (
-            { category => _('-- Pick a category --'), category_display => _('-- Pick a category --'), group => '' },
+            { category => _('-- Pick a category --'), category_display => _('-- Pick a category --'), group => [''] },
             grep { $_->category ne _('Other') } @category_options );
         push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }
