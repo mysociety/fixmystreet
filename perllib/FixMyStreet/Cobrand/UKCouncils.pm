@@ -392,7 +392,7 @@ sub _fetch_features_url {
         SRSNAME => $cfg->{srsname},
         TYPENAME => $cfg->{typename},
         VERSION => "1.1.0",
-        outputformat => "geojson",
+        outputformat => $cfg->{outputformat} || "geojson",
         $cfg->{filter} ? ( Filter => $cfg->{filter} ) : ( BBOX => $cfg->{bbox} ),
     );
 

@@ -53,15 +53,10 @@ my $contact2 = $mech->create_contact_ok(
     body_id => $hackney->id,
     category => 'Roads',
     email => 'roads@example.org',
-    send_method => 'Triage',
+    send_method => 'Email',
 );
 
 my $admin_user = $mech->create_user_ok('admin-user@example.org', name => 'Admin User', from_body => $hackney);
-
-$admin_user->user_body_permissions->create({
-    body => $hackney,
-    permission_type => 'triage'
-});
 
 my @reports = $mech->create_problems_for_body(1, $hackney->id, 'A Hackney report', {
     confirmed => '2019-10-25 09:00',
@@ -129,7 +124,6 @@ subtest "sends branded alert emails" => sub {
         FixMyStreet::Script::Alerts::send();
     };
 
-    $mech->email_count_is(1);
     my $email = $mech->get_email;
     ok $email, "got an email";
     like $mech->get_text_body_from_email($email), qr/Hackney Council/, "emails are branded";
@@ -168,7 +162,6 @@ subtest "sends branded confirmation emails" => sub {
             "submit good details"
         );
 
-        $mech->email_count_is(1);
         my $email = $mech->get_email;
         ok $email, "got an email";
         like $mech->get_text_body_from_email($email), qr/Hackney Council/, "emails are branded";
@@ -176,6 +169,67 @@ subtest "sends branded confirmation emails" => sub {
         my $url = $mech->get_link_from_email($email);
         $mech->get_ok($url);
         $mech->clear_emails_ok;
+    };
+};
+
+FixMyStreet::override_config {
+    STAGING_FLAGS => { send_reports => 1 },
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => ['hackney', 'fixmystreet'],
+}, sub {
+    subtest "special send handling" => sub {
+        my $cbr = Test::MockModule->new('FixMyStreet::Cobrand::Hackney');
+        my $p = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $contact2->update({ email => 'park:parks@example;estate:estates@example;other:OTHER', send_method => '' });
+
+        subtest 'in a park' => sub {
+            $cbr->mock('_fetch_features', sub {
+                my ($self, $cfg, $x, $y) = @_;
+                return [{
+                    properties => { park_id => 'park' },
+                    geometry => {
+                        type => 'Polygon',
+                        coordinates => [ [ [ $x-1, $y-1 ], [ $x+1, $y+1 ] ] ],
+                    }
+                }] if $cfg->{typename} eq 'greenspaces:hackney_park';
+            });
+            FixMyStreet::Script::Reports::send();
+            my $email = $mech->get_email;
+            is $email->header('To'), '"Hackney Council" <parks@example>';
+            $mech->clear_emails_ok;
+            $p->discard_changes;
+            $p->update({ whensent => undef });
+        };
+
+        subtest 'in an estate' => sub {
+            $cbr->mock('_fetch_features', sub {
+                my ($self, $cfg, $x, $y) = @_;
+                return [{
+                    properties => { id => 'estate' },
+                    geometry => {
+                        type => 'Polygon',
+                        coordinates => [ [ [ $x-1, $y-1 ], [ $x+1, $y+1 ] ] ],
+                    }
+                }] if $cfg->{typename} eq 'housing:lbh_estate';
+            });
+            FixMyStreet::Script::Reports::send();
+            my $email = $mech->get_email;
+            is $email->header('To'), '"Hackney Council" <estates@example>';
+            $mech->clear_emails_ok;
+            $p->discard_changes;
+            $p->update({ whensent => undef });
+        };
+
+        subtest 'elsewhere' => sub {
+            $cbr->mock('_fetch_features', sub {
+                my ($self, $cfg, $x, $y) = @_;
+                return []; # Not in park or estate
+            });
+            my $test_data = FixMyStreet::Script::Reports::send();
+            my $req = $test_data->{test_req_used};
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 'OTHER';
+        };
     };
 };
 
@@ -188,7 +242,6 @@ subtest "sends branded confirmation emails" => sub {
     #}, sub {
         #FixMyStreet::Script::Reports::send();
     #};
-    #$mech->email_count_is(1);
     #my $email = $mech->get_email;
     #ok $email, "got an email";
     #like $mech->get_text_body_from_email($email), qr/Hackney Council/, "emails are branded";
