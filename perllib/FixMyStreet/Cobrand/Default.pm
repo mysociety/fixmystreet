@@ -957,9 +957,10 @@ Get stats to display on the council reports page
 sub get_report_stats { return 0; }
 
 sub get_body_sender {
-    my ( $self, $body, $category ) = @_;
+    my ( $self, $body, $problem ) = @_;
 
     # look up via category
+    my $category = $problem->category;
     my $contact = $body->contacts->search( { category => $category } )->first;
     if ( $body->can_be_devolved && $contact && $contact->send_method ) {
         return { method => $contact->send_method, config => $contact, contact => $contact };

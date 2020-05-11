@@ -50,7 +50,7 @@ sub open311_params {
     my $conf = $body;
     if ($comment) {
         my $cobrand_logged = $comment->get_cobrand_logged;
-        my $sender = $cobrand_logged->get_body_sender($body, $comment->problem->category);
+        my $sender = $cobrand_logged->get_body_sender($body, $comment->problem);
         $conf = $sender->{config};
     }
 

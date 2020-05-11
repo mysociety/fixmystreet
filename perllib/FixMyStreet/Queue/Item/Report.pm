@@ -172,7 +172,7 @@ sub _create_reporters {
     my @dear;
     my %reporters = ();
     while (my $body = $bodies->next) {
-        my $sender_info = $self->cobrand->get_body_sender( $body, $row->category );
+        my $sender_info = $self->cobrand_handler->get_body_sender( $body, $row );
         my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
         if ( ! exists $self->senders->{ $sender } ) {
