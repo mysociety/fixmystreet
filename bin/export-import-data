@@ -20,6 +20,7 @@ my ($opt, $usage) = describe_options(
     [ 'name=s', "Name of body" ],
     [ 'import=s', "File to import" ],
     [ 'commit', "Actually commit changes to the database" ],
+    [ 'categories=s', "pipe-separated list of categories to export contacts for and filter templates by" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
 print($usage->text), exit if $opt->help;
@@ -28,6 +29,7 @@ die "Please specify a file to import\n" if $opt->import && (! -e $opt->import ||
 
 my $J = JSON::MaybeXS->new(utf8 => 1, pretty => 1, canonical => 1);
 my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opt->name }) or die "Cannot find body " . $opt->name . "\n";
+my @categories = split(/\|/, ($opt->{categories} || ''));
 
 if ($opt->import) {
     import($opt->import);
@@ -38,7 +40,31 @@ if ($opt->import) {
 sub export {
     my %out;
 
-    for ($body->response_templates->all) {
+    if (@categories) {
+        my @contacts = $body->contacts->search({
+            category => { -in => \@categories },
+        })->all;
+        die "Categories mismatch" unless scalar @categories == scalar @contacts;
+        for (@contacts) {
+            push @{$out{contacts}}, {
+                category => $_->category,
+                email => $_->email,
+                state => $_->state,
+                non_public => $_->non_public ? JSON->true : JSON->false,
+                extra => $_->extra,
+            };
+        }
+    }
+
+    my $templates = $body->response_templates;
+    if (@categories) {
+        $templates = $templates->search({
+            'contact.category' => { -in => \@categories }
+        }, {
+            join => { 'contact_response_templates' => 'contact' }
+        });
+    }
+    for ($templates->all) {
         push @{$out{templates}}, {
             title => $_->title,
             text => $_->text,
@@ -80,6 +106,25 @@ sub import {
 
     my $db = FixMyStreet::DB->schema->storage;
     $db->txn_begin;
+
+    foreach (@{$out->{contacts}}) {
+        my $existing = $body->contacts->search({ category => $_->{category} })->single;
+        if ($existing) {
+            warn "Category $_->{category} already exists, skipping";
+            next;
+        }
+        my $contact = $body->contacts->new({
+            note => "Imported from $file",
+            editor => 'export-import-data',
+            whenedited => \'current_timestamp',
+            category => $_->{category},
+            email => $_->{email},
+            state => $_->{state},
+            non_public => $_->{non_public},
+            extra => $_->{extra},
+        });
+        $contact->insert;
+    }
 
     foreach (@{$out->{templates}}) {
         my $existing = $body->response_templates->search({ title => $_->{title} })->single;
