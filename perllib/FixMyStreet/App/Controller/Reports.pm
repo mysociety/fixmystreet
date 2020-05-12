@@ -154,6 +154,8 @@ sub ward : Path : Args(2) {
     $c->forward('stash_report_sort', [ $c->cobrand->reports_ordering ]);
     $c->forward( 'load_and_group_problems' );
 
+    $c->forward('setup_categories');
+
     if ($c->get_param('ajax')) {
         my $ajax_template = $c->stash->{ajax_template} || 'reports/_problem-list.html';
         $c->detach('ajax', [ $ajax_template ]);
@@ -165,7 +167,7 @@ sub ward : Path : Args(2) {
 
     $c->stash->{stats} = $c->cobrand->get_report_stats();
 
-    $c->forward('setup_categories_and_map');
+    $c->forward('setup_map');
 
     # List of wards
     if ( !$c->stash->{wards} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
@@ -181,7 +183,7 @@ sub ward : Path : Args(2) {
     }
 }
 
-sub setup_categories_and_map :Private {
+sub setup_categories :Private {
     my ($self, $c) = @_;
 
     my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
@@ -191,9 +193,15 @@ sub setup_categories_and_map :Private {
 
     $c->cobrand->call_hook('munge_reports_category_list', \@categories);
 
+    $c->forward('/report/assigned_users_only', [ \@categories ]);
+
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
     $c->forward('/report/stash_category_groups', [ \@categories ]) if $c->cobrand->enable_category_groups;
+}
+
+sub setup_map :Private {
+    my ($self, $c) = @_;
 
     my $pins = $c->stash->{pins} || [];
 

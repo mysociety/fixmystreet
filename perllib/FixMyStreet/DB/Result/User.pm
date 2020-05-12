@@ -444,7 +444,7 @@ sub permissions {
 
     my $body_id = $problem->bodies_str;
 
-    return unless $self->belongs_to_body($body_id);
+    return {} unless $self->belongs_to_body($body_id);
 
     my @permissions = grep { $_->{body_id} == $self->from_body->id } @{$self->body_permissions};
     return { map { $_->{permission} => 1 } @permissions };

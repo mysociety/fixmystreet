@@ -1,7 +1,7 @@
 <div class="shadow-wrap">
     <ul id="key-tools">
       [% IF c.user_exists OR NOT problem.non_public %]
-        [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_body( problem.bodies_str ) %]
+        [% IF c.cobrand.users_can_hide AND relevant_staff_user %]
         <li><form method="post" action="/report/[% problem.id %]/delete" id="remove-from-site-form">
             <input type="hidden" name="token" value="[% csrf_token %]">
             <button type="submit" id="key-tool-report-abuse" class="abuse" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site">[% loc('Remove from site') %]</button>
@@ -46,7 +46,7 @@
         [% loc('Receive email when updates are left on this problem.' ) %]</p>
         <fieldset>
       [% IF c.user_exists %]
-          [% IF c.user.has_permission_to("contribute_as_another_user", problem.bodies_str_ids) %]
+          [% IF permissions.contribute_as_another_user %]
             <label for="alert_rznvy">[% loc('Email') %]</label>
             <div class="form-txt-submit-box">
                 <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">

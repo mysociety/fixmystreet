@@ -82,6 +82,12 @@
       </p>
     [% END %]
 
+    <p class="form-check">
+        <input type="checkbox" name="assigned_users_only" value="1" id="assigned_users_only" [% ' checked' IF contact.extra.assigned_users_only %]>
+        <label for="assigned_users_only">[% loc('Frontend staff access only to users assigned to this category') %]</label>
+        <span class='form-hint'>[% loc('Use this if you wish only users assigned to this category to see staff-related features (such as the inspector form) in the front end.') %]</span>
+    </p>
+
   [% IF body.can_be_devolved %]
     <div class="admin-hint">
       <p>
@@ -126,6 +132,7 @@
     <h2>[% loc('Extra data:') %] </h2>
     <dl>
       [% FOR pair IN contact.get_extra_metadata %]
+        [% NEXT IF pair.key == 'group' OR pair.key == 'assigned_users_only' %]
         <dt>[% pair.key %]</dt> <dd>[% pair.value OR '<em>-</em>' %]</dd>
       [% END %]
     </dl>

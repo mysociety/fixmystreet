@@ -564,7 +564,8 @@ sub heatmap : Local : Args(0) {
     $c->stash->{children} = $children;
     $c->stash->{ward_hash} = { map { $_->{id} => 1 } @{$c->stash->{wards}} } if $c->stash->{wards};
 
-    $c->forward('/reports/setup_categories_and_map');
+    $c->forward('/reports/setup_categories');
+    $c->forward('/reports/setup_map');
 }
 
 sub heatmap_filters :Private {
