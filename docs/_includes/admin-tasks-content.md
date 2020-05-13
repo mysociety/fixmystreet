@@ -579,6 +579,10 @@ for information on <a
 href="#creating-editing-notices">creating/editing extra notices and
 questions</a> for a category.
 
+You may also be able to configure categories to allow anonymous
+reporting if you have this option available. If this is not available then
+contact us to discuss it.
+
 Categories can be made ‘staff only’, where they are only available to logged-in
 members of staff, not members of the public. This could be used for e.g.
 contact centre staff to leave reports in categories that you still want to be
