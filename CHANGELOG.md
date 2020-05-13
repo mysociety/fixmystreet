@@ -20,6 +20,7 @@
         - Skip accounts without email when sending inactive emails.
         - Include file extensions in Dropzone accepted photo config.
         - Fix photo orientation in modern browsers.
+        - Improve compatibility with G Suite OpenID Connect authentication. #3032
     - Admin improvements:
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989
