@@ -15,6 +15,7 @@
         - Fix double encoding of per-category templates.
         - Return reports in all closed states through Open311.
         - Skip accounts without email when sending inactive emails.
+        - Improve compatibility with G Suite OpenID Connect authentication. #3032
     - Admin improvements:
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989
