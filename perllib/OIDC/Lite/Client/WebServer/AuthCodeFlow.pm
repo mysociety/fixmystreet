@@ -1,4 +1,4 @@
-package OIDC::Lite::Client::WebServer::Azure;
+package OIDC::Lite::Client::WebServer::AuthCodeFlow;
 
 use strict;
 use warnings;
@@ -8,12 +8,15 @@ use OIDC::Lite::Client::IDTokenResponseParser;
 
 =head1 NAME
 
-OIDC::Lite::Client::WebServer::Azure - extension to auth against Azure AD B2C
+OIDC::Lite::Client::WebServer::AuthCodeFlow - extension to auth against an
+identity provider using the authorization code flow, such as Azure AD B2C or
+Google OAuth 2.0.
+More info: https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps
 
 OIDC::Lite doesn't appear to support the authorisation code flow to get an
-ID token - only an access token. Azure returns all its claims in the id_token
-and doesn't support a UserInfo endpoint, so this extension adds support for
-parsing the id_token when calling get_access_token.
+ID token - only an access token. This flow returns all its claims in the id_token
+(and may not support a UserInfo endpoint e.g. Azure AD B2C), so this extension
+adds support for parsing the id_token when calling get_access_token.
 
 =cut
 
