@@ -27,6 +27,11 @@ sub dispatch_request {
         return [ 200, [ 'Content-Type' => 'text/html' ], [ 'OpenID Connect login page' ] ];
     },
 
+    sub (GET + /oauth2/v2.0/authorize_google + ?*) {
+        my ($self) = @_;
+        return [ 200, [ 'Content-Type' => 'text/html' ], [ 'OpenID Connect login page' ] ];
+    },
+
     sub (GET + /oauth2/v2.0/logout + ?*) {
         my ($self) = @_;
         return [ 200, [ 'Content-Type' => 'text/html' ], [ 'OpenID Connect logout page' ] ];
@@ -56,6 +61,49 @@ sub dispatch_request {
             nonce => 'MyAwesomeRandomValue',
         };
         $payload->{emails} = ['pkg-tappcontrollerauth_socialt-oidc@example.org'] if $self->returns_email;
+        my $signature = "dummy";
+        my $id_token = join(".", (
+            encode_base64($self->json->encode($header), ''),
+            encode_base64($self->json->encode($payload), ''),
+            encode_base64($signature, '')
+        ));
+        my $data = {
+            id_token => $id_token,
+            token_type => "Bearer",
+            not_before => $now,
+            id_token_expires_in => 3600,
+            profile_info => encode_base64($self->json->encode({}), ''),
+        };
+        my $json = $self->json->encode($data);
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+    },
+
+    sub (POST + /oauth2/v2.0/token_google + ?*) {
+        my ($self) = @_;
+        my $header = {
+            typ => "JWT",
+            alg => "RS256",
+            kid => "XXXfakeKEY1234",
+        };
+        my $now = DateTime->now->epoch;
+        my $payload = {
+            exp => $now + 3600,
+            nbf => $now,
+            locale => 'en-GB',
+            ver => "1.0",
+            iss => 'https://accounts.google.com',
+            sub => "my_google_user_id",
+            aud => "example_client_id",
+            iat => $now,
+            auth_time => $now,
+            given_name => "Andy",
+            family_name => "Dwyer",
+            name => "Andy Dwyer",
+            nonce => 'MyAwesomeRandomValue',
+            hd => 'example.org',
+        };
+        $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc_google@example.org' if $self->returns_email;
+        $payload->{email_verified} = JSON->true if $self->returns_email;
         my $signature = "dummy";
         my $id_token = join(".", (
             encode_base64($self->json->encode($header), ''),
