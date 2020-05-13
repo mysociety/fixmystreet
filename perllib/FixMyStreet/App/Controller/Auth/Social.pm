@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Net::Facebook::Oauth2;
 use Net::Twitter::Lite::WithAPIv1_1;
-use OIDC::Lite::Client::WebServer::Azure;
+use OIDC::Lite::Client::WebServer::AuthCodeFlow;
 use URI::Escape;
 
 use mySociety::AuthToken;
@@ -167,7 +167,7 @@ sub oidc : Private {
 
     my $config = $c->cobrand->feature('oidc_login');
 
-    OIDC::Lite::Client::WebServer::Azure->new(
+    OIDC::Lite::Client::WebServer::AuthCodeFlow->new(
         id               => $config->{client_id},
         secret           => $config->{secret},
         authorize_uri    => $config->{auth_uri},
