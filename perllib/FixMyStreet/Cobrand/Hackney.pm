@@ -63,6 +63,12 @@ sub default_map_zoom { 5 }
 
 sub admin_user_domain { 'hackney.gov.uk' }
 
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
 sub anonymous_account {
     my $self = shift;
     return {
