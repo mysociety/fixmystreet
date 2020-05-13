@@ -45,14 +45,6 @@
     }
 }
 
-a#geolocate_link {
-    color: $link-color; // override default `#front-main a`
-
-    &:hover {
-        color: $link-hover-color; // override default `#front-main a`
-    }
-}
-
 .site-footer__section {
     @include box-sizing(border-box);
     float: left;

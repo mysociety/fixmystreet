@@ -18,9 +18,11 @@ $site-width: 60em;
 
 @import "pattern-lib/colours";
 
-$primary: #00728F;
+$primary: $bathnes-primary;
 $primary_b: #0b0b0c;
-$primary_text: #0b0c0c;
+$primary_text: #fff;
+$primary_link_color: $primary_text;
+$primary_link_hover_color: rgba($primary_text, 0.8);
 
 $base_bg: white;
 $base_fg: #0b0c0c;

@@ -11,6 +11,9 @@ $link-visited-color: $link-color !default;
 $link-text-decoration: none !default;
 $link-hover-text-decoration: underline !default;
 
+$primary_link_decoration: underline !default;
+$primary_link_hover_decoration: $primary_link_decoration !default;
+
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #666 !default;
@@ -2371,6 +2374,12 @@ label .muted {
           background:#333;
         }
       }
+    }
+  }
+  a {
+    text-decoration: $primary_link_decoration;
+    &:hover {
+      text-decoration: $primary_link_hover_decoration;
     }
   }
 }

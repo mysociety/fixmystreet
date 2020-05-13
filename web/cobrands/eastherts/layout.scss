@@ -127,10 +127,6 @@
     }
 }
 
-a#geolocate_link {
-    color: $eh_green; // override default `#front-main a`
-}
-
 body.mappage {
     .eh-footer {
         display: none;

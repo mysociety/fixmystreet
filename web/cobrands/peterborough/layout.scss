@@ -31,15 +31,6 @@ body.frontpage #front-main {
     }
 }
 
-a#geolocate_link {
-    color: $link-color; // override default `#front-main a`
-    &:hover,
-    &:active,
-    &:focus {
-        color: $link-hover-color; // override default `#front-main a`
-    }
-}
-
 #postcodeForm .form-hint {
     color: $grey;
 }

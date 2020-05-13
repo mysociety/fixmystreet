@@ -13,6 +13,9 @@ $header-top-border: $header-top-border-width solid $primary !default;
 
 $container-max-width: 60em !default;
 
+$primary_link_color: null !default;
+$primary_link_hover_color: null !default;
+
 .internal-link-fixed-header {
     display: block;
     position: relative;
@@ -854,18 +857,10 @@ textarea.form-error {
     }
   }
   a {
-    color: inherit;
-    text-decoration: underline;
+    color: $primary_link_color;
     &:hover {
-      text-decoration: none;
+      color: $primary_link_hover_color;
     }
-  }
-}
-
-a#geolocate_link {
-  text-decoration: none; // override `#front-main a`
-  &:hover {
-    text-decoration: underline;
   }
 }
 

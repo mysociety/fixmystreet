@@ -11,9 +11,11 @@ $green: #75c044;
 
 //Any 20% tint of the above
 
-$primary_text: #fff;
 $primary: $cyan;
 $primary_b: #222;
+$primary_text: #fff;
+$primary_link_color: $primary_text;
+$primary_link_hover_color: rgba($primary_text, 0.8);
 
 $base_bg: #fff;
 $base_fg: #222;

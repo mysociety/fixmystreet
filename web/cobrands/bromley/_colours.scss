@@ -9,6 +9,8 @@ $bromley_dark_green: #505050;
 $primary: $bromley_blue;
 $primary_b: #ffffff;
 $primary_text: #ffffff;
+$primary_link_color: $primary_text;
+$primary_link_hover_color: rgba($primary_text, 0.8);
 
 $link-color: $bromley_green;
 $link-hover-color: $bromley_green;

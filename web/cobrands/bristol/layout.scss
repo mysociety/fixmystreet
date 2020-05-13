@@ -95,10 +95,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   }
 }
 
-a#geolocate_link {
-  color: $b3; // override default `#front-main a`
-}
-
 body.mappage {
   // Add a red border-bottom *inside* the header
   #site-header {

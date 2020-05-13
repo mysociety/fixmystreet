@@ -31,12 +31,7 @@ body.frontpage .content {
 }
 
 a#geolocate_link {
-    color: #2e3191; // override default `#front-main a`
     margin-top: 1em;
-
-    &:hover {
-        text-decoration: none;
-    }
 }
 
 .ce-footer {

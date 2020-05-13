@@ -36,10 +36,6 @@
     }
 }
 
-a#geolocate_link {
-    color: $westminster-blue; // override default `#front-main a`
-}
-
 body.mappage {
     #site-header {
         box-sizing: border-box; // count padding as part of height, so border-bottom is visible
