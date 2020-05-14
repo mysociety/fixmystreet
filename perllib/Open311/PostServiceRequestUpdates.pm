@@ -141,6 +141,28 @@ sub process_update {
     }
 }
 
+sub summary_failures {
+    my $self = shift;
+    my $bodies = $self->fetch_bodies;
+    my $params = $self->construct_query(1);
+    my $u = FixMyStreet::DB->resultset("Comment")
+        ->to_body([ keys %$bodies ])
+        ->search({ "me.send_fail_count" => { '>', 0 } })
+        ->search($params, { join => "problem" });
+
+    my $base_url = FixMyStreet->config('BASE_URL');
+    my $sending_errors;
+    while (my $row = $u->next) {
+        my $url = $base_url . "/report/" . $row->problem_id;
+        $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* $url, update " . $row->id . " failed "
+            . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
+            . ", reason " . $row->send_fail_reason . "\n";
+    }
+    if ($sending_errors) {
+        print '=' x 80 . "\n\n" . "The following updates failed sending:\n$sending_errors";
+    }
+}
+
 sub log {
     my ($self, $comment, $msg) = @_;
     return unless $self->verbose;

@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 
-# send-reports-failure-summary:
-# Prints a summary of report sending failures
+# send-failure-summary:
+# Prints a summary of report/update sending failures
 
-use strict;
 use warnings;
 use v5.14;
 
@@ -15,6 +14,12 @@ BEGIN {
 }
 
 use FixMyStreet::Script::Reports;
+use Open311::PostServiceRequestUpdates;
 
+# report summary
 my $manager = FixMyStreet::Script::Reports->new;
 $manager->end_summary_failures;
+
+# updates summary
+my $updates = Open311::PostServiceRequestUpdates->new;
+$updates->summary_failures;

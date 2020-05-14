@@ -1,12 +1,13 @@
 #!/usr/bin/env perl
 
 use FixMyStreet::TestMech;
+use Test::Output;
 
 my $mech = FixMyStreet::TestMech->new;
 
 use_ok( 'Open311::PostServiceRequestUpdates' );
 
-my $o = Open311::PostServiceRequestUpdates->new( site => 'fixmystreet.com' );
+my $o = Open311::PostServiceRequestUpdates->new;
 
 my $params = {
     send_method => 'Open311',
@@ -130,6 +131,7 @@ subtest 'Oxfordshire gets an ID' => sub {
     $o->send;
     $c2->discard_changes;
     is $c2->send_fail_count, 1, 'Oxfordshire update tried to send, failed';
+    stdout_like { $o->summary_failures } qr/The following updates failed sending/;
   };
 };
 
