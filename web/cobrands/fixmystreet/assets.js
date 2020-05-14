@@ -833,7 +833,19 @@ fixmystreet.assets = {
     named_select_action_not_found: function() {
         var message = this.fixmystreet.asset_item_message;
         message = message.replace('ITEM', this.fixmystreet.asset_item);
-        $('.category_meta_message').html(message);
+        if (this.fixmystreet.asset_group) {
+            var prefix = this.fixmystreet.asset_group.replace(/[^a-z]/gi, '');
+            var id = "category_meta_message_" + prefix;
+            var $p = $('#' + id);
+            $p.html(message);
+        } else {
+            $.each(this.fixmystreet.asset_category, function(i, c) {
+                var prefix = c.replace(/[^a-z]/gi, ''),
+                    id = "category_meta_message_" + prefix,
+                    $p = $('#' + id);
+                $p.html(message);
+            });
+        }
     },
 
     selectedFeature: function() {

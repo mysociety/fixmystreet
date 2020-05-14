@@ -31,4 +31,11 @@ describe('new report form', function() {
     cy.get('.js-hide-if-invalid-category').should('be.visible');
   });
 
+  it('correctly changes the asset select message', function() {
+    cy.get('select:eq(4)').select('Street lighting');
+    cy.get('.category_meta_message').should('contain', 'You can pick a street light from the map');
+    cy.get('select:eq(4)').select('Trees');
+    cy.get('.category_meta_message').should('contain', 'You can pick a tree from the map');
+  });
+
 });
