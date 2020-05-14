@@ -32,4 +32,6 @@ sub open311_contact_meta_override {
     @$meta = grep { $_->{code} ne 'closest_address' } @$meta;
 }
 
+sub map_type { 'OSM' }
+
 1;
