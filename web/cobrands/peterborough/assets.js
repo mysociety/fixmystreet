@@ -137,8 +137,11 @@ fixmystreet.assets.add(light_defaults, {
         }
     },
     asset_group: 'Street lighting',
+    asset_category: 'Lighting enquiry',
     relevant: function(options) {
-        return options.group === 'Street lighting' && options.category !== UNKNOWN_LIGHT_CATEGORY_NAME;
+        return  ( options.group === 'Street lighting' &&
+                  options.category !== UNKNOWN_LIGHT_CATEGORY_NAME
+                ) || options.category === "Lighting enquiry";
     },
     asset_item_message: 'You can pick a <b class="asset-spot">street light</b> from the map &raquo;',
     select_action: true,
