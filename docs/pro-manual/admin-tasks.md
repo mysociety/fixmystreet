@@ -22,7 +22,5 @@ via a role) for you to be able to perform this task.
 
 - If you’re a member of council staff using FixMyStreet Pro, questions should be addressed
 to your Administrator.
-- For technical problems and queries, Administrators may contact the FixMyStreet team on
-[bettercities@mysociety.org](mailto:bettercities@mysociety.org).
-- Is something not quite right, or missing from this documentation? Let us know on
-[bettercities@mysociety.org](mailto:bettercities@mysociety.org).
+- For any technical problems and queries, Administrators may contact the
+  FixMyStreet team by raising a ticket through their helpdesk system.

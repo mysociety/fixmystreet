@@ -35,6 +35,17 @@ Your password must contain 6 or more characters, and must not be one of the most
 used combinations (such as ‘Password’ or ‘123456’). Your council may also have password policies
 which you are expected to abide by.
 
+### Two-factor authentication
+
+Any staff user can choose to set up two-factor authentication on their account.
+To do this, they will need an app on their phone that can generate time-based
+authentication keys, such as Google Authenticator or a password manager. Then.
+they can visit their account page on the site and select ‘Activate two-factor
+authentication’ to receive a QR code to scan with the app.
+
+If you wish your organisation to have mandated two-factor authentication,
+please get in touch.
+
 ### How to log out
 
 Click on ‘Your account’ in the top menu, then click ‘Sign out’.

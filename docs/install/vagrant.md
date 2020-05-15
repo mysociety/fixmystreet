@@ -69,6 +69,13 @@ The username and password to access the admin (at address
 `http://fixmystreet.127.0.0.1.xip.io:3000/admin/`) will have been shown at the
 end of the `vagrant up` output.
 
+If you need to run the server under HTTPS, to e.g. develop the service worker
+or geolocation, then you can run `script/server --listen :3000:ssl
+--ssl-cert=my.crt --ssl-key=my.key --Reload perllib,conf` where my.crt and
+my.key point to a key and self-signed certificate you have generated using
+something like `openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout
+my.key -out my.crt -subj "/CN=My local CA" -days 3650`.
+
 ## Editing a cobrand
 
 If you're working on a cobrand in an external repository, you will want that

@@ -4,9 +4,11 @@
 
 <img alt="When you're logged in as an administrator the 'admin' button is in the navigation menu" src="/assets/img/pro-user-guide/navigating-as-pro-staff.png" class="admin-screenshot" />
 
-If your Administrator has already given you staff permissions, you’ll see additional admin button
-on the top menu when you’re logged in. If not, your Administrator can add these permissions at
-any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
+If your Administrator has already given you staff permissions, you may see
+additional admin button on the top menu when you’re logged in. If not, your
+access may be only in the frontend (e.g. moderation does not require any
+backend admin access), or your Administrator can add these permissions at any
+time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 </div>
 
 <div class="admin-task" markdown="1" id="viewing-reports-your-area">
@@ -18,14 +20,15 @@ any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 If you want to view everything that’s been reported within the council area, here’s the quickest
 way.
 
-Click on ‘all reports’ in the top menu. You’ll see the boundaries of your council area on the map,
-and a list of all reports listed, with the most recent reports at the top, on the left hand panel.
+Click on ‘all reports’ in the top menu. You’ll see the boundaries of your
+council area on the map, and a list of all reports listed, with the most
+recently updated reports at the top, in the left hand panel.
 
 <img alt="Click all reports in the top menu to view all reports in an area" src="/assets/img/pro-user-guide/viewing-reports-your-area.png" class="admin-screenshot" />
 
 Note that staff members can be allocated one or more category (e.g. potholes, streetlights, etc) by
 the Administrator — see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’ for more details. When logged in, these staff
-members will see reports within these categories by default.
+members will only see reports within those categories by default.
 
 </div>
 
@@ -111,25 +114,16 @@ to access the full report admin editing page.
 
 <div class="admin-task" markdown="1" id="search-user">
 
-### Searching for a user
+### User admin
 
 <span class="admin-task__permissions">Permissions required: User must be marked
 as staff; “Edit users' details/search for their reports” must be ticked</span>
 
-Click on ‘admin’ in the top menu bar.
-
-Enter any part of the user’s name or email address in the ‘Search users’ box.
-
-</div>
-
-<div class="admin-task" markdown="1" id="editing-users-information">
-
-### Editing a user’s information
-
-<span class="admin-task__permissions">Permissions required: User must be marked as staff; "Edit users' details/search for their reports" must be ticked.</span>
-
-Click on ‘Edit’ beside any user to view or change their account details.
-Or, click the user’s email address to view a list of all reports and updates made by that user.
+In the admin, enter any part of the user’s name or email address in the ‘Search
+users’ box. You may click on ‘Edit’ beside any user to view or change their
+account details, click the user’s email address to view a list of all reports
+and updates made by that user, or click ‘Timeline’ to see a timeline of that
+user’s activities on the site.
 
 </div>
 
@@ -528,6 +522,17 @@ staff user only deals with reports of a specific type.
 To remove an account, the Administrator-level member of staff should make contact with
 mySociety.
 
+#### Two-factor authentication
+
+Any staff user can choose to set up two-factor authentication on their account.
+To do this, they will need an app on their phone that can generate time-based
+authentication keys, such as Google Authenticator or a password manager. Then.
+they can visit their account page on the site and select ‘Activate two-factor
+authentication’ to receive a QR code to scan with the app.
+
+If you wish your organisation to have mandated two-factor authentication,
+please get in touch.
+
 </div>
 
 <div class="admin-task" markdown="1" id="creating-editing-categories">
@@ -538,9 +543,11 @@ mySociety.
 
 #### Note
 
-If your FixMyStreet Pro installation has been integrated with a CRM system, this
-section does not apply. In such cases, categories are managed from within the CRM, and
-FixMyStreet will be set up to work with these.
+If your FixMyStreet Pro installation has been integrated with a CRM system,
+this section might not fully apply; it is possible categories are managed from
+within the CRM, and FixMyStreet will be set up to work with these. Some
+installations only integrate on some categories, and some sections such as form
+disabling can still be used on top of an integration.
 
 </div>
 
@@ -571,6 +578,15 @@ or what parent category or categories a particular category is in. See below
 for information on <a
 href="#creating-editing-notices">creating/editing extra notices and
 questions</a> for a category.
+
+You may also be able to configure categories to allow anonymous
+reporting if you have this option available. If this is not available then
+contact us to discuss it.
+
+Categories can be made ‘staff only’, where they are only available to logged-in
+members of staff, not members of the public. This could be used for e.g.
+contact centre staff to leave reports in categories that you still want to be
+phoned in.
 
 You can set up as many or as few categories as you like, and each category can have its own email
 address attached to it, so for example, reports about potholes may go to one council email
@@ -770,12 +786,13 @@ above, ‘Creating a template’. Additionally you can delete the template from 
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff</span>
 
-When you first log in to the Admin area, you’ll see some top-level stats at the foot of the page,
-including the number of reports published on the site, the number of updates, the number of
-alerts set up and the number of user questionnaires sent out. This can be useful for a quick
-snapshot of activity.
+When you log in to the Admin area and click Stats in the admin navigation,
+you’ll see some top-level statistics, including the number of reports published
+on the site, the number of updates, and the number of alerts set up. This can
+be useful for a quick snapshot of activity.
 
-For a more detailed breakdown, visit the stats dashboard. This can be accessed by typing
+For a more detailed breakdown, visit the stats dashboard. This can be accessed
+by going to "Summary statistics" from the admin stats page, or by typing
 ‘/dashboard’ on the end of your FixMyStreet url.
 
 From here, you can access statistics on:
@@ -797,6 +814,16 @@ You can also group the results by:
 Android device or via an iOS device).
 
 These statistics can be downloaded as a CSV document, suitable for use in a spreadsheet program
-such as Excel.
+such as Excel or your own reporting tools.
+
+#### Heatmap
+
+Also accessible from the admin stats page is our heatmap. This can provide an
+overview of reporting in your area, filtered by state, category, or ward, for a
+particular date range:
+
+<img alt="Screenshot of Bromley heatmap showing clusters in the north and north west."
+    src="https://user-images.githubusercontent.com/4776/72752804-0eb6b700-3bbb-11ea-915b-5afde5235014.png">
+
 
 </div>
