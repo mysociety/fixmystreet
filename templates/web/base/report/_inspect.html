@@ -34,6 +34,7 @@
             <label for="state">[% loc('State') %]</label>
             [% INCLUDE 'report/inspect/state_groups_select.html' %]
           </p>
+          [% TRY %][% INCLUDE 'report/inspect/_raise_defect.html' %][% CATCH file %][% END %]
           <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
             <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
             <p class="[% "hidden" UNLESS problem.duplicate_of %]"><strong>[% loc('Duplicate of') %]</strong></p>
@@ -69,6 +70,8 @@
         [% IF permissions.report_inspect %]
           [% INCLUDE 'report/inspect/public_update.html' %]
         [% END %]
+
+        [% TRY %][% INCLUDE 'report/inspect/_inspected.html' %][% CATCH file %][% END %]
 
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]" />
