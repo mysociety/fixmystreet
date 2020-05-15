@@ -152,20 +152,23 @@ body.fullwidthpage {
                 }
             }
         }
-        a#geolocate_link {
-            font-family: $body-font;
-            background: url(images/locate-me.png) $left 0 no-repeat;
-            height: 34px;
-            padding-#{$left}: 24px;
-            margin-top: 0.25em;
-            @media ($high-dpi-screen) {
-                background-image: url(images/locate-me@2.png);
-                background-size: 22px 34px;
-            }
-        }
-        a#geolocate_link.loading {
-            background: url("/cobrands/fixmystreet/images/spinner-yellow.gif") 100% 33% no-repeat
-        }
+    }
+}
+
+a#geolocate_link {
+    font-family: $body-font;
+    background: url(images/locate-me.png) $left 0 no-repeat;
+    height: 34px;
+    padding-#{$left}: 24px;
+    margin-top: 0.25em;
+
+    @media ($high-dpi-screen) {
+        background-image: url(images/locate-me@2.png);
+        background-size: 22px 34px;
+    }
+
+    &.loading {
+        background: url("/cobrands/fixmystreet/images/spinner-yellow.gif") 100% 33% no-repeat
     }
 }
 

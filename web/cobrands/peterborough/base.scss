@@ -45,6 +45,7 @@ h1, h2 {
     }
     #postcodeForm {
         background-color: #fff;
+        padding-bottom: 0;
         div input#sub {
             background-color: $link-color;
         }
@@ -52,17 +53,6 @@ h1, h2 {
     label,
     .form-hint {
         color: $primary_b;
-    }
-    a#geolocate_link {
-        background-color: transparent;
-        padding: 0;
-        color: $link-color;
-        &:hover,
-        &:active,
-        &:focus {
-            background-color: transparent;
-            text-decoration: underline
-        }
     }
 }
 

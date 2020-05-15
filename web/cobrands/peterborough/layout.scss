@@ -29,14 +29,6 @@ body.frontpage #front-main {
         font-weight: normal;
         font-size: 1.5em;
     }
-    a#geolocate_link {
-        color: $link-color;
-        &:hover,
-        &:active,
-        &:focus {
-            color: $link-hover-color;
-        }
-    }
 }
 
 #postcodeForm .form-hint {

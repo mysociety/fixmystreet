@@ -82,25 +82,14 @@ body.frontpage {
         }
     }
 
-    a#geolocate_link {
-        background: transparent;
-        display: block;
-        padding: 0;
-        margin-top: 0.5em;
-        font-family: inherit;
-        font-size: 1em;
-        border-radius: 0;
-        color: $westminster_blue;
-
-        &:hover {
-            background: transparent;
-            text-decoration: underline;
-        }
-    }
-
     .form-hint {
         color: inherit;
     }
+}
+
+a#geolocate_link {
+    padding: 0;
+    margin-top: 0.5em;
 }
 
 #front-howto h2,

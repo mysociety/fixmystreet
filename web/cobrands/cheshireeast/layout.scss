@@ -29,11 +29,9 @@ body.frontpage .content {
     margin: 0;
     width: 30em;
 }
-#front-main a#geolocate_link {
-    color: #2e3191;
-    &:hover {
-        text-decoration: none;
-    }
+
+a#geolocate_link {
+    margin-top: 1em;
 }
 
 .ce-footer {

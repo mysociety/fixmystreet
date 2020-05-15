@@ -90,15 +90,12 @@ a,
     background-color: #ecf3ec;
 }
 
-#front-main a#geolocate_link {
-    color: #2e3191;
-    background: transparent;
+a#geolocate_link {
     border-bottom: 1px solid #a6a7da;
-    padding: 0;
-    margin-top: 0.5em;
-    font-size: inherit;
+    padding: 0; // remove padding so that border-bottom looks like an underline
+    margin: 0 0 1em 0;
+
     &:hover {
-        background: transparent;
         border-bottom: 1px solid #2e3191;
         transition: border-color 0.5s;
     }

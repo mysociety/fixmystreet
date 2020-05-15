@@ -90,17 +90,12 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
     background-color: white;
     text-align: left;
     padding-top: 40px;
+    padding-bottom: 0;
 
     #postcodeForm {
-      margin-top: 0;
-
       div {
         margin: 0;
       }
-    }
-
-    a#geolocate_link {
-      color: $b3;
     }
 
     h1 {

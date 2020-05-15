@@ -43,18 +43,6 @@
             margin: 1.5em 0 0.5em 0;
         }
     }
-
-    a#geolocate_link {
-        color: $link-color;
-
-        &:hover {
-            color: $link-hover-color;
-        }
-
-        &:focus {
-            outline: 3px solid $warwickshire-yellow;
-        }
-    }
 }
 
 .site-footer__section {

@@ -21,6 +21,8 @@ $primary: $purple;
 //$primary: #dce6f2; // From bexley.gov.uk/services
 $primary_b: #222;
 $primary_text: $white;
+$primary_link_color: $primary_text;
+$primary_link_hover_color: rgba($primary_text, 0.8);
 
 $base_bg: $white;
 $base_fg: #222;

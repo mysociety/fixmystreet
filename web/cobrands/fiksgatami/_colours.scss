@@ -7,6 +7,8 @@ $bg: #1a4f7f;
 $primary: #99bfe1;
 $primary_b: #000000;
 $primary_text: #222222;
+$primary_link_color: $primary_text;
+$primary_link_hover_color: rgba($primary_text, 0.8);
 
 $base_bg: $bg;
 $base_fg: #fff;

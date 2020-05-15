@@ -3,6 +3,8 @@
 $primary: #FFD000;
 $primary_b: #F3B11E; // For the box around the front page postcode form only
 $primary_text: #222;
+$primary_link_color: $primary_text;
+$primary_link_hover_color: rgba($primary_text, 0.8);
 
 // Tiled main body background
 $base_bg: #272727 url(images/tile.jpg) 0 0 repeat;
