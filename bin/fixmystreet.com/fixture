@@ -103,6 +103,7 @@ if ($opt->test_fixtures) {
         { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council' },
         { area_id => 2566, categories => [ 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree' ], name => 'Peterborough City Council' },
         { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation' ], name => 'TfL' },
+        { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Oxfordshire County Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
@@ -279,6 +280,7 @@ $priority->add_to_contacts($body->contacts->first);
 say "Created users, all with password 'password':";
 my %users;
 my $perms_inspector = ['report_inspect', 'planned_reports'];
+my $perms_inspector_with_instruct = [@$perms_inspector, 'report_instruct'];
 my $perms_cs = [
     'contribute_as_body', 'contribute_as_another_user',
     'moderate', 'view_body_contribute_details',
@@ -290,6 +292,7 @@ my $perms_cs_full = [
 ];
 foreach (
     { name => 'Inspector Gadget', email => 'inspector@example.org', email_verified => 1, body => $body, permissions => $perms_inspector },
+    { name => 'Inspector Instructor', email => 'inspector-instructor@example.org', email_verified => 1, body => $body, permissions => $perms_inspector_with_instruct },
     { name => 'Harriet Helpful', email_verified => 1, email => 'cs@example.org', body => $body, permissions => $perms_cs },
     { name => 'Andrew Agreeable', email_verified => 1, email => 'cs_full@example.org', body => $body, permissions => $perms_cs_full },
     { name => 'Super User', email_verified => 1, email => 'super@example.org', body => $body, permissions => [
