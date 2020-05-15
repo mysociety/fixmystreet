@@ -1,4 +1,16 @@
 fixmystreet.staff_set_up = {
+  action_scheduled_raise_defect: function() {
+    $("#report_inspect_form").find('[name=state]').on('change', function() {
+        if ($(this).val() !== "action scheduled") {
+            $("#js-inspect-action-scheduled").addClass("hidden");
+            $('#raise_defect_yes').prop('required', false);
+        } else {
+            $("#js-inspect-action-scheduled").removeClass("hidden");
+            $('#raise_defect_yes').prop('required', true);
+        }
+    });
+  },
+
   list_item_actions: function() {
     $('#js-reports-list').on('click', ':submit', function(e) {
       e.preventDefault();
@@ -423,6 +435,7 @@ $(fixmystreet).on('display:report', function() {
     fixmystreet.staff_set_up.response_templates();
     if ($("#report_inspect_form").length) {
         fixmystreet.staff_set_up.report_page_inspect();
+        fixmystreet.staff_set_up.action_scheduled_raise_defect();
     }
 });
 

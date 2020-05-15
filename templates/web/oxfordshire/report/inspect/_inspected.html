@@ -1,0 +1,7 @@
+[% IF problem.get_extra_metadata('inspected') %]
+[% IF problem.whensent %]
+  <p>[% loc("<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on.") %]</p>
+[% ELSE %]
+  <p>[% loc("<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on.") %]</p>
+[% END %]
+[% END %]

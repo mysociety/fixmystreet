@@ -1,0 +1,11 @@
+[% IF permissions.report_instruct AND NOT problem.get_extra_metadata('inspected') %]
+<div id="js-inspect-action-scheduled" class="[% "hidden" UNLESS problem.state == 'action scheduled' %]">
+  <p>[% loc('Do you want to automatically raise a defect?') %]</p>
+  <p class="segmented-control segmented-control--radio">
+      <input type="radio" name="raise_defect" id="raise_defect_yes" value="1">
+      <label class="btn" for="raise_defect_yes">[% loc('Yes') %]</label>
+      <input type="radio" name="raise_defect" id="raise_defect_no" value="0">
+      <label class="btn" for="raise_defect_no">[% loc('No') %]</label>
+  </p>
+</div>
+[% END %]
