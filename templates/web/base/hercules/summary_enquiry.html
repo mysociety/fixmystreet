@@ -1,0 +1,76 @@
+[% PROCESS 'hercules/govuk/fields.html' ~%]
+[% INCLUDE header.html %]
+
+[% PROCESS errors %]
+
+<div class="hercules__summary">
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      [% data.category %]
+    </dt>
+    <dd class="govuk-summary-list__value">
+    </dd>
+    <dd class="govuk-summary-list__actions">
+    <form method="post">
+        <input type="hidden" name="saved_data" value="[% saved_data %]">
+        <input type="hidden" name="goto" value="enquiry">
+        <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+    </form>
+    </dd>
+  </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Collection address</dt>
+        <dd class="govuk-summary-list__value">[% property.Description | title %]</dd>
+    </div>
+  [% FOR extra IN data.keys.grep('^extra_') %]
+    [% NEXT UNLESS data.$extra %]
+    [% SET extra_name = extra.replace('extra_', '') %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% extra_name | title %]</dt>
+        <dd class="govuk-summary-list__value">[% data.$extra %]</dd>
+    </div>
+  [% END %]
+  
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      About you
+    </dt>
+    <dd class="govuk-summary-list__value">
+    </dd>
+    <dd class="govuk-summary-list__actions">
+    <form method="post">
+        <input type="hidden" name="saved_data" value="[% saved_data %]">
+        <input type="hidden" name="goto" value="about_you">
+        <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+    </form>
+      </a>
+    </dd>
+  </div>
+
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Your name</dt>
+        <dd class="govuk-summary-list__value">[% data.name %]</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Telephone number</dt>
+        <dd class="govuk-summary-list__value">[% data.phone %]</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Email</dt>
+        <dd class="govuk-summary-list__value">[% data.email %]</dd>
+    </div>
+
+</dl>
+
+<form method="post">
+    <div class="govuk-form-group">
+        <input class="govuk-button" type="submit" value="Submit">
+    </div>
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="process" value="[% process %]">
+    <input type="hidden" name="saved_data" value="[% saved_data %]">
+</form>
+</div>
+
+[% INCLUDE footer.html %]

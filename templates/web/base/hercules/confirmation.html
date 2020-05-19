@@ -1,0 +1,28 @@
+[% INCLUDE header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        Container request sent / Missed collection reported / Enquiry submitted
+    </h1>
+    <div class="govuk-panel__body">
+      <p>Your request has been sent;
+      [% IF data.email %]
+        a copy has been sent to your email address, [% data.email %].
+      [% END %]
+        </p>
+        <p>Containers arrive typically within two weeks, but this may vary due to demand.
+        [% IF report_ids.size > 1 %]
+            Your reference numbers are: <strong>[% report_ids.join(', ') %]</strong>.
+        [% ELSE %]
+            Your reference number is <strong>[% report_ids.join(', ') %]</strong>.
+        [% END %]
+    </div>
+</div>
+
+[% USE Dumper %]
+<pre>
+  [% Dumper.dump(data) %]
+</pre>
+
+[% INCLUDE footer.html %]
+

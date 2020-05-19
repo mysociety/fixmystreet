@@ -1,0 +1,64 @@
+[% USE date(format = '%A, %-d~~~ %B') %]
+[% INCLUDE header.html %]
+
+<h1 class="govuk-heading-xl">Your bin days</h1>
+
+<dl>
+    <dt>Address</dt>
+    <dd>[% property.Description | title %]</dd>
+</dl>
+<div class="hercules__collections">
+  <h2 class="govuk-heading-l">Your collections</h2>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">  
+
+[% FOR unit IN service_data %]
+
+<h3 class="govuk-heading-m">[% unit.service_name %]</h3>
+
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Frequency</dt>
+    <dd class="govuk-summary-list__value">[% unit.schedule %]</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Next collection</dt>
+    <dd class="govuk-summary-list__value">
+      [% IF unit.next %]
+        [% date.format(unit.next) | replace('~~~', unit.next_ordinal) %]
+        [% IF unit.next_changed %]Adjusted[% END %]
+      [% ELSE %]
+        <i>None</i>
+      [% END %]
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last collection</dt>
+    <dd class="govuk-summary-list__value">[% date.format(unit.last) | replace('~~~', unit.last_ordinal) %]</dd>
+  </div>
+</dl>
+
+[% END %]
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <div class="aside">
+        <div class="aside-download">
+          <h3>Download your collection schedule</h3>
+          <ul>
+            <li><a href="#">Add to your calendar (.ics file)</a></li>
+          </ul>
+        </div>
+        <div class="aside-services">
+          <h3>More services</h3>
+          <ul>
+              <li><a href="[% c.uri_for_action('hercules/report', [ uprn ]) %]">Report a missed collection</a></li>
+              <li><a href="[% c.uri_for_action('hercules/request', [ uprn ]) %]">Request a new container</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+[% INCLUDE footer.html %]
+
