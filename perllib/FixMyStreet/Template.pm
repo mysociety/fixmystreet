@@ -155,4 +155,12 @@ sub sanitize {
     return $text;
 }
 
+sub title : Filter {
+    my $text = shift;
+    $text =~ s{(\w[\w']*)}{\u\L$1}g;
+    # Postcode special handling
+    $text =~ s{(\w?\w\d[\d\w]?\s*\d\w\w)}{\U$1}g;
+    return $text;
+}
+
 1;

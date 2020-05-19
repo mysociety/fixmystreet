@@ -1,0 +1,61 @@
+[% INCLUDE header.html %]
+
+<h1 class="govuk-heading-xl">Your bin days</h1>
+
+<dl>
+    <dt>Address</dt>
+    <dd>[% data.refuse.Property | title %]</dd>
+</dl>
+
+<h2 class="govuk-heading-l">Your collections</h2>
+
+<h3 class="govuk-heading-m">Recycling</h3>
+
+<style>
+dasdsda.govuk-summary-list__key { padding-top: 3em; }
+.govuk-summary-list__key--sub { padding-top: 10px; font-weight: normal !important; /* Ugh */ }
+</style>
+
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Frequency</dt>
+    <dd class="govuk-summary-list__value">[% data.recycling.CollectionSchedule %]</dd><!-- CollectionDay -->
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Next collection</dt>
+    <dd class="govuk-summary-list__value">[% data.recycling.NextCollection %]</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last collection</dt>
+    <dd class="govuk-summary-list__value">[% data.recycling.LastCollection %]</dd>
+  </div>
+</dl>
+<!-- Resolution Result CollectionState -->
+
+<h3 class="govuk-heading-m">Refuse</h3>
+
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Frequency</dt>
+    <dd class="govuk-summary-list__value">[% data.refuse.CollectionSchedule %]</dd><!-- CollectionDay -->
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Next collection</dt>
+    <dd class="govuk-summary-list__value">[% data.refuse.NextCollection %]</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last collection</dt>
+    <dd class="govuk-summary-list__value">[% data.refuse.LastCollection %]</dd>
+  </div>
+</dl>
+<!-- Resolution Result CollectionState -->
+
+<div class="sidebar">
+    <ul>
+        <li><a href="[% c.uri_for_action('hercules/report', [ uprn ]) %]">Report a missed collection</a></li>
+        <li><a href="[% c.uri_for_action('hercules/request', [ uprn ]) %]">Request a new container</a></li>
+    </ul>
+</div>
+
+[% INCLUDE footer.html %]
+

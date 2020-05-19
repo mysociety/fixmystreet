@@ -1,0 +1,89 @@
+[% INCLUDE header.html %]
+
+<style>
+.govuk-summary-list__key { padding-top: 3em; }
+.govuk-summary-list__key--sub { padding-top: 10px; font-weight: normal !important; /* Ugh */ }
+</style>
+
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Missed collection
+    </dt>
+    <dd class="govuk-summary-list__value">
+    </dd>
+    <dd class="govuk-summary-list__actions">
+    <form method="post">
+        <input type="hidden" name="saved_data" value="[% saved_data %]">
+        <input type="hidden" name="goto" value="report">
+        <input type="submit" class="govuk-button govuk-button--secondary" value="Change answers">
+    </form>
+    </dd>
+  </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Collection address</dt>
+        <dd class="govuk-summary-list__value">[% uprn %]</dd>
+    </div>
+  [% IF data.refuse123 %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Refuse</dt>
+        <dd class="govuk-summary-list__value">[% data.date_refuse %]</dd>
+    </div>
+  [% END %]
+  [% IF data.recycling123 %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Mixed Recycling</dt>
+        <dd class="govuk-summary-list__value">[% data.date_recycling %]</dd>
+    </div>
+  [% END %]
+  
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      About you
+    </dt>
+    <dd class="govuk-summary-list__value">
+    </dd>
+    <dd class="govuk-summary-list__actions">
+    <form method="post">
+        <input type="hidden" name="saved_data" value="[% saved_data %]">
+        <input type="hidden" name="goto" value="about_you">
+        <input type="submit" class="govuk-button govuk-button--secondary" value="Change answers">
+    </form>
+      </a>
+    </dd>
+  </div>
+
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Your name</dt>
+        <dd class="govuk-summary-list__value">[% data.name %]</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Telephone number</dt>
+        <dd class="govuk-summary-list__value">[% data.phone %]</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Email</dt>
+        <dd class="govuk-summary-list__value">[% data.email %]</dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Delivery address</dt>
+      [% IF data.address_same %]
+        <dd class="govuk-summary-list__value">Same as collection address</dd>
+      [% ELSE %]
+        <dd class="govuk-summary-list__value">[% data.address %]</dd>
+      [% END %]
+    </div>
+  
+</dl>
+
+<form method="post">
+    <div class="govuk-form-group">
+        <input class="govuk-button" type="submit" value="Submit">
+    </div>
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="process" value="[% process %]">
+    <input type="hidden" name="saved_data" value="[% saved_data %]">
+</form>
+
+[% INCLUDE footer.html %]

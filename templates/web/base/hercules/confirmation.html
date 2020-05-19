@@ -1,0 +1,20 @@
+[% INCLUDE header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        Container request sent
+    </h1>
+    [% USE Dumper %]
+    [% Dumper.dump(data) %]
+    <div class="govuk-panel__body">
+        Your request has been sent;
+      [% IF data.email %]
+        a copy has been sent to your email address [% data.email %].
+      [% END %]
+        <p>Containers arrive typically within two weeks, but this may vary due to demand.
+        Your reference number is <strong>[% report.id %]</strong>.
+    </div>
+</div>
+
+[% INCLUDE footer.html %]
+
