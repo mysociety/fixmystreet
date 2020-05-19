@@ -1,0 +1,37 @@
+[% SET bodyclass = 'hercules' %]
+[% INCLUDE header.html %]
+
+<style>
+    label, legend { margin-top: 0; font-weight: normal !important; } /* from base/h5bp */
+</style>
+
+[% PROCESS 'hercules/govuk/fields.html' %]
+[% PROCESS title %]
+[% SET service_id = c.req.params.service_id %]
+
+<dl class="hercules__address">
+    <dt class="hercules__address__title">Address</dt>
+    <dd class="hercules__address__property">[% property.address | title %]</dd>
+</dl>
+
+<dl class="hercules__address">
+    <dt class="hercules__address__title">Service</dt>
+    <dd class="hercules__address__property">[% services.$service_id.service_name %]</dd>
+</dl>
+
+<form method="get" action="[% c.uri_for_action('hercules/enquiry', [ uprn ]) %]">
+    <div class="govuk-form-group">
+    [% PROCESS radio field = {
+      id = 'category',
+      html_name = 'category',
+      label = 'Category',
+      options = field_options
+    }
+    %]
+    </div>
+    <div class="govuk-form-group"><input type="submit" value="Continue" class="govuk-button"></div>
+
+  <input type="hidden" name="service_id" value="[% service_id %]">
+</form>
+
+[% INCLUDE footer.html %]

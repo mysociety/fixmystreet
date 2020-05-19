@@ -1111,7 +1111,7 @@ sub process_report : Private {
 
     # save the cobrand and language related information
     $report->cobrand( $c->cobrand->moniker );
-    $report->cobrand_data( '' );
+    $report->cobrand_data( $c->stash->{cobrand_data} || '' );
     $report->lang( $c->stash->{lang_code} );
 
     return 1;
