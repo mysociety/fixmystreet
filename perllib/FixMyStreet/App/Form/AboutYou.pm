@@ -36,6 +36,7 @@ has_field address_same => (
 has_field address => (
     type => 'TextArea',
     label => 'Address for delivery',
+    required_when => { address_same => 0 },
 );
 
 has_field submit => (
