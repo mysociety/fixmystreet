@@ -1,12 +1,5 @@
 fixmystreet.maps.tile_base = '//{S}tilma.mysociety.org/oml';
 
-fixmystreet.maps.config = (function(original) {
-    return function(){
-        original();
-        fixmystreet.map_type = OpenLayers.Layer.BingUK;
-    };
-})(fixmystreet.maps.config);
-
 OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
     uk_bounds: [
         new OpenLayers.Bounds(-6.6, 49.8, 1.102680, 51),
@@ -78,3 +71,8 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
 
     CLASS_NAME: "OpenLayers.Layer.BingUK"
 });
+
+fixmystreet.layer_options = [
+  { map_type: OpenLayers.Layer.BingUK },
+  { map_type: OpenLayers.Layer.BingAerial }
+];
