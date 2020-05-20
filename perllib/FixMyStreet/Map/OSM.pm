@@ -77,11 +77,15 @@ sub generate_map_data {
         $zoomOffset = 0;
     }
 
-    # Adjust zoom level dependent upon population density
-    my $dist = $data->{distance}
-        || FixMyStreet::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude} );
-    my $default_zoom = $data->{cobrand}->default_map_zoom() || ($numZoomLevels - 4);
-    $default_zoom = $numZoomLevels - 3 if $dist < 10;
+    # Adjust zoom level dependent upon population density if cobrand hasn't
+    # specified a default zoom.
+    my $cobrand_default_zoom = $data->{cobrand}->default_map_zoom();
+    my $default_zoom = $cobrand_default_zoom || ($numZoomLevels - 4);
+    if (undef $cobrand_default_zoom) {
+        my $dist = $data->{distance}
+            || FixMyStreet::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude} );
+        $default_zoom = $numZoomLevels - 3 if $dist < 10;
+    }
 
     my $zoom = $data->{zoom} || $default_zoom;
     $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
