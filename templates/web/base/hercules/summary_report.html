@@ -22,7 +22,7 @@
   </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Collection address</dt>
-        <dd class="govuk-summary-list__value">[% uprn %]</dd>
+        <dd class="govuk-summary-list__value">[% property.Description | title %]</dd>
     </div>
   [% IF data.refuse123 %]
     <div class="govuk-summary-list__row">
@@ -66,15 +66,6 @@
         <dd class="govuk-summary-list__value">[% data.email %]</dd>
     </div>
 
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Delivery address</dt>
-      [% IF data.address_same %]
-        <dd class="govuk-summary-list__value">Same as collection address</dd>
-      [% ELSE %]
-        <dd class="govuk-summary-list__value">[% data.address %]</dd>
-      [% END %]
-    </div>
-  
 </dl>
 
 <form method="post">
