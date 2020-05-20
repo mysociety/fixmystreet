@@ -414,14 +414,17 @@ sub bin_services_for_address {
         my $schedules = $servicetask->{ServiceTaskSchedules}{ServiceTaskSchedule};
         $schedules = [ $schedules ] unless ref $schedules eq 'ARRAY';
 
-        my $min_next; my $max_last;
+        my ($min_next, $max_last, $next_changed);
         foreach my $schedule (@$schedules) {
             my $next = $schedule->{NextInstance}; # CurrentScheduledData->DateTime, Ref->Value->anyType, OriginalScheduledDate->DateTime
-            my $d = $next->{OriginalScheduledDate}{DateTime};
-            $min_next = $d if $d && (!$min_next || $d lt $min_next);
+            my $d = $next->{CurrentScheduledDate}{DateTime};
+            if ($d && (!$min_next || $d lt $min_next)) {
+                $min_next = $d;
+                $next_changed = $next->{CurrentScheduledDate}{DateTime} ne $next->{OriginalScheduledDate}{DateTime};
+            }
 
             my $last = $schedule->{LastInstance}; # ditto
-            $d = $last->{OriginalScheduledDate}{DateTime};
+            $d = $last->{CurrentScheduledDate}{DateTime};
             $max_last = $d if $d && (!$max_last || $d gt $max_last);
 
             #$schedule->{ScheduleDescription};
@@ -440,6 +443,7 @@ sub bin_services_for_address {
             schedule => $servicetask->{ScheduleDescription},
             last => $max_last,
             next => $min_next,
+            next_changed => $next_changed,
         };
 
         push @out, $row;
