@@ -377,10 +377,12 @@ sub bin_addresses_for_postcode {
     $echo = Integrations::Echo->new(%$echo);
     my $result = $echo->FindPoints($pc);
 
+    my $points = $result->{PointInfo};
+    $points = [ $points ] unless ref $points eq 'ARRAY';
     my $data = [ map { {
         value => $_->{SharedRef}{Value}{anyType},
         label => FixMyStreet::Template::title($_->{Description}),
-    } } @{$result->{PointInfo}} ];
+    } } @$points ];
     natkeysort_inplace { $_->{label} } @$data;
     return $data;
 }
@@ -416,19 +418,19 @@ sub bin_services_for_address {
         foreach my $schedule (@$schedules) {
             my $next = $schedule->{NextInstance}; # CurrentScheduledData->DateTime, Ref->Value->anyType, OriginalScheduledDate->DateTime
             my $d = $next->{OriginalScheduledDate}{DateTime};
-            $min_next = $d if !$min_next || $d lt $min_next;
+            $min_next = $d if $d && (!$min_next || $d lt $min_next);
 
             my $last = $schedule->{LastInstance}; # ditto
             $d = $last->{OriginalScheduledDate}{DateTime};
-            $max_last = $d if !$max_last || $d gt $max_last;
+            $max_last = $d if $d && (!$max_last || $d gt $max_last);
 
             #$schedule->{ScheduleDescription};
             #$schedule->{ScheduleId};
             #$schedule->{Id};
             #$schedule->{Allocation}; # Type RoundName RoundId RoundGroupName/Id RoundLegId RoundLegName
         }
-        $min_next = DateTime::Format::W3CDTF->parse_datetime($min_next)->set_time_zone(FixMyStreet->local_time_zone);
-        $max_last = DateTime::Format::W3CDTF->parse_datetime($max_last)->set_time_zone(FixMyStreet->local_time_zone);
+        $min_next = DateTime::Format::W3CDTF->parse_datetime($min_next)->set_time_zone(FixMyStreet->local_time_zone) if $min_next;
+        $max_last = DateTime::Format::W3CDTF->parse_datetime($max_last)->set_time_zone(FixMyStreet->local_time_zone) if $max_last;
 
         my $row = {
             id => $_->{Id},

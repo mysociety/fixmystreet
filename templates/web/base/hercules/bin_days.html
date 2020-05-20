@@ -26,7 +26,7 @@ ignore.govuk-summary-list__key { padding-top: 3em; }
   </div>
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Next collection</dt>
-    <dd class="govuk-summary-list__value">[% date.format(unit.next) %]</dd>
+    <dd class="govuk-summary-list__value">[% IF unit.next %][% date.format(unit.next) %][% ELSE %]<i>None</i>[% END %]</dd>
   </div>
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Last collection</dt>
