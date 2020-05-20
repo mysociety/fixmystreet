@@ -66,11 +66,14 @@ sub uprn : Chained('/') : PathPart('hercules/uprn') : CaptureArgs(1) {
         $c->detach;
     }
 
-    $c->stash->{data} = FixMyStreet::Cobrand::Bromley::bin_services_for_address($uprn);
+    $c->stash->{property} = FixMyStreet::Cobrand::Bromley->look_up_property($uprn);
+	# Id, PointType, PointSegmentId, PointAddressType, Description, StreetId, Coordinates->GeoPoint
     $c->stash->{uprn} = $uprn;
 }
 
 sub bin_days : Chained('uprn') : PathPart('') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{data} = FixMyStreet::Cobrand::Bromley->bin_services_for_address($c->stash->{uprn});
 }
 
 sub request : Chained('uprn') : Args(0) {

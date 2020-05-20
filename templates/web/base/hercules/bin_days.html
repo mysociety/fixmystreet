@@ -1,54 +1,40 @@
+[% USE date(format = '%-d/%-m/%Y') %]
 [% INCLUDE header.html %]
 
 <h1 class="govuk-heading-xl">Your bin days</h1>
 
 <dl>
     <dt>Address</dt>
-    <dd>[% data.refuse.Property | title %]</dd>
+    <dd>[% property.Description | title %]</dd>
 </dl>
 
 <h2 class="govuk-heading-l">Your collections</h2>
 
-<h3 class="govuk-heading-m">Recycling</h3>
-
 <style>
-dasdsda.govuk-summary-list__key { padding-top: 3em; }
+ignore.govuk-summary-list__key { padding-top: 3em; }
 .govuk-summary-list__key--sub { padding-top: 10px; font-weight: normal !important; /* Ugh */ }
 </style>
 
-<dl class="govuk-summary-list">
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Frequency</dt>
-    <dd class="govuk-summary-list__value">[% data.recycling.CollectionSchedule %]</dd><!-- CollectionDay -->
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Next collection</dt>
-    <dd class="govuk-summary-list__value">[% data.recycling.NextCollection %]</dd>
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Last collection</dt>
-    <dd class="govuk-summary-list__value">[% data.recycling.LastCollection %]</dd>
-  </div>
-</dl>
-<!-- Resolution Result CollectionState -->
+[% FOR unit IN data %]
 
-<h3 class="govuk-heading-m">Refuse</h3>
+<h3 class="govuk-heading-m">[% unit.service_name %]</h3>
 
 <dl class="govuk-summary-list">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Frequency</dt>
-    <dd class="govuk-summary-list__value">[% data.refuse.CollectionSchedule %]</dd><!-- CollectionDay -->
+    <dd class="govuk-summary-list__value">[% unit.schedule %]</dd>
   </div>
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Next collection</dt>
-    <dd class="govuk-summary-list__value">[% data.refuse.NextCollection %]</dd>
+    <dd class="govuk-summary-list__value">[% date.format(unit.next) %]</dd>
   </div>
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Last collection</dt>
-    <dd class="govuk-summary-list__value">[% data.refuse.LastCollection %]</dd>
+    <dd class="govuk-summary-list__value">[% date.format(unit.last) %]</dd>
   </div>
 </dl>
-<!-- Resolution Result CollectionState -->
+
+[% END %]
 
 <div class="sidebar">
     <ul>

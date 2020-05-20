@@ -15,7 +15,7 @@ has_field postcode => (
     validate_method => sub {
         my $self = shift;
         return if $self->has_errors; # Called even if already failed
-        my $data = FixMyStreet::Cobrand::Bromley::bin_addresses_for_postcode($self->value);
+        my $data = FixMyStreet::Cobrand::Bromley->bin_addresses_for_postcode($self->value);
         if (!@$data) {
             $self->add_error('Sorry, we did not find any results for that postcode');
         }
