@@ -398,6 +398,12 @@ sub look_up_property {
 
 }
 
+my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
+sub ordinal {
+    my $n = shift;
+	$irregulars{$n % 100} || $irregulars{$n % 10} || 'th';
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $uprn = shift;
@@ -414,7 +420,7 @@ sub bin_services_for_address {
         my $schedules = $servicetask->{ServiceTaskSchedules}{ServiceTaskSchedule};
         $schedules = [ $schedules ] unless ref $schedules eq 'ARRAY';
 
-        my ($min_next, $max_last, $next_changed);
+        my ($min_next, $max_last, $next_changed, $next_ordinal, $last_ordinal);
         foreach my $schedule (@$schedules) {
             my $next = $schedule->{NextInstance}; # CurrentScheduledData->DateTime, Ref->Value->anyType, OriginalScheduledDate->DateTime
             my $d = $next->{CurrentScheduledDate}{DateTime};
@@ -426,14 +432,22 @@ sub bin_services_for_address {
             my $last = $schedule->{LastInstance}; # ditto
             $d = $last->{CurrentScheduledDate}{DateTime};
             $max_last = $d if $d && (!$max_last || $d gt $max_last);
+            # XXX Have to call getTask for each last instance to get its CompletedDate?
 
             #$schedule->{ScheduleDescription};
             #$schedule->{ScheduleId};
             #$schedule->{Id};
             #$schedule->{Allocation}; # Type RoundName RoundId RoundGroupName/Id RoundLegId RoundLegName
         }
-        $min_next = DateTime::Format::W3CDTF->parse_datetime($min_next)->set_time_zone(FixMyStreet->local_time_zone) if $min_next;
-        $max_last = DateTime::Format::W3CDTF->parse_datetime($max_last)->set_time_zone(FixMyStreet->local_time_zone) if $max_last;
+
+        if ($min_next) {
+            $min_next = DateTime::Format::W3CDTF->parse_datetime($min_next)->set_time_zone(FixMyStreet->local_time_zone);
+            $next_ordinal = ordinal($min_next->day);
+        }
+        if ($max_last) {
+            $max_last = DateTime::Format::W3CDTF->parse_datetime($max_last)->set_time_zone(FixMyStreet->local_time_zone);
+            $last_ordinal = ordinal($max_last->day);
+        }
 
         my $row = {
             id => $_->{Id},
@@ -442,7 +456,9 @@ sub bin_services_for_address {
             #$servicetask->{TaskTypeName} TaskTypeId Id
             schedule => $servicetask->{ScheduleDescription},
             last => $max_last,
+            last_ordinal => $last_ordinal,
             next => $min_next,
+            next_ordinal => $next_ordinal,
             next_changed => $next_changed,
         };
 

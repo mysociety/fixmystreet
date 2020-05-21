@@ -1,4 +1,4 @@
-[% USE date(format = '%-d/%-m/%Y') %]
+[% USE date(format = '%A, %-d~~~ %B') %]
 [% INCLUDE header.html %]
 
 <h1 class="govuk-heading-xl">Your bin days</h1>
@@ -28,7 +28,7 @@ ignore.govuk-summary-list__key { padding-top: 3em; }
     <dt class="govuk-summary-list__key">Next collection</dt>
     <dd class="govuk-summary-list__value">
       [% IF unit.next %]
-        [% date.format(unit.next) %]
+        [% date.format(unit.next) | replace('~~~', unit.next_ordinal) %]
         [% IF unit.next_changed %]Adjusted[% END %]
       [% ELSE %]
         <i>None</i>
@@ -37,7 +37,7 @@ ignore.govuk-summary-list__key { padding-top: 3em; }
   </div>
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Last collection</dt>
-    <dd class="govuk-summary-list__value">[% date.format(unit.last) %]</dd>
+    <dd class="govuk-summary-list__value">[% date.format(unit.last) | replace('~~~', unit.last_ordinal) %]</dd>
   </div>
 </dl>
 
