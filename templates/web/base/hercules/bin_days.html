@@ -41,13 +41,14 @@ ignore.govuk-summary-list__key { padding-top: 3em; }
   </div>
 </dl>
 
-[% END %]
-
-<div class="sidebar">
-    <ul>
-        <li><a href="[% c.uri_for_action('hercules/report', [ uprn ]) %]">Report a missed collection</a></li>
-        <li><a href="[% c.uri_for_action('hercules/request', [ uprn ]) %]">Request a new container</a></li>
-    </ul>
+  <div class="govuk-grid-column-one-third">
+    <div class="sidebar">
+        <ul>
+            <li><a href="[% c.uri_for_action('hercules/report', [ uprn ]) %]">Report a missed collection</a></li>
+            <li><a href="[% c.uri_for_action('hercules/request', [ uprn ]) %]">Request a new container</a></li>
+        </ul>
+    </div>
+  </div>
 </div>
 
 [% INCLUDE footer.html %]
