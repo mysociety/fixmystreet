@@ -411,6 +411,7 @@ sub bin_services_for_address {
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
     my $result = $echo->GetServiceUnitsForObject($uprn);
+    return [] unless $result;
 
     my @out;
     foreach (@{$result->{ServiceUnit}}) {
