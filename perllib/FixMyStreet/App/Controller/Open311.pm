@@ -206,6 +206,7 @@ sub output_requests : Private {
 
     my $attr = {
         order_by => { -desc => 'confirmed' },
+        cursor_page_size => 100,
         rows => $limit
     };
 
