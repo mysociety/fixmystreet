@@ -52,7 +52,7 @@ sub for_new_reports {
         $params->{$rs->me('state')} = [ 'unconfirmed', 'confirmed' ];
     }
 
-    $rs->search($params, { prefetch => 'body' });
+    $rs->search($params, { prefetch => { body => 'body_areas' } });
 }
 
 sub translated {

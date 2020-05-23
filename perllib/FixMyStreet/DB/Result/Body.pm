@@ -179,11 +179,15 @@ __PACKAGE__->might_have(
 
 around name => \&translate_around;
 
-sub areas {
-    my $self = shift;
-    my %ids = map { $_->area_id => 1 } $self->body_areas->all;
-    return \%ids;
-}
+has areas => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my %ids = map { $_->area_id => 1 } $self->body_areas->all;
+        return \%ids;
+    },
+);
 
 sub first_area_children {
     my ( $self ) = @_;
