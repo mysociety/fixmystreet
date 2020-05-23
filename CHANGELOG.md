@@ -3,6 +3,8 @@
 * Unreleased
     - New features:
         - Add Open Location Codes support to search box. #3047
+    - Front end improvements:
+        - Add lazy image loading on list items.
     - Changes:
         - Mark user as active when sent an email alert.
     - Bugfixes:
