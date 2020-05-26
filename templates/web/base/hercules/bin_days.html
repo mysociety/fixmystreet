@@ -7,6 +7,10 @@
     <dt>Address</dt>
     <dd>[% property.Description | title %]</dd>
 </dl>
+<div class="hercules__collections">
+  <h2 class="govuk-heading-l">Your collections</h2>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
 <h2 class="govuk-heading-l">Your collections</h2>
 
@@ -41,15 +45,25 @@ ignore.govuk-summary-list__key { padding-top: 3em; }
   </div>
 </dl>
 
-  <div class="govuk-grid-column-one-third">
-    <div class="sidebar">
-        <ul>
-            <li><a href="[% c.uri_for_action('hercules/report', [ uprn ]) %]">Report a missed collection</a></li>
-            <li><a href="[% c.uri_for_action('hercules/request', [ uprn ]) %]">Request a new container</a></li>
-        </ul>
+    <div class="govuk-grid-column-one-third">
+      <div class="aside">
+        <div class="aside-download">
+          <h3>Download your collection schedule</h3>
+          <ul>
+            <li><a href="#">.pdf file</a></li>
+            <li><a href="#">Add to your calendar (.ics file)</a></li>
+          </ul>
+        </div>
+        <div class="aside-services">
+          <h3>More services</h3>
+          <ul>
+              <li><a href="[% c.uri_for_action('hercules/report', [ uprn ]) %]">Report a missed collection</a></li>
+              <li><a href="[% c.uri_for_action('hercules/request', [ uprn ]) %]">Request a new container</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-
 [% INCLUDE footer.html %]
 

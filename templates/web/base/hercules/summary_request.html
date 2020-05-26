@@ -1,10 +1,6 @@
 [% INCLUDE header.html %]
 
-<style>
-.govuk-summary-list__key { padding-top: 3em; }
-.govuk-summary-list__key--sub { padding-top: 10px; font-weight: normal !important; /* Ugh */ }
-</style>
-
+<div class="hercules__summary"></div>
 <dl class="govuk-summary-list">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
@@ -16,7 +12,7 @@
     <form method="post">
         <input type="hidden" name="saved_data" value="[% saved_data %]">
         <input type="hidden" name="goto" value="request">
-        <input type="submit" class="govuk-button govuk-button--secondary" value="Change answers">
+        <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
     </form>
     </dd>
   </div>
@@ -53,7 +49,7 @@
     <form method="post">
         <input type="hidden" name="saved_data" value="[% saved_data %]">
         <input type="hidden" name="goto" value="about_you">
-        <input type="submit" class="govuk-button govuk-button--secondary" value="Change answers">
+        <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
     </form>
       </a>
     </dd>
@@ -91,5 +87,6 @@
     <input type="hidden" name="process" value="[% process %]">
     <input type="hidden" name="saved_data" value="[% saved_data %]">
 </form>
+</div>
 
 [% INCLUDE footer.html %]

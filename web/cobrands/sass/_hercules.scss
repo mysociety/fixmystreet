@@ -1,0 +1,21 @@
+.hercules__collections,
+.hercules__summary {
+
+  .govuk-summary-list {
+    font-size: 1em;
+  }
+  
+  .govuk-summary-list__key--sub { 
+    padding-top: 10px; 
+    font-weight: normal !important; /* Ugh */ 
+  }
+}
+
+.hercules__summary {
+  .govuk-button--secondary {
+    font-size: 1em;
+  }
+  .govuk-summary-list__key {
+    vertical-align: middle;
+  }
+}
