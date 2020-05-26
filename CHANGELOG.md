@@ -9,6 +9,7 @@
     - Development improvements:
         - `#geolocate_link` is now easier to re-style. #3006
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007
+        - Add option to show front end testing code coverage. #3036
 
 * v3.0.1 (6th May 2020)
     - New features:

@@ -7,7 +7,7 @@ use lib '.'; # For the mock MapIt module
 use Getopt::Long ':config' => qw(pass_through auto_help);
 
 my ($run_server, $run_cypress, $vagrant, $wsl, $node, $config_file);
-my ($cobrand, $coords, $area_id, $name, $mapit_url);
+my ($cobrand, $coords, $area_id, $name, $mapit_url, $coverage);
 
 BEGIN {
     $config_file = 'conf/general.yml-example';
@@ -19,6 +19,7 @@ BEGIN {
     $node = 'C:\Program Files\nodejs\node.exe';
 
     GetOptions(
+        'coverage' => \$coverage,
         'config=s' => \$config_file,
         'server' => \$run_server,
         'cypress' => \$run_cypress,
@@ -35,6 +36,11 @@ BEGIN {
 
     if ($vagrant && $wsl) {
         print 'You cannot use both --vagrant and --wsl';
+        exit 1;
+    }
+
+    if ($coverage && (system('git', 'diff', '--quiet', 'web') >> 8)) {
+        print 'Do not run coverage with changes in web, they will be lost';
         exit 1;
     }
 
@@ -75,6 +81,35 @@ if ($vagrant) {
     exit;
 }
 
+BEGIN {
+    # setenv.pl above unloads File:: modules but we need them
+    use File::Path qw(remove_tree);
+}
+
+sub coverage_setup {
+    # Add instrumentation to all JS files under web/
+    if (system('nyc', 'instrument', '--exclude', 'vendor', '--compact', 'false', 'web', 'webO') >> 8) {
+        print 'Could not instrument JS files - are @cypress/code-coverage and nyc installed?';
+        exit 1;
+    }
+
+    # Move the instrumented files on top of the originals
+    while (glob("webO/js/*.js webO/cobrands/*/*.js")) {
+        (my $new = $_) =~ s/webO/web/;
+        rename $_, $new;
+    }
+
+    remove_tree('webO', { safe => 1 }); # Remove anything else left
+}
+
+sub coverage_teardown {
+    remove_tree('.nyc_output', '.cypress/coverage', { safe => 1 }); # Remove old data and incorrect report
+    rename '.cypress/.nyc_output', './.nyc_output'; # Move to top level so nyc can find JS files
+    system('git', 'checkout', 'web'); # Remove instrumented JS files
+    system('nyc', 'report', '--reporter=lcov'); # Generate correct report
+    print "The JS coverage report is at coverage/lcov-report/index.html\n";
+}
+
 sub run {
     my $cmd = shift @ARGV;
     die "Must specify a cypress command\n" unless $cmd || !$run_cypress;
@@ -113,8 +148,12 @@ sub run {
         if ($wsl) {
             @cypress = ('cmd.exe', '/c', $node, $wsl);
         }
-        my $exit = system(@cypress, $cmd, '--config', 'pluginsFile=false,supportFile=false', '--project', '.cypress', @ARGV);
+        my @config = $coverage ? () : ('--config', 'pluginsFile=false,supportFile=false');
+        my $exit = system(@cypress, $cmd, @config, '--project', '.cypress', @ARGV);
         kill 'TERM', $pid if $pid;
+
+        coverage_teardown() if $coverage;
+
         exit $exit >> 8;
     } else {
         # Child, run the server on port 3001
@@ -128,6 +167,7 @@ sub run {
     }
 }
 
+coverage_setup() if $coverage;
 run();
 
 

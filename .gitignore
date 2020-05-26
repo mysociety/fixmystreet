@@ -40,6 +40,10 @@ _Inline/
 *.pyc
 docker-compose.override.yml
 
+# JS coverage
+/.nyc_output
+/coverage
+
 # International
 /fixmystreet-international
 *[Mm]ake[Mm]y[Ii]sland*
