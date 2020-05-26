@@ -319,7 +319,7 @@ sub constraint_exists {
 # Returns true if a check constraint contains a certain string
 sub constraint_contains {
     my ( $constraint, $check ) = @_;
-    my ($consrc) = $db->dbh->selectrow_array('select consrc from pg_constraint where conname = ?', {}, $constraint);
+    my ($consrc) = $db->dbh->selectrow_array('select pg_get_expr(conbin, conrelid) from pg_constraint where conname = ?', {}, $constraint);
     return unless $consrc;
     return $consrc =~ /$check/;
 }
