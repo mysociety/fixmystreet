@@ -6,8 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use Encode;
-use List::MoreUtils qw(uniq);
-use List::Util 'first';
+use List::Util qw(first uniq);
 use HTML::Entities;
 use Path::Class;
 use Utils;
@@ -759,14 +758,20 @@ sub setup_categories_and_bodies : Private {
             if !$c->stash->{unresponsive}{ALL} &&
                 ($contact->email =~ /^REFUSED$/i || $body_send_method eq 'Refused');
 
-        push @category_options, $contact unless $seen{$contact->category};
-        $seen{$contact->category} = $contact;
+        if (my $cat = $seen{$contact->category}) {
+            # Make sure the category is listed in all its groups, not just the first set
+            my @groups = uniq @{$cat->groups}, @{$contact->groups};
+            $cat->set_extra_metadata(group => \@groups);
+        } else {
+            push @category_options, $contact;
+            $seen{$contact->category} = $contact;
+        }
     }
 
     if (@category_options) {
         # If there's an Other category present, put it at the bottom
         @category_options = (
-            { category => _('-- Pick a category --'), category_display => _('-- Pick a category --'), group => '' },
+            { category => _('-- Pick a category --'), category_display => _('-- Pick a category --'), group => [''] },
             grep { $_->category ne _('Other') } @category_options );
         push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }

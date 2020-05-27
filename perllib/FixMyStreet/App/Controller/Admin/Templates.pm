@@ -69,7 +69,7 @@ sub edit : Path : Args(2) {
         category => $_->category_display,
         active => $active_contacts{$_->id},
         email => $_->email,
-        group => $_->get_extra_metadata('group') // '',
+        group => $_->groups,
     } } @live_contacts;
     $c->stash->{contacts} = \@all_contacts;
     $c->forward('/report/stash_category_groups', [ \@all_contacts, 1 ]) if $c->cobrand->enable_category_groups;

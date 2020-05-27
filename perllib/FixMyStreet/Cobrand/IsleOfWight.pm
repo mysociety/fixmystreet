@@ -176,10 +176,7 @@ sub expand_triage_cat_list {
 
     my %group_to_category;
     while ( my $cat = $all_cats->next ) {
-        next unless $cat->get_extra_metadata('group');
-        my $groups = $cat->get_extra_metadata('group');
-        $groups = ref $groups eq 'ARRAY' ? $groups : [ $groups ];
-        for my $group ( @$groups ) {
+        for my $group ( @{$cat->groups} ) {
             $group_to_category{$group} //= [];
             push @{ $group_to_category{$group} }, $cat->category;
         }

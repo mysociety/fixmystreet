@@ -703,9 +703,8 @@ sub stash_category_groups : Private {
 
     my %category_groups = ();
     for my $category (@$contacts) {
-        my $group = $category->{group} // $category->get_extra_metadata('group') // [''];
-        # this could be an array ref or a string
-        my @groups = ref $group eq 'ARRAY' ? @$group : ($group);
+        my $group = $category->{group} // $category->groups;
+        my @groups = @$group;
         if (scalar @groups > 1 && $combine_multiple) {
             @groups = sort @groups;
             $category->{group} = \@groups;

@@ -401,7 +401,7 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
             id => $_->id,
             category => $_->category,
             active => $active_contacts{$_->id},
-            group => $_->get_extra_metadata('group') // '',
+            group => $_->groups,
         } } @live_contacts;
         $c->stash->{contacts} = \@all_contacts;
         $c->forward('/report/stash_category_groups', [ \@all_contacts, 1 ]) if $c->cobrand->enable_category_groups;

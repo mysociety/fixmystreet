@@ -198,7 +198,15 @@ sub setup_page_data : Private {
         order_by => [ "$table.category" ],
     } )->all;
     $c->stash->{filter_categories} = \@categories;
-    $c->forward('/report/stash_category_groups', [ \@categories ]) if $c->cobrand->enable_category_groups;
+
+    if ($c->cobrand->enable_category_groups) {
+        my @contacts = map { {
+            category => $_->category,
+            category_display => $_->category_display,
+            group => [''],
+        } } @categories;
+        $c->forward('/report/stash_category_groups', [ \@contacts ]);
+    }
 
     my $pins = $c->stash->{pins};
     FixMyStreet::Map::display_map(

@@ -7,7 +7,6 @@ BEGIN { extends 'Catalyst::Controller'; }
 use JSON::MaybeXS;
 use DateTime;
 use DateTime::Format::ISO8601;
-use List::MoreUtils 'uniq';
 use FixMyStreet::DateRange;
 
 =head1 NAME

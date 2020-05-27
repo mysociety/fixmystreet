@@ -641,10 +641,10 @@ subtest "category groups" => sub {
         }
     }, sub {
         $contact2->update( { extra => { group => ['Roads','Pavements'] } } );
-        $contact9->update( { extra => { group => 'Roads' } } );
+        $contact9->update( { extra => { group => 'Pavements' } } );
         $contact10->update( { extra => { group => 'Roads' } } );
         $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
-        $mech->content_like(qr{<optgroup label="Pavements">\s*<option value='Potholes'>Potholes</option></optgroup>});
+        $mech->content_like(qr{<optgroup label="Pavements">\s*<option value='Potholes'>Potholes</option>\s*<option value='Street lighting'>Street lighting</option></optgroup>});
         $mech->content_like(qr{<optgroup label="Roads">\s*<option value='Potholes'>Potholes</option>\s*<option value='Street lighting'>Street lighting</option></optgroup>});
     };
 };
