@@ -523,6 +523,8 @@ subtest "Test alerts are not sent for no-text updates" => sub {
     };
 
     $mech->email_count_is(1);
+    $user2->discard_changes;
+    isnt $user2->last_active, undef, 'Last active has been set';
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);

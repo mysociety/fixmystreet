@@ -307,6 +307,10 @@ sub _send_aggregated_alert_email(%) {
     # Ignore phone-only users
     return unless $data{alert_user}->email_verified;
 
+    # Mark user as active as they're being sent an alert
+    $data{alert_user}->set_last_active;
+    $data{alert_user}->update;
+
     my $email = $data{alert_user}->email;
     my ($domain) = $email =~ m{ @ (.*) \z }x;
     return if $data{schema}->resultset('Abuse')->search( {
