@@ -53,6 +53,11 @@ foreach my $test (
     };
 }
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
 # check that exact queries result in the correct lat,lng
 foreach my $test (
     {
@@ -69,16 +74,18 @@ foreach my $test (
 {
     subtest "check lat/lng for '$test->{pc}'" => sub {
         $mech->get_ok('/');
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.uk/',
-        }, sub {
-            $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-                "good location" );
-        };
+        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+            "good location" );
         is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
         is_deeply $mech->extract_location, $test,
           "got expected location for pc '$test->{pc}'";
+        $mech->get_ok('/');
+        my $pc = "$test->{latitude},$test->{longitude}";
+        $mech->submit_form_ok( { with_fields => { pc => $pc } },
+            "good location" );
+        is_deeply $mech->page_errors, [], "no errors for pc '$pc'";
+        is_deeply $mech->extract_location, { %$test, pc => $pc },
+          "got expected location for pc '$pc'";
     };
 }
 
@@ -93,10 +100,10 @@ my @edinburgh_problems = $mech->create_problems_for_body( 5, $body_edin_id, 'Aro
 
 subtest 'check lookup by reference' => sub {
     $mech->get_ok('/');
-    $mech->submit_form_ok( { with_fields => { pc => 'ref:12345' } }, 'bad ref');
+    $mech->submit_form_ok( { with_fields => { pc => '12345' } }, 'bad ref');
     $mech->content_contains('Searching found no reports');
     my $id = $edinburgh_problems[0]->id;
-    $mech->submit_form_ok( { with_fields => { pc => "ref:$id" } }, 'good ref');
+    $mech->submit_form_ok( { with_fields => { pc => $id } }, 'good ref');
     is $mech->uri->path, "/report/$id", "redirected to report page";
 };
 
@@ -106,19 +113,14 @@ subtest 'check lookup by reference does not show non_public reports' => sub {
     });
     my $id = $edinburgh_problems[0]->id;
     $mech->get_ok('/');
-    $mech->submit_form_ok( { with_fields => { pc => "ref:$id" } }, 'non_public ref');
+    $mech->submit_form_ok( { with_fields => { pc => $id } }, 'non_public ref');
     $mech->content_contains('Searching found no reports');
 };
 
 subtest 'check non public reports are not displayed on around page' => sub {
     $mech->get_ok('/');
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
-            "good location" );
-    };
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+        "good location" );
     $mech->content_contains( "Around page Test 3 for $body_edin_id",
         'problem to be marked non public visible' );
 
@@ -126,26 +128,16 @@ subtest 'check non public reports are not displayed on around page' => sub {
     ok $private->update( { non_public => 1 } ), 'problem marked non public';
 
     $mech->get_ok('/');
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
-            "good location" );
-    };
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+        "good location" );
     $mech->content_lacks( "Around page Test 3 for $body_edin_id",
         'problem marked non public is not visible' );
 };
 
 subtest 'check missing body message not shown when it does not need to be' => sub {
     $mech->get_ok('/');
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'fixmystreet',
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
-            "good location" );
-    };
+    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+        "good location" );
     $mech->content_lacks('yet have details for the other councils that cover this location');
 };
 
@@ -162,24 +154,14 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
         });
 
         $mech->get_ok('/');
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.uk/',
-        }, sub {
-            $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
-                "good location" );
-        };
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+            "good location" );
         $mech->content_contains( "Around page Test 3 for $body_edin_id",
             'problem marked non public is visible' );
         $mech->content_contains( "Around page Test 2 for $body_edin_id",
             'problem marked public is visible' );
 
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.uk/',
-        }, sub {
-            $mech->get_ok('/around?pc=EH1+1BB&status=non_public');
-        };
+        $mech->get_ok('/around?pc=EH1+1BB&status=non_public');
         $mech->content_contains( "Around page Test 3 for $body_edin_id",
             'problem marked non public is visible' );
         $mech->content_lacks( "Around page Test 2 for $body_edin_id",
@@ -193,24 +175,14 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
         });
 
         $mech->get_ok('/');
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.uk/',
-        }, sub {
-            $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
-                "good location" );
-        };
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB' } },
+            "good location" );
         $mech->content_lacks( "Around page Test 3 for $body_edin_id",
             'problem marked non public is not visible' );
         $mech->content_contains( "Around page Test 2 for $body_edin_id",
             'problem marked public is visible' );
 
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.uk/',
-        }, sub {
-            $mech->get_ok('/around?pc=EH1+1BB&status=non_public');
-        };
+        $mech->get_ok('/around?pc=EH1+1BB&status=non_public');
         $mech->content_lacks( "Around page Test 3 for $body_edin_id",
             'problem marked non public is not visible' );
         $mech->content_lacks( "Around page Test 2 for $body_edin_id",
@@ -230,16 +202,13 @@ subtest 'check assigned-only list items do not display shortlist buttons' => sub
     $user->update({ from_body => $body });
     $user->user_body_permissions->find_or_create({ body => $body, permission_type => 'planned_reports' });
 
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'fixmystreet',
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->get_ok('/around?pc=EH1+1BB');
-    };
+    $mech->get_ok('/around?pc=EH1+1BB');
     $mech->content_contains('shortlist-add-' . $edinburgh_problems[4]->id);
     $mech->content_lacks('shortlist-add-' . $edinburgh_problems[3]->id);
     $mech->content_lacks('shortlist-add-' . $edinburgh_problems[1]->id);
 };
+
+}; # End big override_config
 
 my $body = $mech->create_body_ok(2237, "Oxfordshire");
 
