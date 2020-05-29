@@ -49,15 +49,9 @@ sub submit : Path('submit') : Args(0) {
     $c->set_param('pc', '');
     $c->set_param('skipped', 1);
 
-    $c->forward('/report/new/initialize_report');
-    $c->forward('/report/new/check_for_category');
-    $c->forward('/auth/check_csrf_token');
-    $c->forward('/report/new/process_report');
-    $c->forward('/report/new/process_user');
-    $c->forward('handle_uploads');
-    $c->forward('/photo/process_photo');
-    $c->go('index', [ 1 ]) unless $c->forward('/report/new/check_for_errors');
-    $c->forward('/report/new/save_user_and_report');
+    $c->forward('/report/new/non_map_creation', [ [ '/contact/enquiry/handle_uploads' ] ])
+        or $c->go('index', [ 1 ]);
+
     $c->forward('confirm_report');
     $c->stash->{success} = 1;
 
