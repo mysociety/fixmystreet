@@ -20,8 +20,6 @@ my $contact = $mech->create_contact_ok(
 );
 
 my $row = FixMyStreet::DB->resultset('Problem')->new( {
-    latitude => 51.023569,
-    longitude => -3.099055,
     bodies_str => '1000',
     category => 'category',
     cobrand => '',
@@ -69,19 +67,5 @@ foreach my $test ( {
         }
     };
 }
-
-$body->update({ name => 'Somerset West and Taunton Council' });
-
-subtest 'Test special behaviour' => sub {
-    my $e = FixMyStreet::SendReport::Email->new;
-    $contact->update( { state => 'confirmed', email => 'SPECIAL' } );
-    $e->add_body( $body );
-    FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.uk/'
-    }, sub {
-        my ($e) = $e->build_recipient_list( $row, {} );
-        like $e->[0], qr/tauntondeane/, 'correct recipient';
-    };
-};
 
 done_testing();

@@ -16,9 +16,6 @@ sub build_recipient_list {
 
         my ($body_email, $state, $note) = ( $contact->email, $contact->state, $contact->note );
 
-        $body_email = swandt_contact($row->latitude, $row->longitude)
-            if $body->name eq 'Somerset West and Taunton Council' && $body_email eq 'SPECIAL';
-
         unless ($state eq 'confirmed') {
             $all_confirmed = 0;
             $note = 'Body ' . $row->bodies_str . ' deleted'
@@ -126,23 +123,6 @@ sub email_list {
     my $list = shift;
     my @list = map { ref $_ ? $_->[0] : $_ } @$list;
     return \@list;
-}
-
-# SW&T has different contact addresses depending upon the old district
-sub swandt_contact {
-    my $district = _get_district_for_contact(@_);
-    my $email;
-    $email = ['customerservices', 'westsomerset'] if $district == 2427;
-    $email = ['enquiries', 'tauntondeane'] if $district == 2429;
-    return join('@', $email->[0], $email->[1] . '.gov.uk');
-}
-
-sub _get_district_for_contact {
-    my ( $lat, $lon ) = @_;
-    my $district =
-      FixMyStreet::MapIt::call( 'point', "4326/$lon,$lat", type => 'DIS', generation => 34 );
-    ($district) = keys %$district;
-    return $district;
 }
 
 1;
