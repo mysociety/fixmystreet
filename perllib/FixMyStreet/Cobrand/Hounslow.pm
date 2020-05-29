@@ -126,40 +126,25 @@ sub open311_skip_report_fetch {
 sub filter_report_description { "" }
 
 sub setup_general_enquiries_stash {
-  my $self = shift;
+    my $self = shift;
+    my $c = $self->{c};
 
-  my @bodies = $self->{c}->model('DB::Body')->active->for_areas(( $self->council_area_id ))->all;
-  my %bodies = map { $_->id => $_ } @bodies;
-  my @contacts                #
-    = $self->{c}              #
-    ->model('DB::Contact')    #
-    ->active
-    ->search(
-        {
-          'me.body_id' => [ keys %bodies ]
-        },
-        {
-          prefetch => 'body',
-          order_by => 'me.category',
-        }
-      )->all;
-  @contacts = grep {
-    my $groups = $_->groups;
-    grep { $_ eq 'Other' || $_ eq 'General Enquiries' } @$groups;
-  } @contacts;
-  $self->{c}->stash->{bodies} = \%bodies;
-  $self->{c}->stash->{bodies_to_list} = \%bodies;
-  $self->{c}->stash->{contacts} = \@contacts;
-  $self->{c}->stash->{missing_details_bodies} = [];
-  $self->{c}->stash->{missing_details_body_names} = [];
+    $c->set_param('title', "General Enquiry");
+    # Can't use (0, 0) for lat lon so default to the rough location
+    # of Hounslow Highways HQ.
+    $c->stash->{latitude} = 51.469;
+    $c->stash->{longitude} = -0.35;
 
-  $self->{c}->set_param('title', "General Enquiry");
-  # Can't use (0, 0) for lat lon so default to the rough location
-  # of Hounslow Highways HQ.
-  $self->{c}->stash->{latitude} = 51.469;
-  $self->{c}->stash->{longitude} = -0.35;
+    $c->stash->{all_areas} = { $self->council_area_id => { id => $self->council_area_id } };
+    $c->forward('/report/new/setup_categories_and_bodies');
 
-  return 1;
+    my $contacts = $c->stash->{contacts};
+    @$contacts = grep {
+        my $groups = $_->groups;
+        grep { $_ eq 'Other' || $_ eq 'General Enquiries' } @$groups;
+    } @$contacts;
+
+    return 1;
 }
 
 sub abuse_reports_only { 1 }
