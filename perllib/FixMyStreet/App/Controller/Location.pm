@@ -6,6 +6,7 @@ BEGIN {extends 'Catalyst::Controller'; }
 
 use Encode;
 use FixMyStreet::Geocode;
+use Geo::OLC;
 use Try::Tiny;
 use Utils;
 
@@ -74,6 +75,30 @@ sub determine_location_from_pc : Private {
             map { Utils::truncate_coordinate($_) } ($1, $2);
         return $c->forward( 'check_location' );
     }
+
+    if (Geo::OLC::is_full($pc)) {
+        my $ref = Geo::OLC::decode($pc);
+        ($c->stash->{latitude}, $c->stash->{longitude}) =
+            map { Utils::truncate_coordinate($_) } @{$ref->{center}};
+        return $c->forward( 'check_location' );
+    }
+
+    if ($pc =~ /^\s*([2-9CFGHJMPQRVWX]{4,6}\+[2-9CFGHJMPQRVWX]{2,3})\s+(.*)$/i) {
+        my ($code, $rest) = ($1, $2);
+        my ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($rest, $c);
+        if (ref($error) eq 'ARRAY') { # Just take the first result
+            $lat = $error->[0]{latitude};
+            $lon = $error->[0]{longitude};
+        }
+        if (defined $lat && defined $lon) {
+            $code = Geo::OLC::recover_nearest($code, $lat, $lon);
+            my $ref = Geo::OLC::decode($code);
+            ($c->stash->{latitude}, $c->stash->{longitude}) =
+                map { Utils::truncate_coordinate($_) } @{$ref->{center}};
+            return $c->forward( 'check_location' );
+        }
+    }
+
     if ( $c->cobrand->country eq 'GB' && $pc =~ /^([A-Z])([A-Z])([\d\s]{4,})$/i) {
         if (my $convert = gridref_to_latlon( $1, $2, $3 )) {
             ($c->stash->{latitude}, $c->stash->{longitude}) =

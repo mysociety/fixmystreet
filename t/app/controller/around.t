@@ -9,6 +9,7 @@ use constant MIN_ZOOM_LEVEL => 88;
 package main;
 
 use Test::MockModule;
+use t::Mock::Nominatim;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -88,6 +89,30 @@ foreach my $test (
           "got expected location for pc '$pc'";
     };
 }
+
+subtest "check lat/lng for full plus code" => sub {
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => "9C7RXR26+R5" } } );
+    is_deeply $mech->page_errors, [], "no errors for plus code";
+    is_deeply $mech->extract_location, {
+        pc => "9C7RXR26+R5",
+        latitude  => 55.952063,
+        longitude => -3.189562,
+    },
+      "got expected location for full plus code";
+};
+
+subtest "check lat/lng for short plus code" => sub {
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => "XR26+R5 Edinburgh" } } );
+    is_deeply $mech->page_errors, [], "no errors for plus code";
+    is_deeply $mech->extract_location, {
+        pc => "XR26+R5 Edinburgh",
+        latitude  => 55.952063,
+        longitude => -3.189562,
+    },
+      "got expected location for short plus code";
+};
 
 my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
 my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;

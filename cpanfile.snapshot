@@ -3116,6 +3116,15 @@ DISTRIBUTIONS
       perl 5.014000
       strict 0
       warnings 0
+  Geo-OLC-1
+    pathname: J/JG/JGREELY/Geo-OLC-1.tar.gz
+    provides:
+      Geo::OLC 1
+    requirements:
+      ExtUtils::MakeMaker 0
+      List::Util 1
+      Test::More 0
+      perl 5.010001
   Geography-NationalGrid-1.6
     pathname: P/PK/PKENT/Geography-NationalGrid-1.6.tar.gz
     provides:
