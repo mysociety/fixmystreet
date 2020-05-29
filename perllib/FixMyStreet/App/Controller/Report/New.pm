@@ -1785,6 +1785,24 @@ sub generate_category_extra_json : Private {
     return \@fields;
 }
 
+sub non_map_creation : Private {
+    my ($self, $c, $extras) = @_;
+
+    $c->forward('initialize_report');
+    $c->forward('check_for_category');
+    $c->forward('/auth/check_csrf_token');
+    $c->forward('process_report');
+    $c->forward('process_user');
+    if ($extras) {
+        $c->forward($_) for @$extras;
+    }
+    $c->forward('/photo/process_photo');
+    return 0 unless $c->forward('check_for_errors');
+    $c->forward('save_user_and_report');
+    return 1;
+
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
