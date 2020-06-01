@@ -306,6 +306,14 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # check that the nonce matches what we set in the user session
     $c->detach('/page_error_500_internal_error', ['invalid id_token']) unless $id_token->payload->{nonce} eq $c->session->{oauth}{nonce};
 
+    if (my $domains = $c->cobrand->feature('oidc_login')->{allowed_domains}) {
+        # Check that the hd payload is present in the token and matches the
+        # list of allowed domains from the config
+        my $hd = $id_token->payload->{hd};
+        my %allowed_domains = map { $_ => 1} @$domains;
+        $c->detach('oauth_failure') unless $allowed_domains{$hd};
+    }
+
     # Some claims need parsing into a friendlier format
     my $name = $id_token->payload->{name} || join(" ", $id_token->payload->{given_name}, $id_token->payload->{family_name});
     my $email = $id_token->payload->{email};
