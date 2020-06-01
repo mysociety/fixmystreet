@@ -14,6 +14,12 @@
   [% PROCESS back %]
   [% PROCESS errors %]
   [% PROCESS title %]
+  [% IF property %]
+  <dl>
+    <dt>Address</dt>
+    <dd>[% property.Description | title %]</dd>
+  </dl>
+  [% END %]
 <form method="post">
   [% PROCESS form %]
   <input type="hidden" name="token" value="[% csrf_token %]">
