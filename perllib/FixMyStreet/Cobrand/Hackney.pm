@@ -55,4 +55,12 @@ sub default_map_zoom { 5 }
 
 sub admin_user_domain { 'hackney.gov.uk' }
 
+sub anonymous_account {
+    my $self = shift;
+    return {
+        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
+        name => 'Anonymous user',
+    };
+}
+
 1;
