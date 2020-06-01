@@ -536,6 +536,11 @@ sub check_2fa {
     return 0;
 }
 
+sub user_country {
+    my $c = shift;
+    return FixMyStreet::Gaze::get_country_from_ip($c->req->address);
+}
+
 =head1 SEE ALSO
 
 L<FixMyStreet::App::Controller::Root>, L<Catalyst>
