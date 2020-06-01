@@ -44,6 +44,7 @@
             <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0">
         </a>
         [% loc('Receive email when updates are left on this problem.' ) %]</p>
+        [% PROCESS 'auth/form_extra.html' %]
         <fieldset>
       [% IF c.user_exists %]
           [% IF permissions.contribute_as_another_user %]

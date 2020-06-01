@@ -448,6 +448,9 @@ sub check_csrf_token : Private {
         unless $time
             && $time > time() - 3600
             && $token eq $gen_token;
+
+    # Also check recaptcha if needed
+    $c->cobrand->call_hook('check_recaptcha');
 }
 
 sub no_csrf_token : Private {
