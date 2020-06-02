@@ -272,4 +272,6 @@ sub report_form_extras {
     ( { name => 'private_comments' } )
 }
 
+sub report_sent_confirmation_email { 'id' }
+
 1;

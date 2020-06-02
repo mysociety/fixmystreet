@@ -23,8 +23,12 @@ INCLUDE '_email_top.html';
     <a style="[% dontknow_button_style %]" href="[% url %]?been_fixed=Unknown">Don’t know</a>
   </p>
   <p style="[% p_style %]">Thank you! Your feedback is really valuable.</p>
+
+  [% TRY %][% INCLUDE '_questionnaire-report-id.html' %][% CATCH file %][% END %]
+
   [% end_padded_box | safe %]
 </th>
+
 [% WRAPPER '_email_sidebar.html' object = report, url = url %]
     <h2 style="[% h2_style %]">[% title %]</h2>
     [% report.detail | html_para_email(secondary_p_style) %]
