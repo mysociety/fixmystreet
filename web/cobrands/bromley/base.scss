@@ -436,3 +436,29 @@ body.mappage {
 }
 
 @import "../sass/hercules";
+
+// Hercules style overrides
+.hercules {
+  [class^="govuk-heading-"] {
+    font-family: $heading-font;
+    color: darken($bromley_blue, 10%);
+  }
+  
+  .govuk-heading-xl {
+    font-size: 2.2em;
+    margin-bottom: 1em;
+  }
+  
+  .govuk-heading-l {
+    font-size: 1.4375em;
+  }
+  
+  .govuk-heading-m {
+    font-size: 1.125em;
+  }
+
+  .govuk-summary-list {
+    border-top-color: $bromley_blue;
+  }
+}
+

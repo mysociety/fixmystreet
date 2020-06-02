@@ -1,5 +1,7 @@
 [% INCLUDE header.html %]
 
+[% SET bodyclass = 'hercules' %]
+
 <style>
     label, legend { margin-top: 0; font-weight: normal !important; } /* from base/h5bp */
     input[type="text"].govuk-input--width-2 { max-width: 5.4ex; }
@@ -15,9 +17,9 @@
   [% PROCESS errors %]
   [% PROCESS title %]
   [% IF property %]
-  <dl>
-    <dt>Address</dt>
-    <dd>[% property.Description | title %]</dd>
+  <dl class="hercules__address">
+    <dt class="hercules__address__title">Address</dt>
+    <dd class="hercules__address__property">[% property.Description | title %]</dd>
   </dl>
   [% END %]
 <form method="post">

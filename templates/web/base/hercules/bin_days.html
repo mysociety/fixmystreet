@@ -1,11 +1,11 @@
 [% USE date(format = '%A, %-d~~~ %B') %]
 [% INCLUDE header.html %]
-
+[% SET bodyclass = 'hercules' %]
 <h1 class="govuk-heading-xl">Your bin days</h1>
 
-<dl>
-    <dt>Address</dt>
-    <dd>[% property.Description | title %]</dd>
+<dl class="hercules__address">
+  <dt class="hercules__address__title">Address</dt>
+  <dd class="hercules__address__property">[% property.Description | title %]</dd>
 </dl>
 <div class="hercules__collections">
   <h2 class="govuk-heading-l">Your collections</h2>
@@ -54,6 +54,21 @@
           <ul>
               <li><a href="[% c.uri_for_action('hercules/report', [ uprn ]) %]">Report a missed collection</a></li>
               <li><a href="[% c.uri_for_action('hercules/request', [ uprn ]) %]">Request a new container</a></li>
+              <li>Get in touch
+                <ul>
+                  <li><a href="#">Failure to deliver bin</a></li>
+                  <li><a href="#">Gate not closed</a></li>
+                  <li><a href="#">Waste spillage</a></li>
+                  <li><a href="#">Bin not returned</a></li>
+                  <li><a href="#">Crew behaviour</a></li>
+                  <li><a href="#">Damage to 3rd party vehicle</a></li>
+                  <li><a href="#">Damage to property</a></li>
+                  <li><a href="#">General Enquiry</a></li>
+
+                </ul>
+              </li>
+
+
           </ul>
         </div>
       </div>
