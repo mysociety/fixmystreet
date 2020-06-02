@@ -90,14 +90,6 @@ sub send_questionnaires { 0 }
 
 sub default_map_zoom { 3 }
 
-sub category_extra_hidden {
-    my ($self, $meta) = @_;
-    my $code = $meta->{code};
-    # These two are used in the non-Open311 'Street light fault' category.
-    return 1 if $code eq 'unitid' || $code eq 'asset_details';
-    return $self->SUPER::category_extra_hidden($meta);
-}
-
 sub available_permissions {
     my $self = shift;
 

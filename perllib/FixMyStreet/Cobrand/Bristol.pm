@@ -68,8 +68,10 @@ sub open311_contact_meta_override {
     $service->{group} = [];
 
     my %server_set = (easting => 1, northing => 1);
+    my %hidden_field = (usrn => 1, asset_id => 1);
     foreach (@$meta) {
         $_->{automated} = 'server_set' if $server_set{$_->{code}};
+        $_->{automated} = 'hidden_field' if $hidden_field{$_->{code}};
     }
 }
 
