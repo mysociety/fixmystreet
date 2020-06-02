@@ -21,6 +21,8 @@
               <option value="[% option.key %]"[% IF option.key == report_meta.$x_meta_name.value %] selected[% END %]>[% option.name %]</option>
             [% END %]
           </select>
+        [% ELSIF meta.datatype == 'text' %]
+          <textarea class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>[% report_meta.$x_meta_name.value %]</textarea>
         [% ELSE %]
           <input class="form-control" type="[% meta.fieldtype OR 'text' %]" value="[% report_meta.$x_meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
         [% END %]
