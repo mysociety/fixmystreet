@@ -60,9 +60,9 @@
 [% BLOCK checkboxes %]
   <fieldset class="govuk-fieldset" aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-      <h1 class="govuk-fieldset__heading">
+      <h2 class="govuk-fieldset__heading">
         [% field.label %]
-      </h1>
+      </h2>
     </legend>
 [% IF field.get_tag('hint') %]
     <span id="[% field.id %]-hint" class="govuk-hint">[% field.get_tag('hint') %]</span>
@@ -99,9 +99,9 @@
       aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% id %]-error[% END %]"
     [%~ END %]>
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-      <h1 class="govuk-fieldset__heading">
+      <h2 class="govuk-fieldset__heading">
         [% field.label %]
-      </h1>
+      </h2>
     </legend>
 [% IF field.get_tag('hint') %]
     <span id="[% field.id %]-hint" class="govuk-hint">
@@ -148,9 +148,9 @@
 [% BLOCK radio %]
   <fieldset class="govuk-fieldset" aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <h1 class="govuk-fieldset__heading">
+        <h2 class="govuk-fieldset__heading">
           [% field.label %]
-        </h1>
+        </h2>
     </legend>
 [% IF field.get_tag('hint') %]
     <span id="[% field.id %]-hint" class="govuk-hint">[% field.get_tag('hint') %]</span>

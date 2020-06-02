@@ -439,7 +439,8 @@ body.mappage {
 
 // Hercules style overrides
 .hercules {
-  [class^="govuk-heading-"] {
+  [class^="govuk-heading-"],
+  .govuk-fieldset__heading {
     font-family: $heading-font;
     color: darken($bromley_blue, 10%);
   }
@@ -459,6 +460,15 @@ body.mappage {
 
   .govuk-summary-list {
     border-top-color: $bromley_blue;
+  }
+
+  .govuk-button {
+    background-color: $bromley_green;
+    box-shadow: 0 2px 0 darken($bromley_green, 10%);
+    &:hover {
+      //don't override focus as gov.uk is good at that
+      background-color: darken($bromley_green, 10%);
+    }
   }
 }
 
