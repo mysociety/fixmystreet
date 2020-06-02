@@ -67,6 +67,7 @@ DEFAULT behaviour = 'question';
                 <label for="metadata-[% i %]-datatype">[% loc('Display as') %]</label>
                 <select class="form-control" name="metadata[[% i %]].datatype" id="metadata-[% i %]-datatype">
                     <option value="string" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'string' %]>[% loc('Text field') %]</option>
+                    <option value="text" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'text' %]>[% loc('Textarea') %]</option>
                     <option value="singlevaluelist" data-show="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'singlevaluelist' %]>[% loc('Drop-down list') %]</option>
                 </select>
             </div>
