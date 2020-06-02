@@ -5,6 +5,10 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Catalyst::Test 'FixMyStreet::App';
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 set_fixed_time('2019-10-16T17:00:00Z'); # Out of hours
 
 use_ok 'FixMyStreet::Cobrand::Bexley';
@@ -233,6 +237,23 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/new/ajax?latitude=51.466707&longitude=0.181108');
         $mech->content_contains('http://public.example.org/dead_animals');
         $mech->content_lacks('http://staff.example.org/dead_animals');
+    };
+
+    subtest 'test ID in confirmation email' => sub {
+        $mech->clear_emails_ok;
+        $mech->log_out_ok;
+        $mech->get_ok('/report/new?latitude=51.45556&longitude=0.15356');
+        $mech->submit_form_ok({ with_fields => {
+            title => 'Test ID',
+            detail => 'Test ID',
+            category => 'Lamp post',
+            name => 'Normal User',
+            username_register => 'normal@example.org',
+        } });
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { rows => 1, order_by => { -desc => 'id' } })->single;
+        my $id = $report->id;
+        my $text = $mech->get_text_body_from_email;
+        like $text, qr/The report's reference number is $id/;
     };
 };
 
