@@ -5,6 +5,7 @@
         - Fix issue with dashboard report CSV export. #3026
         - bin/update-schema PostgreSQL 12 compatibility. #3043
         - Make sure category shown in all its groups when reporting.
+        - Do not remove any devolved contacts.
     - Admin improvements:
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989

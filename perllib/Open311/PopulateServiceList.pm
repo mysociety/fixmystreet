@@ -350,10 +350,10 @@ sub _delete_contacts_not_in_service_list {
     );
 
     if ($self->_current_body->can_be_devolved) {
-        # If the body has can_be_devolved switched on, it's most likely a
-        # combination of Open311/email, so ignore any email addresses.
+        # If the body has can_be_devolved switched on, ignore any
+        # contact with its own send method
         $found_contacts = $found_contacts->search(
-            { email => { -not_like => '%@%' } }
+            { send_method => [ "", undef ] },
         );
     }
 

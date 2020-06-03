@@ -175,33 +175,53 @@ subtest "set multiple groups with groups element" => sub {
     is_deeply $contact->get_extra->{group}, ['sanitation & cleaning','street'], "groups set correctly";
 };
 
-subtest 'check non open311 contacts marked as deleted' => sub {
-    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+$body->update({ can_be_devolved => 1 });
+for my $test (
+    {
+        test => 'check non open311 contacts marked as deleted',
+        contact_params => {
+            email => 'contact@example.com',
+        },
+        deleted => 1,
+    },
+    {
+        test => 'check devolved non open311 contacts not marked as deleted',
+        contact_params => {
+            email => 'contact',
+            send_method => 'Open311',
+        },
+        deleted => 0,
+    },
+) {
+    subtest $test->{test} => sub {
+        FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 
-    my $contact = FixMyStreet::DB->resultset('Contact')->create(
-        {
-            body_id => $body->id,
-            email =>   'contact@example.com',
-            category => 'An old category',
-            state => 'confirmed',
-            editor => $0,
-            whenedited => \'current_timestamp',
-            note => 'test contact',
-        }
-    );
+        my $contact = FixMyStreet::DB->resultset('Contact')->create(
+            {
+                body_id => $body->id,
+                category => 'An old category',
+                state => 'confirmed',
+                editor => $0,
+                whenedited => \'current_timestamp',
+                note => 'test contact',
+                %{$test->{contact_params}},
+            }
+        );
 
-    my $service_list = get_xml_simple_object( get_standard_xml() );
+        my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $processor = Open311::PopulateServiceList->new();
-    $processor->_current_body( $body );
-    $processor->process_services( $service_list );
+        my $processor = Open311::PopulateServiceList->new();
+        $processor->_current_body( $body );
+        $processor->process_services( $service_list );
 
-    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
-    is $contact_count, 4, 'correct number of contacts';
+        my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+        is $contact_count, 4, 'correct number of contacts';
 
-    $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, state => 'deleted' } )->count();
-    is $contact_count, 1, 'correct number of deleted contacts';
-};
+        $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id, state => 'deleted' } )->count();
+        is $contact_count, $test->{deleted}, 'correct number of deleted contacts';
+    };
+}
+$body->update({ can_be_devolved => 0 });
 
 subtest 'check email changed if matching category' => sub {
     FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
