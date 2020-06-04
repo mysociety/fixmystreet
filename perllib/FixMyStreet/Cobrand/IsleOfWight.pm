@@ -128,11 +128,10 @@ sub munge_around_category_where {
     my $b = $self->{c}->model('DB::Body')->for_areas( $self->council_area_id )->first;
     if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
         $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
-        return $where;
+        return;
     }
 
     $where->{'send_method'} = 'Triage';
-    return $where;
 }
 
 sub munge_load_and_group_problems {
