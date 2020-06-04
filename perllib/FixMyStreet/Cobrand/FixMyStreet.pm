@@ -54,32 +54,33 @@ sub relative_url_for_report {
 sub munge_around_category_where {
     my ($self, $where) = @_;
 
-    my $user = $self->{c}->user;
-    my @iow = grep { $_->name eq 'Isle of Wight Council' } @{ $self->{c}->stash->{around_bodies} };
-    return unless @iow;
+    my $iow = grep { $_->name eq 'Isle of Wight Council' } @{ $self->{c}->stash->{around_bodies} };
+    if ($iow) {
+        # display all the categories on Isle of Wight at the moment as there's no way to
+        # do the expand bit later as we fetch it using ajax which uses a bounding box so
+        # can't determine the body
+        $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
+    }
+}
 
-    # display all the categories on Isle of Wight at the moment as there's no way to
-    # do the expand bit later as we fetch it using ajax which uses a bounding box so
-    # can't determine the body
-    $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
-    return $where;
+sub _iow_category_munge {
+    my ($self, $body, $categories) = @_;
+    my $user = $self->{c}->user;
+
+    if ( $user && ( $user->is_superuser || $user->belongs_to_body( $body->id ) ) ) {
+        @$categories = grep { !$_->send_method || $_->send_method ne 'Triage' } @$categories;
+        return;
+    }
+
+    @$categories = grep { $_->send_method && $_->send_method eq 'Triage' } @$categories;
 }
 
 sub munge_reports_categories_list {
     my ($self, $categories) = @_;
 
     my %bodies = map { $_->body->name => $_->body } @$categories;
-    if ( $bodies{'Isle of Wight Council'} ) {
-        my $user = $self->{c}->user;
-        my $b = $bodies{'Isle of Wight Council'};
-
-        if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
-            @$categories = grep { !$_->send_method || $_->send_method ne 'Triage' } @$categories;
-            return @$categories;
-        }
-
-        @$categories = grep { $_->send_method && $_->send_method eq 'Triage' } @$categories;
-        return @$categories;
+    if ( my $body = $bodies{'Isle of Wight Council'} ) {
+        return $self->_iow_category_munge($body, $categories);
     }
 }
 
@@ -118,16 +119,9 @@ sub munge_report_new_contacts {
 
     my %bodies = map { $_->body->name => $_->body } @$contacts;
 
-    if ( $bodies{'Isle of Wight Council'} ) {
-        my $user = $self->{c}->user;
-        if ( $user && ( $user->is_superuser || $user->belongs_to_body( $bodies{'Isle of Wight Council'}->id ) ) ) {
-            @$contacts = grep { !$_->send_method || $_->send_method ne 'Triage' } @$contacts;
-            return;
-        }
-
-        @$contacts = grep { $_->send_method && $_->send_method eq 'Triage' } @$contacts;
+    if ( my $body = $bodies{'Isle of Wight Council'} ) {
+        return $self->_iow_category_munge($body, $contacts);
     }
-
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
