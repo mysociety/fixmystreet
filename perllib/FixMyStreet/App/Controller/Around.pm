@@ -240,12 +240,8 @@ sub check_and_stash_category : Private {
     $c->stash->{bodies_ids} = [ map { $_->id } @bodies];
     $c->{stash}->{list_of_names_as_string} = $csv->string;
 
-    my $where  = { body_id => [ keys %bodies ], };
-
-    my $cobrand_where = $c->cobrand->call_hook('munge_around_category_where', $where );
-    if ( $cobrand_where ) {
-       $where = $cobrand_where;
-    }
+    my $where = { body_id => [ keys %bodies ], };
+    $c->cobrand->call_hook('munge_around_category_where', $where);
 
     my @categories = $c->model('DB::Contact')->not_deleted->search(
         $where,
