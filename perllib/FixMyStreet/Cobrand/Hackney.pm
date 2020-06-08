@@ -63,4 +63,21 @@ sub anonymous_account {
     };
 }
 
+sub open311_skip_existing_contact {
+    my ($self, $contact) = @_;
+
+    # For Hackney we want the 'protected' flag to prevent any changes to this
+    # contact at all.
+    return $contact->get_extra_metadata("open311_protect") ? 1 : 0;
+}
+
+sub open311_filter_contacts_for_deletion {
+    my ($self, $contacts) = @_;
+
+    # Don't delete open311 protected contacts when importing
+    return $contacts->search({
+        extra => { -not_like => '%T15:open311_protect,I1:1%' },
+    });
+}
+
 1;
