@@ -145,6 +145,8 @@ sub _handle_existing_contact {
     my $service_name = $self->_normalize_service_name;
     my $protected = $contact->get_extra_metadata("open311_protect");
 
+    return if $self->_current_body_cobrand && $self->_current_body_cobrand->call_hook(open311_skip_existing_contact => $contact);
+
     print $self->_current_body->id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
 
     if ( $contact->state eq 'deleted' || $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
@@ -370,7 +372,11 @@ sub _delete_contacts_not_in_service_list {
 sub _delete_contacts_not_in_service_list_cobrand_overrides {
     my ( $self, $found_contacts ) = @_;
 
-    return $found_contacts;
+    if ($self->_current_body_cobrand && $self->_current_body_cobrand->can('open311_filter_contacts_for_deletion')) {
+        return $self->_current_body_cobrand->open311_filter_contacts_for_deletion($found_contacts);
+    } else {
+        return $found_contacts;
+    }
 }
 
 1;
