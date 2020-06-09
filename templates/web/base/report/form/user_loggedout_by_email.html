@@ -62,6 +62,8 @@
 
     <input class="form-control js-password-validate" type="password" name="password_register" id="password_register" aria-describedby="password_register_hint" value="">
 
+    [% PROCESS 'auth/form_extra.html' %]
+
     <input class="btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
 
 </div>

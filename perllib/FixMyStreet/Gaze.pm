@@ -3,6 +3,7 @@ package FixMyStreet::Gaze;
 use strict;
 use warnings;
 
+use FixMyStreet;
 use mySociety::Gaze;
 
 sub get_radius_containing_population ($$) {
@@ -22,6 +23,13 @@ sub get_radius_containing_population ($$) {
     }
     $dist = int( $dist * 10 + 0.5 ) / 10.0;
     return $dist;
+}
+
+sub get_country_from_ip {
+    my ($ip) = @_;
+    return 'GB' if FixMyStreet->test_mode;
+    # uncoverable statement
+    return mySociety::Gaze::get_country_from_ip($ip);
 }
 
 1;

@@ -3,6 +3,7 @@ use base 'FixMyStreet::Cobrand::Default';
 use strict;
 
 use JSON::MaybeXS;
+use LWP::UserAgent;
 use mySociety::MaPit;
 use mySociety::VotingArea;
 use Utils;
@@ -420,6 +421,38 @@ sub report_new_munge_before_insert {
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker('tfl')->new();
         $tfl->report_new_munge_before_insert($report);
     }
+}
+
+# To use recaptcha, add a RECAPTCHA key to your config, with subkeys secret and
+# site_key, taken from the recaptcha site. This shows it to non-UK IP addresses
+# on alert and report pages.
+
+sub requires_recaptcha {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return 0 if $c->user_exists;
+    return 0 if !FixMyStreet->config('RECAPTCHA');
+    return 0 if $c->user_country eq 'GB';
+    return 0 unless $c->action =~ /^(alert|report)/;
+    return 1;
+}
+
+sub check_recaptcha {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $self->requires_recaptcha;
+
+    my $url = 'https://www.google.com/recaptcha/api/siteverify';
+    my $res = LWP::UserAgent->new->post($url, {
+        secret => FixMyStreet->config('RECAPTCHA')->{secret},
+        response => $c->get_param('g-recaptcha-response'),
+        remoteip => $c->req->address,
+    });
+    $res = decode_json($res->content);
+    $c->detach('/page_error_400_bad_request', ['Bad recaptcha'])
+        unless $res->{success};
 }
 
 1;

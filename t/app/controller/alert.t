@@ -1,6 +1,7 @@
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
+use Test::MockModule;
 use t::Mock::Nominatim;
 
 # check that we can get the page
@@ -71,6 +72,27 @@ FixMyStreet::override_config {
 
     $mech->get_ok('/alert/subscribe?rss=1&feed=ward:1000:1001:Cheltenham:Lansdown');
     is $mech->uri->path, '/rss/reports/Cheltenham/Lansdown';
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+    GEOCODER => '',
+    RECAPTCHA => { secret => 'secret', site_key => 'site_key' },
+}, sub {
+    subtest 'recaptcha' => sub {
+        $mech->get_ok('/alert/list?pc=EH11BB');
+        $mech->content_lacks('g-recaptcha'); # GB is default test country
+
+        my $mod_app = Test::MockModule->new('FixMyStreet::App');
+        $mod_app->mock('user_country', sub { 'FR' });
+        my $mod_lwp = Test::MockModule->new('LWP::UserAgent');
+        $mod_lwp->mock('post', sub { HTTP::Response->new(200, 'OK', [], '{ "success": true }') });
+
+        $mech->get_ok('/alert/list?pc=EH11BB');
+        $mech->content_contains('g-recaptcha');
+        $mech->submit_form_ok({ with_fields => { rznvy => 'someone@example.org' } });
+    };
 };
 
 done_testing();
