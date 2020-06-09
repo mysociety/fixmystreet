@@ -63,7 +63,7 @@
                     [% IF problem.anonymous %]
                         [% tprintf( loc('Reported anonymously at %s'), prettify_dt( problem.confirmed ) ) %]
                     [% ELSE %]
-                        [% tprintf( loc('Reported by %s at %s'), problem.user.name, prettify_dt( problem.confirmed ) ) | html %]
+                        [% tprintf( loc('Reported by %s at %s'), problem.name, prettify_dt( problem.confirmed ) ) | html %]
                     [% END %]
                 </cite>
 
