@@ -3,6 +3,8 @@
 * Unreleased
     - New features:
         - Add Open Location Codes support to search box. #3047
+    - Changes:
+        - Mark user as active when sent an email alert.
     - Bugfixes:
         - Fix issue with dashboard report CSV export. #3026
         - bin/update-schema PostgreSQL 12 compatibility. #3043
