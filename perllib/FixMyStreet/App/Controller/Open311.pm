@@ -323,7 +323,7 @@ sub get_requests : Private {
         if ( 'status' eq $param ) {
             $value = {
                 'open' => [ FixMyStreet::DB::Result::Problem->open_states() ],
-                'closed' => [ FixMyStreet::DB::Result::Problem->fixed_states(), 'closed' ],
+                'closed' => [ FixMyStreet::DB::Result::Problem->fixed_states(), FixMyStreet::DB::Result::Problem->closed_states() ],
             }->{$value};
         } elsif ( 'has_photo' eq $param ) {
             $value = undef;
