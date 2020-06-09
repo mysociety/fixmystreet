@@ -29,6 +29,15 @@ sub users_restriction { FixMyStreet::Cobrand::UKCouncils::users_restriction($_[0
 sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction($_[0], $_[1]) }
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 
+sub munge_problem_list {
+    my ($self, $problem) = @_;
+    $problem->anonymous(1);
+}
+sub munge_update_list {
+    my ($self, $update) = @_;
+    $update->anonymous(1);
+}
+
 sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;

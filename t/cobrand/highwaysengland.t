@@ -29,12 +29,11 @@ my $highways = $mech->create_body_ok(2234, 'Highways England');
 
 $mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole');
 
-# Br1 3UH
-subtest "check where heard from saved" => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'highwaysengland',
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'highwaysengland',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest "check where heard from saved" => sub {
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'M1, J16', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
@@ -64,7 +63,12 @@ subtest "check where heard from saved" => sub {
         like $mech->get_text_body_from_email($email), qr/Heard from: Facebook/, 'where hear included in email'
 
     };
-};
 
+    subtest "check anonymous display" => sub {
+        my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title');
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_lacks('Reported by Test User at');
+    };
+};
 
 done_testing();

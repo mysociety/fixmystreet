@@ -220,6 +220,8 @@ sub output_requests : Private {
 
     my @problemlist;
     while ( my $problem = $problems->next ) {
+        $c->cobrand->call_hook(munge_problem_list => $problem);
+
         my $id = $problem->id;
 
         $problem->service( 'Web interface' ) unless $problem->service;
