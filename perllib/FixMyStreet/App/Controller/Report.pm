@@ -197,6 +197,7 @@ sub load_problem_or_display_error : Private {
         }
     }
 
+    $c->cobrand->call_hook(munge_problem_list => $problem);
     $c->stash->{problem} = $problem;
     if ( $c->user_exists && $c->user->can_moderate($problem) ) {
         $c->stash->{problem_original} = $problem->find_or_new_related(
@@ -251,6 +252,7 @@ sub load_updates : Private {
     my @combined;
     my %questionnaires_with_updates;
     while (my $update = $updates->next) {
+        $c->cobrand->call_hook(munge_update_list => $update);
         push @combined, [ $update->confirmed, $update ];
         if (my $qid = $update->get_extra_metadata('questionnaire_id')) {
             $questionnaires_with_updates{$qid} = $update;

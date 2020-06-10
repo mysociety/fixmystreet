@@ -210,7 +210,7 @@ sub output_requests : Private {
     };
 
     # Look up categories for this council or councils
-    my $problems = $c->cobrand->problems->search( $criteria, $attr );
+    my $problems = $c->stash->{rs}->search( $criteria, $attr );
 
     my %statusmap = (
         map( { $_ => 'open' } FixMyStreet::DB::Result::Problem->open_states() ),
@@ -220,6 +220,8 @@ sub output_requests : Private {
 
     my @problemlist;
     while ( my $problem = $problems->next ) {
+        $c->cobrand->call_hook(munge_problem_list => $problem);
+
         my $id = $problem->id;
 
         $problem->service( 'Web interface' ) unless $problem->service;
@@ -323,24 +325,8 @@ sub get_requests : Private {
         if ( 'status' eq $param ) {
             $value = {
                 'open' => [ FixMyStreet::DB::Result::Problem->open_states() ],
-                'closed' => [ FixMyStreet::DB::Result::Problem->fixed_states(), 'closed' ],
+                'closed' => [ FixMyStreet::DB::Result::Problem->fixed_states(), FixMyStreet::DB::Result::Problem->closed_states() ],
             }->{$value};
-        } elsif ( 'agency_responsible' eq $param ) {
-            my @valuelist;
-            for my $agency (split(/\|/, $value)) {
-                unless ($agency =~ m/^(\d+)$/) {
-                    $c->detach( 'error', [
-                        sprintf(_('Invalid agency_responsible value %s'),
-                            $value)
-                    ] );
-                }
-                my $agencyid = $1;
-                # FIXME This seem to match the wrong entries
-                # some times.  Not sure when or why
-                my $re = "(\\y$agencyid\\y|^$agencyid\\y|\\y$agencyid\$)";
-                push(@valuelist, $re);
-            }
-            $value = \@valuelist;
         } elsif ( 'has_photo' eq $param ) {
             $value = undef;
             $op = '!=' if 'true' eq $value;
@@ -361,6 +347,11 @@ sub get_requests : Private {
         $criteria->{confirmed} = { '>=', $c->get_param('start_date') };
     } elsif ( $c->get_param('end_date') ) {
         $criteria->{confirmed} = { '<', $c->get_param('end_date') };
+    }
+
+    $c->stash->{rs} = $c->cobrand->problems;
+    if (my $bodies = $c->get_param('agency_responsible')) {
+        $c->stash->{rs} = $c->stash->{rs}->to_body([ split(/\|/, $bodies) ]);
     }
 
     if ('rss' eq $c->stash->{format}) {
@@ -384,7 +375,7 @@ sub rss_query : Private {
         rows => $limit
     };
 
-    my $problems = $c->cobrand->problems->search( $criteria, $attr );
+    my $problems = $c->stash->{rs}->search( $criteria, $attr );
     $c->stash->{problems} = $problems;
 }
 
@@ -411,6 +402,7 @@ sub get_request : Private {
         id => $id,
         non_public => 0,
     };
+    $c->stash->{rs} = $c->cobrand->problems;
     $c->forward( 'output_requests', [ $criteria ] );
 }
 
