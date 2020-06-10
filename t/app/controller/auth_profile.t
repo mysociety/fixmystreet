@@ -417,16 +417,16 @@ subtest "Test generate token page" => sub {
         "submit generate token form"
     );
     $mech->content_contains( 'Your token has been generated', "token generated" );
+    my ($token) = $mech->content =~ /<span>(.*?)<\/span>/;
+    my @parts = split /-/, $token, 2;
+    is $parts[0], $user->id, 'token has user ID at start';
 
     $user->discard_changes();
-    my $token = $user->get_extra_metadata('access_token');
-    ok $token, 'access token set';
-
-    $mech->content_contains($token, 'access token displayed');
+    $user->password($user->get_extra_metadata('access_token'), 1);
+    ok $user->check_password($parts[1]), 'access token set';
 
     $mech->get_ok('/auth/generate_token');
-    $mech->content_contains('Current token:');
-    $mech->content_contains($token, 'access token displayed');
+    $mech->content_lacks($parts[1], 'access token not displayed');
     $mech->content_contains('If you generate a new token');
 
     $mech->log_out_ok;

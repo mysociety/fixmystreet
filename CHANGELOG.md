@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Security:
+        - Store personal access tokens hashed, and only show once, upon generation.
     - New features:
         - Add Open Location Codes support to search box. #3047
     - Front end improvements:

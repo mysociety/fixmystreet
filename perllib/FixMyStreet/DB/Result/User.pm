@@ -179,6 +179,11 @@ sub check_password {
     }
 }
 
+sub access_token {
+    my $self = shift;
+    return $self->get_extra_metadata('access_token');
+}
+
 around password => sub {
     my ($orig, $self) = (shift, shift);
     if (@_) {

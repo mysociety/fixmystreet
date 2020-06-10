@@ -9,7 +9,11 @@ INCLUDE 'header.html', title = loc('Security'), bodyclass = 'fullwidthpage'
 
     <p>
         <strong>[% loc('Token') %]:</strong>
-        <span>[% existing_token | html %]</span>
+        <span>[% token_generated %]</span>
+    </p>
+
+    <p>
+        [% loc('This will be the only time this token is visible, so please make a note of it now.') %]
     </p>
 
     <p><a href="/my">[% loc('Your account') %]</a></p>
@@ -66,13 +70,6 @@ INCLUDE 'header.html', title = loc('Security'), bodyclass = 'fullwidthpage'
 <h2>[% loc('Token') %]</h2>
 
     <input type="hidden" name="token" value="[% csrf_token %]">
-
-    [% IF existing_token %]
-        <p>
-            <strong>[% loc('Current token:') %]</strong>
-            <span>[% existing_token | html %]</span>
-        </p>
-    [% END %]
 
     <p>
     <input name="generate_token" type="submit" class="btn" value="[% existing_token ? loc('Replace token') : loc('Generate token') %]">

@@ -188,9 +188,10 @@ sub generate_token : Path('/auth/generate_token') {
 
         if ($c->get_param('generate_token')) {
             my $token = mySociety::AuthToken::random_token();
-            $c->user->set_extra_metadata('access_token', $token);
+            my $u = FixMyStreet::DB->resultset("User")->new({ password => $token });
+            $c->user->set_extra_metadata('access_token', $u->password);
             $c->user->update;
-            $c->stash->{token_generated} = 1;
+            $c->stash->{token_generated} = $c->user->id . '-' . $token;
         }
 
         my $action = $c->get_param('2fa_action') || '';
@@ -224,7 +225,7 @@ sub generate_token : Path('/auth/generate_token') {
     }
 
     $c->stash->{has_2fa} = $has_2fa ? 1 : 0;
-    $c->stash->{existing_token} = $c->user->get_extra_metadata('access_token');
+    $c->stash->{existing_token} = $c->user->get_extra_metadata('access_token') ? 1 : 0;
 }
 
 __PACKAGE__->meta->make_immutable;

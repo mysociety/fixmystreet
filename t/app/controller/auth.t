@@ -245,19 +245,20 @@ subtest "check logging in with token" => sub {
 
     my $user =  FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
     # token needs to be 18 characters
-    $user->set_extra_metadata('access_token', '1234567890abcdefgh');
+    my $u = FixMyStreet::DB->resultset("User")->new({ password => '1234567890abcdefgh' });
+    $user->set_extra_metadata('access_token', $u->password);
     $user->update();
 
-    $mech->add_header('Authorization', 'Bearer 1234567890abcdefgh');
+    $mech->add_header('Authorization', 'Bearer ' . $user->id . '-1234567890abcdefgh');
     $mech->logged_in_ok;
 
     $mech->delete_header('Authorization');
     $mech->not_logged_in_ok;
 
-    $mech->get_ok('/auth/check_auth?access_token=1234567890abcdefgh');
+    $mech->get_ok('/auth/check_auth?access_token=' . $user->id . '-1234567890abcdefgh');
 
-    $mech->add_header('Authorization', 'Bearer 1234567890abcdefgh');
-    $user->set_extra_metadata('access_token', 'XXXXXXXXXXXXXXXXXX');
+    $mech->add_header('Authorization', 'Bearer ' . $user->id . '-1234567890abcdefgh');
+    $user->set_extra_metadata('access_token', '$2a$08$HNslSx7Uic7q6Ti5WYT5JOT6npYPwrwLnDMJMJoD22LIqG5TfDIKf');
     $user->update();
     $mech->not_logged_in_ok;
 

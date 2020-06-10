@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base 'Class::Accessor::Fast';
 
-__PACKAGE__->mk_accessors(qw(token_field token_lookup));
+__PACKAGE__->mk_accessors(qw(token_field));
 
 our $VERSION = "0.01";
 
@@ -23,21 +23,23 @@ sub authenticate {
     $token ||= $c->get_param('access_token');
     return unless $token;
 
-    my $field = $self->token_field || 'access_token';
+    my $id;
+    ($id, $token) = split /-/, $token, 2;
+    return unless $id =~ /^[1-9]\d*$/;
 
-    my $value = $token;
-    if (my $lookup = $self->token_lookup) {
-        $value = {};
-        foreach (keys %$lookup) {
-            my $v = $lookup->{$_};
-            $v =~ s/TOKEN/$token/;
-            $value->{$_} = $v;
-        }
-    }
-    my $user_obj = $realm->find_user({ $field => $value }, $c);
-    if (ref $user_obj) {
+    my $user_obj = $realm->find_user({ id => $id }, $c);
+    if (ref($user_obj) && $self->check_token($user_obj, $token)) {
         return $user_obj;
     }
+    return;
+}
+
+sub check_token {
+    my ($self, $user, $token) = @_;
+
+    my $field = $self->token_field || 'access_token';
+    my $value = $user->$field;
+    return $user->_column_encoders->{password}->($token, $value) eq $value;
 }
 
 __PACKAGE__;
@@ -101,12 +103,6 @@ The field in the user object that contains the access token. This will vary
 depending on the storage class used, but is most likely something like
 'access_token'. In fact, this is so common that if this is left out of the
 config, it defaults to 'access_token'.
-
-=item token_lookup
-
-If the token isn't a field on its own, but contained within another field, you
-can provide a custom lookup here, where the string TOKEN in a value will be
-replaced by the access token.
 
 =back
 
