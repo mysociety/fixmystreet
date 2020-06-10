@@ -46,7 +46,7 @@ sub by_categories {
             || (grep { $_->contact_id == $contact->get_column('id') } $_->$join_table)
         } @results;
         @ts = $rs->map_extras(@ts);
-        $extras{$contact->category} = encode_json(\@ts);
+        $extras{$contact->category} = JSON::XS->new->encode(\@ts);
     }
 
     return \%extras;
