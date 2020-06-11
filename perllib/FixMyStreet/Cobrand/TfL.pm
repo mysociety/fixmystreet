@@ -494,6 +494,7 @@ sub _tlrn_categories { [
     "Single Light out (street light)",
     "Standing water",
     "Street Light - Equipment damaged, pole leaning",
+    "Streetspace Suggestions and Feedback",
     "Unstable hoardings",
     "Unstable scaffolding",
     "Worn out road markings",
