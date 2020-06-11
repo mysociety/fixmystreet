@@ -133,4 +133,26 @@ fixmystreet.alloy_defaults = {
     strategy_class: OpenLayers.Strategy.Alloy
 };
 
+fixmystreet.alloy_add_layers = function(defaults, layers) {
+    $.each(layers, function(index, layer) {
+        if ( layer.categories ) {
+            var options = {
+                http_options: {
+                    layerid: layer.layer,
+                    layerVersion: layer.version,
+                },
+                asset_type: layer.asset_type || 'spot',
+                asset_category: layer.categories,
+                asset_item: layer.item_name || layer.layer_name.toLowerCase(),
+            };
+            if (layer.max_resolution) {
+                options.max_resolution = layer.max_resolution;
+            }
+            if (layer.snap_threshold || layer.snap_threshold === 0) {
+                options.snap_threshold = layer.snap_threshold;
+            }
+            fixmystreet.assets.add(northants_defaults, options);
+        }
+    });
+};
 })();
