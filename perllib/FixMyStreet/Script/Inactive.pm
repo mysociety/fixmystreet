@@ -185,6 +185,7 @@ sub email_inactive_users {
     });
     while (my $user = $users->next) {
         next if $user->get_extra_metadata('inactive_email_sent');
+        next unless $user->email && $user->email_verified;
 
         say "Emailing user #" . $user->id if $self->verbose;
         next if $self->dry_run;
