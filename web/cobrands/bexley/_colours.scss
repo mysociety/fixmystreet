@@ -40,9 +40,9 @@ $primary_text: $text_black;
 $base_bg: $white;
 $base_fg: $text_black;
 
-$nav_background_colour: $fuchsia;
-$nav_colour: $white;
-$nav_hover_background_colour: darken($fuchsia, 10%);
+$nav_background_colour: $white;
+$nav_colour: $text_black;
+$nav_hover_background_colour: $fuchsia_lt;
 
 $col_click_map: $aqua;
 
