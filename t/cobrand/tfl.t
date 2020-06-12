@@ -642,12 +642,23 @@ subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {
 
     $mech->submit_form_ok( { with_fields => {
         area_ids => [2482],
+        'contacts[' . $contact1->id . ']' => 1,
+        'contacts[' . $contact2->id . ']' => 1,
+        assigned_categories_only => 1,
     } } );
 
     $staffuser->discard_changes;
     is_deeply $staffuser->area_ids, [2482], "User assigned to Bromley LBO area";
 
     $staffuser->update({ area_ids => undef}); # so login below doesn't break
+};
+
+subtest 'Check TfL assigned only sees only their categories in filter' => sub {
+    $mech->log_in_ok($staffuser->email);
+    $mech->get_ok('/around?pc=BR1+3UH');
+    $mech->content_contains('Bus stops');
+    $mech->content_lacks('Pothole');
+    $staffuser->unset_extra_metadata('categories'); # so login below doesn't break
 };
 
 my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
