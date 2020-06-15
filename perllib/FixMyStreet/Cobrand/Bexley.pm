@@ -3,10 +3,6 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
-use Encode;
-use JSON::MaybeXS;
-use LWP::Simple qw($ua);
-use Path::Tiny;
 use Time::Piece;
 
 sub council_area_id { 2494 }
@@ -221,39 +217,8 @@ sub _is_out_of_hours {
     return 1 if $time->hour > 16 || ($time->hour == 16 && $time->min >= 45);
     return 1 if $time->hour < 8;
     return 1 if $time->wday == 1 || $time->wday == 7;
-    return 1 if _is_bank_holiday();
+    return 1 if FixMyStreet::Cobrand::UK::is_public_holiday();
     return 0;
-}
-
-sub _is_bank_holiday {
-    my $json = _get_bank_holiday_json();
-    my $today = localtime->date;
-    for my $event (@{$json->{'england-and-wales'}{events}}) {
-        if ($event->{date} eq $today) {
-            return 1;
-        }
-    }
-}
-
-sub _get_bank_holiday_json {
-    my $file = 'bank-holidays.json';
-    my $cache_file = path(FixMyStreet->path_to("../data/$file"));
-    my $js;
-    if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
-        # uncoverable statement
-        $js = $cache_file->slurp_utf8;
-    } else {
-        $ua->timeout(5);
-        $js = LWP::Simple::get("https://www.gov.uk/$file");
-        # uncoverable branch false
-        $js = decode_utf8($js) if !utf8::is_utf8($js);
-        if ($js && !FixMyStreet->config('STAGING_SITE')) {
-            # uncoverable statement
-            $cache_file->spew_utf8($js);
-        }
-    }
-    $js = JSON->new->decode($js) if $js;
-    return $js;
 }
 
 1;
