@@ -217,7 +217,7 @@ sub construct_bin_report_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless $_->{last};
+        next unless $_->{last} && $_->{report_allowed};
         my $id = $_->{service_id};
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {

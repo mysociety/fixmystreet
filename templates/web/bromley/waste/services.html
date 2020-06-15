@@ -1,9 +1,13 @@
+[% IF unit.report_allowed %]
   [% any_report_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/report', [ uprn ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="service-[% unit.service_id %]" value="1">
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
   </form>
+[% ELSE %]
+  <span class="waste-service-descriptor">Please note that missed collections can only be reported within 2 working days of your scheduled collection day.</span>
+[% END %]
   <a href="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
 [% IF unit.request_allowed %]
   [% any_request_allowed = 1 %]
