@@ -1,8 +1,10 @@
+[% IF unit.report_allowed %]
   <form method="post" action="[% c.uri_for_action('hercules/report', [ uprn ]) %]" class="hercules-service-launch-arrow">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="service-[% unit.service_id %]" value="1">
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="hercules-service-link">
   </form>
+[% END %]
   <a href="[% c.uri_for_action('hercules/enquiry', [ uprn ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="hercules-service-link hercules-service-launch-arrow">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
   <a href="[% c.uri_for_action('hercules/enquiry', [ uprn ]) %]?template=damage&amp;service_id=[% unit.service_id %]" class="hercules-service-link hercules-service-launch-arrow">Report damage during a [% unit.service_name FILTER lower %] collection</a>
 [% IF unit.request_allowed %]
