@@ -61,7 +61,6 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     select_action: true,
     feature_code: 'feature_id',
     stylemap: streetlight_stylemap,
-    asset_item_message: 'You can pick a <b class="asset-spot">ITEM</b> from the map &raquo;',
     construct_asset_name: function(id) {
         var code = id.replace(/[O0-9]+[A-Z]*/g, '');
         return {id: id, name: streetlight_code_to_type[code]};

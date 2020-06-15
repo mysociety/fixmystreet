@@ -136,7 +136,6 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     select_action: true,
     stylemap: streetlight_stylemap,
     feature_code: 'FeatureId',
-    asset_item_message: 'You can pick a <b class="asset-spot">ITEM</b> from the map &raquo;',
     construct_asset_name: function(id) {
         if (id.split) {
             var code = id.split("/").slice(-1)[0];

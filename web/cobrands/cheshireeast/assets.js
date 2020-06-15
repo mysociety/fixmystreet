@@ -42,8 +42,7 @@ fixmystreet.assets.add(labeled_defaults, {
     filter_key: 'feature_gr',
     filter_value: 'LCOL',
     asset_group: 'Street lights',
-    asset_item: 'street light',
-    asset_item_message: 'You can pick a <b class="asset-spot">street light</b> from the map &raquo;'
+    asset_item: 'street light'
 });
 
 fixmystreet.assets.add(defaults, {
