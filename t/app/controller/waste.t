@@ -1,8 +1,14 @@
+use utf8;
 use Test::MockModule;
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
+
+# Mock fetching bank holidays
+my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+$uk->mock('_fetch_url', sub { '{}' });
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -44,6 +50,7 @@ FixMyStreet::override_config {
         $mech->content_contains('can’t find your address');
     };
     subtest 'Address lookup' => sub {
+        set_fixed_time('2020-05-28T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
         $mech->submit_form_ok({ with_fields => { address => '1000000002' } });
@@ -51,7 +58,15 @@ FixMyStreet::override_config {
         $mech->content_contains('Food Waste');
     };
     subtest 'Report a missed bin' => sub {
+        $mech->content_contains('service-101', 'Can report, last collection was 27th');
+        $mech->content_contains('service-537', 'Can report, last collection was 27th');
+        $mech->content_lacks('service-535', 'Cannot report, last collection was 20th');
+        $mech->content_lacks('service-542', 'Cannot report, last collection was 18th');
         $mech->follow_link_ok({ text => 'Report a missed collection' });
+        $mech->content_contains('service-101', 'Checkbox, last collection was 27th');
+        $mech->content_contains('service-537', 'Checkbox, last collection was 27th');
+        $mech->content_lacks('service-535', 'No checkbox, last collection was 20th');
+        $mech->content_lacks('service-542', 'No checkbox, last collection was 18th');
         $mech->submit_form_ok({ form_number => 2 });
         $mech->content_contains('Please specify what was missed');
         $mech->submit_form_ok({ with_fields => { 'service-101' => 1 } });

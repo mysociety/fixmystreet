@@ -452,6 +452,12 @@ sub check_recaptcha {
         unless $res->{success};
 }
 
+sub public_holidays {
+    my $nation = shift || 'england-and-wales';
+    my $json = _get_bank_holiday_json();
+    return [ map { $_->{date} } @{$json->{$nation}{events}} ];
+}
+
 sub is_public_holiday {
     my %args = @_;
     $args{date} ||= localtime;
