@@ -256,9 +256,10 @@ subtest 'geocoder' => sub {
     ] };
 };
 
-my $bex = Test::MockModule->new('FixMyStreet::Cobrand::Bexley');
-$bex->mock('get', sub {
-    return <<EOF
+subtest 'out of hours' => sub {
+    my $lwp = Test::MockModule->new('LWP::UserAgent');
+    $lwp->mock('get', sub {
+        HTTP::Response->new(200, 'OK', [], <<EOF);
 {
     "england-and-wales": {
         "events": [
@@ -267,9 +268,8 @@ $bex->mock('get', sub {
     }
 }
 EOF
-});
+    });
 
-subtest 'out of hours' => sub {
     my $cobrand = FixMyStreet::Cobrand::Bexley->new;
     set_fixed_time('2019-10-16T12:00:00Z');
     is $cobrand->_is_out_of_hours(), 0, 'not out of hours in the day';
