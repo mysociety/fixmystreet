@@ -13,6 +13,7 @@ use Sort::Key::Natural qw(natkeysort_inplace);
 use Try::Tiny;
 use URI::Escape qw(uri_escape_utf8);
 use FixMyStreet::DateRange;
+use FixMyStreet::WorkingDays;
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -499,6 +500,7 @@ sub bin_services_for_address {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
+            report_allowed => within_working_days($schedules->{last}, 2),
             request_allowed => $request_allowed{$_->{ServiceId}},
             request_containers => $containers,
             request_max => $quantity_max{$_->{ServiceId}},
@@ -560,5 +562,24 @@ sub _parse_schedules {
     };
 }
 
+=over
+
+=item within_working_days
+
+Given a DateTime object and a number, return true if today is less than or
+equal to that number of working days (excluding weekends and bank holidays)
+after the date.
+
+=back
+
+=cut
+
+sub within_working_days {
+    my ($dt, $days) = @_;
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    $dt = $wd->add_days($dt, $days)->ymd;
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    return $today le $dt;
+}
 
 1;
