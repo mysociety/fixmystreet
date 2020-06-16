@@ -45,6 +45,7 @@ sub string {
         if $params->{bounds};
     $query_params{countrycodes} = $params->{country}
         if $params->{country};
+    $c->cobrand->call_hook(geocoder_munge_query_params => \%query_params);
     $url .= join('&', map { "$_=$query_params{$_}" } sort keys %query_params);
 
     $c->stash->{geocoder_url} = $url;
