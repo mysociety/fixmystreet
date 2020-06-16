@@ -136,6 +136,8 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     requires 'SOAP::Lite', '1.20';
     # TfL
     requires 'Net::Subnet';
+    # Bromley
+    requires 'Data::ICal';
 };
 
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {
