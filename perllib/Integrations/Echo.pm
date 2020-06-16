@@ -21,6 +21,7 @@ has endpoint => (
         SOAP::Lite->soapversion(1.2);
         my $soap = SOAP::Lite->on_action( sub { $self->action . $_[1]; } )->proxy($self->url);
         $soap->serializer->register_ns("http://schemas.microsoft.com/2003/10/Serialization/Arrays", 'msArray'),
+        $soap->serializer->register_ns("http://schemas.datacontract.org/2004/07/System", 'dataContract');
         return $soap;
     },
 );
@@ -89,16 +90,23 @@ sub GetTasks {
     );
 }
 
-sub GetPointAddress {
-    my $self = shift;
+sub _uprn_ref {
+    require SOAP::Lite;
     my $uprn = shift;
     tie(my %obj, 'Tie::IxHash',
         Key => 'Uprn',
         Type => 'PointAddress',
         Value => [
-            { 'msArray:anyType' => $uprn },
+            { 'msArray:anyType' => SOAP::Data->value($uprn)->type('string') },
         ],
     );
+    return \%obj;
+}
+
+sub GetPointAddress {
+    my $self = shift;
+    my $uprn = shift;
+    my $obj = _uprn_ref($uprn);
     return {
         Id => '12345',
         PointType => 'PointAddress',
@@ -106,7 +114,7 @@ sub GetPointAddress {
         Coordinates => { GeoPoint => { Latitude => 51.401546, Longitude => 0.015415 } },
         Description => '2 Example Street, Bromley, BR1 1AA',
     } if $self->sample_data;
-    $self->call('GetPointAddress', ref => \%obj);
+    $self->call('GetPointAddress', ref => $obj);
 }
 
 sub FindPoints {
@@ -131,19 +139,14 @@ sub FindPoints {
 sub GetServiceUnitsForObject {
     my $self = shift;
     my $uprn = shift;
-    tie(my %obj, 'Tie::IxHash',
-        Key => 'Uprn',
-        Type => 'PointAddress',
-        Value => [
-            { 'msArray:anyType' => $uprn },
-        ],
-    );
+    my $obj = _uprn_ref($uprn);
     return {
         ServiceUnit => [ {
             Id => 1001,
             ServiceId => 101,
             ServiceName => 'Refuse collection',
             ServiceTasks => { ServiceTask => {
+                Id => 401,
                 ScheduleDescription => 'every Wednesday',
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
@@ -161,6 +164,7 @@ sub GetServiceUnitsForObject {
             ServiceId => 102,
             ServiceName => 'Paper recycling collection',
             ServiceTasks => { ServiceTask => {
+                Id => 402,
                 ScheduleDescription => 'every other Wednesday',
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
@@ -178,6 +182,7 @@ sub GetServiceUnitsForObject {
             ServiceId => 535,
             ServiceName => 'Domestic Container Mix Collection',
             ServiceTasks => { ServiceTask => {
+                Id => 403,
                 ScheduleDescription => 'every other Wednesday',
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
@@ -195,6 +200,7 @@ sub GetServiceUnitsForObject {
             ServiceId => 104,
             ServiceName => 'Food waste collection',
             ServiceTasks => { ServiceTask => {
+                Id => 404,
                 ScheduleDescription => 'every other Monday',
                 ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                     EndDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -215,11 +221,67 @@ sub GetServiceUnitsForObject {
         } ],
     } if $self->sample_data;
     $self->call('GetServiceUnitsForObject',
-        objectRef => \%obj,
+        objectRef => $obj,
         query => {
             IncludeTaskInstances => 'true',
         }
     );
+}
+
+sub dt_to_hash {
+    my $dt = shift;
+    my $utc = $dt->clone->set_time_zone('UTC');
+    $dt = ixhash(
+        'dataContract:DateTime' => $utc->ymd . 'T' . $utc->hms . 'Z',
+        'dataContract:OffsetMinutes' => $dt->offset / 60,
+    );
+    return $dt;
+}
+
+sub GetServiceTaskInstances {
+    my ($self, @tasks) = @_;
+
+    my @objects;
+    foreach (@tasks) {
+        my $obj = ixhash(
+            Key => 'Id',
+            Type => 'ServiceTask',
+            Value => [
+                { 'msArray:anyType' => $_ },
+            ],
+        );
+        push @objects, { ObjectRef => $obj };
+    }
+    my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
+    my $end = $start->clone->add(months => 3);
+    my $query = ixhash(
+        From => dt_to_hash($start),
+        To => dt_to_hash($end),
+    );
+    return {
+        ServiceTaskInstances => [
+            { ServiceTaskRef => { Value => { anyType => 401 } },
+                Instances => { ScheduledTaskInfo => [
+                    { CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+                ] }
+            },
+            { ServiceTaskRef => { Value => { anyType => 402 } },
+                Instances => { ScheduledTaskInfo => [
+                    { CurrentScheduledDate => { DateTime => '2020-07-08T00:00:00Z' } },
+                ] }
+            },
+        ]
+    } if $self->sample_data;
+    # uncoverable statement
+    $self->call('GetServiceTaskInstances',
+        serviceTaskRefs => \@objects,
+        query => $query,
+    );
+}
+
+sub ixhash {
+    tie (my %data, 'Tie::IxHash', @_);
+    return \%data;
 }
 
 sub make_soap_structure {
@@ -234,8 +296,6 @@ sub make_soap_structure {
         } elsif (ref $v eq 'ARRAY') {
             my @map = map { make_soap_structure(%$_) } @$v;
             $val = \SOAP::Data->value(SOAP::Data->name('dummy' => @map));
-        } else {
-            $d->type('string');
         }
         push @out, $d->value($val);
     }

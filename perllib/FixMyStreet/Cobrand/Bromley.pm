@@ -533,7 +533,9 @@ sub bin_services_for_address {
             request_allowed => $request_allowed{$_->{ServiceId}},
             request_containers => $containers{$_->{ServiceId}},
             request_max => $quantity_max{$_->{ServiceId}},
-            #$servicetask->{TaskTypeName} TaskTypeId Id
+            service_task_id => $servicetask->{Id},
+            service_task_name => $servicetask->{TaskTypeName},
+            service_task_type_id => $servicetask->{TaskTypeId},
             schedule => $servicetask->{ScheduleDescription},
             last => $max_last,
             last_ordinal => $last_ordinal,
@@ -546,6 +548,35 @@ sub bin_services_for_address {
     }
 
     return \@out;
+}
+
+sub bin_future_collections {
+    my $self = shift;
+
+    my $services = $self->{c}->stash->{service_data};
+    my @tasks;
+    my %names;
+    foreach (@$services) {
+        push @tasks, $_->{service_task_id};
+        $names{$_->{service_task_id}} = $_->{service_name};
+    }
+
+    my $echo = $self->feature('echo');
+    $echo = Integrations::Echo->new(%$echo);
+    my $result = $echo->GetServiceTaskInstances(@tasks);
+    return [] unless $result;
+
+    my $events = [];
+    foreach (@{$result->{ServiceTaskInstances} || []}) {
+        my $task_id = $_->{ServiceTaskRef}{Value}{anyType};
+        foreach (@{$_->{Instances}{ScheduledTaskInfo}}) {
+            my $dt = construct_bin_date($_->{CurrentScheduledDate});
+            my $summary = $names{$task_id} . ' collection';
+            my $desc = '';
+            push @$events, { date => $dt, summary => $summary, desc => $desc };
+        }
+    }
+    return $events;
 }
 
 =over
