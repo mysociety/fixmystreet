@@ -131,7 +131,20 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label class="inline-text" for="category">[% loc('Category:') %]</label>
     [% INCLUDE 'admin/report-category.html' %]
 </li>
-<li>[% loc('Extra data:') %] [% IF extra_fields.size %]<ul>[% FOREACH field IN extra_fields %]<li><strong>[% field.name %]</strong>: [% field.val %]</li>[% END %]</ul>[% ELSE %]No[% END %]</li>
+<li>[% loc('Extra data:') ~%]
+    [%~ IF extra_fields.size ~%]
+        <ul>
+        [%~ FOREACH field IN extra_fields ~%]
+            <li><strong>[%~ field.name ~%]</strong>: [% IF field.val.0.defined ~%]
+                    [%~ field.val.list.join(", ") ~%]
+                [%~ ELSE ~%]
+                    [%~ field.val ~%]
+                [%~ END ~%]
+            </li>
+        [%~ END ~%]
+        </ul>
+    [%~ ELSE %] No[% END ~%]
+</li>
 <li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
 <select class="form-control" name="anonymous"  id="anonymous">
 <option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
