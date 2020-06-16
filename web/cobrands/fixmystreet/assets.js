@@ -179,6 +179,18 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         return (f1.attributes[asset_id_field] == f2.attributes[asset_id_field]);
     },
 
+    construct_selected_asset_message: function(asset) {
+        var id = asset.attributes[this.fixmystreet.feature_code] || '';
+        if (id === '') {
+            return;
+        }
+        var data = { id: id, name: this.fixmystreet.asset_item };
+        if (this.fixmystreet.construct_asset_name) {
+            data = this.fixmystreet.construct_asset_name(id) || data;
+        }
+        return 'You have selected ' + data.name + ' <b>' + data.id + '</b>';
+    },
+
     find_matching_feature: function(feature, layer) {
         if (!layer) {
             return false;
@@ -836,15 +848,9 @@ fixmystreet.assets = {
         return new OpenLayers.Style(f);
     },
     named_select_action_found: function(asset) {
-        var id = asset.attributes[this.fixmystreet.feature_code] || '';
-        var message;
-        if (id !== '') {
-            var data = { id: id, name: this.fixmystreet.asset_item };
-            if (this.fixmystreet.construct_asset_name) {
-                data = this.fixmystreet.construct_asset_name(id) || data;
-            }
-            message = 'You have selected ' + data.name + ' <b>' + data.id + '</b>';
-        } else {
+        var fn = this.fixmystreet.construct_selected_asset_message || this.construct_selected_asset_message;
+        var message = fn.call(this, asset);
+        if (!message) {
             message = get_asset_pick_message.call(this);
         }
         $('.category_meta_message').html(message);
