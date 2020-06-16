@@ -27,6 +27,27 @@ sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
+sub geocoder_munge_query_params {
+    my ($self, $params) = @_;
+
+    $params->{addressdetails} = 1;
+}
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    if (my $a = $result->{address}) {
+        if ($a->{road} && $a->{suburb} && $a->{postcode}) {
+            $result->{display_name} = "$a->{road}, $a->{suburb}, $a->{postcode}";
+            return;
+        }
+    }
+    $result->{display_name} = '' unless $result->{display_name} =~ /Hackney/;
+    $result->{display_name} =~ s/, United Kingdom$//;
+    $result->{display_name} =~ s/, London, Greater London, England//;
+    $result->{display_name} =~ s/, London Borough of Hackney//;
+}
+
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
