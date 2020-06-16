@@ -72,13 +72,26 @@ sub _cache_timeout {
     FixMyStreet->config('CACHE_TIMEOUT') // 3600;
 }
 
+sub recent_completed {
+    my $rs = shift;
+    $rs->_recent_in_states('completed', [
+        FixMyStreet::DB::Result::Problem->fixed_states(),
+        FixMyStreet::DB::Result::Problem->closed_states()
+    ]);
+}
+
 sub recent_fixed {
     my $rs = shift;
-    my $key = "recent_fixed:$site_key";
+    $rs->_recent_in_states('fixed', [ FixMyStreet::DB::Result::Problem->fixed_states() ]);
+}
+
+sub _recent_in_states {
+    my ($rs, $state_key, $states) = @_;
+    my $key = "recent_$state_key:$site_key";
     my $result = Memcached::get($key);
     unless ($result) {
         $result = $rs->search( {
-            state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
+            state => $states,
             lastupdate => { '>', \"current_timestamp-'1 month'::interval" },
         } )->count;
         Memcached::set($key, $result, _cache_timeout());

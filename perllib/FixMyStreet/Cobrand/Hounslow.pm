@@ -171,4 +171,29 @@ sub lookup_site_code_config { {
 # their cobrand at all.
 sub cut_off_date { '2019-05-06' }
 
+sub front_stats_data {
+    my ( $self ) = @_;
+
+    my $recency = '1 week';
+    my $shorter_recency = '3 days';
+
+    my $completed = $self->problems->recent_completed();
+    my $updates = $self->problems->number_comments();
+    my $new = $self->problems->recent_new( $recency );
+
+    if ( $new > $completed ) {
+        $recency = $shorter_recency;
+        $new = $self->problems->recent_new( $recency );
+    }
+
+    my $stats = {
+        completed => $completed,
+        updates => $updates,
+        new => $new,
+        recency => $recency,
+    };
+
+    return $stats;
+}
+
 1;
