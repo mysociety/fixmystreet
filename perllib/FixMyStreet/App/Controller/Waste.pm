@@ -92,6 +92,44 @@ sub bin_days : Chained('uprn') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
 }
 
+sub calendar : Chained('uprn') : PathPart('calendar.ics') : Args(0) {
+    my ($self, $c) = @_;
+    $c->res->header(Content_Type => 'text/calendar');
+    require Data::ICal::RFC7986;
+    require Data::ICal::Entry::Event;
+    my $calendar = Data::ICal::RFC7986->new(
+        calname => 'Bin calendar',
+        rfc_strict => 1,
+        auto_uid => 1,
+    );
+    $calendar->add_properties(
+        prodid => '//FixMyStreet//Bin Collection Calendars//EN',
+        method => 'PUBLISH',
+        'refresh-interval' => [ 'P1D', { value => 'DURATION' } ],
+        'x-published-ttl' => 'P1D',
+        calscale => 'GREGORIAN',
+        'x-wr-timezone' => 'Europe/London',
+        source => [ $c->uri_for_action($c->action, [ $c->stash->{uprn} ]), { value => 'URI' } ],
+        url => $c->uri_for_action('waste/bin_days', [ $c->stash->{uprn} ]),
+    );
+
+    my $events = $c->cobrand->bin_future_collections;
+    my $stamp = DateTime->now->strftime('%Y%m%dT%H%M%SZ');
+    foreach (@$events) {
+        my $event = Data::ICal::Entry::Event->new;
+        $event->add_properties(
+            summary => $_->{summary},
+            description => $_->{desc},
+            dtstamp => $stamp,
+            dtstart => [ $_->{date}->ymd(''), { value => 'DATE' } ],
+            dtend => [ $_->{date}->add(days=>1)->ymd(''), { value => 'DATE' } ],
+        );
+        $calendar->add_entry($event);
+    }
+
+    $c->res->body($calendar->as_string);
+}
+
 sub construct_bin_request_form {
     my $c = shift;
 
