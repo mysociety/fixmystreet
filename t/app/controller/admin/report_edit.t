@@ -686,16 +686,28 @@ subtest "Test display of fields extra data" => sub {
     $mech->get_ok("/admin/report_edit/$report_id");
     $mech->content_contains('Extra data: No');
 
-    $report->push_extra_fields( {
-        name => 'report_url',
-        value => 'http://example.com',
-    });
+    $report->push_extra_fields(
+        {
+            name => 'report_url',
+            value => 'http://example.com',
+        },
+        {
+            name => 'sent_to',
+            value => [ 'onerecipient@example.org' ],
+        },
+        {
+            name => 'sent_too',
+            value => [ 'onemorerecipient@example.org', 'another@example.org' ],
+        },
+    );
     $report->update;
 
     $report->discard_changes;
 
     $mech->get_ok("/admin/report_edit/$report_id");
     $mech->content_contains('report_url</strong>: http://example.com');
+    $mech->content_contains('sent_to</strong>: onerecipient@example.org');
+    $mech->content_contains('sent_too</strong>: onemorerecipient@example.org, another@example.org');
 
     $report->set_extra_fields( {
         description => 'Report URL',
