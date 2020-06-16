@@ -947,6 +947,14 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
+  Class-ReturnValue-0.55
+    pathname: J/JE/JESSE/Class-ReturnValue-0.55.tar.gz
+    provides:
+      Class::ReturnValue 0.55
+    requirements:
+      Devel::StackTrace 0
+      ExtUtils::MakeMaker 0
+      Test::More 0
   Class-Singleton-1.4
     pathname: A/AB/ABW/Class-Singleton-1.4.tar.gz
     provides:
@@ -1723,6 +1731,36 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.42
       perl 5.006
+  Data-ICal-0.24
+    pathname: B/BP/BPS/Data-ICal-0.24.tar.gz
+    provides:
+      Data::ICal 0.24
+      Data::ICal::Entry undef
+      Data::ICal::Entry::Alarm undef
+      Data::ICal::Entry::Alarm::Audio undef
+      Data::ICal::Entry::Alarm::Display undef
+      Data::ICal::Entry::Alarm::Email undef
+      Data::ICal::Entry::Alarm::None undef
+      Data::ICal::Entry::Alarm::Procedure undef
+      Data::ICal::Entry::Alarm::URI undef
+      Data::ICal::Entry::Event undef
+      Data::ICal::Entry::FreeBusy undef
+      Data::ICal::Entry::Journal undef
+      Data::ICal::Entry::TimeZone undef
+      Data::ICal::Entry::TimeZone::Daylight undef
+      Data::ICal::Entry::TimeZone::Standard undef
+      Data::ICal::Entry::Todo undef
+      Data::ICal::Property 0.06
+    requirements:
+      Class::Accessor 0
+      Class::ReturnValue 0
+      ExtUtils::MakeMaker 6.36
+      MIME::QuotedPrint 0
+      Test::LongString 0
+      Test::More 0
+      Test::NoWarnings 0
+      Test::Warn 0
+      Text::vFile::asData 0
   Data-OptList-0.110
     pathname: R/RJ/RJBS/Data-OptList-0.110.tar.gz
     provides:
@@ -7931,6 +7969,14 @@ DISTRIBUTIONS
       Text::Unidecode 0.04
     requirements:
       ExtUtils::MakeMaker 0
+  Text-vFile-asData-0.08
+    pathname: R/RC/RCLAMP/Text-vFile-asData-0.08.tar.gz
+    provides:
+      Text::vFile::asData 0.08
+    requirements:
+      Class::Accessor::Chained 0
+      ExtUtils::MakeMaker 0
+      Test::More 0.88
   Throwable-0.200013
     pathname: R/RJ/RJBS/Throwable-0.200013.tar.gz
     provides:
