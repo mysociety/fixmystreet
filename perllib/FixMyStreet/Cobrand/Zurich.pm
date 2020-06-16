@@ -10,6 +10,7 @@ use DateTime::Format::Pg;
 use Try::Tiny;
 
 use FixMyStreet::Geocode::Zurich;
+use FixMyStreet::WorkingDays;
 
 use strict;
 use warnings;
@@ -221,7 +222,7 @@ sub get_body_sender {
 
 # Report overdue functions
 
-my %public_holidays = map { $_ => 1 } (
+my @public_holidays = (
     # New Year's Day, Saint Berchtold, Good Friday, Easter Monday,
     # Sechseläuten, Labour Day, Ascension Day, Whit Monday,
     # Swiss National Holiday, Knabenschiessen, Christmas, St Stephen's Day
@@ -247,53 +248,23 @@ my %public_holidays = map { $_ => 1 } (
     '2021-09-13',
 );
 
-sub is_public_holiday {
-    my $dt = shift;
-    return $public_holidays{$dt->ymd};
-}
-
-sub is_weekend {
-    my $dt = shift;
-    return $dt->dow > 5;
-}
-
-sub add_days {
-    my ( $dt, $days ) = @_;
-    $dt = $dt->clone;
-    while ( $days > 0 ) {
-        $dt->add ( days => 1 );
-        next if is_public_holiday($dt) or is_weekend($dt);
-        $days--;
-    }
-    return $dt;
-}
-
-sub sub_days {
-    my ( $dt, $days ) = @_;
-    $dt = $dt->clone;
-    while ( $days > 0 ) {
-        $dt->subtract ( days => 1 );
-        next if is_public_holiday($dt) or is_weekend($dt);
-        $days--;
-    }
-    return $dt;
-}
-
 sub overdue {
     my ( $self, $problem ) = @_;
 
     my $w = $problem->created;
     return 0 unless $w;
 
+    my $wd = FixMyStreet::WorkingDays->new( public_holidays => \@public_holidays );
+
     # call with previous state
     if ( $problem->state eq 'submitted' ) {
         # One working day
-        $w = add_days( $w, 1 );
+        $w = $wd->add_days( $w, 1 );
         return $w < DateTime->now() ? 1 : 0;
     } elsif ( $problem->state eq 'confirmed' || $problem->state eq 'in progress' || $problem->state eq 'feedback pending' ) {
         # States which affect the subdiv_overdue statistic.  TODO: this may no longer be required
         # Six working days from creation
-        $w = add_days( $w, 6 );
+        $w = $wd->add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
 
     # call with new state
@@ -301,7 +272,7 @@ sub overdue {
         # States which affect the closed_overdue statistic
         # Five working days from moderation (so 6 from creation)
 
-        $w = add_days( $w, 6 );
+        $w = $wd->add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
     }
 }
