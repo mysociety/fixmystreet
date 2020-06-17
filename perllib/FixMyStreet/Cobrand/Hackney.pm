@@ -15,9 +15,17 @@ sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
+    my $town = 'Hackney';
+
+    # Teale Street is on the boundary with Tower Hamlets and
+    # shows the 'please use fixmystreet.com' message, but Hackney
+    # do provide services on that road.
+    ($string, $town) = ('E2 9AA', '') if $string =~ /^teale\s+st/i;
+
     return {
         %{ $self->SUPER::disambiguate_location() },
-        town   => 'Hackney',
+        string => $string,
+        town   => $town,
         centre => '51.552267,-0.063316',
         bounds => [ 51.519814, -0.104511, 51.577784, -0.016527 ],
     };
