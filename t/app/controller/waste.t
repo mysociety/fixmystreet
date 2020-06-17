@@ -2,6 +2,7 @@ use utf8;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -30,17 +31,18 @@ sub create_contact {
     $contact->update;
 }
 
-create_contact({ category => 'Report missed collection', email => 'missed' });
-create_contact({ category => 'Request new container', email => 'request' },
+create_contact({ category => 'Report missed collection', email => 'missed@example.org' });
+create_contact({ category => 'Request new container', email => 'request@example.org' },
     { code => 'Quantity', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
 );
-create_contact({ category => 'General enquiry', email => 'general' },
+create_contact({ category => 'General enquiry', email => 'general@example.org' },
     { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' });
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['bromley', 'fixmystreet'],
     COBRAND_FEATURES => { echo => { bromley => { sample_data => 1 } }, waste => { bromley => 1 } },
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->host('bromley.fixmystreet.com');
     subtest 'Missing address lookup' => sub {
@@ -82,6 +84,12 @@ FixMyStreet::override_config {
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your report has been sent');
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        is $emails[0]->header('To'), '"Bromley Council" <missed@example.org>';
+        is $emails[1]->header('To'), $user->email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Your report to Bromley Council has been logged/;
 
         is $user->alerts->count, 1;
     };

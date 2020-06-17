@@ -379,6 +379,14 @@ sub munge_load_and_group_problems {
     }
 }
 
+# We want to send confirmation emails only for Waste reports
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    my $contact = $report->contact or return;
+    return 'id' if grep { $_ eq 'Waste' } @{$report->contact->groups};
+    return '';
+}
+
 sub munge_around_category_where {
     my ($self, $where) = @_;
     $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
