@@ -243,7 +243,7 @@ sub _send {
 sub _post_send {
     my ($self, $result) = @_;
 
-    my $send_confirmation_email = $self->cobrand_handler->report_sent_confirmation_email;
+    my $send_confirmation_email = $self->cobrand_handler->report_sent_confirmation_email($self->report);
     unless ($result) {
         $self->report->update( {
             whensent => \'current_timestamp',
