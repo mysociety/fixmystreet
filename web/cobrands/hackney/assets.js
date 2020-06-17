@@ -127,6 +127,50 @@ fixmystreet.assets.add(wfs_defaults, {
   attributes: {}
 });
 
+fixmystreet.hackney = {};
+fixmystreet.hackney.debug_parks = function() {
+  fixmystreet.assets.add(wfs_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "greenspaces:hackney_park",
+        }
+    },
+    non_interactive: true,
+    always_visible: true,
+    stylemap: new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fillColor: "#88ff88",
+            fillOpacity: 0.4,
+            strokeColor: "#008800",
+            strokeOpacity: 1,
+            strokeWidth: 4,
+        })
+    }),
+    attributes: {}
+  });
+  fixmystreet.assets.add(wfs_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "housing:lbh_estate",
+        }
+    },
+    non_interactive: true,
+    always_visible: true,
+    stylemap: new OpenLayers.StyleMap({
+      'default': new OpenLayers.Style({
+          fillColor: "#C3A963",
+          fillOpacity: 0.4,
+          strokeColor: "#C3A963",
+          strokeOpacity: 1,
+          strokeWidth: 4,
+      })
+    }),
+    attributes: {}
+  });
+};
+if (window.URLSearchParams && new URLSearchParams(location.search).has("debuglbr")) {
+  fixmystreet.hackney.debug_parks();
+}
 
 /** These layers are served directly from Alloy: */
 
