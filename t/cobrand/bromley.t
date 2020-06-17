@@ -246,4 +246,23 @@ subtest 'check heatmap page' => sub {
     };
 };
 
+subtest 'test waste max-per-day' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => { max_per_day => 1, sample_data => 1 } },
+            hercules => { bromley => 1 }
+        },
+    }, sub {
+        SKIP: {
+            skip( "No memcached", 2 ) unless Memcached::increment('bromley-test');
+            Memcached::delete("bromley-test");
+            $mech->get_ok('/hercules/uprn/12345');
+            $mech->get('/hercules/uprn/12345');
+            is $mech->res->code, 403, 'Now forbidden';
+        }
+    };
+
+};
+
 done_testing();
