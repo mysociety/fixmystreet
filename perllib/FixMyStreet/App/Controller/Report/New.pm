@@ -1676,7 +1676,7 @@ sub redirect_or_confirm_creation : Private {
         $c->forward( 'create_related_things' );
         if ($c->stash->{contributing_as_another_user} && $report->user->email
             && $report->user->id != $c->user->id
-            && !$c->cobrand->report_sent_confirmation_email) {
+            && !$c->cobrand->report_sent_confirmation_email($report)) {
                 $c->send_email( 'other-reported.txt', {
                     to => [ [ $report->user->email, $report->name ] ],
                 } );
