@@ -33,4 +33,15 @@ sub delete {
     instance->delete(@_);
 }
 
+sub increment {
+    my $key = shift;
+    my $timeout = shift;
+    my $count = instance->incr($key);
+    if (!defined $count) {
+        instance->add($key, 0, $timeout);
+        $count = instance->incr($key);
+    };
+    return $count;
+}
+
 1;

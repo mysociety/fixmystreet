@@ -1,7 +1,12 @@
 use CGI::Simple;
+use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
+
+# Mock fetching bank holidays
+my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+$uk->mock('_fetch_url', sub { '{}' });
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
@@ -245,6 +250,25 @@ subtest 'check heatmap page' => sub {
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
+};
+
+subtest 'test waste max-per-day' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => { max_per_day => 1, sample_data => 1 } },
+            waste => { bromley => 1 }
+        },
+    }, sub {
+        SKIP: {
+            skip( "No memcached", 2 ) unless Memcached::increment('bromley-test');
+            Memcached::delete("bromley-test");
+            $mech->get_ok('/waste/uprn/12345');
+            $mech->get('/waste/uprn/12345');
+            is $mech->res->code, 403, 'Now forbidden';
+        }
+    };
+
 };
 
 done_testing();

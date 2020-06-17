@@ -11,6 +11,7 @@ use Sort::Key::Natural qw(natkeysort_inplace);
 use Try::Tiny;
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
+use Memcached;
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -435,8 +436,17 @@ sub look_up_property {
     my $self = shift;
     my $uprn = shift;
 
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    if ($cfg->{max_per_day}) {
+        my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+        my $ip = $self->{c}->req->address;
+        my $key = FixMyStreet->test_mode ? "bromley-test" : "bromley-$ip-$today";
+        my $count = Memcached::increment($key, 86400) || 0;
+        $self->{c}->detach('/page_error_403_access_denied', []) if $count > $cfg->{max_per_day};
+    }
+
     my $result = $echo->GetPointAddress($uprn);
     return {
         id => $result->{Id},
