@@ -81,7 +81,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your request has been sent');
+        $mech->content_contains('Your report has been sent');
     };
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
@@ -138,7 +138,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your request has been sent');
+        $mech->content_contains('Your enquiry has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->user->email, $user->email;
