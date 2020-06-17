@@ -490,7 +490,7 @@ sub bin_services_for_address {
     );
 
     my @out;
-    my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
     foreach (@{$result->{ServiceUnit}}) {
         next unless $_->{ServiceTasks};
 
@@ -563,7 +563,7 @@ sub report_allowed {
     my $dt = shift;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
     $dt = $wd->add_days($dt, 2)->ymd;
-    my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
     return $today le $dt;
 }
 
