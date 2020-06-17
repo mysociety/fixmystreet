@@ -115,22 +115,27 @@ sub open311_filter_contacts_for_deletion {
     });
 }
 
-sub lookup_site_code_config {
-    my ($self, $type) = @_;
-    my $property_map = {
+sub problem_is_within_area_type {
+    my ($self, $problem, $type) = @_;
+    my $layer_map = {
         park => "greenspaces:hackney_park",
         estate => "housing:lbh_estate",
     };
-    {
-        buffer => 3, # metres
+    my $layer = $layer_map->{$type};
+    return unless $layer;
+
+    my ($x, $y) = $problem->local_coords;
+
+    my $cfg = {
         url => "https://map.hackney.gov.uk/geoserver/wfs",
         srsname => "urn:ogc:def:crs:EPSG::27700",
-        typename => $property_map->{$type},
-        property => ( $type eq "park" ? "park_id" : "id" ),
-        accept_feature => sub { 1 },
-        accept_types => { Polygon => 1 },
+        typename => $layer,
         outputformat => "json",
-    }
+        filter => "<Filter xmlns:gml=\"http://www.opengis.net/gml\"><Intersects><PropertyName>geom</PropertyName><gml:Point srsName=\"27700\"><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Intersects></Filter>",
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y) || [];
+    return scalar @$features ? 1 : 0;
 }
 
 sub get_body_sender {
@@ -142,9 +147,9 @@ sub get_body_sender {
     my $regex = qr/$parts/i;
     if (my ($park, $estate, $other) = $contact->email =~ $regex) {
         my $to = $other;
-        if (my $park_id = $self->lookup_site_code($problem, 'park')) {
+        if ($self->problem_is_within_area_type($problem, 'park')) {
             $to = $park;
-        } elsif (my $estate_id = $self->lookup_site_code($problem, 'estate')) {
+        } elsif ($self->problem_is_within_area_type($problem, 'estate')) {
             $to = $estate;
         }
         $problem->set_extra_metadata(sent_to => { $contact->email => $to });
