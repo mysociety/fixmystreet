@@ -84,7 +84,7 @@ sub uprn : Chained('/') : PathPart('hercules/uprn') : CaptureArgs(1) {
     $c->stash->{latitude} = $property->{latitude};
     $c->stash->{longitude} = $property->{longitude};
 
-    $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $uprn) || [];
+    $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
 }
 

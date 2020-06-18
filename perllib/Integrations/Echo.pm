@@ -2,8 +2,10 @@ package Integrations::Echo;
 
 use strict;
 use warnings;
+use DateTime;
 use Moo;
 use Tie::IxHash;
+use FixMyStreet; # TODO Pass in timezone/now?
 
 has attr => ( is => 'ro', default => 'http://www.twistedfish.com/xmlns/echo/api/v1' );
 has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
@@ -117,6 +119,7 @@ sub GetPointAddress {
     $self->call('GetPointAddress', ref => $obj);
 }
 
+# Given a postcode, returns an arrayref of addresses
 sub FindPoints {
     my $self = shift;
     my $pc = shift;
@@ -124,16 +127,15 @@ sub FindPoints {
         PointType => 'PointAddress',
         Postcode => $pc,
     );
-    return {
-        PointInfo => [
-            { Description => '1 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000001 } } },
-            { Description => '2 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000002 } } },
-            { Description => '3 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000003 } } },
-            { Description => '4 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000004 } } },
-            { Description => '5 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000005 } } },
-        ],
-    } if $self->sample_data;
-    $self->call('FindPoints', query => \%obj);
+    return [
+        { Description => '1 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000001 } } },
+        { Description => '2 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000002 } } },
+        { Description => '3 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000003 } } },
+        { Description => '4 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000004 } } },
+        { Description => '5 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000005 } } },
+    ] if $self->sample_data;
+    my $res = $self->call('FindPoints', query => \%obj);
+    return force_arrayref($res, 'PointInfo');
 }
 
 sub GetServiceUnitsForObject {
@@ -228,16 +230,6 @@ sub GetServiceUnitsForObject {
     );
 }
 
-sub dt_to_hash {
-    my $dt = shift;
-    my $utc = $dt->clone->set_time_zone('UTC');
-    $dt = ixhash(
-        'dataContract:DateTime' => $utc->ymd . 'T' . $utc->hms . 'Z',
-        'dataContract:OffsetMinutes' => $dt->offset / 60,
-    );
-    return $dt;
-}
-
 sub GetServiceTaskInstances {
     my ($self, @tasks) = @_;
 
@@ -258,30 +250,48 @@ sub GetServiceTaskInstances {
         From => dt_to_hash($start),
         To => dt_to_hash($end),
     );
-    return {
-        ServiceTaskInstances => [
-            { ServiceTaskRef => { Value => { anyType => 401 } },
-                Instances => { ScheduledTaskInfo => [
-                    { CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
-                ] }
-            },
-            { ServiceTaskRef => { Value => { anyType => 402 } },
-                Instances => { ScheduledTaskInfo => [
-                    { CurrentScheduledDate => { DateTime => '2020-07-08T00:00:00Z' } },
-                ] }
-            },
-        ]
-    } if $self->sample_data;
+    return [
+        { ServiceTaskRef => { Value => { anyType => 401 } },
+            Instances => { ScheduledTaskInfo => [
+                { CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+            ] }
+        },
+        { ServiceTaskRef => { Value => { anyType => 402 } },
+            Instances => { ScheduledTaskInfo => [
+                { CurrentScheduledDate => { DateTime => '2020-07-08T00:00:00Z' } },
+            ] }
+        },
+    ] if $self->sample_data;
     # uncoverable statement
-    $self->call('GetServiceTaskInstances',
+    my $res = $self->call('GetServiceTaskInstances',
         serviceTaskRefs => \@objects,
         query => $query,
     );
+    return force_arrayref($res, 'ServiceTaskInstances');
 }
 
 sub ixhash {
     tie (my %data, 'Tie::IxHash', @_);
     return \%data;
+}
+
+sub dt_to_hash {
+    my $dt = shift;
+    my $utc = $dt->clone->set_time_zone('UTC');
+    $dt = ixhash(
+        'dataContract:DateTime' => $utc->ymd . 'T' . $utc->hms . 'Z',
+        'dataContract:OffsetMinutes' => $dt->offset / 60,
+    );
+    return $dt;
+}
+
+sub force_arrayref {
+    my ($res, $key) = @_;
+    return [] unless $res;
+    my $data = $res->{$key};
+    return [] unless $data;
+    $data = [ $data ] unless ref $data eq 'ARRAY';
+    return $data;
 }
 
 sub make_soap_structure {

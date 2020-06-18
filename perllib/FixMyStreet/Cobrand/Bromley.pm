@@ -417,12 +417,7 @@ sub bin_addresses_for_postcode {
 
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
-    my $result = $echo->FindPoints($pc);
-    return [] unless $result;
-
-    my $points = $result->{PointInfo};
-    return [] unless $points;
-    $points = [ $points ] unless ref $points eq 'ARRAY';
+    my $points = $echo->FindPoints($pc);
     my $data = [ map { {
         value => $_->{SharedRef}{Value}{anyType},
         label => FixMyStreet::Template::title($_->{Description}),
@@ -448,6 +443,8 @@ sub look_up_property {
 
     my $result = $echo->GetPointAddress($uprn);
     return {
+        id => $result->{Id},
+        uprn => $uprn,
         address => $result->{Description},
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
@@ -473,11 +470,11 @@ sub construct_bin_date {
 
 sub bin_services_for_address {
     my $self = shift;
-    my $uprn = shift;
+    my $property = shift;
 
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
-    my $result = $echo->GetServiceUnitsForObject($uprn);
+    my $result = $echo->GetServiceUnitsForObject($property->{uprn});
     return [] unless $result;
 
     my %request_allowed = map { $_ => 1 } (535, 536, 537, 541, 542, 544);
@@ -503,7 +500,7 @@ sub bin_services_for_address {
         45 => 'Wheeled Bin (Food)',
     };
 
-    my %containers = (
+    my %service_to_containers = (
         535 => [ 1 ],
         536 => [ 2 ],
         537 => [ 12 ],
@@ -556,13 +553,15 @@ sub bin_services_for_address {
         $next_ordinal = ordinal($min_next->day) if $min_next;
         $last_ordinal = ordinal($max_last->day) if $max_last;
 
+        my $containers = $service_to_containers{$_->{ServiceId}};
+
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
-            report_allowed => report_allowed($max_last),
+            report_allowed => report_allowed_time($max_last),
             request_allowed => $request_allowed{$_->{ServiceId}},
-            request_containers => $containers{$_->{ServiceId}},
+            request_containers => $containers,
             request_max => $quantity_max{$_->{ServiceId}},
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
@@ -595,10 +594,8 @@ sub bin_future_collections {
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
     my $result = $echo->GetServiceTaskInstances(@tasks);
-    return [] unless $result;
-
     my $events = [];
-    foreach (@{$result->{ServiceTaskInstances} || []}) {
+    foreach (@$result) {
         my $task_id = $_->{ServiceTaskRef}{Value}{anyType};
         foreach (@{$_->{Instances}{ScheduledTaskInfo}}) {
             my $dt = construct_bin_date($_->{CurrentScheduledDate});
@@ -612,7 +609,7 @@ sub bin_future_collections {
 
 =over
 
-=item report_allowed
+=item report_allowed_time
 
 Given a DateTime object, return true if today is less than or equal to two
 working days (excluding weekends and bank holidays) after that date.
@@ -621,7 +618,7 @@ working days (excluding weekends and bank holidays) after that date.
 
 =cut
 
-sub report_allowed {
+sub report_allowed_time {
     my $dt = shift;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
     $dt = $wd->add_days($dt, 2)->ymd;
