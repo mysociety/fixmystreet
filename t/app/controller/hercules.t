@@ -97,8 +97,11 @@ FixMyStreet::override_config {
         is $res->code, 403;
         $mech->log_in_ok($user->email);
         $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Provide an update');
+        $report->update({ state => 'fixed - council' });
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('Provide an update');
 
         $mech->host('www.fixmystreet.com');
         $res = $mech->get('/report/' . $report->id);
