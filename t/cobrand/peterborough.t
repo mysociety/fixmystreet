@@ -64,7 +64,7 @@ subtest "extra update params are sent to open311" => sub {
             test_get_returns => { 'servicerequestupdates.xml' => $test_res },
         );
 
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { external_id => 1, category => 'Trees' });
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { external_id => 1, category => 'Trees', whensent => DateTime->now });
 
         my $c = FixMyStreet::DB->resultset('Comment')->create({
             problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
@@ -80,5 +80,64 @@ subtest "extra update params are sent to open311" => sub {
         is $cgi->param('service_code'), $contact->email, 'Service code included';
     };
 };
+
+subtest "bartec report with no gecode handled correctly" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+    }, sub {
+        my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Bins', email => 'Bartec-Bins');
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough' });
+
+        my $test_data = FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+
+        my $req = $test_data->{test_req_used};
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[postcode]'), undef, 'postcode param not set';
+        is $cgi->param('attribute[house_no]'), undef, 'house_no param not set';
+        is $cgi->param('attribute[street]'), undef, 'street param not set';
+    };
+};
+
+subtest "extra bartec params are sent to open311" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+    }, sub {
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'Bins',
+            latitude => 52.5608,
+            longitude => 0.2405,
+            cobrand => 'peterborough',
+            geocode => {
+                resourceSets => [ {
+                    resources => [ {
+                        address => {
+                            addressLine => '12 A Street',
+                            postalCode => 'XX1 1XZ'
+                        }
+                    } ]
+                } ]
+            }
+        } );
+
+        my $test_data = FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+
+        my $req = $test_data->{test_req_used};
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[postcode]'), 'XX1 1XZ', 'postcode param sent';
+        is $cgi->param('attribute[house_no]'), '12', 'house_no param sent';
+        is $cgi->param('attribute[street]'), 'A Street', 'street param sent';
+    };
+};
+
 
 done_testing;
