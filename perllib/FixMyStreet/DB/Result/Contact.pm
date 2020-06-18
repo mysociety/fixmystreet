@@ -180,10 +180,12 @@ sub disable_form_field {
 sub sent_by_open311 {
     my $self = shift;
     my $body = $self->body;
+    my $method = $self->send_method || '';
+    my $body_method = $body->send_method || '';
     return 1 if
-        (!$body->can_be_devolved && $body->send_method eq 'Open311')
-        || ($body->can_be_devolved && $body->send_method eq 'Open311' && !$self->send_method)
-        || ($body->can_be_devolved && $self->send_method eq 'Open311');
+        (!$body->can_be_devolved && $body_method eq 'Open311')
+        || ($body->can_be_devolved && $body_method eq 'Open311' && !$method)
+        || ($body->can_be_devolved && $method eq 'Open311');
     return 0;
 }
 

@@ -7,7 +7,7 @@ After=network.target
 Type=forking
 User=fms
 PIDFile=/var/www/fixmystreet/fixmystreet.pid
-ExecStartPre=mkdir /var/www/fixmystreet/logs
+ExecStartPre=/bin/mkdir -p /var/www/fixmystreet/logs
 ExecStart=/var/www/fixmystreet/fixmystreet/script/server \
             --port 9000 \
             --env deployment \
