@@ -14,6 +14,7 @@ use Try::Tiny;
 use URI::Escape qw(uri_escape_utf8);
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
+use Memcached;
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -370,6 +371,14 @@ sub munge_load_and_group_problems {
     }
 }
 
+# We want to send confirmation emails only for Waste reports
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    my $contact = $report->contact or return;
+    return 'id' if grep { $_ eq 'Waste' } @{$report->contact->groups};
+    return '';
+}
+
 sub munge_around_category_where {
     my ($self, $where) = @_;
     $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
@@ -387,6 +396,19 @@ sub munge_report_new_contacts {
 
     @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
     $self->SUPER::munge_report_new_contacts($categories);
+}
+
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+
+    # Only open waste reports
+    if (my $contact = $problem->contact) {
+        my $waste = grep { $_ eq 'Waste' } @{$problem->contact->groups};
+        return 1 if $waste && ($problem->is_fixed || $problem->is_closed);
+    }
+
+    return $self->next::method(@_);
 }
 
 sub bin_addresses_for_postcode {
@@ -413,8 +435,17 @@ sub look_up_property {
     my $self = shift;
     my $uprn = shift;
 
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    if ($cfg->{max_per_day}) {
+        my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+        my $ip = $self->{c}->req->address;
+        my $key = FixMyStreet->test_mode ? "bromley-test" : "bromley-$ip-$today";
+        my $count = Memcached::increment($key, 86400) || 0;
+        $self->{c}->detach('/page_error_403_access_denied', []) if $count > $cfg->{max_per_day};
+    }
+
     my $result = $echo->GetPointAddress($uprn);
     return {
         address => $result->{Description},
