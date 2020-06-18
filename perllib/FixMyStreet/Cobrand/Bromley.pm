@@ -394,6 +394,19 @@ sub munge_report_new_contacts {
     $self->SUPER::munge_report_new_contacts($categories);
 }
 
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+
+    # Only open waste reports
+    if (my $contact = $problem->contact) {
+        my $waste = grep { $_ eq 'Waste' } @{$problem->contact->groups};
+        return 1 if $waste && ($problem->is_fixed || $problem->is_closed);
+    }
+
+    return $self->next::method(@_);
+}
+
 sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;
