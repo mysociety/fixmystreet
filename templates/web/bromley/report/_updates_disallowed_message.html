@@ -1,0 +1,13 @@
+[% IF c.cobrand.updates_disallowed(problem) == 'waste';
+    SET uprn = problem.get_extra_field_value('uprn');
+%]
+<p>
+   <a href="/waste[% IF uprn %]/uprn/[% uprn %][% END %]">See your bin collections</a>.
+</p>
+[% ELSE %]
+<p>[% loc('This report is now closed to updates.') %]
+   [% tprintf(loc('You can <a href="%s">make a new report in the same location</a>.'),
+          c.uri_for( '/report/new', { longitude = longitude, latitude = latitude } )
+      ) %]
+</p>
+[% END %]

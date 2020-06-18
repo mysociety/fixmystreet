@@ -406,6 +406,16 @@ sub munge_report_new_contacts {
     $self->SUPER::munge_report_new_contacts($categories);
 }
 
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+
+    # No updates on waste reports
+    return 'waste' if $problem->cobrand_data eq 'waste';
+
+    return $self->next::method(@_);
+}
+
 sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;

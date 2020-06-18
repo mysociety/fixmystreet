@@ -99,8 +99,12 @@ FixMyStreet::override_config {
         is $res->code, 403;
         $mech->log_in_ok($user->email);
         $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('Provide an update');
+        $report->update({ state => 'fixed - council' });
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('Provide an update');
+        $mech->content_contains( '<a href="/waste/uprn/1000000002">See your bin collections</a>' );
 
         $mech->host('www.fixmystreet.com');
         $res = $mech->get('/report/' . $report->id);
