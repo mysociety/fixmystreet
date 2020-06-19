@@ -87,7 +87,7 @@ sub display :PathPart('') :Chained('id') :Args(0) {
 
     my $permissions = $c->stash->{permissions} ||= $c->forward('fetch_permissions');
 
-    my $staff_user = $c->user_exists && ($c->user->is_superuser || $c->user->belongs_to_body($c->stash->{problem}->bodies_str));
+    my $staff_user = $c->user_exists && $c->user->belongs_to_body($c->stash->{problem}->bodies_str);
 
     if ($staff_user) {
         # Check assigned categories feature
