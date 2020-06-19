@@ -295,8 +295,11 @@ sub GetEventsForObject {
     my ($self, $id, $type) = @_;
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 3);
     return [ {
-        # Missed collection for service 542
+        # Missed collection for service 542 (food waste)
         EventTypeId => 2100,
+        ServiceId => 542,
+    }, { # And a gate not closed
+        EventTypeId => 2118,
         ServiceId => 542,
     }, {
         # Request for a new paper container
