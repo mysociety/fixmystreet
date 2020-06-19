@@ -541,6 +541,7 @@ sub bin_services_for_address {
             request_open => $open_request,
             request_containers => $containers,
             request_max => $quantity_max{$_->{ServiceId}},
+            enquiry_open_events => $open->{enquiry},
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
             service_task_type_id => $servicetask->{TaskTypeId},
@@ -580,6 +581,8 @@ sub _parse_events {
             $open->{request}->{$container} = 1;
         } elsif (2095 <= $event_type && $event_type <= 2103) { # Missed collection
             $open->{missed}->{$service_id} = 1;
+        } else { # General enquiry of some sort
+            $open->{enquiry}->{$event_type} = 1;
         }
     }
     return $open;
