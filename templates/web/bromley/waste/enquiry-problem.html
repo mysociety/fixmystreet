@@ -1,13 +1,29 @@
-[% PROCESS waste/enquiry.html
+[%
+
+f = [];
+service_id = c.req.params.service_id;
+service = services.$service_id;
+IF service.report_allowed;
+    IF !service.enquiry_open_events.2118;
+        f.push( { value = 'Gate not closed', label = 'A gate or enclosure wasn’t closed after the collection' } );
+    END;
+    IF !service.enquiry_open_events.2119;
+        f.push( { value = 'Waste spillage', label = 'Bin contents were spilled during the collection' } );
+    END;
+    IF !service.enquiry_open_events.2120;
+        f.push( { value = 'Bin not returned', label = 'A bin wasn’t returned after the collection' } );
+    END;
+END;
+f.push(
+    { value = 'Crew behaviour', label = 'There was a problem with the crew’s behaviour' },
+    { value = 'Wrongful removal', label = 'Something was wrongly removed during the collection' },
+    { value = 'Damage to 3rd party', label = 'Someone else’s vehicle was damaged' },
+    { value = 'Damage to Property', label = 'My property was damaged' },
+    { value = 'Failure to deliver bin', label = 'My bin was not delivered' },
+);
+
+PROCESS waste/enquiry.html
     title = 'Report a problem'
-    field_options = [
-        { value = 'Gate not closed', label = 'A gate or enclosure wasn’t closed after the collection' },
-        { value = 'Waste spillage', label = 'Bin contents were spilled during the collection' },
-        { value = 'Bin not returned', label = 'A bin wasn’t returned after the collection' },
-        { value = 'Crew behaviour', label = 'There was a problem with the crew’s behaviour' },
-        { value = 'Wrongful removal', label = 'Something was wrongly removed during the collection' },
-        { value = 'Damage to 3rd party', label = 'Someone else’s vehicle was damaged' },
-        { value = 'Damage to Property', label = 'My property was damaged' },
-        { value = 'Failure to deliver bin', label = 'My bin was not delivered' },
-    ]
+    field_options = f;
+
 %]
