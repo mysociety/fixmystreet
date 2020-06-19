@@ -291,6 +291,46 @@ sub GetServiceTaskInstances {
     return force_arrayref($res, 'ServiceTaskInstances');
 }
 
+sub GetEventsForObject {
+    my ($self, $id, $type) = @_;
+    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 3);
+    return [ {
+        # Missed collection for service 542
+        EventTypeId => 2100,
+        ServiceId => 542,
+    }, {
+        # Request for a new paper container
+        EventTypeId => 2104,
+        Data => { ExtensibleDatum => [
+            { Value => 2, DatatypeName => 'Source' },
+            {
+                ChildData => { ExtensibleDatum => [
+                    { Value => 1, DatatypeName => 'Action' },
+                    { Value => 12, DatatypeName => 'Container Type' },
+                ] },
+            },
+        ] },
+        ServiceId => 535,
+    } ] if $self->sample_data;
+    # uncoverable statement
+    my $res = $self->call('GetEventsForObject',
+        objectRef => ixhash(
+            Key => 'Id',
+            Type => 'PointAddress',
+            Value => { 'msArray:anyType' => $id },
+        ),
+        query => ixhash(
+            $type ? (EventTypeRef => ixhash(
+                Key => 'Id',
+                Type => 'EventType',
+                Value => { 'msArray:anyType' => $type },
+            )) : (),
+            From => dt_to_hash($from),
+        ),
+    );
+    return force_arrayref($res, 'Event');
+}
+
 sub ixhash {
     tie (my %data, 'Tie::IxHash', @_);
     return \%data;

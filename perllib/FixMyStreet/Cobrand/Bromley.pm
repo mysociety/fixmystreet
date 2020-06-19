@@ -522,6 +522,9 @@ sub bin_services_for_address {
     my $result = $echo->GetServiceUnitsForObject($property->{uprn});
     return [] unless @$result;
 
+    my $events = $echo->GetEventsForObject($property->{id});
+    my $open = $self->_parse_open_events($events);
+
     my @out;
     foreach (@$result) {
         next unless $_->{ServiceTasks};
@@ -532,12 +535,15 @@ sub bin_services_for_address {
         next unless $schedules->{next} or $schedules->{last};
 
         my $containers = $service_to_containers{$_->{ServiceId}};
+        my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
             report_allowed => within_working_days($schedules->{last}{date}, 2),
+            report_open => $open->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}},
+            request_open => $open_request,
             request_containers => $containers,
             request_max => $quantity_max{$_->{ServiceId}},
             service_task_id => $servicetask->{Id},
@@ -551,6 +557,37 @@ sub bin_services_for_address {
     }
 
     return \@out;
+}
+
+sub _parse_open_events {
+    my $self = shift;
+    my $events = shift;
+    my $open;
+    foreach (@$events) {
+        next if $_->{ResolvedDate} || $_->{ResolutionCodeId}; # Is this the right field?
+        my $event_type = $_->{EventTypeId};
+        my $service_id = $_->{ServiceId};
+        if ($event_type == 2104) { # Request
+            my $data = $_->{Data}{ExtensibleDatum};
+            my $container;
+            DATA: foreach (@$data) {
+                if ($_->{ChildData}) {
+                    foreach (@{$_->{ChildData}{ExtensibleDatum}}) {
+                        if ($_->{DatatypeName} eq 'Container Type') {
+                            $container = $_->{Value};
+                            last DATA;
+                        }
+                    }
+                }
+            }
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            $open->{request}->{$container} = $report ? { report => $report } : 1;
+        } elsif (2095 <= $event_type && $event_type <= 2103) { # Missed collection
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            $open->{missed}->{$service_id} = $report ? { report => $report } : 1;
+        }
+    }
+    return $open;
 }
 
 sub _parse_schedules {
