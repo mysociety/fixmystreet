@@ -477,7 +477,6 @@ sub bin_services_for_address {
     my $result = $echo->GetServiceUnitsForObject($property->{uprn});
     return [] unless $result;
 
-    my %request_allowed = map { $_ => 1 } (535, 536, 537, 541, 542, 544);
     my %service_name_override = (
         531 => 'Non-Recyclable Waste',
         532 => 'Non-Recyclable Waste',
@@ -508,6 +507,7 @@ sub bin_services_for_address {
         542 => [ 9, 10 ],
         544 => [ 45 ],
     );
+    my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
         535 => 6,
         536 => 4,

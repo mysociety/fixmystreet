@@ -163,7 +163,7 @@ sub GetServiceUnitsForObject {
             } },
         }, {
             Id => 1002,
-            ServiceId => 102,
+            ServiceId => 537,
             ServiceName => 'Paper recycling collection',
             ServiceTasks => { ServiceTask => {
                 Id => 402,
@@ -199,7 +199,7 @@ sub GetServiceUnitsForObject {
             } },
         }, {
             Id => 1004,
-            ServiceId => 104,
+            ServiceId => 542,
             ServiceName => 'Food waste collection',
             ServiceTasks => { ServiceTask => {
                 Id => 404,
