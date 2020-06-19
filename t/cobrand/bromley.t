@@ -1,5 +1,6 @@
 use CGI::Simple;
 use Test::MockModule;
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
@@ -250,6 +251,23 @@ subtest 'check heatmap page' => sub {
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
+};
+
+subtest 'test open enquiries' => sub {
+    set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => { sample_data => 1 } },
+            waste => { bromley => 1 }
+        },
+    }, sub {
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->follow_link_ok({ text => 'Report a problem with a food waste collection' });
+        $mech->content_contains('Waste spillage');
+        $mech->content_lacks('Gate not closed');
+    };
+
 };
 
 subtest 'test waste max-per-day' => sub {
