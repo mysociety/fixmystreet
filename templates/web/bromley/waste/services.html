@@ -1,4 +1,8 @@
-[% IF unit.report_allowed %]
+[% IF unit.report_open %]
+  [% IF unit.report_open.report %]<a href="[% unit.report_open.report.url %]" class="waste-service-link waste-service-descriptor">[% ELSE %]<span class="waste-service-descriptor">[% END %]
+    A [% unit.service_name FILTER lower %] collection has been reported as missed
+  [% IF unit.report_open.report %]</a>[% ELSE %]</span>[% END %]
+[% ELSIF unit.report_allowed %]
   [% any_report_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/report', [ uprn ]) %]" class="waste-service-launch-arrow">
     <input type="hidden" name="token" value="[% csrf_token %]">
@@ -10,7 +14,11 @@
 [% END %]
   <a href="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-launch-arrow waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
   <a href="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]?template=damage&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-launch-arrow waste-service-descriptor">Report damage during a [% unit.service_name FILTER lower %] collection</a>
-[% IF unit.request_allowed %]
+[% IF unit.request_open %]
+  [% IF unit.request_open.report %]<a href="[% unit.request_open.report.url %]" class="waste-service-link waste-service-descriptor">[% ELSE %]<span class="waste-service-descriptor">[% END %]
+    A new [% unit.service_name FILTER lower %] container request has been made
+  [% IF unit.request_open.report %]</a>[% ELSE %]</span>[% END %]
+[% ELSIF unit.request_allowed %]
   [% any_request_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/request', [ uprn ]) %]" class="waste-service-launch-arrow">
     <input type="hidden" name="token" value="[% csrf_token %]">
