@@ -477,6 +477,28 @@ sub bin_services_for_address {
     my $result = $echo->GetServiceUnitsForObject($property->{uprn});
     return [] unless $result;
 
+    my $events = $echo->GetEventsForObject($property->{id});
+    my $open;
+    foreach (@$events) {
+        next if $_->{ResolvedDate} || $_->{ResolutionCodeId}; # XXX?
+        my $event_type = $_->{EventTypeId};
+        my $service_id = $_->{ServiceId};
+        if ($event_type == 2104) { # Request
+            my $data = $_->{Data}{ExtensibleDatum};
+            my $container;
+            foreach (@$data) {
+                if ($_->{ChildData}) {
+                    foreach (@{$_->{ChildData}{ExtensibleDatum}}) {
+                        $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type';
+                    }
+                }
+            }
+            $open->{request}->{$container} = 1;
+        } elsif (2095 <= $event_type && $event_type <= 2103) { # Missed collection
+            $open->{missed}->{$service_id} = 1;
+        }
+    }
+
     my %service_name_override = (
         531 => 'Non-Recyclable Waste',
         532 => 'Non-Recyclable Waste',
@@ -554,13 +576,16 @@ sub bin_services_for_address {
         $last_ordinal = ordinal($max_last->day) if $max_last;
 
         my $containers = $service_to_containers{$_->{ServiceId}};
+        my $open_request = grep { $open->{request}->{$_} } @$containers;
 
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
             report_allowed => report_allowed_time($max_last),
+            report_open => $open->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}},
+            request_open => $open_request,
             request_containers => $containers,
             request_max => $quantity_max{$_->{ServiceId}},
             service_task_id => $servicetask->{Id},
