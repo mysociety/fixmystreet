@@ -136,7 +136,7 @@ sub construct_bin_request_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless $_->{next};
+        next unless $_->{next} && !$_->{request_open};
         my $name = $_->{service_name};
         my $containers = $_->{request_containers};
         my $max = $_->{request_max};
@@ -217,7 +217,7 @@ sub construct_bin_report_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless $_->{last} && $_->{report_allowed};
+        next unless $_->{last} && $_->{report_allowed} && !$_->{report_open};
         my $id = $_->{service_id};
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {

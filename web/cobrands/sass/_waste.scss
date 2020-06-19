@@ -97,6 +97,7 @@ body.waste {
   transition: all 200ms ease-out;
   z-index: inherit;
   position: relative;
+  max-width: 100%;
   .js &.hidden-js {
     display: block;
     opacity: 0;
@@ -135,6 +136,9 @@ input[type="submit"].waste-service-link {
   &:hover,
   &:focus {
     text-decoration: underline;
+  }
+  &:visited {
+    color: $link-color;
   }
 }
 

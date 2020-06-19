@@ -59,6 +59,9 @@ FixMyStreet::override_config {
         $mech->content_contains('2 Example Street');
         $mech->content_contains('Food Waste');
     };
+    subtest 'Thing already requested' => sub {
+        $mech->content_contains('A food waste collection has been reported as missed');
+    };
     subtest 'Report a missed bin' => sub {
         $mech->content_contains('service-101', 'Can report, last collection was 27th');
         $mech->content_contains('service-537', 'Can report, last collection was 27th');
@@ -134,6 +137,10 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 2;
         is $report->get_extra_field_value('Container_Type'), 1;
+    };
+    subtest 'Thing already requested' => sub {
+        $mech->get_ok('/waste/uprn/1000000002');
+        $mech->content_contains('A new paper &amp; cardboard container request has been made');
     };
     subtest 'General enquiry, bad data' => sub {
         $mech->get_ok('/waste/uprn/1000000002/enquiry');
