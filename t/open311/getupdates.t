@@ -18,9 +18,6 @@ my $body = FixMyStreet::DB->resultset('Body')->new( {
     name => 'Test Body',
 } );
 
-my $updates = Open311::GetUpdates->new( system_user => $user );
-ok $updates, 'created object';
-
 my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
 <service_requests>
 <request>
@@ -101,7 +98,12 @@ for my $test (
 
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
 
-        ok $updates->update_reports( [ 638344 ], $o, $body ), 'Updated reports';
+        my $updates = Open311::GetUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $body,
+        );
+        $updates->update_reports( [ $problem ] );
         my @parts = uri_split($o->test_uri_used);
         is $parts[2], '/requests.xml', 'path matches';
         my @qs = sort split '&', $parts[3];
@@ -179,7 +181,13 @@ subtest 'update with two requests' => sub {
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
 
-    ok $updates->update_reports( [ 638344,638345 ], $o, $body ), 'Updated reports';
+    my $updates = Open311::GetUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $body,
+    );
+
+    $updates->update_reports( [ $problem, $problem2 ] );
     my @parts = uri_split($o->test_uri_used);
     is $parts[2], '/requests.xml', 'path matches';
     my @qs = sort split '&', $parts[3];
@@ -227,7 +235,7 @@ my $problem3 = $problem_rs->create( {
     external_id  => 638346,
 } );
 
-subtest 'test translation of auto-added comment from old-style Open311 update' => sub {
+subtest 'test auto-added comment from old-style Open311 update' => sub {
     my $dt = sprintf( '<updated_datetime>%s</updated_datetime>', DateTime->now );
     $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
@@ -236,7 +244,13 @@ subtest 'test translation of auto-added comment from old-style Open311 update' =
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],
     }, sub {
-        ok $updates->update_reports( [ 638346 ], $o, $body ), 'Updated reports';
+        my $updates = Open311::GetUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $body,
+            blank_updates_permitted => 1,
+        );
+        $updates->update_reports( [ $problem3 ] );
     };
     my @parts = uri_split($o->test_uri_used);
     is $parts[2], '/requests.xml', 'path matches';
@@ -244,7 +258,8 @@ subtest 'test translation of auto-added comment from old-style Open311 update' =
     is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638346' ], 'query string matches');
 
     is $problem3->comments->count, 1, 'added a comment';
-    is $problem3->comments->first->text, "Stängd av kommunen", 'correct comment text';
+    is $problem3->comments->first->problem_state, 'fixed - council';
+    is $problem3->comments->first->text, '', 'correct comment text';
 };
 
 END {

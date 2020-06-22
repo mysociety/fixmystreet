@@ -2,6 +2,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Script::Reports;
+use Open311::GetUpdates;
 use Sub::Override;
 
 my $problem_rs = FixMyStreet::DB->resultset('Problem');
@@ -133,6 +134,7 @@ $problem->anonymous(1);
 $problem->insert;
 
 my $tz_local = DateTime::TimeZone->new( name => 'local' );
+my $comment_time = DateTime->now->set_time_zone( $tz_local );
 
 my $body = FixMyStreet::DB->resultset('Body')->new({
     name => 'Edinburgh City Council'
@@ -140,52 +142,32 @@ my $body = FixMyStreet::DB->resultset('Body')->new({
 
 for my $test (
     {
-        desc => 'request older than problem ignored',
-        lastupdate => '',
+        desc => 'request after problem created',
         request => {
-            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local )->subtract( days => 2 ) ),
-        },
-        created => 0,
-    },
-    {
-        desc => 'request newer than problem created',
-        lastupdate => '',
-        request => {
-            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
             status => 'open',
-            status_notes => 'this is an update from the council',
+            comment_time => $comment_time,
+            description => 'this is an update from the council',
         },
-        created => 1,
         state => 'confirmed',
-        mark_fixed => 0,
-        mark_open => 0,
     },
     {
         desc => 'update with state of closed fixes problem',
-        lastupdate => '',
         request => {
-            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
+            comment_time => $comment_time,
             status => 'closed',
-            status_notes => 'the council have fixed this',
+            description => 'the council have fixed this',
         },
-        created => 1,
-        state => 'fixed',
-        mark_fixed => 1,
-        mark_open => 0,
+        state => 'fixed - council',
     },
     {
-        desc => 'update with state of open leaves problem as fixed',
-        lastupdate => '',
+        desc => 'update with state of open reopens problem',
         request => {
-            updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
+            comment_time => $comment_time,
             status => 'open',
-            status_notes => 'the council do not think this is fixed',
+            description => 'the council do not think this is fixed',
         },
-        created => 1,
-        start_state => 'fixed',
-        state => 'fixed',
-        mark_fixed => 0,
-        mark_open => 0,
+        start_state => 'fixed - council',
+        state => 'confirmed',
     },
 ) {
     subtest $test->{desc} => sub {
@@ -197,23 +179,20 @@ for my $test (
         $problem->update;
         my $w3c = DateTime::Format::W3CDTF->new();
 
-        my $ret = $problem->update_from_open311_service_request( $test->{request}, $body, $user );
-        is $ret, $test->{created}, 'return value';
-
-        return unless $test->{created};
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1 );
+        my $updates = Open311::GetUpdates->new(
+            current_open311 => $o,
+            current_body => $body,
+            system_user => $user,
+        );
+        my $update = $updates->process_update($test->{request}, $problem);
 
         $problem->discard_changes;
-        is $problem->lastupdate, $w3c->parse_datetime($test->{request}->{updated_datetime}), 'lastupdate time';
-
-        my $update = $problem->comments->first;
+        is $problem->lastupdate, $test->{request}->{comment_time}, 'lastupdate time';
 
         ok $update, 'updated created';
-
         is $problem->state, $test->{state}, 'problem state';
-
-        is $update->text, $test->{request}->{status_notes}, 'update text';
-        is $update->mark_open, $test->{mark_open}, 'update mark_open flag';
-        is $update->mark_fixed, $test->{mark_fixed}, 'update mark_fixed flag';
+        is $update->text, $test->{request}->{description}, 'update text';
     };
 }
 

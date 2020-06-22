@@ -1,67 +1,53 @@
 package Open311::GetUpdates;
 
 use Moo;
+extends 'Open311::UpdatesBase';
+
 use Open311;
-use FixMyStreet::Cobrand;
 
-has body_list => ( is => 'ro' );
-has system_user => ( is => 'ro' );
+has '+send_comments_flag' => ( default => 0 );
+has ext_to_int_map => ( is => 'rw' );
 
-sub get_updates {
-    my $self = shift;
+has report_criteria => ( is => 'ro', default => sub { {
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        external_id => { '!=', '' },
+    } } );
 
-    while ( my $body = $self->body_list->next ) {
-        my $open311 = Open311->new(
-            endpoint     => $body->endpoint,
-            jurisdiction => $body->jurisdiction,
-            api_key      => $body->api_key
-        );
+sub process_body {
+    my ($self) = @_;
 
-        my $reports = $body->result_source->schema->resultset('Problem')->to_body($body)->search(
-            {
-                state => { 'IN', [qw/confirmed fixed/] },
-                -and => [
-                    external_id => { '!=', undef },
-                    external_id => { '!=', '' },
-                ],
-            }
-        );
+    my $reports = $self->schema->resultset('Problem')
+        ->to_body($self->current_body)
+        ->search($self->report_criteria);
 
-        my @report_ids = ();
-        while ( my $report = $reports->next ) {
-            push @report_ids, $report->external_id;
-        }
-
-        next unless @report_ids;
-
-        $self->update_reports( \@report_ids, $open311, $body );
-    }
+    my @reports = $reports->all;
+    $self->update_reports(\@reports);
 }
 
 sub update_reports {
-    my ( $self, $report_ids, $open311, $body ) = @_;
+    my ( $self, $reports ) = @_;
+    return unless @$reports;
 
-    my $service_requests = $open311->get_service_requests( { report_ids => $report_ids } );
-    my $requests = $service_requests->{request};
+    my $requests = $self->current_open311->get_service_requests( {
+        report_ids => [ map { $_->external_id } @$reports ],
+    } );
 
+    $self->ext_to_int_map({ map { $_->external_id => $_ } @$reports });
     for my $request (@$requests) {
-        # if there's no updated date then we can't
-        # tell if it's newer than what we have so we should skip it
-        next unless $request->{updated_datetime};
+        $request->{description} = $request->{status_notes};
 
-        my $request_id = $request->{service_request_id};
+        my $p = $self->find_problem($request) or next;
+        next if $request->{comment_time} < $p->lastupdate;
+        # But what if update at our end later than update their end...
 
-        my $problem = $body->result_source->schema->resultset('Problem')
-          ->search( { external_id => $request_id, } );
-
-        if (my $p = $problem->first) {
-            my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($p->cobrand)->new();
-            $cobrand->set_lang_and_domain($p->lang, 1, FixMyStreet->path_to('locale')->stringify );
-            $p->update_from_open311_service_request( $request, $body, $self->system_user );
-        }
+        $self->process_update($request, $p);
     }
+}
 
-    return 1;
+sub _find_problem {
+    my ($self, $criteria) = @_;
+    my $problem = $self->ext_to_int_map->{$criteria->{external_id}};
+    return $problem;
 }
 
 1;

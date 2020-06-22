@@ -8,6 +8,7 @@
 
 use strict;
 use warnings;
+use v5.14;
 
 BEGIN {
     use File::Basename qw(dirname);
@@ -16,21 +17,21 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
+use Getopt::Long::Descriptive;
 use Open311::GetUpdates;
-use FixMyStreet;
-use FixMyStreet::DB;
 
-# FIXME - make this configurable and/or better
-my $system_user = FixMyStreet::DB->resultset('User')->find_or_create(
-    {
-        email => FixMyStreet->config('CONTACT_EMAIL'),
-        name => 'System User',
-    }
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['body|b:s', 'body name to only fetch this body' ],
+    ['verbose|v', 'more verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+my %params = (
+    verbose => $opts->verbose,
+    body => $opts->body,
 );
 
-my $body_list = FixMyStreet::DB->resultset('Body');
-
-my $update = Open311::GetUpdates->new(
-    body_list => $body_list,
-    system_user  => $system_user
-)->get_updates;
+my $updates = Open311::GetUpdates->new(%params);
+$updates->fetch;

@@ -4,7 +4,6 @@ use Moo;
 use Open311;
 use FixMyStreet::DB;
 use FixMyStreet::MapIt;
-use FixMyStreet::App::Model::PhotoSet;
 use DateTime::Format::W3CDTF;
 
 has system_user => ( is => 'rw' );
@@ -85,7 +84,7 @@ sub create_problems {
         ->active
         ->search( { body_id => $body->id } );
 
-    for my $request (@{$requests->{request}}) {
+    for my $request (@$requests) {
         # no point importing if we can't put it on the map
         unless ($request->{service_request_id} && $request->{lat} && $request->{long}) {
             warn "Not creating request '$request->{description}' for @{[$body->name]} as missing one of id, lat or long"
