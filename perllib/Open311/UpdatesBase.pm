@@ -15,7 +15,8 @@ has suppress_alerts => ( is => 'rw', default => 0 );
 has blank_updates_permitted => ( is => 'rw', default => 0 );
 
 has current_body => ( is => 'rw' );
-has current_open311 => ( is => 'rw' );
+has current_open311 => ( is => 'rwp', lazy => 1, builder => 1 );
+has open311_config => ( is => 'ro' ); # If we need to pass in a devolved contact
 
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 
@@ -59,20 +60,7 @@ sub fetch {
         $pm->start and next;
 
         $self->current_body( $body );
-
-        my %open311_conf = (
-            endpoint => $body->endpoint,
-            api_key => $body->api_key,
-            jurisdiction => $body->jurisdiction,
-            extended_statuses => $body->send_extended_statuses,
-        );
-
-        my $cobrand = $body->get_cobrand_handler;
-        $cobrand->call_hook(open311_config_updates => \%open311_conf)
-            if $cobrand;
-
-        $self->current_open311( $open311 || Open311->new(%open311_conf) );
-
+        $self->_set_current_open311( $open311 || $self->_build_current_open311 );
         $self->suppress_alerts( $body->suppress_alerts );
         $self->blank_updates_permitted( $body->blank_updates_permitted );
         $self->system_user( $body->comment_user );
@@ -82,6 +70,25 @@ sub fetch {
     }
 
     $pm->wait_all_children;
+}
+
+sub _build_current_open311 {
+    my $self = shift;
+
+    my $body = $self->current_body;
+    my $conf = $self->open311_config || $body;
+    my %open311_conf = (
+        endpoint => $conf->endpoint || '',
+        api_key => $conf->api_key || '',
+        jurisdiction => $conf->jurisdiction || '',
+        extended_statuses => $body->send_extended_statuses,
+    );
+
+    my $cobrand = $body->get_cobrand_handler;
+    $cobrand->call_hook(open311_config_updates => \%open311_conf)
+        if $cobrand;
+
+    return Open311->new(%open311_conf);
 }
 
 sub check_date {

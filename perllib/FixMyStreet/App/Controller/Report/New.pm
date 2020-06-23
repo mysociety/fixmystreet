@@ -1679,21 +1679,8 @@ sub create_related_things : Private {
     foreach my $body (values %{$problem->bodies}) {
         my $user = $body->comment_user or next;
 
-        my %open311_conf = (
-            endpoint => $body->endpoint || '',
-            api_key => $body->api_key || '',
-            jurisdiction => $body->jurisdiction || '',
-            extended_statuses => $body->send_extended_statuses,
-        );
-
-        my $cobrand = $body->get_cobrand_handler;
-        $cobrand->call_hook(open311_config_updates => \%open311_conf)
-            if $cobrand;
-
-        my $open311 = Open311->new(%open311_conf);
         my $updates = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
-            current_open311 => $open311,
             current_body => $body,
             blank_updates_permitted => 1,
         );
