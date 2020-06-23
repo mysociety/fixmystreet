@@ -23,6 +23,8 @@
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007
         - Add option to show front end testing code coverage. #3036
         - Add function to fetch user's country from Gaze.
+    - Open311 improvements:
+        - Use devolved data on update sending.
     - UK:
         - Add option for recaptcha. #3050
 

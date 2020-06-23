@@ -14,14 +14,12 @@ use Open311;
 use constant SEND_METHOD_OPEN311 => 'Open311';
 
 has verbose => ( is => 'ro', default => 0 );
-has current_open311 => ( is => 'rw' );
 
 sub send {
     my $self = shift;
 
     my $bodies = $self->fetch_bodies;
     foreach my $body (values %$bodies) {
-        $self->construct_open311($body);
         $self->process_body($body);
     }
 }
@@ -41,18 +39,25 @@ sub fetch_bodies {
 }
 
 sub construct_open311 {
-    my ($self, $body) = @_;
-    my $o = Open311->new($self->open311_params($body));
-    $self->current_open311($o);
+    my ($self, $body, $comment) = @_;
+    my $o = Open311->new($self->open311_params($body, $comment));
+    return $o;
 }
 
 sub open311_params {
-    my ($self, $body) = @_;
+    my ($self, $body, $comment) = @_;
+
+    my $conf = $body;
+    if ($comment) {
+        my $cobrand_logged = $comment->get_cobrand_logged;
+        my $sender = $cobrand_logged->get_body_sender($body, $comment->problem->category);
+        $conf = $sender->{config};
+    }
 
     my %open311_conf = (
-        endpoint => $body->endpoint,
-        jurisdiction => $body->jurisdiction,
-        api_key => $body->api_key,
+        endpoint => $conf->endpoint,
+        jurisdiction => $conf->jurisdiction,
+        api_key => $conf->api_key,
         extended_statuses => $body->send_extended_statuses,
         fixmystreet_body => $body,
     );
@@ -119,7 +124,7 @@ sub process_update {
         return;
     }
 
-    my $o = $self->current_open311;
+    my $o = $self->construct_open311($body, $comment);
 
     $cobrand->call_hook(open311_pre_send => $comment, $o);
 

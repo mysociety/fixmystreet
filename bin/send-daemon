@@ -125,7 +125,6 @@ sub look_for_update {
     my ($body) = grep { $bodies->{$_} } @{$comment->problem->bodies_str_ids};
     $body = $bodies->{$body};
 
-    $updates->construct_open311($body);
     $updates->process_update($body, $comment);
 }
 
