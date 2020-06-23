@@ -1,6 +1,7 @@
 use CGI::Simple;
 use Test::MockModule;
 use Test::MockTime qw(:all);
+use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
@@ -11,7 +12,8 @@ $uk->mock('_fetch_url', sub { '{}' });
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
-my $body = $mech->create_body_ok( 2482, 'Bromley Council');
+my $body = $mech->create_body_ok( 2482, 'Bromley Council',
+    { can_be_devolved => 1, comment_user => $user });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -32,7 +34,13 @@ $mech->create_contact_ok(
     email => 'tfl@example.org',
 );
 
-my $waste = $mech->create_contact_ok(body => $body, category => 'Report missed collection', email => 'missed');
+my $waste = $mech->create_contact_ok(
+    body => $body,
+    category => 'Report missed collection',
+    email => 'missed',
+    send_method => 'Open311',
+    endpoint => 'waste-endpoint',
+);
 $waste->set_extra_metadata(group => ['Waste']);
 $waste->update;
 
@@ -287,6 +295,118 @@ subtest 'test waste max-per-day' => sub {
         }
     };
 
+};
+
+package SOAP::Result;
+sub result { return $_[0]->{result}; }
+sub new { my $c = shift; bless { @_ }, $c; }
+
+package main;
+
+subtest 'updating of waste reports' => sub {
+    my $integ = Test::MockModule->new('SOAP::Lite');
+    $integ->mock(call => sub {
+        my ($cls, @args) = @_;
+        my $method = $args[0]->name;
+        if ($method eq 'GetEvent') {
+            my ($key, $type, $value) = ${$args[3]->value}->value;
+            my $external_id = ${$value->value}->value->value;
+            my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
+            return SOAP::Result->new(result => {
+                EventStateId => $event_state_id,
+                EventTypeId => '2104',
+                LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
+                ResolutionCodeId => $resolution_code,
+            });
+        } elsif ($method eq 'GetEventType') {
+            return SOAP::Result->new(result => {
+                Workflow => { States => { State => [
+                    { CoreState => 'New', Name => 'New', Id => 15001 },
+                    { CoreState => 'Pending', Name => 'Unallocated', Id => 15002 },
+                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 15003 },
+                    { CoreState => 'Closed', Name => 'Completed', Id => 15004,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 201, Name => '' },
+                        { ResolutionCodeId => 202, Name => 'Spillage on Arrival' },
+                      ] } },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 15005,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 203, Name => 'Nothing Found' },
+                        { ResolutionCodeId => 204, Name => 'Too Heavy' },
+                        { ResolutionCodeId => 205, Name => 'Inclement Weather' },
+                      ] } },
+                    { CoreState => 'Closed', Name => 'Rejected', Id => 15006,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 206, Name => 'Out of Time' },
+                        { ResolutionCodeId => 207, Name => 'Duplicate' },
+                      ] } },
+                ] } },
+            });
+        } else {
+            is $method, 'UNKNOWN';
+        }
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => { url => 'https://www.example.org/' } },
+            waste => { bromley => 1 }
+        },
+    }, sub {
+        @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
+            category => 'Report missed collection',
+            cobrand_data => 'waste',
+        });
+        $reports[1]->update({ external_id => 'something-else' }); # To test loop
+        $report = $reports[0];
+        my $cobrand = FixMyStreet::Cobrand::Bromley->new;
+
+        $report->update({ external_id => 'waste-15001-' });
+        stdout_like {
+            $cobrand->waste_fetch_events(1);
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, 0, 'No new update';
+        is $report->state, 'confirmed', 'No state change';
+
+        $report->update({ external_id => 'waste-15003-' });
+        stdout_like {
+            $cobrand->waste_fetch_events(1);
+        } qr/Updating report to state action scheduled, Allocated to Crew/;
+        $report->discard_changes;
+        is $report->comments->count, 1, 'A new update';
+        is $report->state, 'action scheduled', 'A state change';
+
+        $report->update({ external_id => 'waste-15003-' });
+        stdout_like {
+            $cobrand->waste_fetch_events(1);
+        } qr/Latest update matches fetched state/;
+        $report->discard_changes;
+        is $report->comments->count, 1, 'No new update';
+        is $report->state, 'action scheduled', 'State unchanged';
+
+        $report->update({ external_id => 'waste-15004-201' });
+        stdout_like {
+            $cobrand->waste_fetch_events(1);
+        } qr/Updating report to state fixed - council, Completed/;
+        $report->discard_changes;
+        is $report->comments->count, 2, 'A new update';
+        is $report->state, 'fixed - council', 'Changed to fixed';
+
+        $reports[1]->update({ state => 'fixed - council' });
+        stdout_like {
+            $cobrand->waste_fetch_events(1);
+        } qr/^$/, 'No open reports';
+
+        $report->update({ external_id => 'waste-15005-205', state => 'confirmed' });
+        stdout_like {
+            $cobrand->waste_fetch_events(1);
+        } qr/Updating report to state unable to fix, Inclement Weather/;
+        $report->discard_changes;
+        is $report->comments->count, 3, 'A new update';
+        is $report->state, 'unable to fix', 'A state change';
+    };
 };
 
 done_testing();
