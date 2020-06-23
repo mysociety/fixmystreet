@@ -5,6 +5,7 @@
         - Add Open Location Codes support to search box. #3047
     - Front end improvements:
         - Add lazy image loading on list items.
+        - Improve Bing geocoder results.
     - Changes:
         - Mark user as active when sent an email alert.
     - Bugfixes:

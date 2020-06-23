@@ -36,6 +36,8 @@ sub string {
     $url .= '&userMapView=' . join(',', @{$params->{bounds}})
         if $params->{bounds};
     $url .= '&userLocation=' . $params->{centre} if $params->{centre};
+    $url .= '&userIp=127.0.0.1'; # So server location does not affect results
+    $url .= '&maxResults=10'; # Match what is said in the front end
     $url .= '&c=' . $params->{bing_culture} if $params->{bing_culture};
 
     $c->stash->{geocoder_url} = $url;
@@ -52,7 +54,13 @@ sub string {
 
     foreach (@$results) {
         my $address = $_->{name};
-        next if $params->{bing_country} && $_->{address}->{countryRegion} ne $params->{bing_country};
+        if ($params->{bing_country}) {
+            next if $_->{address}->{countryRegion} ne $params->{bing_country};
+            $address =~ s/, $params->{bing_country}$//;
+        }
+        if ($address !~ /$_->{address}->{locality}/) {
+            $address .= ", $_->{address}->{locality}";
+        }
 
         # Getting duplicate, yet different, results from Bing sometimes
         next if @valid_locations
