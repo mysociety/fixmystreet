@@ -11,6 +11,7 @@ use Sort::Key::Natural qw(natkeysort_inplace);
 use Try::Tiny;
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
+use Open311::GetServiceRequestUpdates;
 use Memcached;
 
 sub council_area_id { return 2482; }
@@ -668,8 +669,6 @@ Given a DateTime object and a number, return true if today is less than or
 equal to that number of working days (excluding weekends and bank holidays)
 after the date.
 
-=back
-
 =cut
 
 sub within_working_days {
@@ -678,6 +677,152 @@ sub within_working_days {
     $dt = $wd->add_days($dt, $days)->ymd;
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
     return $today le $dt;
+}
+
+=item waste_fetch_events
+
+Loop through all open waste events to see if there have been any updates
+
+=back
+
+=cut
+
+sub waste_fetch_events {
+    my ($self, $verbose) = @_;
+
+    my $body = $self->body;
+    my @contacts = $body->contacts->search({
+        send_method => 'Open311',
+        endpoint => { '!=', '' },
+    })->all;
+    die "Could not find any devolved contacts\n" unless @contacts;
+
+    my %open311_conf = (
+        endpoint => $contacts[0]->endpoint || '',
+        api_key => $contacts[0]->api_key || '',
+        jurisdiction => $contacts[0]->jurisdiction || '',
+        extended_statuses => $body->send_extended_statuses,
+    );
+    my $cobrand = $body->get_cobrand_handler;
+    $cobrand->call_hook(open311_config_updates => \%open311_conf)
+        if $cobrand;
+    my $open311 = Open311->new(%open311_conf);
+
+    my $updates = Open311::GetServiceRequestUpdates->new(
+        current_open311 => $open311,
+        current_body => $body,
+        system_user => $body->comment_user,
+        suppress_alerts => 0,
+        blank_updates_permitted => $body->blank_updates_permitted,
+    );
+
+    my $echo = $self->feature('echo');
+    $echo = Integrations::Echo->new(%$echo);
+
+    my $cfg = {
+        verbose => $verbose,
+        updates => $updates,
+        echo => $echo,
+        event_types => {},
+    };
+
+    my $reports = $self->problems->search({
+        external_id => { '!=', '' },
+        state => [ FixMyStreet::DB::Result::Problem->open_states() ],
+        category => [ map { $_->category } @contacts ],
+    });
+
+    while (my $report = $reports->next) {
+        print 'Fetching data for report ' . $report->id . "\n" if $verbose;
+
+        my $event = $cfg->{echo}->GetEvent($report->external_id);
+        my $request = $self->construct_waste_open311_update($cfg, $event) or next;
+
+        next if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
+        next unless $self->waste_check_last_update(
+            $cfg, $report, $request->{status}, $request->{external_status_code});
+
+        my $last_updated = construct_bin_date($event->{LastUpdatedDate});
+        $request->{comment_time} = $last_updated;
+
+        print "  Updating report to state $request->{status}, $request->{description} ($request->{external_status_code})\n" if $cfg->{verbose};
+        $cfg->{updates}->process_update($request, $report);
+    }
+}
+
+sub construct_waste_open311_update {
+    my ($self, $cfg, $event) = @_;
+
+    my $event_type = $cfg->{event_types}{$event->{EventTypeId}} ||= $self->waste_get_event_type($cfg, $event->{EventTypeId});
+    my $state_id = $event->{EventStateId};
+    my $resolution_id = $event->{ResolutionCodeId} || '';
+    my $status = $event_type->{states}{$state_id}{state};
+    my $description = $event_type->{resolution}{$resolution_id} || $event_type->{states}{$state_id}{name};
+    return {
+        description => $description,
+        status => $status,
+        update_id => 'waste',
+        external_status_code => $resolution_id,
+    };
+}
+
+sub waste_get_event_type {
+    my ($self, $cfg, $id) = @_;
+
+    my $event_type = $cfg->{echo}->GetEventType($id);
+
+    my $state_map = {
+        New => { New => 'confirmed' },
+        Pending => {
+            Unallocated => 'investigating',
+            'Allocated to Crew' => 'action scheduled',
+        },
+        Closed => {
+            Completed => 'fixed - council',
+            'Not Completed' => 'unable to fix',
+            Rejected => 'closed',
+        },
+    };
+
+    my $states = $event_type->{Workflow}->{States}->{State};
+    my $data;
+    foreach (@$states) {
+        my $core = $_->{CoreState}; # New/Pending/Closed
+        my $name = $_->{Name}; # New : Unallocated/Allocated to Crew : Completed/Not Completed/Rejected
+        $data->{states}{$_->{Id}} = {
+            core => $core,
+            name => $name,
+            state => $state_map->{$core}{$name},
+        };
+        my $codes = Integrations::Echo::force_arrayref($_->{ResolutionCodes}, 'StateResolutionCode');
+        foreach (@$codes) {
+            my $name = $_->{Name};
+            my $id = $_->{ResolutionCodeId};
+            $data->{resolution}{$id} = $name;
+        }
+    }
+    return $data;
+}
+
+# We only have the report's current state, no history, so must check current
+# against latest received update to see if state the same, and skip if so
+sub waste_check_last_update {
+    my ($self, $cfg, $report, $status, $resolution_id) = @_;
+
+    my $latest = $report->comments->search(
+        { external_id => 'waste', },
+        { order_by => { -desc => 'id' } }
+    )->first;
+
+    if ($latest) {
+        my $state = $cfg->{updates}->current_open311->map_state($status);
+        my $code = $latest->get_extra_metadata('external_status_code') || '';
+        if ($latest->problem_state eq $state && $code eq $resolution_id) {
+            print "  Latest update matches fetched state, skipping\n" if $cfg->{verbose};
+            return;
+        }
+    }
+    return 1;
 }
 
 1;

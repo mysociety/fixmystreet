@@ -291,6 +291,24 @@ sub GetServiceTaskInstances {
     return force_arrayref($res, 'ServiceTaskInstances');
 }
 
+sub GetEvent {
+    my ($self, $guid) = @_;
+    $self->call('GetEvent', ref => ixhash(
+        Key => 'Guid',
+        Type => 'Event',
+        Value => { 'msArray:anyType' => $guid },
+    ));
+}
+
+sub GetEventType {
+    my ($self, $id) = @_;
+    $self->call('GetEventType', ref => ixhash(
+        Key => 'Id',
+        Type => 'EventType',
+        Value => { 'msArray:anyType' => $id },
+    ));
+}
+
 sub GetEventsForObject {
     my ($self, $id, $type) = @_;
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 3);
