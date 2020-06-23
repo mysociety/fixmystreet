@@ -224,7 +224,7 @@ sub open311_config_updates {
     $params->{endpoints} = {
         service_request_updates => 'update.xml',
         update => 'update.xml'
-    };
+    } if $params->{endpoint} =~ /bromley.gov.uk/;
 }
 
 sub open311_pre_send {
