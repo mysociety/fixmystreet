@@ -501,6 +501,68 @@ sub setup_categories_and_bodies : Private {
     @$contacts = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$contacts;
 }
 
+sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{format} = 'xml';
+    $c->response->header(Content_Type => 'text/xml');
+
+    require SOAP::Lite;
+
+    $c->detach('soap_error', [ 'Invalid method', 405 ]) unless $c->req->method eq 'POST';
+
+    my $echo = $c->cobrand->feature('echo');
+    $c->detach('soap_error', [ 'Missing config', 500 ]) unless $echo;
+
+    # Make sure we log entire request for debugging
+    $c->detach('soap_error', [ 'Missing body' ]) unless $c->req->body;
+    my $soap = join('', $c->req->body->getlines);
+    $c->log->info($soap);
+
+    my $body = $c->cobrand->body;
+    $c->detach('soap_error', [ 'Bad jurisdiction' ]) unless $body;
+
+    my $env = SOAP::Deserializer->deserialize($soap);
+
+    my $header = $env->header;
+    $c->detach('soap_error', [ 'Missing SOAP header' ]) unless $header;
+    my $action = $header->{Action};
+    $c->detach('soap_error', [ 'Incorrect Action' ]) unless $action && $action eq $echo->{receive_action};
+    $header = $header->{Security};
+    $c->detach('soap_error', [ 'Missing Security header' ]) unless $header;
+    my $token = $header->{UsernameToken};
+    $c->detach('soap_error', [ 'Authentication failed' ])
+        unless $token && $token->{Username} eq $echo->{receive_username} && $token->{Password} eq $echo->{receive_password};
+
+    my $event = $env->result;
+
+    my $cfg = { echo => Integrations::Echo->new(%$echo) };
+    my $request = $c->cobrand->construct_waste_open311_update($cfg, $event);
+    $request->{updated_datetime} = DateTime::Format::W3CDTF->format_datetime(DateTime->now);
+    $request->{service_request_id} = $event->{Guid};
+
+    $c->stash->{check_existing_action} = '/waste/check_existing_update';
+    $c->stash->{bad_request_action} = '/waste/soap_error';
+    $c->forward('/open311/updates/process_update', [ $body, $request ]);
+}
+
+sub soap_error : Private {
+    my ($self, $c, $comment, $code) = @_;
+    $code ||= 400;
+    $code = 404 if $comment eq 'not found'; # So can see it was okay, just not a report we hold
+    $c->response->status($code);
+    my $type = $code == 500 ? 'Server' : 'Client';
+    $c->response->body(SOAP::Serializer->fault($type, "Bad request: $comment"));
+}
+
+sub check_existing_update : Private {
+    my ($self, $c, $p, $request, $updates) = @_;
+
+    my $cfg = { updates => $updates };
+    $c->detach('soap_error', [ 'already exists', '409' ])
+        unless $c->cobrand->waste_check_last_update(
+            $cfg, $p, $request->{status}, $request->{external_status_code});
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
