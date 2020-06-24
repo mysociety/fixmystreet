@@ -515,13 +515,13 @@ sub bin_services_for_address {
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
     my $result = $echo->GetServiceUnitsForObject($property->{uprn});
-    return [] unless $result;
+    return [] unless @$result;
 
     my $events = $echo->GetEventsForObject($property->{id});
     my $open = _parse_events($events);
 
     my @out;
-    foreach (@{$result->{ServiceUnit}}) {
+    foreach (@$result) {
         next unless $_->{ServiceTasks};
 
         my $servicetask = $_->{ServiceTasks}{ServiceTask};
@@ -648,7 +648,8 @@ sub bin_future_collections {
     my $events = [];
     foreach (@$result) {
         my $task_id = $_->{ServiceTaskRef}{Value}{anyType};
-        foreach (@{$_->{Instances}{ScheduledTaskInfo}}) {
+        my $tasks = Integrations::Echo::force_arrayref($_->{Instances}, 'ScheduledTaskInfo');
+        foreach (@$tasks) {
             my $dt = construct_bin_date($_->{CurrentScheduledDate});
             my $summary = $names{$task_id} . ' collection';
             my $desc = '';
