@@ -43,6 +43,12 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
         $request->{$_} = $c->get_param($_) || $c->detach('bad_request', [ $_ ]);
     }
 
+    $c->forward('process_update', [ $body, $request ]);
+}
+
+sub process_update : Private {
+    my ($self, $c, $body, $request) = @_;
+
     my $updates = Open311::GetServiceRequestUpdates->new(
         system_user => $body->comment_user,
         current_body => $body,
@@ -51,14 +57,20 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
     my $p = $updates->find_problem($request);
     $c->detach('bad_request', [ 'not found' ]) unless $p;
 
-    my $comment = $p->comments->search( { external_id => $request->{update_id} } )->first;
-    $c->detach('bad_request', [ 'already exists' ]) if $comment;
+    $c->forward('check_existing', [ $p, $request, $updates ]);
 
-    $comment = $updates->process_update($request, $p);
+    my $comment = $updates->process_update($request, $p);
 
     my $data = { service_request_updates => { update_id => $comment->id } };
 
     $c->forward('/open311/format_output', [ $data ]);
+}
+
+sub check_existing : Private {
+    my ($self, $c, $p, $request, $updates) = @_;
+
+    my $comment = $p->comments->search( { external_id => $request->{update_id} } )->first;
+    $c->detach('bad_request', [ 'already exists' ]) if $comment;
 }
 
 sub bad_request : Private {

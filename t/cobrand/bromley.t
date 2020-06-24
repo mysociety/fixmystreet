@@ -13,7 +13,7 @@ $uk->mock('_fetch_url', sub { '{}' });
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $body = $mech->create_body_ok( 2482, 'Bromley Council',
-    { can_be_devolved => 1, comment_user => $user });
+    { can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -275,7 +275,7 @@ subtest 'test open enquiries' => sub {
         $mech->content_contains('Waste spillage');
         $mech->content_lacks('Gate not closed');
     };
-
+    restore_time();
 };
 
 subtest 'test waste max-per-day' => sub {
@@ -406,6 +406,86 @@ subtest 'updating of waste reports' => sub {
         $report->discard_changes;
         is $report->comments->count, 3, 'A new update';
         is $report->state, 'unable to fix', 'A state change';
+    };
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => {
+                url => 'https://www.example.org/',
+                receive_action => 'action',
+                receive_username => 'un',
+                receive_password => 'password',
+            } },
+            waste => { bromley => 1 }
+        },
+    }, sub {
+        FixMyStreet::App->log->disable('info');
+
+        $mech->get('/waste/echo');
+        is $mech->res->code, 405, 'Cannot GET';
+
+        $mech->post('/waste/echo', Content_Type => 'text/xml');
+        is $mech->res->code, 400, 'No body';
+
+        my $in = '<Envelope><Header><Action>bad-action</Action></Header><Body></Body></Envelope>';
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $mech->res->code, 400, 'Bad action';
+
+        $in = '<Envelope><Header><Action>action</Action><Security><UsernameToken><Username></Username><Password></Password></UsernameToken></Security></Header><Body></Body></Envelope>';
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $mech->res->code, 400, 'Bad auth';
+
+        $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>waste-15005-XXX</Guid>
+        <EventTypeId>2104</EventTypeId>
+        <EventStateId>15006</EventStateId>
+        <ResolutionCodeId>207</ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $mech->res->code, 200, 'OK response, even though event does not exist';
+        is $report->comments->count, 3, 'No new update';
+
+        $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>waste-15005-205</Guid>
+        <EventTypeId>2104</EventTypeId>
+        <EventStateId>15006</EventStateId>
+        <ResolutionCodeId>207</ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        #$report->update({ external_id => 'waste-15005-205', state => 'confirmed' });
+        is $report->comments->count, 4, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'closed', 'A state change';
+
+        FixMyStreet::App->log->enable('info');
     };
 };
 
