@@ -17,6 +17,8 @@
         - Do not email inactive body comment users. #3587
         - Look up organizational domain in DMARC checking. #3603
         - Stop slash in category name breaking csv download #3642
+    - Development improvements:
+        - Upgrade Mozilla::CA to handle new root certificates.
 
 * v3.1 (16th November 2020)
     - Security:
