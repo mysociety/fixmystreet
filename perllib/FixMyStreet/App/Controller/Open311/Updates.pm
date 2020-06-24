@@ -31,7 +31,6 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
         $body = $c->model('DB::Body')->find({ id => $c->get_param('jurisdiction_id') });
     }
     $c->detach('bad_request', ['jurisdiction_id']) unless $body;
-    my $user = $body->comment_user;
 
     my $key = $c->get_param('api_key') || '';
     my $token = $c->cobrand->feature('open311_token') || '';
@@ -44,6 +43,12 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
     foreach (qw(service_request_id update_id updated_datetime status description)) {
         $request->{$_} = $c->get_param($_) || $c->detach('bad_request', [ $_ ]);
     }
+
+    $c->forward('process_update', [ $body, $request ]);
+}
+
+sub process_update : Private {
+    my ($self, $c, $body, $request) = @_;
 
     my %open311_conf = (
         endpoint => $body->endpoint,
@@ -58,7 +63,7 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
 
     my $open311 = Open311->new(%open311_conf);
     my $updates = Open311::GetServiceRequestUpdates->new(
-        system_user => $user,
+        system_user => $body->comment_user,
         current_open311 => $open311,
         current_body => $body,
     );
@@ -66,19 +71,26 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
     my $p = $updates->find_problem($request);
     $c->detach('bad_request', [ 'not found' ]) unless $p;
 
-    my $comment = $p->comments->search( { external_id => $request->{update_id} } )->first;
-    $c->detach('bad_request', [ 'already exists' ]) if $comment;
+    $c->forward($c->stash->{check_existing_action} || 'check_existing', [ $p, $request, $updates ]);
 
-    $comment = $updates->process_update($request, $p);
+    my $comment = $updates->process_update($request, $p);
 
     my $data = { service_request_updates => { update_id => $comment->id } };
 
     $c->forward('/open311/format_output', [ $data ]);
 }
 
+sub check_existing : Private {
+    my ($self, $c, $p, $request, $updates) = @_;
+
+    my $comment = $p->comments->search( { external_id => $request->{update_id} } )->first;
+    $c->detach('bad_request', [ 'already exists' ]) if $comment;
+}
+
 sub bad_request : Private {
     my ($self, $c, $comment) = @_;
     $c->response->status(400);
+    $c->detach($c->stash->{bad_request_action}, [ $comment ]) if $c->stash->{bad_request_action};
     $c->forward('/open311/format_output', [ { errors => { code => 400, description => "Bad request: $comment" } } ]);
 }
 

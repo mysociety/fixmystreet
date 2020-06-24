@@ -494,6 +494,63 @@ sub setup_categories_and_bodies : Private {
     @$contacts = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$contacts;
 }
 
+sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{format} = 'xml';
+    $c->response->header(Content_Type => 'text/xml');
+
+    $c->detach('soap_error', [ 'POST' ]) unless $c->req->method eq 'POST';
+
+    my $echo = $c->cobrand->feature('echo');
+    $c->detach('soap_error', [ 'config', 500 ]) unless $echo;
+
+    # Make sure we log entire request for debugging
+    $c->detach('soap_error', [ 'body' ]) unless $c->req->body;
+    my $soap = join('', $c->req->body->getlines);
+    $c->log->info($soap);
+
+    my $action = $c->req->header('SOAPAction');
+    $c->detach('soap_error', [ 'Action' ]) unless $action eq $echo->{receive_action};
+
+    my $body = $c->cobrand->body;
+    $c->detach('soap_error', ['jurisdiction_id']) unless $body;
+
+    require SOAP::Lite;
+
+    my $env = SOAP::Deserializer->deserialize($soap);
+
+    my $token = $env->header->{Security}{UsernameToken};
+    $c->detach('soap_error', ['api_key']) unless $token && $token->{Username} eq $echo->{receive_username} && $token->{Password} eq $echo->{receive_password};
+
+    my $event = $env->result;
+
+    my $cfg = { echo => Integrations::Echo->new(%$echo) };
+    my $request = $c->cobrand->construct_waste_open311_update($cfg, $event);
+    $request->{updated_datetime} = DateTime::Format::W3CDTF->format_datetime(DateTime->now);
+    $request->{service_request_id} = $event->{Guid};
+
+    $c->stash->{check_existing_action} = '/hercules/check_existing_update';
+    $c->stash->{bad_request_action} = '/hercules/soap_error';
+    $c->forward('/open311/updates/process_update', [ $body, $request ]);
+}
+
+sub soap_error : Private {
+    my ($self, $c, $comment, $code) = @_;
+    $code ||= 400;
+    $c->response->status($code);
+    my $type = $code == 500 ? 'Client' : 'Server';
+    $c->response->body(SOAP::Serializer->fault($type, "Bad request: $comment"));
+}
+
+sub check_existing_update : Private {
+    my ($self, $c, $p, $request, $updates) = @_;
+
+    my $cfg = { updates => $updates };
+    $c->detach('soap_error', [ 'already exists' ])
+        unless $c->cobrand->waste_check_last_update(
+            $cfg, $p, $request->{status}, $request->{external_status_code});
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
