@@ -1,8 +1,13 @@
 use CGI::Simple;
+use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
+
+# Mock fetching bank holidays
+my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+$uk->mock('_fetch_url', sub { '{}' });
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
