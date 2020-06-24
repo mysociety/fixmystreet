@@ -7,6 +7,11 @@
     background-color: white;
   }
 
+  .govuk-summary-list__row {
+    background-color: white;
+  }
+  
+
   .govuk-heading-m {
     margin-bottom: 10px;
   }
@@ -83,8 +88,7 @@
   margin-top: 1.5em;
 }
 
-.hercules-service-link,
-input[type="submit"].hercules-service-link {
+.hercules-service-descriptor {
   font-family: $body-font;
   display: block;
   margin-bottom: 0.5em;
@@ -93,10 +97,14 @@ input[type="submit"].hercules-service-link {
   border-bottom: 1px solid #e9e9e9;
   -webkit-appearance: none;
   background: transparent;
-  color: $link-color;
   font-size: inherit;
   width: 100%;
   text-align: left; 
+}
+
+.hercules-service-link,
+input[type="submit"].hercules-service-link {
+  color: $link-color;
   &:hover,
   &:focus {
     text-decoration: underline;
@@ -104,17 +112,11 @@ input[type="submit"].hercules-service-link {
 }
 
 .hercules-service-name-link {
-  position: relative;
-  display: block;
-  cursor: pointer;
-  margin-top: 1.5em;
-  &:after {
-    display: block;
-    content:"\2193";
-    position: absolute;
-    right: 1em;
-    top: 0;
-    font-weight: bold;
+  .hercules & {
+    cursor: pointer;
+    margin-top: 0.5em;
+    margin-bottom: 0;
+    font-size: 1rem;
   }
 }
 
