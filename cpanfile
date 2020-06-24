@@ -185,6 +185,9 @@ requires 'Test::WWW::Mechanize::Catalyst', '0.62';
 requires 'Web::Scraper';
 requires 'Web::Simple';
 
+# Default root certificates used by LWP::UserAgent
+requires 'Mozilla::CA', '20200520';
+
 #################################################################
 # [1] Params::Classify 0.13 installs XS, but 0.15 will only do so
 # if ParseXS >= 3.30 is installed. If we don't do that, and are
