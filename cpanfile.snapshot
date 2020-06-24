@@ -5268,13 +5268,12 @@ DISTRIBUTIONS
       MooseX::Types 0.04
       Path::Class 0.16
       Test::More 0.88
-  Mozilla-CA-20200520
-    pathname: A/AB/ABH/Mozilla-CA-20200520.tar.gz
+  Mozilla-CA-20211001
+    pathname: A/AB/ABH/Mozilla-CA-20211001.tar.gz
     provides:
-      Mozilla::CA 20200520
+      Mozilla::CA 20211001
     requirements:
       ExtUtils::MakeMaker 0
-      Test 0
       perl 5.006
   Net-Amazon-S3-0.85
     pathname: L/LL/LLAP/Net-Amazon-S3-0.85.tar.gz

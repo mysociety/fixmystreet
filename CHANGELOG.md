@@ -52,6 +52,7 @@
         - Add German and Swiss language packs to default
         linux install #3544
         - Upgrade jQuery. #3017
+        - Upgrade Mozilla::CA to handle new root certificates.
     - Open311 improvements:
         - Consistent protected field ordering.
         - Move test handling out of core code.
