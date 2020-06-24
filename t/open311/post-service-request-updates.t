@@ -16,7 +16,7 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
 };
-my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params, send_extended_statuses => 1 });
+my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params, send_extended_statuses => 1, can_be_devolved => 1 });
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => "5" . $bromley->id });
 my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire', $params);
 my $lewisham = $mech->create_body_ok(2492, 'Lewisham', $params);
@@ -135,5 +135,12 @@ subtest 'Oxfordshire gets an ID' => sub {
   };
 };
 
+subtest 'Devolved contact' => sub {
+    $mech->create_contact_ok(body_id => $bromley->id, category => 'Other', email => "OTHER", send_method => 'Open311', endpoint => '/devolved-endpoint/');
+    $c1->update({ send_fail_count => 0 });
+    $o->send;
+    $c1->discard_changes;
+    like $c1->send_fail_reason, qr/devolved-endpoint/, 'Failure message contains correct endpoint';
+};
 
 done_testing();

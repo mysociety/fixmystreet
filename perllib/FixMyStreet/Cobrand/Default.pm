@@ -961,7 +961,7 @@ sub get_body_sender {
 
     # look up via category
     my $contact = $body->contacts->search( { category => $category } )->first;
-    if ( $body->can_be_devolved && $contact->send_method ) {
+    if ( $body->can_be_devolved && $contact && $contact->send_method ) {
         return { method => $contact->send_method, config => $contact, contact => $contact };
     }
 
