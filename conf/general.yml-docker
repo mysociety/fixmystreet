@@ -110,7 +110,7 @@ PHOTO_STORAGE_OPTIONS:
 #   MAPIT_URL: 'http://global.mapit.mysociety.org/'
 # And then specify whichever type code have the boundaries you want:
 #   MAPIT_TYPES: [ 'O06' ]
-MAPIT_URL: ''
+MAPIT_URL: 'http://localhost:9000/fakemapit/'
 MAPIT_TYPES: [ 'ZZZ' ]
 
 # If the MapIt you're using in MAPIT_URL requires an API key
