@@ -288,6 +288,23 @@ subtest 'check common password AJAX call' => sub {
     $mech->content_contains("true");
 };
 
+subtest 'check hibp password call' => sub {
+    FixMyStreet::override_config {
+        CHECK_HAVEIBEENPWNED => 1,
+    }, sub {
+        my $lwp = Test::MockModule->new('LWP::Simple');
+        # Switch mock round from live site, so we know we're not testing live site by mistake
+        $lwp->mock(get => sub($) {
+            return '9958D0F0EE6744E7CCAFC84515FCFAD7B1B:10' if $_[0] =~ /6EF4D$/; # squirblewirble
+            return '';
+        });
+        $mech->post_ok('/auth/common_password', { password_register => 'p@ssword2' });
+        $mech->content_contains("true");
+        $mech->post_ok('/auth/common_password', { password_register => 'squirblewirble' });
+        $mech->content_contains("That password has appeared in a known");
+    };
+};
+
 subtest 'test forgotten password page' => sub {
     $mech->get_ok('/auth/forgot');
     $mech->content_contains('Forgot password');

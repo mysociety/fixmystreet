@@ -223,6 +223,10 @@ SMTP_PORT: ''
 SMTP_USERNAME: ''
 SMTP_PASSWORD: ''
 
+# Set if you want password setting to be checked (securely) against the
+# Have I Been Pwned dataset
+CHECK_HAVEIBEENPWNED: 0
+
 # Gaze is a world-wide service for population density lookups. You can leave
 # this as is.
 GAZE_URL: 'https://gaze.mysociety.org/gaze'

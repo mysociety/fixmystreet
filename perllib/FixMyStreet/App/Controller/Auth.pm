@@ -460,7 +460,7 @@ sub no_csrf_token : Private {
 
 =item common_password
 
-Returns 1/0 depending on if password is common or not.
+Returns 1/0 depending on if password is common/breached or not.
 
 =cut
 
@@ -469,10 +469,8 @@ sub common_password : Local : Args(0) {
 
     my $password = $c->get_param('password_register');
 
-    my $return = JSON->true;
-    if (!$c->cobrand->call_hook('bypass_password_checks') && found($password)) {
-        $return = _('Please choose a less commonly-used password');
-    }
+    my $pass = $c->forward('test_password', [ $password ]);
+    my $return = $pass ? JSON->true : $c->stash->{field_errors}->{password_register};
 
     my $body = JSON->new->utf8->allow_nonref->encode($return);
     $c->res->content_type('application/json; charset=utf-8');
@@ -491,20 +489,48 @@ sub test_password : Private {
 
     return 1 if $c->cobrand->call_hook('bypass_password_checks');
 
-    my @errors;
-
+    my $error;
     my $min_length = $c->cobrand->password_minimum_length;
-    push @errors, sprintf(_('Please make sure your password is at least %d characters long'), $min_length)
-        if length($password) < $min_length;
+    if (length($password) < $min_length) {
+        $error = sprintf(_('Please make sure your password is at least %d characters long'), $min_length);
+    } elsif (found($password)) {
+        $error = _('Please choose a less commonly-used password');
+    } elsif (hibp($password)) {
+        $error = _('That password has appeared in a known third-party data breach (<a href="https://haveibeenpwned.com/Passwords" target="_blank">more information</a>); please choose another');
+    }
 
-    push @errors, _('Please choose a less commonly-used password')
-        if found($password);
-
-    if (@errors) {
-        $c->stash->{field_errors}->{password_register} = join('<br>', @errors);
+    if ($error) {
+        $c->stash->{field_errors}->{password_register} = $error;
         return 0;
     }
     return 1;
+}
+
+=item hibp
+
+Returns true if we should check Have I Been Pwned and the check
+comes back positive for a password that has been breached.
+
+=cut
+
+use Encode qw(encode);
+use Digest::SHA qw(sha1_hex);
+use LWP::Simple;
+use Unicode::Normalize;
+
+sub hibp : Private {
+    my $password = shift;
+
+    return 0 unless FixMyStreet->config('CHECK_HAVEIBEENPWNED');
+    my $sha1 = uc sha1_hex(encode('UTF-8', NFD($password)));
+    my $url = 'https://api.pwnedpasswords.com/range/' . substr($sha1, 0, 5);
+    my $response = LWP::Simple::get($url);
+    my $remainder = substr($sha1, 5);
+    foreach my $line (split /\r\n/, $response) {
+        my ($part, $count) = split /:/, $line;
+        return $count if $part eq $remainder;
+    }
+    return 0;
 }
 
 =head2 sign_out
