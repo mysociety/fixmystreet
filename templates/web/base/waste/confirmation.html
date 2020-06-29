@@ -1,0 +1,34 @@
+[%
+IF first_page == 'request';
+    title = 'Container request sent';
+ELSIF first_page == 'report';
+    title = 'Missed collection reported';
+ELSE;
+    title = 'Enquiry submitted';
+END ~%]
+[% INCLUDE header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>Your [% first_page %] has been sent;
+          [% IF data.email %]
+            a copy has been sent to your email address, [% data.email %].
+          [% END %]
+        </p>
+        <p>
+          [% IF first_page == 'request' %]
+            Containers arrive typically within two weeks, but this may vary due to demand.
+          [% END %]
+          [% IF report_ids.size > 1 %]
+            Your reference numbers are: <strong>[% report_ids.join(', ') %]</strong>.
+          [% ELSE %]
+            Your reference number is <strong>[% report_ids.join(', ') %]</strong>.
+          [% END %]
+        </p>
+    </div>
+</div>
+
+[% INCLUDE footer.html %]

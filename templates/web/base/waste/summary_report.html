@@ -1,0 +1,19 @@
+[%
+title = 'Submit missed bin report';
+thing = 'missed bin report';
+summary_title = 'Missed collection';
+step1 = 'report';
+%]
+
+[% BLOCK answers %]
+  [% FOR service IN data.keys.grep('^service-') %]
+    [% NEXT UNLESS data.$service %]
+    [% SET service_id = service.replace('service-', '') %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% services.$service_id.service_name %]</dt>
+        <dd class="govuk-summary-list__value">[% date.format(services.$service_id.last.date) | replace('~~~', services.$service_id.last.ordinal) %]</dd>
+    </div>
+  [% END %]
+[% END %]
+
+[% PROCESS waste/summary.html %]

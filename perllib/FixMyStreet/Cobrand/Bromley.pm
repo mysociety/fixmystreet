@@ -378,6 +378,25 @@ sub munge_load_and_group_problems {
     }
 }
 
+sub munge_around_category_where {
+    my ($self, $where) = @_;
+    $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
+}
+
+sub munge_reports_category_list {
+    my ($self, $categories) = @_;
+    @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
+}
+
+sub munge_report_new_contacts {
+    my ($self, $categories) = @_;
+
+    return if $self->{c}->action =~ /^waste/;
+
+    @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
+    $self->SUPER::munge_report_new_contacts($categories);
+}
+
 sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;
@@ -442,6 +461,33 @@ sub bin_services_for_address {
         545 => 'Garden Waste',
     );
 
+    $self->{c}->stash->{containers} = {
+        1 => 'Green Box (Plastic)',
+        2 => 'Wheeled Bin (Plastic)',
+        12 => 'Black Box (Paper)',
+        13 => 'Wheeled Bin (Paper)',
+        9 => 'Kitchen Caddy',
+        10 => 'Outside Food Waste Container',
+        45 => 'Wheeled Bin (Food)',
+    };
+    my %service_to_containers = (
+        535 => [ 1 ],
+        536 => [ 2 ],
+        537 => [ 12 ],
+        541 => [ 13 ],
+        542 => [ 9, 10 ],
+        544 => [ 45 ],
+    );
+    my %request_allowed = map { $_ => 1 } keys %service_to_containers;
+    my %quantity_max = (
+        535 => 6,
+        536 => 4,
+        537 => 6,
+        541 => 4,
+        542 => 6,
+        544 => 4,
+    );
+
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
     my $result = $echo->GetServiceUnitsForObject($property->{uprn});
@@ -456,10 +502,14 @@ sub bin_services_for_address {
 
         next unless $schedules->{next} or $schedules->{last};
 
+        my $containers = $service_to_containers{$_->{ServiceId}};
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
+            request_allowed => $request_allowed{$_->{ServiceId}},
+            request_containers => $containers,
+            request_max => $quantity_max{$_->{ServiceId}},
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
             service_task_type_id => $servicetask->{TaskTypeId},
