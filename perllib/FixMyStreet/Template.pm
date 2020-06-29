@@ -161,7 +161,6 @@ sub sanitize {
     return $text;
 }
 
-
 =head2 email_sanitize_text
 
 Intended for use in the _email_comment_list.txt template to allow HTML
@@ -289,6 +288,14 @@ sub _space_slash {
     my $t = shift;
     $t =~ s{/(?!$)}{/ }g;
     return $t;
+}
+
+sub title : Filter {
+    my $text = shift;
+    $text =~ s{(\w[\w']*)}{\u\L$1}g;
+    # Postcode special handling
+    $text =~ s{(\w?\w\d[\d\w]?\s*\d\w\w)}{\U$1}g;
+    return $text;
 }
 
 1;
