@@ -443,3 +443,50 @@ body.mappage {
     }
   }
 }
+
+@import "../sass/waste";
+
+// Waste style overrides
+.waste {
+  [class^="govuk-heading-"],
+  .govuk-fieldset__heading {
+    font-family: $heading-font;
+    color: darken($bromley_blue, 10%);
+  }
+
+  .govuk-heading-xl {
+    font-size: 2.2em;
+    margin-bottom: 1em;
+  }
+
+  .govuk-heading-l {
+    font-size: 1.4375em;
+  }
+
+  .govuk-heading-m {
+    font-size: 1.125em;
+  }
+
+  .govuk-summary-list {
+    border-top-color: $bromley_blue;
+  }
+
+  .govuk-button {
+    background-color: $bromley_green;
+    box-shadow: 0 2px 0 darken($bromley_green, 10%);
+    &:hover {
+      //don't override focus as gov.uk is good at that
+      background-color: darken($bromley_green, 10%);
+    }
+  }
+
+  .govuk-button--secondary {
+    background-color: $base_bg;
+    box-shadow: 0 2px 0 darken($base_bg, 10%);
+    &:hover {
+      background-color: darken($base_bg, 5%);
+      box-shadow: 0 2px 0 darken($base_bg, 15%);
+    }
+  }
+}
+
