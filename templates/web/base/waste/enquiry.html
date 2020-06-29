@@ -1,0 +1,33 @@
+[% SET bodyclass = 'waste' %]
+[% INCLUDE header.html %]
+
+[% PROCESS 'waste/govuk/fields.html' %]
+[% PROCESS title %]
+[% SET service_id = c.req.params.service_id %]
+
+<dl class="waste__address">
+    <dt class="waste__address__title">Address</dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+</dl>
+
+<dl class="waste__address">
+    <dt class="waste__address__title">Service</dt>
+    <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
+</dl>
+
+<form method="get" action="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]">
+    <div class="govuk-form-group">
+    [% PROCESS radio field = {
+      id = 'category',
+      html_name = 'category',
+      label = 'Category',
+      options = field_options
+    }
+    %]
+    </div>
+    <div class="govuk-form-group"><input type="submit" value="Continue" class="govuk-button"></div>
+
+  <input type="hidden" name="service_id" value="[% service_id %]">
+</form>
+
+[% INCLUDE footer.html %]

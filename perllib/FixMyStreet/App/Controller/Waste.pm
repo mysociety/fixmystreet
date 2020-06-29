@@ -10,6 +10,7 @@ use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request;
 use FixMyStreet::App::Form::Waste::Report;
+use FixMyStreet::App::Form::Waste::Enquiry;
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -223,6 +224,77 @@ sub process_report_data : Private {
         $c->forward('add_report', [ $data ]) or return;
         push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
     }
+    return 1;
+}
+
+sub enquiry : Chained('uprn') : Args(0) {
+    my ($self, $c) = @_;
+
+    if (my $template = $c->get_param('template')) {
+        $c->stash->{template} = "waste/enquiry-$template.html";
+        $c->detach;
+    }
+
+    $c->forward('setup_categories_and_bodies');
+
+    my $category = $c->get_param('category');
+    my $service = $c->get_param('service_id');
+    if (!$category || !$service || !$c->stash->{services}{$service}) {
+        $c->res->redirect('/waste/uprn/' . $c->stash->{uprn});
+        $c->detach;
+    }
+    my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
+    if (!$contact) {
+        $c->res->redirect('/waste/uprn/' . $c->stash->{uprn});
+        $c->detach;
+    }
+
+    my $field_list = [];
+    foreach (@{$contact->get_metadata_for_input}) {
+        next if $_->{code} eq 'service_id' || $_->{code} eq 'uprn';
+        my $type = 'Text';
+        $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
+        my $required = $_->{required} eq 'true' ? 1 : 0;
+        push @$field_list, "extra_$_->{code}" => {
+            type => $type, label => $_->{description}, required => $required
+        };
+    }
+
+    $c->stash->{first_page} = 'enquiry';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry';
+    $c->stash->{page_list} = [
+        enquiry => {
+            fields => [ 'category', 'service_id', grep { ! ref $_ } @$field_list, 'continue' ],
+            title => $category,
+            next => 'about_you',
+            update_field_list => sub {
+                my $form = shift;
+                my $c = $form->c;
+                return {
+                    category => { default => $c->get_param('category') },
+                    service_id => { default => $c->get_param('service_id') },
+                }
+            }
+        },
+    ];
+    $c->stash->{field_list} = $field_list;
+    $c->forward('form');
+}
+
+sub process_enquiry_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+    my $address = $c->stash->{property}->{address};
+    $data->{title} = $data->{category};
+    $data->{detail} = "$data->{category}\n\n$address";
+    # Read extra details in loop
+    foreach (grep { /^extra_/ } keys %$data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param($id, $data->{$_});
+    }
+    $c->set_param('service_id', $data->{service_id});
+    $c->forward('add_report', [ $data ]) or return;
+    push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
     return 1;
 }
 
