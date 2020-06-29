@@ -26,11 +26,11 @@
 <input type="hidden" id="body" name="body" value="[% body.id | html %]">
 
 <p class="report-list-filters" style='padding-top:0.25em'>
-    From <input type="date" id="start_date" name="start_date" class="form-control" value="[% start_date | html %]">
-    To <input type="date" id="end_date" name="end_date" class="form-control" value="[% end_date | html %]">
+    [% loc('From') %] <input type="date" id="start_date" name="start_date" class="form-control" value="[% start_date | html %]">
+    [% loc('To') %] <input type="date" id="end_date" name="end_date" class="form-control" value="[% end_date | html %]">
 
 <p class="report-list-filters">
-In wards <select class="form-control js-multiple" multiple id="wards" name="wards">
+[% loc('In wards') %] <select class="form-control js-multiple" multiple id="wards" name="wards">
   [% FOR child IN children.values.sort('name') %]
   [% SET aid = child.id %]
   <option value="[% child.name | html %]"[% ' selected' IF ward_hash.$aid %]>[% child.name %]</option>
@@ -41,9 +41,9 @@ In wards <select class="form-control js-multiple" multiple id="wards" name="ward
 
 <p class="segmented-control segmented-control--radio">
     <input type="radio" name="heatmap" id="heatmap_yes" value="Yes" checked>
-    <label class="btn" for="heatmap_yes">Heatmap</label>
+    <label class="btn" for="heatmap_yes">[% loc('Heatmap') %]</label>
     <input type="radio" name="heatmap" id="heatmap_no" value="No">
-    <label class="btn" for="heatmap_no">Pin map</label>
+    <label class="btn" for="heatmap_no">[% loc('Pin map') %]</label>
 </p>
 
 <div id="js-reports-list">
