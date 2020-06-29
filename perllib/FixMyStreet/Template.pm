@@ -161,7 +161,6 @@ sub sanitize {
     return $text;
 }
 
-
 =head2 email_sanitize_text
 
 Intended for use in the _email_comment_list.txt template to allow HTML
@@ -239,6 +238,14 @@ sub email_sanitize_html : Fn('email_sanitize_html') {
     my $staff = $extra->{is_superuser} || $extra->{is_body_user};
 
     return FixMyStreet::App::View::Web::_staff_html_markup($text, $staff);
+}
+
+sub title : Filter {
+    my $text = shift;
+    $text =~ s{(\w[\w']*)}{\u\L$1}g;
+    # Postcode special handling
+    $text =~ s{(\w?\w\d[\d\w]?\s*\d\w\w)}{\U$1}g;
+    return $text;
 }
 
 1;

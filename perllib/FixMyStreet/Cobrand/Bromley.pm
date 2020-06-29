@@ -6,6 +6,8 @@ use warnings;
 use utf8;
 use DateTime::Format::W3CDTF;
 use DateTime::Format::Flexible;
+use Integrations::Echo;
+use Sort::Key::Natural qw(natkeysort_inplace);
 use Try::Tiny;
 use FixMyStreet::DateRange;
 
@@ -375,5 +377,144 @@ sub munge_load_and_group_problems {
     }
 }
 
-1;
+sub bin_addresses_for_postcode {
+    my $self = shift;
+    my $pc = shift;
 
+    my $echo = $self->feature('echo');
+    $echo = Integrations::Echo->new(%$echo);
+    my $points = $echo->FindPoints($pc);
+    my $data = [ map { {
+        value => $_->{SharedRef}{Value}{anyType},
+        label => FixMyStreet::Template::title($_->{Description}),
+    } } @$points ];
+    natkeysort_inplace { $_->{label} } @$data;
+    return $data;
+}
+
+sub look_up_property {
+    my $self = shift;
+    my $uprn = shift;
+
+    my $echo = $self->feature('echo');
+    $echo = Integrations::Echo->new(%$echo);
+    my $result = $echo->GetPointAddress($uprn);
+    return {
+        id => $result->{Id},
+        uprn => $uprn,
+        address => $result->{Description},
+        latitude => $result->{Coordinates}{GeoPoint}{Latitude},
+        longitude => $result->{Coordinates}{GeoPoint}{Longitude},
+    };
+}
+
+my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
+sub ordinal {
+    my $n = shift;
+    $irregulars{$n % 100} || $irregulars{$n % 10} || 'th';
+}
+
+sub construct_bin_date {
+    my $str = shift;
+    return unless $str;
+    my $offset = ($str->{OffsetMinutes} || 0) * 60;
+    my $zone = DateTime::TimeZone->offset_as_string($offset);
+    my $date = DateTime::Format::W3CDTF->parse_datetime($str->{DateTime});
+    $date->set_time_zone($zone);
+    return $date;
+}
+
+sub bin_services_for_address {
+    my $self = shift;
+    my $property = shift;
+
+    my %service_name_override = (
+        531 => 'Non-Recyclable Waste',
+        532 => 'Non-Recyclable Waste',
+        533 => 'Non-Recyclable Waste',
+        535 => 'Mixed Recycling (Cans, Plastics & Glass)',
+        536 => 'Mixed Recycling (Cans, Plastics & Glass)',
+        537 => 'Paper & Cardboard',
+        541 => 'Paper & Cardboard',
+        542 => 'Food Waste',
+        544 => 'Food Waste',
+    );
+
+    my $echo = $self->feature('echo');
+    $echo = Integrations::Echo->new(%$echo);
+    my $result = $echo->GetServiceUnitsForObject($property->{uprn});
+    return [] unless @$result;
+
+    my @out;
+    foreach (@$result) {
+        next unless $_->{ServiceTasks};
+
+        my $servicetask = $_->{ServiceTasks}{ServiceTask};
+        my $schedules = _parse_schedules($servicetask);
+
+        next unless $schedules->{next} or $schedules->{last};
+
+        my $row = {
+            id => $_->{Id},
+            service_id => $_->{ServiceId},
+            service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
+            service_task_id => $servicetask->{Id},
+            service_task_name => $servicetask->{TaskTypeName},
+            service_task_type_id => $servicetask->{TaskTypeId},
+            schedule => $servicetask->{ScheduleDescription},
+            last => $schedules->{last},
+            last_ordinal => $schedules->{last_ordinal},
+            next => $schedules->{next},
+            next_ordinal => $schedules->{next_ordinal},
+            next_changed => $schedules->{next_changed},
+        };
+        push @out, $row;
+    }
+
+    return \@out;
+}
+
+sub _parse_schedules {
+    my $servicetask = shift;
+    my $schedules = $servicetask->{ServiceTaskSchedules}{ServiceTaskSchedule};
+    $schedules = [ $schedules ] unless ref $schedules eq 'ARRAY';
+
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
+    my ($min_next, $max_last, $next_changed);
+    foreach my $schedule (@$schedules) {
+        my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
+        next if $end_date lt $today;
+
+        my $next = $schedule->{NextInstance};
+        my $d = construct_bin_date($next->{CurrentScheduledDate});
+        if ($d && (!$min_next || $d < $min_next)) {
+            $min_next = $d;
+            $next_changed = $next->{CurrentScheduledDate}{DateTime} ne $next->{OriginalScheduledDate}{DateTime};
+        }
+
+        my $last = $schedule->{LastInstance};
+        $d = construct_bin_date($last->{CurrentScheduledDate});
+        $max_last = $d if $d && (!$max_last || $d > $max_last);
+        # XXX Have to call getTask for each last instance to get its CompletedDate?
+
+        #$schedule->{ScheduleDescription};
+        #$schedule->{ScheduleId};
+        #$schedule->{Id};
+        #$schedule->{Allocation}; # Type RoundName RoundId RoundGroupName/Id RoundLegId RoundLegName
+    }
+
+    my ($next_ordinal, $last_ordinal);
+    $next_ordinal = ordinal($min_next->day) if $min_next;
+    $last_ordinal = ordinal($max_last->day) if $max_last;
+
+    return {
+        next => $min_next,
+        next_ordinal => $next_ordinal,
+        next_changed => $next_changed,
+        last => $max_last,
+        last_ordinal => $last_ordinal,
+    };
+}
+
+
+1;
