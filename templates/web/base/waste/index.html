@@ -1,0 +1,32 @@
+[% SET bodyclass = 'waste' %]
+
+[% INCLUDE header.html %]
+
+<style>
+    label, legend { margin-top: 0; font-weight: normal !important; } /* from base/h5bp */
+    input[type="text"].govuk-input--width-2 { max-width: 5.4ex; }
+    input[type="text"].govuk-input--width-4 { max-width: 9ex; }
+    input[type="text"].govuk-input { font-size: 16px; font-size: 1rem; line-height: 1.25; padding: 5px; }
+    @media (min-width: 40.0625em) {
+        input[type="text"].govuk-input { font-size: 19px; font-size: 1.1875rem; line-height: 1.31579; }
+    }
+</style>
+
+  [% PROCESS 'waste/govuk/fields.html' %]
+  [% PROCESS back %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title">Address</dt>
+    <dd class="waste__address__property">[% property.address | title %]</dd>
+  </dl>
+  [% END %]
+<form method="post">
+  [% PROCESS form %]
+  <input type="hidden" name="token" value="[% csrf_token %]">
+  <input type="hidden" name="process" value="[% process %]">
+  <input type="hidden" name="saved_data" value="[% saved_data %]">
+</form>
+
+[% INCLUDE footer.html %]
