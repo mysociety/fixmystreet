@@ -35,15 +35,19 @@ sub restriction {
     return {};
 }
 
-# FixMyStreet needs to not show TfL reports...
+# FixMyStreet needs to not show TfL reports or Bromley waste reports
 sub problems_restriction {
     my ($self, $rs) = @_;
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
-    return $rs->search({ "$table.cobrand" => { '!=' => 'tfl' } });
+    return $rs->search({
+        "$table.cobrand" => { '!=' => 'tfl' },
+        "$table.cobrand_data" => { '!=' => 'waste' },
+    });
 }
 sub problems_sql_restriction {
     my $self = shift;
     return "AND cobrand != 'tfl'";
+    # Doesn't need Bromley one as all waste reports non-public
 }
 
 sub relative_url_for_report {
@@ -61,6 +65,10 @@ sub munge_around_category_where {
         # can't determine the body
         $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
     }
+    my $bromley = grep { $_->name eq 'Bromley Council' } @{ $self->{c}->stash->{around_bodies} };
+    if ($bromley) {
+        $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
+    }
 }
 
 sub _iow_category_munge {
@@ -75,12 +83,15 @@ sub _iow_category_munge {
     @$categories = grep { $_->send_method && $_->send_method eq 'Triage' } @$categories;
 }
 
-sub munge_reports_categories_list {
+sub munge_reports_category_list {
     my ($self, $categories) = @_;
 
     my %bodies = map { $_->body->name => $_->body } @$categories;
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $categories);
+    }
+    if ( $bodies{'Bromley Council'} ) {
+        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
     }
 }
 
@@ -121,6 +132,9 @@ sub munge_report_new_contacts {
 
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
+    }
+    if ( $bodies{'Bromley Council'} ) {
+        @$contacts = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$contacts;
     }
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
