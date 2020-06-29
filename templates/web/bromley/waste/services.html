@@ -4,6 +4,7 @@
     <input type="hidden" name="service-[% unit.service_id %]" value="1">
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
   </form>
+  <a href="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
 [% IF unit.request_allowed %]
   [% any_request_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/request', [ uprn ]) %]">
@@ -12,3 +13,8 @@
     <input type="submit" value="Request a new [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
+  <form method="get" action="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]">
+    <input type="hidden" name="service_id" value="[% unit.service_id %]">
+    <input type="hidden" name="category" id="category" value="General Enquiry">
+    <input type="submit" value="Contact us about a [% unit.service_name FILTER lower %] collection" class="waste-service-descriptor waste-service-link">
+  </form>

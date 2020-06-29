@@ -29,6 +29,8 @@ create_contact({ category => 'Request new container', email => 'request' },
     { code => 'Quantity', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
 );
+create_contact({ category => 'General enquiry', email => 'general' },
+    { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' });
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['bromley', 'fixmystreet'],
@@ -105,6 +107,29 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 2;
         is $report->get_extra_field_value('Container_Type'), 1;
+    };
+    subtest 'General enquiry, bad data' => sub {
+        $mech->get_ok('/waste/uprn/1000000002/enquiry');
+        is $mech->uri->path, '/waste/uprn/1000000002';
+        $mech->get_ok('/waste/uprn/1000000002/enquiry?category=Bad');
+        is $mech->uri->path, '/waste/uprn/1000000002';
+        $mech->get_ok('/waste/uprn/1000000002/enquiry?service=1');
+        is $mech->uri->path, '/waste/uprn/1000000002';
+    };
+    subtest 'General enquiry, on behalf of someone else' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/uprn/1000000002/enquiry?category=General+enquiry&service_id=537');
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'Some notes' } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
+        $mech->content_contains('Some notes');
+        $mech->content_contains('Test McTest');
+        $mech->content_contains($user->email);
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your enquiry has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Notes'), 'Some notes';
+        is $report->user->email, $user->email;
+        is $report->get_extra_metadata('contributed_by'), $staff_user->id;
     };
 };
 
