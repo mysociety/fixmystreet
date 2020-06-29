@@ -269,6 +269,89 @@ sub process_report_data : Private {
     return 1;
 }
 
+sub enquiry : Chained('uprn') : Args(0) {
+    my ($self, $c) = @_;
+
+    if (my $template = $c->get_param('template')) {
+        $c->stash->{template} = "waste/enquiry-$template.html";
+        $c->detach;
+    }
+
+    $c->forward('setup_categories_and_bodies');
+
+    my $category = $c->get_param('category');
+    my $service = $c->get_param('service_id');
+    if (!$category || !$service || !$c->stash->{services}{$service}) {
+        $c->res->redirect('/waste/uprn/' . $c->stash->{uprn});
+        $c->detach;
+    }
+    my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
+    if (!$contact) {
+        $c->res->redirect('/waste/uprn/' . $c->stash->{uprn});
+        $c->detach;
+    }
+
+    my $field_list = [];
+    foreach (@{$contact->get_metadata_for_input}) {
+        next if $_->{code} eq 'service_id' || $_->{code} eq 'uprn';
+        my $type = 'Text';
+        $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
+        my $required = $_->{required} eq 'true' ? 1 : 0;
+        push @$field_list, "extra_$_->{code}" => {
+            type => $type, label => $_->{description}, required => $required
+        };
+    }
+
+    push @$field_list, category => { type => 'Hidden', default => $c->get_param('category') };
+    push @$field_list, service_id => { type => 'Hidden', default => $c->get_param('service_id') };
+    push @$field_list, submit => { type => 'Submit', value => 'Continue', element_attr => { class => 'govuk-button' } };
+
+    $c->stash->{first_page} = 'enquiry';
+    $c->forward('form', [ {
+        enquiry => {
+            title => $category,
+            form_params => {
+                field_list => $field_list,
+            },
+            next => 'about_you',
+        },
+        about_you => {
+            title => 'About you',
+            form => 'FixMyStreet::App::Form::Waste::AboutYou',
+            form_params => {
+                inactive => ['address_same', 'address'],
+            },
+            next => 'summary',
+        },
+        summary => {
+            title => 'Submit missed collection',
+            template => 'waste/summary_enquiry.html',
+            next => 'done'
+        },
+        done => {
+            process => 'process_enquiry_data',
+            title => 'Enquiry sent',
+            template => 'waste/confirmation.html',
+        }
+    } ] );
+}
+
+sub process_enquiry_data : Private {
+    my ($self, $c) = @_;
+    my $data = $c->stash->{data};
+    $data->{title} = $data->{category};
+    $data->{detail} = $data->{category};
+    # Read extra details in loop
+    foreach (grep { /^extra_/ } keys %$data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param($id, $data->{$_});
+    }
+    $c->set_param('service_id', $data->{service_id});
+    $c->forward('add_report') or return;
+    push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
+    return 1;
+}
+
 sub load_form {
     my ($saved_data, $page_data) = @_;
     my $form_class = $page_data->{form} || 'HTML::FormHandler';
