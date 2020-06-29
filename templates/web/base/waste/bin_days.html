@@ -1,0 +1,90 @@
+[% SET bodyclass = 'waste' %]
+[% USE date(format = '%A, %-d~~~ %B') %]
+
+[% INCLUDE header.html %]
+
+<h1 class="govuk-heading-xl">Your bin days</h1>
+
+<dl class="waste__address">
+  <dt class="waste__address__title">Address</dt>
+  <dd class="waste__address__property">[% property.address | title %]</dd>
+</dl>
+<div class="waste__collections">
+  <h2 class="govuk-heading-l">Your collections</h2>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+[% SET any_report_allowed = 0 ~%]
+[% SET any_request_allowed = 0 ~%]
+[% FOR unit IN service_data %]
+
+<h3 class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
+
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Frequency</dt>
+    <dd class="govuk-summary-list__value">[% unit.schedule %]</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Next collection</dt>
+    <dd class="govuk-summary-list__value">
+      [% IF unit.next %]
+        [% date.format(unit.next) | replace('~~~', unit.next_ordinal) %]
+        [% IF unit.next_changed %]Adjusted[% END %]
+      [% ELSE %]
+        <i>None</i>
+      [% END %]
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last collection</dt>
+    <dd class="govuk-summary-list__value">
+      [% IF unit.last %]
+        [% date.format(unit.last) | replace('~~~', unit.last_ordinal) %]
+      [% ELSE %]
+        <i>None</i>
+      [% END %]
+    </dd>
+  </div>
+</dl>
+<p class="waste-panel-toggle hidden-nojs"><a data-toggle-visibility="#panel-[% unit.service_id %]" class="waste-service-name-link govuk-button govuk-button--secondary">[% unit.service_name %] services</a></p>
+
+<div class="waste-services-launch-panel hidden-js" id="panel-[% unit.service_id %]">
+    [% PROCESS waste/services.html %]
+</div>
+
+[% END %]
+[% IF NOT service_data.size %]
+    <p>This property has no collections.</p>
+[% END %]
+    </div>
+
+    [% IF service_data.size %]
+    <div class="govuk-grid-column-one-third">
+      <div class="aside">
+        <div class="aside-download">
+          <h3>Download your collection schedule</h3>
+          <ul>
+            <li><a href="#">Add to your calendar (.ics file)</a></li>
+          </ul>
+        </div>
+       [% IF any_report_allowed OR any_request_allowed %]
+        <div class="aside-services">
+          <h3>More services</h3>
+          <ul>
+            [% IF any_report_allowed %]
+              <li><a href="[% c.uri_for_action('waste/report', [ uprn ]) %]">Report a missed collection</a></li>
+            [% END %]
+            [% IF any_request_allowed %]
+              <li><a href="[% c.uri_for_action('waste/request', [ uprn ]) %]">Request a new container</a></li>
+            [% END %]
+          </ul>
+        </div>
+       [% END %]
+      </div>
+    </div>
+    [% END %]
+  </div>
+</div>
+[% INCLUDE footer.html %]
+
