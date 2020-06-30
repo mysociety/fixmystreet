@@ -705,7 +705,7 @@ $.extend(fixmystreet.set_up, {
         resizeWidth: 2048,
         resizeHeight: 2048,
         resizeQuality: 0.6,
-        acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png',
+        acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png,.png,.tiff,.tif,.gif,.jpeg,.jpg',
         dictDefaultMessage: default_message,
         dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,
         dictInvalidFileType: translation_strings.upload_invalid_file_type,
