@@ -15,7 +15,7 @@
   <a href="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-launch-arrow waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
 [% IF unit.request_open %]
   [% IF unit.request_open.report %]<a href="[% unit.request_open.report.url %]" class="waste-service-link waste-service-descriptor">[% ELSE %]<span class="waste-service-descriptor">[% END %]
-    A new [% unit.service_name FILTER lower %] container request has been made
+    A new [% unit.service_name FILTER lower %] container request has been made[% IF unit.request_open.report %]</a> – check status[% END %]
   [% IF unit.request_open.report %]</a>[% ELSE %]</span>[% END %]
 [% ELSIF unit.request_allowed %]
   [% any_request_allowed = 1 %]
