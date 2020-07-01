@@ -163,4 +163,42 @@ fixmystreet.assets.add(light_defaults, {
     asset_item_message: ''
 });
 
+var bin_defaults = $.extend(true, {}, defaults, {
+    class: OpenLayers.Layer.PeterboroughVectorAsset,
+    select_action: true,
+    actions: {
+        asset_found: fixmystreet.message_controller.asset_found,
+        asset_not_found: fixmystreet.message_controller.asset_not_found
+    },
+    attributes: {
+        asset_details: function() {
+            var a = this.attributes;
+            return a.Reference + ", " + a.Location;
+        },
+        central_asset_id: 'OBJECTID'
+    },
+    asset_id_field: 'OBJECTID',
+    asset_type: 'spot'
+});
+
+fixmystreet.assets.add(bin_defaults, {
+    http_options: {
+      params: {
+        TYPENAME: 'LitterBins'
+      }
+    },
+    asset_category: 'Litter bin',
+    asset_item: 'litter bin'
+});
+
+fixmystreet.assets.add(bin_defaults, {
+    http_options: {
+      params: {
+        TYPENAME: 'DogBins'
+      }
+    },
+    asset_category: 'Dog bin',
+    asset_item: 'dog waste bin'
+});
+
 })();
