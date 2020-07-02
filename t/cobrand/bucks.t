@@ -112,7 +112,6 @@ subtest 'pothole on road not sent to extra email, only confirm sent' => sub {
     is $report->external_id, 248, 'Report has right external ID';
 };
 
-
 # report made in Flytipping category off road should get moved to other category
 subtest 'Flytipping not on a road gets recategorised' => sub {
     $mech->log_in_ok($publicuser->email);
@@ -129,6 +128,23 @@ subtest 'Flytipping not on a road gets recategorised' => sub {
     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
+};
+
+subtest 'Flytipping not on a road going to HE does not get recategorised' => sub {
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping');
+    $mech->submit_form_ok({
+        with_fields => {
+            single_body_only => 'Highways England',
+            title => "Test Report",
+            detail => 'Test report details.',
+            category => 'Flytipping',
+            'road-placement' => 'off-road',
+        }
+    }, "submit details");
+    $mech->content_contains('We don&rsquo;t handle this type of problem');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->category, "Flytipping", 'Report was not recategorised';
 
     $mech->log_out_ok;
 };

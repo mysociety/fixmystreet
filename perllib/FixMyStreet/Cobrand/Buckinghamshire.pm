@@ -103,6 +103,7 @@ sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
     return unless $report->category eq 'Flytipping';
+    return unless $self->{c}->stash->{report}->to_body_named('Buckinghamshire');
 
     my $placement = $self->{c}->get_param('road-placement');
     return unless $placement && $placement eq 'off-road';
