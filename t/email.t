@@ -14,4 +14,10 @@ my ($type, $id) = FixMyStreet::Email::check_verp_token($token);
 is $type, "report", 'Correct type from token';
 is $id, 123, 'Correct ID from token';
 
+my $verpid = FixMyStreet::Email::unique_verp_id([ "report", 123 ]);
+is $verpid, 'fms-report-123-8fb274c6@example.org', 'VERP id okay';
+
+$verpid = FixMyStreet::Email::unique_verp_id([ "report", 123 ], "example.net");
+is $verpid, 'fms-report-123-8fb274c6@example.net', 'VERP id okay with custom domain';
+
 done_testing();

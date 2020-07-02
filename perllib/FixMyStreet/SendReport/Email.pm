@@ -53,10 +53,11 @@ sub send_from {
 sub envelope_sender {
     my ($self, $row) = @_;
 
+    my $cobrand = $row->get_cobrand_logged;
     if ($row->user->email && $row->user->email_verified) {
-        return FixMyStreet::Email::unique_verp_id('report', $row->id);
+        return FixMyStreet::Email::unique_verp_id([ 'report', $row->id ], $cobrand->call_hook('verp_email_domain'));
     }
-    return $row->get_cobrand_logged->do_not_reply_email;
+    return $cobrand->do_not_reply_email;
 }
 
 sub send {
