@@ -31,6 +31,10 @@ sub disambiguate_location {
     };
 }
 
+sub do_not_reply_email { shift->feature('do_not_reply_email') }
+
+sub verp_email_domain { shift->feature('verp_email_domain') }
+
 sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }

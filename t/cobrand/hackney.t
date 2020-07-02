@@ -85,6 +85,14 @@ subtest "check moderation label uses correct name" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => ['hackney'],
+        COBRAND_FEATURES => {
+            do_not_reply_email => {
+                hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com',
+            },
+            verp_email_domain => {
+                hackney => 'hackney-example.com',
+            },
+        },
     }, sub {
         $mech->log_out_ok;
         $mech->log_in_ok( $hackney_user->email );
@@ -139,6 +147,14 @@ subtest "sends branded confirmation emails" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'hackney' ],
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            do_not_reply_email => {
+                hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com',
+            },
+            verp_email_domain => {
+                hackney => 'hackney-example.com',
+            },
+        },
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'E8 1DY', } },
             "submit location" );

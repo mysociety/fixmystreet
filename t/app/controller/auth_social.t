@@ -118,7 +118,13 @@ for my $test (
                     token_uri => 'http://oidc.example.org/oauth2/v2.0/token_google',
                     allowed_domains => [ 'example.org' ],
                 }
-            }
+            },
+            do_not_reply_email => {
+                hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com',
+            },
+            verp_email_domain => {
+                hackney => 'hackney-example.com',
+            },
         }
     },
     email => $mech->uniquify_email('oidc_google@example.org'),
