@@ -63,16 +63,7 @@ sub lookup_site_code_config { {
     accept_feature => sub { 1 }
 } }
 
-sub open311_pre_send {
-    my ($self, $row, $open311) = @_;
-
-    return unless $row->extra;
-    my $extra = $row->get_extra_fields;
-    if (@$extra) {
-        @$extra = grep { $_->{name} ne 'urgent' } @$extra;
-        $row->set_extra_fields(@$extra);
-    }
-}
+sub open311_extra_data_exclude { [ '^urgent$' ] }
 
 # Make sure fetched report description isn't shown.
 sub filter_report_description { "" }

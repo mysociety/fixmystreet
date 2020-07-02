@@ -44,7 +44,7 @@ sub reports_per_page { return 20; }
 
 sub admin_user_domain { 'royalgreenwich.gov.uk' }
 
-sub open311_extra_data {
+sub open311_extra_data_include {
     my ($self, $row, $h, $extra) = @_;
 
     # Greenwich doesn't have category metadata to fill this

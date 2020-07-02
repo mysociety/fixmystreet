@@ -91,10 +91,10 @@ sub open311_config {
     $params->{multi_photos} = 1;
 }
 
-sub open311_extra_data {
+sub open311_extra_data_include {
     my ($self, $row, $h, $extra) = @_;
 
-    return ([
+    return [
         { name => 'report_url',
           value => $h->{url} },
         { name => 'title',
@@ -103,10 +103,9 @@ sub open311_extra_data {
           value => $row->detail },
         { name => 'category',
           value => $row->category },
-    ], [
-        'emergency'
-    ]);
+    ];
 }
+sub open311_extra_data_exclude { [ 'emergency' ] }
 
 sub open311_get_update_munging {
     my ($self, $comment) = @_;

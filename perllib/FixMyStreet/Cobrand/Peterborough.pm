@@ -41,7 +41,7 @@ sub geocoder_munge_results {
 
 sub admin_user_domain { "peterborough.gov.uk" }
 
-around open311_extra_data => sub {
+around open311_extra_data_include => sub {
     my ($orig, $self, $row, $h, $extra) = @_;
 
     my $open311_only = $self->$orig($row, $h, $extra);
@@ -53,18 +53,8 @@ around open311_extra_data => sub {
     }
     return $open311_only;
 };
-
 # remove categories which are informational only
-sub open311_pre_send {
-    my ($self, $row, $open311) = @_;
-
-    return unless $row->extra;
-    my $extra = $row->get_extra_fields;
-    if (@$extra) {
-        @$extra = grep { $_->{name} !~ /^(PCC-|emergency$|private_land$)/i } @$extra;
-        $row->set_extra_fields(@$extra);
-    }
-}
+sub open311_extra_data_exclude { [ '^PCC-', '^emergency$', '^private_land$' ] }
 
 sub lookup_site_code_config { {
     buffer => 50, # metres

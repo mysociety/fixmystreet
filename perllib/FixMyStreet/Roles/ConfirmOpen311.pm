@@ -13,7 +13,7 @@ sub open311_config {
     $params->{multi_photos} = 1;
 }
 
-sub open311_extra_data {
+sub open311_extra_data_include {
     my ($self, $row, $h, $extra) = @_;
 
     my $open311_only = [
