@@ -193,7 +193,7 @@ sub string_diff {
     $new = FixMyStreet::Template::html_filter($new);
 
     if ($options{single}) {
-        return unless $old;
+        return '' unless $old;
         $old = [ $old ];
         $new = [ $new ];
     }
