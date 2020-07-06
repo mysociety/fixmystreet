@@ -28,7 +28,7 @@ sub dispatch_request {
     sub (GET + /mapserver/tfl + ?*) {
         my ($self, $args) = @_;
         my $features = [];
-        if ($args->{Filter} =~ /540512,169141/) {
+        if ($args->{Filter} =~ /540512,169141|534371,185488/) {
             $features = [
                 { type => "Feature", properties => { HA_ID => "19" }, geometry => { type => "Polygon", coordinates => [ [
                     [ 539408.94, 170607.58 ],

@@ -23,6 +23,10 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 2457, # Epsom Ewell, outside London, for bus stop test
     body_id => $body->id,
 });
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2508, # Hackney
+    body_id => $body->id,
+});
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 $staffuser->user_body_permissions->create({
@@ -57,6 +61,13 @@ my $bromley_flytipping = $mech->create_contact_ok(
 );
 $bromley_flytipping->set_extra_metadata(group => [ 'Street cleaning' ]);
 $bromley_flytipping->update;
+
+my $hackney = $mech->create_body_ok(2508, 'Hackney Council');
+$mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Abandoned Vehicle',
+    email => 'av-hackney@example.com',
+);
 
 my $contact1 = $mech->create_contact_ok(
     body_id => $body->id,
@@ -748,7 +759,7 @@ subtest 'Test no questionnaire sending' => sub {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet' ],
+    ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet', 'hackney' ],
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         internal_ips => { tfl => [ '127.0.0.1' ] },
@@ -859,6 +870,21 @@ for my $test (
             'Flooding (Bromley)',
             'Flytipping (Bromley)',
             'Grit bins',
+            'Timings',
+            'Traffic lights',
+            'Trees'
+        ],
+    },
+    {
+        host => 'hackney.fixmystreet.com',
+        name => "test no hackney categories on red route",
+        lat => 51.552287,
+        lon => -0.063326,
+        expected => [
+            'Bus stops',
+            'Flooding',
+            'Grit bins',
+            'Pothole',
             'Timings',
             'Traffic lights',
             'Trees'

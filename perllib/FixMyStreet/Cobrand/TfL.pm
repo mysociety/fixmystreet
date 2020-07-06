@@ -437,6 +437,13 @@ sub munge_surrounding_london {
         # Don't send any TfL categories
         %$bodies = map { $_->id => $_ } grep { $_->name ne 'TfL' } values %$bodies;
     }
+
+    # Hackney doesn't have any of the council TfL categories so don't show
+    # any Hackney categories on red routes
+    my %bodies = map { $_->name => $_->id } values %$bodies;
+    if ( $bodies{'Hackney Council'} && $self->report_new_is_on_tlrn ) {
+        delete $bodies->{ $bodies{'Hackney Council'} };
+    }
 }
 
 sub munge_red_route_categories {
