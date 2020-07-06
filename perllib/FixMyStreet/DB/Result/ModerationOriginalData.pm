@@ -166,6 +166,8 @@ sub compare_extra {
     my @all_keys = grep { $_ ne 'sent_to' } sort keys %$both;
     my @s;
     foreach (@all_keys) {
+        $old->{$_} = join(', ', @{$old->{$_}}) if ref $old->{$_} eq 'ARRAY';
+        $new->{$_} = join(', ', @{$new->{$_}}) if ref $new->{$_} eq 'ARRAY';
         if ($old->{$_} && $new->{$_}) {
             push @s, string_diff("$_ = $old->{$_}", "$_ = $new->{$_}");
         } elsif ($new->{$_}) {
@@ -174,7 +176,7 @@ sub compare_extra {
             push @s, string_diff("$_ = $old->{$_}", "");
         }
     }
-    return join ', ', grep { $_ } @s;
+    return join '; ', grep { $_ } @s;
 }
 
 sub extra_diff {
