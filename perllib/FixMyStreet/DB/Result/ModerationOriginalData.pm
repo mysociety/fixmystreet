@@ -172,7 +172,7 @@ sub compare_extra {
             push @s, string_diff("$_ = $old->{$_}", "$_ = $new->{$_}");
         } elsif ($new->{$_}) {
             push @s, string_diff("", "$_ = $new->{$_}");
-        } else {
+        } elsif ($old->{$_}) {
             push @s, string_diff("$_ = $old->{$_}", "");
         }
     }
