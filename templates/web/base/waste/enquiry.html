@@ -1,10 +1,6 @@
 [% SET bodyclass = 'waste' %]
 [% INCLUDE header.html %]
 
-<style>
-    label, legend { margin-top: 0; font-weight: normal !important; } /* from base/h5bp */
-</style>
-
 [% PROCESS 'waste/govuk/fields.html' %]
 [% PROCESS title %]
 [% SET service_id = c.req.params.service_id %]
