@@ -100,7 +100,18 @@
   font-size: inherit;
   text-align: left; 
   white-space: normal;
-  width: 100%;
+  line-height: 1.5;
+}
+
+.waste-service-launch-form {
+  border-bottom: 1px solid #e9e9e9;
+  font-size: 1em;
+  .waste-service-descriptor {
+    border-bottom: 0;
+  }
+  .waste-service-launch-arrow {
+    padding-right: 0;
+  }
 }
 
 .waste-service-link,
@@ -142,12 +153,5 @@ input[type="submit"].waste-service-link {
     &:after {
       color: $link-hover-color;
     }
-  }
-}
-
-form.waste-service-launch-arrow {
-  width: 100%;
-  &:after {
-    border-bottom: 1px solid #e9e9e9;
   }
 }
