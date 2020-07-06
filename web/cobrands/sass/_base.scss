@@ -313,6 +313,9 @@ legend,
         box-shadow: none;
         color: #888888;
     }
+    &[disabled] {
+        background-color: #eee;
+    }
 }
 
 select.form-control {
