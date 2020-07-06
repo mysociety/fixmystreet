@@ -22,6 +22,7 @@
         - Fix photo orientation in modern browsers.
         - Improve compatibility with G Suite OpenID Connect authentication. #3032
         - Fix duplicate asset message after dismissing duplicate suggestions.
+        - Improve moderation diff display in a few small ways. #3105
     - Admin improvements:
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989
