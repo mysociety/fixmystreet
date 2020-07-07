@@ -14,6 +14,7 @@ use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use Utils;
 use Path::Tiny 'path';
+use FixMyStreet::App::Model::PhotoSet;
 
 has jurisdiction => ( is => 'ro', isa => Str );;
 has api_key => ( is => 'ro', isa => Str );
@@ -277,7 +278,8 @@ sub get_service_requests {
     };
 
     my $service_request_xml = $self->_get( $self->endpoints->{requests}, $params || undef );
-    return $self->_get_xml_object( $service_request_xml );
+    my $requests = $self->_get_xml_object( $service_request_xml );
+    return $requests->{request};
 }
 
 sub get_service_request_id_from_token {

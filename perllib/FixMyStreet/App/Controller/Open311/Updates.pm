@@ -3,7 +3,6 @@ package FixMyStreet::App::Controller::Open311::Updates;
 use utf8;
 use Moose;
 use namespace::autoclean;
-use Open311;
 use Open311::GetServiceRequestUpdates;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -31,7 +30,6 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
         $body = $c->model('DB::Body')->find({ id => $c->get_param('jurisdiction_id') });
     }
     $c->detach('bad_request', ['jurisdiction_id']) unless $body;
-    my $user = $body->comment_user;
 
     my $key = $c->get_param('api_key') || '';
     my $token = $c->cobrand->feature('open311_token') || '';
@@ -45,21 +43,8 @@ sub receive : Regex('^open311/v2/servicerequestupdates.(xml|json)$') : Args(0) {
         $request->{$_} = $c->get_param($_) || $c->detach('bad_request', [ $_ ]);
     }
 
-    my %open311_conf = (
-        endpoint => $body->endpoint,
-        api_key => $body->api_key,
-        jurisdiction => $body->jurisdiction,
-        extended_statuses => $body->send_extended_statuses,
-    );
-
-    my $cobrand = $body->get_cobrand_handler;
-    $cobrand->call_hook(open311_config_updates => \%open311_conf)
-        if $cobrand;
-
-    my $open311 = Open311->new(%open311_conf);
     my $updates = Open311::GetServiceRequestUpdates->new(
-        system_user => $user,
-        current_open311 => $open311,
+        system_user => $body->comment_user,
         current_body => $body,
     );
 

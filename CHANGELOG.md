@@ -32,6 +32,7 @@
         - Add cobrand hook to specify custom domain for VERP emails.
     - Open311 improvements:
         - Use devolved data on update sending.
+        - Rewrite open311-update-reports to share code and improve functionality.
     - UK:
         - Add option for recaptcha. #3050
 
