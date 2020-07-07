@@ -419,10 +419,10 @@ function check_zoom_message_visibility() {
             category = $("select#" + select).val() || '',
             prefix = category.replace(/[^a-z]/gi, ''),
             id = "category_meta_message_" + prefix,
-            $p = $('#' + id),
+            $p = $('.category_meta_message'),
             message;
         if ($p.length === 0) {
-            $p = $("<p>").prop("id", id).prop('class', 'category_meta_message');
+            $p = $("<p>").prop('class', 'category_meta_message');
             if ($('html').hasClass('mobile')) {
                 $p.click(function() {
                     $("#mob_ok").trigger('click');
@@ -430,6 +430,7 @@ function check_zoom_message_visibility() {
             }
             $p.prependTo('#js-post-category-messages');
         }
+        $p.prop('id', id);
 
         if (this.getVisibility() && this.inRange) {
             message = get_asset_pick_message.call(this);
@@ -453,6 +454,9 @@ function get_asset_pick_message() {
     return message;
 }
 
+/* This doesn't just use the class because e.g. an unselect event
+ * can fire after a category change event, and that would then
+ * update the new message using the text of the unselected layer. */
 function update_message_display(message) {
     if (this.fixmystreet.asset_group) {
         _update_message(message, this.fixmystreet.asset_group);

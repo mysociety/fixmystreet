@@ -63,7 +63,7 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     stylemap: streetlight_stylemap,
     construct_asset_name: function(id) {
         var code = id.replace(/[O0-9]+[A-Z]*/g, '');
-        return {id: id, name: streetlight_code_to_type[code]};
+        return {id: id, name: streetlight_code_to_type[code] || 'street light'};
     },
     actions: {
         asset_found: fixmystreet.assets.named_select_action_found,
