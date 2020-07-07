@@ -47,8 +47,8 @@ sub index :Path : Args(0) {
 
     my $search = $c->get_param('search');
     my $role = $c->get_param('role');
+    my $users = $c->cobrand->users;
     if ($search || $role) {
-        my $users = $c->cobrand->users;
         my $isearch;
         if ($search) {
             $search = $self->trim($search);
@@ -78,25 +78,20 @@ sub index :Path : Args(0) {
                 join => 'user_roles',
             });
         }
-
-        my @users = $users->all;
-        $c->stash->{users} = [ @users ];
-        if ($search) {
-            $c->forward('/admin/add_flags', [ { email => { ilike => $isearch } } ]);
-        }
-
     } else {
         $c->forward('/auth/get_csrf_token');
         $c->forward('/admin/fetch_all_bodies');
         $c->cobrand->call_hook('admin_user_edit_extra_data');
 
         # Admin users by default
-        my $users = $c->cobrand->users->search(
-            { from_body => { '!=', undef } },
-            { order_by => 'name' }
-        );
-        my @users = $users->all;
-        $c->stash->{users} = \@users;
+        $users = $users->search({ from_body => { '!=', undef } });
+    }
+
+    $users = $users->search(undef, { order_by => [ \"name = ''", 'name' ] });
+    my @users = $users->all;
+    $c->stash->{users} = \@users;
+    if ($search) {
+        $c->forward('/admin/add_flags', [ { email => { ilike => "%$search%" } } ]);
     }
 
     my $rs;
