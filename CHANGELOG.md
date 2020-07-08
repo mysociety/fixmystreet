@@ -8,6 +8,7 @@
     - Front end improvements:
         - Add lazy image loading on list items.
         - Improve Bing geocoder results.
+        - Add option of checking passwords against Have I Been Pwned.
     - Changes:
         - Mark user as active when sent an email alert.
     - Bugfixes:
