@@ -156,6 +156,20 @@ sub compare_photo {
     return FixMyStreet::Template::SafeString->new($s);
 }
 
+# This is a list of extra keys that could be set on a report after a moderation
+# has occurred. This can confuse the display of the last moderation entry, as
+# the comparison with the problem's extra will be wrong.
+my @keys_to_ignore = (
+    'sent_to', # SendReport::Email adds this arrayref when sent
+    'closed_updates', # Marked to close a report to updates
+    'closure_alert_sent_at', # Set by alert sending if update closes a report
+    # Can be set/changed by an Open311 update
+    'external_status_code', 'customer_reference',
+    # Can be set by inspectors
+    'traffic_information', 'detailed_information', 'duplicates', 'duplicate_of', 'order',
+);
+my %keys_to_ignore = map { $_ => 1 } @keys_to_ignore;
+
 sub compare_extra {
     my ($self, $other) = @_;
 
@@ -163,18 +177,20 @@ sub compare_extra {
     my $new = $other->get_extra_metadata;
 
     my $both = { %$old, %$new };
-    my @all_keys = grep { $_ ne 'sent_to' } sort keys %$both;
+    my @all_keys = grep { !$keys_to_ignore{$_} } sort keys %$both;
     my @s;
     foreach (@all_keys) {
+        $old->{$_} = join(', ', @{$old->{$_}}) if ref $old->{$_} eq 'ARRAY';
+        $new->{$_} = join(', ', @{$new->{$_}}) if ref $new->{$_} eq 'ARRAY';
         if ($old->{$_} && $new->{$_}) {
             push @s, string_diff("$_ = $old->{$_}", "$_ = $new->{$_}");
         } elsif ($new->{$_}) {
             push @s, string_diff("", "$_ = $new->{$_}");
-        } else {
+        } elsif ($old->{$_}) {
             push @s, string_diff("$_ = $old->{$_}", "");
         }
     }
-    return join ', ', grep { $_ } @s;
+    return join '; ', grep { $_ } @s;
 }
 
 sub extra_diff {
@@ -193,7 +209,7 @@ sub string_diff {
     $new = FixMyStreet::Template::html_filter($new);
 
     if ($options{single}) {
-        return unless $old;
+        return '' unless $old;
         $old = [ $old ];
         $new = [ $new ];
     }
