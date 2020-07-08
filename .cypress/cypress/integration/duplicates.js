@@ -53,7 +53,7 @@ describe('Duplicate tests', function() {
     it('lets an inspector see duplicate reports coming from /reports', function() {
       cy.request({
         method: 'POST',
-        url: 'http://borsetshire.localhost:3001/auth?r=/reports',
+        url: 'http://borsetshire.localhost:3001/auth?r=/my',
         form: true,
         body: { username: 'admin@example.org', password_sign_in: 'password' }
       });
