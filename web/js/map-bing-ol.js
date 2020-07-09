@@ -14,6 +14,7 @@ fixmystreet.maps.config = function() {
 };
 
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+    tile_base: '//t{S}.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/${id}?mkt=en-US&it=G,L&src=t&shading=hill&og=969&n=z',
     attributionTemplate: '${logo}${copyrights}',
 
     setMap: function() {
@@ -35,7 +36,8 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     },
 
     updateAttribution: function() {
-        var copyrights = '&copy; 2011 <a href="https://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq';
+        var year = (new Date()).getFullYear();
+        var copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE';
         var logo = '<a href="https://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
         this._updateAttribution(copyrights, logo);
     },
@@ -89,12 +91,11 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     },
 
     get_urls: function(bounds, z) {
-        return [
-            "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=6570",
-            "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=6570",
-            "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=6570",
-            "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=6570"
-        ];
+        var urls = [];
+        for (var i=0; i<4; i++) {
+            urls.push(this.tile_base.replace('{S}', i));
+        }
+        return urls;
     },
 
     CLASS_NAME: "OpenLayers.Layer.Bing"
