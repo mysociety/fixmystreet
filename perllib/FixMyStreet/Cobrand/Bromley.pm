@@ -171,7 +171,7 @@ sub open311_config {
     $params->{extended_description} = 0;
 }
 
-sub open311_extra_data {
+sub open311_extra_data_include {
     my ($self, $row, $h, $extra) = @_;
 
     my $title = $row->title;
@@ -207,7 +207,11 @@ sub open311_extra_data {
         push @$open311_only, { name => 'fms_extra_title', value => $row->user->title };
     }
 
-    return ($open311_only, [ 'feature_id', 'prow_reference' ]);
+    return $open311_only;
+}
+
+sub open311_extra_data_exclude {
+    [ 'feature_id', 'prow_reference' ]
 }
 
 sub open311_config_updates {

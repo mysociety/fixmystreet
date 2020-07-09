@@ -20,7 +20,7 @@ sub open311_extra_data {
         }
     }
     $row->detail($row->detail . $text);
-    return ();
+    return (undef, ['sect_label', 'road_name', 'area_name']);
 }
 
 sub open311_post_send {

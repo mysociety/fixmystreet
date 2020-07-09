@@ -122,7 +122,7 @@ sub open311_config {
     $params->{extended_description} = 'oxfordshire';
 }
 
-sub open311_extra_data {
+sub open311_extra_data_include {
     my ($self, $row, $h, $extra) = @_;
 
     return [

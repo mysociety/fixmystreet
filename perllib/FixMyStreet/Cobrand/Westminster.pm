@@ -78,7 +78,7 @@ sub open311_config {
     $h->{account_id} = $id || '0';
 }
 
-sub open311_extra_data {
+sub open311_extra_data_include {
     my ($self, $row, $h, $extra) = @_;
 
     # Reports made via the app probably won't have a USRN because we don't

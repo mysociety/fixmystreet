@@ -329,6 +329,13 @@ sub munge_report_new_contacts {
     }
 }
 
+sub open311_extra_data {
+    my $self = shift;
+    my $include = $self->call_hook(open311_extra_data_include => @_);
+    my $exclude = $self->call_hook(open311_extra_data_exclude => @_);
+    push @$exclude, 'sect_label', 'road_name', 'area_name';
+    return ($include, $exclude);
+};
 
 =head2 lookup_site_code
 

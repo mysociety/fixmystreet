@@ -45,16 +45,7 @@ sub send_questionnaires {
     return 0;
 }
 
-sub open311_pre_send {
-    my ($self, $row, $open311) = @_;
-
-    return unless $row->extra;
-    my $extra = $row->get_extra_fields;
-    if (@$extra) {
-        @$extra = grep { $_->{name} ne 'road-placement' } @$extra;
-        $row->set_extra_fields(@$extra);
-    }
-}
+sub open311_extra_data_exclude { [ 'road-placement' ] }
 
 sub open311_post_send {
     my ($self, $row, $h) = @_;
@@ -103,6 +94,7 @@ sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
     return unless $report->category eq 'Flytipping';
+    return unless $self->{c}->stash->{report}->to_body_named('Buckinghamshire');
 
     my $placement = $self->{c}->get_param('road-placement');
     return unless $placement && $placement eq 'off-road';
