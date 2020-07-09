@@ -1,4 +1,4 @@
-fixmystreet.maps.tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.org/oml' ];
+fixmystreet.maps.tile_base = '//{S}tilma.mysociety.org/oml';
 
 fixmystreet.maps.config = (function(original) {
     return function(){
@@ -52,13 +52,15 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
         this._updateAttribution(copyrights, logo);
     },
 
+    tile_prefix: [ '', 'a-', 'b-', 'c-' ],
+
     get_urls: function(bounds, z) {
         var urls;
         var in_uk = this.in_uk(bounds.getCenterLonLat());
         if (z >= 16 && in_uk) {
             urls = [];
-            for (var i=0; i< fixmystreet.maps.tile_base[0].length; i++) {
-                urls.push( fixmystreet.maps.tile_base[1].replace('{S}', fixmystreet.maps.tile_base[0][i]) + "/${z}/${x}/${y}.png" );
+            for (var i=0; i< this.tile_prefix.length; i++) {
+                urls.push( fixmystreet.maps.tile_base.replace('{S}', this.tile_prefix[i]) + "/${z}/${x}/${y}.png" );
             }
         } else {
             var type = '';

@@ -18,20 +18,18 @@ sub map_javascript { [
     '/js/map-fms.js',
 ] }
 
-sub map_tile_base {
-    '-', "//%stilma.mysociety.org/oml/%d/%d/%d.png";
-}
+sub map_tile_base { "oml" }
 
 sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $ni = in_northern_ireland_box( $params{latitude}, $params{longitude} );
     if (!$ni && $z >= 16) {
-        my ($tile_sep, $tile_base) = $self->map_tile_base;
+        my $tile_base = '//%stilma.mysociety.org/' . $self->map_tile_base . '/%d/%d/%d.png';
         return [
-            sprintf($tile_base, 'a' . $tile_sep, $z, $x-1, $y-1),
-            sprintf($tile_base, 'b' . $tile_sep, $z, $x, $y-1),
-            sprintf($tile_base, 'c' . $tile_sep, $z, $x-1, $y),
+            sprintf($tile_base, 'a-', $z, $x-1, $y-1),
+            sprintf($tile_base, 'b-', $z, $x, $y-1),
+            sprintf($tile_base, 'c-', $z, $x-1, $y),
             sprintf($tile_base, '', $z, $x, $y),
         ];
     } else {
