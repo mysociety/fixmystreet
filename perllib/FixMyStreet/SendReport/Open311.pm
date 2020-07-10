@@ -47,7 +47,7 @@ sub send {
         push @$extra, @$include if $include;
         if ($exclude) {
             $exclude = join('|', @$exclude);
-            @$extra = grep { $_->{name} !~ /$exclude/ } @$extra;
+            @$extra = grep { $_->{name} !~ /$exclude/i } @$extra;
         }
 
         my $id_field = $contact->id_field;
