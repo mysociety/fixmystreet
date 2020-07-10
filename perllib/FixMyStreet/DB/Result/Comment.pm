@@ -110,6 +110,41 @@ with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Moderation',
      'FixMyStreet::Roles::PhotoSet';
 
+=head2 FOREIGNBUILDARGS
+
+Make sure that when creating a new Comment object, certain
+other fields are set based upon the supplied data.
+
+=cut
+
+sub FOREIGNBUILDARGS {
+    my ($class, $opts) = @_;
+
+    if (my $user = $opts->{user}) {
+        my $name;
+        if ($user->is_superuser) {
+            $opts->{extra}->{is_superuser} = 1;
+            $name = _('an administrator');
+        } elsif (my $body = $user->from_body) {
+            $opts->{extra}->{is_body_user} = $body->id;
+            $name = $body->name;
+            $name = 'Island Roads' if $name eq 'Isle of Wight Council';
+        } else {
+            $name = $user->name;
+        }
+        $opts->{name} //= $name;
+    }
+
+    $opts->{anonymous} //= 0;
+    $opts->{mark_fixed} //= 0;
+    $opts->{state} //= 'confirmed'; # it's only public updates that need to be unconfirmed
+    if ($opts->{state} eq 'confirmed') {
+        $opts->{confirmed} //= \'current_timestamp';
+    }
+
+    return $opts;
+};
+
 =head2 get_cobrand_logged
 
 Get a cobrand object for the cobrand the update was made on.

@@ -154,13 +154,8 @@ sub process_update {
                 $request, $p, $state, $old_state,
                 $external_status_code, $old_external_status_code
             ),
-            mark_fixed => 0,
-            mark_open => 0,
-            anonymous => 0,
-            name => $self->system_user->name,
             confirmed => $request->{comment_time},
             created => $request->{comment_time},
-            state => 'confirmed',
         }
     );
 

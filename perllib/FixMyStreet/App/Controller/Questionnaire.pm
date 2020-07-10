@@ -206,16 +206,12 @@ sub submit_standard : Private {
         $update = $c->model('DB::Comment')->new(
             {
                 problem      => $problem,
-                name         => $problem->name,
                 user         => $problem->user,
                 text         => $update,
-                state        => 'confirmed',
                 mark_fixed   => $c->stash->{new_state} eq 'fixed - user' ? 1 : 0,
                 mark_open    => $c->stash->{new_state} eq 'confirmed' ? 1 : 0,
                 lang         => $c->stash->{lang_code},
                 cobrand      => $c->cobrand->moniker,
-                cobrand_data => '',
-                confirmed    => \'current_timestamp',
                 anonymous    => $problem->anonymous,
             }
         );

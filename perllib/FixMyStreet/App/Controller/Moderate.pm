@@ -340,13 +340,8 @@ sub moderate_state : Private {
         $problem->state($new_state);
         $problem->add_to_comments( {
             text => $c->stash->{moderation_reason},
-            created => \'current_timestamp',
-            confirmed => \'current_timestamp',
-            user_id => $c->user->id,
-            name => $c->user->from_body ? $c->user->from_body->name : $c->user->name,
-            state => 'confirmed',
-            mark_fixed => 0,
-            anonymous => $c->user->from_body ? 0 : 1,
+            user => $c->user->obj,
+            anonymous => $c->user->is_superuser || $c->user->from_body ? 0 : 1,
             problem_state => $new_state,
         } );
         return 'state';

@@ -81,7 +81,7 @@ for my $test (
         fields => {
             text => 'this is an update',
             state => 'confirmed',
-            name => '',
+            name => 'Test User',
             anonymous => 1,
             username => $update->user->email,
         },
@@ -96,7 +96,7 @@ for my $test (
         fields => {
             text => 'this is a changed update',
             state => 'confirmed',
-            name => '',
+            name => 'Test User',
             anonymous => 1,
             username => $update->user->email,
         },

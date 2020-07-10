@@ -117,27 +117,14 @@ sub update : Private {
         $c->stash->{problem}->update( { state => 'confirmed' } );
         $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'triage' ] );
 
-        my $name = $c->user->moderating_user_name;
-        my $extra = { is_superuser => 1 };
-        if ($c->user->from_body) {
-            delete $extra->{is_superuser};
-            $extra->{is_body_user} = $c->user->from_body->id;
-        }
-
+        my $extra;
         $extra->{triage_report} = 1;
         $extra->{holding_category} = $current_category;
         $extra->{new_category} = $new_category;
 
-        my $timestamp = \'current_timestamp';
         my $comment = $problem->add_to_comments( {
             text => "Report triaged from $current_category to $new_category",
-            created => $timestamp,
-            confirmed => $timestamp,
-            user_id => $c->user->id,
-            name => $name,
-            mark_fixed => 0,
-            anonymous => 0,
-            state => 'confirmed',
+            user => $c->user->obj,
             problem_state => $problem->state,
             extra => $extra,
             whensent => \'current_timestamp',

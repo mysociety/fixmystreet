@@ -1096,10 +1096,10 @@ subtest $test->{desc} => sub {
     unlike $update_meta->[1], qr/Commenter/, 'commenter name not included';
     like $update_meta->[0], qr/investigating/i, 'update meta includes state change';
 
-    if ($test->{body} || $test->{bodyuser}) {
-        like $update_meta->[1], qr/Westminster/, 'body user update uses body name';
-    } elsif ($test->{superuser}) {
+    if ($test->{superuser}) {
         like $update_meta->[1], qr/an administrator/, 'superuser update says an administrator';
+    } elsif ($test->{body} || $test->{bodyuser}) {
+        like $update_meta->[1], qr/Westminster/, 'body user update uses body name';
     }
 
     ok $user->user_body_permissions->create({

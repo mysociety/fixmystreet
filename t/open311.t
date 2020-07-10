@@ -402,6 +402,7 @@ subtest 'Hounslow update description is correct for a different user' => sub {
 
     my $comment = make_comment('hounslow');
     $comment->user($user2);
+    $comment->name($user2->name);
     my $results;
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'hounslow',

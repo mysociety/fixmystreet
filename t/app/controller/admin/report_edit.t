@@ -329,7 +329,6 @@ foreach my $test (
             closed_updates => undef,
         },
         expect_comment => 1,
-        user_body => $oxfordshire,
         changes   => { state => 'investigating' },
         log_entries => [
             qw/edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
@@ -351,7 +350,6 @@ foreach my $test (
         },
         expect_comment => 1,
         expected_text => '*Category changed from ‘Other’ to ‘Potholes’*',
-        user_body => $oxfordshire,
         changes   => { state => 'in progress', category => 'Potholes' },
         log_entries => [
             qw/edit state_change category_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
@@ -363,11 +361,6 @@ foreach my $test (
     subtest $test->{description} => sub {
         $report->comments->delete;
         $log_entries->reset;
-
-        if ( $test->{user_body} ) {
-            $superuser->from_body( $test->{user_body}->id );
-            $superuser->update;
-        }
 
         $mech->get_ok("/admin/report_edit/$report_id");
 
@@ -440,21 +433,12 @@ foreach my $test (
             } else {
                 is $comment->text, '', 'comment has no text';
             }
-            if ( $test->{user_body} ) {
-                ok $comment->get_extra_metadata('is_body_user'), 'body user metadata set';
-                ok !$comment->get_extra_metadata('is_superuser'), 'superuser metadata not set';
-                is $comment->name, $test->{user_body}->name, 'comment name is body name';
-            } else {
-                ok !$comment->get_extra_metadata('is_body_user'), 'body user metadata not set';
-                ok $comment->get_extra_metadata('is_superuser'), 'superuser metadata set';
-                is $comment->name, _('an administrator'), 'comment name is admin';
-            }
+            ok !$comment->get_extra_metadata('is_body_user'), 'body user metadata not set';
+            ok $comment->get_extra_metadata('is_superuser'), 'superuser metadata set';
+            is $comment->name, _('an administrator'), 'comment name is admin';
         } else {
             is $report->comments->count, 0, 'report has no comments';
         }
-
-        $superuser->from_body(undef);
-        $superuser->update;
     };
 }
 

@@ -1,0 +1,38 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::DB;
+
+my $rs = FixMyStreet::DB->resultset("Comment")->search({
+    'user.from_body' => { '!=', undef },
+    'user.is_superuser' => 0,
+    'me.extra' => [ undef, { -not_like => '%is_body_user%' } ],
+}, {
+    "+columns" => ["user.from_body"],
+    join => 'user',
+});
+while (my $row = $rs->next) {
+    my $id = $row->user->{_column_data}->{from_body}; # Avoid DB lookups
+    $row->set_extra_metadata( is_body_user => $id );
+    $row->update;
+}
+
+$rs = FixMyStreet::DB->resultset("Comment")->search({
+    'user.is_superuser' => 1,
+    'me.extra' => [ undef, { -not_like => '%is_superuser%' } ],
+}, {
+    join => 'user',
+});
+while (my $row = $rs->next) {
+    $row->set_extra_metadata( is_superuser => 1 );
+    $row->update;
+}

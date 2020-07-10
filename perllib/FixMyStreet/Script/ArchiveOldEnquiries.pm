@@ -141,7 +141,6 @@ sub close_problems {
     my $problems = shift;
 
     my $extra = { auto_closed_by_script => 1 };
-    $extra->{is_superuser} = 1 if !$opts->{user_name};
 
     my $cobrand;
     while (my $problem = $problems->next) {
@@ -152,16 +151,9 @@ sub close_problems {
             $cobrand->set_lang_and_domain($problem->lang, 1);
         }
 
-        my $timestamp = \'current_timestamp';
         my $comment = $problem->add_to_comments( {
             text => $opts->{closure_text} || '',
-            created => $timestamp,
-            confirmed => $timestamp,
-            user_id => $opts->{user},
-            name => $opts->{user_name} || _('an administrator'),
-            mark_fixed => 0,
-            anonymous => 0,
-            state => 'confirmed',
+            user => FixMyStreet::DB->resultset("User")->find($opts->{user}),
             problem_state => $opts->{closed_state},
             extra => $extra,
         } );

@@ -368,24 +368,10 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         if ( $problem->state ne $old_state ) {
             $c->forward( '/admin/log_edit', [ $id, 'problem', 'state_change' ] );
 
-            my $name = $c->user->moderating_user_name;
-            my $extra = { is_superuser => 1 };
-            if ($c->user->from_body) {
-                delete $extra->{is_superuser};
-                $extra->{is_body_user} = $c->user->from_body->id;
-            }
-            my $timestamp = \'current_timestamp';
             $problem->add_to_comments( {
                 text => $c->stash->{update_text} || '',
-                created => $timestamp,
-                confirmed => $timestamp,
-                user_id => $c->user->id,
-                name => $name,
-                mark_fixed => 0,
-                anonymous => 0,
-                state => 'confirmed',
+                user => $c->user->obj,
                 problem_state => $problem->state,
-                extra => $extra
             } );
         }
         $c->forward( '/admin/log_edit', [ $id, 'problem', 'edit' ] );
@@ -444,13 +430,7 @@ sub edit_category : Private {
         } else {
             $problem->add_to_comments({
                 text => $update_text,
-                created => \'current_timestamp',
-                confirmed => \'current_timestamp',
-                user_id => $c->user->id,
-                name => $c->user->from_body ? $c->user->from_body->name : $c->user->name,
-                state => 'confirmed',
-                mark_fixed => 0,
-                anonymous => 0,
+                user => $c->user->obj,
             });
         }
         $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'category_change' ] );
