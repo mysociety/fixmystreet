@@ -289,6 +289,7 @@ subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/uprn/12345');
         $mech->content_contains('Completed at 10:00am, Wrong Bin Out');
+        $mech->content_lacks('Report a refuse collection');
         $mech->content_contains('Report a paper &amp; cardboard collection as missed');
         set_fixed_time('2020-05-28T12:00:00Z');
         $mech->get_ok('/waste/uprn/12345');
