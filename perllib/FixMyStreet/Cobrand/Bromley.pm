@@ -535,7 +535,7 @@ sub bin_services_for_address {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
-            report_allowed => within_working_days($schedules->{last}, 2),
+            report_allowed => within_working_days($schedules->{last}{date}, 2),
             report_open => $open->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}},
             request_open => $open_request,
@@ -547,10 +547,7 @@ sub bin_services_for_address {
             service_task_type_id => $servicetask->{TaskTypeId},
             schedule => $servicetask->{ScheduleDescription},
             last => $schedules->{last},
-            last_ordinal => $schedules->{last_ordinal},
             next => $schedules->{next},
-            next_ordinal => $schedules->{next_ordinal},
-            next_changed => $schedules->{next_changed},
         };
         push @out, $row;
     }
@@ -604,32 +601,28 @@ sub _parse_schedules {
 
         my $next = $schedule->{NextInstance};
         my $d = construct_bin_date($next->{CurrentScheduledDate});
-        if ($d && (!$min_next || $d < $min_next)) {
-            $min_next = $d;
+        if ($d && (!$min_next || $d < $min_next->{date})) {
             $next_changed = $next->{CurrentScheduledDate}{DateTime} ne $next->{OriginalScheduledDate}{DateTime};
+            $min_next = {
+                date => $d,
+                ordinal => ordinal($d->day),
+                changed => $next_changed,
+            };
         }
 
         my $last = $schedule->{LastInstance};
         $d = construct_bin_date($last->{CurrentScheduledDate});
-        $max_last = $d if $d && (!$max_last || $d > $max_last);
-        # XXX Have to call getTask for each last instance to get its CompletedDate?
-
-        #$schedule->{ScheduleDescription};
-        #$schedule->{ScheduleId};
-        #$schedule->{Id};
-        #$schedule->{Allocation}; # Type RoundName RoundId RoundGroupName/Id RoundLegId RoundLegName
+        if ($d && (!$max_last || $d > $max_last->{date})) {
+            $max_last = {
+                date => $d,
+                ordinal => ordinal($d->day),
+            };
+        }
     }
-
-    my ($next_ordinal, $last_ordinal);
-    $next_ordinal = ordinal($min_next->day) if $min_next;
-    $last_ordinal = ordinal($max_last->day) if $max_last;
 
     return {
         next => $min_next,
-        next_ordinal => $next_ordinal,
-        next_changed => $next_changed,
         last => $max_last,
-        last_ordinal => $last_ordinal,
     };
 }
 
