@@ -9,8 +9,6 @@ use base 'FixMyStreet::Map::FMS';
 
 use strict;
 
-sub map_tile_base {
-    '-', "//%stilma.mysociety.org/bromley/%d/%d/%d.png";
-}
+sub map_tile_base { "bromley" }
 
 1;

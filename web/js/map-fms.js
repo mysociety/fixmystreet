@@ -1,11 +1,4 @@
-fixmystreet.maps.tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.org/oml' ];
-
-fixmystreet.maps.config = (function(original) {
-    return function(){
-        original();
-        fixmystreet.map_type = OpenLayers.Layer.BingUK;
-    };
-})(fixmystreet.maps.config);
+fixmystreet.maps.tile_base = '//{S}tilma.mysociety.org/oml';
 
 OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
     uk_bounds: [
@@ -44,36 +37,42 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
         } else {
             logo = '<a href="https://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
             if (in_uk) {
-                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Highways England, Ordnance Survey';
+                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE, Highways England, Ordnance Survey';
             } else {
-                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
+                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE, Ordnance Survey';
             }
         }
         this._updateAttribution(copyrights, logo);
     },
 
+    tile_prefix: [ '', 'a-', 'b-', 'c-' ],
+
     get_urls: function(bounds, z) {
-        var urls;
+        var urls = [], i;
         var in_uk = this.in_uk(bounds.getCenterLonLat());
         if (z >= 16 && in_uk) {
             urls = [];
-            for (var i=0; i< fixmystreet.maps.tile_base[0].length; i++) {
-                urls.push( fixmystreet.maps.tile_base[1].replace('{S}', fixmystreet.maps.tile_base[0][i]) + "/${z}/${x}/${y}.png" );
+            for (i=0; i< this.tile_prefix.length; i++) {
+                urls.push( fixmystreet.maps.tile_base.replace('{S}', this.tile_prefix[i]) + "/${z}/${x}/${y}.png" );
+            }
+        } else if (z > 11 && in_uk) {
+            var type = 'g=8702&lbl=l1&productSet=mmOS&key=' + fixmystreet.key;
+            var tile_base = "//ecn.t{S}.tiles.virtualearth.net/tiles/r${id}?" + type;
+            for (i=0; i<4; i++) {
+                urls.push(tile_base.replace('{S}', i));
             }
         } else {
-            var type = '';
-            if (z > 11 && in_uk) {
-                type = '&productSet=mmOS&key=' + fixmystreet.key;
+            for (i=0; i<4; i++) {
+                urls.push(this.tile_base.replace('{S}', i));
             }
-            urls = [
-                "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type,
-                "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type,
-                "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type,
-                "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=6570" + type
-            ];
         }
         return urls;
     },
 
     CLASS_NAME: "OpenLayers.Layer.BingUK"
 });
+
+fixmystreet.layer_options = [
+  { map_type: OpenLayers.Layer.BingUK },
+  { map_type: OpenLayers.Layer.BingAerial }
+];

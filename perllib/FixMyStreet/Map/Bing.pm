@@ -8,6 +8,8 @@ use strict;
 
 sub map_type { '' }
 
+sub map_template { 'bing' }
+
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
     '/js/map-OpenLayers.js',
@@ -29,14 +31,21 @@ sub get_quadkey {
     return $key;
 }
 
-sub map_tile_base {
-    '', "//ecn.%s.tiles.virtualearth.net/tiles/r%s.png?g=6570";
+sub display_map {
+    my ($self, $c, %params) = @_;
+
+    $params{aerial} = $c->get_param("aerial") ? 1 : 0;
+
+    $self->SUPER::display_map($c, %params);
 }
+
+my $road_base = '//t%s.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/%s?mkt=en-US&it=G,L&src=t&shading=hill&og=969&n=z';
+my $aerial_base = '//t%s.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/%s?mkt=en-US&it=A,G,L&src=t&og=969&n=z';
 
 sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
-    my ($tile_sep, $tile_base) = $self->map_tile_base;
+    my $tile_base = $params{aerial} ? $aerial_base : $road_base;
     return [
         sprintf($tile_base, 't0', $self->get_quadkey($x-1, $y-1, $z)),
         sprintf($tile_base, 't1', $self->get_quadkey($x,   $y-1, $z)),

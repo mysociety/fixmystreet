@@ -23,3 +23,8 @@ OpenLayers.Layer.MasterMap = OpenLayers.Class(OpenLayers.Layer.BingUK, {
 
     CLASS_NAME: "OpenLayers.Layer.MasterMap"
 });
+
+fixmystreet.layer_options = [
+  { map_type: OpenLayers.Layer.MasterMap },
+  { map_type: OpenLayers.Layer.BingAerial }
+];

@@ -1,1 +1,1 @@
-fixmystreet.maps.tile_base = [ [ "", "a-" ], "https://{S}fix.bromley.gov.uk/tilma" ];
+fixmystreet.maps.tile_base = '//{S}tilma.mysociety.org/bromley';

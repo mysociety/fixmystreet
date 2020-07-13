@@ -958,6 +958,8 @@ $.extend(fixmystreet.utils, {
                 );
             } else if (layer_options.matrixIds) {
                 layer = new fixmystreet.map_type(layer_options);
+            } else if (fixmystreet.layer_options[i].map_type) {
+                layer = new fixmystreet.layer_options[i].map_type(fixmystreet.layer_name, layer_options);
             } else {
                 layer = new fixmystreet.map_type(fixmystreet.layer_name, layer_options);
             }
