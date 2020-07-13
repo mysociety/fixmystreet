@@ -78,20 +78,6 @@ h1, h2 {
     font-weight: 700;
 }
 
-a,
-.fake-link   {
-  color: $link-color;
-
-  &:visited {
-    color: $link-visited-color;
-  }
-
-  &:hover,
-  &:active {
-    color: $link-hover-color;
-  }
-}
-
 .dz-clickable .dz-message u {
     color: $link-color;
 }
