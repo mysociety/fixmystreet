@@ -70,26 +70,44 @@ sub call {
     return $res;
 }
 
+# Given a list of task handles as two-value array refs (as returned in e.g. the
+# LastInstance part of GetServiceUnitsForObject), returns a list of the
+# corresponding tasks.
 sub GetTasks {
     my $self = shift;
-    my $ref1 = shift;
-    my $ref2 = shift;
-    tie(my %obj, 'Tie::IxHash',
-        Key => 'Handle',
-        Type => "Task",
-        Value => [
-            { 'msArray:anyType' => $ref1 },
-            { 'msArray:anyType' => $ref2 },
+
+    my @refs;
+    foreach my $ref (@_) {
+        tie(my %a, 'Tie::IxHash',
+            Key => 'Handle',
+            Type => "Task",
+            Value => [
+                { 'msArray:anyType' => $ref->[0] },
+                { 'msArray:anyType' => $ref->[1] },
+            ],
+        );
+        push @refs, \%a;
+    }
+
+    return [
+        { Ref => { Value => { anyType => [ 123, 456 ] } }, CompletedDate => undef },
+        { Ref => { Value => { anyType => [ 234, 567 ] } }, CompletedDate => { DateTime => '2020-05-27T10:00:00Z' } },
+        { Ref => { Value => { anyType => [ 345, 678 ] } }, CompletedDate => undef },
+        { Ref => { Value => { anyType => [ 456, 789 ] } }, CompletedDate => undef },
+    ] if $self->sample_data;
+
+    # This creates XML of the form <taskRefs><ObjectRef>...</ObjectRef><ObjectRef>...</ObjectRef>...</taskRefs>
+    # uncoverable statement
+    my $res = $self->call('GetTasks',
+        taskRefs => [
+            map { { ObjectRef => $_ } } @refs
         ],
-    );
-    $self->call('GetTasks',
-        taskRefs => {
-            ObjectRef => \%obj,
-        },
         options => {
             IncludePoints => 'false',
         },
     );
+    # uncoverable statement
+    return force_arrayref($res, 'Task');
 }
 
 sub _uprn_ref {
