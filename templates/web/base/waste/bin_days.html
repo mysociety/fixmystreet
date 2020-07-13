@@ -29,8 +29,8 @@
     <dt class="govuk-summary-list__key">Next collection</dt>
     <dd class="govuk-summary-list__value">
       [% IF unit.next %]
-        [% date.format(unit.next) | replace('~~~', unit.next_ordinal) %]
-        [% IF unit.next_changed %]Adjusted[% END %]
+        [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
+        [% IF unit.next.changed %](adjusted)[% END %]
       [% ELSE %]
         <i>None</i>
       [% END %]
@@ -40,7 +40,7 @@
     <dt class="govuk-summary-list__key">Last collection</dt>
     <dd class="govuk-summary-list__value">
       [% IF unit.last %]
-        [% date.format(unit.last) | replace('~~~', unit.last_ordinal) %]
+        [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
       [% ELSE %]
         <i>None</i>
       [% END %]
