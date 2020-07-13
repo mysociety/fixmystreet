@@ -528,6 +528,7 @@ sub bin_services_for_address {
     my $open = $self->_parse_open_events($events);
 
     my @out;
+    my %task_ref_to_row;
     foreach (@$result) {
         next unless $_->{ServiceTasks};
 
@@ -556,7 +557,25 @@ sub bin_services_for_address {
             last => $schedules->{last},
             next => $schedules->{next},
         };
+        if ($row->{last}) {
+            my $ref = join(',', @{$row->{last}{ref}});
+            $task_ref_to_row{$ref} = $row;
+        }
         push @out, $row;
+    }
+    if (%task_ref_to_row) {
+        my $tasks = $echo->GetTasks(map { $_->{last}{ref} } values %task_ref_to_row);
+        foreach (@$tasks) {
+            my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
+            my $completed = construct_bin_date($_->{CompletedDate});
+            my $state = $_->{State}{Name} || '';
+            my $resolution = $_->{Resolution}{Name} || '';
+
+            my $row = $task_ref_to_row{$ref};
+            $row->{last}{state} = $state;
+            $row->{last}{completed} = $completed;
+            $row->{last}{resolution} = $resolution;
+        }
     }
 
     return \@out;
@@ -623,6 +642,7 @@ sub _parse_schedules {
             $max_last = {
                 date => $d,
                 ordinal => ordinal($d->day),
+                ref => $last->{Ref}{Value}{anyType},
             };
         }
     }
