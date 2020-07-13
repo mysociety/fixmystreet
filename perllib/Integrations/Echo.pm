@@ -91,7 +91,12 @@ sub GetTasks {
 
     return [
         { Ref => { Value => { anyType => [ 123, 456 ] } }, CompletedDate => undef },
-        { Ref => { Value => { anyType => [ 234, 567 ] } }, CompletedDate => { DateTime => '2020-05-27T10:00:00Z' } },
+        {
+            Ref => { Value => { anyType => [ 234, 567 ] } },
+            State => { Name => 'Completed' },
+            Resolution => { Name => 'Wrong Bin Out' },
+            CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
+        },
         { Ref => { Value => { anyType => [ 345, 678 ] } }, CompletedDate => undef },
         { Ref => { Value => { anyType => [ 456, 789 ] } }, CompletedDate => undef },
     ] if $self->sample_data;
@@ -176,6 +181,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 123, 456 ] } },
                 },
             } },
         } },
@@ -194,6 +200,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 234, 567 ] } },
                 },
             } },
         } },
@@ -212,6 +219,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 345, 678 ] } },
                 },
             } },
         } },
@@ -235,6 +243,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 456, 789 ] } },
                 },
             } ] },
         } },
