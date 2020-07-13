@@ -278,6 +278,32 @@ subtest 'test open enquiries' => sub {
     restore_time();
 };
 
+subtest 'test reporting before/after completion' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => { sample_data => 1 } },
+            waste => { bromley => 1 }
+        },
+    }, sub {
+        set_fixed_time('2020-05-27T11:00:00Z');
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->content_contains('(completed at 10:00am)');
+        $mech->content_contains('Wrong Bin Out');
+        $mech->content_contains('Report a paper &amp; cardboard collection as missed');
+        set_fixed_time('2020-05-28T12:00:00Z');
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->content_contains('Report a paper &amp; cardboard collection as missed');
+        set_fixed_time('2020-05-29T12:00:00Z');
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->content_contains('Report a paper &amp; cardboard collection as missed');
+        set_fixed_time('2020-05-30T12:00:00Z');
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->content_lacks('Report a paper &amp; cardboard collection as missed');
+    };
+    restore_time();
+};
+
 subtest 'test waste max-per-day' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
