@@ -175,6 +175,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 123, 456 ] } },
                 },
             } },
         } },
@@ -193,6 +194,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 234, 567 ] } },
                 },
             } },
         } },
@@ -211,6 +213,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 345, 678 ] } },
                 },
             } },
         } },
@@ -234,6 +237,7 @@ sub GetServiceUnitsForObject {
                 },
                 LastInstance => {
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 456, 789 ] } },
                 },
             } ] },
         } },
