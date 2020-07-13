@@ -3,7 +3,7 @@ set -e
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-PACKAGE_FILE=conf/packages
+PACKAGE_FILE=conf/packages.generic
 
 [ -n "$1" ] && PACKAGE_FILE="conf/packages.${1}"
 

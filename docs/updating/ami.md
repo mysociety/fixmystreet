@@ -41,9 +41,11 @@ make sure they are all committed to your local branch and fork first, see
 to try checking out your repository elsewhere and trying the merge there first,
 to see if it there are any problems.
 
-After updating the code, you should run the following command to update any
+After updating the code, you should run the following commands to update any
 needed dependencies and any schema changes to your database. It's a good idea
 to take a backup of your database first.
+
+    admin@ip-10-58-191-98:/var/www/fixmystreet/fixmystreet$ sudo bin/install_packages
 
     fms@ip-10-58-191-98:~/fixmystreet$ script/update
 

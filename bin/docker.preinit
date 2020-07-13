@@ -34,6 +34,7 @@ fi
 su $FMS_DB_USER -c "${FMS_ROOT}/bin/docker-cobrand"
 
 # Ensure things are up to date - schema, CSS, etc
+${FMS_ROOT}/bin/install_packages docker
 su $FMS_DB_USER -c "${FMS_ROOT}/script/update"
 
 # Update reports

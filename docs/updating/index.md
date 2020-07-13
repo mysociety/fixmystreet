@@ -53,12 +53,13 @@ you are too worried to merge in case it breaks something.
 
 ## Subsequent dependency updates
 
-After updating the code, you should run the following command to update any
+After updating the code, you should run the following commands to update any
 needed dependencies and any schema changes to your database. It's a good idea
 to take a backup of your database first.
 
 {% highlight bash %}
-script/update
+sudo bin/install_packages # (as your admin user)
+script/update # (as the fms user)
 {% endhighlight %}
 
 Of course, if you have made changes to the database schema yourself, this may

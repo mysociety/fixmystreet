@@ -60,6 +60,9 @@ EOS
 # This just runs our update script, used on our offical box.
 $update = <<-EOS
     chown -R vagrant:vagrant /home/vagrant/.cpanm
+    # Ensure any new packages are installed
+    /home/vagrant/fixmystreet/bin/install_packages
+    # Run setup script
     su vagrant -c '/home/vagrant/fixmystreet/script/setup ; exit $?'
     if [ $? -eq 0 ]; then
       touch /tmp/success
