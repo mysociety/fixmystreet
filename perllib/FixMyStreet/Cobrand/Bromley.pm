@@ -542,7 +542,6 @@ sub bin_services_for_address {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
-            report_allowed => within_working_days($schedules->{last}{date}, 2),
             report_open => $open->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}},
             request_open => $open_request,
@@ -564,6 +563,7 @@ sub bin_services_for_address {
     }
     if (%task_ref_to_row) {
         my $tasks = $echo->GetTasks(map { $_->{last}{ref} } values %task_ref_to_row);
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
         foreach (@$tasks) {
             my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
             my $completed = construct_bin_date($_->{CompletedDate});
@@ -574,6 +574,10 @@ sub bin_services_for_address {
             $row->{last}{state} = $state;
             $row->{last}{completed} = $completed;
             $row->{last}{resolution} = $resolution;
+            $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
+            if (!$completed && $row->{last}{date}->ymd eq $now->ymd) {
+                $row->{report_allowed} = 0;
+            }
         }
     }
 
