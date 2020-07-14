@@ -14,15 +14,10 @@ fixmystreet.maps.config = function() {
 
 (function() {
     $(function(){
-        $('#map_layer_toggle').toggle(function(){
-            $(this).text('Roads');
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
-        }, function(){
-            $(this).text('Aerial');
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
+            $(this).text(translation_strings.map_roads);
+            $(this).text(translation_strings.map_aerial);
         });
     });
-
 })();
 
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
