@@ -14,8 +14,16 @@ fixmystreet.maps.config = function() {
 
 (function() {
     $(function(){
-            $(this).text(translation_strings.map_roads);
-            $(this).text(translation_strings.map_aerial);
+        $('#map_layer_toggle').click(function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            if ($this.text() == translation_strings.map_aerial) {
+                $this.text(translation_strings.map_roads);
+                fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+            } else {
+                $this.text(translation_strings.map_aerial);
+                fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
+            }
         });
     });
 })();
