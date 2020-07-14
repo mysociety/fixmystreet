@@ -116,13 +116,24 @@ subtest "only original reporter can comment" => sub {
     };
 };
 
+subtest "only original reporter can comment" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'fixmystreet',
+        COBRAND_FEATURES => { updates_allowed => { fixmystreet => { 'Isle of Wight' => 'reporter' } } },
+    }, sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/report/' . $reports[0]->id);
+        $mech->content_contains('Only the original reporter may leave updates');
+    };
+};
+
 subtest "check moderation label uses correct name" => sub {
     my $REPORT_URL = '/report/' . $reports[0]->id;
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => ['isleofwight'],
     }, sub {
-        $mech->log_out_ok;
         $mech->log_in_ok( $iow_user->email );
         $mech->get_ok($REPORT_URL);
         $mech->content_lacks('show-moderation');
