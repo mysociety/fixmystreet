@@ -66,6 +66,7 @@
     <p class="form-check">
         <input type="checkbox" name="updates_disallowed" value="1" id="updates_disallowed" [% ' checked' IF contact.get_extra_metadata('updates_disallowed') %]>
         <label for="updates_disallowed">[% loc('Disable updates on reports in this category') %]</label>
+        [% TRY %][% INCLUDE admin/bodies/_updates_disallowed_hint.html %][% CATCH file %][% END %]
     </p>
 
     <p class="form-check">

@@ -1,0 +1,9 @@
+[% cfg = c.cobrand.feature('updates_allowed') ~%]
+<span class="form-hint">
+    This site’s configuration means even if this is unticked, only
+  [%~ IF cfg == 'staff' %] staff will be able to leave updates.
+  [%~ ELSIF cfg == 'reporter' %] the problem reporter will be able to leave updates.
+  [%~ ELSIF cfg == 'reporter-open' %] the problem reporter will be able to leave updates on open reports.
+  [%~ ELSIF cfg == 'open' %] open reports can have updates left on them.
+  [%~ END %]
+</span>
