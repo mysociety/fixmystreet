@@ -24,7 +24,9 @@ sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $ni = in_northern_ireland_box( $params{latitude}, $params{longitude} );
-    if (!$ni && $z >= 16) {
+    if ($params{aerial} || $ni || $z <= 11) {
+        return $self->SUPER::map_tiles(%params);
+    } elsif ($z >= 16) {
         my $tile_base = '//%stilma.mysociety.org/' . $self->map_tile_base . '/%d/%d/%d.png';
         return [
             sprintf($tile_base, 'a-', $z, $x-1, $y-1),
@@ -32,7 +34,7 @@ sub map_tiles {
             sprintf($tile_base, 'c-', $z, $x-1, $y),
             sprintf($tile_base, '', $z, $x, $y),
         ];
-    } elsif (!$ni && $z > 11) {
+    } elsif ($z > 11) {
         my $key = FixMyStreet->config('BING_MAPS_API_KEY');
         my $base = "//ecn.%s.tiles.virtualearth.net/tiles/r%s?g=8702&lbl=l1&productSet=mmOS&key=$key";
         return [
@@ -41,8 +43,6 @@ sub map_tiles {
             sprintf($base, "t2", $self->get_quadkey($x-1, $y,   $z)),
             sprintf($base, "t3", $self->get_quadkey($x,   $y,   $z)),
         ];
-    } else {
-        return $self->SUPER::map_tiles(%params);
     }
 }
 

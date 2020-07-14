@@ -39,8 +39,8 @@ sub display_map {
     $self->SUPER::display_map($c, %params);
 }
 
-my $road_base = '//t%s.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/%s?mkt=en-US&it=G,L&src=t&shading=hill&og=969&n=z';
-my $aerial_base = '//t%s.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/%s?mkt=en-US&it=A,G,L&src=t&og=969&n=z';
+my $road_base = '//%s.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/%s?mkt=en-US&it=G,L&src=t&shading=hill&og=969&n=z';
+my $aerial_base = '//%s.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/%s?mkt=en-US&it=A,G,L&src=t&og=969&n=z';
 
 sub map_tiles {
     my ( $self, %params ) = @_;
