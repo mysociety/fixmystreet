@@ -33,6 +33,7 @@ sub disambiguate_location {
     ( $string, $town ) = ( "TW3 4HR", "" ) if $string =~ /lampton\s+road/i;
     ( $string, $town ) = ( "TW3 4AJ", "" ) if $string =~ /kingsley\s+road/i;
     ( $string, $town ) = ( "TW3 1YQ", "" ) if $string =~ /stanborough\s+road/i;
+    ( $string, $town ) = ( "Snowy Fielder Way", "" ) if $string =~ /Snowy\s+Fielder\s+Waye/i;
 
     return {
         %{ $self->SUPER::disambiguate_location() },
