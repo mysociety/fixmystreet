@@ -1,3 +1,4 @@
+[% SET filter_group = c.get_param('filter_group') %]
 [%~ IF category_groups.size ~%]
     [%~ FOREACH group IN category_groups ~%]
         [% IF group.name %]<optgroup label="[% group.name %]">[% END %]

@@ -250,7 +250,10 @@ subtest 'check category, status and extra filtering works on /around' => sub {
     # Create one open and one fixed report in each category
     foreach my $category ( @$categories ) {
         my $contact = $mech->create_contact_ok( category => $category, body_id => $body->id, email => "$category\@example.org" );
-        if ($category ne 'Pothole') {
+        if ($category eq 'Vegetation') {
+            $contact->set_extra_metadata(group => ['Environment', 'Green']);
+            $contact->update;
+        } elsif ($category eq 'Flytipping') {
             $contact->set_extra_metadata(group => ['Environment']);
             $contact->update;
         }
@@ -281,6 +284,9 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
         $mech->get_ok( '/around?filter_group=Environment&bbox=' . $bbox );
         $mech->content_contains('<option value="Flytipping" selected>');
+
+        $mech->get_ok( '/around?filter_group=Environment&filter_category=Vegetation&bbox=' . $bbox );
+        $mech->content_like(qr/<optgroup label="Environment">.*?<option value="Vegetation" selected>.*?<optgroup label="Green">.*?<option value="Vegetation">/s);
     };
 
     $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Pothole&bbox=' . $bbox );

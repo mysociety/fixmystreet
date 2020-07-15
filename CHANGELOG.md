@@ -10,6 +10,7 @@
         - Improve Bing geocoder results.
         - Add option of checking passwords against Have I Been Pwned.
         - Add aerial maps option to Bing maps.
+        - Select matches for both filter category and group. #3110
     - Changes:
         - Mark user as active when sent an email alert.
     - Bugfixes:
