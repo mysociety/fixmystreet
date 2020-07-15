@@ -32,6 +32,8 @@ sub disambiguate_location {
 
 sub get_geocoder { 'OSM' }
 
+sub contact_extra_fields { [ 'display_name' ] }
+
 sub geocoder_munge_results {
     my ($self, $result) = @_;
     $result->{display_name} = '' unless $result->{display_name} =~ /City of Peterborough/;
