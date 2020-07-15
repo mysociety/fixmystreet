@@ -18,13 +18,14 @@
 
         [% FOREACH category IN category_options %]
           [% cat_name = category.category;
+             cat_safe = mark_safe(cat_name);
              cat_prefix = cat_name | lower | replace('[^a-z]', '');
              cat_prefix = "category_" _ cat_prefix _ "_" %]
             <p data-category="[% cat_name | html %]"
                [%~ IF cat_name != problem.category %] class="hidden"[% END %]
-               data-priorities='[% priorities_by_category.$cat_name | html %]'
-               data-templates='[% templates_by_category.$cat_name | html %]'>
-                [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$cat_name hide_notices=1 show_hidden=1 %]
+               data-priorities='[% priorities_by_category.$cat_safe | html %]'
+               data-templates='[% templates_by_category.$cat_safe | html %]'>
+                [% INCLUDE 'report/new/category_extras_fields.html' metas=category_extras.$cat_safe hide_notices=1 show_hidden=1 %]
             </p>
         [% END %]
 

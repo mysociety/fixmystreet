@@ -26,6 +26,7 @@
         - Fix duplicate asset message after dismissing duplicate suggestions.
         - Improve moderation diff display in a few small ways. #3105
         - Do not have bootstrap run sudo commands. #2930
+        - Fix lookups in templates of categories with &s.
     - Admin improvements:
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989

@@ -7,7 +7,7 @@ my $brum = $mech->create_body_ok(2514, 'Birmingham City Council');
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1 } );
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $contact2 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Sheep', email => 'SHEEP', send_method => 'Open311' );
-my $contact3 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Badgers', email => 'badgers@example.net' );
+my $contact3 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Badgers & Voles', email => 'badgers@example.net' );
 my $rp = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
     name => 'High Priority',
@@ -683,19 +683,20 @@ FixMyStreet::override_config {
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
-    ALLOWED_COBRANDS => 'fixmystreet',
+    ALLOWED_COBRANDS => 'oxfordshire',
 }, sub {
     subtest "test category not updated if fail to include public update" => sub {
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers' });
+        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers & Voles' });
 
         $report->discard_changes;
         is $report->category, "Cows", "Report in correct category";
-        $mech->content_contains('Badgers" selected', 'Changed category still selected');
+        $mech->content_contains('Badgers &amp; Voles" selected', 'Changed category still selected');
     };
 
     subtest "test invalid form maintains Category and priority" => sub {
         $mech->get_ok("/report/$report_id");
+        $mech->content_like(qr/data-priorities='[^']*?Low Priority/);
         my $expected_fields = {
           state => 'action scheduled',
           category => 'Cows',
@@ -709,9 +710,9 @@ FixMyStreet::override_config {
         my $values = $mech->visible_form_values('report_inspect_form');
         is_deeply $values, $expected_fields, 'correct form fields present';
 
-        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers', priority => $rp2->id });
+        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers & Voles', priority => $rp2->id });
 
-        $expected_fields->{category} = 'Badgers';
+        $expected_fields->{category} = 'Badgers & Voles';
         $expected_fields->{priority} = $rp2->id;
 
         my $new_values = $mech->visible_form_values('report_inspect_form');
@@ -724,15 +725,15 @@ FixMyStreet::override_config {
         $mech->submit_form(
             button => 'save',
             with_fields => {
-                category => 'Badgers',
+                category => 'Badgers & Voles',
                 include_update => 1,
                 public_update => 'This is a public update',
         });
 
         $report->discard_changes;
-        is $report->category, "Badgers", "Report in correct category";
+        is $report->category, "Badgers & Voles", "Report in correct category";
         is $report->comments->count, 1, "Only leaves one update";
-        like $report->comments->first->text, qr/Category changed.*Badgers/, 'update text included category change';
+        like $report->comments->first->text, qr/Category changed.*Badgers & Voles/, 'update text included category change';
     };
 
     subtest "test non-public changing" => sub {
@@ -779,10 +780,10 @@ FixMyStreet::override_config {
     });
     subtest "test report not resent when category changes if send_method doesn't change" => sub {
         $mech->get_ok("/report/$report3_id");
-        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers', include_update => undef, });
+        $mech->submit_form(button => 'save', with_fields => { category => 'Badgers & Voles', include_update => undef, });
 
         $report3->discard_changes;
-        is $report3->category, "Badgers", "Report in correct category";
+        is $report3->category, "Badgers & Voles", "Report in correct category";
         isnt $report3->whensent, undef, "Report not marked as unsent";
         is $report3->bodies_str, $oxon->id, "Reported to OCC";
     };

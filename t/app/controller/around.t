@@ -217,8 +217,8 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
 
 subtest 'check assigned-only list items do not display shortlist buttons' => sub {
     my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
-    my $contact = $mech->create_contact_ok( category => 'Horses', body_id => $body->id, email => "horses\@example.org" );
-    $edinburgh_problems[4]->update({ category => 'Horses' });
+    my $contact = $mech->create_contact_ok( category => 'Horses & Ponies', body_id => $body->id, email => "horses\@example.org" );
+    $edinburgh_problems[4]->update({ category => 'Horses & Ponies' });
 
     my $user = $mech->log_in_ok( 'test@example.com' );
     $user->set_extra_metadata(assigned_categories_only => 1);
