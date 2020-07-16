@@ -4,6 +4,7 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     currentRequests: [],
 
     tileSize: 512,
+    resolution: 2.388657133579254,
     abort: function() {
         if (this.currentRequests.length) {
             for (var j = 0; j < this.currentRequests.length; j++) {
@@ -56,14 +57,11 @@ OpenLayers.Protocol.Alloy = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 
     getTileCoord: function(bounds, maxExtent, map, reverse) {
         var origin = new OpenLayers.LonLat(maxExtent.left, maxExtent.top);
-        // hard code this number as we want to avoid fetching asset groups
-        // which happens at more zoomed out levels
-        var resolution = 2.388657133579254;
 
         var adjustX = reverse ? 0.5 : 0;
         var adjustY = reverse ? 0 : 0.5;
-        var xFromOrigin = Math.floor((bounds[0] - origin.lon) / resolution + adjustX);
-        var yFromOrigin = Math.floor((bounds[1] - origin.lat) / resolution + adjustY);
+        var xFromOrigin = Math.floor((bounds[0] - origin.lon) / this.resolution + adjustX);
+        var yFromOrigin = Math.floor((bounds[1] - origin.lat) / this.resolution + adjustY);
         var tileCoordX = Math.floor(xFromOrigin / this.tileSize);
         var tileCoordY = Math.floor(yFromOrigin / this.tileSize) * -1;
 
@@ -169,8 +167,9 @@ OpenLayers.Format.AlloyV2 = OpenLayers.Class(OpenLayers.Format.GeoJSON, {
 
 OpenLayers.Protocol.AlloyV2 = OpenLayers.Class(OpenLayers.Protocol.Alloy, {
     tileSize: 128,
+    resolution: 4.777314267158508,
     getURL: function(coords, options) {
-        return OpenLayers.String.format(options.base, {'layerid': options.layerid, 'styleid': options.styleid, 'z': 17, 'x': coords[0], 'y': coords[1]});
+        return OpenLayers.String.format(options.base, {'layerid': options.layerid, 'styleid': options.styleid, 'z': 16, 'x': coords[0], 'y': coords[1]});
     }
 });
 
