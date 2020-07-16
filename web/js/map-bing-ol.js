@@ -25,6 +25,10 @@ fixmystreet.maps.config = function() {
                 fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
             }
         });
+        // If page loaded with Aerial as starting, rather than default road
+        if ($('#map_layer_toggle').text() == translation_strings.map_roads) {
+            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+        }
     });
 })();
 
