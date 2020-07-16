@@ -1,4 +1,4 @@
-[% cfg = c.cobrand.updates_disallowed_config(problem).0 ~%]
+[% cfg = c.cobrand.per_body_config('updates_allowed', problem).0 ~%]
 [% IF cfg.match('reporter') AND (NOT cfg.match('open') OR problem.is_open) %]
     <p>
         Only the original reporter may leave updates.

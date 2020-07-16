@@ -413,4 +413,31 @@ subtest 'check log of the above' => sub {
     $mech->content_contains('Edited body <a href="/admin/body/' . $body->id . '">Aberdeen City Council</a>');
 };
 
+subtest 'check update disallowed message' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bathnes',
+        COBRAND_FEATURES => { updates_allowed => { bathnes => 'open' } }
+    }, sub {
+        $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
+        $mech->content_contains('even if this is unticked, only open reports can have updates left on them.');
+    };
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bathnes',
+        COBRAND_FEATURES => { updates_allowed => { bathnes => 'staff' } }
+    }, sub {
+        $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
+        $mech->content_contains('even if this is unticked, only staff will be able to leave updates.');
+    };
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bathnes',
+        COBRAND_FEATURES => { updates_allowed => { bathnes => 'reporter' } }
+    }, sub {
+        $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
+        $mech->content_contains('even if this is unticked, only the problem reporter will be able to leave updates');
+    };
+};
+
 done_testing();
