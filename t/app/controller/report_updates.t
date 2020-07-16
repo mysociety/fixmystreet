@@ -907,6 +907,7 @@ subtest "check comment with no status change has not status in meta" => sub {
 
         is $report->state, 'investigating', 'correct report state';
         is $update->problem_state, 'investigating', 'correct update state';
+        is $update->get_extra_metadata('is_body_user'), $body->id, 'correct metadata';
         $update_meta = $mech->extract_update_metas;
         like $update_meta->[0], qr/fixed/i, 'first update meta says fixed';
         unlike $update_meta->[2], qr/State changed to/, 'second update meta does not include state change';

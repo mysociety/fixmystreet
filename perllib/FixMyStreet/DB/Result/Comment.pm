@@ -145,6 +145,26 @@ sub FOREIGNBUILDARGS {
     return $opts;
 };
 
+=head2 around user
+
+Also make sure we catch the setting of a user on an object at a time other than
+object creation, to set the extra field needed.
+
+=cut
+
+around user => sub {
+    my ( $orig, $self ) = ( shift, shift );
+    my $res = $self->$orig(@_);
+    if (@_) {
+        if ($_[0]->is_superuser) {
+            $self->set_extra_metadata( is_superuser => 1 );
+        } elsif (my $body = $_[0]->from_body) {
+            $self->set_extra_metadata( is_body_user => $body->id );
+        }
+    }
+    return $res;
+};
+
 =head2 get_cobrand_logged
 
 Get a cobrand object for the cobrand the update was made on.
