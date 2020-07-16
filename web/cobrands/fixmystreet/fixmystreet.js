@@ -1310,6 +1310,20 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
     }
 };
 
+(function() { // fetch_reporting_data closure
+
+function re_select(group, category) {
+    var cat_in_group = $("#form_category optgroup[label=\"" + group + "\"] option[value=\"" + category + "\"]");
+    if (cat_in_group.length) {
+        cat_in_group.prop({selected:true});
+        return true;
+    } else if ($("#form_category option[value=\"" + category + "\"]").length) {
+        $("#form_category").val(category);
+        return true;
+    }
+    return false;
+}
+
 fixmystreet.fetch_reporting_data = function() {
     $.getJSON('/report/new/ajax', {
         latitude: $('#fixmystreet\\.latitude').val(),
@@ -1364,16 +1378,12 @@ fixmystreet.fetch_reporting_data = function() {
         }
 
         $('#form_category_row').html(data.category);
-        var cat_in_group = $("#form_category optgroup[label=\"" + old_category_group + "\"] option[value=\"" + old_category + "\"]");
-        if (cat_in_group.length) {
-            cat_in_group.prop({selected:true});
-        } else if ($("#form_category option[value=\"" + old_category + "\"]").length) {
-            $("#form_category").val(old_category);
-        } else if (filter_category !== undefined && $("#form_category option[value='" + filter_category + "']").length) {
+        var reselected = re_select(old_category_group, old_category);
+        if (!reselected && filter_category !== undefined) {
             // If the category filter appears on the map and the user has selected
             // something from it, then pre-fill the category field in the report,
             // if it's a value already present in the drop-down.
-            $("#form_category").val(filter_category);
+            re_select(old_category_group, filter_category);
         }
 
         fixmystreet.set_up.category_groups(old_category_group);
@@ -1407,6 +1417,8 @@ fixmystreet.fetch_reporting_data = function() {
         }
     });
 };
+
+})(); // fetch_reporting_data closure
 
 fixmystreet.display = {
   begin_report: function(lonlat, saveHistoryState) {
