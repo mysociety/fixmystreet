@@ -1,8 +1,10 @@
 [% select_status = PROCESS 'reports/_list-filter-status.html' %]
 
+[%# We want to only select things that match all filters, if filters are provided ~%]
 [% BLOCK category_options %]
     [% FOR cat IN categories %]
-        <option value="[% cat.category %]"[% ' selected' IF filter_category.${cat.category} OR ( filter_group AND ( cat.groups.grep(filter_group).size OR cat.category == filter_group ) ) %]>
+      [% SET cat_safe = mark_safe(cat.category) %]
+        <option value="[% cat.category %]"[% ' selected' IF ( filter_category.size OR filter_group ) AND ( NOT filter_category.size OR filter_category.$cat_safe ) AND ( NOT filter_group OR filter_group == group.name ) %]>
             [% cat.category_display %]
             [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
         </option>

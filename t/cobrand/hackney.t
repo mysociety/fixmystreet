@@ -28,7 +28,7 @@ my $params = {
 my $hackney = $mech->create_body_ok(2508, 'Hackney Council', $params);
 my $contact = $mech->create_contact_ok(
     body_id => $hackney->id,
-    category => 'Potholes',
+    category => 'Potholes & stuff',
     email => 'pothole@example.org',
 );
 $contact->set_extra_fields( ( {
@@ -143,7 +143,7 @@ $p->delete;
 subtest "sends branded confirmation emails" => sub {
     $mech->log_out_ok;
     $mech->clear_emails_ok;
-    $mech->get_ok('/around');
+    $mech->get_ok('/?filter_category=Potholes+%26+stuff');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'hackney' ],
         MAPIT_URL => 'http://mapit.uk/',
@@ -158,6 +158,9 @@ subtest "sends branded confirmation emails" => sub {
     }, sub {
         $mech->submit_form_ok( { with_fields => { pc => 'E8 1DY', } },
             "submit location" );
+
+        # While we're here, check the category with an ampersand (regression test)
+        $mech->content_contains('<option value="Potholes &amp; stuff" selected>');
 
         # click through to the report page
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, },

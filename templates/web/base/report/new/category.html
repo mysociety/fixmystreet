@@ -10,7 +10,7 @@ END
 [% IF category_options.size OR category_groups.size ~%]
     [%~ BLOCK category_option ~%]
     [% cat_lc = cat.category | lower =%]
-    <option value='[% cat.category | html %]'[% ' selected' IF report.category == cat.category || category_lc == cat_lc ~%]
+    <option value='[% cat.category | html %]'[% ' selected' IF ( report.category == cat.category || category_lc == cat_lc ) AND ( NOT filter_group OR filter_group == group.name ) ~%]
     >[% IF loop.first %][% cat.category_display %][% ELSE %][% cat.category_display | html %][% END %]
     [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
     </option>

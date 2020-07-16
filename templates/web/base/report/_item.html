@@ -5,8 +5,9 @@
 [%
 
 SET relevant_staff = 1;
-SET is_user_category = user_categories.${problem.category};
-IF (assigned_users_only.${problem.category} OR assigned_categories_only) AND NOT is_user_category;
+SET category_safe = mark_safe(problem.category);
+SET is_user_category = user_categories.$category_safe;
+IF (assigned_users_only.$category_safe OR assigned_categories_only) AND NOT is_user_category;
     SET relevant_staff = 0;
 END;
 
