@@ -21,11 +21,13 @@ sub map_template { 'osm' }
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wfs.js',
     '/js/map-OpenLayers.js',
+    FixMyStreet->config('BING_MAPS_API_KEY') ? ('/js/map-bing-ol.js') : (),
     '/js/map-OpenStreetMap.js',
 ] }
 
 sub map_tiles {
     my ( $self, %params ) = @_;
+    return FixMyStreet::Map::Bing->map_tiles(%params) if $params{aerial};
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $tile_url = $self->base_tile_url();
     return [
@@ -58,6 +60,8 @@ sub display_map {
     $params{longitude} = Utils::truncate_coordinate($c->get_param('lon') + 0)
         if defined $c->get_param('lon');
     $params{zoomToBounds} = $params{any_zoom} && !defined $c->get_param('zoom');
+
+    $params{aerial} = $c->get_param("aerial") && FixMyStreet->config('BING_MAPS_API_KEY') ? 1 : 0;
 
     my %data;
     $data{cobrand} = $c->cobrand;

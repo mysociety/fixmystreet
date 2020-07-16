@@ -8,8 +8,6 @@ use strict;
 
 sub map_type { '' }
 
-sub map_template { 'bing' }
-
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
     '/js/map-OpenLayers.js',
@@ -29,14 +27,6 @@ sub get_quadkey {
         $key .= $digit;
     }
     return $key;
-}
-
-sub display_map {
-    my ($self, $c, %params) = @_;
-
-    $params{aerial} = $c->get_param("aerial") ? 1 : 0;
-
-    $self->SUPER::display_map($c, %params);
 }
 
 my $road_base = '//%s.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/%s?mkt=en-US&it=G,L&src=t&shading=hill&og=969&n=z';

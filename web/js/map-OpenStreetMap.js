@@ -7,6 +7,13 @@ fixmystreet.maps.config = function() {
         new OpenLayers.Control.PermalinkFMS('map'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
+
+    if (OpenLayers.Layer.BingAerial) {
+        fixmystreet.layer_options = [
+          { map_type: fixmystreet.map_type },
+          { map_type: OpenLayers.Layer.BingAerial }
+        ];
+    }
 };
 
 // http://www.openstreetmap.org/openlayers/OpenStreetMap.js (added maxResolution)
