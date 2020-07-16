@@ -4,7 +4,11 @@ if (!fixmystreet.maps) {
     return;
 }
 
-var is_live = !fixmystreet.staging;
+var base_url = fixmystreet.staging ?
+      "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://northants.assets/${layerid}/${x}/${y}/${z}/cluster" :
+      "https://tilma.mysociety.org/resource-proxy/proxy.php?https://northants.assets/${layerid}/${x}/${y}/${z}/cluster";
+
+var url_with_style = base_url + '?styleIds=${styleid}';
 
 var layers = [
 /*
@@ -157,6 +161,8 @@ var layers = [
 },
 ];
 
+var highway_layer = 'layers_highwayAssetsCustom_5d4806b0fe2ad809d85a774f';
+
 // This is required so that the found/not found actions are fired on category
 // select and pin move rather than just on asset select/not select.
 OpenLayers.Layer.NCCVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
@@ -195,11 +201,12 @@ OpenLayers.Layer.NCCVectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorNear
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
-var northants_defaults = $.extend(true, {}, fixmystreet.assets.alloyv2_defaults, {
+var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   class: OpenLayers.Layer.NCCVectorAsset,
   protocol_class: OpenLayers.Protocol.AlloyV2,
   http_options: {
-      layerid: is_live ? 26 : 'layers_highwayAssetsCustom_5d4806b0fe2ad809d85a774f'
+      base: url_with_style,
+      layerid: highway_layer
   },
   non_interactive: false,
   body: "Northamptonshire County Council",
@@ -253,10 +260,11 @@ fixmystreet.alloy_add_layers(northants_defaults, layers);
 
 // NCC roads layers which prevent report submission unless we have selected
 // an asset.
-var northants_road_defaults = $.extend(true, {}, fixmystreet.assets.alloyv2_defaults, {
+var northants_road_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
     protocol_class: OpenLayers.Protocol.AlloyV2,
     http_options: {
-        layerid: is_live ? 26 : 'layers_highwayAssetsCustom_5d4806b0fe2ad809d85a774f'
+        base: url_with_style,
+        layerid: highway_layer
     },
     body: "Northamptonshire County Council",
     road: true,
@@ -415,7 +423,8 @@ prow_style.addRules([rule_footpath, rule_boat, rule_bridleway]);
 fixmystreet.assets.add(northants_road_defaults, {
     http_options: {
       // PRoW Network
-      styleid: "5d4815ebfe2ad809d85a7ac9"
+      base: base_url,
+      layerid: 'layers_pRoWType_5d483b2ffe2ad809d85a8d9a'
     },
     stylemap: new OpenLayers.StyleMap({
         'default': prow_style
