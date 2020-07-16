@@ -40,7 +40,7 @@ dependencies are listed in `conf/packages.generic`. To install all of them you
 can run e.g.:
 
 {% highlight bash %}
-$ sudo xargs -a conf/packages.generic apt-get install
+$ sudo bin/install_packages
 {% endhighlight %}
 
 A similar list of packages should work for other Debian-based distributions.

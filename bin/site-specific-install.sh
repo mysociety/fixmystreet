@@ -54,8 +54,6 @@ fi
 
 install_website_packages
 
-su -l -c "touch '$DIRECTORY/admin-htpasswd'" "$UNIX_USER"
-
 if [ $INSTALL_DB = true ]; then
     add_postgresql_user
 fi
