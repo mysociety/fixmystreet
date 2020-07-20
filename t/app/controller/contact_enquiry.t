@@ -40,9 +40,18 @@ my $contact4 = $mech->create_contact_ok(
     category => 'Carriageway Defect',
     email => 'potholes@example.com',
 );
+my $contact5 = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Other (disabled)',
+    email => 'other@example.com',
+);
 $contact->update( { extra => { group => 'General Enquiries' } } );
 $contact2->update( { extra => { group => 'General Enquiries' } } );
 $contact3->update( { extra => { group => 'Other' } } );
+$contact5->update( { extra => { group => 'Other' } } );
+
+$contact5->push_extra_fields({ code => '_fms_disable_', 'disable_form' => 'true', description => 'form_disabled' });
+$contact5->update;
 
 FixMyStreet::override_config { ALLOWED_COBRANDS => ['bromley'], }, sub {
     subtest 'redirected to / if general enquiries not enabled' => sub {
@@ -60,6 +69,7 @@ FixMyStreet::override_config {
     subtest 'Non-general enquiries category not shown' => sub {
         $mech->get_ok( '/contact/enquiry' );
         $mech->content_lacks('Carriageway Defect');
+        $mech->content_lacks('Other (disabled)');
         $mech->content_contains('FOI Request');
     };
 

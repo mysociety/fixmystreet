@@ -34,6 +34,7 @@
         <select class="form-control required" name="category" id="category">
          <option value="">[% loc('-- Please select --') %]</option>
         [% FOREACH contact IN contacts %]
+         [% NEXT IF contact.get_extra_field(, 'code', '_fms_disable_').disable_form == 'true' %]
          <option value="[% contact.category | html %]" [% "selected" IF report.category == contact.category %]>[% contact.category | html %]</option>
         [% END %]
         </select>
