@@ -367,20 +367,20 @@ fixmystreet.assets.add(northants_road_defaults, {
 function ncc_match_prow_type(f, styleId) {
     return f &&
            f.attributes &&
-           f.attributes.layerStyleId &&
-           f.attributes.layerStyleId == styleId;
+           f.attributes.styleId &&
+           f.attributes.styleId == styleId;
 }
 
 function ncc_prow_is_fp(f) {
-    return ncc_match_prow_type(f, is_live ? 6190 : 1454);
+    return ncc_match_prow_type(f, '5d483b84fe2ad809d85a8dab' );
 }
 
 function ncc_prow_is_bw(f) {
-    return ncc_match_prow_type(f, is_live ? 6192 : 1453);
+    return ncc_match_prow_type(f, '5d483b84fe2ad809d85a8dac');
 }
 
 function ncc_prow_is_boat(f) {
-    return ncc_match_prow_type(f, is_live ? 6193: 1455);
+    return ncc_match_prow_type(f, '5d483b84fe2ad809d85a8dad');
 }
 
 var rule_footpath = new OpenLayers.Rule({
