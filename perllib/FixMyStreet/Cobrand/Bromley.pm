@@ -564,10 +564,19 @@ sub bin_services_for_address {
         foreach (@$tasks) {
             my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
             my $completed = construct_bin_date($_->{CompletedDate});
+            my $state = $_->{State}{Name} || '';
+            my $resolution = $_->{Resolution}{Name} || '';
+
             my $row = $task_ref_to_row{$ref};
             $row->{last}{completed} = $completed;
             $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
             if (!$completed && $row->{last}{date}->ymd eq $now->ymd) {
+                $row->{report_allowed} = 0;
+            }
+            if ($state eq 'Not Completed') {
+                $row->{report_allowed} = 0;
+            }
+            if ($state eq 'Completed' && $resolution eq 'Excess Waste') {
                 $row->{report_allowed} = 0;
             }
         }
