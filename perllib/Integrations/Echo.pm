@@ -90,12 +90,15 @@ sub GetTasks {
     }
 
     return [
-        { Ref => { Value => { anyType => [ 123, 456 ] } }, CompletedDate => undef },
         {
-            Ref => { Value => { anyType => [ 234, 567 ] } },
+            Ref => { Value => { anyType => [ 123, 456 ] } },
             State => { Name => 'Completed' },
             Resolution => { Name => 'Wrong Bin Out' },
             CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
+        },
+        {
+            Ref => { Value => { anyType => [ 234, 567 ] } },
+            CompletedDate => undef
         },
         { Ref => { Value => { anyType => [ 345, 678 ] } }, CompletedDate => undef },
         { Ref => { Value => { anyType => [ 456, 789 ] } }, CompletedDate => undef },
@@ -319,41 +322,50 @@ sub GetEventType {
 }
 
 sub GetEventsForObject {
-    my ($self, $id, $type) = @_;
+    my ($self, $type, $id, $event_type) = @_;
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 3);
-    return [ {
-        # Missed collection for service 542 (food waste)
-        EventTypeId => 2100,
-        ServiceId => 542,
-    }, { # And a gate not closed
-        EventTypeId => 2118,
-        ServiceId => 542,
-    }, {
-        # Request for a new paper container
-        EventTypeId => 2104,
-        Data => { ExtensibleDatum => [
-            { Value => 2, DatatypeName => 'Source' },
-            {
-                ChildData => { ExtensibleDatum => [
-                    { Value => 1, DatatypeName => 'Action' },
-                    { Value => 12, DatatypeName => 'Container Type' },
-                ] },
-            },
-        ] },
-        ServiceId => 535,
-    } ] if $self->sample_data;
+    if ($self->sample_data) {
+        return [ {
+            # Missed collection for service 542 (food waste)
+            EventTypeId => 2100,
+            ServiceId => 542,
+        }, { # And a gate not closed
+            EventTypeId => 2118,
+            ServiceId => 542,
+        }, {
+            # Request for a new paper container
+            EventTypeId => 2104,
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 12, DatatypeName => 'Container Type' },
+                    ] },
+                },
+            ] },
+            ServiceId => 535,
+        } ] if $type eq 'PointAddress';
+        return [ {
+            # Missed collection for service 537 (paper)
+            EventTypeId => 2099,
+            ServiceId => 537,
+        } ] if $type eq 'ServiceUnit' && $id == 1002;
+        return [];
+    }
+
     # uncoverable statement
     my $res = $self->call('GetEventsForObject',
         objectRef => ixhash(
             Key => 'Id',
-            Type => 'PointAddress',
+            Type => $type,
             Value => { 'msArray:anyType' => $id },
         ),
         query => ixhash(
-            $type ? (EventTypeRef => ixhash(
+            $event_type ? (EventTypeRef => ixhash(
                 Key => 'Id',
                 Type => 'EventType',
-                Value => { 'msArray:anyType' => $type },
+                Value => { 'msArray:anyType' => $event_type },
             )) : (),
             From => dt_to_hash($from),
         ),

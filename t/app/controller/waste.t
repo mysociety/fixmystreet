@@ -61,15 +61,16 @@ FixMyStreet::override_config {
     };
     subtest 'Thing already requested' => sub {
         $mech->content_contains('A food waste collection has been reported as missed');
+        $mech->content_contains('A paper &amp; cardboard collection has been reported as missed'); # as part of service unit, not property
     };
     subtest 'Report a missed bin' => sub {
         $mech->content_contains('service-101', 'Can report, last collection was 27th');
-        $mech->content_contains('service-537', 'Can report, last collection was 27th');
+        $mech->content_lacks('service-537', 'Cannot report, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'Cannot report, last collection was 20th');
         $mech->content_lacks('service-542', 'Cannot report, last collection was 18th');
         $mech->follow_link_ok({ text => 'Report a missed collection' });
         $mech->content_contains('service-101', 'Checkbox, last collection was 27th');
-        $mech->content_contains('service-537', 'Checkbox, last collection was 27th');
+        $mech->content_lacks('service-537', 'No checkbox, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'No checkbox, last collection was 20th');
         $mech->content_lacks('service-542', 'No checkbox, last collection was 18th');
         $mech->submit_form_ok({ form_number => 2 });
