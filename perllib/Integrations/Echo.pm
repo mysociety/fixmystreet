@@ -92,7 +92,7 @@ sub GetTasks {
     return [
         { Ref => { Value => { anyType => [ 123, 456 ] } }, CompletedDate => { DateTime => '2020-05-27T10:00:00Z' } },
         { Ref => { Value => { anyType => [ 234, 567 ] } }, CompletedDate => undef },
-        { Ref => { Value => { anyType => [ 345, 678 ] } }, CompletedDate => undef },
+        { Ref => { Value => { anyType => [ 345, 678 ] } }, State => { Name => 'Not Completed' } },
         { Ref => { Value => { anyType => [ 456, 789 ] } }, CompletedDate => undef },
     ] if $self->sample_data;
 
