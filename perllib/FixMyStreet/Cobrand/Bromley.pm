@@ -523,7 +523,7 @@ sub bin_services_for_address {
     my $result = $echo->GetServiceUnitsForObject($property->{uprn});
     return [] unless @$result;
 
-    my $events = $echo->GetEventsForObject($property->{id});
+    my $events = $echo->GetEventsForObject('PointAddress', $property->{id});
     my $open = $self->_parse_open_events($events);
 
     my @out;
@@ -536,13 +536,16 @@ sub bin_services_for_address {
 
         next unless $schedules->{next} or $schedules->{last};
 
+        my $events = $echo->GetEventsForObject('ServiceUnit', $_->{Id});
+        my $open_unit = $self->_parse_open_events($events);
+
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
-            report_open => $open->{missed}->{$_->{ServiceId}},
+            report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}},
             request_open => $open_request,
             request_containers => $containers,
