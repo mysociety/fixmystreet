@@ -100,7 +100,10 @@ sub GetTasks {
             Ref => { Value => { anyType => [ 234, 567 ] } },
             CompletedDate => undef
         },
-        { Ref => { Value => { anyType => [ 345, 678 ] } }, CompletedDate => undef },
+        {
+            Ref => { Value => { anyType => [ 345, 678 ] } },
+            State => { Name => 'Not Completed' }
+        },
         { Ref => { Value => { anyType => [ 456, 789 ] } }, CompletedDate => undef },
     ] if $self->sample_data;
 

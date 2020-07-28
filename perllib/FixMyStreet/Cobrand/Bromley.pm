@@ -581,6 +581,9 @@ sub bin_services_for_address {
             if (!$completed && $row->{last}{date}->ymd eq $now->ymd) {
                 $row->{report_allowed} = 0;
             }
+            if ($state eq 'Not Completed' || ($state eq 'Completed' && $resolution eq 'Excess Waste')) {
+                $row->{report_allowed} = 0;
+            }
         }
     }
 
