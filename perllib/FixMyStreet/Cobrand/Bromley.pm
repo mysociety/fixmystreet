@@ -595,7 +595,8 @@ sub _parse_open_events {
     my $events = shift;
     my $open;
     foreach (@$events) {
-        next if $_->{ResolvedDate} || $_->{ResolutionCodeId}; # Is this the right field?
+        next if $_->{ResolvedDate};
+        next if $_->{ResolutionCodeId} && $_->{ResolutionCodeId} != 584; # Out of Stock
         my $event_type = $_->{EventTypeId};
         my $service_id = $_->{ServiceId};
         if ($event_type == 2104) { # Request
