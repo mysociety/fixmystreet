@@ -261,31 +261,30 @@ subtest 'check heatmap page' => sub {
     };
 };
 
-subtest 'test open enquiries' => sub {
-    set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bromley',
-        COBRAND_FEATURES => {
-            echo => { bromley => { sample_data => 1 } },
-            waste => { bromley => 1 }
-        },
-    }, sub {
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    COBRAND_FEATURES => {
+        echo => { bromley => { sample_data => 1 } },
+        waste => { bromley => 1 }
+    },
+}, sub {
+    subtest 'test open enquiries' => sub {
+        set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
         $mech->get_ok('/waste/uprn/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a food waste collection' });
         $mech->content_contains('Waste spillage');
         $mech->content_lacks('Gate not closed');
+        restore_time();
     };
-    restore_time();
-};
 
-subtest 'test reporting before/after completion' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bromley',
-        COBRAND_FEATURES => {
-            echo => { bromley => { sample_data => 1 } },
-            waste => { bromley => 1 }
-        },
-    }, sub {
+    subtest 'test crew reported issue' => sub {
+        set_fixed_time('2020-05-21T12:00:00Z'); # After sample container mix
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->content_lacks('Report a mixed recycling ');
+        restore_time();
+    };
+
+    subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/uprn/12345');
         $mech->content_contains('(completed at 10:00am)');
@@ -301,8 +300,8 @@ subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-30T12:00:00Z');
         $mech->get_ok('/waste/uprn/12345');
         $mech->content_lacks('Report a refuse collection');
+        restore_time();
     };
-    restore_time();
 };
 
 subtest 'test waste max-per-day' => sub {
