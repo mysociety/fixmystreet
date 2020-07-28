@@ -336,7 +336,7 @@ sub GetEventsForObject {
             EventTypeId => 2118,
             ServiceId => 542,
         }, {
-            # Request for a new paper container
+            # Request for a new paper container, currently out of stock
             EventTypeId => 2104,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
@@ -348,6 +348,7 @@ sub GetEventsForObject {
                 },
             ] },
             ServiceId => 535,
+            ResolutionCodeId => 584,
         } ] if $type eq 'PointAddress';
         return [ {
             # Missed collection for service 537 (paper)
