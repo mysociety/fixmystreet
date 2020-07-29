@@ -64,7 +64,7 @@ sub index :Path : Args(0) {
                     -or => [
                         email => { ilike => $isearch },
                         phone => { ilike => $isearch },
-                        name => { ilike => $isearch },
+                        'me.name' => { ilike => $isearch },
                         from_body => $search_n,
                     ]
                 }
@@ -87,7 +87,10 @@ sub index :Path : Args(0) {
         $users = $users->search({ from_body => { '!=', undef } });
     }
 
-    $users = $users->search(undef, { order_by => [ \"name = ''", 'name' ] });
+    $users = $users->search(undef, {
+        prefetch => 'from_body',
+        order_by => [ \"me.name = ''", 'me.name' ],
+    });
     my @users = $users->all;
     $c->stash->{users} = \@users;
     if ($search) {
