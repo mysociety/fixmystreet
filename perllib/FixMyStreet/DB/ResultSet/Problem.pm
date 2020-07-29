@@ -8,6 +8,11 @@ use Memcached;
 use mySociety::Locale;
 use FixMyStreet::DB;
 
+use Moo;
+with 'FixMyStreet::Roles::FullTextSearch';
+__PACKAGE__->load_components('Helper::ResultSet::Me');
+sub text_search_columns { qw(id external_id bodies_str name title detail) }
+
 my $site_key;
 
 sub set_restriction {

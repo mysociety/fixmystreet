@@ -78,6 +78,8 @@ print "= Dry run =\n" unless $commit;
 
 my $upgrade = !$downgrade;
 
+my $db_fts_config = FixMyStreet->config('DB_FULL_TEXT_SEARCH_CONFIG') || 'english';
+
 sub get_statements {
     my $path = shift;
     open(my $FP, '<', $path) or die $!;
@@ -91,6 +93,7 @@ sub get_statements {
         $in_function = 1 if /create (or replace )?function/i;
         $in_function = 0 if /language (sql|'plpgsql')/i;
         if ($s =~ /;/ && !$in_function) {
+            $s =~ s/DB_FULL_TEXT_SEARCH_CONFIG/$db_fts_config/g;
             push @statements, $s;
             $s = '';
         }
@@ -212,6 +215,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0073' if index_exists('problem_fulltext_idx');
     return '0072' if constraint_contains('contacts_state_check', 'staff');
     return '0071' if table_exists('manifest_theme');
     return '0070' if column_like('alert_type', "ref='new_problems'", 'head_title', '{{SITE_NAME}}');

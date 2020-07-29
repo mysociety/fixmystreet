@@ -66,6 +66,10 @@ EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
 LANGUAGES:
   - 'en-gb,English,en_GB'
 
+# A postgresql text search configuration value - it should match the
+# configuration used by the problem_fulltext_idx index.
+DB_FULL_TEXT_SEARCH_CONFIG: 'english'
+
 # If you're running an installation that is being used in a different time zone
 # from the server, you can set the time zone here (standard time zone string)
 TIME_ZONE: ""
