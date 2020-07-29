@@ -427,8 +427,8 @@ sub requires_recaptcha {
 
     return 0 if $c->user_exists;
     return 0 if !FixMyStreet->config('RECAPTCHA');
+    return 0 unless $c->action =~ /^(alert|report|around)/;
     return 0 if $c->user_country eq 'GB';
-    return 0 unless $c->action =~ /^(alert|report)/;
     return 1;
 }
 
