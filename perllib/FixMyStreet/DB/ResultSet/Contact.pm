@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use POSIX qw(strcoll);
 
-sub me { join('.', shift->current_source_alias, shift || q{})  }
+__PACKAGE__->load_components('Helper::ResultSet::Me');
 
 =head2 not_deleted
 

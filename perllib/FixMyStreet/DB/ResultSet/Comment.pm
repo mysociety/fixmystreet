@@ -4,11 +4,16 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
+use Moo;
+with 'FixMyStreet::Roles::FullTextSearch';
+__PACKAGE__->load_components('Helper::ResultSet::Me');
+sub text_search_columns { qw(id problem_id name text) }
+sub text_search_nulls { qw(name) }
+
 sub to_body {
     my ($rs, $bodies) = @_;
     return FixMyStreet::DB::ResultSet::Problem::to_body($rs, $bodies, 1);
 }
-
 
 sub timeline {
     my ( $rs ) = @_;
