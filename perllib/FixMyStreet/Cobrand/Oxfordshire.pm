@@ -155,6 +155,35 @@ sub open311_post_send {
     $row->detail($self->{ox_original_detail});
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    if ($comment->get_extra_metadata('defect_raised')) {
+        my $p = $comment->problem;
+        my ($e, $n) = $p->local_coords;
+        my $usrn = $p->get_extra_field_value('usrn');
+        if (!$usrn) {
+            my $cfg = {
+                url => 'https://tilma.mysociety.org/mapserver/oxfordshire',
+                typename => "OCCRoads",
+                srsname => 'urn:ogc:def:crs:EPSG::27700',
+                accept_feature => sub { 1 },
+                filter => "<Filter xmlns:gml=\"http://www.opengis.net/gml\"><DWithin><PropertyName>SHAPE_GEOMETRY</PropertyName><gml:Point><gml:coordinates>$e,$n</gml:coordinates></gml:Point><Distance units='m'>20</Distance></DWithin></Filter>",
+            };
+            my $features = $self->_fetch_features($cfg);
+            my $feature = $self->_nearest_feature($cfg, $e, $n, $features);
+            if ($feature) {
+                my $props = $feature->{properties};
+                $usrn = Utils::trim_text($props->{TYPE1_2_USRN});
+            }
+        }
+        $params->{'attribute[usrn]'} = $usrn;
+        $params->{'attribute[raise_defect]'} = 1;
+        $params->{'attribute[easting]'} = $e;
+        $params->{'attribute[northing]'} = $n;
+    }
+}
+
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
 

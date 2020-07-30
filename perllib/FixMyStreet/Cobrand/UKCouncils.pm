@@ -425,7 +425,7 @@ sub _nearest_feature {
 
     # We have a list of features, and we want to find the one closest to the
     # report location.
-    my $site_code = '';
+    my $chosen = '';
     my $nearest;
 
     # We shouldn't receive anything aside from these geometry types, but belt and braces.
@@ -452,14 +452,14 @@ sub _nearest_feature {
             for (my $i=0; $i<@$coordinates-1; $i++) {
                 my $distance = $self->_distanceToLine($x, $y, $coordinates->[$i], $coordinates->[$i+1]);
                 if ( !defined $nearest || $distance < $nearest ) {
-                    $site_code = $feature->{properties}->{$cfg->{property}};
+                    $chosen = $feature;
                     $nearest = $distance;
                 }
             }
         }
     }
 
-    return $site_code;
+    return $cfg->{property} && $chosen ? $chosen->{properties}->{$cfg->{property}} : $chosen;
 }
 
 sub contact_name {

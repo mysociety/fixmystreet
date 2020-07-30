@@ -4,6 +4,7 @@ use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
+use Open311;
 my $mech = FixMyStreet::TestMech->new;
 
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
@@ -177,6 +178,48 @@ FixMyStreet::override_config {
             like $c->param('description'), qr/$test->{text}: $test->{value}/, $test->{text} . ' included in body';
         };
     }
+
+    subtest 'extra data sent with defect update' => sub {
+        my $comment = FixMyStreet::DB->resultset('Comment')->first;
+        $comment->set_extra_metadata(defect_raised => 1);
+        $comment->update;
+        $comment->problem->external_id('hey');
+        $comment->problem->update;
+
+        my $cbr = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+        $cbr->mock('_fetch_features', sub {
+            my ($self, $cfg, $x, $y) = @_;
+            [ {
+                type => 'Feature',
+                geometry => { type => 'LineString', coordinates => [ [ 1, 2 ], [ 3, 4 ] ] },
+                properties => { TYPE1_2_USRN => 13579 },
+            } ];
+        });
+        my $test_res = HTTP::Response->new();
+        $test_res->code(200);
+        $test_res->message('OK');
+        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>');
+
+        my $o = Open311->new(
+            fixmystreet_body => $oxon,
+            test_mode => 1,
+            test_get_returns => { 'servicerequestupdates.xml' => $test_res },
+        );
+
+        $o->post_service_request_update($comment);
+        my $cgi = CGI::Simple->new($o->test_req_used->content);
+        is $cgi->param('attribute[usrn]'), 13579, 'USRN sent with update';
+        is $cgi->param('attribute[raise_defect]'), 1, 'Defect flag sent with update';
+
+        # Now set a USRN on the problem (found at submission)
+        $comment->problem->push_extra_fields({ name => 'usrn', value => '12345' });
+        $comment->problem->update;
+
+        $o->post_service_request_update($comment);
+        $cgi = CGI::Simple->new($o->test_req_used->content);
+        is $cgi->param('attribute[usrn]'), 12345, 'USRN sent with update';
+        is $cgi->param('attribute[raise_defect]'), 1, 'Defect flag sent with update';
+    };
 
 };
 
