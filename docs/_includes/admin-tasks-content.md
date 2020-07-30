@@ -656,6 +656,50 @@ selected. This can be used to provide extra information about the category,
 point specific cases elsewhere (e.g. a phone number for urgent enquiries), or
 anything else you think the reporter may find useful.
 
+##### HTML content in notices
+
+Sometimes it can be helpful to use different text formatting or include images
+in the notices shown to users. You could, for example, include photos that
+illustrate the sorts of issues users should report in a particular category.
+
+<img alt="Screenshot illustrating how the notice can include guidance for the user as well as a comparison photo."
+    src="/assets/img/pro-user-guide/blocked-drains-guidance.png" class="admin-screenshot" />
+
+The **Notice text** field allows you to include HTML tags to apply text
+formatting, add links, or include images in the notice shown to the user. The
+above notice was generated from this HTML:
+
+```html
+We take different action depending on how a drain is blocked.<br>
+
+<span style="font-weight: normal">A blockage on the surface of a drain could be caused by leaves or litter. These blockages can usually be cleared by carrying out street sweeping.</span><br>
+
+<img src="https://www.borsetshire.gov.uk/images/BlockedDrainExamples.jpeg" alt="Compared with a surface blockage, an internal blockage could be caused by leaves, mud, or stones and need specialist equipment.">
+
+```
+
+The following HTML tags are allowed for use:
+
+ - `p`
+ - `ul`
+ - `ol`
+ - `li`
+ - `br`
+ - `b`
+ - `i`
+ - `strong`
+ - `em`
+ - `a`
+   - The following attributes are allowed: `href`, `style`, `target="_blank"`, `title`
+ - `img`
+   - The following attributes are allowed: `src`, `alt`, `width`, `height`, `hspace`, `vspace`, `align`, `sizes`, `srcset`
+   - **NB** The `alt` attribute is required if you're giving information only present in the image.
+ - `span`
+   - The following attributes are allowed: `style`
+
+Any other tags or attributes not allowed by the above list will be stripped out
+when you save your changes on the form.
+
 #### Questions
 
 A question can ask the user to provide some specific additional information
