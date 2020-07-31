@@ -199,7 +199,7 @@ sub prepare_params_for_email : Private {
     my $base_url = $c->cobrand->base_url();
     my $admin_url = $c->cobrand->admin_base_url;
 
-    my $user = $c->cobrand->users->find( { email => $c->stash->{em} } );
+    my $user = $c->cobrand->users->find( { email => lc $c->stash->{em} } );
     if ( $user ) {
         $c->stash->{user_admin_url} = $admin_url . '/users/' . $user->id;
         $c->stash->{user_reports_admin_url} = $admin_url . '/reports?search=' . $user->email;
