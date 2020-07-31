@@ -45,6 +45,10 @@ sub index : Path {
     $c->stash->{dir} = $dir;
     $order = $dir ? { -desc => "me.$order" } : "me.$order";
 
+    # The below is added so that PostgreSQL does not try and use other indexes
+    # besides the full text search. It should have no impact on results shown.
+    $order = [ $order, { -desc => "me.id" }, { -desc => "me.created" } ];
+
     my $p_page = $c->get_param('p') || 1;
     my $u_page = $c->get_param('u') || 1;
 
