@@ -92,6 +92,9 @@ sub index : Path {
             ];
         } else {
             $problems = $problems->search_text($search);
+            # The below is added so that PostgreSQL does not try and use other indexes
+            # besides the full text search. It should have no impact on results shown.
+            $order = [ $order, { -desc => "me.id" }, { -desc => "me.created" } ];
         }
 
         $problems = $problems->search(
@@ -109,6 +112,7 @@ sub index : Path {
         $c->stash->{problems_pager} = $problems->pager;
 
         my $updates = $c->cobrand->updates;
+        $order = { -desc => 'me.id' };
         if ($valid_email) {
             $query = [
                 'user.email' => { ilike => $like_search },
@@ -126,6 +130,7 @@ sub index : Path {
             $query = 0;
         } else {
             $updates = $updates->search_text($search);
+            $order = [ $order, { -desc => "me.created" } ];
             $query = 1;
         }
 
@@ -140,7 +145,7 @@ sub index : Path {
                     join => 'user',
                     prefetch => [qw/problem/],
                     rows => 50,
-                    order_by => { -desc => 'me.id' }
+                    order_by => $order,
                 }
             )->page( $u_page );
             $c->stash->{updates} = [ $updates->all ];
