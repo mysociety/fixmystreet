@@ -320,7 +320,6 @@ var fault_popup = null;
  */
 function init_asset_layer(layer, pins_layer) {
     layer.update_layer_visibility();
-    fixmystreet.map.addLayer(layer);
     if (layer.fixmystreet.asset_category || layer.fixmystreet.asset_group) {
         fixmystreet.map.events.register( 'zoomend', layer, check_zoom_message_visibility);
     }
@@ -945,13 +944,19 @@ fixmystreet.assets = {
             return hide_assets;
         })(fixmystreet.maps.display_around);
 
-        var pins_layer = fixmystreet.map.getLayersByName("Pins")[0];
+        var asset_layer;
         for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
-            var asset_layer = fixmystreet.assets.layers[i];
+            asset_layer = fixmystreet.assets.layers[i];
             var controls = asset_layer.controls || [];
             for (var j = 0; j < controls.length; j++) {
                 fixmystreet.map.addControl(controls[j]);
             }
+            fixmystreet.map.addLayer(asset_layer);
+        }
+
+        var pins_layer = fixmystreet.map.getLayersByName("Pins")[0];
+        for (i = 0; i < fixmystreet.assets.layers.length; i++) {
+            asset_layer = fixmystreet.assets.layers[i];
             init_asset_layer(asset_layer, pins_layer);
         }
     }
