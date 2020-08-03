@@ -189,6 +189,7 @@ fixmystreet.staff_set_up = {
         populateSelect($priorities, priorities_data, 'priorities_type_format');
         updateTemplates({'category': category});
         $priorities.val(curr_pri);
+        update_change_asset_button();
     });
 
     function state_change(state) {
@@ -251,6 +252,46 @@ fixmystreet.staff_set_up = {
             });
         }
     }
+
+    function get_value_and_group(slr) {
+        var elt = $(slr)[0];
+        var group = $(elt.options[elt.selectedIndex]).closest('optgroup').prop('label');
+        return { 'value': $(elt).val(), 'group': group || '' };
+    }
+
+    function update_change_asset_button() {
+        var category = get_value_and_group('#category'); // The inspect form category dropdown only
+        var found = false;
+        if (fixmystreet.assets) {
+            for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
+                var layer = fixmystreet.assets.layers[i];
+                if ((layer.fixmystreet.asset_category || layer.fixmystreet.asset_group) && layer.relevant(category.value, category.group)) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (found) {
+            $('.btn--change-asset').show();
+        } else {
+            $('.btn--change-asset').hide();
+        }
+    }
+    update_change_asset_button();
+
+    $('.btn--change-asset').on('click', function(e) {
+        e.preventDefault();
+        $(this).toggleClass('asset-spot');
+        if ($(this).hasClass('asset-spot')) {
+            var v = get_value_and_group('#category');
+            $('#inspect_form_category').val(v.value);
+            $('#inspect_category_group').val(v.group);
+        } else {
+            $('#inspect_form_category').val('');
+            $('#inspect_category_group').val('');
+        }
+        $(fixmystreet).trigger('inspect_form:asset_change');
+    });
 
     // Make the "Provide an update" form toggleable, hidden by default.
     // (Inspectors will normally just use the #public_update box instead).

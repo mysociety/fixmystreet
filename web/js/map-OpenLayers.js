@@ -132,14 +132,11 @@ $.extend(fixmystreet.utils, {
             new OpenLayers.Projection("EPSG:4326")
         );
 
-        var lat = transformedLonlat.lat.toFixed(6);
-        var lon = transformedLonlat.lon.toFixed(6);
-
-        document.getElementById('fixmystreet.latitude').value = lat;
-        document.getElementById('fixmystreet.longitude').value = lon;
-
+        fixmystreet.maps.update_pin_input_fields(transformedLonlat);
         $(fixmystreet).trigger('maps:update_pin', [ lonlat ]);
 
+        var lat = transformedLonlat.lat.toFixed(6);
+        var lon = transformedLonlat.lon.toFixed(6);
         return {
             'url': { 'lon': lon, 'lat': lat },
             'state': { 'lon': lonlat.lon, 'lat': lonlat.lat }

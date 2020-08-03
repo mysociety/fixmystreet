@@ -1548,6 +1548,9 @@ fixmystreet.display = {
             $twoColReport = $reportPage.find('.two_column_sidebar'),
             $sideReport = $reportPage.find('#side-report');
 
+        // Set this from report page in case change asset used and therefore relevant() function
+        fixmystreet.bodies = fixmystreet.utils.csv_to_array($reportPage.find('#js-map-data').data('bodies'))[0];
+
         if ($sideReport.length) {
             $('#side').hide(); // Hide the list of reports
             $('#side-form').hide(); // And the form

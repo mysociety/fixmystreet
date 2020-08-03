@@ -24,12 +24,13 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         $(fixmystreet).on('assets:unselected', this.checkSelected.bind(this));
         $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
+        $(fixmystreet).on('inspect_form:asset_change', this.update_layer_visibility.bind(this));
     },
 
-    relevant: function() {
-      var category = $('select#form_category').val(),
-          group = $('select#category_group').val(),
-          layer = this.fixmystreet,
+    relevant: function(category, group) {
+      category = category || $('#inspect_form_category').val() || $('#form_category').val();
+      group = group || $('#inspect_category_group').val() || $('#category_group').val();
+      var layer = this.fixmystreet,
           relevant;
       if (layer.relevant) {
           relevant = layer.relevant({category: category, group: group});
@@ -132,11 +133,15 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         // Set the extra fields to the value of the selected feature
         $.each(this.fixmystreet.attributes, function(field_name, attribute_name) {
             var $field = $("#form_" + field_name);
+            var $inspect_fields = $('[id^=category_][id$=form_' + field_name + ']');
+            var value;
             if (typeof attribute_name === 'function') {
-                $field.val(attribute_name.apply(feature));
+                value = attribute_name.apply(feature);
             } else {
-                $field.val(feature.attributes[attribute_name]);
+                value = feature.attributes[attribute_name];
             }
+            $field.val(value);
+            $inspect_fields.val(value);
         });
     },
 
@@ -875,6 +880,14 @@ fixmystreet.assets = {
         }
 
         options = $.extend(true, {}, default_options, options);
+
+        var cls = construct_layer_class(options);
+        var staff_report_page = ((fixmystreet.page == 'report' || fixmystreet.page == 'reports') && fixmystreet.staff_set_up);
+        if (staff_report_page && cls === OpenLayers.Layer.VectorNearest) {
+            // Only care about asset layers on report page when staff
+            return;
+        }
+
         var asset_layer = this.add_layer(options);
         this.add_controls([asset_layer], options);
         return asset_layer;
@@ -920,8 +933,10 @@ fixmystreet.assets = {
     },
 
     init: function() {
-        if (fixmystreet.page != 'new' && fixmystreet.page != 'around') {
+        var staff_report_page = ((fixmystreet.page == 'report' || fixmystreet.page == 'reports') && fixmystreet.staff_set_up);
+        if (fixmystreet.page != 'new' && fixmystreet.page != 'around' && !staff_report_page) {
             // We only want to show asset markers when making a new report
+            // or if an inspector is editing a report
             return;
         }
 
