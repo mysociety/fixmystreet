@@ -146,6 +146,21 @@ $.extend(fixmystreet.utils, {
         };
       },
 
+      update_pin_input_fields: function(lonlat) {
+        var bng = lonlat.clone().transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
+        );
+        var lat = lonlat.lat.toFixed(6);
+        var lon = lonlat.lon.toFixed(6);
+        $("#problem_northing").text(bng.lat.toFixed(1));
+        $("#problem_easting").text(bng.lon.toFixed(1));
+        $("#problem_latitude").text(lat);
+        $("#problem_longitude").text(lon);
+        $("input[name=latitude]").val(lat);
+        $("input[name=longitude]").val(lon);
+      },
+
       display_around: function() {
         // Required after changing the size of the map element
         fixmystreet.map.updateSize();
@@ -627,17 +642,9 @@ $.extend(fixmystreet.utils, {
             // Not actually on the inspect report page
             return;
         }
-        fixmystreet.maps.admin_drag(function(lonlat) {
-            var bng = lonlat.clone().transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
-            );
-            $("#problem_northing").text(bng.y.toFixed(1));
-            $("#problem_easting").text(bng.x.toFixed(1));
-            $("#problem_latitude").text(lonlat.y.toFixed(6));
-            $("#problem_longitude").text(lonlat.x.toFixed(6));
-            $("input[name=latitude]").val(lonlat.y.toFixed(6));
-            $("input[name=longitude]").val(lonlat.x.toFixed(6));
+        fixmystreet.maps.admin_drag(function(geom) {
+            var lonlat = new OpenLayers.LonLat(geom.x, geom.y);
+            fixmystreet.maps.update_pin_input_fields(lonlat);
         },
         false);
     }
