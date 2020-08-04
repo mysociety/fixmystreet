@@ -83,6 +83,7 @@ my $categories = scraper {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'no2fa',
+    COBRAND_FEATURES => { category_groups => { no2fa => 1 } },
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
 
@@ -174,13 +175,14 @@ FixMyStreet::override_config {
     subtest 'export as csv' => sub {
         $mech->create_problems_for_body(1, $body->id, 'Title', {
             detail => "this report\nis split across\nseveral lines",
+            category => 'Problem one',
             areas => ",$alt_area_id,2651,",
         });
         $mech->get_ok('/dashboard?export=1');
         my @rows = $mech->content_as_csv;
         is scalar @rows, 19, '1 (header) + 18 (reports) = 19 lines';
 
-        is scalar @{$rows[0]}, 20, '20 columns present';
+        is scalar @{$rows[0]}, 21, '21 columns present';
 
         is_deeply $rows[0],
             [
@@ -189,6 +191,7 @@ FixMyStreet::override_config {
                 'Detail',
                 'User Name',
                 'Category',
+                'Subcategory',
                 'Created',
                 'Confirmed',
                 'Acknowledged',
@@ -207,9 +210,9 @@ FixMyStreet::override_config {
             ],
             'Column headers look correct';
 
-        is $rows[5]->[14], 'Trowbridge', 'Ward column is name not ID';
-        is $rows[5]->[15], '529025', 'Correct Easting conversion';
-        is $rows[5]->[16], '179716', 'Correct Northing conversion';
+        is $rows[5]->[15], 'Trowbridge', 'Ward column is name not ID';
+        is $rows[5]->[16], '529025', 'Correct Easting conversion';
+        is $rows[5]->[17], '179716', 'Correct Northing conversion';
     };
 
     subtest 'export updates as csv' => sub {
