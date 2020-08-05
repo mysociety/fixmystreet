@@ -41,6 +41,12 @@ create table users (
 );
 CREATE UNIQUE INDEX users_email_verified_unique ON users (email) WHERE email_verified;
 CREATE UNIQUE INDEX users_phone_verified_unique ON users (phone) WHERE phone_verified;
+create index users_fulltext_idx on users USING GIN(
+    to_tsvector(
+        'english',
+        translate(id || ' ' || coalesce(name,'') || ' ' || coalesce(email,'') || ' ' || coalesce(phone,''), '@.', '  ')
+    )
+);
 
 -- Record details of reporting bodies, including open311 configuration details
 create table body (

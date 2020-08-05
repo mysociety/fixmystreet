@@ -49,26 +49,11 @@ sub index :Path : Args(0) {
     my $role = $c->get_param('role');
     my $users = $c->cobrand->users;
     if ($search || $role) {
-        my $isearch;
         if ($search) {
             $search = $self->trim($search);
             $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
             $c->stash->{searched} = $search;
-
-            $isearch = '%' . $search . '%';
-            my $search_n = 0;
-            $search_n = int($search) if $search =~ /^\d+$/;
-
-            $users = $users->search(
-                {
-                    -or => [
-                        email => { ilike => $isearch },
-                        phone => { ilike => $isearch },
-                        'me.name' => { ilike => $isearch },
-                        from_body => $search_n,
-                    ]
-                }
-            );
+            $users = $users->search_text($search);
         }
         if ($role) {
             $c->stash->{role_selected} = $role;

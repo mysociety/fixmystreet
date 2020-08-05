@@ -84,8 +84,6 @@ subtest 'user search' => sub {
         permissions => ['moderate', 'user_edit'],
     });
     $user->add_to_roles($role);
-    $mech->get_ok('/admin/users?search=' . $haringey->id );
-    $mech->content_contains('test@example.com');
     $mech->get_ok('/admin/users?role=' . $role->id);
     $mech->content_contains('selected>Role A');
     $mech->content_contains('test@example.com');

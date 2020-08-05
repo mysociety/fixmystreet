@@ -13,6 +13,7 @@ with 'FixMyStreet::Roles::FullTextSearch';
 __PACKAGE__->load_components('Helper::ResultSet::Me');
 sub text_search_columns { qw(id external_id bodies_str name title detail) }
 sub text_search_nulls { qw(external_id bodies_str) }
+sub text_search_translate { '/.' }
 
 my $site_key;
 
