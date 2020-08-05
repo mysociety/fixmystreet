@@ -163,9 +163,8 @@ sub categories_restriction {
 # Do a manual prefetch of all staff users for contributed_by lookup
 sub _dashboard_user_lookup {
     my $self = shift;
-    my $c = $self->{c};
 
-    my @user_ids = $c->model('DB::User')->search(
+    my @user_ids = FixMyStreet::DB->resultset('User')->search(
         { from_body => { '!=' => undef } },
         { columns => [ 'id', 'email' ] })->all;
 
@@ -174,23 +173,22 @@ sub _dashboard_user_lookup {
 }
 
 sub dashboard_export_updates_add_columns {
-    my $self = shift;
-    my $c = $self->{c};
+    my ($self, $csv) = @_;
 
-    return unless $c->user->has_body_permission_to('export_extra_columns');
+    return unless $csv->{user}->has_body_permission_to('export_extra_columns');
 
-    push @{$c->stash->{csv}->{headers}}, "Staff User";
-    push @{$c->stash->{csv}->{headers}}, "User Email";
-    push @{$c->stash->{csv}->{columns}}, "staff_user";
-    push @{$c->stash->{csv}->{columns}}, "user_email";
+    push @{$csv->{headers}}, "Staff User";
+    push @{$csv->{headers}}, "User Email";
+    push @{$csv->{columns}}, "staff_user";
+    push @{$csv->{columns}}, "user_email";
 
-    $c->stash->{csv}->{objects} = $c->stash->{csv}->{objects}->search(undef, {
+    $csv->{objects} = $csv->{objects}->search(undef, {
         '+columns' => ['user.email'],
         join => 'user',
     });
     my $user_lookup = $self->_dashboard_user_lookup;
 
-    $c->stash->{csv}->{extra_data} = sub {
+    $csv->{extra_data} = sub {
         my $report = shift;
 
         my $staff_user = '';
@@ -206,34 +204,33 @@ sub dashboard_export_updates_add_columns {
 }
 
 sub dashboard_export_problems_add_columns {
-    my $self = shift;
-    my $c = $self->{c};
+    my ($self, $csv) = @_;
 
-    return unless $c->user->has_body_permission_to('export_extra_columns');
+    return unless $csv->{user}->has_body_permission_to('export_extra_columns');
 
-    $c->stash->{csv}->{headers} = [
-        @{ $c->stash->{csv}->{headers} },
+    $csv->{headers} = [
+        @{ $csv->{headers} },
         "User Email",
         "User Phone",
         "Staff User",
         "Attribute Data",
     ];
 
-    $c->stash->{csv}->{columns} = [
-        @{ $c->stash->{csv}->{columns} },
+    $csv->{columns} = [
+        @{ $csv->{columns} },
         "user_email",
         "user_phone",
         "staff_user",
         "attribute_data",
     ];
 
-    $c->stash->{csv}->{objects} = $c->stash->{csv}->{objects}->search(undef, {
+    $csv->{objects} = $csv->{objects}->search(undef, {
         '+columns' => ['user.email', 'user.phone'],
         join => 'user',
     });
     my $user_lookup = $self->_dashboard_user_lookup;
 
-    $c->stash->{csv}->{extra_data} = sub {
+    $csv->{extra_data} = sub {
         my $report = shift;
 
         my $staff_user = '';

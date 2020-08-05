@@ -203,13 +203,12 @@ sub available_permissions {
 }
 
 sub dashboard_export_problems_add_columns {
-    my $self = shift;
-    my $c = $self->{c};
+    my ($self, $csv) = @_;
 
-    push @{$c->stash->{csv}->{headers}}, "HIAMS/Exor Ref";
-    push @{$c->stash->{csv}->{columns}}, "external_ref";
+    push @{$csv->{headers}}, "HIAMS/Exor Ref";
+    push @{$csv->{columns}}, "external_ref";
 
-    $c->stash->{csv}->{extra_data} = sub {
+    $csv->{extra_data} = sub {
         my $report = shift;
         # Try and get a HIAMS reference first of all
         my $ref = $report->get_extra_metadata('customer_reference');

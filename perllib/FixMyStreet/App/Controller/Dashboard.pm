@@ -339,8 +339,9 @@ sub export_as_csv_updates : Private {
             'text', 'user_name_display', 'reported_as',
         ],
         filename => $self->csv_filename($c, 1),
+        user => $c->user_exists ? $c->user->obj : undef,
     };
-    $c->cobrand->call_hook("dashboard_export_updates_add_columns");
+    $c->cobrand->call_hook(dashboard_export_updates_add_columns => $csv);
     $c->forward('generate_csv');
 }
 
@@ -407,8 +408,11 @@ sub export_as_csv : Private {
             'reported_as',
         ],
         filename => $self->csv_filename($c, 0),
+        user => $c->user_exists ? $c->user->obj : undef,
+        category => $c->stash->{category},
+        contacts => $c->stash->{contacts},
     };
-    $c->cobrand->call_hook("dashboard_export_problems_add_columns");
+    $c->cobrand->call_hook(dashboard_export_problems_add_columns => $csv);
     $c->forward('generate_csv');
 }
 
@@ -460,7 +464,7 @@ sub generate_csv : Private {
 
     my $objects = $c->stash->{csv}->{objects};
     while ( my $obj = $objects->next ) {
-        my $hashref = $obj->as_hashref($c, \%asked_for);
+        my $hashref = $obj->as_hashref(\%asked_for);
 
         $hashref->{user_name_display} = $obj->anonymous
             ? '(anonymous)' : $obj->name;
@@ -554,7 +558,7 @@ sub heatmap : Local : Args(0) {
     if ($c->get_param('ajax')) {
         my @pins;
         while ( my $problem = $problems->next ) {
-            push @pins, $problem->pin_data($c, 'reports');
+            push @pins, $problem->pin_data('reports');
         }
         $c->stash->{pins} = \@pins;
         $c->detach('/reports/ajax', [ 'dashboard/heatmap-list.html' ]);

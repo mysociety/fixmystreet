@@ -157,7 +157,7 @@ sub get_problems : Private {
 
     while ( my $problem = $rs->next ) {
         $c->stash->{has_content}++;
-        push @$pins, $problem->pin_data($c, 'my', private => 1);
+        push @$pins, $problem->pin_data('my', private => 1);
         push @$problems, $problem;
     }
 

@@ -272,7 +272,7 @@
           [% ELSE %]
             [% loc('Message to competent body:') %]
           [% END %]
-        [% problem.body(c).endpoint %]
+        [% problem.body.endpoint %]
     </h2>
     <div class="admin-external-message">
         [% problem.extra.external_message | html_para %]

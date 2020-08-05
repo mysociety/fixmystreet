@@ -262,7 +262,8 @@ about an update. Can include HTML.
 =cut
 
 sub meta_line {
-    my ( $self, $c ) = @_;
+    my ( $self, $user ) = @_;
+    my $cobrand = $self->result_source->schema->cobrand;
 
     my $meta = '';
 
@@ -292,9 +293,9 @@ sub meta_line {
                 $body = 'Island Roads';
             }
         }
-        my $cobrand_always_view_body_user = $c->cobrand->call_hook("always_view_body_contribute_details");
+        my $cobrand_always_view_body_user = $cobrand->call_hook("always_view_body_contribute_details");
         my $can_view_contribute = $cobrand_always_view_body_user ||
-            ($c->user_exists && $c->user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids));
+            ($user && $user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids));
         if ($self->text) {
             if ($can_view_contribute) {
                 $meta = sprintf( _( 'Posted by <strong>%s</strong> (%s) at %s' ), $body, $user_name, Utils::prettify_dt( $self->confirmed ) );
@@ -320,21 +321,23 @@ sub meta_line {
 };
 
 sub problem_state_processed {
-    my ( $self, $c ) = @_;
+    my $self = shift;
     return 'fixed - user' if $self->mark_fixed;
     return 'confirmed' if $self->mark_open;
-    my $cobrand_state = $c->cobrand->call_hook(problem_state_processed => $self);
+    my $cobrand = $self->result_source->schema->cobrand;
+    my $cobrand_state = $cobrand->call_hook(problem_state_processed => $self);
 
     return $cobrand_state || $self->problem_state;
 }
 
 sub problem_state_display {
-    my ( $self, $c ) = @_;
+    my $self = shift;
 
-    my $state = $self->problem_state_processed($c);
+    my $state = $self->problem_state_processed;
     return '' unless $state;
 
-    my $cobrand_name = $c->cobrand->moniker;
+    my $cobrand = $self->result_source->schema->cobrand;
+    my $cobrand_name = $cobrand->moniker;
     my $names = join(',,', @{$self->problem->body_names});
     if ($names =~ /(Bromley|Isle of Wight|TfL)/) {
         ($cobrand_name = lc $1) =~ s/ //g;
@@ -370,7 +373,8 @@ sub hide {
 }
 
 sub as_hashref {
-    my ($self, $c, $cols) = @_;
+    my ($self, $cols) = @_;
+    my $cobrand = $self->result_source->schema->cobrand;
 
     my $out = {
         id => $self->id,
@@ -380,13 +384,13 @@ sub as_hashref {
         created => $self->created,
     };
 
-    $out->{problem_state} = $self->problem_state_processed($c);
+    $out->{problem_state} = $self->problem_state_processed;
 
     $out->{photos} = [ map { $_->{url} } @{$self->photos} ] if !$cols || $cols->{photos};
 
     if ($self->confirmed) {
         $out->{confirmed} = $self->confirmed if !$cols || $cols->{confirmed};
-        $out->{confirmed_pp} = $c->cobrand->prettify_dt( $self->confirmed ) if !$cols || $cols->{confirmed_pp};
+        $out->{confirmed_pp} = $cobrand->prettify_dt( $self->confirmed ) if !$cols || $cols->{confirmed_pp};
     }
 
     return $out;

@@ -398,9 +398,9 @@ sub link_to_council_cobrand {
          $handler->moniker ne $self->{c}->cobrand->moniker
        ) {
         my $url = sprintf("%s%s", $handler->base_url, $problem->url);
-        return sprintf("<a href='%s'>%s</a>", $url, $problem->body( $self->{c} ));
+        return sprintf("<a href='%s'>%s</a>", $url, $problem->body);
     } else {
-        return $problem->body( $self->{c} );
+        return $problem->body;
     }
 }
 

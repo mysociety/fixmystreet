@@ -242,11 +242,10 @@ sub available_permissions {
 }
 
 sub dashboard_export_problems_add_columns {
-    my $self = shift;
-    my $c = $self->{c};
+    my ($self, $csv) = @_;
 
-    $c->stash->{csv}->{headers} = [
-        map { $_ eq 'Ward' ? 'Borough' : $_ } @{ $c->stash->{csv}->{headers} },
+    $csv->{headers} = [
+        map { $_ eq 'Ward' ? 'Borough' : $_ } @{ $csv->{headers} },
         "Agent responsible",
         "Safety critical",
         "Delivered to",
@@ -255,8 +254,8 @@ sub dashboard_export_problems_add_columns {
         "Reassigned by",
     ];
 
-    $c->stash->{csv}->{columns} = [
-        @{ $c->stash->{csv}->{columns} },
+    $csv->{columns} = [
+        @{ $csv->{columns} },
         "agent_responsible",
         "safety_critical",
         "delivered_to",
@@ -265,18 +264,18 @@ sub dashboard_export_problems_add_columns {
         "reassigned_by",
     ];
 
-    if ($c->stash->{category}) {
-        my ($contact) = grep { $_->category eq $c->stash->{category} } @{$c->stash->{contacts}};
+    if ($csv->{category}) {
+        my ($contact) = grep { $_->category eq $csv->{category} } @{$csv->{contacts}};
         if ($contact) {
             foreach (@{$contact->get_metadata_for_storage}) {
                 next if $_->{code} eq 'safety_critical';
-                push @{$c->stash->{csv}->{columns}}, "extra.$_->{code}";
-                push @{$c->stash->{csv}->{headers}}, $_->{description};
+                push @{$csv->{columns}}, "extra.$_->{code}";
+                push @{$csv->{headers}}, $_->{description};
             }
         }
     }
 
-    $c->stash->{csv}->{extra_data} = sub {
+    $csv->{extra_data} = sub {
         my $report = shift;
 
         my $agent = $report->shortlisted_user;

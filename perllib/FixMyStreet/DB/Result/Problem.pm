@@ -631,13 +631,14 @@ meta data about the report.
 =cut
 
 sub meta_line {
-    my ( $problem, $c ) = @_;
+    my ( $problem, $user ) = @_;
+    my $cobrand = $problem->result_source->schema->cobrand;
 
     my $date_time = Utils::prettify_dt( $problem->confirmed );
     my $meta = '';
 
     my $category = $problem->category_display;
-    $category = $c->cobrand->call_hook(change_category_text => $category) || $category;
+    $category = $cobrand->call_hook(change_category_text => $category) || $category;
 
     if ( $problem->anonymous ) {
         if ( $problem->service and $category && $category ne _('Other') ) {
@@ -656,8 +657,8 @@ sub meta_line {
     } else {
         my $problem_name = $problem->name;
 
-        if ($c->user_exists and
-            $c->user->has_permission_to('view_body_contribute_details', $problem->bodies_str_ids) and
+        if ($user and
+            $user->has_permission_to('view_body_contribute_details', $problem->bodies_str_ids) and
             $problem->name ne $problem->user->name) {
             $problem_name = sprintf('%s (%s)', $problem->name, $problem->user->name );
         }
@@ -692,12 +693,12 @@ sub nearest_address {
 }
 
 sub body {
-    my ( $problem, $c ) = @_;
+    my ( $problem, $link ) = @_;
     my $body;
     if ($problem->external_body) {
         if ($problem->cobrand eq 'zurich') {
             my $cache = $problem->result_source->schema->cache;
-            return $cache->{bodies}{$problem->external_body} //= $c->model('DB::Body')->find({ id => $problem->external_body });
+            return $cache->{bodies}{$problem->external_body} //= FixMyStreet::DB->resultset('Body')->find({ id => $problem->external_body });
         } else {
             $body = FixMyStreet::Template::html_filter($problem->external_body);
         }
@@ -705,7 +706,7 @@ sub body {
         my $bodies = $problem->bodies;
         my @body_names = sort map {
             my $name = $_->name;
-            if ($c and FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS')) {
+            if ($link and FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS')) {
                 '<a href="' . $_->url . '">' . FixMyStreet::Template::html_filter($name) . '</a>';
             } else {
                 FixMyStreet::Template::html_filter($name);
@@ -810,9 +811,10 @@ sub can_display_external_id {
 
 # This can return HTML and is safe, so returns a FixMyStreet::Template::SafeString
 sub duration_string {
-    my ( $problem, $c ) = @_;
-    my $body = $c->cobrand->call_hook(link_to_council_cobrand => $problem) || $problem->body($c);
-    my $handler = $c->cobrand->call_hook(get_body_handler_for_problem => $problem);
+    my $problem = shift;
+    my $cobrand = $problem->result_source->schema->cobrand;
+    my $body = $cobrand->call_hook(link_to_council_cobrand => $problem) || $problem->body(1);
+    my $handler = $cobrand->call_hook(get_body_handler_for_problem => $problem);
     if ( $handler && $handler->call_hook('is_council_with_case_management') ) {
         my $s = sprintf(_('Received by %s moments later'), $body);
         return FixMyStreet::Template::SafeString->new($s);
@@ -896,7 +898,8 @@ sub resend {
 }
 
 sub as_hashref {
-    my ($self, $c, $cols) = @_;
+    my ($self, $cols) = @_;
+    my $cobrand = $self->result_source->schema->cobrand;
 
     my $state_t = FixMyStreet::DB->resultset("State")->display($self->state);
 
@@ -916,11 +919,11 @@ sub as_hashref {
     };
     $out->{is_fixed} = $self->fixed_states->{ $self->state } ? 1 : 0 if !$cols || $cols->{is_fixed};
     $out->{photos} = [ map { $_->{url} } @{$self->photos} ] if !$cols || $cols->{photos};
-    $out->{meta} = $self->confirmed ? $self->meta_line( $c ) : '' if !$cols || $cols->{meta};
-    $out->{created_pp} = $c->cobrand->prettify_dt( $self->created ) if !$cols || $cols->{created_pp};
+    $out->{meta} = $self->confirmed ? $self->meta_line : '' if !$cols || $cols->{meta};
+    $out->{created_pp} = $cobrand->prettify_dt( $self->created ) if !$cols || $cols->{created_pp};
     if ($self->confirmed) {
         $out->{confirmed} = $self->confirmed if !$cols || $cols->{confirmed};
-        $out->{confirmed_pp} = $c->cobrand->prettify_dt( $self->confirmed ) if !$cols || $cols->{confirmed_pp};
+        $out->{confirmed_pp} = $cobrand->prettify_dt( $self->confirmed ) if !$cols || $cols->{confirmed_pp};
     }
     return $out;
 }
@@ -973,10 +976,11 @@ has get_cobrand_logged => (
 
 
 sub pin_data {
-    my ($self, $c, $page, %opts) = @_;
-    my $colour = $c->cobrand->pin_colour($self, $page);
+    my ($self, $page, %opts) = @_;
+    my $cobrand = $self->result_source->schema->cobrand;
+    my $colour = $cobrand->pin_colour($self, $page);
     my $title = $opts{private} ? $self->title : $self->title_safe;
-    $title = $c->cobrand->call_hook(pin_hover_title => $self, $title) || $title;
+    $title = $cobrand->call_hook(pin_hover_title => $self, $title) || $title;
     {
         latitude => $self->latitude,
         longitude => $self->longitude,
@@ -986,7 +990,7 @@ sub pin_data {
         problem => $self,
         draggable => $opts{draggable},
         type => $opts{type},
-        base_url => $c->cobrand->relative_url_for_report($self),
+        base_url => $cobrand->relative_url_for_report($self),
     }
 };
 

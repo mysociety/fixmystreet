@@ -49,7 +49,7 @@
     <h3 class="questionnaire-report-reminder__report-title">
         <a href="/report/[% problem.id %]">[% problem.title | html %]</a>
     </h3>
-    <p class="questionnaire-report-reminder__report-meta">[% problem.meta_line(c) | html %]</p>
+    <p class="questionnaire-report-reminder__report-meta">[% problem.meta_line(c.user) | html %]</p>
   [% IF updates.size %]
     <p class="questionnaire-report-reminder__last-update-header">
         <strong>[% loc('Last update') %]</strong>

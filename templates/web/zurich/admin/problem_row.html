@@ -31,7 +31,7 @@
                 [%- IF p_body.parent.parent.id -%][%# ...it's a subdivision %]
                     [% PROCESS value_or_nbsp value=p_body.name %]
                 [%- ELSIF problem.external_body %]
-                    [% PROCESS value_or_nbsp value=problem.body(c).name %]
+                    [% PROCESS value_or_nbsp value=problem.body.name %]
                 [%- ELSE -%]
                     &nbsp;
                 [%- END -%]

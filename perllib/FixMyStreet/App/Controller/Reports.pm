@@ -826,7 +826,7 @@ sub stash_report_sort : Private {
 sub add_row {
     my ( $c, $problem, $body, $problems, $pins ) = @_;
     push @{$problems->{$body}}, $problem;
-    push @$pins, $problem->pin_data($c, 'reports');
+    push @$pins, $problem->pin_data('reports');
 }
 
 sub ajax : Private {

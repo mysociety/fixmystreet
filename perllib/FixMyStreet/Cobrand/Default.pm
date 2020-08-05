@@ -1248,15 +1248,13 @@ sub get_geocoder {
 sub problem_as_hashref {
     my $self = shift;
     my $problem = shift;
-    my $ctx = shift;
 
-    return $problem->as_hashref( $ctx );
+    return $problem->as_hashref;
 }
 
 sub updates_as_hashref {
     my $self = shift;
     my $problem = shift;
-    my $ctx = shift;
 
     return {};
 }

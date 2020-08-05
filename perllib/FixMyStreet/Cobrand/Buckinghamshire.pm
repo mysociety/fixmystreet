@@ -124,19 +124,18 @@ sub map_type { 'Buckinghamshire' }
 sub default_map_zoom { 3 }
 
 sub _dashboard_export_add_columns {
-    my $self = shift;
-    my $c = $self->{c};
+    my ($self, $csv) = @_;
 
-    push @{$c->stash->{csv}->{headers}}, "Staff User";
-    push @{$c->stash->{csv}->{columns}}, "staff_user";
+    push @{$csv->{headers}}, "Staff User";
+    push @{$csv->{columns}}, "staff_user";
 
     # All staff users, for contributed_by lookup
-    my @user_ids = $c->model('DB::User')->search(
+    my @user_ids = FixMyStreet::DB->resultset('User')->search(
         { from_body => $self->body->id },
         { columns => [ 'id', 'email', ] })->all;
     my %user_lookup = map { $_->id => $_->email } @user_ids;
 
-    $c->stash->{csv}->{extra_data} = sub {
+    $csv->{extra_data} = sub {
         my $report = shift;
         my $staff_user = '';
         if (my $contributed_by = $report->get_extra_metadata('contributed_by')) {
@@ -149,11 +148,11 @@ sub _dashboard_export_add_columns {
 }
 
 sub dashboard_export_updates_add_columns {
-    shift->_dashboard_export_add_columns;
+    shift->_dashboard_export_add_columns(@_);
 }
 
 sub dashboard_export_problems_add_columns {
-    shift->_dashboard_export_add_columns;
+    shift->_dashboard_export_add_columns(@_);
 }
 
 # Enable adding/editing of parish councils in the admin

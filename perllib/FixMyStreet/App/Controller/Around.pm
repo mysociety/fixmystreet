@@ -295,7 +295,7 @@ sub map_features : Private {
         @pins = map {
             # Here we might have a DB::Problem or a DB::Result::Nearby, we always want the problem.
             my $p = (ref $_ eq 'FixMyStreet::DB::Result::Nearby') ? $_->problem : $_;
-            $p->pin_data($c, 'around');
+            $p->pin_data('around');
         } @$on_map, @$nearby;
     }
 

@@ -1,4 +1,4 @@
-[% problem.meta_line(c) | html %]
+[% problem.meta_line(c.user) | html %]
 [% IF c.cobrand.moniker != problem.get_cobrand_logged.moniker AND problem.get_cobrand_logged.is_council %]
     using <a href="https://www.fixmystreet.com/pro/">FixMyStreet Pro</a>
 [% END %]

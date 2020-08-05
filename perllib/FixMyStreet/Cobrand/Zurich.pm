@@ -131,9 +131,8 @@ sub problem_has_user_response {
 sub problem_as_hashref {
     my $self = shift;
     my $problem = shift;
-    my $ctx = shift;
 
-    my $hashref = $problem->as_hashref( $ctx );
+    my $hashref = $problem->as_hashref;
 
     if ( $problem->state eq 'submitted' ) {
         for my $var ( qw( photo is_fixed meta ) ) {
@@ -171,7 +170,6 @@ sub problem_as_hashref {
 sub updates_as_hashref {
     my $self = shift;
     my $problem = shift;
-    my $ctx = shift;
 
     my $hashref = {};
 
@@ -182,7 +180,7 @@ sub updates_as_hashref {
             $hashref->{details} = FixMyStreet::App::View::Web::add_links(
                 $problem->get_extra_metadata('public_response') || '' );
         } else {
-            $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body($ctx)->name );
+            $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body->name );
         }
     }
 
@@ -1319,7 +1317,7 @@ sub export_as_csv {
             my $report = shift;
 
             my $body_name = "";
-            if ( my $external_body = $report->body($c) ) {
+            if ( my $external_body = $report->body ) {
                 $body_name = $external_body->name || '[Unknown body]';
             }
 
