@@ -9,6 +9,7 @@ with 'FixMyStreet::Roles::FullTextSearch';
 __PACKAGE__->load_components('Helper::ResultSet::Me');
 sub text_search_columns { qw(id problem_id name text) }
 sub text_search_nulls { qw(name) }
+sub text_search_translate { '/.' }
 
 sub to_body {
     my ($rs, $bodies) = @_;
