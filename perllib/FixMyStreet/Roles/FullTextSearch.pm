@@ -13,9 +13,11 @@ sub search_text {
         my $col = $rs->me($_);
         $nulls{$_} ? "coalesce($col, '')" : $col;
     } $rs->text_search_columns;
-    my $vector = "translate(" . join(" || ' ' || ", @cols) . ", '/.', '  ')";
+    my $vector = join(" || ' ' || ", @cols);
+    $vector = "translate($vector, '/.', '  ')";
+    my $bind = "translate(?, '/.', '  ')";
     my $config = FixMyStreet->config('DB_FULL_TEXT_SEARCH_CONFIG') || 'english';
-    $rs->search(\[ "to_tsvector('$config', $vector) @@ plainto_tsquery('$config', ?)", $query ]);
+    $rs->search(\[ "to_tsvector('$config', $vector) @@ plainto_tsquery('$config', $bind)", $query ]);
 }
 
 1;
