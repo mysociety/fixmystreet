@@ -175,20 +175,20 @@ sub _dashboard_user_lookup {
 sub dashboard_export_updates_add_columns {
     my ($self, $csv) = @_;
 
-    return unless $csv->{user}->has_body_permission_to('export_extra_columns');
+    return unless $csv->user->has_body_permission_to('export_extra_columns');
 
-    push @{$csv->{headers}}, "Staff User";
-    push @{$csv->{headers}}, "User Email";
-    push @{$csv->{columns}}, "staff_user";
-    push @{$csv->{columns}}, "user_email";
+    $csv->add_csv_columns(
+        staff_user => 'Staff User',
+        user_email => 'User Email',
+    );
 
-    $csv->{objects} = $csv->{objects}->search(undef, {
+    $csv->objects_attrs({
         '+columns' => ['user.email'],
         join => 'user',
     });
     my $user_lookup = $self->_dashboard_user_lookup;
 
-    $csv->{extra_data} = sub {
+    $csv->csv_extra_data(sub {
         my $report = shift;
 
         my $staff_user = '';
@@ -200,37 +200,28 @@ sub dashboard_export_updates_add_columns {
             user_email => $report->user->email || '',
             staff_user => $staff_user,
         };
-    };
+    });
 }
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
-    return unless $csv->{user}->has_body_permission_to('export_extra_columns');
+    return unless $csv->user->has_body_permission_to('export_extra_columns');
 
-    $csv->{headers} = [
-        @{ $csv->{headers} },
-        "User Email",
-        "User Phone",
-        "Staff User",
-        "Attribute Data",
-    ];
+    $csv->add_csv_columns(
+        user_email => 'User Email',
+        user_phone => 'User Phone',
+        staff_user => 'Staff User',
+        attribute_data => "Attribute Data",
+    );
 
-    $csv->{columns} = [
-        @{ $csv->{columns} },
-        "user_email",
-        "user_phone",
-        "staff_user",
-        "attribute_data",
-    ];
-
-    $csv->{objects} = $csv->{objects}->search(undef, {
+    $csv->objects_attrs({
         '+columns' => ['user.email', 'user.phone'],
         join => 'user',
     });
     my $user_lookup = $self->_dashboard_user_lookup;
 
-    $csv->{extra_data} = sub {
+    $csv->csv_extra_data(sub {
         my $report = shift;
 
         my $staff_user = '';
@@ -244,7 +235,7 @@ sub dashboard_export_problems_add_columns {
             staff_user => $staff_user,
             attribute_data => $attribute_data,
         };
-    };
+    });
 }
 
 1;

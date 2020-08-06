@@ -481,10 +481,10 @@ sub summary : Private {
     $c->forward('/admin/fetch_contacts');
     $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
 
-    $c->forward('/dashboard/construct_rs_filter', []);
+    my $reporting = $c->forward('/dashboard/construct_rs_filter', []);
 
     if ( $c->get_param('csv') ) {
-        $c->detach('export_summary_csv');
+        $c->detach('export_summary_csv', [ $reporting ]);
     }
 
     $c->forward('/dashboard/generate_grouped_data');
@@ -494,38 +494,26 @@ sub summary : Private {
 }
 
 sub export_summary_csv : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $reporting ) = @_;
 
-    $c->stash->{csv} = {
-        objects => $c->stash->{objects_rs}->search_rs({}, {
-            rows => 100,
-            order_by => { '-desc' => 'me.confirmed' },
-        }),
-        headers => [
-            'Report ID',
-            'Title',
-            'Category',
-            'Created',
-            'Confirmed',
-            'Status',
-            'Latitude', 'Longitude',
-            'Query',
-            'Report URL',
-        ],
-        columns => [
-            'id',
-            'title',
-            'category',
-            'created',
-            'confirmed',
-            'state',
-            'latitude', 'longitude',
-            'postcode',
-            'url',
-        ],
-        filename => 'fixmystreet-data',
-    };
-    $c->forward('/dashboard/generate_csv');
+    $reporting->objects_attrs({
+        rows => 100,
+        order_by => { '-desc' => 'me.confirmed' },
+    });
+    $reporting->add_csv_columns(
+        id => 'Report ID',
+        title => 'Title',
+        category => 'Category',
+        created => 'Created',
+        confirmed => 'Confirmed',
+        state => 'Status',
+        latitude => 'Latitude',
+        longitude => 'Longitude',
+        postcode => 'Query',
+        url => 'Report URL',
+    );
+    $reporting->filename('fixmystreet-data');
+    $reporting->generate_csv_http($c);
 }
 
 =head2 check_canonical_url

@@ -1275,8 +1275,8 @@ sub admin_stats {
 sub export_as_csv {
     my ($self, $c, $params) = @_;
 
-    my $csv = $c->stash->{csv} = {
-        objects => $c->model('DB::Problem')->search_rs(
+    my $reporting = FixMyStreet::Reporting->new(
+        objects_rs => $c->model('DB::Problem')->search_rs(
             $params,
             {
                 join => ['admin_log_entries', 'user'],
@@ -1297,7 +1297,7 @@ sub export_as_csv {
                 ]
             }
         ),
-        headers => [
+        csv_headers => [
             'Report ID', 'Created', 'Sent to Agency', 'Last Updated',
             'E', 'N', 'Category', 'Status', 'Closure Status',
             'UserID', 'User email', 'User phone', 'User name',
@@ -1305,7 +1305,7 @@ sub export_as_csv {
             'Media URL', 'Interface Used', 'Council Response',
             'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
         ],
-        columns => [
+        csv_columns => [
             'id', 'created', 'whensent',' lastupdate', 'local_coords_x',
             'local_coords_y', 'category', 'state', 'closure_status',
             'user_id', 'user_email', 'user_phone', 'user_name',
@@ -1313,7 +1313,7 @@ sub export_as_csv {
             'media_url', 'service', 'public_response',
             'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
         ],
-        extra_data => sub {
+        csv_extra_data => sub {
             my $report = shift;
 
             my $body_name = "";
@@ -1360,8 +1360,8 @@ sub export_as_csv {
             };
         },
         filename => 'stats',
-    };
-    $c->forward('/dashboard/generate_csv');
+    );
+    $reporting->generate_csv_http($c);
 }
 
 sub problem_confirm_email_extras {

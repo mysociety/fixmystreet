@@ -6,9 +6,9 @@ use DateTime;
 use Encode;
 use JSON::MaybeXS;
 use Path::Tiny;
-use Text::CSV;
 use Time::Piece;
 use FixMyStreet::DateRange;
+use FixMyStreet::Reporting;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -135,14 +135,11 @@ sub index : Path : Args(0) {
     $c->stash->{end_date} = $c->get_param('end_date');
     $c->stash->{q_state} = $c->get_param('state') || '';
 
-    $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
+    my $reporting = $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
 
     if ( $c->get_param('export') ) {
-        if ($c->get_param('updates')) {
-            $c->forward('export_as_csv_updates');
-        } else {
-            $c->forward('export_as_csv');
-        }
+        $reporting->csv_parameters;
+        $reporting->generate_csv_http($c);
     } else {
         $c->forward('generate_grouped_data');
         $self->generate_summary_figures($c);
@@ -152,37 +149,19 @@ sub index : Path : Args(0) {
 sub construct_rs_filter : Private {
     my ($self, $c, $updates) = @_;
 
-    my $table_name = $updates ? 'problem' : 'me';
-
-    my %where;
-    $where{areas} = [ map { { 'like', "%,$_,%" } } @{$c->stash->{ward}} ]
-        if @{$c->stash->{ward}};
-    $where{"$table_name.category"} = $c->stash->{category}
-        if $c->stash->{category};
-
-    my $state = $c->stash->{q_state};
-    if ( FixMyStreet::DB::Result::Problem->fixed_states->{$state} ) { # Probably fixed - council
-        $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
-    } elsif ( $state ) {
-        $where{"$table_name.state"} = $state;
-    } else {
-        $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->visible_states() ];
-    }
-
-    my $days30 = DateTime->now(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(days => 30);
-    $days30->truncate( to => 'day' );
-
-    my $range = FixMyStreet::DateRange->new(
+    my $reporting = FixMyStreet::Reporting->new(
+        type => $updates ? 'updates' : 'problems',
+        category => $c->stash->{category},
+        state => $c->stash->{q_state},
+        wards => $c->stash->{ward},
+        body => $c->stash->{body} || undef,
         start_date => $c->stash->{start_date},
-        start_default => $days30,
         end_date => $c->stash->{end_date},
-        formatter => $c->model('DB')->storage->datetime_parser,
+        user => $c->user_exists ? $c->user->obj : undef,
     );
-    $where{"$table_name.confirmed"} = $range->sql;
 
-    $c->stash->{params} = \%where;
-    my $rs = $updates ? $c->cobrand->updates : $c->cobrand->problems;
-    $c->stash->{objects_rs} = $rs->to_body($c->stash->{body})->search( \%where );
+    $c->stash($reporting->construct_rs_filter);
+    return $reporting;
 }
 
 sub generate_grouped_data : Private {
@@ -302,229 +281,6 @@ sub generate_body_response_time : Private {
 
     my $avg = $c->stash->{body}->calculate_average($c->cobrand->call_hook("body_responsiveness_threshold"));
     $c->stash->{body_average} = $avg ? int($avg / 60 / 60 / 24 + 0.5) : 0;
-}
-
-sub csv_filename {
-    my ($self, $c, $updates) = @_;
-    my %where = (
-        category => $c->stash->{category},
-        state => $c->stash->{q_state},
-        ward => join(',', @{$c->stash->{ward}}),
-    );
-    $where{body} = $c->stash->{body}->id if $c->stash->{body};
-    join '-',
-        $c->req->uri->host,
-        $updates ? ('updates') : (),
-        map {
-            my $value = $where{$_};
-            (defined $value and length $value) ? ($_, $value) : ()
-        } sort keys %where
-};
-
-sub export_as_csv_updates : Private {
-    my ($self, $c) = @_;
-
-    my $csv = $c->stash->{csv} = {
-        objects => $c->stash->{objects_rs}->search_rs({}, {
-            order_by => ['me.confirmed', 'me.id'],
-            '+columns' => ['problem.bodies_str'],
-            cursor_page_size => 1000,
-        }),
-        headers => [
-            'Report ID', 'Update ID', 'Date', 'Status', 'Problem state',
-            'Text', 'User Name', 'Reported As',
-        ],
-        columns => [
-            'problem_id', 'id', 'confirmed', 'state', 'problem_state',
-            'text', 'user_name_display', 'reported_as',
-        ],
-        filename => $self->csv_filename($c, 1),
-        user => $c->user_exists ? $c->user->obj : undef,
-    };
-    $c->cobrand->call_hook(dashboard_export_updates_add_columns => $csv);
-    $c->forward('generate_csv');
-}
-
-sub export_as_csv : Private {
-    my ($self, $c) = @_;
-
-    my $groups = $c->cobrand->enable_category_groups ? 1 : 0;
-    my $join = ['comments'];
-    my $columns = ['comments.id', 'comments.problem_state', 'comments.state', 'comments.confirmed', 'comments.mark_fixed'];
-    if ($groups) {
-        push @$join, 'contact';
-        push @$columns, 'contact.id', 'contact.extra';
-    }
-    my $csv = $c->stash->{csv} = {
-        objects => $c->stash->{objects_rs}->search_rs({}, {
-            join => $join,
-            collapse => 1,
-            '+columns' => $columns,
-            order_by => ['me.confirmed', 'me.id'],
-            cursor_page_size => 1000,
-        }),
-        headers => [
-            'Report ID',
-            'Title',
-            'Detail',
-            'User Name',
-            'Category',
-            $groups ? ('Subcategory') : (),
-            'Created',
-            'Confirmed',
-            'Acknowledged',
-            'Fixed',
-            'Closed',
-            'Status',
-            'Latitude', 'Longitude',
-            'Query',
-            'Ward',
-            'Easting',
-            'Northing',
-            'Report URL',
-            'Site Used',
-            'Reported As',
-        ],
-        columns => [
-            'id',
-            'title',
-            'detail',
-            'user_name_display',
-            'category',
-            $groups ? ('subcategory') : (),
-            'created',
-            'confirmed',
-            'acknowledged',
-            'fixed',
-            'closed',
-            'state',
-            'latitude', 'longitude',
-            'postcode',
-            'wards',
-            'local_coords_x',
-            'local_coords_y',
-            'url',
-            'site_used',
-            'reported_as',
-        ],
-        filename => $self->csv_filename($c, 0),
-        user => $c->user_exists ? $c->user->obj : undef,
-        category => $c->stash->{category},
-        contacts => $c->stash->{contacts},
-    };
-    $c->cobrand->call_hook(dashboard_export_problems_add_columns => $csv);
-    $c->forward('generate_csv');
-}
-
-=head2 generate_csv
-
-Generates a CSV output, given a 'csv' stash hashref containing:
-* filename: filename to be used in output
-* problems: a resultset of the rows to output
-* headers: an arrayref of the header row strings
-* columns: an arrayref of the columns (looked up in the row's as_hashref, plus
-the following: user_name_display, acknowledged, fixed, closed, wards,
-local_coords_x, local_coords_y, url).
-* extra_data: If present, a function that is passed the report and returns a
-hashref of extra data to include that can be used by 'columns'.
-
-=cut
-
-sub generate_csv : Private {
-    my ($self, $c) = @_;
-
-    my $filename = $c->stash->{csv}->{filename};
-    $c->res->content_type('text/csv; charset=utf-8');
-    $c->res->header('content-disposition' => "attachment; filename=\"${filename}.csv\"");
-
-    # Emit a header (copying Drupal's naming) telling an intermediary (e.g.
-    # Varnish) not to buffer the output. Varnish will need to know this, e.g.:
-    #   if (beresp.http.Surrogate-Control ~ "BigPipe/1.0") {
-    #     set beresp.do_stream = true;
-    #     set beresp.ttl = 0s;
-    #   }
-    $c->res->header('Surrogate-Control' => 'content="BigPipe/1.0"');
-
-    # Tell nginx not to buffer this response
-    $c->res->header('X-Accel-Buffering' => 'no');
-
-    # Define an empty body so the web view doesn't get added at the end
-    $c->res->body("");
-
-    # Old parameter renaming
-    $c->stash->{csv}->{objects} //= $c->stash->{csv}->{problems};
-
-    my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
-    $csv->print($c->response, $c->stash->{csv}->{headers});
-
-    my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
-    my $closed_states = FixMyStreet::DB::Result::Problem->closed_states;
-
-    my %asked_for = map { $_ => 1 } @{$c->stash->{csv}->{columns}};
-
-    my $objects = $c->stash->{csv}->{objects};
-    while ( my $obj = $objects->next ) {
-        my $hashref = $obj->as_hashref(\%asked_for);
-
-        $hashref->{user_name_display} = $obj->anonymous
-            ? '(anonymous)' : $obj->name;
-
-        if ($asked_for{acknowledged}) {
-            for my $comment ($obj->comments) {
-                my $problem_state = $comment->problem_state or next;
-                next unless $comment->state eq 'confirmed';
-                next if $problem_state eq 'confirmed';
-                $hashref->{acknowledged} //= $comment->confirmed;
-                $hashref->{fixed} //= $fixed_states->{ $problem_state } || $comment->mark_fixed ?
-                    $comment->confirmed : undef;
-                if ($closed_states->{ $problem_state }) {
-                    $hashref->{closed} = $comment->confirmed;
-                    last;
-                }
-            }
-        }
-
-        if ($asked_for{wards}) {
-            $hashref->{wards} = join ', ',
-              map { $c->stash->{children}->{$_}->{name} }
-              grep {$c->stash->{children}->{$_} }
-              split ',', $hashref->{areas};
-        }
-
-        if ($obj->can('local_coords') && $asked_for{local_coords_x}) {
-            ($hashref->{local_coords_x}, $hashref->{local_coords_y}) =
-                $obj->local_coords;
-        }
-
-        if ($asked_for{subcategory}) {
-            my $group = $obj->contact ? $obj->contact->groups : [];
-            $group = join(',', @$group);
-            if ($group) {
-                $hashref->{subcategory} = $obj->category;
-                $hashref->{category} = $group;
-            }
-        }
-
-        if ($obj->can('url')) {
-            my $base = $c->cobrand->base_url_for_report($obj->can('problem') ? $obj->problem : $obj);
-            $hashref->{url} = join '', $base, $obj->url;
-        }
-
-        $hashref->{site_used} = $obj->can('service') ? ($obj->service || $obj->cobrand) : $obj->cobrand;
-
-        $hashref->{reported_as} = $obj->get_extra_metadata('contributed_as') || '';
-
-        if (my $fn = $c->stash->{csv}->{extra_data}) {
-            my $extra = $fn->($obj);
-            $hashref = { %$hashref, %$extra };
-        }
-
-        $csv->print($c->response, [
-            @{$hashref}{
-                @{$c->stash->{csv}->{columns}}
-            },
-        ] );
-    }
 }
 
 sub heatmap : Local : Args(0) {

@@ -126,8 +126,7 @@ sub default_map_zoom { 3 }
 sub _dashboard_export_add_columns {
     my ($self, $csv) = @_;
 
-    push @{$csv->{headers}}, "Staff User";
-    push @{$csv->{columns}}, "staff_user";
+    $csv->add_csv_columns( staff_user => 'Staff User' );
 
     # All staff users, for contributed_by lookup
     my @user_ids = FixMyStreet::DB->resultset('User')->search(
@@ -135,7 +134,7 @@ sub _dashboard_export_add_columns {
         { columns => [ 'id', 'email', ] })->all;
     my %user_lookup = map { $_->id => $_->email } @user_ids;
 
-    $csv->{extra_data} = sub {
+    $csv->csv_extra_data(sub {
         my $report = shift;
         my $staff_user = '';
         if (my $contributed_by = $report->get_extra_metadata('contributed_by')) {
@@ -144,7 +143,7 @@ sub _dashboard_export_add_columns {
         return {
             staff_user => $staff_user,
         };
-    };
+    });
 }
 
 sub dashboard_export_updates_add_columns {
