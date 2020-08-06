@@ -81,7 +81,7 @@ sub create_problems {
     }
 
     my $contacts = $self->schema->resultset('Contact')
-        ->active
+        ->not_deleted_admin
         ->search( { body_id => $body->id } );
 
     for my $request (@$requests) {
