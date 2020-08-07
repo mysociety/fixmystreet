@@ -1,0 +1,36 @@
+$central-beds-green: #8dc63f;
+$central-beds-purple: #513785;
+$central-beds-fuschia: #9b2262; // for links
+$central-beds-orange: #ffc045; // for warnings etc
+$central-beds-brown: #493a3c;
+$central-beds-cream: #edeae3;
+
+$link-color: $central-beds-fuschia;
+$link-hover-color: $central-beds-fuschia;
+
+$primary: $central-beds-cream;
+$primary_b: #000;
+$primary_text: #000;
+
+$base_bg: $central-beds-cream;
+$base_fg: #000;
+
+$nav_background_colour: #fff;
+$nav_colour: #000;
+$nav_hover_background_colour: #eee;
+
+$header-top-border-width: 0.25em;
+$header-top-border: $header-top-border-width solid $central-beds-purple;
+
+$body-font: Arial, sans-serif;
+$meta-font: $body-font;
+$heading-font: $body-font;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: #ccc;
+
+$col_click_map: $central-beds-green;
+
+$menu-image: 'menu-black';
+
+$container-max-width: 70em;
