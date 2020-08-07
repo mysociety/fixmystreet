@@ -141,6 +141,8 @@ sub html_paragraph : Filter('html_para') {
 sub sanitize {
     my $text = shift;
 
+    $text = $$text if UNIVERSAL::isa($text, 'FixMyStreet::Template::SafeString');
+ 
     my %allowed_tags = map { $_ => 1 } qw( p ul ol li br b i strong em );
     my $scrubber = HTML::Scrubber->new(
         rules => [

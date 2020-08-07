@@ -49,7 +49,7 @@ action_map = {
                 [%- tprintf(loc('Problem %s created on behalf of %s'), mark_safe(report_link), item.obj.name) %], ‘[% item.obj.title | html %]’
             [%~ CASE 'update' %]
                 [% tprintf(loc("Update %s created for problem %d"), mark_safe(report_link), item.obj.problem_id) %]
-                [% item.obj.text | add_links | markup(item.obj.user) | html_para %]
+                [% item.obj.text | staff_html_markup(item.obj.extra) %]
             [%~ CASE 'shortlistAdded' %]
                 [%- tprintf(loc('Problem %s added to shortlist'), mark_safe(report_link)) %]
             [%~ CASE 'shortlistRemoved' %]

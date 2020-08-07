@@ -113,7 +113,7 @@ li .my-account-buttons a {
         <div class="item-list__update-wrap">
             [% INCLUDE 'report/photo.html' object=u %]
             <div class="item-list__update-text">
-                [% u.text | add_links | html_para %]
+                [% u.text | staff_html_markup(u.extra) %]
 
                 <p class="meta-2">
                     [% tprintf( loc("Added %s"), prettify_dt( u.confirmed, 'date' ) ) %]

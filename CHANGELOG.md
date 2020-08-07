@@ -39,6 +39,8 @@
         - Add full text index to speed up admin search.
         - Offline process for CSV generation.
         - Allow inspectors to change report asset.
+        - Staff users can use HTML tags in updates. #3143
+        - Response templates can include HTML tags. #3143
     - Development improvements:
         - `#geolocate_link` is now easier to re-style. #3006
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007

@@ -825,6 +825,15 @@ Click on ‘Templates’ in the admin menu. You will see a table of existing tem
 beside the status you wish to change. You may alter any of the fields as described in the section
 above, ‘Creating a template’. Additionally you can delete the template from this page.
 
+
+#### HTML content in templates
+
+HTML tags are permitted in response templates, which makes it possible to include
+images or rich text formatting in the updates which are added to reports.
+
+Refer to the section ["HTML Content in notices"](#html-content-in-notices) above for details of
+what tags and attributes are allowed.
+
 </div>
 
 <div class="admin-task" markdown="1" id="view-statistics">

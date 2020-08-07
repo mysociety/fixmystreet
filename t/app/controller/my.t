@@ -14,17 +14,12 @@ my $other_user = FixMyStreet::DB->resultset('User')->find_or_create({ email => '
 my @other = $mech->create_problems_for_body(1, 1234, 'Another Title', { user => $other_user });
 
 my $user = $mech->log_in_ok( 'test@example.com' );
-$mech->get_ok('/my');
-is $mech->uri->path, '/my', "stayed on '/my' page";
-
-$mech->content_contains('Test Title');
-$mech->content_lacks('Another Title');
-
 my @update;
 my $i = 0;
+my $staff_text = '<p>this is <script>how did this happen</script> <strong>an update</strong></p><ul><li>With</li><li>A</li><li>List</li></ul>';
 foreach ($user, $user, $other_user) {
     $update[$i] = FixMyStreet::DB->resultset('Comment')->create({
-        text => 'this is an update',
+        text => $staff_text,
         user => $_,
         state => 'confirmed',
         problem => $problems[0],
@@ -34,6 +29,20 @@ foreach ($user, $user, $other_user) {
     });
     $i++;
 }
+
+subtest 'Check loading of /my page' => sub {
+    $mech->get_ok('/my');
+    is $mech->uri->path, '/my', "stayed on '/my' page";
+
+    $mech->content_contains('Test Title');
+    $mech->content_lacks('Another Title');
+    $mech->content_contains('&lt;p&gt;this is');
+    $mech->content_lacks('<p>this is  <strong>an update</strong></p><ul><li>With');
+
+    $update[0]->update({ extra => { is_superuser => 1 } });
+    $mech->get_ok('/my');
+    $mech->content_contains('<p>this is  <strong>an update</strong></p><ul><li>With');
+};
 
 foreach (
     { type => 'problem', id => 0, result => 404, desc => 'nothing' },

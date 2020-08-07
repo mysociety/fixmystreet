@@ -2200,4 +2200,91 @@ subtest 'check disabling of updates per category' => sub {
     $mech->content_lacks('Provide an update');
 };
 
+subtest 'check that only staff can display HTML in updates' => sub {
+    $report->comments->delete;
+    $user->update({ from_body => undef, is_superuser => 0 });
+
+    my @lines = (
+        "This update contains:",
+        "1. <strong>some staff-allowed HTML</strong>",
+        "2. *some Markdown-style italics*",
+        "3. <script>some disallowed HTML</script>",
+        "4. An automatic link: https://myfancylink.fixmystreet.com/",
+        "5. A block-level element: <p>This is its own para</p>",
+        ""
+    );
+    my $comment = FixMyStreet::DB->resultset('Comment')->create(
+        {
+            user          => $user,
+            problem_id    => $report->id,
+            text          => join("\n\n", @lines),
+            confirmed     => DateTime->now( time_zone => 'local'),
+            problem_state => 'confirmed',
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 0,
+            state         => 'confirmed',
+        }
+    );
+
+    # First check that comments from a public user don't receive special treatment
+    $mech->get_ok( "/report/" . $report->id );
+
+    $mech->content_contains("1. &lt;strong&gt;some staff-allowed HTML&lt;/strong&gt;");
+    $mech->content_lacks("<strong>some staff-allowed HTML</strong>");
+
+    $mech->content_contains("2. *some Markdown-style italics*");
+    $mech->content_lacks("<i>some Markdown-style italics</i>");
+    $mech->content_lacks("&lt;i&gt;some Markdown-style italics&lt;/i&gt;");
+
+    $mech->content_contains("3. &lt;script&gt;some disallowed HTML&lt;/script&gt;");
+    $mech->content_lacks("<script>some disallowed HTML</script>");
+
+    $mech->content_contains('4. An automatic link: <a href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>') or diag $mech->content;
+
+    $mech->content_contains("5. A block-level element: &lt;p&gt;This is its own para&lt;/p&gt;");
+    $mech->content_lacks("5. A block-level element: <p>This is its own para</p>");
+
+    # Now check that comments from a member of staff user do allow HTML/italic markup
+    $comment->set_extra_metadata(is_body_user => $body->id);
+    $comment->update;
+    $mech->get_ok( "/report/" . $report->id );
+
+    $mech->content_contains("1. <strong>some staff-allowed HTML</strong>");
+    $mech->content_lacks("&lt;strong&gt;some staff-allowed HTML&lt;/strong&gt;");
+
+    $mech->content_contains("2. <i>some Markdown-style italics</i>");
+    $mech->content_lacks("*some Markdown-style italics*");
+    $mech->content_lacks("&lt;i&gt;some Markdown-style italics&lt;/i&gt;");
+
+    $mech->content_lacks("some disallowed HTML");
+
+    $mech->content_contains('4. An automatic link: <a href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>');
+
+    $mech->content_contains("5. A block-level element: <p>This is its own para</p>");
+    $mech->content_lacks("<p>\n5. A block-level element: <p>This is its own para</p></p>");
+
+    # and the same for superusers
+    $comment->unset_extra_metadata('is_body_user');
+    $comment->set_extra_metadata(is_superuser => 1);
+    $comment->update;
+    $mech->get_ok( "/report/" . $report->id );
+
+    $mech->content_contains("1. <strong>some staff-allowed HTML</strong>");
+    $mech->content_lacks("&lt;strong&gt;some staff-allowed HTML&lt;/strong&gt;");
+
+    $mech->content_contains("2. <i>some Markdown-style italics</i>");
+    $mech->content_lacks("*some Markdown-style italics*");
+    $mech->content_lacks("&lt;i&gt;some Markdown-style italics&lt;/i&gt;");
+
+    $mech->content_lacks("some disallowed HTML");
+
+    $mech->content_contains('4. An automatic link: <a href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>');
+
+    $mech->content_contains("5. A block-level element: <p>This is its own para</p>");
+    $mech->content_lacks("<p>\n5. A block-level element: <p>This is its own para</p></p>");
+
+};
+
+
 done_testing();

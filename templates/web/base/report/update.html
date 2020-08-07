@@ -35,7 +35,7 @@
                 [% INCLUDE 'report/photo.html' object=update %]
                 <div class="item-list__update-text">
                     <div class="moderate-display">
-                        [% update.text | add_links | markup(update.user) | html_para %]
+                        [% update.text | staff_html_markup(update.extra) %]
                     </div>
                     [% IF can_moderate %]
                     <div class="moderate-edit">
@@ -43,7 +43,7 @@
                         <label><input type="checkbox" name="update_revert_text" class="revert-textarea">
                         [% loc('Revert to original') %]</label>
                         [% END %]
-                        <textarea class="form-control" name="update_text">[% update.text | add_links %]</textarea>
+                        <textarea class="form-control" name="update_text">[% update.text %]</textarea>
                     </div>
                     [% END %]
 
