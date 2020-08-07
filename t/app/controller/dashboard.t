@@ -20,6 +20,8 @@ use strict;
 use warnings;
 
 use FixMyStreet::TestMech;
+use File::Temp 'tempdir';
+use Path::Tiny;
 use Web::Scraper;
 
 set_absolute_time('2014-02-01T12:00:00');
@@ -81,10 +83,15 @@ my $categories = scraper {
     },
 };
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'no2fa',
     COBRAND_FEATURES => { category_groups => { no2fa => 1 } },
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
 }, sub {
 
     subtest 'not logged in, redirected to login' => sub {
@@ -252,7 +259,37 @@ FixMyStreet::override_config {
         like $mech->res->header('Content-type'), qr'text/csv';
         $mech->content_contains('Report ID');
         $mech->delete_header('Authorization');
+
+        my $token = 'access_token=' . $counciluser->id . '-1234567890abcdefgh';
+        $mech->get_ok("/dashboard?export=2&$token");
+        is $mech->res->code, 202;
+        my $loc = $mech->res->header('Location');
+        like $loc, qr{/dashboard/csv/.*\.csv$};
+        $mech->get_ok("$loc?$token");
+        like $mech->res->header('Content-type'), qr'text/csv';
+        $mech->content_contains('Report ID');
     };
+
+    subtest 'view status page' => sub {
+        # Simulate a partly done file
+        my $f = Path::Tiny->tempfile(SUFFIX => '.csv-part', DIR => path($UPLOAD_DIR, 'dashboard_csv', $counciluser->id));
+        (my $name = $f->basename) =~ s/-part$//;;
+
+        my $token = 'access_token=' . $counciluser->id . '-1234567890abcdefgh';
+        $mech->get_ok("/dashboard/csv/$name?$token");
+        is $mech->res->code, 202;
+
+        $mech->log_in_ok( $counciluser->email );
+        $mech->get_ok('/dashboard/status');
+        $mech->content_contains('/dashboard/csv/www.example.org-body-' . $body->id . '-start_date-2014-01-02.csv');
+        $mech->content_like(qr/$name\s*<br>0KB\s*<i>In progress/);
+
+        $f->remove;
+        $mech->get_ok('/dashboard/status');
+        $mech->content_contains('/dashboard/csv/www.example.org-body-' . $body->id . '-start_date-2014-01-02.csv');
+        $mech->content_lacks('In progress');
+        $mech->content_lacks('setTimeout');
+    }
 };
 
 FixMyStreet::override_config {

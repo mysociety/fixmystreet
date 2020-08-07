@@ -1,0 +1,68 @@
+[% USE date %]
+[% IF NOT c.get_param('ajax') %]
+[% INCLUDE 'header.html'
+    title = loc('Dashboard')
+    robots = 'noindex, nofollow'
+    bodyclass = 'fullwidthpage';
+%]
+
+[% IF body %]
+<hgroup>
+    [% tprintf(loc('<h2>Reports, Statistics and Actions for</h2> <h1>%s</h1>'), body_name) %]
+</hgroup>
+[% ELSE %]
+<h1>[% loc('Summary statistics') %]</h1>
+[% END %]
+
+<p><a href="[% c.uri_for_action('dashboard/index') %]">[% loc('Back') %]</a></p>
+
+[% END %]
+
+<table id="overview" cellpadding=8 cellspacing=0>
+    <tr>
+        <th scope="col">[% loc('Created') %]</th>
+        <th scope="col">[% loc('CSV File') %]</th>
+    </tr>
+  [% in_progress = 0 %]
+  [% FOR file IN rows %]
+    <tr>
+        <td>[% date.format(file.ctime, format = '%Y-%m-%d %H:%M') %]</td>
+        <td>
+            [% IF file.finished %]
+                <a href="/dashboard/csv/[% file.name %]">[% file.name %]</a>
+                <br>[% file.size div 1024 %]KB
+            [% ELSE %]
+                [% file.name %]
+                <br>[% file.size div 1024 %]KB
+                <i>[% loc('In progress') %]</i>
+                [% in_progress = 1 %]
+            [% END %]
+        </td>
+    </tr>
+  [% END %]
+</table>
+
+[% IF NOT c.get_param('ajax') %]
+
+[% IF in_progress %]
+<script nonce="[% csp_nonce %]">
+(function() {
+    var wait = 1;
+    setTimeout(function refresh() {
+        $('#overview').load('[% c.uri_for_action('dashboard/status') %]?ajax=1', function() {
+            if ($(this).html().indexOf('<i>[% loc('In progress', "JS") %]</i>') === -1) {
+                return;
+            }
+            wait += 1;
+            if (wait > 10) {
+                wait = 10;
+            }
+            setTimeout(refresh, wait * 1000);
+        });
+    }, wait * 1000);
+})();
+</script>
+[% END %]
+
+[% INCLUDE 'footer.html' %]
+[% END %]

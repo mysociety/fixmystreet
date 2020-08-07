@@ -1,0 +1,77 @@
+#!/usr/bin/env perl
+
+# csv-export
+# Offline creation of CSV export, first take
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use open ':std', ':encoding(UTF-8)';
+use Getopt::Long::Descriptive;
+use Path::Tiny;
+use CronFns;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
+use FixMyStreet::Reporting;
+
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
+CronFns::language($site);
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['cobrand=s', 'which cobrand is asking for the data', { required => 1 }],
+    ['type=s', 'whether to export problems or updates', { required => 1 }],
+    ['out=s', 'where to output CSV data'],
+
+    ['body=i', 'Body ID to restrict export to'],
+    ['wards=s', 'Ward area IDs to restrict export to'],
+    ['category=s', 'Category to restrict export to'],
+    ['state=s', 'State to restrict export to'],
+    ['start_date=s', 'Start date for export (default 30 days ago)'],
+    ['end_date=s', 'End date for export'],
+
+    ['user=i', 'user ID which requested this export'],
+    ['verbose|v', 'more verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+my $use_stdout = !$opts->out || $opts->out eq '-';
+my ($file, $fh);
+if ($use_stdout) {
+    $fh = *STDOUT;
+} else {
+    $file = path($opts->out . '-part');
+    $fh = $file->openw_utf8;
+}
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand);
+FixMyStreet::DB->schema->cobrand($cobrand);
+
+my $user = FixMyStreet::DB->resultset("User")->find($opts->user) if $opts->user;
+my $body = FixMyStreet::DB->resultset("Body")->find($opts->body) if $opts->body;
+my $wards = $opts->wards ? [split',', $opts->wards] : [];
+
+my $reporting = FixMyStreet::Reporting->new(
+    type => $opts->type,
+    user => $user,
+    category => $opts->category,
+    state => $opts->state,
+    wards => $wards,
+    body => $body,
+    $opts->start_date ? (start_date => $opts->start_date) : (),
+    end_date => $opts->end_date,
+);
+$reporting->construct_rs_filter;
+$reporting->csv_parameters;
+$reporting->generate_csv($fh);
+unless ($use_stdout) {
+    $file->move($opts->out);
+}

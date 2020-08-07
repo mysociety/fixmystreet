@@ -2,6 +2,7 @@ package FixMyStreet::Reporting;
 
 use DateTime;
 use Moo;
+use Path::Tiny;
 use Text::CSV;
 use Types::Standard qw(ArrayRef CodeRef Enum HashRef InstanceOf Int Maybe Str);
 use FixMyStreet::DB;
@@ -304,6 +305,46 @@ sub generate_csv {
 }
 
 # Output code
+
+sub cache_dir {
+    my $self = shift;
+
+    my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+    my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
+    $dir = path($dir, "dashboard_csv")->absolute(FixMyStreet->path_to());
+    my $subdir = $self->user ? $self->user->id : 0;
+    $dir = $dir->child($subdir);
+    $dir->mkpath;
+    $dir;
+}
+
+sub kick_off_process {
+    my $self = shift;
+
+    return $self->_process if FixMyStreet->test_mode;
+
+    my $pid = fork;
+    unless ($pid) {
+        unless (fork) {
+            # eval so that it will definitely exit cleanly. Otherwise, an
+            # exception would turn this grandchild into a zombie app process
+            eval { $self->_process };
+            exit 0;
+        }
+        exit 0;
+    }
+    waitpid($pid, 0);
+}
+
+sub _process {
+    my $self = shift;
+    my $out = path($self->cache_dir, $self->filename . '.csv');
+    my $file = path($out . '-part');
+    if (!$file->exists) {
+        $self->generate_csv($file->openw_utf8);
+        $file->move($out);
+    }
+}
 
 # Outputs relevant CSV HTTP headers, and then streams the CSV
 sub generate_csv_http {

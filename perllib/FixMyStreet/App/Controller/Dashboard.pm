@@ -137,9 +137,24 @@ sub index : Path : Args(0) {
 
     my $reporting = $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
 
-    if ( $c->get_param('export') ) {
+    if ( my $export = $c->get_param('export') ) {
         $reporting->csv_parameters;
-        $reporting->generate_csv_http($c);
+        if ($export == 1) {
+            # Existing method, generate and serve
+            $reporting->generate_csv_http($c);
+        } elsif ($export == 2) {
+            # New offline method
+            $reporting->kick_off_process;
+            my ($redirect, $code) = ('/dashboard/status', 303);
+            if (Catalyst::Authentication::Credential::AccessToken->get_token($c)) {
+                # Client knows to re-request until ready
+                $redirect = '/dashboard/csv/' . $reporting->filename . '.csv';
+                $c->res->body('');
+                $code = 202;
+            }
+            $c->res->redirect($redirect, $code);
+            $c->detach;
+        }
     } else {
         $c->forward('generate_grouped_data');
         $self->generate_summary_figures($c);
@@ -274,6 +289,62 @@ sub generate_summary_figures {
         next if $meta_state eq 'open';
         $c->stash->{"summary_$meta_state"} += $comment->get_column('count');
     }
+}
+
+sub status : Local : Args(0) {
+    my ($self, $c) = @_;
+
+    my $body = $c->stash->{body} = $c->forward('check_page_allowed');
+    $c->stash->{body_name} = $body->name if $body;
+
+    my $reporting = FixMyStreet::Reporting->new(
+        user => $c->user_exists ? $c->user->obj : undef,
+    );
+    my $dir = $reporting->cache_dir;
+    my @data;
+    foreach ($dir->children) {
+        my $stat = $_->stat;
+        my $name = $_->basename;
+        my $finished = $name =~ /part$/ ? 0 : 1;
+        $name =~ s/-part$//;
+        push @data, {
+            ctime => $stat->ctime,
+            size => $stat->size,
+            name => $name,
+            finished => $finished,
+        };
+    }
+    @data = sort { $b->{ctime} <=> $a->{ctime} } @data;
+    $c->stash->{rows} = \@data;
+}
+
+sub csv : Local : Args(1) {
+    my ($self, $c, $filename) = @_;
+
+    $c->authenticate(undef, "access_token");
+
+    my $body = $c->stash->{body} = $c->forward('check_page_allowed');
+
+    (my $basename = $filename) =~ s/\.csv$//;
+    my $reporting = FixMyStreet::Reporting->new(
+        user => $c->user_exists ? $c->user->obj : undef,
+        filename => $basename,
+    );
+    my $dir = $reporting->cache_dir;
+    my $csv = path($dir, $filename);
+
+    if (!$csv->exists) {
+        if (path($dir, "$filename-part")->exists && Catalyst::Authentication::Credential::AccessToken->get_token($c)) {
+            $c->res->body('');
+            $c->res->status(202);
+            $c->detach;
+        } else {
+            $c->detach( '/page_error_404_not_found', [] ) unless $csv->exists;
+        }
+    }
+
+    $reporting->http_setup($c);
+    $c->res->body($csv->openr_raw);
 }
 
 sub generate_body_response_time : Private {

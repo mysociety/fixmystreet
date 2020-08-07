@@ -15,12 +15,18 @@ sub new {
     return $self;
 }
 
-sub authenticate {
-    my ( $self, $c, $realm, $authinfo_ignored ) = @_;
-
+sub get_token {
+    my ($self, $c) = @_;
     my $auth_header = $c->req->header('Authorization') || '';
     my ($token) = $auth_header =~ /^Bearer (.*)/i;
     $token ||= $c->get_param('access_token');
+    return $token;
+}
+
+sub authenticate {
+    my ( $self, $c, $realm, $authinfo_ignored ) = @_;
+
+    my $token = $self->get_token($c);
     return unless $token;
 
     my $id;

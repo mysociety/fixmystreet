@@ -105,8 +105,8 @@
     <li>[% INCLUDE gb new_gb='device+site' text=loc('Device and Site') %]</li>
     <li class="pull-right">
         <span>[% loc('Export as CSV') %]:</span>
-        <a href="[% c.uri_with({ export => 1 }) %]">[% loc('Reports') %]</a>
-        <a href="[% c.uri_with({ export => 1, updates => 1 }) %]">[% loc('Updates') %]</a>
+        <a href="[% c.uri_with({ export => 2 }) %]">[% loc('Reports') %]</a>
+        <a href="[% c.uri_with({ export => 2, updates => 1 }) %]">[% loc('Updates') %]</a>
     </li>
 </ul>
 

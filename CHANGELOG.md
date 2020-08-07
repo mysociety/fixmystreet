@@ -34,6 +34,7 @@
         - Better sort admin user table.
         - Centralise update creation to include fields.
         - Add full text index to speed up admin search.
+        - Offline process for CSV generation.
     - Development improvements:
         - `#geolocate_link` is now easier to re-style. #3006
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007
