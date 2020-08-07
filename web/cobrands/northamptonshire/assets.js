@@ -11,45 +11,6 @@ var base_url = fixmystreet.staging ?
 var url_with_style = base_url + '?styleIds=${styleid}';
 
 var layers = [
-/*
-{
-  "name": "Posts",
-  "id": "5d480a68fe2ad809d85a78cf"
-}
-{
-  "name": "Grips",
-  "id": "5d480aeefe2ad8059ce44c75"
-}
-{
-  "name": "Special Treatment",
-  "id": "5d480b39fe2ad809d85a78ec"
-}
-{
-  "name": "Channel",
-  "id": "5d480b66fe2ad809d85a78f0"
-}
-{
-  "name": "Comms Cabinet",
-  "id": "5d480c01fe2ad8059ce44cd4"
-}
-{
-  "name": "Steps",
-  "id": "5d480c3bfe2ad8059ce44cda"
-}
-{
-  "name": "Steps Handrail",
-  "id": "5d4812adfe2ad809d85a7a6e"
-}
-{
-  "name": "Tree Group",
-  "id": "5d481333fe2ad809d85a7a78"
-}
-{
-  "name": "Traffic Calming",
-  "id": "5d481403fe2ad8059ce44efd"
-}
-
-*/
 {
   "categories": [
         "Loose / Raised/Sunken",
@@ -88,6 +49,23 @@ var layers = [
   "styleid": '5d4812dffe2ad809d85a7a72',
 },
 {
+  "categories": [
+      "Fallen Tree",
+      "Restricted Visibility / Overgrown / Overhanging",
+      "Restricted Visibility"
+  ],
+  "layer_name": "Tree",
+  "styleid": '5d481376fe2ad8059ce44ef2',
+},
+{
+  "categories": [ "Safety Bollard - Damaged/Missing" ],
+  "layer_name": "Safety Bollard",
+  "styleid": "5d481446fe2ad8059ce44f02",
+},
+];
+
+var prow_assets = [
+{
   "categories": [ "Bridge-Damaged/ Missing" ],
   "item_name": "bridge or right of way",
   "layer_name": "BRIDGES",
@@ -109,59 +87,13 @@ var layers = [
   "categories": [ "Sign/Waymarking - Damaged/Missing" ],
   "item_name": "waymarking or right of way",
   "layer_name": "WAYMARK POST",
-  "styleid": "5d481a4ffe2ad809d85a7b90"
-},
-/*
-{
-  "categories": [
-    "Damaged/Exposed Wiring / Vandalised",
-    "Lamp/Bulb Failure",
-    "Signal Failure",
-    "Signal Failure all out",
-    "Signal Stuck",
-    "Signal Head Failure",
-    "Request Timing Review",
-    "Damaged Control box",
-    "Signal Failure/Damaged - Toucan/Pelican"
-  ],
-  "item_name": "signal or crossing",
-  "layer_name": "Midblock",
-  "layer": 223,
-},
-{
-  "categories": [
-    "Damaged/Exposed Wiring / Vandalised",
-    "Lamp/Bulb Failure",
-    "Signal Failure",
-    "Signal Failure all out",
-    "Signal Stuck",
-    "Signal Head Failure",
-    "Request Timing Review",
-    "Damaged Control box",
-    "Signal Failure/Damaged - Toucan/Pelican"
-  ],
-  "item_name": "signal or crossing",
-  "layer_name": "TL Junction",
-  "layer": 225,
-},
-*/
-{
-  "categories": [
-      "Fallen Tree",
-      "Restricted Visibility / Overgrown / Overhanging",
-      "Restricted Visibility"
-  ],
-  "layer_name": "Tree",
-  "styleid": '5d481376fe2ad8059ce44ef2',
-},
-{
-  "categories": [ "Safety Bollard - Damaged/Missing" ],
-  "layer_name": "Safety Bollard",
-  "styleid": "5d481446fe2ad8059ce44f02",
+  "styleid": "5d481a4ffe2ad809d85a7b90&styleIds=5d481742fe2ad809d85a7b05"
 },
 ];
 
 var highway_layer = 'layers_highwayAssetsCustom_5d4806b0fe2ad809d85a774f';
+var prow_asset_layer = 'layers_pRoWAssets_5d48157cfe2ad809d85a7abc';
+var signal_asset_layer = 'layers_nETCOM_5d483dd7fe2ad809d85a8fab';
 
 // This is required so that the found/not found actions are fired on category
 // select and pin move rather than just on asset select/not select.
@@ -257,6 +189,40 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
 });
 
 fixmystreet.alloy_add_layers(northants_defaults, layers);
+
+var prow_defaults = $.extend(true, {}, northants_defaults, {
+  http_options: {
+    layerid: prow_asset_layer
+  }
+});
+
+fixmystreet.alloy_add_layers(prow_defaults, prow_assets);
+
+var signals_defaults = $.extend(true, {}, northants_defaults, {
+  http_options: {
+    layerid: signal_asset_layer
+  }
+});
+
+
+fixmystreet.assets.add(signals_defaults, {
+  http_options: {
+    layer_id: signal_asset_layer,
+    styleid: "5d484093fe2ad809d85a9139&styleIds=5d483f6cfe2ad8059ce464de",
+  },
+  asset_category: [
+    "Damaged/Exposed Wiring / Vandalised",
+    "Lamp/Bulb Failure",
+    "Signal Failure",
+    "Signal Failure all out",
+    "Signal Stuck",
+    "Signal Head Failure",
+    "Request Timing Review",
+    "Damaged Control box",
+    "Signal Failure/Damaged - Toucan/Pelican"
+  ],
+  asset_item: "signal or crossing"
+});
 
 // NCC roads layers which prevent report submission unless we have selected
 // an asset.
