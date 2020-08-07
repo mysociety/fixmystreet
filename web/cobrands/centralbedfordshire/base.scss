@@ -1,0 +1,120 @@
+@import "../sass/h5bp";
+@import "_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+.central-beds-header {
+    background: $central-beds-purple;
+    border-top: 0.75em solid $central-beds-brown;
+    padding-bottom: 0.75em;
+}
+
+.central-beds-header__logo,
+.central-beds-footer__logo {
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-top: 72px;
+    width: 72px;
+    height: 0;
+    margin: 0.25em auto 0 auto;
+    background: $central-beds-green url(images/central-beds-logo.png) 50% 50% no-repeat;
+    background-image: url(images/central-beds-logo.svg), none;
+    background-size: cover;
+    border-radius: 50%;
+}
+
+.central-beds-header__logo {
+    -webkit-transition: all 75ms ease-in;
+    transition: all 75ms ease-in;
+
+    &:hover,
+    &:active,
+    &:focus {
+        -webkit-transform: scale(1.025);
+        -ms-transform: scale(1.025);
+        transform: scale(1.025);
+    }
+}
+
+.central-beds-footer {
+    background: $central-beds-brown;
+    border-top: 72px solid $central-beds-cream;
+    color: $central-beds-green;
+    text-align: center;
+    padding-bottom: 4em;
+
+    p + p {
+        margin: 1em 0 0 0;
+    }
+}
+
+.central-beds-footer__logo {
+    margin-top: ( 72px * -0.5 );
+}
+
+a {
+    font-weight: bold;
+}
+
+#site-logo {
+    display: inline-block;
+    background: transparent;
+    font-size: 1.5em;
+    line-height: 60px;
+    width: auto;
+    color: $central-beds-purple;
+    text-indent: 0;
+}
+
+#report-cta,
+html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.scss
+    border: none;
+    color: #fff;
+    background-color: $central-beds-green;
+
+    &:hover,
+    &:focus {
+        background-color: darken($central-beds-green, 5%);
+    }
+}
+
+#report-cta {
+    padding: 0.4em 0.6em;
+}
+
+.frontpage #report-cta,
+.frontpage .report-a-problem-btn {
+    display: none;
+}
+
+#front-main {
+    background-color: $central-beds-cream;
+    margin: 0;
+    padding: 1em;
+
+    h1 {
+        font-weight: bold;
+    }
+}
+
+.nav-menu {
+    background-color: $central-beds-cream;
+    padding-top: 2em;
+
+    a, span {
+        background: transparent;
+        border-bottom: none;
+        font-size: 1em;
+    }
+}
+
+html.js .form-section-preview {
+    background-color: $central-beds-cream;
+}
+
+.big-green-banner {
+    text-transform: none;
+}
