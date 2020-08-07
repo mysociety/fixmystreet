@@ -1,0 +1,91 @@
+@import "_colours";
+@import "../sass/layout";
+
+.central-beds-header {
+    border-top-width: 1.5em;
+    padding-bottom: ( 1.5em * -0.5 );
+
+    @media (min-width: 1280px) {
+        border-top-width: 2.25em;
+        padding-bottom: ( 2.25em * -0.5 );
+    }
+}
+
+.central-beds-header__logo {
+    width: 144px;
+    padding-top: 144px;
+    margin-top: ( 1.5em * -0.5 );
+
+    @media (min-width: 1280px) {
+        width: 186px;
+        padding-top: 186px;
+        margin-top: ( 2.25em * -0.5 );
+    }
+}
+
+.central-beds-footer {
+    border-top-width: 96px;
+
+    @media (min-width: 1280px) {
+        border-top-width: 128px;
+    }
+}
+
+.central-beds-footer__logo {
+    width: 96px;
+    padding-top: 96px;
+    margin-top: ( 96px * -0.5 );
+
+    @media (min-width: 1280px) {
+        width: 128px;
+        padding-top: 128px;
+        margin-top: ( 128px * -0.5 );
+    }
+}
+
+.nav-menu {
+    padding-top: 0;
+    background: transparent;
+
+    a:hover {
+        color: $central-beds-fuschia;
+        background: transparent;
+    }
+
+    span {
+        color: #333;
+    }
+}
+
+#front-main {
+    padding: 3em 1em;
+}
+
+#front_stats big {
+    color: $central-beds-green;
+}
+
+body.mappage {
+    .nav-wrapper {
+        background-color: $central-beds-cream;
+    }
+}
+
+body.twothirdswidthpage .content {
+    aside {
+        background-color: $central-beds-cream;
+    }
+
+    .sticky-sidebar {
+        left: 43em; // up from 42em now we have a wider container
+        top: 0; // full height of .content, so aside can move vertically
+        bottom: 0;
+    }
+
+    aside,
+    .sticky-sidebar aside {
+        position: static; // fallback
+        position: sticky;
+        top: 0;
+    }
+}
