@@ -211,11 +211,9 @@ function road_owned(f) {
 
 fixmystreet.assets.add(defaults, {
     stylemap: fixmystreet.assets.stylemap_invisible,
-    wfs_url: proxy_base_url + 'nsg/',
-    wfs_feature: "WFS_STREETS_CLASSIFIED_ROADS_INTERESTS",
-    propertyNames: ['TYPE1_2_USRN', 'STREET_MAINTENANCE_RESPONSIBILITY_NAME', 'SHAPE_GEOMETRY'],
+    wfs_feature: "OCCRoads",
+    propertyNames: ['TYPE1_2_USRN', 'STREET_MAINTENANCE_RESPONSIBILITY_NAME', 'msGeometry'],
     srsName: "EPSG:27700",
-    geometryName: null,
     usrn: {
         attribute: 'TYPE1_2_USRN',
         field: 'usrn'
