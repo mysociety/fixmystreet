@@ -5,29 +5,7 @@
  * the mySociety standard header - the following resets a lot of this
  */
 
- $pro-yellow: #FED876;
-
- .ms-header {
-     border: 0;
- }
-
-.ms-header__logo {
-    
-    border-radius: 0;
-    background-position: 0 0;
-    background-size: 0 0 ;
-    background-repeat: no-repeat;
-    background-image: none;
-    width: auto;
-    height: auto;
-    display: block;
-    position: static;
-    right: auto;
-    top: auto;
-    background-color:  transparent;
-    background-repeat: no-repeat;
-    margin: 10px 0;
-}
+$pro-yellow: #FED876;
 
 .site-header {
     background-color: white;
@@ -81,14 +59,12 @@ h4 {
 // user guide view, for printing (but these styles will be visible on screen too
 
 .user-guide-print {
-    .ms-header,
     .mysoc-footer,
     .site-nav,
     .secondary-content-column,
     a[href="#main-nav"] {
         display: none !important;
         visibility: hidden;
-        
     }
 
     .main-content-column {
