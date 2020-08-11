@@ -22,18 +22,18 @@
 
   <p>[% loc('Do you want to automatically raise a defect?') %]</p>
   <p class="segmented-control segmented-control--radio">
-      <input type="radio" name="raise_defect" id="raise_defect_yes" value="1" data-show="#js-inspect-defect-yes">
+      <input type="radio" name="raise_defect" id="raise_defect_yes" value="1" data-show=".js-inspect-defect-yes">
       <label class="btn" for="raise_defect_yes">[% loc('Yes') %]</label>
-      <input type="radio" name="raise_defect" id="raise_defect_no" value="0" data-hide="#js-inspect-defect-yes">
+      <input type="radio" name="raise_defect" id="raise_defect_no" value="0" data-hide=".js-inspect-defect-yes">
       <label class="btn" for="raise_defect_no">[% loc('No') %]</label>
   </p>
 
-    <div id="js-inspect-defect-yes" class="hidden-js">
+    <div class="js-inspect-defect-yes hidden-js">
 
         <p>Please fill in the below:</p>
 
         <label for="defect_item_category">Defect category</label>
-        <select id="defect_item_category" name="defect_item_category" class="form-control">
+        <select id="defect_item_category" name="defect_item_category" class="form-control" required>
             <option value="">-- Pick a category --</option>
             <option data-show=".defect-non-kerb-options" data-hide=".defect-kerb-options">Minor Carriageway</option>
             <option data-show=".defect-non-kerb-options" data-hide=".defect-kerb-options">Footway/ Cycleway</option>
@@ -41,7 +41,7 @@
         </select>
 
         <label for="defect_item_type">Defect type</label>
-        <select id="defect_item_type" name="defect_item_type" class="form-control">
+        <select id="defect_item_type" name="defect_item_type" class="form-control" required>
             <option value="">-- Pick a type --</option>
             <optgroup class="defect-non-kerb-options" label="Minor Carriageway/ Footway/ Cycleway">
                 <option>Sweep &amp; Fill</option>
@@ -55,7 +55,7 @@
         </select>
 
         <label for="defect_item_detail">Defect detail</label>
-        <select id="defect_item_detail" name="defect_item_detail" class="form-control">
+        <select id="defect_item_detail" name="defect_item_detail" class="form-control" required>
             <option value="">-- Pick a detail --</option>
             <optgroup class="defect-non-kerb-options" label="Minor Carriageway/ Footway/ Cycleway">
                 <option>Pothole Sweep &amp; Fill 0-1m&sup2;</option>
