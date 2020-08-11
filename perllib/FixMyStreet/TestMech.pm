@@ -276,6 +276,24 @@ sub get_text_body_from_email {
     return $body;
 }
 
+sub get_html_body_from_email {
+    my ($mech, $email, $obj) = @_;
+    unless ($email) {
+        $email = $mech->get_email;
+        $mech->clear_emails_ok;
+    }
+
+    my $body;
+    $email->walk_parts(sub {
+        my $part = shift;
+        return if $part->subparts;
+        return if $part->content_type !~ m{text/html};
+        $body = $obj ? $part : $part->body_str;
+        ok $body, "Found HTML body";
+    });
+    return $body;
+}
+
 sub get_link_from_email {
     my ($mech, $email, $multiple, $mismatch) = @_;
     unless ($email) {

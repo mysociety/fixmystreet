@@ -11,6 +11,9 @@ use FixMyStreet::Template::SafeString;
 use FixMyStreet::Template::Context;
 use FixMyStreet::Template::Stash;
 
+use RABX;
+use IO::String;
+
 my %FILTERS;
 my %SUBS;
 
@@ -155,6 +158,26 @@ sub sanitize {
     );
     $text = $scrubber->scrub($text);
     return $text;
+}
+
+
+=head2 email_sanitize_html
+
+Intended for use in the _email_comment_list.html template to allow HTML
+in updates from staff/superusers.
+
+=cut
+
+sub email_sanitize_html : Fn('email_sanitize_html') {
+    my $update = shift;
+
+    my $text = $update->{item_text};
+    my $extra = $update->{item_extra};
+    $extra = $extra ? RABX::wire_rd(new IO::String($extra)) : {};
+
+    my $staff = $extra->{is_superuser} || $extra->{is_body_user};
+
+    return FixMyStreet::App::View::Web::_staff_html_markup($text, $staff);
 }
 
 1;

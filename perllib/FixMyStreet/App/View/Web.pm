@@ -126,29 +126,34 @@ sub staff_html_markup_factory {
 
     return sub {
         my $text = shift;
-        unless ($staff) {
-            return FixMyStreet::Template::html_paragraph(add_links($text));
-        }
-
-        $text = FixMyStreet::Template::sanitize($text);
-
-        # Apply Markdown-style italics
-        $text =~ s{\*(\S.*?\S)\*}{<i>$1</i>};
-
-        # Mark safe so add_links doesn't escape everything.
-        $text = FixMyStreet::Template::SafeString->new($text);
-
-        $text = add_links($text);
-
-        # If the update already has block-level elements then don't wrap
-        # individual lines in <p> elements, as we assume the user knows what
-        # they're doing.
-        unless ($text =~ /<(p|ol|ul)>/) {
-            $text = FixMyStreet::Template::html_paragraph($text);
-        }
-
-        return $text;
+        return _staff_html_markup($text, $staff);
     }
+}
+
+sub _staff_html_markup {
+    my ( $text, $staff ) = @_;
+    unless ($staff) {
+        return FixMyStreet::Template::html_paragraph(add_links($text));
+    }
+
+    $text = FixMyStreet::Template::sanitize($text);
+
+    # Apply Markdown-style italics
+    $text =~ s{\*(\S.*?\S)\*}{<i>$1</i>};
+
+    # Mark safe so add_links doesn't escape everything.
+    $text = FixMyStreet::Template::SafeString->new($text);
+
+    $text = add_links($text);
+
+    # If the update already has block-level elements then don't wrap
+    # individual lines in <p> elements, as we assume the user knows what
+    # they're doing.
+    unless ($text =~ /<(p|ol|ul)>/) {
+        $text = FixMyStreet::Template::html_paragraph($text);
+    }
+
+    return $text;
 }
 
 =head2 escape_js

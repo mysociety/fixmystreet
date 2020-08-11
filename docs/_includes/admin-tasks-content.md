@@ -829,7 +829,11 @@ above, ‘Creating a template’. Additionally you can delete the template from 
 #### HTML content in templates
 
 HTML tags are permitted in response templates, which makes it possible to include
-images or rich text formatting in the updates which are added to reports.
+hyperlinks or rich text formatting in the updates which are added to reports.
+
+Be aware that response templates are emailed to users as well as being shown on
+the site, so it's best to keep any HTML formatting quite light-touch due to the
+quirks of email clients' rendering of HTML message.
 
 Refer to the section ["HTML Content in notices"](#html-content-in-notices) above for details of
 what tags and attributes are allowed.
