@@ -321,29 +321,24 @@ sub cache_dir {
 sub kick_off_process {
     my $self = shift;
 
-    return $self->_process if FixMyStreet->test_mode;
-
-    my $pid = fork;
-    unless ($pid) {
-        unless (fork) {
-            # eval so that it will definitely exit cleanly. Otherwise, an
-            # exception would turn this grandchild into a zombie app process
-            eval { $self->_process };
-            exit 0;
-        }
-        exit 0;
-    }
-    waitpid($pid, 0);
-}
-
-sub _process {
-    my $self = shift;
     my $out = path($self->cache_dir, $self->filename . '.csv');
     my $file = path($out . '-part');
-    if (!$file->exists) {
-        $self->generate_csv($file->openw_utf8);
-        $file->move($out);
+    return if $file->exists;
+    $file->touch; # So status page shows it even if process takes short while to spin up
+
+    my $cmd = FixMyStreet->path_to('bin/csv-export');
+    $cmd .= ' --cobrand ' . $self->cobrand->moniker;
+    $cmd .= " --out $out";
+    foreach (qw(type category state start_date end_date)) {
+        $cmd .= " --$_ " . $self->$_ if $self->$_;
     }
+    foreach (qw(body user)) {
+        $cmd .= " --$_ " . $self->$_->id if $self->$_;
+    }
+    $cmd .= " --wards " . join(',', @{$self->wards}) if @{$self->wards};
+    $cmd .= ' &' unless FixMyStreet->test_mode;
+
+    system($cmd);
 }
 
 # Outputs relevant CSV HTTP headers, and then streams the CSV
