@@ -181,6 +181,10 @@ sub open311_munge_update_params {
         $params->{'attribute[raise_defect]'} = 1;
         $params->{'attribute[easting]'} = $e;
         $params->{'attribute[northing]'} = $n;
+
+        foreach (qw(defect_item_category defect_item_type defect_item_detail defect_location_description)) {
+            $params->{"attribute[$_]"} = $p->get_extra_metadata($_);
+        }
     }
 }
 
@@ -195,6 +199,16 @@ sub should_skip_sending_update {
     return 1 if !$customer_ref && $diff > 60*60*24;
     return 'WAIT' if !$customer_ref;
     return 0;
+}
+
+
+sub report_inspect_update_extra {
+    my ( $self, $problem ) = @_;
+
+    foreach (qw(defect_item_category defect_item_type defect_item_detail defect_location_description)) {
+        my $value = $self->{c}->get_param($_);
+        $problem->set_extra_metadata($_ => $value) if $value;
+    }
 }
 
 sub on_map_default_status { return 'open'; }

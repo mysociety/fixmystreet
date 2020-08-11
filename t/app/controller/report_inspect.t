@@ -920,10 +920,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ button => 'save', with_fields => {
             public_update => "This is a public update.", include_update => "1",
             state => 'action scheduled', raise_defect => 1,
+            defect_item_category => 'Kerbing',
         } });
         $report2->discard_changes;
         is $report2->get_extra_metadata('inspected'), 1, 'report marked as inspected';
         $mech->get_ok("/report/$report2_id");
+        $mech->content_like(qr/Defect category<\/dt>\s*<dd>Kerbing/);
         my $meta = $mech->extract_update_metas;
         like $meta->[0], qr/State changed to: Action scheduled/, 'First update mentions action scheduled';
         like $meta->[1], qr/Posted by .*defect raised/, 'Update mentions defect raised';

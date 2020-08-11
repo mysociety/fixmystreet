@@ -1,11 +1,79 @@
-[% IF permissions.report_instruct AND NOT problem.get_extra_metadata('inspected') %]
+[% IF permissions.report_instruct %]
+
+[% IF problem.get_extra_metadata('inspected') AND NOT errors %]
+
+<dl>
+    <dt>Defect category</dt>
+    <dd>[% problem.get_extra_metadata('defect_item_category') %]</dd>
+
+    <dt>Defect type</dt>
+    <dd>[% problem.get_extra_metadata('defect_item_type') %]</dd>
+
+    <dt>Defect detail</dt>
+    <dd>[% problem.get_extra_metadata('defect_item_detail') %]</dd>
+
+    <dt>Location description</dt>
+    <dd>[% problem.get_extra_metadata('defect_location_description') %]</dd>
+</dl>
+
+[% ELSE %]
+
 <div id="js-inspect-action-scheduled" class="[% "hidden" UNLESS problem.state == 'action scheduled' %]">
+
   <p>[% loc('Do you want to automatically raise a defect?') %]</p>
   <p class="segmented-control segmented-control--radio">
-      <input type="radio" name="raise_defect" id="raise_defect_yes" value="1">
+      <input type="radio" name="raise_defect" id="raise_defect_yes" value="1" data-show=".js-inspect-defect-yes">
       <label class="btn" for="raise_defect_yes">[% loc('Yes') %]</label>
-      <input type="radio" name="raise_defect" id="raise_defect_no" value="0">
+      <input type="radio" name="raise_defect" id="raise_defect_no" value="0" data-hide=".js-inspect-defect-yes">
       <label class="btn" for="raise_defect_no">[% loc('No') %]</label>
   </p>
+
+    <div class="js-inspect-defect-yes hidden-js">
+
+        <p>Please fill in the below:</p>
+
+        <label for="defect_item_category">Defect category</label>
+        <select id="defect_item_category" name="defect_item_category" class="form-control" required>
+            <option value="">-- Pick a category --</option>
+            <option data-show=".defect-non-kerb-options" data-hide=".defect-kerb-options">Minor Carriageway</option>
+            <option data-show=".defect-non-kerb-options" data-hide=".defect-kerb-options">Footway/ Cycleway</option>
+            <option data-show=".defect-kerb-options" data-hide=".defect-non-kerb-options">Kerbing</option>
+        </select>
+
+        <label for="defect_item_type">Defect type</label>
+        <select id="defect_item_type" name="defect_item_type" class="form-control" required>
+            <option value="">-- Pick a type --</option>
+            <optgroup class="defect-non-kerb-options" label="Minor Carriageway/ Footway/ Cycleway">
+                <option>Sweep &amp; Fill</option>
+            </optgroup>
+            <optgroup class="defect-kerb-options" label="Kerbing">
+                <option>Damaged</option>
+                <option>Loose</option>
+                <option>Misaligned Single Units or Uneven Run of Units</option>
+                <option>Missing</option>
+            </optgroup>
+        </select>
+
+        <label for="defect_item_detail">Defect detail</label>
+        <select id="defect_item_detail" name="defect_item_detail" class="form-control" required>
+            <option value="">-- Pick a detail --</option>
+            <optgroup class="defect-non-kerb-options" label="Minor Carriageway/ Footway/ Cycleway">
+                <option>Pothole Sweep &amp; Fill 0-1m&sup2;</option>
+                <option>Pothole Cluster Sweep &amp; Fill 1-2m&sup2;</option>
+            </optgroup>
+            <optgroup class="defect-kerb-options" label="Kerbing">
+                <option>1 kerb unit or 1 linear m</option>
+                <option>Greater than 1 kerb unit or 1 linear m</option>
+            </optgroup>
+        </select>
+
+        <label for="defect_location_description">Location description</label>
+        <textarea rows="2" id="defect_location_description" name="defect_location_description" class="form-control"></textarea>
+
+    </div>
+
 </div>
+
+[% END %]
+
 [% END %]
