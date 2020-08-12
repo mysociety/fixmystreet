@@ -120,6 +120,9 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         if (!fixmystreet.map) {
             return;
         }
+        if (!this.getVisibility()) {
+          return;
+        }
         var feature = fixmystreet.assets.selectedFeature();
         if (feature) {
             this.setAttributeFields(feature);
