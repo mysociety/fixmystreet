@@ -1330,8 +1330,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         // If we are looking at an individual report, and the report was
         // ajaxed into the DOM from the all reports page, then clicking
         // the map background should take us back to the all reports list.
-        if ($('.js-back-to-report-list').length) {
-            $('.js-back-to-report-list').trigger('click');
+        var asset_button_clicked = $('.btn--change-asset').hasClass('asset-spot');
+        if (asset_button_clicked) {
+            return true;
+        }
+        var back_link = $('.js-back-to-report-list');
+        if (back_link.length) {
+            back_link.trigger('click');
             return true;
         }
 
