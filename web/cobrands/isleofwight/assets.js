@@ -33,6 +33,7 @@ var pin_prefix = fixmystreet.pin_prefix || document.getElementById('js-map-data'
 
 var labeled_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
+  'hover': fixmystreet.assets.style_default_hover,
   'select': fixmystreet.assets.construct_named_select_style("${asset_id}")
 });
 

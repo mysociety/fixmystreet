@@ -129,6 +129,7 @@ select_style.createLiterals = function() {
 
 var streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
+  'hover': fixmystreet.assets.style_default_hover,
   'select': select_style
 });
 
