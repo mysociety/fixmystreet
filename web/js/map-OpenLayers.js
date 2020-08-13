@@ -290,9 +290,12 @@ $.extend(fixmystreet.utils, {
       // pin_moved_callback is called with a new EPSG:4326 OpenLayers.LonLat if
       // the user drags the pin and confirms its new location.
       admin_drag: function(pin_moved_callback, confirm_change) {
+          if (fixmystreet.maps.admin_drag_control) {
+              return;
+          }
           confirm_change = confirm_change || false;
           var original_lonlat;
-          var drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
+          var drag = fixmystreet.maps.admin_drag_control = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
               onStart: function(feature, e) {
                   // Keep track of where the feature started, so we can put it
                   // back if the user cancels the operation.
