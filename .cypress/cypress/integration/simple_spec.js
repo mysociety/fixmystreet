@@ -47,7 +47,7 @@ describe('Leaving updates', function() {
         cy.route('/report/*').as('show-report');
         cy.route('/reports/*').as('show-all');
         cy.route('/mapit/area/*').as('get-geometry');
-        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6');
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
         // force to hopefully work around apparent Cypress SVG issue
         cy.get('image[title="Lights out in tunnel"]:last').click({force: true});
         cy.wait('@show-report');

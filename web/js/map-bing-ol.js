@@ -66,7 +66,7 @@ OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
             maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),
-            numZoomLevels: 19,
+            numZoomLevels: 20,
             sphericalMercator: true,
             buffer: 0
         }, options);

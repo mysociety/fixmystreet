@@ -8,6 +8,7 @@ use base 'FixMyStreet::Map::FMS';
 use strict;
 
 use constant ZOOM_LEVELS => 7;
+use constant DEFAULT_ZOOM => 4;
 
 sub map_template { 'fms' }
 

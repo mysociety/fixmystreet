@@ -9,6 +9,8 @@ use base 'FixMyStreet::Map::OSM';
 
 use strict;
 
+use constant ZOOM_LEVELS => 6;
+
 sub map_type { '' }
 
 sub map_javascript { [

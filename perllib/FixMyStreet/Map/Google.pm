@@ -10,8 +10,9 @@ use strict;
 use FixMyStreet::Gaze;
 use Utils;
 
-use constant ZOOM_LEVELS    => 6;
+use constant ZOOM_LEVELS    => 7;
 use constant MIN_ZOOM_LEVEL => 13;
+use constant DEFAULT_ZOOM   => 3;
 
 sub map_javascript { [
     "http://maps.googleapis.com/maps/api/js?sensor=false",
@@ -28,16 +29,16 @@ sub display_map {
 
     my $numZoomLevels = ZOOM_LEVELS;
     my $zoomOffset = MIN_ZOOM_LEVEL;
-    if ($params{any_zoom}) {
-        $numZoomLevels = 19;
-        $zoomOffset = 0;
-    }
 
     # Adjust zoom level dependent upon population density
-    my $dist = $c->stash->{distance}
-        || FixMyStreet::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude} );
-    my $default_zoom = $c->cobrand->default_map_zoom() ? $c->cobrand->default_map_zoom() : $numZoomLevels - 4;
-    $default_zoom = $numZoomLevels - 3 if $dist < 10;
+    my $default_zoom;
+    if (my $cobrand_default_zoom = $c->cobrand->default_map_zoom) {
+        $default_zoom = $cobrand_default_zoom;
+    } else {
+        my $dist = $c->stash->{distance}
+            || FixMyStreet::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude} );
+        $default_zoom = $dist < 10 ? $self->DEFAULT_ZOOM : $self->DEFAULT_ZOOM - 1;
+    }
 
     # Map centre may be overridden in the query string
     $params{latitude} = Utils::truncate_coordinate($c->get_param('lat') + 0)
@@ -45,6 +46,12 @@ sub display_map {
     $params{longitude} = Utils::truncate_coordinate($c->get_param('lon') + 0)
         if defined $c->get_param('lon');
     $params{zoomToBounds} = $params{any_zoom} && !defined $c->get_param('zoom');
+
+    if ($params{any_zoom}) {
+        $numZoomLevels += $zoomOffset;
+        $default_zoom += $zoomOffset;
+        $zoomOffset = 0;
+    }
 
     my $zoom = defined $c->get_param('zoom') ? $c->get_param('zoom') + 0 : $default_zoom;
     $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;

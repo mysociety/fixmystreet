@@ -11,8 +11,9 @@ use Math::Trig;
 use FixMyStreet::Gaze;
 use Utils;
 
-use constant ZOOM_LEVELS    => 6;
+use constant ZOOM_LEVELS    => 7;
 use constant MIN_ZOOM_LEVEL => 13;
+use constant DEFAULT_ZOOM   => 3;
 
 sub map_type { 'OpenLayers.Layer.OSM.Mapnik' }
 
@@ -76,10 +77,6 @@ sub generate_map_data {
 
     my $numZoomLevels = $self->ZOOM_LEVELS;
     my $zoomOffset = $self->MIN_ZOOM_LEVEL;
-    if ($params{any_zoom}) {
-        $numZoomLevels = 19;
-        $zoomOffset = 0;
-    }
 
     # Adjust zoom level dependent upon population density if cobrand hasn't
     # specified a default zoom.
@@ -89,7 +86,13 @@ sub generate_map_data {
     } else {
         my $dist = $data->{distance}
             || FixMyStreet::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude} );
-        $default_zoom = $dist < 10 ? $numZoomLevels - 3 : $numZoomLevels - 4;
+        $default_zoom = $dist < 10 ? $self->DEFAULT_ZOOM : $self->DEFAULT_ZOOM - 1;
+    }
+
+    if ($params{any_zoom}) {
+        $numZoomLevels += $zoomOffset;
+        $default_zoom += $zoomOffset;
+        $zoomOffset = 0;
     }
 
     my $zoom = $data->{zoom} || $default_zoom;

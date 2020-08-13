@@ -156,7 +156,7 @@ fixmystreet.maps = {};
         };
         if (!fixmystreet.zoomToBounds) {
             map_args.minZoom = 13;
-            map_args.maxZoom = 18;
+            map_args.maxZoom = 19;
         }
         fixmystreet.map = new google.maps.Map(document.getElementById("map"), map_args);
 

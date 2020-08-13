@@ -413,7 +413,7 @@ subtest 'check map zoom level customisation' => sub {
         MAP_TYPE => 'OSM',
     }, sub {
         $mech->get('/around?latitude=51.754926&longitude=-1.256179');
-        $mech->content_contains('data-numZoomLevels=6');
+        $mech->content_contains('data-numZoomLevels=7');
         $mech->content_contains('data-zoomOffset=13');
     };
 

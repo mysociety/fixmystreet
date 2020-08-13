@@ -112,7 +112,7 @@ describe('Around page filtering and push state', function() {
         cy.route('/report/*').as('show-report');
         cy.route('/reports/*').as('show-all');
         cy.route('/mapit/area/*').as('get-geometry');
-        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6');
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
         // get the second image which is the pin, first is the shadow
         cy.get('image[title="Lights out in tunnel"]:last').invoke('attr', 'xlink:href').should('contain', 'small');
         // force to hopefully work around apparent Cypress SVG issue

@@ -13,7 +13,7 @@ is_deeply $c->stash->{map}, {
     type => 'google',
     zoom => 15,
     zoomOffset => 0,
-    numZoomLevels => 19,
+    numZoomLevels => 20,
     zoom_act => 15,
 };
 

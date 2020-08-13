@@ -9,6 +9,8 @@ use base 'FixMyStreet::Map::Bing';
 
 use strict;
 
+use constant ZOOM_LEVELS => 6;
+
 sub map_template { 'fms' }
 
 sub map_javascript { [
