@@ -52,40 +52,6 @@ OpenLayers.Layer.OSM.Mapnik = OpenLayers.Class(OpenLayers.Layer.OSM, {
 });
 
 /**
- * Class: OpenLayers.Layer.OSM.MapQuestOpen
- *
- * Inherits from:
- *  - <OpenLayers.Layer.OSM>
- */
-OpenLayers.Layer.OSM.MapQuestOpen = OpenLayers.Class(OpenLayers.Layer.OSM, {
-    /**
-     * Constructor: OpenLayers.Layer.OSM.MapQuestOpen
-     *
-     * Parameters:
-     * name - {String}
-     * options - {Object} Hashtable of extra options to tag onto the layer
-     */
-    initialize: function(name, options) {
-        var url = [
-            "https://otile1-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "https://otile2-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "https://otile3-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "https://otile4-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
-        ];
-        options = OpenLayers.Util.extend({
-            /* Below line added to OSM's file in order to allow minimum zoom level */
-            maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),
-            numZoomLevels: 19,
-            buffer: 0
-        }, options);
-        var newArguments = [name, url, options];
-        OpenLayers.Layer.OSM.prototype.initialize.apply(this, newArguments);
-    },
-
-    CLASS_NAME: "OpenLayers.Layer.OSM.MapQuestOpen"
-});
-
-/**
  * Class: OpenLayers.Layer.OSM.CycleMap
  *
  * Inherits from:
