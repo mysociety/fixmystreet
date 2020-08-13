@@ -286,9 +286,15 @@ fixmystreet.staff_set_up = {
             var v = get_value_and_group('#category');
             $('#inspect_form_category').val(v.value);
             $('#inspect_category_group').val(v.group);
+            if ($('html').hasClass('mobile')) {
+                $('#toggle-fullscreen').trigger('click');
+                $('html, body').animate({ scrollTop: 0 }, 500);
+                $('#map_box').append('<div id="change_asset_mobile"/>');
+            }
         } else {
             $('#inspect_form_category').val('');
             $('#inspect_category_group').val('');
+            $('#change_asset_mobile').remove();
         }
         $(fixmystreet).trigger('inspect_form:asset_change');
     });

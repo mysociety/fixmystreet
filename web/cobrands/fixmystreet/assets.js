@@ -134,6 +134,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
             return;
         }
         // Set the extra fields to the value of the selected feature
+        var $mobile_display = $('#change_asset_mobile').text('');
         $.each(this.fixmystreet.attributes, function(field_name, attribute_name) {
             var $field = $("#form_" + field_name);
             var $inspect_fields = $('[id^=category_][id$=form_' + field_name + ']');
@@ -145,6 +146,7 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
             }
             $field.val(value);
             $inspect_fields.val(value);
+            $mobile_display.append(field_name + ': ' + value + '<br>');
         });
     },
 
