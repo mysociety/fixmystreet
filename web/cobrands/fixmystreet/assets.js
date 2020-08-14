@@ -107,7 +107,13 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         if (!this.inRange && this.resolutions) {
             var firstVisibleResolution = this.resolutions[0];
             var zoomLevel = fixmystreet.map.getZoomForResolution(firstVisibleResolution);
-            fixmystreet.map.zoomTo(zoomLevel);
+            if (window.selected_problem_id) {
+                var feature = fixmystreet.maps.get_marker_by_id(window.selected_problem_id);
+                var center = feature.geometry.getBounds().getCenterLonLat();
+                fixmystreet.map.setCenter(center, zoomLevel);
+            } else {
+                fixmystreet.map.zoomTo(zoomLevel);
+            }
         }
     },
 
