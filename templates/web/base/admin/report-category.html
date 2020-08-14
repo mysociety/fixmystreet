@@ -1,11 +1,8 @@
-[%~ IF NOT select_name %]
-    [%~ select_name = 'category' %]
-[%~ END %]
 [%~ BLOCK category_option ~%]
 <option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display | html %]</option>
 [%~ END ~%]
 
-<select class="form-control" name="[% select_name %]" id="[% select_name %]">
+<select class="form-control" name="category" id="category">
   [% SET category_safe = mark_safe(problem.category) ~%]
   [% IF NOT problem.category OR NOT categories_hash.$category_safe %]
     <optgroup label="[% loc('Existing category') %]">

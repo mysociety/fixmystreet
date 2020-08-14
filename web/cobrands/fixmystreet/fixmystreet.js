@@ -892,9 +892,15 @@ $.extend(fixmystreet.set_up, {
             .prependTo('#sub_map_links');
     }
 
-    $('#toggle-fullscreen').off('click').on('click', function() {
+    $('#toggle-fullscreen').off('click').on('click', function(e) {
+      e.preventDefault();
       var btnClass = $('html').hasClass('map-fullscreen') ? 'expand' : 'compress';
       var text = $(this).data(btnClass + '-text');
+
+      // Inspector form asset changing
+      if ($('html').hasClass('map-fullscreen') && $('.btn--change-asset').hasClass('asset-spot')) {
+          $('.btn--change-asset').click();
+      }
 
       $('html').toggleClass('map-fullscreen only-map');
       $(this).html(text).attr('class', btnClass);
@@ -1547,6 +1553,9 @@ fixmystreet.display = {
         var $reportPage = $(html),
             $twoColReport = $reportPage.find('.two_column_sidebar'),
             $sideReport = $reportPage.find('#side-report');
+
+        // Set this from report page in case change asset used and therefore relevant() function
+        fixmystreet.bodies = fixmystreet.utils.csv_to_array($reportPage.find('#js-map-data').data('bodies'))[0];
 
         if ($sideReport.length) {
             $('#side').hide(); // Hide the list of reports

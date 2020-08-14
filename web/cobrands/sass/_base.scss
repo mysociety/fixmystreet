@@ -1972,6 +1972,15 @@ html.js #map .noscript {
   }
 }
 
+#change_asset_mobile {
+    position: absolute;
+    bottom: 3em;
+    #{$left}: 0.25em;
+    padding: 0.25em;
+    color: #fff;
+    background-color: black;
+}
+
 .olControlAttribution {
     bottom: 3.25em !important;
     #{$right}: 0.25em !important;

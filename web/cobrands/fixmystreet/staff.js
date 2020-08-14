@@ -189,6 +189,7 @@ fixmystreet.staff_set_up = {
         populateSelect($priorities, priorities_data, 'priorities_type_format');
         updateTemplates({'category': category});
         $priorities.val(curr_pri);
+        update_change_asset_button();
     });
 
     function state_change(state) {
@@ -246,20 +247,57 @@ fixmystreet.staff_set_up = {
         // triage pages may not show geolocation button
         if (el) {
             fixmystreet.geolocate(el, function(pos) {
-                var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
-                var bng = latlon.clone().transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
-                );
-                $("#problem_northing").text(bng.lat.toFixed(1));
-                $("#problem_easting").text(bng.lon.toFixed(1));
-                $("#problem_latitude").text(latlon.lat.toFixed(6));
-                $("#problem_longitude").text(latlon.lon.toFixed(6));
-                $inspect_form.find("input[name=latitude]").val(latlon.lat);
-                $inspect_form.find("input[name=longitude]").val(latlon.lon);
+                var lonlat = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
+                fixmystreet.maps.update_pin_input_fields(lonlat);
             });
         }
     }
+
+    function get_value_and_group(slr) {
+        var elt = $(slr)[0];
+        var group = $(elt.options[elt.selectedIndex]).closest('optgroup').prop('label');
+        return { 'value': $(elt).val(), 'group': group || '' };
+    }
+
+    function update_change_asset_button() {
+        var category = get_value_and_group('#category'); // The inspect form category dropdown only
+        var found = false;
+        if (fixmystreet.assets) {
+            for (var i = 0; i < fixmystreet.assets.layers.length; i++) {
+                var layer = fixmystreet.assets.layers[i];
+                if ((layer.fixmystreet.asset_category || layer.fixmystreet.asset_group) && layer.relevant(category.value, category.group)) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (found) {
+            $('.btn--change-asset').show();
+        } else {
+            $('.btn--change-asset').hide();
+        }
+    }
+    update_change_asset_button();
+
+    $('.btn--change-asset').on('click', function(e) {
+        e.preventDefault();
+        $(this).toggleClass('asset-spot');
+        if ($(this).hasClass('asset-spot')) {
+            var v = get_value_and_group('#category');
+            $('#inspect_form_category').val(v.value);
+            $('#inspect_category_group').val(v.group);
+            if ($('html').hasClass('mobile')) {
+                $('#toggle-fullscreen').trigger('click');
+                $('html, body').animate({ scrollTop: 0 }, 500);
+                $('#map_box').append('<div id="change_asset_mobile"/>');
+            }
+        } else {
+            $('#inspect_form_category').val('');
+            $('#inspect_category_group').val('');
+            $('#change_asset_mobile').remove();
+        }
+        $(fixmystreet).trigger('inspect_form:asset_change');
+    });
 
     // Make the "Provide an update" form toggleable, hidden by default.
     // (Inspectors will normally just use the #public_update box instead).

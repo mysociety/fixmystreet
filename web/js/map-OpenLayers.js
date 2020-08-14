@@ -132,18 +132,30 @@ $.extend(fixmystreet.utils, {
             new OpenLayers.Projection("EPSG:4326")
         );
 
-        var lat = transformedLonlat.lat.toFixed(6);
-        var lon = transformedLonlat.lon.toFixed(6);
-
-        document.getElementById('fixmystreet.latitude').value = lat;
-        document.getElementById('fixmystreet.longitude').value = lon;
-
+        fixmystreet.maps.update_pin_input_fields(transformedLonlat);
         $(fixmystreet).trigger('maps:update_pin', [ lonlat ]);
 
+        var lat = transformedLonlat.lat.toFixed(6);
+        var lon = transformedLonlat.lon.toFixed(6);
         return {
             'url': { 'lon': lon, 'lat': lat },
             'state': { 'lon': lonlat.lon, 'lat': lonlat.lat }
         };
+      },
+
+      update_pin_input_fields: function(lonlat) {
+        var bng = lonlat.clone().transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
+        );
+        var lat = lonlat.lat.toFixed(6);
+        var lon = lonlat.lon.toFixed(6);
+        $("#problem_northing").text(bng.lat.toFixed(1));
+        $("#problem_easting").text(bng.lon.toFixed(1));
+        $("#problem_latitude").text(lat);
+        $("#problem_longitude").text(lon);
+        $("input[name=latitude]").val(lat);
+        $("input[name=longitude]").val(lon);
       },
 
       display_around: function() {
@@ -278,9 +290,12 @@ $.extend(fixmystreet.utils, {
       // pin_moved_callback is called with a new EPSG:4326 OpenLayers.LonLat if
       // the user drags the pin and confirms its new location.
       admin_drag: function(pin_moved_callback, confirm_change) {
+          if (fixmystreet.maps.admin_drag_control) {
+              return;
+          }
           confirm_change = confirm_change || false;
           var original_lonlat;
-          var drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
+          var drag = fixmystreet.maps.admin_drag_control = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
               onStart: function(feature, e) {
                   // Keep track of where the feature started, so we can put it
                   // back if the user cancels the operation.
@@ -627,17 +642,9 @@ $.extend(fixmystreet.utils, {
             // Not actually on the inspect report page
             return;
         }
-        fixmystreet.maps.admin_drag(function(lonlat) {
-            var bng = lonlat.clone().transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
-            );
-            $("#problem_northing").text(bng.y.toFixed(1));
-            $("#problem_easting").text(bng.x.toFixed(1));
-            $("#problem_latitude").text(lonlat.y.toFixed(6));
-            $("#problem_longitude").text(lonlat.x.toFixed(6));
-            $("input[name=latitude]").val(lonlat.y.toFixed(6));
-            $("input[name=longitude]").val(lonlat.x.toFixed(6));
+        fixmystreet.maps.admin_drag(function(geom) {
+            var lonlat = new OpenLayers.LonLat(geom.x, geom.y);
+            fixmystreet.maps.update_pin_input_fields(lonlat);
         },
         false);
     }
@@ -1323,8 +1330,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         // If we are looking at an individual report, and the report was
         // ajaxed into the DOM from the all reports page, then clicking
         // the map background should take us back to the all reports list.
-        if ($('.js-back-to-report-list').length) {
-            $('.js-back-to-report-list').trigger('click');
+        var asset_button_clicked = $('.btn--change-asset').hasClass('asset-spot');
+        if (asset_button_clicked) {
+            return true;
+        }
+        var back_link = $('.js-back-to-report-list');
+        if (back_link.length) {
+            back_link.trigger('click');
             return true;
         }
 
