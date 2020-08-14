@@ -770,8 +770,8 @@ sub waste_fetch_events {
         my $event = $cfg->{echo}->GetEvent($report->external_id);
         my $request = $self->construct_waste_open311_update($cfg, $event) or next;
 
-        return if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
-        return unless $self->waste_check_last_update(
+        next if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
+        next unless $self->waste_check_last_update(
             $cfg, $report, $request->{status}, $request->{external_status_code});
 
         my $last_updated = construct_bin_date($event->{LastUpdatedDate});

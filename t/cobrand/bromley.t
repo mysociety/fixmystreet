@@ -378,10 +378,12 @@ subtest 'updating of waste reports' => sub {
             waste => { bromley => 1 }
         },
     }, sub {
-        ($report) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
+        @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
             category => 'Report missed collection',
             cobrand_data => 'waste',
         });
+        $reports[1]->update({ external_id => 'something-else' }); # To test loop
+        $report = $reports[0];
         my $cobrand = FixMyStreet::Cobrand::Bromley->new;
 
         $report->update({ external_id => 'waste-15001-' });
@@ -416,6 +418,7 @@ subtest 'updating of waste reports' => sub {
         is $report->comments->count, 2, 'A new update';
         is $report->state, 'fixed - council', 'Changed to fixed';
 
+        $reports[1]->update({ state => 'fixed - council' });
         stdout_like {
             $cobrand->waste_fetch_events(1);
         } qr/^$/, 'No open reports';
