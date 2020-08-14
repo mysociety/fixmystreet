@@ -88,7 +88,8 @@ has filename => ( is => 'rw', isa => Str, lazy => 1, default => sub {
         $self->on_updates ? ('updates') : (),
         map {
             my $value = $where{$_};
-            (defined $value and length $value) ? ($_, $value) : ()
+            (my $nosp = $value) =~ s/ /-/g;
+            (defined $value and length $value) ? ($_, $nosp) : ()
         } sort keys %where
 });
 
@@ -328,14 +329,14 @@ sub kick_off_process {
 
     my $cmd = FixMyStreet->path_to('bin/csv-export');
     $cmd .= ' --cobrand ' . $self->cobrand->moniker;
-    $cmd .= " --out $out";
+    $cmd .= " --out \Q$out\E";
     foreach (qw(type category state start_date end_date)) {
-        $cmd .= " --$_ " . $self->$_ if $self->$_;
+        $cmd .= " --$_ " . quotemeta($self->$_) if $self->$_;
     }
     foreach (qw(body user)) {
         $cmd .= " --$_ " . $self->$_->id if $self->$_;
     }
-    $cmd .= " --wards " . join(',', @{$self->wards}) if @{$self->wards};
+    $cmd .= " --wards " . join(',', map { quotemeta } @{$self->wards}) if @{$self->wards};
     $cmd .= ' &' unless FixMyStreet->test_mode;
 
     system($cmd);
