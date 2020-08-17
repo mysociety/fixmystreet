@@ -386,7 +386,7 @@ subtest 'updating of waste reports' => sub {
         $report = $reports[0];
         my $cobrand = FixMyStreet::Cobrand::Bromley->new;
 
-        $report->update({ external_id => 'waste-15001-' });
+        $report->update({ external_id => 'waste-15001-', extra => { _fields => [ { name => 'uprn', value => '12345' } ] } });
         stdout_like {
             $cobrand->waste_fetch_events(1);
         } qr/Fetching data for report/;
@@ -417,6 +417,9 @@ subtest 'updating of waste reports' => sub {
         $report->discard_changes;
         is $report->comments->count, 2, 'A new update';
         is $report->state, 'fixed - council', 'Changed to fixed';
+
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains( 'You can <a href="/waste/uprn/12345">see your bin collections</a>' );
 
         $reports[1]->update({ state => 'fixed - council' });
         stdout_like {
