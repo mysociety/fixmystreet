@@ -414,7 +414,7 @@ sub updates_disallowed {
     # Only open waste reports
     if (my $contact = $problem->contact) {
         my $waste = grep { $_ eq 'Waste' } @{$problem->contact->groups};
-        return 1 if $waste && ($problem->is_fixed || $problem->is_closed);
+        return 'waste' if $waste && ($problem->is_fixed || $problem->is_closed);
     }
 
     return $self->next::method(@_);
