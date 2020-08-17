@@ -94,6 +94,8 @@ FixMyStreet::override_config {
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Your report to Bromley Council has been logged/;
+
+        is $user->alerts->count, 1;
     };
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
