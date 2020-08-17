@@ -475,6 +475,15 @@ sub add_report : Private {
     my $report = $c->stash->{report};
     $report->confirm;
     $report->update;
+
+    $c->model('DB::Alert')->find_or_create({
+        user => $report->user,
+        alert_type => 'new_updates',
+        parameter => $report->id,
+        cobrand => $report->cobrand,
+        lang => $report->lang,
+    })->confirm;
+
     return 1;
 }
 
