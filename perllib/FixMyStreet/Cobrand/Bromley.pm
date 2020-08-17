@@ -326,6 +326,8 @@ sub add_admin_subcategories {
     my $c = $self->{c};
 
     my $user = $c->stash->{user};
+    return unless $user; # e.g. admin templates, not user
+
     my @subcategories = @{$user->get_extra_metadata('subcategories') || []};
     my %active_contacts = map { $_ => 1 } @subcategories;
 
