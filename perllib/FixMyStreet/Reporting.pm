@@ -88,7 +88,7 @@ has filename => ( is => 'rw', isa => Str, lazy => 1, default => sub {
         $self->on_updates ? ('updates') : (),
         map {
             my $value = $where{$_};
-            (my $nosp = $value) =~ s/ /-/g;
+            (my $nosp = $value || '') =~ s/ /-/g;
             (defined $value and length $value) ? ($_, $nosp) : ()
         } sort keys %where
 });
