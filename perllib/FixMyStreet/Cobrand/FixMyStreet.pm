@@ -347,4 +347,13 @@ sub manifest {
     };
 }
 
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    # Make sure TfL reports are marked safety critical
+    $self->SUPER::report_new_munge_before_insert($report);
+
+    FixMyStreet::Cobrand::Buckinghamshire::report_new_munge_before_insert($self, $report);
+}
+
 1;

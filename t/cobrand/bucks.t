@@ -130,6 +130,24 @@ subtest 'Flytipping not on a road gets recategorised' => sub {
     is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
 };
 
+subtest 'Flytipping not on a road on .com gets recategorised' => sub {
+    ok $mech->host("www.fixmystreet.com"), "change host to www";
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test Report",
+            detail => 'Test report details.',
+            category => 'Flytipping',
+            'road-placement' => 'off-road',
+        }
+    }, "submit details");
+    $mech->content_contains('on its way to the council right now');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
+    ok $mech->host("buckinghamshire.fixmystreet.com"), "change host to bucks";
+};
+
 subtest 'Flytipping not on a road going to HE does not get recategorised' => sub {
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping');
     $mech->submit_form_ok({
@@ -151,7 +169,7 @@ subtest 'Flytipping not on a road going to HE does not get recategorised' => sub
 
 subtest 'Ex-district reports are sent to correct emails' => sub {
     FixMyStreet::Script::Reports::send();
-    $mech->email_count_is(2); # one for council, one confirmation for user
+    $mech->email_count_is(4); # (one for council, one confirmation for user) x 2
     my @email = $mech->get_email;
     is $email[0]->header('To'), 'Buckinghamshire <flytipping@chiltern>';
 };
@@ -245,7 +263,7 @@ subtest 'extra CSV columns are present' => sub {
     $mech->get_ok('/dashboard?export=1');
 
     my @rows = $mech->content_as_csv;
-    is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
+    is scalar @rows, 6, '1 (header) + 4 (reports) = 6 lines';
     is scalar @{$rows[0]}, 21, '21 columns present';
 
     is_deeply $rows[0],
