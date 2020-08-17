@@ -503,7 +503,7 @@ function layer_visibilitychanged() {
         }
         return;
     } else if (!this.getVisibility()) {
-        asset_unselected.call(this);
+        this.get_select_control().unselectAll();
         this.asset_not_found(); // as trigger won't call on non-visible layers
     }
 
