@@ -337,7 +337,7 @@ sub add_admin_subcategories {
         foreach (@{$subcats{$_->{id}}}) {
             push @new_contacts, {
                 id => $_->{key},
-                category => ("&nbsp;" x 4) . $_->{name},
+                category => (" " x 4) . $_->{name}, # nbsp
                 active => $active_contacts{$_->{key}},
             };
         }
