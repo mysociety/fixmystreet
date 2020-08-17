@@ -45,6 +45,7 @@
             [% IF date.format(unit.last.date) != date.format(unit.last.completed) ~%]
             , [% date.format(unit.last.completed) ~%]
             [% END ~%]
+            [% IF unit.last.resolution %], [% unit.last.resolution %][% END ~%]
         )[% END %]
       [% ELSE %]
         <i>None</i>

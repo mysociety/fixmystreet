@@ -574,6 +574,7 @@ sub bin_services_for_address {
 
             my $row = $task_ref_to_row{$ref};
             $row->{last}{completed} = $completed;
+            $row->{last}{resolution} = $resolution;
             $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
             if (!$completed && $row->{last}{date}->ymd eq $now->ymd) {
                 $row->{report_allowed} = 0;

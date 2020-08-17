@@ -286,7 +286,7 @@ FixMyStreet::override_config {
     subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/uprn/12345');
-        $mech->content_contains('completed at 10:00am');
+        $mech->content_contains('completed at 10:00am, Wrong Bin Out');
         $mech->content_lacks('Report a paper &amp; cardboard collection');
         $mech->content_contains('Report a refuse collection');
         set_fixed_time('2020-05-28T12:00:00Z');
