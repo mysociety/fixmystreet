@@ -41,3 +41,22 @@
 #pc-hint {
     color: #444;
 }
+
+/* This together with resp-iframe below gives us a responsive
+   iframe for the video on the councils page that keeps the
+   correct width/height ratio when the page is resized.
+*/
+.resp-iframe-container {
+    position: relative;
+    overflow: hidden;
+    padding-top: 56.25%;
+}
+
+.resp-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
