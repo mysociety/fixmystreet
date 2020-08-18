@@ -493,6 +493,8 @@ function _update_message(message, c) {
     }
 }
 
+var lastVisible = 0;
+
 function layer_visibilitychanged() {
     if (this.fixmystreet.road) {
         if (!this.getVisibility()) {
@@ -527,12 +529,13 @@ function layer_visibilitychanged() {
             visible++;
         }
     }
-    if (visible === 2 || visible === 0) {
-        // We're either switching WFS layers (so going 1->2->1 or 1->0->1)
-        // or switching off WFS layer (so going 1->0). Either way, we want
-        // to show the marker again.
+    if (visible === 0 || visible > lastVisible) {
+        // We're either switching WFS layers (so going 1->2->1 or 1->0->1 or
+        // even 1->2->3->2) or switching off WFS layer (so going 1->0).
+        // Whichever way, we want to show the marker again.
         fixmystreet.markers.setVisibility(true);
     }
+    lastVisible = visible;
     if (!this.fixmystreet.non_interactive) {
         this.select_nearest_asset();
     }
