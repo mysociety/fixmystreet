@@ -883,7 +883,7 @@ fixmystreet.assets = {
         if (!message) {
             message = get_asset_pick_message.call(this);
         }
-        $('.category_meta_message').html(message);
+        update_message_display.call(this, message);
     },
     named_select_action_not_found: function() {
         var message = get_asset_pick_message.call(this);
