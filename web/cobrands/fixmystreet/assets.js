@@ -399,6 +399,7 @@ function asset_selected(e) {
 
     // Keep track of selection in case layer is reloaded or hidden etc.
     selected_feature = feature.clone();
+    selected_feature.layer = feature.layer;
 
     // Hide the normal markers layer to keep things simple, but
     // move the green marker to the point of the click to stop
@@ -419,6 +420,11 @@ function asset_selected(e) {
 }
 
 function asset_unselected(e) {
+    if (selected_feature.layer !== this) {
+        // The selected feature has already changed to something in a different
+        // layer, so we don't want to mess that up by clearing it
+        return;
+    }
     fixmystreet.markers.setVisibility(true);
     selected_feature = null;
     this.clearAttributeFields();
