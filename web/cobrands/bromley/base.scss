@@ -74,6 +74,15 @@ a:active {
   color: $link-visited-color;
 }
 
+// Want main text links to be bold
+.content a {
+    font-weight: bold;
+}
+// Except in list items
+.item-list a {
+    font-weight: normal;
+}
+
 // The map page header looks a bit high for some reason
 .big-green-banner {
   top: 0;
