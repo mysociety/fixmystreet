@@ -277,7 +277,9 @@ fixmystreet.staff_set_up = {
             $('.btn--change-asset').hide();
         }
     }
-    update_change_asset_button();
+    if ( $('.btn--change-asset').length ) {
+        update_change_asset_button();
+    }
 
     $('.btn--change-asset').on('click', function(e) {
         e.preventDefault();
