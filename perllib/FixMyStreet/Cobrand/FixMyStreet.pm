@@ -304,6 +304,19 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
+sub problem_state_processed {
+    my ($self, $comment) = @_;
+
+    my $state = $comment->problem_state || '';
+    my $code = $comment->get_extra_metadata('external_status_code') || '';
+
+    my ($cfg) = $self->per_body_config('extra_state_mapping', $comment->problem);
+
+    $state = ( $cfg->{$state}->{$code} || $state ) if $cfg->{$state};
+
+    return $state;
+}
+
 sub suppress_reporter_alerts {
     my $self = shift;
     my $c = $self->{c};
