@@ -90,7 +90,11 @@ sub GetTasks {
     }
 
     return [
-        { Ref => { Value => { anyType => [ 123, 456 ] } }, CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }, Resolution => { Name => 'Wrong Bin Out' } },
+        {
+            Ref => { Value => { anyType => [ 123, 456 ] } },
+            CompletedDate => { DateTime => '2020-05-27T10:00:00Z' },
+            Resolution => { Ref => { Value => { anyType => 187 } }, Name => 'Wrong Bin Out' }
+        },
         { Ref => { Value => { anyType => [ 234, 567 ] } }, CompletedDate => undef },
         { Ref => { Value => { anyType => [ 345, 678 ] } }, State => { Name => 'Not Completed' } },
         { Ref => { Value => { anyType => [ 456, 789 ] } }, CompletedDate => undef },
