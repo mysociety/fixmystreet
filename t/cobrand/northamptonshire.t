@@ -114,6 +114,15 @@ subtest 'check further investigation state' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            extra_state_mapping => {
+                northamptonshire => {
+                    investigating => {
+                        further => 'Under further investigation'
+                    }
+                }
+            }
+        }
     }, sub {
         $mech->get_ok('/report/' . $comment->problem_id);
     };
@@ -126,6 +135,76 @@ subtest 'check further investigation state' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
         MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            extra_state_mapping => {
+                northamptonshire => {
+                    investigating => {
+                        further => 'Under further investigation'
+                    }
+                }
+            }
+        }
+    }, sub {
+        $mech->get_ok('/report/' . $comment->problem_id);
+    };
+
+    $mech->content_contains('Under further investigation');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            extra_state_mapping => {
+                northamptonshire => {
+                    fixed => {
+                        further => 'Under further investigation'
+                    }
+                },
+                fixmystreet => {
+                    'Northamptonshire County Council' => {
+                        fixed => {
+                            further => 'Under further investigation'
+                        }
+                    }
+                }
+            }
+        }
+    }, sub {
+        $mech->get_ok('/report/' . $comment->problem_id);
+    };
+
+    $mech->content_contains('Investigating');
+    $mech->content_lacks('Under further investigation');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/report/' . $comment->problem_id);
+    };
+
+    $mech->content_contains('Investigating');
+    $mech->content_lacks('Under further investigation');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            extra_state_mapping => {
+                northamptonshire => {
+                    investigating => {
+                        further => 'Under further investigation'
+                    }
+                },
+                fixmystreet => {
+                    'Northamptonshire County Council' => {
+                        investigating => {
+                            further => 'Under further investigation'
+                        }
+                    }
+                }
+            }
+        }
     }, sub {
         $mech->get_ok('/report/' . $comment->problem_id);
     };
