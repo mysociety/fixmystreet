@@ -582,6 +582,7 @@ sub bin_services_for_address {
             }
 
             my $row = $task_ref_to_row{$ref};
+            $row->{last}{state} = $state;
             $row->{last}{completed} = $completed;
             $row->{last}{resolution} = $resolution;
             $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
