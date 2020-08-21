@@ -148,11 +148,6 @@ FixMyStreet::override_config {
 
     for my $test (
         {
-            field => 'usrn',
-            value => '12345',
-            text => 'USRN',
-        },
-        {
             field => 'feature_id',
             value => '12345',
             text => 'Asset Id',
