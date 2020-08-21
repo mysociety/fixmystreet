@@ -93,7 +93,7 @@ sub GetTasks {
         {
             Ref => { Value => { anyType => [ 123, 456 ] } },
             State => { Name => 'Completed' },
-            Resolution => { Name => 'Wrong Bin Out' },
+            Resolution => { Ref => { Value => { anyType => 187 } }, Name => 'Wrong Bin Out' },
             CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
         },
         {

@@ -571,7 +571,16 @@ sub bin_services_for_address {
             my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
             my $completed = construct_bin_date($_->{CompletedDate});
             my $state = $_->{State}{Name} || '';
+
             my $resolution = $_->{Resolution}{Name} || '';
+            my $resolution_id = $_->{Resolution}{Ref}{Value}{anyType};
+            if ($resolution_id) {
+                my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
+                    'me.body_id' => $self->body->id,
+                    'me.external_status_code' => $resolution_id,
+                })->first;
+                $resolution = $template->text if $template;
+            }
 
             my $row = $task_ref_to_row{$ref};
             $row->{last}{state} = $state;
@@ -581,7 +590,7 @@ sub bin_services_for_address {
             if (!$completed && $row->{last}{date}->ymd eq $now->ymd) {
                 $row->{report_allowed} = 0;
             }
-            if ($state eq 'Not Completed' || ($state eq 'Completed' && $resolution eq 'Excess Waste')) {
+            if ($state eq 'Not Completed' || ($state eq 'Completed' && $_->{Resolution}{Name} eq 'Excess Waste')) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = 1;
             }
