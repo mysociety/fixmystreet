@@ -270,6 +270,19 @@ sub relative_url_for_report {
     return FixMyStreet->config('BASE_URL');
 }
 
+sub problem_state_processed {
+    my ($self, $comment) = @_;
+
+    my $state = $comment->problem_state || '';
+    my $code = $comment->get_extra_metadata('external_status_code') || '';
+
+    my $cfg = $self->feature('extra_state_mapping');
+
+    $state = ( $cfg->{$state}->{$code} || $state ) if $cfg->{$state};
+
+    return $state;
+}
+
 sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
