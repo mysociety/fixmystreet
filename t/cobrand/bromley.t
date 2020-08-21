@@ -290,6 +290,15 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/uprn/12345');
         $mech->content_contains('(completed at 10:00am)');
         $mech->content_contains('Wrong Bin Out');
+        FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Wrong bin',
+            text => 'We could not collect your waste as it was not correctly presented.',
+            external_status_code => 187,
+        });
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->content_contains('(completed at 10:00am)');
+        $mech->content_contains('We could not collect your waste as it was not correctly presented.');
         $mech->content_lacks('Report a paper &amp; cardboard collection');
         $mech->content_contains('Report a refuse collection');
         set_fixed_time('2020-05-28T12:00:00Z');
