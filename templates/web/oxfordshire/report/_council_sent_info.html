@@ -1,13 +1,16 @@
-[% IF problem.whensent || problem.can_display_external_id %]
-    <div class="council_info_box">
-      [% IF problem.can_display_external_id %]
-          [% reference = problem.get_extra_metadata('customer_reference') %]
-        <h3>
-          [% IF reference %]
-              [% problem.external_body %] Council ref:&nbsp;[% reference %]
-          [% END %]
-        </h3>
-      [% END %]
+[% reference = problem.get_extra_metadata('customer_reference') ~%]
+[% feature_id = problem.get_extra_field_value('feature_id') ~%]
+[% column_no = problem.get_extra_field_value('column_no') ~%]
+[% RETURN UNLESS reference OR feature_id OR column_no %]
 
-    </div>
-[% END %]
+<div class="council_info_box">
+  [% IF reference %]
+    <p><strong>Council ref:</strong> [% reference %]</p>
+  [% END %]
+  [% IF feature_id %]
+    <p><strong>Asset ID:</strong> [% feature_id %]</p>
+  [% END %]
+  [% IF column_no %]
+    <p><strong>Column number:</strong> [% column_no %]</p>
+  [% END %]
+</div>
