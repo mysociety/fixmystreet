@@ -144,7 +144,7 @@ sub open311_pre_send {
     $self->{ox_original_detail} = $row->detail;
 
     if (my $fid = $row->get_extra_field_value('feature_id')) {
-        my $text = $row->detail . "\n\nAsset Id: $fid\n";
+        my $text = "Asset Id: $fid\n\n" . $row->detail;
         $row->detail($text);
     }
 }
