@@ -185,7 +185,7 @@ fixmystreet.assets.add(owned_defaults, {
             TYPENAME: "junctions"
         }
     },
-    asset_category: ["Gully and Catchpits"],
+    asset_category: ["Gully and Catchpits", 'Drainage'],
     asset_item: 'drain'
 });
 
