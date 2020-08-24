@@ -3,7 +3,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
-use mySociety::EmailUtil qw(is_valid_email);
+use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
 
 sub council_area_id { return 2508; }
 sub council_area { return 'Hackney'; }
@@ -155,9 +155,7 @@ sub get_body_sender {
 
     my $contact = $body->contacts->search( { category => $problem->category } )->first;
 
-    my $parts = join '\s*', qw(^ park : (.*?) ; estate : (.*?) ; other : (.*?) $);
-    my $regex = qr/$parts/i;
-    if (my ($park, $estate, $other) = $contact->email =~ $regex) {
+    if (my ($park, $estate, $other) = $self->_split_emails($contact->email)) {
         my $to = $other;
         if ($self->problem_is_within_area_type($problem, 'park')) {
             $to = $park;
@@ -182,6 +180,26 @@ sub munge_sendreport_params {
         my ($email, $name) = @$recip;
         $recip->[0] = $sent_to->{$email} if $sent_to->{$email};
     }
+}
+
+sub _split_emails {
+    my ($self, $email) = @_;
+
+    my $parts = join '\s*', qw(^ park : (.*?) ; estate : (.*?) ; other : (.*?) $);
+    my $regex = qr/$parts/i;
+
+    my ($park, $estate, $other) = $email =~ $regex;
+    return ($park, $estate, $other);
+}
+
+sub validate_contact_email {
+    my ( $self, $email ) = @_;
+
+    return 1 if is_valid_email_list($email);
+
+    my @emails = grep { $_ } $self->_split_emails($email);
+    return unless @emails;
+    return 1 if is_valid_email_list(join(",", @emails));
 }
 
 1;

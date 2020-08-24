@@ -48,6 +48,10 @@ $hackney_user->user_body_permissions->create({
     body => $hackney,
     permission_type => 'moderate',
 });
+$hackney_user->user_body_permissions->create({
+    body => $hackney,
+    permission_type => 'category_edit',
+});
 
 my $contact2 = $mech->create_contact_ok(
     body_id => $hackney->id,
@@ -291,5 +295,28 @@ subtest "check category extra uses correct name" => sub {
     like $extra_details->{category_extra}, qr/Hackney Council/, 'correct name in category extras';
 };
 
+subtest "can edit special destination email addresses" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['hackney'],
+        COBRAND_FEATURES => { anonymous_account => { hackney => 'anonymous' } },
+    }, sub {
+        $contact2->update({ send_method => 'Email' });
+        $mech->log_in_ok( $hackney_user->email );
+        $mech->get_ok("/admin/body/" . $hackney->id . "/" . $contact2->category);
+        $mech->submit_form_ok( { with_fields => { email => 'park:parks@example.com;estate:estates@example;other:new@example.org' } },
+            "submit valid new email address");
+        $mech->content_lacks("Please enter a valid email");
+        $contact2->discard_changes;
+        is $contact2->email, 'park:parks@example.com;estate:estates@example;other:new@example.org', "New email addresses saved";
+
+        $mech->get_ok("/admin/body/" . $hackney->id . "/" . $contact2->category);
+        $mech->submit_form_ok( { with_fields => { email => 'invalid' } },
+            "submit invalid new email address");
+        $mech->content_contains("Please enter a valid email");
+        $contact2->discard_changes;
+        is $contact2->email, 'park:parks@example.com;estate:estates@example;other:new@example.org', "Invalid email addresses not saved";
+    };
+};
 
 done_testing();

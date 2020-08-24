@@ -255,7 +255,9 @@ sub update_contact : Private {
     $email =~ s/\s+//g;
     my $send_method = $c->get_param('send_method') || $contact->body->send_method || "";
     my $email_unchanged = $contact->email && $email && $contact->email eq $email;
-    unless ( $send_method eq 'Open311' || $email_unchanged ) {
+    my $cobrand = $contact->body->get_cobrand_handler;
+    my $cobrand_valid = $cobrand && $cobrand->call_hook(validate_contact_email => $email);
+    unless ( $send_method eq 'Open311' || $email_unchanged || $cobrand_valid ) {
         $errors{email} = _('Please enter a valid email') unless is_valid_email_list($email) || $email eq 'REFUSED';
     }
 
