@@ -254,6 +254,9 @@ sub check_and_stash_category : Private {
             distinct => 1
         }
     )->all_sorted;
+    # Ensure only uniquely named categories are shown
+    my %seen;
+    @categories = grep { !$seen{$_->category_display}++ } @categories;
     $c->stash->{filter_categories} = \@categories;
     my %categories_mapped = map { $_->category => 1 } @categories;
     $c->forward('/report/stash_category_groups', [ \@categories ]) if $c->cobrand->enable_category_groups;

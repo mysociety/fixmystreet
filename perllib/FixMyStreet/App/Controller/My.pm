@@ -197,6 +197,9 @@ sub setup_page_data : Private {
         distinct => 1,
         order_by => [ "$table.category" ],
     } )->all;
+    # Ensure only uniquely named categories are shown
+    my %seen;
+    @categories = grep { !$seen{$_->category_display}++ } @categories;
     $c->stash->{filter_categories} = \@categories;
 
     if ($c->cobrand->enable_category_groups) {
