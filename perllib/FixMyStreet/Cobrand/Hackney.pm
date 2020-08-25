@@ -92,7 +92,7 @@ sub open311_extra_data {
 
 sub map_type { 'OSM' }
 
-sub default_map_zoom { 5 }
+sub default_map_zoom { 6 }
 
 sub admin_user_domain { 'hackney.gov.uk' }
 
