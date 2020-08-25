@@ -97,6 +97,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
+    select_action: true,
     stylemap: occ_stylemap,
     wfs_feature: "Traffic_Lights",
     asset_id_field: 'Site',
@@ -104,7 +105,12 @@ fixmystreet.assets.add(defaults, {
         feature_id: 'Site'
     },
     asset_category: ["Traffic Lights (permanent only)"],
-    asset_item: 'traffic light'
+    asset_item: 'traffic light',
+    feature_code: 'Site',
+    actions: {
+        asset_found: fixmystreet.assets.named_select_action_found,
+        asset_not_found: fixmystreet.assets.named_select_action_not_found
+    }
 });
 
 var streetlight_select = $.extend({
@@ -185,7 +191,7 @@ fixmystreet.assets.add(owned_defaults, {
             TYPENAME: "junctions"
         }
     },
-    asset_category: ["Gully and Catchpits"],
+    asset_category: ["Gully and Catchpits", 'Drainage'],
     asset_item: 'drain'
 });
 

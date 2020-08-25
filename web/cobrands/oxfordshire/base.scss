@@ -152,16 +152,8 @@ dd, p {
   padding: 1em;
   margin: 0 -1em -1em -1em; // counteract 1em padding on sidebar without using .full-width which sets an explicit width
 
-  h3 {
-    font-weight: bold;
-    font-size: 1em;
-    margin: 0 0 0.5em 0;
-  }
-
   p {
-    color: #666;
     margin: 0 0 0.5em 0;
-    font-size: 0.9em;
   }
 
   & > :last-child {
