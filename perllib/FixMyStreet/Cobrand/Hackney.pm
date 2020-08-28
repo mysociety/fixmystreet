@@ -188,8 +188,10 @@ sub _split_emails {
     my $parts = join '\s*', qw(^ park : (.*?) ; estate : (.*?) ; other : (.*?) $);
     my $regex = qr/$parts/i;
 
-    my ($park, $estate, $other) = $email =~ $regex;
-    return ($park, $estate, $other);
+    if (my ($park, $estate, $other) = $email =~ $regex) {
+        return ($park, $estate, $other);
+    }
+    return ();
 }
 
 sub validate_contact_email {
