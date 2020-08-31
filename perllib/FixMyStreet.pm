@@ -97,6 +97,9 @@ sub override_config($&) {
 
     mySociety::MaPit::configure($config->{MAPIT_URL}) if $config->{MAPIT_URL};
 
+    use Readonly;
+    Readonly my %ro_config => %$config;
+
     # NB: though we have this, templates tend to use [% c.config %].
     # This overriding happens after $c->config is set, so note that
     # FixMyStreet::App->setup_request rewrites $c->config if we are in
@@ -106,8 +109,8 @@ sub override_config($&) {
         "FixMyStreet::config",
         sub {
             my ($class, $key) = @_;
-            return { %CONFIG, %$config } unless $key;
-            return $config->{$key} if exists $config->{$key};
+            return { %CONFIG, %ro_config } unless $key;
+            return $ro_config{$key} if exists $ro_config{$key};
             return $CONFIG{$key} if exists $CONFIG{$key};
         }
     );
