@@ -514,6 +514,7 @@ Sets the query parameter to the passed variable.
 sub set_param {
     my ($c, $param, $value) = @_;
     $c->req->params->{$param} = $value;
+    $c->req->body_params->{$param} = $value;
 }
 
 =head2 check_2fa
