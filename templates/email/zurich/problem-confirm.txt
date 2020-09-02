@@ -1,8 +1,8 @@
-Subject: Züri wie neu: Meldung #[% report.id %]
+Subject: Züri wie neu: Bitte bestätigen Sie Ihre Meldung #[% report.id %]
 
 Grüezi [% report.name %]
 
-Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Klicken Sie bitte auf diesen Link, um[% UNLESS email_confirmed %] Ihre E-Mail-Adresse zu bestätigen und[% END %] über den Status der Meldung informiert zu bleiben. Falls der Link nicht funktioniert, kopieren Sie ihn in Ihren Browser:
+Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Klicken Sie bitte auf diesen Link, um[% UNLESS email_confirmed %] Ihre Meldung zu bestätigen und[% END %] über den Status ihrer Meldung per E-Mail informiert zu bleiben. Falls der Link nicht funktioniert, kopieren Sie ihn in Ihren Browser:
 
 [% token_url %]
 
