@@ -1323,6 +1323,11 @@ fixmystreet.update_councils_text = function(data) {
 fixmystreet.update_pin = function(lonlat, savePushState) {
     var lonlats = fixmystreet.maps.update_pin(lonlat);
 
+    if ($('body').hasClass('noise')) {
+        // Do nothing for noise map page
+        return;
+    }
+
     if (savePushState !== false) {
         if ('pushState' in history) {
             var newReportUrl = '/report/new?longitude=' + lonlats.url.lon + '&latitude=' + lonlats.url.lat;
@@ -1763,6 +1768,18 @@ $(function() {
         setup_func();
     });
 
+    // We only do popstate things on normal map pages, which set this variable
+    if (!fixmystreet.page) {
+        return;
+    }
+    // The replaceState below means that normal browser behaviour with POSTed
+    // pages stops working (because the replaceState turns the POST into a
+    // GET), e.g. clicking back in a multi-page form reloads the page and
+    // takes you back to the start, so avoid that on the noise flow.
+    if ($('body').hasClass('noise')) {
+        return;
+    }
+
     // Have a fake history entry so we can cover all eventualities.
     if ('replaceState' in history) {
         history.replaceState({ initial: true }, null);
@@ -1778,11 +1795,6 @@ $(function() {
                 // Note: no pushState callbacks in these display_* calls,
                 // because we're already inside a popstate: We want to roll
                 // back to a previous state, not create a new one!
-
-                if (!fixmystreet.page) {
-                    // Only care about map pages, which set this variable
-                    return;
-                }
 
                 var location = window.history.location || window.location;
 

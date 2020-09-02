@@ -3,6 +3,8 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use JSON::MaybeXS;
+use URI::Escape;
 use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
 
 sub council_area_id { return 2508; }
@@ -59,6 +61,46 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Hackney//;
 }
 
+sub addresses_for_postcode {
+    my ($self, $postcode) = @_;
+
+    my $api = $self->feature('address_api');
+    my $url = $api->{url};
+    my $key = $api->{key};
+
+    $url .= '?format=detailed&postcode=' . uri_escape_utf8($postcode);
+    my $ua = LWP::UserAgent->new;
+    $ua->default_header(Authorization => $key);
+
+    my $pages = 1;
+    my @addresses;
+    my $outside;
+    for (my $page = 1; $page <= $pages; $page++) {
+        my $res = $ua->get($url . '&page=' . $page);
+        my $data = decode_json($res->decoded_content);
+        $pages = $data->{data}->{pageCount} || 0;
+        foreach my $address (@{$data->{data}->{address}}) {
+            unless ($address->{locality} eq 'HACKNEY') {
+                $outside = 1;
+                next;
+            }
+            my $string = join(", ",
+                grep { $_ && $_ ne 'Hackney' }
+                map { s/((^\w)|(\s\w))/\U$1/g; $_ }
+                map { lc $address->{"line$_"} }
+                (1..3)
+            );
+            push @addresses, {
+                value => $address->{UPRN},
+                latitude => $address->{latitude},
+                longitude => $address->{longitude},
+                label => $string,
+            };
+        }
+    }
+    return { error => 'Sorry, that postcode appears to lie outside Hackney' } if !@addresses && $outside;
+    return { addresses => \@addresses };
+}
 
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
@@ -174,6 +216,17 @@ sub get_body_sender {
 sub munge_sendreport_params {
     my ($self, $row, $h, $params) = @_;
 
+    if ($row->cobrand_data eq 'noise') {
+        my $name = $params->{To}[0][1];
+        my $emails = $self->feature('open311_email');
+        my $where = $row->get_extra_metadata('where');
+        if (my $recipient = $emails->{"noise_$where"}) {
+            my @emails = split(/,/, $recipient);
+            $params->{To} = [ map { [ $_, $name ] } @emails ];
+        }
+        return;
+    }
+
     my $split_match = $row->get_extra_metadata('split_match') or return;
     $row->unset_extra_metadata('split_match');
     for my $recip (@{$params->{To}}) {
@@ -203,6 +256,13 @@ sub validate_contact_email {
     return unless @emails;
     return 1 if is_valid_email_list(join(",", @emails));
 }
+
+# We want to send confirmation emails only for Noise reports
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    return 'id' if $report->cobrand_data eq 'noise';
+    return '';
+};
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;

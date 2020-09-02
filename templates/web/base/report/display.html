@@ -57,6 +57,8 @@
               c.uri_for( '/report/new', { longitude => longitude, latitude => latitude } )
           ) %]
     </p>
+[% ELSIF problem.cobrand_data == 'noise' %]
+    <p><a href="/noise/existing">Log a new occurrence against your existing report</a></p>
 [% ELSIF NOT shown_form  %]
     [% PROCESS 'report/update-form-wrapper.html' %]
 [% END %]

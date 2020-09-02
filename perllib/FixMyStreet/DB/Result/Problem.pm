@@ -1145,4 +1145,13 @@ has alerts => (
     },
 );
 
+has comment_count => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        $self->comments->count;
+    },
+);
+
 1;
