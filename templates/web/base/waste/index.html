@@ -14,9 +14,6 @@
   [% END %]
 <form method="post">
   [% PROCESS form %]
-  <input type="hidden" name="token" value="[% csrf_token %]">
-  <input type="hidden" name="process" value="[% process %]">
-  <input type="hidden" name="saved_data" value="[% saved_data %]">
 </form>
 
 [% INCLUDE footer.html %]

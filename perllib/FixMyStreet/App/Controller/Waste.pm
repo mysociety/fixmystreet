@@ -10,7 +10,7 @@ use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request;
 use FixMyStreet::App::Form::Waste::Report;
-use FixMyStreet::App::Form::Field::JSON;
+use FixMyStreet::App::Form::Waste::Enquiry;
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -171,9 +171,6 @@ sub construct_bin_request_form {
         }
     }
 
-    push @$field_list, category => { type => 'Hidden', default => 'Request new container' };
-    push @$field_list, submit => { type => 'Submit', value => 'Request new containers', element_attr => { class => 'govuk-button' } };
-
     return $field_list;
 }
 
@@ -183,39 +180,21 @@ sub request : Chained('uprn') : Args(0) {
     my $field_list = construct_bin_request_form($c);
 
     $c->stash->{first_page} = 'request';
-    $c->forward('form', [ {
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request';
+    $c->stash->{page_list} = [
         request => {
+            fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => 'Which containers do you need?',
-            form => 'FixMyStreet::App::Form::Waste::Request',
-            form_params => {
-                field_list => $field_list,
-            },
             next => 'about_you',
         },
-        about_you => {
-            title => 'About you',
-            form => 'FixMyStreet::App::Form::Waste::AboutYou',
-            form_params => {
-                inactive => ['address_same', 'address'],
-            },
-            next => 'summary',
-        },
-        summary => {
-            title => 'Submit container request',
-            template => 'waste/summary_request.html',
-            next => 'done'
-        },
-        done => {
-            process => 'process_request_data',
-            title => 'Container request sent',
-            template => 'waste/confirmation.html',
-        }
-    } ] );
+    ];
+    $c->stash->{field_list} = $field_list;
+    $c->forward('form');
 }
 
 sub process_request_data : Private {
-    my ($self, $c) = @_;
-    my $data = $c->stash->{data};
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
     my $address = $c->stash->{property}->{address};
     my @services = grep { /^container-/ && $data->{$_} } keys %$data;
     foreach (@services) {
@@ -226,7 +205,7 @@ sub process_request_data : Private {
         $data->{detail} = "Quantity: $quantity\n\n$address";
         $c->set_param('Container_Type', $id);
         $c->set_param('Quantity', $quantity);
-        $c->forward('add_report') or return;
+        $c->forward('add_report', [ $data ]) or return;
         push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
     }
     return 1;
@@ -248,11 +227,6 @@ sub construct_bin_report_form {
         };
     }
 
-    if (@$field_list) {
-        push @$field_list, category => { type => 'Hidden', default => 'Report missed collection' };
-        push @$field_list, submit => { type => 'Submit', value => 'Report collection as missed', element_attr => { class => 'govuk-button' } };
-    }
-
     return $field_list;
 }
 
@@ -262,39 +236,21 @@ sub report : Chained('uprn') : Args(0) {
     my $field_list = construct_bin_report_form($c);
 
     $c->stash->{first_page} = 'report';
-    $c->forward('form', [ {
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report';
+    $c->stash->{page_list} = [
         report => {
+            fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => 'Select your missed collection',
-            form => 'FixMyStreet::App::Form::Waste::Report',
-            form_params => {
-                field_list => $field_list,
-            },
             next => 'about_you',
         },
-        about_you => {
-            title => 'About you',
-            form => 'FixMyStreet::App::Form::Waste::AboutYou',
-            form_params => {
-                inactive => ['address_same', 'address'],
-            },
-            next => 'summary',
-        },
-        summary => {
-            title => 'Submit missed collection',
-            template => 'waste/summary_report.html',
-            next => 'done'
-        },
-        done => {
-            process => 'process_report_data',
-            title => 'Missed collection sent',
-            template => 'waste/confirmation.html',
-        }
-    } ] );
+    ];
+    $c->stash->{field_list} = $field_list;
+    $c->forward('form');
 }
 
 sub process_report_data : Private {
-    my ($self, $c) = @_;
-    my $data = $c->stash->{data};
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
     my $address = $c->stash->{property}->{address};
     my @services = grep { /^service-/ && $data->{$_} } keys %$data;
     foreach (@services) {
@@ -303,7 +259,7 @@ sub process_report_data : Private {
         $data->{title} = "Report missed $service";
         $data->{detail} = "$data->{title}\n\n$address";
         $c->set_param('service_id', $id);
-        $c->forward('add_report') or return;
+        $c->forward('add_report', [ $data ]) or return;
         push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
     }
     return 1;
@@ -342,43 +298,30 @@ sub enquiry : Chained('uprn') : Args(0) {
         };
     }
 
-    push @$field_list, category => { type => 'Hidden', default => $c->get_param('category') };
-    push @$field_list, service_id => { type => 'Hidden', default => $c->get_param('service_id') };
-    push @$field_list, submit => { type => 'Submit', value => 'Continue', element_attr => { class => 'govuk-button' } };
-
     $c->stash->{first_page} = 'enquiry';
-    $c->forward('form', [ {
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry';
+    $c->stash->{page_list} = [
         enquiry => {
+            fields => [ 'category', 'service_id', grep { ! ref $_ } @$field_list, 'continue' ],
             title => $category,
-            form_params => {
-                field_list => $field_list,
-            },
             next => 'about_you',
+            update_field_list => sub {
+                my $form = shift;
+                my $c = $form->c;
+                return {
+                    category => { default => $c->get_param('category') },
+                    service_id => { default => $c->get_param('service_id') },
+                }
+            }
         },
-        about_you => {
-            title => 'About you',
-            form => 'FixMyStreet::App::Form::Waste::AboutYou',
-            form_params => {
-                inactive => ['address_same', 'address'],
-            },
-            next => 'summary',
-        },
-        summary => {
-            title => 'Submit missed collection',
-            template => 'waste/summary_enquiry.html',
-            next => 'done'
-        },
-        done => {
-            process => 'process_enquiry_data',
-            title => 'Enquiry sent',
-            template => 'waste/confirmation.html',
-        }
-    } ] );
+    ];
+    $c->stash->{field_list} = $field_list;
+    $c->forward('form');
 }
 
 sub process_enquiry_data : Private {
-    my ($self, $c) = @_;
-    my $data = $c->stash->{data};
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
     my $address = $c->stash->{property}->{address};
     $data->{title} = $data->{category};
     $data->{detail} = "$data->{category}\n\n$address";
@@ -388,73 +331,74 @@ sub process_enquiry_data : Private {
         $c->set_param($id, $data->{$_});
     }
     $c->set_param('service_id', $data->{service_id});
-    $c->forward('add_report') or return;
+    $c->forward('add_report', [ $data ]) or return;
     push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
     return 1;
 }
 
 sub load_form {
-    my ($saved_data, $page_data) = @_;
-    my $form_class = $page_data->{form} || 'HTML::FormHandler';
-    my $form = $form_class->new(
-        init_object => $saved_data,
-        %{$page_data->{form_params} || {}},
+    my ($c, $previous_form) = @_;
+
+    my $page;
+    if ($previous_form) {
+        $page = $previous_form->next;
+    } else {
+        $page = $c->forward('get_page');
+    }
+
+    my $form = $c->stash->{form_class}->new(
+        page_list => $c->stash->{page_list},
+        $c->stash->{field_list} ? (field_list => $c->stash->{field_list}) : (),
+        page_name => $page,
+        csrf_token => $c->stash->{csrf_token},
+        c => $c,
+        previous_form => $previous_form,
+        saved_data_encoded => $c->get_param('saved_data'),
+        no_preload => 1,
     );
+
+    if (!$form->has_current_page) {
+        $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
+    }
+
     return $form;
 }
 
 sub form : Private {
-    my ($self, $c, $pages) = @_;
+    my ($self, $c) = @_;
 
-    my $saved_data = $c->get_param('saved_data');
-    $saved_data = FixMyStreet::App::Form::Field::JSON->inflate_json($saved_data) || {};
-    map { $saved_data->{$_} = 1 } grep { /^(service|container)-/ && $c->req->params->{$_} } keys %{$c->req->params};
+    my $form = load_form($c);
+    if ($c->get_param('process')) {
+        $c->forward('/auth/check_csrf_token');
+        $form->process(params => $c->req->body_params);
+        if ($form->validated) {
+            $form = load_form($c, $form);
+        }
+    }
+
+    $form->process unless $form->processed;
+
+    $c->stash->{template} = $form->template || 'waste/index.html';
+    $c->stash->{form} = $form;
+}
+
+sub get_page : Private {
+    my ($self, $c) = @_;
 
     my $goto = $c->get_param('goto') || '';
     my $process = $c->get_param('process') || '';
     $goto = $c->stash->{first_page} unless $goto || $process;
-    if ( ($goto && $process) || ($goto && !$pages->{$goto}) || ($process && !$pages->{$process})) {
+    if ($goto && $process) {
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 
-    my $page = $goto || $process;
-    my $form = load_form($saved_data, $pages->{$page});
-
-    if ($process) {
-        $c->forward('/auth/check_csrf_token');
-        $form->process(params => $c->req->body_params);
-        if ($form->validated) {
-            $saved_data = { %$saved_data, %{$form->value} };
-            $c->stash->{data} = $saved_data;
-            my $next = $pages->{$page}{next};
-            $form = load_form($saved_data, $pages->{$next});
-            my $success = 1;
-            if ($next eq 'done') {
-                $success = $c->forward($pages->{$next}{process});
-                if (!$success) {
-                    $form->add_form_error('Something went wrong, please try again');
-                    foreach (keys %{$c->stash->{field_errors}}) {
-                        $form->add_form_error("$_: " . $c->stash->{field_errors}{$_});
-                    }
-                }
-            }
-            $page = $next if $success;
-        }
-    }
-
-    $c->stash->{template} = $pages->{$page}{template} || 'waste/index.html';
-    $c->stash->{title} = $pages->{$page}{title};
-    $c->stash->{process} = $page;
-    $c->stash->{saved_data} = FixMyStreet::App::Form::Field::JSON->deflate_json($saved_data);
-    $c->stash->{form} = $form;
+    return $goto || $process;
 }
 
 sub add_report : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $data ) = @_;
 
     $c->stash->{cobrand_data} = 'waste';
-
-    my $data = $c->stash->{data};
 
     $c->set_param('form_as', 'another_user') if $c->user_exists && $c->user->from_body && $c->user->email ne $data->{email}; # XXX
 
