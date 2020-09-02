@@ -1,0 +1,259 @@
+[% BLOCK form %]
+  [% FOR field IN form.sorted_fields %]
+    [% NEXT IF field.name == 'back' %]
+    [% SET error = field.errors.join(' ') ~%]
+    <div class="govuk-form-group[% IF error %] govuk-form-group--error[% END %][% ' hidden-js' IF field.get_tag('initial_hidden') %]" id="form-[% field.id %]-row">
+    [% IF field.widget == 'Submit' %]
+        [% field.render_element | safe %]
+    [% ELSIF field.widget == 'Hidden' %]
+        [% PROCESS hidden %]
+    [% ELSIF field.widget == 'Text' %]
+        [% PROCESS text %]
+    [% ELSIF field.widget == 'Textarea' %]
+        [% PROCESS textarea %]
+    [% ELSIF field.widget == 'RadioGroup' %]
+        [% PROCESS radio %]
+    [% ELSIF field.widget == 'Select' %]
+        [% PROCESS select %]
+    [% ELSIF field.widget == 'CheckboxGroup' %]
+        [% PROCESS checkboxes options=field.options %]
+    [% ELSIF field.widget == 'Checkbox' %]
+        [% PROCESS checkboxes options=[{ value = 1, label = field.option_label }] %]
+    [% ELSIF field.type == 'DateTime' # Date %]
+        [% PROCESS date %]
+    [% ELSE %]
+        [% field.html_name %] [% field.widget %] NOT HANDLED
+    [% END %]
+    </div>
+  [% END %]
+[% END %]
+
+[% BLOCK back %]
+  [% IF form.field('back').is_active %]
+    [% form.field('back').render_element | safe %]
+  [% END %]
+[% END %]
+
+[% BLOCK errors %]
+  [% IF form.errors %]
+    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+        <h2 class="govuk-error-summary__title" id="error-summary-title">
+            There is a problem
+        </h2>
+        <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              [% FOR error IN form.errors %]
+                <li>
+                    <a href="#">[% error %]</a>
+                </li>
+              [% END %]
+            </ul>
+        </div>
+    </div>
+  [% END %]
+[% END %]
+
+[% BLOCK title %]
+  <h1 class="govuk-heading-xl">[% title %]</h1>
+[% END %]
+
+[% BLOCK checkboxes %]
+  <fieldset class="govuk-fieldset" aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]">
+[% IF field.label %]
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h2 class="govuk-fieldset__heading">
+        [% field.label %]
+      </h2>
+    </legend>
+[% END %]
+[% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">[% field.get_tag('hint') %]</span>
+[% END %]
+[% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+[% END %]
+    <div class="govuk-checkboxes">
+    [% FOR item IN options %]
+	  [% hint = item.hint OR item.get_tag('hint') %]
+      <div class="govuk-checkboxes__item">
+        <input type="checkbox" class="govuk-checkboxes__input" id="[% field.id %]-[% loop.index %]"
+            name="[% field.html_name %]" value="[% item.value %]"[% ' aria-describedby="' _ field.id _ '-item-hint"' IF hint %]
+            [% 'data-toggle-visibility="#' _ field.get_tag('toggle') _ '"' IF field.get_tag('toggle') ~%]
+            [% 'checked' IF field.fif.grep(item.value).size %]>
+        <label class="govuk-label govuk-checkboxes__label" for="[% field.id %]-[% loop.index %]">
+          [% item.label %]
+        </label>
+[% IF hint %]
+        <span id="[% field.id %]-item-hint" class="govuk-hint govuk-checkboxes__hint">
+          [% hint %]
+        </span>
+[% END %]
+      </div>
+    [% END %]
+    </div>
+  </fieldset>
+[% END %]
+
+[% BLOCK date %]
+  <fieldset class="govuk-fieldset" role="group"
+    [%~ IF field.get_tag('hint') OR error %]
+      aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% id %]-error[% END %]"
+    [%~ END %]>
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h2 class="govuk-fieldset__heading">
+        [% field.label %]
+      </h2>
+    </legend>
+[% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">
+      [% field.get_tag('hint') %]
+    </span>
+[% END %]
+[% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+[% END %]
+    <div class="govuk-date-input" id="[% field.id %]">
+      <div class="govuk-date-input__item">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-date-input__label" for="[% field.id %].day">
+            Day
+          </label>
+          <input class="govuk-input govuk-date-input__input govuk-input--width-2[% IF error %] govuk-input--error[% END %]"
+            id="[% field.id %].day" name="[% field.html_name %].day" type="text" value="[% field.fif.day %]" pattern="[0-9]*" inputmode="numeric">
+        </div>
+      </div>
+      <div class="govuk-date-input__item">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-date-input__label" for="[% field.id %].month">
+            Month
+          </label>
+          <input class="govuk-input govuk-date-input__input govuk-input--width-2[% IF error %] govuk-input--error[% END %]"
+            id="[% field.id %].month" name="[% field.html_name %].month" type="text" value="[% field.fif.month %]" pattern="[0-9]*" inputmode="numeric">
+        </div>
+      </div>
+      <div class="govuk-date-input__item">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-date-input__label" for="[% field.id %].year">
+            Year
+          </label>
+          <input class="govuk-input govuk-date-input__input govuk-input--width-4[% IF error %] govuk-input--error[% END %]"
+            id="[% field.id %].year" name="[% field.html_name %].year" type="text" value="[% field.fif.year %]" pattern="[0-9]*" inputmode="numeric">
+        </div>
+      </div>
+    </div>
+  </fieldset>
+[% END %]
+
+[% BLOCK radio %]
+  <fieldset class="govuk-fieldset" aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h2 class="govuk-fieldset__heading">
+          [% field.label %]
+        </h2>
+    </legend>
+[% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">[% field.get_tag('hint') %]</span>
+[% END %]
+[% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+[% END %]
+    <div class="govuk-radios[% IF field.get_tag('inline') %] govuk-radios--inline[% END %][% IF field.get_tag('small') %] govuk-radios--small[% END %]">
+    [% FOR item IN field.options %]
+      [% IF loop.last AND field.get_tag('last_differs') %]
+        <div class="govuk-radios__divider">or</div>
+      [% END %]
+	  [% hint = item.hint OR item.get_tag('hint') ~%]
+      <div class="govuk-radios__item">
+        <input type="radio" class="govuk-radios__input" id="[% field.id %]-[% loop.index %]"
+            name="[% field.html_name %]" value="[% item.value %]"[% ' aria-describedby="' _ field.id _ '-item-hint"' IF hint %]
+            [% 'data-show="' _ item.data_show _ '"' IF item.data_show %]
+            [% 'data-hide="' _ item.data_hide _ '"' IF item.data_hide %]
+            [% 'checked' IF field.fif == item.value %]>
+        <label class="govuk-label govuk-radios__label" for="[% field.id %]-[% loop.index %]">
+          [% item.label %]
+        </label>
+[% IF hint %]
+        <span id="[% field.id %]-item-hint" class="govuk-hint govuk-checkboxes__hint">
+          [% hint %]
+        </span>
+[% END %]
+      </div>
+    [% END %]
+    </div>
+  </fieldset>
+[% END %]
+
+[% BLOCK hidden %]
+    <input type="hidden" name="[% field.html_name %]" id="[% field.id %]" value="[% field.fif %]">
+[% END %]
+
+[% BLOCK text %]
+    <label class="govuk-label" for="[% field.id %]">
+        [% field.label %]
+    </label>
+  [% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">
+        [% field.get_tag('hint') %]
+    </span>
+  [% END %]
+  [% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+  [% END %]
+    <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="[% field.id %]" name="[% field.html_name %]" type="text"
+         value="[% field.fif %]"
+    [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
+    [%~ IF field.disabled %] disabled[% END ~%]
+    [%~ IF field.get_tag('hint') OR error %]
+      aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% id %]-error[% END %]"
+    [%~ END %]>
+[% END %]
+
+[% BLOCK textarea %]
+    <label class="govuk-label" for="[% field.id %]">
+        [% field.label %]
+    </label>
+  [% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">
+        [% field.get_tag('hint') %]
+    </span>
+  [% END %]
+  [% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+  [% END %]
+    <textarea class="govuk-textarea[% IF error %] govuk-textarea--error[% END %]" id="[% field.id %]"
+        name="[% field.html_name %]" rows="5"
+    [%~ IF field.get_tag('hint') OR error %]
+        aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% id %]-error[% END %]"
+    [%~ END %]>[% field.fif %]</textarea>
+[% END %]
+
+[% BLOCK select %]
+    <label class="govuk-label" for="[% field.id %]">
+        [% field.label %]
+    </label>
+  [% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">
+        [% field.get_tag('hint') %]
+    </span>
+  [% END %]
+  [% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+  [% END %]
+  <select class="govuk-select" id="[% field.id %]" name="[% field.html_name %]">
+    [% FOR item IN field.options %]
+      <option value="[% item.value %]"[% ' selected' IF field.fif == item.value %]>[% item.label %]</option>
+	[% END %]
+  </select>
+[% END %]
