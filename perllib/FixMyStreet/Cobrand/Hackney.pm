@@ -204,6 +204,13 @@ sub validate_contact_email {
     return 1 if is_valid_email_list(join(",", @emails));
 }
 
+# We want to send confirmation emails only for Noise reports
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    return 'id' if $report->cobrand_data eq 'noise';
+    return '';
+};
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 

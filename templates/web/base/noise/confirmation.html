@@ -1,0 +1,31 @@
+[% title = 'Report sent' %]
+[% INCLUDE header.html %]
+
+<div>
+    <h1 class="">
+        [% title %]
+    </h1>
+    <div class="">
+        [% IF report %]
+        <p>Your report has been submitted.
+          [% IF form.saved_data.email %]
+            A copy has been sent to your email address, [% form.saved_data.email %].
+          [% END %]
+        </p>
+        <p>
+            Your reference number is <strong>[% report.id %]</strong>.
+        </p>
+        [% ELSE %]
+        <p>Your additional report has been submitted.</p>
+        [% END %]
+
+        <h2>What happens next?</h2>
+        <p>...</p>
+        <!--
+        [% USE Dumper %]
+        [% Dumper.dump(form.saved_data) %]
+        -->
+    </div>
+</div>
+
+[% INCLUDE footer.html %]
