@@ -1,0 +1,17 @@
+[% SET bodyclass = 'noise' ~%]
+[% SET title = form.title ~%]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'noise/govuk/fields.html' %]
+  [% PROCESS back %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+
+  [% IF form.intro_template %][% PROCESS "noise/${form.intro_template}" %][% END %]
+
+<form method="post">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]

@@ -1300,6 +1300,11 @@ fixmystreet.update_councils_text = function(data) {
 fixmystreet.update_pin = function(lonlat, savePushState) {
     var lonlats = fixmystreet.maps.update_pin(lonlat);
 
+    if ($('body').hasClass('noise')) {
+        // Do nothing for noise map page
+        return;
+    }
+
     if (savePushState !== false) {
         if ('pushState' in history) {
             var newReportUrl = '/report/new?longitude=' + lonlats.url.lon + '&latitude=' + lonlats.url.lat;
