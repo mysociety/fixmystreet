@@ -5,6 +5,7 @@
 [% INCLUDE header.html %]
 
 [% PROCESS errors %]
+[% SET data = form.saved_data ~%]
 
 <h1 class="govuk-heading-xl">[% title %]</h1>
 <p>Please review the information you’ve provided before you submit your [% thing %].</p>
@@ -19,7 +20,7 @@
     </dd>
     <dd class="govuk-summary-list__actions">
     <form method="post">
-        <input type="hidden" name="saved_data" value="[% saved_data %]">
+        <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
         <input type="hidden" name="goto" value="[% step1 %]">
         <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
     </form>
@@ -39,7 +40,7 @@
     </dd>
     <dd class="govuk-summary-list__actions">
     <form method="post">
-        <input type="hidden" name="saved_data" value="[% saved_data %]">
+        <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
         <input type="hidden" name="goto" value="about_you">
         <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
     </form>
@@ -62,12 +63,7 @@
 </dl>
 
 <form method="post">
-    <div class="govuk-form-group">
-        <input class="govuk-button" type="submit" value="Submit">
-    </div>
-    <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="hidden" name="process" value="[% process %]">
-    <input type="hidden" name="saved_data" value="[% saved_data %]">
+    [% PROCESS form %]
 </form>
 </div>
 
