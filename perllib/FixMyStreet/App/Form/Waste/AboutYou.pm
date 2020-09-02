@@ -1,12 +1,8 @@
 package FixMyStreet::App::Form::Waste::AboutYou;
 
 use utf8;
-use HTML::FormHandler::Moose;
-extends 'HTML::FormHandler';
-
+use HTML::FormHandler::Moose::Role;
 use FixMyStreet::SMS;
-
-has '+field_name_space' => ( default => 'FixMyStreet::App::Form::Field' );
 
 has_field name => (
     type => 'Text',
@@ -38,32 +34,5 @@ has_field email => (
         hint => 'If you provide an email address, we can send you order status updates'
     },
 );
-
-has_field address_same => (
-    type => 'Checkbox',
-    label => 'Delivery address',
-    default => 1,
-    option_label => 'Same as collection address'
-);
-
-has_field address => (
-    type => 'TextArea',
-    label => 'Address for delivery',
-    required_when => { address_same => 0 },
-);
-
-has_field submit => (
-    type => 'Submit',
-    value => 'Continue',
-    element_attr => { class => 'govuk-button' },
-);
-
-sub validate {
-    my $self = shift;
-    $self->add_form_error('Please specify at least one of phone or email')
-        unless $self->field('phone')->value || $self->field('email')->value;
-}
-
-__PACKAGE__->meta->make_immutable;
 
 1;
