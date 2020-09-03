@@ -149,7 +149,7 @@ sub process_user : Private {
 
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
     my $type = $parsed->{type} || 'email';
-    $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION') || $c->stash->{contributing_as_another_user};
+    $type = 'email' unless $c->cobrand->sms_authentication || $c->stash->{contributing_as_another_user};
     $update->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) );
 
     $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};

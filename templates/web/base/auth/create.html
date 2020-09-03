@@ -20,7 +20,7 @@ INCLUDE 'header.html', bodyclass='authpage' %]
 
 [% IF forgotten %]
 <p>
-  [% IF c.config.SMS_AUTHENTICATION %]
+  [% IF c.cobrand.sms_authentication %]
     [% loc('Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated.') %]</p>
   [% ELSE %]
     [% loc('Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated.') %]
@@ -44,7 +44,7 @@ INCLUDE 'header.html', bodyclass='authpage' %]
 
         [% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
 
-        [% IF c.config.SMS_AUTHENTICATION %]
+        [% IF c.cobrand.sms_authentication %]
             [% SET username_label = loc('Your email or mobile') %]
         [% ELSE %]
             [% SET username_label = loc('Your email') %]

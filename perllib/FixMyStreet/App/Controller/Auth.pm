@@ -89,7 +89,7 @@ sub expired : Path('expired') : Args(0) {
 sub authenticate : Private {
     my ($self, $c, $type, $username, $password) = @_;
     return 1 if $type eq 'email' && $c->authenticate({ email => $username, email_verified => 1, password => $password });
-    return 1 if FixMyStreet->config('SMS_AUTHENTICATION') && $type eq 'phone' && $c->authenticate({ phone => $username, phone_verified => 1, password => $password });
+    return 1 if $c->cobrand->sms_authentication && $type eq 'phone' && $c->authenticate({ phone => $username, phone_verified => 1, password => $password });
     return 0;
 }
 
@@ -146,7 +146,7 @@ sub code_sign_in : Private {
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
 
-    if ($parsed->{type} eq 'phone' && FixMyStreet->config('SMS_AUTHENTICATION')) {
+    if ($parsed->{type} eq 'phone' && $c->cobrand->sms_authentication) {
         $c->forward('phone/sign_in', [ $parsed ]);
     } else {
         $c->forward('email_sign_in', [ $parsed->{username} ]);

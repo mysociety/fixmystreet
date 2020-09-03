@@ -30,7 +30,7 @@
 
         [% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
 
-[% IF c.config.SMS_AUTHENTICATION %]
+[% IF c.cobrand.sms_authentication %]
     [% SET username_label = loc('Your email or mobile') %]
 [% ELSE %]
     [% SET username_label = loc('Your email') %]
@@ -80,7 +80,7 @@
 
 [% BLOCK form_sign_in_no %]
     <p><input class="fake-link" type="submit" name="sign_in_by_code" value="
-      [%~ IF c.config.SMS_AUTHENTICATION %]
+      [%~ IF c.cobrand.sms_authentication %]
         [%~ loc('Email me a link or text me a code to sign in') %]
       [%~ ELSE %]
         [%~ loc('Email me a link to sign in') %]

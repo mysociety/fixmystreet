@@ -7,8 +7,8 @@
     [% INCLUDE 'report/form/user_name.html' %]
     [% INCLUDE 'report/_show_name_label.html' %]
 
-  [% IF type != 'update' AND NOT c.config.SMS_AUTHENTICATION %]
-    [% UNLESS c.cobrand.call_hook('disable_phone_number_entry') %]
+  [% IF type != 'update' %]
+    [% IF NOT c.cobrand.call_hook('disable_phone_number_entry') AND NOT c.cobrand.sms_authentication %]
         <label for="form_phone">[% loc('Phone number (optional)') %]</label>
         [% IF field_errors.phone %]
           <p class='form-error'>[% field_errors.phone %]</p>
@@ -23,7 +23,7 @@
     </div>
   [% END %]
 
-  [% IF type != 'update' AND c.config.SMS_AUTHENTICATION AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]
+  [% IF type != 'update' AND c.cobrand.sms_authentication AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]
 
   <fieldset>
       <legend>How would you like to receive updates?</legend>

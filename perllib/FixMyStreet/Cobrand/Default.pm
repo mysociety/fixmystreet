@@ -1247,6 +1247,7 @@ sub get_geocoder {
     FixMyStreet->config('GEOCODER');
 }
 
+sub sms_authentication { FixMyStreet->config('SMS_AUTHENTICATION') }
 
 sub problem_as_hashref {
     my $self = shift;

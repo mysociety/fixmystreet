@@ -79,7 +79,7 @@ fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
         upload_cancel_confirmation: '[% loc('Are you sure you want to cancel this upload?', "JS") %]',
         upload_invalid_file_type: '[% loc('Please upload an image only', "JS") %]',
 
-        [% IF c.config.SMS_AUTHENTICATION ~%]
+        [% IF c.cobrand.sms_authentication ~%]
         login_with_email: '[% loc('Log in with email/text', "JS") %]',
         [% ELSE ~%]
         login_with_email: '[% loc('Log in with email', "JS") %]',
