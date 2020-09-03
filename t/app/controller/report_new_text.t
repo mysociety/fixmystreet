@@ -1,4 +1,6 @@
 use FixMyStreet::TestMech;
+use JSON::MaybeXS;
+use Test::MockModule;
 use t::Mock::Twilio;
 
 my $twilio = t::Mock::Twilio->new;
@@ -200,7 +202,7 @@ foreach my $test (
         is $user->password, '', 'password not yet set for new user';
     }
 
-    my $report = $user->problems->first;
+    my $report = $user->problems->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->state, 'unconfirmed', "report not confirmed";
     is $report->bodies_str, $body->id;
@@ -331,7 +333,7 @@ subtest "test report creation for a user who is signing in as they report" => su
         );
     };
 
-    my $report = $user->problems->first;
+    my $report = $user->problems->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     $mech->content_contains('Thank you for reporting this issue');
     is $report->bodies_str, $body->id;
@@ -387,7 +389,7 @@ subtest "test report creation for a user who is logged in" => sub {
         );
     };
 
-    my $report = $user->problems->first;
+    my $report = $user->problems->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->bodies_str, $body->id;
     $mech->content_contains('Thank you for reporting this issue');
@@ -407,6 +409,98 @@ subtest "test report creation for a user who is logged in" => sub {
         . ',' . ($report->longitude + 0.01) . ',' .  ($report->latitude + 0.01)
     );
     $mech->content_contains( "Test Report at caf\xc3\xa9" );
+};
+
+subtest "test report creation when sending texts via Notify" => sub {
+    $mech->log_out_ok;
+
+    my $mod_lwp = Test::MockModule->new('LWP::UserAgent');
+    my $notify_code;
+    $mod_lwp->mock('post', sub {
+        my ($self, $url, %args) = @_;
+        my $data = decode_json($args{Content});
+        if ($data->{phone_number} eq '+18165550101') {
+            return HTTP::Response->new(400, 'Bad request', [], '{"errors": [{ "error": "BadRequestError", "message": "Bad request" }]}');
+        }
+        ($notify_code) = $data->{personalisation}{text} =~ /(\d+)/;
+        HTTP::Response->new(200, 'OK', [], '{ "id": 234 }');
+    });
+
+    $mech->get_ok('/around');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+        SMS_AUTHENTICATION => 1,
+        PHONE_COUNTRY => 'GB',
+        COBRAND_FEATURES => {
+            govuk_notify => {
+                fixmystreet => {
+                    key => 'test-abcdefghijklmnopqrstuvwxyz0123456789-this-bit-is-the-secret-key',
+                }
+            }
+        },
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok(
+            {
+                button => 'submit_register',
+                with_fields => {
+                    title => 'Test Report', detail => 'Test report details.',
+                    name => 'Joe Bloggs',
+                    update_method => 'phone',
+                    phone => '+18165550101',
+                    category => 'Street lighting',
+                }
+            },
+            "submit good details"
+        );
+        $mech->content_contains('Sending a confirmation text failed');
+    };
+
+    $mech->get_ok('/around');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+        SMS_AUTHENTICATION => 1,
+        PHONE_COUNTRY => 'GB',
+        COBRAND_FEATURES => {
+            govuk_notify => {
+                fixmystreet => {
+                    key => 'test-abcdefghijklmnopqrstuvwxyz0123456789-this-bit-is-the-secret-key',
+                }
+            }
+        },
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok(
+            {
+                button => 'submit_register',
+                with_fields => {
+                    title => 'Test Report', detail => 'Test report details.',
+                    name => 'Joe Bloggs',
+                    update_method => 'phone',
+                    phone => $test_phone,
+                    category => 'Street lighting',
+                }
+            },
+            "submit good details"
+        );
+    };
+
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    my $user = FixMyStreet::DB->resultset('User')->find( { phone => $test_phone } );
+    my $report = $user->problems->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->state, 'unconfirmed', "report not confirmed";
+    is $report->bodies_str, $body->id;
+
+    $mech->submit_form_ok({ with_fields => { code => $notify_code } });
+
+    $report->discard_changes;
+    is $report->state, 'confirmed', "Report is now confirmed";
 };
 
 done_testing();

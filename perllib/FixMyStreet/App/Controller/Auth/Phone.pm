@@ -95,7 +95,7 @@ sub sign_in : Private {
 sub send_token : Private {
     my ( $self, $c, $token_data, $token_scope, $to ) = @_;
 
-    my $result = FixMyStreet::SMS->send_token($token_data, $token_scope, $to);
+    my $result = FixMyStreet::SMS->send_token($token_data, $token_scope, $to, $c->cobrand);
     if ($result->{error}) {
         $c->log->debug("Failure sending text containing code *$result->{random}*");
         $c->stash->{sms_error} = $result->{error};

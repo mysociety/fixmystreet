@@ -259,7 +259,8 @@ RECAPTCHA: ''
 # need to set the site's two-digit ISO 3166 country code (e.g. GB) here.
 PHONE_COUNTRY: ''
 
-# If you enable login via SMS authentication, you'll need a twilio account
+# If you enable login via SMS authentication, you'll need a twilio account or a
+# GOV.UK Notify account
 SMS_AUTHENTICATION: 0
 TWILIO_ACCOUNT_SID: ''
 TWILIO_AUTH_TOKEN: ''

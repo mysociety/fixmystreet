@@ -88,6 +88,7 @@
     - UK:
         - Add option for recaptcha. #3050
         - Display search tips when location search returns no results. #3180
+        - Add ability to use GOV.UK Notify for text messaging.
 
 * v3.0.1 (6th May 2020)
     - New features:
