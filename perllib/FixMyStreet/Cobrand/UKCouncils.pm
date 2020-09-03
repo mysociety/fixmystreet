@@ -21,6 +21,8 @@ sub suggest_duplicates {
     return $self->feature('suggest_duplicates');
 }
 
+sub sms_authentication { shift->feature('sms_authentication') }
+
 sub path_to_web_templates {
     my $self = shift;
     return [
