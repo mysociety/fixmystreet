@@ -15,22 +15,19 @@ use FixMyStreet::DB;
 has twilio => (
     is => 'lazy',
     default => sub {
-        WWW::Twilio::API->new(
-            AccountSid => FixMyStreet->config('TWILIO_ACCOUNT_SID'),
+        my $sid = FixMyStreet->config('TWILIO_ACCOUNT_SID');
+        return unless $sid;
+        my $api = WWW::Twilio::API->new(
+            AccountSid => $sid,
             AuthToken => FixMyStreet->config('TWILIO_AUTH_TOKEN'),
             utf8 => 1,
         );
+        return {
+            api => $api,
+            from => FixMyStreet->config('TWILIO_FROM_PARAMETER'),
+            messaging_service => FixMyStreet->config('TWILIO_MESSAGING_SERVICE_SID'),
+        }
     },
-);
-
-has from => (
-    is => 'lazy',
-    default => sub { FixMyStreet->config('TWILIO_FROM_PARAMETER') },
-);
-
-has messaging_service => (
-    is => 'lazy',
-    default => sub { FixMyStreet->config('TWILIO_MESSAGING_SERVICE_SID') },
 );
 
 sub send_token {
@@ -55,9 +52,15 @@ sub send_token {
 
 sub send {
     my ($self, %params) = @_;
-    my $output = $self->twilio->POST('Messages.json', 
-        $self->from ? (From => $self->from) : (),
-        $self->messaging_service ? (MessagingServiceSid => $self->messaging_service) : (),
+
+    my $twilio = $self->twilio;
+    unless ($twilio) {
+        return { error => "No SMS service configured" };
+    }
+
+    my $output = $twilio->{api}->POST('Messages.json',
+        $twilio->{from} ? (From => $twilio->{from}) : (),
+        $twilio->{messaging_service} ? (MessagingServiceSid => $twilio->{messaging_service}) : (),
         To => $params{to},
         Body => $params{body},
     );
