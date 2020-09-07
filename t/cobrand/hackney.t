@@ -1,6 +1,7 @@
 use utf8;
 use CGI::Simple;
 use DateTime;
+use JSON::MaybeXS;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use Open311;
@@ -43,6 +44,7 @@ $contact->set_extra_fields( ( {
 $contact->update;
 
 my $user = $mech->create_user_ok('user@example.org', name => 'Test User');
+my $phone_user = $mech->create_user_ok('+441632960461');
 my $hackney_user = $mech->create_user_ok('hackney_user@example.org', name => 'Hackney User', from_body => $hackney);
 $hackney_user->user_body_permissions->create({
     body => $hackney,
@@ -125,20 +127,40 @@ my $alert = FixMyStreet::DB->resultset('Alert')->create( {
     cobrand    => 'hackney',
 } )->confirm;
 
+FixMyStreet::DB->resultset('Alert')->create( {
+    parameter  => $p->id,
+    alert_type => 'new_updates',
+    user       => $phone_user,
+    cobrand    => 'hackney',
+} )->confirm;
+
 subtest "sends branded alert emails" => sub {
     $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef);
     $mech->clear_emails_ok;
+
+    my $mod_lwp = Test::MockModule->new('LWP::UserAgent');
+    my $text_content;
+    $mod_lwp->mock('post', sub {
+        my ($self, $url, %args) = @_;
+        my $data = decode_json($args{Content});
+        $text_content = $data->{personalisation}{text};
+        HTTP::Response->new(200, 'OK', [], '{ "id": 123 }');
+    });
 
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => ['hackney','fixmystreet'],
         COBRAND_FEATURES => {
             do_not_reply_email => { hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com' },
+            sms_authentication => { hackney => 1 },
+            govuk_notify => { hackney => { key => 'test-0123456789abcdefghijklmnopqrstuvwxyz-key-goes-here' } },
         },
     }, sub {
         FixMyStreet::Script::Alerts::send();
     };
 
+    my $id = $p->id;
+    like $text_content, qr{Your report \($id\) has had an update; to view: http://hackney.example.org/report/$id\n\nTo stop: http://hackney.example.org/A/[A-Za-z0-9]+};
     my $email = $mech->get_email;
     ok $email, "got an email";
     like $mech->get_text_body_from_email($email), qr/Hackney Council/, "emails are branded";

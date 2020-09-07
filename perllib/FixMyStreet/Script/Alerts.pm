@@ -298,21 +298,28 @@ sub _send_aggregated_alert(%) {
     my $cobrand = $data{cobrand};
 
     $cobrand->set_lang_and_domain( $data{lang}, 1, FixMyStreet->path_to('locale')->stringify );
-    FixMyStreet::Map::set_map_class($cobrand->map_type);
 
     my $user = $data{alert_user};
 
-    # Ignore phone-only users
-    return unless $user->email_verified;
+    # Only send text alerts for new report updates at present
+    my $allow_phone_update = ($user->phone_verified && $data{is_new_update} && $cobrand->sms_authentication);
+    return unless $user->email_verified || $allow_phone_update;
 
     # Mark user as active as they're being sent an alert
     $user->set_last_active;
     $user->update;
 
-    my $email = $data{alert_user}->email;
-    my ($domain) = $email =~ m{ @ (.*) \z }x;
+    my @check;
+    if ($user->email_verified) {
+        push @check, $user->email;
+        my ($domain) = $user->email =~ m{ @ (.*) \z }x;
+        push @check, $domain;
+    }
+    if ($user->phone_verified) {
+        push @check, $user->phone;
+    }
     return if $data{schema}->resultset('Abuse')->search( {
-        email => [ $email, $domain ]
+        email => \@check,
     } )->first;
 
     my $token = $data{schema}->resultset("Token")->new_result( {
@@ -320,10 +327,30 @@ sub _send_aggregated_alert(%) {
         data  => {
             id => $data{alert_id},
             type => 'unsubscribe',
-            email => $email,
         }
     } );
     $data{unsubscribe_url} = $cobrand->base_url( $data{cobrand_data} ) . '/A/' . $token->token;
+
+    my $result;
+    if ($allow_phone_update && !$user->email_verified) {
+        $result = _send_aggregated_alert_phone(%data);
+    } else {
+        $result = _send_aggregated_alert_email(%data);
+    }
+
+    if ($result->{success}) {
+        $token->insert();
+    } else {
+        warn "Failed to send alert $data{alert_id}: $result->{error}";
+    }
+}
+
+sub _send_aggregated_alert_email {
+    my %data = @_;
+
+    my $cobrand = $data{cobrand};
+
+    FixMyStreet::Map::set_map_class($cobrand->map_type);
 
     my $sender = FixMyStreet::Email::unique_verp_id([ 'alert', $data{alert_id} ], $cobrand->call_hook('verp_email_domain'));
     my $result = FixMyStreet::Email::send_cron(
@@ -331,7 +358,7 @@ sub _send_aggregated_alert(%) {
         "$data{template}.txt",
         \%data,
         {
-            To => $email,
+            To => $data{alert_user}->email,
         },
         $sender,
         0,
@@ -340,10 +367,19 @@ sub _send_aggregated_alert(%) {
     );
 
     unless ($result) {
-        $token->insert();
+        return { success => 1 };
     } else {
-        print "Failed to send alert $data{alert_id}!";
+        return { error => "failed to send email" };
     }
+}
+
+sub _send_aggregated_alert_phone {
+    my %data = @_;
+    my $result = FixMyStreet::SMS->new(cobrand => $data{cobrand})->send(
+        to => $data{alert_user}->phone,
+        body => sprintf(_("Your report (%d) has had an update; to view: %s\n\nTo stop: %s"), $data{id}, $data{problem_url}, $data{unsubscribe_url}),
+    );
+    return $result;
 }
 
 sub _get_address_from_geocode {
