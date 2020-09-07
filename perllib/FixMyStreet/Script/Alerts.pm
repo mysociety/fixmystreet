@@ -73,6 +73,8 @@ sub send() {
         my %data = ( template => $alert_type->template, data => [], schema => $schema );
         while (my $row = $query->fetchrow_hashref) {
 
+            $row->{is_new_update} = defined($row->{item_text});
+
             my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->{alert_cobrand})->new();
             $cobrand->set_lang_and_domain( $row->{alert_lang}, 1, FixMyStreet->path_to('locale')->stringify );
 
@@ -95,7 +97,7 @@ sub send() {
             } );
 
             # this is currently only for new_updates
-            if (defined($row->{item_text})) {
+            if ($row->{is_new_update}) {
                 # this might throw up the odd false positive but only in cases where the
                 # state has changed and there was already update text
                 if ($row->{item_problem_state} &&
@@ -113,7 +115,7 @@ sub send() {
 
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 $last_problem_state = '';
-                _send_aggregated_alert_email(%data);
+                _send_aggregated_alert(%data);
                 %data = ( template => $alert_type->template, data => [], schema => $schema );
             }
 
@@ -135,14 +137,10 @@ sub send() {
 
             my $url = $cobrand->base_url_for_report($row);
             # this is currently only for new_updates
-            if (defined($row->{item_text})) {
+            if ($row->{is_new_update}) {
                 if ( $cobrand->moniker ne 'zurich' && $row->{alert_user_id} == $row->{user_id} ) {
                     # This is an alert to the same user who made the report - make this a login link
                     # Don't bother with Zurich which has no accounts
-                    my $user = $schema->resultset('User')->find( {
-                        id => $row->{alert_user_id}
-                    } );
-                    $data{alert_user} = $user;
                     my $token_obj = $schema->resultset('Token')->create( {
                         scope => 'alert_to_reporter',
                         data  => {
@@ -199,6 +197,10 @@ sub send() {
 
             if (!$data{alert_user_id}) {
                 %data = (%data, %$row);
+                my $user = $schema->resultset('User')->find( {
+                    id => $row->{alert_user_id}
+                } );
+                $data{alert_user} = $user;
                 if ($ref eq 'area_problems') {
                     my $va_info = FixMyStreet::MapIt::call('area', $row->{alert_parameter});
                     $data{area_name} = $va_info->{name};
@@ -217,7 +219,7 @@ sub send() {
             $last_alert_id = $row->{alert_id};
         }
         if ($last_alert_id) {
-            _send_aggregated_alert_email(%data);
+            _send_aggregated_alert(%data);
         }
     }
 
@@ -286,11 +288,11 @@ sub send() {
             };
             push @{$data{data}}, $row;
         }
-        _send_aggregated_alert_email(%data) if @{$data{data}};
+        _send_aggregated_alert(%data) if @{$data{data}};
     }
 }
 
-sub _send_aggregated_alert_email(%) {
+sub _send_aggregated_alert(%) {
     my %data = @_;
 
     my $cobrand = $data{cobrand};
@@ -298,19 +300,14 @@ sub _send_aggregated_alert_email(%) {
     $cobrand->set_lang_and_domain( $data{lang}, 1, FixMyStreet->path_to('locale')->stringify );
     FixMyStreet::Map::set_map_class($cobrand->map_type);
 
-    if (!$data{alert_user}) {
-        my $user = $data{schema}->resultset('User')->find( {
-            id => $data{alert_user_id}
-        } );
-        $data{alert_user} = $user;
-    }
+    my $user = $data{alert_user};
 
     # Ignore phone-only users
-    return unless $data{alert_user}->email_verified;
+    return unless $user->email_verified;
 
     # Mark user as active as they're being sent an alert
-    $data{alert_user}->set_last_active;
-    $data{alert_user}->update;
+    $user->set_last_active;
+    $user->update;
 
     my $email = $data{alert_user}->email;
     my ($domain) = $email =~ m{ @ (.*) \z }x;
