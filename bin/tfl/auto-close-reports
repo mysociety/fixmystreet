@@ -1,0 +1,48 @@
+#!/usr/bin/env perl
+
+# Closes reports that meet the following criteria:
+#  * status is action scheduled
+#  * in a category with a fixed - council auto response template
+#  * over n days in action scheduled state (n is an argument)
+#
+# Reports matching these criteria are marked as fixed - council and the
+# relevant response template text is added as a comment.
+
+use warnings;
+use v5.14;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet;
+use Getopt::Long;
+use FixMyStreet::Script::TfL::AutoClose;
+
+my %h;
+GetOptions(\%h, 'verbose|v', 'days|d', 'help|h', 'commit|c');
+pod2usage(0) if $h{help};
+
+FixMyStreet::Script::TfL::AutoClose->new(%h)->close;
+
+__END__
+
+=head1 NAME
+
+auto-close-reports - set action_scheduled reports to fixed
+
+=head1 SYNOPSIS
+
+auto-close-reports --commit
+
+ Options:
+   --commit      Actually close any reports
+   --days        Number of days before autoclosing
+   --verbose     Output how many reports have been closed
+   --help        This help message
+
+=cut
