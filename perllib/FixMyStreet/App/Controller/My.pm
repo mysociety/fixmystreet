@@ -319,6 +319,26 @@ sub anonymize : Path('anonymize') {
     }
 }
 
+sub notify_preference : Local : Args(0) {
+    my ( $self, $c ) = @_;
+
+    unless ($c->req->method eq 'POST') {
+        return $c->res->redirect('/my');
+    }
+
+    $c->forward('/auth/check_csrf_token');
+
+    my $update_notify = $c->get_param('update_notify');
+    my $alert_notify = $c->get_param('alert_notify');
+
+    $c->user->set_extra_metadata(
+        update_notify => $update_notify,
+        alert_notify => $alert_notify,
+    );
+    $c->user->update;
+    $c->res->redirect('/my');
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

@@ -31,6 +31,9 @@ li .my-account-buttons a {
     padding: 0 0.5em;
 }
 </style>
+
+<form method="post" action="[% c.uri_for_action('/my/notify_preference') %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
 <ul>
 <li>[% loc('Name:') %] [% c.user.name %]
 <li>[% loc('Email:') %] [% c.user.email OR '-' %]
@@ -57,7 +60,37 @@ li .my-account-buttons a {
         <a href="/auth/change_phone">[% loc('Change') %]</a>
       [% END %]
     </p>
+[% current_pref = c.user.get_extra_metadata('update_notify') %]
+<li>[% loc('Receive update notifications by') %]:
+    <p class="segmented-control segmented-control--radio">
+      [% IF c.user.email_verified %]
+        <input type="radio" name="update_notify" id="update_notify_email" value="email"[% ' checked' IF current_pref == 'email' OR NOT current_pref %]>
+        <label class="btn" for="update_notify_email">[% loc('Email') %]</label>
+      [% END %]
+      [% IF c.user.phone_verified AND c.cobrand.sms_authentication %]
+        <input type="radio" name="update_notify" id="update_notify_phone" value="phone"[% ' checked' IF current_pref == 'phone' %]>
+        <label class="btn" for="update_notify_phone">[% loc('Phone') %]</label>
+      [% END %]
+        <input type="radio" name="update_notify" id="update_notify_none" value="none"[% ' checked' IF current_pref == 'none' %]>
+        <label class="btn" for="update_notify_none">[% loc('None') %]</label>
+    </p>
+</li>
+[% current_pref = c.user.get_extra_metadata('alert_notify') %]
+<li>[% loc('Receive alert notifications by') %]:
+    <p class="segmented-control segmented-control--radio">
+      [% IF c.user.email_verified %]
+        <input type="radio" name="alert_notify" id="alert_notify_email" value="email"[% ' checked' IF current_pref == 'email' OR NOT current_pref %]>
+        <label class="btn" for="alert_notify_email">[% loc('Email') %]</label>
+      [% END %]
+        <input type="radio" name="alert_notify" id="alert_notify_none" value="none"[% ' checked' IF current_pref == 'none' %]>
+        <label class="btn" for="alert_notify_none">[% loc('None') %]</label>
+    </p>
+    <p>
+        <input class="btn btn--block" type="submit" value="[% loc('Update') %]">
+    </p>
+</li>
 </ul>
+</form>
 
 <p class="my-account-buttons">
   [% IF c.session.oauth.change_password_uri %]

@@ -301,6 +301,10 @@ sub _send_aggregated_alert(%) {
 
     my $user = $data{alert_user};
 
+    my $pref = $data{is_new_update} ? 'update_notify' : 'alert_notify';
+    $pref = $user->get_extra_metadata($pref) || '';
+    return if $pref eq 'none';
+
     # Only send text alerts for new report updates at present
     my $allow_phone_update = ($user->phone_verified && $data{is_new_update} && $cobrand->sms_authentication);
     return unless $user->email_verified || $allow_phone_update;
@@ -332,7 +336,7 @@ sub _send_aggregated_alert(%) {
     $data{unsubscribe_url} = $cobrand->base_url( $data{cobrand_data} ) . '/A/' . $token->token;
 
     my $result;
-    if ($allow_phone_update && !$user->email_verified) {
+    if ($allow_phone_update && (!$user->email_verified || $pref eq 'phone')) {
         $result = _send_aggregated_alert_phone(%data);
     } else {
         $result = _send_aggregated_alert_email(%data);

@@ -25,7 +25,7 @@ sub dispatch_request {
                 [ '{"code":"21408", "message": "Unable to send"}' ] ];
         }
         push @{$self->texts}, $data;
-        return [ 200, [ 'Content-Type' => 'application/json' ], [ '{}' ] ];
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ '{"sid": "this-is-a-sid"}' ] ];
     },
 }
 

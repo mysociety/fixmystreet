@@ -71,4 +71,38 @@ is $problems[0]->discard_changes->anonymous, 1, 'Problem from form made anonymou
 is $problems[2]->discard_changes->anonymous, 1, 'Other user problem made anonymous';
 is $update[0]->discard_changes->anonymous, 1, 'User update made anonymous';
 
+subtest 'test setting of notification preferences' => sub {
+    FixMyStreet::override_config {
+        SMS_AUTHENTICATION => 1,
+    }, sub {
+        $mech->get_ok('/my/notify_preference');
+        is $mech->uri->path, '/my';
+        $mech->get_ok('/my');
+        $mech->content_contains('id="update_notify_email" value="email" checked');
+        $mech->content_lacks('id="update_notify_phone" value="phone"');
+        $mech->content_contains('id="alert_notify_email" value="email" checked');
+        $mech->submit_form_ok({ with_fields => { update_notify => 'none', alert_notify => 'none' } });
+        $mech->content_contains('id="update_notify_none" value="none" checked');
+        $mech->content_lacks('id="update_notify_phone" value="phone"');
+        $mech->content_contains('id="alert_notify_none" value="none" checked');
+        $user->update({ phone => '01234 567890', phone_verified => 1 });
+        $mech->get_ok('/my');
+        $mech->content_contains('id="update_notify_email" value="email">');
+        $mech->content_contains('id="update_notify_phone" value="phone"');
+        $mech->submit_form_ok({ with_fields => { update_notify => 'phone', alert_notify => 'email' } });
+        $mech->content_contains('id="update_notify_phone" value="phone" checked');
+        $mech->content_contains('id="alert_notify_email" value="email" checked');
+        $user->update({ email_verified => 0 });
+        $mech->get_ok('/my');
+        $mech->content_lacks('id="update_notify_email" value="email"');
+        $mech->content_contains('id="update_notify_phone" value="phone"');
+        $mech->content_lacks('id="alert_notify_email" value="email"');
+        $mech->submit_form_ok({ with_fields => { update_notify => 'phone', alert_notify => 'none' } });
+        $mech->content_lacks('id="update_notify_email" value="email"');
+        $mech->content_contains('id="update_notify_phone" value="phone" checked');
+        $mech->content_lacks('id="alert_notify_email" value="email"');
+        $mech->content_contains('id="alert_notify_none" value="none" checked');
+    };
+};
+
 done_testing();

@@ -34,10 +34,10 @@ And
 =cut
 
 sub set_extra_metadata {
-    my ($self,  $key, $value) = @_;
+    my ($self, %new) = @_;
     my $extra = $self->get_extra();
 
-    $self->extra({ %$extra, $key => $value });
+    $self->extra({ %$extra, %new });
 };
 
 =head2 set_extra_metadata_if_undefined
