@@ -52,7 +52,7 @@ $ncc->update( { comment_user_id => $counciluser->id } );
 
 subtest 'Check district categories hidden on cobrand' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        ALLOWED_COBRANDS=> 'northamptonshire',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok( '/around' );
@@ -70,7 +70,7 @@ subtest 'Check district categories hidden on cobrand' => sub {
 
 subtest 'Check updates not sent for defects' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        ALLOWED_COBRANDS=> 'northamptonshire',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         my $updates = Open311::PostServiceRequestUpdates->new();
@@ -86,7 +86,7 @@ $report->update({ user => $user });
 $comment->update({ extra => undef });
 subtest 'check updates sent for non defects' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        ALLOWED_COBRANDS=> 'northamptonshire',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         my $updates = Open311::PostServiceRequestUpdates->new();
@@ -112,7 +112,7 @@ subtest 'check further investigation state' => sub {
     $comment->update();
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        ALLOWED_COBRANDS=> 'northamptonshire',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
@@ -133,7 +133,7 @@ subtest 'check further investigation state' => sub {
     $comment->update;
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        ALLOWED_COBRANDS=> 'northamptonshire',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
@@ -151,7 +151,7 @@ subtest 'check further investigation state' => sub {
     $mech->content_contains('Under further investigation');
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        ALLOWED_COBRANDS=> 'northamptonshire',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
@@ -177,7 +177,7 @@ subtest 'check further investigation state' => sub {
     $mech->content_lacks('Under further investigation');
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { northamptonshire => '.' } ],
+        ALLOWED_COBRANDS=> 'northamptonshire',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok('/report/' . $comment->problem_id);
@@ -187,7 +187,7 @@ subtest 'check further investigation state' => sub {
     $mech->content_lacks('Under further investigation');
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        ALLOWED_COBRANDS=> 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
@@ -212,7 +212,7 @@ subtest 'check further investigation state' => sub {
     $mech->content_contains('Under further investigation');
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        ALLOWED_COBRANDS=> 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
@@ -238,7 +238,7 @@ subtest 'check further investigation state' => sub {
     $mech->content_lacks('Under further investigation');
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        ALLOWED_COBRANDS=> 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok('/report/' . $comment->problem_id);
@@ -246,6 +246,41 @@ subtest 'check further investigation state' => sub {
 
     $mech->content_contains('Investigating');
     $mech->content_lacks('Under further investigation');
+
+    $comment->set_extra_metadata('external_status_code' => '');
+    $comment->update;
+    my $comment2 = FixMyStreet::DB->resultset('Comment')->create( {
+        mark_fixed => 0,
+        user => $user,
+        problem => $report,
+        anonymous => 0,
+        text => 'this is a comment',
+        confirmed => DateTime->now,
+        state => 'confirmed',
+        problem_state => 'investigating',
+        cobrand => 'default',
+    } );
+    $comment2->set_extra_metadata('external_status_code' => 'further');
+    $comment2->update;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS=> 'northamptonshire',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            extra_state_mapping => {
+                northamptonshire => {
+                    investigating => {
+                        further => 'Under further investigation'
+                    }
+                }
+            }
+        }
+    }, sub {
+        $mech->get_ok('/report/' . $comment->problem_id);
+    };
+
+    $mech->content_contains('Investigating');
+    $mech->content_contains('Under further investigation');
 };
 
 subtest 'check pin colour / reference shown' => sub {
