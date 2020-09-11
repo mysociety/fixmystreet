@@ -844,8 +844,9 @@ subtest "check comment with no status change has not status in meta" => sub {
         $user->from_body( undef );
         $user->update;
 
+        $report->update( { state => 'fixed - user' } );
         my $comment = $report->comments->first;
-        $comment->update( { mark_fixed => 1, problem_state => 'fixed - council' } );
+        $comment->update( { mark_fixed => 1, problem_state => 'fixed - user' } );
 
         $mech->get_ok("/report/$report_id");
 
@@ -871,8 +872,8 @@ subtest "check comment with no status change has not status in meta" => sub {
 
         my $update = pop @updates;
 
-        is $report->state, 'fixed - council', 'correct report state';
-        is $update->problem_state, 'fixed - council', 'correct update state';
+        is $report->state, 'fixed - user', 'correct report state';
+        is $update->problem_state, 'fixed - user', 'correct update state';
         my $update_meta = $mech->extract_update_metas;
         unlike $update_meta->[1], qr/State changed to/, 'update meta does not include state change';
 
