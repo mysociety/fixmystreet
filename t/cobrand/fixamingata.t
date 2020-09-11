@@ -1,5 +1,6 @@
 use mySociety::Locale;
 
+use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -79,7 +80,7 @@ my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create({
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixamingata' ],
 }, sub {
-    FixMyStreet::DB->resultset('AlertType')->email_alerts();
+    FixMyStreet::Script::Alerts::send();
 };
 
 $email = $mech->get_email;
