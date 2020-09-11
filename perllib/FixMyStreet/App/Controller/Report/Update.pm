@@ -592,6 +592,11 @@ sub send_confirmation_text : Private {
     my ( $self, $c ) = @_;
     my $update = $c->stash->{update};
     $c->forward('/auth/phone/send_token', [ $c->stash->{token_data}, 'comment', $update->user->phone ]);
+    my $error = $c->render_fragment( 'auth/_username_error.html', { default => 'phone' });
+    if ($error) {
+        $c->stash->{field_errors}{username_register} = $error;
+        $c->go( '/report/display', [ $c->stash->{problem}->id ], [] );
+    }
     $c->stash->{submit_url} = '/report/update/text';
 }
 

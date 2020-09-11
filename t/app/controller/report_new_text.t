@@ -72,6 +72,19 @@ foreach my $test (
         },
         errors => [ 'Please enter a mobile number', ],
     },
+    {
+        msg => 'number that fails',
+        pc => 'EH1 1BB',
+        fields => {
+            update_method => 'phone', phone => '+18165550101', email => '',
+            %defaults,
+        },
+        changes => {
+            username => '',
+            phone => '+1 816-555-0101',
+        },
+        errors => [ 'Sending a confirmation text failed: "Unable to send (21408)"' ],
+    },
   )
 {
     subtest "check form errors where $test->{msg}" => sub {
@@ -82,6 +95,7 @@ foreach my $test (
             MAPIT_URL => 'http://mapit.uk/',
             SMS_AUTHENTICATION => 1,
             PHONE_COUNTRY => 'GB',
+            TWILIO_ACCOUNT_SID => 'AC123',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
                 "submit location" );

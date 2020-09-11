@@ -1340,6 +1340,11 @@ sub send_problem_confirm_text : Private {
 
     $data->{id} = $report->id;
     $c->forward('/auth/phone/send_token', [ $data, 'problem', $report->user->phone ]);
+    my $error = $c->render_fragment( 'auth/_username_error.html', { default => 'phone' });
+    if ($error) {
+        $c->stash->{field_errors}{phone} = $error;
+        $c->forward('generate_map');
+    }
     $c->stash->{submit_url} = '/report/new/text';
 }
 

@@ -58,22 +58,25 @@ my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
 my $comment_id = $comment->id;
 ok $comment, "created test update - $comment_id";
 
+my %defaults = (
+    username => '',
+    update => 'Update',
+    name => 'Name',
+    photo1 => '',
+    photo2 => '',
+    photo3 => '',
+    fixed => undef,
+    add_alert => 1,
+    may_show_name => undef,
+    password_sign_in => '',
+    password_register => '',
+);
 for my $test (
     {
         desc => 'Invalid phone',
         fields => {
             username_register => '01214960000000',
-            username => '',
-            update => 'Update',
-            name => 'Name',
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
-            fixed => undef,
-            add_alert => 1,
-            may_show_name => undef,
-            password_sign_in => '',
-            password_register => '',
+            %defaults,
         },
         changes => {},
         field_errors => [ 'Please check your phone number is correct' ]
@@ -82,20 +85,19 @@ for my $test (
         desc => 'landline number',
         fields => {
             username_register => '01214960000',
-            username => '',
-            update => 'Update',
-            name => 'Name',
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
-            fixed => undef,
-            add_alert => 1,
-            may_show_name => undef,
-            password_register => '',
-            password_sign_in => '',
+            %defaults,
         },
         changes => {},
         field_errors => [ 'Please enter a mobile number' ]
+    },
+    {
+        desc => 'fails to send',
+        fields => {
+            username_register => '+18165550101',
+            %defaults,
+        },
+        changes => {},
+        field_errors => [ 'Sending a confirmation text failed: "Unable to send (21408)"' ]
     },
   )
 {
@@ -104,6 +106,7 @@ for my $test (
 
         FixMyStreet::override_config {
             SMS_AUTHENTICATION => 1,
+            TWILIO_ACCOUNT_SID => 'AC123',
             PHONE_COUNTRY => 'GB',
         }, sub {
             $mech->submit_form_ok( { with_fields => $test->{fields} }, 'submit update' );
