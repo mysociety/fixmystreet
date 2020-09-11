@@ -454,7 +454,8 @@ subtest 'Inspect form state choices' => sub {
     my $id = $report->id;
     $mech->get_ok("/report/$id");
     $mech->content_lacks('for triage');
-    $mech->content_lacks('action scheduled');
+    $mech->content_lacks('planned');
+    $mech->content_lacks('investigating');
 };
 
 subtest "change category, report resent to new location" => sub {
