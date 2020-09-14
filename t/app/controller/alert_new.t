@@ -544,6 +544,7 @@ subtest "Test no marked as confirmed added to alerts" => sub {
 
     my ($report) = $mech->create_problems_for_body(1, 1, 'Testing', {
         user => $user1,
+        state => 'investigating',
     });
     my $report_id = $report->id;
     ok $report, "created test report - $report_id";
@@ -556,6 +557,8 @@ subtest "Test no marked as confirmed added to alerts" => sub {
     ok $alert, 'created alert for other user';
 
     $mech->create_comment_for_problem($report, $user3, 'Staff User', 'this is update', 'f', 'confirmed', 'confirmed', { confirmed  => $dt->clone->add( hours => 9 ) });
+    $mech->create_comment_for_problem($report, $user3, 'Staff User', 'this is another update', 'f', 'confirmed', 'investigating', { confirmed  => $dt->clone->add( hours => 10 ) });
+    $mech->create_comment_for_problem($report, $user3, 'Staff User', 'this is a third update, same state', 'f', 'confirmed', 'investigating', { confirmed  => $dt->clone->add( hours => 11 ) });
 
     $mech->clear_emails_ok;
     FixMyStreet::override_config {
@@ -570,6 +573,8 @@ subtest "Test no marked as confirmed added to alerts" => sub {
     like $body, qr/The following updates have been left on this report:/, 'email is about updates to existing report';
     like $body, qr/Staff User/, 'Update comes from correct user';
     unlike $body, qr/State changed to: Open/s, 'no marked as confirmed text';
+    like $body, qr/State changed to: Investigating/, 'mention of state change';
+    unlike $body, qr/State changed to: Investigating.*State changed to: Investigating/s, 'only one mention of state change';
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);

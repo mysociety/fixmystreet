@@ -69,7 +69,7 @@ sub send() {
         $query = FixMyStreet::DB->schema->storage->dbh->prepare($query);
         $query->execute();
         my $last_alert_id;
-        my $last_problem_state = '';
+        my $last_problem_state = 'confirmed';
         my %data = ( template => $alert_type->template, data => [], schema => $schema );
         while (my $row = $query->fetchrow_hashref) {
 
@@ -100,15 +100,13 @@ sub send() {
             if ($row->{is_new_update}) {
                 # this might throw up the odd false positive but only in cases where the
                 # state has changed and there was already update text
-                if ($row->{item_problem_state} &&
-                    !( $last_problem_state eq '' && $row->{item_problem_state} eq 'confirmed' ) &&
-                    $last_problem_state ne $row->{item_problem_state}
-                ) {
+                if ($row->{item_problem_state} && $last_problem_state ne $row->{item_problem_state}) {
                     my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand->moniker);
 
                     my $update = _('State changed to:') . ' ' . $state;
                     $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
                                                             $update;
+                    $last_problem_state = $row->{item_problem_state};
                 }
                 next unless $row->{item_text};
             }
