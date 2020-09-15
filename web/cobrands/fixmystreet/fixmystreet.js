@@ -1746,6 +1746,11 @@ $(function() {
         setup_func();
     });
 
+    // We only do popstate things on normal map pages, which set this variable
+    if (!fixmystreet.page || $('body').hasClass('noise')) {
+        return;
+    }
+
     // Have a fake history entry so we can cover all eventualities.
     if ('replaceState' in history) {
         history.replaceState({ initial: true }, null);
@@ -1761,11 +1766,6 @@ $(function() {
                 // Note: no pushState callbacks in these display_* calls,
                 // because we're already inside a popstate: We want to roll
                 // back to a previous state, not create a new one!
-
-                if (!fixmystreet.page) {
-                    // Only care about map pages, which set this variable
-                    return;
-                }
 
                 var location = window.history.location || window.location;
 
