@@ -1,0 +1,78 @@
+$search-help-alignment: center !default;
+$search-help-background: transparent !default;
+$search-help-color: inherit !default;
+$search-help-margin: -1em -1em 0 -1em !default; // overlap .container padding
+$search-help-margin-desktop: -1em -1em -2em -1em !default; // overlap .content and .tablewrapper padding-bottoms
+$search-help-header-background: #DB3914 !default;
+$search-help-header-color: #fff !default;
+$search-help-header-font-weight: bold !default;
+$search-help-header-font-size: 1em !default;
+$search-help-header-font-size-desktop: $search-help-header-font-size !default;
+$search-help-header-font-family: null !default;
+
+.search-help {
+    margin: $search-help-margin;
+    background: $search-help-background;
+    color: $search-help-color;
+
+    // Override greedy `.tablewrapper > div` styles
+    .tablewrapper > & {
+        display: block;
+        width: auto;
+    }
+
+    @media (min-width: 48em) {
+        margin: $search-help-margin-desktop;
+    }
+}
+
+.search-help__header {
+    margin: 0;
+    text-align: $search-help-alignment;
+    background: $search-help-header-background;
+    color: $search-help-header-color;
+    font-family: $search-help-header-font-family;
+    font-weight: $search-help-header-font-weight;
+    font-size: $search-help-header-font-size;
+    padding: 1em; // IE8
+    padding: 1rem;
+
+    @media (min-width: 48em) {
+        font-size: $search-help-header-font-size-desktop;
+    }
+}
+
+.search-help__tips {
+    overflow: auto; // expand to include margin-bottom on last child
+
+    @media (min-width: 48em) {
+        @include flex-container();
+        @if ( $search-help-alignment == left ) {
+            @include justify-content(flex-start);
+        } @else if ( $search-help-alignment == right ) {
+            @include justify-content(flex-end);
+        } @else {
+            @include justify-content(center);
+            padding: 1em 0;
+        }
+    }
+
+    h3 {
+        margin-top: 0;
+        text-align: $search-help-alignment;
+    }
+}
+
+.search-help__tips__category {
+    margin: 1em;
+
+    @media (min-width: 48em) {
+        max-width: 20em;
+    }
+
+    ul {
+        margin-bottom: 0;
+        font-size: 0.875em;
+        margin-left: 1em;
+    }
+}

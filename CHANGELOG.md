@@ -50,6 +50,7 @@
         - Rewrite open311-update-reports to share code and improve functionality.
     - UK:
         - Add option for recaptcha. #3050
+        - Display search tips when location search returns no results. #3180
 
 * v3.0.1 (6th May 2020)
     - New features:

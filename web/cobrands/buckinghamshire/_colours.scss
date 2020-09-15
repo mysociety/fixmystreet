@@ -55,6 +55,10 @@ $col_click_map_dark: darken($bucks_charcoal, 10%);
 $header-top-border-width: 0;
 $header-top-border: 0;
 
+$search-help-alignment: left;
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
 @mixin bucks-button {
   background-color: $bucks_button_bg;
   border: 0;

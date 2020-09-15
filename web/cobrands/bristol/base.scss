@@ -118,3 +118,7 @@ label {
     color: $g7 !important;
     font-weight: bold !important;
 }
+
+b, strong {
+  @extend %bold-font;
+}

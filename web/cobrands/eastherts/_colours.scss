@@ -35,3 +35,8 @@ $container-max-width: 70.5em; // match 1128px row width in East Herts template
 $eh-header-height: 84px + 16px + 16px;
 $eh-nav-height: 48px;
 $mappage-header-height: $eh-header-height + $eh-nav-height;
+
+$search-help-alignment: left;
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+$search-help-margin-desktop: 0;

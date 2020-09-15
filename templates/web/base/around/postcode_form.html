@@ -35,7 +35,7 @@
         %]
         <a href="[% c.uri_for('/around', link_params) | html %]" id="geolocate_link">&hellip; [% loc('or use my location') %]</a>
 
-        [% UNLESS possible_location_matches %]
+        [% UNLESS possible_location_matches OR location_error_pc_lookup %]
             [% INCLUDE 'around/_postcode_form_post.html' %]
         [% END %]
     </div>

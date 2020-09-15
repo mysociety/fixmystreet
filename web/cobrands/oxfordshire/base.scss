@@ -141,6 +141,13 @@ ol.big-numbers {
         margin-bottom: 1em;
         padding-bottom: 5px;
     }
+
+    // Overloaded selector, to override `.content h2`
+    h2.search-help__header {
+        margin-bottom: 0;
+        padding-bottom: 1rem;
+        font-size: 1em;
+    }
 }
 
 dd, p {
