@@ -45,6 +45,9 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Your report to Hackney Council has been logged/;
         is $user->alerts->count, 1;
+        my $report = $user->problems->first;
+        is $report->title, "Noise report";
+        is $report->detail, "Kind of noise: music\nNoise details: Details\n\nWhere is the noise coming from? residence\nNoise source: house3\n\nIs the noise happening now? Yes\nWhat days does the noise happen? monday, thursday\nWhat time does the noise happen? morning, evening\n";
     };
     subtest 'Report new noise, your address missing, source address unknown' => sub {
         $mech->get_ok('/noise');
@@ -95,6 +98,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your additional report has been submitted');
+        my $update = $user->comments->first;
+        is $update->text, "Kind of noise: music\nNoise details: Details\n\nIs the noise happening now? Yes\nWhat days does the noise happen? friday, saturday\nWhat time does the noise happen? night\n";
     };
 };
 

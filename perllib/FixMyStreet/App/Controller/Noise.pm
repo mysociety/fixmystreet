@@ -113,7 +113,6 @@ sub process_noise_report : Private {
     $user->name($data->{name});
     $user->phone($data->{phone});
 
-    use Data::Dumper;
     my %shared = (
         state => 'unconfirmed',
         cobrand => $c->cobrand->moniker,
@@ -125,20 +124,44 @@ sub process_noise_report : Private {
         extra => $data,
     );
     my $object;
+    my $now = $data->{happening_now} ? 'Yes' : 'No';
+    my $days = join(', ', @{$data->{happening_days}||[]});
+    my $times = join(', ', @{$data->{happening_time}||[]});
     if ($data->{report}) {
         # Update on existing report. Will be logged in.
         my $report = FixMyStreet::DB->resultset('Problem')->find($data->{report});
+
         # Create an update!
+        my $text = <<EOF;
+Kind of noise: $data->{kind}
+Noise details: $data->{more_details}
+
+Is the noise happening now? $now
+What days does the noise happen? $days
+What time does the noise happen? $times
+EOF
         $object = $c->model('DB::Comment')->new({
             problem => $report,
-            text => Dumper($data),
+            text => $text,
             problem_state => $report->state,
             %shared,
         });
     } else {
         # New report
         my $title = 'Noise report';
-        my $detail = Dumper($data);
+
+        my $addr = $data->{address_known} ? $data->{source_address} : "$data->{latitude}, $data->{longitude}, $data->{radius}";
+        my $detail = <<EOF;
+Kind of noise: $data->{kind}
+Noise details: $data->{more_details}
+
+Where is the noise coming from? $data->{where}
+Noise source: $addr
+
+Is the noise happening now? $now
+What days does the noise happen? $days
+What time does the noise happen? $times
+EOF
         $object = $c->model('DB::Problem')->new({
             non_public => 1,
             category => 'Noise report',
