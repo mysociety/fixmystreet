@@ -14,4 +14,14 @@
   [% PROCESS form %]
 </form>
 
+<script nonce="[% csp_nonce %]">
+(function(){
+    var id;
+    id = document.getElementById('form-kind_other-row');
+    if (id) { id.className += ' hidden-js'; }
+    id = document.getElementById('form-estates-row');
+    if (id) { id.className += ' hidden-js'; }
+})();
+</script>
+
 [% INCLUDE footer.html %]

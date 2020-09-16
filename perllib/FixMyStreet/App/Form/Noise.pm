@@ -206,17 +206,17 @@ has_field kind => (
     required => 1,
     tags => { last_differs => 1, small => 1 },
     options => [
-        { label => 'Aircraft', value => 'aircraft', },
-        { label => 'Banging', value => 'banging' },
-        { label => 'Car alarm', value => 'car' },
-        { label => 'DIY', value => 'diy' },
-        { label => 'Dog barking', value => 'dog', },
-        { label => 'House / intruder alarm', value => 'alarm' },
-        { label => 'Music', value => 'music' },
-        { label => 'Noise on the road', value => 'road' },
-        { label => 'Shouting', value => 'shouting' },
-        { label => 'TV', value => 'tv' },
-        { label => 'Other', value => 'other' },
+        { label => 'Aircraft', value => 'aircraft', data_hide => '#form-kind_other-row' },
+        { label => 'Banging', value => 'banging', data_hide => '#form-kind_other-row'  },
+        { label => 'Car alarm', value => 'car', data_hide => '#form-kind_other-row'  },
+        { label => 'DIY', value => 'diy', data_hide => '#form-kind_other-row'  },
+        { label => 'Dog barking', value => 'dog', data_hide => '#form-kind_other-row' },
+        { label => 'House / intruder alarm', value => 'alarm', data_hide => '#form-kind_other-row' },
+        { label => 'Music', value => 'music', data_hide => '#form-kind_other-row' },
+        { label => 'Noise on the road', value => 'road', data_hide => '#form-kind_other-row' },
+        { label => 'Shouting', value => 'shouting', data_hide => '#form-kind_other-row' },
+        { label => 'TV', value => 'tv', data_hide => '#form-kind_other-row' },
+        { label => 'Other', value => 'other', data_show => '#form-kind_other-row' },
     ],
 );
 
@@ -237,8 +237,8 @@ has_field where => (
     required => 1,
     label => 'Where is the noise coming from?',
     options => [
-        { label => 'A shop, bar, nightclub, or other business (including construction)', value => 'business' },
-        { label => 'A house, flat, apartment, or other residence', value => 'residence' },
+        { label => 'A shop, bar, nightclub, or other business (including construction)', value => 'business', data_hide => '#form-estates-row' },
+        { label => 'A house, flat, apartment, or other residence', value => 'residence', data_show => '#form-estates-row' },
     ],
 );
 
