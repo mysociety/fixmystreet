@@ -105,13 +105,13 @@ sub process_noise_report : Private {
     my $data = $form->saved_data;
 
     # Is this the best way to do it?
-    my $contributing_as_another_user = $c->user_exists && $c->user->from_body && $c->user->email ne $data->{email};
+    my $contributing_as_another_user = $c->user_exists && $c->user->from_body && $data->{email} && $c->user->email ne $data->{email};
 
     my $user = $c->user_exists && !$contributing_as_another_user
         ? $c->user->obj
         : $c->model('DB::User')->find_or_new( { email => $data->{email} } );
-    $user->name($data->{name});
-    $user->phone($data->{phone});
+    $user->name($data->{name}) if $data->{name};
+    $user->phone($data->{phone}) if $data->{phone};
 
     my %shared = (
         state => 'unconfirmed',
@@ -119,7 +119,7 @@ sub process_noise_report : Private {
         cobrand_data => 'noise',
         lang => $c->stash->{lang_code},
         user => $user,
-        name => $data->{name},
+        name => $user->name,
         anonymous => 0,
         extra => $data,
     );
