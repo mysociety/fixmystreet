@@ -21,4 +21,14 @@ sub disambiguate_location {
     };
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    # TODO: This is the same as Bexley - could be factored into its own Role.
+    $params->{service_request_id_ext} = $comment->problem->id;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 1;
