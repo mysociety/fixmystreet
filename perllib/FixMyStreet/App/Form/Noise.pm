@@ -296,7 +296,7 @@ has_field source_postcode => (
 has_page source_known_address => (
     fields => ['source_address', 'continue'],
     title => 'The source of the noise',
-    next => sub { $_[0]->{address} eq 'missing' ? 'address_unknown' : 'when' },
+    next => sub { $_[0]->{source_address} eq 'missing' ? 'address_unknown' : 'when' },
     update_field_list => sub {
         my $form = shift;
         my $options;
@@ -348,12 +348,14 @@ has_field pc => (
         my $ret = $c->forward('/location/determine_location_from_pc', [ $self->value ]);
         if (!$ret) {
             if ( $c->stash->{possible_location_matches} ) {
-                $self->add_error('Multiple matches - deal XXX');
+                $self->add_error('Multiple matches - deal somehow');
             } else {
                 $self->add_error($c->stash->{location_error});
             }
         }
-        $self->form->{found_location} = [ $c->stash->{latitude}, $c->stash->{longitude} ];
+        my $saved_data = $self->form->saved_data;
+        $saved_data->{latitude} = $c->stash->{latitude};
+        $saved_data->{longitude} = $c->stash->{longitude};
     },
 );
 
@@ -365,20 +367,15 @@ has_page map => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
-        my $previous_form = $form->previous_form;
-        if ($previous_form && $previous_form->{found_location}) {
-            return {
-                latitude => { default => $previous_form->{found_location}[0] },
-                longitude => { default => $previous_form->{found_location}[1] },
-            };
-        } elsif ($c->forward('/report/new/determine_location_from_tile_click')) {
+        if ($c->forward('/report/new/determine_location_from_tile_click')) {
             $c->forward('/around/check_location_is_acceptable', []);
             # We do not want to process the form if they have clicked the map
             $c->stash->{override_no_process} = 1;
-            return {
-                latitude => { default => $c->stash->{latitude} },
-                longitude => { default => $c->stash->{longitude} },
-            };
+
+            my $saved_data = $form->saved_data;
+            $saved_data->{latitude} = $c->stash->{latitude};
+            $saved_data->{longitude} = $c->stash->{longitude};
+            return {};
         }
     },
     post_process => sub {
