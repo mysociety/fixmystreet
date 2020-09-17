@@ -71,6 +71,9 @@ FixMyStreet::override_config {
         # Check going back skips the geocoding step
         $mech->submit_form_ok({ form_number => 3, fields => { goto => 'where' } });
         $mech->submit_form_ok({ with_fields => { where => 'residence', address_known => 0 } });
+        $mech->submit_form_ok({ button => 'goto-address_unknown' });
+        $mech->submit_form_ok({ with_fields => { pc => 'E8 2GY' } });
+        $mech->content_contains('"51.5"');
         $mech->submit_form_ok({ with_fields => { latitude => 51.549249, longitude => -0.054106, radius => 'medium' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 0,
