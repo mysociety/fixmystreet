@@ -4,7 +4,6 @@ it('loads the right front page', function() {
 });
 
 it('prevents clicking unless asset selected', function() {
-  this.skip();
   cy.server();
   cy.fixture('bus_stops.json');
   cy.fixture('bus_stops_none.json');
@@ -27,7 +26,6 @@ it('prevents clicking unless asset selected', function() {
 });
 
 it('selecting an asset allows a report', function() {
-  this.skip();
   cy.server();
   cy.fixture('bus_stops.json');
   cy.fixture('bus_stops_none.json');
@@ -50,7 +48,6 @@ it('selecting an asset allows a report', function() {
 });
 
 it('detects multiple assets at same location', function() {
-  this.skip();
   cy.server();
   cy.fixture('bus_stops.json');
   cy.fixture('bus_stops_none.json');
