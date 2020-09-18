@@ -30,6 +30,7 @@
         - Do not have bootstrap run sudo commands. #2930
         - Fix lookups in templates of categories with &s.
         - Fix a few obscure asset layer changing issues.
+        - Fix multiple disable messages for dropdown answers
     - Admin improvements:
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989

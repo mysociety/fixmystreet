@@ -332,12 +332,14 @@ sub disable_form_message : Private {
             my %category;
             foreach my $opt (@{$_->{values}}) {
                 if ($opt->{disable}) {
-                    $category{message} = $opt->{disable_message} || $_->{datatype_description};
-                    $category{code} = $_->{code};
-                    push @{$category{answers}}, $opt->{key};
+                    my $message = $opt->{disable_message} || $_->{datatype_description};
+                    $category{$message} ||= {};
+                    $category{$message}->{message} = $message;
+                    $category{$message}->{code} = $_->{code};
+                    push @{$category{$message}->{answers}}, $opt->{key};
                 }
             }
-            push @{$out{questions}}, \%category if %category;
+            push @{$out{questions}}, $_ for values %category;
         }
     }
 

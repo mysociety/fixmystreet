@@ -394,6 +394,14 @@ subtest "Category extras includes form disabling string" => sub {
         $contact4->push_extra_fields({ datatype_description => 'Please please ring', description => 'Is it dangerous?', code => 'dangerous',
             variable => 'true', order => '0', values => [ { name => 'Yes', key => 'yes', disable => 1 }, { name => 'No', key => 'no' } ]
         });
+        $contact4->push_extra_fields({ datatype_description => 'Please ring different numbers', description => 'What sort of dangerous?', code => 'danger_type',
+            variable => 'true', order => '0', values => [
+                { name => 'slightly', key => 'slightly', disable => 1, disable_message => 'Ring the slightly number'  },
+                { name => 'very', key => 'very', disable => 1, disable_message => 'Ring the very number'  },
+                { name => 'extremely', key => 'extremely', disable => 1, disable_message => 'Ring the very number'  },
+                { name => 'No', key => 'no' }
+            ]
+        });
         $contact4->update;
         for (
           { url => '/report/new/ajax?' },
@@ -401,6 +409,7 @@ subtest "Category extras includes form disabling string" => sub {
         ) {
             my $json = $mech->get_ok_json($_->{url} . '&latitude=55.952055&longitude=-3.189579');
             my $output = $json->{by_category} ? $json->{by_category}{Pothole}{disable_form} : $json->{disable_form};
+            $output->{questions} = [ sort { $a->{message} cmp $b->{message} } @{ $output->{questions} } ];
             is_deeply $output, {
                 all => 'Please ring us!',
                 questions => [
@@ -408,6 +417,16 @@ subtest "Category extras includes form disabling string" => sub {
                         message => 'Please please ring',
                         code => 'dangerous',
                         answers => [ 'yes' ],
+                    },
+                    {
+                        message => 'Ring the slightly number',
+                        code => 'danger_type',
+                        answers => [ 'slightly' ],
+                    },
+                    {
+                        message => 'Ring the very number',
+                        code => 'danger_type',
+                        answers => [ 'very', 'extremely' ],
                     },
                 ],
             };
