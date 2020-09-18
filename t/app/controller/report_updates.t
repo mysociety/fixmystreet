@@ -285,7 +285,7 @@ for my $test (
             password_sign_in => '',
         },
         changes => {},
-        field_errors => [ 'Please enter a message', 'Please enter your email', 'Please enter your name' ]
+        field_errors => [ 'Please enter a message', 'Please enter your name', 'Please enter your email' ]
     },
     {
         desc => 'Invalid email, no message',
@@ -303,7 +303,7 @@ for my $test (
             password_register => '',
         },
         changes => {},
-        field_errors => [ 'Please enter a message', 'Please enter a valid email', 'Please enter your name' ]
+        field_errors => [ 'Please enter a message', 'Please enter your name', 'Please enter a valid email' ]
     },
     {
         desc => 'email with spaces, no message',
@@ -1222,6 +1222,21 @@ $report->update;
 $report->comments->delete;
 
 for my $test (
+    {
+        desc => 'submit an update with bad email and password',
+        form_values => {
+            submit_update => 1,
+            username => 'registered@',
+            update        => 'Update from a user',
+            add_alert     => undef,
+            password_sign_in => 'secret',
+        },
+        field_errors => [
+            'Please enter a valid email',
+            "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
+            'Please enter your name', # FIXME Not really necessary error
+        ],
+    },
     {
         desc => 'submit an update for a registered user, signing in with wrong password',
         form_values => {

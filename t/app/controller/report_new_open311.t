@@ -130,8 +130,8 @@ foreach my $test (
             'This information is required',
             'Please enter a subject',
             'Please enter some details',
-            'Please enter your email',
             'Please enter your name',
+            'Please enter your email',
         ],
         submit_with => {
             title => 'test',
@@ -170,8 +170,8 @@ foreach my $test (
             'This information is required',
             'Please enter a subject',
             'Please enter some details',
-            'Please enter your email',
             'Please enter your name',
+            'Please enter your email',
         ],
         submit_with => {
             title => 'test',

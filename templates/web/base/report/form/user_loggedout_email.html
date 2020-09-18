@@ -10,8 +10,8 @@
 [% END %]
 
 <label for="form_[% name %]">[% username_label %]</label>
-[% IF field_errors.username %]
-    <p class='form-error'>[% field_errors.username %]</p>
+[% IF field_errors.$name %]
+    <p class='form-error'>[% field_errors.$name %]</p>
 [% END %]
 <input type="[% username_type %]" name="username" id="form_[% name %]"
        value="[% username_value | html %]"

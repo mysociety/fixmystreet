@@ -702,6 +702,26 @@ subtest "test password errors for a user who is signing in as they report" => su
                     title         => 'Test Report',
                     detail        => 'Test report details.',
                     photo1        => '',
+                    username      => 'test-2',
+                    password_sign_in => 'secret1',
+                    category      => 'Street lighting',
+                }
+            },
+            "submit with wrong password"
+        );
+
+        is_deeply $mech->page_errors, [
+            "Please enter a valid email",
+            "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
+        ], "check there were errors";
+
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_sign_in',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo1        => '',
                     username      => 'test-2@example.com',
                     password_sign_in => 'secret1',
                     category      => 'Street lighting',

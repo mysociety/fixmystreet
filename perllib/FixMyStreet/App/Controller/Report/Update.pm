@@ -404,6 +404,16 @@ sub check_for_errors : Private {
         $field_errors{photo} = $photo_error;
     }
 
+    # Now assign the username error according to where it came from
+    if ($field_errors{username}) {
+        if ($c->get_param('submit_sign_in') || $c->get_param('password_sign_in')) {
+            $field_errors{username_sign_in} = $field_errors{username};
+        } else {
+            $field_errors{username_register} = $field_errors{username};
+        }
+        delete $field_errors{username};
+    }
+
     # all good if no errors
     return 1
       unless ( scalar keys %field_errors
