@@ -5,7 +5,7 @@ if (!fixmystreet.maps) {
 }
 
 var base_url = fixmystreet.staging ?
-      "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://northants.assets/${layerid}/${x}/${y}/${z}/cluster" :
+      "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://northants.staging/${layerid}/${x}/${y}/${z}/cluster" :
       "https://tilma.mysociety.org/resource-proxy/proxy.php?https://northants.assets/${layerid}/${x}/${y}/${z}/cluster";
 
 var url_with_style = base_url + '?styleIds=${styleid}';
