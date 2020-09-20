@@ -22,6 +22,7 @@ use Text::CSV;
 
 my $NEW_ID = 'alloy_item_id';
 my $OLD_ID = 'res_id';
+my $FMS_ID = 'fms_id';
 
 my ($commit, $file);
 GetOptions(
@@ -42,14 +43,19 @@ my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptons
 if ($northants) {
     while (my $report = $csv->getline_hr( $fh ) ) {
         next unless $report->{$OLD_ID};
-        my $p = FixMyStreet::DB->resultset('Problem')->to_body( $northants->id )->search({ external_id => $report->{$OLD_ID} })->first;
+        my $p = FixMyStreet::DB->resultset('Problem')->to_body( $northants->id )->search({ id => $report->{$FMS_ID} })->first;
         next unless $p;
+        if ( $p->external_id ne $report->{$OLD_ID} ) {
+            warn "mismatch for " . $report->{$FMS_ID} . "\n";
+            next;
+        }
 
         if ($commit) {
             $p->set_extra_metadata('old_external_id', $p->external_id);
             $p->external_id($report->{$NEW_ID});
             $p->update;
         }
+        say "Processed $count" if $count % 100 == 0;
         $count++;
     }
 
