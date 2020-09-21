@@ -88,6 +88,7 @@ var owned_stylemap = new OpenLayers.StyleMap({
 fixmystreet.assets.add(defaults, {
     stylemap: occ_stylemap,
     wfs_feature: "Trees",
+    srsName: "EPSG:27700",
     asset_id_field: 'Ref',
     attributes: {
         feature_id: 'Ref'
