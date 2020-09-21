@@ -844,7 +844,7 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => $c->get_param($_) }
-      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
+      qw( email name phone password_register fms_extra_title update_method );
 
     # Report form includes two username fields: #form_username_register and #form_username_sign_in
     $params{username} = (first { $_ } $c->get_param_list('username')) || '';
@@ -896,6 +896,20 @@ sub process_user : Private {
         # If the 'username' (i.e. email) field is blank, then use the phone
         # field for the username.
         $params{username} = $params{phone};
+    }
+
+    # Code to deal with SMS being switched on and so the user being asked to
+    # pick a method and no username field
+    if (!$params{username} && !$params{update_method}) {
+        $c->stash->{field_errors}->{update_method} = _('Please pick your update preference');
+    }
+    if (!$params{username} && $params{update_method}) {
+        if ($params{update_method} eq 'phone') {
+            $params{username} = $params{phone};
+        } else {
+            $params{username} = $params{email};
+        }
+        $c->stash->{update_method} = $params{update_method};
     }
 
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
@@ -1235,6 +1249,7 @@ sub check_for_errors : Private {
     # if using social login then we don't care about other errors
     $c->stash->{is_social_user} = $c->get_param('social_sign_in') ? 1 : 0;
     if ( $c->stash->{is_social_user} ) {
+        delete $field_errors{update_method};
         delete $field_errors{name};
         delete $field_errors{username};
     }
