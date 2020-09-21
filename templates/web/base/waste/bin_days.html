@@ -41,12 +41,8 @@
     <dd class="govuk-summary-list__value">
       [% IF unit.last %]
         [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
-        [% IF unit.last.completed %]([% unit.last.state %] at [% date.format(unit.last.completed, '%l:%M%P') ~%]
-            [% IF date.format(unit.last.date) != date.format(unit.last.completed) ~%]
-            , [% date.format(unit.last.completed) ~%]
-            [% END ~%]
-            [% IF unit.last.resolution %], [% unit.last.resolution %][% END ~%]
-        )[% END %]
+        [% IF unit.last.completed %](completed at [% date.format(unit.last.completed, '%l:%M%P') ~%])[% END ~%]
+        [% IF unit.last.resolution %]<br>[% unit.last.resolution %][% END ~%]
       [% ELSE %]
         <i>None</i>
       [% END %]
