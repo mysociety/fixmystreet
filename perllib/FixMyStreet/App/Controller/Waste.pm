@@ -216,13 +216,14 @@ sub request : Chained('uprn') : Args(0) {
 sub process_request_data : Private {
     my ($self, $c) = @_;
     my $data = $c->stash->{data};
+    my $address = $c->stash->{property}->{address};
     my @services = grep { /^container-/ && $data->{$_} } keys %$data;
     foreach (@services) {
         my ($id) = /container-(.*)/;
         my $container = $c->stash->{containers}{$id};
         my $quantity = $data->{"quantity-$id"};
         $data->{title} = "Request new $container";
-        $data->{detail} = "Quantity: $quantity";
+        $data->{detail} = "Quantity: $quantity\n\n$address";
         $c->set_param('Container_Type', $id);
         $c->set_param('Quantity', $quantity);
         $c->forward('add_report') or return;
@@ -294,12 +295,13 @@ sub report : Chained('uprn') : Args(0) {
 sub process_report_data : Private {
     my ($self, $c) = @_;
     my $data = $c->stash->{data};
+    my $address = $c->stash->{property}->{address};
     my @services = grep { /^service-/ && $data->{$_} } keys %$data;
     foreach (@services) {
         my ($id) = /service-(.*)/;
         my $service = $c->stash->{services}{$id}{service_name};
         $data->{title} = "Report missed $service";
-        $data->{detail} = $data->{title};
+        $data->{detail} = "$data->{title}\n\n$address";
         $c->set_param('service_id', $id);
         $c->forward('add_report') or return;
         push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
@@ -377,8 +379,9 @@ sub enquiry : Chained('uprn') : Args(0) {
 sub process_enquiry_data : Private {
     my ($self, $c) = @_;
     my $data = $c->stash->{data};
+    my $address = $c->stash->{property}->{address};
     $data->{title} = $data->{category};
-    $data->{detail} = $data->{category};
+    $data->{detail} = "$data->{category}\n\n$address";
     # Read extra details in loop
     foreach (grep { /^extra_/ } keys %$data) {
         my ($id) = /^extra_(.*)/;
