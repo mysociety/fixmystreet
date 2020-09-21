@@ -340,12 +340,13 @@ arrayref of TEXTs. If none found return empty arrayref.
 sub page_errors {
     my $mech   = shift;
     my $result = scraper {
-        process 'div.form-error, p.form-error, p.error, ul.error li', 'errors[]', 'TEXT';
+        process 'div.form-error, p.form-error, p.error, ul.error li, .search-help__header', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
     my $err = $result->{errors} || [];
     my %seen = ();
     $err = [ grep { not $seen{$_}++ } @$err ];
+    @$err = map { s/^\s+|\s+$//g; $_ } @$err;
     return $err;
 }
 
