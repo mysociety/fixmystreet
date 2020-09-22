@@ -151,13 +151,9 @@ has_page address => (
         if ($form->previous_form) {
             $options = $form->previous_form->addresses;
         } else {
-            # Need to perform same lookup as UPRN form...
-            $options = [
-                { value => 'house1', label => 'House 1' },
-                { value => 'house2', label => 'House 2' },
-                { value => 'house3', label => 'House 3' },
-                { value => 'missing', label => 'I can’t find my address' },
-            ];
+            my $saved_data = $form->saved_data;
+            $options = $form->c->cobrand->addresses_for_postcode($saved_data->{postcode});
+            push @$options, { value => 'missing', label => 'I can’t find my address' };
         }
         return { address => { options => $options } };
     },
@@ -274,11 +270,7 @@ has_page source_known_postcode => (
 sub check_postcode {
     my $self = shift;
     return if $self->has_errors; # Called even if already failed
-    my $data = [
-        { value => 'house1', label => 'House 1' },
-        { value => 'house2', label => 'House 2' },
-        { value => 'house3', label => 'House 3' },
-    ];
+    my $data = $self->form->c->cobrand->addresses_for_postcode($self->value);
     if (!@$data) {
         $self->add_error('Sorry, we did not find any results for that postcode');
     }
@@ -303,23 +295,23 @@ has_page source_known_address => (
         if ($form->previous_form) {
             $options = $form->previous_form->addresses;
         } else {
-            # Need to perform same lookup as UPRN form...
-            $options = [
-                { value => 'house1', label => 'House 1' },
-                { value => 'house2', label => 'House 2' },
-                { value => 'house3', label => 'House 3' },
-                { value => 'missing', label => 'I can’t find the address' },
-            ];
+            my $saved_data = $form->saved_data;
+            $options = $form->c->cobrand->addresses_for_postcode($saved_data->{source_postcode});
+            push @$options, { value => 'missing', label => 'I can’t find my address' };
         }
         return { source_address => { options => $options } };
     },
     post_process => sub {
         my $form = shift;
-        my $address = $form->saved_data->{source_address};
-        # Look up lat/lon of address somewhere
         my $saved_data = $form->saved_data;
-        $saved_data->{latitude} = 51.549229;
-        $saved_data->{longitude} = -0.054106;
+        my $uprn = $saved_data->{source_address};
+        return unless $uprn;
+        foreach ($form->field('source_address')->options) {
+            if ($uprn eq $_->{value}) {
+                $saved_data->{latitude} = $_->{latitude};
+                $saved_data->{longitude} = $_->{longitude};
+            }
+        }
     },
 );
 

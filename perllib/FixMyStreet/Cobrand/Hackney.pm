@@ -3,6 +3,8 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use JSON::MaybeXS;
+use URI::Escape;
 use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
 
 sub council_area_id { return 2508; }
@@ -59,6 +61,41 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Hackney//;
 }
 
+sub addresses_for_postcode {
+    my ($self, $postcode) = @_;
+
+    my $api = $self->feature('address_api');
+    my $url = $api->{url};
+    my $key = $api->{key};
+
+    $url .= '?format=detailed&postcode=' . uri_escape_utf8($postcode);
+    my $ua = LWP::UserAgent->new;
+    $ua->default_header(x_api_key => $key);
+
+    my $pages = 1;
+    my @addresses;
+    for (my $page = 1; $page <= $pages; $page++) {
+        my $res = $ua->get($url . '&page=' . $page);
+        my $data = decode_json($res->decoded_content);
+        $pages = $data->{data}->{page_count};
+        foreach my $address (@{$data->{data}->{address}}) {
+            next unless $address->{locality} eq 'HACKNEY';
+            my $string = join(", ",
+                grep { $_ && $_ ne 'Hackney' }
+                map { s/((^\w)|(\s\w))/\U$1/g; $_ }
+                map { lc $address->{"line$_"} }
+                (1..3)
+            );
+            push @addresses, {
+                value => $address->{uprn},
+                latitude => $address->{latitude},
+                longitude => $address->{longitude},
+                label => $string,
+            };
+        }
+    }
+    return \@addresses;
+}
 
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
