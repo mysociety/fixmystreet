@@ -51,7 +51,7 @@
         - Do not display deleted priorities in inspect form. #3195
         - Include extra fields in submit emails.
     - Development improvements:
-        - `#geolocate_link` is now easier to re-style. #3006
+        - `#geolocate_link` is now easier to re-style, and can be overridden in its own template file, `around/_postcode_form_geolocation.html`. #3006
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007
         - Add option to show front end testing code coverage. #3036
         - Add function to fetch user's country from Gaze.
