@@ -152,7 +152,8 @@ has_page address => (
             $options = $form->previous_form->addresses;
         } else {
             my $saved_data = $form->saved_data;
-            $options = $form->c->cobrand->addresses_for_postcode($saved_data->{postcode});
+            my $data = $form->c->cobrand->addresses_for_postcode($saved_data->{postcode});
+            $options = $data->{addresses};
             push @$options, { value => 'missing', label => 'I can’t find my address' };
         }
         return { address => { options => $options } };
@@ -271,8 +272,12 @@ sub check_postcode {
     my $self = shift;
     return if $self->has_errors; # Called even if already failed
     my $data = $self->form->c->cobrand->addresses_for_postcode($self->value);
+    if ($data->{error}) {
+        return $self->add_error($data->{error});
+    }
+    $data = $data->{addresses};
     if (!@$data) {
-        $self->add_error('Sorry, we did not find any results for that postcode');
+        return $self->add_error('Sorry, we did not find any results for that postcode');
     }
     push @$data, { value => 'missing', label => 'I can’t find my address' };
     $self->form->addresses($data);
@@ -296,7 +301,8 @@ has_page source_known_address => (
             $options = $form->previous_form->addresses;
         } else {
             my $saved_data = $form->saved_data;
-            $options = $form->c->cobrand->addresses_for_postcode($saved_data->{source_postcode});
+            my $data = $form->c->cobrand->addresses_for_postcode($saved_data->{source_postcode});
+            $options = $data->{addresses};
             push @$options, { value => 'missing', label => 'I can’t find my address' };
         }
         return { source_address => { options => $options } };

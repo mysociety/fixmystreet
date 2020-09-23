@@ -74,12 +74,16 @@ sub addresses_for_postcode {
 
     my $pages = 1;
     my @addresses;
+    my $outside;
     for (my $page = 1; $page <= $pages; $page++) {
         my $res = $ua->get($url . '&page=' . $page);
         my $data = decode_json($res->decoded_content);
         $pages = $data->{data}->{page_count} || 0;
         foreach my $address (@{$data->{data}->{address}}) {
-            next unless $address->{locality} eq 'HACKNEY';
+            unless ($address->{locality} eq 'HACKNEY') {
+                $outside = 1;
+                next;
+            }
             my $string = join(", ",
                 grep { $_ && $_ ne 'Hackney' }
                 map { s/((^\w)|(\s\w))/\U$1/g; $_ }
@@ -94,7 +98,8 @@ sub addresses_for_postcode {
             };
         }
     }
-    return \@addresses;
+    return { error => 'Sorry, that postcode appears to lie outside Hackney' } if !@addresses && $outside;
+    return { addresses => \@addresses };
 }
 
 sub open311_config {

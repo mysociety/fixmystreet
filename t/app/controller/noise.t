@@ -30,6 +30,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { best_time => [['day', 'evening'], 1], best_method => 'email' } });
         $mech->submit_form_ok({ with_fields => { postcode => 'B24QA' } });
         $mech->content_contains('Sorry, we did not find any results');
+        $mech->submit_form_ok({ with_fields => { postcode => 'L11JD' } });
+        $mech->content_contains('Sorry, that postcode appears to lie outside Hackney');
         $mech->submit_form_ok({ with_fields => { postcode => 'SW1A 1AA' } });
         $mech->content_contains('12 Saint Street, Dalston');
         $mech->content_lacks('1 Road Road');
