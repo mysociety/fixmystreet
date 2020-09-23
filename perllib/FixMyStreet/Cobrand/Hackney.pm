@@ -77,7 +77,7 @@ sub addresses_for_postcode {
     for (my $page = 1; $page <= $pages; $page++) {
         my $res = $ua->get($url . '&page=' . $page);
         my $data = decode_json($res->decoded_content);
-        $pages = $data->{data}->{page_count};
+        $pages = $data->{data}->{page_count} || 0;
         foreach my $address (@{$data->{data}->{address}}) {
             next unless $address->{locality} eq 'HACKNEY';
             my $string = join(", ",

@@ -22,6 +22,7 @@ sub dispatch_request {
 
     sub (GET + ?*) {
         my ($self, $query) = @_;
+        return $self->output({}) if $query->{postcode} eq 'B2 4QA';
         my $response = {
             data => {
                 address => [

@@ -28,8 +28,11 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 0 } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email, phone => '01234 567890' } });
         $mech->submit_form_ok({ with_fields => { best_time => [['day', 'evening'], 1], best_method => 'email' } });
+        $mech->submit_form_ok({ with_fields => { postcode => 'B24QA' } });
+        $mech->content_contains('Sorry, we did not find any results');
         $mech->submit_form_ok({ with_fields => { postcode => 'SW1A 1AA' } });
         $mech->content_contains('12 Saint Street, Dalston');
+        $mech->content_lacks('1 Road Road');
         $mech->submit_form_ok({ with_fields => { address => '100000111' } });
         $mech->submit_form_ok({ with_fields => { kind => 'music' } });
         $mech->submit_form_ok({ with_fields => { where => 'residence', address_known => 1 } });
