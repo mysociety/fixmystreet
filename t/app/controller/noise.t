@@ -88,6 +88,7 @@ FixMyStreet::override_config {
             happening_time => [['morning','evening'], 1],
         } });
         $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
+        $mech->content_contains('My Address');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your report has been submitted');
     };
