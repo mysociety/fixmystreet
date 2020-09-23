@@ -1,39 +1,37 @@
-/* LAYOUT */
+$color-societyworks-yellow: #FED876;
+$color-societyworks-pink: #E65376;
+$color-societyworks-offwhite: #F7F6F5;
+$color-societyworks-black: #333;
+$color-societyworks-dark-gunmetal: #3B3F44;
+$color-societyworks-bright-blue: #0BA7D1; // useful for links!
+$color-societyworks-warm-grey: #9e9a98;
+$color-societyworks-bright-green: #0BD198;
 
-// If you are wanting a right-to-left layout, uncomment the following line.
-// $direction: right;
+$color-societyworks-borders: darken($color-societyworks-offwhite, 10%);
 
-/* COLOURS */
+$primary: $color-societyworks-offwhite; // background on #postcodeForm, #front_stats, #front-main on desktop, and border-bottom on various map page sidebar items
+$primary_b: $color-societyworks-borders; // border on div around the #postcodeForm input
+$primary_text: $color-societyworks-black; // text colour wherever $primary is the background
 
-$color-borsetshire-blue: #1375B8;
-$color-borsetshire-light-blue: #95D4FF;
-$color-borsetshire-green: #76951F;
-$color-borsetshire-light-green: #A6C257;
-$color-borsetshire-yellow: #C5A728;
-$color-borsetshire-light-yellow: #F4D659;
+$base_bg: #fff; // background on body and .tablewrapper on desktop
+$base_fg: $color-societyworks-black; // text color on body and .tablewrapper on desktop
 
-$primary: $color-borsetshire-blue; // background on #postcodeForm, #front_stats, #front-main on desktop, and border-bottom on various map page sidebar items
-$primary_b: darken($color-borsetshire-blue, 10%); // border on div around the #postcodeForm input
-$primary_text: #fff; // text colour wherever $primary is the background
+$nav_background_colour: #fff; // background for #site-header on mobile, and `.mappage #site-header` on desktop
+$nav_colour: $color-societyworks-black; // text color for `.nav-menu a` on desktop
+$nav_hover_background_colour: transparent; // hover text color for `.nav-menu a`
 
-$base_bg: white; // background on body and .tablewrapper on desktop
-$base_fg: #000; // text color on body and .tablewrapper on desktop
+$layout_front_stats_color: $color-societyworks-yellow; // text color for homepage stats on desktop
 
-$nav_background_colour: $color-borsetshire-blue; // background for #site-header on mobile, and `.mappage #site-header` on desktop
-$nav_colour: #fff; // text color for `.nav-menu a` on desktop
-$nav_hover_background_colour: $color-borsetshire-blue; // hover text color for `.nav-menu a`
-
-$col_big_numbers: #ccc; // text color for ol.big-numbers list item counters on homepage
-
-$col_click_map: gray;  // background for .big-green-banner on map page
+$col_click_map: $color-societyworks-yellow;  // background for .big-green-banner on map page
 
 $header-top-border: false;
+$menu-image: 'menu-black';
+$mappage-header-height: 7.75em;
+$container-max-width: 72em;
 
-$mappage-header-height: 5em; // 3em #site-logo plus 1em padding top and bottom
-
-$body-font: Cabin, "Calibri", "Gill Sans", "Gill Sans MT", sans-serif;
+$body-font: "Lato",-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 $meta-font: $body-font;
-$heading-font: $body-font;
+$heading-font: Lora, Georgia, serif;
 
 $search-help-alignment: left;
 $search-help-background: #fff3f3;
