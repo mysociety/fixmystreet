@@ -1,57 +1,75 @@
 @import "_colours";
 @import "../sass/layout";
-@import "_council-header";
-
-@import url('https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i');
 
 #site-logo {
-    background-position: 0 0;
-    background-size: 180px 48px;
-    height: 48px;
-    width: 180px;
-    @include svg-background-image('images/site-logo');
+    width: 240px;
+    height: 60px;
+    background-size: 240px 60px;
 }
 
 #site-header {
-    background-color: darken($color-borsetshire-blue, 5%);
+    padding: 2em 0;
 }
 
-// Postcode form is left-aligned, and given a background image
-// and a bit more padding than normal.
-#front-main {
-    padding: 4em 1em;
-    text-align: inherit;
-    color: inherit;
-    background: mix(#fff, $color-borsetshire-light-yellow, 50%) url('images/street.jpg') 50% 55% no-repeat;
-    background-size: cover;
+.content {
+    padding: 0; // no need for padding, as content background colour matches body background (white)
+    margin: 2em 0; // reinstate vertical spacing, now that padding has gone
+}
 
-    #postcodeForm div {
-        margin: 0;
+.nav-menu--main {
+    li + li {
+        margin-left: 1.5em;
     }
-}
 
-// Nav menu items have a bit more padding than normal.
-.nav-menu {
     a, span {
-        padding: 0.5em 0.75em;
-        border-radius: 0.2em;
+        padding: 0;
+        font-size: 1.125em;
+        color: $nav_colour;
     }
 
-    span {
-        color: $color-borsetshire-light-yellow;
+    a {
+        &:hover,
+        &:focus {
+            color: $nav_colour;
+            box-shadow: 0 3px 0 0 $color-societyworks-pink;
+        }
     }
 
     a.report-a-problem-btn {
-        padding: 0.5em 0.75em;
-        margin: 0 0.5em 0 0;
+        color: $nav_colour;
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+
+        &:hover, &:focus {
+            background-color: transparent;
+        }
+    }
+
+    span.report-a-problem-btn,
+    span.report-a-problem-btn:hover {
+        color: $nav_colour;
     }
 }
 
-.homepage-login-hint {
-    .container {
-        &:before {
-            right: 16.4em;
+#front-main {
+    background: $primary;
+    color: inherit;
+    padding: 5% 1em;
+
+    #postcodeForm {
+        overflow: visible;
+
+        div {
+            margin: 0;
+            width: 100%;
+            max-width: 30em;
         }
+    }
+
+    h1 {
+        font-size: 3em;
     }
 }
 
@@ -83,22 +101,34 @@ body.authpage {
     }
 }
 
-.fms-pro-promo {
-  margin: 1em 0 3em 0;
-  padding: 2em;
+body.twothirdswidthpage .content {
+    position: static;
+    background: transparent;
 
-  p {
-    font-size: 1.2em;
-    max-width: 26em;
-  }
+    aside {
+        background: transparent;
+        padding: 0;
+    }
 
-  h2 {
-    font-family: inherit;
-    font-weight: bold;
-    font-size: 2em;
-  }
+    .sticky-sidebar {
+        left: 43em;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 1em;
 
-  @media (min-width: 60em) {
-    padding: 3em;
-  }
+        @media (max-width: 61em) {
+            left: 33em;
+        }
+
+        aside {
+            position: sticky;
+            width: auto;
+            max-width: 20em;
+            margin-left: auto;
+            top: 2em;
+            bottom: 2em;
+        }
+    }
 }

@@ -9,6 +9,11 @@ sub council_area { return 'Borsetshire'; }
 sub council_name { return 'Borsetshire County Council'; }
 sub council_url { return 'demo'; }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a UK postcode, or street name and area';
+}
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey' if $p->is_closed;
