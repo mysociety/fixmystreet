@@ -6,6 +6,7 @@ use warnings;
 
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
+with 'FixMyStreet::Roles::ConfirmValidation';
 
 sub council_area_id { 2636 }
 sub council_area { 'Isle of Wight' }

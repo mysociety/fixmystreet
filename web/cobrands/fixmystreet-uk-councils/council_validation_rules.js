@@ -23,6 +23,8 @@ body_validation_rules = {
     'Buckinghamshire Council': confirm_validation_rules,
     'Cheshire East Council': confirm_validation_rules,
     'Hounslow Borough Council': confirm_validation_rules,
+    'Isle of Wight Council': confirm_validation_rules,
+    'Island Roads': confirm_validation_rules,
     'Lincolnshire County Council': confirm_validation_rules,
     'Northamptonshire County Council': {
         title: {
