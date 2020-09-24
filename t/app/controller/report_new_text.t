@@ -42,7 +42,7 @@ foreach my $test (
             %defaults,
         },
         changes => {
-            username => 'bademail',
+            username => '',
         },
         errors => [ 'Please enter a valid email' ],
     },
@@ -54,7 +54,7 @@ foreach my $test (
             %defaults,
         },
         changes => {
-            username => '01214960000000',
+            username => '',
             phone => '01214960000000',
         },
         errors => [ 'Please check your phone number is correct' ],
@@ -67,7 +67,7 @@ foreach my $test (
             %defaults,
         },
         changes => {
-            username => '0121 496 0000',
+            username => '',
             phone => '0121 496 0000',
         },
         errors => [ 'Please enter a mobile number', ],

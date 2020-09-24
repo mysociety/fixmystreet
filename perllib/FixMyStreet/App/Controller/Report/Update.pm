@@ -6,7 +6,6 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use Path::Class;
-use List::Util 'first';
 use Utils;
 
 =head1 NAME
@@ -103,8 +102,14 @@ sub process_user : Private {
     my %params = map { $_ => $c->get_param($_) }
       ( 'name', 'password_register', 'fms_extra_title' );
 
-    # Update form includes two username fields: #form_username_register and #form_username_sign_in
-    $params{username} = (first { $_ } $c->get_param_list('username')) || '';
+    if ($c->user_exists) {
+        $params{username} = $c->get_param('username');
+    } elsif ($c->get_param('submit_sign_in') || $c->get_param('password_sign_in')) {
+        $params{username} = $c->get_param('username');
+    } else {
+        $params{username} = $c->get_param('username_register');
+    }
+    $params{username} ||= '';
 
     my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
@@ -145,8 +150,7 @@ sub process_user : Private {
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
     my $type = $parsed->{type} || 'email';
     $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION') || $c->stash->{contributing_as_another_user};
-    $update->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) )
-        unless $update->user;
+    $update->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) );
 
     $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
 

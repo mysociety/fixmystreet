@@ -80,7 +80,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( {
             with_fields => {
                 name => 'Test User',
-                username => 'testuser@example.org',
+                username_register => 'testuser@example.org',
                 category => 'Other',
                 detail => 'This is a general enquiry',
             }
@@ -149,7 +149,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( {
             with_fields => {
                 name => 'Simon Neil',
-                username => $user->email,
+                username_register => $user->email,
                 category => 'General Enquiry',
                 detail => 'This is a general enquiry',
             }
@@ -212,7 +212,7 @@ FixMyStreet::override_config {
             submit_problem => 1,
             token => $csrf,
             name => 'Test User',
-            username => 'testuser@example.org',
+            username_register => 'testuser@example.org',
             category => 'Other',
             detail => encode_utf8('This is a general enquiry‽'),
             photo1         => [ $sample_jpeg, undef, Content_Type => 'image/jpeg' ],

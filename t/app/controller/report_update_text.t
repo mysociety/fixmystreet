@@ -62,7 +62,8 @@ for my $test (
     {
         desc => 'Invalid phone',
         fields => {
-            username => '01214960000000',
+            username_register => '01214960000000',
+            username => '',
             update => 'Update',
             name => 'Name',
             photo1 => '',
@@ -80,7 +81,8 @@ for my $test (
     {
         desc => 'landline number',
         fields => {
-            username => '01214960000',
+            username_register => '01214960000',
+            username => '',
             update => 'Update',
             name => 'Name',
             photo1 => '',
@@ -92,9 +94,7 @@ for my $test (
             password_register => '',
             password_sign_in => '',
         },
-        changes => {
-            username => '0121 496 0000',
-        },
+        changes => {},
         field_errors => [ 'Please enter a mobile number' ]
     },
   )
@@ -126,7 +126,7 @@ for my $test (
         desc => 'submit an update, unregistered, logged out',
         form_values => {
             submit_update => 1,
-            username => $test_phone,
+            username_register => $test_phone,
             update => 'Update from an unregistered user',
             add_alert => undef,
             name => 'Unreg User',
@@ -137,7 +137,7 @@ for my $test (
         desc => 'submit an update, unregistered, logged out, sign up for alerts',
         form_values => {
             submit_update => 1,
-            username => $test_phone,
+            username_register => $test_phone,
             update => 'Update from an unregistered user',
             add_alert => 1,
             name => 'Unreg User',
@@ -149,7 +149,7 @@ for my $test (
         registered => 1,
         form_values => {
             submit_update => 1,
-            username => $test_phone,
+            username_register => $test_phone,
             update => 'Update from a registered user',
             add_alert => undef,
             name => 'Reg User',
@@ -194,7 +194,7 @@ for my $test (
         ok $update, 'found update in database';
         is $update->state, 'unconfirmed', 'update unconfirmed';
         my $details = $test->{form_values};
-        is $update->user->phone, $details->{username}, 'update phone';
+        is $update->user->phone, $details->{username_register}, 'update phone';
         is $update->user->phone_verified, 1;
         is $update->text, $details->{update}, 'update text';
         is $add_alerts, $details->{add_alert} ? 1 : 0, 'do not sign up for alerts';
@@ -211,7 +211,7 @@ for my $test (
             ok $user->check_password( 'new_secret' ), 'password changed';
             is $user->name, 'Reg User', 'name changed';
         } else {
-            $user = FixMyStreet::DB->resultset( 'User' )->find( { phone => $details->{username} } );
+            $user = FixMyStreet::DB->resultset( 'User' )->find( { phone => $details->{username_register} } );
             ok $user, 'found user';
         }
 

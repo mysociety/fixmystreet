@@ -107,7 +107,7 @@ sub make_report {
                 detail        => 'Test report details.',
                 photo1        => '',
                 name          => 'Joe Bloggs',
-                username      => $user->email,
+                username_register => $user->email,
                 may_show_name => '1',
                 phone         => '07903 123 456',
                 category      => 'Trees',

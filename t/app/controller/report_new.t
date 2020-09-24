@@ -156,7 +156,7 @@ foreach my $test (
                     photo1        => '',
                     name          => 'Joe Bloggs',
                     may_show_name => '1',
-                    username      => 'test-1@example.com',
+                    username_register => 'test-1@example.com',
                     phone         => '07903 123 456',
                     category      => 'Street lighting',
                     password_register => $test->{password} ? 'secret' : '',
@@ -680,7 +680,7 @@ subtest "test report creation for a category that is non public" => sub {
                     title         => 'Test Report',
                     detail        => 'Test report details.',
                     photo1        => '',
-                    username      => $user->email,
+                    username_register => $user->email,
                     name          => 'Joe Bloggs',
                     category      => 'Street lighting',
                 }
@@ -940,7 +940,7 @@ for my $test (
             title             => "Test Report",
             detail            => 'Test report details.',
             photo1            => '',
-            username          => 'firstlast@example.com',
+            username_register => 'firstlast@example.com',
             may_show_name     => '1',
             phone             => '07903 123 456',
             category          => 'Trees',
@@ -1085,7 +1085,7 @@ subtest "test Hart" => sub {
                 $mech->submit_form_ok( { with_fields => { pc => 'GU51 4AE' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 my %optional_fields = $test->{confirm} ?  () :
-                    ( username => $test_email, phone => '07903 123 456' );
+                    ( username_register => $test_email, phone => '07903 123 456' );
 
                 # we do this as otherwise test::www::mechanize::catalyst
                 # goes to the value set in ->host above irregardless and
@@ -1279,7 +1279,7 @@ subtest "extra google analytics code displayed on email confirmation problem cre
             title             => "Test Report",
             detail            => 'Test report details.',
             photo1            => '',
-            username          => 'firstlast@example.com',
+            username_register => 'firstlast@example.com',
             name              => 'Test User',
             may_show_name     => '1',
             phone             => '07903 123 456',

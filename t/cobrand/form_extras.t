@@ -41,7 +41,7 @@ FixMyStreet::override_config {
                 detail => 'Test report details.',
                 name => 'Joe Bloggs',
                 may_show_name => '1',
-                username => 'test-1@example.com',
+                username_register => 'test-1@example.com',
                 password_register => '',
             }
         },

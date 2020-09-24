@@ -19,7 +19,7 @@
         [% IF field_errors.username_register %]
            <div class="form-error">[% field_errors.username_register %]</div>
         [% END %]
-        <input type="text" class="form-control required email" name="username" id="form_email" [% "disabled" IF c.user.email %] value="[% ( email OR c.user.email ) | html %]" size="30">
+        <input type="text" class="form-control required email" name="username_register" id="form_email" [% "disabled" IF c.user.email %] value="[% ( email OR c.user.email ) | html %]" size="30">
 
         <div class="form-group">
           <label for="form_phone">[% loc('Your phone number') %]</label>

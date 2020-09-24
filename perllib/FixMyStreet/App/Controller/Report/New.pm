@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use Encode;
-use List::Util qw(first uniq);
+use List::Util qw(uniq);
 use HTML::Entities;
 use Path::Class;
 use Utils;
@@ -126,8 +126,10 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     # Apps are sending email as username
     # Prepare for when they upgrade
-    if (!$c->get_param('username')) {
-        $c->set_param('username', $c->get_param('email'));
+    my $username_field = ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') )
+        ? 'username': 'username_register';
+    if (!$c->get_param($username_field)) {
+        $c->set_param($username_field, $c->get_param('email'));
     }
 
     # create the report - loading a partial if available
@@ -846,8 +848,14 @@ sub process_user : Private {
     my %params = map { $_ => $c->get_param($_) }
       qw( email name phone password_register fms_extra_title update_method );
 
-    # Report form includes two username fields: #form_username_register and #form_username_sign_in
-    $params{username} = (first { $_ } $c->get_param_list('username')) || '';
+    if ($c->user_exists) {
+        $params{username} = $c->get_param('username');
+    } elsif ($c->get_param('submit_sign_in') || $c->get_param('password_sign_in')) {
+        $params{username} = $c->get_param('username');
+    } else {
+        $params{username} = $c->get_param('username_register');
+    }
+    $params{username} ||= '';
 
     my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
     my $anon_fallback = $c->cobrand->allow_anonymous_reports eq '1' && !$c->user_exists && !$params{username};
@@ -915,8 +923,7 @@ sub process_user : Private {
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
     my $type = $parsed->{type} || 'email';
     $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION') || $c->stash->{contributing_as_another_user};
-    $report->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) )
-        unless $report->user;
+    $report->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) );
 
     $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
 

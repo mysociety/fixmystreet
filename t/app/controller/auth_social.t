@@ -241,7 +241,8 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->content_contains('We need your email address, please give it below.');
                 # We don't have an email, so check that we can still submit it,
                 # and the ID carries through the confirmation
-                $fields->{username} = $test->{email};
+                $fields->{username} = $test->{email} if $page eq 'my';
+                $fields->{username_register} = $test->{email} unless $page eq 'my';
                 $fields->{name} = 'Ffion Tester' unless $page eq 'my';
                 $mech->submit_form(with_fields => $fields, $page eq 'my' ? (button => 'sign_in_by_code') : ());
                 $mech->content_contains('Nearly done! Now check your email');
@@ -408,7 +409,8 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->content_contains('We need your email address, please give it below.');
                 # We don't have an email, so check that we can still submit it,
                 # and the ID carries through the confirmation
-                $fields->{username} = $tw_email;
+                $fields->{username_register} = $tw_email unless $page eq 'my';
+                $fields->{username} = $tw_email if $page eq 'my';
                 $fields->{name} = 'Ffion Tester' unless $page eq 'my';
                 $mech->submit_form(with_fields => $fields, $page eq 'my' ? (button => 'sign_in_by_code') : ());
                 $mech->content_contains('Nearly done! Now check your email');
