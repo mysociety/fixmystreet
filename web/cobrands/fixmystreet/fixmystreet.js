@@ -316,7 +316,11 @@ $.extend(fixmystreet.set_up, {
         errorElement: 'div',
         errorClass: 'form-error',
         errorPlacement: function( error, element ) {
-            element.before( error );
+            if (element.parent().hasClass('segmented-control')) {
+                element.parent().before( error );
+            } else {
+                element.before( error );
+            }
         },
         submitHandler: function(form) {
             if (form.submit_problem) {
