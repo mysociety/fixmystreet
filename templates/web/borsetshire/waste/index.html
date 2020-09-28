@@ -1,0 +1,31 @@
+[% SET bodyclass = 'waste' %]
+
+[% PROCESS 'waste/govuk/fields.html' %]
+
+[% pre_container_extra = BLOCK %]
+  [% UNLESS property %]
+    <div id="front-main">
+        <div id="front-main-container">
+            <h1>Check your bin days <br> or report a missed collection</h1>
+        </div>
+    </div>
+  [% END %]
+[% END %]
+
+[% INCLUDE header.html %]
+
+[% PROCESS back %]
+[% PROCESS errors %]
+[% PROCESS title %]
+[% IF property %]
+    <dl class="waste__address">
+        <dt class="waste__address__title">Address</dt>
+        <dd class="waste__address__property">[% property.address | title %]</dd>
+    </dl>
+[% END %]
+
+<form method="post">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]
