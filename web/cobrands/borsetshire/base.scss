@@ -164,3 +164,116 @@ body.authpage {
         }
     }
 }
+
+@import "../sass/waste";
+
+// Waste style overrides
+.waste {
+    .content {
+        margin: 2em 0;
+    }
+
+    #front-main h1 {
+        margin-bottom: 0;
+    }
+
+    .govuk-heading-xl,
+    .govuk-heading-l,
+    .govuk-heading-m,
+    .govuk-heading-s,
+    .govuk-body,
+    .govuk-body-m,
+    .govuk-accordion__section-button,
+    .govuk-button,
+    .govuk-fieldset__legend,
+    .govuk-fieldset__legend--xl,
+    .govuk-fieldset__legend--l,
+    .govuk-fieldset__legend--m,
+    .govuk-fieldset__legend--s,
+    .govuk-fieldset__heading,
+    .govuk-label,
+    .govuk-checkboxes__item,
+    .govuk-summary-list,
+    .govuk-input,
+    .govuk-details,
+    .govuk-radios__item,
+    .govuk-radios__divider,
+    .govuk-select,
+    .govuk-skip-link,
+    .govuk-textarea {
+        -webkit-font-smoothing: auto;
+        -moz-osx-font-smoothing: auto;
+    }
+
+    .govuk-heading-xl {
+        font-family: $heading-font;
+        color: inherit;
+        font-size: 2.2em;
+        margin-bottom: 1em;
+    }
+
+    .govuk-heading-l,
+    .govuk-heading-m,
+    .govuk-fieldset__heading,
+    .govuk-summary-list {
+        font-family: inherit;
+        color: inherit;
+    }
+
+    .govuk-heading-l {
+        font-size: 1.4375em;
+    }
+
+    .govuk-heading-m {
+        font-size: 1.125em;
+    }
+
+    .govuk-button {
+        @include button-size();
+        box-shadow: none;
+
+        @include button-variant(
+            lighten($color-societyworks-yellow, 10%),
+            $color-societyworks-yellow,
+            $color-societyworks-yellow,
+            $color-societyworks-black,
+            darken($color-societyworks-yellow, 10%),
+            $color-societyworks-yellow,
+            darken($color-societyworks-yellow, 10%),
+            $color-societyworks-black
+        );
+
+        &:focus {
+            outline: auto;
+        }
+
+        &:focus:not(:active):not(:hover) {
+            box-shadow: none;
+            border-color: darken($color-societyworks-yellow, 10%);
+        }
+    }
+
+    .govuk-button--secondary {
+        @include button-variant();
+
+        &:focus:not(:active):not(:hover) {
+            border-color: #ccc;
+        }
+    }
+
+    .govuk-button-s {
+        font-size: 1em;
+    }
+
+    .govuk-input {
+        border: 1px solid $form-control-border-color;
+        @include border-radius(4px);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+
+        &:focus {
+            border: 1px solid $form-control-border-color;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+            outline: auto;
+        }
+    }
+}

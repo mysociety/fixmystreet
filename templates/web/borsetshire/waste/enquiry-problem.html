@@ -1,0 +1,13 @@
+[% PROCESS waste/enquiry.html
+    title = 'Report a problem'
+    field_options = [
+        { value = 'Gate not closed', label = 'A gate or enclosure wasn’t closed after the collection' },
+        { value = 'Waste spillage', label = 'Bin contents were spilled during the collection' },
+        { value = 'Bin not returned', label = 'A bin wasn’t returned after the collection' },
+        { value = 'Crew behaviour', label = 'There was a problem with the crew’s behaviour' },
+        { value = 'Wrongful removal', label = 'Something was wrongly removed during the collection' },
+        { value = 'Damage to 3rd party', label = 'Someone else’s vehicle was damaged' },
+        { value = 'Damage to Property', label = 'My property was damaged' },
+        { value = 'Failure to deliver bin', label = 'My bin was not delivered' },
+    ]
+%]
