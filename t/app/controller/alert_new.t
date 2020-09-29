@@ -878,7 +878,7 @@ subtest 'check staff updates can include sanitized HTML' => sub {
         user => $user1,
     });
 
-    my $update1 = $mech->create_comment_for_problem($report, $user2, 'Staff User', 'This is some update text with <strong>HTML</strong> and *italics*. <script>not allowed</script>', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 8 ) });
+    my $update1 = $mech->create_comment_for_problem($report, $user2, 'Staff User', '<p>This is some update text with <strong>HTML</strong> and *italics*.</p> <ul><li>Even a list</li><li>Which might work</li><li>In the <a href="https://www.fixmystreet.com/">text</a> part</li></ul> <script>not allowed</script>', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 8 ) });
     $update1->set_extra_metadata(is_body_user => $user2->from_body->id);
     $update1->update;
 
@@ -896,7 +896,7 @@ subtest 'check staff updates can include sanitized HTML' => sub {
     FixMyStreet::DB->resultset('AlertType')->email_alerts();
     my $email = $mech->get_email;
     my $plain = $mech->get_text_body_from_email($email);
-    like $plain, qr/This is some update text with <strong>HTML<\/strong> and \*italics\*\./, 'plain text part contains exactly what was entered';
+    like $plain, qr/This is some update text with \*HTML\* and \*italics\*\.\r\n\r\n\* Even a list\r\n\r\n\* Which might work\r\n\r\n\* In the text \[https:\/\/www.fixmystreet.com\/\] part/, 'plain text part contains no HTML tags from staff update';
     like $plain, qr/Public users <i>cannot<\/i> use HTML\./, 'plain text part contains exactly what was entered';
 
     my $html = $mech->get_html_body_from_email($email);
