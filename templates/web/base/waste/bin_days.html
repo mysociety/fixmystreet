@@ -58,7 +58,7 @@
 
 [% END %]
 [% IF NOT service_data.size %]
-    <p>This property has no collections.</p>
+    [% INCLUDE waste/bin_days_no_collections.html %]
 [% END %]
 
         [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
@@ -68,25 +68,7 @@
     [% IF service_data.size %]
     <div class="govuk-grid-column-one-third">
       <div class="aside">
-        <div class="aside-download">
-          <h3>Download your collection schedule</h3>
-          <ul>
-            <li><a href="[% c.uri_for_action('waste/calendar', [ uprn ]) %]">Add to your calendar (.ics file)</a></li>
-          </ul>
-        </div>
-       [% IF any_report_allowed OR any_request_allowed %]
-        <div class="aside-services">
-          <h3>More services</h3>
-          <ul>
-            [% IF any_report_allowed %]
-              <li><a href="[% c.uri_for_action('waste/report', [ uprn ]) %]">Report a missed collection</a></li>
-            [% END %]
-            [% IF any_request_allowed %]
-              <li><a href="[% c.uri_for_action('waste/request', [ uprn ]) %]">Request a new container</a></li>
-            [% END %]
-          </ul>
-        </div>
-       [% END %]
+        [% INCLUDE waste/bin_days_sidebar.html %]
       </div>
     </div>
     [% END %]
