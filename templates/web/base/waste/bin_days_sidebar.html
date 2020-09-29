@@ -1,0 +1,25 @@
+       [% IF service_data.size %]
+       <div class="aside-download">
+         <h3>Download your collection schedule</h3>
+         <ul>
+           <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar (.ics file)</a></li>
+         </ul>
+       </div>
+       [% END %]
+       [% SET show_garden_subscribe = NOT waste_features.garden_disabled AND NOT pending_subscription AND NOT services_available.Garden_Waste.is_active %]
+       [% TRY %][% PROCESS waste/_more_services_sidebar.html %][% CATCH file %]
+       [% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
+           <h3>More services</h3>
+           <ul>
+             [% IF any_report_allowed %]
+               <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
+             [% END %]
+             [% IF any_request_allowed %]
+               <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
+             [% END %]
+             [% IF show_garden_subscribe %]
+               <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+             [% END %]
+           </ul>
+       [% END %]
+       [% END %]
