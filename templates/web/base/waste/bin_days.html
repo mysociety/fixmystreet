@@ -42,7 +42,7 @@
       [% IF unit.last %]
         [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
         [% IF unit.last.completed %](completed at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%])[% END ~%]
-        [% IF unit.last.resolution %]<br>[% unit.last.resolution %][% END ~%]
+        [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
       [% ELSE %]
         <i>None</i>
       [% END %]
