@@ -470,7 +470,7 @@ $.extend(fixmystreet.set_up, {
             $.each(data.disable_form.questions, function(_, question) {
                 if (question.message && question.code) {
                     $('#form_' + question.code).on('change.category', function() {
-                        $(fixmystreet).trigger('report_new:category_change');
+                        $(fixmystreet).trigger('report_new:category_change', { skip_duplicates: true } );
                     });
                 }
             });

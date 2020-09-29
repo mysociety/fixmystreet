@@ -77,4 +77,23 @@ describe('Duplicate tests', function() {
       cy.get('#js-duplicate-reports li h3 a').should('have.attr', 'href', '/report/1');
     });
 
+    it('does not redisplay duplicates when stopper questions are changed', function() {
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-stopper'); // Server-side setup
+      cy.visit('http://borsetshire.localhost:3001/report/1');
+      cy.contains('Report another problem here').click();
+      cy.wait('@report-ajax');
+      cy.get('[id=category_group]').select('Flytipping');
+      cy.get('.extra-category-questions').should('not.be.visible');
+      cy.get('.js-hide-duplicate-suggestions:first').click();
+      cy.get('.js-hide-duplicate-suggestions:first').should('not.be.visible');
+      cy.get('.extra-category-questions').should('be.visible');
+      cy.get('[id=form_hazardous]').select('No');
+      cy.wait(500);
+      cy.get('.extra-category-questions').should('be.visible');
+      cy.get('.js-hide-duplicate-suggestions:first').should('not.be.visible');
+      cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-stopper'); // Server-side setup
+    });
+
 });
