@@ -4,6 +4,15 @@
 <p>
    <a href="/waste[% IF uprn %]/uprn/[% uprn %][% END %]">See your bin collections</a>.
 </p>
+
+<div class="bromley-waste-credits">
+    <p>Powered by</p>
+    <p>
+        <a href="https://www.veolia.co.uk">Veolia</a>
+        <a href="https://www.societyworks.org/services/waste/">SocietyWorks</a>
+    </p>
+</div>
+
 [% ELSE %]
 <p>[% loc('This report is now closed to updates.') %]
    [% tprintf(loc('You can <a href="%s">make a new report in the same location</a>.'),
