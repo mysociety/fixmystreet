@@ -26,6 +26,12 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
+    wfs_feature: "Public_Transport_Stops",
+    asset_category: [ "Bus stop", "Bus shelter" ],
+    asset_item: 'bus stop or shelter'
+});
+
+fixmystreet.assets.add(defaults, {
     wfs_feature: "SL_Street_Light_Units",
     asset_category: "Street light",
     asset_item: 'street light',
