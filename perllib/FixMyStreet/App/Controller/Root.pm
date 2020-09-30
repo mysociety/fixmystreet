@@ -79,6 +79,13 @@ sub index : Path : Args(0) {
         $c->detach;
     }
 
+    if ($c->cobrand->can('body')) {
+        $c->stash->{front_page_message} = $c->model('DB::Message')->search({
+            type => 'front',
+            body_id => $c->cobrand->body->id,
+        })->single;
+    }
+
     $c->forward('/auth/get_csrf_token');
 }
 

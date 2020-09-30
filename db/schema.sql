@@ -593,3 +593,12 @@ CREATE TABLE manifest_theme (
     theme_colour text,
     images text ARRAY
 );
+
+CREATE TABLE message (
+    id serial not null primary key,
+    body_id integer references body(id) not null,
+    type text not null check (type = 'front' OR type = 'emergency'),
+    text text not null,
+    created timestamp not null default current_timestamp,
+    unique(body_id, type)
+);
