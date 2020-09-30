@@ -866,4 +866,47 @@ subtest 'check setting include dates in new updates cobrand option' => sub {
     $include_date_in_alert_override->restore();
 };
 
+subtest 'check staff updates can include sanitized HTML' => sub {
+    my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User');
+    my $user2 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $body);
+    my $user3 = $mech->create_user_ok('updater@example.com', name => 'Another User');
+
+    my $dt = DateTime->now->add( minutes => -30 );
+    my $r_dt = $dt->clone->add( minutes => 20 );
+
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
+        user => $user1,
+    });
+
+    my $update1 = $mech->create_comment_for_problem($report, $user2, 'Staff User', '<p>This is some update text with <strong>HTML</strong> and *italics*.</p> <ul><li>Even a list</li><li>Which might work</li><li>In the <a href="https://www.fixmystreet.com/">text</a> part</li></ul> <script>not allowed</script>', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 8 ) });
+    $update1->set_extra_metadata(is_body_user => $user2->from_body->id);
+    $update1->update;
+
+    $mech->create_comment_for_problem($report, $user3, 'Updater User', 'Public users <i>cannot</i> use HTML. <script>not allowed</script>', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 9 ) });
+
+    my $alert_user1 = FixMyStreet::DB->resultset('Alert')->create( {
+            user       => $user1,
+            alert_type => 'new_updates',
+            parameter  => $report->id,
+            confirmed  => 1,
+            whensubscribed => $dt,
+    } );
+    ok $alert_user1, "alert created";
+
+    FixMyStreet::DB->resultset('AlertType')->email_alerts();
+    my $email = $mech->get_email;
+    my $plain = $mech->get_text_body_from_email($email);
+    like $plain, qr/This is some update text with \*HTML\* and \*italics\*\.\r\n\r\n\* Even a list\r\n\r\n\* Which might work\r\n\r\n\* In the text \[https:\/\/www.fixmystreet.com\/\] part/, 'plain text part contains no HTML tags from staff update';
+    like $plain, qr/Public users <i>cannot<\/i> use HTML\./, 'plain text part contains exactly what was entered';
+
+    my $html = $mech->get_html_body_from_email($email);
+    like $html, qr{This is some update text with <strong>HTML</strong> and <i>italics</i>\.}, 'HTML part contains HTML tags';
+    unlike $html, qr/<script>/, 'HTML part contains no script tags';
+
+    $mech->delete_user( $user1 );
+    $mech->delete_user( $user2 );
+    $mech->delete_user( $user3 );
+};
+
+
 done_testing();

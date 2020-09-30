@@ -351,7 +351,7 @@ my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create(
         user_id    => $user->id,
         name       => 'A User',
         mark_fixed => 'false',
-        text       => 'This is some update text',
+        text       => 'This is some <strong>update</strong> text',
         state      => 'confirmed',
         confirmed  => $sent_time,
         anonymous  => 'f',
@@ -360,7 +360,12 @@ my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create(
 subtest 'Check updates are shown correctly on questionnaire page' => sub {
     $mech->get_ok("/Q/" . $token->token);
     $mech->content_contains( 'Show all updates' );
-    $mech->content_contains( 'This is some update text' );
+    $mech->content_contains( 'This is some &lt;strong&gt;update&lt;/strong&gt; text' );
+};
+subtest 'Check staff update is shown correctly on questionnaire page' => sub {
+    $comment->update({ extra => { is_superuser => 1 } });
+    $mech->get_ok("/Q/" . $token->token);
+    $mech->content_contains( 'This is some <strong>update</strong> text' );
 };
 
 for my $test (

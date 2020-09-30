@@ -41,6 +41,7 @@ sub send() {
                    $item_table.photo as item_photo,
                    $item_table.problem_state as item_problem_state,
                    $item_table.cobrand as item_cobrand,
+                   $item_table.extra as item_extra,
                    $head_table.*
             from alert, $item_table, $head_table
                 where alert.parameter::integer = $head_table.id

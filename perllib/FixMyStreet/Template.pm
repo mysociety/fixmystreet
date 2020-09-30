@@ -7,9 +7,13 @@ use FixMyStreet;
 use mySociety::Locale;
 use Attribute::Handlers;
 use HTML::Scrubber;
+use HTML::TreeBuilder;
 use FixMyStreet::Template::SafeString;
 use FixMyStreet::Template::Context;
 use FixMyStreet::Template::Stash;
+
+use RABX;
+use IO::String;
 
 my %FILTERS;
 my %SUBS;
@@ -141,6 +145,8 @@ sub html_paragraph : Filter('html_para') {
 sub sanitize {
     my $text = shift;
 
+    $text = $$text if UNIVERSAL::isa($text, 'FixMyStreet::Template::SafeString');
+ 
     my %allowed_tags = map { $_ => 1 } qw( p ul ol li br b i strong em );
     my $scrubber = HTML::Scrubber->new(
         rules => [
@@ -153,6 +159,86 @@ sub sanitize {
     );
     $text = $scrubber->scrub($text);
     return $text;
+}
+
+
+=head2 email_sanitize_text
+
+Intended for use in the _email_comment_list.txt template to allow HTML
+in updates from staff/superusers. Sanitizes the HTML and then converts
+it all to text.
+
+=cut
+
+sub email_sanitize_text : Fn('email_sanitize_text') {
+    my $update = shift;
+
+    my $text = $update->{item_text};
+    my $extra = $update->{item_extra};
+    $extra = $extra ? RABX::wire_rd(new IO::String($extra)) : {};
+
+    my $staff = $extra->{is_superuser} || $extra->{is_body_user};
+
+    return $text unless $staff;
+
+    $text = FixMyStreet::Template::sanitize($text);
+
+    my $tree = HTML::TreeBuilder->new_from_content($text);
+    _sanitize_elt($tree);
+
+    return $tree->as_text;
+}
+
+my $list_type;
+my $list_num;
+my $sanitize_text_subs = {
+    b => [ '*', '*' ],
+    strong => [ '*', '*' ],
+    i => [ '_', '_' ],
+    em => [ '_', '_' ],
+    p => [ '', "\n\n" ],
+    li => [ '', "\n\n" ],
+};
+sub _sanitize_elt {
+    my $elt = shift;
+    foreach ($elt->content_list) {
+        next unless ref $_;
+        $list_type = $_->tag, $list_num = 1 if $_->tag eq 'ol' || $_->tag eq 'ul';
+        _sanitize_elt($_);
+        $_->replace_with("\n") if $_->tag eq 'br';
+        $_->replace_with('[image: ', $_->attr('alt'), ']') if $_->tag eq 'img';
+        $_->replace_with($_->as_text, ' [', $_->attr('href'), ']') if $_->tag eq 'a';
+        $_->replace_with_content if $_->tag eq 'span' || $_->tag eq 'font';
+        $_->replace_with_content if $_->tag eq 'ul' || $_->tag eq 'ol';
+        if ($_->tag eq 'li') {
+            $sanitize_text_subs->{li}[0] = $list_type eq 'ol' ? "$list_num. " : '* ';
+            $list_num++;
+        }
+        if (my $sub = $sanitize_text_subs->{$_->tag}) {
+            $_->preinsert($sub->[0]);
+            $_->postinsert($sub->[1]);
+            $_->replace_with_content;
+        }
+    }
+}
+
+=head2 email_sanitize_html
+
+Intended for use in the _email_comment_list.html template to allow HTML
+in updates from staff/superusers.
+
+=cut
+
+sub email_sanitize_html : Fn('email_sanitize_html') {
+    my $update = shift;
+
+    my $text = $update->{item_text};
+    my $extra = $update->{item_extra};
+    $extra = $extra ? RABX::wire_rd(new IO::String($extra)) : {};
+
+    my $staff = $extra->{is_superuser} || $extra->{is_body_user};
+
+    return FixMyStreet::App::View::Web::_staff_html_markup($text, $staff);
 }
 
 1;

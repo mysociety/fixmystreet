@@ -25,7 +25,7 @@ __PACKAGE__->config(
     FILTERS => {
         add_links => \&add_links,
         escape_js => \&escape_js,
-        markup => [ \&markup_factory, 1 ],
+        staff_html_markup => [ \&staff_html_markup_factory, 1 ],
     },
     COMPILE_EXT => '.ttc',
     STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
@@ -100,7 +100,7 @@ sub add_links {
     my $text = shift;
     $text = FixMyStreet::Template::conditional_escape($text);
     $text =~ s/\r//g;
-    $text =~ s{(https?://)([^\s]+)}{"<a href=\"$1$2\">$1" . _space_slash($2) . '</a>'}ge;
+    $text =~ s{(?<!["'])(https?://)([^\s]+)}{"<a href=\"$1$2\">$1" . _space_slash($2) . '</a>'}ge;
     return FixMyStreet::Template::SafeString->new($text);
 }
 
@@ -110,21 +110,50 @@ sub _space_slash {
     return $t;
 }
 
-=head2 markup_factory
+=head2 staff_html_markup_factory
 
-This returns a function that will allow updates to have markdown-style italics.
-Pass in the user that wrote the text, so we know whether it can be privileged.
+This returns a function that processes the text body of an update, applying
+HTML sanitization and markdown-style italics if it was made by a staff user.
+
+Pass in the update extra, so we can determine if it was made by a staff user.
 
 =cut
 
-sub markup_factory {
-    my ($c, $user) = @_;
+sub staff_html_markup_factory {
+    my ($c, $extra) = @_;
+
+    my $staff = $extra->{is_superuser} || $extra->{is_body_user};
+
     return sub {
         my $text = shift;
-        return $text unless $user && ($user->from_body || $user->is_superuser);
-        $text =~ s{\*(\S.*?\S)\*}{<i>$1</i>};
-        FixMyStreet::Template::SafeString->new($text);
+        return _staff_html_markup($text, $staff);
     }
+}
+
+sub _staff_html_markup {
+    my ( $text, $staff ) = @_;
+    unless ($staff) {
+        return FixMyStreet::Template::html_paragraph(add_links($text));
+    }
+
+    $text = FixMyStreet::Template::sanitize($text);
+
+    # Apply Markdown-style italics
+    $text =~ s{\*(\S.*?\S)\*}{<i>$1</i>};
+
+    # Mark safe so add_links doesn't escape everything.
+    $text = FixMyStreet::Template::SafeString->new($text);
+
+    $text = add_links($text);
+
+    # If the update already has block-level elements then don't wrap
+    # individual lines in <p> elements, as we assume the user knows what
+    # they're doing.
+    unless ($text =~ /<(p|ol|ul)>/) {
+        $text = FixMyStreet::Template::html_paragraph($text);
+    }
+
+    return $text;
 }
 
 =head2 escape_js
