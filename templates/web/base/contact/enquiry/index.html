@@ -16,10 +16,10 @@
         <input type="text" class="form-control required" name="name" id="form_name" value="[% ( form_name OR c.user.name ) | html %]" size="30">
 
         <label for="form_email">[% loc('Your email') %]</label>
-        [% IF field_errors.username %]
-           <div class="form-error">[% field_errors.username %]</div>
+        [% IF field_errors.username_register %]
+           <div class="form-error">[% field_errors.username_register %]</div>
         [% END %]
-        <input type="text" class="form-control required email" name="username" id="form_email" [% "disabled" IF c.user.email %] value="[% ( email OR c.user.email ) | html %]" size="30">
+        <input type="text" class="form-control required email" name="username_register" id="form_email" [% "disabled" IF c.user.email %] value="[% ( email OR c.user.email ) | html %]" size="30">
 
         <div class="form-group">
           <label for="form_phone">[% loc('Your phone number') %]</label>

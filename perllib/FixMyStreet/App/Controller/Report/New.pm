@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use Encode;
-use List::Util qw(first uniq);
+use List::Util qw(uniq);
 use HTML::Entities;
 use Path::Class;
 use Utils;
@@ -126,8 +126,10 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     # Apps are sending email as username
     # Prepare for when they upgrade
-    if (!$c->get_param('username')) {
-        $c->set_param('username', $c->get_param('email'));
+    my $username_field = ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') )
+        ? 'username': 'username_register';
+    if (!$c->get_param($username_field)) {
+        $c->set_param($username_field, $c->get_param('email'));
     }
 
     # create the report - loading a partial if available
@@ -844,10 +846,16 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => $c->get_param($_) }
-      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
+      qw( email name phone password_register fms_extra_title update_method );
 
-    # Report form includes two username fields: #form_username_register and #form_username_sign_in
-    $params{username} = (first { $_ } $c->get_param_list('username')) || '';
+    if ($c->user_exists) {
+        $params{username} = $c->get_param('username');
+    } elsif ($c->get_param('submit_sign_in') || $c->get_param('password_sign_in')) {
+        $params{username} = $c->get_param('username');
+    } else {
+        $params{username} = $c->get_param('username_register');
+    }
+    $params{username} ||= '';
 
     my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
     my $anon_fallback = $c->cobrand->allow_anonymous_reports eq '1' && !$c->user_exists && !$params{username};
@@ -898,11 +906,24 @@ sub process_user : Private {
         $params{username} = $params{phone};
     }
 
+    # Code to deal with SMS being switched on and so the user being asked to
+    # pick a method and no username field
+    if (!$params{username} && !$params{update_method}) {
+        $c->stash->{field_errors}->{update_method} = _('Please pick your update preference');
+    }
+    if (!$params{username} && $params{update_method}) {
+        if ($params{update_method} eq 'phone') {
+            $params{username} = $params{phone};
+        } else {
+            $params{username} = $params{email};
+        }
+        $c->stash->{update_method} = $params{update_method};
+    }
+
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
     my $type = $parsed->{type} || 'email';
     $type = 'email' unless FixMyStreet->config('SMS_AUTHENTICATION') || $c->stash->{contributing_as_another_user};
-    $report->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) )
-        unless $report->user;
+    $report->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) );
 
     $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
 
@@ -1235,6 +1256,7 @@ sub check_for_errors : Private {
     # if using social login then we don't care about other errors
     $c->stash->{is_social_user} = $c->get_param('social_sign_in') ? 1 : 0;
     if ( $c->stash->{is_social_user} ) {
+        delete $field_errors{update_method};
         delete $field_errors{name};
         delete $field_errors{username};
     }
@@ -1248,6 +1270,16 @@ sub check_for_errors : Private {
     # add the photo error if there is one.
     if ( my $photo_error = delete $c->stash->{photo_error} ) {
         $field_errors{photo} = $photo_error;
+    }
+
+    # Now assign the username error according to where it came from
+    if ($field_errors{username}) {
+        if ($c->get_param('submit_sign_in') || $c->get_param('password_sign_in')) {
+            $field_errors{username_sign_in} = $field_errors{username};
+        } else {
+            $field_errors{username_register} = $field_errors{username};
+        }
+        delete $field_errors{username};
     }
 
     # all good if no errors
@@ -1308,6 +1340,11 @@ sub send_problem_confirm_text : Private {
 
     $data->{id} = $report->id;
     $c->forward('/auth/phone/send_token', [ $data, 'problem', $report->user->phone ]);
+    my $error = $c->render_fragment( 'auth/_username_error.html', { default => 'phone' });
+    if ($error) {
+        $c->stash->{field_errors}{phone} = $error;
+        $c->forward('generate_map');
+    }
     $c->stash->{submit_url} = '/report/new/text';
 }
 

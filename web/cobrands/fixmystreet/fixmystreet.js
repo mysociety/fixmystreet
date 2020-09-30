@@ -316,7 +316,11 @@ $.extend(fixmystreet.set_up, {
         errorElement: 'div',
         errorClass: 'form-error',
         errorPlacement: function( error, element ) {
-            element.before( error );
+            if (element.parent().hasClass('segmented-control')) {
+                element.parent().before( error );
+            } else {
+                element.before( error );
+            }
         },
         submitHandler: function(form) {
             if (form.submit_problem) {
@@ -1094,16 +1098,16 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
-  reporting_hide_phone_email: function() {
-    $('#form_username_register').on('keyup change', function() {
-        var username = $(this).val();
-        if (/^[^a-z]+$/i.test(username)) {
-            $('#js-hide-if-username-phone').hide();
-            $('#js-hide-if-username-email').show();
-        } else {
-            $('#js-hide-if-username-phone').show();
-            $('#js-hide-if-username-email').hide();
-        }
+  reporting_required_phone_email: function() {
+    var fem = $('#form_email');
+    var fph = $('#form_phone');
+    $('#update_method_email').on('change', function() {
+      fem.prop('required', true);
+      fph.prop('required', false);
+    });
+    $('#update_method_phone').on('change', function() {
+      fem.prop('required', false);
+      fph.prop('required', true);
     });
   },
 

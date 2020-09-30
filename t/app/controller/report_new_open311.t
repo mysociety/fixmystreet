@@ -108,7 +108,8 @@ my $empty_form = {
     photo3        => '',
     name          => '',
     may_show_name => '1',
-    username      => '',
+    username_register => '',
+    username => '',
     phone         => '',
     category      => '',
     password_sign_in => '',
@@ -130,14 +131,14 @@ foreach my $test (
             'This information is required',
             'Please enter a subject',
             'Please enter some details',
-            'Please enter your email',
             'Please enter your name',
+            'Please enter your email',
         ],
         submit_with => {
             title => 'test',
             detail => 'test detail',
             name => 'Test User',
-            username => 'testopen311@example.com',
+            username_register => 'testopen311@example.com',
             category => 'Street lighting',
             number => 27,
             type => 'old',
@@ -170,14 +171,14 @@ foreach my $test (
             'This information is required',
             'Please enter a subject',
             'Please enter some details',
-            'Please enter your email',
             'Please enter your name',
+            'Please enter your email',
         ],
         submit_with => {
             title => 'test',
             detail => 'test detail',
             name => 'Test User',
-            username => 'testopen311@example.com',
+            username_register => 'testopen311@example.com',
             size => 'big',
             colour => 'red',
         },
@@ -201,7 +202,7 @@ foreach my $test (
         $mech->clear_emails_ok;
 
         # check that the user does not exist
-        my $test_email = $test->{submit_with}->{username};
+        my $test_email = $test->{submit_with}->{username_register};
         my $user = FixMyStreet::DB->resultset('User')->find( { email => $test_email } );
         if ( $user ) {
             $user->problems->delete;
@@ -452,7 +453,7 @@ subtest "Category extras includes form disabling string" => sub {
         # Test submission of whole form, switching back to a blocked category at the same time
         $mech->submit_form_ok({ with_fields => {
             category => 'Pothole', title => 'Title', detail => 'Detail',
-            username => 'testing@example.org', name => 'Testing Example',
+            username_register => 'testing@example.org', name => 'Testing Example',
         } });
         $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
         $mech->content_contains('Please ring us!');

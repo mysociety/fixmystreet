@@ -272,7 +272,8 @@ for my $test (
     {
         desc => 'No email, no message',
         fields => {
-            username  => '',
+            username_register => '',
+            username => '',
             update => '',
             name   => '',
             photo1 => '',
@@ -285,12 +286,13 @@ for my $test (
             password_sign_in => '',
         },
         changes => {},
-        field_errors => [ 'Please enter a message', 'Please enter your email', 'Please enter your name' ]
+        field_errors => [ 'Please enter a message', 'Please enter your name', 'Please enter your email' ]
     },
     {
         desc => 'Invalid email, no message',
         fields => {
-            username  => 'test',
+            username_register => 'test',
+            username => '',
             update => '',
             name   => '',
             photo1 => '',
@@ -303,12 +305,13 @@ for my $test (
             password_register => '',
         },
         changes => {},
-        field_errors => [ 'Please enter a message', 'Please enter a valid email', 'Please enter your name' ]
+        field_errors => [ 'Please enter a message', 'Please enter your name', 'Please enter a valid email' ]
     },
     {
         desc => 'email with spaces, no message',
         fields => {
-            username => 'test @ example. com',
+            username_register => 'test @ example. com',
+            username => '',
             update => '',
             name   => '',
             photo1 => '',
@@ -320,15 +323,14 @@ for my $test (
             password_register => '',
             password_sign_in => '',
         },
-        changes => {
-            username => 'test@example.com',
-        },
+        changes => {},
         field_errors => [ 'Please enter a message', 'Please enter your name' ]
     },
     {
         desc => 'email with uppercase, no message',
         fields => {
-            username => 'test@EXAMPLE.COM',
+            username_register => 'test@EXAMPLE.COM',
+            username => '',
             update => '',
             name   => '',
             photo1 => '',
@@ -340,9 +342,7 @@ for my $test (
             password_register => '',
             password_sign_in => '',
         },
-        changes => {
-            username => 'test@example.com',
-        },
+        changes => {},
         field_errors => [ 'Please enter a message', 'Please enter your name' ]
     },
   )
@@ -369,6 +369,7 @@ for my $test (
         desc => 'submit an update for a non registered user',
         initial_values => {
             name          => '',
+            username_register => '',
             username => '',
             may_show_name => undef,
             add_alert     => 1,
@@ -382,7 +383,7 @@ for my $test (
         },
         form_values => {
             submit_update => 1,
-            username => 'unregistered@example.com',
+            username_register => 'unregistered@example.com',
             update        => 'Update from an unregistered user',
             add_alert     => undef,
             name          => 'Unreg User',
@@ -394,6 +395,7 @@ for my $test (
         desc => 'submit an update for a non registered user and sign up',
         initial_values => {
             name          => '',
+            username_register => '',
             username => '',
             may_show_name => undef,
             add_alert     => 1,
@@ -407,7 +409,7 @@ for my $test (
         },
         form_values => {
             submit_update => 1,
-            username => 'unregistered@example.com',
+            username_register => 'unregistered@example.com',
             update        => "update from an\r\n\r\nunregistered user",
             add_alert     => 1,
             name          => 'Unreg User',
@@ -465,14 +467,14 @@ for my $test (
 
         ok $update, 'found update in database';
         is $update->state, 'unconfirmed', 'update unconfirmed';
-        is $update->user->email, $details->{username}, 'update email';
+        is $update->user->email, $details->{username_register}, 'update email';
         is $update->text, $details->{update}, 'update text';
         is $add_alerts, $details->{add_alert} ? 1 : 0, 'do not sign up for alerts';
 
         $mech->get_ok( $url );
         $mech->content_contains("/report/$report_id#update_$update_id");
 
-        my $unreg_user = FixMyStreet::DB->resultset( 'User' )->find( { email => $details->{username} } );
+        my $unreg_user = FixMyStreet::DB->resultset( 'User' )->find( { email => $details->{username_register} } );
 
         ok $unreg_user, 'found user';
 
@@ -497,6 +499,7 @@ for my $test (
         desc => 'overriding email confirmation allows report confirmation with no email sent',
         initial_values => {
             name          => '',
+            username_register => '',
             username => '',
             may_show_name => undef,
             add_alert     => 1,
@@ -510,7 +513,7 @@ for my $test (
         },
         form_values => {
             submit_update => 1,
-            username => 'unregistered@example.com',
+            username_register => 'unregistered@example.com',
             update        => "update no email confirm",
             add_alert     => 1,
             name          => 'Unreg User',
@@ -562,10 +565,10 @@ for my $test (
 
         ok $update, 'found update in database';
         is $update->state, 'confirmed', 'update confirmed';
-        is $update->user->email, $details->{username}, 'update email';
+        is $update->user->email, $details->{username_register}, 'update email';
         is $update->text, $details->{update}, 'update text';
 
-        my $unreg_user = FixMyStreet::DB->resultset( 'User' )->find( { email => $details->{username} } );
+        my $unreg_user = FixMyStreet::DB->resultset( 'User' )->find( { email => $details->{username_register} } );
 
         ok $unreg_user, 'found user';
 
@@ -1223,6 +1226,21 @@ $report->comments->delete;
 
 for my $test (
     {
+        desc => 'submit an update with bad email and password',
+        form_values => {
+            submit_update => 1,
+            username => 'registered@',
+            update        => 'Update from a user',
+            add_alert     => undef,
+            password_sign_in => 'secret',
+        },
+        field_errors => [
+            'Please enter a valid email',
+            "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
+            'Please enter your name', # FIXME Not really necessary error
+        ],
+    },
+    {
         desc => 'submit an update for a registered user, signing in with wrong password',
         form_values => {
             submit_update => 1,
@@ -1308,7 +1326,7 @@ subtest 'submit an update for a registered user, creating update by email' => su
     $mech->submit_form_ok( {
         with_fields => {
             submit_update => 1,
-            username => $user->email,
+            username_register => $user->email,
             update        => 'Update from a user',
             add_alert     => undef,
             name          => 'New Name',
@@ -1757,7 +1775,7 @@ for my $test (
         fields => {
             submit_update => 1,
             name          => 'Test User',
-            username => $report->user->email,
+            username_register => $report->user->email,
             may_show_name => 1,
             update        => 'update from owner',
             add_alert     => undef,
@@ -1779,7 +1797,7 @@ for my $test (
             submit_update => 1,
             name          => 'Test User',
             may_show_name => 1,
-            username => $report->user->email,
+            username_register => $report->user->email,
             update        => 'update from owner',
             add_alert     => undef,
             fixed         => 1,
@@ -1844,7 +1862,7 @@ for my $test (
         my $update = $report->comments->first;
         ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
-        is $update->user->email, $test->{fields}->{username}, 'update user';
+        is $update->user->email, $test->{fields}->{username_register}, 'update user';
         is $update->state, 'unconfirmed', 'update confirmed';
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 

@@ -15,20 +15,46 @@ $mech->create_contact_ok( body_id => $body->id, category => 'Street lighting', e
 $mech->create_contact_ok( body_id => $body->id, category => 'Trees', email => 'trees@example.com' );
 
 # test that phone number validation works okay
+my %defaults = (
+    title => 'Title', detail => 'Detail', name => 'Bob Jones',
+    category => 'Street lighting', may_show_name => 1,
+    photo1 => '', photo2 => '', photo3 => '',
+    password_register => '', password_sign_in => '',
+);
 foreach my $test (
+    {
+        msg => 'missing update method',
+        pc => 'EH1 1BB',
+        fields => {
+            update_method => undef, phone => '', email => '',
+            %defaults,
+        },
+        changes => {
+            username => '',
+        },
+        errors => [ 'Please enter your email', 'Please pick your update preference' ],
+    },
+    {
+        msg => 'email method',
+        pc => 'EH1 1BB',
+        fields => {
+            update_method => 'email', phone => '', email => 'bademail',
+            %defaults,
+        },
+        changes => {
+            username => '',
+        },
+        errors => [ 'Please enter a valid email' ],
+    },
     {
         msg => 'invalid number',
         pc => 'EH1 1BB',
         fields => {
-            username => '0121 4960000000', email => '', phone => '',
-            title => 'Title', detail => 'Detail', name => 'Bob Jones',
-            category => 'Street lighting',
-            may_show_name => '1',
-            photo1 => '', photo2 => '', photo3 => '',
-            password_register => '', password_sign_in => '',
+            update_method => 'phone', phone => '0121 4960000000', email => '',
+            %defaults,
         },
         changes => {
-            username => '01214960000000',
+            username => '',
             phone => '01214960000000',
         },
         errors => [ 'Please check your phone number is correct' ],
@@ -37,18 +63,27 @@ foreach my $test (
         msg => 'landline number',
         pc => 'EH1 1BB',
         fields => {
-            username => '0121 4960000', email => '', phone => '',
-            title => 'Title', detail => 'Detail', name => 'Bob Jones',
-            category => 'Street lighting',
-            may_show_name => '1',
-            photo1 => '', photo2 => '', photo3 => '',
-            password_register => '', password_sign_in => '',
+            update_method => 'phone', phone => '0121 4960000', email => '',
+            %defaults,
         },
         changes => {
-            username => '0121 496 0000',
+            username => '',
             phone => '0121 496 0000',
         },
         errors => [ 'Please enter a mobile number', ],
+    },
+    {
+        msg => 'number that fails',
+        pc => 'EH1 1BB',
+        fields => {
+            update_method => 'phone', phone => '+18165550101', email => '',
+            %defaults,
+        },
+        changes => {
+            username => '',
+            phone => '+1 816-555-0101',
+        },
+        errors => [ 'Sending a confirmation text failed: "Unable to send (21408)"' ],
     },
   )
 {
@@ -60,6 +95,7 @@ foreach my $test (
             MAPIT_URL => 'http://mapit.uk/',
             SMS_AUTHENTICATION => 1,
             PHONE_COUNTRY => 'GB',
+            TWILIO_ACCOUNT_SID => 'AC123',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
                 "submit location" );
@@ -142,7 +178,8 @@ foreach my $test (
                     title => 'Test Report', detail => 'Test report details.',
                     photo1 => '',
                     name => 'Joe Bloggs', may_show_name => '1',
-                    username => $test_phone,
+                    update_method => 'phone',
+                    phone => $test_phone,
                     category => 'Street lighting',
                     password_register => $test->{password} ? 'secret' : '',
                 }

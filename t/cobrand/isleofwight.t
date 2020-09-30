@@ -481,7 +481,7 @@ subtest "sends branded confirmation emails" => sub {
                     detail        => 'Test report details.',
                     photo1        => '',
                     name          => 'Joe Bloggs',
-                    username      => 'test-1@example.com',
+                    username_register => 'test-1@example.com',
                     category      => 'Roads',
                 }
             },

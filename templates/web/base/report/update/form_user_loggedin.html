@@ -23,6 +23,9 @@
       [% END %]
     </select>
     <label for="form_username">[% loc('Email address') %]</label>
+    [% IF field_errors.username_register %]
+      <p class='form-error'>[% field_errors.username_register %]</p>
+    [% END %]
     <input class="form-control" name="username" id="form_username" type="text" value="[% c.user.email | html %]">
   [% END %]
 
