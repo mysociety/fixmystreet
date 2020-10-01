@@ -20,6 +20,9 @@ describe('Clicking the map', function() {
         cy.get('#map_sidebar').should('contain', 'check and confirm your details');
         cy.get('#map_sidebar').parents('form').submit();
         cy.get('body').should('contain', 'Thank you for reporting this issue');
+        cy.visit('http://fixmystreet.localhost:3001/_test/setup/simple-service-check').then(function(w) {
+            expect(w.document.documentElement.innerText).to.equal('desktop');
+        });
     });
 });
 

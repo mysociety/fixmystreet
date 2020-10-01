@@ -43,6 +43,7 @@
         - Allow inspectors to change report asset.
         - Staff users can use HTML tags in updates. #3143
         - Response templates can include HTML tags. #3143
+        - Record whether report made on desktop or mobile.
     - Development improvements:
         - `#geolocate_link` is now easier to re-style. #3006
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007

@@ -29,8 +29,8 @@ Create a new report, or complete a partial one.
 
 submit_problem: true if a problem has been submitted, at all.
 submit_sign_in: true if the sign in button has been clicked by logged out user.
-submit_register: true if the register/confirm by email button has been clicked
-by logged out user.
+submit_register(_mobile): true if the register/confirm by email button has been clicked
+by logged out user, or submit button clicked by logged in user.
 
 =head2 location (required)
 
@@ -1046,7 +1046,13 @@ sub process_report : Private {
     $report->detail( $detail );
 
     # mobile device type
-    $report->service( $params{service} ) if $params{service};
+    if ($params{service}) {
+        $report->service($params{service});
+    } elsif ($c->get_param('submit_register_mobile')) {
+        $report->service('mobile');
+    } elsif ($c->get_param('submit_register')) {
+        $report->service('desktop');
+    }
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};

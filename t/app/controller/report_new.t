@@ -149,7 +149,7 @@ foreach my $test (
 
         $mech->submit_form_ok(
             {
-                button      => 'submit_register',
+                button      => 'submit_register_mobile',
                 with_fields => {
                     title         => 'Test Report',
                     detail        => 'Test report details.',

@@ -61,6 +61,9 @@ sub setup : Path('/_test/setup') : Args(1) {
         });
         $category->update;
         $c->response->body("OK");
+    } elsif ($test eq 'simple-service-check') {
+        my $problem = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $c->response->body($problem->service);
     }
 }
 

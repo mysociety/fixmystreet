@@ -659,6 +659,7 @@ $.extend(fixmystreet.set_up, {
         } else {
             fixmystreet.resize_to.desktop_page();
         }
+        $('#form_service').val(type);
         last_type = type;
     }).resize();
   },
