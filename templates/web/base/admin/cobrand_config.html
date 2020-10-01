@@ -1,0 +1,19 @@
+[% INCLUDE 'admin/header.html' title=loc('Configuration') -%]
+
+<p>A summary of this site's cobrand configuration.
+</p>
+
+[% FOR cobrand IN cobrands.keys.sort %]
+    <p>[% cobrand %]: [% cobrands.$cobrand.keys.sort.join(', ') %]</p>
+[% END %]
+
+<table>
+<tr><th>Variable</th>
+    <th>general.yml value</th>
+    <th>Cobrand module override</th>
+</tr>
+</table>
+
+
+[% INCLUDE 'admin/footer.html' %]
+

@@ -703,6 +703,7 @@ sub admin_pages {
         $pages->{config} = [ _('Configuration'), 9];
         $pages->{manifesttheme} = [ _('Manifest Theme'), 11];
         $pages->{user_import} = [ undef, undef ];
+        $pages->{cobrands} = [ undef, undef ];
     };
     # And some that need special permissions
     if ( $user->has_body_permission_to('category_edit') ) {

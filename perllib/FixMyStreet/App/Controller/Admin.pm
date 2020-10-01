@@ -100,6 +100,21 @@ sub config_page : Path( 'config' ) : Args(0) {
     );
 }
 
+sub cobrand_config : Path( 'cobrands' ) : Args(0) {
+    my ($self, $c) = @_;
+
+    return unless $c->user->is_superuser;
+
+    my %cobrands = map { $_ => {} } grep { ref $_ ne 'HASH' } @{ $c->config->{ALLOWED_COBRANDS} };
+
+    my $features = $c->config->{COBRAND_FEATURES};
+    for my $feature ( keys %$features ) {
+        $cobrands{$_}->{$feature} = 1 for keys %{ $features->{$feature} };
+    }
+
+    $c->stash->{cobrands} = \%cobrands;
+}
+
 sub timeline : Path( 'timeline' ) : Args(0) {
     my ($self, $c) = @_;
 
