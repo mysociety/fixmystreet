@@ -10,6 +10,7 @@ use DateTime::Format::Pg;
 use Try::Tiny;
 
 use FixMyStreet::Geocode::Zurich;
+use FixMyStreet::Template;
 use FixMyStreet::WorkingDays;
 
 use strict;
@@ -178,7 +179,7 @@ sub updates_as_hashref {
         $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
         if ( $problem->state ne 'external' ) {
-            $hashref->{details} = FixMyStreet::App::View::Web::add_links(
+            $hashref->{details} = FixMyStreet::Template::add_links(
                 $problem->get_extra_metadata('public_response') || '' );
         } else {
             $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body->name );
