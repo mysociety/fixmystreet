@@ -12,7 +12,7 @@ sub join_table {
 }
 
 sub map_extras {
-    my ($rs, @ts) = @_;
+    my ($rs, $params, @ts) = @_;
     return map {
         my $meta = $_->get_extra_metadata();
         my %extra = map { $_ => $meta->{$_} } keys %$meta;

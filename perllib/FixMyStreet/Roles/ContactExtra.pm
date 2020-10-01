@@ -45,7 +45,7 @@ sub by_categories {
                $_->$join_table == 0 # There's no category at all on this defect type/template/priority
             || (grep { $_->contact_id == $contact->get_column('id') } $_->$join_table)
         } @results;
-        @ts = $rs->map_extras(@ts);
+        @ts = $rs->map_extras(\%params, @ts);
         $extras{$contact->category} = JSON::XS->new->encode(\@ts);
     }
 

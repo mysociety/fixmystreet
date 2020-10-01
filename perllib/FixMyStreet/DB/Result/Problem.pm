@@ -780,7 +780,11 @@ alphabetical order of name.
 
 sub response_priorities {
     my $self = shift;
-    return $self->result_source->schema->resultset('ResponsePriority')->for_bodies($self->bodies_str_ids, $self->category);
+    my $rs = $self->result_source->schema->resultset('ResponsePriority')->for_bodies($self->bodies_str_ids, $self->category);
+    $rs->search([
+        'me.deleted' => 0,
+        'me.id' => $self->response_priority_id,
+    ]);
 }
 
 =head2 defect_types

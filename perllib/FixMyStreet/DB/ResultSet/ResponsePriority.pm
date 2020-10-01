@@ -12,8 +12,12 @@ sub join_table {
 }
 
 sub map_extras {
-    my ($rs, @ts) = @_;
-    return map { { id => $_->id, name => $_->name } } @ts;
+    my ($rs, $params, @ts) = @_;
+    my $current = $params->{problem} && $params->{problem}->response_priority_id || 0;
+    return
+        map { { id => $_->id, name => $_->name } }
+        grep { !$_->deleted || $_->id == $current }
+        @ts;
 }
 
 1;

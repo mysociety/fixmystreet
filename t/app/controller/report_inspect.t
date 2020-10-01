@@ -17,6 +17,11 @@ my $rp2 = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
     name => 'Low Priority',
 });
+my $rp3 = FixMyStreet::DB->resultset("ResponsePriority")->create({
+    body => $oxon,
+    name => 'Deleted Priority',
+    deleted => 1,
+});
 FixMyStreet::DB->resultset("ContactResponsePriority")->create({
     contact => $contact,
     response_priority => $rp,
@@ -447,6 +452,7 @@ FixMyStreet::override_config {
     subtest "default response priorities display correctly" => sub {
         $mech->get_ok("/report/$report_id");
         $mech->content_contains('Priority</label', 'report priority list present');
+        $mech->content_lacks('Deleted Priority');
         like $mech->content, qr/<select name="priority" id="problem_priority" class="form-control">[^<]*<option value="" selecte/s, 'blank priority option is selected';
         $mech->content_lacks('value="' . $rp->id . '" selected>High', 'non default priority not selected');
 
@@ -454,6 +460,12 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report_id");
         unlike $mech->content, qr/<select name="priority" id="problem_priority" class="form-control">[^<]*<option value="" selecte/s, 'blank priority option not selected';
         $mech->content_contains('value="' . $rp->id . '" selected>High', 'default priority selected');
+    };
+
+    subtest "check when report has deleted priority" => sub {
+        $report->update({ response_priority => $rp3 });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('value="' . $rp3->id . '" selected>Deleted Priority');
     };
 
     foreach my $test (
