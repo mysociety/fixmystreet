@@ -206,6 +206,26 @@ fixmystreet.assets.add(owned_defaults, {
     asset_item: 'grit bin'
 });
 
+// Defects
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: proxy_base_url + 'nsg/',
+        params: {
+            SERVICE: "WFS",
+            VERSION: "1.1.0",
+            REQUEST: "GetFeature",
+            SRSNAME: "urn:ogc:def:crs:EPSG::27700",
+            TYPENAME: 'WFS_DEFECTS_FOR_QUERYING',
+            propertyName: 'ITEM_CATEGORY_NAME,ITEM_TYPE_NAME,REQUIRED_COMPLETION_DATE,ACTUAL_COMPLETION_DATE,APPROVAL_STATUS_NAME,SHAPE_GEOMETRY',
+        }
+    },
+    srsName: "EPSG:27700",
+    filter_key: 'APPROVAL_STATUS_NAME',
+    filter_value: 'With Contractor',
+    always_visible: true,
+    asset_item: 'defects'
+});
+
 var road_occ_maintainable = 'Maintainable at Public Expense';
 
 function road_owned(f) {
