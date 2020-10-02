@@ -609,29 +609,6 @@ sub get_ok_json {
     return decode_json( $res->content );
 }
 
-sub delete_body {
-    my $mech = shift;
-    my $body = shift;
-
-    $mech->delete_problems_for_body($body->id);
-    $mech->delete_defect_type($_) for $body->defect_types;
-    $mech->delete_contact($_) for $body->contacts;
-    $mech->delete_user($_) for $body->users;
-    $_->delete for $body->response_templates;
-    $_->delete for $body->response_priorities;
-    $body->body_areas->delete;
-    $body->delete;
-}
-
-sub delete_contact {
-    my $mech = shift;
-    my $contact = shift;
-
-    $contact->contact_response_templates->delete_all;
-    $contact->contact_response_priorities->delete_all;
-    $contact->delete;
-}
-
 sub delete_problems_for_body {
     my $mech = shift;
     my $body = shift;
@@ -644,14 +621,6 @@ sub delete_problems_for_body {
         }
         $reports->delete;
     }
-}
-
-sub delete_defect_type {
-    my $mech = shift;
-    my $defect_type = shift;
-
-    $defect_type->contact_defect_types->delete_all;
-    $defect_type->delete;
 }
 
 sub delete_response_template {

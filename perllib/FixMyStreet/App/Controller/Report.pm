@@ -413,7 +413,8 @@ sub inspect : Private {
     if ($c->cobrand->can('body')) {
         my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories(
             $c->stash->{contacts},
-            body_id => $c->cobrand->body->id
+            body_id => $c->cobrand->body->id,
+            problem => $problem,
         );
         $c->stash->{priorities_by_category} = $priorities_by_category;
         my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories(
