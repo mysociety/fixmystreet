@@ -231,9 +231,10 @@ subtest 'check open311 devolved editing' => sub {
     $mech->content_contains("name=\"category\"\n    size=\"30\" value=\"test category\"\n    required>", 'Can edit as now devolved');
     $mech->submit_form_ok( { with_fields => {
         send_method => '',
-        email => 'open311-code',
+        email => 'open311 code',
         note => 'Removing email send method',
     } } );
+    $mech->content_contains('open311 code');
     $mech->content_contains('Values updated');
 };
 

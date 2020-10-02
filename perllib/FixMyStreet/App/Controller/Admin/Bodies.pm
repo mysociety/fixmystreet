@@ -252,8 +252,12 @@ sub update_contact : Private {
     }
 
     my $email = $c->get_param('email');
-    $email =~ s/\s+//g;
     my $send_method = $c->get_param('send_method') || $contact->body->send_method || "";
+    if ($send_method eq 'Open311') {
+        $email =~ s/^\s+|\s+$//g;
+    } else {
+        $email =~ s/\s+//g;
+    }
     my $email_unchanged = $contact->email && $email && $contact->email eq $email;
     my $cobrand = $contact->body->get_cobrand_handler;
     my $cobrand_valid = $cobrand && $cobrand->call_hook(validate_contact_email => $email);
