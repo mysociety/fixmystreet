@@ -185,6 +185,7 @@ sub create_problems {
                 send_method_used => 'Open311',
                 category => $contact,
                 send_questionnaire => 0,
+                service => 'Open311',
                 non_public => $non_public,
             }
         );
