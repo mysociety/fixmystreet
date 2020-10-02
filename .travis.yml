@@ -58,7 +58,7 @@ install:
   - 'if [ "$CYPRESS" = "1" ]; then npm install cypress@3.8.3; fi'
 before_script:
   - commonlib/bin/gettext-makemo FixMyStreet
-  - 'if [ "$COVERAGE_PART" != "0" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,^t"; fi'
+  - 'if [ "$COVERAGE_PART" != "0" ]; then export HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,Test.pm,^t"; fi'
 script:
   - 'if [ "$CYPRESS" = "0" ] && [ "$COVERAGE_PART" = "0" ]; then script/test --jobs 3 t; fi'
   - 'if [ "$COVERAGE_PART" = "1" ]; then script/test --jobs 3 `find t/app/controller -name "*.t"`; fi'
