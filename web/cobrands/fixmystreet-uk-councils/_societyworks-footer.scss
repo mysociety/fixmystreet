@@ -1,0 +1,43 @@
+$societyworks-footer-background: #2E3033 !default;
+$societyworks-footer-color: rgba(#fff, 0.6) !default;
+$societyworks-footer-padding: 2em 0 !default;
+$societyworks-footer-font-family: inherit !default;
+$societyworks-footer-font-size: 14px !default;
+$societyworks-footer-line-height: 1 !default;
+$societyworks-footer-logo-vertical-align: -5px !default;
+
+.societyworks-footer {
+    padding: $societyworks-footer-padding;
+    background: $societyworks-footer-background;
+    color: $societyworks-footer-color;
+
+    p {
+        margin: 0;
+        font-family: $societyworks-footer-font-family;
+        font-size: $societyworks-footer-font-size;
+        line-height: $societyworks-footer-line-height;
+    }
+}
+
+.societyworks-footer__logo {
+    display: inline-block;
+    height: 0;
+    overflow: hidden;
+    padding-top: 24px;
+    width: 115px;
+    background-color: transparent;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 115px 24px;
+    @include svg-background-image('/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo');
+    vertical-align: $societyworks-footer-logo-vertical-align - 2px;
+    margin-#{$left}: 0.5em;
+}
+
+.societyworks-footer__logo--fms-pro {
+    padding-top: 20px;
+    width: 146px;
+    background-size: 146px 20px;
+    @include svg-background-image('/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo-fms-pro');
+    vertical-align: $societyworks-footer-logo-vertical-align;
+}
