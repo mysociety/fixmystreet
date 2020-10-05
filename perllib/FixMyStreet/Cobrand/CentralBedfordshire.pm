@@ -31,4 +31,17 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+sub open311_extra_data_include {
+    my ($self, $row, $h, $extra, $contact) = @_;
+
+    my $cfg = $self->feature('area_code_mapping') || return;
+    my @areas = split ',', $row->areas;
+    my @matches = grep { $_ } map { $cfg->{$_} } @areas;
+    if (@matches) {
+        return [
+            { name => 'area_code', value => $matches[0] },
+        ];
+    }
+}
+
 1;
