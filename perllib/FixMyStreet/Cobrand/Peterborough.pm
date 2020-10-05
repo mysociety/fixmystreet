@@ -98,4 +98,26 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params);
 };
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        usrn => 'USRN',
+        nearest_address => 'Nearest address',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $address = '';
+        $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name}
+            if $report->geocode;
+
+        return {
+            usrn => $report->get_extra_field_value('site_code'),
+            nearest_address => $address,
+        };
+    });
+}
+
 1;

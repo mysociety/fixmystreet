@@ -117,13 +117,19 @@ subtest "extra bartec params are sent to open311" => sub {
             geocode => {
                 resourceSets => [ {
                     resources => [ {
+                        name => '12 A Street, XX1 1SZ',
                         address => {
                             addressLine => '12 A Street',
                             postalCode => 'XX1 1XZ'
                         }
                     } ]
                 } ]
-            }
+            },
+            extra => {
+                _fields => [
+                    { name => 'site_code', value => '12345', },
+                ],
+            },
         } );
 
         my $test_data = FixMyStreet::Script::Reports::send();
@@ -137,6 +143,20 @@ subtest "extra bartec params are sent to open311" => sub {
         is $cgi->param('attribute[house_no]'), '12', 'house_no param sent';
         is $cgi->param('attribute[street]'), 'A Street', 'street param sent';
     };
+};
+
+subtest 'Dashboard CSV extra columns' => sub {
+    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+        from_body => $peterborough, password => 'password');
+    $mech->log_in_ok( $staffuser->email );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+    }, sub {
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('"Reported As",USRN,"Nearest address"');
+    $mech->content_contains('peterborough,,12345,"12 A Street, XX1 1SZ"');
 };
 
 
