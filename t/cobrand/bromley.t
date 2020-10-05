@@ -290,12 +290,22 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/uprn/12345');
         $mech->content_contains('(completed at 10:00am)');
         $mech->content_contains('Wrong Bin Out');
-        FixMyStreet::DB->resultset('ResponseTemplate')->create({
-            body_id => $body->id,
+    };
+
+    subtest 'test template creation' => sub {
+        $mech->log_in_ok('superuser@example.com');
+        $mech->get_ok('/admin/templates/' . $body->id . '/new');
+        $mech->submit_form_ok({ with_fields => {
             title => 'Wrong bin',
             text => 'We could not collect your waste as it was not correctly presented.',
-            external_status_code => 187,
-        });
+            resolution_code => 187,
+            task_type => 3216,
+            task_state => 'Completed',
+        } });
+        $mech->log_out_ok;
+    };
+
+    subtest 'test reporting before/after completion' => sub {
         $mech->get_ok('/waste/uprn/12345');
         $mech->content_contains('(completed at 10:00am)');
         $mech->content_contains('We could not collect your waste as it was not correctly presented.');

@@ -571,13 +571,20 @@ sub bin_services_for_address {
             my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
             my $completed = construct_bin_date($_->{CompletedDate});
             my $state = $_->{State}{Name} || '';
+            my $task_type_id = $_->{TaskTypeId} || '';
 
             my $resolution = $_->{Resolution}{Name} || '';
             my $resolution_id = $_->{Resolution}{Ref}{Value}{anyType};
             if ($resolution_id) {
                 my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
                     'me.body_id' => $self->body->id,
-                    'me.external_status_code' => $resolution_id,
+                    'me.external_status_code' => [
+                        "$resolution_id,$task_type_id,$state",
+                        "$resolution_id,$task_type_id,",
+                        "$resolution_id,,$state",
+                        "$resolution_id,,",
+                        $resolution_id,
+                    ],
                 })->first;
                 $resolution = $template->text if $template;
             }
@@ -803,7 +810,7 @@ sub construct_waste_open311_update {
         description => $description,
         status => $status,
         update_id => 'waste',
-        external_status_code => $resolution_id,
+        external_status_code => "$resolution_id,,",
     };
 }
 
@@ -864,6 +871,17 @@ sub waste_check_last_update {
         }
     }
     return 1;
+}
+
+sub admin_templates_external_status_code_hook {
+    my ($self) = @_;
+    my $c = $self->{c};
+
+    my $res_code = $c->get_param('resolution_code') || '';
+    my $task_type = $c->get_param('task_type') || '';
+    my $task_state = $c->get_param('task_state') || '';
+
+    return "$res_code,$task_type,$task_state";
 }
 
 1;

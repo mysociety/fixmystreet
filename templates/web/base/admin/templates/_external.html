@@ -1,0 +1,12 @@
+[% IF errors.external_status_code %]
+    <div class="form-error">[% errors.external_status_code %]</div>
+[% END %]
+<div class="admin-hint">
+  <p>
+    [% loc('If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here.') %]
+  </p>
+</div>
+<p>
+  <label for="external_status_code">[% loc('External status code') %]</label>
+  <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
+</p>
