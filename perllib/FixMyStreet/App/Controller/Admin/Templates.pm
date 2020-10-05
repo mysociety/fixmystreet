@@ -100,7 +100,10 @@ sub edit : Path : Args(2) {
 
             $template->text( $c->get_param('text') );
             $template->state( $c->get_param('state') );
-            $template->external_status_code( $c->get_param('external_status_code') );
+
+            my $ext_code = $c->cobrand->call_hook('admin_templates_external_status_code_hook');
+            $ext_code ||= $c->get_param('external_status_code');
+            $template->external_status_code($ext_code);
 
             if ( $template->state && $template->external_status_code ) {
                 $c->stash->{errors} ||= {};
