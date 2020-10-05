@@ -206,8 +206,31 @@ fixmystreet.assets.add(owned_defaults, {
     asset_item: 'grit bin'
 });
 
+var defects_default = new OpenLayers.Style({
+    externalGraphic: fixmystreet.pin_prefix + "pin-defects.png",
+    fillColor: "#55BB00",
+    graphicWidth: 48,
+    graphicHeight: 64,
+    graphicXOffset: -24,
+    graphicYOffset: -56,
+    backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow.png",
+    backgroundWidth: 60,
+    backgroundHeight: 30,
+    backgroundXOffset: -7,
+    backgroundYOffset: -22,
+    popupYOffset: -40,
+    graphicOpacity: 1.0
+});
+
+var defects_stylemap = new OpenLayers.StyleMap({
+    'default': defects_default,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': fixmystreet.assets.style_default_hover
+});
+
 // Defects
 fixmystreet.assets.add(defaults, {
+    stylemap: defects_stylemap,
     http_options: {
         url: proxy_base_url + 'nsg/',
         params: {
