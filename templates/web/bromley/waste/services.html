@@ -1,3 +1,6 @@
+[% IF unit.service_id == 531 ~%]
+[% domestic_collection = 1 ~%]
+[% END ~%]
 [% IF unit.report_open %]
   <span class="waste-service-descriptor">
     A [% unit.service_name FILTER lower %] collection has been reported as missed
