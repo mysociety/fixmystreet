@@ -85,7 +85,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h, $extra, $contact) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $open311_only;
     if ($contact->email =~ /^Confirm/) {
@@ -99,7 +99,7 @@ sub open311_extra_data_include {
 
         if (!$row->get_extra_field_value('site_code')) {
             if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
-                push @$extra, { name => 'site_code', value => $ref, description => 'Site code' };
+                $row->update_extra_field({ name => 'site_code', value => $ref, description => 'Site code' });
             }
         }
     } elsif ($contact->email =~ /^Uniform/) {
@@ -108,7 +108,7 @@ sub open311_extra_data_include {
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('uprn')) {
             if (my $ref = $self->lookup_site_code($row, 'UPRN')) {
-                push @$extra, { name => 'uprn', description => 'UPRN', value => $ref };
+                $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
             }
         }
     } else { # Symology
@@ -117,7 +117,7 @@ sub open311_extra_data_include {
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('NSGRef')) {
             if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
-                push @$extra, { name => 'NSGRef', description => 'NSG Ref', value => $ref };
+                $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
             }
         }
     }

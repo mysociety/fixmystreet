@@ -41,7 +41,7 @@ sub send {
 
         # Try and fill in some ones that we've been asked for, but not asked the user for
         my $extra = $row->get_extra_fields();
-        my ($include, $exclude) = $cobrand->call_hook(open311_extra_data => $row, $h, $extra, $contact);
+        my ($include, $exclude) = $cobrand->call_hook(open311_extra_data => $row, $h, $contact);
 
         my $original_extra = [ @$extra ];
         push @$extra, @$include if $include;

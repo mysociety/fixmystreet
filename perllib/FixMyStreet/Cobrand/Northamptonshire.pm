@@ -92,7 +92,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h, $extra) = @_;
+    my ($self, $row, $h) = @_;
 
     return [
         { name => 'report_url',

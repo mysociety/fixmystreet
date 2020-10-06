@@ -79,14 +79,14 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h, $extra) = @_;
+    my ($self, $row, $h) = @_;
 
     # Reports made via the app probably won't have a USRN because we don't
     # display the road layer. Instead we'll look up the closest asset from the
     # asset service at the point we're sending the report over Open311.
     if (!$row->get_extra_field_value('USRN')) {
         if (my $ref = $self->lookup_site_code($row, 'USRN')) {
-            push @$extra, { name => 'USRN', value => $ref };
+            $row->update_extra_field({ name => 'USRN', value => $ref });
         }
     }
 
@@ -96,7 +96,7 @@ sub open311_extra_data_include {
     my ($uprn_field) = grep { $_->{name} eq 'UPRN' } @$fields;
     if ( $uprn_field && !$uprn_field->{value} ) {
         if (my $ref = $self->lookup_site_code($row, 'UPRN')) {
-            push @$extra, { name => 'UPRN', value => $ref };
+            $row->update_extra_field({ name => 'UPRN', value => $ref });
         }
     }
 
