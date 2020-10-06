@@ -254,6 +254,7 @@ sub dashboard_export_problems_add_columns {
         reassigned_at => "Reassigned at",
         reassigned_by => "Reassigned by",
     );
+    $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
     if ($csv->category) {
         my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;

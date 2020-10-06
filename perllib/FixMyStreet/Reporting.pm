@@ -58,6 +58,19 @@ sub modify_csv_header {
     ]);
 }
 
+sub splice_csv_column {
+    my ($self, $before, $column, $header) = @_;
+
+    for (my $i = 0; $i < @{$self->csv_columns}; $i++) {
+        my $col = $self->csv_columns->[$i];
+        if ($col eq $before) {
+            splice @{$self->csv_columns}, $i, 0, $column;
+            splice @{$self->csv_headers}, $i, 0, $header;
+            last;
+        }
+    }
+}
+
 sub add_csv_columns {
     my $self = shift;
     for (my $i = 0; $i < @_; $i += 2) {
@@ -255,6 +268,7 @@ sub generate_csv {
                 next unless $comment->state eq 'confirmed';
                 next if $problem_state eq 'confirmed';
                 $hashref->{acknowledged} //= $comment->confirmed;
+                $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $comment->confirmed : undef;
                 $hashref->{fixed} //= $fixed_states->{ $problem_state } || $comment->mark_fixed ?
                     $comment->confirmed : undef;
                 if ($closed_states->{ $problem_state }) {

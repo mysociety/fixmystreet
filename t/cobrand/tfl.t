@@ -425,6 +425,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->get_ok('/dashboard?export=1&category=Bus+stops');
     $mech->content_contains('Category,Subcategory');
     $mech->content_contains('Query,Borough');
+    $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
     $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
     $mech->content_contains('"Bus things","Bus stops"');
     $mech->content_contains('"BR1 3UH",Bromley,');
@@ -442,10 +443,17 @@ subtest 'Dashboard CSV extra columns' => sub {
         admin_user => $staffuser->name,
         user => $staffuser,
     });
+    FixMyStreet::DB->resultset('Comment')->create({
+        problem => $report, user => $report->user, anonymous => 't', text => 'Update text',
+        problem_state => 'action scheduled', state => 'confirmed', mark_fixed => 0,
+        confirmed => $dt,
+    });
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('Query,Borough');
+    $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
     $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
     $mech->content_contains('(anonymous ' . $report->id . ')');
+    $mech->content_contains($dt . ',,,confirmed,51.4021');
     $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 };
 
