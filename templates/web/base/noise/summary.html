@@ -135,6 +135,11 @@
         <dd class="govuk-summary-list__value">[% data.happening_now ? 'Yes' : 'No' %]</dd>
     </div>
     <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Does the time of the noise follow a pattern?</dt>
+        <dd class="govuk-summary-list__value">[% data.happening_pattern ? 'Yes' : 'No' %]</dd>
+    </div>
+    [% IF data.happening_pattern %]
+    <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">What days does the noise happen?</dt>
         <dd class="govuk-summary-list__value">[% data.happening_days.join(', ') %]</dd>
     </div>
@@ -142,6 +147,12 @@
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">What time does the noise happen?</dt>
         <dd class="govuk-summary-list__value">[% data.happening_time.join(', ') %]</dd>
     </div>
+    [% ELSE %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">When has the noise occurred</dt>
+        <dd class="govuk-summary-list__value">[% data.happening_description %]</dd>
+    </div>
+    [% END %]
 
 </dl>
 
