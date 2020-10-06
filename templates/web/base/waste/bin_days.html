@@ -59,6 +59,9 @@
 [% IF NOT service_data.size %]
     <p>This property has no collections.</p>
 [% END %]
+
+        [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
+
     </div>
 
     [% IF service_data.size %]
