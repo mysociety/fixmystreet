@@ -127,6 +127,15 @@ sub process_noise_report : Private {
     my $now = $data->{happening_now} ? 'Yes' : 'No';
     my $days = join(', ', @{$data->{happening_days}||[]});
     my $times = join(', ', @{$data->{happening_time}||[]});
+    my $time_detail;
+    if ($data->{happening_pattern}) {
+        $time_detail = "Does the time of the noise follow a pattern? Yes
+What days does the noise happen? $days
+What time does the noise happen? $times";
+    } else {
+        $time_detail = "Does the time of the noise follow a pattern? No
+When has the noise occurred? $data->{happening_description}";
+    }
     if ($data->{report}) {
         # Update on existing report. Will be logged in.
         my $report = FixMyStreet::DB->resultset('Problem')->find($data->{report});
@@ -137,8 +146,7 @@ Kind of noise: $data->{kind}
 Noise details: $data->{more_details}
 
 Is the noise happening now? $now
-What days does the noise happen? $days
-What time does the noise happen? $times
+$time_detail
 EOF
         $object = $c->model('DB::Comment')->new({
             problem => $report,
@@ -159,8 +167,7 @@ Where is the noise coming from? $data->{where}
 Noise source: $addr
 
 Is the noise happening now? $now
-What days does the noise happen? $days
-What time does the noise happen? $times
+$time_detail
 EOF
         $object = $c->model('DB::Problem')->new({
             non_public => 1,
