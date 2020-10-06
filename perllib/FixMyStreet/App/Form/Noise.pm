@@ -414,9 +414,19 @@ has_field radius => (
 );
 
 has_page when => (
-    fields => ['happening_now', 'happening_days', 'happening_time', 'continue'],
+    fields => ['happening_now', 'happening_pattern', 'continue'],
     title => 'When does the noise happen?',
-    next => 'more_details',
+    next => sub { $_[0]->{happening_pattern} ? 'happening_time' : 'happening_description' },
+    post_process => sub {
+        my $form = shift;
+        my $saved_data = $form->saved_data;
+        if ($saved_data->{happening_pattern}) {
+            delete $saved_data->{happening_description};
+        } else {
+            delete $saved_data->{happening_days};
+            delete $saved_data->{happening_time};
+        }
+    },
 );
 
 has_field happening_now => (
@@ -426,6 +436,21 @@ has_field happening_now => (
         { label => 'Yes', value => 1 },
         { label => 'No', value => 0 },
     ],
+);
+
+has_field happening_pattern => (
+    type => 'Select', widget => 'RadioGroup',
+    label => 'Does the time of the noise follow a pattern?',
+    options => [
+        { label => 'Yes', value => 1 },
+        { label => 'No', value => 0 },
+    ],
+);
+
+has_page happening_time => (
+    fields => ['happening_days', 'happening_time', 'continue'],
+    title => 'When does the noise happen?',
+    next => 'more_details',
 );
 
 has_field happening_days => (
@@ -457,6 +482,18 @@ has_field happening_time => (
         { value => 'evening', label => 'Evening (6pm – 11pm)' },
         { value => 'night', label => 'Night time (11pm – 6am)' },
     ],
+);
+
+has_page happening_description => (
+    fields => ['happening_description', 'continue'],
+    title => 'When does the noise happen?',
+    next => 'more_details',
+);
+
+has_field happening_description => (
+    label => 'When has the noise occurred?',
+    type => 'Text',
+    widget => 'Textarea',
 );
 
 has_page more_details => (
