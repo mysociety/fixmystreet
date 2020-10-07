@@ -490,6 +490,7 @@ sub bin_services_for_address {
         541 => 'Paper & Cardboard',
         542 => 'Food Waste',
         544 => 'Food Waste',
+        545 => 'Domestic Garden Waste',
     );
 
     $self->{c}->stash->{containers} = {
