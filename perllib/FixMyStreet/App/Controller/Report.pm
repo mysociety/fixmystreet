@@ -685,9 +685,12 @@ sub _nearby_json :Private {
         ]
     } @$nearby;
 
+    my @extra_pins = $c->cobrand->call_hook('extra_nearby_pins', $params->{latitude}, $params->{longitude}, $dist);
+    @pins = (@pins, @extra_pins) if @extra_pins;
+
     my $list_html = $c->render_fragment(
         'report/nearby.html',
-        { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0 }
+        { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0, extra_pins => \@extra_pins }
     );
 
     my $json = { pins => \@pins };

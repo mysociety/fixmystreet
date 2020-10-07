@@ -10,6 +10,75 @@ my $mech = FixMyStreet::TestMech->new;
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
 
+my $oxfordshire_cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+
+$oxfordshire_cobrand->mock('defect_wfs_query', sub {
+    return {
+        features => [
+            {
+                properties => {
+                    APPROVAL_STATUS_NAME => 'With Contractor',
+                    ITEM_CATEGORY_NAME => 'Minor Carriageway',
+                    ITEM_TYPE_NAME => 'Pothole',
+                    REQUIRED_COMPLETION_DATE => '2020-11-05T16:41:00Z',
+                },
+                geometry => {
+                    coordinates => [-1.3553, 51.8477],
+                }
+            },
+            {
+                properties => {
+                    APPROVAL_STATUS_NAME => 'With Contractor',
+                    ITEM_CATEGORY_NAME => 'Trees and Hedges',
+                    ITEM_TYPE_NAME => 'Overgrown/Overhanging',
+                    REQUIRED_COMPLETION_DATE => '2020-11-05T16:41:00Z',
+                },
+                geometry => {
+                    coordinates => [-1.3554, 51.8478],
+                }
+            }
+        ]
+    };
+});
+
+subtest 'check /around?ajax gets extra pins from wfs' => sub {
+    $mech->delete_problems_for_body($oxon->id);
+
+    my $latitude = 51.784721;
+    my $longitude = -1.494453;
+    my $bbox = ($longitude - 0.01) . ',' .  ($latitude - 0.01)
+                . ',' . ($longitude + 0.01) . ',' .  ($latitude + 0.01);
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'oxfordshire',
+    }, sub {
+        my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
+        my $pins = $json->{pins};
+        is scalar @$pins, 2, 'defect pins included';
+        my $pin = @$pins[0];
+        is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020", 'pin title is correct';
+    }
+};
+
+subtest 'check /around/nearby gets extra pins from wfs' => sub {
+    $mech->delete_problems_for_body($oxon->id);
+
+    my $latitude = 51.784721;
+    my $longitude = -1.494453;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'oxfordshire',
+    }, sub {
+        my $json = $mech->get_ok_json( "/around/nearby?filter_category=Potholes&distance=250&latitude=$latitude&longitude=$longitude" );
+        my $pins = $json->{pins};
+        is scalar @$pins, 2, 'defect pins included';
+        my $pin = @$pins[0];
+        is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020", 'pin title is correct';
+    }
+};
+
+$oxfordshire_cobrand->mock('defect_wfs_query', sub { return { features => [] }; });
+
 subtest 'check /around?ajax defaults to open reports only' => sub {
     my $categories = [ 'Bridges', 'Fences', 'Manhole' ];
     my $params = {

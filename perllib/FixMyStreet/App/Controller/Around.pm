@@ -290,15 +290,20 @@ sub map_features : Private {
       );
 
     my @pins;
+    my $extra_pins;
     unless ($c->get_param('no_pins')) {
         @pins = map {
             # Here we might have a DB::Problem or a DB::Result::Nearby, we always want the problem.
             my $p = (ref $_ eq 'FixMyStreet::DB::Result::Nearby') ? $_->problem : $_;
             $p->pin_data('around');
         } @$on_map, @$nearby;
+
+        $extra_pins = $c->cobrand->call_hook('extra_around_pins', $extra->{bbox});
+        @pins = (@pins, @$extra_pins) if $extra_pins;
     }
 
     $c->stash->{pins} = \@pins;
+    $c->stash->{extra_pins} = $extra_pins;
     $c->stash->{on_map} = $on_map;
     $c->stash->{around_map} = $nearby;
 }
