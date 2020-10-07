@@ -111,6 +111,7 @@ subtest 'check contact renaming' => sub {
     $mech->get('/admin/body/' . $body->id . '/test%20category');
     is $mech->res->code, 404;
     $mech->get_ok('/admin/body/' . $body->id . '/testing%20category');
+    $mech->content_contains('<td><strong>test2@example.com</strong></td>');
     $report->discard_changes;
     is $report->category, 'testing category';
     $mech->submit_form_ok( { with_fields => { category => 'test category' } } );
