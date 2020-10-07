@@ -234,6 +234,16 @@ FixMyStreet::override_config {
         $mech->content_contains('http://public.example.org/dead_animals');
         $mech->content_lacks('http://staff.example.org/dead_animals');
     };
+
+    subtest 'private comments field' => sub {
+        my $user = $mech->log_in_ok('cs@example.org');
+        $user->update({ from_body => $body, is_superuser => 1, name => 'Staff User' });
+        for my $permission ( 'contribute_as_another_user', 'contribute_as_anonymous_user', 'contribute_as_body' ) {
+            $user->user_body_permissions->create({ body => $body, permission_type => $permission });
+        }
+        $mech->get_ok('/report/new?longitude=0.15356&latitude=51.45556');
+        $mech->content_contains('name="private_comments"');
+    };
 };
 
 subtest 'nearest road returns correct road' => sub {

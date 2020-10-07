@@ -1,6 +1,8 @@
 <!-- report/new/form_user_loggedin.html -->
 [% PROCESS 'report/form/private_details.html' %]
 
+[% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies_ids) %]
+
 [% IF js %]
   <div style="display:none" id="js-contribute-as-wrapper">
     [% INCLUDE form_as %]
@@ -8,7 +10,6 @@
 [% ELSE %]
   [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", bodies_ids) %]
   [% can_contribute_as_anonymous_user = c.user.has_permission_to("contribute_as_anonymous_user", bodies_ids) %]
-  [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies_ids) %]
   [% IF can_contribute_as_another_user OR can_contribute_as_anonymous_user OR can_contribute_as_body %]
     [% INCLUDE form_as %]
   [% END %]
@@ -73,6 +74,8 @@
         <label class="inline" for="form_non_public">[% loc('Private') %] </label>
     </div>
 [% END %]
-
+[% IF can_contribute_as_body %]
+[% TRY %][% INCLUDE 'report/form/private_comments.html' %][% CATCH file %][% END %]
+[% END %]
 [% PROCESS 'report/form/submit.html' %]
 <!-- /report/new/form_user_loggedin.html -->
