@@ -223,9 +223,9 @@ has_field kind_other => (
 );
 
 has_page where => (
-    fields => ['where', 'estates', 'address_known', 'continue'],
+    fields => ['where', 'estates', 'source_location', 'continue'],
     title => 'Where is the noise coming from?',
-    next => sub { $_[0]->{address_known} ? 'source_known_postcode' : $_[0]->{latitude} ? 'map': 'address_unknown' },
+    next => sub { $_[0]->{source_addresses} ? 'source_known_address' : $_[0]->{latitude} ? 'map': 'address_unknown' },
 );
 
 has_field where => (
@@ -251,21 +251,41 @@ has_field estates => (
     ]
 );
 
-has_field address_known => (
-    type => 'Select',
-    widget => 'RadioGroup',
+has_field source_location => (
     required => 1,
-    label => 'Do you know the address of the source of the noise, and is it in Hackney?',
-    options => [
-        { label => 'Yes', value => 1 },
-        { label => 'No', value => 0 },
-    ],
-);
-
-has_page source_known_postcode => (
-    fields => ['source_postcode', 'find_address'],
-    title => 'The source of the noise',
-    next => 'source_known_address',
+    type => 'Text',
+    label => 'Postcode, or street name and area of the source',
+    tag => { hint => 'If you know the postcode please use that' },
+    validate_method => sub {
+        my $self = shift;
+        my $c = $self->form->c;
+        return if $self->has_errors; # Called even if already failed
+        my $value = $self->value;
+        $value =~ s/[^A-Z0-9]//i;
+        my $pc = mySociety::PostcodeUtil::canonicalise_postcode($value);
+        if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
+            my $data = $self->form->c->cobrand->addresses_for_postcode($pc);
+            if ($data->{addresses} && @{$data->{addresses}}) {
+                my $options = $data->{addresses};
+                push @$options, { value => 'missing', label => 'I can’t find my address' };
+                my $saved_data  = $self->form->saved_data;
+                $saved_data->{source_addresses} = 1;
+                $self->form->addresses($options);
+                return 1;
+            }
+        }
+        my $ret = $c->forward('/location/determine_location_from_pc', [ $self->value ]);
+        if (!$ret) {
+            if ( $c->stash->{possible_location_matches} ) {
+                $self->add_error('Multiple matches - deal somehow');
+            } else {
+                $self->add_error($c->stash->{location_error});
+            }
+        }
+        my $saved_data = $self->form->saved_data;
+        $saved_data->{latitude} = $c->stash->{latitude};
+        $saved_data->{longitude} = $c->stash->{longitude};
+    },
 );
 
 sub check_postcode {
@@ -283,13 +303,6 @@ sub check_postcode {
     $self->form->addresses($data);
 }
 
-has_field source_postcode => (
-    required => 1,
-    type => 'Postcode',
-    validate_method => \&check_postcode,
-    tags => { autofocus => 1 },
-);
-
 has_page source_known_address => (
     fields => ['source_address', 'continue'],
     title => 'The source of the noise',
@@ -301,7 +314,7 @@ has_page source_known_address => (
             $options = $form->previous_form->addresses;
         } else {
             my $saved_data = $form->saved_data;
-            my $data = $form->c->cobrand->addresses_for_postcode($saved_data->{source_postcode});
+            my $data = $form->c->cobrand->addresses_for_postcode($saved_data->{source_location});
             $options = $data->{addresses};
             push @$options, { value => 'missing', label => 'I can’t find my address' };
         }

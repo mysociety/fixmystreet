@@ -37,8 +37,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('1 Road Road');
         $mech->submit_form_ok({ with_fields => { address => '100000111' } });
         $mech->submit_form_ok({ with_fields => { kind => 'music' } });
-        $mech->submit_form_ok({ with_fields => { where => 'residence', address_known => 1 } });
-        $mech->submit_form_ok({ with_fields => { source_postcode => 'SW1A 1AA' } });
+        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'SW1A 1AA'  } });
         $mech->content_contains('24 High Street');
         $mech->submit_form_ok({ with_fields => { source_address => '100000333' } });
         $mech->submit_form_ok({ with_fields => {
@@ -109,7 +108,7 @@ FixMyStreet::override_config {
         is $report->detail, "Kind of noise: road\nNoise details: Details\n\nWhere is the noise coming from? residence\nNoise source: 100000333\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
         is $report->latitude, 53;
     };
-    subtest 'Report new noise, your address missing, source address unknown' => sub {
+    subtest 'Report new noise, your address missing, source address not a postcode' => sub {
         $mech->get_ok('/noise');
         $mech->submit_form_ok({ button => 'start' });
         $mech->submit_form_ok({ with_fields => { existing => 0 } });
@@ -119,8 +118,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
         $mech->submit_form_ok({ with_fields => { address_manual => 'My Address' } });
         $mech->submit_form_ok({ with_fields => { kind => 'diy' } });
-        $mech->submit_form_ok({ with_fields => { where => 'residence', address_known => 0 } });
-        $mech->submit_form_ok({ with_fields => { pc => 'E8 1GY' } });
+        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'A street' } });
         $mech->submit_form_ok({ with_fields => { latitude => 51.549239, longitude => -0.054106, radius => 'medium' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 0,
@@ -133,10 +131,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
         # Check going back skips the geocoding step
         $mech->submit_form_ok({ form_number => 3, fields => { goto => 'where' } });
-        $mech->submit_form_ok({ with_fields => { where => 'residence', address_known => 0 } });
-        $mech->submit_form_ok({ button => 'goto-address_unknown' });
-        $mech->submit_form_ok({ with_fields => { pc => 'E8 2GY' } });
-        $mech->content_contains('"51.5"');
+        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'A street' } });
+        $mech->content_contains('"51.5');
         $mech->submit_form_ok({ with_fields => { latitude => 51.549249, longitude => -0.054106, radius => 'medium' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 0,
