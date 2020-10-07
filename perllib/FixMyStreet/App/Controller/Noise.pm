@@ -158,7 +158,7 @@ EOF
         # New report
         my $title = 'Noise report';
 
-        my $addr = $data->{address_known} ? $data->{source_address} : "$data->{latitude}, $data->{longitude}, $data->{radius}";
+        my $addr = $data->{source_address} ? $data->{source_address} : "$data->{latitude}, $data->{longitude}, $data->{radius}";
         my $detail = <<EOF;
 Kind of noise: $data->{kind}
 Noise details: $data->{more_details}

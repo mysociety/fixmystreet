@@ -108,7 +108,7 @@
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Noise source</dt>
         <dd class="govuk-summary-list__value">
-            [% IF data.address_known %]
+            [% IF data.source_address %]
                 [% data.source_address %]
             [% ELSE %]
                 [% data.latitude %], [% data.longitude %], [% data.radius %]
