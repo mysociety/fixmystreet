@@ -440,7 +440,7 @@ subtest 'updating of waste reports' => sub {
         is $report->state, 'fixed - council', 'Changed to fixed';
 
         $mech->get_ok('/report/' . $report->id);
-        $mech->content_contains( 'You can <a href="/waste/uprn/12345">see your bin collections</a>' );
+        $mech->content_contains( '<a href="/waste/uprn/12345">See your bin collections</a>' );
 
         $reports[1]->update({ state => 'fixed - council' });
         stdout_like {
