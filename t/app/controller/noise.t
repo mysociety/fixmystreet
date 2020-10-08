@@ -1,6 +1,7 @@
 use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use Test::MockModule;
 
 use t::Mock::Hackney;
 LWP::Protocol::PSGI->register(t::Mock::Hackney->to_psgi_app, host => 'hackney.api');
@@ -11,6 +12,24 @@ my $body = $mech->create_body_ok(2508, 'Hackney Council');
 my $contact = $mech->create_contact_ok(body => $body, category => 'Noise report', email => 'noise@example.org');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User', password => 'secret');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
+
+my $geo = Test::MockModule->new('FixMyStreet::Geocode');
+$geo->mock('string', sub {
+    my $s = shift;
+    my $ret = [];
+    if ($s eq 'A street') {
+        $ret = { latitude => 51.549249, longitude => -0.054106, address => 'A street, Hackney' };
+    } elsif ($s eq 'A different street') {
+        $ret = {
+            error => [
+                { latitude => 51.549239, longitude => -0.054106, address => 'A different street, Hackney' },
+                { latitude => 51.549339, longitude => -0.054933, address => 'A different street, South Hackney' },
+            ]
+        };
+    }
+    return $ret;
+});
+
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'hackney',
@@ -78,8 +97,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('1 Road Road');
         $mech->submit_form_ok({ with_fields => { address => '100000111' } });
         $mech->submit_form_ok({ with_fields => { kind => 'road' } });
-        $mech->submit_form_ok({ with_fields => { where => 'residence', address_known => 1 } });
-        $mech->submit_form_ok({ with_fields => { source_postcode => 'SW1A 1AA' } });
+        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'SW1 1AA' } });
         $mech->content_contains('24 High Street');
         $mech->submit_form_ok({ with_fields => { source_address => '100000333' } });
         $mech->submit_form_ok({ with_fields => {
@@ -119,6 +137,49 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { address_manual => 'My Address' } });
         $mech->submit_form_ok({ with_fields => { kind => 'diy' } });
         $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'A street' } });
+        $mech->submit_form_ok({ with_fields => { latitude => 51.549239, longitude => -0.054106, radius => 'medium' } });
+        $mech->submit_form_ok({ with_fields => {
+            happening_now => 0,
+            happening_pattern => 1,
+        } });
+        $mech->submit_form_ok({ with_fields => {
+            happening_days => [['tuesday'], 1],
+            happening_time => [['morning','evening'], 1],
+        } });
+        $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
+        # Check going back skips the geocoding step
+        $mech->submit_form_ok({ form_number => 3, fields => { goto => 'where' } });
+        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'A different street' } });
+        $mech->content_contains('South Hackney');
+        $mech->submit_form_ok({ with_fields => { location_matches => '51.549239,-0.054106' } });
+        $mech->content_contains('"51.5');
+        $mech->submit_form_ok({ with_fields => { latitude => 51.549249, longitude => -0.054106, radius => 'medium' } });
+        $mech->submit_form_ok({ with_fields => {
+            happening_now => 0,
+            happening_pattern => 1,
+        } });
+        $mech->submit_form_ok({ with_fields => {
+            happening_days => [['tuesday'], 1],
+            happening_time => [['morning','evening'], 1],
+        } });
+        $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
+        $mech->content_contains('My Address');
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your report has been submitted');
+    };
+    subtest 'Report new noise, your address missing, source address multiple matches' => sub {
+        $mech->get_ok('/noise');
+        $mech->submit_form_ok({ button => 'start' });
+        $mech->submit_form_ok({ with_fields => { existing => 0 } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email, phone => '01234 567890' } });
+        $mech->submit_form_ok({ with_fields => { best_time => [['day', 'evening'], 1], best_method => 'email' } });
+        $mech->submit_form_ok({ with_fields => { postcode => 'SW1A 1AA' } });
+        $mech->submit_form_ok({ with_fields => { address => 'missing' } });
+        $mech->submit_form_ok({ with_fields => { address_manual => 'My Address' } });
+        $mech->submit_form_ok({ with_fields => { kind => 'diy' } });
+        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'A different street' } });
+        $mech->content_contains('South Hackney');
+        $mech->submit_form_ok({ with_fields => { location_matches => '51.549239,-0.054106' } });
         $mech->submit_form_ok({ with_fields => { latitude => 51.549239, longitude => -0.054106, radius => 'medium' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 0,
