@@ -35,6 +35,7 @@
         - Do not trigger duplicate check when checking stoppers
         - Do not strip spaces from middle of Open311 category codes. #3167
         - Show all category history even if category renamed.
+        - Fix email alert on initial update template.
     - Admin improvements:
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989

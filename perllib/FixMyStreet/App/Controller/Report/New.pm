@@ -1736,7 +1736,10 @@ sub create_related_things : Private {
         my $request = {
             service_request_id => $problem->id,
             update_id => 'auto-internal',
-            comment_time => DateTime->now,
+            # Add a second so it is definitely later than problem confirmed timestamp,
+            # which uses current_timestamp (and thus microseconds) whilst this update
+            # is rounded down to the nearest second
+            comment_time => DateTime->now->add( seconds => 1 ),
             status => 'open',
             description => $description,
         };

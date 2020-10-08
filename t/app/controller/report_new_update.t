@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Alerts;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -43,6 +44,9 @@ subtest "test report creation with initial auto-update" => sub {
     is $comment->user->id, $comment_user->id;
     is $comment->external_id, 'auto-internal';
     is $comment->name, 'Glos Council';
+
+    FixMyStreet::Script::Alerts::send();
+    my $email = $mech->get_email;
 };
 
 done_testing;
