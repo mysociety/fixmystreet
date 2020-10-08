@@ -12,7 +12,7 @@
 
 <p class="meta-2">
     [% INCLUDE meta_line %]
-  [% IF c.user_exists AND c.user.id == update.user_id AND !update.anonymous %]
+  [% IF c.user_exists AND c.user.id == update.user_id AND !update.anonymous AND NOT (c.user.from_body OR c.user.is_superuser) %]
     <small>(<a href="/my/anonymize?update=[% update.id | uri %]" class="js-hide-name">[% loc('Hide your name?') %]</a>)</small>
   [% END %]
   [% mlog = update.latest_moderation_log_entry(); IF mlog %]
