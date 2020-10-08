@@ -814,7 +814,7 @@ sub construct_waste_open311_update {
         description => $description,
         status => $status,
         update_id => 'waste',
-        external_status_code => $resolution_id,
+        external_status_code => "$resolution_id,,",
     };
 }
 
