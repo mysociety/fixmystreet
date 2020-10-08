@@ -86,6 +86,22 @@
 
 </div>
 
+<script nonce="[% csp_nonce %]">
+(function(){
+    var item = document.getElementById('defect_item_category');
+    item.addEventListener('change', function(){
+        var opt = item.options[item.selectedIndex].value;
+        if (opt !== 'Kerbing') {
+            var type = document.getElementById('defect_item_type');
+            type.selectedIndex = 1;
+            var event = document.createEvent("Event");
+            event.initEvent("change", true, false);
+            type.dispatchEvent(event);
+        }
+    });
+})();
+</script>
+
 [% END %]
 
 [% END %]
