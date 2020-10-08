@@ -71,8 +71,6 @@
           [% INCLUDE 'report/inspect/public_update.html' %]
         [% END %]
 
-        [% TRY %][% INCLUDE 'report/inspect/_inspected.html' %][% CATCH file %][% END %]
-
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]" />
           [% IF permissions.planned_reports %]
