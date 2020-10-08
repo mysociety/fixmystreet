@@ -221,4 +221,12 @@ sub _is_out_of_hours {
     return 0;
 }
 
+sub update_anonymous_message {
+    my ($self, $update) = @_;
+    my $t = Utils::prettify_dt( $update->confirmed );
+
+    my $staff = $update->user->from_body || $update->get_extra_metadata('is_body_user') || $update->get_extra_metadata('is_superuser');
+    return sprintf('Posted anonymously by a non-staff user at %s', $t) if !$staff;
+}
+
 1;

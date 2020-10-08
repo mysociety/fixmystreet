@@ -272,7 +272,8 @@ sub meta_line {
     my $anon = $self->anonymous || !$self->name;
 
     if ($anon && (!$staff || $contributed_as eq 'anonymous_user' || $contributed_as eq 'another_user')) {
-        $meta = sprintf( _( 'Posted anonymously at %s' ), Utils::prettify_dt( $self->confirmed ) )
+        $meta = $cobrand->call_hook(update_anonymous_message => $self);
+        $meta ||= sprintf( _( 'Posted anonymously at %s' ), Utils::prettify_dt( $self->confirmed ) )
     } elsif ($staff) {
         my $user_name = FixMyStreet::Template::html_filter($self->user->name);
         my $body;

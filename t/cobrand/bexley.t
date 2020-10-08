@@ -147,7 +147,7 @@ FixMyStreet::override_config {
 
     subtest 'resend is disabled in admin' => sub {
         my $user = $mech->log_in_ok('super@example.org');
-        $user->update({ from_body => $body, is_superuser => 1 });
+        $user->update({ from_body => $body, is_superuser => 1, name => 'Staff User' });
         $mech->get_ok('/admin/report_edit/' . $report->id);
         $mech->content_contains('View report on site');
         $mech->content_lacks('Resend report');
@@ -200,6 +200,16 @@ FixMyStreet::override_config {
             'http://bexley.example.org/photo/' . $report->id . '.0.full.jpeg?74e33622',
             'http://bexley.example.org/photo/' . $report->id . '.1.full.jpeg?74e33622',
         ], 'Request had multiple photos';
+    };
+
+    subtest 'anonymous update message' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        my $staffuser = $mech->create_user_ok('super@example.org');
+        $mech->create_comment_for_problem($report, $report->user, 'Commenter', 'Normal update', 't', 'confirmed', 'confirmed');
+        $mech->create_comment_for_problem($report, $staffuser, 'Staff user', 'Staff update', 'f', 'confirmed', 'confirmed');
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Posted by <strong>London Borough of Bexley</strong>');
+        $mech->content_contains('Posted anonymously by a non-staff user');
     };
 
 };
