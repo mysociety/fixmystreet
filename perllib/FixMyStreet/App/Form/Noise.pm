@@ -225,7 +225,11 @@ has_field kind_other => (
 has_page where => (
     fields => ['where', 'estates', 'source_location', 'continue'],
     title => 'Where is the noise coming from?',
-    next => sub { $_[0]->{source_addresses} ? 'source_known_address' : $_[0]->{latitude} ? 'map': 'address_unknown' },
+    next => sub { $_[0]->{source_addresses} ? 'source_known_address'
+        : $_[0]->{possible_location_matches} ? 'choose_location'
+        : $_[0]->{latitude} ? 'map'
+        : 'choose_location'
+    },
 );
 
 has_field where => (
@@ -261,14 +265,22 @@ has_field source_location => (
         my $c = $self->form->c;
         return if $self->has_errors; # Called even if already failed
         my $value = $self->value;
+        my $saved_data  = $self->form->saved_data;
+        if ( $saved_data->{source_location} && $value ne $saved_data->{source_location} ) {
+            delete $saved_data->{latitude};
+            delete $saved_data->{longitude};
+            delete $saved_data->{source_address};
+            delete $saved_data->{location_matches};
+            delete $saved_data->{possible_location_matches};
+        }
         $value =~ s/[^A-Z0-9]//i;
         my $pc = mySociety::PostcodeUtil::canonicalise_postcode($value);
+        $saved_data->{source_addresses} = 0;
         if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
             my $data = $self->form->c->cobrand->addresses_for_postcode($pc);
             if ($data->{addresses} && @{$data->{addresses}}) {
                 my $options = $data->{addresses};
                 push @$options, { value => 'missing', label => 'I can’t find my address' };
-                my $saved_data  = $self->form->saved_data;
                 $saved_data->{source_addresses} = 1;
                 $self->form->addresses($options);
                 return 1;
@@ -277,12 +289,11 @@ has_field source_location => (
         my $ret = $c->forward('/location/determine_location_from_pc', [ $self->value ]);
         if (!$ret) {
             if ( $c->stash->{possible_location_matches} ) {
-                $self->add_error('Multiple matches - deal somehow');
+                return $saved_data->{possible_location_matches} = $c->stash->{possible_location_matches};
             } else {
                 $self->add_error($c->stash->{location_error});
             }
         }
-        my $saved_data = $self->form->saved_data;
         $saved_data->{latitude} = $c->stash->{latitude};
         $saved_data->{longitude} = $c->stash->{longitude};
     },
@@ -342,32 +353,56 @@ has_field source_address => (
     tags => { last_differs => 1, small => 1 },
 );
 
-has_page address_unknown => (
-    fields => ['pc', 'continue'],
+has_page 'choose_location' => (
+    fields => ['location_matches', 'continue'],
     title => 'The source of the noise',
     next => 'map',
+    update_field_list => sub {
+        my $form = shift;
+        my $saved_data = $form->saved_data;
+        my $locations = $saved_data->{possible_location_matches};
+        my $options = [];
+        for my $location ( @$locations ) {
+            push @$options, { label => $location->{address}, value => $location->{latitude} . "," . $location->{longitude} }
+        }
+        return { location_matches => { options => $options } };
+    },
+    post_process => sub {
+        my $form = shift;
+        my $saved_data = $form->saved_data;
+        # if we previously used a postcode lookup we want to remove the location data
+        if ($saved_data->{source_address}) {
+            delete $saved_data->{source_address};
+        }
+        if ( my $location = $saved_data->{location_matches} ) {
+            my ($lat, $lon) = split ',', $location;
+            $saved_data->{latitude} ||= $lat;
+            $saved_data->{longitude} ||= $lon;
+        }
+    },
 );
 
-has_field pc => (
+has_field 'location_matches' => (
     required => 1,
-    type => 'Text',
-    label => 'Postcode, or street name and area, to see map',
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Select a location',
     validate_method => sub {
         my $self = shift;
-        my $c = $self->form->c;
-        return if $self->has_errors; # Called even if already failed
-        my $ret = $c->forward('/location/determine_location_from_pc', [ $self->value ]);
-        if (!$ret) {
-            if ( $c->stash->{possible_location_matches} ) {
-                $self->add_error('Multiple matches - deal somehow');
-            } else {
-                $self->add_error($c->stash->{location_error});
-            }
+        my $value = $self->value;
+        my $saved_data  = $self->form->saved_data;
+
+        if ($saved_data->{location_matches} && $value ne $saved_data->{location_matches}) {
+            delete $saved_data->{latitude};
+            delete $saved_data->{longitude};
         }
-        my $saved_data = $self->form->saved_data;
-        $saved_data->{latitude} = $c->stash->{latitude};
-        $saved_data->{longitude} = $c->stash->{longitude};
-    },
+    }
+);
+
+has_page address_unknown => (
+    fields => ['source_location', 'continue'],
+    title => 'The source of the noise',
+    next => sub { $_[0]->{possible_location_matches} ? 'choose_location' : $_[0]->{latitude} ? 'map' : 'choose_location' },
 );
 
 has_page map => (
