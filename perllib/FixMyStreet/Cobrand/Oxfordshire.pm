@@ -215,14 +215,6 @@ sub on_map_default_status { return 'open'; }
 
 sub admin_user_domain { 'oxfordshire.gov.uk' }
 
-sub traffic_management_options {
-    return [
-        "Signs and Cones",
-        "Stop and Go Boards",
-        "High Speed Roads",
-    ];
-}
-
 sub admin_pages {
     my $self = shift;
 

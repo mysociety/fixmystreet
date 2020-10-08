@@ -1125,17 +1125,6 @@ has duplicates => (
     },
 );
 
-has traffic_management_options => (
-    is => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        my $cobrand = $self->get_cobrand_logged;
-        $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $self) || $cobrand;
-        return $cobrand->traffic_management_options;
-    },
-);
-
 has inspection_log_entry => (
     is => 'ro',
     lazy => 1,

@@ -96,10 +96,6 @@ END;
                 <p>[% problem.response_priority.name OR '-' %]</p>
             </div>
             <div>
-                <h4>[% loc('Traffic management required?') %]</h4>
-                <p>[% problem.get_extra_metadata('traffic_information') %]</p>
-            </div>
-            <div>
                 <h4>[% loc('Extra details') %]</h4>
                 <p>[% problem.get_extra_metadata('detailed_information') | html %]</p>
             </div>

@@ -60,7 +60,6 @@ FixMyStreet::override_config {
         $mech->content_lacks('Save changes');
         $mech->content_lacks('Private');
         $mech->content_lacks('Priority');
-        $mech->content_lacks('Traffic management');
         $mech->content_lacks('Change asset');
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
 
@@ -70,7 +69,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Save changes');
         $mech->content_lacks('Change asset');
         $mech->content_lacks('Priority');
-        $mech->content_lacks('Traffic management');
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
 
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
@@ -79,7 +77,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Save changes');
         $mech->content_contains('Priority');
         $mech->content_lacks('Change asset');
-        $mech->content_lacks('Traffic management');
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
 
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
@@ -87,7 +84,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Save changes');
         $mech->content_contains('Private');
         $mech->content_contains('Priority');
-        $mech->content_contains('Traffic management');
         $mech->content_contains('Change asset');
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
     };
@@ -210,14 +206,14 @@ FixMyStreet::override_config {
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
 
         $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Action scheduled', include_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { detailed_information => 'Info', state => 'Action scheduled', include_update => undef } });
         $report->discard_changes;
         my $alert = FixMyStreet::DB->resultset('Alert')->find(
             { user => $user, alert_type => 'new_updates', confirmed => 1, }
         );
 
         is $report->state, 'action scheduled', 'report state changed';
-        is $report->get_extra_metadata('traffic_information'), 'Yes', 'report data changed';
+        is $report->get_extra_metadata('detailed_information'), 'Info', 'report data changed';
         ok defined( $alert ) , 'sign up for alerts';
     };
 
@@ -703,15 +699,6 @@ FixMyStreet::override_config {
         return $perms;
     });
 
-    subtest "Oxfordshire-specific traffic management options are shown" => sub {
-        $report->update({ state => 'confirmed' });
-        $mech->get_ok("/report/$report_id");
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Signs and Cones', state => 'Action scheduled', include_update => undef } });
-        $report->discard_changes;
-        is $report->state, 'action scheduled', 'report state changed';
-        is $report->get_extra_metadata('traffic_information'), 'Signs and Cones', 'report data changed';
-    };
-
     subtest "admin link present on inspect page on cobrand" => sub {
         my $report_edit_permission = $user->user_body_permissions->create({
             body => $oxon, permission_type => 'report_edit' });
@@ -745,7 +732,6 @@ FixMyStreet::override_config {
           priority => $rp->id,
           include_update => '1',
           detailed_information => 'XXX164XXXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-          traffic_information => '',
           photo1 => '',
           photo2 => '',
           photo3 => '',
@@ -919,6 +905,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report2_id");
         $mech->submit_form_ok({ button => 'save', with_fields => {
             public_update => "This is a public update.", include_update => "1",
+            traffic_information => 'Signs and cones',
             state => 'action scheduled', raise_defect => 1,
             defect_item_category => 'Kerbing',
         } });

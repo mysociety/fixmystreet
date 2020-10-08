@@ -1286,14 +1286,6 @@ sub category_extra_hidden {
     return 0;
 }
 
-sub traffic_management_options {
-    return [
-        _("Yes"),
-        _("No"),
-    ];
-}
-
-
 =item display_days_ago_threshold
 
 Used to control whether a relative 'n days ago' or absolute date is shown

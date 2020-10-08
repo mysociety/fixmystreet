@@ -14,6 +14,9 @@
 
     <dt>Location description</dt>
     <dd>[% problem.get_extra_metadata('defect_location_description') %]</dd>
+
+    <dt>Traffic management required?</dt>
+    <dd>[% problem.get_extra_metadata('traffic_information') %]</dd>
 </dl>
 
 [% ELSE %]
@@ -65,6 +68,15 @@
                 <option>1 kerb unit or 1 linear m</option>
                 <option>Greater than 1 kerb unit or 1 linear m</option>
             </optgroup>
+        </select>
+
+        <label for="traffic_information">[% loc('Traffic management required?') %]</label>
+        [% traffic_info = problem.get_extra_metadata('traffic_information') %]
+        <select id="traffic_information" name="traffic_information" class="form-control">
+            <option value=""[% ' selected' IF NOT traffic_info %]>-</option>
+            [% FOREACH option IN ['Signs and Cones', 'Stop and Go Boards'] %]
+                <option value='[% option %]'[% ' selected' IF traffic_info == option %]>[% option %]</option>
+            [% END %]
         </select>
 
         <label for="defect_location_description">Location description</label>
