@@ -181,6 +181,15 @@ sub open311_munge_update_params {
         $params->{'attribute[raise_defect]'} = 1;
         $params->{'attribute[easting]'} = $e;
         $params->{'attribute[northing]'} = $n;
+        my $details = $comment->user->email . ' ';
+        if (my $traffic = $p->get_extra_metadata('traffic_information')) {
+            $details .= 'TM1 ' if $traffic eq 'Signs and Cones';
+            $details .= 'TM2 ' if $traffic eq 'Stop and Go Boards';
+        }
+        (my $type = $p->get_extra_metadata('defect_item_type')) =~ s/ .*//;
+        $details .= $type eq 'Sweep' ? 'S&F' : $type;
+        $details .= ' ' . ($p->get_extra_metadata('detailed_information') || '');
+        $params->{'attribute[extra_details]'} = $details;
 
         foreach (qw(defect_item_category defect_item_type defect_item_detail defect_location_description)) {
             $params->{"attribute[$_]"} = $p->get_extra_metadata($_);
