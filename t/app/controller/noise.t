@@ -72,7 +72,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('When has the noise occurred');
         $mech->content_contains('monday');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your report has been submitted');
+        $mech->content_contains('Thank you for reporting this issue');
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         is $emails[0]->header('To'), '"Hackney Council" <noise@example.org>';
@@ -112,7 +112,7 @@ FixMyStreet::override_config {
         $mech->content_contains('When has the noise occurred');
         $mech->content_contains('late at night');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your report has been submitted');
+        $mech->content_contains('Thank you for reporting this issue');
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         is $emails[0]->header('To'), '"Hackney Council" <noise@example.org>';
@@ -165,7 +165,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
         $mech->content_contains('My Address');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your report has been submitted');
+        $mech->content_contains('Thank you for reporting this issue');
     };
     subtest 'Report new noise, your address missing, source address multiple matches' => sub {
         $mech->get_ok('/noise');
@@ -206,7 +206,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
         $mech->content_contains('My Address');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your report has been submitted');
+        $mech->content_contains('Thank you for reporting this issue');
     };
     subtest 'Report another instance on existing report' => sub {
         my $report = $user->problems->first;
