@@ -44,9 +44,9 @@ sub geocoder_munge_results {
 sub admin_user_domain { "peterborough.gov.uk" }
 
 around open311_extra_data_include => sub {
-    my ($orig, $self, $row, $h, $extra) = @_;
+    my ($orig, $self, $row, $h) = @_;
 
-    my $open311_only = $self->$orig($row, $h, $extra);
+    my $open311_only = $self->$orig($row, $h);
     foreach (@$open311_only) {
         if ($_->{name} eq 'description') {
             my ($ref) = grep { $_->{name} =~ /pcc-Skanska-csc-ref/i } @{$row->get_extra_fields};

@@ -172,10 +172,11 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h, $extra) = @_;
+    my ($self, $row, $h) = @_;
 
     my $title = $row->title;
 
+    my $extra = $row->get_extra_fields;
     foreach (@$extra) {
         next unless $_->{value};
         $title .= ' | ID: ' . $_->{value} if $_->{name} eq 'feature_id';

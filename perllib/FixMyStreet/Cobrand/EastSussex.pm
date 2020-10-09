@@ -7,7 +7,7 @@ use warnings;
 sub council_area_id { return 2224; }
 
 sub open311_extra_data {
-    my ($self, $row, $h, $extra, $contact) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     $h->{es_original_detail} = $row->detail;
 

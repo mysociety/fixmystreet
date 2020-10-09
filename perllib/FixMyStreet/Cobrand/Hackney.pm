@@ -67,7 +67,7 @@ sub open311_config {
 }
 
 sub open311_extra_data {
-    my ($self, $row, $h, $extra, $contact) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $open311_only = [
         { name => 'report_url',

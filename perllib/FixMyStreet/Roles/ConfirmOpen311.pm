@@ -14,7 +14,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h, $extra) = @_;
+    my ($self, $row, $h) = @_;
 
     my $open311_only = [
         { name => 'report_url',
@@ -31,9 +31,7 @@ sub open311_extra_data_include {
     # service at the point we're sending the report over Open311.
     if (!$row->get_extra_field_value('site_code')) {
         if (my $site_code = $self->lookup_site_code($row)) {
-            push @$extra,
-                { name => 'site_code',
-                value => $site_code };
+            $row->update_extra_field({ name => 'site_code', value => $site_code });
         }
     }
 
