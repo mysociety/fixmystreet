@@ -22,6 +22,7 @@ Offline pages Catalyst Controller - service worker handling
 
 sub service_worker : Path("/service-worker.js") {
     my ($self, $c) = @_;
+    $c->res->headers->header('Cache-Control' => 'max-age=0');
     $c->res->content_type('application/javascript');
 }
 

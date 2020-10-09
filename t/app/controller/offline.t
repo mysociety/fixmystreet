@@ -54,6 +54,7 @@ FixMyStreet::override_config {
 
 subtest 'service worker' => sub {
     $mech->get_ok('/service-worker.js');
+    is $mech->res->header('Cache-Control'), 'max-age=0', 'service worker is not cached';
     $mech->content_contains('translation_strings');
     $mech->content_contains('offline/fallback');
 };
