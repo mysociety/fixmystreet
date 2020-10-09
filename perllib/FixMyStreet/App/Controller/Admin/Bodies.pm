@@ -151,8 +151,7 @@ sub category : Chained('body') : PathPart('') {
 
     my $history = $c->model('DB::ContactsHistory')->search(
         {
-            body_id => $c->stash->{body_id},
-            category => $c->stash->{contact}->category
+            contact_id => $c->stash->{contact}->id,
         },
         {
             order_by => ['contacts_history_id']
