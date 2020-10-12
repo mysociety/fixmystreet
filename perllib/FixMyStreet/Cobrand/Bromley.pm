@@ -583,6 +583,7 @@ sub bin_services_for_address {
             }
             if ($state eq 'Not Completed' || ($state eq 'Completed' && $resolution eq 'Excess Waste')) {
                 $row->{report_allowed} = 0;
+                $row->{report_locked_out} = 1;
             }
         }
     }
