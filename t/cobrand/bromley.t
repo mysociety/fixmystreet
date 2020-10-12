@@ -280,6 +280,7 @@ FixMyStreet::override_config {
     subtest 'test crew reported issue' => sub {
         set_fixed_time('2020-05-21T12:00:00Z'); # After sample container mix
         $mech->get_ok('/waste/uprn/12345');
+        $mech->content_contains('A missed collection cannot be reported, please see the last collection status above.');
         $mech->content_lacks('Report a mixed recycling ');
         restore_time();
     };
