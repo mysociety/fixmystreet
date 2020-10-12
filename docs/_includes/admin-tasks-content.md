@@ -147,26 +147,34 @@ recognition of your staff role.
 
 <div class="admin-task" markdown="1" id="create-reports-behalf-user">
 
-### Creating reports on behalf of another user/ the council
+### Creating reports/ updates on behalf of another user/ the council
 
 <span class="admin-task__permissions">Permissions required: User must be marked
-as staff; one or more of ‘Create reports/updates on a user's behalf’, ‘Create
-reports/updates as anonymous user’ and ‘Create reports/updates as the council’
-must be ticked.</span>
+as staff; optionally, one or more of ‘Create reports/updates on a user's
+behalf’, ‘Create reports/updates as anonymous user’ and ‘Create reports/updates
+as the council’ can be ticked.</span>
 
-If a resident makes a report by phone or in person, staff members with the appropriate
-permissions can add it to FixMyStreet on their behalf. The report may bear the resident’s name; or
-it may be anonymous (i.e. the report-maker’s name is not published on the site, but will still be
-available in the admin interface). Alternatively, reports can be made as if from the council itself.
-In such cases, staff should make a new report just as a member of the public would — see ‘[The
+If a resident makes a report or update by phone or in person, staff members
+with the appropriate permissions can add it to FixMyStreet on their behalf. The
+report will be anonymous on the site, but the resident’s name will still be
+available in the admin interface. Reports can also be made as if from the
+council.
+
+Staff should make a new report just as a member of the public would — see ‘[The
 citizen’s experience](/pro-manual/citizens-experience/)'. Those with the appropriate permissions will see a dropdown box in
-the report-making interface, labeled ‘Report As’. Select ‘the council’, ‘yourself’, ‘anonymous’ or
+the report-making interface, labeled ‘Report As’. Select either the council, ‘yourself’, ‘anonymous’ or
 ‘another user’.
 
 If a user has the ‘Default to creating reports/update as the council’
 permission then the dropdown will default to reporting as the council.
 Staff with the ’Markup problem details’ permission will also default to
 reporting as the council.
+
+When a staff member makes an update on the site, it will not be publicly
+displayed with the staff member’s name, but the name of the body to which the
+user is attached. Staff members with the ‘See user detail for reports created
+as the council’ permission will be able to see the staff user’s name on the
+report or update, but other staff and the public will not.
 
 </div>
 

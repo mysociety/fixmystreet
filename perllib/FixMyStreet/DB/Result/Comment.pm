@@ -267,9 +267,14 @@ sub meta_line {
 
     my $meta = '';
 
-    if ($self->anonymous or !$self->name) {
-        $meta = sprintf( _( 'Posted anonymously at %s' ), Utils::prettify_dt( $self->confirmed ) )
-    } elsif ($self->user->from_body || $self->get_extra_metadata('is_body_user') || $self->get_extra_metadata('is_superuser') ) {
+    my $contributed_as = $self->get_extra_metadata('contributed_as') || '';
+    my $staff = $self->user->from_body || $self->get_extra_metadata('is_body_user') || $self->get_extra_metadata('is_superuser');
+    my $anon = $self->anonymous || !$self->name;
+
+    if ($anon && (!$staff || $contributed_as eq 'anonymous_user' || $contributed_as eq 'another_user')) {
+        $meta = $cobrand->call_hook(update_anonymous_message => $self);
+        $meta ||= sprintf( _( 'Posted anonymously at %s' ), Utils::prettify_dt( $self->confirmed ) )
+    } elsif ($staff) {
         my $user_name = FixMyStreet::Template::html_filter($self->user->name);
         my $body;
         if ($self->get_extra_metadata('is_superuser')) {
