@@ -198,9 +198,6 @@ sub open311_post_send {
 
     $self->open311_config($row, $h, {}, $contact); # Populate NSGRef again if needed
 
-    my $extra_data = join "; ", map { "$_->{description}: $_->{value}" } @{$row->get_extra_fields};
-    $h->{additional_information} = $extra_data;
-
     $sender->send($row, $h);
 }
 
