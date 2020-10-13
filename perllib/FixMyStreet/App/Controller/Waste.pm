@@ -11,6 +11,7 @@ use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request;
 use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Enquiry;
+use Open311::GetServiceRequestUpdates;
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -496,25 +497,40 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     $request->{updated_datetime} = DateTime::Format::W3CDTF->format_datetime(DateTime->now);
     $request->{service_request_id} = $event->{Guid};
 
-    $c->stash->{check_existing_action} = '/waste/check_existing_update';
-    $c->stash->{bad_request_action} = '/waste/soap_error';
-    $c->forward('/open311/updates/process_update', [ $body, $request ]);
+    my $updates = Open311::GetServiceRequestUpdates->new(
+        system_user => $body->comment_user,
+        current_body => $body,
+    );
+
+    my $p = $updates->find_problem($request);
+    if ($p) {
+        $c->forward('check_existing_update', [ $p, $request, $updates ]);
+        my $comment = $updates->process_update($request, $p);
+    }
+    # Still want to say it is okay, even if we did nothing with it
+    $c->forward('soap_ok');
 }
 
 sub soap_error : Private {
     my ($self, $c, $comment, $code) = @_;
     $code ||= 400;
-    $code = 404 if $comment eq 'not found'; # So can see it was okay, just not a report we hold
     $c->response->status($code);
     my $type = $code == 500 ? 'Server' : 'Client';
     $c->response->body(SOAP::Serializer->fault($type, "Bad request: $comment"));
+}
+
+sub soap_ok : Private {
+    my ($self, $c) = @_;
+    $c->response->status(200);
+    my $method = SOAP::Data->name("NotifyEventUpdatedResponse")->attr({xmlns => "http://www.twistedfish.com/xmlns/echo/api/v1"});
+    $c->response->body(SOAP::Serializer->envelope(method => $method));
 }
 
 sub check_existing_update : Private {
     my ($self, $c, $p, $request, $updates) = @_;
 
     my $cfg = { updates => $updates };
-    $c->detach('soap_error', [ 'already exists', '409' ])
+    $c->detach('soap_ok')
         unless $c->cobrand->waste_check_last_update(
             $cfg, $p, $request->{status}, $request->{external_status_code});
 }

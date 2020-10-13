@@ -495,6 +495,30 @@ subtest 'updating of waste reports' => sub {
   <Body>
     <NotifyEventUpdated>
       <event>
+        <Guid>waste-15005-XXX</Guid>
+        <EventTypeId>2104</EventTypeId>
+        <EventStateId>15006</EventStateId>
+        <ResolutionCodeId>207</ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $mech->res->code, 200, 'OK response, even though event does not exist';
+        is $report->comments->count, 3, 'No new update';
+
+        $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
         <Guid>waste-15005-205</Guid>
         <EventTypeId>2104</EventTypeId>
         <EventStateId>15006</EventStateId>

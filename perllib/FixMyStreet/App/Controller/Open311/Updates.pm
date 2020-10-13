@@ -57,7 +57,7 @@ sub process_update : Private {
     my $p = $updates->find_problem($request);
     $c->detach('bad_request', [ 'not found' ]) unless $p;
 
-    $c->forward($c->stash->{check_existing_action} || 'check_existing', [ $p, $request, $updates ]);
+    $c->forward('check_existing', [ $p, $request, $updates ]);
 
     my $comment = $updates->process_update($request, $p);
 
@@ -76,7 +76,6 @@ sub check_existing : Private {
 sub bad_request : Private {
     my ($self, $c, $comment) = @_;
     $c->response->status(400);
-    $c->detach($c->stash->{bad_request_action}, [ $comment ]) if $c->stash->{bad_request_action};
     $c->forward('/open311/format_output', [ { errors => { code => 400, description => "Bad request: $comment" } } ]);
 }
 
