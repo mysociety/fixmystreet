@@ -24,8 +24,6 @@ Title: [% title %]
 
 Description: [% detail %]
 
-[% additional_information %]
-
 [% url %]
 
 Location Details

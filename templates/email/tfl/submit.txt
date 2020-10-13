@@ -31,8 +31,6 @@ Subject: [% report.title %]
 
 Details: [% report.detail %]
 
-[% additional_information %]
-
 Easting/Northing
 [%- " (IE)" IF coordsyst == "I" -%]
 : [% easting %]/[% northing %]
