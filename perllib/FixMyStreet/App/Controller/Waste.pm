@@ -461,7 +461,7 @@ sub setup_categories_and_bodies : Private {
 sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     my ($self, $c) = @_;
     $c->stash->{format} = 'xml';
-    $c->response->header(Content_Type => 'text/xml');
+    $c->response->header(Content_Type => 'application/soap+xml');
 
     require SOAP::Lite;
 
