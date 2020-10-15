@@ -1,4 +1,4 @@
-[% RETURN IF c.cobrand.body_disallows_state_change(problem) %]
+[% RETURN IF c.cobrand.feature('update_states_disallowed') %]
 
 [% IF (problem.is_fixed OR problem.is_closed) AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
 
