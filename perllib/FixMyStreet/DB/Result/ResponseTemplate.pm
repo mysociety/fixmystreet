@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -28,20 +29,19 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "text",
   { data_type => "text", is_nullable => 0 },
+  "email_text",
+  { data_type => "text", is_nullable => 1 },
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
   "auto_response",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "state",
   { data_type => "text", is_nullable => 1 },
   "external_status_code",
-  { data_type => "text", is_nullable => 1 },
-  "email_text",
   { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -60,8 +60,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MzTa7p2rryKkxbRi7zN+Uw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:09:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:c5AUB+/8pOm6Vi7Kq5CVhA
 
 __PACKAGE__->many_to_many( contacts => 'contact_response_templates', 'contact' );
 

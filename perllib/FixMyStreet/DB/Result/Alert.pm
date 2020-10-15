@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -27,6 +28,8 @@ __PACKAGE__->add_columns(
   "parameter",
   { data_type => "text", is_nullable => 1 },
   "parameter2",
+  { data_type => "text", is_nullable => 1 },
+  "parameter3",
   { data_type => "text", is_nullable => 1 },
   "user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
@@ -46,8 +49,6 @@ __PACKAGE__->add_columns(
   },
   "whendisabled",
   { data_type => "timestamp", is_nullable => 1 },
-  "parameter3",
-  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
@@ -70,8 +71,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2021-03-19 17:41:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zgS7etsaoE3DeFST6VjcOQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:08:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5iQcuL8T7WjvyO0opsvtDg
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 

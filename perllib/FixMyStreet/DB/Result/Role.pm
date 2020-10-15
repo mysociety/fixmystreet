@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -30,6 +31,8 @@ __PACKAGE__->add_columns(
   { data_type => "text[]", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "extra_json",
+  { data_type => "jsonb", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("roles_body_id_name_key", ["body_id", "name"]);
@@ -47,8 +50,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2021-06-17 15:48:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UJk6NBNCsHDY/te2F7tJWA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-11 13:47:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gGynclcsNX5eAwFk7Nqudw
 
 __PACKAGE__->many_to_many( users => 'user_roles', 'user' );
 

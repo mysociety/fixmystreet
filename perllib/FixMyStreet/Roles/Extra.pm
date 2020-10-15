@@ -27,6 +27,30 @@ And
 
 =head1 METHODS
 
+=cut
+
+# Data out of the database is sorted by key length first. So in case we are
+# comparing data straight out of there, decode/encode first so we know it will
+# be the same layout
+around _eq_column_values => sub {
+    my ($orig, $self, $col, $old, $new) = @_;
+    if ($col eq 'extra_json') {
+        $old = $self->_column_to_storage($col, $self->_column_from_storage($col, $old));
+    }
+    return $self->$orig($col, $old, $new);
+};
+
+# XXX Temporary for RABX migration
+around set_filtered_column => sub {
+    my ($orig, $self, $col, $filtered) = @_;
+    if ($col eq 'extra') {
+        $self->$orig(extra_json => $filtered);
+    }
+    return $self->$orig($col, $filtered);
+};
+
+# XXX Temporary for RABX migration
+
 =head2 set_extra_metadata
 
     $problem->set_extra_metadata(overdue => 1);
