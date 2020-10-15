@@ -1,3 +1,4 @@
+use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 
@@ -880,6 +881,7 @@ subtest 'check staff updates can include sanitized HTML' => sub {
 
     my $update1 = $mech->create_comment_for_problem($report, $user2, 'Staff User', '<p>This is some update text with <strong>HTML</strong> and *italics*.</p> <ul><li>Even a list</li><li>Which might work</li><li>In the <a href="https://www.fixmystreet.com/">text</a> part</li></ul> <script>not allowed</script>', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 8 ) });
     $update1->set_extra_metadata(is_body_user => $user2->from_body->id);
+    $update1->set_extra_metadata(something_unicodey => "The cafɇ is here");
     $update1->update;
 
     $mech->create_comment_for_problem($report, $user3, 'Updater User', 'Public users <i>cannot</i> use HTML. <script>not allowed</script>', 't', 'confirmed', undef, { confirmed  => $r_dt->clone->add( minutes => 9 ) });
