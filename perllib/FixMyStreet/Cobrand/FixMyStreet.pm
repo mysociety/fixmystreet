@@ -318,6 +318,16 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
+sub body_disallows_state_change {
+    my $self = shift;
+    my ($problem) = @_;
+    my $c = $self->{c};
+
+    my ($disallowed, $body) = $self->per_body_config('update_states_disallowed', $problem);
+    $disallowed //= 0;
+    return $disallowed;
+}
+
 sub problem_state_processed {
     my ($self, $comment) = @_;
 

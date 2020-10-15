@@ -107,4 +107,30 @@ subtest "Admin searches right domains" => sub {
     };
 };
 
+$mech->log_out_ok;
+
+for my $cobrand ( "hounslow", "fixmystreet") {
+    subtest "Doesn't allow update to change report status on $cobrand cobrand" => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => $cobrand,
+            COBRAND_FEATURES => {
+                update_states_disallowed => {
+                    fixmystreet => {
+                        Hounslow => 1,
+                    },
+                    hounslow => 1,
+                }
+            },
+        }, sub {
+            $report->update({ state => "confirmed" });
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_lacks('form_fixed');
+
+            $report->update({ state => "closed" });
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_lacks('form_reopen');
+        };
+    };
+}
+
 done_testing();
