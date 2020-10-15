@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -39,8 +40,8 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("manifest_theme_cobrand_key", ["cobrand"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-01-30 14:30:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Sgbva7nEVkjqG/+lQL/ryw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-14 22:49:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:el5l7426UkZ6ww/QFp1J+w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

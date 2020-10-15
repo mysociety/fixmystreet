@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -62,6 +63,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "extra_json",
+  { data_type => "jsonb", is_nullable => 1 },
   "send_fail_count",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "send_fail_reason",

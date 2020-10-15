@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -38,6 +39,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "extra_json",
+  { data_type => "jsonb", is_nullable => 1 },
   "non_public",
   { data_type => "boolean", default_value => \"false", is_nullable => 1 },
   "endpoint",
@@ -77,8 +80,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:f7XjQj4iABikbR4EZrjL3g
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-14 22:49:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QyPwCWsz+ivYQnuBJ3BRSw
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');

@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -86,10 +87,14 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "extra_json",
+  { data_type => "jsonb", is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "geocode",
   { data_type => "bytea", is_nullable => 1 },
+  "geocode_json",
+  { data_type => "jsonb", is_nullable => 1 },
   "response_priority_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "send_fail_count",
@@ -174,8 +179,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2022-03-10 11:09:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:W+bK8MqpeFwkTj0Ze/tN0g
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-14 22:49:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OfNztnYORQ9NIb6EvK0cAw
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -271,6 +276,16 @@ use LWP::Simple qw($ua);
 use RABX;
 use URI;
 use URI::QueryParam;
+
+# XXX Temporary for RABX migration
+around geocode => sub {
+    my ($orig, $self) = (shift, shift);
+    if (@_) {
+        $self->geocode_json(@_);
+    }
+    return $self->$orig(@_);
+};
+# XXX Temporary for RABX migration
 
 my $IM = eval {
     require Image::Magick;
