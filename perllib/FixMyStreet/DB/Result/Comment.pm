@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -62,6 +63,10 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "extra",
   { data_type => "text", is_nullable => 1 },
+  "extra_json",
+  { data_type => "jsonb", is_nullable => 1 },
+  "send_state",
+  { data_type => "text", default_value => "unprocessed", is_nullable => 0 },
   "send_fail_count",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "send_fail_reason",
@@ -70,8 +75,6 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "whensent",
   { data_type => "timestamp", is_nullable => 1 },
-  "send_state",
-  { data_type => "text", default_value => "unprocessed", is_nullable => 0 },
   "private_email_text",
   { data_type => "text", is_nullable => 1 },
 );
@@ -96,8 +99,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2022-03-29 14:20:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:x+v4WPYnfPF/ac+UBsPW9g
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:09:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8R6NBLI7UWER4zQ6sM7G5Q
 #
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");

@@ -135,6 +135,10 @@ if ($upgrade && $current_version eq 'EMPTY') {
         if (@statements) {
             run_statements(@statements);
         }
+
+        if ($name =~ /^0082/) {
+            system("bin/one-off-update-rabx-to-json --commit");
+        }
     }
 
     if ( $commit && $current_version lt '0028' ) {
@@ -215,6 +219,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0082' if column_exists('problem', 'extra_json');
     return '0081' if constraint_delete_cascade('alert_sent_alert_id_fkey');
     return '0080' if column_exists('roles', 'extra');
     return '0079' if column_exists('response_templates', 'email_text');
