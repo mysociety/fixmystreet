@@ -516,14 +516,43 @@ sub soap_error : Private {
     $code ||= 400;
     $c->response->status($code);
     my $type = $code == 500 ? 'Server' : 'Client';
-    $c->response->body(SOAP::Serializer->fault($type, "Bad request: $comment"));
+    $c->response->body(SOAP::Serializer->fault($type, "Bad request: $comment", soap_header()));
 }
 
 sub soap_ok : Private {
     my ($self, $c) = @_;
     $c->response->status(200);
-    my $method = SOAP::Data->name("NotifyEventUpdatedResponse")->attr({xmlns => "http://www.twistedfish.com/xmlns/echo/api/v1"});
-    $c->response->body(SOAP::Serializer->envelope(method => $method));
+    my $method = SOAP::Data->name("NotifyEventUpdatedResponse")->attr({
+        xmlns => "http://www.twistedfish.com/xmlns/echo/api/v1"
+    });
+    $c->response->body(SOAP::Serializer->envelope(method => $method, soap_header()));
+}
+
+sub soap_header {
+    my $attr = "http://www.twistedfish.com/xmlns/echo/api/v1";
+    my $action = "NotifyEventUpdatedResponse";
+    my $header = SOAP::Header->name("Action")->attr({
+        xmlns => 'http://www.w3.org/2005/08/addressing',
+        'soap:mustUnderstand' => 1,
+    })->value("$attr/ReceiverService/$action");
+
+    my $dt = DateTime->now();
+    my $dt2 = $dt->clone->add(minutes => 5);
+    my $w3c = DateTime::Format::W3CDTF->new;
+    my $header2 = SOAP::Header->name("Security")->attr({
+        'soap:mustUnderstand' => 'true',
+        'xmlns' => 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
+    })->value(
+        \SOAP::Header->name(
+            "Timestamp" => \SOAP::Header->value(
+                SOAP::Header->name('Created', $w3c->format_datetime($dt)),
+                SOAP::Header->name('Expires', $w3c->format_datetime($dt2)),
+            )
+        )->attr({
+            xmlns => "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd",
+        })
+    );
+    return ($header, $header2);
 }
 
 sub check_existing_update : Private {
