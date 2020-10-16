@@ -29,17 +29,29 @@ sub index :Path : Args(0) {
 
     if ($c->req->method eq 'POST') {
         my @uids = $c->get_param_list('uid');
-        my @role_ids = $c->get_param_list('roles');
         my $user_rs = FixMyStreet::DB->resultset("User")->search({ id => \@uids });
-        foreach my $user ($user_rs->all) {
-            $user->admin_user_body_permissions->delete;
-            $user->user_roles->search({
-                role_id => { -not_in => \@role_ids },
-            })->delete;
-            foreach my $role (@role_ids) {
-                $user->user_roles->find_or_create({
-                    role_id => $role,
+        if ( $c->get_param('remove-staff') ) {
+            foreach my $user ($user_rs->all) {
+                $user->update({
+                    from_body => undef,
+                    email_verified => 0,
+                    phone_verified => 0,
                 });
+                $user->user_roles->delete;
+                $user->admin_user_body_permissions->delete;
+            }
+        } else {
+            my @role_ids = $c->get_param_list('roles');
+            foreach my $user ($user_rs->all) {
+                $user->admin_user_body_permissions->delete;
+                $user->user_roles->search({
+                    role_id => { -not_in => \@role_ids },
+                })->delete;
+                foreach my $role (@role_ids) {
+                    $user->user_roles->find_or_create({
+                        role_id => $role,
+                    });
+                }
             }
         }
         $c->stash->{status_message} = _('Updated!');

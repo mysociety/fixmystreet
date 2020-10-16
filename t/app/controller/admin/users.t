@@ -6,12 +6,29 @@ my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 my $original_user_id = $user->id; # For log later
 my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 3');
+my $user4 = $mech->create_user_ok('test4@example.com', name => 'Test User 4');
+my $user5 = $mech->create_user_ok('test5@example.com', name => 'Test User 5');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $haringey = $mech->create_body_ok(2509, 'Haringey Borough Council');
 my $southend = $mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
+
+$user4->from_body( $oxfordshire->id );
+$user4->update;
+$user4->user_body_permissions->create( {
+    body => $oxfordshire,
+    permission_type => 'user_edit',
+} );
+$user5->from_body( $oxfordshire->id );
+$user5->update;
+my $occ_role = $user5->roles->create({
+    body => $oxfordshire,
+    name => 'Role A',
+    permissions => ['moderate', 'user_edit'],
+});
+$user5->add_to_roles($occ_role);
 
 $mech->log_in_ok( $superuser->email );
 
@@ -95,6 +112,38 @@ subtest 'user assign role' => sub {
     $mech->get_ok('/admin/users');
     $mech->submit_form_ok({ with_fields => { uid => $user->id, roles => $role->id } });
     is $user->roles->count, 1;
+};
+
+subtest 'remove users from staff' => sub {
+    is $user4->from_body->id, $oxfordshire->id, 'user4 has a body';
+    is $user4->email_verified, 1, 'user4 email is verified';
+    is $user4->user_body_permissions->count, 1, 'user4 has permissions';
+    is $user5->from_body->id, $oxfordshire->id, 'user5 has a body';
+    is $user5->email_verified, 1, 'user5 email is verified';
+    is $user5->user_roles->count, 1, 'user5 has a role';
+
+    $mech->get_ok('/admin/users');
+    $mech->content_contains($user4->email);
+    $mech->content_contains($user5->email);
+
+    $mech->submit_form_ok({ with_fields => { uid => $user4->id, 'remove-staff' => 'remove-staff'} });
+    $mech->content_lacks($user4->email);
+    $mech->content_contains($user5->email);
+    $user4->discard_changes;
+    $user5->discard_changes;
+    is $user4->from_body, undef, 'user4 removed from body';
+    is $user4->email_verified, 0, 'user4 email unverified';
+    is $user4->user_body_permissions->count, 0, 'no user4 permissions';
+    is $user5->from_body->id, $oxfordshire->id, 'user5 has a body';
+    is $user5->email_verified, 1, 'user5 email is verified';
+    is $user5->user_roles->count, 1, 'user5 has a role';
+
+    $mech->submit_form_ok({ with_fields => { uid => $user5->id, 'remove-staff' => 'remove-staff'} });
+    $mech->content_lacks($user5->email);
+    $user5->discard_changes;
+    is $user5->from_body, undef, 'user5 has no body';
+    is $user5->email_verified, 0, 'user5 email unverified';
+    is $user5->user_roles->count, 0, 'no user5 roles';
 };
 
 subtest 'search does not show user from another council' => sub {
