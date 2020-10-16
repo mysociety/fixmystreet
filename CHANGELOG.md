@@ -50,6 +50,7 @@
         - Record whether report made on desktop or mobile.
         - Do not display deleted priorities in inspect form. #3195
         - Include extra fields in submit emails.
+        - can remove staff status from users in bulk
     - Development improvements:
         - `#geolocate_link` is now easier to re-style. #3006
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007

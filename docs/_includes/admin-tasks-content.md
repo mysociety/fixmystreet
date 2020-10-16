@@ -528,6 +528,20 @@ maintenance) to a staff user by editing the user and checking the relevant categ
 staff user, when logged in, will then only see reports within those categories. This is useful where a
 staff user only deals with reports of a specific type.
 
+#### Removing staff status from accounts
+
+To remove the staff status from an account visit the user page and
+uncheck the ‘staff’ checkbox. To prevent a user from logging in uncheck
+the ‘email verified’ checkbox.
+
+You can do this in bulk on the Users screen by selecting the checkbox
+next to the user's name on the users page, selecting the ‘Remove staff
+permission’ checkbox and clicking submit.
+
+Note that if a user has access to the email address associated with an
+account they can re-enable their account, but will not have staff
+permissions.
+
 #### Removing accounts
 
 To remove an account, the Administrator-level member of staff should make contact with
