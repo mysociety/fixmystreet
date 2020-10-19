@@ -288,8 +288,17 @@ FixMyStreet::override_config {
     subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/uprn/12345');
-        $mech->content_contains('(completed at 10:00am)');
-        $mech->content_contains('Wrong Bin Out');
+        $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
+        $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(in progress\)/s);
+        $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
+        $mech->content_lacks('Waste spillage');
+
+        set_fixed_time('2020-05-27T19:00:00Z');
+        $mech->get_ok('/waste/uprn/12345');
+        $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
+        $mech->content_like(qr/Paper &amp; Cardboard.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s*<\/dd>/s);
+        $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
+        $mech->content_contains('Waste spillage');
     };
 
     subtest 'test template creation' => sub {

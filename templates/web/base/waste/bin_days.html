@@ -41,6 +41,7 @@
           [% IF unit.next %]
             [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
             [% IF unit.next.changed %](this collection has been adjusted from its usual time)[% END %]
+            [% IF unit.next.state == 'In progress' %](in progress)[% END %]
           [% ELSE %]
             <i>None</i>
           [% END %]
@@ -51,6 +52,7 @@
         <dd class="govuk-summary-list__value">
           [% IF unit.last %]
             [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
+            [% IF unit.last.state == 'In progress' %](in progress)[% END %]
             [% IF unit.last.completed %](completed at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%])[% END ~%]
             [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
           [% ELSE %]

@@ -612,9 +612,21 @@ sub bin_services_for_address {
             $row->{last}{completed} = $completed;
             $row->{last}{resolution} = $resolution;
             $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
-            if (!$completed && $row->{last}{date}->ymd eq $now->ymd) {
-                $row->{report_allowed} = 0;
+
+            # Special handling if last instance is today
+            if ($row->{last}{date}->ymd eq $now->ymd) {
+                # If it's before 5pm and outstanding, show it as in progress
+                if ($state eq 'Outstanding' && $now->hour < 17) {
+                    $row->{next} = $row->{last};
+                    $row->{next}{state} = 'In progress';
+                    delete $row->{last};
+                }
+                if (!$completed && $now->hour < 17) {
+                    $row->{report_allowed} = 0;
+                }
             }
+
+            # If the task is ended and could not be done, do not allow reporting
             if ($state eq 'Not Completed' || ($state eq 'Completed' && $_->{Resolution}{Name} eq 'Excess Waste')) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = 1;

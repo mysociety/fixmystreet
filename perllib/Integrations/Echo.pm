@@ -99,6 +99,7 @@ sub GetTasks {
         },
         {
             Ref => { Value => { anyType => [ 234, 567 ] } },
+            State => { Name => 'Outstanding' },
             CompletedDate => undef
         },
         {
