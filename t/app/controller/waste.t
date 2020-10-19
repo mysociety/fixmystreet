@@ -116,6 +116,18 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/uprn/1000000002/enquiry?service=1');
         is $mech->uri->path, '/waste/uprn/1000000002';
     };
+    subtest 'Checking calendar' => sub {
+        $mech->follow_link_ok({ text => 'Add to your calendar (.ics file)' });
+        $mech->content_contains('BEGIN:VCALENDAR');
+        my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
+        shift @events; # Header
+        my $i = 0;
+        foreach (@events) {
+            $i++ if /DTSTART;VALUE=DATE:20200701/ && /SUMMARY:Refuse collection/;
+            $i++ if /DTSTART;VALUE=DATE:20200708/ && /SUMMARY:Paper & Cardboard/;
+        }
+        is $i, 2, 'Two events from the sample data in the calendar';
+    };
     subtest 'General enquiry, on behalf of someone else' => sub {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/uprn/1000000002/enquiry?category=General+enquiry&service_id=537');
