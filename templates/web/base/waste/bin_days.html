@@ -23,7 +23,8 @@
   <!-- TODO if there's a photo available -->
   <div class="govuk-grid-column-one-quarter text-centered">
     <!-- TODO change based on collection type -->
-    <img src="/cobrands/bromley/images/container-images/refuse-black-sack.png" alt="Batteries, small electrical items and textiles" class="waste-service-image">
+    <img src="/cobrands/bromley/images/container-images/refuse-black-sack.png" srcset="/cobrands/bromley/images/container-images/refuse-black-sack.png 1x, /cobrands/bromley/images/container-images/refuse-black-sack@2x.png 2x" alt="Non-Recyclable Waste" class="waste-service-image">
+
   </div>
   <!-- TODO if there's a photo available -->
   <div class="govuk-grid-column-three-quarters">
@@ -56,15 +57,16 @@
         </dd>
       </div>
     </dl>
+
+
+
+    <p class="waste-panel-toggle hidden-nojs"><a data-toggle-visibility="#panel-[% unit.service_id %]" class="waste-service-name-link govuk-button govuk-button--secondary">[% unit.service_name %] services</a></p>
+
+    <div class="waste-services-launch-panel hidden-js" id="panel-[% unit.service_id %]">
+        [% PROCESS waste/services.html %]
+    </div>
   </div>
 </div>
-
-<p class="waste-panel-toggle hidden-nojs"><a data-toggle-visibility="#panel-[% unit.service_id %]" class="waste-service-name-link govuk-button govuk-button--secondary">[% unit.service_name %] services</a></p>
-
-<div class="waste-services-launch-panel hidden-js" id="panel-[% unit.service_id %]">
-    [% PROCESS waste/services.html %]
-</div>
-
 [% END %]
 [% IF NOT service_data.size %]
     <p>This property has no collections.</p>
