@@ -2,8 +2,10 @@ package Integrations::Echo;
 
 use strict;
 use warnings;
+use DateTime;
 use Moo;
 use Tie::IxHash;
+use FixMyStreet;
 
 has attr => ( is => 'ro', default => 'http://www.twistedfish.com/xmlns/echo/api/v1' );
 has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
@@ -21,6 +23,7 @@ has endpoint => (
         SOAP::Lite->soapversion(1.2);
         my $soap = SOAP::Lite->on_action( sub { $self->action . $_[1]; } )->proxy($self->url);
         $soap->serializer->register_ns("http://schemas.microsoft.com/2003/10/Serialization/Arrays", 'msArray'),
+        $soap->serializer->register_ns("http://schemas.datacontract.org/2004/07/System", 'dataContract');
         return $soap;
     },
 );
@@ -246,6 +249,61 @@ sub GetServiceUnitsForObject {
     );
     # uncoverable statement
     return force_arrayref($res, 'ServiceUnit');
+}
+
+sub GetServiceTaskInstances {
+    my ($self, @tasks) = @_;
+
+    my @objects;
+    foreach (@tasks) {
+        my $obj = ixhash(
+            Key => 'Id',
+            Type => 'ServiceTask',
+            Value => [
+                { 'msArray:anyType' => $_ },
+            ],
+        );
+        push @objects, { ObjectRef => $obj };
+    }
+    my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
+    my $end = $start->clone->add(months => 3);
+    my $query = ixhash(
+        From => dt_to_hash($start),
+        To => dt_to_hash($end),
+    );
+    return [
+        { ServiceTaskRef => { Value => { anyType => 401 } },
+            Instances => { ScheduledTaskInfo => [
+                { CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+            ] }
+        },
+        { ServiceTaskRef => { Value => { anyType => 402 } },
+            Instances => { ScheduledTaskInfo => [
+                { CurrentScheduledDate => { DateTime => '2020-07-08T00:00:00Z' } },
+            ] }
+        },
+    ] if $self->sample_data;
+    # uncoverable statement
+    my $res = $self->call('GetServiceTaskInstances',
+        serviceTaskRefs => \@objects,
+        query => $query,
+    );
+    return force_arrayref($res, 'ServiceTaskInstances');
+}
+
+sub ixhash {
+    tie (my %data, 'Tie::IxHash', @_);
+    return \%data;
+}
+
+sub dt_to_hash {
+    my $dt = shift;
+    my $utc = $dt->clone->set_time_zone('UTC');
+    $dt = ixhash(
+        'dataContract:DateTime' => $utc->ymd . 'T' . $utc->hms . 'Z',
+        'dataContract:OffsetMinutes' => $dt->offset / 60,
+    );
+    return $dt;
 }
 
 sub force_arrayref {
