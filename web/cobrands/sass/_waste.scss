@@ -26,7 +26,7 @@ body.waste {
 .waste__summary {
   .govuk-summary-list {
     font-size: 1em;
-    border-top: 1px solid #808080;
+    padding-bottom: 0.66em;
     background-color: white;
   }
 
@@ -42,6 +42,13 @@ body.waste {
     padding-top: 10px; 
     font-weight: normal !important; /* Ugh */ 
   }
+}
+
+.waste-service-image {
+  max-width: 100%;
+  max-height: 140px;
+  height: auto;
+  margin-bottom: 1em;
 }
 
 .waste__summary {
@@ -109,6 +116,8 @@ body.waste {
 
 .waste-service-name.govuk-heading-m {
   margin-top: 1.5em;
+  border-bottom: 1px solid #808080;
+  padding-bottom: 0.5em;
 }
 
 .waste-service-descriptor {
@@ -149,4 +158,8 @@ input[type="submit"].waste-service-link {
     margin-bottom: 0;
     font-size: 1rem;
   }
+}
+
+.text-centered {
+  text-align: center;
 }

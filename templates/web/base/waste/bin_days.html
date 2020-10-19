@@ -20,42 +20,53 @@
 [% FOR unit IN service_data %]
 
 <h3 class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
+<div class="govuk-grid-row">
+ [% SET image = c.cobrand.image_for_service(unit.service_id) ~%]
+ [% IF image %]
+  <div class="govuk-grid-column-one-quarter text-centered">
+    <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
+  </div>
+  <div class="govuk-grid-column-three-quarters">
+ [% ELSE %]
+  <div class="govuk-grid-column-full">
+ [% END %]
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Frequency</dt>
+        <dd class="govuk-summary-list__value">[% unit.schedule %]</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Next collection</dt>
+        <dd class="govuk-summary-list__value">
+          [% IF unit.next %]
+            [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
+            [% IF unit.next.changed %](this collection has been adjusted from its usual time)[% END %]
+          [% ELSE %]
+            <i>None</i>
+          [% END %]
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Last collection</dt>
+        <dd class="govuk-summary-list__value">
+          [% IF unit.last %]
+            [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
+            [% IF unit.last.completed %](completed at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%])[% END ~%]
+            [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
+          [% ELSE %]
+            <i>None</i>
+          [% END %]
+        </dd>
+      </div>
+    </dl>
 
-<dl class="govuk-summary-list">
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Frequency</dt>
-    <dd class="govuk-summary-list__value">[% unit.schedule %]</dd>
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Next collection</dt>
-    <dd class="govuk-summary-list__value">
-      [% IF unit.next %]
-        [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
-        [% IF unit.next.changed %](this collection has been adjusted from its usual time)[% END %]
-      [% ELSE %]
-        <i>None</i>
-      [% END %]
-    </dd>
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Last collection</dt>
-    <dd class="govuk-summary-list__value">
-      [% IF unit.last %]
-        [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
-        [% IF unit.last.completed %](completed at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%])[% END ~%]
-        [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
-      [% ELSE %]
-        <i>None</i>
-      [% END %]
-    </dd>
-  </div>
-</dl>
-<p class="waste-panel-toggle hidden-nojs"><a data-toggle-visibility="#panel-[% unit.service_id %]" class="waste-service-name-link govuk-button govuk-button--secondary">[% unit.service_name %] services</a></p>
+    <p class="waste-panel-toggle hidden-nojs"><a data-toggle-visibility="#panel-[% unit.service_id %]" class="waste-service-name-link govuk-button govuk-button--secondary">[% unit.service_name %] services</a></p>
 
-<div class="waste-services-launch-panel hidden-js" id="panel-[% unit.service_id %]">
-    [% PROCESS waste/services.html %]
+    <div class="waste-services-launch-panel hidden-js" id="panel-[% unit.service_id %]">
+        [% PROCESS waste/services.html %]
+    </div>
+  </div>
 </div>
-
 [% END %]
 [% IF NOT service_data.size %]
     <p>This property has no collections.</p>
