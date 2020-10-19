@@ -619,6 +619,9 @@ sub bin_services_for_address {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = 1;
             }
+            if ($state eq 'Outstanding' && $row->{last}{date}->ymd eq $now->ymd && $now->hms lt '18:00') {
+                $row->{last}{state} = 'In progress';
+            }
             if ($state eq 'Completed' && $_->{Resolution}{Name} eq 'Excess Waste') {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = 1;
