@@ -474,6 +474,24 @@ sub construct_bin_date {
     return $date;
 }
 
+sub image_for_service {
+    my ($self, $service_id) = @_;
+    my $base = '/cobrands/bromley/images/container-images';
+    my $images = {
+        531 => "$base/refuse-black-sack",
+        532 => "$base/refuse-black-sack",
+        533 => "$base/large-communal-black",
+        535 => "$base/kerbside-green-box-mix",
+        536 => "$base/small-communal-mix",
+        537 => "$base/kerbside-black-box-paper",
+        541 => "$base/small-communal-paper",
+        542 => "$base/food-green-caddy",
+        544 => "$base/food-communal",
+        545 => "$base/garden-waste-bin",
+    };
+    return $images->{$service_id};
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
