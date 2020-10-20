@@ -37,6 +37,7 @@ subtest 'check contact creation' => sub {
 
     $mech->submit_form_ok( { with_fields => { 
         category   => 'test category',
+        title_hint => 'example in test category',
         email      => 'test@example.com',
         note       => 'test note',
         non_public => undef,

@@ -643,7 +643,9 @@ You can edit categories at any time by clicking on their title within the table 
 Categories page.
 
 From here, you can change the email address that the reports in this category are routed to,
-or any of the other options for the category.
+or any of the other options for the category, such as the hint text shown to the user for
+this category, whether reporting should be disabled when this category is selected, or
+whether updates should be disabled on reports in this category.
 
 </div>
 

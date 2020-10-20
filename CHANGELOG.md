@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Admin improvements:
+        - Enable per-category hint customisation.
 
 * v3.1 (16th November 2020)
     - Security:
