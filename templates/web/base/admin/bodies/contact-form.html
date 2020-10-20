@@ -4,6 +4,25 @@
 
   [% INCLUDE 'admin/bodies/_translations.html' %]
 
+  [% IF c.cobrand.enable_category_groups %]
+    <p>
+      <label>
+        [% loc('Parent categories') %]
+        [% IF contact.extra.group %]
+            [% FOR group IN contact.extra.group %]
+            <input class="form-control" type="text" name="group" value="[% group | html %]" size="30">
+            [% END %]
+        [% ELSE %]
+            <input class="form-control" type="text" name="group" value="" size="30">
+        [% END %]
+        <input class="hidden-js js-group-item-template form-control" type="text" name="group" value="" size="30">
+        <p class="hidden-nojs">
+          <button type="button" class="btn btn--small js-group-item-add">[% loc('Add another parent category') %]</button>
+        </p>
+      </label>
+    </p>
+  [% END %]
+
     <label for="destination">[% loc('Destination') %]</label>
     <p class="form-hint" id="destination-hint">
       [% IF body.can_be_devolved %]
@@ -122,25 +141,6 @@
     </p>
 
     [% INCLUDE 'admin/bodies/open311-form-fields.html', object = contact%]
-  [% END %]
-
-  [% IF c.cobrand.enable_category_groups %]
-    <p>
-      <label>
-        [% loc('Parent categories') %]
-        [% IF contact.extra.group %]
-            [% FOR group IN contact.extra.group %]
-            <input class="form-control" type="text" name="group" value="[% group | html %]" size="30">
-            [% END %]
-        [% ELSE %]
-            <input class="form-control" type="text" name="group" value="" size="30">
-        [% END %]
-        <input class="hidden-js js-group-item-template form-control" type="text" name="group" value="" size="30">
-        <p class="hidden-nojs">
-          <button type="button" class="btn btn--small js-group-item-add">[% loc('Add another parent category') %]</button>
-        </p>
-      </label>
-    </p>
   [% END %]
 
     <h2>[% loc('Extra data:') %] </h2>
