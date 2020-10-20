@@ -446,6 +446,13 @@ subtest 'check update disallowed message' => sub {
         $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
         $mech->content_contains('even if this is unticked, only the problem reporter will be able to leave updates');
     };
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bathnes',
+    }, sub {
+        $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
+        $mech->content_lacks('even if this is unticked');
+    };
 };
 
 subtest 'check hardcoded contact renaming' => sub {
