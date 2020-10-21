@@ -110,4 +110,7 @@ sub council_rss_alert_options {
     return ( \@options, undef );
 }
 
+# Make sure fetched report description isn't shown.
+sub filter_report_description { "" }
+
 1;
