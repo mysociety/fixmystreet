@@ -1,6 +1,6 @@
 package FixMyStreet::Script::Alerts;
 
-use strict;
+use v5.14;
 use warnings;
 
 use DateTime::Format::Pg;
@@ -233,7 +233,7 @@ sub send() {
     while (my $alert = $query->next) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($alert->cobrand)->new();
         next unless $cobrand->email_host;
-        next if $alert->is_from_abuser;
+        next if from_abuser($alert->user);
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
@@ -312,12 +312,9 @@ sub _send_aggregated_alert_email(%) {
     $data{alert_user}->set_last_active;
     $data{alert_user}->update;
 
-    my $email = $data{alert_user}->email;
-    my ($domain) = $email =~ m{ @ (.*) \z }x;
-    return if $data{schema}->resultset('Abuse')->search( {
-        email => [ $email, $domain ]
-    } )->first;
+    return if from_abuser($data{alert_user});
 
+    my $email = $data{alert_user}->email;
     my $token = $data{schema}->resultset("Token")->new_result( {
         scope => 'alert',
         data  => {
@@ -347,6 +344,21 @@ sub _send_aggregated_alert_email(%) {
     } else {
         print "Failed to send alert $data{alert_id}!";
     }
+}
+
+sub from_abuser {
+    my $user = shift;
+
+    state %abuse_lookup;
+    if (!%abuse_lookup) {
+        %abuse_lookup = map { $_ => 1 } FixMyStreet::DB->resultset('Abuse')->all;
+    }
+
+    my $email = $user->email;
+    my ($domain) = $email =~ m{ @ (.*) \z }x;
+    my $phone = $user->phone;
+
+    return $abuse_lookup{$email} || $abuse_lookup{$domain} || $abuse_lookup{$phone};
 }
 
 sub _get_address_from_geocode {
