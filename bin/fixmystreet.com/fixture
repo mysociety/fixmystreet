@@ -75,12 +75,25 @@ if ($opt->cobrand) {
 
 say "Created body " . $body->name . " for MapIt area ID " . $opt->area_id . ', categories ' . join(', ', @$categories);
 
-for my $cat (qw/Overflowing Broken Missing/) {
+my $waste_categories = [
+    'Report missed collection',
+    'Request new container',
+    'Gate not closed',
+    'Waste spillage',
+    'Bin not returned',
+    'Crew behaviour',
+    'Wrongful removal',
+    'Damage to 3rd party',
+    'Damage to Property',
+    'Failure to deliver bin',
+];
+foreach my $cat (@$waste_categories) {
     my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create({
         body => $body,
         category => $cat
     });
-    $child_cat->set_extra_metadata( group => 'Bins' );
+    $child_cat->set_extra_metadata( type => 'waste', group => 'Waste' );
+    $child_cat->set_extra_fields({ code => 'notes', datatype => 'text', order => 1, variable => 'true', description => 'Notes' });
     $child_cat->update;
 }
 

@@ -8,7 +8,6 @@ describe('Basic categories', function() {
 
     var categories = [
         'Abandoned vehicles',
-        'Bins',
         'Bus stops',
         'Dog fouling',
         'Flyposting',
@@ -42,14 +41,14 @@ describe('Basic categories', function() {
         cy.get('#form_category_fieldset input').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
-        cy.get('#subcategory_Bins').should('not.be.visible');
-        cy.pickCategory('Bins');
+        cy.get('#subcategory_Licensing').should('not.be.visible');
+        cy.pickCategory('Licensing');
         cy.nextPageReporting();
-        cy.get('#subcategory_Bins').should('be.visible');
+        cy.get('#subcategory_Licensing').should('be.visible');
         cy.go('back');
         cy.pickCategory('Graffiti');
         cy.nextPageReporting();
-        cy.get('#subcategory_Bins').should('not.be.visible');
+        cy.get('#subcategory_Licensing').should('not.be.visible');
     });
 
     it('category dropdown contains works from new page', function() {
@@ -60,10 +59,10 @@ describe('Basic categories', function() {
         cy.get('#form_category_fieldset input').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
-        cy.get('#subcategory_Bins').should('not.be.visible');
+        cy.get('#subcategory_Licensing').should('not.be.visible');
         cy.wait('@report-ajax');
-        cy.pickCategory('Bins');
+        cy.pickCategory('Licensing');
         cy.nextPageReporting();
-        cy.get('#subcategory_Bins').should('be.visible');
+        cy.get('#subcategory_Licensing').should('be.visible');
     });
 });
