@@ -567,6 +567,7 @@ for (0..$num-1) {
         longitude => $lon,
         cobrand => $cobrand,
         lastupdate => $problem_data[$_]->{confirmed},
+        whensent => $problem_data[$_]->{confirmed},
         %{$problem_data[$_]},
     });
 }
