@@ -9,7 +9,6 @@ describe('Basic categories', function() {
     var categories = [
         '-- Pick a category --',
         'Abandoned vehicles',
-        'Bins',
         'Bus stops',
         'Dog fouling',
         'Flyposting',
@@ -29,6 +28,7 @@ describe('Basic categories', function() {
         'Street nameplates',
         'Traffic lights',
         'Trees',
+        'Waste',
         'Other'
     ];
 
@@ -42,11 +42,11 @@ describe('Basic categories', function() {
         cy.get('select:eq(3) option').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
-        cy.get('#subcategory_Bins').should('not.be.visible');
-        cy.get('select:eq(3)').select('Bins');
-        cy.get('#subcategory_Bins').should('be.visible');
+        cy.get('#subcategory_Waste').should('not.be.visible');
+        cy.get('select:eq(3)').select('Waste');
+        cy.get('#subcategory_Waste').should('be.visible');
         cy.get('select:eq(3)').select('Graffiti');
-        cy.get('#subcategory_Bins').should('not.be.visible');
+        cy.get('#subcategory_Waste').should('not.be.visible');
     });
 
     it('category dropdown contains works from new page', function() {
@@ -57,9 +57,9 @@ describe('Basic categories', function() {
         cy.get('select:eq(1) option').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
-        cy.get('#subcategory_Bins').should('not.be.visible');
+        cy.get('#subcategory_Waste').should('not.be.visible');
         cy.wait('@report-ajax');
-        cy.get('select:eq(1)').select('Bins');
-        cy.get('#subcategory_Bins').should('be.visible');
+        cy.get('select:eq(1)').select('Waste');
+        cy.get('#subcategory_Waste').should('be.visible');
     });
 });
