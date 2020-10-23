@@ -242,4 +242,66 @@ subtest 'check heatmap page' => sub {
     };
 };
 
+package SOAP::Result;
+sub result { return $_[0]->{result}; }
+sub new { my $c = shift; bless { @_ }, $c; }
+
+package main;
+
+subtest 'updating of waste reports' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => {
+                receive_action => 'action',
+                receive_username => 'un',
+                receive_password => 'password',
+            } },
+            waste => { bromley => 1 }
+        },
+    }, sub {
+        FixMyStreet::App->log->disable('info');
+
+        $mech->get('/waste/echo');
+        is $mech->res->code, 405, 'Cannot GET';
+
+        $mech->post('/waste/echo', Content_Type => 'text/xml');
+        is $mech->res->code, 400, 'No body';
+
+        my $in = '<Envelope><Header><Action>bad-action</Action></Header><Body></Body></Envelope>';
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $mech->res->code, 400, 'Bad action';
+
+        $in = '<Envelope><Header><Action>action</Action><Security><UsernameToken><Username></Username><Password></Password></UsernameToken></Security></Header><Body></Body></Envelope>';
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $mech->res->code, 400, 'Bad auth';
+
+        $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>waste-15005-XXX</Guid>
+        <EventTypeId>2104</EventTypeId>
+        <EventStateId>15006</EventStateId>
+        <ResolutionCodeId>207</ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+
+        $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $mech->res->code, 200, 'OK response, even though event does not exist';
+        is $report->comments->count, 2, 'No new update';
+
+        FixMyStreet::App->log->enable('info');
+    };
+};
+
 done_testing();
