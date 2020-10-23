@@ -51,12 +51,12 @@ describe('Duplicate tests', function() {
     });
 
     it('lets an inspector see duplicate reports coming from /reports', function() {
-      cy.request({
-        method: 'POST',
-        url: 'http://borsetshire.localhost:3001/auth?r=/my',
-        form: true,
-        body: { username: 'admin@example.org', password_sign_in: 'password' }
-      });
+      cy.visit('http://borsetshire.localhost:3001/auth');
+      cy.get('[name=username]').type('admin@example.org');
+      cy.contains('Sign in with a password').click();
+      cy.get('[name=password_sign_in]').type('password');
+      cy.get('[name=sign_in_by_password]').last().click();
+      cy.url().should('include', '/my');
       cy.visit('http://borsetshire.localhost:3001/reports');
       cy.get('[href$="/report/1"]:last').click();
       cy.get('#report_inspect_form #state').select('Duplicate');
