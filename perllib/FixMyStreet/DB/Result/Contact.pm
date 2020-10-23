@@ -191,12 +191,16 @@ sub sent_by_open311 {
 
 # We do not want to allow editing of a category's name
 # if it's Open311, unless it's marked as protected
+# Also prevent editing of hardcoded categories
 sub category_uneditable {
     my $self = shift;
     return 1 if
         $self->in_storage
         && !$self->get_extra_metadata('open311_protect')
         && $self->sent_by_open311;
+    return 1 if
+        $self->in_storage
+        && $self->get_extra_metadata('hardcoded');
     return 0;
 }
 

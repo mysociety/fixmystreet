@@ -283,6 +283,13 @@ sub update_contact : Private {
             $contact->unset_extra_metadata($_);
         }
     }
+    if ( $c->user->is_superuser ) {
+        if ( $c->get_param('hardcoded') ) {
+            $contact->set_extra_metadata( hardcoded => 1 );
+        } else {
+            $contact->unset_extra_metadata('hardcoded');
+        }
+    }
     if ( my @group = $c->get_param_list('group') ) {
         @group = grep { $_ } @group;
         if (scalar @group == 0) {

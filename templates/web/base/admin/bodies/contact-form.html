@@ -89,6 +89,13 @@
       </p>
     [% END %]
 
+    [% IF c.user.is_superuser %]
+      <p class="form-check">
+          <input type="checkbox" name="hardcoded" value="1" id="hardcoded"[% ' checked' IF contact.get_extra_metadata('hardcoded') %]>
+          <label for="hardcoded">[% loc("Protect this category from being re-named") %]</label>
+      </p>
+    [% END %]
+
     <p class="form-check">
         <input type="checkbox" name="assigned_users_only" value="1" id="assigned_users_only" [% ' checked' IF contact.extra.assigned_users_only %]>
         <label for="assigned_users_only">[% loc('Frontend staff access only to users assigned to this category') %]</label>

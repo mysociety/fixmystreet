@@ -15,6 +15,10 @@ my $mech = FixMyStreet::TestMech->new;
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 $mech->log_in_ok( $superuser->email );
 my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
+my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+
+my $user = $mech->create_user_ok('user@example.com', name => 'OCC User', from_body => $body2);
+$user->user_body_permissions->create({ body => $body2, permission_type => 'category_edit' });
 
 # This override is wrapped around ALL the /admin/body tests
 FixMyStreet::override_config {
@@ -116,6 +120,8 @@ subtest 'check contact renaming' => sub {
     is $report->category, 'testing category';
     $mech->submit_form_ok( { with_fields => { category => 'test category' } } );
 };
+
+
 
 subtest 'check contact updating' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
@@ -439,6 +445,65 @@ subtest 'check update disallowed message' => sub {
     }, sub {
         $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
         $mech->content_contains('even if this is unticked, only the problem reporter will be able to leave updates');
+    };
+};
+
+subtest 'check hardcoded contact renaming' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        'ALLOWED_COBRANDS' => [ 'oxfordshire' ],
+    }, sub {
+        my $contact = FixMyStreet::DB->resultset('Contact')->create(
+            {
+                body_id => $body2->id,
+                category => 'protected category',
+                state => 'confirmed',
+                editor => $0,
+                whenedited => \'current_timestamp',
+                note => 'protected contact',
+                email => 'protected@example.org',
+            }
+        );
+        $contact->set_extra_metadata( 'hardcoded', 1 );
+        $contact->update;
+        $mech->get_ok('/admin/body/' . $body2->id .'/protected%20category');
+        $mech->content_contains( 'name="hardcoded"' );
+        $mech->content_like( qr'value="protected category"[^>]*readonly's );
+        $mech->submit_form_ok( { with_fields => { category => 'non protected category', note => 'rename category' } } );
+        $mech->content_contains( 'protected category' );
+        $mech->content_lacks( 'non protected category' );
+        $mech->get('/admin/body/' . $body2->id . '/non%20protected%20category');
+        is $mech->res->code, 404;
+
+        $mech->get_ok('/admin/body/' . $body2->id .'/protected%20category');
+        $mech->submit_form_ok( { with_fields => { hardcoded => 0, note => 'remove hardcoding'  } } );
+        $mech->get_ok('/admin/body/' . $body2->id .'/protected%20category');
+        $mech->content_unlike( qr'value="protected category"[^>]*readonly's );
+        $mech->submit_form_ok( { with_fields => { category => 'non protected category', note => 'rename category'  } } );
+        $mech->content_contains( 'non protected category' );
+        $mech->get_ok('/admin/body/' . $body2->id . '/non%20protected%20category');
+        $mech->get('/admin/body/' . $body2->id . '/protected%20category');
+        is $mech->res->code, 404;
+
+        $contact->discard_changes;
+        $contact->set_extra_metadata( 'hardcoded', 1 );
+        $contact->update;
+
+        $mech->log_out_ok( $superuser->email );
+        $mech->log_in_ok( $user->email );
+        $mech->get_ok('/admin/body/' . $body2->id . '/non%20protected%20category');
+        $mech->content_lacks( 'name="hardcoded"' );
+        $user->update( { is_superuser => 1 } );
+        $mech->get_ok('/admin/body/' . $body2->id . '/non%20protected%20category');
+        $mech->content_contains('name="hardcoded"' );
+        $user->update( { is_superuser => 0 } );
+        $mech->submit_form_ok( { with_fields => { hardcoded => 0, note => 'remove hardcoding'  } } );
+        $mech->content_lacks( 'name="hardcoded"' );
+
+        $contact->discard_changes;
+        is $contact->get_extra_metadata('hardcoded'), 1, "non superuser can't remove hardcoding";
+
+        $mech->log_out_ok( $user->email );
     };
 };
 
