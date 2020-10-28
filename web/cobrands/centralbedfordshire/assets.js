@@ -59,4 +59,37 @@ fixmystreet.assets.add(defaults, {
     name: "Highways"
 });
 
+var streetlight_stylemap = new OpenLayers.StyleMap({
+    'default': fixmystreet.assets.style_default,
+    'hover': fixmystreet.assets.style_default_hover,
+    'select': fixmystreet.assets.construct_named_select_style("${lighting_c}")
+  });
+
+  var labeled_defaults = $.extend(true, {}, defaults, {
+      select_action: true,
+      stylemap: streetlight_stylemap,
+      feature_code: 'lighting_c',
+      asset_type: 'spot',
+      asset_id_field: 'asset',
+      attributes: {
+          asset: 'asset'
+      },
+      actions: {
+          asset_found: fixmystreet.assets.named_select_action_found,
+          asset_not_found: fixmystreet.assets.named_select_action_not_found
+      }
+  });
+
+fixmystreet.assets.add(labeled_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "StreetLighting"
+        }
+    },
+    max_resolution: 2.388657133579254,
+    asset_category: ["Street Lights"],
+    asset_item: 'street light'
+});
+
+
 })();
