@@ -91,5 +91,16 @@ fixmystreet.assets.add(labeled_defaults, {
     asset_item: 'street light'
 });
 
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Gullies"
+        }
+    },
+    max_resolution: 1.194328566789627,
+    asset_category: ["Surface cover", "Drains/Ditches Blocked"],
+    asset_item: 'drain or manhole'
+});
+
 
 })();
