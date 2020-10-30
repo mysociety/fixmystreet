@@ -77,5 +77,16 @@ for my $cobrand ( "centralbedfordshire", "fixmystreet") {
     };
 }
 
+subtest 'check geolocation overrides' => sub {
+    my $cobrand = FixMyStreet::Cobrand::CentralBedfordshire->new;
+    foreach my $test (
+        { query => 'Clifton', town => 'Bedfordshire' },
+        { query => 'Fairfield', town => 'Bedfordshire' },
+    ) {
+        my $res = $cobrand->disambiguate_location($test->{query});
+        is $res->{town}, $test->{town}, "Town matches $test->{town}";
+    }
+};
+
 
 done_testing();
