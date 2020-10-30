@@ -14,8 +14,11 @@ sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
+    my $town = "Bedfordshire";
+
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town => $town,
         centre => '52.006697,-0.436005',
         bounds => [ 51.805087, -0.702181, 52.190913, -0.143957 ],
     };
