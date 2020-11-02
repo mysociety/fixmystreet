@@ -7,6 +7,7 @@
 package FixMyStreet::Geocode::Bing;
 
 use strict;
+use warnings;
 
 use FixMyStreet::Geocode;
 use Utils;
@@ -51,6 +52,19 @@ sub string {
 
     my $results = $js->{resourceSets}->[0]->{resources};
     my ( $error, @valid_locations, $latitude, $longitude );
+
+    # If there are any High/Medium confidence results, don't include Low ones
+    my $exclude_low;
+    foreach (@$results) {
+        my $confidence = $_->{confidence};
+        if ($confidence eq 'High' || $confidence eq 'Medium') {
+            $exclude_low = 1;
+            last;
+        }
+    }
+    if ($exclude_low) {
+        @$results = grep { $_->{confidence} ne 'Low' } @$results;
+    }
 
     foreach (@$results) {
         my $address = $_->{name};

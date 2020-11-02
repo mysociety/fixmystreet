@@ -19,6 +19,7 @@ sub dispatch_request {
         my $results = [ {
             point => { coordinates => [ 51, -1 ] },
             name => 'Constitution Hill, London, SW1A',
+            confidence => 'High',
             address => {
                 addressLine => 'Constitution Hill',
                 locality => 'London',
@@ -29,12 +30,28 @@ sub dispatch_request {
             push @$results, {
                 point => { coordinates => [ 51, -1 ] },
                 name => 'Constitution Hill again, United Kingdom',
+                confidence => 'High',
                 address => {
                     addressLine => 'Constitution Hill again',
                     locality => 'London',
                     countryRegion => 'United Kingdom',
                 }
             };
+        }
+        if ($query->{q} =~ /low/) {
+            push @$results, {
+                point => { coordinates => [ 52, -2 ] },
+                name => 'Constitution Hill elsewhere, United Kingdom',
+                confidence => 'Low',
+                address => {
+                    addressLine => 'Constitution Hill elsewhere',
+                    locality => 'London',
+                    countryRegion => 'United Kingdom',
+                }
+            };
+        }
+        if ($query->{q} =~ /onlylow/) {
+            @$results = map { $_->{confidence} = 'Low'; $_ } @$results;
         }
         my $data = {
             statusCode => 200,

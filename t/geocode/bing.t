@@ -21,4 +21,10 @@ FixMyStreet::override_config {
     is $r->{error}[1]{address}, 'Constitution Hill again, London';
 };
 
+my $r = FixMyStreet::Geocode::Bing->string('two results andalow', $c);
+is scalar @{$r->{error}}, 2;
+
+$r = FixMyStreet::Geocode::Bing->string('two results onlylow', $c);
+is scalar @{$r->{error}}, 3;
+
 done_testing;
