@@ -452,7 +452,7 @@ sub look_up_property {
     return {
         id => $result->{Id},
         uprn => $uprn,
-        address => $result->{Description},
+        address => FixMyStreet::Template::title($result->{Description}),
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
     };
