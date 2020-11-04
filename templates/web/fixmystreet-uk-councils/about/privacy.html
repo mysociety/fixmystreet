@@ -26,7 +26,12 @@ The Council’s Data Protection Officer may be contacted at
 <h2>Who runs this service?</h2>
 
 <p>
-    This site is a service provided to [% c.cobrand.council_name %] by
+    [% IF c.cobrand.moniker == 'centralbedfordshire' %]
+        The Highways Reporting Tool
+    [% ELSE %]
+        This site
+    [% END %]
+    is a service provided to [% c.cobrand.council_name %] by
     <a href="https://www.societyworks.org/">SocietyWorks Ltd</a>, a limited
     company (05798215). SocietyWorks is a trading subsidiary of mySociety, a
     registered charity in England and Wales (1076346), who also run the
@@ -247,6 +252,10 @@ When you make a report
 <p>
     [% c.cobrand.council_name %] is the data controller and mySociety is a data
     processor.
+    [% IF c.cobrand.moniker == 'centralbedfordshire' %]
+        For information about the Council’s processing of your personal information please contact
+        <a href="mailto:information.governance@centralbedfordshire.gov.uk">information.governance@centralbedfordshire.gov.uk</a>.
+    [% END %]
 </p>
 [% IF c.cobrand.moniker == 'hackney' %]
 <p>
