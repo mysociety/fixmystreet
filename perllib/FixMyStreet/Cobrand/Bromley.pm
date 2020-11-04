@@ -690,10 +690,19 @@ sub _parse_schedules {
 
         my $last = $schedule->{LastInstance};
         $d = construct_bin_date($last->{CurrentScheduledDate});
-        if ($d && (!$max_last || $d > $max_last->{date})) {
+        if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
+            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
+            $min_next = {
+                date => $d,
+                ordinal => ordinal($d->day),
+                changed => $last_changed,
+            };
+        } elsif ($d && (!$max_last || $d > $max_last->{date})) {
+            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
             $max_last = {
                 date => $d,
                 ordinal => ordinal($d->day),
+                changed => $last_changed,
                 ref => $last->{Ref}{Value}{anyType},
             };
         }

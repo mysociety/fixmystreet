@@ -89,24 +89,30 @@ sub GetTasks {
         push @refs, \%a;
     }
 
-    return [
-        {
+    if ($self->sample_data) {
+        my %lookup = map { $_->[0] . ',' . $_->[1] => 1 } @_;
+        my $data = [];
+        push @$data, {
             Ref => { Value => { anyType => [ 123, 456 ] } },
             State => { Name => 'Completed' },
             Resolution => { Ref => { Value => { anyType => 187 } }, Name => 'Wrong Bin Out' },
             TaskTypeId => 3216,
             CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
-        },
-        {
+        } if $lookup{"123,456"};
+        push @$data, {
             Ref => { Value => { anyType => [ 234, 567 ] } },
             CompletedDate => undef
-        },
-        {
+        } if $lookup{"234,567"};
+        push @$data, {
             Ref => { Value => { anyType => [ 345, 678 ] } },
             State => { Name => 'Not Completed' }
-        },
-        { Ref => { Value => { anyType => [ 456, 789 ] } }, CompletedDate => undef },
-    ] if $self->sample_data;
+        } if $lookup{"345,678"};
+        push @$data, {
+            Ref => { Value => { anyType => [ 456, 789 ] } },
+            CompletedDate => undef
+        } if $lookup{"456,789"};
+        return $data;
+    }
 
     # This creates XML of the form <taskRefs><ObjectRef>...</ObjectRef><ObjectRef>...</ObjectRef>...</taskRefs>
     # uncoverable statement
@@ -186,6 +192,7 @@ sub GetServiceUnitsForObject {
                     OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
                 },
                 LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
                     Ref => { Value => { anyType => [ 123, 456 ] } },
                 },
@@ -205,6 +212,7 @@ sub GetServiceUnitsForObject {
                     OriginalScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
                 },
                 LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
                     Ref => { Value => { anyType => [ 234, 567 ] } },
                 },
@@ -224,6 +232,7 @@ sub GetServiceUnitsForObject {
                     OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
                 },
                 LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
                     Ref => { Value => { anyType => [ 345, 678 ] } },
                 },
@@ -239,6 +248,7 @@ sub GetServiceUnitsForObject {
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                 },
             }, {
@@ -248,6 +258,7 @@ sub GetServiceUnitsForObject {
                     OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
                 },
                 LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     Ref => { Value => { anyType => [ 456, 789 ] } },
                 },
