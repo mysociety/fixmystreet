@@ -47,19 +47,18 @@
           [% END %]
         </dd>
       </div>
+     [% IF unit.last %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Last collection</dt>
         <dd class="govuk-summary-list__value">
-          [% IF unit.last %]
             [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
+            [% IF unit.last.changed %](this collection has been adjusted from its usual time)[% END %]
             [% IF unit.last.state == 'In progress' %](in progress)[% END %]
             [% IF unit.last.completed %](completed at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%])[% END ~%]
             [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
-          [% ELSE %]
-            <i>None</i>
-          [% END %]
         </dd>
       </div>
+     [% END %]
     </dl>
 
     <p class="waste-panel-toggle hidden-nojs"><a data-toggle-visibility="#panel-[% unit.service_id %]" class="waste-service-name-link govuk-button govuk-button--secondary">[% unit.service_name %] services</a></p>
