@@ -1336,4 +1336,18 @@ The URL of the privacy policy to use on the report and update submissions forms.
 
 sub privacy_policy_url { '/privacy' }
 
+=item emergency_message
+
+Emergency message, if one has been set in the admin.
+
+=cut
+
+sub emergency_message {
+    my $self = shift;
+    if (!$self->can('body') || !$self->body) {
+        return;
+    }
+    $self->body->get_extra_metadata('emergency_message');
+}
+
 1;
