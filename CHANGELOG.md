@@ -21,6 +21,7 @@
         - Select matches for both filter category and group. #3110
         - Add an extra zoom level to most map types. #3130
         - Improve new report form when using phone verification. #3191
+        - Add option to set an emergency message on the homepage.
     - Changes:
         - Mark user as active when sent an email alert. #3045
     - Bugfixes:

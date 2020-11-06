@@ -1,0 +1,22 @@
+[% INCLUDE 'admin/header.html' title=loc('Emergency message') %]
+
+<p>[% loc('This emergency message will be shown on the homepage.') %]</p>
+
+<form method="post"
+    accept-charset="utf-8"
+    class="validate">
+
+    [% IF errors.emergency_message %]
+        <div class="form-error">[% errors.emergency_message %]</div>
+    [% END %]
+    <p>
+        <strong>[% loc('Emergency message:') %] </strong>
+        <textarea name="emergency_message" class="form-control" rows="20">[% emergency_message %]</textarea>
+    </p>
+    <p>
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+    <input type="submit" class="btn" value="[% emergency_message ? loc('Update message') : loc('Create message') %]" >
+    </p>
+</form>
+
+[% INCLUDE 'admin/footer.html' %]
