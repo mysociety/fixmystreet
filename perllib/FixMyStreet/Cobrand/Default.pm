@@ -734,6 +734,9 @@ sub admin_pages {
         $pages->{reportextrafields} = [ _('Extra Fields'), 10 ];
         $pages->{reportextrafields_edit} = [ undef, undef ];
     }
+    if ( $user->has_body_permission_to('emergency_message_edit') ) {
+        $pages->{emergencymessage} = [ _('Emergency message'), 12 ];
+    }
 
     return $pages;
 }
@@ -793,6 +796,7 @@ sub available_permissions {
             category_edit => _("Add/edit problem categories"),
             template_edit => _("Add/edit response templates"),
             responsepriority_edit => _("Add/edit response priorities"),
+            emergency_message_edit => _("Add/edit emergency message"),
         },
     };
 }
