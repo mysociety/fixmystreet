@@ -1,0 +1,2 @@
+This is a first line.
+This is a message from a file.

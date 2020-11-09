@@ -4,6 +4,20 @@ use strict;
 use warnings;
 require 5.8.0;
 
+=head DESCRIPTION
+
+This is for bulk closing reports, based either on age, or on a list of reports.
+
+If you pass `--reports` with a csv file of report IDs in the first column it will
+close all reports with that id. All reports before `--closure-cutoff` will have alerts
+suppressed.
+
+If you pass `--email-cutoff` and `--closure-cutoff` then all reports older than
+email-cutoff will be closed and an email sent to the user, and all reports older
+than closure-cutoff will be closed with no email.
+
+=cut
+
 BEGIN {
     use File::Basename qw(dirname);
     use File::Spec;
@@ -19,11 +33,16 @@ my ($opts, $usage) = describe_options(
     ['commit|c',     "actually close reports and send emails. Omitting this flag will do a dry-run"],
     ['body|b=s',     "which body ID to close reports for", { required => 1 } ],
     ['user|u=s',     "which user ID to assign closure updates to", { required => 1 } ],
-    ['cobrand=s',     "which cobrand template to use for sent emails", { required => 1 } ],
-    ['closure-cutoff=s',     "Anything before this will be closed with no email", { required => 1 } ],
-    ['email-cutoff=s',     "Anything before this will be closed with an email sent to the reporter", { required => 1 } ],
-    ['limit|l=s',     "limit to a certain number of reports/users to be closed"],
-    ['help|h',       "print usage message and exit" ],
+    ['cobrand=s',    "which cobrand template to use for sent emails" ],
+    [ "mode" => hidden => { one_of => [
+        ['email-cutoff=s',     "Anything before this will be closed with an email sent to the reporter" ],
+        ['reports=s',          "csv file with a single column of report ids" ],
+    ], required => 1 } ],
+    ['closure-cutoff=s',  "Anything before this will be closed with no email/alert", { required => 1 } ],
+    ['message=s',     "text file with the message to add to reports" ],
+    ['closed_state=s', "state to set reports to" ],
+    ['limit|l=s',      "limit to a certain number of reports/users to be closed"],
+    ['help|h',         "print usage message and exit" ],
 );
 print($usage->text), exit if $opts->help;
 

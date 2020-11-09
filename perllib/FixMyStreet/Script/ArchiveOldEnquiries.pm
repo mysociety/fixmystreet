@@ -2,6 +2,8 @@ package FixMyStreet::Script::ArchiveOldEnquiries;
 
 use v5.14;
 use warnings;
+use Text::CSV;
+use Path::Tiny;
 
 use FixMyStreet::DB;
 use FixMyStreet::Cobrand;
@@ -44,6 +46,68 @@ sub archive {
         printf "Re-run with --commit to actually archive reports.\n\n";
     }
 
+    if ( $opts->{reports} ) {
+        close_list()
+    } elsif ( $opts->{closure_cutoff} ) {
+        close_with_emails();
+    }
+}
+
+sub close_list {
+    my $reports = get_ids_from_csv();
+    my $max_reports = scalar @$reports;
+
+    my $rs  = FixMyStreet::DB->resultset("Problem")->search({
+        id => $reports,
+        state => [ FixMyStreet::DB::Result::Problem->open_states() ],
+    })->to_body( $opts->{body});
+
+    my $no_message = $rs->search({
+        lastupdate => { '>', $opts->{closure_cutoff} },
+    });
+
+    my $with_message = $rs->search({
+        lastupdate => { '<=', $opts->{closure_cutoff} },
+    });
+
+    die "Found more reports than expected\n" if $no_message->count + $with_message->count > $max_reports;
+
+    $opts->{retain_alerts} = 1;
+    printf("Closing %d reports, with alerts: ", $with_message->count);
+    close_problems($with_message);
+    printf "done\n";
+    $opts->{retain_alerts} = 0;
+    printf("Closing %d reports, without alerts: ", $no_message->count);
+    close_problems($no_message);
+    printf "done\n";
+}
+
+sub get_ids_from_csv {
+    my @report_ids;
+
+    my $csv = Text::CSV->new;
+    open my $fh, "<:encoding(utf-8)", $opts->{reports} or die "Failed to open $opts->{reports}: $!\n";
+    while (my $line = $csv->getline($fh)) {
+        push @report_ids, $line->[0] if $line->[0] =~ m/^\d+$/;
+    }
+
+    return \@report_ids;
+}
+
+sub get_closure_message {
+    return $opts->{closure_text} if $opts->{closure_text};
+
+    if ( $opts->{closure_file} ) {
+        my $file = path($opts->{closure_file});
+        chomp(my $message = $file->slurp_utf8);
+        return $message;
+
+    }
+}
+
+sub close_with_emails {
+    die "Please provide the name of an cobrand for the archive email template" unless $opts->{cobrand};
+    die "Please provide an email_cutoff option" unless $opts->{email_cutoff};
     my $rs = FixMyStreet::DB->resultset('Problem');
     my @user_ids = query($rs)->search(undef,
     {
@@ -152,7 +216,7 @@ sub close_problems {
         }
 
         my $comment = $problem->add_to_comments( {
-            text => $opts->{closure_text} || '',
+            text => get_closure_message() || '',
             user => FixMyStreet::DB->resultset("User")->find($opts->{user}),
             problem_state => $opts->{closed_state},
             extra => $extra,
