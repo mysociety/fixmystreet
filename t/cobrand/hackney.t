@@ -337,7 +337,10 @@ subtest 'Dashboard CSV extra columns' => sub {
                     }
                 } ]
             } ]
-        }
+        },
+        extra => {
+            detailed_information => "Some detailed information",
+        },
     });
 
     my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
@@ -349,8 +352,8 @@ subtest 'Dashboard CSV extra columns' => sub {
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
-    $mech->content_contains('"Reported As","Nearest address","Nearest postcode"');
-    $mech->content_contains('hackney,,"12 A Street, XX1 1SZ","XX1 1SZ"');
+    $mech->content_contains('"Reported As","Nearest address","Nearest postcode","Extra details"');
+    $mech->content_contains('hackney,,"12 A Street, XX1 1SZ","XX1 1SZ","Some detailed information"');
 };
 
 done_testing();
