@@ -589,7 +589,6 @@ subtest "Assign feedback pending (via confirmed), don't confirm email, no email 
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_contains( 'Unbestätigt' );
-    $report->discard_changes;
     $mech->form_with_fields( 'status_update' );
     $mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
 
@@ -599,6 +598,21 @@ subtest "Assign feedback pending (via confirmed), don't confirm email, no email 
     $mech->content_contains('FINAL UPDATE');
 
     $mech->email_count_is(0);
+    $report->discard_changes;
+    is $report->get_extra_metadata('admin_send_email_template'), 'problem-closed.txt', 'correct email marked for sending';
+};
+
+subtest "Confirming report sends admin email" => sub {
+    my $token = FixMyStreet::DB->resultset('Token')->create({ scope => 'problem', data => $report->id });
+    $mech->get_ok('/P/' . $token->token);
+    $report->discard_changes;
+    is $report->get_extra_metadata('admin_send_email_template'), undef, 'template no longer set';
+
+    $email = $mech->get_email;
+    like $email->header('To'), qr/test\@example.com/, 'to line looks correct';
+    like $email->header('From'), qr/do-not-reply\@example.org/, 'from line looks correct';
+    like $email->body, qr/FINAL UPDATE/, 'body looks correct';
+    $mech->clear_emails_ok;
 };
 
 # Report assigned to third party

@@ -1385,6 +1385,14 @@ sub process_confirmation : Private {
     # problem state, log in, or anything else
     if ($c->cobrand->moniker eq 'zurich') {
         $problem->set_extra_metadata( email_confirmed => 1 );
+
+        # This report may have been managed in the admin before being confirmed,
+        # so send any email that's been generated as a result of that.
+        if ( my $template = $problem->get_extra_metadata('admin_send_email_template') ) {
+            FixMyStreet::Cobrand::Zurich::_admin_send_email($c, $template, $problem);
+            $problem->unset_extra_metadata('admin_send_email_template');
+        }
+
         $problem->update( {
             confirmed => \'current_timestamp',
         } );

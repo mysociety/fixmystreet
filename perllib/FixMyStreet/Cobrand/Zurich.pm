@@ -1057,9 +1057,14 @@ Send an email to the B<user> who logged the problem, if their email address is c
 
 sub _admin_send_email {
     my ( $c, $template, $problem ) = @_;
-
-    return unless $problem->get_extra_metadata('email_confirmed');
     return if $problem->non_public;
+
+    unless ( $problem->get_extra_metadata('email_confirmed') ) {
+        # Make a note of what email was going to be sent, so it can be sent
+        # when the report is confirmed.
+        $problem->set_extra_metadata(admin_send_email_template => $template);
+        return;
+    }
 
     my $to = $problem->name
         ? [ $problem->user->email, $problem->name ]
