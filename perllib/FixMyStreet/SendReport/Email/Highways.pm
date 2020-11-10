@@ -12,8 +12,13 @@ sub build_recipient_list {
     my $contact = $self->fetch_category($body, $row) or return;
     my $email = $contact->email;
     my $area_name = $row->get_extra_field_value('area_name') || '';
+
+    # config is read-only, so must step through one-by-one to prevent
+    # vivification
     my $area_email = FixMyStreet->config('COBRAND_FEATURES') || {};
-    $area_email = $area_email->{open311_email}->{highwaysengland}->{$area_name};
+    $area_email = $area_email->{open311_email} || {};
+    $area_email = $area_email->{highwaysengland} || {};
+    $area_email = $area_email->{$area_name};
     $email = $area_email if $area_email;
 
     @{$self->to} = map { [ $_, $body->name ] } split /,/, $email;
