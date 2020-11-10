@@ -204,4 +204,30 @@ sub validate_contact_email {
     return 1 if is_valid_email_list(join(",", @emails));
 }
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        nearest_address => 'Nearest address',
+        nearest_address_postcode => 'Nearest postcode',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $address = '';
+        my $postcode = '';
+
+        if ( $report->geocode ) {
+            $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name};
+            $postcode = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{address}->{postalCode};
+        }
+
+        return {
+            nearest_address => $address,
+            nearest_address_postcode => $postcode,
+        };
+    });
+}
+
 1;

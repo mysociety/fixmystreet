@@ -322,4 +322,35 @@ subtest "can edit special destination email addresses" => sub {
     };
 };
 
+subtest 'Dashboard CSV extra columns' => sub {
+    my ($report) = $mech->create_problems_for_body(1, $hackney->id, 'A Hackney report', {
+        latitude => 51.552267,
+        longitude => -0.063316,
+        cobrand => 'hackney',
+        geocode => {
+            resourceSets => [ {
+                resources => [ {
+                    name => '12 A Street, XX1 1SZ',
+                    address => {
+                        addressLine => '12 A Street',
+                        postalCode => 'XX1 1SZ'
+                    }
+                } ]
+            } ]
+        }
+    });
+
+    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+        from_body => $hackney, password => 'password');
+    $mech->log_in_ok( $staffuser->email );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'hackney',
+    }, sub {
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('"Reported As","Nearest address","Nearest postcode"');
+    $mech->content_contains('hackney,,"12 A Street, XX1 1SZ","XX1 1SZ"');
+};
+
 done_testing();
