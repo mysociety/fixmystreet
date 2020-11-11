@@ -1,66 +1,76 @@
 ## Releases
 
 * Unreleased
+
+* v3.1 (16th November 2020)
     - Security:
-        - Store personal access tokens hashed, and only show once, upon generation.
+        - Store personal access tokens hashed, and only show once, upon generation. #3063
     - New features:
         - Add Open Location Codes support to search box. #3047
     - Front end improvements:
-        - Add lazy image loading on list items.
-        - Improve Bing geocoder results.
-        - Add option of checking passwords against Have I Been Pwned.
-        - Add aerial maps option to Bing and OSM maps.
+        - Add lazy image loading on list items. #3062
+        - Improve Bing geocoder results. #2300 #3086
+        - Add option of checking passwords against Have I Been Pwned. #3095
+        - Add aerial maps option to Bing and OSM maps. #3041 #3114
         - Select matches for both filter category and group. #3110
         - Add an extra zoom level to most map types. #3130
-        - Improve new report form when using phone verification.
+        - Improve new report form when using phone verification. #3191
     - Changes:
-        - Mark user as active when sent an email alert.
+        - Mark user as active when sent an email alert. #3045
     - Bugfixes:
         - Fix issue with dashboard report CSV export. #3026
         - bin/update-schema PostgreSQL 12 compatibility. #3043
-        - Make sure category shown in all its groups when reporting.
-        - Do not remove any devolved contacts.
-        - Fix double encoding of per-category templates.
+        - Make sure category shown in all its groups when reporting. #3029
+        - Do not remove any devolved contacts. #3053
+        - Fix double encoding of per-category templates. #3058
         - Return reports in all closed states through Open311.
-        - Skip accounts without email when sending inactive emails.
-        - Include file extensions in Dropzone accepted photo config.
-        - Fix photo orientation in modern browsers.
+        - Skip accounts without email when sending inactive emails. #3066
+        - Include file extensions in Dropzone accepted photo config. #3098
+        - Fix photo orientation in modern browsers. #3098
         - Improve compatibility with G Suite OpenID Connect authentication. #3032
-        - Fix duplicate asset message after dismissing duplicate suggestions.
+        - Fix duplicate asset message after dismissing duplicate suggestions. #3101
         - Improve moderation diff display in a few small ways. #3105
         - Do not have bootstrap run sudo commands. #2930
-        - Fix lookups in templates of categories with &s.
-        - Fix a few obscure asset layer changing issues.
-        - Fix multiple disable messages for dropdown answers
-        - Do not trigger duplicate check when checking stoppers
+        - Fix lookups in templates of categories with &s. #3120
+        - Fix a few obscure asset layer changing issues. #3157
+        - Fix multiple disable messages for dropdown answers. #3186
+        - Do not trigger duplicate check when checking stoppers #3194
         - Do not strip spaces from middle of Open311 category codes. #3167
-        - Show all category history even if category renamed.
-        - Fix email alert on initial update template.
-        - Do not cache the service worker
+        - Show all category history even if category renamed. #3181
+        - Fix email alert on initial update template. #3209
+        - Do not cache the service worker. #3201
     - Admin improvements:
+        - Interface for disabling updates/reopening for certain categories. #2991 #2992
+        - Include group in CSV export if enabled. #2994
+        - Disable category rename on Open311 categories when unprotected. #2957
+        - In category admin, group is already shown elsewhere.
+        - Add assigned_(users|categories)_only functionality.
+        - Inspectors can now include a photo with public updates. #2902
         - Display user name/email for contributed as reports. #2990
         - Interface for enabling anonymous reports for certain categories. #2989
-        - Better sort admin user table.
-        - Centralise update creation to include fields.
-        - Add full text index to speed up admin search.
-        - Offline process for CSV generation.
-        - Allow inspectors to change report asset.
+        - Better sort admin user table. #3107
+        - Centralise update creation to include fields. #3111 #3123
+        - Add full text index to speed up admin search. #3129 #3133
+        - Offline process for CSV generation. #3146
+        - Allow inspectors to change report asset. #3134 #3150
         - Staff users can use HTML tags in updates. #3143
         - Response templates can include HTML tags. #3143
-        - Record whether report made on desktop or mobile.
+        - Record whether report made on desktop or mobile. #3199
         - Do not display deleted priorities in inspect form. #3195
-        - Include extra fields in submit emails.
-        - can remove staff status from users in bulk
-        - super users can mark category names as hard coded
+        - Include extra fields in submit emails. #3215
+        - can remove staff status from users in bulk. #3221
+        - super users can mark category names as hard coded. #3227
     - Development improvements:
         - `#geolocate_link` is now easier to re-style. #3006
         - Links inside `#front-main` can be customised using `$primary_link_*` Sass variables. #3007
         - Add option to show front end testing code coverage. #3036
         - Add function to fetch user's country from Gaze.
-        - Add cobrand hook to specify custom domain for VERP emails.
+        - Add cobrand hook to specify custom domain for VERP emails. #3100
     - Open311 improvements:
-        - Use devolved data on update sending.
-        - Rewrite open311-update-reports to share code and improve functionality.
+        - Use devolved data on update sending. #3087
+        - Rewrite open311-update-reports to share code and improve functionality. #3092
+    - Internal things:
+        - Move from Travis to GitHub Actions. #3244
     - UK:
         - Add option for recaptcha. #3050
         - Display search tips when location search returns no results. #3180
@@ -75,12 +85,6 @@
         - Move stats from main admin index to stats index. #2982
         - Speed up dashboard export and report search. #2988
         - Allow a template to be an initial update on reports. #2973
-        - Interface for disabling updates/reopening for certain categories. #2991 #2992
-        - Include group in CSV export if enabled. #2994
-        - Disable category rename on Open311 categories when unprotected. #2957
-        - In category admin, group is already shown elsewhere.
-        - Add assigned_(users|categories)_only functionality.
-        - Inspectors can now include a photo with public updates. #2902
     - Bugfixes:
         - Application user in Docker container can't install packages. #2914
         - Look at all categories when sending reports.
