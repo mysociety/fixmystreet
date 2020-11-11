@@ -61,9 +61,7 @@
      [% END %]
     </dl>
 
-    <p class="waste-panel-toggle hidden-nojs"><a data-toggle-visibility="#panel-[% unit.service_id %]" class="waste-service-name-link govuk-button govuk-button--secondary">[% unit.service_name %] services</a></p>
-
-    <div class="waste-services-launch-panel hidden-js" id="panel-[% unit.service_id %]">
+    <div class="waste-services-launch-panel" id="panel-[% unit.service_id %]">
         [% PROCESS waste/services.html %]
     </div>
   </div>
