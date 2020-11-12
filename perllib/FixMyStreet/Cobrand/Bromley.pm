@@ -7,6 +7,7 @@ use utf8;
 use DateTime::Format::W3CDTF;
 use DateTime::Format::Flexible;
 use Integrations::Echo;
+use Parallel::ForkManager;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use Try::Tiny;
 use FixMyStreet::DateRange;
@@ -438,8 +439,6 @@ sub look_up_property {
     my $id = shift;
 
     my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-
     if ($cfg->{max_per_day}) {
         my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
         my $ip = $self->{c}->req->address;
@@ -448,7 +447,15 @@ sub look_up_property {
         $self->{c}->detach('/page_error_403_access_denied', []) if $count > $cfg->{max_per_day};
     }
 
-    my $result = $echo->GetPointAddress($id);
+    my $calls = $self->_parallel_api_calls(
+        GetPointAddress => [ $id ],
+        GetServiceUnitsForObject => [ $id ],
+        GetEventsForObject => [ 'PointAddress', $id ],
+    );
+
+    $self->{api_serviceunits} = $calls->{"GetServiceUnitsForObject $id"};
+    $self->{api_events} = $calls->{"GetEventsForObject PointAddress $id"};
+    my $result = $calls->{"GetPointAddress $id"};
     return {
         id => $result->{Id},
         uprn => $result->{SharedRef}{Value}{anyType},
@@ -536,12 +543,10 @@ sub bin_services_for_address {
         544 => 4,
     );
 
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
-    my $result = $echo->GetServiceUnitsForObject($property->{id});
+    my $result = $self->{api_serviceunits};
     return [] unless @$result;
 
-    my $events = $echo->GetEventsForObject('PointAddress', $property->{id});
+    my $events = $self->{api_events};
     my $open = $self->_parse_open_events($events);
 
     my @out;
@@ -924,6 +929,32 @@ sub admin_templates_external_status_code_hook {
     my $task_state = $c->get_param('task_state') || '';
 
     return "$res_code,$task_type,$task_state";
+}
+
+sub _parallel_api_calls {
+    my $self = shift;
+    my $echo = $self->feature('echo');
+    $echo = Integrations::Echo->new(%$echo);
+
+    my %calls;
+    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode ? 0 : 10);
+    $pm->run_on_finish(sub {
+        my ($pid, $exit_code, $ident, $exit_signal, $core_dump, $data) = @_;
+        %calls = ( %calls, %$data );
+    });
+
+    while (@_) {
+        my $call = shift;
+        my $args = shift;
+        $pm->start and next;
+        my $result = $echo->$call(@$args);
+        my $key = "$call @$args";
+        $key = $call if $call eq 'GetTasks';
+        $pm->finish(0, { $key => $result });
+    }
+    $pm->wait_all_children;
+
+    return \%calls;
 }
 
 1;
