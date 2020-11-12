@@ -6,9 +6,12 @@ use warnings;
 use utf8;
 use DateTime::Format::W3CDTF;
 use DateTime::Format::Flexible;
+use File::Temp;
 use Integrations::Echo;
+use JSON::MaybeXS;
 use Parallel::ForkManager;
 use Sort::Key::Natural qw(natkeysort_inplace);
+use Storable;
 use Try::Tiny;
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
@@ -447,7 +450,7 @@ sub look_up_property {
         $self->{c}->detach('/page_error_403_access_denied', []) if $count > $cfg->{max_per_day};
     }
 
-    my $calls = $self->_parallel_api_calls(
+    my $calls = $self->call_api(
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
         GetEventsForObject => [ 'PointAddress', $id ],
@@ -565,7 +568,7 @@ sub bin_services_for_address {
     }
     push @to_fetch, GetTasks => \@task_refs if @task_refs;
 
-    my $calls = $self->_parallel_api_calls(@to_fetch);
+    my $calls = $self->call_api(@to_fetch);
 
     my @out;
     my %task_ref_to_row;
@@ -944,6 +947,28 @@ sub admin_templates_external_status_code_hook {
     my $task_state = $c->get_param('task_state') || '';
 
     return "$res_code,$task_type,$task_state";
+}
+
+sub call_api {
+    my $self = shift;
+
+    my $tmp = File::Temp->new;
+    my @cmd = (
+        FixMyStreet->path_to('bin/fixmystreet.com/bromley-echo'),
+        '--out', $tmp,
+        '--calls', encode_json(\@_),
+    );
+
+    # We cannot fork directly under mod_fcgid, so
+    # call an external script that calls back in.
+    my $data;
+    if (FixMyStreet->test_mode) {
+        $data = $self->_parallel_api_calls(@_);
+    } else {
+        system(@cmd);
+        $data = Storable::fd_retrieve($tmp);
+    }
+    return $data;
 }
 
 sub _parallel_api_calls {
