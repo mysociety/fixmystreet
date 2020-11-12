@@ -697,6 +697,7 @@ sub _parse_open_events {
 
 sub _parse_schedules {
     my $servicetask = shift;
+    return unless $servicetask->{ServiceTaskSchedules};
     my $schedules = $servicetask->{ServiceTaskSchedules}{ServiceTaskSchedule};
     $schedules = [ $schedules ] unless ref $schedules eq 'ARRAY';
 
