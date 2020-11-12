@@ -270,7 +270,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'test open enquiries' => sub {
         set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Mixed Recycling.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 20th May\s+\(this collection has been adjusted/s);
         $mech->follow_link_ok({ text => 'Report a problem with a food waste collection' });
         $mech->content_contains('Waste spillage');
@@ -280,7 +280,7 @@ FixMyStreet::override_config {
 
     subtest 'test crew reported issue' => sub {
         set_fixed_time('2020-05-21T12:00:00Z'); # After sample container mix
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Mixed Recycling.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 20th May\s+\(this collection has been adjusted/s);
         $mech->content_contains('A missed collection cannot be reported, please see the last collection status above.');
         $mech->content_lacks('Report a mixed recycling ');
@@ -289,14 +289,14 @@ FixMyStreet::override_config {
 
     subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-27T11:00:00Z');
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
         $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(in progress\)/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
         $mech->content_lacks('Waste spillage');
 
         set_fixed_time('2020-05-27T19:00:00Z');
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
         $mech->content_like(qr/Paper &amp; Cardboard.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s*<\/dd>/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
@@ -317,19 +317,19 @@ FixMyStreet::override_config {
     };
 
     subtest 'test reporting before/after completion' => sub {
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_contains('(completed at 10:00am)');
         $mech->content_contains('We could not collect your waste as it was not correctly presented.');
         $mech->content_lacks('Report a paper &amp; cardboard collection');
         $mech->content_contains('Report a refuse collection');
         set_fixed_time('2020-05-28T12:00:00Z');
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a refuse collection');
         set_fixed_time('2020-05-29T12:00:00Z');
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a refuse collection');
         set_fixed_time('2020-05-30T12:00:00Z');
-        $mech->get_ok('/waste/uprn/12345');
+        $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a refuse collection');
         restore_time();
     };
@@ -346,8 +346,8 @@ subtest 'test waste max-per-day' => sub {
         SKIP: {
             skip( "No memcached", 2 ) unless Memcached::increment('bromley-test');
             Memcached::delete("bromley-test");
-            $mech->get_ok('/waste/uprn/12345');
-            $mech->get('/waste/uprn/12345');
+            $mech->get_ok('/waste/12345');
+            $mech->get('/waste/12345');
             is $mech->res->code, 403, 'Now forbidden';
         }
     };

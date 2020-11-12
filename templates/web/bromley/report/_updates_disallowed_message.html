@@ -1,8 +1,8 @@
 [% IF c.cobrand.updates_disallowed(problem) == 'waste';
-    SET uprn = problem.get_extra_field_value('uprn');
+    SET property_id = problem.get_extra_field_value('property_id');
 %]
 <p>
-   <a href="/waste[% IF uprn %]/uprn/[% uprn %][% END %]">See your bin collections</a>.
+   <a href="/waste[% IF property_id %]/[% property_id %][% END %]">See your bin collections</a>.
 </p>
 
 <div class="bromley-waste-credits">

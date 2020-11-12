@@ -80,7 +80,7 @@
         <div class="aside-download">
           <h3>Download your collection schedule</h3>
           <ul>
-            <li><a href="[% c.uri_for_action('waste/calendar', [ uprn ]) %]">Add to your calendar (.ics file)</a></li>
+            <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar (.ics file)</a></li>
           </ul>
         </div>
        [% IF any_report_allowed OR any_request_allowed %]
@@ -88,10 +88,10 @@
           <h3>More services</h3>
           <ul>
             [% IF any_report_allowed %]
-              <li><a href="[% c.uri_for_action('waste/report', [ uprn ]) %]">Report a missed collection</a></li>
+              <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
             [% END %]
             [% IF any_request_allowed %]
-              <li><a href="[% c.uri_for_action('waste/request', [ uprn ]) %]">Request a new container</a></li>
+              <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
             [% END %]
           </ul>
         </div>

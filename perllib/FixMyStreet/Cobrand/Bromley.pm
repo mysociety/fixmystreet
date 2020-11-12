@@ -426,7 +426,7 @@ sub bin_addresses_for_postcode {
     $echo = Integrations::Echo->new(%$echo);
     my $points = $echo->FindPoints($pc);
     my $data = [ map { {
-        value => $_->{SharedRef}{Value}{anyType},
+        value => $_->{Id},
         label => FixMyStreet::Template::title($_->{Description}),
     } } @$points ];
     natkeysort_inplace { $_->{label} } @$data;
@@ -435,7 +435,7 @@ sub bin_addresses_for_postcode {
 
 sub look_up_property {
     my $self = shift;
-    my $uprn = shift;
+    my $id = shift;
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
@@ -448,10 +448,10 @@ sub look_up_property {
         $self->{c}->detach('/page_error_403_access_denied', []) if $count > $cfg->{max_per_day};
     }
 
-    my $result = $echo->GetPointAddress($uprn);
+    my $result = $echo->GetPointAddress($id);
     return {
         id => $result->{Id},
-        uprn => $uprn,
+        uprn => $result->{SharedRef}{Value}{anyType},
         address => FixMyStreet::Template::title($result->{Description}),
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
@@ -538,7 +538,7 @@ sub bin_services_for_address {
 
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
-    my $result = $echo->GetServiceUnitsForObject($property->{uprn});
+    my $result = $echo->GetServiceUnitsForObject($property->{id});
     return [] unless @$result;
 
     my $events = $echo->GetEventsForObject('PointAddress', $property->{id});
@@ -591,7 +591,8 @@ sub bin_services_for_address {
             my $state = $_->{State}{Name} || '';
             my $task_type_id = $_->{TaskTypeId} || '';
 
-            my $resolution = $_->{Resolution}{Name} || '';
+            my $orig_resolution = $_->{Resolution}{Name} || '';
+            my $resolution = $orig_resolution;
             my $resolution_id = $_->{Resolution}{Ref}{Value}{anyType};
             if ($resolution_id) {
                 my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
@@ -627,7 +628,7 @@ sub bin_services_for_address {
             }
 
             # If the task is ended and could not be done, do not allow reporting
-            if ($state eq 'Not Completed' || ($state eq 'Completed' && $_->{Resolution}{Name} eq 'Excess Waste')) {
+            if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution eq 'Excess Waste')) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = 1;
             }

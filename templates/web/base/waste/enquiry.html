@@ -15,7 +15,7 @@
     <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
 </dl>
 
-<form method="get" action="[% c.uri_for_action('waste/enquiry', [ uprn ]) %]">
+<form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
     <div class="govuk-form-group">
     [% PROCESS radio field = {
       id = 'category',

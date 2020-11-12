@@ -25,6 +25,7 @@ sub create_contact {
     $contact->set_extra_metadata(group => ['Waste']);
     $contact->set_extra_fields(
         { code => 'uprn', required => 1, automated => 'hidden_field' },
+        { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,
     );
@@ -55,7 +56,7 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-28T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
-        $mech->submit_form_ok({ with_fields => { address => '1000000002' } });
+        $mech->submit_form_ok({ with_fields => { address => '12345' } });
         $mech->content_contains('2 Example Street');
         $mech->content_contains('Food Waste');
     };
@@ -108,7 +109,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks('Provide an update');
-        $mech->content_contains( '<a href="/waste/uprn/1000000002">See your bin collections</a>' );
+        $mech->content_contains( '<a href="/waste/12345">See your bin collections</a>' );
 
         $mech->host('www.fixmystreet.com');
         $res = $mech->get('/report/' . $report->id);
@@ -122,7 +123,7 @@ FixMyStreet::override_config {
         $mech->host('bromley.fixmystreet.com');
     };
     subtest 'Request a new container' => sub {
-        $mech->get_ok('/waste/uprn/1000000002/request');
+        $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ form_number => 2 });
         $mech->content_contains('Please specify what you need');
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
@@ -140,16 +141,16 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Type'), 1;
     };
     subtest 'Thing already requested' => sub {
-        $mech->get_ok('/waste/uprn/1000000002');
+        $mech->get_ok('/waste/12345');
         $mech->content_contains('A new paper &amp; cardboard container request has been made');
     };
     subtest 'General enquiry, bad data' => sub {
-        $mech->get_ok('/waste/uprn/1000000002/enquiry');
-        is $mech->uri->path, '/waste/uprn/1000000002';
-        $mech->get_ok('/waste/uprn/1000000002/enquiry?category=Bad');
-        is $mech->uri->path, '/waste/uprn/1000000002';
-        $mech->get_ok('/waste/uprn/1000000002/enquiry?service=1');
-        is $mech->uri->path, '/waste/uprn/1000000002';
+        $mech->get_ok('/waste/12345/enquiry');
+        is $mech->uri->path, '/waste/12345';
+        $mech->get_ok('/waste/12345/enquiry?category=Bad');
+        is $mech->uri->path, '/waste/12345';
+        $mech->get_ok('/waste/12345/enquiry?service=1');
+        is $mech->uri->path, '/waste/12345';
     };
     subtest 'Checking calendar' => sub {
         $mech->follow_link_ok({ text => 'Add to your calendar (.ics file)' });
@@ -165,7 +166,7 @@ FixMyStreet::override_config {
     };
     subtest 'General enquiry, on behalf of someone else' => sub {
         $mech->log_in_ok($staff_user->email);
-        $mech->get_ok('/waste/uprn/1000000002/enquiry?category=General+enquiry&service_id=537');
+        $mech->get_ok('/waste/12345/enquiry?category=General+enquiry&service_id=537');
         $mech->submit_form_ok({ with_fields => { extra_Notes => 'Some notes' } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
         $mech->content_contains('Some notes');
@@ -195,8 +196,8 @@ FixMyStreet::override_config {
         $integ->mock(call => sub {
             return SOAP::Result->new(result => {
                 PointInfo => [
-                    { Description => '1 Example Street', SharedRef => { Value => { anyType => 1000000001 } } },
-                    { Description => '2 Example Street', SharedRef => { Value => { anyType => 1000000002 } } },
+                    { Description => '1 Example Street', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
+                    { Description => '2 Example Street', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
                 ],
             });
         });

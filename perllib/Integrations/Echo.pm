@@ -129,14 +129,14 @@ sub GetTasks {
     return force_arrayref($res, 'Task');
 }
 
-sub _uprn_ref {
+sub _id_ref {
     require SOAP::Lite;
-    my $uprn = shift;
+    my $id = shift;
     tie(my %obj, 'Tie::IxHash',
-        Key => 'Uprn',
+        Key => 'Id',
         Type => 'PointAddress',
         Value => [
-            { 'msArray:anyType' => SOAP::Data->value($uprn)->type('string') },
+            { 'msArray:anyType' => SOAP::Data->value($id) },
         ],
     );
     return \%obj;
@@ -144,10 +144,11 @@ sub _uprn_ref {
 
 sub GetPointAddress {
     my $self = shift;
-    my $uprn = shift;
-    my $obj = _uprn_ref($uprn);
+    my $id = shift;
+    my $obj = _id_ref($id);
     return {
         Id => '12345',
+        SharedRef => { Value => { anyType => '1000000002' } },
         PointType => 'PointAddress',
         PointAddressType => { Name => 'House' },
         Coordinates => { GeoPoint => { Latitude => 51.401546, Longitude => 0.015415 } },
@@ -165,11 +166,11 @@ sub FindPoints {
         Postcode => $pc,
     );
     return [
-        { Description => '1 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000001 } } },
-        { Description => '2 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000002 } } },
-        { Description => '3 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000003 } } },
-        { Description => '4 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000004 } } },
-        { Description => '5 Example Street, Bromley, BR1 1AA', SharedRef => { Value => { anyType => 1000000005 } } },
+        { Description => '1 Example Street, Bromley, BR1 1AA', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
+        { Description => '2 Example Street, Bromley, BR1 1AA', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
+        { Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => 1000000003 } } },
+        { Description => '4 Example Street, Bromley, BR1 1AA', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
+        { Description => '5 Example Street, Bromley, BR1 1AA', Id => '15345', SharedRef => { Value => { anyType => 1000000005 } } },
     ] if $self->sample_data;
     my $res = $self->call('FindPoints', query => \%obj);
     return force_arrayref($res, 'PointInfo');
@@ -177,8 +178,8 @@ sub FindPoints {
 
 sub GetServiceUnitsForObject {
     my $self = shift;
-    my $uprn = shift;
-    my $obj = _uprn_ref($uprn);
+    my $id = shift;
+    my $obj = _id_ref($id);
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     return [ {
         Id => 1001,

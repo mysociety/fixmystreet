@@ -23,8 +23,8 @@ sub auto : Private {
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    if (my $uprn = $c->get_param('address')) {
-        $c->detach('redirect_to_uprn', [ $uprn ]);
+    if (my $id = $c->get_param('address')) {
+        $c->detach('redirect_to_id', [ $id ]);
     }
 
     $c->stash->{title} = 'What is your address?';
@@ -58,9 +58,9 @@ sub address_list_form {
     );
 }
 
-sub redirect_to_uprn : Private {
-    my ($self, $c, $uprn) = @_;
-    my $uri = '/waste/uprn/' . $uprn;
+sub redirect_to_id : Private {
+    my ($self, $c, $id) = @_;
+    my $uri = '/waste/' . $id;
     my $type = $c->get_param('type') || '';
     $uri .= '/request' if $type eq 'request';
     $uri .= '/report' if $type eq 'report';
@@ -68,20 +68,19 @@ sub redirect_to_uprn : Private {
     $c->detach;
 }
 
-sub uprn : Chained('/') : PathPart('waste/uprn') : CaptureArgs(1) {
-    my ($self, $c, $uprn) = @_;
+sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
+    my ($self, $c, $id) = @_;
 
-    if ($uprn eq 'missing') {
+    if ($id eq 'missing') {
         $c->stash->{template} = 'waste/missing.html';
         $c->detach;
     }
 
     $c->forward('/auth/get_csrf_token');
 
-    my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $uprn);
+    my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
     $c->detach( '/page_error_404_not_found', [] ) unless $property;
 
-    $c->stash->{uprn} = $uprn;
     $c->stash->{latitude} = $property->{latitude};
     $c->stash->{longitude} = $property->{longitude};
 
@@ -89,11 +88,11 @@ sub uprn : Chained('/') : PathPart('waste/uprn') : CaptureArgs(1) {
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
 }
 
-sub bin_days : Chained('uprn') : PathPart('') : Args(0) {
+sub bin_days : Chained('property') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
 }
 
-sub calendar : Chained('uprn') : PathPart('calendar.ics') : Args(0) {
+sub calendar : Chained('property') : PathPart('calendar.ics') : Args(0) {
     my ($self, $c) = @_;
     $c->res->header(Content_Type => 'text/calendar');
     require Data::ICal::RFC7986;
@@ -110,8 +109,8 @@ sub calendar : Chained('uprn') : PathPart('calendar.ics') : Args(0) {
         'x-published-ttl' => 'P1D',
         calscale => 'GREGORIAN',
         'x-wr-timezone' => 'Europe/London',
-        source => [ $c->uri_for_action($c->action, [ $c->stash->{uprn} ]), { value => 'URI' } ],
-        url => $c->uri_for_action('waste/bin_days', [ $c->stash->{uprn} ]),
+        source => [ $c->uri_for_action($c->action, [ $c->stash->{property}{id} ]), { value => 'URI' } ],
+        url => $c->uri_for_action('waste/bin_days', [ $c->stash->{property}{id} ]),
     );
 
     my $events = $c->cobrand->bin_future_collections;
@@ -175,7 +174,7 @@ sub construct_bin_request_form {
     return $field_list;
 }
 
-sub request : Chained('uprn') : Args(0) {
+sub request : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
     my $field_list = construct_bin_request_form($c);
@@ -231,7 +230,7 @@ sub construct_bin_report_form {
     return $field_list;
 }
 
-sub report : Chained('uprn') : Args(0) {
+sub report : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
     my $field_list = construct_bin_report_form($c);
@@ -266,7 +265,7 @@ sub process_report_data : Private {
     return 1;
 }
 
-sub enquiry : Chained('uprn') : Args(0) {
+sub enquiry : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
     if (my $template = $c->get_param('template')) {
@@ -279,18 +278,18 @@ sub enquiry : Chained('uprn') : Args(0) {
     my $category = $c->get_param('category');
     my $service = $c->get_param('service_id');
     if (!$category || !$service || !$c->stash->{services}{$service}) {
-        $c->res->redirect('/waste/uprn/' . $c->stash->{uprn});
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
     if (!$contact) {
-        $c->res->redirect('/waste/uprn/' . $c->stash->{uprn});
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
 
     my $field_list = [];
     foreach (@{$contact->get_metadata_for_input}) {
-        next if $_->{code} eq 'service_id' || $_->{code} eq 'uprn';
+        next if $_->{code} eq 'service_id' || $_->{code} eq 'uprn' || $_->{code} eq 'property_id';
         my $type = 'Text';
         $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
         my $required = $_->{required} eq 'true' ? 1 : 0;
@@ -421,7 +420,8 @@ sub add_report : Private {
     $c->set_param('category', $data->{category});
     $c->set_param('title', $data->{title});
     $c->set_param('detail', $data->{detail});
-    $c->set_param('uprn', $c->stash->{uprn});
+    $c->set_param('uprn', $c->stash->{property}{uprn});
+    $c->set_param('property_id', $c->stash->{property}{id});
 
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
