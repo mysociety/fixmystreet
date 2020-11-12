@@ -549,8 +549,9 @@ sub bin_services_for_address {
     my $events = $self->{api_events};
     my $open = $self->_parse_open_events($events);
 
-    my @out;
-    my %task_ref_to_row;
+    my @to_fetch;
+    my %schedules;
+    my @task_refs;
     foreach (@$result) {
         next unless $_->{ServiceTasks};
 
@@ -558,8 +559,22 @@ sub bin_services_for_address {
         my $schedules = _parse_schedules($servicetask);
 
         next unless $schedules->{next} or $schedules->{last};
+        $schedules{$_->{Id}} = $schedules;
+        push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
+        push @task_refs, $schedules->{last}{ref} if $schedules->{last};
+    }
+    push @to_fetch, GetTasks => \@task_refs if @task_refs;
 
-        my $events = $echo->GetEventsForObject('ServiceUnit', $_->{Id});
+    my $calls = $self->_parallel_api_calls(@to_fetch);
+
+    my @out;
+    my %task_ref_to_row;
+    foreach (@$result) {
+        next unless $schedules{$_->{Id}};
+        my $schedules = $schedules{$_->{Id}};
+        my $servicetask = $_->{ServiceTasks}{ServiceTask};
+
+        my $events = $calls->{"GetEventsForObject ServiceUnit $_->{Id}"};
         my $open_unit = $self->_parse_open_events($events);
 
         my $containers = $service_to_containers{$_->{ServiceId}};
@@ -588,7 +603,7 @@ sub bin_services_for_address {
         push @out, $row;
     }
     if (%task_ref_to_row) {
-        my $tasks = $echo->GetTasks(map { $_->{last}{ref} } values %task_ref_to_row);
+        my $tasks = $calls->{GetTasks};
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
         foreach (@$tasks) {
             my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
