@@ -8,6 +8,7 @@ use Scalar::Util 'openhandle', 'blessed';
 use Image::Size;
 use IPC::Cmd qw(can_run);
 use IPC::Open3;
+use Try::Tiny;
 
 use FixMyStreet;
 use FixMyStreet::ImageMagick;
@@ -149,7 +150,9 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 }
 
                 # we have an image we can use - save it to storage
-                $photo_blob = FixMyStreet::ImageMagick->new(blob => $photo_blob)->shrink('2048x2048')->as_blob;
+                $photo_blob = try {
+                    FixMyStreet::ImageMagick->new(blob => $photo_blob)->shrink('2048x2048')->as_blob;
+                } catch { $photo_blob };
                 return $self->storage->store_photo($photo_blob);
             }
 
@@ -201,18 +204,20 @@ sub get_image_data {
     }
 
     my $im = FixMyStreet::ImageMagick->new(blob => $image->{data});
-    my $photo;
-    if ( $size eq 'tn' ) {
-        $photo = $im->shrink('x100');
-    } elsif ( $size eq 'fp' ) {
-        $photo = $im->crop;
-    } elsif ( $size eq 'og' ) {
-        $photo = $im->crop('1200x630');
-    } elsif ( $size eq 'full' ) {
-        $photo = $im
-    } else {
-        $photo = $im->shrink($args{default} || '250x250');
-    }
+    my $photo = try {
+        if ( $size eq 'tn' ) {
+            $im->shrink('x100');
+        } elsif ( $size eq 'fp' ) {
+            $im->crop;
+        } elsif ( $size eq 'og' ) {
+            $im->crop('1200x630');
+        } elsif ( $size eq 'full' ) {
+            $im
+        } else {
+            $im->shrink($args{default} || '250x250');
+        }
+    };
+    return unless $photo;
 
     return {
         data => $photo->as_blob,

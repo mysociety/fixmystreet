@@ -1,0 +1,46 @@
+name: Cypress
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Run Cypress tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Setup node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 8.x
+
+    - name: Setup cache (carton)
+      uses: actions/cache@v2
+      with:
+        path: local
+        key: ${{ runner.os }}-carton-${{ hashFiles('cpanfile.snapshot') }}
+
+    - name: Setup cache (cypress)
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: ${{ runner.os }}-node-8-cypress-3.8.3
+
+    - name: Install packages
+      run: |
+        sudo apt install -y gettext
+        npm install cypress@3.8.3
+        vendor/bin/carton install --deployment
+        commonlib/bin/gettext-makemo FixMyStreet
+        echo "$(npm bin)" >> $GITHUB_PATH
+
+    - name: Run Cypress tests
+      run: |
+        bin/browser-tests run ${CYPRESS_RECORD_KEY:+--record}
+      env:
+        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

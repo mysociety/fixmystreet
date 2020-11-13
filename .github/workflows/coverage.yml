@@ -1,0 +1,62 @@
+name: Coverage
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Run coverage tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [ 1, 2, 3 ]
+
+    env:
+      PERL5LIB: local-coverage/lib/perl5
+      HARNESS_PERL_SWITCHES: "-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,Test.pm,^t"
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: niden/actions-memcached@v7
+
+    - name: Setup cache (carton)
+      uses: actions/cache@v2
+      with:
+        path: local
+        key: ${{ runner.os }}-carton-${{ hashFiles('cpanfile.snapshot') }}
+
+    - name: Setup cache (coverage)
+      uses: actions/cache@v2
+      with:
+        path: local-coverage
+        key: ${{ runner.os }}-coverage
+
+    - name: Install packages
+      run: |
+        sudo apt install -y gettext language-pack-en language-pack-de language-pack-sv libimage-magick-perl
+        vendor/bin/carton install --deployment
+        commonlib/bin/gettext-makemo FixMyStreet
+        bin/cpanm --quiet --notest -l local-coverage Devel::Cover::Report::Codecov JSON::MaybeXS
+
+    - name: Run tests (with coverage, part 1)
+      if: matrix.part == 1
+      run: script/test --jobs 3 $(find t/app/controller -name "[a-q]*.t")
+
+    - name: Run tests (with coverage, part 2)
+      if: matrix.part == 2
+      run: script/test --jobs 3 $(find t/app/controller -name "[r-z]*.t")
+
+    - name: Run tests (with coverage, part 3)
+      if: matrix.part == 3
+      run: script/test --jobs 3 $(find t -name "*.t" ! -path "t/app/controller*")
+
+    - name: Generate coverage report
+      if: success()
+      run: local-coverage/bin/cover --report codecov
+      env:
+        PERL5LIB: 'local-coverage/lib/perl5:perllib'
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

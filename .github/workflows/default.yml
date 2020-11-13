@@ -1,0 +1,49 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test on perl ${{ matrix.perl_version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # stretch, buster, focal/bullseye, xenial, trusty
+        # bionic 5.26 is ubuntu-latest, in coverage run
+        perl_version: [ 5.24.4, 5.28.3, 5.30.3, 5.22.4, 5.18.4 ]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Setup cache (carton)
+      uses: actions/cache@v2
+      with:
+        path: local
+        key: ${{ runner.os }}-perl-${{ matrix.perl_version }}-carton-${{ hashFiles('cpanfile.snapshot') }}
+
+    - name: Setup cache (perl)
+      id: cache-perl
+      uses: actions/cache@v2
+      with:
+        path: ~/perl5
+        key: ${{ runner.os }}-perl-${{ matrix.perl_version }}
+
+    - name: Install correct perl
+      if: steps.cache-perl.outputs.cache-hit != 'true'
+      run: |
+          wget -qO - https://install.perlbrew.pl | bash
+          ~/perl5/perlbrew/bin/perlbrew install --notest ${{ matrix.perl_version }}
+          ~/perl5/perlbrew/bin/perlbrew clean
+
+    - name: Add packages
+      run: |
+        sudo apt install -y gettext language-pack-en language-pack-de language-pack-sv libimage-magick-perl
+        ~/perl5/perlbrew/bin/perlbrew exec vendor/bin/carton install --deployment
+        commonlib/bin/gettext-makemo FixMyStreet
+
+    - name: Run tests
+      run: ~/perl5/perlbrew/bin/perlbrew exec script/test --jobs 3 t

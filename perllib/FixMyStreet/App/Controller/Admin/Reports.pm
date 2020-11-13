@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use utf8;
 use List::MoreUtils 'uniq';
 use FixMyStreet::SMS;
 use Utils;

@@ -64,7 +64,7 @@ sub shrink {
     my ($self, $size) = @_;
     return $self unless $self->image;
     my $err = $self->image->Scale(geometry => "$size>");
-    throw Error::Simple("resize failed: $err") if "$err";
+    die "resize failed: $err" if "$err";
     $self->_set_width_and_height();
     return $self->strip;
 }
@@ -76,9 +76,9 @@ sub crop {
     $size //= '90x60';
     return $self unless $self->image;
     my $err = $self->image->Resize( geometry => "$size^" );
-    throw Error::Simple("resize failed: $err") if "$err";
+    die "resize failed: $err" if "$err";
     $err = $self->image->Extent( geometry => $size, gravity => 'Center' );
-    throw Error::Simple("resize failed: $err") if "$err";
+    die "resize failed: $err" if "$err";
     $self->_set_width_and_height();
     return $self->strip;
 }
