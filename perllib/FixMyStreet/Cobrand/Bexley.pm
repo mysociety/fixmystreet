@@ -43,6 +43,23 @@ sub category_change_force_resend {
     return ($old =~ /^StreetLighting/ xor $new =~ /^StreetLighting/);
 }
 
+sub munge_report_new_category_list {
+    my ($self, $options, $contacts, $extras) = @_;
+
+    my $c = $self->{c};
+
+    if ( $c->user && $c->user->from_body && $c->user->from_body->id == $self->body->id && $self->feature('staff_url') ) {
+        for my $category ( keys %{ $self->feature('staff_url') } ) {
+            my $urls = $self->feature('staff_url')->{$category};
+            for my $extra ( @{ $extras->{$category} } ) {
+                if ($extra->{code} eq $urls->[0]) {
+                    $extra->{description} =~ s#$urls->[1]#$urls->[2]#s;
+                }
+            }
+        }
+    }
+}
+
 sub on_map_default_status { 'open' }
 
 sub open311_munge_update_params {

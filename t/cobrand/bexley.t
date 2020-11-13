@@ -40,11 +40,21 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Gulley covers', emai
 $mech->create_contact_ok(body_id => $body->id, category => 'Damaged road', email => "ROAD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flooding in the road', email => "ConfirmFLOD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "UniformFLY");
-$mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
+my $da = $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
 $mech->create_contact_ok(body_id => $body->id, category => 'Street cleaning and litter', email => "STREET");
 my $category = $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
 $category->set_extra_metadata(group => 'Danger things');
 $category->update;
+
+$da->set_extra_fields({
+    code => 'message',
+    datatype => 'text',
+    description => 'Please visit http://public.example.org/dead_animals',
+    order => 100,
+    required => 'false',
+    variable => 'false',
+});
+$da->update;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bexley' ],
@@ -58,6 +68,10 @@ FixMyStreet::override_config {
             outofhours => 'outofhours@bexley,ooh2@bexley',
             flooding => 'flooding@bexley',
             eh => 'eh@bexley',
+        } },
+        staff_url => { bexley => {
+            'Dead animal' => [ 'message', 'http://public.example.org/dead_animals', 'http://staff.example.org/dead_animals' ],
+            'Missing category' => [ 'message', 'http://public.example.org/dead_animals', 'http://staff.example.org/dead_animals' ]
         } },
         category_groups => { bexley => 1 },
     },
@@ -213,6 +227,15 @@ FixMyStreet::override_config {
         $mech->content_contains('Posted anonymously by a non-staff user');
     };
 
+    subtest 'dead animal url changed for staff users' => sub {
+        $mech->get_ok('/report/new/ajax?latitude=51.466707&longitude=0.181108');
+        $mech->content_lacks('http://public.example.org/dead_animals');
+        $mech->content_contains('http://staff.example.org/dead_animals');
+        $mech->log_out_ok;
+        $mech->get_ok('/report/new/ajax?latitude=51.466707&longitude=0.181108');
+        $mech->content_contains('http://public.example.org/dead_animals');
+        $mech->content_lacks('http://staff.example.org/dead_animals');
+    };
 };
 
 subtest 'nearest road returns correct road' => sub {
