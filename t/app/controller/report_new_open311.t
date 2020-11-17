@@ -436,7 +436,7 @@ subtest "Category extras includes form disabling string" => sub {
         # Test new non-JS form disabling flow
         $mech->get_ok('/report/new?latitude=55.952055&longitude=-3.189579');
         $mech->content_contains('name="submit_category_part_only"');
-        $mech->submit_form_ok({ with_fields => { category => 'Pothole' } });
+        $mech->submit_form_ok({ with_fields => { category => $contact4->category } });
         $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
         $mech->content_contains('Please ring us!');
         # Switch to another, okay, category
@@ -452,7 +452,7 @@ subtest "Category extras includes form disabling string" => sub {
 
         # Test submission of whole form, switching back to a blocked category at the same time
         $mech->submit_form_ok({ with_fields => {
-            category => 'Pothole', title => 'Title', detail => 'Detail',
+            category => $contact4->category, title => 'Title', detail => 'Detail',
             username_register => 'testing@example.org', name => 'Testing Example',
         } });
         $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
@@ -465,14 +465,27 @@ subtest "Category extras includes form disabling string" => sub {
         $contact4->update;
         $mech->get_ok('/report/new?latitude=55.952055&longitude=-3.189579');
         $mech->content_contains('name="submit_category_part_only"');
-        $mech->submit_form_ok({ with_fields => { category => 'Pothole' } });
+        $mech->submit_form_ok({ with_fields => { category => $contact4->category } });
         $mech->content_contains('name="submit_category_part_only"');
         $mech->submit_form_ok({ with_fields => { dangerous => 'no' } });
         $mech->content_lacks('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
         $mech->content_lacks('Please please ring');
         $mech->submit_form_ok({ with_fields => { dangerous => 'yes' } });
+        $mech->content_contains('name="submit_category_part_only"'); # Did not answer type question
         $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
         $mech->content_contains('Please please ring');
+
+        $mech->get_ok('/report/new?latitude=55.952055&longitude=-3.189579');
+        $mech->submit_form_ok({ with_fields => { category => $contact4->category } });
+        $mech->submit_form_ok({ with_fields => { dangerous => 'no', danger_type => 'no' } });
+        $mech->content_lacks('name="submit_category_part_only"');
+        $mech->content_lacks('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_lacks('Please please ring');
+        $mech->content_lacks('Ring the very number');
+        $mech->submit_form_ok({ with_fields => { dangerous => 'no', danger_type => 'very' } });
+        $mech->content_contains('name="submit_category_part_only"');
+        $mech->content_contains('<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">');
+        $mech->content_contains('Ring the very number');
     };
 };
 

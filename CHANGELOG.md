@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Bugfixes:
+        - Fix non-JS form when all extra questions answered. #3248
 
 * v3.1 (16th November 2020)
     - Security:
