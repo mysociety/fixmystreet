@@ -94,7 +94,7 @@ sub close_reports {
         );
         my $earliest;
         while ( my $c = $comments->next ) {
-            if ( $c->problem_state ne 'action scheduled' ) {
+            if ( ($c->problem_state || '') ne 'action scheduled' ) {
                 $earliest = undef;
                 next;
             }
