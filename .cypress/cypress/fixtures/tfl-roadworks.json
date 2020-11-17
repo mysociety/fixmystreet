@@ -1,0 +1,19 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [ 516207, 177268 ]
+            },
+            "properties": {
+                "work_ref": "TFL_12345",
+                "start_date": "2020-11-01T00:00:00.000Z",
+                "end_date": "2020-12-30T00:00:00.000Z",
+                "summary": "Major works, with road closure",
+                "promoter": "Transport for London"
+            }
+        }
+    ]
+}

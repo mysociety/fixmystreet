@@ -105,12 +105,22 @@ var rw_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+function to_ddmmyyyy(date) {
+    date = date.toISOString();
+    date = date.slice(8, 10) + '/' + date.slice(5, 7) + '/' + date.slice(0, 4);
+    return date;
+}
+
 fixmystreet.assets.add(asset_defaults, {
     http_options: {
+        url: "https://tilma.mysociety.org/streetmanager.php",
         params: {
-            TYPENAME: "roadworks"
+            points: 1,
+            end_date: new Date().toISOString().slice(0, 10)
         }
     },
+    srsName: "EPSG:27700",
+    format_class: OpenLayers.Format.GeoJSON,
     name: "Roadworks",
     non_interactive: false,
     always_visible: false,
@@ -118,16 +128,20 @@ fixmystreet.assets.add(asset_defaults, {
     all_categories: false,
     asset_category: "Roadworks",
     stylemap: rw_stylemap,
-    asset_id_field: 'works_ref',
+    asset_id_field: 'work_ref',
     asset_item: 'roadworks',
     attributes: {
-        promoter_works_ref: 'works_ref',
-        start: 'start',
-        end: 'end',
+        promoter_works_ref: 'work_ref',
+        start: function() {
+            return to_ddmmyyyy(new Date(this.attributes.start_date));
+        },
+        end: function() {
+            return to_ddmmyyyy(new Date(this.attributes.end_date));
+        },
         promoter: 'promoter',
         works_desc: 'description',
         works_state: 'status',
-        tooltip: 'location'
+        tooltip: 'summary'
     },
     filter_key: true,
     filter_value: function(feature) {
@@ -151,8 +165,10 @@ fixmystreet.assets.add(asset_defaults, {
             this.fixmystreet.actions.asset_not_found.call(this);
             feature.layer = this;
             var attr = feature.attributes,
-            location = attr.location.replace(/\\n/g, '\n'),
-            desc = attr.description.replace(/\\n/g, '\n');
+                start = to_ddmmyyyy(new Date(attr.start_date)),
+                end = to_ddmmyyyy(new Date(attr.end_date)),
+                summary = attr.summary,
+                desc = attr.description;
 
             var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + this.id + ' box-warning"></div>');
             var $dl = $("<dl></dl>").appendTo($msg);
@@ -160,26 +176,15 @@ fixmystreet.assets.add(asset_defaults, {
                 $dl.append("<dt>Responsibility</dt>");
                 $dl.append($("<dd></dd>").text(attr.promoter));
             }
-            $dl.append("<dt>Location</dt>");
-            var $summary = $("<dd></dd>").appendTo($dl);
-            location.split("\n").forEach(function(para) {
-                if (para.match(/^(\d{2}\s+\w{3}\s+(\d{2}:\d{2}\s+)?\d{4}( - )?){2}/)) {
-                    // skip showing the date again
-                    return;
-                }
-                if (para.match(/^delays/)) {
-                    // skip showing traffic delay information
-                    return;
-                }
-                $summary.append(para).append("<br />");
-            });
+            $dl.append("<dt>Summary</dt>");
+            $dl.append($("<dd></dd>").text(summary));
             if (desc) {
                 $dl.append("<dt>Description</dt>");
                 $dl.append($("<dd></dd>").text(desc));
             }
             $dl.append("<dt>Dates</dt>");
             var $dates = $("<dd></dd>").appendTo($dl);
-            $dates.text(attr.start + " until " + attr.end);
+            $dates.text(start + " until " + end);
             $msg.prependTo('#js-post-category-messages');
         },
         asset_not_found: function() {

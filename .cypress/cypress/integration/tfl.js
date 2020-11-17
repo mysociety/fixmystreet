@@ -23,7 +23,7 @@ it('allows bus stop clicking outside London', function() {
 it('shows TfL roadworks', function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
-    cy.route('**/mapserver/tfl*roadworks*', 'fixture:tfl-roadworks.xml').as('roadworks');
+    cy.route('**/streetmanager*', 'fixture:tfl-roadworks.json').as('roadworks');
     cy.route('**/mapserver/tfl*RedRoutes*', 'fixture:tfl-tlrn.xml').as('tfl-tlrn');
     cy.viewport(480, 800);
 
@@ -36,7 +36,7 @@ it('shows TfL roadworks', function() {
     cy.contains('You can pick a roadworks from the map').should('be.visible');
     cy.get('.mobile-map-banner').should('be.visible');
     cy.get('#mob_ok').click();
-    cy.contains('At the junction').should('be.visible');
+    cy.contains('Major works, with road closure').should('be.visible');
 });
 
 it('does not show TfL categories outside London on .com', function() {
