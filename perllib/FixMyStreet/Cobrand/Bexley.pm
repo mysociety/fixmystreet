@@ -194,7 +194,11 @@ sub open311_post_send {
     }
 
     return unless @to;
-    my $sender = FixMyStreet::SendReport::Email->new( to => \@to );
+    my $sender = FixMyStreet::SendReport::Email->new(
+        use_verp => 0,
+        use_replyto => 1,
+        to => \@to,
+    );
 
     $self->open311_config($row, $h, {}, $contact); # Populate NSGRef again if needed
 

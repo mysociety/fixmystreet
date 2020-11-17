@@ -10,6 +10,9 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 has to => ( is => 'ro', isa => ArrayRef, default => sub { [] } );
 has bcc => ( is => 'ro', isa => ArrayRef, default => sub { [] } );
 
+has use_verp => ( is => 'ro', isa => Int, default => 1 );
+has use_replyto => ( is => 'ro', isa => Int, default => 0 );
+
 sub build_recipient_list {
     my ( $self, $row, $h ) = @_;
 
@@ -58,7 +61,7 @@ sub envelope_sender {
     my ($self, $row) = @_;
 
     my $cobrand = $row->get_cobrand_logged;
-    if ($row->user->email && $row->user->email_verified) {
+    if ($self->use_verp && $row->user->email && $row->user->email_verified) {
         return FixMyStreet::Email::unique_verp_id([ 'report', $row->id ], $cobrand->call_hook('verp_email_domain'));
     }
     return $cobrand->do_not_reply_email;
@@ -102,6 +105,7 @@ sub send {
     }
 
     if (FixMyStreet::Email::test_dmarc($params->{From}[0])
+      || $self->use_replyto
       || Utils::Email::same_domain($params->{From}, $params->{To})) {
         $params->{'Reply-To'} = [ $params->{From} ];
         $params->{From} = [ $sender, $params->{From}[1] ];
