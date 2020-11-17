@@ -1642,6 +1642,7 @@ sub check_for_category : Private {
         if ($disable_form_messages->{all}) {
             $c->stash->{disable_form_message} = $disable_form_messages->{all};
         } elsif (my $questions = $disable_form_messages->{questions}) {
+            my $all_disable_qns_answered = 1;
             foreach my $question (@$questions) {
                 my $answer = $c->get_param($question->{code});
                 my $message = $question->{message};
@@ -1651,10 +1652,12 @@ sub check_for_category : Private {
                             $c->stash->{disable_form_message} = $message;
                         }
                     }
+                } else {
+                    $all_disable_qns_answered = 0;
                 }
             }
             if (!$c->stash->{disable_form_message}) {
-                $c->stash->{have_disable_qn_to_answer} = 1;
+                $c->stash->{have_disable_qn_to_answer} = !$all_disable_qns_answered;
             }
         }
     }
