@@ -1,10 +1,14 @@
 package FixMyStreet::SendReport::Email;
 
 use Moo;
+use MooX::Types::MooseLike::Base qw(:all);
 use FixMyStreet::Email;
 use Utils::Email;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
+
+has to => ( is => 'ro', isa => ArrayRef, default => sub { [] } );
+has bcc => ( is => 'ro', isa => ArrayRef, default => sub { [] } );
 
 sub build_recipient_list {
     my ( $self, $row, $h ) = @_;

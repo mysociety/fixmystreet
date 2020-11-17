@@ -11,12 +11,9 @@ use Module::Pluggable
 
 has 'body_config' => ( is => 'rw', isa => HashRef, default => sub { {} } );
 has 'bodies' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
-has 'to' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
-has 'bcc' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 has 'success' => ( is => 'rw', isa => Bool, default => 0 );
 has 'error' => ( is => 'rw', isa => Str, default => '' );
 has 'unconfirmed_data' => ( 'is' => 'rw', isa => HashRef, default => sub { {} } );
-
 
 sub get_senders {
     my $self = shift;
@@ -24,15 +21,6 @@ sub get_senders {
     my %senders = map { $_ => 1 } $self->senders;
 
     return \%senders;
-}
-
-sub reset {
-    my $self = shift;
-
-    $self->bodies( [] );
-    $self->body_config( {} );
-    $self->to( [] );
-    $self->bcc( [] );
 }
 
 sub add_body {
