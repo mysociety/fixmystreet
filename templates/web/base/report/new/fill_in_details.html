@@ -1,5 +1,6 @@
 [%
-    sidebar_html = PROCESS 'report/new/sidebar.html';
+    # Only used by Zurich
+    TRY; sidebar_html = PROCESS 'report/new/sidebar.html'; CATCH file; END;
 
     SET bodyclass = '';
     SET bodyclass = 'mappage';

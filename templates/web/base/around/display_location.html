@@ -29,7 +29,9 @@
 
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html" around_page = 1;
-    sidebar_html = PROCESS 'report/new/sidebar.html' js = 1 report.used_map = 1;
+
+    # Only used by Zurich
+    TRY; sidebar_html = PROCESS 'report/new/sidebar.html' js = 1 report.used_map = 1; CATCH file; END;
 
     SET bodyclass = 'mappage';
     SET rss = [ tprintf(loc('Recent local problems, %s', "%s is the site name"), site_name), rss_url ];
