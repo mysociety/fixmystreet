@@ -1019,6 +1019,7 @@ $.extend(fixmystreet.set_up, {
     });
 
     $('.js-new-report-show-sign-in').click(function(e) {
+        e.preventDefault();
         $('.js-new-report-sign-in-shown').removeClass('hidden-js');
         $('.js-new-report-sign-in-hidden').addClass('hidden-js');
         focusFirstVisibleInput();
@@ -1031,7 +1032,8 @@ $.extend(fixmystreet.set_up, {
         focusFirstVisibleInput();
     });
 
-    $('.js-new-report-sign-in-forgotten').click(function() {
+    $('.js-new-report-sign-in-forgotten').click(function(e) {
+        e.preventDefault();
         $('.js-new-report-sign-in-shown').addClass('hidden-js');
         $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
         $('.js-new-report-forgotten-shown').removeClass('hidden-js');
