@@ -10,7 +10,7 @@
 [% INCLUDE 'errors.html' %]
 
 <fieldset>
-    <div id="problem_form">
+    <div id="problem_form" class="js-reporting-page--single">
         <div id="form_sign_in">
             [% PROCESS 'report/form/user_loggedout_by_email.html' object=report type='report' email_required=1 %]
         </div>

@@ -7,7 +7,7 @@
 [% INCLUDE 'errors.html' %]
 
 <fieldset>
-    <div id="problem_form">
+    <div id="problem_form" class="js-reporting-page--single">
       [% IF c.user_exists %]
         [% PROCESS "report/new/form_user_loggedin.html" type='report' %]
       [% ELSE %]

@@ -172,14 +172,13 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
               $p = $("<p id='overlapping_features_msg' class='hidden box-warning'>" +
               "There is more than one <span class='overlapping_item_name'></span> at this location. " +
               "Please describe which <span class='overlapping_item_name'></span> has the problem clearly.</p>");
-              $p.prependTo('#js-post-category-messages');
+              $('#category_meta').before($p).closest('.js-reporting-page').removeClass('js-reporting-page--skip');
           }
           $p.find(".overlapping_item_name").text(this.fixmystreet.asset_item);
           $p.removeClass('hidden');
       } else {
           $("#overlapping_features_msg").addClass('hidden');
       }
-
     },
     asset_not_found: function() {
       $("#overlapping_features_msg").addClass('hidden');

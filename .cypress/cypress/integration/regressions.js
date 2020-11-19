@@ -50,7 +50,9 @@ describe('Regression tests', function() {
         // force to hopefully work around apparent Cypress SVG issue
         cy.get('image[title="Lights out in tunnel"]:last').click({force: true});
         cy.wait('@show-report');
-        cy.get('.report-a-problem-btn').eq(0).should('contain', 'Report another problem here').click();
+        // TODO as report-a-problem-btn not printed on around at the mo
+        cy.get('.big-green-banner').click({ force: true });
+        //cy.get('.report-a-problem-btn').eq(0).should('contain', 'Report another problem here').click();
         cy.get('.content').should('not.contain', 'toddler');
     });
 
@@ -78,11 +80,15 @@ describe('Regression tests', function() {
       cy.get('#map_box').click();
       cy.wait('@report-ajax');
       cy.get('[id=category_group]').select('Licensing');
+      cy.get('.js-reporting-page--next:visible').click();
       cy.get('[id=subcategory_Licensing]').select('Skips');
+      cy.get('.js-reporting-page--next:visible').click();
+      cy.get('[name=start_date').type('2019-01-01');
+      cy.get('.js-reporting-page--next:visible').click();
+      cy.get('.js-reporting-page--next:visible').click(); // No photo
       cy.get('[name=title]').type('Title');
       cy.get('[name=detail]').type('Detail');
-      cy.get('[name=start_date').type('2019-01-01');
-      cy.get('.js-new-report-user-show').click();
+      cy.get('.js-reporting-page--next:visible').click();
       cy.get('.js-new-report-show-sign-in').should('be.visible').click();
       cy.get('#form_username_sign_in').type('user@example.org');
       cy.get('[name=password_sign_in]').type('password');

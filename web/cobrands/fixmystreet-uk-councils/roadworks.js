@@ -21,14 +21,13 @@ var roadworks_defaults = {
     all_categories: true,
     actions: {
         found: function(layer, feature) {
-            $(".js-roadworks-message-" + layer.id).remove();
             if (!fixmystreet.roadworks.filter || fixmystreet.roadworks.filter(feature)) {
                 fixmystreet.roadworks.display_message(feature);
                 return true;
             }
         },
         not_found: function(layer) {
-            $(".js-roadworks-message-" + layer.id).remove();
+            $(".js-roadworks-page").remove();
         }
     }
 };
@@ -51,7 +50,7 @@ fixmystreet.roadworks.display_message = function(feature) {
         tag_top = config.tag_top || 'p',
         colon = config.colon ? ':' : '';
 
-    var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + feature.layer.id + ' box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
+    var $msg = $('<div class="js-roadworks-message box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
     var $dl = $("<dl></dl>").appendTo($msg);
     $dl.append("<dt>Dates" + colon + "</dt>");
     var $dates = $("<dd></dd>").appendTo($dl);
@@ -74,7 +73,15 @@ fixmystreet.roadworks.display_message = function(feature) {
         $dl.append(config.text_after);
     }
 
-    $msg.prependTo('#js-post-category-messages');
+    var $div = $(".js-reporting-page.js-roadworks-page");
+    if (!$div.length || $div.data('workRef') !== attr.work_ref) {
+        if (!$div.length) {
+            $div = $("<div class='js-roadworks-page'></div>");
+        }
+        $div.data('workRef', attr.work_ref);
+        $div.html($msg);
+        fixmystreet.pageController.addNextPage('roadworks', $div);
+    }
 };
 
 fixmystreet.assets.add(roadworks_defaults);

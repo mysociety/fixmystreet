@@ -17,18 +17,10 @@
 [% END %]
 </div>
 
-[% PROCESS "report/new/duplicate_suggestions.html" %]
-
-[% IF disable_form_message %]
-<div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">
-    [% disable_form_message | safe %]
+<div class="js-post-category-messages">
+  [% IF disable_form_message %]
+    <div id="js-category-stopper" class="box-warning" role="alert" aria-live="assertive">
+        [% disable_form_message | safe %]
+    </div>
+  [% END %]
 </div>
-[% ELSE %]
-<div id="js-post-category-messages" class="js-hide-if-invalid-category_extras">
-    [%# This section includes 'Pick an asset' text, roadworks info, extra category questions %]
-
-  [%- IF category_extras OR report_extra_fields %]
-    [% PROCESS "report/new/category_extras.html" %]
-  [%- END %]
-</div>
-[% END %]

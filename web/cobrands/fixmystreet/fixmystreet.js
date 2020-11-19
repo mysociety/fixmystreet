@@ -158,6 +158,14 @@ fixmystreet.mobile_reporting = {
     // Creates the "app-like" mobile reporting UI with full screen map
     // and special "OK/Cancel" buttons etc.
     $('html').addClass('map-fullscreen only-map map-reporting');
+    $('#map_box').removeClass('hidden-js');
+
+    if (fixmystreet.page === 'new') {
+        // Might have come direct to report/new, need right buttons
+        fixmystreet.pageController.mapStepButtons();
+        return;
+    }
+
     $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
 
     if ($('#map_filter').length === 0) {
@@ -188,7 +196,6 @@ fixmystreet.mobile_reporting = {
     // Removes the "app-like" mobile reporting UI, reverting all the
     // changes made by fixmystreet.mobile_reporting.apply_ui().
     $('html').removeClass('map-fullscreen only-map map-reporting');
-    $('#map_box').css({ width: "", height: "", position: "" });
     $('#mob_sub_map_links').remove();
 
     // Turn off the mobile map filters.
@@ -201,7 +208,7 @@ fixmystreet.mobile_reporting = {
 fixmystreet.resize_to = {
   mobile_page: function() {
     $('html').addClass('mobile');
-    if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+    if (typeof fixmystreet !== 'undefined' && (fixmystreet.page === 'around' || fixmystreet.page === 'new')) {
         fixmystreet.mobile_reporting.apply_ui();
     }
 
@@ -239,6 +246,102 @@ fixmystreet.update_list_item_buttons = function($list) {
   $list.find('[name="shortlist-up"], [name="shortlist-down"]').prop('disabled', false);
   $list.children(':first-child').find('[name="shortlist-up"]').prop('disabled', true);
   $list.children(':last-child').find('[name="shortlist-down"]').prop('disabled', true);
+};
+
+fixmystreet.pageController = {
+    toPage: function(page, opts) {
+        opts = opts || {};
+        var $curr = $('.js-reporting-page--active');
+        var $page;
+        if (page === 'first') {
+            $page = $('.js-reporting-page').first();
+            page = $page.data('pageName');
+        } else if (page === 'next') {
+            if ($curr.data('pageName') === 'map') {
+                if ($('#form_category').val() === '-- Pick a category --') {
+                    $page = $('.js-reporting-page').first();
+                } else {
+                    // It is possible for multiple map 'page' divs to exist if
+                    // multiple layers shown. We only need one of them
+                    $page = $curr.nextAll('.js-reporting-page:not(.js-reporting-page--skip,.js-reporting-page--map)').first();
+                }
+            } else {
+                $page = $curr.nextAll('.js-reporting-page:not(.js-reporting-page--skip)').first();
+            }
+            page = $page.data('pageName');
+        } else {
+            $page = $('.js-reporting-page[data-page-name=' + page + ']');
+        }
+        if ($curr.data('pageName') === 'map' || $('#mob_ok:visible').length || opts.forceMapHide) {
+            $('#map_box').addClass('hidden-js');
+            $('html').removeClass('only-map');
+        }
+
+        $curr.removeClass('js-reporting-page--active');
+        $page.addClass('js-reporting-page--active');
+
+        if ($page.data('pageName') === 'map' || opts.forceMapShow) {
+            // We're going to bypass to the map for the next step, then come back here
+            $('#map_box').removeClass('hidden-js');
+            $('html').addClass('only-map map-page');
+        }
+        setTimeout(function() {
+            $('html, body, #map_sidebar').scrollTop(0);
+        }, 0);
+        if (!opts.popstate && 'pushState' in history) {
+            history.pushState({
+                reportingPage: page
+            }, null, '#' + page);
+        }
+        $(fixmystreet).trigger('report_new:page_change', [ $curr, $page ]);
+    },
+    mapStepButtons: function() {
+        var $map_box = $('#map_box');
+        var links = '<a href="#ok" id="mob_ok">' + translation_strings.ok + '</a>';
+        if (fixmystreet.page !== 'new') {
+            links = '<a href="#" class="js-back" id="problems_nearby">' + translation_strings.back + '</a>' + links;
+        }
+        $map_box.append('<p class="sub-map-links" id="mob_sub_map_links">' + links + '</p>');
+
+        $('.mobile-map-banner span').text(translation_strings.right_place);
+
+        // mobile user clicks 'ok' on map
+        $('#mob_ok').click(function(e){
+            e.preventDefault();
+            var $page = $('.js-reporting-page--active');
+            var first_page = $('.js-reporting-page').first().data('pageName');
+            if ($page.data('pageName') === first_page || !$page.length) {
+                // Either the original pin location, or the map 'page' was
+                // removed while we had it open, due to e.g. clicking the map
+                // in a totally different council. Show first step
+                fixmystreet.pageController.toPage('first', {
+                    forceMapHide: true
+                });
+            } else {
+                // Something later, e.g. asset selection, move to next step
+                fixmystreet.pageController.toPage('next');
+            }
+        });
+    },
+    addMapPage: function(layer) {
+        var $map_page = $('#' + layer.id + '_map');
+        if (!$map_page.length) {
+            $map_page = $('<div data-page-name="map" class="js-reporting-page js-reporting-page--map" id="' + layer.id + '_map"></div>');
+        }
+        // Move the map page depending on if we are basing its appearance on the
+        // answer to an extra question (so subcategories key is present) or not
+        if (layer.fixmystreet.subcategories) {
+            $map_page.insertAfter('#js-post-category-messages');
+        } else {
+            $map_page.insertBefore('#js-post-category-messages');
+        }
+    },
+    addNextPage: function(name, $div) {
+        $div.addClass('js-reporting-page');
+        $div.attr('data-page-name', name);
+        $div.append("<button class='btn btn--block btn--final js-reporting-page--next'>" + translation_strings.ok + "</button>");
+        $('.js-reporting-page--active').after($div);
+    }
 };
 
 fixmystreet.set_up = fixmystreet.set_up || {};
@@ -454,17 +557,15 @@ $.extend(fixmystreet.set_up, {
             fixmystreet.update_councils_text(fixmystreet.reporting_data);
         }
         if (data.category_extra) {
-            if ( $category_meta.length ) {
-                $category_meta.replaceWith( data.category_extra );
-                var $new_category_meta = $('#category_meta');
-                // Preserve any existing values
-                $category_meta.find("[name]").each(function() {
-                    $new_category_meta.find("[name="+this.name+"]").val(this.value);
-                });
-            } else {
-                $('#js-post-category-messages').prepend( data.category_extra );
-            }
+            $category_meta.replaceWith( data.category_extra );
+            var $new_category_meta = $('#category_meta');
+            $new_category_meta.closest('.js-reporting-page').toggleClass('js-reporting-page--skip', !!data.extra_hidden);
+            // Preserve any existing values
+            $category_meta.find("[name]").each(function() {
+                $new_category_meta.find("[name="+this.name+"]").val(this.value);
+            });
         } else {
+            $category_meta.closest('.js-reporting-page').addClass('js-reporting-page--skip');
             $category_meta.empty();
         }
         if (data.non_public) {
@@ -478,8 +579,10 @@ $.extend(fixmystreet.set_up, {
         }
         if (data.allow_anonymous) {
             $('.js-show-if-anonymous').removeClass('hidden-js');
+            $('.js-reporting-page--include-if-anonymous').removeClass('js-reporting-page--skip');
         } else {
             $('.js-show-if-anonymous').addClass('hidden-js');
+            $('.js-reporting-page--include-if-anonymous').addClass('js-reporting-page--skip');
         }
 
         text_update('#title-hint', data.title_hint);
@@ -512,7 +615,7 @@ $.extend(fixmystreet.set_up, {
             }
         });
 
-        $(fixmystreet).trigger('report_new:category_change', { check_duplicates_dismissal: true });
+        $(fixmystreet).trigger('report_new:category_change');
     });
   },
 
@@ -544,20 +647,24 @@ $.extend(fixmystreet.set_up, {
         return;
     }
 
+    var $subcategory_page = $('.js-reporting-page--subcategory');
+    var $subcategory_label = $subcategory_page.find('label');
+    $subcategory_label.nextAll('.js-subcategory').remove();
+
     var $group_select = $("<select></select>").addClass("form-control validCategory").attr('id', 'category_group');
     var $category_label = $("#form_category_label");
-    var $subcategory_label = $("#form_subcategory_label");
     var $empty_option = $category_select.find("option").first();
 
     $group_select.change(function() {
         var subcategory_id = $(this).find(":selected").data("subcategory_id");
         $(".js-subcategory").hide();
         if (subcategory_id === undefined) {
-            $subcategory_label.addClass("hidden");
+            $subcategory_page.addClass('js-reporting-page--skip');
             $category_select.val($(this).val()).change();
         } else {
+            $subcategory_page.removeClass('js-reporting-page--skip');
             $("#" + subcategory_id).show().change();
-            $subcategory_label.removeClass("hidden").attr('for', subcategory_id);
+            $subcategory_label.attr('for', subcategory_id);
         }
     });
 
@@ -905,8 +1012,8 @@ $.extend(fixmystreet.set_up, {
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
-        if (fixmystreet.page !== 'around' && !$('#toggle-fullscreen').length) {
-            $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" class="expand" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
+        if (fixmystreet.page !== 'around' && fixmystreet.page !== 'new' && !$('#toggle-fullscreen').length) {
+            $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
         }
     }
 
@@ -977,6 +1084,24 @@ $.extend(fixmystreet.set_up, {
         e.preventDefault();
         $(".js-ward-single").addClass("hidden");
         $(".js-ward-multi").removeClass("hidden");
+    });
+  },
+
+  page_controller: function() {
+    // Delegation because e.g. Highways England button gets added
+    $('#problem_form, #form_update_form').on('click', '.js-reporting-page .js-reporting-page--next', function(e) {
+        e.preventDefault();
+        var v = $(this).closest('form').validate();
+        if (!v.form()) {
+            v.focusInvalid();
+            return;
+        }
+        fixmystreet.pageController.toPage('next');
+    });
+
+    $(document).on('click', '.js-back', function(e) {
+        e.preventDefault();
+        history.back();
     });
   },
 
@@ -1066,6 +1191,7 @@ $.extend(fixmystreet.set_up, {
         focusFirstVisibleInput();
     });
 
+    // XXX Is this still needed, should it be better done server side? Will need to spot multiple pages too
     var err = $('.form-error');
     if (err.length) {
         $('.js-sign-in-password-btn').click();
@@ -1484,8 +1610,18 @@ fixmystreet.fetch_reporting_data = function() {
 })(); // fetch_reporting_data closure
 
 fixmystreet.display = {
+  // Possibilities to get here are:
+  // 1. we've clicked the button/banner/map from around page
+  // 2. we've clicked/dragged pin on new page already,
+  // 3. we've clicked Back from page 2 of reporting form to page 1
+  // 4. we've clicked Forward from around page after having gone back to it,
   begin_report: function(lonlat, opts) {
     opts = opts || {};
+
+    if (fixmystreet.page === 'new' && opts.popstate) {
+        // We've clicked Back from page 2 of reporting form to page 1
+        return;
+    }
 
     lonlat = fixmystreet.maps.begin_report(lonlat);
 
@@ -1537,60 +1673,7 @@ fixmystreet.display = {
     $('#sub_map_links').hide();
     $('.map-pins-toggle').hide();
     if ($('html').hasClass('mobile')) {
-        var $map_box = $('#map_box'),
-            width = $map_box.width(),
-            height = $map_box.height();
-        $map_box.append(
-            '<p class="sub-map-links" id="mob_sub_map_links">' +
-            '<a href="#" id="problems_nearby">' +
-                translation_strings.back +
-            '</a>' +
-            '<a href="#" id="try_again">' +
-                translation_strings.try_again +
-            '</a>' +
-            '<a href="#ok" id="mob_ok">' +
-                translation_strings.ok +
-            '</a>' +
-            '</p>')
-        .addClass('above-form') // Stop map being absolute, so reporting form doesn't get hidden
-        .css({
-            width: width,
-            height: height
-        });
-
-        $('.mobile-map-banner span').text(translation_strings.right_place);
-
-        $('#problems_nearby').click(function(e){
-            e.preventDefault();
-            history.back();
-        });
-
-        $('#try_again').click(function(e) {
-            e.preventDefault();
-            $('#mob_ok').click();
-        });
-
-        // mobile user clicks 'ok' on map
-        $('#mob_ok').toggle(function(){
-            //scroll the height of the map box instead of the offset
-            //of the #side-form or whatever as we will probably want
-            //to do this on other pages where #side-form might not be
-            $('html, body').animate({ scrollTop: height-60 }, 500, function(){
-                $('html').removeClass('only-map');
-                $('#mob_sub_map_links').addClass('map_complete');
-                $('#mob_ok').text(translation_strings.map);
-            });
-        }, function(){
-            var current = $('html, body').scrollTop();
-            $('html, body').animate({ scrollTop: 0 }, 500/height*current, function(){
-                $('html').addClass('only-map');
-                $('#mob_sub_map_links').removeClass('map_complete');
-                $('#mob_ok').text(translation_strings.ok);
-                if (fixmystreet.duplicates) {
-                    fixmystreet.duplicates.hide();
-                }
-            });
-        });
+        fixmystreet.pageController.mapStepButtons();
     }
 
     fixmystreet.page = 'new';
@@ -1813,14 +1896,15 @@ $(function() {
         setTimeout(function () {
             if (!window.addEventListener) { return; }
             window.addEventListener('popstate', function(e) {
-                // The user has pressed the Back button, and there is a
-                // stored History state for them to return to.
+                // The user has pressed the Back or Forward button, and there
+                // is a stored History state for them to return to.
 
                 // Note: no pushState callbacks in these display_* calls,
                 // because we're already inside a popstate: We want to roll
                 // back to a previous state, not create a new one!
 
                 var location = window.history.location || window.location;
+                var page;
 
                 if (e.state === null) {
                     // Hashchange or whatever, we don't care.
@@ -1828,6 +1912,15 @@ $(function() {
                 }
 
                 if ('initial' in e.state) {
+                    if (fixmystreet.original.page === 'new') {
+                        // Started at /report/new, so go back to first 'page' there
+                        fixmystreet.pageController.toPage('first', {
+                            popstate: true,
+                            forceMapShow: true
+                        });
+                        return;
+                    }
+
                     // User has navigated Back from a pushStated state, presumably to
                     // see the list of all reports (which was shown on pageload). By
                     // this point, the browser has *already* updated the URL bar so
@@ -1839,7 +1932,7 @@ $(function() {
                     filters.trigger('change.multiselect');
                     if (fixmystreet.utils && fixmystreet.utils.parse_query_string) {
                         var qs = fixmystreet.utils.parse_query_string();
-                        var page = qs.p || 1;
+                        page = qs.p || 1;
                         $('#show_old_reports').prop('checked', qs.show_old_reports || '');
                         $('.pagination:first').data('page', page)
                             .trigger('change.filters');
@@ -1848,7 +1941,12 @@ $(function() {
                 } else if ('reportId' in e.state) {
                     fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
                 } else if ('newReportAtLonlat' in e.state) {
+                    fixmystreet.pageController.toPage('first', {
+                        popstate: true,
+                        forceMapShow: true
+                    });
                     fixmystreet.display.begin_report(e.state.newReportAtLonlat, {
+                        popstate: true,
                         saveHistoryState: false
                     });
                 } else if ('page_change' in e.state) {
@@ -1870,6 +1968,11 @@ $(function() {
                 // } else if ('hashchange' in e.state) {
                     // This popstate was just here because the hash changed.
                     // (eg: mobile nav click.) We want to ignore it.
+                } else if ('reportingPage' in e.state) {
+                    page = e.state.reportingPage;
+                    fixmystreet.pageController.toPage(page, {
+                        popstate: true
+                    });
                 }
                 if ('mapState' in e.state) {
                     fixmystreet.maps.set_map_state(e.state.mapState);

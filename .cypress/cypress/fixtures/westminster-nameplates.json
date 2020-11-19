@@ -1,2 +1,22 @@
 {
+    "type": "FeatureCollection", "crs": { "type": "name", "properties": { "name": "EPSG: 4326" } },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.141588, 51.501009]
+            }, "properties": {
+                "central_asset_id": "ABC1"
+            }
+        }, {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.141598, 51.501019]
+            }, "properties": {
+                "central_asset_id": "ABC2"
+            }
+        }
+    ]
 }

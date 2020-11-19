@@ -12,24 +12,29 @@ describe('Duplicate tests', function() {
       cy.contains('Report another problem here').click();
       cy.wait('@report-ajax');
       cy.get('[id=category_group]').select('Potholes');
-      cy.wait(500);
-      cy.get('[name=title').should('be.visible');
+      cy.get('.js-reporting-page--next:visible').click();
+      cy.get('div.dropzone').should('be.visible');
     });
 
-    it('hides everything when duplicate suggestions are shown', function() {
+    it('has a separate duplicate suggestions step when needed', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');
+      cy.route('/around/nearby*').as('nearby-ajax');
       cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-hide'); // Server-side setup
       cy.visit('http://borsetshire.localhost:3001/report/1');
       cy.contains('Report another problem here').click();
       cy.wait('@report-ajax');
       cy.get('[id=category_group]').select('Licensing');
+      cy.get('.js-reporting-page--next:visible').click();
       cy.get('[id=subcategory_Licensing]').select('Skips');
+      cy.wait('@nearby-ajax');
+      cy.get('.js-reporting-page--next:visible').click();
+      cy.contains('Already been reported?');
       cy.get('.extra-category-questions').should('not.be.visible');
       cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-hide');
     });
 
-    it('does not show duplicate suggestions when signing in during reporting', function() {
+    it.only('does not show duplicate suggestions when signing in during reporting', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');
       cy.route('/around/nearby*').as('nearby-ajax');
@@ -38,10 +43,13 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.get('[id=category_group]').select('Potholes');
       cy.wait('@nearby-ajax');
-      cy.get('.js-hide-duplicate-suggestions:first').should('be.visible').click();
+      cy.get('.js-reporting-page--next:visible').click();
+      cy.contains('Already been reported?');
+      cy.get('.js-reporting-page--next:visible').click(); // Go past duplicates
+      cy.get('.js-reporting-page--next:visible').click(); // No photo
       cy.get('[name=title]').type('Title');
       cy.get('[name=detail]').type('Detail');
-      cy.get('.js-new-report-user-show').click();
+      cy.get('.js-reporting-page--next:visible').click();
       cy.get('.js-new-report-show-sign-in').should('be.visible').click();
       cy.get('#form_username_sign_in').type('user@example.org');
       cy.get('[name=password_sign_in]').type('password');
@@ -80,19 +88,20 @@ describe('Duplicate tests', function() {
     it('does not redisplay duplicates when stopper questions are changed', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');
+      cy.route('/around/nearby*').as('nearby-ajax');
       cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-stopper'); // Server-side setup
       cy.visit('http://borsetshire.localhost:3001/report/1');
       cy.contains('Report another problem here').click();
       cy.wait('@report-ajax');
       cy.get('[id=category_group]').select('Flytipping');
+      cy.wait('@nearby-ajax');
+      cy.get('.js-reporting-page--next:visible').click();
       cy.get('.extra-category-questions').should('not.be.visible');
-      cy.get('.js-hide-duplicate-suggestions:first').click();
-      cy.get('.js-hide-duplicate-suggestions:first').should('not.be.visible');
+      cy.get('.js-reporting-page--next:visible').click(); // Go past duplicates
       cy.get('.extra-category-questions').should('be.visible');
       cy.get('[id=form_hazardous]').select('No');
-      cy.wait(500);
       cy.get('.extra-category-questions').should('be.visible');
-      cy.get('.js-hide-duplicate-suggestions:first').should('not.be.visible');
+      cy.get('.js-reporting-page--next:visible').click();
       cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-stopper'); // Server-side setup
     });
 

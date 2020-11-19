@@ -1,5 +1,6 @@
 [% SET form_show_category_only = NOT category || field_errors.category || disable_form_message || have_disable_qn_to_answer %]
 [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
+[% PROCESS 'report/new/form_public_councils_text.html' ~%]
 
 <!-- report/new/form_report.html -->
 [% INCLUDE 'report/new/form_after_heading.html' %]
@@ -8,13 +9,34 @@
     <p class='form-error'>[% field_errors.bodies %]</p>
 [% END %]
 
-[% PROCESS 'report/new/form_public_councils_text.html' %]
-[% IF public_councils_text_at_top %]
+<div data-page-name="category" class="js-reporting-page js-reporting-page--category js-reporting-page--active">
+  [% IF public_councils_text_at_top %]
     [% INCLUDE public_councils_text %]
-[% END %]
+  [% END %]
 
-[% PROCESS "report/new/category_wrapper.html" %]
-[% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
+    [% PROCESS "report/new/category_wrapper.html" %]
+    [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
+
+    <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next"
+        [% ' disabled' IF disable_form_message %]>[% loc('Continue') %]</button>
+</div>
+
+<div data-page-name="subcategory" class="js-reporting-page js-reporting-page--subcategory js-reporting-page--skip hidden-nojs">
+    <label id="form_subcategory_label">[% loc('Subcategory') %]</label>
+    <div class="js-post-category-messages"></div>
+    <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+</div>
+
+[% PROCESS "report/new/duplicate_suggestions.html" %]
+
+<div data-page-name="extra" id="js-post-category-messages" class="js-reporting-page js-reporting-page--skip">
+    [%# This section includes 'Pick an asset' text, roadworks info, extra category questions %]
+  [% IF NOT disable_form_message %]
+    [% PROCESS "report/new/category_extras.html" %]
+  [% END %]
+    <div class="js-post-category-messages"></div>
+    <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+</div>
 
 [% IF form_show_category_only %]
     <div class="hidden-js">
@@ -25,49 +47,58 @@
     [% SET field_required = ' required' %]
 [% END %]
 
-<div class="js-hide-if-invalid-category[% ' hidden-nojs' IF form_show_category_only %]">
+[% IF c.cobrand.allow_photo_upload %]
+    <div data-page-name="photo" class="js-reporting-page[% ' hidden-nojs' IF form_show_category_only %]">
 
+        [% PROCESS 'report/form/photo_upload.html' type='report' %]
+        [% PROCESS 'report/new/after_photo.html' %]
+
+        <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+    </div>
+[% END %]
+
+<div data-page-name="details" class="js-reporting-page[% ' hidden-nojs' IF form_show_category_only %]">
   [% UNLESS public_councils_text_at_top %]
     [% INCLUDE public_councils_text %]
   [% END %]
 
     [% INCLUDE 'report/new/form_title.html' %]
 
-[% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
-
-[% PROCESS report/form/photo_upload.html type='report' %]
-
-[% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
+    [% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
 
     [% DEFAULT form_detail_label = loc('Explain what’s wrong') %]
     <label for="form_detail">[% form_detail_label %]</label>
 
-[%# You can prevent a hint being printed by setting form_detail_placeholder to a Falsey value %]
-[% IF NOT form_detail_placeholder.defined %]
+    [%# You can prevent a hint being printed by setting form_detail_placeholder to a Falsey value %]
+  [% IF NOT form_detail_placeholder.defined %]
     [% SET form_detail_placeholder = loc('e.g. ‘This pothole has been here for two months and…’') %]
-[% END %]
+  [% END %]
 
-[% IF contact_detail_hint %]
+  [% IF contact_detail_hint %]
     <p class="form-hint" id="detail-hint">[% contact_detail_hint %]</p>
-[% ELSIF form_detail_placeholder %]
+  [% ELSIF form_detail_placeholder %]
     <p class="form-hint" id="detail-hint">[% form_detail_placeholder %]</p>
-[% END %]
+  [% END %]
 
-[% IF field_errors.detail %]
+  [% IF field_errors.detail %]
     <p class='form-error'>[% field_errors.detail %]</p>
-[% END %]
+  [% END %]
 
     <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" [% IF form_detail_placeholder %]aria-describedby="detail-hint"[% END %][% field_required %]>[% report.detail | html %]</textarea>
 
-[% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
+    [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
+
+    <div class="js-reporting-page--single-hidden">
+        [% PROCESS report/form/user.html type='report' %]
+    </div>
+</div>
 
 [% IF partial_token %]
     <input type="hidden" name="partial" value="[% partial_token.token %]">
 [% END %]
 
-    <input type="hidden" id="single_body_only" name="single_body_only" value="">
-    <input type="hidden" id="do_not_send" name="do_not_send" value="">
-    <input type="hidden" name="submit_problem" value="1">
-    <input type="hidden" id="form_service" name="service" value="">
-</div>
+<input type="hidden" id="single_body_only" name="single_body_only" value="">
+<input type="hidden" id="do_not_send" name="do_not_send" value="">
+<input type="hidden" name="submit_problem" value="1">
+<input type="hidden" id="form_service" name="service" value="">
 <!-- /report/new/form_report.html -->

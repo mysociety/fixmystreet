@@ -13,21 +13,31 @@ describe('When you look at the Island Roads site', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
     cy.get('select:eq(4)').select('Potholes');
+    cy.get('.js-reporting-page--next:visible').click();
+    cy.get('.js-reporting-page--next:visible').click(); // Photos
     cy.contains('sent to Island Roads').should('be.visible');
+    cy.go('back');
+    cy.go('back');
     cy.get('select:eq(4)').select('Private');
+    cy.get('.js-reporting-page--next:visible').click();
+    cy.get('.js-reporting-page--next:visible').click(); // Photos
     cy.contains('sent to Island Roads').should('be.visible');
+    cy.go('back');
+    cy.go('back');
     cy.get('select:eq(4)').select('Extra');
+    cy.get('.js-reporting-page--next:visible').click();
     cy.contains('Help Island Roads').should('be.visible');
   });
 
   it('displays nearby roadworks', function() {
-    cy.fixture('iow_roadworks.json');
     cy.route('/streetmanager.php**', 'fixture:iow_roadworks.json').as('roadworks');
     cy.visit('http://isleofwight.localhost:3001/');
     cy.get('[name=pc]').type('PO30 5XJ');
     cy.get('[name=pc]').parents('form').submit();
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
+    cy.get('select').eq(4).select('Potholes');
+    cy.get('.js-reporting-page--next:visible').click();
     cy.wait('@roadworks');
     cy.contains('Roadworks are scheduled near this location').should('be.visible');
     cy.contains('Parapet improvement').should('be.visible');

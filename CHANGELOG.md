@@ -2,6 +2,7 @@
 
 * Unreleased
     - Front end improvements:
+        - Multi-page form reporting.
         - New aerial map toggle.
         - Send text alerts for report updates to only-phone-verified users.
         - Add options for user to set global notification preferences.

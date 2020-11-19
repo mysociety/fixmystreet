@@ -629,39 +629,28 @@ ul.error {
     }
 }
 
-.duplicate-report-suggestions__close {
-    position: absolute;
-    right: 0;
-    top: 0;
-    display: block;
-    width: 32px;
-    height: 0;
-    padding-top: 32px;
-    overflow: hidden;
-    border: none;
-    background: transparent;
-    opacity: 0.5;
-    line-height: 2em; // Make sure line box is taller than text, so text is pushed below hidden overflow.
+.js .js-reporting-page {
+  display: none;
+  visibility: hidden;
+}
 
-    &:hover,
-    &:focus {
-        opacity: 0.7;
-    }
+.js .js-reporting-page--single .js-reporting-page {
+  display: block;
+  visibility: visible;
+}
+.js .js-reporting-page--single .js-reporting-page button {
+  display: none;
+}
+.js .js-reporting-page--single .js-reporting-page--single-hidden {
+  display: none;
+}
+.js .js-reporting-page--active {
+  display: block;
+  visibility: visible;
+}
 
-    // Doing some gymnastics so we can reuse the existing .btn--close icon.
-    &:before {
-      content: "";
-      display: block;
-      width: 16px;
-      height: 16px;
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background-repeat: no-repeat;
-      background-size: 112px 16px;
-      @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
-      background-position: -32px 0;
-    }
+.no-js .js-back {
+  display: none;
 }
 
 /*** LAYOUT ***/
@@ -1628,6 +1617,9 @@ input.final-submit {
     background-position: flip(0 0, -16px 0);
   }
 }
+.problem-back--top {
+    margin-top: 0;
+}
 
 // Banner showing report status, above report title on individual report page.
 .banner {
@@ -1941,13 +1933,8 @@ html.js #map .noscript {
     }
 
     #problems_nearby,
-    #try_again,
     #mob_ok {
         width: 50%;
-    }
-
-    #try_again {
-        display: none;
     }
 
     .feed:after {
@@ -1987,57 +1974,6 @@ html.js #map .noscript {
 // "Selected" styling for the report-list-filter toggle when selected.
 .mobile-filters-active #map_filter {
     background: #000;
-}
-
-// On mobile, once #mob_ok has been pressed, the new report form is shown,
-// and .sub-map-links transforms into a completely different-looking set
-// of buttons for return back to the map.
-.sub-map-links.map_complete {
-    // Undo flex.
-    display: block;
-
-    // "Fade out" the map.
-    top: 30px;
-    background-color: rgba(#000, 0.3);
-
-    #problems_nearby {
-        display: none;
-    }
-
-    #try_again,
-    #mob_ok {
-        position: absolute;
-        display: block;
-        bottom: 0;
-    }
-
-    // Turn #try_again into a black button, centred above the viewport.
-    #try_again {
-        #{$left}: 25%; // along with width of 50%, centres it
-        margin-bottom: 6em;
-        background: rgba(0, 0, 0, 0.8);
-        @include border-radius(0.5em);
-    }
-
-    // Turn #mob_ok into a white "tab" overlapping the map.
-    #mob_ok {
-        #{$right}: 1em;
-        width: 4em;
-        background: #fff;
-        color: #000;
-
-        // "Down" arrow.
-        &:before {
-            content: "";
-            display: block;
-            width: 16px;
-            height: 16px;
-            margin: 2px auto;
-            background-size: 112px 16px;
-            @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
-            background-position: -32px 0;
-        }
-    }
 }
 
 .big-green-banner {
@@ -2081,10 +2017,13 @@ html.js #map .noscript {
   }
 }
 
-#change_asset_mobile {
+#change_asset_mobile,
+.map-page .js-mobile-not-an-asset,
+.only-map .category_meta_message {
     position: absolute;
     bottom: 3em;
     #{$left}: 0.25em;
+    #{$right}: 0.25em;
     padding: 0.25em;
     color: #fff;
     background-color: black;
@@ -2164,29 +2103,19 @@ img.pin {
   }
 }
 
-// When you're in the reporting flow on mobile, we hide the site-header
-// and make the map full screen to reduce distractions. JavaScript also
-// tweaks the text content of some of the map-related elements, to make
-// it more "app-like".
+// When you're in the reporting flow on mobile, we make the map full screen to
+// reduce distractions. JavaScript also tweaks the text content of some of the
+// map-related elements, to make it more "app-like".
 .map-fullscreen {
-  #site-header {
-    display: none;
-  }
-
   #map_box {
     position: absolute;
-    top: 0;
+    top: calc(60px + 0.25em);
     #{$left}: 0;
     #{$right}: 0;
     bottom: 0;
     height: auto; // override `.mobile #map_box` height:10em
     margin: 0;
     z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
-
-    &.above-form {
-      position: relative;
-      margin: 0 -1em;
-    }
   }
 }
 
@@ -2267,10 +2196,6 @@ label .muted {
 }
 .description_tips__heading--inline {
   display: inline-block;
-}
-
-#form_category_row > label:first-child {
-    margin-top: 0;
 }
 
 .box-warning,

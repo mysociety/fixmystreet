@@ -343,9 +343,9 @@ fixmystreet.assets.add(defaults, {
     road: true,
     actions: {
         found: function() {
-            var $div = $("#category_meta .js-gritting-notice");
+            var $div = $(".js-reporting-page.js-gritting-notice");
             if ($div.length) {
-                $div.show();
+                $div.removeClass('js-reporting-page--skip');
             } else {
                 var msg = "<div class='box-warning js-gritting-notice'>" +
                             "<h1>Winter Gritting</h1>" +
@@ -356,11 +356,11 @@ fixmystreet.assets.add(defaults, {
                             "policy</a>.</p>" +
                             "</div>";
                 $div = $(msg);
-                $div.prependTo("#category_meta");
+                fixmystreet.pageController.addNextPage('gritting', $div);
             }
         },
         not_found: function() {
-            $("#category_meta .js-gritting-notice").hide();
+            $('.js-reporting-page.js-gritting-notice').addClass('js-reporting-page--skip');
         }
     }
 });

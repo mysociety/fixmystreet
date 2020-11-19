@@ -1,6 +1,9 @@
 [% PROCESS 'report/new/form_heading.html' %]
 
-<div class="js-new-report-user-hidden">
+[% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
+
+<fieldset>
+    <div id="problem_form">
 
 [% IF report.used_map %]
     <ul class="change_location">
@@ -8,12 +11,6 @@
         <li class="change_location__search">[% loc('Or <a href="/">search for a different location</a>') %]</li>
     </ul>
 [% END %]
-
-</div>
-
-[% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
-
-<div class="js-new-report-user-hidden">
 
 <div id="js-top-message">
     [% PROCESS 'report/new/top_message.html' %]
@@ -30,13 +27,8 @@
 
 [% INCLUDE 'errors.html' %]
 
-</div>
-
-<fieldset>
-    <div id="problem_form">
-        <div class="js-new-report-user-hidden">
-            [% PROCESS 'report/new/form_report.html' %]
-        </div>
+        [% PROCESS 'report/new/form_report.html' %]
         [% PROCESS 'report/new/form_user.html' %]
+
     </div>
 </fieldset>

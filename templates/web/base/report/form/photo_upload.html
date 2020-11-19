@@ -3,6 +3,7 @@
     <label for="form_photo">
         <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
         [% IF c.cobrand.moniker == 'zurich' %][% loc('(Defect &amp; location of defect)') %][% END %]
+        [% loc('(optional)') %]
     </label>
 
       [% IF field_errors.photo %]

@@ -10,6 +10,7 @@ describe('Bromley cobrand', function() {
     cy.contains('Bromley');
     cy.wait('@prow');
     cy.wait('@report-ajax');
+    cy.get('#mob_ok').click();
   });
 
   it('fills the right of way field', function() {
@@ -19,6 +20,7 @@ describe('Bromley cobrand', function() {
 
   it('does not display asset based upon extra question', function() {
     cy.get('select').eq(1).select('Street Lighting and Road Signs');
+    cy.get('.js-reporting-page--next:visible').click();
     cy.get('select').eq(2).select('Non-asset');
     // https://stackoverflow.com/questions/47295287/cypress-io-assert-no-xhr-requests-to-url
     cy.on('fail', function(err) {
@@ -30,8 +32,11 @@ describe('Bromley cobrand', function() {
 
   it('displays assets based upon extra question', function() {
     cy.get('select').eq(1).select('Street Lighting and Road Signs');
+    cy.get('.js-reporting-page--next:visible').click();
     cy.get('select').eq(2).select('On in day');
     cy.wait('@lights');
+    cy.get('.js-reporting-page--next:visible').click();
+    cy.get('.mobile-map-banner').should('be.visible');
   });
 
 });

@@ -119,10 +119,15 @@ function add_to_uprn_select($select, assets) {
 
 function construct_uprn_select(assets, has_children) {
     old_uprn = $('#uprn').val();
-    $("#uprn_select").remove();
     $('.category_meta_message').html('');
-    var $div = $('<div class="extra-category-questions" id="uprn_select">');
+    var $div = $("#uprn_select");
+    if (!$div.length) {
+        $div = $('<div data-page-name="uprn" class="js-reporting-page extra-category-questions" id="uprn_select"></div>');
+        $div.insertBefore('.js-reporting-page[data-page-name="photo"]');
+    }
+    $div.removeClass('js-reporting-page--skip');
     if (assets.length > 1 || has_children) {
+        $div.empty();
         $div.append('<label for="uprn">Please choose a property:</label>');
         var $select = $('<select id="uprn" class="form-control" name="UPRN" required>');
         $select.append('<option value="">---</option>');
@@ -131,7 +136,7 @@ function construct_uprn_select(assets, has_children) {
     } else {
         $div.html('You have selected <b>' + assets[0].attributes.ADDRESS + '</b>');
     }
-    $div.appendTo('#js-post-category-messages');
+    $div.append("<button class='btn btn--block btn--final js-reporting-page--next'>Continue</button>");
 }
 
 $.each(layer_data, function(i, o) {
@@ -190,7 +195,7 @@ $.each(layer_data, function(i, o) {
             },
             asset_not_found: function() {
                 $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
-                $("#uprn_select").remove();
+                $("#uprn_select").addClass('js-reporting-page--skip');
                 fixmystreet.message_controller.asset_not_found.call(this);
             }
         }

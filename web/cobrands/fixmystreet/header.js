@@ -12,6 +12,6 @@ fixmystreet.cobrand = '[% c.cobrand.moniker %]';
         E.className += ' lazyload';
     }
     if (type == 'mobile') {
-        E.className += ' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" %]';
+        E.className += ' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" || page == "new" %]';
     }
 })(document);

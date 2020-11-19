@@ -55,7 +55,7 @@ fixmystreet.assets.add(defaults, {
     actions: {
         found: function(layer, feature) {
             if (fixmystreet.assets.selectedFeature()) {
-                $('#highways').remove();
+                $('.js-reporting-page--highways').remove();
                 return;
             }
             var current_road_name = $('#highways strong').first().text();
@@ -70,7 +70,7 @@ fixmystreet.assets.add(defaults, {
                     non_he_selected();
                 }
             } else {
-                $('#highways').remove();
+                $('.js-reporting-page--highways').remove();
                 add_highways_warning(new_road_name);
             }
         },
@@ -79,7 +79,7 @@ fixmystreet.assets.add(defaults, {
                 fixmystreet.body_overrides.remove_only_send();
                 fixmystreet.body_overrides.do_not_send('Highways England');
             }
-            $('#highways').remove();
+            $('.js-reporting-page--highways').remove();
         }
     }
 });
@@ -128,6 +128,7 @@ function non_he_selected() {
 function add_highways_warning(road_name) {
   var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>Highways England</strong>. ' +
                    'Does your report concern something on this road, or somewhere else (e.g a road crossing it)?<p></div>');
+  var $page = $('<div data-page-name="highwaysengland" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
   var $radios = $('<p class="segmented-control segmented-control--radio"></p>');
 
     $('<input>')
@@ -154,7 +155,12 @@ function add_highways_warning(road_name) {
         .addClass('btn')
         .appendTo($radios);
     $radios.appendTo($warning);
-    $('.change_location').after($warning);
+    $warning.wrap($page);
+    $page = $warning.parent();
+    $page.append('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
+
+    $('.js-reporting-page').first().before($page);
+    $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');
     he_selected();
 }
 

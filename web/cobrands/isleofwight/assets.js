@@ -272,7 +272,5 @@ fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
     }
 }));
 
-fixmystreet.message_controller.add_msg_after_bodies(defaults.body);
-
 
 })();

@@ -328,6 +328,9 @@ if ($opt->test_fixtures) {
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({ body => $bodies->{2498}, category => 'Glass broken' });
     $child_cat->set_extra_metadata(group => ['Bus Stops and Shelters']);
     $child_cat->update;
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({ body => $bodies->{2498}, category => 'Roadworks' });
+    $child_cat->set_extra_fields({ code => 'extra', datatype => 'string', order => 1, variable => 'true' });
+    $child_cat->update;
 }
 
 FixMyStreet::DB::Factory::ResponseTemplate->create({

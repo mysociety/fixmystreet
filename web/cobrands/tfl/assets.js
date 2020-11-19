@@ -27,108 +27,6 @@ if (fixmystreet.cobrand === 'tfl') {
     defaults.body = 'TfL';
 }
 
-/* Red routes (TLRN) asset layer & handling for disabling form when red route
-   is not selected for specific categories. */
-
-var tlrn_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
-        fillColor: "#ff0000",
-        fillOpacity: 0.3,
-        strokeColor: "#ff0000",
-        strokeOpacity: 1,
-        strokeWidth: 2
-    })
-});
-
-
-/* Reports in these categories can only be made on a red route */
-var tlrn_categories = [
-    "All out - three or more street lights in a row",
-    "Blocked drain",
-    "Damage - general (Trees)",
-    "Dead animal in the carriageway or footway",
-    "Debris in the carriageway",
-    "Fallen Tree",
-    "Flooding",
-    "Graffiti / Flyposting (non-offensive)",
-    "Graffiti / Flyposting (offensive)",
-    "Graffiti / Flyposting on street light (non-offensive)",
-    "Graffiti / Flyposting on street light (offensive)",
-    "Grass Cutting and Hedges",
-    "Hoardings blocking carriageway or footway",
-    "Light on during daylight hours",
-    "Lights out in Pedestrian Subway",
-    "Low hanging branches and general maintenance",
-    "Manhole Cover - Damaged (rocking or noisy)",
-    "Manhole Cover - Missing",
-    "Mobile Crane Operation",
-    "Other (TfL)",
-    "Pavement Defect (uneven surface / cracked paving slab)",
-    "Pavement Overcrowding",
-    "Pothole",
-    "Pothole (minor)",
-    "Roadworks",
-    "Scaffolding blocking carriageway or footway",
-    "Single Light out (street light)",
-    "Standing water",
-    "Street Light - Equipment damaged, pole leaning",
-    "Streetspace Feedback",
-    "Unstable hoardings",
-    "Unstable scaffolding",
-    "Worn out road markings"
-];
-
-function is_tlrn_category_only(category, bodies) {
-    return OpenLayers.Util.indexOf(tlrn_categories, category) > -1 &&
-        OpenLayers.Util.indexOf(bodies, 'TfL') > -1 &&
-        bodies.length <= 1;
-}
-
-var red_routes_layer = fixmystreet.assets.add(defaults, {
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/tfl",
-        params: {
-            TYPENAME: "RedRoutes"
-        }
-    },
-    name: "Red Routes",
-    max_resolution: 9.554628534317017,
-    road: true,
-    non_interactive: true,
-    always_visible: true,
-    all_categories: true,
-    nearest_radius: 0.1,
-    stylemap: tlrn_stylemap,
-    no_asset_msg_id: '#js-not-tfl-road',
-    actions: {
-        found: fixmystreet.message_controller.road_found,
-        not_found: function(layer) {
-            // Only care about this on TfL cobrand
-            if (fixmystreet.cobrand !== 'tfl') {
-                return;
-            }
-            var category = $('#form_category').val();
-            if (is_tlrn_category_only(category, fixmystreet.bodies)) {
-                fixmystreet.message_controller.road_not_found(layer);
-            } else {
-                fixmystreet.message_controller.road_found(layer);
-            }
-        }
-    }
-});
-if (red_routes_layer) {
-    red_routes_layer.events.register( 'loadend', red_routes_layer, function(){
-        // The roadworks layer may have finished loading before this layer, so
-        // ensure the filters to only show markers that intersect with a red route
-        // are re-applied.
-        var roadworks = fixmystreet.map.getLayersByName("Roadworks");
-        if (roadworks.length) {
-            // .redraw() reapplies filters without issuing any new requests
-            roadworks[0].redraw();
-        }
-    });
-}
-
 // This is required so that the found/not found actions are fired on category
 // select and pin move rather than just on asset select/not select.
 OpenLayers.Layer.TfLVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
@@ -141,9 +39,7 @@ OpenLayers.Layer.TfLVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset,
     CLASS_NAME: 'OpenLayers.Layer.TfLVectorAsset'
 });
 
-/* Point asset layers, bus stops and traffic lights. This comes after the red
- * route so its check for asset not clicked on happens after whether red route
- * clicked on or not */
+/* Point asset layers, bus stops and traffic lights. */
 
 var asset_defaults = $.extend(true, {}, defaults, {
     class: OpenLayers.Layer.TfLVectorAsset,
@@ -285,14 +181,117 @@ fixmystreet.assets.add(asset_defaults, {
             var $dates = $("<dd></dd>").appendTo($dl);
             $dates.text(attr.start + " until " + attr.end);
             $msg.prependTo('#js-post-category-messages');
-            $('#js-post-category-messages .category_meta_message').hide();
         },
         asset_not_found: function() {
             $(".js-roadworks-message-" + this.id).remove();
-            $('#js-post-category-messages .category_meta_message').show();
         }
     }
 
 });
+
+/* Red routes (TLRN) asset layer & handling for disabling form when red route
+   is not selected for specific categories.
+   This comes after the point assets so that any asset is deselected by the
+   time the check for the red-route only categories is run.
+ */
+
+var tlrn_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillColor: "#ff0000",
+        fillOpacity: 0.3,
+        strokeColor: "#ff0000",
+        strokeOpacity: 1,
+        strokeWidth: 2
+    })
+});
+
+
+/* Reports in these categories can only be made on a red route */
+var tlrn_categories = [
+    "All out - three or more street lights in a row",
+    "Blocked drain",
+    "Damage - general (Trees)",
+    "Dead animal in the carriageway or footway",
+    "Debris in the carriageway",
+    "Fallen Tree",
+    "Flooding",
+    "Graffiti / Flyposting (non-offensive)",
+    "Graffiti / Flyposting (offensive)",
+    "Graffiti / Flyposting on street light (non-offensive)",
+    "Graffiti / Flyposting on street light (offensive)",
+    "Grass Cutting and Hedges",
+    "Hoardings blocking carriageway or footway",
+    "Light on during daylight hours",
+    "Lights out in Pedestrian Subway",
+    "Low hanging branches and general maintenance",
+    "Manhole Cover - Damaged (rocking or noisy)",
+    "Manhole Cover - Missing",
+    "Mobile Crane Operation",
+    "Other (TfL)",
+    "Pavement Defect (uneven surface / cracked paving slab)",
+    "Pavement Overcrowding",
+    "Pothole",
+    "Pothole (minor)",
+    "Roadworks",
+    "Scaffolding blocking carriageway or footway",
+    "Single Light out (street light)",
+    "Standing water",
+    "Street Light - Equipment damaged, pole leaning",
+    "Streetspace Feedback",
+    "Unstable hoardings",
+    "Unstable scaffolding",
+    "Worn out road markings"
+];
+
+function is_tlrn_category_only(category, bodies) {
+    return OpenLayers.Util.indexOf(tlrn_categories, category) > -1 &&
+        OpenLayers.Util.indexOf(bodies, 'TfL') > -1 &&
+        bodies.length <= 1;
+}
+
+var red_routes_layer = fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: "https://tilma.mysociety.org/mapserver/tfl",
+        params: {
+            TYPENAME: "RedRoutes"
+        }
+    },
+    name: "Red Routes",
+    max_resolution: 9.554628534317017,
+    road: true,
+    non_interactive: true,
+    always_visible: true,
+    all_categories: true,
+    nearest_radius: 0.1,
+    stylemap: tlrn_stylemap,
+    no_asset_msg_id: '#js-not-tfl-road',
+    actions: {
+        found: fixmystreet.message_controller.road_found,
+        not_found: function(layer) {
+            // Only care about this on TfL cobrand
+            if (fixmystreet.cobrand !== 'tfl') {
+                return;
+            }
+            var category = $('#form_category').val();
+            if (is_tlrn_category_only(category, fixmystreet.bodies)) {
+                fixmystreet.message_controller.road_not_found(layer);
+            } else {
+                fixmystreet.message_controller.road_found(layer);
+            }
+        }
+    }
+});
+if (red_routes_layer) {
+    red_routes_layer.events.register( 'loadend', red_routes_layer, function(){
+        // The roadworks layer may have finished loading before this layer, so
+        // ensure the filters to only show markers that intersect with a red route
+        // are re-applied.
+        var roadworks = fixmystreet.map.getLayersByName("Roadworks");
+        if (roadworks.length) {
+            // .redraw() reapplies filters without issuing any new requests
+            roadworks[0].redraw();
+        }
+    });
+}
 
 })();

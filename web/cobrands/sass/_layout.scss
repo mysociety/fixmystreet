@@ -31,6 +31,8 @@ $primary_link_hover_color: null !default;
     display: none !important ;
 }
 
+.js-back { display: none; }
+
 body {
     color: $base_fg;
     background: $base_bg;

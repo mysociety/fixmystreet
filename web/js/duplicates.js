@@ -4,24 +4,12 @@
     // quickly remove them when we’re finished showing duplicates.
     var current_duplicate_markers;
 
-    // keep track of whether the suggestion UI has already been dismissed
-    // for this category
-    var dismissed = false;
-    var dismissed_category = null;
-
     // Report ID will be available on report inspect page,
     // but undefined on new report page.
     var report_id = $("#report_inspect_form .js-report-id").text() || undefined;
 
-    // Don't make another call whilst one is in progress
-    var in_progress = false;
-
     function refresh_duplicate_list(evt, params, category) {
         if (params && params.skip_duplicates) {
-            return;
-        }
-
-        if (in_progress) {
             return;
         }
 
@@ -53,33 +41,18 @@
             url_params.inline_maps = 1;
         }
 
-        if (category && params && params.check_duplicates_dismissal ) {
-            dismissed = category === dismissed_category;
-            dismissed_category = category;
-
-            if (!take_effect()) {
-                remove_duplicate_pins();
-                remove_duplicate_list();
-                return;
-            }
-        }
-
-        in_progress = true;
         $.ajax({
             url: nearby_url,
             data: url_params,
             dataType: 'json'
         }).done(function(response) {
-            if (response.pins.length && take_effect()) {
+            if (response.pins.length) {
                 render_duplicate_list(response);
-                render_duplicate_pins(response);
             } else {
-                remove_duplicate_pins();
                 remove_duplicate_list();
             }
         }).fail(function(){
             remove_duplicate_pins();
-            remove_duplicate_list();
         });
     }
 
@@ -95,13 +68,7 @@
         $("#js-duplicate-reports ul").empty().prepend( $reports );
         fixmystreet.set_up.fancybox_images();
 
-        $('#js-duplicate-reports').hide().removeClass('hidden').slideDown(function(){
-            in_progress = false;
-        });
-        if ( $('#problem_form').length ) {
-            $('.js-hide-if-invalid-category').slideUp();
-            $('.js-hide-if-invalid-category_extras').slideUp();
-        }
+        $('#js-duplicate-reports').removeClass('js-reporting-page--skip');
 
         if (!fixmystreet.map.events.extensions.buttonclick.isDeviceTouchCapable) {
             // Highlight map pin when hovering associated list item.
@@ -160,17 +127,14 @@
                 });
                 $li.find('.item-list__item--expandable__actions').append($button);
             });
+            if (fixmystreet.markers) {
+                current_duplicate_markers = fixmystreet.maps.markers_list( api_response.pins, true );
+            }
         }
     }
 
-    function render_duplicate_pins(api_response) {
-        if (!fixmystreet.markers) {
-            return;
-        }
-        var markers = fixmystreet.maps.markers_list( api_response.pins, true );
-        fixmystreet.markers.removeFeatures( current_duplicate_markers );
-        fixmystreet.markers.addFeatures( markers );
-        current_duplicate_markers = markers;
+    function render_duplicate_pins() {
+        fixmystreet.markers.addFeatures( current_duplicate_markers );
 
         // Hide any asset layer that might be visible and get confused with the duplicates
         var layers = fixmystreet.map.getLayersBy('assets', true);
@@ -184,15 +148,7 @@
     }
 
     function remove_duplicate_list() {
-        $('#js-duplicate-reports').slideUp(function(){
-            $(this).addClass('hidden');
-            $(this).find('ul').empty();
-            in_progress = false;
-        });
-        if ($('#problem_form').length && take_effect()) {
-            $('.js-hide-if-invalid-category').slideDown();
-            $('.js-hide-if-invalid-category_extras').slideDown();
-        }
+        $('#js-duplicate-reports').addClass('js-reporting-page--skip');
     }
 
     function remove_duplicate_pins() {
@@ -224,21 +180,6 @@
         refresh_duplicate_list(undefined, {}, category);
     }
 
-    function take_effect() {
-        // We do not want to do anything if any other message is being shown
-        if (document.getElementById('js-category-stopper')) {
-            return false;
-        }
-        if ($('.js-responsibility-message:visible').length) {
-            return false;
-        }
-        // On mobile only show once per category
-        if ($('html').hasClass('mobile') && dismissed) {
-            return false;
-        }
-        return true;
-    }
-
     // Want to show potential duplicates when a regular user starts a new
     // report, or changes the category/location of a partial report.
     $(fixmystreet).on('report_new:category_change', refresh_duplicate_list);
@@ -249,16 +190,17 @@
     // Also want to give inspectors a way to select a *new* duplicate report.
     $(document).on('click', "#js-change-duplicate-report", refresh_duplicate_list);
 
-    $('.js-hide-duplicate-suggestions').on('click', function(e){
-        e.preventDefault();
-        fixmystreet.duplicates.hide();
+    if ( $('#problem_form').length ) {
+        $('#js-duplicate-reports').removeClass('hidden'); // Handled by page code
+    }
+
+    $(fixmystreet).on('report_new:page_change', function(e, $from, $to) {
+        if ($to.hasClass('js-reporting-page--duplicates')) {
+            render_duplicate_pins();
+        }
+        if ($from.hasClass('js-reporting-page--duplicates')) {
+            remove_duplicate_pins();
+        }
     });
 
-    fixmystreet.duplicates = {
-        hide: function() {
-            remove_duplicate_pins();
-            remove_duplicate_list();
-            dismissed = true;
-        }
-    };
 })();
