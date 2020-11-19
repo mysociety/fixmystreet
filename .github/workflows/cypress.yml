@@ -29,18 +29,27 @@ jobs:
         path: |
           ~/.npm
           node_modules
-        key: ${{ runner.os }}-node-8-cypress-3.8.3
+        key: ${{ runner.os }}-node-8-cypress-3.8.3-coverage
 
     - name: Install packages
       run: |
         sudo apt install -y gettext
-        npm install cypress@3.8.3
+        npm install cypress@3.8.3 @cypress/code-coverage codecov
         vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
         echo "$(npm bin)" >> $GITHUB_PATH
 
     - name: Run Cypress tests
       run: |
-        bin/browser-tests run ${CYPRESS_RECORD_KEY:+--record}
+        bin/browser-tests --coverage run ${CYPRESS_RECORD_KEY:+--record}
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
+    - name: Upload code coverage results
+      run: codecov
+
+#    - name: Archive code coverage results
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: code-coverage-report
+#        path: coverage/lcov-report
