@@ -42,8 +42,10 @@ body, button {
     color: #222;
     background-color: #fff
 }
-input[disabled] {
-    color: #888;
+:disabled {
+    color: #555;
+    background-color: #eee;
+    opacity: 1;
 }
 
 /*
