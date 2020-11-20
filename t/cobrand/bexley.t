@@ -129,6 +129,7 @@ FixMyStreet::override_config {
             if (my $t = $test->{email}) {
                 my $email = $mech->get_email;
                 $t = join('@[^@]*', @$t);
+                is $email->header('From'), '"Test User" <do-not-reply@example.org>';
                 like $email->header('To'), qr/^[^@]*$t@[^@]*$/;
                 if ($test->{code} =~ /Confirm/) {
                     like $mech->get_text_body_from_email($email), qr/Site code: Road ID/;

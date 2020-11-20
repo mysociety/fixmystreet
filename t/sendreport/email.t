@@ -20,6 +20,11 @@ my $contact = $mech->create_contact_ok(
 );
 
 my $row = FixMyStreet::DB->resultset('Problem')->new( {
+    id => 123,
+    user => FixMyStreet::DB->resultset('User')->new({
+        email => 'test@example.net',
+        email_verified => 1,
+    }),
     bodies_str => '1000',
     category => 'category',
     cobrand => '',
@@ -67,5 +72,12 @@ foreach my $test ( {
         }
     };
 }
+
+subtest 'check use_verp' => sub {
+        my $e = FixMyStreet::SendReport::Email->new( use_verp => 0 );
+        is $e->envelope_sender($row), 'do-not-reply@example.org';
+        $e = FixMyStreet::SendReport::Email->new( use_verp => 1 );
+        like $e->envelope_sender($row), qr/fms-report-123-[0-9a-f]+\@example.org/;
+};
 
 done_testing();
