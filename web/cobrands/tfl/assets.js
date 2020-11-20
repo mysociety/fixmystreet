@@ -241,7 +241,14 @@ fixmystreet.assets.add(asset_defaults, {
             return false;
         }
         red_routes = red_routes[0];
-        return red_routes.getFeaturesWithinDistance(feature.geometry, 10).length > 0;
+
+        var point = feature.geometry;
+        var relevant = !!red_routes.getFeatureAtPoint(point);
+        if (!relevant) {
+            var nearest = red_routes.getFeaturesWithinDistance(point, 10);
+            relevant = nearest.length > 0;
+        }
+        return relevant;
     },
     select_action: true,
     actions: {

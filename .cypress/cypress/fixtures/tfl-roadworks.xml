@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.mysociety.org:80/mapserver/tfl?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=roadworks&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <gml:featureMember>
+      <ms:roadworks>
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>-36500 6707080</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:description>At the junction, road to be dug up for some pipe works.</ms:description>
+        <ms:status>Works started</ms:status>
+        <ms:works_ref>TFL_12345</ms:works_ref>
+        <ms:promoter>Transport For London</ms:promoter>
+        <ms:start>01/11/2020</ms:start>
+        <ms:location>Nearby</ms:location>
+        <ms:end>30/12/2020</ms:end>
+      </ms:roadworks>
+    </gml:featureMember>
+</wfs:FeatureCollection>
