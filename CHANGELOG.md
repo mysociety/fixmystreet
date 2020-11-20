@@ -3,6 +3,8 @@
 * Unreleased
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
+    - Admin improvements:
+        - Enable per-category hint customisation.
 
 * v3.1 (16th November 2020)
     - Security:

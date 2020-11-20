@@ -649,6 +649,19 @@ subtest "category groups" => sub {
     };
 };
 
+subtest "category hints" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $contact2->update( { extra => { title_hint => 'Example summary', detail_hint => 'Example detail' } } );
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
+        $mech->submit_form_ok( { with_fields => { category => 'Potholes' } } );
+        $mech->content_contains('Example summary');
+        $mech->content_contains('Example detail');
+    };
+};
+
 subtest "test report creation for a category that is non public" => sub {
     $mech->log_out_ok;
     $mech->clear_emails_ok;

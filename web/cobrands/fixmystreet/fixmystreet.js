@@ -409,6 +409,18 @@ $.extend(fixmystreet.set_up, {
   category_change: function() {
     // Deal with changes to report category.
 
+    function text_update(id, str) {
+        var $id = $(id);
+        if (!$id.data('original')) {
+            $id.data('original', $id.text());
+        }
+        if (str) {
+            $id.text(str);
+        } else {
+            $id.text($id.data('original'));
+        }
+    }
+
     // On the new report form, does this by asking for details from the server.
     // Delegation is necessary because #form_category may be replaced during the lifetime of the page
     $("#problem_form").on("change.category", "select#form_category", function(){
@@ -423,10 +435,10 @@ $.extend(fixmystreet.set_up, {
         }
 
         var category = $(this).val(),
-            data = fixmystreet.reporting_data.by_category[category],
+            data = fixmystreet.reporting_data.by_category[category] || {},
             $category_meta = $('#category_meta');
 
-        if (data) {
+        if (!$.isEmptyObject(data)) {
             fixmystreet.bodies = data.bodies || [];
         } else {
             fixmystreet.bodies = fixmystreet.reporting_data.bodies || [];
@@ -435,13 +447,13 @@ $.extend(fixmystreet.set_up, {
             fixmystreet.body_overrides.clear();
         }
 
-        if (data && data.councils_text) {
+        if (data.councils_text) {
             fixmystreet.update_councils_text(data);
         } else {
             // Use the original returned texts
             fixmystreet.update_councils_text(fixmystreet.reporting_data);
         }
-        if (data && data.category_extra) {
+        if (data.category_extra) {
             if ( $category_meta.length ) {
                 $category_meta.replaceWith( data.category_extra );
                 var $new_category_meta = $('#category_meta');
@@ -455,7 +467,7 @@ $.extend(fixmystreet.set_up, {
         } else {
             $category_meta.empty();
         }
-        if (data && data.non_public) {
+        if (data.non_public) {
             $(".js-hide-if-private-category").hide();
             $(".js-hide-if-public-category").removeClass("hidden-js").show();
             $('#form_non_public').prop('checked', true).prop('disabled', true);
@@ -464,13 +476,16 @@ $.extend(fixmystreet.set_up, {
             $(".js-hide-if-public-category").hide();
             $('#form_non_public').prop('checked', false).prop('disabled', false);
         }
-        if (data && data.allow_anonymous) {
+        if (data.allow_anonymous) {
             $('.js-show-if-anonymous').removeClass('hidden-js');
         } else {
             $('.js-show-if-anonymous').addClass('hidden-js');
         }
 
-        if (fixmystreet.message_controller && data && data.disable_form && data.disable_form.questions) {
+        text_update('#title-hint', data.title_hint);
+        text_update('#detail-hint', data.detail_hint);
+
+        if (fixmystreet.message_controller && data.disable_form && data.disable_form.questions) {
             $.each(data.disable_form.questions, function(_, question) {
                 if (question.message && question.code) {
                     $('#form_' + question.code).on('change.category', function() {

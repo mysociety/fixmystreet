@@ -70,7 +70,9 @@
     [% SET form_detail_placeholder = loc('e.g. ‘This pothole has been here for two months and…’') %]
 [% END %]
 
-[% IF form_detail_placeholder %]
+[% IF contact_detail_hint %]
+    <p class="form-hint" id="detail-hint">[% contact_detail_hint %]</p>
+[% ELSIF form_detail_placeholder %]
     <p class="form-hint" id="detail-hint">[% form_detail_placeholder %]</p>
 [% END %]
 

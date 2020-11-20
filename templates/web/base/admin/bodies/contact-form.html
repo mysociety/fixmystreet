@@ -4,6 +4,25 @@
 
   [% INCLUDE 'admin/bodies/_translations.html' %]
 
+  [% IF c.cobrand.enable_category_groups %]
+    <p>
+      <label>
+        [% loc('Parent categories') %]
+        [% IF contact.extra.group %]
+            [% FOR group IN contact.extra.group %]
+            <input class="form-control" type="text" name="group" value="[% group | html %]" size="30">
+            [% END %]
+        [% ELSE %]
+            <input class="form-control" type="text" name="group" value="" size="30">
+        [% END %]
+        <input class="hidden-js js-group-item-template form-control" type="text" name="group" value="" size="30">
+        <p class="hidden-nojs">
+          <button type="button" class="btn btn--small js-group-item-add">[% loc('Add another parent category') %]</button>
+        </p>
+      </label>
+    </p>
+  [% END %]
+
     <label for="destination">[% loc('Destination') %]</label>
     <p class="form-hint" id="destination-hint">
       [% IF body.can_be_devolved %]
@@ -46,6 +65,18 @@
             <p class="form-hint" id="state-staff-hint">[% loc('Only staff users will be able to add reports in this category.') %]</p>
         </div>
     </fieldset>
+
+    [% TRY %][% PROCESS 'report/new/_form_labels.html' %][% CATCH file %][% END %]
+    <label for="title-hint">[% loc('Summary hint text') %]</label>
+    <p class="form-hint" id="title-hint-hint">
+        Default is “[% form_title_placeholder OR loc('e.g. ‘10 inch pothole on Example St, near post box’') %]”
+    </p>
+    <input type="text" class="form-control" id="title-hint" aria-describedby="title-hint-hint" name="title_hint" size="30" value="[% contact.get_extra_metadata('title_hint') %]">
+    <label for="detail-hint">[% loc('Details hint text') %]</label>
+    <p class="form-hint" id="detail-hint-hint">
+        Default is “[% form_detail_placeholder.defined ? form_detail_placeholder : loc('e.g. ‘This pothole has been here for two months and…’') %]”
+    </p>
+    <input type="text" class="form-control" id="detail-hint" aria-describedby="detail-hint-hint" name="detail_hint" size="30" value="[% contact.get_extra_metadata('detail_hint') %]">
 
     <p class="form-check">
         <input type="checkbox" name="non_public" value="1" id="non_public" [% ' checked' IF contact.non_public %]>
@@ -122,25 +153,6 @@
     </p>
 
     [% INCLUDE 'admin/bodies/open311-form-fields.html', object = contact%]
-  [% END %]
-
-  [% IF c.cobrand.enable_category_groups %]
-    <p>
-      <label>
-        [% loc('Parent categories') %]
-        [% IF contact.extra.group %]
-            [% FOR group IN contact.extra.group %]
-            <input class="form-control" type="text" name="group" value="[% group | html %]" size="30">
-            [% END %]
-        [% ELSE %]
-            <input class="form-control" type="text" name="group" value="" size="30">
-        [% END %]
-        <input class="hidden-js js-group-item-template form-control" type="text" name="group" value="" size="30">
-        <p class="hidden-nojs">
-          <button type="button" class="btn btn--small js-group-item-add">[% loc('Add another parent category') %]</button>
-        </p>
-      </label>
-    </p>
   [% END %]
 
     <h2>[% loc('Extra data:') %] </h2>

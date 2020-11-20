@@ -37,6 +37,7 @@ subtest 'check contact creation' => sub {
 
     $mech->submit_form_ok( { with_fields => { 
         category   => 'test category',
+        title_hint => 'example in test category',
         email      => 'test@example.com',
         note       => 'test note',
         non_public => undef,
@@ -445,6 +446,13 @@ subtest 'check update disallowed message' => sub {
     }, sub {
         $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
         $mech->content_contains('even if this is unticked, only the problem reporter will be able to leave updates');
+    };
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bathnes',
+    }, sub {
+        $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
+        $mech->content_lacks('even if this is unticked');
     };
 };
 

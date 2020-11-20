@@ -283,6 +283,17 @@ sub update_contact : Private {
             $contact->unset_extra_metadata($_);
         }
     }
+
+    foreach (qw(title_hint detail_hint)) {
+        my $value = $c->get_param($_) || '';
+        $value = $self->trim($value);
+        if ($value) {
+            $contact->set_extra_metadata( $_ => $value );
+        } else {
+            $contact->unset_extra_metadata($_);
+        }
+    }
+
     if ( $c->user->is_superuser ) {
         if ( $c->get_param('hardcoded') ) {
             $contact->set_extra_metadata( hardcoded => 1 );
@@ -290,6 +301,7 @@ sub update_contact : Private {
             $contact->unset_extra_metadata('hardcoded');
         }
     }
+
     if ( my @group = $c->get_param_list('group') ) {
         @group = grep { $_ } @group;
         if (scalar @group == 0) {
