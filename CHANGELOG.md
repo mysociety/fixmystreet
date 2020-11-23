@@ -4,6 +4,7 @@
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.
+        - Use div for inspector form wrapped extra questions. #3250
 
 * v3.1 (16th November 2020)
     - Security:
