@@ -1454,11 +1454,13 @@ fixmystreet.fetch_reporting_data = function() {
 })(); // fetch_reporting_data closure
 
 fixmystreet.display = {
-  begin_report: function(lonlat, saveHistoryState) {
+  begin_report: function(lonlat, opts) {
+    opts = opts || {};
+
     lonlat = fixmystreet.maps.begin_report(lonlat);
 
     // Store pin location in form fields, and check coverage of point
-    fixmystreet.update_pin(lonlat, saveHistoryState);
+    fixmystreet.update_pin(lonlat, opts.saveHistoryState);
 
     // It's possible to invoke this multiple times in a row
     // (eg: by clicking on the map multiple times, to
@@ -1470,10 +1472,8 @@ fixmystreet.display = {
     // callback early, skipping the remainder of the setup
     // stuff.
     if (fixmystreet.page == 'new') {
-        if (fixmystreet.map.panTo) {
-            fixmystreet.map.panDuration = 100;
+        if (fixmystreet.map.panTo && !opts.noPan) {
             fixmystreet.map.panTo(lonlat);
-            fixmystreet.map.panDuration = 50;
         }
         return;
     }
@@ -1501,9 +1501,7 @@ fixmystreet.display = {
         fixmystreet.map.updateSize(); // required after changing the size of the map element
     }
     if (fixmystreet.map.panTo) {
-        fixmystreet.map.panDuration = 100;
         fixmystreet.map.panTo(lonlat);
-        fixmystreet.map.panDuration = 50;
     }
 
     $('#sub_map_links').hide();
@@ -1813,7 +1811,9 @@ $(function() {
                 } else if ('reportId' in e.state) {
                     fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
                 } else if ('newReportAtLonlat' in e.state) {
-                    fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
+                    fixmystreet.display.begin_report(e.state.newReportAtLonlat, {
+                        saveHistoryState: false
+                    });
                 } else if ('page_change' in e.state) {
                     fixmystreet.markers.protocol.use_page = true;
                     $('#show_old_reports').prop('checked', e.state.page_change.show_old_reports);

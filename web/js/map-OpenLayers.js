@@ -105,7 +105,9 @@ $.extend(fixmystreet.utils, {
         activate: function() {
             this._drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
                 onComplete: function(feature, e) {
-                    fixmystreet.update_pin( feature.geometry );
+                    var geom = feature.geometry,
+                        lonlat = new OpenLayers.LonLat(geom.x, geom.y);
+                    fixmystreet.display.begin_report(lonlat, { noPan: true });
                 }
             } );
             fixmystreet.map.addControl( this._drag );
@@ -120,13 +122,6 @@ $.extend(fixmystreet.utils, {
 
     $.extend(fixmystreet.maps, {
       update_pin: function(lonlat) {
-        // This function might be passed either an OpenLayers.LonLat (so has
-        // lon and lat), or an OpenLayers.Geometry.Point (so has x and y).
-        if (lonlat.x !== undefined && lonlat.y !== undefined) {
-            // It's a Point, convert to a LatLon
-            lonlat = new OpenLayers.LonLat(lonlat.x, lonlat.y);
-        }
-
         var transformedLonlat = lonlat.clone().transform(
             fixmystreet.map.getProjectionObject(),
             new OpenLayers.Projection("EPSG:4326")
