@@ -353,7 +353,7 @@ sub suppress_reporter_alerts {
 
 sub must_have_2fa {
     my ($self, $user) = @_;
-    return 1 if $user->is_superuser;
+    return 1 if $user->is_superuser && !FixMyStreet->staging_flag('skip_must_have_2fa');
     return 1 if $user->from_body && $user->from_body->name eq 'TfL';
     return 0;
 }
