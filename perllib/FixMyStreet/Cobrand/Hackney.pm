@@ -81,9 +81,9 @@ sub open311_extra_data {
     ];
 
     # Make sure contact 'email' set correctly for Open311
-    if (my $sent_to = $row->get_extra_metadata('sent_to')) {
-        $row->unset_extra_metadata('sent_to');
-        my $code = $sent_to->{$contact->email};
+    if (my $split_match = $row->get_extra_metadata('split_match')) {
+        $row->unset_extra_metadata('split_match');
+        my $code = $split_match->{$contact->email};
         $contact->email($code) if $code;
     }
 
@@ -162,7 +162,7 @@ sub get_body_sender {
         } elsif ($self->problem_is_within_area_type($problem, 'estate')) {
             $to = $estate;
         }
-        $problem->set_extra_metadata(sent_to => { $contact->email => $to });
+        $problem->set_extra_metadata(split_match => { $contact->email => $to });
         if (is_valid_email($to)) {
             return { method => 'Email', contact => $contact };
         }
@@ -174,11 +174,11 @@ sub get_body_sender {
 sub munge_sendreport_params {
     my ($self, $row, $h, $params) = @_;
 
-    my $sent_to = $row->get_extra_metadata('sent_to') or return;
-    $row->unset_extra_metadata('sent_to');
+    my $split_match = $row->get_extra_metadata('split_match') or return;
+    $row->unset_extra_metadata('split_match');
     for my $recip (@{$params->{To}}) {
         my ($email, $name) = @$recip;
-        $recip->[0] = $sent_to->{$email} if $sent_to->{$email};
+        $recip->[0] = $split_match->{$email} if $split_match->{$email};
     }
 }
 
