@@ -1,0 +1,17 @@
+{
+    "type": "FeatureCollection",
+    "crs":{"type": "name","properties":{"name": "EPSG:4326"}},
+    "features":[
+        {
+            "type": "Feature",
+            "geometry":{
+                "type": "Point",
+                "coordinates": [-0.141588, 51.501009]
+            },
+            "properties":{
+                "UPRN": "2000123",
+                "ADDRESS": "7b Address Somewhere London"
+            }
+        }
+    ]
+}

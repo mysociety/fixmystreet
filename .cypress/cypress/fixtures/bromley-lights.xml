@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <gml:featureMember>
+      <ms:Streetlights gml:id="Streetlights.T-72-1">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>2529.200300 6693827.044098</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:FEATURE_ID>T-72-1</ms:FEATURE_ID>
+      </ms:Streetlights>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Streetlights gml:id="Streetlights.T-72-2">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>2560.120185 6693804.169299</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:FEATURE_ID>T-72-2</ms:FEATURE_ID>
+      </ms:Streetlights>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Streetlights gml:id="Streetlights.105-W-3">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>2503.121822 6692021.931249</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:FEATURE_ID>105-W-3</ms:FEATURE_ID>
+      </ms:Streetlights>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Streetlights gml:id="Streetlights.105-W-4">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>2531.975248 6692066.092240</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:FEATURE_ID>105-W-4</ms:FEATURE_ID>
+      </ms:Streetlights>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Streetlights gml:id="Streetlights.105-W-5">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>2530.992639 6692108.303100</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:FEATURE_ID>105-W-5</ms:FEATURE_ID>
+      </ms:Streetlights>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Streetlights gml:id="Streetlights.105-W-6">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>2558.762738 6692144.487666</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:FEATURE_ID>105-W-6</ms:FEATURE_ID>
+      </ms:Streetlights>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Streetlights gml:id="Streetlights.105-W-7">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos>2562.257798 6692187.152666</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:FEATURE_ID>105-W-7</ms:FEATURE_ID>
+      </ms:Streetlights>
+    </gml:featureMember>
+</wfs:FeatureCollection>
+

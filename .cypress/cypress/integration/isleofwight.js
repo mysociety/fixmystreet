@@ -2,7 +2,6 @@ describe('When you look at the Island Roads site', function() {
 
   beforeEach(function() {
     cy.server();
-    cy.fixture('roads.xml');
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.visit('http://isleofwight.localhost:3001/');
     cy.contains('Island Roads');
@@ -14,11 +13,11 @@ describe('When you look at the Island Roads site', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
     cy.get('select:eq(4)').select('Potholes');
-    cy.contains('sent to Island Roads');
+    cy.contains('sent to Island Roads').should('be.visible');
     cy.get('select:eq(4)').select('Private');
-    cy.contains('sent to Island Roads');
+    cy.contains('sent to Island Roads').should('be.visible');
     cy.get('select:eq(4)').select('Extra');
-    cy.contains('Help Island Roads');
+    cy.contains('Help Island Roads').should('be.visible');
   });
 
   it('displays nearby roadworks', function() {
@@ -30,7 +29,7 @@ describe('When you look at the Island Roads site', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
     cy.wait('@roadworks');
-    cy.contains('Roadworks are scheduled near this location');
-    cy.contains('Parapet improvement');
+    cy.contains('Roadworks are scheduled near this location').should('be.visible');
+    cy.contains('Parapet improvement').should('be.visible');
   });
 });

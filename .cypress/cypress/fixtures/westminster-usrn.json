@@ -1,0 +1,16 @@
+{
+    "type": "FeatureCollection",
+    "crs": { "type": "name", "properties": { "name": "EPSG:4326" } },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[-0.1416,51.501009,0],[-0.14158,51.501009,0]]
+            },
+            "properties": {
+                "USRN": "USRN123"
+            }
+        }
+    ]
+}

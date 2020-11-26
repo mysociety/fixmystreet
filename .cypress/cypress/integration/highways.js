@@ -1,7 +1,6 @@
 describe('Highways England tests', function() {
     it('report as defaults to body', function() {
         cy.server();
-        cy.fixture('highways.xml');
         cy.route('**/mapserver/highways*', 'fixture:highways.xml').as('highways-tilma');
         cy.route('**/report/new/ajax*', 'fixture:highways-ajax.json').as('report-ajax');
         cy.visit('/');

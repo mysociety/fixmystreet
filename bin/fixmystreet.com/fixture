@@ -93,9 +93,21 @@ for my $cat ('Dropped Kerbs', 'Skips') {
 
 if ($opt->test_fixtures) {
     my $bodies;
+
+    my $params = {
+        name => 'Highways England',
+        area_id => 2608,
+        categories => ['Fallen sign', 'Driver on phone']
+    };
+    $bodies->{HE} = FixMyStreet::DB::Factory::Body->find_or_create($params);
+    my $cats = join(', ', @{$params->{categories}});
+    say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
+
     foreach (
+        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards'], name => 'Westminster City Council' },
+        { area_id => 2482, categories => ['Street Lighting and Road Signs'], name => 'Bromley Council' },
         { area_id => 2234, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire County Council' },
-        { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks'], name => 'Buckinghamshire Council' },
+        { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
@@ -160,20 +172,22 @@ if ($opt->test_fixtures) {
     });
     $child_cat->update;
 
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2217},
-        category => 'Parks',
-    });
-    $child_cat->set_extra_fields({
-        code => 'site_code',
-        datatype => 'string',
-        description => 'site code',
-        order => 100,
-        required => 'false',
-        variable => 'true',
-        automated => 'hidden_field',
-    });
-    $child_cat->update;
+    for my $cat ('Parks', 'Snow and ice problem/winter salting') {
+        $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+            body => $bodies->{2217},
+            category => $cat,
+        });
+        $child_cat->set_extra_fields({
+            code => 'site_code',
+            datatype => 'string',
+            description => 'site code',
+            order => 100,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        });
+        $child_cat->update;
+    }
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2483},
@@ -243,6 +257,67 @@ if ($opt->test_fixtures) {
             ]
         }
     );
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2482},
+        category => 'Street Lighting and Road Signs',
+    });
+    $child_cat->set_extra_fields({
+        code => 'service_sub_code',
+        datatype => 'singlevaluelist',
+        order => 1,
+        variable => 'true',
+        required => 'true',
+        values => [
+            { key => 'SL_ON_DAY', name => 'On in day' },
+            { key => 'SL_NEW', name => 'Non-asset' },
+        ],
+    }, {
+        code => 'prow_reference',
+        datatype => 'string',
+        order => 1,
+        variable => 'true',
+        required => 'false',
+        automated => 'hidden_field',
+    });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2504},
+        category => 'Damaged, dirty, or missing bin',
+    });
+    $child_cat->set_extra_fields({
+        code => 'bin_type',
+        datatype => 'singlevaluelist',
+        order => 1,
+        variable => 'true',
+        required => 'true',
+        values => [
+            { key => '1', name => 'Request new bin' },
+            { key => '2', name => 'Dirty bin' },
+        ],
+    });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2504},
+        category => 'Signs and bollards',
+    });
+    $child_cat->set_extra_fields({
+        code => 'featuretypecode',
+        datatype => 'singlevaluelist',
+        order => 1,
+        variable => 'true',
+        required => 'true',
+        values => [
+            { key => '1', name => 'Bollards' },
+            { key => '2', name => 'Nameplates' },
+        ],
+    }, {
+        code => 'USRN',
+        automated => 'hidden_field',
+    });
     $child_cat->update;
 
     FixMyStreet::DB->resultset('BodyArea')->create({ body_id => $bodies->{2498}->id, area_id => 2457 });

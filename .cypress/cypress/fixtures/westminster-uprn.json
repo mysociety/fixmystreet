@@ -1,0 +1,46 @@
+{
+    "type": "FeatureCollection", "crs": { "type": "name", "properties": { "name": "EPSG: 4326" } },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.141588, 51.501009]
+            }, "properties": {
+                "UPRN": "1000123",
+                "ADDRESS": "7 Address Somewhere London",
+                "PARENTCHILD": "Parent"
+            }
+        }, {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.141588, 51.501009]
+            }, "properties": {
+                "UPRN": "1000234",
+                "ADDRESS": "11-12 Address Somewhere London",
+                "PARENTCHILD": "Parent"
+            }
+        }, {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.141588, 51.501009]
+            }, "properties": {
+                "UPRN": "1000345",
+                "ADDRESS": "10 Address Somewhere London",
+                "PARENTCHILD": "Other"
+            }
+        }, {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.1411818, 51.499745]
+            }, "properties": {
+                "UPRN": "1000456",
+                "ADDRESS": "4 Address Somewhere London",
+                "PARENTCHILD": "Parent"
+            }
+        }
+    ]
+}

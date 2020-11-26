@@ -14,7 +14,9 @@ it('logs in without fuss', function() {
     cy.contains('Inspector').click();
     cy.url().should('include', '/my/planned');
 
-    cy.visit('http://borsetshire.localhost:3001/auth');
+    cy.contains('Your account').click();
+    cy.contains('Sign out').click();
+    cy.contains('Sign in').click();
     cy.get('[name=username]').type('super@example.org');
     cy.contains('Sign in with a password').click();
     cy.get('[name=password_sign_in]').type('password');
