@@ -1,0 +1,41 @@
+[% USE date %]
+<div class="footer-skyline"></div>
+<footer class="site-footer">
+    <div class="container">
+
+        <div class="site-footer__content">
+            <div class="site-footer__block site-footer__logo">
+                <div class="identity identity--crest">
+                    <a href="https://www.royalgreenwich.gov.uk/" class="identity__link">
+                    <span class="icon icon-logo-white identity__logo"></span>
+                    <span class="visually-hidden">Royal Borough of Greenwich</span>
+                </a>
+                </div>
+            </div>
+            <div class="site-footer__block site-footer__copyright-links">
+                <nav class="site-footer__links" aria-label="Footer Navigation">
+                    <ul class="list list--footer-nav">
+                        <li class="list__item"><a class="list__link" href="/about/privacy">Privacy and cookies</a></li>
+                        <li class="list__item"><a class="list__link" href="https://www.royalgreenwich.gov.uk/accessibility">Accessibility</a></li>
+                        <li class="list__item"><a class="list__link" href="https://www.royalgreenwich.gov.uk/statistics">Statistics</a></li>
+                        <li class="list__item"><a class="list__link" href="https://www.royalgreenwich.gov.uk/contact">Contact us</a></li>
+                    </ul>
+                </nav>
+                <section class="site-footer__information" aria-label="Copyright &amp; contact information for Royal Borough of Greenwich's online services">
+                    <p class="site-footer__rights">&copy; [% date.format(date.now, '%Y') %] Royal Borough of Greenwich</p>
+
+                    <p class="site-footer__address">
+                        The Woolwich Centre, 35 Wellington Street, Woolwich, SE18 6HQ. </p>
+                </section>
+            </div>
+        </div>
+    </div>
+</footer>
+<div class="societyworks-footer">
+    <div class="container">
+        <p>
+            Powered by
+            <a class="societyworks-footer__logo societyworks-footer__logo--fms-pro" href="https://www.societyworks.org/services/highways/">FixMyStreet Pro</a>
+        </p>
+    </div>
+</div>

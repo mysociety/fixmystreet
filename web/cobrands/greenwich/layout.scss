@@ -2,29 +2,29 @@
 @import "_fonts";
 @import "../sass/layout";
 
-#site-logo,
-body.frontpage #site-logo,
-body.twothirdswidthpage #site-logo
-{
-        position: relative;
-        top: 14px;
-        left: 14px;
-        margin: 0;
-        padding: 0;
-        background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
-        width: 170px;
-        height: 83px;
+#site-logo {
+    position: relative;
+    top: 14px;
+    margin: 0;
+    padding: 0;
+    @include svg-background-image("/cobrands/greenwich/images/greenwich-logo");
+    background-size: contain;
+    width: 170px;
+    height: 83px;
 }
 
 #front-main {
-    background-color: $base_bg;
+    background-color: $greenwich_light_grey;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
     padding-top: 0.5em;
     text-align: left;
 
     #front-main-container {
-        max-width: $container-max-width;
         background-color: transparent;
         padding: 1em 0;
+        .intro-wrap {
+            max-width: 720px;
+        }
     }
 
     #postcodeForm div {
@@ -32,22 +32,58 @@ body.twothirdswidthpage #site-logo
     }
 
     h1 {
-        color: $greenwich_dark_red;
         padding-bottom: 3em;
     }
 }
 
 #site-header {
     background: none;
-    padding: 0 1em; // "wave" background image means its easier to apply padding here than on .container
-
-    .container {
-        padding: 0; // let the #site-header padding do the work on mid-sized screens
-    }
+    color: $contrast_text;
 
     .container:first-child {
-        background: url("/cobrands/greenwich/mastWave.gif") 0 0 no-repeat;
         min-height: 110px;
+    }
+}
+
+body.authpage, body.twothirdswidthpage, body.alertpage {
+
+    #site-header {
+        .container:first-child {
+            min-height: 0;
+        }
+        .page-header-container, .fms-menu-container {
+            display: block;
+        }
+    }
+
+    .main-menu-container {
+        background: $greenwich_dark_grey;
+        margin: 0 -15px;
+        padding-top: 15px;
+        @media (min-width: 47em) and (max-width: 82em) {
+            padding: 1em 1.5em 0 1.5em;
+        }
+        .container {
+            min-height: 0;
+            h1 {
+                display: none;
+            }
+        }
+    }
+    .content {
+        padding: 0;
+    }
+}
+
+body.authpage, body.mappage {
+    .footer-skyline, .site-footer, .societyworks-footer {
+        display: none;
+    }
+}
+
+body.alertpage {
+    .content {
+        max-width: 640px;
     }
 }
 
@@ -56,12 +92,31 @@ body.frontpage {
         border-left: solid 4px $primary;
     }
 
-    // Greenwich positions the menu visually *below* the h1 on the homepage.
-    #fms-menu-desktop {
+    .main-menu-container {
+        background: $greenwich_dark_grey;
+        padding: 0 1em;
+    }
+
+    .page-header-container {
+        position: relative;
+        padding: 15px 0;
+    }
+
+    .page-header {
         position: absolute;
-        left: 0;
-        right: 0;
-        top: 150px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .fms-menu-container {
+        max-width: 1280px;
+        padding: 0;
+    }
+
+    .table-cell {
+        .content {
+            padding: 1em 0;
+        }
     }
 }
 
@@ -69,7 +124,9 @@ body.frontpage {
     display: none;
 }
 
-#greenwich-menu-desktop, #fms-menu-desktop, #greenwich-breadcrumb {
+#greenwich-menu-desktop,
+#fms-menu-desktop,
+#greenwich-breadcrumb {
     display: block;
     font-size: 15px;
     list-style: none;
@@ -82,28 +139,30 @@ body.frontpage {
         margin: 0;
         padding: 0.25em 0.5em;
 
-        span, a {
-            padding: 0.5em;
+        span,
+        a {
+            padding: 0;
         }
 
-        span, a:hover {
+        span,
+        a:hover {
             text-decoration: underline;
         }
     }
 }
 
 #greenwich-menu-desktop {
-    background: $greenwich_dark_grey;
     font-family: $heading-font;
-    font-style: italic;
-    border-top: solid 4px $primary;
-    border-bottom: solid 4px $greenwich_med_grey;
     text-align: right;
     padding-right: 1em;
+    font-weight: 400;
+    position: relative;
+    top: -40px;
 
     li {
-        span, a {
-            color: $nav_colour;
+        span,
+        a {
+            color: black;
         }
     }
 }
@@ -115,42 +174,51 @@ body.frontpage {
     li {
         padding: 0;
         margin: 0;
-        font-size: 11px;
+        font-size: 1em;
 
-        span, a {
-            color: black;
+        &::after {
+            content: "|";
+            display: inline;
+            padding: 0 0.5625rem 0 0.5625rem;
+        }
+        &:last-of-type::after {
+            content: none;
+        }
 
-            &.bc_arrow {
-                background: url('/cobrands/greenwich/bcArrow.gif') no-repeat right 0.4em;
-                padding: 0 15px 0 0;
-            }
+        span,
+        a {
+            color: $contrast_text;
         }
     }
 }
 
 #fms-menu-desktop {
-    background: $greenwich_light_grey;
+    background: transparent;
     margin-top: 0.5em;
+    padding-bottom: 1em;
 
     li {
+        padding: 0.25em 1em 0 0;
         a {
-            color: $greenwich_dark_grey;
+            color: $contrast_text;
+            &:hover {
+                color: $contrast_text;
+            }
         }
         span {
-            color: $greenwich_red;
+            color: $contrast_text;
         }
     }
 }
 
 body.mappage {
     #site-header {
-        background: $base_bg url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
-        background-size: contain;
-
-        // No more "wave" background on .container
         .container {
             min-height: 0;
             background: transparent;
+            #greenwich-menu-desktop {
+                display: none;
+            }
         }
     }
 
@@ -163,12 +231,10 @@ body.mappage {
     }
 
     #site-logo {
-        top: 5px;
-        left: 6px;
-        background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
-        background-size: 111px 54px;
-        width: 111px;
-        height: 54px;
+        height: $mappage-header-height;
+        width: 80px;
+        background-size: 77px 40px;
+        top: 0;
     }
 
     .nav-wrapper {
@@ -180,13 +246,31 @@ body.mappage {
     }
 
     .nav-menu {
-        a, span {
+        a,
+        span {
             color: $primary_text;
         }
         a:hover {
             text-decoration: underline;
         }
     }
+    // Around page
+    .pagination {
+        .next,
+        .prev {
+            color: $contrast_text;
+            border-radius: 0.25em;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .site-footer {
+        display: none;
+    }
+
+
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
@@ -242,7 +326,9 @@ body.twothirdswidthpage .content .sticky-sidebar {
                     border-left: none;
                 }
 
-                a, a:link, a:visited {
+                a,
+                a:link,
+                a:visited {
                     color: $primary_text;
                 }
             }
@@ -255,5 +341,155 @@ body.twothirdswidthpage .content .sticky-sidebar {
         border-bottom: solid 8px $greenwich_red;
         border-top: solid 48px $greenwich_dark_grey;
         height: 0;
+    }
+}
+
+.footer-skyline {
+    background-image: url(https://www.royalgreenwich.gov.uk/site/images/skyline-grey.svg);
+    background-position: bottom center;
+    background-repeat: repeat no-repeat;
+    background-size: contain;
+    @include flex(0 0 auto);
+    height: 125px;
+}
+
+footer {
+    margin: 0;
+}
+
+.site-footer {
+    background: $greenwich_dark_grey;
+    color: $contrast_text;
+    padding: 2.5rem 0 3rem;
+    text-align: center;
+    @include flex(0 0 auto);
+    overflow: hidden;
+    .list__link,
+    a {
+        color: $contrast_text;
+        white-space: nowrap;
+    }
+
+    .site-footer__block {
+        display: inline-block;
+    }
+    .site-footer__social {
+        margin-top: 2.5rem;
+        float: right;
+        margin-top: 0;
+        text-align: right;
+        width: 25%;
+        .site-footer__social-links {
+            .list--inline {
+                margin-top: 0.375rem;
+                padding-left: 0.25rem;
+            }
+        }
+    }
+    .site-footer__content {
+        float: none;
+        .site-footer__logo {
+            margin-bottom: 0;
+            width: 16.66667%;
+            .identity {
+                width: 100%;
+                float: left;
+                .identity__link {
+                    position: relative;
+                    .identity__logo {
+                        height: 110px;
+                        width: 100%;
+                        background-position: top;
+                        background-size: contain;
+                        display: block;
+                    }
+                    .icon-logo-white {
+                        background-position: center center;
+                        background-repeat: no-repeat;
+                        @include svg-background-image("/cobrands/greenwich/images/greenwich-logo-reversed");
+                    }
+                    .visually-hidden {
+                        border: 0;
+                        clip: rect(0 0 0 0);
+                        height: 1px;
+                        margin: -1px;
+                        overflow: hidden;
+                        padding: 0;
+                        position: absolute;
+                        width: 1px;
+                    }
+                }
+            }
+        }
+        .site-footer__block {
+            display: inline-block;
+            float: left;
+        }
+        .site-footer__copyright-links {
+            padding-left: 3rem;
+            text-align: left;
+            .site-footer__links {
+                .list--footer-nav {
+                    margin: 0 0 0.5rem;
+                    .list__item {
+                        display: inline-block;
+                        padding-right: 1.125rem;
+                        a {
+                            &:visited {
+                                color: $contrast_text;
+                            }
+                        }
+                    }
+                }
+            }
+            .site-footer__information {
+                .site-footer__rights {
+                    font-size: 1.375rem;
+                    margin-bottom: 0;
+                }
+                .site-footer__address {
+                    font-size: 1rem;
+                    font-weight: normal;
+                    margin: 0.125rem 0 0.375rem;
+                }
+                .site-footer__suppliers {
+                    font-size: 1rem;
+                    font-weight: normal;
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
+.societyworks-footer {
+    padding: 2em 0;
+    background: #2e3033;
+    color: rgba(255, 255, 255, 0.6);
+    .container {
+        p {
+            margin: 0;
+        }
+    }
+    .societyworks-footer__logo {
+        display: inline-block;
+        height: 0;
+        overflow: hidden;
+        padding-top: 24px;
+        width: 115px;
+        background-color: transparent;
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        background-size: 115px 24px;
+        @include svg-background-image("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo");
+        vertical-align: -7px;
+        margin-left: 0.5em;
+    }
+    .societyworks-footer__logo--fms-pro {
+        padding-top: 20px;
+        width: 146px;
+        background-size: 146px 20px;
+        @include svg-background-image("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo-fms-pro");
+        vertical-align: -5px;
     }
 }

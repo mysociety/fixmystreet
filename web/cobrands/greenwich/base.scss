@@ -6,47 +6,103 @@
 @import "../sass/base";
 @import "../sass/report_list_pins";
 
+body.frontpage {
+    color: $primary_text;
+    a,
+    .fake-link {
+        &:visited {
+            color: $links_visited;
+        }
+    }
+}
+
 #site-logo {
-    background: url("/cobrands/greenwich/logo.gif") 0 50% no-repeat;
-    background-size: contain;
-    width: 82px;
-    height: 40px;
-    padding: 0.25em 0;
+    @include svg-background-image("/cobrands/greenwich/images/greenwich-logo");
+    // background: url("/cobrands/greenwich/images/greenwich-logo.svg") 0 50% no-repeat;
+    background-size: 77px 40px;
+    width: 80px;
+    height: 60px;
 }
 
 #nav-link {
-  background: url('/cobrands/greenwich/tab-red.png') 0 0 no-repeat;
+    // Custom menu image to match the official Greenwich site.
+    @include svg-background-image("/cobrands/greenwich/images/menu");
+    background-size: 20px 20px;
+
+    // Don't vertically centre, as Greenwich #site-header
+    // includes the page title and breadcrumbs.
+    top: 0;
+    transform: none;
+
+    // Instead, just set a height equal to the height of #site-logo,
+    // and rely on the vertical centering of the background-image
+    padding-top: 60px;
 }
 
-
-#site-header {
-    background: $base_bg url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
-    background-size: cover;
+.main-menu-container {
+    background: $greenwich_dark_grey;
+    color: $contrast_text;
+    padding: 5px 0;
 }
 
-.item-list--reports__item, #front-main #postcodeForm {
+body.mappage,
+body.authpage,
+body.twothirdswidthpage,
+body.alertpage {
+    .page-header-container,
+    .fms-menu-container {
+        display: none;
+    }
+}
+
+body.twothirdswidthpage {
+    .sticky-sidebar {
+        .plain-list {
+            padding: 10px 0 0 0;
+        }
+    }
+}
+
+.item-list--reports__item,
+#front-main #postcodeForm {
     background-color: $greenwich_light_grey;
+}
+
+#front-main {
+    text-align: left;
 }
 
 #front-main #postcodeForm {
     margin-top: 1em;
+    div {
+        input#sub {
+            background: $greenwich_red;
+        }
+    }
 }
 
-label[for=pc] {
-    color: $greenwich_dark_red;
+label[for="pc"] {
+    color: $greenwich_red;
+    text-align: left;
 }
 
 #front_stats {
     color: $nav_colour;
 }
 
-#greenwich-menu-desktop, #fms-menu-desktop, #greenwich-breadcrumb {
+#greenwich-menu-desktop,
+#fms-menu-desktop,
+#greenwich-breadcrumb {
     display: none;
 }
 
 footer {
     ul li {
         list-style: none;
+        a {
+            color: $primary_text;
+            text-decoration: underline;
+        }
     }
 
     hr {
@@ -58,21 +114,53 @@ footer {
     }
 }
 
-h1, h2 {
-    font-style: italic;
+h1,
+h2 {
+    font-weight: 700;
+    line-height: 1.3;
 }
 
-button, input[type=submit], .btn, .green-btn {
+button,
+.btn,
+.green-btn {
     border: none;
-    border-radius: 0;
     color: white;
-    background: $greenwich_dark_grey;
-    border-bottom: solid 4px $greenwich_red;
+    background: $greenwich_red;
 
     &:hover {
         border: none;
-        border-bottom: solid 4px lighten($greenwich_red, 5%);
         text-decoration: underline;
-        background: lighten($greenwich_dark_grey, 2%);
+        color: white;
+        background: lighten($greenwich_red, 2%);
+    }
+}
+
+// Report page
+form#form_update_form {
+    fieldset {
+        div {
+            button.btn {
+                color: white !important;
+            }
+        }
+    }
+}
+
+// Sign in page
+form {
+    fieldset {
+        #form_sign_in {
+            p {
+                input.fake-link {
+                    color: $primary_text;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                    &:visited {
+                        color: $links_visited;
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,18 +1,27 @@
-    <a href="http://www.royalgreenwich.gov.uk/" id="site-logo">[% site_name %]</a>
+<a href="http://www.royalgreenwich.gov.uk/" id="site-logo">[% site_name %]</a>
+<ul id="greenwich-menu-desktop">
+    <li><a href="http://www.royalgreenwich.gov.uk/pay">Make a payment</a></li>
+    <li><a href="http://www.royalgreenwich.gov.uk/apply">Apply for it</a></li>
+    <li><a href="/">Report a problem</a></li>
+    <li><a href="http://www.royalgreenwich.gov.uk/contact">Contact us</a></li>
+</ul>
 </div>
-<div class="container main-menu-container">
-    <ul id="greenwich-menu-desktop">
-        <li><a href="http://www.royalgreenwich.gov.uk/pay">Make a payment</a></li>
-        <li><a href="http://www.royalgreenwich.gov.uk/apply">Apply for it</a></li>
-        <li><a href="/">Report a problem</a></li>
-        <li><a href="http://www.royalgreenwich.gov.uk/a_to_z">A to Z of services</a></li>
-        <li><a href="http://www.royalgreenwich.gov.uk/contact">Contact us</a></li>
-        <li><a href="http://www.royalgreenwich.gov.uk/about">About us</a></li>
-    </ul>
 
-    <ul id="greenwich-breadcrumb">
-        <li><a class="bc_arrow" href="http://www.royalgreenwich.gov.uk/">Home</a></li>
-        <li><a href="/">FixMyStreet</a></li>
-    </ul>
+<div class="main-menu-container">
+    <div class="container page-header-container">
 
-    [% INCLUDE "main_nav.html" hide_privacy_link=1 ul_id="fms-menu-desktop" ul_class="" omit_wrapper=1 %]
+        <div class="page-header">
+            <ul id="greenwich-breadcrumb">
+                <li class="greenwich-breadcrumb__list-item"><a class="bc_arrow"
+                        href="http://www.royalgreenwich.gov.uk/">Home</a></li>
+                <li><a href="/">FixMyStreet</a></li>
+            </ul>
+
+            <h1>[% loc('Report a street cleaning or parks issue in Royal Greenwich') %]</h1>
+        </div>
+
+    </div>
+
+    <div class="container fms-menu-container">
+        [% INCLUDE "main_nav.html" hide_privacy_link=1 ul_id="fms-menu-desktop" ul_class="" omit_wrapper=1 %]
+    </div>
