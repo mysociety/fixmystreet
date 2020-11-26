@@ -1,4 +1,6 @@
+[% IF NOT bodyclass.match('mappage') %]
 [% TRY %][% PROCESS 'footer_extra.html' %][% CATCH file %][% END %]
+[% END %]
 
 [% PROCESS 'common_scripts.html' %]
 
