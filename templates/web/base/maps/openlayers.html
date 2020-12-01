@@ -47,8 +47,29 @@
     [% END %]
     <img id="loading-indicator" class="hidden" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
 
-[% IF NOT around_page AND map_sub_links %]
+<div class="map-links">
+  [% IF map_type_toggle %]
+    [% IF c.config.BING_MAPS_API_KEY OR c.cobrand.moniker == 'zurich' %]
+      [% aerial = c.req.params.aerial %]
+      [% aerial = 1 IF c.cobrand.moniker == 'zurich' AND NOT c.req.params.aerial.defined %]
+      [% IF aerial %]
+        <a class="map-layer-toggle roads" rel="nofollow" href="[% c.uri_with( { aerial => 0 } ) %]">[% loc('Road map') %]</a>
+      [% ELSE %]
+        <a class="map-layer-toggle aerial" rel="nofollow" href="[% c.uri_with( { aerial => 1 } ) %]">[% loc('Aerial map') %]</a>
+      [% END %]
+    [% END %]
+  [% END %]
+
+  [% IF page == "around" %]
+    [% IF c.req.params.no_pins %]
+      <a class="map-pins-toggle" rel="nofollow" href="[% c.uri_with( { no_pins => 0 } ) %]">[% loc('Show pins') %]</a>
+    [% ELSE %]
+      <a class="map-pins-toggle" rel="nofollow" href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
+    [% END %]
+  [% END %]
+</div>
+
+[%# May be filled by JS e.g. around filters, or Expand map ~%]
 <p class="sub-map-links" id="sub_map_links">
-     [% map_sub_links | safe %]
+    [% map_sub_links | safe %]
 </p>
-[% END %]

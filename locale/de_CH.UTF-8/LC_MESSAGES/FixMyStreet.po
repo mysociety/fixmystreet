@@ -367,8 +367,8 @@ msgstr ""
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:67
 #: templates/web/base/maps/fms.html:5 templates/web/base/maps/osm.html:5
-msgid "Aerial"
-msgstr ""
+msgid "Aerial map"
+msgstr "Luftbild"
 
 #: templates/web/base/auth/change_password.html:51
 msgid "Again:"
@@ -3827,8 +3827,8 @@ msgstr ""
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:68
 #: templates/web/base/maps/fms.html:3 templates/web/base/maps/osm.html:3
-msgid "Roads"
-msgstr ""
+msgid "Road map"
+msgstr "Stadtplan"
 
 #: templates/web/base/admin/roles/index.html:5
 msgid "Role"

@@ -1,5 +1,1 @@
-[% map_sub_links = BLOCK %]
-<a class="hidden-nojs" id="map_layer_toggle" href="">[% loc('Satellite') %]</a>
-[% END %]
-
-[% map_html = INCLUDE maps/openlayers.html %]
+[% map_html = INCLUDE maps/openlayers.html map_type_toggle = 1 %]

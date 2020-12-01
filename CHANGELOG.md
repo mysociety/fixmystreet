@@ -1,6 +1,8 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - New aerial map toggle.
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.

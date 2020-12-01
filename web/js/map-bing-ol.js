@@ -12,25 +12,13 @@ fixmystreet.maps.config = function() {
     }
 };
 
-(function() {
-    $(function(){
-        $('#map_layer_toggle').click(function(e) {
-            e.preventDefault();
-            var $this = $(this);
-            if ($this.text() == translation_strings.map_aerial) {
-                $this.text(translation_strings.map_roads);
-                fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
-            } else {
-                $this.text(translation_strings.map_aerial);
-                fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
-            }
-        });
-        // If page loaded with Aerial as starting, rather than default road
-        if ($('#map_layer_toggle').text() == translation_strings.map_roads) {
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
-        }
-    });
-})();
+$(function(){
+    $('.map-layer-toggle').on('click', fixmystreet.maps.toggle_base);
+    // If page loaded with Aerial as starting, rather than default road
+    if ($('.map-layer-toggle').text() == translation_strings.map_roads) {
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+    }
+});
 
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     tile_base: '//t{S}.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/${id}?mkt=en-US&it=G,L&src=t&shading=hill&og=969&n=z',

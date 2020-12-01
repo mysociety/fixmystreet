@@ -107,13 +107,8 @@ fixmystreet.maps.matrix_ids = [
     }
 
     $(function(){
-        $('#map_layer_toggle').toggle(function(){
-            $(this).text('Luftbild');
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
-        }, function(){
-            $(this).text('Stadtplan');
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
-        });
+        fixmystreet.maps.base_layer_aerial = true;
+        $('.map-layer-toggle').click(fixmystreet.maps.toggle_base);
 
         /* Admin dragging of pin */
         if (fixmystreet.page == 'admin') {

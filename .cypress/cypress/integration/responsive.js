@@ -12,12 +12,6 @@ describe('Front page responsive design tests', function() {
         cy.get('a#report-cta').should('be.visible');
     });
 
-    it('Shows correct things on tablet', function() {
-        cy.viewport(800, 800);
-        cy.visit('/');
-        cy.get('a#report-cta').should('not.be.visible');
-    });
-
     it('Shows correct things on desktop', function() {
         cy.viewport(1024, 800);
         cy.visit('/');
@@ -39,30 +33,16 @@ describe('Around page responsive design tests', function() {
         cy.cleanUpXHR();
     });
 
-    it('Shows correct things on tablet', function() {
-        cy.viewport(800, 800);
-        cy.visit('/around?pc=' + Cypress.env('postcode') + '&js=1');
-        cy.get('.mobile-map-banner').should('not.be.visible');
-        cy.get('#map_sidebar').should('be.visible');
-        cy.get('#side-form').should('not.be.visible');
-        cy.get('#sub_map_links').should('be.visible');
-        cy.get('#map_links_toggle').should('be.visible');
-        cy.get('#map_box').click(200, 200);
-        cy.get('#sub_map_links').should('be.visible');
-        cy.get('#side-form').should('be.visible');
-        cy.cleanUpXHR();
-    });
-
     it('Shows correct things on desktop', function() {
         cy.viewport(1024, 800);
         cy.visit('/around?pc=' + Cypress.env('postcode') + '&js=1');
         cy.get('.mobile-map-banner').should('not.be.visible');
         cy.get('#map_sidebar').should('be.visible');
-        cy.get('#sub_map_links').should('be.visible');
-        cy.get('#map_links_toggle').should('be.visible');
+        cy.get('#sub_map_links').should('not.be.visible');
+        cy.get('#map_links_toggle').should('not.be.visible');
         cy.get('#side-form').should('not.be.visible');
         cy.get('#map_box').click(200, 200);
-        cy.get('#sub_map_links').should('be.visible');
+        cy.get('#sub_map_links').should('not.be.visible');
         cy.get('#side-form').should('be.visible');
         cy.cleanUpXHR();
     });

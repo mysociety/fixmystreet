@@ -1713,6 +1713,10 @@ html.js #map .noscript {
 #fms_pan_zoom {
   top: 0.5em;
   #{$right}: 0.5em;
+
+  .map-reporting & {
+    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
+  }
 }
 
 #fms_pan_zoom_panup,
@@ -1779,6 +1783,71 @@ html.js #map .noscript {
   top: 44px;
 }
 
+.map-links {
+  $panzoom-button-height: 2.75em; // 44px
+  $panzoom-gutter: 0.5em;
+
+  display: none; // Not shown unless full screen on mobile
+  position: absolute;
+  #{$right}: $panzoom-gutter;
+  top: $panzoom-gutter + ( $panzoom-button-height * 2 );
+
+  @include clearfix();
+
+  .map-reporting & {
+    // #fms_pan_zoom has { top: 2.75em } during reporting,
+    // rather than { top: 0.5em }.
+    top: 2.75em + ( $panzoom-button-height * 2 );
+  }
+
+  .map-fullscreen & {
+    display: block;
+  }
+
+  & > * {
+    display: block;
+    float: #{$right};
+    clear: both;
+    overflow: hidden;
+    width: 36px;
+    height: 0;
+    padding-top: 36px;
+    opacity: 0.85;
+    background: #222;
+    background-position: flip(100% 0, 0 0);
+    background-repeat: no-repeat;
+    background-size: 36px 36px;
+    border-radius: 5px;
+    margin-top: $panzoom-gutter; // vertical space between links
+
+    &:hover, &:focus {
+      opacity: 1;
+    }
+    &:hover {
+      overflow: visible;
+      width: auto;
+      height: auto;
+      padding: flip(6px 40px 6px 10px, 6px 10px 6px 40px);
+      line-height: 24px;
+      white-space: nowrap;
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+
+  .map-layer-toggle {
+    @include svg-background-image('/cobrands/fixmystreet/images/map-layer-aerial');
+  }
+
+  .map-layer-toggle.roads {
+    @include svg-background-image('/cobrands/fixmystreet/images/map-layer-roads');
+  }
+
+  .map-pins-toggle {
+    @include svg-background-image('/cobrands/fixmystreet/images/hide-pins-link');
+  }
+}
+
 %sub-map-link-icon {
     content: "";
     display: inline-block;
@@ -1835,11 +1904,6 @@ html.js #map .noscript {
     .feed:after {
         @extend %sub-map-link-icon;
         background-position: -12px 0;
-    }
-
-    #hide_pins_link:after {
-        @extend %sub-map-link-icon;
-        background-position: -24px 0;
     }
 
     #fms_shortlist_all:after {
@@ -1925,10 +1989,6 @@ html.js #map .noscript {
             background-position: -32px 0;
         }
     }
-}
-
-.big-hide-pins-link {
-    display: none; // will become `block` in layout.scss
 }
 
 .big-green-banner {
@@ -2078,12 +2138,6 @@ img.pin {
       position: relative;
       margin: 0 -1em;
     }
-  }
-}
-
-.map-reporting {
-  #fms_pan_zoom {
-    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
   }
 }
 

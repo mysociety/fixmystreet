@@ -565,8 +565,7 @@ body.authpage {
 #fms_pan_zoom_panleft,
 #fms_pan_zoom_panright,
 #fms_pan_zoom_zoomin,
-#fms_pan_zoom_zoomout,
-.big-hide-pins-link {
+#fms_pan_zoom_zoomout {
   opacity: 0.85;
   &:hover {
     opacity: 1;
@@ -588,6 +587,22 @@ body.authpage {
   #{$left}: auto !important;
 }
 
+.map-links {
+  $panzoom-height: 36px + 36px + 36px + 22px + 44px + 44px;
+  $panzoom-gutter: 22px;
+  $panzoom-indent: (0.5 * 16px); // 0.5em
+  $zoom-indent: 30px;
+
+  #{$right}: $panzoom-indent + $zoom-indent;
+  top: $panzoom-indent + $panzoom-height;
+
+  & > * {
+    margin-top: $panzoom-gutter;
+  }
+
+  display: block; // Always shown on desktop
+}
+
 // Dock to side of screen, rather than filling 100% width.
 .sub-map-links {
   #{$left}: auto;
@@ -595,44 +610,6 @@ body.authpage {
 
   a {
     padding: 0.5em 1em;
-  }
-}
-
-// Show the extra button if there is vertical space.
-@media (min-height: 450px) {
-  .big-hide-pins-link {
-    $fms_pan_zoom_top: 8px;
-    $fms_pan_zoom_right: 8px;
-    $fms_pan_zoom_zoomout_top: 174px;
-    $fms_pan_zoom_zoomout_right: 30px;
-    $fms_pan_zoom_zoomout_height: 44px;
-    $gap: 22px;
-
-    display: block;
-    position: absolute;
-    top: $fms_pan_zoom_top + $fms_pan_zoom_zoomout_top + $fms_pan_zoom_zoomout_height + $gap;
-    #{$right}: $fms_pan_zoom_right + $fms_pan_zoom_zoomout_right;
-    border-radius: 5px;
-    color: #fff;
-    width: 36px;
-    height: 0;
-    padding-top: 36px;
-    overflow: hidden;
-
-    background: #222;
-    background-size: 36px 36px;
-    background-repeat: no-repeat;
-    background-position: flip(100% 0, 0 0);
-    @include svg-background-image('/cobrands/fixmystreet/images/hide-pins-link');
-
-    &:hover {
-      text-decoration: none;
-      color: #fff;
-      width: auto;
-      height: auto;
-      padding: flip(6px 40px 6px 10px, 6px 10px 6px 40px);
-      overflow: visible;
-    }
   }
 }
 

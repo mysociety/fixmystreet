@@ -18,6 +18,12 @@
     [% ward_text = loc( 'Wards of this council' ) %]
 [% END %]
 
+[% IF c.user && c.user.has_body_permission_to('planned_reports') %]
+[% map_sub_links = BLOCK %]
+    <a id="fms_shortlist_all" class="hidden">[% loc('Shortlist all visible') %]</a>
+[% END %]
+[% END %]
+
 [%
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
@@ -28,12 +34,6 @@
 %]
 
 [% map_html | safe %]
-
-[% IF c.user && c.user.has_body_permission_to('planned_reports') %]
-  <p class="sub-map-links" id="sub_map_links">
-    <a id="fms_shortlist_all" class="hidden">[% loc('Shortlist all visible') %]</a>
-  </p>
-[% END %]
 
 </div>
 <div id="map_sidebar">

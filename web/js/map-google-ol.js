@@ -1,18 +1,12 @@
 $(function(){
-    $('#map_layer_toggle').on('click', function(e){
-        e.preventDefault();
-        var $t = $(this), text = $t.text();
-        if (text == translation_strings.map_map) {
-            $t.text(translation_strings.map_satellite);
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
-        } else {
-            $t.text(translation_strings.map_map);
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
-        }
-    });
+    $('.map-layer-toggle').on('click', fixmystreet.maps.toggle_base);
+    // If page loaded with Aerial as starting, rather than default road
+    if ($('.map-layer-toggle').text() == translation_strings.map_roads) {
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+    }
     // jshint undef:false
     if (typeof fixmystreet_google_default !== 'undefined' && fixmystreet_google_default == 'satellite') {
-        $('#map_layer_toggle').click();
+        $('.map-layer-toggle').click();
     }
 });
 

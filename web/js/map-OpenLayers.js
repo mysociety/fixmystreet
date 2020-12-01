@@ -193,7 +193,7 @@ $.extend(fixmystreet.utils, {
         // link so that it updates the text in case they go
         // back
         if ( ! fixmystreet.markers.getVisibility() ) {
-            $('#hide_pins_link').click();
+            $('.map-pins-toggle').click();
         }
         return lonlat;
       },
@@ -479,6 +479,20 @@ $.extend(fixmystreet.utils, {
           control.events.register("locationupdated", null, updateGeolocationMarker);
           fixmystreet.map.addControl(control);
           control.activate();
+      },
+      toggle_base: function(e) {
+          e.preventDefault();
+          var $this = $(this);
+          var aerial = fixmystreet.maps.base_layer_aerial ? 0 : 1;
+          if ($this.text() == translation_strings.map_aerial) {
+              $this.text(translation_strings.map_roads);
+              $(this).toggleClass('roads aerial');
+              fixmystreet.map.setBaseLayer(fixmystreet.map.layers[aerial]);
+          } else {
+              $this.text(translation_strings.map_aerial);
+              $(this).toggleClass('roads aerial');
+              fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1-aerial]);
+          }
       }
     });
 
@@ -891,16 +905,16 @@ $.extend(fixmystreet.utils, {
             zoomToBounds( fixmystreet.markers.getDataExtent() );
         }
 
-        $('#hide_pins_link, .big-hide-pins-link').click(function(e) {
+        $('.map-pins-toggle').click(function(e) {
             e.preventDefault();
             if (this.innerHTML == translation_strings.show_pins) {
                 fixmystreet.markers.setVisibility(true);
                 fixmystreet.select_feature.activate();
-                $('#hide_pins_link, .big-hide-pins-link').html(translation_strings.hide_pins);
+                $('.map-pins-toggle').html(translation_strings.hide_pins);
             } else if (this.innerHTML == translation_strings.hide_pins) {
                 fixmystreet.markers.setVisibility(false);
                 fixmystreet.select_feature.deactivate();
-                $('#hide_pins_link, .big-hide-pins-link').html(translation_strings.show_pins);
+                $('.map-pins-toggle').html(translation_strings.show_pins);
             }
             if (typeof ga !== 'undefined') {
                 ga('send', 'event', 'toggle-pins-on-map', 'click');

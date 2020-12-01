@@ -28,7 +28,7 @@
     );
 
     PROCESS "report/photo-js.html";
-    PROCESS "maps/${map.type}.html" around_page = 1;
+    PROCESS "maps/${map.type}.html";
 
     # Only used by Zurich
     TRY; sidebar_html = PROCESS 'report/new/sidebar.html' js = 1 report.used_map = 1; CATCH file; END;
@@ -59,22 +59,7 @@
     [% END %]
 [% END %]
 
-    [% map_html | safe %]
-
-    [% IF c.req.params.no_pins %]
-        <a class="big-hide-pins-link" rel='nofollow' href="[% c.uri_with( { no_pins => 0 } ) %]">[% loc('Show pins') %]</a>
-    [% ELSE %]
-        <a class="big-hide-pins-link" rel='nofollow' href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
-    [% END %]
-
-        <p class="sub-map-links" id='sub_map_links'>
-            [% map_sub_links | safe %]
-            [% IF c.req.params.no_pins %]
-                <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => 0 } ) %]">[% loc('Show pins') %]</a>
-            [% ELSE %]
-                <a id='hide_pins_link' rel='nofollow' href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
-            [% END %]
-        </p>
+        [% map_html | safe %]
 
         <div class="mobile-map-banner">
             <a href="/">[% loc('Home') %]</a>

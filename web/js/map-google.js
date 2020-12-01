@@ -206,19 +206,19 @@ fixmystreet.maps = {};
         }
         */
 
-        $('#hide_pins_link, .big-hide-pins-link').click(function(e) {
+        $('.map-pins-toggle').click(function(e) {
             var i, m;
             e.preventDefault();
             if (this.innerHTML == translation_strings.show_pins) {
                 for (m=0; m<fixmystreet.markers.length; m++) {
                     fixmystreet.markers[m].setMap(fixmystreet.map);
                 }
-                $('#hide_pins_link, .big-hide-pins-link').html(translation_strings.hide_pins);
+                $('.map-pins-toggle').html(translation_strings.hide_pins);
             } else if (this.innerHTML == translation_strings.hide_pins) {
                 for (m=0; m<fixmystreet.markers.length; m++) {
                     fixmystreet.markers[m].setMap(null);
                 }
-                $('#hide_pins_link, .big-hide-pins-link').html(translation_strings.show_pins);
+                $('.map-pins-toggle').html(translation_strings.show_pins);
             }
             if (typeof ga !== 'undefined') {
                 ga('send', 'event', 'toggle-pins-on-map', 'click');

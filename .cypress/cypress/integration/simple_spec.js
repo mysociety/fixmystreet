@@ -1,5 +1,5 @@
 describe('Clicking the map', function() {
-    before(function(){
+    beforeEach(function(){
         cy.visit('/');
         cy.contains('Go');
         cy.get('[name=pc]').type(Cypress.env('postcode'));
@@ -23,6 +23,18 @@ describe('Clicking the map', function() {
         cy.visit('http://fixmystreet.localhost:3001/_test/setup/simple-service-check').then(function(w) {
             expect(w.document.documentElement.innerText).to.equal('desktop');
         });
+    });
+
+    it('map pins toggle okay', function() {
+        cy.get('.map-layer-toggle').click();
+        cy.get('.map-layer-toggle').should('have.class', 'roads');
+        cy.get('.map-layer-toggle').click();
+        cy.get('.map-layer-toggle').should('have.class', 'aerial');
+
+        cy.get('.map-pins-toggle').click();
+        cy.get('.map-pins-toggle').should('contain', 'Show pins');
+        cy.get('.map-pins-toggle').click();
+        cy.get('.map-pins-toggle').should('contain', 'Hide pins');
     });
 });
 

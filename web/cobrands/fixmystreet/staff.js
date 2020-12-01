@@ -507,15 +507,20 @@ $.extend(fixmystreet.maps, {
   },
 
   show_shortlist_control: function() {
-    var $shortlistButton = $('#fms_shortlist_all');
+    var $shortlistButton = $('#fms_shortlist_all'),
+        $sub_map_links = $('#sub_map_links');
     if ($shortlistButton === undefined || fixmystreet.page != "reports" ) {
       return;
     }
 
     if (fixmystreet.map.getZoom() >= 14) {
       $shortlistButton.removeClass('hidden');
+      $sub_map_links.show();
     } else {
       $shortlistButton.addClass('hidden');
+      if (!$sub_map_links.find('a').not('.hidden').length) {
+          $('#sub_map_links').hide();
+      }
     }
   }
 });

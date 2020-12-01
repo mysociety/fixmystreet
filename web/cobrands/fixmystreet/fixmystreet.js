@@ -1506,7 +1506,7 @@ fixmystreet.display = {
     }
 
     $('#sub_map_links').hide();
-    $('.big-hide-pins-link').hide();
+    $('.map-pins-toggle').hide();
     if ($('html').hasClass('mobile')) {
         var $map_box = $('#map_box'),
             width = $map_box.width(),
@@ -1622,7 +1622,7 @@ fixmystreet.display = {
 
             fixmystreet.page = 'report';
 
-            $('.big-hide-pins-link').hide();
+            $('.map-pins-toggle').hide();
 
             // If this is the first individual report we've loaded, remove the
             // "all reports" sub_map_links but store them in a global variable
@@ -1729,7 +1729,7 @@ fixmystreet.display = {
             $('#sub_map_links').replaceWith(fixmystreet.original.sub_map_links);
             delete fixmystreet.original.sub_map_links;
         }
-        $('.big-hide-pins-link').show();
+        $('.map-pins-toggle').show();
         fixmystreet.set_up.map_controls();
 
         fixmystreet.update_report_a_problem_btn();
