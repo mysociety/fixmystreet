@@ -27,3 +27,14 @@ it('loads the staff layer correctly', function() {
         expect(llpg).to.equal(1);
     });
 });
+
+it('uses the Curo Group housing layer correctly', function() {
+    cy.server();
+    cy.route(/.*?isharemaps.*?Curo_Land_Registry.*/, 'fixture:banes-caro-group-housing-layer.json').as('banes-caro-group-housing-layer-tilma');
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.visit('http://bathnes.localhost:3001/report/new?longitude=-2.359276&latitude=51.379009');
+    cy.contains('Bath & North East Somerset Council');
+    cy.wait('@banes-caro-group-housing-layer-tilma');
+    cy.pickCategory('Dog fouling');
+    cy.contains('Maintained by Curo Group').should('be.visible');
+});

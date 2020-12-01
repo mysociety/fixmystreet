@@ -1,0 +1,56 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "ogc_fid": "24",
+        "lr_title": "AV10813",
+        "tenure": "Absolute Freehold",
+        "proprietor": "Somer Community Housing Trust",
+        "globalid": "{417311a0-e5c8-453c-96e0-e59500c3e0f7}",
+        "shape__are": "117.55656051600",
+        "shape__len": "51.68386469410",
+        "h_link": "\\\\somernt\\curo\\shared\\Curo Maps Docs\\Land Registry\\Documents\\AV10813.pdf",
+        "shape__a_1": "117.55656051600",
+        "shape__l_1": "51.68386469410",
+        "creationda": "2018-06-25",
+        "editdate": "2018-06-25",
+        "mi_style": "",
+        "mi_prinx": "4"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              375054.04,
+              164465.97,
+              0.0
+            ],
+            [
+              375128.71,
+              164465.61,
+              0.0
+            ],
+            [
+              375129.05,
+              164536.36,
+              0.0
+            ],
+            [
+              375054.38,
+              164536.72,
+              0.0
+            ],
+            [
+              375054.04,
+              164465.97,
+              0.0
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
