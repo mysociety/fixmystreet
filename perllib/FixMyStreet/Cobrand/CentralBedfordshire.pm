@@ -47,4 +47,6 @@ sub open311_extra_data_include {
     }
 }
 
+sub report_sent_confirmation_email { 'external_id' }
+
 1;

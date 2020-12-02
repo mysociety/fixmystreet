@@ -49,7 +49,9 @@ FixMyStreet::override_config {
         is $c->param('service_code'), 'BRIDGES';
         is $c->param('attribute[area_code]'), 'Area1';
 
-        $mech->email_count_is(0);
+        $mech->email_count_is(1);
+        $report->discard_changes;
+        like $mech->get_text_body_from_email, qr/reference number is @{[$report->external_id]}/;
     };
 
     subtest 'External ID is shown on report page' => sub {
