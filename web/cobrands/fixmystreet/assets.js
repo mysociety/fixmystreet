@@ -16,13 +16,12 @@ var fixmystreet = fixmystreet || {};
     };
 })();
 
-OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
+OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
     initialize: function(name, options) {
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, arguments);
         // Update layer based upon new data from category change
         $(fixmystreet).on('assets:selected', this.checkSelected.bind(this));
         $(fixmystreet).on('assets:unselected', this.checkSelected.bind(this));
-        $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
         $(fixmystreet).on('inspect_form:asset_change', this.update_layer_visibility.bind(this));
     },
@@ -226,17 +225,28 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.Vector, {
         }
     },
 
+    CLASS_NAME: 'OpenLayers.Layer.VectorBase'
+});
+
+/* For some reason the changeCategory event does not work if only present in Asset,
+ * but then fires twice on the right function if included in Nearest. So split the
+ * addition of this event into both classes */
+
+OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
+    initialize: function(name, options) {
+        OpenLayers.Layer.VectorBase.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
+    },
     CLASS_NAME: 'OpenLayers.Layer.VectorAsset'
 });
 
 // Handles layers such as USRN, TfL roads, and the like
-OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
     selected_feature: null,
 
     initialize: function(name, options) {
-        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+        OpenLayers.Layer.VectorBase.prototype.initialize.apply(this, arguments);
         $(fixmystreet).on('maps:update_pin', this.checkFeature.bind(this));
-        // Update fields/etc from data now available from category change
         $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
     },
 
