@@ -153,7 +153,7 @@ $.each(layer_data, function(i, o) {
         },
         actions: {
             asset_found: function(asset) {
-                if (fixmystreet.message_controller.asset_found()) {
+                if (fixmystreet.message_controller.asset_found.call(this)) {
                     return;
                 }
                 var lonlat = asset.geometry.getBounds().getCenterLonLat();

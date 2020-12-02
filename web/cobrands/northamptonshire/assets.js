@@ -150,7 +150,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   select_action: true,
   actions: {
     asset_found: function(asset) {
-      if (fixmystreet.message_controller.asset_found()) {
+      if (fixmystreet.message_controller.asset_found.call(this)) {
           return;
       }
       var lonlat = asset.geometry.getBounds().getCenterLonLat();

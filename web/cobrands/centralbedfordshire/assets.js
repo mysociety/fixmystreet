@@ -56,6 +56,7 @@ fixmystreet.assets.add(defaults, {
     asset_item: "road",
     asset_type: 'road',
     no_asset_msg_id: '#js-not-a-road',
+    no_asset_msgs_class: '.js-roads-centralbeds',
     name: "Highways"
 });
 

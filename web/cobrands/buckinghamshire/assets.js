@@ -321,6 +321,7 @@ fixmystreet.assets.add(defaults, {
         }
     },
     no_asset_msg_id: '#js-not-a-road',
+    no_asset_msgs_class: '.js-roads-bucks',
     usrn: {
         attribute: 'site_code',
         field: 'site_code'
