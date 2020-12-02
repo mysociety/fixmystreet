@@ -49,4 +49,7 @@ sub open311_extra_data_include {
 
 sub report_sent_confirmation_email { 'external_id' }
 
+# Don't show any reports made before the go-live date at all.
+sub cut_off_date { '2020-12-02' }
+
 1;
