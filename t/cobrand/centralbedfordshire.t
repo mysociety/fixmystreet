@@ -51,6 +51,11 @@ FixMyStreet::override_config {
 
         $mech->email_count_is(0);
     };
+
+    subtest 'External ID is shown on report page' => sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains("Council ref:&nbsp;" . $report->external_id);
+    };
 };
 
 for my $cobrand ( "centralbedfordshire", "fixmystreet") {
