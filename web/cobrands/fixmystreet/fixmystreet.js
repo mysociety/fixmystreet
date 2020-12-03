@@ -922,6 +922,7 @@ $.extend(fixmystreet.set_up, {
           $('.btn--change-asset').click();
       }
 
+      $('html, body').scrollTop(0);
       $('html').toggleClass('map-fullscreen only-map');
       $(this).html(text).attr('class', btnClass);
 
