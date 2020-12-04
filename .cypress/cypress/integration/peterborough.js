@@ -38,4 +38,15 @@ describe('new report form', function() {
     cy.get('.category_meta_message').should('contain', 'You can pick a tree from the map');
   });
 
+  it('displays nearby roadworks', function() {
+    cy.fixture('peterborough_roadworks.json');
+    cy.route('/streetmanager.php**', 'fixture:peterborough_roadworks.json').as('roadworks');
+    cy.wait('@roadworks');
+    cy.get('select:eq(4)').select('Pothole');
+    cy.contains('Roadworks are scheduled near this location').should('be.visible');
+    cy.contains('Parapet improvement').should('be.visible');
+    cy.get('select:eq(4)').select('Fallen branch');
+    cy.should('not.contain', 'Roadworks are scheduled near this location');
+  });
+
 });

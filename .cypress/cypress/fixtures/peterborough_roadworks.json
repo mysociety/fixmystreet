@@ -1,0 +1,16 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":{"type":"Point","coordinates":[519239,298522]},
+            "properties":{
+                "start_date":"2019-06-18T00:00:00.000Z",
+                "end_date":"2040-07-23T23:59:59.000Z",
+                "summary":"Peterborough",
+                "description":"Parapet improvement",
+                "promoter":"Peterborough Council"
+            }
+        }
+    ]
+}
