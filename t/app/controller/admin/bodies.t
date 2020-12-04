@@ -89,7 +89,7 @@ subtest 'check contact editing' => sub {
         note     => 'test3 note',
     } } );
 
-    $mech->content_contains( 'test2@example.com,test3@example.com' );
+    $mech->content_contains( 'test2@example.com, test3@example.com' );
 
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com,test3@example.com' );
