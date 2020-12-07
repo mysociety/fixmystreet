@@ -46,7 +46,7 @@ FixMyStreet::override_config {
     subtest 'Log in using mobile, by text' => sub {
         $mech->submit_form_ok({
             form_name => 'general_auth',
-            fields => { username => '+18165550100', password_register => 'secret' },
+            fields => { username => '+18165550100', password_register => 'secretsecret' },
             button => 'sign_in_by_code',
         }, "sign in using mobile");
 
@@ -77,7 +77,7 @@ FixMyStreet::override_config {
         $mech->content_contains('There was a problem');
         $mech->submit_form_ok({
             form_name => 'general_auth',
-            fields => { username => '+18165550100', password_sign_in => 'secret' },
+            fields => { username => '+18165550100', password_sign_in => 'secretsecret' },
             button => 'sign_in_by_password',
         }, "sign in using password");
 

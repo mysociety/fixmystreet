@@ -181,7 +181,7 @@ foreach my $test (
                     update_method => 'phone',
                     phone => $test_phone,
                     category => 'Street lighting',
-                    password_register => $test->{password} ? 'secret' : '',
+                    password_register => $test->{password} ? 'secretsecret' : '',
                 }
             },
             "submit good details"
@@ -218,7 +218,7 @@ foreach my $test (
 
     is $report->name, 'Joe Bloggs', 'name updated correctly';
     if ($test->{password}) {
-        ok $report->user->check_password('secret'), 'password updated correctly';
+        ok $report->user->check_password('secretsecret'), 'password updated correctly';
     } elsif ($test->{user}) {
         ok $report->user->check_password('old_password'), 'password unchanged, as no new one given';
     } else {
