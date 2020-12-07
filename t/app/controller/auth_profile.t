@@ -163,7 +163,7 @@ subtest 'check password length/common' => sub {
     $mech->content_contains("Please make sure your password is at least");
     $mech->submit_form_ok({
         form_name => 'change_password',
-        fields => { current_password => $test_password, new_password => 'common', confirm => 'common' },
+        fields => { current_password => $test_password, new_password => 'secret123', confirm => 'secret123' },
     });
     $mech->content_contains("Please choose a less commonly-used password");
 };

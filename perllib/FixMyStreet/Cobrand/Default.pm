@@ -97,7 +97,7 @@ Returns the minimum length a password can be set to.
 
 =cut
 
-sub password_minimum_length { 6 }
+sub password_minimum_length { 8 }
 
 =item country
 

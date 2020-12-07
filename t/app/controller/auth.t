@@ -275,7 +275,7 @@ subtest 'check password length/common' => sub {
     $mech->content_contains("Please make sure your password is at least");
     $mech->submit_form_ok({
         form_name => 'general_auth',
-        fields => { username => $test_email, password_register => 'common' },
+        fields => { username => $test_email, password_register => 'secret123' },
         button => 'sign_in_by_code',
     });
     $mech->content_contains("Please choose a less commonly-used password");

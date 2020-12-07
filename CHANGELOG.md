@@ -19,6 +19,8 @@
         - Stop slash in category name breaking csv download #3642
     - Development improvements:
         - Upgrade Mozilla::CA to handle new root certificates.
+    - Security:
+        - Increase minimum password length to eight.
 
 * v3.1 (16th November 2020)
     - Security:
