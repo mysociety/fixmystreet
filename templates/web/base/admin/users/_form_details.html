@@ -25,9 +25,3 @@
 <input type='text' class="form-control" id='phone' name='phone' value='[% user.phone | html %]'></li>
 <li><label class="inline-text" for="phone_verified">[% loc('Phone verified:') %]</label>
 <input type="checkbox" id="phone_verified" name="phone_verified" value="1" [% user.phone_verified ? ' checked' : '' %]>
-
-[% IF username_in_abuse %]
-<li>
-    <p class="error">[% loc('User in abuse table') %] <input name="unban" type="submit" value="[% loc('Unban') %]"></p>
-</li>
-[% END %]

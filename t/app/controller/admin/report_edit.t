@@ -523,65 +523,6 @@ subtest 'change email to new user' => sub {
     is $report->user_id, $user3->id, 'user changed to new user';
 };
 
-subtest 'adding email to abuse list from report page' => sub {
-    my $email = $report->user->email;
-
-    my $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $email } );
-    $abuse->delete if $abuse;
-
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('Ban user');
-
-    $mech->click_ok('banuser');
-
-    $mech->content_contains('User added to abuse list');
-    $mech->content_contains('<small>User in abuse table</small>');
-
-    $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $email } );
-    ok $abuse, 'entry created in abuse table';
-
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('<small>User in abuse table</small>');
-};
-
-subtest 'flagging user from report page' => sub {
-    $report->user->flagged(0);
-    $report->user->update;
-
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('Flag user');
-
-    $mech->click_ok('flaguser');
-
-    $mech->content_contains('User flagged');
-    $mech->content_contains('Remove flag');
-
-    $report->discard_changes;
-    ok $report->user->flagged, 'user flagged';
-
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('Remove flag');
-};
-
-subtest 'unflagging user from report page' => sub {
-    $report->user->flagged(1);
-    $report->user->update;
-
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('Remove flag');
-
-    $mech->click_ok('removeuserflag');
-
-    $mech->content_contains('User flag removed');
-    $mech->content_contains('Flag user');
-
-    $report->discard_changes;
-    ok !$report->user->flagged, 'user not flagged';
-
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains('Flag user');
-};
-
 subtest "Test setting a report from unconfirmed to something else doesn't cause a front end error" => sub {
     $report->update( { confirmed => undef, state => 'unconfirmed', non_public => 0 } );
     $mech->get_ok("/admin/report_edit/$report_id");

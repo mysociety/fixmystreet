@@ -299,65 +299,6 @@ subtest 'editing update email creates new user if required' => sub {
     is $update->user->id, $user->id, 'update set to new user';
 };
 
-subtest 'adding email to abuse list from update page' => sub {
-    my $email = $update->user->email;
-
-    my $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $email } );
-    $abuse->delete if $abuse;
-
-    $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('Ban user');
-
-    $mech->click_ok('banuser');
-
-    $mech->content_contains('User added to abuse list');
-    $mech->content_contains('<small>User in abuse table</small>');
-
-    $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $email } );
-    ok $abuse, 'entry created in abuse table';
-
-    $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('<small>User in abuse table</small>');
-};
-
-subtest 'flagging user from update page' => sub {
-    $update->user->flagged(0);
-    $update->user->update;
-
-    $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('Flag user');
-
-    $mech->click_ok('flaguser');
-
-    $mech->content_contains('User flagged');
-    $mech->content_contains('Remove flag');
-
-    $update->discard_changes;
-    ok $update->user->flagged, 'user flagged';
-
-    $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('Remove flag');
-};
-
-subtest 'unflagging user from update page' => sub {
-    $update->user->flagged(1);
-    $update->user->update;
-
-    $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('Remove flag');
-
-    $mech->click_ok('removeuserflag');
-
-    $mech->content_contains('User flag removed');
-    $mech->content_contains('Flag user');
-
-    $update->discard_changes;
-    ok !$update->user->flagged, 'user not flagged';
-
-    $mech->get_ok( '/admin/update_edit/' . $update->id );
-    $mech->content_contains('Flag user');
-};
-
 subtest 'hiding comment marked as fixed reopens report' => sub {
     $update->mark_fixed( 1 );
     $update->update;

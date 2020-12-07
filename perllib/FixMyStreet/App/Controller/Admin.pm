@@ -206,18 +206,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     $c->forward('check_username_for_abuse', [ $update->user ] );
 
-    if ( $c->get_param('banuser') ) {
-        $c->forward('users/ban');
-    }
-    elsif ( $c->get_param('flaguser') ) {
-        $c->forward('users/flag');
-        $c->stash->{update}->discard_changes;
-    }
-    elsif ( $c->get_param('removeuserflag') ) {
-        $c->forward('users/flag_remove');
-        $c->stash->{update}->discard_changes;
-    }
-    elsif ( $c->get_param('submit') ) {
+    if ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
 
         my $old_state = $update->state;

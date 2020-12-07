@@ -32,8 +32,16 @@ $user5->add_to_roles($occ_role);
 
 $mech->log_in_ok( $superuser->email );
 
+subtest 'add user to abuse list from edit user page' => sub {
+    $mech->get_ok( '/admin/users/' . $user->id );
+    $mech->content_lacks('User in abuse table');
+    $mech->click_ok('banuser');
+    my $abuse = FixMyStreet::DB->resultset('Abuse')->find( { email => $user->email } );
+    ok $abuse, 'record added to abuse table';
+};
+
+
 subtest 'search abuse' => sub {
-    my $abuse = FixMyStreet::DB->resultset('Abuse')->find_or_create( { email => $user->email } );
     $mech->get_ok( '/admin/users?search=example' );
     $mech->content_like(qr{test\@example.com.*</td>\s*<td>.*?</td>\s*<td>User in abuse table}s);
 };

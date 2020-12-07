@@ -244,20 +244,18 @@ user: see ‘[moderating reports](#deal-undesirable-content)’.
 
 #### Adding a user to the abuse list
 
-<span class="admin-task__permissions">Permissions required: User must be marked as staff, ‘Edit reports’ must be ticked.</span>
+<span class="admin-task__permissions">Permissions required: User must be marked as staff, ‘Edit users’ must be ticked.</span>
 
 You can add an abusive user's email to the abuse list, which automatically hides any reports they
 create, and means that their reports are not sent. Instead, the user sees a message that there was
 an error in confirming their report.
 
-Staff with the required permissions can ban a user directly from a report page, using the ‘Ban user’
+Staff with the required permissions can ban a user directly from their user admin page, using the ‘Ban user’
 button.
-
-<img alt="Ban a user directly from a report page" src="/assets/img/pro-user-guide/ban-user-report-page.png" class="admin-screenshot" />
 
 #### Removing users from the banned list
 
-When a user has been banned, an ‘unban’ button will be visible on their records and reports. This
+When a user has been banned, an ‘unban’ button will be visible on their user admin page. This
 restores them to the status of a standard user, but it does not have any effect on reports which
 were made during the period when the user was banned — these remain unsent.
 

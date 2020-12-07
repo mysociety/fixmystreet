@@ -48,7 +48,7 @@
         </td>
         <td>
           <a href="[% c.uri_for( 'reports', search => user.email ) %]">list content</a>
-          [% IF user.id %] | <a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('edit user') %]</a>[% END %]
+          [% IF user.id %] | <a href="[% c.uri_for_action( '/admin/users/edit', [ user.id ] ) %]">[% loc('Edit user') %]</a>[% END %]
         </td>
     </tr>
     [%- END %]

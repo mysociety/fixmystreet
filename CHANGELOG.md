@@ -7,6 +7,7 @@
         - Use div for inspector form wrapped extra questions. #3250
     - Admin improvements:
         - Enable per-category hint customisation.
+        - Move ban/unban buttons to user edit admin page.
     - Security:
         - Increase minimum password length to eight.
 

@@ -131,6 +131,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label class="inline-text" for="category">[% loc('Category:') %]</label>
     [% INCLUDE 'admin/report-category.html' %]
 </li>
+
 <li>[% loc('Extra data:') ~%]
     [%~ IF extra_fields.size ~%]
         <ul>
@@ -154,8 +155,6 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
     <input type='text' class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
 <li><label for="username">[% loc('User:') %]</label>
     <input type='text' class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
-    [% PROCESS abuse_button %]
-    [% PROCESS flag_button user=problem.user %]
 </li>
 [% IF problem.user.phone_display != problem.user.username %]
 <li>[% loc('Phone:') %] [% problem.user.phone_display | html %]</li>
@@ -167,6 +166,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 [% END %]
 <li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
     <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
+
 <li><label class="inline-text" for="non_public">[% loc('Private') %]:</label>
     <input type="checkbox" id="non_public" name="non_public"[% ' checked' IF problem.non_public %]></li>
 

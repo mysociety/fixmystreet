@@ -49,7 +49,7 @@
 [% ELSIF update.user.id == update.problem.user.id && update.mark_open %]
 <li>[% loc('Update reopened problem') %]</li>
 [% END %]
-[% PROCESS abuse_button %] [% PROCESS flag_button user=update.user %]</li>
+</li>
 <li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% update.cobrand_data %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
