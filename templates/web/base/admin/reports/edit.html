@@ -146,29 +146,15 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
         </ul>
     [%~ ELSE %] No[% END ~%]
 </li>
-<li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
-<select class="form-control" name="anonymous"  id="anonymous">
-<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
-<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
-</select></li>
-<li><label for="name">[% loc('Name:') %]</label>
-    <input type='text' class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
-<li><label for="username">[% loc('User:') %]</label>
-    <input type='text' class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
-</li>
-[% IF problem.user.phone_display != problem.user.username %]
-<li>[% loc('Phone:') %] [% problem.user.phone_display | html %]</li>
-[% END %]
-[% IF problem.user.email != problem.user.username %]
-<li>[% loc('Email:') %]
-<a href="mailto:[% problem.user.email | html %]">[% problem.user.email | html %]</a>
-</li>
-[% END %]
-<li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
-    <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
 
 <li><label class="inline-text" for="non_public">[% loc('Private') %]:</label>
     <input type="checkbox" id="non_public" name="non_public"[% ' checked' IF problem.non_public %]></li>
+
+<li><label class="inline-text" for="closed_updates">[% loc('Closed to updates') %]:</label>
+    <input type="checkbox" id="closed_updates" name="closed_updates"[% ' checked' IF problem.extra.closed_updates %]></li>
+
+<li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
+    <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
 
 [% IF problem.photo %]
 <li>
@@ -181,8 +167,8 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
                 <span>zoom</span>
             </a>
         </div>
-        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
-        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+        <input class="btn" type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
+        <input class="btn" type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
         <br><input type="checkbox" id="remove_photo_[% loop.index %]" name="remove_photo_[% loop.index %]" value="1">
         <label class="inline" for="remove_photo_[% loop.index %]">[% loc("Remove photo (can't be undone!)") %]</label></li>
     </li>
@@ -190,12 +176,40 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </ul>
 </li>
 [% END %]
-
-<li><label class="inline-text" for="closed_updates">[% loc('Closed to updates') %]:</label>
-    <input type="checkbox" id="closed_updates" name="closed_updates"[% ' checked' IF problem.extra.closed_updates %]></li>
-
 </ul>
-<input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]">
+
+<div class="clearfix full-width" style="background-color: #eee; padding: 1em 1em 0;">
+  [% IF allowed_pages.user_edit %]
+    <p style="float:right"><a href="[% c.uri_for_action('/admin/users/edit', [ problem.user.id ]) %]">[% loc('Edit user') %]</a>
+  [% END %]
+
+<ul class="plain-list">
+<li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
+<select class="form-control" name="anonymous"  id="anonymous">
+<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
+<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
+</select></li>
+<li><label class="inline-text" for="name">[% loc('Name:') %]</label>
+    [% loc('(for this report)') %]
+    <input type='text' class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
+
+<li><label class="inline-text" for="username">[% loc('User:') %]</label>
+    [% loc('(for this report)') %]
+    <input type='text' class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
+</li>
+
+[% IF problem.user.phone_display != problem.user.username %]
+<li>[% loc('Phone:') %] [% problem.user.phone_display OR loc('None') %]</li>
+[% END %]
+[% IF problem.user.email != problem.user.username %]
+<li>[% loc('Email:') %]
+[% IF problem.user.email %]<a href="mailto:[% problem.user.email | html %]">[% problem.user.email %]</a>[% ELSE %][% loc('None') %][% END %]
+</li>
+[% END %]
+</ul>
+</div>
+
+<p><input type="submit" class="btn btn--block btn--final" name="Submit changes" value="[% loc('Submit changes') %]">
 </form>
 
 </div>

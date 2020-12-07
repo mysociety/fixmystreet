@@ -31,9 +31,14 @@
         <option [% 'selected ' IF state.0 == update.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
 </select></li>
-<li><label for="name">[% loc('Name:') %]</label>
+<li><label class="inline-text" for="name">[% loc('Name:') %]</label>
+    [% loc('(for this update)') %]
     <input type='text' class="form-control" name='name' id='name' value='[% update.name | html %]'></li>
-<li><label for="username">[% loc('User:') %]</label>
+<li><label class="inline-text" for="username">[% loc('User:') %]</label>
+    [% loc('(for this update)') %]
+  [% IF allowed_pages.user_edit %]
+    &ndash; <a href="[% c.uri_for_action('admin/users/edit', [ update.user.id ]) %]">[% loc('Edit user') %]</a>
+  [% END %]
     <input type='text' class="form-control" id='username' name='username' value='[% update.user.username | html %]'>
 [%- IF update.user.from_body && update.user.from_body.id == update.problem.bodies_str %]
 [% ' (' _ tprintf(loc('user is from same council as problem - %d'), update.user.from_body.id ) _')' %]
@@ -51,7 +56,7 @@
 [% END %]
 </li>
 <li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
-<li>[% loc('Cobrand data:') %] [% update.cobrand_data %]</li>
+<li>[% loc('Cobrand data:') %] [% update.cobrand_data OR loc('None') %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
 [% IF update.get_extra_metadata('external_status_code') %]
 <li>[% loc('External status code:') %] [% update.get_extra_metadata('external_status_code') | html %]</li>

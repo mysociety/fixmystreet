@@ -8,6 +8,8 @@
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
+        - Add link to user edit admin from report/update edit admin.
+        - Improve layout of some admin pages.
     - Security:
         - Increase minimum password length to eight.
 
