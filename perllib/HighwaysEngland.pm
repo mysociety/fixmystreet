@@ -43,6 +43,7 @@ sub junction_lookup {
 
 sub _lookup_db {
     my ($road, $table, $thing, $thing_name) = @_;
+    return unless -e database_file();
     my $db = DBI->connect("dbi:SQLite:dbname=".database_file(), undef, undef) or return;
     $thing = "J$thing" if $table eq 'junction' && $thing =~ /^[1-9]/;
     my $results;

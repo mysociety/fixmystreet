@@ -37,6 +37,7 @@ FixMyStreet::override_config {
         noise => { hackney => 1 },
         do_not_reply_email => { hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com' },
         address_api => { hackney => { key => '123', url => 'http://hackney.api/' } },
+        open311_email => { hackney => { noise_residence => 'noise_residential@example.org,other@example.org', noise_business => 'noise_business@example.org' } },
     },
     PHONE_COUNTRY => 'GB',
     MAPIT_URL => 'http://mapit.uk/',
@@ -75,7 +76,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Thank you for reporting this issue');
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
-        is $emails[0]->header('To'), '"Hackney Council" <noise@example.org>';
+        is $emails[0]->header('To'), '"Hackney Council" <noise_residential@example.org>, "Hackney Council" <other@example.org>';
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Your report to Hackney Council has been logged/;
@@ -115,7 +116,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Thank you for reporting this issue');
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
-        is $emails[0]->header('To'), '"Hackney Council" <noise@example.org>';
+        is $emails[0]->header('To'), '"Hackney Council" <noise_residential@example.org>, "Hackney Council" <other@example.org>';
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Your report to Hackney Council has been logged/;

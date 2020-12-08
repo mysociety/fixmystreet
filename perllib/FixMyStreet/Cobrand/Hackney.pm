@@ -216,6 +216,17 @@ sub get_body_sender {
 sub munge_sendreport_params {
     my ($self, $row, $h, $params) = @_;
 
+    if ($row->cobrand_data eq 'noise') {
+        my $name = $params->{To}[0][1];
+        my $emails = $self->feature('open311_email');
+        my $where = $row->get_extra_metadata('where');
+        if (my $recipient = $emails->{"noise_$where"}) {
+            my @emails = split(/,/, $recipient);
+            $params->{To} = [ map { [ $_, $name ] } @emails ];
+        }
+        return;
+    }
+
     my $split_match = $row->get_extra_metadata('split_match') or return;
     $row->unset_extra_metadata('split_match');
     for my $recip (@{$params->{To}}) {
