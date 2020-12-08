@@ -229,7 +229,13 @@ them by clicking on the link at the top of any admin page:
 
 * **Configuration** <br/> This page shows you a summary of the live
   configuration information for your site.
- 
+
+* **Emergency message** <br/> This page allows you to set an emergency
+  message which will be displayed on the homepage.
+
+  <p>
+    To clear the message simply delete any contents in the box.
+  </p>
 <a name="report-states"></a>
 
 ## Report states

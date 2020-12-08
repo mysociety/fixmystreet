@@ -324,6 +324,7 @@ my %default_perms = (
     "permissions[template_edit]" => undef,
     "permissions[responsepriority_edit]" => undef,
     "permissions[category_edit]" => undef,
+    "permissions[emergency_message_edit]" => undef,
 );
 
 # Start this section with user having no name
