@@ -656,7 +656,7 @@ whether updates should be disabled on reports in this category.
 #### Note
 
 If your FixMyStreet Pro installation has been integrated with a CRM system, some of this
-section may not not apply, e.g. extra questions may be pulled directly from the backend.
+section may not apply, e.g. extra questions may be pulled directly from the backend.
 
 </div>
 
