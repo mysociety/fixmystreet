@@ -320,11 +320,11 @@ subtest 'can provide reports as csv' => sub {
     is $new_reports[0]->state, "fixed", "report is closed";
     is $skipped->state, "confirmed", "report is ignored";
 
-    is $alert_new->alerts_sent->count, 1, 'Archiving sent alert for new report alert';
-    is $alert_old->alerts_sent->count, 0, 'Archiving did not send alert for old report alert';
+    is $alert_new->alerts_sent->count, 0, 'Archiving did not mark alerts as sent for new report alert';
+    is $alert_old->alerts_sent->count, 1, 'Archiving marked alert as sent for old report alert';
 
-    my $alert_sent = $alert_new->alerts_sent->first;
-    my $comment = $new_reports[0]->comments->first;
+    my $alert_sent = $alert_old->alerts_sent->first;
+    my $comment = $old_reports[0]->comments->first;
     is $alert_sent->parameter, $comment->id, 'AlertSent created for new comment';
 };
 

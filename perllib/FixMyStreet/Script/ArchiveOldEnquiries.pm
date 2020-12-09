@@ -63,11 +63,11 @@ sub close_list {
     })->to_body( $opts->{body});
 
     my $no_message = $rs->search({
-        lastupdate => { '>', $opts->{closure_cutoff} },
+        lastupdate => { '<', $opts->{closure_cutoff} },
     });
 
     my $with_message = $rs->search({
-        lastupdate => { '<=', $opts->{closure_cutoff} },
+        lastupdate => { '>=', $opts->{closure_cutoff} },
     });
 
     die "Found more reports than expected\n" if $no_message->count + $with_message->count > $max_reports;
