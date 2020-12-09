@@ -27,6 +27,8 @@ $cobrand->mock('_fetch_features', sub {
     return [];
 });
 
+my $staff_user = $mech->create_user_ok('astaffuser@example.com', name => 'A staff user', from_body => $body);
+
 use_ok 'FixMyStreet::Cobrand::CheshireEast';
 
 FixMyStreet::override_config {
@@ -44,6 +46,10 @@ FixMyStreet::override_config {
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     category => 'Zebra Crossing',
     photo => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
+    extra => {
+        contributed_as => 'another_user',
+        contributed_by => $staff_user->id,
+    },
 });
 my $report = $reports[0];
 
@@ -80,10 +86,17 @@ FixMyStreet::override_config {
         ok $report->whensent, 'Report marked as sent';
         is $report->send_method_used, 'Open311', 'Report sent via Open311';
         is $report->external_id, 248, 'Report has right external ID';
+        is $report->detail, 'Test Test 1 for ' . $body->id . ' Detail', 'Report detail is unchanged';
 
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
         is $c->param('attribute[title]'), 'Test Test 1 for ' . $body->id, 'Request had correct title';
+        my $expected_desc = 'Test Test 1 for ' . $body->id . " Detail\n\n(this report was made by <" . $staff_user->email . "> (" . $staff_user->name .") on behalf of the user)";
+        (my $c_description = $c->param('attribute[description]')) =~ s/\r\n/\n/g;
+        is $c_description, $expected_desc, 'Request had correct description attribute';
+        ($c_description = $c->param('description')) =~ s/\r\n/\n/g;
+        is $c_description, "Test Test 1 for " . $body->id . "\n\n$expected_desc\n\nhttp://www.example.org/report/" . $report->id . "\n", 'Request had correct description';
+
         is_deeply [ $c->param('media_url') ], [
             'http://www.example.org/photo/' . $report->id . '.0.full.jpeg?74e33622',
             'http://www.example.org/photo/' . $report->id . '.1.full.jpeg?74e33622',

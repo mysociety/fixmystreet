@@ -113,4 +113,43 @@ sub council_rss_alert_options {
 # Make sure fetched report description isn't shown.
 sub filter_report_description { "" }
 
+
+=head2 open311_extra_data_include
+
+For reports made by staff on behalf of another user, append the staff
+user's email & name to the report description.
+
+=cut
+around open311_extra_data_include => sub {
+    my ($orig, $self, $row, $h) = @_;
+
+    $h->{ce_original_detail} = $row->detail;
+
+    my $contributed_suffix;
+    if (my $contributed_by = $row->get_extra_metadata("contributed_by")) {
+        if (my $staff_user = $self->users->find({ id => $contributed_by })) {
+            $contributed_suffix = "\n\n(this report was made by <" . $staff_user->email . "> (" . $staff_user->name .") on behalf of the user)";
+        }
+    }
+
+    my $open311_only = $self->$orig($row, $h);
+    if ($contributed_suffix) {
+        foreach (@$open311_only) {
+            if ($_->{name} eq 'description') {
+                $_->{value} .= $contributed_suffix;
+            }
+        }
+        $row->detail($row->detail . $contributed_suffix);
+    }
+
+    return $open311_only;
+};
+
+sub open311_post_send {
+    my ($self, $row, $h, $contact) = @_;
+
+    $row->detail($h->{ce_original_detail});
+}
+
+
 1;
