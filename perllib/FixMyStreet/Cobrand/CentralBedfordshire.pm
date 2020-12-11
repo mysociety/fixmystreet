@@ -49,6 +49,22 @@ sub open311_extra_data_include {
     }
 }
 
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+
+    # For certain categories, send an email also
+    my $emails = $self->feature('open311_email');
+    my $dest = $emails->{$row->category};
+    return unless $dest;
+
+    my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $dest, "Central Bedfordshire" ] ] );
+    $sender->send($row, $h);
+}
+
+
 sub report_sent_confirmation_email { 'external_id' }
 
 # Don't show any reports made before the go-live date at all.

@@ -12,6 +12,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $body = $mech->create_body_ok(21070, 'Central Bedfordshire Council', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => "BRIDGES");
+$mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POTHOLES");
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {
     category => 'Bridges', cobrand => 'centralbedfordshire',
@@ -28,6 +29,9 @@ FixMyStreet::override_config {
             60917 => 'Area2',
             60814 => 'Area3',
         } },
+        open311_email => { centralbedfordshire => {
+            Potholes => 'potholes@example.org',
+        } }
     },
 }, sub {
 
@@ -69,6 +73,28 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/reports/Central+Bedfordshire');
         $mech->content_lacks('An old problem made before Central Beds FMS launched');
+    };
+
+    subtest "it sends email as well as Open311 submission" => sub {
+        my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Another Report', {
+            category => 'Potholes', cobrand => 'centralbedfordshire',
+            latitude => 52.030695, longitude => -0.357033, areas => ',117960,11804,135257,148868,21070,37488,44682,59795,65718,83582,',
+        });
+
+        my $test_data = FixMyStreet::Script::Reports::send();
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), 'POTHOLES';
+
+        $mech->email_count_is(2);
+        $report2->discard_changes;
+        my @emails = $mech->get_email;
+        my$body = $mech->get_text_body_from_email($emails[0]);
+        like $body, qr/A user of FixMyStreet has submitted the following report/;
+        like $body, qr(http://centralbedfordshire.example.org/report/@{[$report2->id]});
+
+        like $mech->get_text_body_from_email($emails[1]), qr/reference number is @{[$report2->external_id]}/;
+
     };
 };
 
