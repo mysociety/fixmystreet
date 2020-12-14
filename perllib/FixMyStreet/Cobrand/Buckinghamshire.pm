@@ -119,7 +119,7 @@ sub filter_report_description {
     return $description;
 }
 
-sub map_type { 'Buckinghamshire' }
+sub map_type { 'FMS' }
 
 sub default_map_zoom { 3 }
 
