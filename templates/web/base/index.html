@@ -6,6 +6,8 @@
     <p class="form-error">[% error %]</p>
 [% END %]
 
+[% TRY %][% PROCESS 'front/emergency-message.html' %][% CATCH file %][% END %]
+
 [% TRY %][% PROCESS 'front/pre-steps.html' %][% CATCH file %][% END %]
 
 <div class="tablewrapper">
