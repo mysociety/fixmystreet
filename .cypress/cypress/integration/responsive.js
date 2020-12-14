@@ -10,6 +10,12 @@ describe('Front page responsive design tests', function() {
         cy.viewport(480, 800);
         cy.visit('/');
         cy.get('a#report-cta').should('be.visible');
+
+        cy.get('#main-nav').should('not.be.visible');
+        cy.get('#nav-link').click();
+        cy.get('#main-nav').should('be.visible');
+        cy.get('#nav-link').click();
+        cy.get('#main-nav').should('not.be.visible');
     });
 
     it('Shows correct things on desktop', function() {
@@ -20,7 +26,7 @@ describe('Front page responsive design tests', function() {
 });
 
 describe('Around page responsive design tests', function() {
-    it('Shows correct things on mobile', function() {
+    it('Shows correct things on mobile around', function() {
         cy.viewport(480, 800);
         cy.visit('/around?pc=' + Cypress.env('postcode') + '&js=1');
         cy.get('.mobile-map-banner').should('be.visible');
@@ -31,6 +37,16 @@ describe('Around page responsive design tests', function() {
         cy.get('#problems_nearby').should('be.visible');
         cy.get('#mob_ok').click();
         cy.cleanUpXHR();
+    });
+
+    it('Mobile nav bar works on non-front page', function() {
+        cy.viewport(480, 800);
+        cy.visit('/faq');
+        cy.get('#main-nav').should('not.be.visible');
+        cy.get('#nav-link').click();
+        cy.get('#main-nav').should('be.visible');
+        cy.get('#nav-link').click();
+        cy.get('#main-nav').should('not.be.visible');
     });
 
     it('Shows correct things on desktop', function() {

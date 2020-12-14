@@ -171,11 +171,6 @@ svg|g.site-logo__svg {
     );
 }
 
-// Avoid double border between mobile nav and footer
-.nav-menu--main > :last-child a {
-  border-bottom: none;
-}
-
 $mysoc-footer-background-color: #222;
 $mysoc-footer-text-color: #acacac;
 $mysoc-footer-site-name-text-color: #fff;

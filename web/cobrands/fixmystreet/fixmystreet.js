@@ -815,22 +815,41 @@ $.extend(fixmystreet.set_up, {
     $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
   },
 
+  // Very similar function in front.js for front page
   on_mobile_nav_click: function() {
-    $('.mobile').on('click', '#nav-link', function(e) {
-        e.preventDefault();
-        var offset = $('#main-nav').offset().top;
-        $('html, body').animate({scrollTop:offset}, 1000);
+    var html = document.documentElement;
+    if (!html.classList) {
+      return;
+    }
 
-        // Registering a pushState here means that mobile users can
-        // press their browser's Back button to return out of the
-        // mobile menu (easier than scrolling all the way back up
-        // the page). However, to show the map page popstate listener
-        // that this was a special state, we set hashchange to true in
-        // the event state, so we can detect it, and ignore it, later.
-        if ('pushState' in history) {
-            history.pushState({
-                hashchange: true
-            }, null);
+    var modal = document.getElementById('js-menu-open-modal'),
+        nav = document.getElementById('main-nav'),
+        nav_link = document.querySelector('[href="#main-nav"]');
+
+    var toggle_menu = function(e) {
+      if (!html.classList.contains('mobile')) {
+        return;
+      }
+      e.preventDefault();
+      var content = document.querySelector('.content'),
+          content_top = content.offsetTop - parseInt(getComputedStyle(content).marginTop, 10);
+      modal.style.top = content_top + 'px';
+      nav.style.top = content_top + 'px';
+      var opened = html.classList.toggle('js-nav-open');
+      if (opened) {
+        // Set height so can scroll menu if not enough space
+        var h = window.innerHeight - content_top;
+        nav.style.maxHeight = h + 'px';
+      }
+      nav_link.setAttribute('aria-expanded', opened);
+    };
+
+    modal.addEventListener('click', toggle_menu);
+    nav_link.addEventListener('click', toggle_menu);
+    nav_link.setAttribute('aria-expanded', false);
+    nav.addEventListener('click', function(e) {
+        if (e.target.matches('span')) {
+            toggle_menu(e);
         }
     });
   },

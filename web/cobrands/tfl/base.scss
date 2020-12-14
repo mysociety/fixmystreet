@@ -218,14 +218,14 @@ ol.big-numbers>li {
     color: $beck-blue;
     font-family: $heading-font;
     border: 0;
-    background-color: transparent;
+    background-color: #fff;
     text-decoration: underline;
     &:hover,
     &:active,
     &:focus,
     &:visited {
         color: $blue-dark;
-        background-color: transparent;
+        background-color: #fff;
     }
 }
 

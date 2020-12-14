@@ -4,6 +4,7 @@ $body-font: MuseoSans, Helmet, Freesans, sans-serif !default;
 $meta-font: Helmet, Freesans, sans-serif !default;
 $heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !default;
 $menu-image: 'menu-white' !default;
+$close-menu-image: "close-#{$menu-image}" !default;
 
 $link-color: #005ea5 !default;
 $link-hover-color: #2b8cc4 !default;
@@ -717,10 +718,13 @@ ul.error {
   height: 0;
   padding-top: 3em;
   overflow: hidden;
-  background: transparent url(../fixmystreet/images/#{$menu-image}.png) center center no-repeat;
-  background-image: inline-image("../fixmystreet/images/#{$menu-image}.svg"), none;
+  background: transparent inline-image("../fixmystreet/images/#{$menu-image}.svg") center center no-repeat;
   background-size: 22px 18px;
   #{$right}: 0;
+
+  html.js-nav-open & {
+    background-image: inline-image("../fixmystreet/images/#{$close-menu-image}.svg");
+  }
 }
 
 #nav-link, #report-cta {
@@ -747,21 +751,44 @@ ul.error {
   }
 }
 
+html.mobile.js-nav-open #js-menu-open-modal {
+    position: absolute;
+    bottom: -1000px; // Just to be sure
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
 // The nav list has this sort of "full width" look,
 // so we want to cancel out the margin from .container
 #main-nav {
   margin: 0 -1em;
+  .mobile & {
+    display: none;
+    position: absolute;
+    overflow: auto;
+    left: 1em;
+    right: 1em;
+    z-index: 1; // So appears over map
+  }
+  .mobile.js-nav-open & {
+    display: block;
+  }
 }
 
 .nav-menu {
   @include list-reset-soft;
+  border-top: 0.25em solid #333;
+  .mobile & {
+    border-top: none;
+  }
   a, span {
     display: block;
     padding: 0.5em 1em;
-    background-color: #f6f6f6;
+    background-color: #fff;
     color: #333;
     font-size: 1.25em;
-    border-bottom: 0.25em solid #333;
+    border-bottom: 1px solid #ccc;
   }
   a:visited {
     color: #333;
@@ -772,7 +799,7 @@ ul.error {
     text-decoration: none;
   }
   span {
-    background-color: #ccc;
+    background-color: mix(#fff, $primary, 70%);
   }
   span.report-a-problem-btn {
     cursor: pointer;
@@ -2141,7 +2168,7 @@ img.pin {
   }
 }
 
-.only-map {
+.only-map, .mobile.js-nav-open {
   height: 100%;
   body {
     height: 100%;

@@ -1,6 +1,57 @@
 document.getElementById('pc').focus();
 
 (function(){
+
+    function set_up_mobile_nav() {
+        var html = document.documentElement;
+        if (!html.classList) {
+          return;
+        }
+
+        // Just the HTML class bit of the main resize listener, just in case
+        window.addEventListener('resize', function() {
+            var type = Modernizr.mq('(min-width: 48em)') ? 'desktop' : 'mobile';
+            if (type == 'mobile') {
+                html.classList.add('mobile');
+            } else {
+                html.classList.remove('mobile');
+            }
+        });
+
+        var modal = document.getElementById('js-menu-open-modal'),
+            nav = document.getElementById('main-nav'),
+            nav_link = document.querySelector('[href="#main-nav"]');
+
+        var toggle_menu = function(e) {
+            if (!html.classList.contains('mobile')) {
+                return;
+            }
+            e.preventDefault();
+            var content = document.getElementById('front-main'),
+                content_top = content.offsetTop - parseInt(getComputedStyle(content).marginTop, 10);
+            modal.style.top = content_top + 'px';
+            nav.style.top = content_top + 'px';
+            var opened = html.classList.toggle('js-nav-open');
+            if (opened) {
+                // Set height so can scroll menu if not enough space
+                var h = window.innerHeight - content_top;
+                nav.style.maxHeight = h + 'px';
+            }
+            nav_link.setAttribute('aria-expanded', opened);
+        };
+
+        modal.addEventListener('click', toggle_menu);
+        nav_link.addEventListener('click', toggle_menu);
+        nav_link.setAttribute('aria-expanded', false);
+        nav.addEventListener('click', function(e) {
+            if (e.target.matches('span')) {
+                toggle_menu(e);
+            }
+        });
+    }
+
+    set_up_mobile_nav();
+
     var around_forms = document.querySelectorAll('form[action*="around"]');
     for (var i=0; i<around_forms.length; i++) {
         var form = around_forms[i];
@@ -15,6 +66,10 @@ document.getElementById('pc').focus();
     for (i=0; i<around_links.length; i++) {
         var link = around_links[i];
         link.href = link.href + (link.href.indexOf('?') > -1 ? '&js=1' : '?js=1');
+    }
+
+    if (!('addEventListener' in window)) {
+        return;
     }
 
     var lk = document.querySelector('span.report-a-problem-btn');
