@@ -78,4 +78,10 @@ fixmystreet.assets.add(options, {
     filter_value: 'S180'
 });
 
+fixmystreet.assets.add(options, {
+    asset_category: "Parking Services",
+    asset_item: 'pay & display machine',
+    filter_value: 'PAMA'
+});
+
 })();
