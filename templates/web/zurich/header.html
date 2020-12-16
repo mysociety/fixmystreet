@@ -1,6 +1,11 @@
+[%
+    SET html_att = ' lang="' _ lang_code _ '"';
+    # For a right-to-left language, use the following line in your own header:
+    # SET html_att = html_att _ ' dir="rtl"';
+-%]
 <!doctype html>
-<!--[if IE 9]>   <html class="no-js ie9" lang="[% lang_code %]"><![endif]-->
-<!--[if gt IE 9]><!--><html class="no-js" lang="[% lang_code %]"><!--<![endif]-->
+<!--[if IE 9]>   <html class="no-js ie9"[% html_att | safe %]><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"[% html_att | safe %]><!--<![endif]-->
     <head>
         <meta name="viewport" content="initial-scale=1.0">
 
@@ -10,26 +15,19 @@
 
         [% INCLUDE 'header_opengraph.html' %]
         [% INCLUDE 'header/css.html' %]
-        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css">
-
         [% INCLUDE 'common_header_tags.html' %]
-
-        [% INCLUDE 'tracking_code.html' %]
+        [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
 
     </head>
+    [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
     <body class="[% bodyclass | html IF bodyclass %]">
 
     [% INCLUDE 'debug_header.html' %]
+    [% TRY %][% PROCESS 'before_wrapper.html' %][% CATCH file %][% END %]
 
     <div class="wrapper">
         <div class="table-cell clearfix">
-            <header id="site-header" role="banner">
-                <div class="container">
-                    <a href="/" id="site-logo-text">Züri wie neu</a>
-                    <a href="http://www.stadt-zuerich.ch/" id="site-logo">Stadt Zürich</a>
-                    <a href="#main-nav" id="nav-link">Main Navigation</a>
-                </div>
-            </header>
+            [% INCLUDE 'header_site.html' %]
 
             <div class="container">
 
