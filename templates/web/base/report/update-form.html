@@ -9,11 +9,9 @@
       <h2[% IF two_column_sidebar %] class="hidden-js"[% END %]>[% loc( 'Provide an update') %]</h2>
     [% END %]
 
-    [% IF c.cobrand.moniker != 'stevenage' %]
     <div class="general-notes">
         [% INCLUDE 'report/updates-sidebar-notes.html' %]
     </div>
-    [% END %]
   [% END %]
 
     [% INCLUDE 'errors.html' %]

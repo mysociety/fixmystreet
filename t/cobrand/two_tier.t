@@ -4,7 +4,6 @@ use FixMyStreet::Cobrand;
 my @cobrands = (
     [ hart => 2333 ],
     [ oxfordshire  => 2237 ],
-    [ stevenage    => 2347 ],
     [ warwickshire => 2243 ],
 );
 
