@@ -21,7 +21,6 @@ cleaning</strong> or <strong>clearing</strong>.
 <ul>
     <li>Urgent and emergency problems</li>
     <li>Complaints about people, including anti-social behaviour</li>
-    <li>Issues with council services, such as bins and recycling</li>
     <li>Proposals for change, eg to road layouts</li>
     <li>Complaints about [% c.cobrand.council_name %]</li>
 </ul>
@@ -71,7 +70,7 @@ cleaning</strong> or <strong>clearing</strong>.
 <dd>
 <p>
     Begin by entering the location of your issue <a href="/">on the front
-    page</a>. You can use the name of a street, area, a place or a postcode —
+    page</a>. You can use the name of a motorway, area, a place or a postcode —
     or you can click “use my location” which will automatically detect where
     you are.
 </p>
@@ -87,29 +86,6 @@ cleaning</strong> or <strong>clearing</strong>.
 </p>
 <p>
     You’ll then be asked to fill in a few details.
-</p>
-</dd>
-
-<dt>Do I have to be a [% c.cobrand.council_name %] resident to use this site?</dt>
-
-<dd>
-<p>
-    No — anyone can use this site.
-</p>
-</dd>
-
-<dt>Do I need to make an account to use this site?</dt>
-
-<dd>
-<p>
-    No; if you wish to see previous reports you have made, you can sign in by
-    clicking ‘Sign in’ and then either have a link sent to your email, sign in
-    with a previously set password, or set a password using the ‘create an
-    account’ link.
-</p>
-<p>
-    If you already have an account on fixmystreet.com, you can use the same
-    details on this site.
 </p>
 </dd>
 
@@ -135,9 +111,8 @@ cleaning</strong> or <strong>clearing</strong>.
 
 <dd>
 <p>
-    When there’s a change in your report’s status, and where you have provided
-    your email address, you’ll receive an update. This might tell you, for
-    example, that:
+    When there’s a change in your report’s status, an update will be left on
+    the report on the site. This might tell you, for example, that:
 </p>
 
 <ul>
@@ -147,10 +122,6 @@ cleaning</strong> or <strong>clearing</strong>.
     <li>The issue has been deemed unsuitable for fixing (as happens in some cases)</li>
 </ul>
 
-<p>
-    These updates are also published on the site so that everyone can see what
-    progress has been made.
-</p>
 </dd>
 
 <dt>Can I use this site on my smartphone or tablet?</dt>
@@ -176,60 +147,11 @@ cleaning</strong> or <strong>clearing</strong>.
 </p>
 </dd>
 
-<dt>What else can I do on this site?</dt>
-
-<dd>
+<dt>Can I make updates to my report?</dt>
 <p>
-    You can subscribe to a specific area, so you’ll get an email whenever
-    someone makes a report in your chosen neighbourhood.
+    Yes, you can leave updates on open reports, by visiting a report page and
+    filling in the update form.
 </p>
-<p>
-    Search for a location, and then click ‘get updates’ at the bottom of the
-    list of reports.
-</p>
-<p>
-    If you run a website and you’d like to publish reports automatically from a
-    specific area, you can also access an RSS feed from the ‘get updates’
-    interface.
-</p>
-</dd>
-
-<dt>Can I edit or delete a report?</dt>
-
-<dd>
-<p>
-    You can remove your name from a report if you have included it by accident,
-    or changed your mind about it being published. Visit the report page when
-    signed in and click on the link marked ‘hide your name?’.
-</p>
-<p>
-    You’ll then have the option to remove your name from one report or every
-    report you’ve made.
-</p>
-<p>
-    If you’d like to edit some other part of your report, please get in touch.
-</p>
-</dd>
-
-[% IF c.cobrand.feature('updates_allowed') == 'open' %]
-    <dt>Can I make updates to my report?</dt>
-    <p>
-        Yes, you can leave updates on open reports, by visiting a report page and
-        filling in the update form.
-    </p>
-[% ELSIF c.cobrand.feature('updates_allowed') == 'reporter-open' %]
-    <dt>Can I make updates to my report?</dt>
-    <p>
-        Yes, you can leave updates on open reports you have made, by visiting a
-        report page and filling in the update form.
-    </p>
-[% ELSIF c.cobrand.feature('updates_allowed') == 'reporter' %]
-    <dt>Can I make updates to my report?</dt>
-    <p>
-        Yes, you can leave updates on reports you have made, by visiting a report
-        page and filling in the update form.
-    </p>
-[% END %]
 
 <dt>Do you remove content from this site?</dt>
 

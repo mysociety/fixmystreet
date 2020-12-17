@@ -4,6 +4,8 @@ use parent 'FixMyStreet::Cobrand::UK';
 use strict;
 use warnings;
 
+sub council_name { 'Highways England' }
+
 sub council_url { 'highwaysengland' }
 
 sub site_key { 'highwaysengland' }
@@ -28,6 +30,8 @@ sub problems_sql_restriction { FixMyStreet::Cobrand::UKCouncils::problems_sql_re
 sub users_restriction { FixMyStreet::Cobrand::UKCouncils::users_restriction($_[0], $_[1]) }
 sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction($_[0], $_[1]) }
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
+sub contact_name { FixMyStreet::Cobrand::UKCouncils::contact_name($_[0]) }
+sub contact_email { FixMyStreet::Cobrand::UKCouncils::contact_email($_[0]) }
 
 sub munge_problem_list {
     my ($self, $problem) = @_;
@@ -87,6 +91,8 @@ sub allow_photo_upload { 0 }
 sub allow_anonymous_reports { 'button' }
 
 sub admin_user_domain { 'highwaysengland.co.uk' }
+
+sub abuse_reports_only { 1 }
 
 sub anonymous_account {
     my $self = shift;
