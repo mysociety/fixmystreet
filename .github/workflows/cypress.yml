@@ -33,6 +33,7 @@ jobs:
 
     - name: Install packages
       run: |
+        sudo apt update
         sudo apt install -y gettext
         npm install cypress@3.8.3 @cypress/code-coverage codecov
         vendor/bin/carton install --deployment
