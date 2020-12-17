@@ -20,29 +20,28 @@ document.getElementById('pc').focus();
 
         var modal = document.getElementById('js-menu-open-modal'),
             nav = document.getElementById('main-nav'),
-            nav_link = document.querySelector('[href="#main-nav"]');
+            nav_checkbox = document.getElementById('main-nav-btn'),
+            nav_link = document.querySelector('label[for="main-nav-btn"]');
 
         var toggle_menu = function(e) {
             if (!html.classList.contains('mobile')) {
                 return;
             }
             e.preventDefault();
-            var content = document.getElementById('front-main'),
-                content_top = content.offsetTop - parseInt(getComputedStyle(content).marginTop, 10);
-            modal.style.top = content_top + 'px';
-            nav.style.top = content_top + 'px';
             var opened = html.classList.toggle('js-nav-open');
             if (opened) {
                 // Set height so can scroll menu if not enough space
-                var h = window.innerHeight - content_top;
+                var nav_top = nav_checkbox.offsetTop;
+                var h = window.innerHeight - nav_top;
                 nav.style.maxHeight = h + 'px';
+                modal.style.top = nav_top + 'px';
             }
             nav_link.setAttribute('aria-expanded', opened);
+            nav_checkbox.checked = opened;
         };
 
         modal.addEventListener('click', toggle_menu);
         nav_link.addEventListener('click', toggle_menu);
-        nav_link.setAttribute('aria-expanded', false);
         nav.addEventListener('click', function(e) {
             if (e.target.matches('span')) {
                 toggle_menu(e);

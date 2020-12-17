@@ -713,6 +713,11 @@ ul.error {
 }
 
 // this is a skip to nav for mobile users only
+label[for="main-nav-btn"] {
+  font-weight: normal;
+  margin: 0;
+}
+
 #nav-link {
   width: 3em;
   height: 0;
@@ -759,29 +764,26 @@ html.mobile.js-nav-open #js-menu-open-modal {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-// The nav list has this sort of "full width" look,
-// so we want to cancel out the margin from .container
 #main-nav {
-  margin: 0 -1em;
-  .mobile & {
-    display: none;
+  display: none;
+  position: absolute;
+  overflow: auto;
+  left: 0;
+  right: 0;
+  z-index: 1; // So appears over map
+}
+
+#main-nav-btn {
     position: absolute;
-    overflow: auto;
-    left: 1em;
-    right: 1em;
-    z-index: 1; // So appears over map
-  }
-  .mobile.js-nav-open & {
-    display: block;
-  }
+    #{$left}: -9999px;
+}
+
+#main-nav-btn:checked ~ #main-nav {
+  display: block;
 }
 
 .nav-menu {
   @include list-reset-soft;
-  border-top: 0.25em solid #333;
-  .mobile & {
-    border-top: none;
-  }
   a, span {
     display: block;
     padding: 0.5em 1em;

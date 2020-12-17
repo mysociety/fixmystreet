@@ -2,10 +2,16 @@
     <div class="mobile-header-nav">
         <ul>
             <li> <a href="http://www.hart.gov.uk/"><div class="home-icon">&nbsp;</div></a>
-            <li> <a href="#main-nav"><div class="menu-icon">&nbsp;</div></a>
+            <li> <label for="main-nav-btn" aria-expanded="false"><div class="menu-icon">&nbsp;</div></label>
         </ul>
     </div>
     <div class="container">
         <a id="site-logo" href="http://www.hart.gov.uk">Hart District Council</a>
     </div>
 </header>
+
+<div class="nav-wrapper">
+    <div class="container">
+        [% INCLUDE 'main_nav.html' %]
+    </div>
+</div>

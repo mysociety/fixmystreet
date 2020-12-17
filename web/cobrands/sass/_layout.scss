@@ -59,12 +59,12 @@ h1 {
 }
 
 #main-nav {
+  position: static;
   min-height: $mappage-header-height; // defaults to map header height; should be height of #site-header (eg: #site-logo + any vertical padding)
   height: 1px; // flex `align-items: center` doesn't work in IE10 and IE11 unless flex container has an explicit height (even when min-height means this explicit height gets ignored!)
   @include flex-container();
   @include flex-align(center);
   float: $right; // we could use justify-content here, but float degrades better for non-flexbox browsers
-  margin: 0;
   @if ($header-top-border) {
     margin-top: $header-top-border-width * -1; // visually compensate for border on #site-header
   }
@@ -89,9 +89,8 @@ h1 {
     z-index: 1;
 }
 
-#nav-link {
-  #{$right}: auto;
-  #{$left}: -999999px;
+#nav-link, #main-nav-btn {
+    display: none;
 }
 
 #report-cta,

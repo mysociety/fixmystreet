@@ -15,7 +15,7 @@
             </div>
 
             <a href="[% c.cobrand.base_url IF admin %]/" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>
-            <a href="#main-nav" class="navigation-trigger">Menu</a>
+            <label class="navigation-trigger" for="main-nav-btn" aria-expanded="false">Menu</label>
 
             <div class="header-search header-search--desktop">
                 <form id="search" class="site-search" action="https://www.bathnes.gov.uk/search/site/" method="post">
@@ -34,3 +34,9 @@
 
     <div class="header-marque"></div>
 </header>
+
+<div class="nav-wrapper">
+    <div class="container">
+        [% INCLUDE 'main_nav.html' %]
+    </div>
+</div>

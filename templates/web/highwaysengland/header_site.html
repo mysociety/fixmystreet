@@ -1,9 +1,15 @@
 <header id="site-header" role="banner">
     <div class="container">
         [% INCLUDE 'header_logo.html' %]
-        <a href="#main-nav" id="nav-link">Main Navigation</a>
+        <label id="nav-link" for="main-nav-btn" aria-expanded="false">[% loc('Main Navigation') %]</label>
     </div>
 </header>
+
+<div class="nav-wrapper">
+    <div class="container">
+        [% INCLUDE 'main_nav.html' %]
+    </div>
+</div>
 
 [% IF c.req.uri.path == '/' %]
     <div class="front-warning">
