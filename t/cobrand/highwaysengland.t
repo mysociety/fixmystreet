@@ -88,4 +88,48 @@ FixMyStreet::override_config {
     };
 };
 
+subtest 'Dashboard CSV extra columns' => sub {
+    $mech->delete_problems_for_body($highways->id);
+    my ($problem1, $problem2) = $mech->create_problems_for_body(2, $highways->id, 'Title');
+    $problem1->update({
+        extra => {
+            where_hear => "Social media",
+            _fields => [
+                {
+                    name => "area_name",
+                    value => "South West",
+                },
+            ],
+        },
+        service => 'desktop',
+        cobrand => 'highwaysengland'
+    });
+    $problem2->update({
+        extra => {
+            where_hear => "Search engine",
+            _fields => [
+                {
+                    name => "area_name",
+                    value => "Area 7",
+                },
+            ],
+        },
+        service => 'mobile',
+        cobrand => 'fixmystreet',
+    });
+
+    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+        from_body => $highways, password => 'password');
+    $mech->log_in_ok( $staffuser->email );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'highwaysengland',
+    }, sub {
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('URL","Device Type","Reported As","Area name","How you found us","Site Used"');
+    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem1->id .',desktop,,"South West","Social media",highwaysengland');
+    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,,"Area 7","Search engine",fixmystreet');
+};
+
 done_testing();
