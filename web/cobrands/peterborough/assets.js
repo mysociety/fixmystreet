@@ -4,8 +4,25 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var format = new OpenLayers.Format.QueryStringFilter();
+OpenLayers.Protocol.Peterborough = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    filterToParams: function(filter, params) {
+        params = format.write(filter, params);
+        params.geometry = params.bbox;
+        delete params.bbox;
+        return params;
+    },
+    CLASS_NAME: "OpenLayers.Protocol.Peterborough"
+});
 
 var defaults = {
+    max_resolution: 4.777314267158508,
+    srsName: "EPSG:3857",
+    body: "Peterborough City Council",
+    strategy_class: OpenLayers.Strategy.FixMyStreet
+};
+
+var tilma_defaults = $.extend(true, {}, defaults, {
     http_options: {
         url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/peterborough" : "https://tilma.mysociety.org/mapserver/peterborough",
         params: {
@@ -15,14 +32,23 @@ var defaults = {
             SRSNAME: "urn:ogc:def:crs:EPSG::3857"
         }
     },
-    max_resolution: 4.777314267158508,
-    geometryName: 'msGeometry',
-    srsName: "EPSG:3857",
-    body: "Peterborough City Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
-};
+    geometryName: 'msGeometry'
+});
 
-fixmystreet.assets.add(defaults, {
+var arcgis_defaults = $.extend(true, {}, defaults, {
+    protocol_class: OpenLayers.Protocol.Peterborough,
+    format_class: OpenLayers.Format.GeoJSON,
+    http_options: {
+        params: {
+            inSR: '3857',
+            outSR: '3857',
+            f: 'geojson'
+        }
+    },
+    geometryName: 'SHAPE'
+});
+
+fixmystreet.assets.add(tilma_defaults, {
     http_options: {
         params: {
             TYPENAME: "highways"
@@ -53,7 +79,7 @@ OpenLayers.Layer.PeterboroughVectorAsset = OpenLayers.Class(OpenLayers.Layer.Vec
 var NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
 var UNKNOWN_LIGHT_CATEGORY_NAME = 'Problem with a light not shown on map';
 
-var trees_defaults = $.extend(true, {}, defaults, {
+var trees_defaults = $.extend(true, {}, tilma_defaults, {
     class: OpenLayers.Layer.PeterboroughVectorAsset,
     select_action: true,
     actions: {
@@ -93,7 +119,7 @@ fixmystreet.assets.add(trees_defaults, {
 // We don't want to plant trees where the existing trees are, so add a
 // separate layer with pin-snapping disabled for new tree requests.
 // The new tree request category is disabled in the other tree point layer.
-fixmystreet.assets.add(defaults, {
+fixmystreet.assets.add(tilma_defaults, {
     http_options: {
         params: {
             TYPENAME: "tree_points"
@@ -113,7 +139,7 @@ var streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${UNITNO}")
 });
 
-var light_defaults = $.extend(true, {}, defaults, {
+var light_defaults = $.extend(true, {}, tilma_defaults, {
     http_options: {
         params: {
             TYPENAME: "StreetLights"
@@ -163,42 +189,61 @@ fixmystreet.assets.add(light_defaults, {
     asset_item_message: ''
 });
 
-var bin_defaults = $.extend(true, {}, defaults, {
-    class: OpenLayers.Layer.PeterboroughVectorAsset,
-    select_action: true,
+var url_base = 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/';
+
+var flytipping_defaults = $.extend(true, {}, arcgis_defaults, {
+    http_options: {
+      params: {
+        outFields: '',
+      }
+    },
+    // this prevents issues when public and non public land
+    // are right next to each other
+    nearest_radius: 0.1,
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    asset_category: ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti'  ],
+    non_interactive: true,
+    road: true,
+    asset_item: 'road',
+    asset_type: 'road',
+});
+
+// PCC Property Combined
+fixmystreet.assets.add(flytipping_defaults, {
+    http_options: {
+      url: url_base + '2/query?',
+    },
     actions: {
-        asset_found: fixmystreet.message_controller.asset_found,
-        asset_not_found: fixmystreet.message_controller.asset_not_found
-    },
-    attributes: {
-        asset_details: function() {
-            var a = this.attributes;
-            return a.Reference + ", " + a.Location;
+        found: function(layer) {
+            $("#js-roads-responsibility").addClass("hidden");
         },
-        central_asset_id: 'OBJECTID'
-    },
-    asset_id_field: 'OBJECTID',
-    asset_type: 'spot'
+        not_found: function() {
+            for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
+                var layer = fixmystreet.assets.layers[i];
+                if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
+                    $("#js-roads-responsibility").addClass("hidden");
+                    return;
+                }
+            }
+            $("#js-roads-responsibility").removeClass("hidden");
+            $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
+            $('#js-environment-message').removeClass('hidden');
+        },
+    }
 });
 
-fixmystreet.assets.add(bin_defaults, {
+// PCC Property Leased Out NOT Responsible
+fixmystreet.assets.add(flytipping_defaults, {
     http_options: {
-      params: {
-        TYPENAME: 'LitterBins'
-      }
+      url: url_base + '3/query?',
     },
-    asset_category: 'Litter bin',
-    asset_item: 'litter bin'
-});
-
-fixmystreet.assets.add(bin_defaults, {
-    http_options: {
-      params: {
-        TYPENAME: 'DogBins'
-      }
-    },
-    asset_category: 'Dog bin',
-    asset_item: 'dog waste bin'
+    actions: {
+        found: function() {
+            $("#js-roads-responsibility").removeClass("hidden");
+            $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
+            $('#js-environment-message').removeClass('hidden');
+        },
+    }
 });
 
 })();
