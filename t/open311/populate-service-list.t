@@ -485,6 +485,103 @@ subtest 'check existing non_public category does not get marked public' => sub {
     is $contact->non_public, 1, 'contact remains non_public';
 };
 
+subtest 'check new category marked waste_only' => sub {
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>404</service_code>
+        <service_name>Food bin missing</service_name>
+        <description></description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>waste_only</keywords>
+        <group>Missing bin</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    is $contact->email, '404', 'email correct';
+    is $contact->category, 'Food bin missing', 'category correct';
+    is $contact->get_extra_metadata('waste_only'), 1, 'contact marked as waste_only in extra';
+};
+
+subtest 'check new category not marked waste_only' => sub {
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>404</service_code>
+        <service_name>Food bin missing</service_name>
+        <description></description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords></keywords>
+        <group>Missing bin</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    is $contact->email, '404', 'email correct';
+    is $contact->category, 'Food bin missing', 'category correct';
+    is $contact->get_extra_metadata('waste_only'), undef, 'contact not marked as waste_only in extra';
+};
+
+subtest 'check existing category marked waste_only' => sub {
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    is $contact->get_extra_metadata('waste_only'), undef, 'contact not marked as waste_only in extra';
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>404</service_code>
+        <service_name>Food bin missing</service_name>
+        <description></description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>waste_only</keywords>
+        <group>Missing bin</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    is $contact->email, '404', 'email correct';
+    is $contact->category, 'Food bin missing', 'category correct';
+    is $contact->get_extra_metadata('waste_only'), 1, 'contact marked as waste_only in extra';
+};
+
 for my $test (
     {
         desc => 'check meta data added to existing contact',
