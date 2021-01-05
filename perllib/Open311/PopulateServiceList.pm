@@ -183,6 +183,7 @@ sub _handle_existing_contact {
 
     $self->_set_contact_group($contact) unless $protected;
     $self->_set_contact_non_public($contact);
+    $self->_set_contact_as_waste_only($contact);
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
@@ -218,6 +219,7 @@ sub _create_contact {
 
     $self->_set_contact_group($contact);
     $self->_set_contact_non_public($contact);
+    $self->_set_contact_as_waste_only($contact);
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
@@ -321,6 +323,21 @@ sub _set_contact_non_public {
         non_public => 1,
         %{ $self->_action_params("marked private") },
     }) if $keywords{private};
+}
+
+sub _set_contact_as_waste_only {
+    my ($self, $contact) = @_;
+
+    my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
+    my $waste_only = $keywords{waste_only} ? 1 : 0;
+    my $old_waste_only = $contact->get_extra_metadata("waste_only") || 0;
+
+    if ($waste_only != $old_waste_only) {
+        $contact->set_extra_metadata(waste_only => $waste_only);
+        $contact->update({
+            %{ $self->_action_params("set waste_only to $waste_only") },
+        });
+    }
 }
 
 sub _get_new_groups {
