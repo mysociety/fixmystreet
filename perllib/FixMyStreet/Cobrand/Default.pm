@@ -1119,6 +1119,15 @@ sub report_check_for_errors {
 
 sub report_sent_confirmation_email { '' }
 
+=item post_report_sent
+
+Perform any cobrand specific actions that need to happen to a report after it
+has been sent. Takes the report as an argument.
+
+=cut
+
+sub post_report_sent { '' }
+
 =item never_confirm_reports
 
 If true then we never send an email to confirm a report
