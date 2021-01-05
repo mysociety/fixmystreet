@@ -253,6 +253,7 @@ sub _post_send {
             $self->h->{sent_confirm_id_ref} = $self->report->$send_confirmation_email;
             $self->_send_report_sent_email;
         }
+        $self->cobrand->call_hook(post_report_sent => $self->report);
         $self->log("Send successful");
     } else {
         my @errors;
