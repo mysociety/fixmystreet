@@ -7,7 +7,7 @@ use utf8;
 has c => ( is => 'ro' );
 has addresses => ( is => 'rw');
 
-has default_page_type => ( is => 'ro', isa => 'Str', default => 'Noise' );
+has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
 
 before _process_page_array => sub {
     my ($self, $pages) = @_;
@@ -93,7 +93,9 @@ has_page about_you => (
     },
 );
 
-with 'FixMyStreet::App::Form::Noise::AboutYou';
+has email_hint => ( is => 'ro', default => 'We’ll only use this to send you updates on your report' );
+has phone_hint => ( is => 'ro', default => 'We will call you on this number to discuss your report and if necessary arrange a visit' );
+with 'FixMyStreet::App::Form::AboutYou';
 
 has_page best_time => (
     fields => ['best_time', 'best_method', 'continue'],

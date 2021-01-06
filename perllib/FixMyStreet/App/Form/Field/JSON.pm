@@ -20,8 +20,14 @@ sub inflate_json {
 sub deflate_json {
     my ($self, $value) = @_;
     return $value unless $value;
-    $value = encode_base64(encode_json($value), "");
-    return $value;
+    $value = encode_base64(JSON::MaybeXS->new->convert_blessed->encode($value), ""); return $value;
+}
+
+# this is required to make sure that it inflates correctly as the form
+# code expects to see a hash with the field names
+sub DateTime::TO_JSON {
+    my ($dt) = @_;
+    return { day => $dt->day, month => $dt->month, year => $dt->year };
 }
 
 __PACKAGE__->meta->make_immutable;

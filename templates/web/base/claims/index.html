@@ -1,0 +1,27 @@
+[% SET bodyclass = 'claims' ~%]
+[% SET title = form.title ~%]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'claims/govuk/fields.html' %]
+  [% PROCESS back %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+
+  [% IF form.intro_template %][% PROCESS "claims/${form.intro_template}" %][% END %]
+
+<form method="post">
+  [% PROCESS form %]
+</form>
+
+<script nonce="[% csp_nonce %]">
+(function(){
+    var id;
+    id = document.getElementById('form-kind_other-row');
+    if (id) { id.className += ' hidden-js'; }
+    id = document.getElementById('form-estates-row');
+    if (id) { id.className += ' hidden-js'; }
+})();
+</script>
+
+[% INCLUDE footer.html %]
