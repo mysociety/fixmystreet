@@ -7,6 +7,19 @@ use Catalyst::Test 'FixMyStreet::App';
 
 use_ok 'FixMyStreet::Cobrand::CentralBedfordshire';
 
+my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+$ukc->mock('_fetch_features', sub {
+    my ($self, $cfg, $x, $y) = @_;
+    is $y, 238194, 'Correct latitude';
+    return [{
+        properties => { streetref1 => 'Road ID' },
+        geometry => {
+            type => 'LineString',
+            coordinates => [ [ $x-1, $y-1 ], [ $x+1, $y+1 ] ],
+        }
+    }];
+});
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(21070, 'Central Bedfordshire Council', {
@@ -46,12 +59,13 @@ FixMyStreet::override_config {
         $mech->content_contains('Central Bedfordshire');
     };
 
-    subtest 'Correct area_code parameter for Open311' => sub {
+    subtest 'Correct area_code and NSGRef parameters for Open311' => sub {
         my $test_data = FixMyStreet::Script::Reports::send();
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'BRIDGES';
         is $c->param('attribute[area_code]'), 'Area1';
+        is $c->param('attribute[NSGRef]'), 'Road ID';
 
         $mech->email_count_is(1);
         $report->discard_changes;
