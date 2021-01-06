@@ -1,4 +1,4 @@
-package FixMyStreet::App::Form::Noise::AboutYou;
+package FixMyStreet::App::Form::AboutYou;
 
 use utf8;
 use HTML::FormHandler::Moose::Role;
@@ -22,7 +22,7 @@ has_field email => (
     type => 'Email',
     label => 'Email address',
     tags => {
-        hint => 'We’ll only use this to send you updates on your report'
+        hint => sub { shift->form->email_hint },
     },
 );
 
@@ -31,7 +31,7 @@ has_field phone => (
     type => 'Text',
     label => 'Telephone number',
     tags => {
-        hint => 'We will call you on this number to discuss your report and if necessary arrange a visit'
+        hint => sub { shift->form->phone_hint },
     },
     validate_method => sub {
         my $self = shift;

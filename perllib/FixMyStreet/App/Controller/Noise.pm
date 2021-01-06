@@ -2,25 +2,24 @@ package FixMyStreet::App::Controller::Noise;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use FixMyStreet::App::Form::Noise;
-use mySociety::AuthToken;
 
-sub auto : Private {
-    my ( $self, $c ) = @_;
-    my $cobrand_check = $c->cobrand->feature('noise');
-    $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
-    $c->session->{form_unique_id} ||= mySociety::AuthToken::random_token();
-    return 1;
-}
+has feature => (
+    is => 'ro',
+    default => 'noise'
+);
 
-sub index : Path : Args(0) {
-    my ( $self, $c ) = @_;
+has form_class => (
+    is => 'ro',
+    default => 'FixMyStreet::App::Form::Noise',
+);
 
-    $c->forward('/auth/get_csrf_token');
-    $c->forward('form');
-}
+has index_template => (
+    is => 'ro',
+    default => 'noise/index.html',
+);
 
 # For if we were redirected to login
 sub existing : Local : Args(0) {
@@ -34,40 +33,16 @@ sub existing : Local : Args(0) {
     $c->forward('form');
 }
 
-sub load_form {
-    my ($c, $previous_form) = @_;
-
-    my $page;
-    if ($previous_form) {
-        $page = $previous_form->next;
-    } else {
-        $page = $c->forward('get_page');
-    }
-
-    my $form = FixMyStreet::App::Form::Noise->new(
-        page_name => $page,
-        csrf_token => $c->stash->{csrf_token},
-        c => $c,
-        previous_form => $previous_form,
-        saved_data_encoded => $c->get_param('saved_data'),
-        no_preload => 1,
-        unique_id_session => $c->session->{form_unique_id},
-        unique_id_form => $c->get_param('unique_id'),
-    );
-
-    if (!$form->has_current_page) {
-        $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
-    }
+sub requires_sign_in : Private {
+    my ($self, $c, $form) = @_;
 
     if ($form->requires_sign_in && !$c->user_exists) {
         $c->res->redirect('/auth?r=noise/existing');
         $c->detach;
     }
-
-    return $form;
 }
 
-sub form : Private {
+sub pre_form : Private {
     my ($self, $c) = @_;
 
     # Special button on map page to go back to address unknown (hard as form wraps whole page)
@@ -76,33 +51,7 @@ sub form : Private {
         $c->set_param('process', '');
     }
 
-    my $form = load_form($c);
-    if ($c->get_param('process') && !$c->stash->{override_no_process}) {
-        $c->forward('/auth/check_csrf_token');
-        $form->process(params => $c->req->body_params);
-        if ($form->validated) {
-            $form = load_form($c, $form);
-        }
-    }
-
-    $form->process unless $form->processed;
-
-    $c->stash->{template} = $form->template || 'noise/index.html';
-    $c->stash->{form} = $form;
     $c->stash->{label_for_field} = \&label_for_field;
-}
-
-sub get_page : Private {
-    my ($self, $c) = @_;
-
-    my $goto = $c->get_param('goto') || '';
-    my $process = $c->get_param('process') || '';
-    $goto = 'intro' unless $goto || $process;
-    if ($goto && $process) {
-        $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
-    }
-
-    return $goto || $process;
 }
 
 sub label_for_field {
