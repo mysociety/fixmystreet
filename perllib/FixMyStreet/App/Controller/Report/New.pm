@@ -712,7 +712,6 @@ sub setup_categories_and_bodies : Private {
     my ( $self, $c ) = @_;
 
     my $all_areas = $c->stash->{all_areas};
-    my $first_area = ( values %$all_areas )[0];
 
     my @bodies = $c->model('DB::Body')->active->for_areas(keys %$all_areas)->all;
     my %bodies = map { $_->id => $_ } @bodies;
@@ -813,7 +812,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{category_extras_hidden}  = \%category_extras_hidden;
     $c->stash->{category_extras_notices}  = \%category_extras_notices;
     $c->stash->{non_public_categories}  = \%non_public_categories;
-    $c->stash->{extra_name_info} = $first_area->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
+    $c->stash->{extra_name_info} = $all_areas->{+COUNCIL_ID_BROMLEY} ? 1 : 0;
 
     # escape these so we can then split on , cleanly in the template.
     my @list_of_names = map { $_->name } values %bodies_to_list;

@@ -48,6 +48,7 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     latitude => 51.402096,
     longitude => 0.015784,
     cobrand => 'bromley',
+    areas => '2482,8141',
     user => $user,
 });
 my $report = $reports[0];
@@ -246,6 +247,15 @@ subtest 'check special subcategories in admin' => sub {
     $user->discard_changes;
     is_deeply $user->get_extra_metadata('categories'), [ $contact->id ];
     is_deeply $user->get_extra_metadata('subcategories'), [ 'BLUE' ];
+};
+
+subtest 'check title field on report page for staff' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+    }, sub {
+        $mech->get_ok( '/report/' . $report->id );
+        $mech->content_contains('MRS');
+    };
 };
 
 subtest 'check heatmap page' => sub {
