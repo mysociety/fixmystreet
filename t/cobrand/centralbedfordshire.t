@@ -65,6 +65,7 @@ FixMyStreet::override_config {
 
     subtest "it doesn't show old reports on the cobrand" => sub {
         $mech->create_problems_for_body(1, $body->id, 'An old problem made before Central Beds FMS launched', {
+            state => 'fixed - user',
             confirmed => '2018-12-25 09:00',
             lastupdate => '2018-12-25 09:00',
             latitude => 52.030692,
@@ -103,7 +104,7 @@ subtest "it still shows old reports on fixmystreet.com" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'fixmystreet',
     }, sub {
-        $mech->get_ok('/reports/Central+Bedfordshire');
+        $mech->get_ok('/reports/Central+Bedfordshire?status=fixed');
         $mech->content_contains('An old problem made before Central Beds FMS launched');
     };
 };
