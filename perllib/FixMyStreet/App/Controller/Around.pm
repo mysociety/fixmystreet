@@ -209,12 +209,12 @@ and that they are in UK (if we are in UK).
 =cut
 
 sub check_location_is_acceptable : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $prefetched_all_areas ) = @_;
 
     # check that there are areas that can accept this location
     $c->stash->{area_check_action} = 'submit_problem';
     $c->stash->{remove_redundant_areas} = 1;
-    return $c->forward('/council/load_and_check_areas');
+    return $c->forward('/council/load_and_check_areas', [ $prefetched_all_areas ]);
 }
 
 =head2 check_and_stash_category
