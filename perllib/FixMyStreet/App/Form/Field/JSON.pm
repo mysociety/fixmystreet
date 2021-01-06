@@ -10,18 +10,30 @@ has '+inflate_method' => ( default => sub { \&inflate_json } );
 has '+deflate_method' => ( default => sub { \&deflate_json } );
 has '+fif_from_value' => ( default => 1 );
 
+has json => (
+    is => 'ro',
+    default => sub { JSON::MaybeXS->new->utf8->convert_blessed },
+);
+
 sub inflate_json {
     my ($self, $value) = @_;
     return $value unless $value;
-    $value = decode_json(decode_base64($value));
+    $value = $self->json->decode(decode_base64($value));
     return $value;
 }
 
 sub deflate_json {
     my ($self, $value) = @_;
     return $value unless $value;
-    $value = encode_base64(encode_json($value), "");
+    $value = encode_base64($self->json->encode($value), "");
     return $value;
+}
+
+# this is required to make sure that it inflates correctly as the form
+# code expects to see a hash with the field names
+sub DateTime::TO_JSON {
+    my ($dt) = @_;
+    return { day => $dt->day, month => $dt->month, year => $dt->year };
 }
 
 __PACKAGE__->meta->make_immutable;
