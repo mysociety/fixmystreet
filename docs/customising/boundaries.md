@@ -282,7 +282,7 @@ Use this type of boundary if:
     <ol>
       <li>
         <p>
-          Go to <a href="http://nominamtim.openstreetmap.org">OpenStreetMap's
+          Go to <a href="https://nominatim.openstreetmap.org">OpenStreetMap's
           geocoder</a> and enter the name of the city, e.g., "Zurich,
           Switzerland".
         </p>
