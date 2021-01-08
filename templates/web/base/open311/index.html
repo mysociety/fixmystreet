@@ -71,6 +71,7 @@ for council problem-reporting systems.</p>
 <ul>
 <li><a rel="nofollow" href="http://www.open311.org/">[% loc('Open311 initiative web page') %]</a></li>
 <li><a rel="nofollow" href="http://wiki.open311.org/GeoReport_v2">[% loc('Open311 specification') %]</a></li>
+<li><a href="https://github.com/mysociety/fixmystreet/wiki/Open311-FMS---Complete-Spec">Open311 specification, with mySociety additions</a></li>
 </ul>
 
 <p>[% tprintf( loc('At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date.'), c.config.OPEN311_LIMIT ) %]</p>
@@ -90,41 +91,41 @@ for council problem-reporting systems.</p>
 [% jurisdiction_id = c.cobrand.jurisdiction_id_example %]
 [% examples = [
     {
-        url = c.cobrand.base_url _ "/open311/v2/discovery.xml?jurisdiction_id=$jurisdiction_id",
+        url = "/open311/v2/discovery.xml?jurisdiction_id=$jurisdiction_id",
         info = 'discovery information',
     },
     {
-        url = c.cobrand.base_url _ "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id",
+        url = "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id",
         info = 'list of services provided',
     },
     {
-        url = c.cobrand.base_url _ "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id&lat=60&long=11",
+        url = "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id&lat=60&long=11",
         info = 'list of services provided for WGS84 coordinate latitude 60 longitude 11',
     },
     {
-        url = c.cobrand.base_url _ "/open311/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id",
+        url = "/open311/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id",
         info = 'Request number 1',
     },
     {
-        url = c.cobrand.base_url _ "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10",
+        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10",
         info = 'All open requests reported before 2011-03-10 to Trondheim (id 1601)',
     },
     {
-        url = c.cobrand.base_url _ "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220",
+        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220",
         info = 'All open requests in Asker (id 220) and Bærum (id 219)',
     },
     {
-        url = c.cobrand.base_url _ "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning",
+        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning",
         info = "All requests with the category 'Vannforsyning'",
     },
     {
-        url = c.cobrand.base_url _ "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=closed",
+        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=closed",
         info = 'All closed requests',
     },
 ] %]
 [% FOREACH examples %]
-    <li><a href="[% url %]">[% info %]</a>
-    <br>[% url | html %]</li>
+    <li>[% info %]: <a href="[% url %]">XML</a> or <a href="[% url.replace('xml', 'json') %]">JSON</a>
+    <br>[% url.replace('xml', '<i>format</i>') | safe %]</li>
 [% END %]
 
 </ul>
