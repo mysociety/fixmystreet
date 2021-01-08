@@ -109,40 +109,25 @@ sub get_discovery : Private {
     my $spec_url = 'http://wiki.open311.org/GeoReport_v2';
     my $info =
     {
-        'contact' => ["Send email to $contact_email."],
-        'changeset' => [$prod_changeset],
-        'max_requests' => [ $c->config->{OPEN311_LIMIT} || 1000 ],
+        'contact' => "Send email to $contact_email.",
+        'changeset' => $prod_changeset,
+        'max_requests' => $c->config->{OPEN311_LIMIT} || 1000,
         'endpoints' => [
             {
-                'endpoint' => [
-                    {
-                        'formats' => [
-                            {'format' => [ 'text/xml',
-                                           'application/json',
-                                           'text/html' ]
-                            }
-                            ],
-                        'specification' => [ $spec_url ],
-                        'changeset' => [ $prod_changeset ],
-                        'url' => [ $prod_url ],
-                        'type' => [ 'production' ]
-                    },
-                    {
-                        'formats' => [
-                            {
-                                'format' => [ 'text/xml',
-                                              'application/json',
-                                              'text/html' ]
-                            }
-                            ],
-                        'specification' => [ $spec_url ],
-                        'changeset' => [ $test_changeset ],
-                        'url' => [ $test_url ],
-                        'type' => [ 'test' ]
-                    }
-                    ]
+                'formats' => [ 'text/xml', 'application/json', 'text/html' ],
+                'specification' => $spec_url,
+                'changeset' => $prod_changeset,
+                'url' => $prod_url,
+                'type' => 'production'
+            },
+            {
+                'formats' => [ 'text/xml', 'application/json', 'text/html' ],
+                'specification' => $spec_url,
+                'changeset' => $test_changeset,
+                'url' => $test_url,
+                'type' => 'test'
             }
-            ]
+        ]
     };
     $c->forward( 'format_output', [ {
         'discovery' => $info
@@ -182,13 +167,13 @@ sub get_services : Private {
              {
                  # FIXME Open311 v2 seem to require all three, and we
                  # only have one value.
-                 'service_name' => [ $categoryname ],
-                 'description' =>  [ $categoryname ],
-                 'service_code' => [ $categoryname ],
-                 'metadata' => [ 'false' ],
-                 'type' => [ 'realtime' ],
-#                 'group' => [ '' ],
-#                 'keywords' => [ '' ],
+                 'service_name' => $categoryname,
+                 'description' => $categoryname,
+                 'service_code' => $categoryname,
+                 'metadata' => 'false',
+                 'type' => 'realtime',
+#                 'group' => '',
+#                 'keywords' => '',
              }
             );
     }
@@ -422,6 +407,8 @@ sub format_output : Private {
             service_requests => 'request',
             errors => 'error',
             service_request_updates => 'request_update',
+            endpoints => 'endpoint',
+            formats => 'format',
         };
         $c->res->body( XMLout($hashref,
             KeyAttr => {},
