@@ -1,0 +1,8 @@
+<div>[% tprintf( new_text, decode(new_n) ) %]</div>
+[% IF completed_text %]
+    <div>[% tprintf( completed_text, decode(completed_n) ) %]</div>
+[% END %]
+[% IF fixed_text %]
+    <div>[% tprintf( fixed_text, decode(fixed_n) ) %]</div>
+[% END %]
+<div>[% tprintf( updates_text, decode(updates_n) ) %]</div>

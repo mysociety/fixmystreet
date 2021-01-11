@@ -94,4 +94,6 @@ sub report_sent_confirmation_email { 'external_id' }
 # Don't show any reports made before the go-live date at all.
 sub cut_off_date { '2020-12-02' }
 
+sub front_stats_show_middle { 'completed' }
+
 1;

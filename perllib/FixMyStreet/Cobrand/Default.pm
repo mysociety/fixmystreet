@@ -382,6 +382,8 @@ sub shorten_recency_if_new_greater_than_fixed {
     return 1;
 }
 
+sub front_stats_show_middle { 'fixed' }
+
 =item front_stats_data
 
 Return a data structure containing the front stats information that a template
@@ -395,16 +397,23 @@ sub front_stats_data {
     my $recency         = '1 week';
     my $shorter_recency = '3 days';
 
-    my $fixed   = $self->problems->recent_fixed();
+    my ($fixed, $completed);
+    if ($self->front_stats_show_middle eq 'completed') {
+        $completed = $self->problems->recent_completed();
+    } elsif ($self->front_stats_show_middle eq 'fixed') {
+        $fixed = $self->problems->recent_fixed();
+    }
     my $updates = $self->problems->number_comments();
     my $new     = $self->problems->recent_new( $recency );
 
-    if ( $new > $fixed && $self->shorten_recency_if_new_greater_than_fixed ) {
+    my $middle = $fixed // $completed // 0;
+    if ( $new > $middle && $self->shorten_recency_if_new_greater_than_fixed ) {
         $recency = $shorter_recency;
         $new     = $self->problems->recent_new( $recency );
     }
 
     my $stats = {
+        completed => $completed,
         fixed   => $fixed,
         updates => $updates,
         new     => $new,

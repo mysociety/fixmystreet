@@ -16,11 +16,23 @@
             stats.new
          );
     
+  IF stats.completed.defined;
+    completed_text = nget(
+        "<big>%s</big> completed in past month",
+        "<big>%s</big> completed in past month",
+        stats.completed
+    );
+    completed_n = stats.completed | format_number;
+  END;
+
+  IF stats.fixed.defined;
     fixed_text = nget(
         "<big>%s</big> fixed in past month",
         "<big>%s</big> fixed in past month",
         stats.fixed
     );
+    fixed_n = stats.fixed | format_number;
+  END;
     
     updates_text = nget(
         "<big>%s</big> update on reports",
@@ -29,22 +41,9 @@
     );
 
     new_n = stats.new | format_number;
-    fixed_n = stats.fixed | format_number;
     updates_n = stats.updates | format_number;
 %]
 
 <div id="front_stats">
-    [% SWITCH c.cobrand.moniker %]
-    [%   CASE 'fixamingata' %]
-    <div>[% tprintf( new_text, decode(new_n).replace(" ", "&nbsp;").replace(",", "&nbsp;") ) %]</div>
-    <div>[% tprintf( fixed_text, decode(fixed_n).replace(" ", "&nbsp;").replace(",", "&nbsp;") ) %]</div>
-    <div>[% tprintf( updates_text, decode(updates_n).replace(" ", "&nbsp;").replace(",", "&nbsp;") ) %]</div>
-    [%   CASE 'zurich' %]
-    <div>[% tprintf( new_text, decode(new_n) ) %]</div>
-    <div>[% tprintf( fixed_text, decode(fixed_n) ) %]</div>
-    [%   CASE %]
-    <div>[% tprintf( new_text, decode(new_n) ) %]</div>
-    <div>[% tprintf( fixed_text, decode(fixed_n) ) %]</div>
-    <div>[% tprintf( updates_text, decode(updates_n) ) %]</div>
-    [% END %]
+    [% PROCESS 'front/_stats.html' %]
 </div>

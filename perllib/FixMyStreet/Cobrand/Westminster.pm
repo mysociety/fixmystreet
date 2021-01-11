@@ -30,6 +30,8 @@ sub enter_postcode_text {
     return 'Enter a ' . $self->council_area . ' postcode, or street name';
 }
 
+sub front_stats_show_middle { 'none' }
+
 sub send_questionnaires { 0 }
 
 sub suppress_reporter_alerts { 1 }
