@@ -3,6 +3,8 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use Integrations::Bartec;
+use Sort::Key::Natural qw(natkeysort_inplace);
 use Utils;
 
 use Moo;
@@ -380,6 +382,108 @@ sub munge_report_new_contacts {
 
     @$categories = grep { !$_->get_extra_metadata('waste_only') } @$categories;
     $self->SUPER::munge_report_new_contacts($categories);
+}
+
+sub _premises_for_postcode {
+    my $self = shift;
+    my $pc = shift;
+
+    my $key = "peterborough:bartec:premises_for_postcode:$pc";
+
+    unless ( $self->{c}->session->{$key} ) {
+        my $bartec = $self->feature('bartec');
+        $bartec = Integrations::Bartec->new(%$bartec);
+        my $response = $bartec->Premises_Get($pc);
+
+        $self->{c}->session->{$key} = [ map { {
+            id => $pc . ":" . $_->{UPRN},
+            uprn => $_->{UPRN},
+            address => $self->_format_address($_),
+            latitude => $_->{Location}->{Metric}->{Latitude},
+            longitude => $_->{Location}->{Metric}->{Longitude},
+        } } @$response ];
+    }
+
+    return $self->{c}->session->{$key};
+}
+
+sub clear_cached_lookups {
+    my ($self, $id) = @_;
+    my ($pc, $uprn) = split ":", $id;
+    my $key = "peterborough:bartec:premises_for_postcode:$pc";
+    delete $self->{c}->session->{$key};
+}
+
+sub bin_addresses_for_postcode {
+    my $self = shift;
+    my $pc = shift;
+
+    my $premises = $self->_premises_for_postcode($pc);
+    my $data = [ map { {
+        value => $pc . ":" . $_->{uprn},
+        label => $_->{address},
+    } } @$premises ];
+    natkeysort_inplace { $_->{label} } @$data;
+    return $data;
+}
+
+my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
+sub ordinal {
+    my $n = shift;
+    $irregulars{$n % 100} || $irregulars{$n % 10} || 'th';
+}
+
+sub construct_bin_date {
+    my $str = shift;
+    return unless $str;
+    my $date = DateTime::Format::W3CDTF->parse_datetime($str);
+    return $date;
+}
+
+sub look_up_property {
+    my $self = shift;
+    my $id = shift;
+
+    my ($pc, $uprn) = split ":", $id;
+
+    my $premises = $self->_premises_for_postcode($pc);
+
+    my %premises = map { $_->{uprn} => $_ } @$premises;
+
+    return $premises{$uprn};
+}
+
+sub bin_services_for_address {
+    my $self = shift;
+    my $property = shift;
+
+    my $bartec = $self->feature('bartec');
+    $bartec = Integrations::Bartec->new(%$bartec);
+    my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($property->{uprn});
+
+    my @out;
+
+    foreach (@$jobs) {
+        my $last = construct_bin_date($_->{PreviousDate});
+        my $next = construct_bin_date($_->{NextDate});
+        my $row = {
+            id => $_->{JobID},
+            last => { date => $last, ordinal => ordinal($last->day) },
+            next => { date => $next, ordinal => ordinal($next->day) },
+            service_name => $_->{JobDescription},
+        };
+        push @out, $row;
+    }
+
+    return \@out;
+}
+
+sub _format_address {
+    my ($self, $property) = @_;
+
+    my $a = $property->{Address};
+    my $prefix = join(" ", $a->{Address1}, $a->{Address2}, $a->{Street});
+    return Utils::trim_text(FixMyStreet::Template::title(join(", ", $prefix, $a->{Town}, $a->{PostCode})));
 }
 
 1;
