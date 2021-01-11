@@ -69,6 +69,12 @@ sub munge_around_category_where {
     if ($bromley) {
         $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
     }
+
+    my $pboro = grep { $_->name eq 'Peterborough City Council' } @{ $self->{c}->stash->{around_bodies} };
+    if ($pboro) {
+        my $pboro = FixMyStreet::Cobrand::Peterborough->new({ c => $self->{c} });
+        $pboro->munge_around_category_where($where);
+    }
 }
 
 sub _iow_category_munge {
@@ -92,6 +98,11 @@ sub munge_reports_category_list {
     }
     if ( $bodies{'Bromley Council'} ) {
         @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
+    }
+
+    if ( $bodies{'Peterborough City Council'} ) {
+        my $pboro = FixMyStreet::Cobrand::Peterborough->new({ c => $self->{c} });
+        $pboro->munge_reports_category_list($categories);
     }
 }
 
@@ -143,6 +154,10 @@ sub munge_report_new_contacts {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
         $tfl->munge_red_route_categories($contacts);
+    }
+    if ( $bodies{'Peterborough City Council'} ) {
+        my $pboro = FixMyStreet::Cobrand::Peterborough->new({ c => $self->{c} });
+        $pboro->munge_report_new_contacts($contacts);
     }
 
 }
