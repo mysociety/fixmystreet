@@ -2720,33 +2720,33 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Email-Sender-1.300030
-    pathname: R/RJ/RJBS/Email-Sender-1.300030.tar.gz
+  Email-Sender-1.300035
+    pathname: R/RJ/RJBS/Email-Sender-1.300035.tar.gz
     provides:
-      Email::Sender 1.300030
-      Email::Sender::Failure 1.300030
-      Email::Sender::Failure::Multi 1.300030
-      Email::Sender::Failure::Permanent 1.300030
-      Email::Sender::Failure::Temporary 1.300030
-      Email::Sender::Manual 1.300030
-      Email::Sender::Manual::QuickStart 1.300030
-      Email::Sender::Role::CommonSending 1.300030
-      Email::Sender::Role::HasMessage 1.300030
-      Email::Sender::Simple 1.300030
-      Email::Sender::Success 1.300030
-      Email::Sender::Success::Partial 1.300030
-      Email::Sender::Transport 1.300030
-      Email::Sender::Transport::DevNull 1.300030
-      Email::Sender::Transport::Failable 1.300030
-      Email::Sender::Transport::Maildir 1.300030
-      Email::Sender::Transport::Mbox 1.300030
-      Email::Sender::Transport::Print 1.300030
-      Email::Sender::Transport::SMTP 1.300030
-      Email::Sender::Transport::SMTP::Persistent 1.300030
-      Email::Sender::Transport::Sendmail 1.300030
-      Email::Sender::Transport::Test 1.300030
-      Email::Sender::Transport::Wrapper 1.300030
-      Email::Sender::Util 1.300030
+      Email::Sender 1.300035
+      Email::Sender::Failure 1.300035
+      Email::Sender::Failure::Multi 1.300035
+      Email::Sender::Failure::Permanent 1.300035
+      Email::Sender::Failure::Temporary 1.300035
+      Email::Sender::Manual 1.300035
+      Email::Sender::Manual::QuickStart 1.300035
+      Email::Sender::Role::CommonSending 1.300035
+      Email::Sender::Role::HasMessage 1.300035
+      Email::Sender::Simple 1.300035
+      Email::Sender::Success 1.300035
+      Email::Sender::Success::Partial 1.300035
+      Email::Sender::Transport 1.300035
+      Email::Sender::Transport::DevNull 1.300035
+      Email::Sender::Transport::Failable 1.300035
+      Email::Sender::Transport::Maildir 1.300035
+      Email::Sender::Transport::Mbox 1.300035
+      Email::Sender::Transport::Print 1.300035
+      Email::Sender::Transport::SMTP 1.300035
+      Email::Sender::Transport::SMTP::Persistent 1.300035
+      Email::Sender::Transport::Sendmail 1.300035
+      Email::Sender::Transport::Test 1.300035
+      Email::Sender::Transport::Wrapper 1.300035
+      Email::Sender::Util 1.300035
     requirements:
       Carp 0
       Email::Abstract 3.006
