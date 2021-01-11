@@ -75,7 +75,7 @@ requires 'Digest::MD5';
 requires 'Digest::SHA';
 requires 'Email::Address', '1.912';
 requires 'Email::MIME', '1.946';
-requires 'Email::Sender';
+requires 'Email::Sender', '1.300035';
 requires 'Email::Valid';
 requires 'Error';
 requires 'FCGI'; # Required by e.g. Plack::Handler::FCGI
