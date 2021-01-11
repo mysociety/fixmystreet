@@ -2,6 +2,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Test::MockModule;
 use CGI::Simple;
+use Test::LongString;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -404,5 +405,45 @@ subtest 'Resending between backends' => sub {
         }
     };
 };
+
+foreach my $cobrand ( "peterborough", "fixmystreet" ) {
+    subtest "waste categories aren't available outside /waste on $cobrand cobrand" => sub {
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.uk/',
+            ALLOWED_COBRANDS => $cobrand,
+        }, sub {
+            $peterborough->contacts->delete_all;
+            my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Litter Bin Needs Emptying', email => 'Bartec-Bins');
+            my $waste = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Missed Collection', email => 'Bartec-MissedCollection');
+            $waste->set_extra_metadata(waste_only => 1);
+            $waste->update;
+
+            subtest "not when getting new report categories via AJAX" => sub {
+                my $json = $mech->get_ok_json('/report/new/ajax?latitude=52.57146&longitude=-0.24201');
+                is_deeply $json->{by_category}, { "Litter Bin Needs Emptying" => { bodies => [ 'Peterborough City Council' ] } }, "Waste category not in JSON";
+                lacks_string($json, "Missed Collection", "Waste category not mentioned at all");
+            };
+
+            subtest "not when making a new report directly" => sub {
+                $mech->get_ok('/report/new?latitude=52.57146&longitude=-0.24201');
+                $mech->content_contains("Litter Bin Needs Emptying", "non-waste category mentioned");
+                $mech->content_lacks("Missed Collection", "waste category not mentioned");
+            };
+
+            subtest "not when browsing /around" => sub {
+                $mech->get_ok('/around?latitude=52.57146&longitude=-0.24201');
+                $mech->content_contains("Litter Bin Needs Emptying", "non-waste category mentioned");
+                $mech->content_lacks("Missed Collection", "waste category not mentioned");
+            };
+
+            subtest "not when browsing all reports" => sub {
+                $mech->get_ok('/reports/Peterborough');
+                $mech->content_contains("Litter Bin Needs Emptying", "non-waste category mentioned");
+                $mech->content_lacks("Missed Collection", "waste category not mentioned");
+            };
+
+        };
+    };
+}
 
 done_testing;

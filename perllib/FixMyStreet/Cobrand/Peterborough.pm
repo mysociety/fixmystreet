@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use Utils;
 
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
@@ -344,6 +345,41 @@ sub category_change_force_resend {
     return 0 if $old =~ /^Ezytreev/ && $new =~ /^Ezytreev/;
     return 0 if $old !~ /^(Bartec|Ezytreev)/ && $new !~ /^(Bartec|Ezytreev)/;
     return 1;
+}
+
+=head2 Waste product code
+
+Functions specific to the waste product & Bartec integration.
+
+=cut 
+
+=head2 munge_around_category_where, munge_reports_category_list, munge_report_new_contacts
+
+These filter out waste-related categories from the main FMS report flow.
+TODO: Are these small enough to be here or should they be in a Role?
+
+=cut 
+
+sub munge_around_category_where {
+    my ($self, $where) = @_;
+    $where->{extra} = [ undef, { -not_like => '%T10:waste_only,I1:1%' } ];
+}
+
+sub munge_reports_category_list {
+    my ($self, $categories) = @_;
+    @$categories = grep { !$_->get_extra_metadata('waste_only') } @$categories;
+}
+
+sub munge_report_new_contacts {
+    my ($self, $categories) = @_;
+
+    if ($self->{c}->action =~ /^waste/) {
+        @$categories = grep { $_->get_extra_metadata('waste_only') } @$categories;
+        return;
+    }
+
+    @$categories = grep { !$_->get_extra_metadata('waste_only') } @$categories;
+    $self->SUPER::munge_report_new_contacts($categories);
 }
 
 1;
