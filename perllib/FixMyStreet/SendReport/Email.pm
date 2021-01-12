@@ -23,7 +23,7 @@ sub build_recipient_list {
 
         my ($body_email, $state, $note) = ( $contact->email, $contact->state, $contact->note );
 
-        unless ($state eq 'confirmed') {
+        if ($state eq 'unconfirmed') {
             $all_confirmed = 0;
             $note = 'Body ' . $row->bodies_str . ' deleted'
                 unless $note;
