@@ -1,3 +1,4 @@
+[% IF cobrand.moniker == 'fixmystreet' %]
 <table [% table_reset | safe %]>
   <tr>
     <th style="[% td_style %] padding: [% column_padding %]px; background-color: [% color_yellow %]; color: [% color_black %];">
@@ -26,7 +27,7 @@
         <a href="https://www.fixmystreet.com" style="[% submit_footer_link_style %]">FixMyStreet</a>
         is the website and app that makes it easy for anyone to report
         street faults, anywhere in the UK.
-        <a href="https://www.mysociety.org/better-cities/fixmystreet-in-the-uk/" style="[% submit_footer_link_style %]">Find out more</a>.
+        <a href="https://www.mysociety.org/community/fixmystreet-in-the-uk/" style="[% submit_footer_link_style %]">Find out more</a>.
       </p>
     </th>
     <th style="[% submit_footer_td_style %] padding: [% column_padding %]px 0 0 0;">
@@ -43,3 +44,4 @@
     </th>
   </tr>
 </table>
+[% END %]
