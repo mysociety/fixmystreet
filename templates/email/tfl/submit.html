@@ -57,7 +57,7 @@ of a local problem that they believe might require your attention.</p>
     [% IF report.get_extra_field_value('site') %]
       <p style="[% secondary_p_style %]"><strong>Signal site number:</strong> [% report.get_extra_field_value('site') | html %]</p>
     [% END %]
-    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+    [% report.detail | html_para_email(secondary_p_style) %]
     <p style="[% secondary_p_style %]">
       <strong>Location:</strong>
       <br>Easting/Northing
