@@ -818,6 +818,8 @@ sub _parse_servicetasks {
     return $servicetasks->[0];
 }
 
+sub bin_day_format { '%A, %-d~~~ %B' }
+
 sub bin_future_collections {
     my $self = shift;
 
