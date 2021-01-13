@@ -1,0 +1,34 @@
+[%
+    SET extra_js = [ ];
+    SET bodyclass = 'mappage claims';
+    SET title = 'Location of the incident';
+    PROCESS "report/photo-js.html";
+    PROCESS "maps/${map.type}.html";
+    PROCESS 'govuk/fields.html';
+    INCLUDE 'header.html';
+%]
+
+<form method="post" name="mapForm" id="mapForm">
+    [% map_html | safe %]
+    </div>
+    <div id="map_sidebar">
+        <div id="side-form">
+
+  [% PROCESS errors %]
+  [% PROCESS title %]
+
+    <ul class="change_location">
+        <li class="change_location__map">Click the map or drag the pin to adjust the location</li>
+        <li class="change_location__search">Or <input type="submit" name="goto-address_unknown" value="search for a different location" class="govuk-button"></li>
+    </ul>
+<style>
+.change_location { display: block !important; }
+</style>
+
+  [% PROCESS form %]
+
+        </div>
+    </div>
+</form>
+
+[% INCLUDE 'footer.html' %]
