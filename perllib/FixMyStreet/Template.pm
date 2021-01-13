@@ -39,6 +39,10 @@ sub Filter : ATTR(CODE,BEGIN) {
     add_attr(\%FILTERS, $_[1], $_[2], $_[4]);
 }
 
+sub FilterFactory : ATTR(CODE,BEGIN) {
+    add_attr(\%FILTERS, $_[1], [ $_[2], 1 ], $_[4]);
+}
+
 sub Fn : ATTR(CODE,BEGIN) {
     add_attr(\%SUBS, $_[1], $_[2], $_[4]);
 }
@@ -140,6 +144,16 @@ sub html_paragraph : Filter('html_para') {
     s/\r?\n/<br>\n/g for @paras;
     $text = "<p>\n" . join("\n</p>\n\n<p>\n", @paras) . "</p>\n";
     return FixMyStreet::Template::SafeString->new($text);
+}
+
+sub html_paragraph_email_factory : FilterFactory('html_para_email') {
+    my ($c, $style) = @_;
+    return sub {
+        my $text = shift;
+        $text = html_paragraph($text);
+        $text =~ s/<p>/<p style="$style">/g;
+        return FixMyStreet::Template::SafeString->new($text);
+    }
 }
 
 sub sanitize {
