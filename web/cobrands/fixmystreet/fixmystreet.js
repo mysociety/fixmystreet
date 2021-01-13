@@ -1418,7 +1418,7 @@ fixmystreet.update_councils_text = function(data) {
 fixmystreet.update_pin = function(lonlat, savePushState) {
     var lonlats = fixmystreet.maps.update_pin(lonlat);
 
-    if ($('body').hasClass('noise')) {
+    if ($('body').hasClass('noise') || $('body').hasClass('claims')) {
         // Do nothing for noise map page
         return;
     }
@@ -1845,7 +1845,7 @@ $(function() {
     // pages stops working (because the replaceState turns the POST into a
     // GET), e.g. clicking back in a multi-page form reloads the page and
     // takes you back to the start, so avoid that on the noise flow.
-    if ($('body').hasClass('noise')) {
+    if ($('body').hasClass('noise') || $('body').hasClass('claims')) {
         return;
     }
 

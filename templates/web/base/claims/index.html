@@ -1,7 +1,10 @@
-[% SET bodyclass = 'claims govuk' ~%]
-[% SET title = form.title ~%]
+[% SET bodyclass = 'claims govuk';
+   SET title = form.title;
+   SET extra_js = [];
+%]
 
 [% INCLUDE header.html %]
+
 
   [% PROCESS 'govuk/fields.html' %]
   [% PROCESS back %]
