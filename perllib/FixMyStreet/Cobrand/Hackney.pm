@@ -213,16 +213,23 @@ sub get_body_sender {
 }
 
 # Translate email address to actual delivery address
+sub noise_destination_email {
+    my ($self, $row, $name) = @_;
+    my $emails = $self->feature('open311_email');
+    my $where = $row->get_extra_metadata('where');
+    if (my $recipient = $emails->{"noise_$where"}) {
+        my @emails = split(/,/, $recipient);
+        return [ map { [ $_, $name ] } @emails ];
+    }
+}
+
 sub munge_sendreport_params {
     my ($self, $row, $h, $params) = @_;
 
     if ($row->cobrand_data eq 'noise') {
         my $name = $params->{To}[0][1];
-        my $emails = $self->feature('open311_email');
-        my $where = $row->get_extra_metadata('where');
-        if (my $recipient = $emails->{"noise_$where"}) {
-            my @emails = split(/,/, $recipient);
-            $params->{To} = [ map { [ $_, $name ] } @emails ];
+        if (my $recipient = $self->noise_destination_email($row, $name)) {
+            $params->{To} = $recipient;
         }
         return;
     }

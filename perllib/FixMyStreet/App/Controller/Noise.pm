@@ -203,6 +203,21 @@ EOF
 
     if ($c->stash->{report}) {
         $c->forward('/report/new/create_related_things');
+    } else {
+        # Send alert email, like would be sent for report
+        my $recipient = $c->cobrand->noise_destination_email($object->problem, $c->cobrand->council_name);
+        $c->send_email('alert-update.txt', {
+            to => $recipient,
+            report => $object->problem,
+            cobrand => $c->cobrand,
+            problem_url => $c->cobrand->base_url . $object->problem->url,
+            data => [ {
+                item_photo => $object->photo,
+                item_text => $object->text,
+                item_name => $object->name,
+                item_anonymous => $object->anonymous,
+            } ],
+        });
     }
 
     return 1;
