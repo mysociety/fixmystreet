@@ -2,6 +2,7 @@ use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Path::Tiny;
+use Test::MockModule;
 
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 ok $sample_file->exists, "sample file $sample_file exists";
@@ -9,6 +10,16 @@ ok $sample_file->exists, "sample file $sample_file exists";
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council');
+
+my $geo = Test::MockModule->new('FixMyStreet::Geocode');
+$geo->mock('string', sub {
+    my $s = shift;
+    my $ret = [];
+    if ($s eq 'A street') {
+        $ret = { latitude => 51.81386, longitude => -0.82973, address => 'A street, Bucks' };
+    }
+    return $ret;
+});
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'buckinghamshire',
@@ -48,7 +59,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { what => 'vehicle', claimed_before => 'No' } }, 'claim type');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } }, 'about you details');
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'Yes' } }, 'fault fixed');
-        $mech->submit_form_ok({ with_fields => { location => 'A location' } }, 'location details');
+        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
+        $mech->submit_form_ok({ button => 'goto-where' }, 'back to enter more location details');
+        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
+        $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } }, 'incident time');
         $mech->submit_form_ok({ with_fields => { weather => 'sunny', direction => 'east', details => 'some details', in_vehicle => 'Yes', speed => '20mph', actions => 'an action' } }, 'incident details');
         $mech->submit_form_ok({ with_fields => { witnesses => 'Yes', witness_details => 'some witnesses', report_police => 'Yes', incident_number => 23 } }, 'witnesses etc');

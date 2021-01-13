@@ -23,6 +23,16 @@ has index_template => (
 );
 
 
+sub pre_form : Private {
+    my ($self, $c) = @_;
+
+    # Special button on map page to go back to where (hard as form wraps whole page)
+    if ($c->get_param('goto-where')) {
+        $c->set_param('goto', 'where');
+        $c->set_param('process', '');
+    }
+}
+
 sub process_claim : Private {
     my ($self, $c, $form) = @_;
 

@@ -156,17 +156,127 @@ has_field report_id => (
 has_page where => (
     fields => ['location', 'continue'],
     title => 'Where did the incident happen',
-    next => 'when',
+    next => sub { $_[0]->{possible_location_matches} ? 'choose_location' : $_[0]->{latitude} ? 'map' : 'choose_location' },
 );
 
 has_field location => (
     required => 1,
     tags => {
         hide => sub { $_[0]->form->value_equals('fault_fixed', 'No'); }
+        hint => 'If you know the postcode please use that',
     },
     type => 'Text',
-    widget => 'Textarea',
-    label => 'Place a pin on the map (TBD)',
+    label => 'Postcode, or street name and area of the source',
+    validate_method => sub {
+        my $self = shift;
+        my $c = $self->form->c;
+        return if $self->has_errors; # Called even if already failed
+        my $value = $self->value;
+        my $saved_data  = $self->form->saved_data;
+        my $ret = $c->forward('/location/determine_location_from_pc', [ $self->value ]);
+        if (!$ret) {
+            if ( $c->stash->{possible_location_matches} ) {
+                return $saved_data->{possible_location_matches} = $c->stash->{possible_location_matches};
+            } else {
+                $self->add_error($c->stash->{location_error});
+            }
+        }
+        $saved_data->{latitude} = $c->stash->{latitude};
+        $saved_data->{longitude} = $c->stash->{longitude};
+    },
+);
+
+has_page 'choose_location' => (
+    fields => ['location_matches', 'continue'],
+    title => 'The location of the incident',
+    next => 'map',
+    update_field_list => sub {
+        my $form = shift;
+        my $saved_data = $form->saved_data;
+        my $locations = $saved_data->{possible_location_matches};
+        my $options = [];
+        for my $location ( @$locations ) {
+            push @$options, { label => $location->{address}, value => $location->{latitude} . "," . $location->{longitude} }
+        }
+        return { location_matches => { options => $options } };
+    },
+    post_process => sub {
+        my $form = shift;
+        my $saved_data = $form->saved_data;
+        if ( my $location = $saved_data->{location_matches} ) {
+            my ($lat, $lon) = split ',', $location;
+            $saved_data->{latitude} ||= $lat;
+            $saved_data->{longitude} ||= $lon;
+        }
+    },
+);
+
+has_field 'location_matches' => (
+    required => 1,
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Select a location',
+    tags => { hide => 1 },
+    validate_method => sub {
+        my $self = shift;
+        my $value = $self->value;
+        my $saved_data  = $self->form->saved_data;
+
+        if ($saved_data->{location_matches} && $value ne $saved_data->{location_matches}) {
+            delete $saved_data->{latitude};
+            delete $saved_data->{longitude};
+        }
+    }
+);
+
+has_page map => (
+    fields => ['latitude', 'longitude', 'continue'],
+    title => 'The location of the incident',
+    template => 'claims/map.html',
+    next => 'when',
+    update_field_list => sub {
+        my $form = shift;
+        my $c = $form->c;
+        if ($c->forward('/report/new/determine_location_from_tile_click')) {
+            $c->forward('/around/check_location_is_acceptable', []);
+            # We do not want to process the form if they have clicked the map
+            $c->stash->{override_no_process} = 1;
+
+            my $saved_data = $form->saved_data;
+            $saved_data->{latitude} = $c->stash->{latitude};
+            $saved_data->{longitude} = $c->stash->{longitude};
+            return {};
+        }
+    },
+    post_process => sub {
+        my $form = shift;
+        my $c = $form->c;
+        my $latitude = $form->fif->{latitude};
+        my $longitude = $form->fif->{longitude};
+        $c->stash->{page} = 'new';
+        FixMyStreet::Map::display_map(
+            $c,
+            latitude => $latitude,
+            longitude => $longitude,
+            clickable => 1,
+            pins => [ {
+                latitude => $latitude,
+                longitude => $longitude,
+                draggable => 1,
+                colour => $c->cobrand->pin_new_report_colour,
+            } ],
+        );
+    },
+);
+
+has_field latitude => (
+    label => 'Latitude',
+    type => 'Hidden'
+);
+
+has_field longitude => (
+    label => 'Longitude',
+    type => 'Hidden'
 );
 
 has_page when => (
@@ -947,7 +1057,7 @@ sub fields_for_display {
          for my $f ( @{ $page->fields } ) {
              my $field = $form->field($f);
              next if $field->type eq 'Submit';
-             my $value = $form->saved_data->{$field->{name}};
+             my $value = $form->saved_data->{$field->{name}} || '';
              push @{$x->{fields}}, {
                  name => $field->{name},
                  desc => $field->{label},
