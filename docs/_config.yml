@@ -5,6 +5,11 @@ gems:
   - jekyll-paginate
 paginate_path: "/blog/:num/"
 
+# Set so absolute_url doesn't produce http: links for CSS/JS. Suggested at
+# https://github.com/jekyll/jekyll/issues/5709#issuecomment-274191010 though
+# url is not in Jeykll config documentation?
+url: "https://fixmystreet.org"
+
 authors:
   struan:
     display_name: Struan
