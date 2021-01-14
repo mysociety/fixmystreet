@@ -36,7 +36,7 @@ INCLUDE '_email_top.html';
 <tr>
 <th style="[% td_style %][% only_column_style %]">
   <h1 style="[% h1_style %]">[% subject | html %]</h1>
-  [% message | html | html_para | replace('<p>', '<p style="' _ p_style _ '">') %]
+  [% message | html_para_email(p_style) %]
   [%~ IF complaint %]
   <p style="[% secondary_p_style %]">
     [% complaint | html %]

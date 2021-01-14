@@ -85,9 +85,9 @@ FixMyStreet::override_config {
         is $report->title, "Noise report";
         is $report->detail, "Kind of noise: music\nNoise details: Details\n\nWhere is the noise coming from? residence\nNoise source: 100000333\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? monday, thursday\nWhat time does the noise happen? morning, evening\n";
         is $report->latitude, 53;
+        $mech->clear_emails_ok;
     };
     subtest 'Report new noise, no pattern to times' => sub {
-        $mech->clear_emails_ok;
         $mech->get_ok('/noise');
         $mech->submit_form_ok({ button => 'start' });
         $mech->submit_form_ok({ with_fields => { existing => 0 } });
@@ -126,6 +126,7 @@ FixMyStreet::override_config {
         is $report->title, "Noise report";
         is $report->detail, "Kind of noise: road\nNoise details: Details\n\nWhere is the noise coming from? residence\nNoise source: 100000333\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
         is $report->latitude, 53;
+        $mech->clear_emails_ok;
     };
     subtest 'Report new noise, your address missing, source address not a postcode' => sub {
         $mech->get_ok('/noise');
@@ -231,6 +232,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your additional report has been submitted');
         my $update = $user->comments->first;
         is $update->text, "Kind of noise: music\nNoise details: Details\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? friday, saturday\nWhat time does the noise happen? night\n";
+        like $mech->get_text_body_from_email, qr/Kind of noise: music/;
     };
 };
 

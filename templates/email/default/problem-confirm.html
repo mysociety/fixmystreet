@@ -30,7 +30,7 @@ of problem, so it will instead be sent to [% report.body %].
 </th>
 [% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
-    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+    [% report.detail | html_para_email(secondary_p_style) %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
