@@ -22,6 +22,8 @@
     [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
     <body class="[% bodyclass | html IF bodyclass %]">
 
+        <a class="skiplink" href="#content">[% loc('Skip to main content') %]</a>
+
     [% INCLUDE 'debug_header.html' %]
     [% TRY %][% PROCESS 'before_wrapper.html' %][% CATCH file %][% END %]
 
@@ -30,6 +32,7 @@
         <div class="table-cell">
             [% INCLUDE 'header_site.html' %]
 
+            <a name="content"></a>
             [% pre_container_extra | safe %]
 
             <div class="container">

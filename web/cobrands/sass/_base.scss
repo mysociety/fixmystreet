@@ -666,6 +666,21 @@ ul.error {
 
 /*** LAYOUT ***/
 
+.skiplink {
+    display: inline-block;
+    padding: 1em;
+    position: absolute;
+    left: -9999em;
+}
+.skiplink:focus {
+   outline: 3px solid transparent;
+   color: $primary_text;
+   background-color: $primary;
+   text-decoration: none;
+   left: 0;
+   z-index: 2;
+}
+
 .dev-site-notice {
     font-size: 1.5em;
     color: #fff;
