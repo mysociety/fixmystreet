@@ -8,10 +8,12 @@
     ELSE;
         SET img_dir = cobrand;
     END -%]
+[% IF NOT for_rss ~%]
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+[% END ~%]
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title></title>
+  <title>[% rss_title | safe %]</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <style type="text/css">
   [%~ # Styles here will be applied by everything except Gmail.com %]
@@ -51,6 +53,17 @@
   </style>
 </head>
 <body style="[% body_style %]">
+[% IF staging AND NOT for_rss %]
+  <table [% wrapper_table | safe %] style="[% td_style %]">
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% warning_style %]" class="hint">
+        [% loc('This email was sent from a staging site.') %]
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+  </table>
+[% END %]
   <table [% wrapper_table | safe %] style="[% wrapper_style %]">
     <tr>
       <th class="spacer-cell"></th>
@@ -67,8 +80,12 @@
         <table [% table_reset | safe %]>
           <tr>
             <th id="header" colspan="[% email_columns %]" style="[% td_style %][% header_style %]">
-              [%~ IF file_exists("web/cobrands/${ img_dir }/images/email-logo.gif") ~%]
-                <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/email-logo.gif') %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
+              [%~ IF file_exists("web/cobrands/${ img_dir }/images/${ logo_file }") ~%]
+                [%~ IF for_rss ~%]
+                  <img src="/cobrands/[% img_dir %]/images/[% logo_file %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
+                [%~ ELSE ~%]
+                  <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/' _ logo_file ) %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
+                [%~ END ~%]
               [%~ ELSE ~%]
                 <span style="[% logo_style %]">[% site_name %]</span>
               [%~ END %]
