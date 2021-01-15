@@ -199,4 +199,12 @@ sub Jobs_FeatureScheduleDates_Get {
     return $res->{Jobs_FeatureScheduleDates} || [];
 }
 
+sub Features_Schedules_Get {
+    my $self = shift;
+    my $uprn = shift;
+
+    # This SOAP call fails if the <Types> element is missing, so the [undef] forces an empty <Types /> element
+    return $self->call('Features_Schedules_Get', token => $self->token, UPRN => $uprn, Types => [undef])->{FeatureSchedule} || [];
+}
+
 1;
