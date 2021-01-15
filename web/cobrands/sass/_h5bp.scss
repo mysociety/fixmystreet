@@ -62,8 +62,8 @@ body, button {
    Links
    ========================================================================== */
 
-/* mySociety removal: link colours specified elsewhere */
-a:focus { outline: thin dotted; }
+/* mySociety: remove link colours specified elsewhere, add class */
+a:focus, .focussed { outline: thin dotted; }
 
 /* Improve readability when focused and hovered in all browsers: h5bp.com/h */
 a:hover, a:active { outline: 0; }

@@ -844,8 +844,14 @@ $.extend(fixmystreet.set_up, {
       nav_checkbox.checked = opened;
     };
 
+    nav_checkbox.addEventListener('focus', function() {
+        nav_link.classList.add('focussed');
+    });
+    nav_checkbox.addEventListener('blur', function() {
+        nav_link.classList.remove('focussed');
+    });
     modal.addEventListener('click', toggle_menu);
-    nav_link.addEventListener('click', toggle_menu);
+    nav_checkbox.addEventListener('change', toggle_menu);
     nav.addEventListener('click', function(e) {
         if (e.target.matches('span')) {
             toggle_menu(e);
