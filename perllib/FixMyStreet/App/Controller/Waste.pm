@@ -473,7 +473,7 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     # Make sure we log entire request for debugging
     $c->detach('soap_error', [ 'Missing body' ]) unless $c->req->body;
     my $soap = join('', $c->req->body->getlines);
-    $c->log->info($soap);
+    $c->log->debug($soap);
 
     my $body = $c->cobrand->body;
     $c->detach('soap_error', [ 'Bad jurisdiction' ]) unless $body;
