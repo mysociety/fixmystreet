@@ -28,6 +28,7 @@ body.mappage {
   display: block; // remove flex so nav touches top of parent
   min-height: 0; // no vertical align, so no need for a height
   margin-top: 0; // don't bother overlapping the border
+  height: auto;
 
   .ie9 & > * {
     position: static;
