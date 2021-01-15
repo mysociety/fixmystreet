@@ -48,7 +48,7 @@ FixMyStreet::override_config {
         { JobID => 456, JobDescription => 'Empty Bin Recycling 240l', PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Recycling' },
     ] });
     $b->mock('Features_Schedules_Get', sub { [
-        { JobName => 'Black', Feature => { FeatureType => { ID => 6533 } } },
+        { JobName => 'Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
         { JobName => 'Recycling', Feature => { FeatureType => { ID => 6534 } } },
     ] });
     subtest 'Missing address lookup' => sub {
@@ -64,6 +64,7 @@ FixMyStreet::override_config {
         $mech->content_contains('1 Pope Way, Peterborough, PE1 3NA');
         $mech->submit_form_ok({ with_fields => { address => 'PE1 3NA:100090215480' } });
         $mech->content_contains('1 Pope Way, Peterborough');
+        $mech->content_contains('Every two weeks');
     };
 };
 

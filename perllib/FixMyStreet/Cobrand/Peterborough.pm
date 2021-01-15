@@ -459,7 +459,11 @@ sub bin_services_for_address {
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
+
+    # TODO parallelize these calls if performance is an issue
     my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($property->{uprn});
+    my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
+    my %schedules = map { $_->{JobName} => $_ } @$schedules;
 
     my @out;
 
@@ -471,6 +475,7 @@ sub bin_services_for_address {
             last => { date => $last, ordinal => ordinal($last->day) },
             next => { date => $next, ordinal => ordinal($next->day) },
             service_name => $_->{JobDescription},
+            schedule => $schedules{$_->{JobName}}->{Frequency},
         };
         push @out, $row;
     }
