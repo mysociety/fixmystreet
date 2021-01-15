@@ -84,6 +84,7 @@ sub form : Private {
 
     $c->stash->{template} = $form->template || 'noise/index.html';
     $c->stash->{form} = $form;
+    $c->stash->{label_for_field} = \&label_for_field;
 }
 
 sub get_page : Private {
@@ -97,6 +98,13 @@ sub get_page : Private {
     }
 
     return $goto || $process;
+}
+
+sub label_for_field {
+    my ($form, $field, $key) = @_;
+    foreach ($form->field($field)->options) {
+        return $_->{label} if $_->{value} eq $key;
+    }
 }
 
 sub process_noise_report : Private {
@@ -124,9 +132,10 @@ sub process_noise_report : Private {
         extra => $data,
     );
     my $object;
+    my $kind = label_for_field($form, 'kind', $data->{kind});
     my $now = $data->{happening_now} ? 'Yes' : 'No';
-    my $days = join(', ', @{$data->{happening_days}||[]});
-    my $times = join(', ', @{$data->{happening_time}||[]});
+    my $days = join(', ', map { ucfirst } @{$data->{happening_days}||[]});
+    my $times = join(', ', map { ucfirst } @{$data->{happening_time}||[]});
     my $time_detail;
     if ($data->{happening_pattern}) {
         $time_detail = "Does the time of the noise follow a pattern? Yes
@@ -142,7 +151,7 @@ When has the noise occurred? $data->{happening_description}";
 
         # Create an update!
         my $text = <<EOF;
-Kind of noise: $data->{kind}
+Kind of noise: $kind
 Noise details: $data->{more_details}
 
 Is the noise happening now? $now
@@ -157,13 +166,30 @@ EOF
     } else {
         # New report
         my $title = 'Noise report';
+        my $user_address = $data->{address_manual};
+        if (!$user_address) {
+            $user_address = $c->cobrand->address_for_uprn($data->{address});
+            $user_address .= " ($data->{address})";
+        }
+        my $user_available = ucfirst(join(' or ', @{$data->{best_time}}) . ', by ' . $data->{best_method});
+        my $where = label_for_field($form, 'where', $data->{where});
 
-        my $addr = $data->{source_address} ? $data->{source_address} : "$data->{latitude}, $data->{longitude}, $data->{radius}";
+        my $addr;
+        if ($data->{source_address}) {
+            $addr = $c->cobrand->address_for_uprn($data->{source_address});
+            $addr .= " ($data->{source_address})";
+        } else {
+            my $radius = label_for_field($form, 'radius', $data->{radius});
+            $addr = "$data->{latitude}, $data->{longitude}, $radius";
+        }
         my $detail = <<EOF;
-Kind of noise: $data->{kind}
+Reporter address: $user_address
+Reporter availability: $user_available
+
+Kind of noise: $kind
 Noise details: $data->{more_details}
 
-Where is the noise coming from? $data->{where}
+Where is the noise coming from? $where
 Noise source: $addr
 
 Is the noise happening now? $now

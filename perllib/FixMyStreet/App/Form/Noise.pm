@@ -110,7 +110,7 @@ has_field best_time => (
     label => 'When is the best time to contact you?',
     tags => { hint => 'Tick all that apply' },
     options => [
-        { label => 'Weekdays', value => 'day' },
+        { label => 'Weekdays', value => 'weekday' },
         { label => 'Weekends', value => 'weekend' },
         { label => 'Evenings', value => 'evening' },
     ],

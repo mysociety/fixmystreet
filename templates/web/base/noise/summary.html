@@ -48,13 +48,13 @@
             [% IF data.address_manual %]
                 [% data.address_manual %]
             [% ELSE %]
-                [% data.address %]
+                [% c.cobrand.address_for_uprn(data.address) %]
             [% END %]
         </dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Availability</dt>
-        <dd class="govuk-summary-list__value">[% data.best_time.join(', ') %] by [% data.best_method %]</dd>
+        <dd class="govuk-summary-list__value">[% data.best_time.join(' or ') | ucfirst %], by [% data.best_method %]</dd>
     </div>
 [% END %]
 
@@ -78,7 +78,7 @@
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Kind of noise</dt>
-        <dd class="govuk-summary-list__value">[% data.kind %]</dd>
+        <dd class="govuk-summary-list__value">[% label_for_field(form, 'kind', data.kind) %]</dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Noise details</dt>
@@ -103,13 +103,13 @@
   </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Where is the noise coming from?</dt>
-        <dd class="govuk-summary-list__value">[% data.where %]</dd>
+        <dd class="govuk-summary-list__value">[% label_for_field(form, 'where', data.where) %]</dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Noise source</dt>
         <dd class="govuk-summary-list__value">
             [% IF data.source_address %]
-                [% data.source_address %]
+                [% c.cobrand.address_for_uprn(data.source_address) %]
             [% ELSE %]
                 [% data.latitude %], [% data.longitude %], [% data.radius %]
             [% END %]
@@ -141,11 +141,13 @@
     [% IF data.happening_pattern %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">What days does the noise happen?</dt>
-        <dd class="govuk-summary-list__value">[% data.happening_days.join(', ') %]</dd>
+        <dd class="govuk-summary-list__value">
+            [% FOR day IN data.happening_days %][% day | ucfirst %][% IF NOT loop.last %], [% END %][% END %]
+        </dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">What time does the noise happen?</dt>
-        <dd class="govuk-summary-list__value">[% data.happening_time.join(', ') %]</dd>
+        <dd class="govuk-summary-list__value">[% data.happening_time.join(', ') | ucfirst %]</dd>
     </div>
     [% ELSE %]
     <div class="govuk-summary-list__row">
