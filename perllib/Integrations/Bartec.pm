@@ -173,8 +173,7 @@ sub Premises_Get {
 }
 
 sub Jobs_FeatureScheduleDates_Get {
-    my $self = shift;
-    my $uprn = shift;
+    my ($self, $uprn, $start, $end) = @_;
 
     my $w3c = DateTime::Format::W3CDTF->new;
 
@@ -195,8 +194,15 @@ sub Jobs_FeatureScheduleDates_Get {
             value => $end,
         },
     });
-    delete $res->{SOM};
-    return $res;
+    return $res->{Jobs_FeatureScheduleDates} || [];
+}
+
+sub Features_Schedules_Get {
+    my $self = shift;
+    my $uprn = shift;
+
+    # This SOAP call fails if the <Types> element is missing, so the [undef] forces an empty <Types /> element
+    return $self->call('Features_Schedules_Get', token => $self->token, UPRN => $uprn, Types => [undef])->{FeatureSchedule} || [];
 }
 
 sub make_soap_structure {
