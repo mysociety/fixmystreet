@@ -1,0 +1,9 @@
+[%~ FOREACH problem IN reports ~%]
+[%~ INCLUDE 'report/_item_expandable.html' ~%]
+[%~ END ~%]
+
+[%~ FOREACH pin IN extra_pins ~%]
+<li class="item-list__item item-list__item--expandable" data-report-id="[% pin.3 %]">
+    <h3 class="item-list__heading">[% pin.4 %]</h3>
+</li>
+[%~ END ~%]

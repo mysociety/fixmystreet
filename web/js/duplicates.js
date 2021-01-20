@@ -179,6 +179,8 @@
                 layers[i].setVisibility(false);
             }
         }
+
+        $(fixmystreet).trigger('maps:render_duplicates');
     }
 
     function remove_duplicate_list() {

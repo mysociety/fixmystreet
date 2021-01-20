@@ -522,7 +522,10 @@ $.extend(fixmystreet.utils, {
         }
     }
 
-    function marker_click(problem_id, evt) {
+    function marker_click(feature, evt) {
+        $(fixmystreet).trigger('maps:marker_click', feature);
+
+        var problem_id = feature.attributes.id;
         var $a = $('.item-list a[href$="/' + problem_id + '"]');
         if (!$a[0]) {
             return;
@@ -815,11 +818,6 @@ $.extend(fixmystreet.utils, {
             });
         }
         fixmystreet.markers = new OpenLayers.Layer.Vector("Pins", pin_layer_options);
-        fixmystreet.markers.events.register( 'loadend', fixmystreet.markers, function(evt) {
-            if (fixmystreet.map.popups.length) {
-                fixmystreet.map.removePopup(fixmystreet.map.popups[0]);
-            }
-        });
         fixmystreet.markers.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
         fixmystreet.markers.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
         OpenLayers.Request.XMLHttpRequest.onabort = function() {
@@ -837,7 +835,7 @@ $.extend(fixmystreet.utils, {
                     // Override clickFeature so that we can use it even though
                     // hover is true. http://gis.stackexchange.com/a/155675
                     clickFeature: function (feature) {
-                        marker_click(feature.attributes.id, this.handlers.feature.evt);
+                        marker_click(feature, this.handlers.feature.evt);
                     },
                     overFeature: function (feature) {
                         if (fixmystreet.latest_map_hover_event != 'overFeature') {
@@ -1336,6 +1334,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     trigger: function(e) {
+        if ($(e.target).hasClass('olPopupCloseBox')) {
+            // Ignore clicks that are closing popups
+            return;
+        }
+        $(fixmystreet).trigger('maps:click');
+
         // If we are looking at an individual report, and the report was
         // ajaxed into the DOM from the all reports page, then clicking
         // the map background should take us back to the all reports list.

@@ -1744,6 +1744,11 @@ input.final-submit {
         filter: grayscale(0.75);
       }
     }
+
+    // Fix broken OpenLayers.Popup.FramedCloud images
+    .olPopup img {
+      max-width: inherit;
+    }
   }
 }
 

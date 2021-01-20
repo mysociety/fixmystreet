@@ -18,7 +18,7 @@ use FixMyStreet;
 
 =head2 convert_latlon_to_en
 
-    ( $easting, $northing ) = Utils::convert_en_to_latlon( $latitude, $longitude );
+    ( $easting, $northing ) = Utils::convert_latlon_to_en( $latitude, $longitude );
 
 Takes the WGS84 latitude and longitude and returns OSGB36 easting and northing.
 
