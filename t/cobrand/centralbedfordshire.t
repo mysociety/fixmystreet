@@ -60,16 +60,21 @@ FixMyStreet::override_config {
     };
 
     subtest 'Correct area_code and NSGRef parameters for Open311' => sub {
+        $report->set_extra_fields({ name => 'UnitID', value => 'Asset 123' });
+        $report->update;
         my $test_data = FixMyStreet::Script::Reports::send();
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'BRIDGES';
         is $c->param('attribute[area_code]'), 'Area1';
         is $c->param('attribute[NSGRef]'), 'Road ID';
+        is $c->param('attribute[UnitID]'), undef, 'Unit ID not included as attribute';
+        like $c->param('description'), qr/Unit ID: Asset 123/, 'But is included in description';
 
         $mech->email_count_is(1);
         $report->discard_changes;
         like $mech->get_text_body_from_email, qr/reference number is @{[$report->external_id]}/;
+        unlike $report->detail, qr/Unit ID: Asset 123/, 'Asset ID not left in description';
     };
 
     subtest 'External ID is shown on report page' => sub {
