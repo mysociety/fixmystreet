@@ -59,6 +59,8 @@ $search-help-alignment: left;
 $search-help-background: #fff3f3;
 $search-help-header-font-size-desktop: 1.25em;
 
+$geolocation-link: $bucks_links;
+
 @mixin bucks-button {
   background-color: $bucks_button_bg;
   border: 0;

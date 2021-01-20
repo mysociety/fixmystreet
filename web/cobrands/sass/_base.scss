@@ -27,6 +27,9 @@ $header-top-border: $header-top-border-width solid $primary !default;
 
 $container-max-width: 60em !default;
 
+$geolocation-link: #222 !default;
+$geolocation-link-border: $geolocation-link !default;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -2428,18 +2431,53 @@ label .muted {
   }
 }
 
+
+
+
 a#geolocate_link {
-  display: inline-block;
-  padding: 0.5em;
+  border: 1px solid $geolocation-link-border;
+  color: $geolocation-link;
+  @include button-size($button-margin-top: 15px);
+  @include flex-container-inline();
+  @include flex-align(center);
 }
 
 .no-js #geolocate_link {
-    display: none !important;
+  display: none !important;
 }
 
-a#geolocate_link.loading, .btn--geolocate.loading {
-    background: url("/cobrands/fixmystreet/images/spinner-white.gif") flip(100%,0) 50% no-repeat;
-    padding-#{$right}: 1.5em;
+// Animation for current location loading spinner
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+       transform:  rotate(360deg);
+  }
+}
+
+.geolocate-link__icon {
+  display: inline-block;
+  margin-#{$right}: .5em;
+
+  .loading & {
+    display: none;
+  }
+}
+
+.geolocate-link__loading {
+  display: none;
+  animation: 1.5s linear infinite spin;
+
+  .loading & {
+    display: inline-block;
+    margin-#{$right}: .5em;
+  }
+}
+
+.btn--geolocate.loading {
+  background: url("/cobrands/fixmystreet/images/spinner-white.gif") flip(100%, 0) 50% no-repeat;
+  padding-#{$right}: 1.5em;
 }
 
 #front_stats {

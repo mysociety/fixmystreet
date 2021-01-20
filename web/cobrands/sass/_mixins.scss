@@ -1,5 +1,17 @@
 $direction: 'left' !default;
 
+// Padding
+$button-padding-top: .75em !default;
+$button-padding-bottom: .75em !default;
+$button-padding-left: 1em !default;
+$button-padding-right: 1em !default;
+
+// Margin
+$button-margin-top: 0 !default;
+$button-margin-bottom: 0 !default;
+$button-margin-right: 0 !default;
+$button-margin-left: 0 !default;
+
 @if (variable-exists(nav_fg)) {
     $nav_colour: $nav_fg !global;
 }
@@ -10,20 +22,19 @@ $direction: 'left' !default;
     $nav_background_colour: $nav_fg_hover !global;
 }
 
-@mixin button-size() {
+
+@mixin button-size($button-margin-top:$button-margin-top, $button-margin-right:$button-margin-right, $button-margin-bottom:$button-margin-bottom, $button-margin-left:$button-margin-left, $button-padding-top:$button-padding-top, $button-padding-right:$button-padding-right, $button-padding-bottom:$button-padding-bottom, $button-padding-left:$button-padding-left) {
+    margin: flip($button-margin-top $button-margin-right $button-margin-bottom $button-margin-left, $button-margin-top $button-margin-left $button-margin-bottom $button-margin-right);
+    padding: flip($button-padding-top $button-padding-right $button-padding-bottom $button-padding-left, $button-padding-top $button-padding-left $button-padding-bottom $button-padding-right);
     display: inline-block;
-    margin: 0;
-    padding: 0.75em 1em;
     width: auto;
     height: auto;
-
     vertical-align: top;
     text-align: center;
     font-size: 1em;
     line-height: 1em;
     font-weight: bold;
     font-family: inherit;
-
     cursor: pointer;
     @include border-radius(4px);
 
@@ -187,6 +198,14 @@ $right: right;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
+}
+
+@mixin flex-container-inline() {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -moz-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
 }
 
 @mixin flex($values, $values2009: 0) {
