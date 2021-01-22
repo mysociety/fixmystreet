@@ -273,8 +273,10 @@ fixmystreet.pageController = {
             $page = $('.js-reporting-page[data-page-name=' + page + ']');
         }
         if ($curr.data('pageName') === 'map' || $('#mob_ok:visible').length || opts.forceMapHide) {
-            $('#map_box').addClass('hidden-js');
-            $('html').removeClass('only-map');
+            if ($("html").hasClass("mobile")) {
+                $('#map_box').addClass('hidden-js');
+                $('html').removeClass('only-map map-page');
+            }
         }
 
         $curr.removeClass('js-reporting-page--active');
@@ -282,8 +284,11 @@ fixmystreet.pageController = {
 
         if ($page.data('pageName') === 'map' || opts.forceMapShow) {
             // We're going to bypass to the map for the next step, then come back here
-            $('#map_box').removeClass('hidden-js');
-            $('html').addClass('only-map map-page');
+            // Or we have clicked Back to the original map
+            if ($("html").hasClass("mobile")) {
+                $('#map_box').removeClass('hidden-js');
+                $('html').addClass('only-map map-page');
+            }
         }
         setTimeout(function() {
             $('html, body, #map_sidebar').scrollTop(0);
