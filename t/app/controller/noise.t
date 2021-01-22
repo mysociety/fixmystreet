@@ -36,7 +36,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         noise => { hackney => 1 },
         do_not_reply_email => { hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com' },
-        address_api => { hackney => { key => '123', url => 'http://hackney.api/' } },
+        address_api => { hackney => { key => '123', url => 'http://hackney.api/', pageAttr => 'page_count' } },
         open311_email => { hackney => { noise_residence => 'noise_residential@example.org,other@example.org', noise_business => 'noise_business@example.org' } },
     },
     PHONE_COUNTRY => 'GB',

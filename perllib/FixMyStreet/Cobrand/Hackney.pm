@@ -92,6 +92,7 @@ sub addresses_for_postcode {
     my $api = $self->feature('address_api');
     my $url = $api->{url};
     my $key = $api->{key};
+    my $pageAttr = $api->{pageAttr};
 
     $url .= '?format=detailed&postcode=' . uri_escape_utf8($postcode);
     my $ua = LWP::UserAgent->new;
@@ -103,7 +104,7 @@ sub addresses_for_postcode {
     for (my $page = 1; $page <= $pages; $page++) {
         my $res = $ua->get($url . '&page=' . $page);
         my $data = decode_json($res->decoded_content);
-        $pages = $data->{data}->{pageCount} || 0;
+        $pages = $data->{data}->{$pageAttr} || 0;
         foreach my $address (@{$data->{data}->{address}}) {
             unless ($address->{locality} eq 'HACKNEY') {
                 $outside = 1;
