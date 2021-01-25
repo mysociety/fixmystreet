@@ -6,3 +6,62 @@
         </ul>
     </div>
 </footer>
+
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js"></script>
+<script nonce="[% csp_nonce %]">
+var config = {
+    apiKey: 'c1a902dfad207b122cca32738e623af375e1d2ee',
+    product: 'PRO_MULTISITE',
+    mode: 'gdpr',
+    consentCookieExpiry: '365',
+    statement: {
+        description: 'For more information visit our',
+        name: 'Cookies page',
+        url: '/council_and_democracy/council_information/website_information/website_information.aspx',
+        updated: '08/09/2020'
+    },
+    accessibility: {
+        outline: true
+    },
+    optionalCookies: [{
+        name: 'analytics',
+        label: 'Analytics cookies',
+        description: 'We\u0027d like to set Google Analytics cookies. This helps us to improve our website by collecting and reporting information on its usage and is done in a way that does not directly identify anyone.',
+        cookies: ['_ga', '_gid', '__utma', '__utmt', '__utmb', '__utmc', '__utmz', '__utm.gif'],
+            onAccept : function(){
+                // Add Google Analytics via GTM
+                // assumes the associated event has been created within GTM
+                // and that event in turn loads analytics
+                dataLayer.push({
+                    'event': 'analytics_consent_given'
+                });
+                // End Google Analytics
+            },
+        onRevoke: function () {
+        }
+    }],
+    position: 'LEFT',
+    theme: 'DARK',
+    branding: {
+        fontColor: "#FFF",
+        fontSizeTitle: "1.2em",
+        fontSizeIntro: "1em",
+        fontSizeHeaders: "1em",
+        fontSize: "1em",
+        backgroundColor: "#206c49",
+        toggleText: "#fff",
+        toggleColor: "#68907e",
+        toggleBackground: "#144a31",
+        buttonIcon: null,
+        buttonIconWidth: "64px",
+        buttonIconHeight: "64px",
+        removeIcon: false,
+		removeAbout: true
+    }
+};
+
+CookieControl.load(config);
+
+</script>
+[% END %]

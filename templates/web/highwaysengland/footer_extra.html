@@ -4,3 +4,85 @@
         <a href="https://www.fixmystreet.com/pro" class="powered-by-fms">Powered by FixMyStreet Pro</a>
     </div>
 </footer>
+
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" ></script>
+<script nonce="[% csp_nonce %]">
+var config = {
+    apiKey: '19778dbc0956eccba34f08b83ee934d77b7057cd',
+    product: 'PRO',
+    accessibility: {
+       overlay: false
+    },
+    initialState: 'notify',
+    notifyOnce: 'false',
+    statement : {
+        description: 'For more information visit our',
+        name : 'Privacy Policy',
+        url: 'https://highwaysengland.co.uk/privacy-policy-cookies/',
+        updated : '22/06/2020'
+    },
+    optionalCookies: [
+        {
+            name: 'analytics',
+            label: 'Analytical cookies',
+            description: 'Analytical cookies help us to improve our website by collecting and reporting information on its usage.',
+            cookies: ['_ga', '_gid', '_gat', '__utma', '__utmt', '__utmb', '__utmc', '__utmz', '__utmv'],
+            onAccept: function () {
+                // Add Google Analytics
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'UA-60685296-3');
+                dataLayer.push({
+                    'event' : 'analytics_consent_given'
+                });
+                // End Google Analytics
+            },
+            onRevoke: function () {
+                // Disable Google Analytics
+                window['ga-disable-UA-60685296-3'] = true;
+                // End Google Analytics
+                dataLayer.push({
+                    'event': 'analytics-consent-revoked'
+                });
+            },
+            recommendedState : 'on',
+            thirdPartyCookies: [{"name": "YouTube", "optOutLink": "https://adssettings.google.com/authenticated?hl=en_US"}]
+        }
+    ],
+    locales: [
+        {
+            locale: 'en',
+            text: {
+                notifyTitle: "Your choice regarding cookies on this site",
+                notifyDescription: "We use cookies to optimise site functionality and give you the best possible experience.",
+            }
+        }
+    ],
+    necessaryCookies:  ['ASP.Net_SessionID', 'HASH_ASP.NET_SessionId', '__RequestVerificationToken', 'AWSELB', 'AWSELBCORS'],
+    branding : {
+        fontColor: "#000",
+        fontSizeTitle: "1.2em",
+        fontSizeIntro: "1em",
+        fontSizeHeaders: "1em",
+        fontSize: "0.8em",
+        backgroundColor: '#fff',
+        toggleText: '#fff',
+        toggleColor: '#D0D0D0',
+        toggleBackground: '#0073A6',
+        removeIcon: true,
+        removeAbout: false,
+        rejectBackground: '#D0D0D0',
+        acceptBackground: '#0073A6',
+        acceptText: '#fff',
+        rejectText: '#000',
+        position: 'RIGHT',
+        theme: 'LIGHT',
+        alertBackground: '#0073A6',
+        alertText: '#fff'
+    }
+};
+CookieControl.load(config);
+</script>
+[% END %]

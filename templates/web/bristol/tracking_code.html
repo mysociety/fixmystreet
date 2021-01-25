@@ -1,13 +1,11 @@
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
 
 <script nonce="[% csp_nonce %]">
-    !function(b,r,i,s,t,o,l){b.GoogleAnalyticsObject=i;b[i]||(b[i]=function(){
-    (b[i].q=b[i].q||[]).push(arguments)});b[i].l=+new Date;o=r.createElement(s);
-    l=r.getElementsByTagName(s)[0];o.src=t;l.parentNode.insertBefore(o,l)}
-    (window,document,'ga','script','https://www.google-analytics.com/analytics.js');
-
-    ga('create', 'UA-79501135-1', 'auto');
-    ga('send', 'pageview');
+function getConsentCookie(b){b+="=";for(var d=decodeURIComponent(document.cookie).split(";"),c=0;c<d.length;c++){for(var a=d[c];" "==a.charAt(0);)a=a.substring(1);if(0==a.indexOf(b))return a.substring(b.length,a.length)}return""};
+var cookieconsent=getConsentCookie("cookieconsent_status");
+if(cookieconsent=="allow"){
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-5L9VVS');ga("set","page");ga("send","pageview");
+}
 </script>
 
 [% ELSE %]

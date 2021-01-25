@@ -6,6 +6,8 @@
 @import "../sass/base";
 @import "../sass/report_list_pins";
 
+@import "./cookieconsent.unmin";
+
 // Put the BCC logo in place, and reveal the 'bristol.gov.uk' text alongside it
 #site-logo {
   @extend %bold-font;

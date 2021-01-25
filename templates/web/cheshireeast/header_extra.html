@@ -1,13 +1,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap">
 
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-10804167-1"></script>
-<script nonce="[% csp_nonce %]">
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-10804167-1');
-</script>
+<!-- Google Tag Manager -->
+<script nonce="[% csp_nonce %]">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5ZQX9F');</script>
+<!-- End Google Tag Manager -->
 [% ELSE %]
 <!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
 [% END %]

@@ -43,6 +43,14 @@ div.form-error, p.form-error {
     letter-spacing: 0.06em;
 }
 
+/* Cookie control */
+#ccc-icon.ccc-icon--dark {
+    fill: rgba(0, 0, 37, 46%) !important;
+}
+#ccc-icon:focus {
+	outline: 3px solid #ffa100 !important;
+}
+
 .report_meta_info,
 .council_sent_info {
   font-size: inherit;

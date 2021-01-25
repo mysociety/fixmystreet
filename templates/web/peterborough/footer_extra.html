@@ -29,3 +29,31 @@ may be contacted or blocked from using the site.
         </a></li>
     </ul>
 </div>
+
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" type="text/javascript"></script>
+<script nonce="[% csp_nonce %]">
+var config = {
+    apiKey: '757ec4f62504be20fcc91244814d4888401bee7d',
+    product: 'PRO_MULTISITE',
+    statement: {
+        description: 'For more information visit our',
+        name: 'Privacy Statement',
+        url: 'https://www.peterborough.gov.uk/privacy',
+        updated: '30/04/2020',
+    },
+    initialState: 'open',
+    position: 'LEFT',
+    closeStyle: 'button',
+    text: {
+        closeLabel: 'Confirm your choices',
+    },
+    consentCookieExpiry: 60,
+    branding: {
+        removeIcon: true,
+        removeAbout: true,
+    },
+};
+CookieControl.load( config );
+</script>
+[% END %]

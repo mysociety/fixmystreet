@@ -53,9 +53,12 @@
     position: relative;
     width: 100%;
     vertical-align: top;
-    padding: 15px;
+    padding: 1rem;
+}
 
-    @media (min-width: 768px) {
-        padding: 30px;
+@media (min-width: 768px) {
+    .occlss-layout--gutter-s {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 }
