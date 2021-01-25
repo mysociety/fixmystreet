@@ -440,7 +440,6 @@ body.twothirdswidthpage {
       position:absolute;
       #{$left}: 42em;
       top:0;
-      z-index: -1;
       width:13em;
       padding:1em;
       h2 {
@@ -453,7 +452,6 @@ body.twothirdswidthpage {
     .sticky-sidebar {
       position: absolute;
       #{$left}: 42em;
-      z-index: -1;
       aside {
         position: fixed;
         top:7em;
