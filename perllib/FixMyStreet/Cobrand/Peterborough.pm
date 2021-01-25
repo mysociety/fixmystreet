@@ -418,9 +418,36 @@ sub look_up_property {
     return $premises{$uprn};
 }
 
+sub image_for_service {
+    my ($self, $service_id) = @_;
+    my $base = '/cobrands/peterborough/images';
+    my $images = {
+        6533 => "$base/black-bin",
+        6534 => "$base/green-bin",
+        6579 => "$base/brown-bin",
+    };
+    return $images->{$service_id};
+}
+
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
+
+    my %service_name_override = (
+        "Empty Bin 240L Black" => "Black Bin",
+        "Empty Bin 240L Brown" => "Brown Bin",
+        "Empty Bin 240L Green" => "Green Bin",
+        "Empty Black 240l Bin" => "Black Bin",
+        "Empty Brown 240l Bin" => "Brown Bin",
+        "Empty Green 240l Bin" => "Green Bin",
+        "Empty Bin Recycling 1100l" => "Recycling",
+        "Empty Bin Recycling 240l" => "Recycling",
+        "Empty Bin Recycling 660l" => "Recycling",
+        "Empty Bin Refuse 1100l" => "Refuse",
+        "Empty Bin Refuse 240l" => "Refuse",
+        "Empty Bin Refuse 660l" => "Refuse",
+    );
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
@@ -439,8 +466,9 @@ sub bin_services_for_address {
             id => $_->{JobID},
             last => { date => $last, ordinal => ordinal($last->day) },
             next => { date => $next, ordinal => ordinal($next->day) },
-            service_name => $_->{JobDescription},
+            service_name => $service_name_override{$_->{JobDescription}} || $_->{JobDescription},
             schedule => $schedules{$_->{JobName}}->{Frequency},
+            service_id => $schedules{$_->{JobName}}->{Feature}->{FeatureType}->{ID},
         };
         push @out, $row;
     }
