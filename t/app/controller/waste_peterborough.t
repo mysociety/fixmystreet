@@ -44,12 +44,12 @@ FixMyStreet::override_config {
         { Token => { TokenString => "TOKEN" } }
     });
     $b->mock('Jobs_FeatureScheduleDates_Get', sub { [
-        { JobID => 123, JobDescription => 'Empty Bin 240L Black', PreviousDate => '2021-08-01T11:11:11Z', NextDate => '2021-08-08T11:11:11Z', JobName => 'Black' },
-        { JobID => 456, JobDescription => 'Empty Bin Recycling 240l', PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Recycling' },
+        { JobID => 123, PreviousDate => '2021-08-01T11:11:11Z', NextDate => '2021-08-08T11:11:11Z', JobName => 'Empty Bin 240L Black' },
+        { JobID => 456, PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Empty Bin Recycling 240l' },
     ] });
     $b->mock('Features_Schedules_Get', sub { [
-        { JobName => 'Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
-        { JobName => 'Recycling', Feature => { FeatureType => { ID => 6534 } } },
+        { JobName => 'Empty Bin 240L Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
+        { JobName => 'Empty Bin Recycling 240l', Feature => { FeatureType => { ID => 6534 } } },
     ] });
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
