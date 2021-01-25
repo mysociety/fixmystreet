@@ -402,7 +402,7 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
             group => $_->groups,
         } } @live_contacts;
         $c->stash->{contacts} = \@all_contacts;
-        $c->forward('/report/stash_category_groups', [ \@all_contacts, 1 ]) if $c->cobrand->enable_category_groups;
+        $c->forward('/report/stash_category_groups', [ \@all_contacts, { combine_multiple => 1 } ]);
     }
 
     # this goes after in case we've delete any alerts

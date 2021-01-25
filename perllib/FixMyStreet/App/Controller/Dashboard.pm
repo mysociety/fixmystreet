@@ -109,7 +109,7 @@ sub index : Path : Args(0) {
 
         $c->forward('/admin/fetch_contacts');
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
-        $c->forward('/report/stash_category_groups', [ $c->stash->{contacts}, 0 ]);
+        $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
         # See if we've had anything from the body dropdowns
         $c->stash->{category} = $c->get_param('category');

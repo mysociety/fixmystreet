@@ -827,7 +827,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{missing_details_bodies} = \@missing_details_bodies;
     $c->stash->{missing_details_body_names} = \@missing_details_body_names;
 
-    $c->forward('/report/stash_category_groups', [ \@category_options ]) if $c->cobrand->enable_category_groups;
+    $c->forward('/report/stash_category_groups', [ \@category_options, { mix_in => 1 } ]);
 }
 
 sub setup_report_extra_fields : Private {

@@ -72,7 +72,7 @@ sub edit : Path : Args(2) {
         group => $_->groups,
     } } @live_contacts;
     $c->stash->{contacts} = \@all_contacts;
-    $c->forward('/report/stash_category_groups', [ \@all_contacts, 1 ]) if $c->cobrand->enable_category_groups;
+    $c->forward('/report/stash_category_groups', [ \@all_contacts, { combine_multiple => 1 } ]);
 
     # bare block to use 'last' if form is invalid.
     if ($c->req->method eq 'POST') { {
