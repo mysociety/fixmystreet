@@ -110,4 +110,20 @@ sub cut_off_date { '2020-12-02' }
 
 sub front_stats_show_middle { 'completed' }
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        external_id => 'CRNo',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            external_id => $report->external_id,
+        };
+    });
+}
+
 1;

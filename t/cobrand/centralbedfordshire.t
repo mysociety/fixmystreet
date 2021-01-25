@@ -164,4 +164,19 @@ subtest 'check geolocation overrides' => sub {
 };
 
 
+subtest 'Dashboard CSV extra columns' => sub {
+    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+        from_body => $body, password => 'password');
+    $mech->log_in_ok( $staffuser->email );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'centralbedfordshire',
+    }, sub {
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('"Site Used","Reported As",CRNo');
+    $mech->content_contains('centralbedfordshire,,' . $report->external_id);
+};
+
+
 done_testing();
