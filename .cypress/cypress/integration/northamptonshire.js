@@ -15,7 +15,7 @@ it('prevents clicking unless asset selected, desktop flow', function() {
   cy.get('#map_box').click();
   cy.wait('@report-ajax');
 
-  cy.get('[id=category_group]').select('Shelter Damaged');
+  cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
   cy.wait('@empty-bus_stops-layer');
@@ -37,7 +37,7 @@ it('prevents clicking unless asset selected, mobile flow', function() {
   cy.wait('@report-ajax');
   cy.get('#mob_ok').click();
 
-  cy.get('[id=category_group]').select('Shelter Damaged');
+  cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
   cy.wait('@empty-bus_stops-layer');
@@ -62,7 +62,7 @@ it('selecting an asset allows a report, mobile flow', function() {
   cy.wait('@report-ajax');
   cy.get('#mob_ok').click();
 
-  cy.get('[id=category_group]').select('Shelter Damaged');
+  cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
   cy.wait('@empty-bus_stops-layer');
@@ -86,7 +86,7 @@ it('selecting an asset allows a report, desktop flow', function() {
   cy.get('#map_box').click();
   cy.wait('@report-ajax');
 
-  cy.get('[id=category_group]').select('Shelter Damaged');
+  cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
   cy.wait('@empty-bus_stops-layer');
@@ -109,7 +109,7 @@ it('detects multiple assets at same location', function() {
   cy.get('#map_box').click();
   cy.wait('@report-ajax');
 
-  cy.get('[id=category_group]').select('Shelter Damaged');
+  cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
   cy.wait('@bus_stops-layer2');
@@ -127,7 +127,7 @@ it('shows the emergency message', function() {
   cy.get('[name=pc]').parents('form').submit();
   cy.get('#map_box').click();
   cy.wait('@report-ajax');
-  cy.get('[id=category_group]').select('Very Urgent');
+  cy.pickCategory('Very Urgent');
   cy.contains('Please call us instead, it is very urgent.').should('be.visible');
   cy.get('#form_title').should('not.be.visible');
 });

@@ -1,0 +1,11 @@
+[% IF category; category_lc = category | lower; END ~%]
+[%~ FOREACH group IN category_groups ~%]
+    [% IF group.name %]
+    <select class="required hidden-js[% ' hidden-nojs' UNLESS filter_group == group.name %] form-control js-subcategory validCategory" name="category.[% group.id %]" id="subcategory_[% group.id %]">
+        <option value="">[% loc('-- Pick a category --') %]</option>
+    [%~ FOREACH cat IN group.categories ~%]
+        [% INCLUDE report/new/_category_option.html %]
+    [%~ END ~%]
+    </select>
+    [% END %]
+[%~ END =%]

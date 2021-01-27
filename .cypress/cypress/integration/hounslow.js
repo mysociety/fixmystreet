@@ -13,9 +13,9 @@ describe('private categories', function() {
     cy.get('.olMapViewport #fms_pan_zoom_zoomin').click();
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.get('select:eq(4)').select('Potholes');
+    cy.pickCategory('Potholes');
     cy.get("#js-councils_text").contains('sent to Hounslow Highways and also published online');
-    cy.get('select:eq(4)').select('Other');
+    cy.pickCategory('Other');
     cy.get("#js-councils_text").contains('sent to Hounslow Highways but not published online');
   });
 
@@ -26,9 +26,9 @@ describe('private categories', function() {
     cy.get('.olMapViewport #fms_pan_zoom_zoomin').click();
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.get('select:eq(4)').select('Potholes');
+    cy.pickCategory('Potholes');
     cy.contains('sent to Hounslow Borough Council and also published online');
-    cy.get('select:eq(4)').select('Other');
+    cy.pickCategory('Other');
     cy.contains('sent to Hounslow Borough Council but not published online');
   });
 

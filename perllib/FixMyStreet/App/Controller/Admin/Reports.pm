@@ -448,7 +448,7 @@ sub edit_location : Private {
         $c->stash->{fetch_all_areas} = 1;
         $c->stash->{area_check_action} = 'admin';
         $c->forward('/council/load_and_check_areas', []);
-        $c->forward('/report/new/setup_categories_and_bodies');
+        $c->forward('/report/new/setup_categories_and_bodies', []);
         my %allowed_bodies = map { $_ => 1 } @{$problem->bodies_str_ids};
         my @new_bodies = keys %{$c->stash->{bodies_to_list}};
         my $bodies_match = grep { exists( $allowed_bodies{$_} ) } @new_bodies;
@@ -474,7 +474,7 @@ sub categories_for_point : Private {
     $c->forward('/around/check_location_is_acceptable', [ $prefetched_all_areas ]);
     # As with a new report, fetch the bodies/categories
     $c->stash->{categories_for_point} = 1;
-    $c->forward('/report/new/setup_categories_and_bodies');
+    $c->forward('/report/new/setup_categories_and_bodies', []);
 
     # Remove the "Pick a category" option
     shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};

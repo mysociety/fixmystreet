@@ -12,7 +12,7 @@ describe('new report form', function() {
   });
 
   it('is hidden when emergency option is yes', function() {
-    cy.get('select:eq(4)').select('Fallen branch');
+    cy.pickCategory('Fallen branch');
     cy.get('.js-reporting-page--next:visible').click();
     cy.get('#form_emergency').select('yes');
     cy.get('.js-post-category-messages:visible').should('contain', 'Please phone customer services to report this problem.');
@@ -23,7 +23,7 @@ describe('new report form', function() {
   });
 
   it('is hidden when private land option is yes', function() {
-    cy.get('select:eq(4)').select('Fallen branch');
+    cy.pickCategory('Fallen branch');
     cy.get('.js-reporting-page--next:visible').click();
     cy.get('#form_private_land').select('yes');
     cy.get('.js-post-category-messages:visible').should('contain', 'The council do not have powers to address issues on private land.');
@@ -34,9 +34,9 @@ describe('new report form', function() {
   });
 
   it('correctly changes the asset select message', function() {
-    cy.get('select:eq(4)').select('Street lighting');
+    cy.pickCategory('Street lighting');
     cy.get('.category_meta_message').should('contain', 'You can pick a light from the map');
-    cy.get('select:eq(4)').select('Trees');
+    cy.pickCategory('Trees');
     cy.get('.category_meta_message').should('contain', 'You can pick a tree from the map');
   });
 
@@ -44,12 +44,12 @@ describe('new report form', function() {
     cy.fixture('peterborough_roadworks.json');
     cy.route('/streetmanager.php**', 'fixture:peterborough_roadworks.json').as('roadworks');
     cy.wait('@roadworks');
-    cy.get('select:eq(4)').select('Pothole');
+    cy.pickCategory('Pothole');
     cy.get('.js-reporting-page--next:visible').click();
     cy.contains('Roadworks are scheduled near this location').should('be.visible');
     cy.contains('Parapet improvement').should('be.visible');
     cy.go('back');
-    cy.get('select:eq(4)').select('Fallen branch');
+    cy.pickCategory('Fallen branch');
     cy.get('.js-reporting-page--next:visible').click();
     cy.should('not.contain', 'Roadworks are scheduled near this location');
   });

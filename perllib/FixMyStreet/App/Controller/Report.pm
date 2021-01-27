@@ -730,6 +730,24 @@ sub stash_category_groups : Private {
         }
     }
 
+    # New reporting, top level mixes groups and categories not in a group
+    if ($opts->{mix_in}) {
+        my $no_group = delete $category_groups{""};
+        my @list = map { [ $_->category_display, $_ ]  } @$no_group;
+        foreach (keys %category_groups) {
+            (my $id = $_) =~ s/[^a-zA-Z]+//g;
+            push @list, [ $_, { id => $id, name => $_, categories => $category_groups{$_} } ];
+        }
+        @list = sort {
+            return 1 if $a->[0] eq _('Other');
+            return -1 if $b->[0] eq _('Other');
+            $a->[0] cmp $b->[0];
+        } @list;
+        @list = map { $_->[1] } @list;
+        $c->stash->{category_groups} = \@list;
+        return;
+    }
+
     # Change empty group to 'No Group' if multiple groups and combining multiple
     if ($opts->{combine_multiple} && scalar keys %category_groups > 1 && $category_groups{""}) {
         $category_groups{_('No Group')} = delete $category_groups{""};

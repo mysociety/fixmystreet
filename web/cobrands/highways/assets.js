@@ -87,28 +87,17 @@ fixmystreet.assets.add(defaults, {
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
-    var old_category = $("#form_category").val();
-
-    // Restart the category dropdown from the original data (not all of it as
-    // we keep subcategories the same)
-    var select = $(fixmystreet.reporting_data.category).filter('select');
     if (he_flag) {
-        var select1 = select.find('> option:first-child')[0].outerHTML;
-        var select2 = select.find('optgroup[label*="Highways England"]').html();
-        $('#form_category').html(select1 + select2);
+        $('#category_group').val('Highways England').trigger('change', [ 'no_event' ]);
+        $('.js-reporting-page--category').addClass('js-reporting-page--skip');
     } else {
-        select.find('optgroup[label*="Highways England"]').remove();
-        select = select.html();
-        $('#form_category').html(select);
+        $('.js-reporting-page--category').removeClass('js-reporting-page--skip');
+        var old_category = $('#category_group').val();
+        if (old_category == 'Highways England') {
+            $("#category_group")[0].selectedIndex = 0;
+        }
+        $('#category_group option[value*="Highways England"]').hide();
     }
-    if ($("#form_category option[value=\"" + old_category + "\"]").length) {
-        $("#form_category").val(old_category);
-    }
-
-    // Recalculate the category groups
-    var old_category_group = $('#category_group').val() || $('#filter_group').val();
-    $('#category_group').remove();
-    fixmystreet.set_up.category_groups(old_category_group, true);
 }
 
 function he_selected() {

@@ -1,0 +1,5 @@
+[% cat_lc = cat.category | lower =%]
+<option value='[% cat.category %]'[% ' selected' IF ( report.category == cat.category || category_lc == cat_lc ) AND ( NOT filter_group OR filter_group == group.name ) ~%]
+    >[% cat.category_display %]
+    [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
+</option>

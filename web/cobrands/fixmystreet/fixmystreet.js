@@ -258,7 +258,7 @@ fixmystreet.pageController = {
             page = $page.data('pageName');
         } else if (page === 'next') {
             if ($curr.data('pageName') === 'map') {
-                if ($('#form_category').val() === '-- Pick a category --') {
+                if (!fixmystreet.reporting.selectedCategory().category) {
                     $page = $('.js-reporting-page').first();
                 } else {
                     // It is possible for multiple map 'page' divs to exist if
@@ -398,7 +398,7 @@ $.extend(fixmystreet.set_up, {
     // FIXME - needs to use translated string
     if (jQuery.validator) {
         jQuery.validator.addMethod('validCategory', function(value, element) {
-            return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+            return this.optional(element) || value != ''; }, translation_strings.category );
         jQuery.validator.addMethod('js-password-validate', function(value, element) {
             return !value || value.length >= fixmystreet.password_minimum_length;
         }, translation_strings.password_register.short);
@@ -530,8 +530,8 @@ $.extend(fixmystreet.set_up, {
     }
 
     // On the new report form, does this by asking for details from the server.
-    // Delegation is necessary because #form_category may be replaced during the lifetime of the page
-    $("#problem_form").on("change.category", "select#form_category", function(){
+    // Delegation is necessary because category/subcategory may be replaced during the lifetime of the page
+    var category_changed = function() {
 	// If we haven't got any reporting data (e.g. came straight to
 	// /report/new), fetch it first. That will then automatically call this
 	// function again, due to it calling change() on the category if set.
@@ -621,6 +621,26 @@ $.extend(fixmystreet.set_up, {
         });
 
         $(fixmystreet).trigger('report_new:category_change');
+    };
+
+    $("#problem_form").on("change.category", "[name^=category.]", category_changed);
+    $("#problem_form").on("change.category", "[name=category]", function(e, no_event){
+        // First we need to check if we are picking a group or a category
+        var $subcategory_page = $('.js-reporting-page--subcategory');
+        var $subcategory_label = $subcategory_page.find('label');
+        var subcategory_id = $(this).find(":selected").data("subcategory");
+        $(".js-subcategory").addClass('hidden-js');
+        if (subcategory_id === undefined) {
+            $subcategory_page.addClass('js-reporting-page--skip');
+            category_changed.apply(this);
+        } else {
+            $subcategory_page.removeClass('js-reporting-page--skip');
+            $("#subcategory_" + subcategory_id).removeClass('hidden-js');
+            if (!no_event) {
+                $("#subcategory_" + subcategory_id).change();
+            }
+            $subcategory_label.attr('for', 'subcategory_' + subcategory_id);
+        }
     });
   },
 
@@ -641,117 +661,9 @@ $.extend(fixmystreet.set_up, {
         });
   },
 
-  // no_event makes sure no change event is fired (so we don't end up in an infinite loop)
-  // and also only sets up the main group dropdown, assuming the subs are left alone
-  category_groups: function(old_group, no_event) {
-    var $category_select = $("select#form_category");
-    if (!$category_select.hasClass('js-grouped-select')) {
-        if (!no_event && $category_select.val() !== '-- Pick a category --') {
-            $category_select.change();
-        }
-        return;
-    }
-
-    var $subcategory_page = $('.js-reporting-page--subcategory');
-    var $subcategory_label = $subcategory_page.find('label');
-    $subcategory_label.nextAll('.js-subcategory').remove();
-
-    var $group_select = $("<select></select>").addClass("form-control validCategory").attr('id', 'category_group');
-    var $category_label = $("#form_category_label");
-    var $empty_option = $category_select.find("option").first();
-
-    $group_select.change(function() {
-        var subcategory_id = $(this).find(":selected").data("subcategory_id");
-        $(".js-subcategory").hide();
-        if (subcategory_id === undefined) {
-            $subcategory_page.addClass('js-reporting-page--skip');
-            $category_select.val($(this).val()).change();
-        } else {
-            $subcategory_page.removeClass('js-reporting-page--skip');
-            $("#" + subcategory_id).show().change();
-            $subcategory_label.attr('for', subcategory_id);
-        }
-    });
-
-    var subcategory_change = function() {
-        $category_select.val($(this).val()).change();
-    };
-
-    var add_option = function(el) {
-        $group_select.append($(el).clone());
-        if (el.selected) {
-            $group_select.val(el.value);
-        }
-    };
-
-    var add_optgroup = function(el) {
-        var $el = $(el);
-        var $options = $el.find("option");
-
-        if ($options.length === 0) {
-            /// Pass empty optgroups
-        } else if ($options.length == 1) {
-            add_option($options.get(0));
-        } else {
-            var label = $el.attr("label");
-            var subcategory_id = "subcategory_" + label.replace(/[^a-zA-Z]+/g, '');
-            var $opt = $("<option></option>").text(label).val(label);
-            $opt.data("subcategory_id", subcategory_id);
-            $group_select.append($opt);
-
-            if (no_event) {
-                $options.each(function() {
-                    // Make sure any preselected value is preserved in the new UI:
-                    if (this.selected) {
-                        $group_select.val(label);
-                    }
-                });
-                return;
-            }
-
-            var $sub_select = $("<select></select>").addClass("form-control js-subcategory validCategory");
-            $sub_select.attr("id", subcategory_id);
-            $sub_select.append($empty_option.clone());
-            $options.each(function() {
-                $sub_select.append($(this).clone());
-                // Make sure any preselected value is preserved in the new UI:
-                if (this.selected) {
-                    $group_select.val(label);
-                    $sub_select.val(this.value);
-                }
-            });
-            $sub_select.hide().insertAfter($subcategory_label).change(subcategory_change);
-        }
-    };
-
-    $category_select.hide();
-    $group_select.insertAfter($category_select);
-    $category_label.attr('for', 'category_group');
-    $category_select.find("optgroup, > option").each(function() {
-        if (this.tagName.toLowerCase() === 'optgroup') {
-            add_optgroup(this);
-        } else if (this.tagName.toLowerCase() === 'option') {
-            add_option(this);
-        }
-    });
-    // Sort elements in place, but leave the first 'pick a category' option alone
-    $group_select.find("option").slice(1).sort(function(a, b) {
-        // 'Other' should always be at the end.
-        if (a.label === 'Other') {
-            return 1;
-        }
-        if (b.label === 'Other') {
-            return -1;
-        }
-        return a.label > b.label ? 1 : -1;
-    }).appendTo($group_select);
-
-    if (old_group !== '-- Pick a category --' && $category_select.val() == '-- Pick a category --') {
-        $group_select.val(old_group);
-    }
-    if (!no_event) {
-        $group_select.change();
-    }
+  category_groups: function() {
+    var $group_select = $("#category_group");
+    $group_select.change();
   },
 
   hide_name: function() {
@@ -1507,15 +1419,17 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
 (function() { // fetch_reporting_data closure
 
 function re_select(group, category) {
-    var cat_in_group = $("#form_category optgroup[label=\"" + group + "\"] option[value=\"" + category + "\"]");
+    var group_id = group.replace(/[^a-z]+/gi, '');
+    var cat_in_group = $("#subcategory_" + group_id + " option[value=\"" + category + "\"]");
     if (cat_in_group.length) {
+        $('#category_group').val(group);
         cat_in_group.prop({selected:true});
-        return true;
-    } else if ($("#form_category option[value=\"" + category + "\"]").length) {
-        $("#form_category").val(category);
-        return true;
+    } else {
+        var top_level = group || category;
+        if (top_level && $("#category_group option[value=\"" + top_level + "\"]").length) {
+            $("#category_group").val(top_level);
+        }
     }
-    return false;
 }
 
 fixmystreet.fetch_reporting_data = function() {
@@ -1533,9 +1447,9 @@ fixmystreet.fetch_reporting_data = function() {
             return;
         }
         $('#side-form').show();
-        var old_category_group = $('#category_group').val() || $('#filter_group').val(),
-            old_category = $("#form_category").val(),
-            filter_category = $("#filter_categories").val();
+        var selected = fixmystreet.reporting.selectedCategory(),
+            old_category_group = selected.group || $('#filter_group').val() || '',
+            old_category = selected.category || $("#filter_categories").val() || '';
 
         fixmystreet.reporting_data = data;
 
@@ -1572,15 +1486,9 @@ fixmystreet.fetch_reporting_data = function() {
         }
 
         $('#form_category_row').html(data.category);
-        var reselected = re_select(old_category_group, old_category);
-        if (!reselected && filter_category !== undefined) {
-            // If the category filter appears on the map and the user has selected
-            // something from it, then pre-fill the category field in the report,
-            // if it's a value already present in the drop-down.
-            re_select(old_category_group, filter_category);
-        }
-
-        fixmystreet.set_up.category_groups(old_category_group);
+        $('#form_subcategory_row').html(data.subcategories);
+        re_select(old_category_group, old_category);
+        fixmystreet.set_up.category_groups();
 
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
@@ -1610,6 +1518,23 @@ fixmystreet.fetch_reporting_data = function() {
             $('#js-contribute-as-wrapper').hide();
         }
     });
+};
+
+fixmystreet.reporting = {};
+fixmystreet.reporting.selectedCategory = function() {
+    var group_or_cat = $('#category_group').val() || '',
+        group_id = group_or_cat.replace(/[^a-z]+/gi, ''),
+        $subcategory = $("#subcategory_" + group_id),
+        category,
+        group;
+    if ($subcategory.length) {
+        category = $subcategory.val();
+        group = group_or_cat;
+    } else {
+        category = group_or_cat;
+        group = '';
+    }
+    return { group: group, category: category };
 };
 
 })(); // fetch_reporting_data closure

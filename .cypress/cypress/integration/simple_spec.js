@@ -7,9 +7,12 @@ describe('Clicking the map', function() {
     });
 
     it('allows me to report a new problem', function() {
+        cy.server();
+        cy.route('/report/new/ajax*').as('report-ajax');
         cy.url().should('include', '/around');
         cy.get('#map_box').click(200, 200);
-        cy.get('#category_group').select('Flyposting');
+        cy.wait('@report-ajax');
+        cy.pickCategory('Flyposting');
         cy.get('.js-reporting-page--next:visible').click();
         cy.get('.js-reporting-page--next:visible').click(); // No photo
         cy.get('[name=title]').type('Title');

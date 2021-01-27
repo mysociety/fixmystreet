@@ -164,7 +164,7 @@ sub run {
         if ($wsl) {
             @cypress = ('cmd.exe', '/c', $node, $wsl);
         }
-        my @config = $coverage ? () : ('--config', 'pluginsFile=false,supportFile=false');
+        my @config = $coverage ? () : ('--config', 'pluginsFile=false,supportFile=cypress/support/commands.js');
         my $exit = system(@cypress, $cmd, @config, '--project', '.cypress', @ARGV);
         kill 'TERM', $pid if $pid;
 

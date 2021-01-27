@@ -119,7 +119,7 @@ $(function(){
     $("#problem_form").on("change.category", function() {
         var group = '';
         if (OpenLayers.Util.indexOf(fixmystreet.bodies, 'East Sussex County Council') != -1 ) {
-          group = $('#form_category :selected').parent().attr('label');
+          group = fixmystreet.reporting.selectedCategory().group;
         }
         $('#form_group').val(group);
     });

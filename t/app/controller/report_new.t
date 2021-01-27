@@ -410,7 +410,7 @@ foreach my $test (
                     photo1        => '',
                     photo2        => '',
                     photo3        => '',
-                    category      => '-- Pick a category --',
+                    category      => '',
                 },
                 "user's details prefilled"
             );
@@ -553,7 +553,7 @@ foreach my $test (
                     photo1        => '',
                     photo2        => '',
                     photo3        => '',
-                    category      => '-- Pick a category --',
+                    category      => '',
                 },
                 "user's details prefilled"
             );
@@ -644,8 +644,26 @@ subtest "category groups" => sub {
         $contact9->update( { extra => { group => 'Pavements' } } );
         $contact10->update( { extra => { group => 'Roads' } } );
         $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
-        $mech->content_like(qr{<optgroup label="Pavements">\s*<option value='Potholes'>Potholes</option>\s*<option value='Street lighting'>Street lighting</option></optgroup>});
-        $mech->content_like(qr{<optgroup label="Roads">\s*<option value='Potholes'>Potholes</option>\s*<option value='Street lighting'>Street lighting</option></optgroup>});
+        $mech->content_like(qr{<option value="Pavements" data-subcategory="Pavements">Pavements</option>\s*<option value="Roads" data-subcategory="Roads">Roads</option>\s*<option value='Trees'>Trees</option>\s*</select>});
+        my $options = '\s*<option value="">-- Pick a category --</option>\s*<option value=\'Potholes\'>Potholes</option>\s*<option value=\'Street lighting\'>Street lighting</option>\s*</select>';
+        my $optionsS = '\s*<option value="">-- Pick a category --</option>\s*<option value=\'Potholes\' selected>Potholes</option>\s*<option value=\'Street lighting\'>Street lighting</option>\s*</select>';
+        $mech->content_like(qr{<select[^>]*id="subcategory_Pavements">$options});
+        $mech->content_like(qr{<select[^>]*id="subcategory_Roads">$options});
+        foreach my $key ('category', 'filter_group') { # Server-submission of top-level, or clicking on map with hidden field
+            $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon&$key=Pavements");
+            $mech->content_like(qr{<option value="Pavements" data-subcategory="Pavements" selected>Pavements</option>\s*<option value="Roads" data-subcategory="Roads">Roads</option>\s*<option value='Trees'>Trees</option>\s*</select>});
+            $mech->content_like(qr{<select[^>]*id="subcategory_Pavements">$options});
+            $mech->content_like(qr{<select[^>]*id="subcategory_Roads">$options});
+        }
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon&category=Trees");
+        $mech->content_like(qr{<option value="Pavements" data-subcategory="Pavements">Pavements</option>\s*<option value="Roads" data-subcategory="Roads">Roads</option>\s*<option value='Trees' selected>Trees</option>\s*</select>});
+        $mech->content_like(qr{<select[^>]*id="subcategory_Pavements">$options});
+        $mech->content_like(qr{<select[^>]*id="subcategory_Roads">$options});
+        # Server submission of pavement subcategory
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon&category=Pavements&category.Pavements=Potholes");
+        $mech->content_like(qr{<option value="Pavements" data-subcategory="Pavements" selected>Pavements</option>\s*<option value="Roads" data-subcategory="Roads">Roads</option>\s*<option value='Trees'>Trees</option>\s*</select>});
+        $mech->content_like(qr{<select[^>]*id="subcategory_Pavements">$optionsS});
+        $mech->content_like(qr{<select[^>]*id="subcategory_Roads">$options});
     };
 };
 
@@ -747,7 +765,7 @@ subtest "check map click ajax response" => sub {
     # this order seems to be random so check individually/sort
     like $extra_details->{councils_text}, qr/Cheltenham Borough Council/, 'correct council text for two tier';
     like $extra_details->{councils_text}, qr/Gloucestershire County Council/, 'correct council text for two tier';
-    like $extra_details->{category}, qr/Pothol\x{00E9}s.*Street lighting/, 'category looks correct for two tier council';
+    like $extra_details->{category}, qr/Pothol\x{00E9}s.*Trees/s, 'category looks correct for two tier council';
     my @sorted_bodies = sort @{ $extra_details->{bodies} };
     is_deeply \@sorted_bodies, [ "Cheltenham Borough Council", "Gloucestershire County Council" ], 'correct bodies for two tier';
     ok !$extra_details->{titles_list}, 'Non Bromley does not send back list of titles';

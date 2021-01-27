@@ -5,7 +5,7 @@ fixmystreet.roadworks.config = {
 };
 
 fixmystreet.roadworks.filter = function(feature) {
-  var category = $('select#form_category').val(),
+  var category = fixmystreet.reporting.selectedCategory().category,
       categories = ['Damage to pavement', 'Damage to road', 'Faded road markings', 'Damaged Railing, manhole, or drain cover'];
     return OpenLayers.Util.indexOf(categories, category) != -1;
 };

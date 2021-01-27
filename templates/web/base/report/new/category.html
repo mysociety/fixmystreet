@@ -8,26 +8,25 @@ IF category_options.size == 2;
 END
 ~%]
 [% IF category_options.size OR category_groups.size ~%]
-    [%~ BLOCK category_option ~%]
-    [% cat_lc = cat.category | lower =%]
-    <option value='[% cat.category | html %]'[% ' selected' IF ( report.category == cat.category || category_lc == cat_lc ) AND ( NOT filter_group OR filter_group == group.name ) ~%]
-    >[% IF loop.first %][% cat.category_display %][% ELSE %][% cat.category_display | html %][% END %]
-    [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
-    </option>
-    [%~ END ~%]
-
     [% IF category;
         category_lc = category | lower;
        END; ~%]
-    <label for='form_category' id="form_category_label">
+    <label for='category_group' id="form_category_label">
         [%~ form_category_label OR loc('Category') ~%]
     </label>[% =%]
-    <select required class="validCategory form-control[% IF category_groups.size %] js-grouped-select[% END %]" name="category" id="form_category"
+    <select required class="validCategory form-control" name="category" id="category_group"
     [%~ IF c.user.from_body =%]
       [%~ prefill_report = ( c.cobrand.prefill_report_fields_for_inspector && inspector ) || c.user.has_body_permission_to('report_prefill') %]
       data-body="[% c.user.from_body.name %]" data-prefill="[% prefill_report %]"
     [%~ END ~%]
     >
-        [%~ INCLUDE 'report/new/_category_select.html' ~%]
+
+        [%~ FOREACH group_or_cat IN category_groups ~%]
+          [% IF group_or_cat.name %]
+            <option value="[% group_or_cat.name %]" data-subcategory="[% group_or_cat.id %]"[% ' selected' IF filter_group == group_or_cat.name %]>[% group_or_cat.name %]</option>
+          [% ELSE # A category not in a group %]
+            [% INCLUDE report/new/_category_option.html cat=group_or_cat group='' %]
+          [%~ END =%]
+        [%~ END =%]
     </select>
 [%~ END ~%]

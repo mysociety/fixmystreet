@@ -1,12 +1,12 @@
 <div id="form_category_row">
 [% IF js %]
-    <label for="form_category">[% form_category_label OR loc('Category') %]</label>
-    <select class="validCategory form-control" name="category" id="form_category"
+    <label for="category_group">[% form_category_label OR loc('Category') %]</label>
+    <select class="validCategory form-control" name="category" id="category_group"
     [%~ IF c.user.from_body =%]
       [%~ prefill_report = c.cobrand.prefill_report_fields_for_inspector || c.user.has_body_permission_to('report_prefill') %]
       data-body="[% c.user.from_body.name %]" data-prefill="[% prefill_report %]"
     [%~ END =%]
-    required><option>[% loc('Loading...') %]</option></select>
+    required><option value="">[% loc('Loading...') %]</option></select>
 [% ELSE %]
     [% IF category_options.size %]
         [% IF field_errors.category %]

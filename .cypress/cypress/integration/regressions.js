@@ -65,7 +65,7 @@ describe('Regression tests', function() {
 
       cy.get('#map_box').click();
       cy.wait('@report-ajax');
-      cy.get('[id=category_group]').select('Graffiti');
+      cy.pickCategory('Graffiti');
       cy.contains(/These will be sent to Northampton Borough Council and also/);
 
       cy.get('#map_box').click(200, 200);
@@ -79,7 +79,7 @@ describe('Regression tests', function() {
       cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6&js=1');
       cy.get('#map_box').click();
       cy.wait('@report-ajax');
-      cy.get('[id=category_group]').select('Licensing');
+      cy.pickCategory('Licensing');
       cy.get('.js-reporting-page--next:visible').click();
       cy.get('[id=subcategory_Licensing]').select('Skips');
       cy.get('.js-reporting-page--next:visible').click();

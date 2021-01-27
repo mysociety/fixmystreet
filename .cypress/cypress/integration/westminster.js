@@ -15,19 +15,19 @@ describe('Westminster cobrand', function() {
   });
 
   it('checks asset fetching when extra question answered', function() {
-    cy.get('select').eq(1).select('Signs and bollards');
+    cy.pickCategory('Signs and bollards');
     cy.get('#form_USRN').should('have.value', 'USRN123');
     cy.get('.js-reporting-page--next:visible').click();
-    cy.get('select').eq(2).select('Nameplates');
+    cy.pickSubcategory('Nameplates', '#form_featuretypecode');
     cy.wait('@nameplates');
     cy.get('.js-reporting-page--next:visible').click();
     cy.get('.mobile-map-banner').should('be.visible');
   });
 
   it('checks UPRN fetching', function() {
-    cy.get('select').eq(1).select('Damaged, dirty, or missing bin');
+    cy.pickCategory('Damaged, dirty, or missing bin');
     cy.get('.js-reporting-page--next:visible').click();
-    cy.get('select').eq(2).select('Request new bin');
+    cy.pickSubcategory('Request new bin', '#form_bin_type');
     cy.wait('@uprn');
     cy.get('.js-reporting-page--next:visible').click();
     cy.get('.mobile-map-banner').should('be.visible');
