@@ -760,7 +760,7 @@ subtest "check map click ajax response" => sub {
         ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?w=1&latitude=' . $saved_lat . '&longitude=' . $saved_lon );
     };
     # this order seems to be random so check individually/sort
     like $extra_details->{councils_text}, qr/Cheltenham Borough Council/, 'correct council text for two tier';

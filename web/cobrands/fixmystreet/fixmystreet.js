@@ -1434,6 +1434,7 @@ function re_select(group, category) {
 
 fixmystreet.fetch_reporting_data = function() {
     $.getJSON('/report/new/ajax', {
+        w: 1,
         latitude: $('#fixmystreet\\.latitude').val(),
         longitude: $('#fixmystreet\\.longitude').val()
     }, function(data) {

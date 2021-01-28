@@ -188,12 +188,21 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         $c->detach('send_json_response');
     }
 
-    $c->forward('setup_categories_and_bodies', [ { mix_in => 1 } ]);
     $c->forward('setup_report_extra_fields');
+
+    # w is true if web site, not present if native app.
+    # Native app at present only handles one dropdown
+    $c->stash->{native_app} = !$c->get_param('w');
+    my $subcategories;
+    if ($c->stash->{native_app}) {
+        $c->forward('setup_categories_and_bodies');
+    } else {
+        $c->forward('setup_categories_and_bodies', [ { mix_in => 1 } ]);
+        $subcategories = $c->render_fragment( 'report/new/subcategories.html');
+    }
 
     # render templates to get the html
     my $category = $c->render_fragment( 'report/new/category.html');
-    my $subcategories = $c->render_fragment( 'report/new/subcategories.html');
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
     my $councils_text_private = $c->render_fragment( 'report/new/councils_text_private.html');
     my $top_message = $c->render_fragment('report/new/top_message.html');
@@ -232,7 +241,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         councils_text   => $councils_text,
         councils_text_private => $councils_text_private,
         category        => $category,
-        subcategories => $subcategories,
+        $subcategories ? (subcategories => $subcategories) : (),
         extra_name_info => $extra_name_info,
         titles_list     => $extra_titles_list,
         %display_names ? (display_names   => \%display_names) : (),

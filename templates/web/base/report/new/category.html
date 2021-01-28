@@ -7,20 +7,25 @@ IF category_options.size == 2;
     category = category_options.1.category;
 END
 ~%]
+[% SET category_id = native_app ? 'form_category' : 'category_group' ~%]
 [% IF category_options.size OR category_groups.size ~%]
     [% IF category;
         category_lc = category | lower;
        END; ~%]
-    <label for='category_group' id="form_category_label">
+    <label for='[% category_id %]' id="form_category_label">
         [%~ form_category_label OR loc('Category') ~%]
     </label>[% =%]
-    <select required class="validCategory form-control" name="category" id="category_group"
+    <select required class="validCategory form-control" name="category" id="[% category_id %]"
     [%~ IF c.user.from_body =%]
       [%~ prefill_report = ( c.cobrand.prefill_report_fields_for_inspector && inspector ) || c.user.has_body_permission_to('report_prefill') %]
       data-body="[% c.user.from_body.name %]" data-prefill="[% prefill_report %]"
     [%~ END ~%]
     >
 
+      [% IF native_app %]
+        [% BLOCK category_option %][% INCLUDE report/new/_category_option.html %][% END %]
+        [%~ INCLUDE 'report/new/_category_select.html' ~%]
+      [% ELSE %]
         [%~ FOREACH group_or_cat IN category_groups ~%]
           [% IF group_or_cat.name %]
             <option value="[% group_or_cat.name %]" data-subcategory="[% group_or_cat.id %]"[% ' selected' IF filter_group == group_or_cat.name %]>[% group_or_cat.name %]</option>
@@ -28,5 +33,6 @@ END
             [% INCLUDE report/new/_category_option.html cat=group_or_cat group='' %]
           [%~ END =%]
         [%~ END =%]
+      [% END %]
     </select>
 [%~ END ~%]
