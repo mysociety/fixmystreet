@@ -1,7 +1,33 @@
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
 
-<!-- Google Tag Manager -->
 <script nonce="[% csp_nonce %]">
+    !function(){var i,e,t,s=window.legal=window.legal||[];if(s.SNIPPET_VERSION="3.0.0",i="https://widgets.legalmonster.com/v1/legal.js",!s.__VERSION__)if(s.invoked)window.console&&console.info&&console.info("legal.js: The initialisation snippet is included more than once on this page, and does not need to be.");else{for(s.invoked=!0,s.methods=["cookieConsent","document","ensureConsent","handleWidget","signup","user"],s.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);return e.unshift(t),s.push(e),s}},e=0;e<s.methods.length;e++)t=s.methods[e],s[t]=s.factory(t);s.load=function(e,t){var n,o=document.createElement("script");o.setAttribute("data-legalmonster","sven"),o.type="text/javascript",o.async=!0,o.src=i,(n=document.getElementsByTagName("script")[0]).parentNode.insertBefore(o,n),s.__project=e,s.__loadOptions=t||{}},s.widget=function(e){s.__project||s.load(e.widgetPublicKey),s.handleWidget(e)}}}();
+
+    legal.widget({
+        type: "cookie",
+        widgetPublicKey: "oJi3t3NezvtFU59nHhGH4QjW",
+        brandBackgroundColor: "#1d70b8", // Button colour
+        brandTextColor: "white", // Button text colour
+        brandInteractionColor: " #003078", // Interaction colour
+    });
+</script>
+
+<script nonce="[% csp_nonce %]">
+    // Turn off CSS transform rule on "body" element to allow fixed positioning of child elements.
+    function turnOffBodyTransform() {
+        document.body.style["transform"] = "none";
+    }
+    // If the DOM is already loaded, run immediately:
+    if (/interactive|complete/.test(document.readyState)) {
+        turnOffBodyTransform();
+    // If not, add a listener and run when ready:
+    } else {
+        document.addEventListener("DOMContentLoaded", turnOffBodyTransform);
+    }
+</script>
+
+<!-- Google Tag Manager -->
+<script nonce="[% csp_nonce %]" type="text/plain" data-cookieconsent="analytics">
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=

@@ -4,3 +4,34 @@
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 [% END %]
+
+<div aria-hidden="true" role="dialog" aria-labelledby="cookiepopup_title" class="js-occlss-alert-cookiepopup occlss-alert occlss-alert--info occlss-alert--cookiepopup">
+  <div class="occlss-layout">
+    <div class="occlss-layout__col occlss-layout__col--2  occlss-alert__sign-cont">
+      <span class="occlss-icon occlss-icon--info" aria-hidden="true">
+        <svg viewBox="0 0 32 32" aria-hidden="true" class="occlss-icon__container occlss-alert__sign">
+            <path d="M19.018 15.655c.046-.093.046-.185.046-.278v-4.128a.93.93 0 00-.928-.928H9.927a.93.93 0 00-.928.928v4.128c0 .51.417.928.928.928h2.458v8.626H9.927a.93.93 0 00-.928.928v4.128c0 .51.417.928.928.928h11.595a.93.93 0 00.928-.928v-4.128a.93.93 0 00-.928-.928h-2.458l-.046-9.276zM12.617 1h4.87a.93.93 0 01.928.928v4.128a.93.93 0 01-.928.928h-4.87a.93.93 0 01-.928-.928V1.928A.93.93 0 0112.617 1z"/>
+        </svg>
+      </span>
+    </div>
+    <div class="occlss-layout__col occlss-layout__col--10 occlss-alert__cont">
+      <h2 class="occlss-alert__heading" id="cookiepopup_title">Cookies</h2>
+      <p class="occlss-alert__text occlss-u-bspace-sm">Cookies tell us which parts of our website people have visited, and help us to measure the effectiveness of our content. We store no personal details.</p>
+      <a href="javascript:;" class="occlss-button occlss-button--neutral js-occlss-alert-cookiepopup-close-decline occlss-u-bspace-xs occlss-u-tspace-sm" style="display: inline-block; margin-right: 30px;">Decline all</a>
+      <a href="javascript:;" class="occlss-button occlss-button--primary js-occlss-alert-cookiepopup-close occlss-u-bspace-xs occlss-u-tspace-sm" style="display: inline-block">Accept all</a>
+    </div>
+  </div>
+</div>
+<script nonce="[% csp_nonce %]">
+(function(){
+function setCookie(k,v){var d=new Date;d.setMilliseconds(d.getMilliseconds()+31536E6);return document.cookie=[k,"=",v,"; expires="+d.toUTCString()].join("")}
+function getCookie(k){k=("; "+document.cookie).split("; "+k+"=");if(2==k.length)return k.pop().split(";").shift()}
+
+var div = document.querySelector('.js-occlss-alert-cookiepopup');
+function h(v){div.setAttribute("aria-hidden","true");div.style.display="none";setCookie("google_stats",v)}
+
+if(!getCookie('google_stats')){div.style.display='block';div.setAttribute("aria-hidden","false")}
+document.querySelector('.js-occlss-alert-cookiepopup-close').addEventListener('click',function(){h("true")});
+document.querySelector('.js-occlss-alert-cookiepopup-close-decline').addEventListener('click',function(){h("false")});
+})();
+</script>

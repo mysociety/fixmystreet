@@ -177,7 +177,7 @@ dd, p {
 }
 
 // We want OCCLSS buttons to look like FMS buttons.
-.occlss-button--primary {
+.occlss-button {
     @include button-size();
 }
 
@@ -293,3 +293,4 @@ textarea {
 }
 
 @import "oxfordshire-footer";
+@import "oxfordshire-cookiepopup";
