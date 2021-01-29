@@ -1,12 +1,17 @@
 /* COLOURS */
 
-$westminster_black: #0d0e16;
-$westminster_blue: #1e6dc7;
+$westminster_black: #161616;
+$westminster_blue: #0b2265;
+$westminster_blue_links: #0e35ff; 
+$westminster_blue_btns: #0335ff; 
+$westminster_blue_btns_hover: #032DD9; 
 $westminster_green: #137c71;
 $westminster_pink: #c8007b;
 $westminster_navy: #0b2265;
-$westminster_yellow: #fecb00;
+$westminster_yellow: #ffd420;
 $westminster_grey: #f7f5f6;
+$westminster_dark_grey: #4d5366;
+$westminster_body_bkgd: #f3f6fa;
 
 $primary: $westminster_yellow;
 
@@ -34,6 +39,7 @@ $heading-font: $body-font;
 $meta-font: $body-font;
 
 $mappage-header-height: 4.5em;
+$header-padding: 1.5em;
 
 $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi';
 
@@ -41,3 +47,7 @@ $search-help-alignment: left;
 $search-help-background: #fff3f3;
 $search-help-margin: 0 -1em;
 $search-help-margin-desktop: 1em -1em 0 -1em;
+
+$form-border: #afb6c9;
+
+$container-max-width: 1084px;

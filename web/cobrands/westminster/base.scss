@@ -1,11 +1,23 @@
 @import "../sass/h5bp";
 @import "colours";
+@import "fonts";
+@import "buttons";
 @import "../sass/mixins";
 
 @import "../sass/base";
 
 body.frontpage {
     background-color: #fff; // instead of $westminster_grey
+}
+
+body.frontpage,
+body.mappage {
+    h1 {
+        font-size: 2.2em;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        color: $westminster_navy;
+    }
 }
 
 #site-logo {
@@ -20,7 +32,7 @@ body.frontpage {
 #site-header {
     padding-top: 13px;
     padding-bottom: 15px;
-    border-bottom: 3px solid $westminster-yellow;
+    border-bottom: 4px solid $westminster-yellow;
 }
 
 #nav-link {
@@ -33,15 +45,10 @@ body.frontpage {
 }
 
 #front-main {
-    background-color: $westminster_grey;
+    background-color: $westminster_body_bkgd;
     margin: 0;
     padding: 1em;
     text-align: inherit;
-
-    h1 {
-        font-weight: bold;
-        color: $westminster_navy;
-    }
 
     #postcodeForm {
         margin: 0;
@@ -53,32 +60,46 @@ body.frontpage {
             border: none;
             background: transparent;
             position: relative;
-            background: #fff;
-            box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
+            background: $westminster_body_bkgd;
 
             input#pc {
                 box-sizing: border-box;
                 padding: 10px 22px;
+                border: 1px solid $form-border;
+                border-radius: 4.5px;
+                background: #fff;
+
+                &:focus {
+                    box-shadow: 0 0 0 3px $westminster-yellow;
+                    outline: 0;
+                }
             }
 
             input#sub {
-                width: 0;
-                padding-left: 50px;
+                width: 40px;
+                height: 46px;
+                padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
                 overflow: hidden;
                 @include flex(0 0 auto);
-                background: transparent url(/cobrands/westminster/images/search-icon.png) no-repeat 50% 50%;
-                background-size: 25px 25px;
+                background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
+                background-size: 42px 32px;
+                position: absolute;
+                border-top-right-radius: 4.5px;
+                border-bottom-right-radius: 4.5px;
+                top: 0;
+                right: 0;
 
                 &:hover,
                 &:focus {
-                    background: transparent url(/cobrands/westminster/images/search-icon.png) no-repeat 50% 50%;
-                    background-size: 25px 25px;
-                }
-
-                &:focus {
-                    outline: 1px dotted #000;
+                    background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50%
+                        50%;
+                    background-size: 42px 32px;
                 }
             }
+        }
+        label {
+            font-size: 1.1em;
+            font-weight: 600;
         }
     }
 
@@ -90,26 +111,35 @@ body.frontpage {
 a#geolocate_link {
     padding: 0;
     margin-top: 0.5em;
+    display: inline-block !important;
+}
+
+.content {
+    color: $westminster_dark_grey;
 }
 
 #front-howto h2,
 #front-recently h2 {
-    font-weight: bold;
-    color: $westminster-navy;
+    font-weight: 600;
+    color: $westminster_blue;
+    font-size: 2.2em;
 }
 
-ol.big-numbers>li:before {
-    color: $westminster-navy;
+ol.big-numbers > li:before {
+    color: $westminster_blue;
 }
 
 #front_stats {
-    background-color: $westminster-blue;
-    color: #fff; 
+    background-color: $westminster_blue;
+    color: #fff;
 }
 
 #report-cta {
     border: 0;
-    background-color: $westminster-yellow;
+    border-radius: 4.5px;
+    background-color: $westminster_blue_links;
+    color: #fff;
+    padding: 10px 14px;
     &:hover,
     &:focus {
         color: #fff;
@@ -118,19 +148,18 @@ ol.big-numbers>li:before {
 
 .westminster-footer {
     background-color: $westminster_navy;
-    border-top: 3px solid $westminster-yellow;
     padding: 1.5em 0;
-    text-align: center;
 
     a {
         color: #fff;
     }
 }
 
-.westminster-footer-logo {
+.westminster-footer-logo__mobile {
+    margin: 1.8em 0 2em;
     a {
-        $image-width: 200px*(130/200);
-        $image-height: 49px*(130/200);
+        $image-width: 200px * (130/200);
+        $image-height: 49px * (130/200);
         display: inline-block;
         overflow: hidden;
         width: $image-width;
@@ -139,8 +168,11 @@ ol.big-numbers>li:before {
         background-size: $image-width $image-height;
         background-position: center center;
         background-repeat: no-repeat;
-        @include svg-background-image('/cobrands/westminster/images/footer-logo');
+        @include svg-background-image("/cobrands/westminster/images/footer-logo");
     }
+}
+.westminster-footer-logo__desktop {
+    display: none;
 }
 
 .westminster-site-links,
@@ -177,35 +209,38 @@ ol.big-numbers>li:before {
         width: 38px;
         padding-top: 38px;
         height: 0;
-        background-color: $westminster_grey;
-        background-size: 24px 24px;
+        background-size: 32px 32px;
         background-repeat: no-repeat;
         background-position: center center;
-        border-radius: 38px;
+        border-radius: 14px;
     }
 }
 
+.westminster-social-links__linkedin {
+    @include svg-background-image("/cobrands/westminster/images/westminster_linkedin");
+}
+
 .westminster-social-links__twitter {
-    @include svg-background-image('/cobrands/westminster/images/footer-twitter');
+    @include svg-background-image("/cobrands/westminster/images/westminster_twitter");
 }
 
 .westminster-social-links__instagram {
-    @include svg-background-image('/cobrands/westminster/images/footer-instagram');
+    @include svg-background-image("/cobrands/westminster/images/westminster_instagram");
 }
 
 .westminster-social-links__facebook {
-    @include svg-background-image('/cobrands/westminster/images/footer-facebook');
+    @include svg-background-image("/cobrands/westminster/images/westminster_facebook");
 }
 
 .westminster-tertiary-links {
-    font-size: 0.8em;
-    padding-top: 2em;
-    border-top: 1px solid $westminster_grey;
-    margin: 0 -6px;
+    padding: 2em 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
 
     li {
-        display: inline-block;
-        margin: 0.2em 6px;
+        display: block;
+        margin: 0 0 0.8em 0;
     }
 }
 
@@ -213,11 +248,46 @@ ol.big-numbers>li:before {
     display: none; // No updates
 }
 
-
 .my-account-buttons--email {
     display: none; // hide 'change email' link
 }
 
 .my-account-buttons a.change-password {
     display: none;
+}
+
+body.mappage {
+    #report-a-problem-main {
+        button.btn {
+            @include btn-primary
+        }
+    }
+    .form-section-preview {
+        button.btn {
+            @include btn-primary
+        }
+    }
+}
+
+body.authpage, body.twothirdswidthpage {
+    .form-control {
+        outline-color: $westminster_yellow;
+    }
+    #form_sign_in {
+        input.btn {
+            @include btn-medium-primary
+        }
+    }
+}
+
+body.alertpage, body.authpage, body.twothirdswidthpage {
+    .form-txt-submit-box {
+        input.green-btn, input.btn-primary {
+            @include btn-medium-primary
+        }
+    }
+
+    input.green-btn {
+        @include btn-medium-primary
+    }
 }
