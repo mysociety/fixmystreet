@@ -11,7 +11,7 @@ it('allows bus stop clicking outside London', function() {
     cy.pickCategory('Bus Stops and Shelters');
     cy.wait('@tfl-bus-stops');
     cy.get('.js-reporting-page--active .js-reporting-page--next').click();
-    cy.get('.js-subcategory').select('Incorrect timetable');
+    cy.get('.js-subcategory label').contains('Incorrect timetable').click();
 
     // Also check a category not on a red route
     cy.go('back');

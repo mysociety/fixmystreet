@@ -146,7 +146,7 @@ foreach my $test (
             password_register => '',
         },
         changes => {
-            category => '',
+            category => undef,
         },
         errors  => [
             'Please enter a subject',

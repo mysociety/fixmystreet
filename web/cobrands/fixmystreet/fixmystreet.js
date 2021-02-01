@@ -424,7 +424,7 @@ $.extend(fixmystreet.set_up, {
         errorElement: 'div',
         errorClass: 'form-error',
         errorPlacement: function( error, element ) {
-            if (element.parent().hasClass('segmented-control')) {
+            if (element.attr('type') == 'radio') {
                 element.parent().before( error );
             } else {
                 element.before( error );
@@ -529,21 +529,8 @@ $.extend(fixmystreet.set_up, {
         }
     }
 
-    // On the new report form, does this by asking for details from the server.
-    // Delegation is necessary because category/subcategory may be replaced during the lifetime of the page
-    var category_changed = function() {
-	// If we haven't got any reporting data (e.g. came straight to
-	// /report/new), fetch it first. That will then automatically call this
-	// function again, due to it calling change() on the category if set.
-        if (!fixmystreet.reporting_data) {
-            if (fixmystreet.page === 'new') {
-                fixmystreet.fetch_reporting_data();
-            }
-            return;
-        }
-
-        var category = $(this).val(),
-            data = fixmystreet.reporting_data.by_category[category] || {},
+    var category_changed = function(category) {
+        var data = fixmystreet.reporting_data.by_category[category] || {},
             $category_meta = $('#category_meta');
 
         if (!$.isEmptyObject(data)) {
@@ -622,26 +609,47 @@ $.extend(fixmystreet.set_up, {
 
         $(fixmystreet).trigger('report_new:category_change');
     };
+    fixmystreet.reporting.topLevelPoke = function() {
+        var checked = $("#form_category_fieldset input:checked");
+        if (checked.length) {
+            checked.trigger('change');
+        } else {
+            var $subcategory_page = $('.js-reporting-page--subcategory');
+            $subcategory_page.addClass('js-reporting-page--skip');
+            category_changed('');
+        }
+    };
 
-    $("#problem_form").on("change.category", "[name^=category.]", category_changed);
+    // Delegation is necessary because category/subcategory may be replaced during the lifetime of the page
+    $("#problem_form").on("change.category", "[name^=category.]", function() {
+        category_changed($(this).val());
+    });
     $("#problem_form").on("change.category", "[name=category]", function(e, no_event){
         // First we need to check if we are picking a group or a category
         var $subcategory_page = $('.js-reporting-page--subcategory');
-        var $subcategory_label = $subcategory_page.find('label');
-        var subcategory_id = $(this).find(":selected").data("subcategory");
+        var subcategory_id = $(this).data("subcategory");
         $(".js-subcategory").addClass('hidden-js');
+        var $input;
         if (subcategory_id === undefined) {
             $subcategory_page.addClass('js-reporting-page--skip');
-            category_changed.apply(this);
+            $input = $(this);
         } else {
             $subcategory_page.removeClass('js-reporting-page--skip');
-            $("#subcategory_" + subcategory_id).removeClass('hidden-js');
-            if (!no_event) {
-                $("#subcategory_" + subcategory_id).change();
-            }
-            $subcategory_label.attr('for', 'subcategory_' + subcategory_id);
+            var $subcategory = $("#subcategory_" + subcategory_id);
+            $subcategory.removeClass('hidden-js');
+            $input = $subcategory.find('input:checked');
+        }
+        if (!no_event) {
+            category_changed($input.val());
         }
     });
+
+    // If we haven't got any reporting data (e.g. came straight to
+    // /report/new), fetch it first. That will then automatically call this
+    // function again, due to it calling change() on the category if set.
+    if (!fixmystreet.reporting_data && fixmystreet.page === 'new') {
+        fixmystreet.fetch_reporting_data();
+    }
   },
 
   reapply_validation: function(rules) {
@@ -659,11 +667,6 @@ $.extend(fixmystreet.set_up, {
                 }
             }
         });
-  },
-
-  category_groups: function() {
-    var $group_select = $("#category_group");
-    $group_select.change();
   },
 
   hide_name: function() {
@@ -1420,18 +1423,20 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
 
 function re_select(group, category) {
     var group_id = group.replace(/[^a-z]+/gi, '');
-    var cat_in_group = $("#subcategory_" + group_id + " option[value=\"" + category + "\"]");
+    var cat_in_group = $("#subcategory_" + group_id + " input[value=\"" + category + "\"]");
     if (cat_in_group.length) {
-        $('#category_group').val(group);
-        cat_in_group.prop({selected:true});
+        $('#form_category_fieldset input[value="' + group + '"]')[0].checked = true;
+        cat_in_group[0].checked = true;
     } else {
         var top_level = group || category;
-        if (top_level && $("#category_group option[value=\"" + top_level + "\"]").length) {
-            $("#category_group").val(top_level);
+        var top_level_match = $("#form_category_fieldset input[value=\"" + top_level + "\"]");
+        if (top_level && top_level_match.length) {
+            top_level_match[0].checked = true;
         }
     }
 }
 
+// On the new report form, does this by asking for details from the server.
 fixmystreet.fetch_reporting_data = function() {
     $.getJSON('/report/new/ajax', {
         w: 1,
@@ -1489,7 +1494,7 @@ fixmystreet.fetch_reporting_data = function() {
         $('#form_category_row').html(data.category);
         $('#form_subcategory_row').html(data.subcategories);
         re_select(old_category_group, old_category);
-        fixmystreet.set_up.category_groups();
+        fixmystreet.reporting.topLevelPoke();
 
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
@@ -1523,13 +1528,13 @@ fixmystreet.fetch_reporting_data = function() {
 
 fixmystreet.reporting = {};
 fixmystreet.reporting.selectedCategory = function() {
-    var group_or_cat = $('#category_group').val() || '',
+    var group_or_cat = $('#form_category_fieldset input:checked').val() || '',
         group_id = group_or_cat.replace(/[^a-z]+/gi, ''),
         $subcategory = $("#subcategory_" + group_id),
         category,
         group;
     if ($subcategory.length) {
-        category = $subcategory.val();
+        category = $subcategory.find('input:checked').val() || '';
         group = group_or_cat;
     } else {
         category = group_or_cat;

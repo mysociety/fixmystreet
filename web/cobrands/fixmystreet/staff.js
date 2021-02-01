@@ -440,7 +440,7 @@ $(fixmystreet).on('display:report', function() {
 });
 
 $(fixmystreet).on('report_new:category_change', function() {
-    var $this = $('#category_group');
+    var $this = $('#form_category_fieldset');
     var category = fixmystreet.reporting.selectedCategory().category;
     if (!category) { return; }
     var prefill_reports = $this.data('prefill');

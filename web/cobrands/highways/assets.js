@@ -87,17 +87,19 @@ fixmystreet.assets.add(defaults, {
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
+    var he_input = $('#form_category_fieldset input[value*="Highways England"]');
     if (he_flag) {
-        $('#category_group').val('Highways England').trigger('change', [ 'no_event' ]);
+        he_input.prop('checked', true).trigger('change', [ 'no_event' ]);
         $('.js-reporting-page--category').addClass('js-reporting-page--skip');
     } else {
         $('.js-reporting-page--category').removeClass('js-reporting-page--skip');
-        var old_category = $('#category_group').val();
-        if (old_category == 'Highways England') {
-            $("#category_group")[0].selectedIndex = 0;
+        var old_category = $('#form_category_fieldset input:checked');
+        if (old_category.val() == 'Highways England') {
+            old_category[0].checked = false;
         }
-        $('#category_group option[value*="Highways England"]').hide();
+        he_input.parent('div').hide();
     }
+    $('.js-reporting-page--next').prop('disabled', false);
 }
 
 function he_selected() {
@@ -146,7 +148,7 @@ function add_highways_warning(road_name) {
     $radios.appendTo($warning);
     $warning.wrap($page);
     $page = $warning.parent();
-    $page.append('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
+    $page.append('<button type="button" class="btn btn--block js-reporting-page--next" disabled>Continue</button>');
 
     $('.js-reporting-page').first().before($page);
     $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');

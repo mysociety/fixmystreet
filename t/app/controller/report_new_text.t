@@ -369,7 +369,7 @@ subtest "test report creation for a user who is logged in" => sub {
                 photo1 => '',
                 photo2 => '',
                 photo3 => '',
-                category => '',
+                category => undef,
             },
             "user's details prefilled"
         );

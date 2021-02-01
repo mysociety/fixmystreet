@@ -805,15 +805,16 @@ sub setup_categories_and_bodies : Private {
     }
 
     if (@category_options) {
+        if (!$opts->{mix_in}) {
+            my $pick = $c->model('DB::Contact')->new({
+                category => "",
+                # So the translation code isn't called
+                extra => { display_name => _('-- Pick a category --') },
+            });
+            unshift @category_options, $pick;
+        }
         # If there's an Other category present, put it at the bottom
-        my $pick = $c->model('DB::Contact')->new({
-            category => "",
-            # So the translation code isn't called
-            extra => { display_name => _('-- Pick a category --') },
-        });
-        @category_options = (
-            $pick,
-            grep { $_->category ne _('Other') } @category_options );
+        @category_options = ( grep { $_->category ne _('Other') } @category_options );
         push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }
 

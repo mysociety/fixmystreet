@@ -1,12 +1,14 @@
 <div id="form_category_row">
 [% IF js %]
-    <label for="category_group">[% form_category_label OR loc('Category') %]</label>
-    <select class="validCategory form-control" name="category" id="category_group"
+    <fieldset id="form_category_fieldset"
     [%~ IF c.user.from_body =%]
-      [%~ prefill_report = c.cobrand.prefill_report_fields_for_inspector || c.user.has_body_permission_to('report_prefill') %]
+      [%~ prefill_report = ( c.cobrand.prefill_report_fields_for_inspector && inspector ) || c.user.has_body_permission_to('report_prefill') %]
       data-body="[% c.user.from_body.name %]" data-prefill="[% prefill_report %]"
-    [%~ END =%]
-    required><option value="">[% loc('Loading...') %]</option></select>
+    [%~ END ~%]
+    >
+        <legend id="form_category_legend">[%~ form_category_label OR loc('Category') ~%]</legend>
+        [% loc('Loading...') %]
+    </fieldset>
 [% ELSE %]
     [% IF category_options.size %]
         [% IF field_errors.category %]

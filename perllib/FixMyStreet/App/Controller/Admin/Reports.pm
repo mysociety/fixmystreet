@@ -476,9 +476,6 @@ sub categories_for_point : Private {
     $c->stash->{categories_for_point} = 1;
     $c->forward('/report/new/setup_categories_and_bodies', []);
 
-    # Remove the "Pick a category" option
-    shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
-
     $c->stash->{categories_hash} = { map { $_->category => 1 } @{$c->stash->{category_options}} };
 
     $c->forward('/admin/triage/setup_categories');

@@ -1268,7 +1268,7 @@ fixmystreet.message_controller = (function() {
     }
 
     function is_matching_stopper(stopper, i) {
-        var body = $('#category_group').data('body');
+        var body = $('#form_category_fieldset').data('body');
 
         if (OpenLayers.Util.indexOf(ignored_bodies, body) > -1) {
             return false;

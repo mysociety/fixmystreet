@@ -23,14 +23,14 @@ describe('Highways England tests', function() {
         cy.get('#js-councils_text').should('contain', 'Borsetshire');
         cy.get('#single_body_only').should('have.value', '');
         cy.nextPageReporting();
-        cy.get('#category_group').should('be.visible');
-        cy.get('#category_group option[value="Highways England"]').should('not.be.visible');
+        cy.get('#form_category_fieldset').should('be.visible');
+        cy.get('#form_category_fieldset input[value="Highways England"]').should('not.be.visible');
         cy.go('back');
 
         cy.get('#js-highways').click({ force: true });
         cy.get('#js-councils_text').should('contain', 'Highways England');
         cy.get('#single_body_only').should('have.value', 'Highways England');
         cy.nextPageReporting();
-        cy.get('#subcategory_HighwaysEngland').select('Sign issue');
+        cy.get('#subcategory_HighwaysEngland label').contains('Sign issue').click();
     });
 });

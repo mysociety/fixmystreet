@@ -1,11 +1,17 @@
 [% IF category; category_lc = category | lower; END ~%]
 [%~ FOREACH group IN category_groups ~%]
-    [% IF group.name %]
-    <select class="required hidden-js[% ' hidden-nojs' UNLESS filter_group == group.name %] form-control js-subcategory validCategory" name="category.[% group.id %]" id="subcategory_[% group.id %]">
-        <option value="">[% loc('-- Pick a category --') %]</option>
-    [%~ FOREACH cat IN group.categories ~%]
-        [% INCLUDE report/new/_category_option.html %]
-    [%~ END ~%]
-    </select>
-    [% END %]
+  [% IF group.name %]
+    <fieldset class="govuk-radios govuk-radios--small hidden-js[% ' hidden-nojs' UNLESS filter_group == group.name %] js-subcategory" id="subcategory_[% group.id %]">
+        <legend>[% group.name %]: [% loc('Subcategory') %]</legend>
+      [%~ FOREACH cat IN group.categories ~%]
+        [% cat_lc = cat.category | lower =%]
+        <div class="govuk-radios__item">
+        <input class="required govuk-radios__input" id="subcategory_[% cat.id %]" type="radio" name="category.[% group.id %]" value='[% cat.category %]'[% ' checked' IF ( report.category == cat.category || category_lc == cat_lc ) AND ( NOT filter_group OR filter_group == group.name ) ~%]>
+        <label class="govuk-label govuk-radios__label" for="subcategory_[% cat.id %]">[% cat.category_display %]
+            [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
+        </label>
+        </div>
+      [%~ END ~%]
+    </fieldset>
+  [% END %]
 [%~ END =%]
