@@ -136,6 +136,9 @@ sub munge_report_new_contacts {
     if ( $bodies{'Bromley Council'} ) {
         @$contacts = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$contacts;
     }
+    if ( $bodies{'Hackney Council'} ) {
+        @$contacts = grep { $_->category ne 'Noise report' } @$contacts;
+    }
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });

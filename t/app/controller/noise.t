@@ -30,6 +30,19 @@ $geo->mock('string', sub {
     return $ret;
 });
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['fixmystreet', 'hackney'],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'Check category not displayed in normal flow' => sub {
+        $mech->host('www.fixmystreet.com');
+        $mech->get_ok('/report/new?latitude=51.552267&longitude=-0.063316');
+        $mech->content_lacks('Noise report');
+        $mech->host('hackney.gov.uk');
+        $mech->get_ok('/report/new?latitude=51.552267&longitude=-0.063316');
+        $mech->content_lacks('Noise report');
+    };
+};
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'hackney',

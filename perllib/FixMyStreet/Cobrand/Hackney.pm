@@ -238,6 +238,12 @@ sub get_body_sender {
     return $self->SUPER::get_body_sender($body, $problem);
 }
 
+sub munge_report_new_contacts {
+    my ($self, $contacts) = @_;
+    @$contacts = grep { $_->category ne 'Noise report' } @$contacts;
+    $self->SUPER::munge_report_new_contacts($contacts);
+}
+
 # Translate email address to actual delivery address
 sub noise_destination_email {
     my ($self, $row, $name) = @_;
