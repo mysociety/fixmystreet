@@ -1,3 +1,9 @@
+package FixMyStreet::Cobrand::Birmingham;
+use parent 'FixMyStreet::Cobrand::UKCouncils';
+sub council_area_id { 2514 }
+sub cut_off_date { DateTime->now->subtract(days => 30)->strftime('%Y-%m-%d') }
+
+package main;
 use utf8;
 use FixMyStreet::Script::UpdateAllReports;
 
@@ -29,8 +35,10 @@ END { FixMyStreet::App->log->enable('info'); }
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     TEST_DASHBOARD_DATA => $data,
-    ALLOWED_COBRANDS => 'fixmystreet',
+    ALLOWED_COBRANDS => [ 'fixmystreet', 'birmingham' ],
 }, sub {
+    ok $mech->host('www.fixmystreet.com');
+
     subtest 'check marketing dashboard access' => sub {
         # Not logged in, redirected
         $mech->get_ok('/reports/Birmingham/summary');
@@ -108,6 +116,46 @@ FixMyStreet::override_config {
         $mech->log_out_ok();
         $mech->get_ok('/reports');
         $mech->content_lacks('Where we send Birmingham');
+    };
+
+    subtest 'check average fix time respects cobrand cut-off date' => sub {
+        $mech->log_in_ok('someone@birmingham.gov.uk');
+        my $user = FixMyStreet::DB->resultset('User')->find_or_create({ email => 'counciluser@example.org' });
+
+        # A report created 100 days ago (ie before the cobrand's cut-off), just fixed.
+        my ($report1) = $mech->create_problems_for_body(2, $body->id, 'Title', {
+            confirmed => DateTime->now->subtract(days => 100),
+        });
+        $report1->comments->create({
+            user      => $user,
+            name      => 'A User',
+            anonymous => 'f',
+            text      => 'fixed the problem',
+            state     => 'confirmed',
+            mark_fixed => 1,
+            confirmed => DateTime->now,
+        });
+
+        # Another report, created 10 days ago, that was just fixed.
+        my ($report2) = $mech->create_problems_for_body(2, $body->id, 'Title', {
+            confirmed => DateTime->now->subtract(days => 10),
+        });
+        $report2->comments->create({
+            user      => $user,
+            name      => 'A User',
+            anonymous => 'f',
+            text      => 'fixed the problem',
+            state     => 'confirmed',
+            mark_fixed => 1,
+            confirmed => DateTime->now,
+        });
+
+        $mech->get_ok('/about/council-dashboard');
+        $mech->content_contains('How responsive is Birmingham?');
+        # Average of 55 days means the older problem was included in the calculation.
+        $mech->content_lacks('<td>Birmingham</td><td>55 days</td></tr>');
+        # 10 days means the older problem was ignored.
+        $mech->content_contains('<td>Birmingham</td><td>10 days</td></tr>');
     };
 };
 
