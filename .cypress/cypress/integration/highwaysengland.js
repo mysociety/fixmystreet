@@ -24,6 +24,6 @@ describe('Highways England cobrand tests', function() {
         cy.get('#map_box').click(240, 249);
         cy.wait('@report-ajax');
         cy.pickCategory('Fallen sign');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
     });
 });

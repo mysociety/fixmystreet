@@ -13,11 +13,11 @@ describe('Clicking the map', function() {
         cy.get('#map_box').click(200, 200);
         cy.wait('@report-ajax');
         cy.pickCategory('Flyposting');
-        cy.get('.js-reporting-page--next:visible').click();
-        cy.get('.js-reporting-page--next:visible').click(); // No photo
+        cy.nextPageReporting();
+        cy.nextPageReporting(); // No photo
         cy.get('[name=title]').type('Title');
         cy.get('[name=detail]').type('Detail');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
         cy.get('.js-new-report-show-sign-in').should('be.visible').click();
         cy.get('#form_username_sign_in').type('user@example.org');
         cy.get('[name=password_sign_in]').type('password');

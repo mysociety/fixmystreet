@@ -44,11 +44,11 @@ describe('Basic categories', function() {
         });
         cy.get('#subcategory_Bins').should('not.be.visible');
         cy.pickCategory('Bins');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
         cy.get('#subcategory_Bins').should('be.visible');
         cy.go('back');
         cy.pickCategory('Graffiti');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
         cy.get('#subcategory_Bins').should('not.be.visible');
     });
 
@@ -63,7 +63,7 @@ describe('Basic categories', function() {
         cy.get('#subcategory_Bins').should('not.be.visible');
         cy.wait('@report-ajax');
         cy.pickCategory('Bins');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
         cy.get('#subcategory_Bins').should('be.visible');
     });
 });

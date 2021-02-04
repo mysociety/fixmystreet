@@ -13,19 +13,19 @@ describe('When you look at the Island Roads site', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
     cy.pickCategory('Potholes');
-    cy.get('.js-reporting-page--next:visible').click();
-    cy.get('.js-reporting-page--next:visible').click(); // Photos
+    cy.nextPageReporting();
+    cy.nextPageReporting(); // Photos
     cy.contains('sent to Island Roads').should('be.visible');
     cy.go('back');
     cy.go('back');
     cy.pickCategory('Private');
-    cy.get('.js-reporting-page--next:visible').click();
-    cy.get('.js-reporting-page--next:visible').click(); // Photos
+    cy.nextPageReporting();
+    cy.nextPageReporting(); // Photos
     cy.contains('sent to Island Roads').should('be.visible');
     cy.go('back');
     cy.go('back');
     cy.pickCategory('Extra');
-    cy.get('.js-reporting-page--next:visible').click();
+    cy.nextPageReporting();
     cy.contains('Help Island Roads').should('be.visible');
   });
 
@@ -37,7 +37,7 @@ describe('When you look at the Island Roads site', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
     cy.pickCategory('Potholes');
-    cy.get('.js-reporting-page--next:visible').click();
+    cy.nextPageReporting();
     cy.wait('@roadworks');
     cy.contains('Roadworks are scheduled near this location').should('be.visible');
     cy.contains('Parapet improvement').should('be.visible');

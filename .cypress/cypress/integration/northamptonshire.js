@@ -42,7 +42,7 @@ it('prevents clicking unless asset selected, mobile flow', function() {
   cy.wait('@bus_stops-layer');
   cy.wait('@empty-bus_stops-layer');
   cy.contains(/Please select a.*bus stop.*from the map/).should('not.be.visible');
-  cy.get('.js-reporting-page--next:visible').click();
+  cy.nextPageReporting();
   cy.get('.mobile-map-banner').should('be.visible');
   cy.contains(/Please select a.*bus stop.*from the map/).should('be.visible');
   cy.get('#mob_ok').should('not.be.visible');
@@ -67,10 +67,10 @@ it('selecting an asset allows a report, mobile flow', function() {
   cy.wait('@bus_stops-layer');
   cy.wait('@empty-bus_stops-layer');
   cy.contains(/Please select a.*bus stop.*from the map/).should('not.be.visible');
-  cy.get('.js-reporting-page--next:visible').click();
+  cy.nextPageReporting();
   cy.get('.mobile-map-banner').should('be.visible');
   cy.get('#mob_ok').click();
-  cy.get('.js-reporting-page--next:visible').click(); // No photo
+  cy.nextPageReporting(); // No photo
   cy.get('#js-councils_text').should('be.visible');
 });
 
@@ -91,8 +91,8 @@ it('selecting an asset allows a report, desktop flow', function() {
   cy.wait('@bus_stops-layer');
   cy.wait('@empty-bus_stops-layer');
 
-  cy.get('.js-reporting-page--next:visible').click();
-  cy.get('.js-reporting-page--next:visible').click(); // No photo
+  cy.nextPageReporting();
+  cy.nextPageReporting(); // No photo
   cy.get('#js-councils_text').should('be.visible');
 });
 
@@ -114,7 +114,7 @@ it('detects multiple assets at same location', function() {
   cy.wait('@bus_stops-layer');
   cy.wait('@bus_stops-layer2');
   cy.wait('@empty-bus_stops-layer');
-  cy.get('.js-reporting-page--next:visible').click();
+  cy.nextPageReporting();
 
   cy.contains('more than one bus stop at this location').should('be.visible');
 });

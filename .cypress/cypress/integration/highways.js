@@ -15,14 +15,14 @@ describe('Highways England tests', function() {
         cy.get('#highways').should('contain', 'M6');
         cy.get('#js-councils_text').should('contain', 'Highways England');
         cy.get('#single_body_only').should('have.value', 'Highways England');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
         cy.get('#subcategory_HighwaysEngland').should('be.visible');
         cy.go('back');
 
         cy.get('#js-not-highways').click();
         cy.get('#js-councils_text').should('contain', 'Borsetshire');
         cy.get('#single_body_only').should('have.value', '');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
         cy.get('#category_group').should('be.visible');
         cy.get('#category_group option[value="Highways England"]').should('not.be.visible');
         cy.go('back');
@@ -30,7 +30,7 @@ describe('Highways England tests', function() {
         cy.get('#js-highways').click({ force: true });
         cy.get('#js-councils_text').should('contain', 'Highways England');
         cy.get('#single_body_only').should('have.value', 'Highways England');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.nextPageReporting();
         cy.get('#subcategory_HighwaysEngland').select('Sign issue');
     });
 });

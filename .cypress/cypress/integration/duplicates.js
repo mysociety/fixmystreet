@@ -12,7 +12,7 @@ describe('Duplicate tests', function() {
       cy.contains('Report another problem here').click();
       cy.wait('@report-ajax');
       cy.pickCategory('Potholes');
-      cy.get('.js-reporting-page--next:visible').click();
+      cy.nextPageReporting();
       cy.get('div.dropzone').should('be.visible');
     });
 
@@ -25,10 +25,10 @@ describe('Duplicate tests', function() {
       cy.contains('Report another problem here').click();
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
-      cy.get('.js-reporting-page--next:visible').click();
+      cy.nextPageReporting();
       cy.get('[id=subcategory_Licensing]').select('Skips');
       cy.wait('@nearby-ajax');
-      cy.get('.js-reporting-page--next:visible').click();
+      cy.nextPageReporting();
       cy.contains('Already been reported?');
       cy.get('.extra-category-questions').should('not.be.visible');
       cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-hide');
@@ -43,13 +43,13 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Potholes');
       cy.wait('@nearby-ajax');
-      cy.get('.js-reporting-page--next:visible').click();
+      cy.nextPageReporting();
       cy.contains('Already been reported?');
-      cy.get('.js-reporting-page--next:visible').click(); // Go past duplicates
-      cy.get('.js-reporting-page--next:visible').click(); // No photo
+      cy.nextPageReporting(); // Go past duplicates
+      cy.nextPageReporting(); // No photo
       cy.get('[name=title]').type('Title');
       cy.get('[name=detail]').type('Detail');
-      cy.get('.js-reporting-page--next:visible').click();
+      cy.nextPageReporting();
       cy.get('.js-new-report-show-sign-in').should('be.visible').click();
       cy.get('#form_username_sign_in').type('user@example.org');
       cy.get('[name=password_sign_in]').type('password');
@@ -95,13 +95,13 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Flytipping');
       cy.wait('@nearby-ajax');
-      cy.get('.js-reporting-page--next:visible').click();
+      cy.nextPageReporting();
       cy.get('.extra-category-questions').should('not.be.visible');
-      cy.get('.js-reporting-page--next:visible').click(); // Go past duplicates
+      cy.nextPageReporting(); // Go past duplicates
       cy.get('.extra-category-questions').should('be.visible');
       cy.get('[id=form_hazardous]').select('No');
       cy.get('.extra-category-questions').should('be.visible');
-      cy.get('.js-reporting-page--next:visible').click();
+      cy.nextPageReporting();
       cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-stopper'); // Server-side setup
     });
 
