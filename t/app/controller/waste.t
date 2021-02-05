@@ -291,4 +291,38 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    COBRAND_FEATURES => {
+        echo => { bromley => { url => 'http://example.org' } },
+        waste => { bromley => 1 },
+        payment_gateway => { bromley => { cc_url => 'http://example.com' } },
+    },
+}, sub {
+    my $pay = Test::MockModule->new('Integrations::SCP');
+    $pay->mock(pay => sub {
+        return {
+            transactionState => 'COMPLETE',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectURL => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+            }
+        };
+    });
+
+    subtest 'check payment gateway' => sub {
+        $mech->get_ok('/waste/pay');
+        is $mech->res->previous->code, 302, 'payments issues a redirect';
+        is $mech->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+    }
+};
+
 done_testing;
