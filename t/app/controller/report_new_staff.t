@@ -143,7 +143,7 @@ subtest "check map click ajax response for inspector" => sub {
         ALLOWED_COBRANDS => 'fixmystreet',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579&w=1' );
     };
     like $extra_details->{category}, qr/data-prefill="0/, 'inspector prefill not set';
     ok !$extra_details->{contribute_as}, 'no contribute as section';
@@ -167,7 +167,7 @@ subtest "check map click ajax response for inspector and uk cobrand" => sub {
         ALLOWED_COBRANDS => 'bromley',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.402096&longitude=0.015784' );
+        $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.402096&longitude=0.015784&w=1' );
     };
     like $extra_details->{category}, qr/data-prefill="0/, 'inspector prefill not set';
 };

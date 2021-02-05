@@ -87,28 +87,19 @@ fixmystreet.assets.add(defaults, {
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
-    var old_category = $("#form_category").val();
-
-    // Restart the category dropdown from the original data (not all of it as
-    // we keep subcategories the same)
-    var select = $(fixmystreet.reporting_data.category).filter('select');
+    var he_input = $('#form_category_fieldset input[value*="Highways England"]');
     if (he_flag) {
-        var select1 = select.find('> option:first-child')[0].outerHTML;
-        var select2 = select.find('optgroup[label*="Highways England"]').html();
-        $('#form_category').html(select1 + select2);
+        he_input.prop('checked', true).trigger('change', [ 'no_event' ]);
+        $('.js-reporting-page--category').addClass('js-reporting-page--skip');
     } else {
-        select.find('optgroup[label*="Highways England"]').remove();
-        select = select.html();
-        $('#form_category').html(select);
+        $('.js-reporting-page--category').removeClass('js-reporting-page--skip');
+        var old_category = $('#form_category_fieldset input:checked');
+        if (old_category.val() == 'Highways England') {
+            old_category[0].checked = false;
+        }
+        he_input.parent('div').hide();
     }
-    if ($("#form_category option[value=\"" + old_category + "\"]").length) {
-        $("#form_category").val(old_category);
-    }
-
-    // Recalculate the category groups
-    var old_category_group = $('#category_group').val() || $('#filter_group').val();
-    $('#category_group').remove();
-    fixmystreet.set_up.category_groups(old_category_group, true);
+    $('.js-reporting-page--next').prop('disabled', false);
 }
 
 function he_selected() {
@@ -157,7 +148,7 @@ function add_highways_warning(road_name) {
     $radios.appendTo($warning);
     $warning.wrap($page);
     $page = $warning.parent();
-    $page.append('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
+    $page.append('<button type="button" class="btn btn--block js-reporting-page--next" disabled>Continue</button>');
 
     $('.js-reporting-page').first().before($page);
     $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');

@@ -7,7 +7,6 @@ describe('Basic categories', function() {
     });
 
     var categories = [
-        '-- Pick a category --',
         'Abandoned vehicles',
         'Bins',
         'Bus stops',
@@ -38,17 +37,17 @@ describe('Basic categories', function() {
         cy.url().should('include', '/around');
         cy.get('#map_box').click(240, 249);
         cy.wait('@report-ajax');
-        cy.get('[name=category]').should('not.be.visible');
-        cy.get('select:eq(3) option').each(function (obj, i) {
+        cy.get('[name=category]').should('be.visible');
+        cy.get('#form_category_fieldset input').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
         cy.get('#subcategory_Bins').should('not.be.visible');
-        cy.get('select:eq(3)').select('Bins');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.pickCategory('Bins');
+        cy.nextPageReporting();
         cy.get('#subcategory_Bins').should('be.visible');
         cy.go('back');
-        cy.get('select:eq(3)').select('Graffiti');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.pickCategory('Graffiti');
+        cy.nextPageReporting();
         cy.get('#subcategory_Bins').should('not.be.visible');
     });
 
@@ -56,14 +55,14 @@ describe('Basic categories', function() {
         cy.server();
         cy.route('/report/new/ajax*').as('report-ajax');
         cy.visit('/report/new?latitude=51.496194&longitude=-2.603439');
-        cy.get('[name=category]').should('not.be.visible');
-        cy.get('select:eq(1) option').each(function (obj, i) {
+        cy.get('[name=category]').should('be.visible');
+        cy.get('#form_category_fieldset input').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
         cy.get('#subcategory_Bins').should('not.be.visible');
         cy.wait('@report-ajax');
-        cy.get('select:eq(1)').select('Bins');
-        cy.get('.js-reporting-page--next:visible').click();
+        cy.pickCategory('Bins');
+        cy.nextPageReporting();
         cy.get('#subcategory_Bins').should('be.visible');
     });
 });

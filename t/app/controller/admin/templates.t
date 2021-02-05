@@ -292,12 +292,17 @@ subtest "category groups are shown" => sub {
         $mech->log_in_ok( $superuser->email );
 
         $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
-        $mech->content_contains("No Group") or diag $mech->content;
+        $mech->content_lacks("No Group");
         $mech->content_lacks("Multiple Groups");
         $mech->content_lacks("These categories appear in more than one group:");
 
         $oxfordshirecontact->set_extra_metadata( group => [ 'Highways' ] );
         $oxfordshirecontact->update;
+        $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+        $mech->content_contains("No Group");
+        $mech->content_lacks("Multiple Groups");
+        $mech->content_lacks("These categories appear in more than one group:");
+
         $oxfordshirecontact2->set_extra_metadata( group => [ 'Street Cleaning' ] );
         $oxfordshirecontact2->update;
         $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );

@@ -23,7 +23,7 @@ describe('Highways England cobrand tests', function() {
     it('allows reporting on other HE roads', function() {
         cy.get('#map_box').click(240, 249);
         cy.wait('@report-ajax');
-        cy.get('#category_group').select('Fallen sign');
-        cy.get('#form_category').should('have.value', 'Fallen sign');
+        cy.pickCategory('Fallen sign');
+        cy.nextPageReporting();
     });
 });

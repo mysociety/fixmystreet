@@ -21,8 +21,13 @@
         [% ' disabled' IF disable_form_message %]>[% loc('Continue') %]</button>
 </div>
 
-<div data-page-name="subcategory" class="js-reporting-page js-reporting-page--subcategory js-reporting-page--skip hidden-nojs">
-    <label id="form_subcategory_label">[% loc('Subcategory') %]</label>
+<div data-page-name="subcategory" class="js-reporting-page js-reporting-page--subcategory js-reporting-page--skip[% ' hidden-nojs' UNLESS filter_group %]">
+    <div id="form_subcategory_row">
+      [% IF NOT js %]
+        [% PROCESS report/new/subcategories.html %]
+      [% END %]
+    </div>
+
     <div class="js-post-category-messages"></div>
     <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
 </div>

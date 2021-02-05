@@ -2867,3 +2867,6 @@ $emergency-message-border: 1px solid #525252 !default;
 @import "_dashboard";
 @import "_top-banner";
 @import "_search-help";
+
+$govuk-focus-colour: $primary !default;
+@import "../../vendor/govuk-frontend/radios";

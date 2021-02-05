@@ -135,7 +135,6 @@ FixMyStreet::override_config {
 }, sub {
     $mech->submit_form_ok( { with_fields => { body => $body_edin_id } }, 'Submitted dropdown okay' );
     is $mech->uri->path, '/reports/City+of+Edinburgh';
-    $mech->content_contains('<optgroup label="">');
 
     subtest "test ward pages" => sub {
         $mech->get_ok('/reports/Birmingham/Bad-Ward');

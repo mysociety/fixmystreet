@@ -19,23 +19,23 @@ describe('buckinghamshire cobrand', function() {
     cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.get('select:eq(4)').select('Parks');
+    cy.pickCategory('Parks');
     cy.get('[name=site_code]').should('have.value', '7300268');
-    cy.get('.js-reporting-page--next:visible').click();
+    cy.nextPageReporting();
     cy.contains('Photo').should('be.visible');
   });
 
   it('uses the label "Full name" for the name field', function() {
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.get('select:eq(4)').select('Flytipping');
+    cy.pickCategory('Flytipping');
     cy.wait('@around-ajax');
 
-    cy.get('.js-reporting-page--next:visible').click();
-    cy.get('.js-reporting-page--next:visible').click(); // No photo
+    cy.nextPageReporting();
+    cy.nextPageReporting(); // No photo
     cy.get('[name=title]').type('Title');
     cy.get('[name=detail]').type('Detail');
-    cy.get('.js-reporting-page--next:visible').click();
+    cy.nextPageReporting();
     cy.get('label[for=form_name]').should('contain', 'Full name');
   });
 
@@ -44,9 +44,9 @@ describe('buckinghamshire cobrand', function() {
     cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.get('select').eq(4).select('Snow and ice problem/winter salting');
+    cy.pickCategory('Snow and ice problem/winter salting');
     cy.wait('@winter-routes');
-    cy.get('.js-reporting-page--next:visible').click();
+    cy.nextPageReporting();
     cy.contains('The road you have selected is on a regular gritting route').should('be.visible');
   });
 
@@ -67,8 +67,8 @@ describe('buckinghamshire roads handling', function() {
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
     cy.get('#mob_ok').click();
-    cy.get('select:eq(4)').select('Parks');
-    cy.get('.js-reporting-page--next:visible').click();
+    cy.pickCategory('Parks');
+    cy.nextPageReporting();
     cy.contains('Please select a road on which to make a report.').should('be.visible');
   });
 });

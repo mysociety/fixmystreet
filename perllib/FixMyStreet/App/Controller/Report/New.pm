@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use Encode;
-use List::Util qw(uniq);
+use List::Util qw(uniq any);
 use HTML::Entities;
 use Path::Class;
 use Utils;
@@ -99,9 +99,9 @@ sub report_new : Path : Args(0) {
 
     # create a problem from the submitted details
     $c->stash->{template} = "report/new/fill_in_details.html";
-    $c->forward('setup_categories_and_bodies');
+    $c->forward('setup_categories_and_bodies', [ { mix_in => 1 } ]);
     $c->forward('setup_report_extra_fields');
-    $c->forward('check_for_category');
+    $c->forward('check_for_category', [ { with_group => 1 } ]);
     $c->forward('setup_report_extras');
 
     # deal with the user and report and check both are happy
@@ -143,7 +143,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     $c->forward('setup_categories_and_bodies');
     $c->forward('setup_report_extra_fields');
-    $c->forward('check_for_category');
+    $c->forward('check_for_category', []);
     $c->forward('process_report');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
@@ -188,8 +188,18 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         $c->detach('send_json_response');
     }
 
-    $c->forward('setup_categories_and_bodies');
     $c->forward('setup_report_extra_fields');
+
+    # w is true if web site, not present if native app.
+    # Native app at present only handles one dropdown
+    $c->stash->{native_app} = !$c->get_param('w');
+    my $subcategories;
+    if ($c->stash->{native_app}) {
+        $c->forward('setup_categories_and_bodies');
+    } else {
+        $c->forward('setup_categories_and_bodies', [ { mix_in => 1 } ]);
+        $subcategories = $c->render_fragment( 'report/new/subcategories.html');
+    }
 
     # render templates to get the html
     my $category = $c->render_fragment( 'report/new/category.html');
@@ -220,7 +230,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my %by_category;
     foreach my $contact (@{$c->stash->{category_options}}) {
-        next if ref $contact eq 'HASH'; # Ignore the 'Pick a category' line
+        next unless $contact->category; # Ignore the 'Pick a category' line
         my $cat = $c->stash->{category} = $contact->category;
         my $body = $c->forward('by_category_ajax_data', [ 'all', $cat ]);
         $by_category{$cat} = $body;
@@ -231,6 +241,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         councils_text   => $councils_text,
         councils_text_private => $councils_text_private,
         category        => $category,
+        $subcategories ? (subcategories => $subcategories) : (),
         extra_name_info => $extra_name_info,
         titles_list     => $extra_titles_list,
         %display_names ? (display_names   => \%display_names) : (),
@@ -253,7 +264,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('setup_categories_and_bodies');
     $c->forward('setup_report_extra_fields');
 
-    $c->forward('check_for_category');
+    $c->forward('check_for_category', []);
     $c->stash->{json_response} = $c->forward('by_category_ajax_data', [ 'one', $c->stash->{category} ]);
     $c->forward('send_json_response');
 }
@@ -710,7 +721,7 @@ Look up categories for the relevant body or bodies.
 =cut
 
 sub setup_categories_and_bodies : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $opts ) = @_;
 
     my $all_areas = $c->stash->{all_areas};
 
@@ -794,10 +805,16 @@ sub setup_categories_and_bodies : Private {
     }
 
     if (@category_options) {
+        if (!$opts->{mix_in}) {
+            my $pick = $c->model('DB::Contact')->new({
+                category => "",
+                # So the translation code isn't called
+                extra => { display_name => _('-- Pick a category --') },
+            });
+            unshift @category_options, $pick;
+        }
         # If there's an Other category present, put it at the bottom
-        @category_options = (
-            { category => _('-- Pick a category --'), category_display => _('-- Pick a category --'), group => [''] },
-            grep { $_->category ne _('Other') } @category_options );
+        @category_options = ( grep { $_->category ne _('Other') } @category_options );
         push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }
 
@@ -827,7 +844,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{missing_details_bodies} = \@missing_details_bodies;
     $c->stash->{missing_details_body_names} = \@missing_details_body_names;
 
-    $c->forward('/report/stash_category_groups', [ \@category_options ]) if $c->cobrand->enable_category_groups;
+    $c->forward('/report/stash_category_groups', [ \@category_options, $opts ]);
 }
 
 sub setup_report_extra_fields : Private {
@@ -1629,10 +1646,24 @@ sub generate_map : Private {
 }
 
 sub check_for_category : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $opts ) = @_;
 
-    my $category = $c->get_param('category') || $c->stash->{report}->category || '';
-    $category = '' if $category eq _('Loading...') || $category eq _('-- Pick a category --');
+    my $category;
+    if (!$opts->{with_group}) {
+        $category = $c->get_param('category') || '';
+    } else {
+        # Group is either an actual group, or a category that wasn't in a group
+        my $group = $c->get_param('category') || $c->get_param('filter_group') || '';
+        if (any { $_->{name} && $group eq $_->{name} } @{$c->stash->{category_groups}}) {
+            $c->stash->{filter_group} = $group;
+            (my $group_id = $group) =~ s/[^a-zA-Z]+//g;
+            my $cat_param = "category.$group_id";
+            $category = $c->get_param($cat_param);
+        } else {
+            $category = $group;
+        }
+    }
+    $category ||= $c->stash->{report}->category || '';
     # Just check to see if the filter had an option
     $category ||= $c->get_param('filter_category') || '';
     $c->stash->{category} = $category;
@@ -1873,7 +1904,7 @@ sub non_map_creation : Private {
     my ($self, $c, $extras) = @_;
 
     $c->forward('initialize_report');
-    $c->forward('check_for_category');
+    $c->forward('check_for_category', []);
     $c->forward('/auth/check_csrf_token');
     $c->forward('process_report');
     $c->forward('process_user');

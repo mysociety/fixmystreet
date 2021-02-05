@@ -14,14 +14,14 @@ describe('Bromley cobrand', function() {
   });
 
   it('fills the right of way field', function() {
-    cy.get('select').eq(1).select('Street Lighting and Road Signs');
+    cy.pickCategory('Street Lighting and Road Signs');
     cy.get('#form_prow_reference').should('have.value', 'FP111');
   });
 
   it('does not display asset based upon extra question', function() {
-    cy.get('select').eq(1).select('Street Lighting and Road Signs');
-    cy.get('.js-reporting-page--next:visible').click();
-    cy.get('select').eq(2).select('Non-asset');
+    cy.pickCategory('Street Lighting and Road Signs');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Non-asset', '#form_service_sub_code');
     // https://stackoverflow.com/questions/47295287/cypress-io-assert-no-xhr-requests-to-url
     cy.on('fail', function(err) {
       expect(err.message).to.include('No request ever occurred.');
@@ -31,11 +31,11 @@ describe('Bromley cobrand', function() {
   });
 
   it('displays assets based upon extra question', function() {
-    cy.get('select').eq(1).select('Street Lighting and Road Signs');
-    cy.get('.js-reporting-page--next:visible').click();
-    cy.get('select').eq(2).select('On in day');
+    cy.pickCategory('Street Lighting and Road Signs');
+    cy.nextPageReporting();
+    cy.pickSubcategory('On in day', '#form_service_sub_code');
     cy.wait('@lights');
-    cy.get('.js-reporting-page--next:visible').click();
+    cy.nextPageReporting();
     cy.get('.mobile-map-banner').should('be.visible');
   });
 

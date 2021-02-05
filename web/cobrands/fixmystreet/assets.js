@@ -27,8 +27,9 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
     },
 
     relevant: function(category, group) {
-      category = category || $('#inspect_form_category').val() || $('#form_category').val();
-      group = group || $('#inspect_category_group').val() || $('#category_group').val();
+      var selected = fixmystreet.reporting.selectedCategory();
+      group = group || $('#inspect_category_group').val() || selected.group || '';
+      category = category || $('#inspect_form_category').val() || selected.category || '';
       var layer = this.fixmystreet,
           relevant;
       if (layer.relevant) {
@@ -446,8 +447,7 @@ function check_zoom_message_visibility() {
         return;
     }
     if (this.relevant()) {
-        var select = this.fixmystreet.asset_group ? 'category_group' : 'form_category',
-            category = $("select#" + select).val() || '',
+        var category = fixmystreet.reporting.selectedCategory().category,
             prefix = category.replace(/[^a-z]/gi, ''),
             id = "category_meta_message_" + prefix,
             $p = $('.category_meta_message'),
@@ -1268,13 +1268,13 @@ fixmystreet.message_controller = (function() {
     }
 
     function is_matching_stopper(stopper, i) {
-        var body = $('#form_category').data('body');
+        var body = $('#form_category_fieldset').data('body');
 
         if (OpenLayers.Util.indexOf(ignored_bodies, body) > -1) {
             return false;
         }
 
-        var category = $('#form_category').val();
+        var category = fixmystreet.reporting.selectedCategory().category;
         if (category != stopper.category) {
             return false;
         }

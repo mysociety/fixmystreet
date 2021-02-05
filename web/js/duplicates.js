@@ -8,15 +8,13 @@
     // but undefined on new report page.
     var report_id = $("#report_inspect_form .js-report-id").text() || undefined;
 
-    function refresh_duplicate_list(evt, params, category) {
+    function refresh_duplicate_list(evt, params) {
         if (params && params.skip_duplicates) {
             return;
         }
 
+        var category = $("#report_inspect_form [name=category]").val() || fixmystreet.reporting.selectedCategory().category;
         if (!category) {
-            category = $('select[name="category"]').val();
-        }
-        if (category === '-- Pick a category --') {
             return;
         }
 

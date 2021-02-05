@@ -16,14 +16,10 @@
   [% IF filter_categories.size %]
     [% SET filter_group = c.get_param('filter_group') %]
     <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
-      [% IF category_groups %]
-        [% FOR group IN category_groups %]
-          <optgroup label="[% group.name %]">
-            [% INCLUDE category_options categories=group.categories %]
-          </optgroup>
-        [% END %]
-      [% ELSE %]
-        [% INCLUDE category_options categories=filter_categories %]
+      [% FOR group IN category_groups %]
+        [% IF group.name %]<optgroup label="[% group.name %]">[% END %]
+          [% INCLUDE category_options categories=group.categories %]
+        [% IF group.name %]</optgroup>[% END %]
       [% END %]
     </select>
   [% ELSE %]

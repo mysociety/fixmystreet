@@ -13,7 +13,7 @@ describe('When you look at the Hackney site', function() {
   it('uses the correct name', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
-    cy.get('select:eq(4)').select('Potholes');
+    cy.pickCategory('Potholes');
     cy.contains('sent to Hackney Council');
   });
 });
