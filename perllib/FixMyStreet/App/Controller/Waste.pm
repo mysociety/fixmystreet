@@ -12,6 +12,7 @@ use FixMyStreet::App::Form::Waste::Request;
 use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Enquiry;
 use Open311::GetServiceRequestUpdates;
+use Integrations::SCP;
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -67,6 +68,104 @@ sub redirect_to_id : Private {
     $uri .= '/report' if $type eq 'report';
     $c->res->redirect($uri);
     $c->detach;
+}
+
+sub pay : Path('pay') : Args(0) {
+    my ($self, $c, $id) = @_;
+
+    my $payment = Integrations::SCP->new({
+        config => $c->cobrand->feature('payment_gateway')
+    });
+
+    my $result = $payment->pay({
+        returnUrl => $c->uri_for('pay') . '',
+        backUrl => $c->uri_for('pay') . '',
+        ref => time(),
+        request_id => time(),
+        description => 'This is a test',
+        amount => '1000',
+    });
+
+    if ( $result ) {
+        $c->stash->{xml} = $result;
+
+        # GET back
+        # requestId - should match above
+        # scpReference - transaction Ref, used later for query
+        # transactionState - in progress/complete
+        # invokeResult/status - SUCCESS/INVALID_REQUEST/ERROR
+        # invokeResult/redirectURL - what is says
+        # invokeResult/errorDetails - what it says
+        #
+        if ( $result->{transactionState} eq 'COMPLETE' &&
+             $result->{invokeResult}->{status} eq 'SUCCESS' ) {
+
+             # need to save scpReference against request here
+             my $redirect = $result->{invokeResult}->{redirectURL};
+             $c->res->redirect( $redirect );
+             $c->detach;
+         }
+     } else {
+        $c->stash->{error} = 'Unknown error';
+        $c->stash->{template} = 'waste/pay.html';
+        $c->detach;
+    }
+}
+
+# redirect from cc processing
+sub pay_complete : Path('pay_complete') : Args(1) {
+    my ($self, $c, $id) = @_;
+
+
+    # load report
+    # my $p = $c->model('Problem')->find( id => $id );
+    # need to get some ID Things which I guess we stored in pay
+
+    my $payment = Integrations::SCP->new(
+        config => $c->cobrand->feature('payment_gateway')
+    );
+
+    my $resp = $payment->query({
+        #scpReference = $p->get_extra_metadata('scpReference'),
+    });
+
+    if ($resp->{transactionState} eq 'COMPLETE') {
+        if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
+            # create sub in echo
+            $c->stash->{message} = 'Payment succesful';
+        } else {
+            # cancelled, not attempted, logged out - try again option
+            # card rejected - try again with different card/cancel
+            # otherwise error page?
+        }
+    } else {
+        # retry if in progress, error if invalid ref.
+    }
+}
+
+sub direct_debit : Path('dd') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $dt = DateTime->now;
+    my $payment_details = $c->cobrand->feature('payment_gateway');
+    $c->stash->{payment_details} = $payment_details;
+    $c->stash->{amount} = $payment_details->{ggw_cost},
+    $c->stash->{reference} = time;
+    $c->stash->{year} = $dt->year;
+    $c->stash->{template} = 'waste/dd.html';
+    $c->detach;
+}
+
+sub direct_debit_complete : Path('dd_complete') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->res->body('NOT IMPLEMENTED');
+}
+
+sub direct_debit_cancelled : Path('dd_cancelled') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->res->body('NOT IMPLEMENTED');
 }
 
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
