@@ -892,6 +892,7 @@ sub waste_get_event_type {
             'Allocated to Crew' => 'action scheduled',
         },
         Closed => {
+            Closed => 'fixed - council',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
             Rejected => 'closed',
@@ -902,7 +903,7 @@ sub waste_get_event_type {
     my $data;
     foreach (@$states) {
         my $core = $_->{CoreState}; # New/Pending/Closed
-        my $name = $_->{Name}; # New : Unallocated/Allocated to Crew : Completed/Not Completed/Rejected
+        my $name = $_->{Name}; # New : Unallocated/Allocated to Crew : Completed/Not Completed/Rejected/Closed
         $data->{states}{$_->{Id}} = {
             core => $core,
             name => $name,
