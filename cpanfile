@@ -53,6 +53,7 @@ requires 'Cache::Memcached';
 requires 'Carp';
 requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'Crypt::JWT';
+requires 'Crypt::Digest::SHA256';
 requires 'Data::Password::Common';
 requires 'DateTime', '1.51';
 requires 'DateTime::Format::Flexible';
