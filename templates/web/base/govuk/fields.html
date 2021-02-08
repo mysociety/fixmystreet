@@ -19,8 +19,12 @@
         [% PROCESS checkboxes options=field.options %]
     [% ELSIF field.widget == 'Checkbox' %]
         [% PROCESS checkboxes options=[{ value = 1, label = field.option_label }] %]
-    [% ELSIF field.type == 'DateTime' # Date %]
+    [% ELSIF field.type == 'DateTime' %]
         [% PROCESS date %]
+    [% ELSIF field.type == 'Photo' %]
+        [% PROCESS photo %]
+    [% ELSIF field.type == 'Upload' OR field.type == 'FileIdUpload' %]
+        [% PROCESS upload %]
     [% ELSE %]
         [% field.html_name %] [% field.widget %] NOT HANDLED
     [% END %]
@@ -256,4 +260,61 @@
       <option value="[% item.value %]"[% ' selected' IF field.fif == item.value %]>[% item.label %]</option>
 	[% END %]
   </select>
+[% END %]
+
+[% BLOCK photo %]
+    <label class="govuk-label js-photo-label" for="[% field.id %]">
+        [% field.label %]
+    </label>
+  [% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">
+        [% field.get_tag('hint') %]
+    </span>
+  [% END %]
+  [% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+  [% END %]
+  <div id="form_photos" data-upload-field="[% field.id %]_fileid">
+  [% IF field.fif %]
+        [% FOREACH id IN field.fif.split(',') %]
+        <img align="right" src="/photo/temp.[% id %]" alt="">
+        [% END %]
+  [% END %]
+
+      <input type="hidden" name="fileid_field" value="[% field.id %]_fileid">
+      <input type="hidden" name="photo_field" value="[% field.id %]">
+      <input class="govuk-file-upload" id="[% field.id %]" name="[% field.id %]" type="file" >
+      [% SET count = field.get_tag('max_photos');
+         WHILE count > 1 ~%]
+         <input class="govuk-file-upload" id="[% field.id %][% count %]" name="[% field.id %][% count %]" type="file" >
+      [% count = count - 1;
+         END ~%]
+  </div>
+[% END %]
+
+[% BLOCK upload %]
+    <label class="govuk-label" for="[% field.id %]">
+        [% field.label %]
+    </label>
+  [% IF field.get_tag('hint') %]
+    <span id="[% field.id %]-hint" class="govuk-hint">
+        [% field.get_tag('hint') %]
+    </span>
+  [% END %]
+  [% IF error %]
+    <span id="[% field.id %]-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> [% error %]
+    </span>
+  [% END %]
+
+  <input type="hidden" name="[% field.id %]_fileid" value="[% field.get_tag('files') %]">
+  <input type="hidden" name="[% field.id %]_filenames" value="[% field.get_tag('filenames').join(',') %]">
+  [% IF field.get_tag('files') %]
+    Already files added: [% field.get_tag('filenames').join(', ') %]
+  [% END %]
+  <div>
+  <input class="govuk-file-upload" id="[% field.id %]" name="[% field.id %]" type="file">
+  </div>
 [% END %]
