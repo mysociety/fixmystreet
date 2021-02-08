@@ -101,7 +101,8 @@ for my $test (
             <metadata>false</metadata>
             <type>realtime</type>
             <keywords>lorem, ipsum, dolor</keywords>
-            <group>street</group>
+            <group>street
+</group>
             <service_name>Construction plate shifted</service_name>
             <description>Metal construction plate covering the street or sidewalk has been moved.</description>
           </service>

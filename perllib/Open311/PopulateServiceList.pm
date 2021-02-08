@@ -328,11 +328,13 @@ sub _get_new_groups {
     return [] unless $self->_current_body_cobrand && $self->_current_body_cobrand->enable_category_groups;
 
     my $groups = $self->_current_service->{groups} || [];
-    return $groups if @$groups;
+    my @groups = map { Utils::trim_text($_) } @$groups;
+    return \@groups if @groups;
 
     my $group = $self->_current_service->{group} || [];
     $group = [] if @$group == 1 && !$group->[0]; # <group></group> becomes [undef]...
-    return $group;
+    @groups = map { Utils::trim_text($_) } @$group;
+    return \@groups;
 }
 
 sub _groups_different {
