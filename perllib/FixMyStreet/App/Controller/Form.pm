@@ -60,7 +60,8 @@ sub form : Private {
     my $form = $self->load_form($c);
     if ($c->get_param('process') && !$c->stash->{override_no_process}) {
         $c->forward('/auth/check_csrf_token');
-        $form->process(params => $c->req->body_params);
+        my @params = $form->get_params($c);
+        $form->process(params => @params);
         if ($form->validated) {
             $form = $self->load_form($c, $form);
         }

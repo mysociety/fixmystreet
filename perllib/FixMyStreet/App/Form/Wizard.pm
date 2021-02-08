@@ -28,6 +28,12 @@ has_field saved_data => ( type => 'JSON' );
 has_field token => ( type => 'Hidden', required => 1 );
 has_field process => ( type => 'Hidden', required => 1 );
 
+sub get_params {
+    my ($self, $c) = @_;
+
+    return $c->req->body_params;
+}
+
 sub next {
     my $self = shift;
     my $next = $self->current_page->next;

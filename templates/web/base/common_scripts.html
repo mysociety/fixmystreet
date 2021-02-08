@@ -73,6 +73,12 @@ ELSE;
     );
 END;
 
+IF bodyclass.match('govuk');
+    scripts.push(
+        version('/vendor/dropzone.min.js'),
+    );
+END;
+
 IF admin;
     scripts.push(
         version('/cobrands/fixmystreet/admin.js'),
