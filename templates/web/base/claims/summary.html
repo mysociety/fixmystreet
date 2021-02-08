@@ -42,7 +42,16 @@
       [% NEXT IF field.hide %]
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% field.desc %]</dt>
-            <dd class="govuk-summary-list__value">[% field.pretty %]</dd>
+            <dd class="govuk-summary-list__value">
+            [% IF field.type == 'Photo' %]
+                [% SET photos = field.value.split(',');
+                   FOR photo IN photos ~%]
+                    <img align="left" src="/photo/temp.[% photo %]">
+                [% END ~%]
+            [% ELSE %]
+                [% field.pretty %]
+            [% END %]
+            </dd>
         </div>
        [% END %]
   [% END %]

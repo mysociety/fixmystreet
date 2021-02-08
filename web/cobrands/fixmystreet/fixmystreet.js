@@ -745,6 +745,7 @@ $.extend(fixmystreet.set_up, {
       var $originalLabel = $('[for="form_photo"], .js-photo-label', $context);
       var $originalInput = $('#form_photos, .js-photo-fields', $context);
       var $dropzone = $('<div tabindex=0>').addClass('dropzone');
+      var $fileid_input = $originalInput.data('upload-field') || 'upload_fileid';
 
       $originalLabel.removeAttr('for');
       $('[data-plural]', $originalLabel).text(
@@ -789,18 +790,25 @@ $.extend(fixmystreet.set_up, {
             $('input[type=submit]', $context).prop('disabled', false).addClass('green-btn');
           });
           this.on("success", function(file, xhrResponse) {
-            var ids = $('input[name=upload_fileid]', $context).val().split(','),
-                id = (file.server_id = xhrResponse.id),
-                l = ids.push(id),
-                newstr = ids.join(',');
-            $('input[name=upload_fileid]', $context).val(newstr);
+            var $upload_fileids = $('input[name=' + $fileid_input + ']', $context);
+            var ids = [];
+            // only split if it has a value otherwise you get a spurious empty string
+            // in the array as split returns the whole string if no match
+            if ( $upload_fileids.val() ) {
+                ids = $upload_fileids.val().split(',');
+            }
+            var id = (file.server_id = xhrResponse.id),
+                l = ids.push(id);
+            newstr = ids.join(',');
+            $upload_fileids.val(newstr);
           });
           this.on("error", function(file, errorMessage, xhrResponse) {
           });
           this.on("removedfile", function(file) {
-            var ids = $('input[name=upload_fileid]', $context).val().split(','),
+            var $upload_fileids = $('input[name=' + $fileid_input + ']', $context);
+            var ids = $upload_fileids.val().split(','),
                 newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
-            $('input[name=upload_fileid]', $context).val(newstr);
+            $upload_fileids.val(newstr);
           });
           this.on("maxfilesexceeded", function(file) {
             this.removeFile(file);
@@ -822,7 +830,7 @@ $.extend(fixmystreet.set_up, {
           }
       });
 
-      $.each($('input[name=upload_fileid]', $context).val().split(','), function(i, f) {
+      $.each($('input[name=' + $fileid_input + ']', $context).val().split(','), function(i, f) {
         if (!f) {
             return;
         }

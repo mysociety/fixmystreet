@@ -40,6 +40,12 @@ sub has_page_called {
     return grep { $_->name eq $page_name } $self->all_pages;
 }
 
+sub get_params {
+    my ($self, $c) = @_;
+
+    return $c->req->body_params;
+}
+
 sub next {
     my $self = shift;
     my $next = $self->current_page->next;
