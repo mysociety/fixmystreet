@@ -4,6 +4,11 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Wizard';
 use utf8;
 
+use Path::Tiny;
+use File::Copy;
+use Digest::SHA qw(sha1_hex);
+use File::Basename;
+
 has c => ( is => 'ro' );
 
 has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
@@ -133,10 +138,10 @@ has_page about_fault => (
     fields => ['report_id', 'continue'],
     intro => 'fault_reported.html',
     title => 'About the fault',
-    next => 'where',
     tags => {
         hide => sub { $_[0]->form->value_equals('fault_fixed', 'Yes'); }
     },
+    next => 'when',
 );
 
 has_field report_id => (
@@ -153,6 +158,9 @@ has_page where => (
 
 has_field location => (
     required => 1,
+    tags => {
+        hide => sub { $_[0]->form->value_equals('fault_fixed', 'No'); }
+    },
     type => 'Text',
     widget => 'Textarea',
     label => 'Place a pin on the map (TBD)',
@@ -316,13 +324,28 @@ has_field incident_number => (
 
 
 has_page cause => (
-    fields => ['what_cause', 'aware', 'where_cause', 'describe_cause', 'photos', 'continue'],
+    fields => ['what_cause', 'aware', 'where_cause', 'describe_cause', 'photos_fileid', 'photos', 'continue'],
     title => 'What caused the incident?',
     next => sub {
             $_[0]->{what} == 0 ? 'about_vehicle' :
             $_[0]->{what} == 1 ? 'about_you_personal' :
             'about_property',
         },
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        $form->update_photo('photos', $fields);
+        return $fields;
+    },
+    post_process => sub {
+            my ($form) = @_;
+            $form->process_photo('photos');
+        },
+);
+
+has_field photos_fileid => (
+    type => 'Hidden',
+    tags => { hide => 1 },
 );
 
 has_field what_cause => (
@@ -367,7 +390,8 @@ has_field describe_cause => (
 );
 
 has_field photos => (
-    type => 'Text',
+    type => 'Photo',
+    tags => { max_photos => 2 },
     label => 'Please provide two dated photos of the incident',
 );
 
@@ -378,6 +402,18 @@ has_page about_vehicle => (
         hide => sub { $_[0]->form->value_nequals('what', 0); }
     },
     next => 'damage_vehicle',
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        $form->handle_upload( 'v5', $fields );
+
+        return $fields;
+    },
+    post_process => sub {
+        my ($form) = @_;
+
+        $form->process_upload('v5');
+    },
 );
 
 has_field make => (
@@ -399,9 +435,12 @@ has_field mileage => (
 );
 
 has_field v5 => (
-    required => 1,
-    type => 'Text',
+    validate_when_empty => 1,
+    type => 'FileIdUpload',
     label => 'Copy of the vehicle’s V5 Registration Document',
+    messages => {
+        upload_file_not_found => 'Please provide a copy of the V5 Registration Document',
+    },
 );
 
 has_field v5_in_name => (
@@ -444,12 +483,30 @@ has_field vat_reg => (
 );
 
 has_page damage_vehicle => (
-    fields => ['vehicle_damage', 'vehicle_photos', 'vehicle_receipts', 'tyre_damage', 'tyre_mileage', 'tyre_receipts', 'continue'],
+    fields => ['vehicle_damage', 'vehicle_photos_fileid', 'vehicle_photos', 'vehicle_receipts', 'tyre_damage', 'tyre_mileage', 'tyre_receipts', 'continue'],
     title => 'What was the damage to the vehicle',
     tags => {
         hide => sub { $_[0]->form->value_nequals('what', 0); }
     },
     next => 'summary',
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        my $c = $form->{c};
+
+        $form->update_photo('vehicle_photos', $fields);
+        $form->handle_upload( 'vehicle_receipts', $fields );
+        $form->handle_upload( 'tyre_receipts', $fields );
+
+        return $fields;
+    },
+    post_process => sub {
+        my ($form) = @_;
+
+        $form->process_photo('vehicle_photos');
+        $form->process_upload('vehicle_receipts');
+        $form->process_upload('tyre_receipts');
+    },
 );
 
 has_field vehicle_damage => (
@@ -459,17 +516,31 @@ has_field vehicle_damage => (
     label => 'Describe the damage to the vehicle',
 );
 
+has_field vehicle_photos_fileid => (
+    type => 'Hidden',
+    tags => { hide => 1 },
+    validate_method => sub {
+        my $self = shift;
+        my $value = $self->value;
+        my @parts = split(/,/, $value);
+        return scalar @parts == 2;
+    }
+);
+
 has_field vehicle_photos => (
-    required => 1,
-    type => 'Text',
+    type => 'Photo',
+    tags => { max_photos => 2 },
     label => 'Please provide two photos of the damage to the vehicle',
 );
 
 has_field vehicle_receipts=> (
-    required => 1,
-    type => 'Text',
-    label => 'Please provide receipted invoiced for repairs',
+    validate_when_empty => 1,
+    type => 'FileIdUpload',
+    label => 'Please provide receipted invoices for repairs',
     hint => 'Or estimates where the damage has not yet been repaired',
+    messages => {
+        upload_file_not_found => 'Please provide invoices for repairs',
+    },
 );
 
 has_field tyre_damage => (
@@ -493,17 +564,21 @@ has_field tyre_mileage => (
 );
 
 has_field tyre_receipts => (
-    type => 'Text',
+    validate_when_empty => 1,
+    type => 'FileIdUpload',
     label => 'Please provide copy of tyre purchase receipts',
     tags => {
-        hide => sub { $_[0]->form->value_equals('tyre_damage}', 'No') }
+        hide => sub { $_[0]->form->value_equals('tyre_damage', 'No') },
+        required => sub { $_[0]->form->field('tyre_damage')->value eq 'Yes' },
     },
-    required_when => { 'tyre_damage' => 'Yes' },
-);
-
-has_field tyre_receipts => (
-    type => 'Text',
-    label => 'Please provide copy of tyre purchase receipts',
+    balidate_method => sub {
+        my $self = shift;
+        my $c = $self->form->{c};
+        return 1 if $self->form->saved_data->{tyre_damage} == 'Yes' && $c->req->upload('tyre_receipts');
+    },
+    messages => {
+        upload_file_not_found => 'Please provide a copy of the tyre purchase receipts',
+    },
 );
 
 has_page about_property => (
@@ -513,21 +588,46 @@ has_page about_property => (
         hide => sub { $_[0]->form->value_nequals('what', 2); }
     },
     next => 'damage_property',
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        $form->handle_upload( 'property_insurance', $fields );
+        return $fields;
+    },
 );
 
 has_field property_insurance => (
-    required => 1,
-    type => 'Text',
+    type => 'FileIdUpload',
+    validate_when_empty => 1,
     label => 'Please provide a copy of the home/contents insurance certificate',
+    validate_method => sub {
+        my $self = shift;
+        my $c = $self->form->{c};
+        return 1 if $c->req->upload('property_insurance');
+    },
+    messages => {
+        upload_file_not_found => 'Please provide a copy of the insurance certificate',
+    },
 );
 
 has_page damage_property => (
-    fields => ['property_damage_description', 'property_photos', 'property_invoices', 'continue'],
+    fields => ['property_damage_description', 'property_photos_fileid', 'property_photos', 'property_invoices', 'continue'],
     title => 'What was the damage to the property?',
     tags => {
         hide => sub { $_[0]->form->value_nequals('what', 2); }
     },
     next => 'summary',
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        $form->update_photo('property_photos', $fields);
+        $form->handle_upload( 'property_invoices', $fields );
+        return $fields;
+    },
+    post_process => sub {
+        my ($form) = @_;
+        $form->process_photo('property_photos');
+    },
 );
 
 has_field property_damage_description => (
@@ -537,17 +637,36 @@ has_field property_damage_description => (
     label => 'Describe the damage to the property',
 );
 
+has_field property_photos_fileid => (
+    tags => { hide => 1 },
+    type => 'Hidden',
+    validate_method => sub {
+        my $self = shift;
+        my $value = $self->value;
+        my @parts = split(/,/, $value);
+        return scalar @parts == 2;
+    }
+);
+
 has_field property_photos => (
-    required => 1,
-    type => 'Text',
+    type => 'Photo',
+    tags => { max_photos => 2 },
     label => 'Please provide two photos of the damage to the property',
 );
 
 has_field property_invoices => (
-    required => 1,
-    type => 'Text',
+    type => 'FileIdUpload',
+    validate_when_empty => 1,
     hint => 'Or estimates where the damage has not yet been repaired. These must be on headed paper, addressed to you and dated',
     label => 'Please provide receipted invoices for repairs',
+    validate_method => sub {
+        my $self = shift;
+        my $c = $self->form->{c};
+        return 1 if $c->req->upload('property_invoices');
+    },
+    messages => {
+        upload_file_not_found => 'Please provide a copy of the repair invoices',
+    },
 );
 
 has_page about_you_personal => (
@@ -825,9 +944,33 @@ sub format_for_display {
             return "" unless $value;
             return "$value->{day}/$value->{month}/$value->{year}";
         }
+    } elsif ( $field->{type} eq 'FileIdUpload' ) {
+        if ( ref $value eq 'HASH' ) {
+           return join( ',', @{ $value->{filenames} } );
+        }
+        return "";
     }
 
     return $value;
+}
+
+# params does not include file uploads which causes breaks the
+# validation and value setting so we need to handle them here.
+sub get_params {
+    my ($self, $c) = @_;
+
+    my @params = $c->req->body_params;
+
+    if ( $c->req->uploads ) {
+        for my $field ( keys %{ $c->req->uploads } ) {
+            if ($self->field($field)->{type} eq 'FileIdUpload') {
+                $self->file_upload($field);
+                $params[0]->{$field} = $self->saved_data->{$field};
+            }
+        }
+    }
+
+    return @params;
 }
 
 # this makes sure that if any of the child fields have errors we mark the date
@@ -844,6 +987,76 @@ sub validate_datetime {
     }
 
     $field->add_error("Please enter a valid date") unless $valid;
+}
+
+sub update_photo {
+    my ($form, $field, $fields) = @_;
+    my $saved_data = $form->saved_data;
+
+    if ($saved_data->{$field}) {
+        my $fileid = $field . '_fileid';
+        $saved_data->{$fileid} = $saved_data->{$field};
+        $fields->{$fileid} = { default => $saved_data->{$field} };
+    }
+}
+
+sub process_photo {
+    my ($form, $field) = @_;
+
+    my $saved_data = $form->saved_data;
+    my $fileid = $field . '_fileid';
+    my $c = $form->{c};
+    $c->forward('/photo/process_photo');
+    $saved_data->{$field} = $c->stash->{$fileid};
+    $saved_data->{$fileid} = '';
+}
+
+sub file_upload {
+    my ($form, $field) = @_;
+
+    my $c = $form->{c};
+    my $saved_data = $form->saved_data;
+
+    my $receipts = $c->req->upload($field);
+    if ( $receipts ) {
+        my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+        my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
+        $dir = path($dir, "claims_files")->absolute(FixMyStreet->path_to());
+        $dir->mkpath;
+
+        FixMyStreet::PhotoStorage::base64_decode_upload($c, $receipts);
+        my ($p, $n, $ext) = fileparse($receipts->filename, qr/\.[^.]*/);
+        my $key = sha1_hex($receipts->slurp) . $ext;
+        my $out = path($dir, $key);
+        unless (copy($receipts->tempname, $out)) {
+            $c->log->info('Couldn\'t copy temp file to destination: ' . $!);
+            $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");
+            return;
+        }
+        # Then store the file hashes along with the original filenames for display
+        $saved_data->{$field} = { files => $key, filenames => [ $receipts->raw_basename ] };
+    }
+}
+
+sub handle_upload {
+    my ($form, $field, $fields) = @_;
+
+    my $saved_data = $form->saved_data;
+    if ( $saved_data->{$field} ) {
+        $fields->{$field} = { default => $saved_data->{$field}->{files}, tags => $saved_data->{$field} };
+    }
+}
+
+sub process_upload {
+    my ($form, $field) = @_;
+
+    my $saved_data = $form->saved_data;
+    my $c = $form->{c};
+    if ( !$saved_data->{$field} && $c->req->params->{$field . '_fileid'} ) {
+        my $files = $c->req->params->{$field . '_fileid'};
+        my @names = split ',', $c->req->params->{$field . '_filenames'};
+        $saved_data->{$field} = { files => $files, filenames => \@names };
+    }
 }
 
 1;

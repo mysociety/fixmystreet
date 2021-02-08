@@ -1,4 +1,4 @@
-[% SET bodyclass = 'claims' ~%]
+[% SET bodyclass = 'claims govuk' ~%]
 [% SET title = form.title ~%]
 
 [% INCLUDE header.html %]
@@ -10,7 +10,7 @@
 
   [% IF form.intro_template %][% PROCESS "claims/${form.intro_template}" %][% END %]
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
   [% PROCESS form %]
 </form>
 

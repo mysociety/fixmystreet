@@ -161,12 +161,14 @@ sub process_photo : Private {
 
 sub process_photo_upload_or_cache : Private {
     my ( $self, $c ) = @_;
+    my $photo_prefix = $c->get_param('photo_field') || 'photo';
+    my $fileid_field = $c->get_param('fileid_field') || 'upload_fileid';
     my @items = (
         ( map {
-            /^photo/ ? # photo, photo1, photo2 etc.
+            /^$photo_prefix/ ? # photo, photo1, photo2 etc.
                 ($c->req->upload($_)) : ()
         } sort $c->req->upload),
-        grep { $_ } split /,/, ($c->get_param('upload_fileid') || '')
+        grep { $_ } split /,/, ($c->get_param($fileid_field) || '')
     );
 
     my $photoset = FixMyStreet::App::Model::PhotoSet->new({
@@ -176,7 +178,7 @@ sub process_photo_upload_or_cache : Private {
 
     my $fileid = $photoset->data;
 
-    $c->stash->{upload_fileid} = $fileid or return;
+    $c->stash->{$fileid_field} = $fileid or return;
     return 1;
 }
 
