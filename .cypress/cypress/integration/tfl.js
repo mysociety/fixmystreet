@@ -16,6 +16,7 @@ it('allows bus stop clicking outside London', function() {
     // Also check a category not on a red route
     cy.go('back');
     cy.pickCategory('Mobile Crane Operation');
+    cy.get('#map_sidebar').scrollTo('top');
     cy.contains('does not maintain this road').should('be.visible');
 });
 
