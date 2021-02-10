@@ -555,7 +555,8 @@ sub construct_bin_request_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless $_->{next} && !$_->{request_open};
+        next unless ( $_->{next} && !$_->{request_open} ) || $_->{request_only};
+        my $service = $_;
         my $name = $_->{service_name};
         my $containers = $_->{request_containers};
         my $max = $_->{request_max};
@@ -595,6 +596,7 @@ sub construct_bin_request_form {
                     required_when => { "container-$id" => 1 },
                 };
             }
+            $c->cobrand->call_hook("bin_request_form_extra_fields", $service, $id, $field_list);
         }
     }
 
