@@ -196,7 +196,7 @@ sub create_alert : Private {
         $alert->insert();
     }
 
-    if ( $c->user_exists && ($c->user->id == $alert->user->id || $c->stash->{can_create_for_another})) {
+    if ( $c->user_exists && ($c->user->id == $alert->user->id)) {
         $alert->confirm();
     } else {
         $alert->confirmed(0);
