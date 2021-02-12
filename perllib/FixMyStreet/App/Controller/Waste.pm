@@ -1308,8 +1308,6 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{area_check_action} = 'submit_problem';
     $c->forward('/council/load_and_check_areas', []);
     $c->forward('/report/new/setup_categories_and_bodies');
-    my $contacts = $c->stash->{contacts};
-    @$contacts = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$contacts;
 }
 
 sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {

@@ -463,7 +463,10 @@ sub munge_reports_category_list {
 sub munge_report_new_contacts {
     my ($self, $categories) = @_;
 
-    return if $self->{c}->action =~ /^waste/;
+    if ($self->{c}->action =~ /^waste/) {
+        @$categories = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$categories;
+        return;
+    }
 
     @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
     $self->SUPER::munge_report_new_contacts($categories);
