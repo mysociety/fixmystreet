@@ -210,17 +210,11 @@ sub request : Chained('property') : Args(0) {
 sub process_request_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
-    my $address = $c->stash->{property}->{address};
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
     foreach (@services) {
         my ($id) = /container-(.*)/;
-        my $container = $c->stash->{containers}{$id};
-        my $quantity = $data->{"quantity-$id"};
-        $data->{title} = "Request new $container";
-        $data->{detail} = "Quantity: $quantity\n\n$address";
-        $c->set_param('Container_Type', $id);
-        $c->set_param('Quantity', $quantity);
+        $c->cobrand->call_hook("waste_munge_request_data", $id, $data);
         $c->forward('add_report', [ $data ]) or return;
         push @reports, $c->stash->{report};
     }
