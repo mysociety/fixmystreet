@@ -1,0 +1,19 @@
+[%
+
+email_summary = "Subscribed to " _ site_name _ " alerts";
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Subscribed to [% site_name %] alerts</h1>
+  <p style="[% p_style %]">You have been subscribed to [% site_name %] alerts for <a href="[% problem_url %]">[% problem.title %]</a>.</p>
+
+  <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about [% problem.title %].</a></p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

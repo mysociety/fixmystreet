@@ -1,0 +1,17 @@
+Subject: Subscribed to [% site_name %] alerts
+
+You have been subscribed to [% site_name %] alerts for [% problem.title %].
+
+[% problem_url %]
+
+Email alerts are a free service from [% site_name %].
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
+
+[% signature %]
+
+Unsubscribe?
+
+If you no longer wish to receive an email whenever this report is updated,
+please follow this link: [% unsubscribe_url %]

@@ -337,6 +337,16 @@ subtest 'Test body user signing someone else up for alerts' => sub {
         confirmed  => 1,
     });
     is $alert, undef, 'No alert created for staff user';
+
+    # Check that email is sent to newly subscribed user.
+    my $email = $mech->get_email;
+    my $title = $report->title;
+    like $mech->get_text_body_from_email($email), qr/You have been subscribed to FixMyStreet alerts for $title/i, "Correct email text";
+    my @urls = $mech->get_link_from_email($email, 1);
+    ok $urls[0] =~ m{/report/\S+}, "report URL '$urls[0]'";
+    ok $urls[-1] =~ m{/A/\S+}, "unsubscribe URL '$urls[-1]'";
+
+    $mech->clear_emails_ok;
 };
 
 $report->delete; # Emails sent otherwise below
