@@ -122,15 +122,25 @@ sub end_summary_failures {
         whensent => undef,
         bodies_str => { '!=', undef },
         send_fail_count => { '>', 0 }
-    } );
+    },
+    {
+        order_by => { -desc => 'confirmed' }
+    });
+    my %bodies;
     while (my $row = $unsent->next) {
         my $base_url = FixMyStreet->config('BASE_URL');
+        my $key =  join ', ', @{ $row->body_names };
+        $bodies{$key} ||= [];
+        push @{ $bodies{$key} }, $row->id;
         $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* " . $base_url . "/report/" . $row->id . ", failed "
             . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
             . ", reason " . $row->send_fail_reason . "\n";
     }
     if ($sending_errors) {
-        print "The following reports had problems sending:\n$sending_errors";
+        my $count = $unsent->count;
+        my $bodies = join '\n', map { "$_ (" . scalar @{ $bodies{$_} } . "): " . join ', ', @{ $bodies{$_} } } keys %bodies;
+
+        print "The following $count reports had problems sending:\n$bodies\n$sending_errors";
     }
 }
 

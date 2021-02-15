@@ -18,6 +18,8 @@
         - Move ban/unban buttons to user edit admin page.
         - Add link to user edit admin from report/update edit admin.
         - Improve layout of some admin pages.
+    - Development improvements:
+        - Include failure count in send report error output, #3316
     - Security:
         - Increase minimum password length to eight.
 
