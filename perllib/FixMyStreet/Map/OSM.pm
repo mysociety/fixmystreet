@@ -13,6 +13,7 @@ use Utils;
 
 use constant ZOOM_LEVELS    => 7;
 use constant MIN_ZOOM_LEVEL => 13;
+use constant MIN_ZOOM_LEVEL_ANY => 0;
 use constant DEFAULT_ZOOM   => 3;
 
 sub map_type { 'OpenLayers.Layer.OSM.Mapnik' }
@@ -77,6 +78,7 @@ sub generate_map_data {
 
     my $numZoomLevels = $self->ZOOM_LEVELS;
     my $zoomOffset = $self->MIN_ZOOM_LEVEL;
+    my $anyZoomOffset = $self->MIN_ZOOM_LEVEL_ANY;
 
     # Adjust zoom level dependent upon population density if cobrand hasn't
     # specified a default zoom.
@@ -90,9 +92,9 @@ sub generate_map_data {
     }
 
     if ($params{any_zoom}) {
-        $numZoomLevels += $zoomOffset;
-        $default_zoom += $zoomOffset;
-        $zoomOffset = 0;
+        $numZoomLevels += $zoomOffset - $anyZoomOffset;
+        $default_zoom += $zoomOffset - $anyZoomOffset;
+        $zoomOffset = $anyZoomOffset;
     }
 
     my $zoom = $data->{zoom} || $default_zoom;
