@@ -57,6 +57,7 @@ describe('Staff user tests', function() {
         // update about you
         cy.get('#form_update').type("this is an update");
         cy.get('button.js-reporting-page--next').click();
+        cy.get('#form_as').select('myself');
         cy.get('[name=username]').should('be.disabled'); // (already protected)
         cy.get('[name=name]').should('have.attr', 'readonly');
         cy.get('input[name=submit_register]').click();
