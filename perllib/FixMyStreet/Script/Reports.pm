@@ -138,7 +138,7 @@ sub end_summary_failures {
     }
     if ($sending_errors) {
         my $count = $unsent->count;
-        my $bodies = join '\n', map { "$_ (" . scalar @{ $bodies{$_} } . "): " . join ', ', @{ $bodies{$_} } } keys %bodies;
+        my $bodies = join "\n", map { "$_ (" . scalar @{ $bodies{$_} } . "): " . join ', ', @{ $bodies{$_} } } keys %bodies;
 
         print "The following $count reports had problems sending:\n$bodies\n$sending_errors";
     }
