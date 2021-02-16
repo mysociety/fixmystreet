@@ -68,6 +68,14 @@ sub redirect_to_id : Private {
     $c->detach;
 }
 
+
+sub direct_debit_complete : Path('dd_complete') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->res->body('NOT IMPLEMENTED');
+
+}
+
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
 
