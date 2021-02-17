@@ -27,7 +27,12 @@
     data-map_type="[% map.map_type %]"
 [% IF include_key -%]
     data-bing_key='[% c.config.BING_MAPS_API_KEY %]'
-[%- END -%]
+[% END -%]
+[% IF map.os_maps -%]
+    data-os_key='[% map.os_maps.key %]'
+    data-os_layer='[% map.os_maps.layer %]'
+    data-os_url='[% map.os_maps.url %]'
+[% END -%]
 [% IF list_of_names_as_string -%]
     data-bodies='[% list_of_names_as_string | html %]'
 [%- END -%]
