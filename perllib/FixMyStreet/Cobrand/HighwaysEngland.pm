@@ -150,6 +150,14 @@ sub munge_report_new_bodies {
     %$bodies = map { $_->id => $_ } grep { $_->name eq 'Highways England' } values %$bodies;
 }
 
+# Want to remove the group our categories are all in
+sub munge_report_new_contacts {
+    my ($self, $contacts) = @_;
+    foreach (@$contacts) {
+        $_->unset_extra_metadata("group");
+    }
+}
+
 sub report_new_is_on_he_road {
     my ( $self ) = @_;
 
