@@ -478,7 +478,7 @@ sub _tlrn_categories { [
     "Hoardings blocking carriageway or footway",
     "Light on during daylight hours",
     "Lights out in Pedestrian Subway",
-    "Low hanging branches and general maintenance",
+    "Low hanging branches",
     "Manhole Cover - Damaged (rocking or noisy)",
     "Manhole Cover - Missing",
     "Mobile Crane Operation",
