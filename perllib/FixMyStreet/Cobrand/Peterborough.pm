@@ -311,4 +311,19 @@ sub _flytipping_categories { [
     "Offensive graffiti - STAFF ONLY",
 ] }
 
+# We can resend reports upon category change
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+    ($old) = map { $_->email } grep { $_->category eq $old } @$contacts;
+    ($new) = map { $_->email } grep { $_->category eq $new } @$contacts;
+
+    return 0 if $old =~ /^Bartec/ && $new =~ /^Bartec/;
+    return 0 if $old =~ /^Ezytreev/ && $new =~ /^Ezytreev/;
+    return 0 if $old !~ /^(Bartec|Ezytreev)/ && $new !~ /^(Bartec|Ezytreev)/;
+    return 1;
+}
+
 1;

@@ -95,6 +95,7 @@ subtest "extra update params are sent to open311" => sub {
     };
 };
 
+my $problem;
 subtest "bartec report with no gecode handled correctly" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
@@ -102,12 +103,12 @@ subtest "bartec report with no gecode handled correctly" => sub {
         ALLOWED_COBRANDS => 'peterborough',
     }, sub {
         my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Bins', email => 'Bartec-Bins');
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough' });
+        ($problem) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough', areas => ',2566,' });
 
         my $test_data = FixMyStreet::Script::Reports::send();
 
-        $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
+        $problem->discard_changes;
+        ok $problem->whensent, 'Report marked as sent';
 
         my $req = $test_data->{test_req_used};
         my $cgi = CGI::Simple->new($req->content);
@@ -343,5 +344,38 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_like(qr/"No further action",.*?,peterborough,,[^,]*counciluser\@example.com,12345,"12 A Street, XX1 1SZ",248,EXT,light-ref,/);
 };
 
+subtest 'Resending between backends' => sub {
+    $staffuser->user_body_permissions->create({ body => $peterborough, permission_type => 'report_edit' });
+    $mech->create_contact_ok(body_id => $peterborough->id, category => 'Pothole', email => 'Bartec-POT');
+    $mech->create_contact_ok(body_id => $peterborough->id, category => 'Fallen tree', email => 'Ezytreev-Fallen');
+    $mech->create_contact_ok(body_id => $peterborough->id, category => 'Flying tree', email => 'Ezytreev-Flying');
+    $mech->create_contact_ok(body_id => $peterborough->id, category => 'Graffiti', email => 'graffiti@example.org', send_method => 'Email');
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+    }, sub {
+        # $problem is in Bins category from creation, which is Bartec
+        my $whensent = $problem->whensent;
+        $mech->get_ok('/admin/report_edit/' . $problem->id);
+        foreach (
+            { category => 'Pothole', resent => 0 },
+            { category => 'Fallen tree', resent => 1 },
+            { category => 'Flying tree', resent => 0 },
+            { category => 'Graffiti', resent => 1, method => 'Email' },
+            { category => 'Trees', resent => 1 }, # Not due to forced, but due to send method change
+            { category => 'Bins', resent => 1 },
+        ) {
+            $mech->submit_form_ok({ with_fields => { category => $_->{category} } }, "Switch to $_->{category}");
+            $problem->discard_changes;
+            if ($_->{resent}) {
+                is $problem->whensent, undef, "Marked for resending";
+                $problem->update({ whensent => $whensent, send_method_used => $_->{method} || 'Open311' }); # reset as sent
+            } else {
+                isnt $problem->whensent, undef, "Not marked for resending";
+            }
+        }
+    };
+};
 
 done_testing;
