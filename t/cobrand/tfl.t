@@ -54,13 +54,12 @@ my $bromley_flooding = $mech->create_contact_ok(
 $bromley_flooding->set_extra_metadata(display_name => 'Flooding');
 $bromley_flooding->update;
 
-my $bromley_flytipping = $mech->create_contact_ok(
+$mech->create_contact_ok(
     body_id => $bromley->id,
     category => 'Flytipping (Bromley)',
     email => 'flytipping-bromley@example.com',
+    group => ['Street cleaning'],
 );
-$bromley_flytipping->set_extra_metadata(group => [ 'Street cleaning' ]);
-$bromley_flytipping->update;
 
 my $hackney = $mech->create_body_ok(2508, 'Hackney Council');
 $mech->create_contact_ok(

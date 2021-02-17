@@ -34,15 +34,14 @@ $mech->create_contact_ok(
     email => 'tfl@example.org',
 );
 
-my $waste = $mech->create_contact_ok(
+$mech->create_contact_ok(
     body => $body,
     category => 'Report missed collection',
     email => 'missed',
     send_method => 'Open311',
     endpoint => 'waste-endpoint',
+    group => ['Waste'],
 );
-$waste->set_extra_metadata(group => ['Waste']);
-$waste->update;
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     latitude => 51.402096,

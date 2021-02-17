@@ -42,9 +42,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Flooding in the road
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "UniformFLY");
 my $da = $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
 $mech->create_contact_ok(body_id => $body->id, category => 'Street cleaning and litter', email => "STREET");
-my $category = $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG");
-$category->set_extra_metadata(group => 'Danger things');
-$category->update;
+$mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG", group => 'Danger things');
 
 $da->set_extra_fields({
     code => 'message',
