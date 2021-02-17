@@ -26,7 +26,7 @@
     data-zoomOffset=[% map.zoomOffset %]
     data-map_type="[% map.map_type %]"
 [% IF include_key -%]
-    data-key='[% c.config.BING_MAPS_API_KEY %]'
+    data-bing_key='[% c.config.BING_MAPS_API_KEY %]'
 [%- END -%]
 [% IF list_of_names_as_string -%]
     data-bodies='[% list_of_names_as_string | html %]'

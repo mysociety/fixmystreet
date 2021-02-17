@@ -56,7 +56,7 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
                 urls.push( fixmystreet.maps.tile_base.replace('{S}', this.tile_prefix[i]) + "/${z}/${x}/${y}.png" );
             }
         } else if (z > 11 && in_uk) {
-            var type = 'g=8702&lbl=l1&productSet=mmOS&key=' + fixmystreet.key;
+            var type = 'g=8702&lbl=l1&productSet=mmOS&key=' + fixmystreet.bing_key;
             var tile_base = "//ecn.t{S}.tiles.virtualearth.net/tiles/r${id}?" + type;
             for (i=0; i<4; i++) {
                 urls.push(tile_base.replace('{S}', i));
