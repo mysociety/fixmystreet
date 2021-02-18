@@ -20,6 +20,7 @@
         - Improve layout of some admin pages.
     - Development improvements:
         - Include failure count in send report error output, #3316
+        - Sort output in export script. #3323
     - Security:
         - Increase minimum password length to eight.
 
