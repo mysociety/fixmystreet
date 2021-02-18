@@ -1,0 +1,16 @@
+[% SET hardcoded = c.cobrand.is_hardcoded_category(contact.category) ~%]
+<p>
+  <label for="category">[% loc('Category') %]</label>
+  <input type="text" class="form-control" id="category" name="category"
+    size="30" value="[% contact.category %]"
+    [% hardcoded || contact.category_uneditable ? 'readonly' : 'required' %]>
+</p>
+[% IF hardcoded %]
+<div class="fms-admin-warning">
+    This category name is uneditable as it is either TLRN-only, a council redirect, or a category marked not to resend.<br>Please contact us to edit the name of this category.
+</div>
+[% END %]
+
+[% IF contact.in_storage %]
+    <input type="hidden" name="current_category" value="[% current_contact.category | html %]" >
+[% END %]
