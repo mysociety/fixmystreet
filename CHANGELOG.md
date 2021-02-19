@@ -10,6 +10,7 @@
         - Fix Gaze sometimes being called twice on /around. #3324
         - Fix moderation of update text.
         - Only trigger one refresh going Back to list view. #3476
+        - Fix checked order of updates in dashboard export.
 
 * v3.1 (16th November 2020)
     - Security:
