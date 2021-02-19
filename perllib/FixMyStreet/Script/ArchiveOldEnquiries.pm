@@ -165,7 +165,7 @@ sub send_email_and_close {
 
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->{cobrand})->new();
     $cobrand->set_lang_and_domain($problems[0]->lang, 1);
-    FixMyStreet::Map::set_map_class($cobrand->map_type);
+    FixMyStreet::Map::set_map_class($cobrand);
 
     my %h = (
       reports => [@problems],

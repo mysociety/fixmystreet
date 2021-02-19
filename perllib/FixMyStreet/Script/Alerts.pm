@@ -352,7 +352,7 @@ sub _send_aggregated_alert_email {
 
     my $cobrand = $data{cobrand};
 
-    FixMyStreet::Map::set_map_class($cobrand->map_type);
+    FixMyStreet::Map::set_map_class($cobrand);
 
     my $sender = FixMyStreet::Email::unique_verp_id([ 'alert', $data{alert_id} ], $cobrand->call_hook('verp_email_domain'));
     my $result = FixMyStreet::Email::send_cron(

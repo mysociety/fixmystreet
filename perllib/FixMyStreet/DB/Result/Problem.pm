@@ -1006,8 +1006,9 @@ sub static_map {
     my $orig_map_class = FixMyStreet::Map::set_map_class('OSM')
         unless $FixMyStreet::Map::map_class->isa("FixMyStreet::Map::OSM");
 
+    my $cobrand = $FixMyStreet::Map::map_cobrand || $self->get_cobrand_logged;
     my $map = $FixMyStreet::Map::map_class->new({
-        cobrand => $self->get_cobrand_logged,
+        cobrand => $cobrand,
         distance => 1, # prevents the call to Gaze which isn't necessary
         $params{zoom} ? ( zoom => $params{zoom} ) : (),
     });
@@ -1018,7 +1019,7 @@ sub static_map {
         ? [ {
             latitude  => $self->latitude,
             longitude => $self->longitude,
-            colour    => $self->get_cobrand_logged->pin_colour($self, 'report'),
+            colour    => $cobrand->pin_colour($self, 'report'),
             type      => 'big',
           } ]
         : [],

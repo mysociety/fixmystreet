@@ -230,7 +230,7 @@ sub setup_request {
 
     $c->model('DB::Problem')->set_restriction( $cobrand->site_key() );
 
-    FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->get_param('map_override') );
+    FixMyStreet::Map::set_map_class($cobrand);
     # All pages need this, either loading it or prefetching it
     $c->stash->{map_js} = FixMyStreet::Map::map_javascript();
 
