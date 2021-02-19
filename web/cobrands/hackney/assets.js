@@ -146,11 +146,12 @@ var layers = [
   }
 ];
 
+var base = fixmystreet.staging ? "https://tilma.staging.mysociety.org" : "https://tilma.mysociety.org";
 var hackney_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   class: OpenLayers.Layer.NCCVectorAsset,
   protocol_class: OpenLayers.Protocol.AlloyV2,
   http_options: {
-    base: "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://hackney.assets/${layerid}/${x}/${y}/${z}/cluster?styleIds=${styleid}"
+    base: base + "/resource-proxy/proxy.php?https://hackney.assets/${layerid}/${x}/${y}/${z}/cluster?styleIds=${styleid}"
   },
   non_interactive: false,
   body: "Hackney Council",
