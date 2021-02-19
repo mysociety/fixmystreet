@@ -118,7 +118,7 @@ sub map_features {
         $nearby = $c->model('DB::Nearby')->nearby($c, %p);
     }
 
-    return ( $on_map, $nearby );
+    return ( $on_map, $nearby, $p{distance} );
 }
 
 sub click_to_wgs84 {
